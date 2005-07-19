@@ -96,10 +96,13 @@ public abstract class Terminal
 					e.toString ()).fillInStackTrace ();
 			}
 		}
+		//COMMENTED TO BUILD ON UNIX WO NATIVE
+		/*
 		else if (os.indexOf ("windows") != -1)
 		{
 			t = new WindowsTerminal ();
 		}
+		*/
 		else
 		{
 			t = new UnixTerminal ();
