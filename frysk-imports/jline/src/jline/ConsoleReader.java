@@ -688,8 +688,8 @@ public class ConsoleReader
 
 		try
 		{
-			Object content = transferable.getTransferData (
-				java.awt.datatransfer.DataFlavor.plainTextFlavor);
+			// my version of the fix below, didn't see that one at first
+			Object content = (new java.awt.datatransfer.DataFlavor()).getReaderForText(transferable);
 
 			/*
 			 * This fix was suggested in bug #1060649 at
