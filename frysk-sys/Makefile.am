@@ -56,6 +56,7 @@ frysk.sys.jar: $(GEN_BUILT_CLASSES)
 		| fastjar -@ -cf $@
 
 
+LDADD += libfrysk.sys.a
 libfrysk_sys_a_SOURCES = $(GEN_SOURCES)
 noinst_LIBRARIES += libfrysk.sys.a
 libfrysk.sys.so: libfrysk.sys.a

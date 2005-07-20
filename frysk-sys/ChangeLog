@@ -1,5 +1,8 @@
 2005-07-20  Andrew Cagney  <cagney@redhat.com>
-
+		
+	* autogen.sh: Pass "com" and "util" to Makefile.gen.sh.
+	* Makefile.am: Add libfrysk.sys.a to LDADD.
+	
 	* Makefile.am: New file.
 	* autogen.sh: New file.
 	* configure.ac: New file.
