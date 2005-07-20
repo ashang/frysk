@@ -1,10 +1,14 @@
 #!/bin/sh -eu
 
-dirs="com"
+if test $@ -eq 0 ; then
+    echo "Usage: $0 directory ..." 1>&2
+    exit 1
+fi
+dirs="$*"
 
 # Generate the list of source files
 
-echo Creating Makefile.gen ...
+echo Creating Makefile.gen from directories ${dirs} ...
 
 rm -f Makefile.gen
 
@@ -71,7 +75,7 @@ EOF
         done
     print '	$(ZZZ)'
 done
-
+print ""
 
 # Traverse the source tree creating a list of all the built .java
 # files (created from either a .mkjava or a .shjava file).  These need
@@ -86,12 +90,14 @@ EOF
     NAME=`echo ${suffix} | tr '[a-z]' '[A-Z]'`
     print_header "... GEN_${NAME} = *.${suffix}=.java"
     print "GEN_BUILT_${NAME} = \\"
-    find * -name "*.${suffix}" -print | while read file ; do
+    find ${dirs} -name "*.${suffix}" -print | while read file ; do
         print "	`echo ${file} | sed -e "s/.${suffix}/.java/"` \\"
     done
     print '	$(ZZZ)'
 done
-
+print 'BUILT_SOURCES += $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)'
+print 'CLEANFILES += $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)'
+print ''
 
 
 # Grep the cni/*.cxx files forming a list of any includes.  Assume
@@ -101,7 +107,7 @@ done
 
 print_header "... GEN_BUILT_H  += *.cxx=.h"
 print "GEN_BUILT_H = \\"
-find * -name 'cni' -print | while read d ; do
+find ${dirs} -name 'cni' -print | while read d ; do
     find $d -name '*.cxx' -print
 done \
     | xargs grep '#include ".*.h"' \
