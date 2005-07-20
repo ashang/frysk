@@ -1,3 +1,11 @@
+2005-07-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: New file.
+	* autogen.sh: New file.
+	* configure.ac: New file.
+	* include/linux.ptrace.h: New file.
+	* .cvsignore: New file.
+	
 2005-07-19  Andrew Cagney  <cagney@redhat.com>
 
 	* README: New file.

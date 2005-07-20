@@ -1,4 +1,8 @@
 2005-07-20  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules: New file.
+	* Makefile.gen.sh: New file.
+	* mkjava.sh: New file.
+
 	* README: New file.
 

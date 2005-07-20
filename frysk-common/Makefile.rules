@@ -1,0 +1,89 @@
+# Rule for building a .java file from an input .mkclass file.  This
+# lets us specify CLASS.java directly in the BUILT_SOURCES list.
+
+MKJAVA = $(srcdir)/common/mkjava.sh
+SUFFIXES += .mkjava
+.mkjava.java:
+	rm -f $*.tmp
+	$(SHELL) $(MKJAVA) < $(srcdir)/$*.mkjava > $*.tmp $@
+	mv $*.tmp $@
+$(MKJAVA_BUILT): $(MKJAVA)
+BUILT_SOURCES += $(MKJAVA_BUILT)
+
+# Rule for building a .java file from a shell|mkjava pipeline.
+
+SUFFIXES += .shjava
+.shjava.java:
+	rm -f $*.tmp
+	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
+	mv $*.tmp $@
+$(SHJAVA_BUILT): $(MKJAVA)
+BUILT_SOURCES += $(SHJAVA_BUILT)
+
+
+
+# Since a single .java file can result in multiple .class files (due
+# to inner classes) trying to track all those would get complicated.
+# Instead generate a .classes file containing the list of .class files
+# that will be created and use that for all dependencies.
+
+# The .Po files intended for the .java.o dependencies is hijacked,
+# instead containing dependencies for .classes.
+
+SUFFIXES += .classes
+.java.classes:
+	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
+	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -d . -C '$<' ; \
+	then \
+		mv -f "$$depbase.Tpo" "$$depbase.Po" ; \
+	else \
+		rm -f "$$depbase.Tpo" ; \
+		exit 1 ; \
+	fi
+	echo '# $<' > $*.classes.tmp
+	jv-scan --list-class '$<' | tr '[ ]' '[\n]' >> $*.classes.tmp
+	mv -f $*.classes.tmp $*.classes
+
+# Convert the .classes (actually the corresponding .class) into a .o.
+# Since a change to a .java file will force the rebuild of the
+# .classes file, this need only depend on the .classes file (I think).
+
+# Unfounatly, GCJ often crashes when trying to compile .class files,
+# Go back to the original .java file as a hack.
+
+.classes.o:
+	$(GCJCOMPILE) -c `sed -n 's,^# ,,p' < $<` -o $@
+#	$(GCJCOMPILE) -d . -c $*.class ## dumps core
+#	$(GCJCOMPILE) -d . -c `sed -e 's,\.,/,g' -e 's,$$,.class,' < $<`
+
+
+# Generate a .h file (using CNI) from the .classes file.
+
+GCJH = $(GCJ)h
+.classes.h:
+	$(GCJH) $(GCJHFLAGS) `sed -e '/^#/d' $<`
+
+
+# Shared library rule (for moment assume that .a contains PIC code).
+SUFFIXES += .so
+.a.so:
+	$(CC) -shared -o $@.tmp \
+		-Wl,--whole-archive,$<,--no-whole-archive \
+		-Wl,--soname,$@,-z,-defs
+	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
+	mv $@.tmp $@
+
+# Assembler rule.
+
+.S.o:
+	$(CCASCOMPILE) -c -o $@ $<
+
+# Hack to save us constantly editing this file.  The assumption is
+# that all .java and .cxx files are always built.  Recursively call
+# make to ensure that Makefile is up-to-date.
+
+$(srcdir)/Makefile.gen: $(srcdir)/common/Makefile.gen.sh
+	cd $(srcdir) && ./common/Makefile.gen.sh
+.PHONY: autogen
+autogen: clean
+	cd $(srcdir) && ./autogen.sh
