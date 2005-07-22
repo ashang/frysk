@@ -1,3 +1,10 @@
+2005-07-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Add GEN_DIRS=... to generated output.
+	* Makefile.rules ($(srcdir)/Makefile.gen): Pass GEN_DIRS to
+	Makefile.gen.sh.
+	* Makefile.gen.sh: Fix typo, use $# for argument count.
+
 2005-07-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Pass the find directory list in as a parameter,

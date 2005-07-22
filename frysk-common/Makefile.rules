@@ -83,7 +83,7 @@ SUFFIXES += .so
 # make to ensure that Makefile is up-to-date.
 
 $(srcdir)/Makefile.gen: $(srcdir)/common/Makefile.gen.sh
-	cd $(srcdir) && ./common/Makefile.gen.sh
+	cd $(srcdir) && ./common/Makefile.gen.sh $(GEN_DIRS)
 .PHONY: autogen
 autogen: clean
 	cd $(srcdir) && ./autogen.sh

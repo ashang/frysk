@@ -1,6 +1,6 @@
 #!/bin/sh -eu
 
-if test $@ -eq 0 ; then
+if test $# -eq 0 ; then
     echo "Usage: $0 directory ..." 1>&2
     exit 1
 fi
@@ -29,6 +29,9 @@ print ()
     echo "$@" >> Makefile.gen
 }
 
+
+print_header List of sub-directories.
+print 'GEN_DIRS =' ${dirs}
 
 # Traverse the source tree creating a list (in GEN_SOURCES) of all the
 # source files (exclude Test files as they are handled later).
@@ -66,7 +69,6 @@ EOF
     print_header "... GEN_BUILT_CLASSES += *.${suffix}"
     print "GEN_BUILT_CLASSES += \\"
     find ${dirs} \
-	-name '*Test*' -prune -o \
 	-name "*.${suffix}" -print \
 	| while read file ; do
 	    d=`dirname ${file}`
