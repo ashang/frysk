@@ -1,3 +1,10 @@
+2005-07-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk-sys.db): New rule, build the gcj class to
+	solib database.
+	(frysk-sys.jar): Rename frysk.sys.jar.
+	(libfrysk-sys.so): Rename libfrysk-sys.so.
+
 2005-07-21  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore: New file.
