@@ -1,3 +1,12 @@
+2005-07-22  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/model/RegisterSet.java: Remove reference
+	to package proc.
+	* configure.ac: New file.
+	* Makefile.am: New file.
+	* autogen.sh: New file.
+	* .cvsignore: New file.
+		
 2005-07-21  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/event/Event.java: New file.
