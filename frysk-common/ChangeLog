@@ -1,3 +1,8 @@
+2005-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: For .mkjava and .shjava sources, filter out any
+	corresponding .java files.
+
 2005-07-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Add GEN_DIRS=... to generated output.

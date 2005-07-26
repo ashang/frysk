@@ -38,17 +38,25 @@ print 'GEN_DIRS =' ${dirs}
 
 print "GEN_SOURCES ="
 cat <<EOF | while read suffix ; do
-java
-cxx
-mkjava
-shjava
+.java
+.cxx
+.mkjava
+.shjava
 EOF
-    print_header "... GEN_SOURCES += *.${suffix}"
+    print_header "... GEN_SOURCES += *${suffix}"
     print "GEN_SOURCES += \\"
     find ${dirs} \
 	-name '*Test*' -prune -o \
-	-name "*.${suffix}" -print \
+	-name "*${suffix}" -print \
 	| while read file ; do
+	    d=`dirname ${file}`
+	    b=`basename ${file} ${suffix}`
+	    case "${file}" in
+		*.java )
+		    test -r "${d}/${b}.mkjava" && continue
+		    test -r "${d}/${b}.shjava" && continue
+		    ;;
+	    esac
 	    print "	${file} \\"
         done
     print '	$(ZZZ)'
