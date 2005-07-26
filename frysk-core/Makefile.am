@@ -58,7 +58,7 @@ noinst_PROGRAMS += frysk.core.jar
 
 
 
-LDADD += ../Core/libfrysk-core.a ../Sys/libfrysk-sys.a
+LDADD += libfrysk-core.a ../frysk-sys/libfrysk-sys.a
 libfrysk_core_a_SOURCES = $(GEN_SOURCES)
 noinst_LIBRARIES += libfrysk-core.a
 
