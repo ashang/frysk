@@ -1,0 +1,7 @@
+2005-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: New file.
+	* autogen.sh: New file.
+	* Makefile.am: New file.
+	* .cvsignore: New file.
+
