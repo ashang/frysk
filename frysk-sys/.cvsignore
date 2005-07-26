@@ -7,3 +7,10 @@ config.status
 configure
 Makefile
 autom4te.cache
+*.jar
+install-sh
+missing
+*.so
+compile
+.depcomp
+*.db

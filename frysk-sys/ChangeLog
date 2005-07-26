@@ -1,3 +1,11 @@
+2005-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* .classpath: New file.
+	* .project: New file.
+	* .externalToolBuilders/Ant.launch: New file.
+	* build.xml: New file.
+	* .cvsignore: Exclude more generated files.
+
 2005-07-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk-sys.db): New rule, build the gcj class to
