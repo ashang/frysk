@@ -1,5 +1,8 @@
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/sys/Errno.java: Add missing
+	serialVersionUID.
+
 	* .classpath: New file.
 	* .project: New file.
 	* .externalToolBuilders/Ant.launch: New file.
