@@ -1,5 +1,7 @@
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
 
+	* BUILD-SO: New file.
+
 	* Makefile.gen.sh: For .mkjava and .shjava sources, filter out any
 	corresponding .java files.
 
