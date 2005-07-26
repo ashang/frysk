@@ -1,5 +1,11 @@
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
 
+	* .project: New file.
+	* .classpath: new file.
+	* .externalToolBuilders/Autoconf.launch: New file.
+	* .externalToolBuilders/Autogen.launch: New file.
+	* .externalToolBuilders/Make.launch: New file.
+
 	* configure.ac: New file.
 	* autogen.sh: New file.
 	* Makefile.am: New file.
