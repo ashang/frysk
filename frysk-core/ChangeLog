@@ -1,3 +1,8 @@
+2005-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/event/EventLoop.java: Update to use the
+	static Poll.SignalSet methods.
+
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (LDADD): Refer to frysk-sys, not Sys.

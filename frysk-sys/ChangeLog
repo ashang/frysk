@@ -1,3 +1,9 @@
+2005-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/cni/Poll.cxx: 
+	* com/redhat/fedora/frysk/sys/Poll.java: Make SignalSet static,
+	drop SignalSet paramter from poll method.
+
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/Errno.java: Add missing
