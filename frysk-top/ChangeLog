@@ -1,3 +1,8 @@
+2005-07-28  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CONFIG_FILES): Add jline/Makefile.
+	* Makefile.am (SUBDIRS): Add jline.
+
 2005-07-27  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: New file.
