@@ -1,6 +1,8 @@
 2005-07-28  Andrew Cagney  <cagney@redhat.com>
 
-	* com/redhat/fedora/frysk/sys/cni/Wait.cxx: 
+	* com/redhat/fedora/frysk/sys/cni/Wait.cxx: For WIFEXITED, call
+	Observer.exited.
+	
 	* com/redhat/fedora/frysk/sys/Wait.java: Uncomment all the
 	commented out observers and add a new method "unknown", but always
 	call "stop" observer.
