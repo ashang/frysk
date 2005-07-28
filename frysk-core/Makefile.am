@@ -33,6 +33,8 @@ AM_LDFLAGS = \
 
 AM_GCJFLAGS = \
 	-I$(srcdir)/../frysk-sys \
+	-I$(srcdir)/../frysk-sys/include \
+	-I$(top_builddir)/../frysk-sys \
 	-I$(srcdir) \
 	-I$(top_builddir) \
 	-Werror \
@@ -65,6 +67,61 @@ noinst_LIBRARIES += libfrysk-core.a
 libfrysk-core.so: libfrysk-core.a
 noinst_PROGRAMS += libfrysk-core.so
 
+
+prog_perf_clone_SOURCES = prog/perf/clone.c
+prog_perf_clone_LDADD = -lpthread
+noinst_PROGRAMS += prog/perf/clone
+prog_perf_fork_SOURCES = prog/perf/fork.c
+prog_perf_fork_LDADD = -lpthread
+noinst_PROGRAMS += prog/perf/fork
+
+prog_fib_clone_SOURCES = prog/fib/clone.c
+prog_fib_clone_LDADD = -lpthread
+prog_fib_fork_SOURCES = prog/fib/fork.c
+noinst_PROGRAMS += \
+	prog/fib/clone \
+	prog/fib/fork \
+	$(ZZZ)
+
+prog_print_argv_SOURCES = prog/print/argv.c
+prog_print_auxv_SOURCES = prog/print/auxv.c
+prog_print_argc_SOURCES = prog/print/argc.c
+prog_print_envp_SOURCES = prog/print/envp.c
+noinst_PROGRAMS += \
+	prog/print/argv \
+	prog/print/auxv \
+	prog/print/argc \
+	prog/print/envp \
+	$(ZZZ)
+
+prog_step_infThreadLoop_SOURCES = prog/step/infThreadLoop.c
+prog_step_infThreadLoop_LDADD = -lpthread
+noinst_PROGRAMS += prog/step/infThreadLoop
+
+prog_syscall_syscalls_SOURCES = prog/syscall/syscalls.c
+prog_syscall_exec_SOURCES = prog/syscall/exec.c
+prog_syscall_threadexec_SOURCES = prog/syscall/threadexec.c
+prog_syscall_threadexec_LDADD = -lpthread
+prog_syscall_syscallloop_SOURCES = prog/syscall/syscallloop.c
+noinst_PROGRAMS += \
+	prog/syscall/threadexec \
+	prog/syscall/exec \
+	prog/syscall/syscalls \
+	prog/syscall/syscalls \
+	prog/syscall/syscallloop
+
+prog_terminated_infloop_SOURCES = prog/terminated/infloop.c
+noinst_PROGRAMS += \
+	prog/terminated/infloop
+
+prog_x86isa_x86regs_SOURCES = prog/x86isa/x86regs.S
+noinst_PROGRAMS += prog/x86isa/x86regs
+
+prog_util_auxv_SOURCES = prog/util/auxv.java
+prog_util_run_SOURCES = prog/util/run.java
+noinst_PROGRAMS += \
+	prog/util/auxv \
+	prog/util/run
 
 include common/Makefile.rules
 include Makefile.gen

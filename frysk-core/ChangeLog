@@ -1,3 +1,108 @@
+2005-07-28  Andrew Cagney  <cagney@redhat.com>
+	    Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Makefile.am (prog_perf_clone_SOURCES, prog_perf_clone_LDADD) 
+	(prog_perf_fork_SOURCES, prog_perf_fork_LDADD) 
+	(prog_fib_clone_SOURCES, prog_fib_clone_LDADD) 
+	(prog_fib_fork_SOURCES, prog_print_argv_SOURCES) 
+	(prog_print_auxv_SOURCES, prog_print_argc_SOURCES) 
+	(prog_syscall_syscalls_SOURCES, prog_print_envp_SOURCES) 
+	(prog_step_infThreadLoop_SOURCES, prog_step_infThreadLoop_LDADD) 
+	(prog_syscall_exec_SOURCES, prog_syscall_threadexec_SOURCES) 
+	(prog_syscall_threadexec_SOURCES, prog_syscall_threadexec_LDADD) 
+	(prog_syscall_syscallloop_SOURCES, noinst_PROGRAMS) 
+	(prog_terminated_infloop_SOURCES, prog_x86isa_x86regs_SOURCES) 
+	(prog_util_auxv_SOURCES, prog_util_run_SOURCES): Define.
+	(AM_GCJFLAGS): Include from frysk-sys's build directory.
+	* com/redhat/fedora/frysk/proc/AllStoppedProcEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/Auxv.java: New file.
+	* com/redhat/fedora/frysk/proc/ByteOrder.java: New file.
+	* com/redhat/fedora/frysk/proc/ClonedTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/EventLoop.java: New file.
+	* com/redhat/fedora/frysk/proc/ExecedTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/ExitedTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/ExitingTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/ForkedTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/I386Linux.java: New file.
+	* com/redhat/fedora/frysk/proc/Isa.java: New file.
+	* com/redhat/fedora/frysk/proc/Linux.java: New file.
+	* com/redhat/fedora/frysk/proc/Manager.java: New file.
+	* com/redhat/fedora/frysk/proc/PowerPcLinux.java: New file.
+	* com/redhat/fedora/frysk/proc/Proc.java: New file.
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/ProcEventObservable.java: New file.
+	* com/redhat/fedora/frysk/proc/ProcFactory.java: New file.
+	* com/redhat/fedora/frysk/proc/PsEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/PsListener.java: New file.
+	* com/redhat/fedora/frysk/proc/PsObserver.java: New file.
+	* com/redhat/fedora/frysk/proc/Register.java: New file.
+	* com/redhat/fedora/frysk/proc/StoppedTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/SysUtils.java: New file.
+	* com/redhat/fedora/frysk/proc/Syscall.java: New file.
+	* com/redhat/fedora/frysk/proc/SyscallEventInfo.java: New file.
+	* com/redhat/fedora/frysk/proc/SyscallTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/Task.java: New file.
+	* com/redhat/fedora/frysk/proc/TaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/TaskEventObservable.java: New file.
+	* com/redhat/fedora/frysk/proc/TaskFactory.java: New file.
+	* com/redhat/fedora/frysk/proc/TaskId.java: New file.
+	* com/redhat/fedora/frysk/proc/TerminatedTaskEvent.java: New file.
+	* com/redhat/fedora/frysk/proc/TestAttach.java: New file.
+	* com/redhat/fedora/frysk/proc/TestAttachSuspended.java: New file.
+	* com/redhat/fedora/frysk/proc/TestAttachThreads.java: New file.
+	* com/redhat/fedora/frysk/proc/TestAuxv.java: New file.
+	* com/redhat/fedora/frysk/proc/TestClone.java: New file.
+	* com/redhat/fedora/frysk/proc/TestDetach.java: New file.
+	* com/redhat/fedora/frysk/proc/TestDetachThreads.java: New file.
+	* com/redhat/fedora/frysk/proc/TestExec.java: New file.
+	* com/redhat/fedora/frysk/proc/TestExiting.java: New file.
+	* com/redhat/fedora/frysk/proc/TestFork.java: New file.
+	* com/redhat/fedora/frysk/proc/TestGoAndGo.java: New file.
+	* com/redhat/fedora/frysk/proc/TestI386Regs.java: New file.
+	* com/redhat/fedora/frysk/proc/TestPaused.java: New file.
+	* com/redhat/fedora/frysk/proc/TestProcStop.java: New file.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo.java: New file.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java: New file.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndStop.java: New file.
+	* com/redhat/fedora/frysk/proc/TestPsObserver.java: New file.
+	* com/redhat/fedora/frysk/proc/TestReattachThreads.java: New file.
+	* com/redhat/fedora/frysk/proc/TestRun.java: New file.
+	* com/redhat/fedora/frysk/proc/TestStep.java: New file.
+	* com/redhat/fedora/frysk/proc/TestStop.java: New file.
+	* com/redhat/fedora/frysk/proc/TestStopAndGo.java: New file.
+	* com/redhat/fedora/frysk/proc/TestStopAndStop.java: New file.
+	* com/redhat/fedora/frysk/proc/TestSyscall.java: New file.
+	* com/redhat/fedora/frysk/proc/TestSyscall2.java: New file.
+	* com/redhat/fedora/frysk/proc/TestSyscallOpen.java: New file.
+	* com/redhat/fedora/frysk/proc/TestTerminated.java: New file.
+	* com/redhat/fedora/frysk/proc/TestThreadExec.java: New file.
+	* com/redhat/fedora/frysk/proc/TestUnpaused.java: New file.
+	* com/redhat/fedora/frysk/proc/X8664Linux.java: New file.
+	* com/redhat/fedora/frysk/proc/cni/Linux.cxx: New file.
+	* com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: New file.
+	* include/linux.ptrace.h: New file.
+	* prog/fib/clone.c: New file.
+	* prog/fib/fork.c: New file.
+	* prog/perf/README: New file.
+	* prog/perf/clone.c: New file.
+	* prog/perf/clone.sh: New file.
+	* prog/perf/fork.c: New file.
+	* prog/print/argc.c: New file.
+	* prog/print/argv.c: New file.
+	* prog/print/auxv.c: New file.
+	* prog/print/envp.c: New file.
+	* prog/step/infThreadLoop.c: New file.
+	* prog/syscall/exec.c: New file.
+	* prog/syscall/syscallloop.c: New file.
+	* prog/syscall/syscalls.c: New file.
+	* prog/syscall/threadexec.c: New file.
+	* prog/terminated/infloop.c: New file.
+	* prog/util/auxv.java: New file.
+	* prog/util/run.java: New file.
+	* prog/x86isa/x86regs.S: New file.
+	* include/linux.ptrace.h: New file (copied from the Linux kernel
+	headers)
+
 2005-07-27  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/event/EventLoop.java: Update to use the
