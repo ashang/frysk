@@ -1,7 +1,26 @@
 2005-07-30  Andrew Cagney  <cagney@redhat.com>
 
-	* com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: 
-	* com/redhat/fedora/frysk/proc/SysUtils.java: Add sigchld.
+	* com/redhat/fedora/frysk/proc/SysUtils.java,
+	com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: Delete "kill" and
+	"tkill".
+	* com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	com/redhat/fedora/frysk/proc/TestDetach.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Use Signal.kill.
+
+	* com/redhat/fedora/frysk/proc/cni/SysUtils.cxx,
+	com/redhat/fedora/frysk/proc/SysUtils.java: Add sigchld.
 	* com/redhat/fedora/frysk/proc/Linux.java: Use SysUtils.
 	* com/redhat/fedora/frysk/proc/cni/Linux.cxx: Delete.
 	
