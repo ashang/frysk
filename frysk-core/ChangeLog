@@ -1,5 +1,10 @@
 2005-07-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: 
+	* com/redhat/fedora/frysk/proc/SysUtils.java: Add sigchld.
+	* com/redhat/fedora/frysk/proc/Linux.java: Use SysUtils.
+	* com/redhat/fedora/frysk/proc/cni/Linux.cxx: Delete.
+	
 	* com/redhat/fedora/frysk/proc/cni/Linux.cxx: Don't include
 	"com/redhat/fedora/frysk/proc/Linux$EventLoop$WaitEvent.h".
 
