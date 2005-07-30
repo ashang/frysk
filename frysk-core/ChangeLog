@@ -1,3 +1,8 @@
+2005-07-30  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/cni/Linux.cxx: Don't include
+	"com/redhat/fedora/frysk/proc/Linux$EventLoop$WaitEvent.h".
+
 2005-07-29  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/cni/Linux.cxx: Delete
