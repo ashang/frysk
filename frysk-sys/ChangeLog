@@ -1,5 +1,9 @@
 2005-07-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/sys/cni/XXX.cxx,
+	com/redhat/fedora/frysk/sys/XXX.java: New files.  Copy in infLoop,
+	infThreadLoop and suspendedProg methods from proc.SysUtils.
+
 	* com/redhat/fedora/frysk/sys/cni/Signal.cxx: 
 	* com/redhat/fedora/frysk/sys/Signal.java: New files.
 

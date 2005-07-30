@@ -1,6 +1,26 @@
 2005-07-30  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/SysUtils.java,
+	com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: Delete "infLoop",
+	"infThreadLoop", and "suspendedProg"; moved to sys.XXX.
+	* com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java: Update to
+	use sys.XXX.
+
+	* com/redhat/fedora/frysk/proc/SysUtils.java,
 	com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: Delete "kill" and
 	"tkill".
 	* com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
