@@ -1,3 +1,10 @@
+2005-07-29  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/Wait.java: Delete "stop" wait
+	observer.
+	* com/redhat/fedora/frysk/sys/cni/Wait.cxx: Enable all the wait
+	observers.
+
 2005-07-28  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/cni/Wait.cxx: For WIFEXITED, call
