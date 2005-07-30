@@ -24,7 +24,8 @@ SUFFIXES += .mkjava
 .mkjava.java:
 	rm -f $*.tmp
 	$(SHELL) $(MKJAVA) < $(srcdir)/$*.mkjava > $*.tmp $@
-	mv $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
 $(MKJAVA_BUILT): $(MKJAVA)
 BUILT_SOURCES += $(MKJAVA_BUILT)
 
@@ -34,7 +35,8 @@ SUFFIXES += .shjava
 .shjava.java:
 	rm -f $*.tmp
 	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
-	mv $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
 $(SHJAVA_BUILT): $(MKJAVA)
 BUILT_SOURCES += $(SHJAVA_BUILT)
 

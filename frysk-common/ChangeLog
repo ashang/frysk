@@ -1,5 +1,8 @@
 2005-07-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.mkjava.java, .shjava.java): Make the generated
+	file read-only.
+
 	* Makefile.gen.sh: Add GEN_BUILT_CLASSES to CLEANFILES.
 
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
