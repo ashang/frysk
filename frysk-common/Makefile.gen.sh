@@ -102,6 +102,7 @@ EOF
         done
     print '	$(ZZZ)'
 done
+print 'CLEANFILES += $(GEN_BUILT_CLASSES)'
 print ""
 
 # Traverse the source tree creating a list of all the built .java

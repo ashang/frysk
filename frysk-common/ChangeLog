@@ -1,3 +1,7 @@
+2005-07-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Add GEN_BUILT_CLASSES to CLEANFILES.
+
 2005-07-26  Andrew Cagney  <cagney@redhat.com>
 
 	* BUILD-SO: New file.
