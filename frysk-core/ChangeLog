@@ -1,5 +1,9 @@
 2005-07-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java,
+	com/redhat/fedora/frysk/proc/Task.java: Delete "isTrapSig" and
+	"isStopSig".
+
 	* com/redhat/fedora/frysk/proc/SysUtils.Java,
 	com/redhat/fedora/frysk/proc/cni/SysUtils.cxx: Delete files,
 	signal functions replaced by sys.Sig.
