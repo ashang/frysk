@@ -1,5 +1,8 @@
 2005-07-31  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java: Parameterize the
+	TaskEvent constructors.
+
 	* com/redhat/fedora/frysk/proc/Task.java: For State, add "name"
 	 member, set using an explicit constructor parameter.  Clean up
 	 toString methods.
