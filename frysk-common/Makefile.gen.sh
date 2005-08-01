@@ -65,6 +65,7 @@ EOF
     find ${dirs} \
 	-name '*Test*' -prune -o \
 	-name "*${suffix}" -print \
+	| sort -f \
 	| while read file ; do
 	    d=`dirname ${file}`
 	    b=`basename ${file} ${suffix}`
@@ -135,13 +136,15 @@ print ''
 
 print_header "... GEN_BUILT_H  += *.cxx=.h"
 print "GEN_BUILT_H = \\"
-find ${dirs} -name 'cni' -print | while read d ; do
+find ${dirs} -name 'cni' -print | while read d
+do
     find $d -name '*.cxx' -print
 done \
     | xargs grep '#include ".*.h"' \
     | sed -e 's/^.*#include "//' -e 's/.h".*$//' -e 's/$.*//' \
     | sort -u \
-    | while read c ; do
+    | while read c
+do
     test -r $c.java && print "	$c.h \\"
 done
 print '	$(ZZZ)'
@@ -157,7 +160,9 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 print_header "... TESTS += Test*.java"
 find ${dirs} \
     -name 'Test*.java' -print \
-    | while read file ; do
+    | sort -f \
+    | while read file
+do
     test=`dirname ${file}`/`basename ${file} .java`
     test_=`echo ${test} | tr '[/]' '[_]'`
     print ""
