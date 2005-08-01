@@ -1,5 +1,16 @@
 2005-08-01  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java: Convert SIGSTOP into
+	StoppedTaskEvent.
+	* com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestDetach.java,
+	com/redhat/fedora/frysk/proc/TestAttachSuspended.java: Check for
+	StoppedTaskEvent instead of SignaledTaskEvent.
+	* com/redhat/fedora/frysk/proc/Task.java: Handle StoppedTaskEvent.
+	* com/redhat/fedora/frysk/proc/StoppedTaskEvent.java: Add member
+	detachHackXXX.
+	* com/redhat/fedora/frysk/proc/TestReattachThreads.java: Simplify.
+	
 	* com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
 	com/redhat/fedora/frysk/proc/TestSyscall.java: Instead of
 	SignaledTaskEvent, check for TrappedTaskEvent.
