@@ -1,3 +1,16 @@
+2005-08-01  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java: Instead of
+	SignaledTaskEvent, check for TrappedTaskEvent.
+	* com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/TestStep.java: Instead of
+	SignaledTaskEvent, cast to TaskEvent,
+	* com/redhat/fedora/frysk/proc/Task.java: For State, handle
+	TrappedTaskEvent, delete unnecessary SignalledTaskEvent cases.
+	* com/redhat/fedora/frysk/proc/Linux.java: For stop with SIGTRAP,
+	create a TrappedTaskEvent.
+
 2005-07-31  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Linux.java: Parameterize the
