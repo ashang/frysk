@@ -3,7 +3,15 @@
 	* com/redhat/fedora/frysk/proc/Linux.java,
 	com/redhat/fedora/frysk/proc/Task.java: Delete stopTask, make
 	operation names consistent.
-	
+	* com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Update.
+
 	* com/redhat/fedora/frysk/proc/RequestStepiTaskEvent.java: New.
 	* com/redhat/fedora/frysk/proc/Task.java: Replace "step" with
 	"requestStepi".  Inject a RequestStepiTaskEvent into the event
