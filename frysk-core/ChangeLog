@@ -1,5 +1,8 @@
 2005-08-02  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Task.java: Delete unused variables
+	startRequest, stopRequest, and stepRequest from the state machine.
+
 	* com/redhat/fedora/frysk/proc/Linux.java,
 	com/redhat/fedora/frysk/proc/Task.java: Delete stopTask, make
 	operation names consistent.
