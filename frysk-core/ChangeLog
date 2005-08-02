@@ -1,5 +1,11 @@
 2005-08-02  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/RequestStepiTaskEvent.java: New.
+	* com/redhat/fedora/frysk/proc/Task.java: Replace "step" with
+	"requestStepi".  Inject a RequestStepiTaskEvent into the event
+	queue and handle in the state machine.
+	* com/redhat/fedora/frysk/proc/TestStep.java: Update.
+
 	* com/redhat/fedora/frysk/proc/RequestGoTaskEvent.java: New.
 	* com/redhat/fedora/frysk/proc/Task.java: Replace "go" with
 	"requestGo".  Inject a RequestGoTaskEvent into the event queue and
