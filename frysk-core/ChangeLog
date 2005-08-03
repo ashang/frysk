@@ -1,5 +1,9 @@
 2005-08-03  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcState.java: New file.
+	* com/redhat/fedora/frysk/proc/Proc.java: Copy state code to
+	ProcState.
+
 	* com/redhat/fedora/frysk/proc/ClonedTaskEvent.java,
 	com/redhat/fedora/frysk/proc/ExecedTaskEvent.java,
 	com/redhat/fedora/frysk/proc/ExitedTaskEvent.java,
