@@ -1,3 +1,13 @@
+2005-08-03  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TaskState.java: New file.
+	* com/redhat/fedora/frysk/proc/Task.java: Move state machine to
+	TaskState.
+	* com/redhat/fedora/frysk/proc/TestUnpaused.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java: Update.
+
 2005-08-02  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Task.java: Delete unused variables
