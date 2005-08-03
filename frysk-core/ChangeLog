@@ -1,5 +1,46 @@
 2005-08-03  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ClonedTaskEvent.java,
+	com/redhat/fedora/frysk/proc/ExecedTaskEvent.java,
+	com/redhat/fedora/frysk/proc/ExitedTaskEvent.java,
+	com/redhat/fedora/frysk/proc/ExitingTaskEvent.java,
+	com/redhat/fedora/frysk/proc/ForkedTaskEvent.java,
+	com/redhat/fedora/frysk/proc/RequestGoTaskEvent.java,
+	com/redhat/fedora/frysk/proc/RequestStepiTaskEvent.java,
+	com/redhat/fedora/frysk/proc/RequestStopTaskEvent.java,
+	com/redhat/fedora/frysk/proc/SignaledTaskEvent.java,
+	com/redhat/fedora/frysk/proc/StoppedTaskEvent.java,
+	com/redhat/fedora/frysk/proc/SyscallTaskEvent.java,
+	com/redhat/fedora/frysk/proc/TerminatedTaskEvent.java,
+	com/redhat/fedora/frysk/proc/TrappedTaskEvent.java: Delete ...
+	* com/redhat/fedora/frysk/proc/TaskEvent.java: .. moved into here.
+	* com/redhat/fedora/frysk/proc/Linux.java,
+	com/redhat/fedora/frysk/proc/Task.java,
+	com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestDetach.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Update.
+
 	* com/redhat/fedora/frysk/proc/TaskState.java: New file.
 	* com/redhat/fedora/frysk/proc/Task.java: Move state machine to
 	TaskState.
