@@ -1,3 +1,16 @@
+2005-08-04  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/AllStoppedProcEvent.java: Delete.
+	* frysk-core/com/redhat/fedora/frysk/proc/ProcEvent.java: Add
+	AllStopped sub-class.
+	* frysk-core/com/redhat/fedora/frysk/proc/Proc.java,
+	frysk-core/com/redhat/fedora/frysk/proc/ProcState.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStop.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestStep.java: Update.
+	
 2005-08-03  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/ProcState.java: New file.
