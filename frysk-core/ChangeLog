@@ -1,5 +1,10 @@
 2005-08-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (noinst_PROGRAMS): Add prog/kill/suspend and
+	prog/kill/loop.
+	* prog/kill/suspend.c: New file.
+	* prog/kill/loop.c: New file.
+
 	* com/redhat/fedora/frysk/proc/AllStoppedProcEvent.java: Delete.
 	* frysk-core/com/redhat/fedora/frysk/proc/ProcEvent.java: Add
 	AllStopped sub-class.

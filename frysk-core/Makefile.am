@@ -86,6 +86,12 @@ libfrysk-core.so: libfrysk-core.a
 noinst_PROGRAMS += libfrysk-core.so
 
 
+prog_kill_suspend_SOURCES = prog/kill/suspend.c
+prog_kill_loop_SOURCES = prog/kill/loop.c
+noinst_PROGRAMS += \
+	prog/kill/suspend \
+	prog/kill/loop
+
 prog_perf_clone_SOURCES = prog/perf/clone.c
 prog_perf_clone_LDADD = -lpthread
 noinst_PROGRAMS += prog/perf/clone
