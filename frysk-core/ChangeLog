@@ -1,5 +1,20 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	Fix problems building under eclipse.
+	* .classpath, .project: New.
+	* com/redhat/fedora/frysk/event/.cvsignore: New.
+	* com/redhat/fedora/frysk/model/.cvsignore: New.
+	* com/redhat/fedora/frysk/proc/.cvsignore: New.
+	* prog/util/.cvsignore: New.
+	* com/redhat/fedora/frysk/event/EventLoop.java,
+	com/redhat/fedora/frysk/proc/EventLoop.java,
+	com/redhat/fedora/frysk/proc/Linux.java,
+	com/redhat/fedora/frysk/proc/Manager.java,
+	com/redhat/fedora/frysk/proc/ProcFactory.java,
+	com/redhat/fedora/frysk/proc/PsObserver.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	prog/util/run.java: Fix ECJ build errors.
+
 	* com/redhat/fedora/frysk/proc/Linux.java: Clean up imports -
 	explicitly import Wait, File, Iterator, and Collection.
 
