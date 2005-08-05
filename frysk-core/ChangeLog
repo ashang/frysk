@@ -1,3 +1,8 @@
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/Linux.java: Clean up imports -
+	explicitly import Wait, File, Iterator, and Collection.
+
 2005-08-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Add prog/kill/suspend and
