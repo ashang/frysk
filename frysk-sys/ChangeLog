@@ -1,5 +1,8 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	* .externalToolBuilders/Ant.launch: List directories containing
+	generated files.
+	
 	* .externalToolBuilders/Ant.launch: List generated files.
 
 	* com/redhat/fedora/frysk/sys/.cvsignore: Add Sig.java.
