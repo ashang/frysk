@@ -155,10 +155,11 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 
 # Form a list of all the test cases that need to be built.  For any
 # java file.  If there's a corresponding cni/*.cxx file add that in,
-# ditto for a LibTest.java file.
+# ditto for a TestLib.* files.
 
 print_header "... TESTS += Test*.java"
 find ${dirs} \
+    -name 'TestLib.*' -prune -o \
     -name 'Test*.java' -print \
     | sort -f \
     | while read file
@@ -167,11 +168,13 @@ do
     test_=`echo ${test} | tr '[/]' '[_]'`
     print ""
     files=${file}
-    cxx=`dirname ${file}`/cni/`basename ${file} .java`.cxx
+    dir=`dirname ${file}`
+    cxx=${dir}/cni/`basename ${file} .java`.cxx
     test -r ${cxx} && files="${files} ${cxx}"
-    lib=`dirname ${file}`/LibTest.java
-    test -r ${lib} && files="${files} ${lib}"
-    print "${test_}_SOURCES= ${files}"
+    for lib in TestLib.java cni/TestLib.cxx ; do
+	test -r ${dir}/${lib} && files="${files} ${dir}/${lib}"
+    done
+    print "${test_}_SOURCES = ${files}"
     print "${test_}_LINK = \${GCJLINK}"
     print "TESTS += ${test}"
     print "noinst_PROGRAMS += ${test}"
