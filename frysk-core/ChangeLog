@@ -1,5 +1,7 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	* .classpath: Replace frysk-sys.jar with ../frysk-sys.
+	
 	Fix problems building under eclipse.
 	* .classpath, .project: New.
 	* com/redhat/fedora/frysk/event/.cvsignore: New.

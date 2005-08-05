@@ -8,7 +8,7 @@
 		<attributes>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/frysk-sys/frysk-sys.jar">
+	<classpathentry combineaccessrules="false" kind="src" path="/frysk-sys">
 		<attributes>
 		</attributes>
 	</classpathentry>
