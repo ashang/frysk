@@ -107,3 +107,18 @@ $(srcdir)/Makefile.gen: $(srcdir)/common/Makefile.gen.sh
 .PHONY: autogen
 autogen: clean
 	cd $(srcdir) && ./autogen.sh
+
+# Create a local archive containing a compiled version of the junit
+# JAR, add it to the list of link libraries.
+
+JUNIT_JAR = /usr/share/java/junit.jar
+AM_GCJFLAGS += -I$(JUNIT_JAR)
+LDADD += libjunit.a
+noinst_LIBRARIES += libjunit.a
+libjunit_a_SOURCES =
+libjunit_a_LIBADD = junit.o
+SUFFIXES += .jar
+.jar.o:
+	$(GCJCOMPILE) -c -o $@ $<
+junit.o: $(JUNIT_JAR)
+	$(GCJCOMPILE) -c -o $@ $<

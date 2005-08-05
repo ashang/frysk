@@ -1,5 +1,10 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: When JUnit like tests, generate the file
+	TestJUnits.java.
+	* Makefile.rules (JUNIT_JAR, libjunit.a, junit.o): Add rules to
+	build and link against a junit archive.
+
 	* Makefile.gen.sh: Treat TestLib as the test library.
 
 2005-08-01  Andrew Cagney  <cagney@redhat.com>

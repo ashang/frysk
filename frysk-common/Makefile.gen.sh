@@ -63,7 +63,7 @@ EOF
     print_header "... GEN_SOURCES += *${suffix}"
     print "GEN_SOURCES += \\"
     find ${dirs} \
-	-name '*Test*' -prune -o \
+	-name 'Test*' -prune -o \
 	-name "*${suffix}" -print \
 	| sort -f \
 	| while read file ; do
@@ -153,11 +153,59 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 
 
 
+# Form a list of all the directories that contain JUnit tests (named
+# *Test.java).  For each of those directories generate a
+# TestJUnit.java file which will then run all of those tests using the
+# standard TESTS+= mechanism.
+
+find ${dirs} \
+    -name '*Test.java' -print \
+    | sed -e 's,/[^/]*$,,' \
+    | sort -fu \
+    | while read dir
+do
+  echo ${dir}/TestJUnits.java
+  rm -f ${dir}/TestJUnits.java
+  touch ${dir}/TestJUnits.java
+  package=`echo ${dir} | tr '[/]' '[.]'`
+cat <<EOF >> ${dir}/TestJUnits.java
+package ${package};
+import junit.framework.TestSuite;
+import junit.framework.TestResult;
+import junit.textui.TestRunner;
+public class TestJUnits
+{
+    public static void main (String[] args)
+    {
+	try {
+	    TestSuite testSuite = new TestSuite ();
+EOF
+    for test in ${dir}/*Test.java ; do
+cat <<EOF  >> ${dir}/TestJUnits.java
+	    testSuite.addTest (new TestSuite (`basename ${test} .java`.class));
+EOF
+    done
+cat <<EOF >> ${dir}/TestJUnits.java
+	    TestResult testResult = TestRunner.run (testSuite);
+	    if (!testResult.wasSuccessful()) 
+		System.exit (TestRunner.FAILURE_EXIT);
+	    System.exit(TestRunner.SUCCESS_EXIT);
+	} catch(Exception e) {
+	    System.err.println(e.getMessage());
+	    System.exit (TestRunner.EXCEPTION_EXIT);
+	}
+    }
+}
+EOF
+done
+
+
+
 # Form a list of all the test cases that need to be built.  For any
 # java file.  If there's a corresponding cni/*.cxx file add that in,
 # ditto for a TestLib.* files.
 
-print_header "... TESTS += Test*.java"
+print_header "... TESTS += Test*.java (standalone)"
 find ${dirs} \
     -name 'TestLib.*' -prune -o \
     -name 'Test*.java' -print \

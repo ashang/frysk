@@ -1,5 +1,8 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/sys/.cvsignore: Ignore TestJUnits.java.
+	* com/redhat/fedora/frysk/sys/ExampleJUnitTest.java: New.
+
 	* .externalToolBuilders/Ant.launch: List directories containing
 	generated files.
 	
