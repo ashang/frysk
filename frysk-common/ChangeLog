@@ -1,5 +1,10 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (SUFFIXES, BUILT_SOURCES, CLEANFILES)
+	(noinst_PROGRAMS, bin_PROGRAMS, noinst_LIBRARIES, LDADD)
+	(check_SCRIPTS, TESTS, AM_LDFLAGS, AM_GCJFLAGS, AM_CXXFLAGS):
+	Provide defaults.
+
 	* Makefile.gen.sh: When JUnit like tests, generate the file
 	TestJUnits.java.
 	* Makefile.rules (JUNIT_JAR, libjunit.a, junit.o): Add rules to

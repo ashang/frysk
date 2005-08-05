@@ -1,5 +1,10 @@
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (SUFFIXES, BUILT_SOURCES, CLEANFILES)
+	(noinst_PROGRAMS, bin_PROGRAMS, noinst_LIBRARIES, LDADD)
+	(check_SCRIPTS, TESTS, AM_LDFLAGS, AM_GCJFLAGS, AM_CXXFLAGS):
+	Delete defaults, moved to common/Makefile.rules.
+
 	* .classpath: Replace frysk-sys.jar with ../frysk-sys.
 	
 	Fix problems building under eclipse.
