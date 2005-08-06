@@ -1,5 +1,7 @@
 2005-08-06  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Host.java: New.
+
 	* com/redhat/fedora/frysk/proc/EventLoop.java: Delete.
 	* com/redhat/fedora/frysk/proc/Linux.java: Extend event.EventLoop
 	instead of proc.EventLoop.
