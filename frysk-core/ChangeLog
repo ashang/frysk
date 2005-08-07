@@ -1,5 +1,13 @@
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Add "host".
+	* com/redhat/fedora/frysk/proc/TaskFactory.java: Delete
+	createProc, moved to Host.
+	* com/redhat/fedora/frysk/proc/Host.java: Add createProc.
+	* com/redhat/fedora/frysk/proc/Linux.java,
+	com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
+
 	* com/redhat/fedora/frysk/proc/Proc.java: Make "parent" private.
 	Replace getPid with getTaskId.
 	* prog/util/run.java: Update.
