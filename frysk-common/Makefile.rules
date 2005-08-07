@@ -27,6 +27,20 @@ noinst_LIBRARIES =
 LDADD = 
 check_SCRIPTS =
 TESTS =
+GEN_CLASSPATH = 
+GEN_SOURCEPATH = $(srcdir) $(top_builddir)
+empty=
+space=$(empty) $(empty)
+
+# Make up some javacflags
+
+JAVAC = javac
+JAVACFLAGS = \
+	-g \
+	-1.4 \
+	-sourcepath $(subst $(space),:,$(strip $(GEN_SOURCEPATH))) \
+	-classpath $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
+
 
 # Modify the link rules so the program <dir>/<prog> is built with
 # <dir>.<prog>.main() as the Java entry point.
@@ -50,8 +64,7 @@ AM_LDFLAGS = \
 # non-abstract class when the class actually is abstract.
 
 AM_GCJFLAGS = \
-	-I$(srcdir) \
-	-I$(top_builddir) \
+	$(patsubst %,-I%,$(GEN_SOURCEPATH) $(GEN_CLASSPATH)) \
 	-Werror \
 	-Wall \
 	-fPIC \
@@ -99,35 +112,19 @@ BUILT_SOURCES += $(SHJAVA_BUILT)
 # Instead generate a .classes file containing the list of .class files
 # that will be created and use that for all dependencies.
 
-# The .Po files intended for the .java.o dependencies is hijacked,
-# instead containing dependencies for .classes.
+# jv-scan occasionally gets it wrong generating extra classes, work
+# around this by checking that each class really exists.
 
 SUFFIXES += .classes
 .java.classes:
-	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
-	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -d . -C '$<' ; \
-	then \
-		mv -f "$$depbase.Tpo" "$$depbase.Po" ; \
-	else \
-		rm -f "$$depbase.Tpo" ; \
-		exit 1 ; \
-	fi
+	$(JAVAC) -d . $(JAVACFLAGS)  $<
 	echo '# $<' > $*.classes.tmp
-	jv-scan --list-class '$<' | tr '[ ]' '[\n]' >> $*.classes.tmp
+	jv-scan --list-class '$<' | tr '[ ]' '[\n]' | \
+		while read class ; do \
+			file=`echo $${class} | tr '[.]' '[/]'`.class ; \
+			test ! -r $${file} || echo $${class} ; \
+		done >> $*.classes.tmp
 	mv -f $*.classes.tmp $*.classes
-
-# Convert the .classes (actually the corresponding .class) into a .o.
-# Since a change to a .java file will force the rebuild of the
-# .classes file, this need only depend on the .classes file (I think).
-
-# Unfounatly, GCJ often crashes when trying to compile .class files,
-# Go back to the original .java file as a hack.
-
-.classes.o:
-	$(GCJCOMPILE) -c `sed -n 's,^# ,,p' < $<` -o $@
-#	$(GCJCOMPILE) -d . -c $*.class ## dumps core
-#	$(GCJCOMPILE) -d . -c `sed -e 's,\.,/,g' -e 's,$$,.class,' < $<`
-
 
 # Generate a .h file (using CNI) from the .classes file.
 
@@ -164,7 +161,7 @@ autogen: clean
 # JAR, add it to the list of link libraries.
 
 JUNIT_JAR = /usr/share/java/junit.jar
-AM_GCJFLAGS += -I$(JUNIT_JAR)
+GEN_CLASSPATH += $(JUNIT_JAR)
 LDADD += libjunit.a
 noinst_LIBRARIES += libjunit.a
 libjunit_a_SOURCES =

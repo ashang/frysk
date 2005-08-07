@@ -84,7 +84,9 @@ print ""
 
 # Traverse the source tree creating a list (in GEN_SOURCES) of all the
 # .classes files that will be built (exclude Test files as they are
-# handled later).
+# handled later).  Also force a dependency on the .o file so that when
+# ever not just the .java file but any other files it referes to
+# change the .classes file gets rebuilt.
 
 print "GEN_BUILT_CLASSES ="
 cat <<EOF | while read suffix ; do
@@ -93,15 +95,14 @@ mkjava
 shjava
 EOF
     print_header "... GEN_BUILT_CLASSES += *.${suffix}"
-    print "GEN_BUILT_CLASSES += \\"
     find ${dirs} \
 	-name "*.${suffix}" -print \
 	| while read file ; do
 	    d=`dirname ${file}`
 	    b=`basename ${file} .${suffix}`
-	    print "	${d}/${b}.classes \\"
+	    print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
+	    print "${d}/${b}.classes: ${d}/${b}.o"
         done
-    print '	$(ZZZ)'
 done
 print 'CLEANFILES += $(GEN_BUILT_CLASSES)'
 print ""

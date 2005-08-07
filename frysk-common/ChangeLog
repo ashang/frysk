@@ -1,3 +1,12 @@
+2005-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Generate explicit .o.classes dependency so that
+	the .o file is built before the .classes.
+	* Makefile.rules (JAVAC, JAVACFLAGS, GEN_CLASSPATH,
+	GEN_SOURCEPATH): Define, add JUNIT_JAR to classpath.
+	(.java.classes): Simplify rule, use JAVAC.
+	(.classes.o): Delete rule.
+	
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (SUFFIXES, BUILT_SOURCES, CLEANFILES)

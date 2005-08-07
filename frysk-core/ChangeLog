@@ -1,5 +1,8 @@
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java: Delete unused imports.
+	* Makefile.am (GEN_CLASSPATH): Add frysk-sys.jar.
+
 	* com/redhat/fedora/frysk/proc/Proc.java: Add "host" to
 	constructor.
 	* com/redhat/fedora/frysk/proc/Linux.java,
