@@ -1,5 +1,16 @@
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Add createTask.
+	* com/redhat/fedora/frysk/proc/TaskFactory.java: Delete.
+	* com/redhat/fedora/frysk/proc/I386Linux.java
+	com/redhat/fedora/frysk/proc/Linux.java
+	com/redhat/fedora/frysk/proc/LinuxHost.java
+	com/redhat/fedora/frysk/proc/Manager.java
+	com/redhat/fedora/frysk/proc/TaskState.java
+	com/redhat/fedora/frysk/proc/TestI386Regs.java
+	com/redhat/fedora/frysk/proc/TestStep.java
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java: Update.
+
 	* com/redhat/fedora/frysk/proc/Proc.java: Add "host".
 	* com/redhat/fedora/frysk/proc/TaskFactory.java: Delete
 	createProc, moved to Host.
