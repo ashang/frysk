@@ -1,5 +1,9 @@
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Make "parent" private.
+	Replace getPid with getTaskId.
+	* prog/util/run.java: Update.
+
 	* com/redhat/fedora/frysk/proc/ProcFactory.java: Delete.
 	* com/redhat/fedora/frysk/proc/LinuxHost.java: New.
 	* com/redhat/fedora/frysk/proc/Manager.java: Replace "procFactory"

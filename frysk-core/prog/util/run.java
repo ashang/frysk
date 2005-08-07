@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 package prog.util;
 
 /** Runs the program, along with any sub-programs.
@@ -74,7 +75,7 @@ class run
 	{
 	    count++;
 	    Proc process = (Proc) obj;
-	    if (process.parent == null) {
+	    if (process.getParent () == null) {
 		System.out.println ("Top process destroyed");
 		Manager.eventLoop.stop ();
 	    }
