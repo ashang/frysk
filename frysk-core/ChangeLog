@@ -1,5 +1,10 @@
 2005-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/event/EventLoop.java: On creation, clear
+	Poll's SignalSet.
+	* com/redhat/fedora/frysk/event/TestEventLoop.java: Convert to
+	junit.
+
 	* com/redhat/fedora/frysk/proc/HostState.java: New.
 	* com/redhat/fedora/frysk/proc/HostEvent.java: New.
 	* com/redhat/fedora/frysk/proc/Host.java: Add HostState.

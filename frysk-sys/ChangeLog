@@ -1,3 +1,8 @@
+2005-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/cni/Poll.cxx (empty),
+	com/redhat/fedora/frysk/sys/Poll.java: Add SignalSet.empty.
+
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore: Add TestJUnits.java.
