@@ -1,3 +1,16 @@
+2005-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/prog/Frame.java: New.
+	* com/redhat/fedora/frysk/prog/Language.java: New.
+	* com/redhat/fedora/frysk/prog/LexicalBlock.java: New.
+	* com/redhat/fedora/frysk/prog/Location.java: New.
+	* com/redhat/fedora/frysk/prog/Subprogram.java: New.
+	* com/redhat/fedora/frysk/prog/Thread.java: New.
+	* com/redhat/fedora/frysk/prog/Type.java: New.
+	* com/redhat/fedora/frysk/prog/Variable.java: New.
+	
+	* .cvsignore: Add TestJUnits.java.
+
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Linux.java: Delete unused imports.
