@@ -183,9 +183,9 @@ find ${dirs} \
     -name 'TestLib.*' -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read file ; do
-    grep ' main ' > /dev/null 2>&1 || continue
+    grep ' main ' ${file} > /dev/null 2>&1 || continue
     d=`dirname ${file}`
-    b=`basename ${file}`
+    b=`basename ${file} .java`
     test=${d}/${b}
     test_=`echo ${test} | tr '[/]' '[_]'`
     print ""

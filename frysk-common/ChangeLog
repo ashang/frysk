@@ -1,5 +1,7 @@
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Fix grep filtering out non-standalone *Test*.
+
 	* Makefile.gen.sh: Simplify, handle each suffix separatly.
 	Generate a single TestJUnits.java at the top leve.
 	* Makefile.rules: Update to match.
