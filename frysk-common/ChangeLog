@@ -63,3 +63,6 @@
 
 	* README: New file.
 
+2005-07-20  Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	* frysk-gui: moved files from old gui directory to frysk-gui
