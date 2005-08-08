@@ -1,3 +1,8 @@
+2005-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Add TestJUnits.java.
+	* com/redhat/fedora/frysk/sys/.cvsignore: Delete TestJUnits.java.
+
 2005-08-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (SUFFIXES, BUILT_SOURCES, CLEANFILES)

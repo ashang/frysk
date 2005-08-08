@@ -50,84 +50,54 @@ print ()
 print_header List of sub-directories.
 print 'GEN_DIRS =' ${dirs}
 
-# Traverse the source tree creating a list (in GEN_SOURCES) of all the
-# source files (exclude Test files as they are handled later).
 
-print "GEN_SOURCES ="
-cat <<EOF | while read suffix ; do
-.java
-.cxx
-.mkjava
-.shjava
-EOF
-    print_header "... GEN_SOURCES += *${suffix}"
-    print "GEN_SOURCES += \\"
+
+for suffix in .mkjava .shjava ; do
+    print_header "... ${suffix}"
+    SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
+    print "GEN_BUILT${SUFFIX} ="
     find ${dirs} \
-	-name 'Test*' -prune -o \
 	-name "*${suffix}" -print \
-	| sort -f \
-	| while read file ; do
-	    d=`dirname ${file}`
-	    b=`basename ${file} ${suffix}`
-	    case "${file}" in
-		*.java )
-		    test -r "${d}/${b}.mkjava" && continue
-		    test -r "${d}/${b}.shjava" && continue
-		    ;;
-	    esac
-	    print "	${file} \\"
-        done
-    print '	$(ZZZ)'
-done
-print ""
-
-
-# Traverse the source tree creating a list (in GEN_SOURCES) of all the
-# .classes files that will be built (exclude Test files as they are
-# handled later).  Also force a dependency on the .o file so that when
-# ever not just the .java file but any other files it referes to
-# change the .classes file gets rebuilt.
-
-print "GEN_BUILT_CLASSES ="
-cat <<EOF | while read suffix ; do
-java
-mkjava
-shjava
-EOF
-    print_header "... GEN_BUILT_CLASSES += *.${suffix}"
-    find ${dirs} \
-	-name "*.${suffix}" -print \
-	| while read file ; do
-	    d=`dirname ${file}`
-	    b=`basename ${file} .${suffix}`
-	    print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
-	    print "${d}/${b}.classes: ${d}/${b}.o"
-        done
-done
-print 'CLEANFILES += $(GEN_BUILT_CLASSES)'
-print ""
-
-# Traverse the source tree creating a list of all the built .java
-# files (created from either a .mkjava or a .shjava file).  These need
-# to be generated explicitly has otherwize automake gets confused (it
-# seems to require files generated using special rules to be listed
-# explicitly).
-
-cat <<EOF | while read suffix ; do
-mkjava
-shjava
-EOF
-    NAME=`echo ${suffix} | tr '[a-z]' '[A-Z]'`
-    print_header "... GEN_${NAME} = *.${suffix}=.java"
-    print "GEN_BUILT_${NAME} = \\"
-    find ${dirs} -name "*.${suffix}" -print | while read file ; do
-        print "	`echo ${file} | sed -e "s/.${suffix}/.java/"` \\"
+	| sort -f | while read file ; do
+	d=`dirname ${file}`
+	b=`basename ${file} ${suffix}`
+	print "GEN_SOURCES += ${file}"
+	print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
+	print "${d}/${b}.classes: ${d}/${b}.o"
+	print "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
     done
-    print '	$(ZZZ)'
 done
-print 'BUILT_SOURCES += $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)'
-print 'CLEANFILES += $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)'
-print ''
+
+
+
+for suffix in .java ; do
+    print_header "... ${suffix}"
+    find ${dirs} \
+	-name 'TestLib.java' -print -o \
+	-name '*Test*' -prune -o \
+	-name "*${suffix}" -print \
+	| sort -f | while read file ; do
+	d=`dirname ${file}`
+	b=`basename ${file} ${suffix}`
+	test -r "${d}/${b}.mkjava" && continue
+	test -r "${d}/${b}.shjava" && continue
+	print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
+	print "GEN_SOURCES += ${file}"
+    done
+done
+
+
+
+for suffix in .cxx ; do
+    print_header "... ${suffix}"
+    find ${dirs} \
+	-name "*${suffix}" -print \
+	| sort -f | while read file ; do
+	d=`dirname ${file}`
+	b=`basename ${file} ${suffix}`
+	print "GEN_SOURCES += ${file}"
+    done
+done
 
 
 # Grep the cni/*.cxx files forming a list of any includes.  Assume
@@ -159,18 +129,9 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 # TestJUnit.java file which will then run all of those tests using the
 # standard TESTS+= mechanism.
 
-find ${dirs} \
-    -name '*Test.java' -print \
-    | sed -e 's,/[^/]*$,,' \
-    | sort -fu \
-    | while read dir
-do
-  echo ${dir}/TestJUnits.java
-  rm -f ${dir}/TestJUnits.java
-  touch ${dir}/TestJUnits.java
-  package=`echo ${dir} | tr '[/]' '[.]'`
-cat <<EOF >> ${dir}/TestJUnits.java
-package ${package};
+rm -f TestJUnits.java
+cat <<EOF >> TestJUnits.java
+package TestJUnits;
 import junit.framework.TestSuite;
 import junit.framework.TestResult;
 import junit.textui.TestRunner;
@@ -181,12 +142,20 @@ public class TestJUnits
 	try {
 	    TestSuite testSuite = new TestSuite ();
 EOF
-    for test in ${dir}/*Test.java ; do
-cat <<EOF  >> ${dir}/TestJUnits.java
-	    testSuite.addTest (new TestSuite (`basename ${test} .java`.class));
+find ${dirs} \
+    -name 'TestLib.*' -prune -o \
+    -name '*Test*.java' -print \
+    | sort -f | while read test ; do
+	grep ' main ' $test > /dev/null 2>&1 && continue
+	print "GEN_SOURCES += ${test}"
+	d=`dirname ${test}`
+	b=`basename ${test} .java`
+	class=`echo ${d}/${b} | tr '[/]' '[.]'`
+cat <<EOF  >> TestJUnits.java
+	    testSuite.addTest (new TestSuite (${class}.class));
 EOF
-    done
-cat <<EOF >> ${dir}/TestJUnits.java
+done
+cat <<EOF >> TestJUnits.java
 	    TestResult testResult = TestRunner.run (testSuite);
 	    if (!testResult.wasSuccessful()) 
 		System.exit (TestRunner.FAILURE_EXIT);
@@ -198,7 +167,10 @@ cat <<EOF >> ${dir}/TestJUnits.java
     }
 }
 EOF
-done
+print "TestJUnits_SOURCES = TestJUnits.java"
+print "TestJUnits_LINK = \${GCJLINK}"
+print "TESTS += TestJUnits"
+print "noinst_PROGRAMS += TestJUnits"
 
 
 
@@ -209,20 +181,18 @@ done
 print_header "... TESTS += Test*.java (standalone)"
 find ${dirs} \
     -name 'TestLib.*' -prune -o \
-    -name 'Test*.java' -print \
-    | sort -f \
-    | while read file
-do
-    test=`dirname ${file}`/`basename ${file} .java`
+    -name '*Test*.java' -print \
+    | sort -f | while read file ; do
+    grep ' main ' > /dev/null 2>&1 || continue
+    d=`dirname ${file}`
+    b=`basename ${file}`
+    test=${d}/${b}
     test_=`echo ${test} | tr '[/]' '[_]'`
     print ""
     files=${file}
     dir=`dirname ${file}`
     cxx=${dir}/cni/`basename ${file} .java`.cxx
     test -r ${cxx} && files="${files} ${cxx}"
-    for lib in TestLib.java cni/TestLib.cxx ; do
-	test -r ${dir}/${lib} && files="${files} ${dir}/${lib}"
-    done
     print "${test_}_SOURCES = ${files}"
     print "${test_}_LINK = \${GCJLINK}"
     print "TESTS += ${test}"

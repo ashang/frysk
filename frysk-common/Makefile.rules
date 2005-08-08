@@ -19,7 +19,7 @@
 # Initialize everything to empty and then use += to add things in.
 
 SUFFIXES =
-BUILT_SOURCES =
+BUILT_SOURCES = $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)
 CLEANFILES = $(BUILT_SOURCES)
 noinst_PROGRAMS =
 bin_PROGRAMS =
@@ -31,6 +31,8 @@ GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
+GEN_SOURCES =
+GEN_BUILT_CLASSES =
 
 # Make up some javacflags
 
