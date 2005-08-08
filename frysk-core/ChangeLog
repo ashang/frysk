@@ -1,5 +1,9 @@
 2005-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/HostState.java: New.
+	* com/redhat/fedora/frysk/proc/HostEvent.java: New.
+	* com/redhat/fedora/frysk/proc/Host.java: Add HostState.
+
 	* com/redhat/fedora/frysk/proc/State.java: New.
 	* com/redhat/fedora/frysk/proc/ProcState.java,
 	* com/redhat/fedora/frysk/proc/TaskState.java: Extend State.
