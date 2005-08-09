@@ -1,5 +1,12 @@
 2005-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-core/com/redhat/fedora/frysk/event/Event.java,
+	frysk-core/com/redhat/fedora/frysk/event/EventLoop.java,
+	frysk-core/com/redhat/fedora/frysk/event/SignalEvent.java,
+	frysk-core/com/redhat/fedora/frysk/event/TestEventLoop.java,
+	frysk-core/com/redhat/fedora/frysk/event/TimerEvent.java: Add
+	support for periodic timers to TimerEvent, test.
+
 	* com/redhat/fedora/frysk/event/EventLoop.java: On creation, clear
 	Poll's SignalSet.
 	* com/redhat/fedora/frysk/event/TestEventLoop.java: Convert to
