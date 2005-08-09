@@ -1,5 +1,9 @@
 2005-08-08  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/event/EventLoop.java,
+	com/redhat/fedora/frysk/event/TestEventLoop.java: Add removeEvent
+	for timer events, test.
+
 	* frysk-core/com/redhat/fedora/frysk/event/Event.java,
 	frysk-core/com/redhat/fedora/frysk/event/EventLoop.java,
 	frysk-core/com/redhat/fedora/frysk/event/SignalEvent.java,
