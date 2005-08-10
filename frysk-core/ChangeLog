@@ -1,5 +1,8 @@
 2005-08-10  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Host.java: Change procPool to a
+	Map, add "getProc" method.
+
 	* com/redhat/fedora/frysk/event/EventLoop.java: Add public methods
 	"runPolling" and "runPending", update to use "run".
 
