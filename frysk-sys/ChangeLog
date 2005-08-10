@@ -1,3 +1,11 @@
+2005-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/Wait.java: Add "wait" method, delete
+	"Observer.unknown".
+	* com/redhat/fedora/frysk/sys/cni/Wait.cxx (processStatus)
+	(wait): New.
+	(waitNoHang): Use processStatus.
+
 2005-08-08  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/cni/Poll.cxx (empty),
