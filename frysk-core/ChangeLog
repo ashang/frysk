@@ -1,5 +1,13 @@
 2005-08-10  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestHost.java: New.
+	* com/redhat/fedora/frysk/proc/HostState.java: Handle
+	RefreshRequest.
+	* com/redhat/fedora/frysk/proc/HostEvent.java: Add sub-class
+	RequestRefresh.
+	* com/redhat/fedora/frysk/proc/Host.java: Make "state" protected.
+	Add abstract method "refresh", and method requestRefresh.
+
 	* com/redhat/fedora/frysk/proc/Host.java: Change procPool to a
 	Map, add "getProc" method.
 
