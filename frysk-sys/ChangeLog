@@ -1,5 +1,10 @@
 2005-08-10  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk-sys/com/redhat/fedora/frysk/sys/Fork.java,
+	* frysk-sys/com/redhat/fedora/frysk/sys/Pid.java,
+	* frysk-sys/com/redhat/fedora/frysk/sys/cni/Fork.cxx,
+	* frysk-sys/com/redhat/fedora/frysk/sys/cni/Pid.cxx: New.
+
 	* com/redhat/fedora/frysk/sys/Wait.java: Add "wait" method, delete
 	"Observer.unknown".
 	* com/redhat/fedora/frysk/sys/cni/Wait.cxx (processStatus)
