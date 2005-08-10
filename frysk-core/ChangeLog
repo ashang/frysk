@@ -1,5 +1,8 @@
 2005-08-10  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/event/EventLoop.java: Add public methods
+	"runPolling" and "runPending", update to use "run".
+
 	* com/redhat/fedora/frysk/proc/Linux.java: Remove "unknown" from
 	Wait.Observer.
 
