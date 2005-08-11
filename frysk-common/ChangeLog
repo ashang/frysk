@@ -1,3 +1,10 @@
+2005-08-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.jar.db): Add rule.
+	(GCJCOMPILE): Optionally define.
+	* Makefile.gen.sh: Allow .jar files as command line parameters,
+	generate rules to convert them into .so / shared-libraries.
+
 2005-08-11  Sami Wagiaalla  <swagiaal@redhat.com>
 	
 	* frysk-gui: Procpop can now be built through automake

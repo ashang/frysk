@@ -170,7 +170,7 @@ autogen: clean
 
 SUFFIXES += .jar
 .jar.o:
-	$(GCJ) $(AM_GCJFLAGS) $(GCJFLAGS) -fjni -c $<
+	$(GCJCOMPILE) -fjni -c $<
 
 # Since automake only adds GCJCOMPILE to Makefile.in when its seen
 # .java source, provide our own definition.
