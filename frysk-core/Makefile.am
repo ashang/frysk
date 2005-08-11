@@ -20,7 +20,7 @@
 include common/Makefile.rules
 include Makefile.gen
 
-GEN_CLASSPATH += $(top_builddir)/../frysk-sys/frysk-sys.jar 
+GEN_CLASSPATH += $(top_builddir)/../frysk-sys
 
 frysk.core.jar: $(GEN_BUILT_CLASSES)
 	cat $^ /dev/null \

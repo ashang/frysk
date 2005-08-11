@@ -1,3 +1,8 @@
+2005-08-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH): Instead of the frysk-sys.jar file,
+	specify the frysk-sys build directory.
+
 2005-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestHost.java: New.
