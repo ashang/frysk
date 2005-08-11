@@ -1,5 +1,7 @@
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
+	* autogen.sh: Make the list of subdirectories explicit.
+
 	* configure.ac, Makefile.am (SUBDIRS): Replace jline with
 	frysk-imports.
 
