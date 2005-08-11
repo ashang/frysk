@@ -1,7 +1,18 @@
+2005-08-11  Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	* frysk-gui: Procpop can now be built through automake
+	
+	* EggTrayIcon: gtk code and corresponding jni bindings to 
+	provide a system tray icon.
+	
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java.classes): Simplify, use `ls' to find the
 	list of class files.
+
+2005-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	* frysk-gui: moved files from old gui directory to frysk-gui
 
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
@@ -67,7 +78,3 @@
 	* mkjava.sh: New file.
 
 	* README: New file.
-
-2005-07-20  Sami Wagiaalla  <swagiaal@redhat.com>
-	
-	* frysk-gui: moved files from old gui directory to frysk-gui
