@@ -7,6 +7,9 @@
 	
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (JUNIT_JAR): Delete rules for building junit,
+	moved to frysk-imports/.
+	
 	* Makefile.rules (.java.classes): Simplify, use `ls' to find the
 	list of class files.
 

@@ -31,7 +31,6 @@ GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
-GEN_SOURCES =
 GEN_BUILT_CLASSES =
 
 # Make up some javacflags
@@ -162,22 +161,23 @@ SUFFIXES += .so
 # make to ensure that Makefile is up-to-date.
 
 $(srcdir)/Makefile.gen: $(srcdir)/common/Makefile.gen.sh
-	cd $(srcdir) && ./common/Makefile.gen.sh $(GEN_DIRS)
+	cd $(srcdir) && ./common/Makefile.gen.sh $(GEN_DIRS) $(GEN_JARS)
 .PHONY: autogen
 autogen: clean
 	cd $(srcdir) && ./autogen.sh
 
-# Create a local archive containing a compiled version of the junit
-# JAR, add it to the list of link libraries.
+# Given a .jar, just convert it into a .o, and a .db
 
-JUNIT_JAR = /usr/share/java/junit.jar
-GEN_CLASSPATH += $(JUNIT_JAR)
-LDADD += libjunit.a
-noinst_LIBRARIES += libjunit.a
-libjunit_a_SOURCES =
-libjunit_a_LIBADD = junit.o
 SUFFIXES += .jar
 .jar.o:
-	$(GCJCOMPILE) -c -o $@ $<
-junit.o: $(JUNIT_JAR)
-	$(GCJCOMPILE) -c -o $@ $<
+	$(GCJ) $(AM_GCJFLAGS) $(GCJFLAGS) -fjni -c $<
+
+# Since automake only adds GCJCOMPILE to Makefile.in when its seen
+# .java source, provide our own definition.
+GCJCOMPILE ?= $(GCJ) $(AM_GCJFLAGS) $(GCJFLAGS)
+
+SUFFIXES += .db
+.jar.db:
+	gcj-dbtool -n $@.tmp
+	gcj-dbtool -a $@.tmp $*.jar lib$*.so
+	mv $@.tmp $@

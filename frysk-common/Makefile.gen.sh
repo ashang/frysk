@@ -18,10 +18,21 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 if test $# -eq 0 ; then
-    echo "Usage: $0 directory ..." 1>&2
+    echo "Usage: $0 <directory> ... <path-to-jar> ..." 1>&2
     exit 1
 fi
-dirs="$*"
+dirs=
+jars=
+while test $# -gt 0
+do
+  case "$1" in
+      *.jar ) jars="${jars} $1" ;;
+      * ) dirs="${dirs} $1" ;;
+  esac
+  shift
+done
+dirs=`echo ${dirs}`
+jars=`echo ${jars}`
 
 # Generate the list of source files
 
@@ -47,10 +58,40 @@ print ()
 }
 
 
-print_header List of sub-directories.
-print 'GEN_DIRS =' ${dirs}
+print_header Makefile.gen.in arguments
+print GEN_DIRS = ${dirs}
+print GEN_JARS = ${jars}
 
 
+# Generate rules to compile any .jar files
+
+for jar in x ${jars}
+do
+  test ${jar} = x && continue
+  b=`basename ${jar} .jar`
+  B=`echo $b | tr '[a-z]' '[A-Z]'`
+  print ""
+  print_header "... $jar"
+  cat <<EOF >> Makefile.gen
+${B}_JAR = /usr/share/java/${b}.jar
+${b}.jar: \$(${B}_JAR)
+	cp \$(${B}_JAR) .
+noinst_LIBRARIES += lib${b}.a
+lib${b}_a_LIBADD = ${b}.o
+${b}.o: ${b}.jar
+lib${b}_a_SOURCES = 
+CLEANFILES += ${b}.jar ${b}.o lib${b}.a lib${b}.so
+lib${b}.so: lib${b}.a
+noinst_PROGRAMS += lib${b}.so ${b}.db
+${b}.db: lib${b}.so ${b}.jar
+EOF
+done
+
+
+# If there are no directories, bail here.
+test x"${dirs}" = x && exit 0
+
+print GEN_SOURCES =
 
 for suffix in .mkjava .shjava ; do
     print_header "... ${suffix}"
@@ -171,7 +212,8 @@ print "TestJUnits_SOURCES = TestJUnits.java"
 print "TestJUnits_LINK = \${GCJLINK}"
 print "TESTS += TestJUnits"
 print "noinst_PROGRAMS += TestJUnits"
-
+print GEN_CLASSPATH += ../frysk-imports/junit.jar
+print LDADD += ../frysk-imports/libjunit.a
 
 
 # Form a list of all the test cases that need to be built.  For any

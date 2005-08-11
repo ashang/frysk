@@ -1,0 +1,4 @@
+2005-08-11  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore, Makefile.am, README, autogen.sh, configure.ac: New.
+	* jline/: Import.
