@@ -119,14 +119,22 @@ BUILT_SOURCES += $(SHJAVA_BUILT)
 
 SUFFIXES += .classes
 .java.classes:
+	rm -f $*.class $*\$$*.class
 	$(JAVAC) -d . $(JAVACFLAGS)  $<
 	echo '# $<' > $*.classes.tmp
-	jv-scan --list-class '$<' | tr '[ ]' '[\n]' | \
-		while read class ; do \
-			file=`echo $${class} | tr '[.]' '[/]'`.class ; \
-			test ! -r $${file} || echo $${class} ; \
-		done >> $*.classes.tmp
+	ls $*.class $*\$$*.class | \
+		sed -e 's,.class$$,,' | \
+		sort -f > $*.classes.tmp
 	mv -f $*.classes.tmp $*.classes
+#	jv-scan --list-class '$<' | tr '[ ]' '[\n]' | \
+#		while read class ; do \
+#			file=`echo $${class} | tr '[.]' '[/]'`.class ; \
+#			if test -r $${file} ; then \
+#				echo $${class} ; \
+#			else \
+#				echo "# $${class} -- jv-scan BUG?" ; \
+#			fi \
+#		done >> $*.classes.tmp
 
 # Generate a .h file (using CNI) from the .classes file.
 

@@ -1,3 +1,8 @@
+2005-08-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java.classes): Simplify, use `ls' to find the
+	list of class files.
+
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Fix grep filtering out non-standalone *Test*.
