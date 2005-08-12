@@ -33,12 +33,12 @@ GEN_CLASSPATH += /usr/lib
 
 noinst_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
+EggTrayIcon_libEggTrayIcon_so_LDFLAGS  = $(GTK_JAVA_LIBS) $(GTK_LIBS) $(JGCOMMON_LIBS) -lgtkjni-2.7 -ljgjni-0.1
+EggTrayIcon_libEggTrayIcon_so_LDFLAGS += $(CAIRO_JAVA_LIBS)
 
 noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
 EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
                                        EggTrayIcon/libEggTrayIcon.c 
-EggTrayIcon_libEggTrayIcon_a_LDFLAGS  = $(GTK_JAVA_LIBS) $(GTK_LIBS) $(JGCOMMON_LIBS) -ljgjni-0.1
-EggTrayIcon_libEggTrayIcon_a_LDFLAGS += $(CAIRO_JAVA_LIBS)
 EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(JGCOMMON_CFLAGS)
 
 
@@ -53,7 +53,7 @@ com_redhat_fedora_frysk_gui_Procpop_SOURCES = $(GEN_SOURCES)
 com_redhat_fedora_frysk_gui_Procpop_CLASSPATH = $(GEN_CLASSPATH)
 com_redhat_fedora_frysk_gui_Procpop_LDADD =  -L$(top_builddir)/EggTrayIcon -lEggTrayIcon 
 com_redhat_fedora_frysk_gui_Procpop_LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a 
-com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
+com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GTK_JAVA_LIBS) -lgtkjni-2.7 -ljgjni-0.1
 com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GLADE_JAVA_LIBS)
 com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GNOME_JAVA_LIBS) 
 com_redhat_fedora_frysk_gui_Procpop_LDADD += $(CAIRO_JAVA_LIBS) 
