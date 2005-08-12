@@ -1,3 +1,36 @@
+2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/Linux.java (Linux.Task): Change
+	cont, stepi, and setOptions methods to return an int.
+	(Linux.PollWaitPidEvent): Fix all TaskEvent execute methods to
+	verify a task is non-null before accessing its process method.
+	(Linux.PollWaitPidEvent.ZombiedTaskEvent): New TaskEvent class.
+	* com/redhat/fedora/frysk/proc/Proc.java: Change add (Task) method
+	to not notify observers about Task creation.
+	* com/redhat/fedora/frysk/proc/PsObserver.java: Comment out
+	debugging println.
+	* com/redhat/fedora/frysk/proc/Task.java: Add the new Task to
+	the Proc at the point of construction.  Change the prototypes
+	of the cont, stepi, and setOptions methods to return an int.
+	Add new process method to handle a TaskEvent.Zombied event.
+	Change the toString method to print out the Task's state.
+	* com/redhat/fedora/frysk/proc/TaskEvent.java (TaskEvent.Zombied):
+	New class.
+	* com/redhat/fedora/frysk/proc/TaskState.java: Add zombied state
+	support.  Change every call to Ptrace.cont(), Ptrace.setOptions(),
+	and Ptrace.stepi() to check for a return code and to change to
+	zombied state should the call fail.  For starting state, the
+	first StoppedEvent now results in notifying observers of a newly
+	created Task.  Previously, this action added the Task to the
+	Proc, but this is now done in Task construction.  Add multiple
+	additional process events for starting state.  Add new zombied
+	state that waits for termination or exit.
+	* com/redhat/fedora/frysk/proc/TestHost.java: Add new zombied
+	observer.
+	* com/redhat/fedora/frysk/proc/TestPsObserver.java: Change test
+	to no longer be threaded and instead use timer support.
+	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java: New test.
+
 2005-08-12  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/LinuxHost.java: Delete unused
