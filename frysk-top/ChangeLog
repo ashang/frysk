@@ -1,5 +1,10 @@
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (doxygen, javadoc): Add rules.
+	* configure.ac: Add AM_PROG_GCJ.
+	* overview.html: New.
+	* Doxyfile.in: New.
+
 	* autogen.sh: Make the list of subdirectories explicit.
 
 	* configure.ac, Makefile.am (SUBDIRS): Replace jline with

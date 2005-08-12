@@ -21,4 +21,5 @@ AC_INIT(frysk, 0.0)
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core])
+AM_PROG_GCJ
 AC_OUTPUT
