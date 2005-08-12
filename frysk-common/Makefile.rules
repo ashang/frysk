@@ -139,7 +139,7 @@ SUFFIXES += .classes
 
 GCJH = $(GCJ)h
 .classes.h:
-	$(GCJH) $(GCJHFLAGS) `sed -e '/^#/d' $<`
+	$(GCJH) -I. $(GCJHFLAGS) `sed -e '/^#/d' $<`
 
 
 # Shared library rule (for moment assume that .a contains PIC code).

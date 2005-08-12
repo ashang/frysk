@@ -1,3 +1,7 @@
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.classes.h): Add explicit -I. to GCJH command.
+
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.jar.db): Add rule.
