@@ -1,3 +1,8 @@
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/Sig.shjava: Use "gcc -dD" and
+	/usr/include/signal.h.
+
 2005-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk-sys/com/redhat/fedora/frysk/sys/Fork.java,
