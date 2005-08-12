@@ -1,3 +1,23 @@
+2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/Errno.java: Add Esrch class to
+	represent ESRCH errno (process not found).
+	* com/redhat/fedora/frysk/sys/Ptrace.java: Change prototypes
+	of cont, singleStep, sysCall, and setOptions methods to return an int.
+	* com/redhat/fedora/frysk/sys/Wait.java: Add zombied observer.
+	* com/redhat/fedora/frysk/sys/XXX.java: Add infCloneLoop.
+	* com/redhat/fedora/frysk/sys/cni/Errno.cxx: Add support
+	for new Errno.Esrch class.
+	* com/redhat/fedora/frysk/sys/cni/Ptrace.cxx: For cont,
+	singleStep, sysCall, and setOptions, use a try/catch to
+	gracefully handle an ESRCH error and return an error code.
+	* com/redhat/fedora/frysk/sys/cni/Wait.cxx (PTRACE_EVENT_FORK):
+	Handle an Esrch error thrown when getting the event msg and
+	in such a case, call the zombied observer.
+	(PTRACE_EVENT_CLONE): Ditto.
+	* com/redhat/fedora/frysk/sys/cni/XXX.cxx (infCloneLoop): New
+	test.
+
 2005-08-12  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/Sig.shjava: Use "gcc -dD" and
