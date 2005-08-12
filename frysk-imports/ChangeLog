@@ -1,3 +1,10 @@
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am, configure.ac: Add directory tests/cniinner.
+	* tests/cniinner/.cvsignore, tests/cniinner/Child.java,
+	tests/cniinner/Makefile.am, tests/cniinner/Parent.java,
+	tests/cniinner/native.cxx: New.
+
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore, Makefile.am, README, autogen.sh, configure.ac: New.

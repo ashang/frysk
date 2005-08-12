@@ -20,4 +20,5 @@ include common/Makefile.rules
 include Makefile.gen
 
 SUBDIRS = \
-	jline
+	jline \
+	tests/cniinner
