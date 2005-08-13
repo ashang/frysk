@@ -1,3 +1,8 @@
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Generate "main" rules for .java, .cxx, and .c.
+	* Makefile.rules (AM_LDFLAGS): Delete.
+	
 2005-08-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.classes.h): Add explicit -I. to GCJH command.

@@ -43,22 +43,6 @@ JAVACFLAGS = \
 	-classpath $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
 
 
-# Modify the link rules so the program <dir>/<prog> is built with
-# <dir>.<prog>.main() as the Java entry point.
-
-AM_LDFLAGS = \
-	--main=$$( \
-		b=$$(basename $@ $(EXEEXT)) ; \
-		d=$$(dirname $@ | tr '[/]' '[.]') ; \
-		if test x"$$d" = x. ; then \
-			main=$$b.$$b ; \
-		else \
-			main=$$d.$$b ; \
-		fi ; \
-		echo main=$$main 1>&2 ; \
-		echo $$main )
-
-
 # XXX: GCJ: I think there should be a -Wextraneous-throws; I think
 # -Wno-deprecated is backward; I think -Wredundant-modifiers is broken
 # with gcc4.  It appears to complain about abstract methods in a

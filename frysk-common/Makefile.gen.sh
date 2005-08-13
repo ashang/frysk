@@ -57,6 +57,14 @@ print ()
     echo "$@" >> Makefile.gen
 }
 
+has_main ()
+{
+    case "$1" in
+	*.java ) grep ' main[( ]' $1 > /dev/null 2>&1 ;;
+        *.c|*.cxx ) grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1 ;;
+    esac
+}
+
 
 print_header Makefile.gen.in arguments
 print GEN_DIRS = ${dirs}
@@ -114,29 +122,47 @@ done
 for suffix in .java ; do
     print_header "... ${suffix}"
     find ${dirs} \
-	-name 'TestLib.java' -print -o \
-	-name '*Test*' -prune -o \
 	-name "*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
+	name=${d}/${b}
+	name_=`echo ${name} | tr '[/]' '[_]'`
+	class=`echo ${name} | tr '[/]' '[.]'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
 	print "GEN_SOURCES += ${file}"
+	if has_main ${file} ; then
+	    print "${name_}_SOURCES ="
+	    print "${name_}_LINK = \$(GCJLINK)"
+	    print "noinst_PROGRAMS += ${name}"
+	    print "${name_}_LDFLAGS = --main=${class}"
+	fi
     done
 done
 
 
 
-for suffix in .cxx ; do
+for suffix in .cxx .c ; do
     print_header "... ${suffix}"
     find ${dirs} \
 	-name "*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
-	print "GEN_SOURCES += ${file}"
+	name=${d}/${b}
+	name_=`echo ${name} | tr '[/]' '[_]'`
+	if has_main ${file} ; then
+	    print "${name_}_SOURCES = ${file}"
+	    test ${suffix} = .cxx && print "${name_}_LINK = \$(CXXLINK)"
+	    print "noinst_PROGRAMS += ${name}"
+	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
+		print "${name_}_LDADD = -lpthread"
+	    fi
+	else
+	    print "GEN_SOURCES += ${file}"
+	fi
     done
 done
 
@@ -166,13 +192,12 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 
 
 # Form a list of all the directories that contain JUnit tests (named
-# *Test.java).  For each of those directories generate a
+# *Test*.java).  For each of those directories generate a
 # TestJUnit.java file which will then run all of those tests using the
 # standard TESTS+= mechanism.
 
 rm -f TestJUnits.java
 cat <<EOF >> TestJUnits.java
-package TestJUnits;
 import junit.framework.TestSuite;
 import junit.framework.TestResult;
 import junit.textui.TestRunner;
@@ -187,11 +212,10 @@ find ${dirs} \
     -name 'TestLib.*' -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read test ; do
-	grep ' main ' $test > /dev/null 2>&1 && continue
-	print "GEN_SOURCES += ${test}"
-	d=`dirname ${test}`
-	b=`basename ${test} .java`
-	class=`echo ${d}/${b} | tr '[/]' '[.]'`
+    has_main ${test} && continue
+    d=`dirname ${test}`
+    b=`basename ${test} .java`
+    class=`echo ${d}/${b} | tr '[/]' '[.]'`
 cat <<EOF  >> TestJUnits.java
 	    testSuite.addTest (new TestSuite (${class}.class));
 EOF
@@ -210,33 +234,24 @@ cat <<EOF >> TestJUnits.java
 EOF
 print "TestJUnits_SOURCES = TestJUnits.java"
 print "TestJUnits_LINK = \${GCJLINK}"
+print "TestJUnits_LDFLAGS = --main=TestJUnits"
 print "TESTS += TestJUnits"
 print "noinst_PROGRAMS += TestJUnits"
 print GEN_CLASSPATH += ../frysk-imports/junit.jar
 print LDADD += ../frysk-imports/libjunit.a
 
 
-# Form a list of all the test cases that need to be built.  For any
-# java file.  If there's a corresponding cni/*.cxx file add that in,
-# ditto for a TestLib.* files.
+# Form a list of all the stand-alone test cases that need to be run.
 
-print_header "... TESTS += Test*.java (standalone)"
+print_header "... TESTS += Test*.java"
 find ${dirs} \
-    -name 'TestLib.*' -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read file ; do
-    grep ' main ' ${file} > /dev/null 2>&1 || continue
-    d=`dirname ${file}`
-    b=`basename ${file} .java`
-    test=${d}/${b}
-    test_=`echo ${test} | tr '[/]' '[_]'`
-    print ""
-    files=${file}
-    dir=`dirname ${file}`
-    cxx=${dir}/cni/`basename ${file} .java`.cxx
-    test -r ${cxx} && files="${files} ${cxx}"
-    print "${test_}_SOURCES = ${files}"
-    print "${test_}_LINK = \${GCJLINK}"
-    print "TESTS += ${test}"
-    print "noinst_PROGRAMS += ${test}"
+    if has_main ${file} ; then
+	d=`dirname ${file}`
+	b=`basename ${file} .java`
+	main=${d}/${b}
+	main_=`echo ${main} | tr '[/]' '[_]'`
+	print "TESTS += ${main}"
+    fi
 done

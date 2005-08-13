@@ -1,5 +1,9 @@
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am: Delete rules for building main, handled by
+	common/Makefile.gen.sh.
+	* autogen.sh: Add "prog" directory.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: New.
 	* com/redhat/fedora/frysk/proc/TestHost.java: Extend TestLib,
 	simplify.

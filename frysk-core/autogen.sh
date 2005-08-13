@@ -19,7 +19,7 @@
 
 # Generate everything (always run with --add-missing).
 
-sh -eu ./common/Makefile.gen.sh com
+sh -eu ./common/Makefile.gen.sh com prog
 
 echo "Running aclocal ..."
 aclocal
