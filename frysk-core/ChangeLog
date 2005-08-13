@@ -1,5 +1,8 @@
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java: Delete Proc.attached.
+	* com/redhat/fedora/frysk/proc/Host.java: Update.
+
 	* com/redhat/fedora/frysk/proc/TestHost.java: Delete
 	junit.framework.TestCase import.
 	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java:
