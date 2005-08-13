@@ -1,3 +1,9 @@
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/cni/Errno.cxx,
+	com/redhat/fedora/frysk/sys/Errno.java: Handle ECHILD adding
+	Echild sub-class
+
 2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/Errno.java: Add Esrch class to

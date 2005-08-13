@@ -1,7 +1,15 @@
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestLib.java: New.
+	* com/redhat/fedora/frysk/proc/TestHost.java: Extend TestLib,
+	simplify.
+
 2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
+	
 	* Makefile.am: Added support for cli compilation.
 
 2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
+	
 	* com/redhat/fedora/frysk/cli/hpd/CLI.java: New.
 	* com/redhat/fedora/frysk/cli/hpd/CommandHandler.java: New.
 	* com/redhat/fedora/frysk/cli/hpd/PTNode.java: New.
