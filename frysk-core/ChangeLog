@@ -1,5 +1,12 @@
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestHost.java: Delete
+	junit.framework.TestCase import.
+	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java:
+	Delete com.redhat.fedora.frysk.sys.Signal import.
+	* com/redhat/fedora/frysk/cli/hpd/TaskSet.java: Delete
+	java.util.Arrays import.
+
 	* Makefile.am: Delete rules for building main, handled by
 	common/Makefile.gen.sh.
 	* autogen.sh: Add "prog" directory.
