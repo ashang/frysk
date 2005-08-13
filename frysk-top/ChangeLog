@@ -1,3 +1,7 @@
+2005-08-13  Ivan Pantuyev  <ipantuye@redhat.com>
+	* doc/cli/parsetree.png: New.
+	* doc/cli/cli_notes.txt: New.
+
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (doxygen, javadoc): Add rules.
