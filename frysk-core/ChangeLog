@@ -1,3 +1,16 @@
+2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
+	* Makefile.am: Added support for cli compilation.
+
+2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
+	* com/redhat/fedora/frysk/cli/hpd/CLI.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/CommandHandler.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/PTNode.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/ParserHelper.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/Preprocessor.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/SetNotationParser.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/SetParserTest.java: New.
+	* com/redhat/fedora/frysk/cli/hpd/TaskSet.java: New.
+
 2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Linux.java (Linux.Task): Change
