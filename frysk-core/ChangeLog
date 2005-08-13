@@ -505,7 +505,8 @@
 
 2005-07-28  Andrew Cagney  <cagney@redhat.com>
 	    Jeff Johnston  <jjohnstn@redhat.com>
-
+	    Sami Wagiaalla  <swagiaal@redhat.com>
+	
 	* Makefile.am (prog_perf_clone_SOURCES, prog_perf_clone_LDADD) 
 	(prog_perf_fork_SOURCES, prog_perf_fork_LDADD) 
 	(prog_fib_clone_SOURCES, prog_fib_clone_LDADD) 

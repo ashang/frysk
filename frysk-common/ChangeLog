@@ -9,13 +9,6 @@
 	* Makefile.gen.sh: Allow .jar files as command line parameters,
 	generate rules to convert them into .so / shared-libraries.
 
-2005-08-11  Sami Wagiaalla  <swagiaal@redhat.com>
-	
-	* frysk-gui: Procpop can now be built through automake
-	
-	* EggTrayIcon: gtk code and corresponding jni bindings to 
-	provide a system tray icon.
-	
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (JUNIT_JAR): Delete rules for building junit,
@@ -23,10 +16,6 @@
 	
 	* Makefile.rules (.java.classes): Simplify, use `ls' to find the
 	list of class files.
-
-2005-08-10  Sami Wagiaalla  <swagiaal@redhat.com>
-	
-	* frysk-gui: moved files from old gui directory to frysk-gui
 
 2005-08-07  Andrew Cagney  <cagney@redhat.com>
 
