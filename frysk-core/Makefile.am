@@ -21,6 +21,9 @@ include common/Makefile.rules
 include Makefile.gen
 
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys
+GEN_CLASSPATH += ../frysk-imports/jline/jline.jar
+
+				 
 
 frysk.core.jar: $(GEN_BUILT_CLASSES)
 	cat $^ /dev/null \
@@ -98,3 +101,14 @@ prog_util_run_SOURCES = prog/util/run.java
 noinst_PROGRAMS += \
 	prog/util/auxv \
 	prog/util/run
+
+nodist_com_redhat_fedora_frysk_cli_hpd_CLI_SOURCES = com/redhat/fedora/frysk/cli/hpd/CLI.java \
+													 com/redhat/fedora/frysk/cli/hpd/Preprocessor.java \
+													 com/redhat/fedora/frysk/cli/hpd/CommandHandler.java \
+													 com/redhat/fedora/frysk/cli/hpd/ParserHelper.java \
+													 com/redhat/fedora/frysk/cli/hpd/TaskSet.java \
+													 com/redhat/fedora/frysk/cli/hpd/PTNode.java \
+													 com/redhat/fedora/frysk/cli/hpd/SetNotationParser.java
+com_redhat_fedora_frysk_cli_hpd_CLI_LDADD = -L../frysk-imports/jline -ljline
+noinst_PROGRAMS += com/redhat/fedora/frysk/cli/hpd/CLI
+
