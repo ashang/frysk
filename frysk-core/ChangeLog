@@ -1,5 +1,8 @@
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java: Wrap ptrace calls in
+	try catch block.
+	
 	* com/redhat/fedora/frysk/proc/Linux.java: Delete Proc.attached.
 	* com/redhat/fedora/frysk/proc/Host.java: Update.
 

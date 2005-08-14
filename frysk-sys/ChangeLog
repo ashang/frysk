@@ -1,5 +1,8 @@
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/sys/cni/Ptrace.cxx,
+	com/redhat/fedora/frysk/sys/Ptrace.java: Don't catch Errno.Esrch.
+
 	* com/redhat/fedora/frysk/sys/cni/Errno.cxx,
 	com/redhat/fedora/frysk/sys/Errno.java: Handle ECHILD adding
 	Echild sub-class
