@@ -1,5 +1,13 @@
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Task.java: Make cont, stepi, and
+	setOptions return void.
+	* com/redhat/fedora/frysk/proc/Task.java: Only return the zombied
+	state when a zombied event.
+	* com/redhat/fedora/frysk/proc/Linux.java: For cont ,stepi, and
+	setOptions, instead of returning -1, append a Zombied event to the
+	event queue.
+	
 	* com/redhat/fedora/frysk/proc/Linux.java: Wrap ptrace calls in
 	try catch block.
 	
