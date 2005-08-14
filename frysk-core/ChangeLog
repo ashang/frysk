@@ -1,5 +1,25 @@
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Host.java: Replace "attachProc"
+	with "requestAttachProc".
+	* frysk-core/com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
+	* frysk-core/com/redhat/fedora/frysk/proc/TestAttach.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestPaused.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStop.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestStop.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestUnpaused.java: Simplify.
+	
 	* com/redhat/fedora/frysk/proc/LinuxHost.java: Replace
 	"createProc" by "sendCreateProc".
 	* com/redhat/fedora/frysk/proc/HostState.java: Handle
