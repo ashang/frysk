@@ -1,5 +1,14 @@
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Host.java: Add "sendAttachProc",
+	for "requestAttachProc", append a RequestAttachProc event.
+	* frysk-core/com/redhat/fedora/frysk/proc/HostEvent.java: Add
+	RequestAttachProc.
+	* frysk-core/com/redhat/fedora/frysk/proc/HostState.java: Handle
+	RequestAttachProc.
+	* frysk-core/com/redhat/fedora/frysk/proc/LinuxHost.java: Replace
+	"equestAttachProc" with "sendAttachProc".
+	
 	* com/redhat/fedora/frysk/proc/Host.java: Replace "attachProc"
 	with "requestAttachProc".
 	* frysk-core/com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
