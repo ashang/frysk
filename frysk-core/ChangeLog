@@ -1,5 +1,29 @@
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Replace
+	"createProc" by "sendCreateProc".
+	* com/redhat/fedora/frysk/proc/HostState.java: Handle
+	"RequestCreateProc".
+	* com/redhat/fedora/frysk/proc/HostEvent.java: Add
+	"RequestCreateProc".
+	* com/redhat/fedora/frysk/proc/Host.java: Replace "createProc"
+	with "sendCreateProc" and "requestCreateProc".
+	* frysk-core/com/redhat/fedora/frysk/proc/TestAuxv.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestClone.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestDetach.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestExec.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestExiting.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestFork.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestRun.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestStep.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestSyscall.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestTerminated.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestThreadExec.java,
+	frysk-core/prog/util/run.java: Update.
+
 	* com/redhat/fedora/frysk/proc/Manager.java: Add "resetXXX".
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add
 	"addStopEventLoopOnProcDestroy", make "tearDown" more robust, have

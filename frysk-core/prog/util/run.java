@@ -93,7 +93,7 @@ class run
 
 	Manager.procCreated.addObserver (new ProcCreatedObserver ());
 	Manager.procDestroyed.addObserver (new ProcDestroyedObserver ());
-	Manager.host.createProc (args);
+	Manager.host.requestCreateProc (args);
 	Manager.eventLoop.run ();
 	System.out.println ("Tasks Created " +
 			    Long.toString (TaskCreatedObserver.count));
