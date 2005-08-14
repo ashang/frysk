@@ -77,7 +77,7 @@ class run
 	    Proc process = (Proc) obj;
 	    if (process.getParent () == null) {
 		System.out.println ("Top process destroyed");
-		Manager.eventLoop.stop ();
+		Manager.eventLoop.requestStop ();
 	    }
 	}
     }
