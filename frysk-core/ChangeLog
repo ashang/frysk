@@ -1,5 +1,11 @@
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Manager.java: Add "resetXXX".
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add
+	"addStopEventLoopOnProcDestroy", make "tearDown" more robust, have
+	"setUp" call "resetXXX".
+	* com/redhat/fedora/frysk/proc/TestRun.java: Convert to JUnit.
+
 	* com/redhat/fedora/frysk/event/EventLoop.java: Fix comments.
 	
 	* com/redhat/fedora/frysk/event/TestEventLoop.java: Fix race
