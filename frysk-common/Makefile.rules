@@ -105,7 +105,7 @@ SUFFIXES += .classes
 	rm -f $*.class $*\$$*.class
 	$(JAVAC) -d . $(JAVACFLAGS)  $<
 	echo '# $<' > $*.classes.tmp
-	ls $*.class $*\$$*.class | \
+	ls $*.class $*\$$*.class 2>/dev/null | \
 		sed -e 's,.class$$,,' | \
 		sort -f > $*.classes.tmp
 	mv -f $*.classes.tmp $*.classes

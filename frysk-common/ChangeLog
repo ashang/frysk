@@ -1,3 +1,7 @@
+2005-08-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java.classes): Pipe "ls" errors to /dev/null.
+
 2005-08-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Generate "main" rules for .java, .cxx, and .c.
