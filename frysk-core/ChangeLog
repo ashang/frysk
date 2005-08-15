@@ -1,5 +1,15 @@
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: Add "unattached"
+	state, handle RequestAttach.
+	* com/redhat/fedora/frysk/proc/Proc.java: Add "requestAttach" and
+	"sendAttach", default "state" to "unattached".
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: For
+	"sendAttachProc", send the request to the just-created process.
+	* com/redhat/fedora/frysk/proc/Linux.java: Add "sendAttach".
+	* com/redhat/fedora/frysk/proc/HostState.java: For RequestAttach,
+	when the process already exists, just pass the request on.
+
 	* com/redhat/fedora/frysk/proc/ProcEvent.java: Parameterize
 	constructors with "proc".
 	* com/redhat/fedora/frysk/proc/Proc.java: Delete "process", pass
