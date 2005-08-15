@@ -1,5 +1,19 @@
 2005-08-15  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add "sigKill" method.
+	* com/redhat/fedora/frysk/proc/Task.java: Delete "kill".
+	* com/redhat/fedora/frysk/proc/Linux.java: Delete "kill".
+	* frysk-core/com/redhat/fedora/frysk/proc/TestAttach.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestExiting.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestPaused.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestTerminated.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestUnpaused.java: Use
+	Signal.kill instead.
+
 	* com/redhat/fedora/frysk/proc/TestPsObserver.java: Delete.
 
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
