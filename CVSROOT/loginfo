@@ -19,9 +19,12 @@
 #   s = file name
 #   V = old version number (pre-checkin)
 #   v = new version number (post-checkin)
-#   t = tag or branch name
 #
 # For example:
 #DEFAULT (echo ""; id; echo %s; date; cat) >> $CVSROOT/CVSROOT/commitlog
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
+
+^htdocs (/usr/sourceware/bin/auto_checkout /www/sourceware/htdocs/frysk %{sv} >> $CVSROOT/CVSROOT/updatelog 2>&1 &)
+
+DEFAULT (/usr/sourceware/bin/log_accum -T frysk -G frysk -C frysk -m frysk-cvs@sources.redhat.com -s %{sVv})

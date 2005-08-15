@@ -8,6 +8,8 @@
 #
 # File format:
 #
-#	[<whitespace>]<filename>[<whitespace><error message>]<end-of-line>
+#       [<whitespace>]<filename><whitespace><error message><end-of-line>
 #
 # comment lines begin with '#'
+
+readers         Won't be able to control read-only access.
