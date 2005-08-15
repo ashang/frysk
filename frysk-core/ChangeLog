@@ -1,5 +1,11 @@
 2005-08-14  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: Parameterize
+	constructors with "proc".
+	* com/redhat/fedora/frysk/proc/Proc.java: Delete "process", pass
+	"proc" to ProcEvent constructors.
+	* com/redhat/fedora/frysk/proc/ProcState.java: Update.
+
 	* com/redhat/fedora/frysk/proc/Host.java: Add "sendAttachProc",
 	for "requestAttachProc", append a RequestAttachProc event.
 	* frysk-core/com/redhat/fedora/frysk/proc/HostEvent.java: Add
