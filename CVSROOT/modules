@@ -28,4 +28,52 @@
 CVSROOT CVSROOT
 modules CVSROOT modules
 webpages -a htdocs
+
+# For more info on whats going on below, see cvs(5).
 
+# To simplify the problem of building from ECLIPSE, FRYSK has been
+# broken down into a number of components, each of which being
+# relatively independant: frysk-sys contains the system or native
+# code; frysk-core containing the underlying framewory; ...; and an
+# additional common directory.
+
+# From ECLIPSE, use this module.
+
+frysk-eclipse -a \
+	frysk-imports \
+	frysk-sys \
+	frysk-core \
+	frysk-gui
+
+# Each component consists of both a base directory and the common
+# directory.
+
+frysk-sys frysk-sys &frysk-common
+frysk-core frysk-core &frysk-common
+frysk-gui frysk-gui &frysk-common
+frysk-imports frysk-imports &frysk-common
+
+# The shared support directory (frysk-common).  Note the "-d", this
+# indicates that the check-out should be into the directory "common"
+# under the "current working directory" (e.g., as a sub-directory of
+# frysk-sys, ...).
+
+frysk-common -d common frysk-common
+
+# From the command line, use this module.
+
+frysk -a \
+	frysk-build-top \
+	frysk-build-sys \
+	frysk-build-core \
+	frysk-build-gui \
+	frysk-build-imports
+
+# Modules for building FRYSK outside of eclipse.  In addition to the
+# three base directories an additional "top" directory is checked out.
+
+frysk-build-top -d frysk frysk-top
+frysk-build-sys -d frysk/frysk-sys frysk-sys &frysk-common
+frysk-build-core -d frysk/frysk-core frysk-core &frysk-common
+frysk-build-gui -d frysk/frysk-gui frysk-gui &frysk-common
+frysk-build-imports -d frysk/frysk-imports frysk-imports &frysk-common
