@@ -1,5 +1,13 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcState.java: Simplify
+	"unattached" state, when "running" handle TaskForked.
+	* com/redhat/fedora/frysk/proc/Proc.java: Add "attached" parameter
+	to constructors, set initial state to "running" when "attached".
+	* com/redhat/fedora/frysk/proc/Host.java: Delete "createProc".
+	* com/redhat/fedora/frysk/proc/LinuxHost.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
+
 	* com/redhat/fedora/frysk/proc/Linux.java: For fork, create both
 	ProcEvent.TaskForked and TaskEvent.Forked events.
 	* com/redhat/fedora/frysk/proc/ProcState.java: Handke
