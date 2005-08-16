@@ -1,5 +1,10 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TaskEvent.java: Make all variable
+	members protected, add public accessors.  Add Task parameterized
+	constructor.
+	* com/redhat/fedora/frysk/proc/TaskState.java: Update.
+	
 	* com/redhat/fedora/frysk/proc/TaskEvent.java: Parameterize event
 	constructors with the TaskId, find the corresponding task during
 	"execute".
