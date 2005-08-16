@@ -1,5 +1,12 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TaskState.java: For Cloned, don't
+	add the new task.
+	* com/redhat/fedora/frysk/proc/ProcState.java: Handle TaskCloned.
+	* com/redhat/fedora/frysk/proc/TaskEvent.java: Add TaskCloned.
+	* com/redhat/fedora/frysk/proc/Linux.java: For clone, create both
+	ProcEvent.TaskCloned and TaskEvent.cloned events.
+	
 	* com/redhat/fedora/frysk/proc/TaskEvent.java: Make all variable
 	members protected, add public accessors.  Add Task parameterized
 	constructor.
