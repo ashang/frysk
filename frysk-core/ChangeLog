@@ -1,5 +1,18 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcState.java: Create the new task
+	as runnable.
+	* com/redhat/fedora/frysk/proc/Task.java: Add "runnable" parameter
+	to Task constructor, set "state" accordingly.
+	* com/redhat/fedora/frysk/proc/I386Linux.java: Add "runnable"
+	parameter to Task constructor.
+	* com/redhat/fedora/frysk/proc/Linux.java: Replace "createTask"
+	with "newTask" add "runnable" to Task constructor.
+	* com/redhat/fedora/frysk/proc/Proc.java: Replace "createTask"
+	with "newTask".
+	* com/redhat/fedora/frysk/proc/TaskState.java: Replace state
+	"starting" with "startRunning" and "startStopped".
+	
 	* com/redhat/fedora/frysk/proc/Proc.java: Add dummy versions of
 	getCommand, and getPid.
 
