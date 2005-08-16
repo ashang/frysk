@@ -1,5 +1,8 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Add dummy versions of
+	getCommand, and getPid.
+
 	* com/redhat/fedora/frysk/proc/TaskState.java: For Cloned, don't
 	add the new task.
 	* com/redhat/fedora/frysk/proc/ProcState.java: Handle TaskCloned.
