@@ -1,5 +1,13 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Linux.java: For fork, create both
+	ProcEvent.TaskForked and TaskEvent.Forked events.
+	* com/redhat/fedora/frysk/proc/ProcState.java: Handke
+	ProcEvent.TaskForked.
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: Add TaskForked.
+	* om/redhat/fedora/frysk/proc/TaskState.java: Do not add the
+	forked process.
+	
 	* com/redhat/fedora/frysk/proc/ProcState.java: Create the new task
 	as runnable.
 	* com/redhat/fedora/frysk/proc/Task.java: Add "runnable" parameter
