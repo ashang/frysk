@@ -1,3 +1,7 @@
+2005-08-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Add TestJUnits to GEN_BUILT_CLASSES.
+
 2005-08-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java.classes): Pipe "ls" errors to /dev/null.

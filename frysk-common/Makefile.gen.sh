@@ -238,6 +238,7 @@ print "TestJUnits_LDFLAGS = --main=TestJUnits"
 print "TESTS += TestJUnits"
 print "noinst_PROGRAMS += TestJUnits"
 print GEN_CLASSPATH += ../frysk-imports/junit.jar
+print GEN_BUILT_CLASSES += TestJUnits.classes
 print LDADD += ../frysk-imports/libjunit.a
 
 
