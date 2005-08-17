@@ -36,7 +36,9 @@ noinst_PROGRAMS += libfrysk-core.so
 
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys
 GEN_CLASSPATH += ../frysk-imports/jline/jline.jar
+GEN_CLASSPATH += ../frysk-imports/junit.jar
 LDADD += ../frysk-imports/jline/libjline.a
+LDADD += ../frysk-imports/libjunit.a
 
 # XXX: This needs to be make less-architecture independant.
 
