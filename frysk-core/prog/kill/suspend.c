@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/select.h>
+#include <linux/unistd.h>
 
 int
 main (int argc, char *argv[], char *envp[])
@@ -34,8 +35,11 @@ main (int argc, char *argv[], char *envp[])
   int sig = atol (argv[2]);
   int sec = atol (argv[3]);
 
-  if (kill (pid, sig) < 0) {
-    perror ("kill");
+  // Use tkill, instead of tkill (pid, sig) so that an exact task is
+  // signalled.  Normal kill can send to any task and other tasks may
+  // not be ready.
+  if (syscall (__NR_tkill, pid, sig) < 0) {
+    perror ("tkill");
     exit (errno);
   }
 

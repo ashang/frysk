@@ -1,5 +1,8 @@
 2005-08-17  Andrew Cagney  <cagney@redhat.com>
 
+	* prog/kill/suspend.c, prog/kill/loop.c: Use tkill so that the
+	signal is delivered to an exact thread.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add Fibonacci.
 	* com/redhat/fedora/frysk/proc/TestFork.java: Convert to JUnit,
 	simplify.

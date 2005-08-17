@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <linux/unistd.h>
 
 void
 handler (int n)
@@ -40,8 +41,11 @@ main (int argc, char *argv[], char *envp[])
   int sig = atol (argv[2]);
   int sec = atol (argv[3]);
 
-  if (kill (pid, sig) < 0) {
-    perror ("kill");
+  // Use tkill, instead of tkill (pid, sig) so that an exact task is
+  // signalled.  Normal kill can send to any task and other tasks may
+  // not be ready.
+  if (syscall (__NR_tkill, pid, sig) < 0) {
+    perror ("tkill");
     exit (errno);
   }
 
