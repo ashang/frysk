@@ -1,5 +1,12 @@
 2005-08-16  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TaskState.java: Delete calls to
+	isNewTaskLeftStopped.
+	* com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/Proc.java: Delete
+	isNewTaskLeftStopped.
+	
 	* com/redhat/fedora/frysk/proc/ProcState.java: Simplify
 	"unattached" state, when "running" handle TaskForked.
 	* com/redhat/fedora/frysk/proc/Proc.java: Add "attached" parameter
