@@ -60,7 +60,7 @@ print ()
 has_main ()
 {
     case "$1" in
-	*.java ) grep ' main[( ]' $1 > /dev/null 2>&1 ;;
+	*.java ) grep ' main[ ]*[(]' $1 > /dev/null 2>&1 ;;
         *.c|*.cxx ) grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1 ;;
     esac
 }
