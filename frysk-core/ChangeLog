@@ -1,3 +1,19 @@
+2005-08-18  Tarun Khanna  <tkhanna@.redhat.com>
+
+	* com/redhat/fedora/frysk/expr: New Directory that contains
+	the code for C++ expression parser.  
+	* com/redhat/fedora/frysk/expr/cpp.g: New file that contains
+	the grammar for parsing c++ expressions.  
+	* com/redhat/fedora/frysk/expr/TestCppParser.java: New file to
+	test the C++ expression parser.
+	* com/redhat/fedora/frysk/expr/TestCppLexer.java: New file to
+	test the Lexer for C++ expressions.
+	* com/redhat/fedora/frysk/expr/TabException.java: New file that
+	contains the class definition for Tab Exception.
+	* Makefile.am: Added rules for generation of ANTLR related files
+	vis. CppLexer.java, CppParser.java, CppParserTokenTypes.java.
+	Added these files to "GEN_SOURCES" and "BIN_SOURCES".
+
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestClone.java: Delete println

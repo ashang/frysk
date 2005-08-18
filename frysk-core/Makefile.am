@@ -20,11 +20,33 @@
 include common/Makefile.rules
 include Makefile.gen
 
+
 frysk.core.jar: $(GEN_BUILT_CLASSES)
 	cat $^ /dev/null \
 		| sed -e '/^#/d' -e 's,\.,/,g' -e 's,$$,.class,' \
 		| fastjar -@ -cf $@
 noinst_PROGRAMS += frysk.core.jar
+
+GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParser.java
+GEN_SOURCES += com/redhat/fedora/frysk/expr/CppLexer.java
+GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParserTokenTypes.java
+
+BUILT_SOURCES += com/redhat/fedora/frysk/expr/CppParser.java \
+  com/redhat/fedora/frysk/expr/CppLexer.java \
+  com/redhat/fedora/frysk/expr/CppParserTokenTypes.java
+
+CLEANFILES+= com/redhat/fedora/frysk/expr/CppParser.java \
+	com/redhat/fedora/frysk/expr/CppLexer.java	\
+	com/redhat/fedora/frysk/expr/CppParserTokenTypes.java	\
+	com/redhat/fedora/frysk/expr/CppParserTokenTypes.txt
+
+
+com/redhat/fedora/frysk/expr/CppLexer.java com/redhat/fedora/frysk/expr/CppParserTokenTypes.java: com/redhat/fedora/frysk/expr/CppParser.java 
+
+com/redhat/fedora/frysk/expr/CppParser.java: $(srcdir)/com/redhat/fedora/frysk/expr/cpp.g
+	antlr -o com/redhat/fedora/frysk/expr $(srcdir)/com/redhat/fedora/frysk/expr/cpp.g
+	echo $(srcdir)
+
 
 LDADD += libfrysk-core.a ../frysk-sys/libfrysk-sys.a
 libfrysk_core_a_SOURCES = $(GEN_SOURCES)
@@ -36,11 +58,14 @@ noinst_PROGRAMS += libfrysk-core.so
 
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys
 GEN_CLASSPATH += ../frysk-imports/jline/jline.jar
+GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 LDADD += ../frysk-imports/jline/libjline.a
+LDADD += ../frysk-imports/libantlr.a
 LDADD += ../frysk-imports/libjunit.a
 
 # XXX: This needs to be make less-architecture independant.
 
 prog_x86isa_x86regs_SOURCES = prog/x86isa/x86regs.S
 noinst_PROGRAMS += prog/x86isa/x86regs
+
