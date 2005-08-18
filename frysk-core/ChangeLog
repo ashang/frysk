@@ -1,5 +1,10 @@
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestClone.java: Delete println
+	call, Enable commented out assertEquals calls.
+	* com/redhat/fedora/frysk/proc/TestRun.java: Delete unused
+	java.io.File import.
+	
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add TmpFile.
 	* com/redhat/fedora/frysk/proc/TestRun.java: Use.
 
