@@ -1,5 +1,11 @@
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add ExecCounter.
+	* com/redhat/fedora/frysk/proc/TestThreadExec.java: Delete.
+	* com/redhat/fedora/frysk/proc/TestExec.java: Merge in
+	TestThreadExec, rewrite using JUnit, check that the exec'd program
+	did run.
+
 	* com/redhat/fedora/frysk/proc/TestProcGet.java: New.
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add TmpFile.getFile.
 	* com/redhat/fedora/frysk/proc/TestAuxv.java: Delete.
