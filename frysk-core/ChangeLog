@@ -1,3 +1,9 @@
+2005-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestProcGet.java: New.
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add TmpFile.getFile.
+	* com/redhat/fedora/frysk/proc/TestAuxv.java: Delete.
+
 2005-08-18  Tarun Khanna  <tkhanna@.redhat.com>
 
 	* com/redhat/fedora/frysk/expr: New Directory that contains
