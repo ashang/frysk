@@ -1,3 +1,4 @@
+
 # This file is part of FRYSK.
 #
 # Copyright 2005, Red Hat Inc.
