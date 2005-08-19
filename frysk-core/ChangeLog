@@ -1,3 +1,10 @@
+2005-08-19  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/expr/TestCppParser.java: Rename to ...
+	* com/redhat/fedora/frysk/expr/RunCppParser.java: ... this.
+	* com/redhat/fedora/frysk/expr/TestCppLexer.java: Rename to ...
+	* com/redhat/fedora/frysk/expr/RunCppLexer.java: ... this.
+
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH, LDADD): Update, jline moved to
