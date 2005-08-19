@@ -1,5 +1,7 @@
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
+	* autogen.sh, configure.ac, Makefile.am: Add jargs/jargs.jar.
+
 	* autogen.sh: Add jline/jline.jar to Makefile.gen.sh option list.
 	* jline/Makefile.am (CLEANFILES): Add.
 	(jline.jar): Replace jline target.

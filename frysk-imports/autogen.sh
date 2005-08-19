@@ -20,7 +20,8 @@
 ./common/Makefile.gen.sh \
     /usr/share/java/junit.jar \
     /usr/share/java/antlr.jar \
-    jline/jline.jar
+    jline/jline.jar \
+    jargs/jargs.jar
     
 
 # Generate everything (always run with --add-missing).

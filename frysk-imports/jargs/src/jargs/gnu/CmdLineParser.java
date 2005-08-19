@@ -4,7 +4,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Hashtable;
 import java.util.Vector;
-import java.util.Enumeration;
 import java.util.Locale;
 
 /**
@@ -14,7 +13,7 @@ import java.util.Locale;
  * can be explicitly terminated by the argument '--'.
  *
  * @author Steve Purcell
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.1.1.1 $
  * @see jargs.examples.gnu.OptionTest
  */
 public class CmdLineParser {
@@ -33,6 +32,7 @@ public class CmdLineParser {
      * English).
      */
     public static class UnknownOptionException extends OptionException {
+	static final long serialVersionUID = 1;
         UnknownOptionException( String optionName ) {
             this(optionName, "Unknown option '" + optionName + "'");
         }
@@ -58,6 +58,7 @@ public class CmdLineParser {
      */
     public static class UnknownSuboptionException
         extends UnknownOptionException {
+	static final long serialVersionUID = 1;
         private char suboption;
 
         UnknownSuboptionException( String option, char suboption ) {
@@ -75,6 +76,7 @@ public class CmdLineParser {
      * @author Vidar Holen
      */
     public static class NotFlagException extends UnknownOptionException {
+	static final long serialVersionUID = 1;
         private char notflag;
 
         NotFlagException( String option, char unflaggish ) {
@@ -96,6 +98,7 @@ public class CmdLineParser {
      * English).
      */
     public static class IllegalOptionValueException extends OptionException {
+	static final long serialVersionUID = 1;
         public IllegalOptionValueException( Option opt, String value ) {
             super("Illegal value '" + value + "' for option " +
                   (opt.shortForm() != null ? "-" + opt.shortForm() + "/" : "") +
