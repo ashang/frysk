@@ -1,5 +1,13 @@
 2005-08-19  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TaskEvent.java: Delete
+	.detachHackXXX.
+	* com/redhat/fedora/frysk/proc/TaskState.java: Update.
+	* com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	com/redhat/fedora/frysk/proc/TestDetach.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java: Delete.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add DetachedChild.
 	* com/redhat/fedora/frysk/proc/TestHost.java: Use DetachedChild.
 
