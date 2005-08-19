@@ -57,10 +57,10 @@ noinst_PROGRAMS += libfrysk-core.so
 
 
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys
-GEN_CLASSPATH += ../frysk-imports/jline/jline.jar
+GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
-LDADD += ../frysk-imports/jline/libjline.a
+LDADD += ../frysk-imports/libjline.a
 LDADD += ../frysk-imports/libantlr.a
 LDADD += ../frysk-imports/libjunit.a
 
@@ -68,4 +68,3 @@ LDADD += ../frysk-imports/libjunit.a
 
 prog_x86isa_x86regs_SOURCES = prog/x86isa/x86regs.S
 noinst_PROGRAMS += prog/x86isa/x86regs
-

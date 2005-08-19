@@ -1,5 +1,8 @@
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (GEN_CLASSPATH, LDADD): Update, jline moved to
+	../frysk-imports/jline.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add ExecCounter.
 	* com/redhat/fedora/frysk/proc/TestThreadExec.java: Delete.
 	* com/redhat/fedora/frysk/proc/TestExec.java: Merge in

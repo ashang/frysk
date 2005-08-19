@@ -81,7 +81,7 @@ do
   print ""
   print_header "... $jar"
   cat <<EOF >> Makefile.gen
-${B}_JAR = /usr/share/java/${b}.jar
+${B}_JAR = ${jar}
 ${b}.jar: \$(${B}_JAR)
 	cp \$(${B}_JAR) .
 noinst_LIBRARIES += lib${b}.a

@@ -1,10 +1,10 @@
 jlinesrc=$(srcdir)/src/jline/
 
-all-local: jline
+all-local: jline.jar
 
-jline: $(jlinesrc)/*.java
-	gcj -c --classpath=$(srcdir)/src/ $(jlinesrc)/*.java
-	ar r libjline.a *.o
-	javac -d . $(jlinesrc)/*.java
+CLEANFILES = jline.jar jline/*
+
+jline.jar: $(jlinesrc)/*.java
+	javac -g -d . $(jlinesrc)/*.java
 	cp $(jlinesrc)/*.properties ./jline
-	jar cf jline.jar ./jline/*
+	jar cf jline.jar jline/*

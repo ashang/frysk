@@ -17,7 +17,11 @@
 # along with FRYSK; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-./common/Makefile.gen.sh junit.jar antlr.jar
+./common/Makefile.gen.sh \
+    /usr/share/java/junit.jar \
+    /usr/share/java/antlr.jar \
+    jline/jline.jar
+    
 
 # Generate everything (always run with --add-missing).
 
