@@ -1,5 +1,11 @@
 2005-08-19  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Add
+	PollWaitOnSigChld, based on PollWaitPidEvent.
+	* com/redhat/fedora/frysk/proc/Manager.java: Update.
+	* com/redhat/fedora/frysk/proc/Linux.java: Delete EventLoop and
+	PollWaitPidEvent.
+
 	* com/redhat/fedora/frysk/proc/TaskEvent.java: Delete
 	.detachHackXXX.
 	* com/redhat/fedora/frysk/proc/TaskState.java: Update.
