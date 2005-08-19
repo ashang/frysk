@@ -1,3 +1,8 @@
+2005-08-20  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* com/redhat/fedora/frysk/cli/hpd/doc-files/parsetree.png: New.
+	* com/redhat/fedora/frysk/cli/hpd/doc-files/package.html: New.
+
 2005-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/expr/TestCppParser.java: Rename to ...
