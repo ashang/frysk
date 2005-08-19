@@ -36,9 +36,6 @@
 package jline;
 
 
-import java.awt.event.KeyEvent;
-
-
 /**
  *	Synbolic constants for Console operations and virtual key bindings.
  *

@@ -1,7 +1,0 @@
-2005-08-18  Andrew Cagney  <cagney@redhat.com>
-
-	* .cvsignore: Add Makefile.in.
-	* src/jargs/gnu/CmdLineParser.java: Don't import
-	java.util.Enumeration.  Add serialVersionUID to serializable
-	classes.
-	* Makefile.am: New file.
