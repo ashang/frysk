@@ -1,5 +1,11 @@
 2005-08-19  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestHost.java: Don't import
+	com.redhat.fedora.frysk.sys.Pid, com.redhat.fedora.frysk.sys.Fork,
+	or com.redhat.fedora.frysk.event.SignalEvent.
+	* com/redhat/fedora/frysk/proc/TestExec.java: Don't import
+	java.util.Observer, or java.util.Observable.
+
 	* com/redhat/fedora/frysk/proc/LinuxHost.java: Add
 	PollWaitOnSigChld, based on PollWaitPidEvent.
 	* com/redhat/fedora/frysk/proc/Manager.java: Update.
