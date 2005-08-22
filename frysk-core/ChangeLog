@@ -1,5 +1,8 @@
 2005-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java: In tearDown, discard
+	any Errno.Echild when killing processes.
+
 	* com/redhat/fedora/frysk/proc/Manager.java: Rename "procCreated"
 	to "procDiscovered".
 	* com/redhat/fedora/frysk/proc/Host.java,
