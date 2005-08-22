@@ -1,5 +1,32 @@
 2005-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Manager.java: Rename "procCreated"
+	to "procDiscovered".
+	* com/redhat/fedora/frysk/proc/Host.java,
+	com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcGet.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java,
+	prog/util/run.java: Update.
+
 	* com/redhat/fedora/frysk/event/EventLoop.java: Rename
 	TimerEvent's "removeEvent" to "remove".  For "runPolling", remove
 	the timer event.
@@ -196,15 +223,15 @@
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add "sigKill" method.
 	* com/redhat/fedora/frysk/proc/Task.java: Delete "kill".
 	* com/redhat/fedora/frysk/proc/Linux.java: Delete "kill".
-	* frysk-core/com/redhat/fedora/frysk/proc/TestAttach.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestDetachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestExiting.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestPaused.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestReattachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestTerminated.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestUnpaused.java: Use
+	* com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Use
 	Signal.kill instead.
 
 	* com/redhat/fedora/frysk/proc/TestPsObserver.java: Delete.
@@ -229,32 +256,32 @@
 
 	* com/redhat/fedora/frysk/proc/Host.java: Add "sendAttachProc",
 	for "requestAttachProc", append a RequestAttachProc event.
-	* frysk-core/com/redhat/fedora/frysk/proc/HostEvent.java: Add
+	* com/redhat/fedora/frysk/proc/HostEvent.java: Add
 	RequestAttachProc.
-	* frysk-core/com/redhat/fedora/frysk/proc/HostState.java: Handle
+	* com/redhat/fedora/frysk/proc/HostState.java: Handle
 	RequestAttachProc.
-	* frysk-core/com/redhat/fedora/frysk/proc/LinuxHost.java: Replace
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Replace
 	"equestAttachProc" with "sendAttachProc".
 	
 	* com/redhat/fedora/frysk/proc/Host.java: Replace "attachProc"
 	with "requestAttachProc".
-	* frysk-core/com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
-	* frysk-core/com/redhat/fedora/frysk/proc/TestAttach.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestDetachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestGoAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestPaused.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestReattachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStopAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStopAndStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestUnpaused.java: Simplify.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
+	* com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Simplify.
 	
 	* com/redhat/fedora/frysk/proc/LinuxHost.java: Replace
 	"createProc" by "sendCreateProc".
@@ -264,21 +291,21 @@
 	"RequestCreateProc".
 	* com/redhat/fedora/frysk/proc/Host.java: Replace "createProc"
 	with "sendCreateProc" and "requestCreateProc".
-	* frysk-core/com/redhat/fedora/frysk/proc/TestAuxv.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestClone.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestDetach.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestExec.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestExiting.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestFork.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestI386Regs.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestRun.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStep.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestSyscall.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestSyscall2.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestTerminated.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestThreadExec.java,
-	frysk-core/prog/util/run.java: Update.
+	* com/redhat/fedora/frysk/proc/TestAuxv.java,
+	com/redhat/fedora/frysk/proc/TestClone.java,
+	com/redhat/fedora/frysk/proc/TestDetach.java,
+	com/redhat/fedora/frysk/proc/TestExec.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestFork.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestRun.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestThreadExec.java,
+	prog/util/run.java: Update.
 
 	* com/redhat/fedora/frysk/proc/Manager.java: Add "resetXXX".
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add
@@ -293,39 +320,39 @@
 	simplify other tests.
 	* com/redhat/fedora/frysk/event/EventLoop.java: Replace "stop"
 	with "requestStop".  In "run", process pending events first.
-	* frysk-core/com/redhat/fedora/frysk/proc/TestAttach.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAttachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestAuxv.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestClone.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestDetach.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestDetachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestExec.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestExiting.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestFork.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestGoAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestHost.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestI386Regs.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestPaused.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestPsObserver.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestReattachThreads.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestRun.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStep.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStopAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStopAndStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestSyscall.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestSyscall2.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestTerminated.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestThreadExec.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestUnpaused.java,
-	frysk-core/prog/util/run.java: Update.
+	* com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachSuspended.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestAuxv.java,
+	com/redhat/fedora/frysk/proc/TestClone.java,
+	com/redhat/fedora/frysk/proc/TestDetach.java,
+	com/redhat/fedora/frysk/proc/TestDetachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExec.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestFork.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestHost.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestPsObserver.java,
+	com/redhat/fedora/frysk/proc/TestReattachThreads.java,
+	com/redhat/fedora/frysk/proc/TestRun.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestThreadExec.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java,
+	prog/util/run.java: Update.
 
 	* com/redhat/fedora/frysk/proc/TaskEvent.java: Add "execute" to
 	all classes.
@@ -457,11 +484,11 @@
 	com/redhat/fedora/frysk/event/TestEventLoop.java: Add removeEvent
 	for timer events, test.
 
-	* frysk-core/com/redhat/fedora/frysk/event/Event.java,
-	frysk-core/com/redhat/fedora/frysk/event/EventLoop.java,
-	frysk-core/com/redhat/fedora/frysk/event/SignalEvent.java,
-	frysk-core/com/redhat/fedora/frysk/event/TestEventLoop.java,
-	frysk-core/com/redhat/fedora/frysk/event/TimerEvent.java: Add
+	* com/redhat/fedora/frysk/event/Event.java,
+	com/redhat/fedora/frysk/event/EventLoop.java,
+	com/redhat/fedora/frysk/event/SignalEvent.java,
+	com/redhat/fedora/frysk/event/TestEventLoop.java,
+	com/redhat/fedora/frysk/event/TimerEvent.java: Add
 	support for periodic timers to TimerEvent, test.
 
 	* com/redhat/fedora/frysk/event/EventLoop.java: On creation, clear
@@ -629,15 +656,15 @@
 	* prog/kill/loop.c: New file.
 
 	* com/redhat/fedora/frysk/proc/AllStoppedProcEvent.java: Delete.
-	* frysk-core/com/redhat/fedora/frysk/proc/ProcEvent.java: Add
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: Add
 	AllStopped sub-class.
-	* frysk-core/com/redhat/fedora/frysk/proc/Proc.java,
-	frysk-core/com/redhat/fedora/frysk/proc/ProcState.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestStep.java: Update.
+	* com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestStep.java: Update.
 	
 2005-08-03  Andrew Cagney  <cagney@redhat.com>
 

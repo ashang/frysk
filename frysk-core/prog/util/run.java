@@ -91,7 +91,7 @@ class run
 	    return;
 	}
 
-	Manager.procCreated.addObserver (new ProcCreatedObserver ());
+	Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
 	Manager.procDestroyed.addObserver (new ProcDestroyedObserver ());
 	Manager.host.requestCreateProc (args);
 	Manager.eventLoop.run ();
