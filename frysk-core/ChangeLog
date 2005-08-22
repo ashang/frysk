@@ -1,3 +1,16 @@
+2005-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/event/TestEventLoop.java: Add
+	"testSignalHandler".
+	* com/redhat/fedora/frysk/event/SignalEvent.java: Add "hashCode"
+	and "equals", remove "compareTo".
+	* com/redhat/fedora/frysk/event/EventLoop.java: Add "remove" for
+	SignalEvent.  Rename "addSignalEvent" to "addHandler", handle
+	duplicate handlers.  Rename "signalEvents" to "signalHandlers".
+	Add "processSignal".
+	* com/redhat/fedora/frysk/proc/TestLib.java: Update.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Update.
+
 2005-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestHost.java: Don't import
