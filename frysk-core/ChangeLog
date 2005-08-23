@@ -1,3 +1,9 @@
+2005-08-23  Tarun Khanna  <tkhanna@redhat.com>
+
+	* com/redhat/fedora/frysk/expr/RunCppParser: Minor modifications to
+	change reflect the change of file name.
+	* com/redhat/fedora/frysk/expr/RunCppLexer: Ditto
+
 2005-08-23  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestAttach.java: Switch to JUnit
