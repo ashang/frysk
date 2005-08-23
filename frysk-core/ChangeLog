@@ -1,5 +1,12 @@
 2005-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java: For TaskCounter and
+	ProcCounter, rename numberCreated to numberDiscovered.
+	* com/redhat/fedora/frysk/proc/TestRun.java,
+	com/redhat/fedora/frysk/proc/TestFork.java,
+	com/redhat/fedora/frysk/proc/TestClone.java,
+	com/redhat/fedora/frysk/proc/TestExec.java: Update.
+
 	* com/redhat/fedora/frysk/proc/Proc.java: Rename taskCreated to
 	taskDiscovered.
 	* com/redhat/fedora/frysk/proc/TaskState.java,
