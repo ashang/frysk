@@ -1,5 +1,15 @@
 2005-08-23  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestHost.java: Replace with ...
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: New file.
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: Add RequestRemoval.
+	* com/redhat/fedora/frysk/proc/ProcState.java: Add "destroyed"
+	state, handle RequestRemoval event.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Send a RequestRemoval
+	message to each removed process.
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add WatchForProc.
+	Make ProcCounter implement Cloneable, add "save" method.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: For TaskCounter and
 	ProcCounter, rename numberCreated to numberDiscovered.
 	* com/redhat/fedora/frysk/proc/TestRun.java,
