@@ -1,5 +1,15 @@
 2005-08-22  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Compare TaskId
+	values, instead of TaskId addresses.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add DetachedChild
 	constructor with "clones" parameter.
 	* prog/kill/suspend.c (main): Add <clone> command line parameter,
