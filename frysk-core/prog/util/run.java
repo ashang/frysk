@@ -63,7 +63,7 @@ class run
 	    count++;
 	    Proc proc = (Proc) obj;
 	    proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
-	    proc.taskDestroyed.addObserver (new TaskDestroyedObserver ());
+	    proc.taskRemoved.addObserver (new TaskDestroyedObserver ());
 	}
     }
 
@@ -92,7 +92,7 @@ class run
 	}
 
 	Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
-	Manager.procDestroyed.addObserver (new ProcDestroyedObserver ());
+	Manager.procRemoved.addObserver (new ProcDestroyedObserver ());
 	Manager.host.requestCreateProc (args);
 	Manager.eventLoop.run ();
 	System.out.println ("Tasks Created " +
