@@ -22,18 +22,54 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <linux/unistd.h>
+#include <limits.h>
+#include <pthread.h>
+
+pthread_mutex_t start;
+pthread_mutex_t stop;
+
+void *
+hang (void *np)
+{
+  pthread_mutex_unlock (&start);
+  pthread_mutex_lock (&stop);
+}
 
 int
 main (int argc, char *argv[], char *envp[])
 {
-  if (argc != 4)
+  if (argc != 5)
     {
-      printf ("Usage: kill/suspend <pid> <signal> <suspend-seconds>\n");
+      printf ("\
+Usage: kill/suspend <pid> <signal> <suspend-seconds> <clones>\n\
+After creating <clones> suspended threads, send <signal> to external\n\
+thread <pid>, and then suspend for <suspend-seconds>.\n");
       exit (1);
     }
   int pid = atol (argv[1]);
   int sig = atol (argv[2]);
   int sec = atol (argv[3]);
+  int thr = atol (argv[4]);
+
+  // Don't need much stack.
+  pthread_attr_t pthread_attr;
+  pthread_attr_init (&pthread_attr);
+  pthread_attr_setstacksize (&pthread_attr, PTHREAD_STACK_MIN);
+
+  pthread_mutex_init (&start, NULL);
+  pthread_mutex_lock (&start);
+  pthread_mutex_init (&stop, NULL);
+  pthread_mutex_lock (&stop);
+
+  // Start any threads, make certain they actually exist.
+  int n;
+  pthread_t *threads = NULL;
+  for (n = 0; n < thr; n++) {
+    threads = realloc (threads, sizeof (pthread_t) * (n + 1));
+    pthread_create (&threads[n], &pthread_attr, hang, (void *) n);
+    pthread_detach (threads[n]);
+    pthread_mutex_lock (&start); // released by running SUB.
+  }
 
   // Use tkill, instead of tkill (pid, sig) so that an exact task is
   // signalled.  Normal kill can send to any task and other tasks may
