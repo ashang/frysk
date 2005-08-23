@@ -62,7 +62,7 @@ class run
 	{
 	    count++;
 	    Proc proc = (Proc) obj;
-	    proc.taskCreated.addObserver (new TaskCreatedObserver ());
+	    proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
 	    proc.taskDestroyed.addObserver (new TaskDestroyedObserver ());
 	}
     }

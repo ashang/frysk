@@ -1,3 +1,32 @@
+2005-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/Proc.java: Rename taskCreated to
+	taskDiscovered.
+	* com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcGet.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java,
+	prog/util/run.java: Update.
+
 2005-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Linux.java: Implement Proc
