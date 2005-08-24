@@ -1,3 +1,10 @@
+2005-08-24  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestAttach.java: Fix comments.
+	* com/redhat/fedora/frysk/proc/TestPaused.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestUnpaused.java: Ditto.
+
 2005-08-24  Tarun Khanna  <tkhanna@redhat.com>
 
 	* testsuite:  New directory for DejaGNU tests
