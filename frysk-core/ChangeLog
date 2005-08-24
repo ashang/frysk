@@ -1,3 +1,9 @@
+2005-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestLib.java: Replace WatchForProc
+	with PidCounter.  Add DetachedChild.reap.
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Really add file.
+	
 2005-08-23  Tarun Khanna  <tkhanna@redhat.com>
 
 	* com/redhat/fedora/frysk/expr/RunCppParser: Minor modifications to
