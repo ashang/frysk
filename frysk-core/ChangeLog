@@ -1,3 +1,7 @@
+2005-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* prog/kill/detach.c: New file.
+
 2005-08-24  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestAttach.java: Fix comments.
