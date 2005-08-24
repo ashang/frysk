@@ -1,3 +1,11 @@
+2005-08-24  Tarun Khanna  <tkhanna@redhat.com>
+
+	* testsuite:  New directory for DejaGNU tests
+	* testsuite/expr: New directory to store DejaGNU test scripts 
+	for the expression parser.
+	* testsuite/expr/CppParser.exp:	New expect test script for testing
+	the expression parser.
+
 2005-08-24  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestLib.java: Replace WatchForProc
@@ -7,7 +15,7 @@
 2005-08-23  Tarun Khanna  <tkhanna@redhat.com>
 
 	* com/redhat/fedora/frysk/expr/RunCppParser: Minor modifications to
-	change reflect the change of file name.
+	reflect the change of file name.
 	* com/redhat/fedora/frysk/expr/RunCppLexer: Ditto
 
 2005-08-23  Jeff Johnston  <jjohnstn@redhat.com>

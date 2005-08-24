@@ -1,0 +1,32 @@
+#!/usr/bin/expect --
+
+set pwd [eval pwd]
+puts $pwd
+spawn "$pwd/com/redhat/fedora/frysk/expr/TestCppParser"
+#spawn "../../TestCppParser"
+
+set prompt "\\$"
+expect {
+  -re "$prompt$"
+}
+
+set test "simple tab completion"
+send "a.\t"
+expect {
+  -re "a\..*print *prind *hello.*[set prompt]a\."	{ pass $test }
+}
+
+set test "tab completion 2"
+send "p\t"
+expect {
+  -re "p" { 
+    expect -re "rin$" {pass $test}
+  }
+}
+
+send "	"
+expect {
+  -re "prin.*print *prind.*[set prompt]a\."  { pass $test }
+}
+
+send "\r"
