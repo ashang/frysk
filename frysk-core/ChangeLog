@@ -1,5 +1,13 @@
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add testRefreshAll.
+	* com/redhat/fedora/frysk/proc/HostState.java: Pass refreshAll to
+	sendRefresh.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Add refreshAll to
+	sendRefresh.
+	* com/redhat/fedora/frysk/proc/Host.java: Add refreshAll parameter
+	to requestRefresh and sendRefresh.
+
 	* com/redhat/fedora/frysk/proc/TestRefresh.java: Extend
 	testProcRefresh to check that the task list tracks task creation
 	and deletion.
