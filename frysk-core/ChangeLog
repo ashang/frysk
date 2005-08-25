@@ -1,3 +1,27 @@
+2005-08-25  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java: Change
+	to use TestLib registerChild and stopEventLoopOnProcessDestroy
+	methods.
+	* com/redhat/fedora/frysk/proc/TestAttach.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestAttachThreads.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestExiting.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestGoAndGo.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestPaused.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStopAndGo.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStopAndStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestTerminated.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestUnpaused.java: Ditto plus
+	change testcase to properly stop and detach program.
+	* com/redhat/fedora/frysk/proc/TestLib.java (tearDown): Add
+	issuing a SIGCONT before SIGKILL so that any processes stuck
+	with pending SIGSTOPs will get the SIGKILL and die properly.
+
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add testRefreshAll.
