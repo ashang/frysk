@@ -1,5 +1,15 @@
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java: For TaskCounter and
+	ProcCounter, add LinkedLists "discovered" and "removed" that
+	contain the added and removed tasks/procs/.  Change
+	numberDiscovered and numberRemoved to methods.
+	* frysk-core/com/redhat/fedora/frysk/proc/TestClone.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestExec.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestFork.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestLib.java,
+	frysk-core/com/redhat/fedora/frysk/proc/TestRun.java: Update.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: Refactor
 	DetachedChild into Child, DetachedChild, and DaemonChild.
 	Implement using prog/kill/detach.
