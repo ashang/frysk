@@ -165,3 +165,19 @@ SUFFIXES += .db
 	gcj-dbtool -n $@.tmp
 	gcj-dbtool -a $@.tmp $*.jar lib$*.so
 	mv $@.tmp $@
+
+
+# Build the TestJUnits program.
+
+TestRunner_SOURCES = TestRunner.java
+TestRunner_LINK = \${GCJLINK}
+TestRunner_LDFLAGS = --main=TestRunner
+TESTS += TestRunner
+noinst_PROGRAMS += TestRunner
+GEN_CLASSPATH += ../frysk-imports/junit.jar
+GEN_BUILT_CLASSES += TestRunner.classes
+LDADD += ../frysk-imports/libjunit.a
+
+TestRunner.java: common/TestRunner.sh Makefile
+	$(srcdir)/common/TestRunner.sh $(GEN_JUNIT_TESTS) > TestRunner.tmp
+	mv  TestRunner.tmp  TestRunner.java

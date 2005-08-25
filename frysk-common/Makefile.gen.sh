@@ -191,55 +191,19 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 
 
 
-# Form a list of all the directories that contain JUnit tests (named
-# *Test*.java).  For each of those directories generate a
-# TestJUnit.java file which will then run all of those tests using the
-# standard TESTS+= mechanism.
+# Form a list of all the JUnit tests.  Anything named *Test*, that
+# does not contain a main method is considered a candidate for the
+# list.
 
-rm -f TestJUnits.java
-cat <<EOF >> TestJUnits.java
-import junit.framework.TestSuite;
-import junit.framework.TestResult;
-import junit.textui.TestRunner;
-public class TestJUnits
-{
-    public static void main (String[] args)
-    {
-	try {
-	    TestSuite testSuite = new TestSuite ();
-EOF
+print_header "... GEN_JUNIT_TESTS += *.java"
+print GEN_JUNIT_TESTS =
 find ${dirs} \
     -name 'TestLib.*' -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read test ; do
     has_main ${test} && continue
-    d=`dirname ${test}`
-    b=`basename ${test} .java`
-    class=`echo ${d}/${b} | tr '[/]' '[.]'`
-cat <<EOF  >> TestJUnits.java
-	    testSuite.addTest (new TestSuite (${class}.class));
-EOF
+    print GEN_JUNIT_TESTS += ${test}
 done
-cat <<EOF >> TestJUnits.java
-	    TestResult testResult = TestRunner.run (testSuite);
-	    if (!testResult.wasSuccessful()) 
-		System.exit (TestRunner.FAILURE_EXIT);
-	    System.exit(TestRunner.SUCCESS_EXIT);
-	} catch(Exception e) {
-	    System.err.println(e.getMessage());
-	    System.exit (TestRunner.EXCEPTION_EXIT);
-	}
-    }
-}
-EOF
-print "TestJUnits_SOURCES = TestJUnits.java"
-print "TestJUnits_LINK = \${GCJLINK}"
-print "TestJUnits_LDFLAGS = --main=TestJUnits"
-print "TESTS += TestJUnits"
-print "noinst_PROGRAMS += TestJUnits"
-print GEN_CLASSPATH += ../frysk-imports/junit.jar
-print GEN_BUILT_CLASSES += TestJUnits.classes
-print LDADD += ../frysk-imports/libjunit.a
 
 
 # Form a list of all the stand-alone test cases that need to be run.

@@ -1,3 +1,11 @@
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Instead of TestJUnits.java, generate variable
+	GEN_JUNIT_TESTS.
+	* TestRunner.sh: New file, generate TestRunner.java.
+	* Makefile.rules (TestRunner.java): Add rules for building the
+	JUnit test runner.
+	
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: For .jar files, use the specified path.
