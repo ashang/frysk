@@ -1,5 +1,18 @@
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Extend
+	testProcRefresh to check that the task list tracks task creation
+	and deletion.
+	* com/redhat/fedora/frysk/proc/Linux.java: Request that any lost
+	tasks be removed.  When applicable, create a detached task.
+	* com/redhat/fedora/frysk/proc/Task.java: Add "requestRemoval" and
+	a detached constructor.
+	* com/redhat/fedora/frysk/proc/TaskEvent.java: Add RequestRemoval.
+	* com/redhat/fedora/frysk/proc/TaskState.java: Handle
+	RequestRemoval.
+	* prog/kill/detach.c: Make STDOUT unbuffered.  Except in signal
+	handlers, unmask SIGUSR1 and SIGUSR2.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: For TaskCounter and
 	ProcCounter, add LinkedLists "discovered" and "removed" that
 	contain the added and removed tasks/procs/.  Change

@@ -117,6 +117,7 @@ add_thread (int sig)
   static int thread_nr;
   struct thread *thread = threads + thread_nr;
   if (thread->tid == 0) {
+    printf ("+");
     // Don't need much stack, trim it back.
     pthread_attr_t pthread_attr;
     pthread_attr_init (&pthread_attr);
@@ -129,8 +130,7 @@ add_thread (int sig)
     // Wait until start lock is released by the running / created
     // thread.
     recv (&thread->start);
-    printf ("+%d\n", thread->tid);
-    fflush (stdout);
+    printf ("%d\n", thread->tid);
     if (sig != 0)
       signal_manager ();
     thread_nr = (thread_nr + 1) % nr_threads;
@@ -146,11 +146,10 @@ del_thread (int sig)
   static int thread_nr;
   struct thread *thread = threads + thread_nr;
   if (thread->tid != 0) {
-    printf ("-%d\n", thread->tid);
-    fflush (stdout);
+    printf ("-%d", thread->tid);
     send (&thread->stop);
     pthread_join (thread->pthread, NULL);
-    fflush (stdout);
+    printf ("\n");
     if (sig != 0)
       signal_manager ();
     thread_nr = (thread_nr + 1) % nr_threads;
@@ -210,6 +209,9 @@ Operation:\n\
     if (fork () > 0)
       exit (0);
   }
+
+  // Disable buffering; tell the world the pid.
+  setbuf (stdout, NULL);
   printf ("%d\n", getpid ());
 
   // Start any threads, synchronize with each to ensure that it is
@@ -219,9 +221,20 @@ Operation:\n\
   }
 
   // Set up a signal handlers that will either add or release one
-  // thread.
-  signal (SIGUSR1, add_thread);
-  signal (SIGUSR2, del_thread);
+  // thread.  For each mask out the others signals.  Make certain that
+  // the signals are not masked (don't ask, it appears that this
+  // process, when started via vfork / fork / exec, inherits the
+  // original processes mask).
+  struct sigaction action;
+  memset (&action, 0, sizeof (action));
+  sigemptyset (&action.sa_mask);
+  sigaddset (&action.sa_mask, SIGUSR1);
+  sigaddset (&action.sa_mask, SIGUSR2);
+  sigprocmask (SIG_UNBLOCK, &action.sa_mask, NULL);
+  action.sa_handler = add_thread;
+  sigaction (SIGUSR1, &action, NULL);
+  action.sa_handler = del_thread;
+  sigaction (SIGUSR2, &action, NULL);
 
   // Signal that all is ready.
   signal_manager ();
