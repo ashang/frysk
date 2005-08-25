@@ -28,64 +28,112 @@
 #include <limits.h>
 #include <pthread.h>
 
+
+// Very primative message passing mechanism.  Implemented using either
+// mutex or flags.  The lock, by default is held.
+
+int polling;  // Use polling (i.e., non-blocking flags) 
+
+struct msg {
+  pthread_mutex_t mutex;
+  volatile int flag;
+};
+
+static void
+init (struct msg *l)
+{
+  if (polling)
+    l->flag = 0;
+  else {
+    pthread_mutex_init (&l->mutex, NULL);
+    pthread_mutex_lock (&l->mutex);
+  }
+}
+
+static void
+recv (struct msg *l)
+{
+  if (polling)
+    while (!l->flag);
+  else
+    pthread_mutex_lock (&l->mutex);
+}
+
+static void
+send (struct msg *l)
+{
+  if (polling)
+    l->flag = 1;
+  else
+    pthread_mutex_unlock (&l->mutex);
+}
+
+
 _syscall2(int, tkill, pid_t, tid, int, sig);
 
-pid_t pid;
-int sig;
+int bg;  // Run in the background?
+
+struct manager {
+  pid_t pid;
+  int sig;
+} manager;
 
 void
-signal_parent ()
+signal_manager ()
 {
   // Use tkill, instead of kill so that an exact task is signalled.
   // Normal kill can send the signal to "any task" and "any [other]
   // task" may not be ready.
-  if (tkill (pid, sig) < 0) {
+  if (tkill (manager.pid, manager.sig) < 0) {
     perror ("tkill");
     exit (errno);
   }
 }
 
 int nr_threads;
-pthread_t *threads;
-pthread_mutex_t *starts;
-pthread_mutex_t *stops;
-pid_t *tids;
+struct thread {
+  pthread_t pthread;
+  struct msg start;
+  struct msg stop;
+  pid_t tid;
+} *threads;
 
 _syscall0(pid_t,gettid);
 
 void *
 hang (void *np)
 {
-  int n = (int)np;
-  tids[n] = gettid ();
-  pthread_mutex_unlock (&starts[n]);
-  pthread_mutex_lock (&stops[n]);
-  tids[n] = 0;
+  struct thread *thread = np;
+  thread->tid = gettid ();
+  send (&thread->start);
+  recv (&thread->stop);
+  thread->tid = 0;
 }
 
 // Create a new thread (if there is space).
 void
 add_thread (int sig)
 {
-  static int thread;
-  if (tids[thread] == 0) {
+  static int thread_nr;
+  struct thread *thread = threads + thread_nr;
+  if (thread->tid == 0) {
     // Don't need much stack, trim it back.
     pthread_attr_t pthread_attr;
     pthread_attr_init (&pthread_attr);
     pthread_attr_setstacksize (&pthread_attr, PTHREAD_STACK_MIN);
     // [re] initialize all the mutexes.
-    pthread_mutex_init (&starts[thread], NULL);
-    pthread_mutex_lock (&starts[thread]);
-    pthread_mutex_init (&stops[thread], NULL);
-    pthread_mutex_lock (&stops[thread]);
+    init (&thread->start);
+    init (&thread->stop);
     // Create it then wait for it to ack its existance.
-    pthread_create (&threads[thread], &pthread_attr, hang, (void *) thread);
-    pthread_mutex_lock (&starts[thread]); // released by running SUB.
-    printf ("+%d\n", tids[thread]);
+    pthread_create (&thread->pthread, &pthread_attr, hang, (void *) thread);
+    // Wait until start lock is released by the running / created
+    // thread.
+    recv (&thread->start);
+    printf ("+%d\n", thread->tid);
     fflush (stdout);
     if (sig != 0)
-      signal_parent ();
-    thread = (thread + 1) % nr_threads;
+      signal_manager ();
+    thread_nr = (thread_nr + 1) % nr_threads;
   }
   else
     printf ("+\n");
@@ -93,17 +141,19 @@ add_thread (int sig)
 
 // Stop a thread (if one is present).
 void
-del_thread ()
+del_thread (int sig)
 {
-  static int thread;
-  if (tids[thread] != 0) {
-    printf ("-%d\n", tids[thread]);
+  static int thread_nr;
+  struct thread *thread = threads + thread_nr;
+  if (thread->tid != 0) {
+    printf ("-%d\n", thread->tid);
     fflush (stdout);
-    pthread_mutex_unlock (&stops[thread]);
-    pthread_join (threads[thread], NULL);
+    send (&thread->stop);
+    pthread_join (thread->pthread, NULL);
+    fflush (stdout);
     if (sig != 0)
-      signal_parent ();
-    thread = (thread + 1) % nr_threads;
+      signal_manager ();
+    thread_nr = (thread_nr + 1) % nr_threads;
   }
   else
     printf ("-\n");
@@ -120,44 +170,46 @@ main (int argc, char *argv[], char *envp[])
 {
   int n;
 
-  if (argc != 5)
+  if (argc != 7)
     {
-      printf ("\nUsage:\n\n\
-kill/suspend <pid> <signal> <suspend-seconds> <thread-count>\n");
-      printf ("\nOperation:\n\n\
-The program puts itself into the background (by forking and\n\
-then having the parent exit); it then creates <thread-count>\n\
-blocked threads ensuring that each has been started; sends the\n\
-signal <signal> to <pid> indicating that all is ready.\n\
-\n\
-The program exits either after <suspend-seconds> or after all\n\
-threads have exited.\n\
-\n\
-The PID of the main process and all threads are printed to\n\
-standard output.\n");
-      printf ("\nSignals:\n\n\
-SIGUSR1: Cause one thread to be created (max <thread-count>).\n\
-SIGUSR2: Cause one thread to exit\n\
-\n\
-Signal operations, once completed, are acknowledged by sending\n\
-a further <signal> to <pid>.");
+      printf ("\
+Usage:\n\t<pid> <signal> <seconds> <nr-threads> <bg> <polling>\n\
+Where:\n\
+\t<pid> <signal>   Manager process to signal, and signal to use, once\n\
+\t                 an operation has completed (e.g., running, thread\n\
+\t                 created, thread exited).\n\
+\t<seconds>        Number of seconds that the program should run.\n\
+\t<nr-threads>     Number of threads to initially create.\n\
+\t<bg>             Put the program into the background.\n\
+\t<polling>        Use polling (i.e., busy-loops), rather than blocking,\n\
+\t                 when synchronizing threads.\n");
+      printf ("\
+Operation:\n\
+\tThe program creates <nr-threads> and then notifies the Manager\n\
+\tProcess that it is ready using <signal>.  After <seconds> the program\n\
+\texits.  The program will respond to the following signals:\n\
+\t\tSIGUSR1: Create a new thread <thread-count>).\n\
+\t\tSIGUSR2: Delete a thread.\n\
+\tand after the request has been processed, notify the Manager Process\n\
+\twith <signal>.\n");
       exit (1);
     }
 
-  pid = atol (argv[1]);
-  sig = atol (argv[2]);
+  manager.pid = atol (argv[1]);
+  manager.sig = atol (argv[2]);
   int sec = atol (argv[3]);
   nr_threads = atol (argv[4]);
+  bg = atol (argv[5]);
+  polling = atol (argv[6]);
 
   // Over allocate space for all the thread structures.
-  threads = calloc (nr_threads + 1, sizeof (pthread_t));
-  tids = calloc (nr_threads + 1, sizeof (pid_t));
-  starts = calloc (nr_threads + 1, sizeof (pthread_mutex_t));
-  stops = calloc (nr_threads + 1, sizeof (pthread_mutex_t));
+  threads = calloc (nr_threads + 1, sizeof (struct thread));
 
   // Go into the background.
-  if (fork () > 0)
-    exit (0);
+  if (bg) {
+    if (fork () > 0)
+      exit (0);
+  }
   printf ("%d\n", getpid ());
 
   // Start any threads, synchronize with each to ensure that it is
@@ -172,7 +224,7 @@ a further <signal> to <pid>.");
   signal (SIGUSR2, del_thread);
 
   // Signal that all is ready.
-  signal_parent ();
+  signal_manager ();
 
   // Set up a timer so that in SEC seconds, the program is terminated.
   signal (SIGALRM, sigalrm);

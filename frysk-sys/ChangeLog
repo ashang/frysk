@@ -1,3 +1,8 @@
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/Fork.java,
+	com/redhat/fedora/frysk/sys/cni/Fork.cxx: Add method "daemon".
+
 2005-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/cni/Signal.cxx (kill, tkill): Throw
