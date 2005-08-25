@@ -1,7 +1,7 @@
 2005-08-25  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java: Change
-	to use TestLib registerChild and stopEventLoopOnProcessDestroy
+	to use TestLib registerChild and StopEventLoopOnProcDestroy
 	methods.
 	* com/redhat/fedora/frysk/proc/TestAttach.java: Ditto.
 	* com/redhat/fedora/frysk/proc/TestAttachThreads.java: Ditto.
