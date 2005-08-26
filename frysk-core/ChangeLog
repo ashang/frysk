@@ -1,5 +1,13 @@
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Replace requestAttach,
+	and requestDetach with requestAttachedCont, requestAttachedStop
+	and requestDetachedCont.
+	* com/redhat/fedora/frysk/proc/HostState.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java,
+	com/redhat/fedora/frysk/proc/ProcEvent.java,
+	com/redhat/fedora/frysk/proc/ProcState.java: Update to match.
+	
 	* com/redhat/fedora/frysk/proc/Manager.java: Note that
 	Host.procAdded and Host.procRemoved are prefered.
 	* com/redhat/fedora/frysk/proc/Proc.java: Add taskAdded observer.
