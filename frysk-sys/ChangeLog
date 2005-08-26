@@ -1,3 +1,8 @@
+2005-08-26  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/cni/Wait.cxx: Add __WALL flag
+	for regular wait without WNOHANG.
+
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/Fork.java,
