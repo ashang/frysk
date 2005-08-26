@@ -1,3 +1,12 @@
+2005-08-26  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestLib.java (tearDown): Fix
+	to wait indefinitely for all events before verifying that
+	a particular registered child is gone.
+	* com/redhat/fedora/frysk/proc/TestStep.java: Switch over to
+	use TestLib registerChild and StopEventLoopOnProcDestroy
+	methods.
+
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Id.java: Fix "equals", cast to an
