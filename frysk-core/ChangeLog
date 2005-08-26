@@ -1,5 +1,8 @@
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Id.java: New file.
+	* com/redhat/fedora/frysk/proc/TaskId.java: Extend Id.
+
 	* com/redhat/fedora/frysk/proc/Proc.java: Replace requestAttach,
 	and requestDetach with requestAttachedCont, requestAttachedStop
 	and requestDetachedCont.
