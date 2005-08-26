@@ -1,5 +1,7 @@
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcId.java: New.
+
 	* com/redhat/fedora/frysk/proc/Id.java: New file.
 	* com/redhat/fedora/frysk/proc/TaskId.java: Extend Id.
 
