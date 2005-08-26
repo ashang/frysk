@@ -1,5 +1,31 @@
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Id.java: Fix "equals", cast to an
+	Id not TaskId.
+	* com/redhat/fedora/frysk/proc/Host.java,
+	com/redhat/fedora/frysk/proc/HostEvent.java,
+	com/redhat/fedora/frysk/proc/HostState.java,
+	com/redhat/fedora/frysk/proc/Linux.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java,
+	com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/ProcEvent.java,
+	com/redhat/fedora/frysk/proc/TaskEvent.java,
+	com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestRefresh.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Use ProcId instead
+	of TaskId where applicable.
+
 	* com/redhat/fedora/frysk/proc/ProcId.java: New.
 
 	* com/redhat/fedora/frysk/proc/Id.java: New file.
