@@ -1,5 +1,8 @@
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (gij.sh): Add rule to build GIJ run script.
+	Define SOURCEPATH, CLASSPATH, and DBPATH.  Use.
+	
 	* Makefile.gen.sh: Instead of TestJUnits.java, generate variable
 	GEN_JUNIT_TESTS.
 	* TestRunner.sh: New file, generate TestRunner.java.

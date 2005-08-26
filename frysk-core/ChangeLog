@@ -1,3 +1,8 @@
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk-core.db): Add rules.  Fix name of
+	frysk-core.jar, was frysk.core.jar.
+
 2005-08-25  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java: Change

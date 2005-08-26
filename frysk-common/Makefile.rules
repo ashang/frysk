@@ -27,7 +27,7 @@ noinst_LIBRARIES =
 LDADD = 
 check_SCRIPTS =
 TESTS =
-GEN_CLASSPATH = 
+GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
@@ -35,12 +35,19 @@ GEN_BUILT_CLASSES =
 
 # Make up some javacflags
 
+SOURCEPATH = $(subst $(space),:,$(strip $(GEN_SOURCEPATH)))
+CLASSPATH = $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
+DBPATH = $(subst $(space),:,$(strip \
+	$(patsubst %.jar,%.db,$(filter %.jar,$(GEN_CLASSPATH))) \
+	$(foreach dir,$(filter-out %.jar,$(GEN_CLASSPATH)),$(dir)/$(notdir $(dir)).db) \
+	))
+
 JAVAC = javac
 JAVACFLAGS = \
 	-g \
 	-1.4 \
-	-sourcepath $(subst $(space),:,$(strip $(GEN_SOURCEPATH))) \
-	-classpath $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
+	-sourcepath $(SOURCEPATH) \
+	-classpath $(CLASSPATH)
 
 
 # XXX: GCJ: I think there should be a -Wextraneous-throws; I think
@@ -170,7 +177,7 @@ SUFFIXES += .db
 # Build the TestJUnits program.
 
 TestRunner_SOURCES = TestRunner.java
-TestRunner_LINK = \${GCJLINK}
+TestRunner_LINK = ${GCJLINK}
 TestRunner_LDFLAGS = --main=TestRunner
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
@@ -181,3 +188,14 @@ LDADD += ../frysk-imports/libjunit.a
 TestRunner.java: common/TestRunner.sh Makefile
 	$(srcdir)/common/TestRunner.sh $(GEN_JUNIT_TESTS) > TestRunner.tmp
 	mv  TestRunner.tmp  TestRunner.java
+
+
+# Build a wrapper script for GIJ so that running the interpreter is
+# easier.
+noinst_PROGRAMS += gij.sh
+gij.sh: Makefile
+	rm -f gij.tmp
+	echo '#!/bin/sh' >> gij.tmp
+	echo 'gij --cp $(CLASSPATH) -Dgnu.gcj.precompiled.db.path=$(DBPATH) "$$@"' >> gij.tmp
+	mv gij.tmp gij.sh
+	chmod a+x gij.sh
