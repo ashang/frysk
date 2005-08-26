@@ -1,3 +1,20 @@
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/Manager.java: Note that
+	Host.procAdded and Host.procRemoved are prefered.
+	* com/redhat/fedora/frysk/proc/Proc.java: Add taskAdded observer.
+	* com/redhat/fedora/frysk/proc/Host.java: Add procAdded and
+	procRemoved observers.
+	* com/redhat/fedora/frysk/proc/Task.java,
+	com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/TestClone.java,
+	com/redhat/fedora/frysk/proc/TestExec.java,
+	com/redhat/fedora/frysk/proc/TestFork.java,
+	com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/TestProcGet.java,
+	com/redhat/fedora/frysk/proc/TestRefresh.java,
+	com/redhat/fedora/frysk/proc/TestRun.java: Use.
+
 2005-08-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk-core.db): Add rules.  Fix name of
@@ -54,11 +71,11 @@
 	ProcCounter, add LinkedLists "discovered" and "removed" that
 	contain the added and removed tasks/procs/.  Change
 	numberDiscovered and numberRemoved to methods.
-	* frysk-core/com/redhat/fedora/frysk/proc/TestClone.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestExec.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestFork.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestLib.java,
-	frysk-core/com/redhat/fedora/frysk/proc/TestRun.java: Update.
+	* com/redhat/fedora/frysk/proc/TestClone.java,
+	com/redhat/fedora/frysk/proc/TestExec.java,
+	com/redhat/fedora/frysk/proc/TestFork.java,
+	com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/TestRun.java: Update.
 
 	* com/redhat/fedora/frysk/proc/TestLib.java: Refactor
 	DetachedChild into Child, DetachedChild, and DaemonChild.
@@ -202,15 +219,12 @@
 
 	* com/redhat/fedora/frysk/proc/Linux.java: Implement Proc
 	.sendRefresh".  In Proc .sendAttach, also add the main task.
-	* frysk-core/com/redhat/fedora/frysk/proc/Proc.java: Add
-	requestRefresh, and sendRefresh.  In Proc, only add the main task
-	when attached.
-	* frysk-core/com/redhat/fedora/frysk/proc/ProcEvent.java: Add
+	* com/redhat/fedora/frysk/proc/Proc.java: Add requestRefresh, and
+	sendRefresh.  In Proc, only add the main task when attached.
+	* com/redhat/fedora/frysk/proc/ProcEvent.java: Add RequestRefresh.
+	* com/redhat/fedora/frysk/proc/ProcState.java: Handle
 	RequestRefresh.
-	* frysk-core/com/redhat/fedora/frysk/proc/ProcState.java: Handle
-	RequestRefresh.
-	* frysk-core/com/redhat/fedora/frysk/proc/TestHost.java: Add
-	testProcRefresh.
+	* com/redhat/fedora/frysk/proc/TestHost.java: Add testProcRefresh.
 
 	* com/redhat/fedora/frysk/proc/TestPaused.java,
 	com/redhat/fedora/frysk/proc/TestProcStop.java,
