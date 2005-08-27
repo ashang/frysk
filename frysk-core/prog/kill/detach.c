@@ -27,6 +27,26 @@
 #include <linux/unistd.h>
 #include <limits.h>
 #include <pthread.h>
+#include <string.h>
+
+
+// Simple sleep for roughly SECONDS and then exit.
+
+static void
+sigalrm ()
+{
+  exit (0);
+}
+
+void
+snooze (int seconds)
+{
+  signal (SIGALRM, sigalrm);
+  alarm (seconds);
+  sigset_t mask;
+  sigemptyset (&mask);
+  while (1) sigsuspend (&mask);
+}
 
 
 // Very primative message passing mechanism.  Implemented using either
@@ -158,12 +178,6 @@ del_thread (int sig)
     printf ("-\n");
 }
 
-void
-sigalrm ()
-{
-  exit (0);
-}
-
 int
 main (int argc, char *argv[], char *envp[])
 {
@@ -240,8 +254,5 @@ Operation:\n\
   signal_manager ();
 
   // Set up a timer so that in SEC seconds, the program is terminated.
-  signal (SIGALRM, sigalrm);
-  alarm (sec);
-
-  while (1) sleep (sec * 2);
+  snooze (sec);
 }

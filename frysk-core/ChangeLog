@@ -1,5 +1,11 @@
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java: Make DetachedChild a
+	sub-class of DaemonChild.  Add ZombieChild.
+	* prog/kill/detach.c (snooze): Add, use.
+	* prog/kill/zombie.c: New file.
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Update.
+
 	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add
 	testRepeatedHostRefresh.  Add class ChildTracker, use.
 	* com/redhat/fedora/frysk/proc/LinuxHost.java: In sendRefresh, use
