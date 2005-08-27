@@ -1,3 +1,8 @@
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/cni/Fork.cxx: For daemon, reap the
+	original child's pid.
+
 2005-08-26  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/cni/Wait.cxx: Add __WALL flag
