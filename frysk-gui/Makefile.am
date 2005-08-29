@@ -21,7 +21,7 @@ include common/Makefile.rules
 include Makefile.gen
 
 
-GEN_CLASSPATH += $(top_builddir)/../frysk-core/frysk.core.jar
+GEN_CLASSPATH += $(top_builddir)/../frysk-core/frysk-core.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys/frysk-sys.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/antlr.jar
 GEN_CLASSPATH += $(JAVAGNOME_JAR) 
@@ -55,6 +55,7 @@ com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0
 com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GLADE_JAVA_LIBS)
 com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GNOME_JAVA_LIBS) 
 com_redhat_fedora_frysk_gui_Procpop_LDADD += $(CAIRO_JAVA_LIBS) 
+com_redhat_fedora_frysk_gui_Procpop_LDADD += $(JGCOMMON_LIBS)
 
 GCJFLAGS += -fjni 
 
@@ -69,7 +70,7 @@ com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(GTK_JAVA_LIBS) -lgtkjn
 com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(GLADE_JAVA_LIBS)
 com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(GNOME_JAVA_LIBS) 
 com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(CAIRO_JAVA_LIBS) 
-
+com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(JGCOMMON_LIBS)
 
 
 noinst_PROGRAMS += com/redhat/fedora/frysk/gui/test/ParserTest
@@ -81,4 +82,6 @@ com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += ../frysk-core/libfrysk-core
 com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
 com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(GLADE_JAVA_LIBS)
 com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(GNOME_JAVA_LIBS) 
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(CAIRO_JAVA_LIBS) 
+com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(CAIRO_JAVA_LIBS)
+com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(JGCOMMON_LIBS)
+
