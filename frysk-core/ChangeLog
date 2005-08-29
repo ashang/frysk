@@ -1,6 +1,15 @@
 2005-08-29  Andrew Cagney  <cagney@redhat.com>
 
-
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add
+	"testParentChild".
+	* com/redhat/fedora/frysk/proc/Proc.java: Add constructor
+	parameterized by Host, ProcId, and Stat.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Add "updateProc".
+	Use LinuxProc.Stat to get the parent ID.  Update a process parent
+	first.
+	* com/redhat/fedora/frysk/proc/LinuxProc.java: Add "Stat".  Add
+	constructor parameterized by Host, ProcId, and Stat.
+	
 	* com/redhat/fedora/frysk/proc/Linux.java: Break up.
 	* com/redhat/fedora/frysk/proc/LinuxProc.java: New.
 	* com/redhat/fedora/frysk/proc/LinuxTask.java: New.
