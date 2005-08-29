@@ -1,3 +1,13 @@
+2005-08-29  Andrew Cagney  <cagney@redhat.com>
+
+
+	* com/redhat/fedora/frysk/proc/Linux.java: Break up.
+	* com/redhat/fedora/frysk/proc/LinuxProc.java: New.
+	* com/redhat/fedora/frysk/proc/LinuxTask.java: New.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java,
+	com/redhat/fedora/frysk/proc/I386Linux.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Update.
+
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestLib.java: Make DetachedChild a
