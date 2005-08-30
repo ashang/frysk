@@ -1,5 +1,10 @@
 2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestI386Modify.java: Use
+	runPolling to put upper limit on time for test to complete.
+
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
 	* Makefile.am: Add x86modify test.
 	* com/redhat/fedora/frysk/proc/I386Linux.java: Specify
 	little-endianness for generic memory.
