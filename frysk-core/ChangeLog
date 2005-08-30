@@ -1,3 +1,8 @@
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestLib.java (tearDown): Add
+	comments regarding use of SIGCONT.
+
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* prog/kill/zombie.c: When the child detects that the parent
