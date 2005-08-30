@@ -16,10 +16,11 @@
 // along with FRYSK; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-/* Create zombie process.  */
+/* Create zombie or daemon process.  */
 
 #include <sys/types.h>
 #include <linux/unistd.h>
+#include <sys/prctl.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <errno.h>
@@ -27,7 +28,7 @@
 #include <string.h>
 
 
-// Simple sleep for roughly SECONDS and then exit.
+// Simple snooze for roughly SECONDS and then exit.
 
 void
 sigalrm (int sig)
@@ -59,6 +60,15 @@ notify_manager ()
   tkill (manager.pid, manager.sig);
 }
 
+void
+parent_died ()
+{
+  // Only notify the manager when the parent [correctly] switched to
+  // process one.
+  if (getppid () == 1)
+    notify_manager ();
+}
+
 pid_t proc;
 int seconds;
 
@@ -71,8 +81,12 @@ add_proc (int sig)
     proc = fork ();
     switch (proc) {
     case 0:
-      // The running child notifies the manager, once that is done
-      // snooze.
+      // Set up a handler that notifies the manager when the parent
+      // exits.
+      signal (SIGHUP, parent_died);
+      prctl (PR_SET_PDEATHSIG, SIGHUP);
+      // It's the responsibility of the running child to notify the
+      // manager; the child does this when it is ready.
       notify_manager ();
       snooze (seconds);
     case -1:
@@ -119,7 +133,9 @@ Operation:\n\
 \t\tSIGUSR1: Create a child process.\n\
 \t\tSIGUSR2: Delete a child process (the process isn't reaped).\n\
 \tand after the request has been processed, notify the Manager Process\n\
-\twith <signal>.\n");
+\twith <signal>.\n\
+\tIn addition, the child will signal the manager when it detects that\n\
+\tits parent has changed (turning it into a daemon).\n");
       exit (1);
   }
 

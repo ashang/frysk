@@ -1,3 +1,17 @@
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* prog/kill/zombie.c: When the child detects that the parent
+	has exited, notify the manager.
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add
+	ZombieChild.fryParent.
+	* com/redhat/fedora/frysk/proc/LinuxProc.java: Don't crash when a
+	process has no tasks.
+	* com/redhat/fedora/frysk/proc/LinuxHost.java: Handle a process
+	becomming a daemon (re-parenting).  Refresh all processes not just
+	the added ones.
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add
+	testRefreshDaemon.
+
 2005-08-29  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add
