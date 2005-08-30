@@ -1,3 +1,7 @@
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (LIBJUNIT): Define.
+
 2005-08-19  Andrew Cagney  <cagney@redhat.com>
 
 	* jline/src/jline/ConsoleOperations.java: Delete unused import of

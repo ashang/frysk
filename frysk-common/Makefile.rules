@@ -183,7 +183,8 @@ TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_BUILT_CLASSES += TestRunner.classes
-LDADD += ../frysk-imports/libjunit.a
+LDADD += $(LIBJUNIT)
+LIBJUNIT ?= ../frysk-imports/libjunit.a
 
 TestRunner.java: common/TestRunner.sh Makefile
 	$(srcdir)/common/TestRunner.sh $(GEN_JUNIT_TESTS) > TestRunner.tmp

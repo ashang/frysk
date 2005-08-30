@@ -16,6 +16,9 @@
 # along with FRYSK; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+# Force use of libjunit.a in this directory.
+LIBJUNIT = libjunit.a
+
 include common/Makefile.rules
 include Makefile.gen
 
