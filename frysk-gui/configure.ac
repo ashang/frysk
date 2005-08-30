@@ -26,6 +26,8 @@ AC_PROG_CC(gcc)
 AM_PROG_GCJ(gcj)
 AC_PROG_RANLIB(ranlib)
 
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lib/pkgconfig
+
 ### gtk-java #####################
 PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
 AC_SUBST(GTK_CFLAGS)
