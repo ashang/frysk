@@ -1,3 +1,8 @@
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestI386Modify.java: Disable for
+	moment.
+
 2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestI386Modify.java: Use
