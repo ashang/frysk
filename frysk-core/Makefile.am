@@ -76,3 +76,5 @@ LDADD += ../frysk-imports/libjunit.a
 
 prog_x86isa_x86regs_SOURCES = prog/x86isa/x86regs.S
 noinst_PROGRAMS += prog/x86isa/x86regs
+prog_x86isa_x86modify_SOURCES = prog/x86isa/x86modify.S
+noinst_PROGRAMS += prog/x86isa/x86modify

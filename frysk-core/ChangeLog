@@ -1,3 +1,13 @@
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Makefile.am: Add x86modify test.
+	* com/redhat/fedora/frysk/proc/I386Linux.java: Specify
+	little-endianness for generic memory.
+	* com/redhat/fedora/frysk/proc/Register.java: Add put
+	method.
+	* com/redhat/fedora/frysk/proc/TestI386Modify.java: New test.
+	* prog/x86isa/x86modify.S: New assembler test.
+
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TaskState.java: Rename state "dead"
