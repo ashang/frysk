@@ -1,5 +1,10 @@
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java: Update to match
+	changes to Wait.java, vis rename wait to waitAll, waitNohang to
+	waitAllNoHang, signaled to terminated, and zombied to disappeared.
+
 	* com/redhat/fedora/frysk/proc/TestProcGet.java: Add
 	testGetCommand.
 	* com/redhat/fedora/frysk/proc/Proc.java: Make getCommand abstract.

@@ -1,3 +1,9 @@
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/sys/Wait.java: Rename wait to waitAll,
+	waitNohang to waitAllNoHang, signaled to terminated, and zombied
+	to disappeared.
+
 2005-08-26  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/cni/Fork.cxx: For daemon, reap the
