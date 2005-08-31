@@ -1,5 +1,13 @@
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Add procDestroyed
+	observer.  Change procRemoved to a simple TaskObserver.
+	* com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java: Update.
+	
 	* com/redhat/fedora/frysk/proc/TestI386Modify.java: Disable for
 	moment.
 
