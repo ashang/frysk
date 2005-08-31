@@ -1,3 +1,28 @@
+2005-08-31  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestAttach.java: Change to not
+	use static variables or classes.
+	* com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestAttachThreads.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestExiting.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestGoAndGo.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestI386Modify.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestI386Regs.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestPaused.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestProcStopAndStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStep.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStopAndGo.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestStopAndStop.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestSyscall.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestSyscall2.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestSyscallOpen.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestTerminated.java: Ditto.
+	* com/redhat/fedora/frysk/proc/TestUnpaused.java: Ditto.
+
 2005-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk-core.jar, frysk-core.db, libfrysk-core.a):
