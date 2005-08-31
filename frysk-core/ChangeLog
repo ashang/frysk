@@ -1,3 +1,13 @@
+2005-08-31  Tarun Khanna  <tkhanna@redhat.com>
+
+	* com/redhat/fedora/frysk/expr/cpp.g: Minor modifications to
+	add custom exception handling in case of parsing errors.
+	* com/redhat/fedora/frysk/expr/RunCppParser.java: Cleaned up
+	the code to handle exceptions correctly.
+	* com/redhat/fedora/frysk/expr/RunCppParser.java: Added custom
+	exception handling to handle parsing errors generated due to
+	incorrect expressions entered by the users.
+
 2005-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TaskState.java: Add method
