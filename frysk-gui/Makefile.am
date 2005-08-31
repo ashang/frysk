@@ -50,8 +50,8 @@ noinst_PROGRAMS += com/redhat/fedora/frysk/gui/Procpop
 com_redhat_fedora_frysk_gui_Procpop_SOURCES += $(GEN_SOURCES) 
 com_redhat_fedora_frysk_gui_Procpop_CLASSPATH = $(GEN_CLASSPATH) 
 
-com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/opt/lib
-com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/to/scratch/swagiaal/frysk/frysk-gui/EggTrayIcon 
+#com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/opt/lib
+#com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/to/scratch/swagiaal/frysk/frysk-gui/EggTrayIcon 
 #com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/opt/lib/libgtkjava-2.7.so  # -LEggTrayIcon
 #om_redhat_fedora_frysk_gui_Procpop_LDFLAGS =  $(GTK_JAVA_LIBS) #-L/opt/lib -lgtkjava #$(GTK_JAVA_LIBS)
 
