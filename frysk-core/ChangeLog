@@ -1,5 +1,10 @@
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestRefresh.java: Add
+	testRefreshZombie.
+	* com/redhat/fedora/frysk/proc/TaskState.java: When requestRemove,
+	and a process with no threads, do not remove it from its parent.
+	
 	* com/redhat/fedora/frysk/proc/Proc.java: Move code removing a
 	process with no tasks from here ...
 	* com/redhat/fedora/frysk/proc/TaskState.java: ... to here.
