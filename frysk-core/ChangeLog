@@ -1,5 +1,9 @@
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java: Move code removing a
+	process with no tasks from here ...
+	* com/redhat/fedora/frysk/proc/TaskState.java: ... to here.
+
 	* com/redhat/fedora/frysk/proc/Proc.java: Move calls to
 	taskDestroyed.notify from here ...
 	* com/redhat/fedora/frysk/proc/TaskState.java: To here.
