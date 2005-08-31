@@ -20,29 +20,6 @@
 include common/Makefile.rules
 include Makefile.gen
 
-
-frysk-core.jar: $(GEN_BUILT_CLASSES)
-	cat $^ /dev/null \
-		| sed -e '/^#/d' -e 's,\.,/,g' -e 's,$$,.class,' \
-		| fastjar -@ -cf $@
-noinst_PROGRAMS += frysk-core.jar
-
-LDADD += libfrysk-core.a
-libfrysk_core_a_SOURCES = $(GEN_SOURCES)
-noinst_LIBRARIES += libfrysk-core.a
-
-libfrysk-core.so: libfrysk-core.a
-noinst_PROGRAMS += libfrysk-core.so
-
-frysk-core.db: libfrysk-core.so frysk-core.jar
-	gcj-dbtool -n $@.tmp
-	gcj-dbtool -a $@.tmp frysk-core.jar libfrysk-core.so
-	mv $@.tmp $@
-noinst_PROGRAMS += frysk-core.db
-
-
-
-
 GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParser.java
 GEN_SOURCES += com/redhat/fedora/frysk/expr/CppLexer.java
 GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParserTokenTypes.java
@@ -63,7 +40,7 @@ com/redhat/fedora/frysk/expr/CppParser.java: $(srcdir)/com/redhat/fedora/frysk/e
 	antlr -o com/redhat/fedora/frysk/expr $(srcdir)/com/redhat/fedora/frysk/expr/cpp.g
 	echo $(srcdir)
 
-GEN_CLASSPATH += ../frysk-sys
+GEN_CLASSPATH += ../frysk-sys/$(GEN_CLASSDIR)
 GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar

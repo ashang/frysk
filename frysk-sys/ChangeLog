@@ -1,3 +1,8 @@
+2005-08-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: (frysk-sys.jar, frysk-sys.db, libfrysk-core.a):
+	Delete rules, handled by common/Makefile.gen.sh.
+
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/sys/Wait.java: Rename wait to waitAll,

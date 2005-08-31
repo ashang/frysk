@@ -1,3 +1,9 @@
+2005-08-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh, Makefile.rules: Send stdout direct to
+	Makefile.gen.  Generate rules for a directory wide .jar, .so, .a,
+	and .db file.  Store classes in GEN_CLASSDIR a.k.a. classes.
+
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (TestRunner_LDFLAGS): Add LIBJUNIT.

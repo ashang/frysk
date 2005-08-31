@@ -32,6 +32,7 @@ GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
 GEN_BUILT_CLASSES =
+GEN_CLASSDIR = classes
 
 # Make up some javacflags
 
@@ -39,7 +40,7 @@ SOURCEPATH = $(subst $(space),:,$(strip $(GEN_SOURCEPATH)))
 CLASSPATH = $(subst $(space),:,$(strip $(GEN_CLASSPATH)))
 DBPATH = $(subst $(space),:,$(strip \
 	$(patsubst %.jar,%.db,$(filter %.jar,$(GEN_CLASSPATH))) \
-	$(foreach dir,$(filter-out %.jar,$(GEN_CLASSPATH)),$(dir)/$(notdir $(dir)).db) \
+	$(foreach dir,$(patsubst %/$(GEN_CLASSDIR),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
 	))
 
 JAVAC = javac
@@ -107,14 +108,19 @@ BUILT_SOURCES += $(SHJAVA_BUILT)
 # jv-scan occasionally gets it wrong generating extra classes, work
 # around this by checking that each class really exists.
 
+# Need to store the .class files in a separate directory as otherwize
+# GCJ will include those instead of the original .java files.
+
 SUFFIXES += .classes
 .java.classes:
-	rm -f $*.class $*\$$*.class
-	$(JAVAC) -d . $(JAVACFLAGS)  $<
+	mkdir -p $(GEN_CLASSDIR)
+	rm -f $(GEN_CLASSDIR)/$*.class $(GEN_CLASSDIR)/$*\$$*.class
+	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) $<
 	echo '# $<' > $*.classes.tmp
-	ls $*.class $*\$$*.class 2>/dev/null | \
-		sed -e 's,.class$$,,' | \
-		sort -f > $*.classes.tmp
+	( cd $(GEN_CLASSDIR) && ls $*.class $*\$$*.class 2>/dev/null ) \
+		| sed -e 's,.class$$,,' \
+		| sort -f \
+		> $*.classes.tmp
 	mv -f $*.classes.tmp $*.classes
 #	jv-scan --list-class '$<' | tr '[ ]' '[\n]' | \
 #		while read class ; do \
@@ -126,11 +132,17 @@ SUFFIXES += .classes
 #			fi \
 #		done >> $*.classes.tmp
 
+# clean up the mess
+clean-local: clean-class-files
+.PHONY: clean-class-files
+clean-class-files:
+	rm -rf $(GEN_CLASSDIR)
+
 # Generate a .h file (using CNI) from the .classes file.
 
 GCJH = $(GCJ)h
 .classes.h:
-	$(GCJH) -I. $(GCJHFLAGS) `sed -e '/^#/d' $<`
+	$(GCJH) -I$(GEN_CLASSDIR) $(GCJHFLAGS) `sed -e '/^#/d' $<`
 
 
 # Shared library rule (for moment assume that .a contains PIC code).
@@ -197,6 +209,6 @@ noinst_PROGRAMS += gij.sh
 gij.sh: Makefile
 	rm -f gij.tmp
 	echo '#!/bin/sh' >> gij.tmp
-	echo 'gij --cp $(CLASSPATH) -Dgnu.gcj.precompiled.db.path=$(DBPATH) "$$@"' >> gij.tmp
+	echo 'gij --cp $(GEN_CLASSDIR):$(CLASSPATH) -Dgnu.gcj.precompiled.db.path=$(DBPATH) "$$@"' >> gij.tmp
 	mv gij.tmp gij.sh
 	chmod a+x gij.sh

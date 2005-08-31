@@ -18,9 +18,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 if test $# -eq 0 ; then
-    echo "Usage: $0 <directory> ... <path-to-jar> ..." 1>&2
+    echo "Usage: $0 <directory> ... <path-to-jni-jar> ..." 1>&2
     exit 1
 fi
+
 dirs=
 jars=
 while test $# -gt 0
@@ -34,27 +35,24 @@ done
 dirs=`echo ${dirs}`
 jars=`echo ${jars}`
 
+
 # Generate the list of source files
 
 echo Creating Makefile.gen from directories ${dirs} ...
+exec > Makefile.gen
 
-rm -f Makefile.gen
+
 
 # Accumulate all the sources, each file type with its own category.
 
 print_header ()
 {
-    cat <<EOF >> Makefile.gen
+    cat <<EOF
 
 # Re-generate using "make autogen"
 # $@
 EOF
-    echo "$@"
-}
-
-print ()
-{
-    echo "$@" >> Makefile.gen
+    echo "$@" 1>&2
 }
 
 has_main ()
@@ -66,9 +64,9 @@ has_main ()
 }
 
 
-print_header Makefile.gen.in arguments
-print GEN_DIRS = ${dirs}
-print GEN_JARS = ${jars}
+print_header Makefile.gen.in arguments: ${dirs} ${jars}
+echo GEN_DIRS = ${dirs}
+echo GEN_JARS = ${jars}
 
 
 # Generate rules to compile any .jar files
@@ -78,9 +76,9 @@ do
   test ${jar} = x && continue
   b=`basename ${jar} .jar`
   B=`echo $b | tr '[a-z]' '[A-Z]'`
-  print ""
+  echo ""
   print_header "... $jar"
-  cat <<EOF >> Makefile.gen
+  cat <<EOF
 ${B}_JAR = ${jar}
 ${b}.jar: \$(${B}_JAR)
 	cp \$(${B}_JAR) .
@@ -97,23 +95,56 @@ done
 
 
 # If there are no directories, bail here.
+
 test x"${dirs}" = x && exit 0
 
-print GEN_SOURCES =
+
+echo GEN_SOURCES =
+ 
+
+# Generate rule to build this directory's .jar, .a, and .so file.
+pwd=`pwd`
+dir=`basename $pwd`
+_dir=`echo ${dir} | sed -e 's,[-/],_,g'`
+print_header "... creating rule for ${dir}.db et.al."
+cat <<EOF
+${dir}.jar: \$(GEN_BUILT_CLASSES)
+	cat \$^ /dev/null \
+		| sed -e '/^#/d' -e 's,\.,/,g' -e 's,\$\$,.class,' \
+		| ( cd \$(GEN_CLASSDIR) && fastjar -@ -cf \$@ )
+	mv \$(GEN_CLASSDIR)/\$@ \$@
+noinst_PROGRAMS += ${dir}.jar
+LDADD += lib${dir}.a
+lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
+noinst_LIBRARIES += lib${dir}.a
+lib${dir}.so: lib${dir}.a
+noinst_PROGRAMS += lib${dir}.so
+${dir}.db: lib${dir}.so ${dir}.jar
+	gcj-dbtool -n \$@.tmp
+	gcj-dbtool -a \$@.tmp ${dir}.jar lib${dir}.so
+	mv \$@.tmp \$@
+noinst_PROGRAMS += ${dir}.db
+EOF
+
+
+
+
+
 
 for suffix in .mkjava .shjava ; do
     print_header "... ${suffix}"
     SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
-    print "GEN_BUILT${SUFFIX} ="
+    echo "GEN_BUILT${SUFFIX} ="
     find ${dirs} \
 	-name "*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
-	print "GEN_SOURCES += ${file}"
-	print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
-	print "${d}/${b}.classes: ${d}/${b}.o"
-	print "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
+	echo "GEN_SOURCES += ${file}"
+	echo "GEN_BUILT_CLASSES += ${d}/${b}.classes"
+	echo "CLEANFILES += ${d}/${b}.classes"
+	echo "${d}/${b}.classes: ${d}/${b}.o"
+	echo "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
     done
 done
 
@@ -131,13 +162,13 @@ for suffix in .java ; do
 	class=`echo ${name} | tr '[/]' '[.]'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
-	print "GEN_BUILT_CLASSES += ${d}/${b}.classes"
-	print "GEN_SOURCES += ${file}"
+	echo "GEN_BUILT_CLASSES += ${d}/${b}.classes"
+	echo "GEN_SOURCES += ${file}"
 	if has_main ${file} ; then
-	    print "${name_}_SOURCES ="
-	    print "${name_}_LINK = \$(GCJLINK)"
-	    print "noinst_PROGRAMS += ${name}"
-	    print "${name_}_LDFLAGS = --main=${class}"
+	    echo "${name_}_SOURCES ="
+	    echo "${name_}_LINK = \$(GCJLINK)"
+	    echo "noinst_PROGRAMS += ${name}"
+	    echo "${name_}_LDFLAGS = --main=${class}"
 	fi
     done
 done
@@ -154,14 +185,14 @@ for suffix in .cxx .c ; do
 	name=${d}/${b}
 	name_=`echo ${name} | tr '[/]' '[_]'`
 	if has_main ${file} ; then
-	    print "${name_}_SOURCES = ${file}"
-	    test ${suffix} = .cxx && print "${name_}_LINK = \$(CXXLINK)"
-	    print "noinst_PROGRAMS += ${name}"
+	    echo "${name_}_SOURCES = ${file}"
+	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
+	    echo "noinst_PROGRAMS += ${name}"
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
-		print "${name_}_LDADD = -lpthread"
+		echo "${name_}_LDADD = -lpthread"
 	    fi
 	else
-	    print "GEN_SOURCES += ${file}"
+	    echo "GEN_SOURCES += ${file}"
 	fi
     done
 done
@@ -173,7 +204,7 @@ done
 # automatically generate the inner Class$Nested class.
 
 print_header "... GEN_BUILT_H  += *.cxx=.h"
-print "GEN_BUILT_H = \\"
+echo "GEN_BUILT_H = \\"
 find ${dirs} -name 'cni' -print | while read d
 do
     find $d -name '*.cxx' -print
@@ -183,11 +214,10 @@ done \
     | sort -u \
     | while read c
 do
-    test -r $c.java && print "	$c.h \\"
+    test -r $c.java && echo "	$c.h \\"
 done
-print '	$(ZZZ)'
-print 'BUILT_SOURCES += $(GEN_BUILT_H)'
-print 'CLEANFILES += $(GEN_BUILT_H)'
+echo '	$(ZZZ)'
+echo 'BUILT_SOURCES += $(GEN_BUILT_H)'
 
 
 
@@ -196,13 +226,13 @@ print 'CLEANFILES += $(GEN_BUILT_H)'
 # list.
 
 print_header "... GEN_JUNIT_TESTS += *.java"
-print GEN_JUNIT_TESTS =
+echo GEN_JUNIT_TESTS =
 find ${dirs} \
     -name 'TestLib.*' -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read test ; do
     has_main ${test} && continue
-    print GEN_JUNIT_TESTS += ${test}
+    echo GEN_JUNIT_TESTS += ${test}
 done
 
 
@@ -217,6 +247,6 @@ find ${dirs} \
 	b=`basename ${file} .java`
 	main=${d}/${b}
 	main_=`echo ${main} | tr '[/]' '[_]'`
-	print "TESTS += ${main}"
+	echo "TESTS += ${main}"
     fi
 done

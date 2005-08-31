@@ -18,22 +18,3 @@
 
 include common/Makefile.rules
 include Makefile.gen
-
-frysk-sys.jar: $(GEN_BUILT_CLASSES)
-	cat $^ /dev/null \
-		| sed -e '/^#/d' -e 's,\.,/,g' -e 's,$$,.class,' \
-		| fastjar -@ -cf $@
-noinst_PROGRAMS += frysk-sys.jar
-
-LDADD += libfrysk-sys.a
-libfrysk_sys_a_SOURCES = $(GEN_SOURCES)
-noinst_LIBRARIES += libfrysk-sys.a
-
-libfrysk-sys.so: libfrysk-sys.a
-noinst_PROGRAMS += libfrysk-sys.so
-
-frysk-sys.db: libfrysk-sys.so frysk-sys.jar
-	gcj-dbtool -n $@.tmp
-	gcj-dbtool -a $@.tmp frysk-sys.jar libfrysk-sys.so
-	mv $@.tmp $@
-noinst_PROGRAMS += frysk-sys.db
