@@ -3,6 +3,7 @@
 	<name>frysk-sys</name>
 	<comment></comment>
 	<projects>
+		<project>frysk-imports</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

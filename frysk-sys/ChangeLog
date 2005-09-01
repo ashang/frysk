@@ -1,5 +1,8 @@
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
+	* .project: Add dependency on frysk-imports.
+	*..cvsignore: Add bin and classes.
+
 	* build.xml: Run ./autogen.sh and ./configure as arguments to
 	"sh".
 
