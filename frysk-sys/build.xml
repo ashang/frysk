@@ -5,9 +5,13 @@
 	<available property="makefile-available" file="Makefile"/>
 	<available property="configure-available" file="configure"/>
 	<target name="makefile" depends="configure" unless="makefile-available">
-		<exec executable="./configure"/>
+		<exec executable="/bin/sh">
+			<arg line="./configure"/>
+		</exec>
 	</target>
 	<target name="configure" unless="configure-available">
-		<exec executable="./autogen.sh"/>
+		<exec executable="/bin/sh">
+			<arg line="./autogen.sh">
+		</exec>
 	</target>
 </project>

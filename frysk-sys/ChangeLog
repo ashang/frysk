@@ -1,3 +1,8 @@
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* build.xml: Run ./autogen.sh and ./configure as arguments to
+	"sh".
+
 2005-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: (frysk-sys.jar, frysk-sys.db, libfrysk-core.a):
