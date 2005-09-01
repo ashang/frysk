@@ -1,5 +1,15 @@
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestI386Modify.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java: Remove try / catch
+	wrapping Host.requestCreateProc.
+
 	* com/redhat/fedora/frysk/proc/TestLib.java: Add methods
 	assertRunUntilStop and runPending.
 	* com/redhat/fedora/frysk/proc/TestAttach.java,
