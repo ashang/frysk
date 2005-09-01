@@ -142,7 +142,6 @@ for suffix in .mkjava .shjava ; do
 	b=`basename ${file} ${suffix}`
 	echo "GEN_SOURCES += ${file}"
 	echo "GEN_BUILT_CLASSES += ${d}/${b}.classes"
-	echo "CLEANFILES += ${d}/${b}.classes"
 	echo "${d}/${b}.classes: ${d}/${b}.o"
 	echo "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
     done

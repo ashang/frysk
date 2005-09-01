@@ -1,3 +1,9 @@
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Do not set CLEANFILES.
+	* Makefile.rules (CLEANFILES): Add $(GEN_BUILT_CLASSES).
+	(clean-local-po): Add clean-local rule to empty the .Po files.
+
 2005-08-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh, Makefile.rules: Send stdout direct to

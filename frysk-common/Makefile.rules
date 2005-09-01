@@ -20,7 +20,7 @@
 
 SUFFIXES =
 BUILT_SOURCES = $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES) $(GEN_BUILT_CLASSES)
 noinst_PROGRAMS =
 bin_PROGRAMS =
 noinst_LIBRARIES =
@@ -195,6 +195,7 @@ TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_BUILT_CLASSES += TestRunner.classes
+CLEANFILES += TestRunner.java
 LDADD += $(LIBJUNIT)
 LIBJUNIT ?= ../frysk-imports/libjunit.a
 
@@ -212,3 +213,12 @@ gij.sh: Makefile
 	echo 'gij --cp $(GEN_CLASSDIR):$(CLASSPATH) -Dgnu.gcj.precompiled.db.path=$(DBPATH) "$$@"' >> gij.tmp
 	mv gij.tmp gij.sh
 	chmod a+x gij.sh
+
+# When it comes to clean, automake forgets to scrub the .Po files
+# (which contain built dependencies).  After a file rename or similar,
+# this can result in a .Po file refering to a non-existant file.  Hack
+# around it by emptying all the .Po files.
+clean-local: clean-local-po
+.PHONY: clean-local-po
+clean-local-po:
+	find * -name '*.Po' -exec cp /dev/null \{\} \;
