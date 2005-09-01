@@ -2,3 +2,5 @@
 *.h
 Makefile.in
 Makefile
+PASS
+a.out

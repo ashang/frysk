@@ -4,3 +4,12 @@ autom4te.cache
 configure
 Makefile.gen
 TestJUnits.java
+Makefile
+config.log
+config.status
+*.jar
+*.db
+TestRunner
+TestRunner.java
+gij.sh
+.deps

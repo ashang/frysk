@@ -1,5 +1,10 @@
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
+	* .externalToolBuilders/AntBuilder.launch, .classpath, .project,
+	build.xml, tests/anoncall/.cvsignore: New files.
+	* .cvsignore, jargs/.cvsignore, jline/.cvsignore,
+	tests/cniinner/.cvsignore: Add more files.
+
 	* configure.ac, Makefile.am: Add subdirectory tests/anoncall.
 	* tests/anoncall/Anon.java,
 	* tests/anoncall/Makefile.am: New test; expected to FAIL.

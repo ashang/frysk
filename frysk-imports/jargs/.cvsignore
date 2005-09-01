@@ -4,3 +4,6 @@ classes
 .project
 jargs.ipr
 jargs.iws
+Makefile
+jargs
+jargs.jar
