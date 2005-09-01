@@ -1,5 +1,9 @@
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/PsEvent.java,
+	com/redhat/fedora/frysk/proc/PsListener.java,
+	com/redhat/fedora/frysk/proc/PsObserver.java: Delete.
+
 	* com/redhat/fedora/frysk/proc/TestTerminated.java,
 	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
 	com/redhat/fedora/frysk/proc/TestSyscall.java,
