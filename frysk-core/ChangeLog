@@ -1,3 +1,34 @@
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TestLib.java: Add methods
+	assertRunUntilStop and runPending.
+	* com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestClone.java,
+	com/redhat/fedora/frysk/proc/TestExec.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestFork.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestI386Modify.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcGet.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestRun.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Use.
+
 2005-08-31  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/TestAttach.java: Change to not
