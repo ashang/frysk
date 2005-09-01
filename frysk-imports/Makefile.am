@@ -25,4 +25,6 @@ include Makefile.gen
 SUBDIRS = \
 	jline \
 	jargs \
-	tests/cniinner
+	tests/cniinner \
+	tests/anoncall
+
