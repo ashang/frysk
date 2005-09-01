@@ -11,7 +11,7 @@
 	</target>
 	<target name="configure" unless="configure-available">
 		<exec executable="/bin/sh">
-			<arg line="./autogen.sh">
+			<arg line="./autogen.sh"/>
 		</exec>
 	</target>
 </project>
