@@ -1,4 +1,9 @@
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
+	
+	* .project: Add frysk-imports directory.
+	* com/redhat/fedora/frysk/cli/hpd/.cvsignore,
+	com/redhat/fedora/frysk/expr/.cvsignore,
+	com/redhat/fedora/frysk/prog/.cvsignore: Add.
 
 	* com/redhat/fedora/frysk/proc/PsEvent.java,
 	com/redhat/fedora/frysk/proc/PsListener.java,
