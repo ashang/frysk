@@ -17,3 +17,8 @@ compile
 .depcomp
 *.db
 TestJUnits.java
+gij.sh
+TestRunner.java
+TestRunner.classes
+TestRunner
+*.class
