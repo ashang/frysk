@@ -1,3 +1,10 @@
+2005-09-02  Igor Foox  <ifoox@redhat.com>
+
+	* rpm-specs, rpm-specs/frysk-cairo.spec, frysk-fontconfig.spec, 
+	frysk-glib2.spec, frysk-gtk2.spec, frysk-pango.spec, 
+	frysk-jg-common.spec, frysk-cairo-java.spec,frysk-libgtk-java.spec, 
+	frysk-libglade-java.spec:  New files.
+
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
 	* .externalToolBuilders/AntBuilder.launch, .classpath, .project,
