@@ -1,20 +1,29 @@
+%define _prefix /opt
+%define _sysconfdir %{_prefix}/etc
+%define _localstatedir %{_prefix}/var
+%define _infodir %{_prefix}/share/info
+%define _mandir %{_prefix}/share/man
+%define _defaultdocdir %{_prefix}/share/doc
+
 # Note that this is NOT a relocatable package
 
-%define glib2_base_version 2.7.1
+%define glib2_base_version 2.8.1
 %define glib2_version %{glib2_base_version}-1
-%define pango_base_version 1.9.1
+%define pango_base_version 1.10.0
 %define pango_version %{pango_base_version}-1
 %define atk_base_version 1.6.0
 %define atk_version %{atk_base_version}-1
-%define cairo_base_version 0.9.2
+%define cairo_base_version 1.0.0
 %define cairo_version %{cairo_base_version}-1
 %define libpng_version 2:1.2.2-16
 
 %define base_version 2.8.3
 %define bin_version 2.4.0
 
+%define name_base gtk2
+
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X.
-Name: gtk2
+Name: frysk-%{name_base}
 Version: %{base_version}
 Release: 1
 License: LGPL
@@ -24,10 +33,14 @@ Source1: update-scripts.tar.gz
 
 # Biarch changes
 Patch0: gtk+-2.4.1-lib64.patch
+# fixed in 2.8.1
+#Patch1: gtk+-2.8.0-back-pixmap.patch
+# Patch update scripts to correctly map to /opt
+Patch2: frysk-gtk2-update-scripts.patch
 
 BuildPrereq: atk-devel >= %{atk_version}
-BuildPrereq: pango-devel >= %{pango_version}
-BuildPrereq: glib2-devel >= %{glib2_version}
+BuildPrereq: frysk-pango-devel >= %{pango_version}
+BuildPrereq: frysk-glib2-devel >= %{glib2_version}
 BuildPrereq: libtiff-devel
 BuildPrereq: libjpeg-devel
 BuildPrereq: libpng-devel >= %{libpng_version}
@@ -42,9 +55,9 @@ Obsoletes: Inti
 URL: http://www.gtk.org
 
 # We need to prereq these so we can run gtk-query-immodules-2.0
-Prereq: glib2 >= %{glib2_version}
+Prereq: frysk-glib2 >= %{glib2_version}
 Prereq: atk >= %{atk_version}
-Prereq: pango >= %{pango_version}
+Prereq: frysk-pango >= %{pango_version}
 # and these for gdk-pixbuf-query-loaders
 Prereq: libtiff >= 3.6.1
 
@@ -58,14 +71,17 @@ interfaces. Offering a complete set of widgets, GTK+ is suitable for
 projects ranging from small one-off tools to complete application
 suites.
 
+This version of GTK+ was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %package devel
 Summary: Development tools for GTK+ applications.
 Group: Development/Libraries
-Requires: gtk2 = %{version}
-Requires: pango-devel >= %{pango_version}
+Requires: frysk-gtk2 = %{version}
+Requires: frysk-pango-devel >= %{pango_version}
 Requires: atk-devel >= %{atk_version}
-Requires: glib2-devel >= %{glib2_version}
-Requires: cairo-devel >= %{cairo_version}
+Requires: frysk-glib2-devel >= %{glib2_version}
+Requires: frysk-cairo-devel >= %{cairo_version}
 Requires: XFree86-devel
 Obsoletes: gtk+-gtkbeta-devel
 Obsoletes: Inti-devel
@@ -77,18 +93,28 @@ Conflicts: gdk-pixbuf-devel <= 0.11
 The gtk+-devel package contains the header files and developer
 docs for the GTK+ widget toolkit.  
 
+This version of gtk+-devel was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %prep
 %setup -q -n gtk+-%{version}
 
 (cd .. && tar xzf %{SOURCE1})
+pushd ..
+pwd
+%patch2 -p0 
+popd
 
 %patch0 -p1 -b .lib64
+#%patch1 -p1 -b .back-pixmap
 
 for i in config.guess config.sub ; do
 	test -f %{_datadir}/libtool/$i && cp %{_datadir}/libtool/$i .
 done
 
 %build
+export PKG_CONFIG_PATH=%{_libdir}/pkgconfig
+export LD_LIBRARY_PATH=%{_libdir}
 libtoolize --force
 
 # Patch3 modifies gdk-pixbuf/Makefile.am
@@ -206,8 +232,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/ldconfig
-/usr/bin/update-gdk-pixbuf-loaders %{_host}
-/usr/bin/update-gtk-immodules %{_host}
+%{_bindir}/update-gdk-pixbuf-loaders %{_host}
+%{_bindir}/update-gtk-immodules %{_host}
 
 %postun
 /sbin/ldconfig
@@ -251,9 +277,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc tmpdocs/examples
 
 %changelog
-* Mon Aug 29 2005 Matthias Clasen <mclasen@redhat.com> 2.8.3-1
-- Newer upstream version
-
 * Mon Aug 15 2005 Matthias Clasen <mclasen@redhat.com> 2.8.0-1
 - Newer upstream version
 

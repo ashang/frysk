@@ -1,5 +1,11 @@
 2005-09-02  Igor Foox  <ifoox@redhat.com>
 
+	* rpm-specs/frysk-cairo.spec, frysk-fontconfig.spec, frysk-glib2.spec,
+	frysk-gtk2.spec, frysk-pango.spec: Updated GTK+ stack specs with frysk
+	related changes.
+
+2005-09-02  Igor Foox  <ifoox@redhat.com>
+
 	* rpm-specs, rpm-specs/frysk-cairo.spec, frysk-fontconfig.spec, 
 	frysk-glib2.spec, frysk-gtk2.spec, frysk-pango.spec, 
 	frysk-jg-common.spec, frysk-cairo-java.spec,frysk-libgtk-java.spec, 

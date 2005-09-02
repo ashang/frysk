@@ -1,5 +1,13 @@
+%define _prefix /opt
+%define _sysconfdir %{_prefix}/etc
+%define _localstatedir %{_prefix}/var
+%define _infodir %{_prefix}/share/info
+%define _mandir %{_prefix}/share/man
+%define _defaultdocdir %{_prefix}/share/doc
+
+%define name_base glib2
 Summary: A library of handy utility functions.
-Name: glib2
+Name: frysk-%{name_base}
 Version: 2.8.1
 Release: 1
 License: LGPL
@@ -22,6 +30,9 @@ functionality as an event loop, threads, dynamic loading, and anobject system.
 
 This package provides version 2 of GLib.
 
+This version of GLib was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %package devel
 Summary: The GIMP ToolKit (GTK+) and GIMP Drawing Kit (GDK) support library
 Group: Development/Libraries
@@ -33,6 +44,9 @@ Conflicts: glib-devel <= 1:1.2.8
 %description devel
 The glib2-devel package includes the header files for 
 version 2 of the GLib library. 
+
+This version of glib-devel was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
 
 %prep
 %setup -q -n glib-%{version}

@@ -1,7 +1,16 @@
+%define _prefix /opt
+%define _sysconfdir %{_prefix}/etc
+%define _localstatedir %{_prefix}/var
+%define _infodir %{_prefix}/share/info
+%define _mandir %{_prefix}/share/man
+%define _defaultdocdir %{_prefix}/share/doc
+
 %define freetype_version 2.1.4
 
+%define name_base fontconfig
+
 Summary: Font configuration and customization library
-Name: fontconfig
+Name: frysk-%{name_base}
 Version: 2.3.2
 Release: 1
 License: MIT
@@ -35,10 +44,13 @@ Fontconfig is designed to locate fonts within the
 system and select them according to requirements specified by 
 applications.
 
+This version of fontconfig was specially packaged for use with the 
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %package devel
 Summary: Font configuration and customization library
 Group: Development/Libraries
-Requires: fontconfig = %{PACKAGE_VERSION}
+Requires: frysk-fontconfig = %{PACKAGE_VERSION}
 Requires: freetype-devel >= %{freetype_version}
 
 %description devel
@@ -48,8 +60,11 @@ and developer docs for the fontconfig package.
 Install fontconfig-devel if you want to develop programs which 
 will use fontconfig.
 
+This version of fontconfig-devel was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %prep
-%setup -q
+%setup -q -n %{name_base}-%{version}
 
 %patch1 -p1 -b .defaultconfig
 %patch13 -p1 -b .fulldir

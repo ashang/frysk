@@ -1,3 +1,10 @@
+%define _prefix /opt
+%define _sysconfdir %{_prefix}/etc
+%define _localstatedir %{_prefix}/var
+%define _infodir %{_prefix}/share/info
+%define _mandir %{_prefix}/share/man
+%define _defaultdocdir %{_prefix}/share/doc
+
 %define glib2_base_version 2.4.0
 %define glib2_version %{glib2_base_version}-1
 %define pkgconfig_version 0.12
@@ -6,8 +13,10 @@
 %define cairo_version 0.9.2
 %define xft_version 1.9.1.020626.1517-1
 
+%define name_base pango
+
 Summary: System for layout and rendering of internationalized text.
-Name: pango
+Name: frysk-%{name_base}
 Version: 1.10.0
 Release: 1
 License: LGPL
@@ -21,14 +30,14 @@ Prereq: glib2 >= %{glib2_version}
 Prereq: freetype >= %{freetype_version}
 Prereq: xorg-x11-libs
 Requires: freetype >= %{freetype_version}
-Requires: cairo >= %{cairo_version}
+Requires: frysk-cairo >= %{cairo_version}
 BuildRequires: libtool >= 1.4.2-10
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: pkgconfig >= %{pkgconfig_version}
 BuildRequires: freetype-devel >= %{freetype_version}
 BuildRequires: fontconfig-devel >= %{fontconfig_version}
 BuildRequires: xorg-x11-devel >= 4.2.99
-BuildRequires: cairo >= %{cairo_version}
+BuildRequires: frysk-cairo >= %{cairo_version}
 Obsoletes: pango-gtkbeta, fribidi-gtkbeta
 ## pango 1.9.0 shipped without api docs
 BuildPrereq: gtk-doc
@@ -40,16 +49,19 @@ Patch5: pango-1.2.5-lib64.patch
 %description
 Pango is a system for layout and rendering of internationalized text.
 
+This version of Pango was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 
 %package devel
 Summary: System for layout and rendering of internationalized text.
 Group: Development/Libraries
-Requires: pango = %{PACKAGE_VERSION}
+Requires: frysk-pango = %{PACKAGE_VERSION}
 Requires: XFree86-devel >= 4.2.99
 Requires: glib2-devel >= %{glib2_version}
 Requires: freetype-devel >= %{freetype_version}
-Requires: fontconfig-devel >= %{fontconfig_version}
-Requires: cairo-devel >= %{cairo_version}
+Requires: frysk-fontconfig-devel >= %{fontconfig_version}
+Requires: frysk-cairo-devel >= %{cairo_version}
 Obsoletes: fribidi-gtkbeta-devel, pango-gtkbeta-devel
 
 %description devel
@@ -59,6 +71,9 @@ and developer docs for the pango package.
 Install pango-devel if you want to develop programs which will use
 pango.
 
+This version of pango-devel was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %prep
 %setup -q -n pango-%{version}
 
@@ -66,7 +81,8 @@ pango.
 %patch5 -p1 -b .lib64
 
 %build
-
+export PKG_CONFIG_PATH=%{_libdir}/pkgconfig
+export LD_LIBRARY_PATH=%{_libdir}
 %configure
 make
 

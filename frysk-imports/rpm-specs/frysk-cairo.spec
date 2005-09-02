@@ -1,12 +1,22 @@
+%define _prefix /opt
+%define _sysconfdir %{_prefix}/etc
+%define _localstatedir %{_prefix}/var
+%define _infodir %{_prefix}/share/info
+%define _mandir %{_prefix}/share/man
+%define _defaultdocdir %{_prefix}/share/doc
+
+
 %define freetype_version 2.1.3-3
 %define fontconfig_version 2.0
 
+%define name_base cairo
+
 Summary:   A vector graphics library
-Name:      cairo
+Name:      frysk-%{name_base}
 Version:   1.0.0
 Release:   1
 URL:       http://cairographics.org
-Source0:   %{name}-%{version}.tar.gz
+Source0:   %{name_base}-%{version}.tar.gz
 License:   LGPL/MPL
 Group:     System Environment/Libraries
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -20,7 +30,7 @@ BuildRequires: pkgconfig
 BuildRequires: xorg-x11-devel
 BuildRequires: libpng-devel
 BuildRequires: freetype-devel >= %{freetype_version}
-BuildRequires: fontconfig-devel >= %{fontconfig_version}
+BuildRequires: frysk-fontconfig-devel >= %{fontconfig_version}
 
 %description 
 Cairo is a vector graphics library designed to provide high-quality
@@ -31,6 +41,9 @@ identical output on all output media while taking advantage of display
 hardware acceleration when available (eg. through the X Render
 Extension or OpenGL).
 
+This version of cairo was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %package devel
 Summary: Cairo developmental libraries and header files
 Group: Development/Libraries
@@ -38,18 +51,21 @@ Requires: %{name} = %{version}-%{release}
 Requires: xorg-x11-devel
 Requires: libpng-devel
 Requires: freetype-devel >= %{freetype_version}
-Requires: fontconfig-devel >= %{fontconfig_version}
+Requires: frysk-fontconfig-devel >= %{fontconfig_version}
 
 %description devel
 Developmental libraries and header files required for developing or
 compiling software which links to the cairo library, which is an open
 source vector graphics library.
 
+This version of cairo-devel was specially packaged for use with the
+frysk Execution Analysis Tool, it is not intended for general use.
+
 %prep
-%setup -q
+%setup -q -n %{name_base}-%{version}
 
 %build
-%configure --enable-warnings --disable-glitz --disable-quartz \
+%configure  --enable-pdf --enable-warnings --disable-glitz --disable-quartz \
 	--disable-atsui --disable-xcb --disable-win32 \
 	--disable-gtk-doc
 make
