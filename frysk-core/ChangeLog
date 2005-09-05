@@ -1,5 +1,9 @@
 2005-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/ProcEvent.java: Add and handle
+	TaskAttached.
+
 	* com/redhat/fedora/frysk/proc/TaskState.java,
 	com/redhat/fedora/frysk/proc/TaskEvent.java,
 	com/redhat/fedora/frysk/proc/TaskState.java: Add and handle
