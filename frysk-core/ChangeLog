@@ -1,5 +1,9 @@
 2005-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Task.java: Delete traceExec.
+	* com/redhat/fedora/frysk/proc/LinuxTask.java,
+	com/redhat/fedora/frysk/proc/TestLib.java: Update.
+	
 	* com/redhat/fedora/frysk/proc/LinuxTask.java: Always enable
 	traceClone.
 	* com/redhat/fedora/frysk/proc/Task.java: Delete traceClone.
