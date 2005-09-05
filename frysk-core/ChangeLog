@@ -1,3 +1,10 @@
+2005-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/TaskEvent.java,
+	com/redhat/fedora/frysk/proc/TaskState.java: Add and handle
+	RequestAttach.
+
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 	
 	* .project: Add frysk-imports directory.
