@@ -1,5 +1,13 @@
 2005-09-05  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/LinuxTask.java: Always enable
+	traceClone.
+	* com/redhat/fedora/frysk/proc/Task.java: Delete traceClone.
+	* com/redhat/fedora/frysk/proc/TestLib.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	prog/util/run.java: Update.
+
 	* com/redhat/fedora/frysk/proc/ProcState.java,
 	com/redhat/fedora/frysk/proc/ProcEvent.java: Add and handle
 	TaskAttached.

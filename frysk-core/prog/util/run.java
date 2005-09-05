@@ -40,7 +40,6 @@ class run
 	    count++;
 	    Task task = (Task) obj;
 	    task.traceFork = true;
-	    task.traceClone = true;
 	}
     }
 
