@@ -80,18 +80,6 @@ com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(CAIRO_JAVA_LIBS)
 com_redhat_fedora_frysk_gui_test_SourceWinTest_LDADD += $(JGCOMMON_LIBS)
 
 
-noinst_PROGRAMS += com/redhat/fedora/frysk/gui/test/ParserTest
-
-com_redhat_fedora_frysk_gui_test_ParserTest_SOURCES += $(GEN_SOURCES)
-com_redhat_fedora_frysk_gui_test_ParserTest_CLASSPATH = $(GEN_CLASSPATH)
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD = -lEggTrayIcon 
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a ../frysk-imports/libantlr.a
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(GLADE_JAVA_LIBS)
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(GNOME_JAVA_LIBS) 
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(CAIRO_JAVA_LIBS)
-com_redhat_fedora_frysk_gui_test_ParserTest_LDADD += $(JGCOMMON_LIBS)
-
 
 #noinst_PROGRAMS += com/redhat/fedora/frysk/gui/test/Test1
 
