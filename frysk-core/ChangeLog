@@ -1,3 +1,7 @@
+2005-09-06  Tarun Khanna  <tkhanna@redhat.com>
+
+	* Makefile.am:	Added support for tunning dejagnu tests.
+
 2005-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/HostState.java,

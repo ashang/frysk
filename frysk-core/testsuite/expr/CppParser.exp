@@ -2,7 +2,7 @@
 
 set pwd [eval pwd]
 puts $pwd
-spawn "$pwd/com/redhat/fedora/frysk/expr/TestCppParser"
+spawn "$pwd/com/redhat/fedora/frysk/expr/RunCppParser"
 #spawn "../../TestCppParser"
 
 set prompt "\\$"

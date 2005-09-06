@@ -20,6 +20,8 @@
 include common/Makefile.rules
 include Makefile.gen
 
+AUTOMAKE_OPTIONS = dejagnu
+
 GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParser.java
 GEN_SOURCES += com/redhat/fedora/frysk/expr/CppLexer.java
 GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParserTokenTypes.java
@@ -55,3 +57,5 @@ prog_x86isa_x86regs_SOURCES = prog/x86isa/x86regs.S
 noinst_PROGRAMS += prog/x86isa/x86regs
 prog_x86isa_x86modify_SOURCES = prog/x86isa/x86modify.S
 noinst_PROGRAMS += prog/x86isa/x86modify
+
+RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite
