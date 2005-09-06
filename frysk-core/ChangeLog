@@ -1,5 +1,13 @@
 2005-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/HostState.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java,
+	com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/ProcEvent.java,
+	com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/State.java: Replace request events
+	with anonymous objects.
+
 	* com/redhat/fedora/frysk/proc/ProcState.java,
 	com/redhat/fedora/frysk/proc/TaskState.java,
 	com/redhat/fedora/frysk/proc/LinuxProc.java,
