@@ -8,7 +8,7 @@
 
 %define	name_base 	libgtk-java
 %define	version		2.7.0
-%define	release		3
+%define	release		4
 
 Summary:	Java bindings for GTK+
 Name:		frysk-%{name_base}
@@ -21,6 +21,7 @@ Source:		%{name_base}-%{version}.tar.bz2
 Patch0:		libgtk-java-2.7.0-datacolumnobject.patch	
 Patch1:		libgtk-java-2.7.0-actionlisteners.patch
 Patch2:  	libgtk-java-2.7.0-CustomEvents.patch 	
+Patch3:		libgtk-java-2.7.0-treeModelrRootConstructor.patch
 BuildRoot:	%{_tmppath}/%{name_base}-%{version}-root
 
 Requires:	frysk-gtk2 >= 2.8.0, frysk-cairo-java >= 0.9.2
@@ -41,6 +42,7 @@ frysk Execution Analysis Tool, it is not intended for general use.
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
+%patch3 -p0
 
 # hack.  java-gnome should distribute the result of "make dist"
 #ln -s autogen.sh configure
@@ -95,6 +97,9 @@ rm -rf %{buildroot}
 %{_datadir}/%{name_base}
 
 %changelog
+* Tue Sep 6 2005 Igor Foox <ifoox@redhat.com> 2.7.0-4
+- Added patch for TreeModel constructor with a specified root.
+
 * Wed Aug 31 2005 Igor Foox <ifoox@redhat.com> 2.7.0-3
 - Added patch for CustomEvents to work.
 

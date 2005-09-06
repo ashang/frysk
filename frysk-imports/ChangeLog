@@ -1,3 +1,7 @@
+2005-09-06  Igor Foox <ifoox@redhat.com>
+	* rpm-specs/frysk-libgtk-java.spec: Added patch for TreeModel constructor 
+	with a specified root.
+
 2005-09-02  Igor Foox  <ifoox@redhat.com>
 
 	* rpm-specs/frysk-cairo.spec, frysk-fontconfig.spec, frysk-glib2.spec,
