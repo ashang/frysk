@@ -1,3 +1,11 @@
+2005-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/LinuxProc.java,
+	com/redhat/fedora/frysk/proc/LinuxHost.java: Instead of the state
+	machine, make requestRefresh responsible for removing the child.
+
 2005-09-05  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Task.java: Delete traceExec.
