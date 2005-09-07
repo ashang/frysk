@@ -1,3 +1,13 @@
+2005-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/TaskState.java: Add attaching
+	state; handle RequestAttach.
+	* com/redhat/fedora/frysk/proc/ProcState.java: Add states
+	AttachingToMainTask, and AttachingToOtherTasks; handle
+	requestAttachingContinue.
+	* com/redhat/fedora/frysk/proc/LinuxTask.java,
+	com/redhat/fedora/frysk/proc/Task.java: Add sendAttach.
+
 2005-09-06  Tarun Khanna  <tkhanna@redhat.com>
 
 	* Makefile.am:	Added support for tunning dejagnu tests.
