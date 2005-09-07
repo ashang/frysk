@@ -1,3 +1,7 @@
+2005-09-07 Igor Foox <ifoox@redhat.com> 
+	*  rpm-specs/frysk-libgtk-java.spec: Added patch for Boxed to supress 
+	un-needed debug output.
+
 2005-09-06  Igor Foox <ifoox@redhat.com>
 	* rpm-specs/frysk-libgtk-java.spec: Added patch for TreeModel constructor 
 	with a specified root.
