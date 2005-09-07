@@ -1,3 +1,32 @@
+2005-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* com/redhat/fedora/frysk/proc/Host.java,
+	com/redhat/fedora/frysk/proc/Manager.java: Move taskPool to Host.
+	* com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/ProcEvent.java,
+	com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/Task.java,
+	com/redhat/fedora/frysk/proc/TaskEvent.java,
+	com/redhat/fedora/frysk/proc/TestAttach.java,
+	com/redhat/fedora/frysk/proc/TestAttachCloningThreads.java,
+	com/redhat/fedora/frysk/proc/TestAttachThreads.java,
+	com/redhat/fedora/frysk/proc/TestExiting.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestI386Regs.java,
+	com/redhat/fedora/frysk/proc/TestPaused.java,
+	com/redhat/fedora/frysk/proc/TestProcStop.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndGo2.java,
+	com/redhat/fedora/frysk/proc/TestProcStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestRun.java,
+	com/redhat/fedora/frysk/proc/TestStop.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStopAndStop.java,
+	com/redhat/fedora/frysk/proc/TestSyscall.java,
+	com/redhat/fedora/frysk/proc/TestSyscall2.java,
+	com/redhat/fedora/frysk/proc/TestSyscallOpen.java,
+	com/redhat/fedora/frysk/proc/TestTerminated.java: Update.
+
 2005-09-06  Andrew Cagney  <cagney@redhat.com>
 
 	* com/redhat/fedora/frysk/proc/Proc.java,
