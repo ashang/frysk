@@ -1,5 +1,16 @@
 2005-09-06  Andrew Cagney  <cagney@redhat.com>
 
+	* com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/ProcState.java,
+	com/redhat/fedora/frysk/proc/Task.java,
+	com/redhat/fedora/frysk/proc/TaskEvent.java,
+	com/redhat/fedora/frysk/proc/TaskState.java,
+	com/redhat/fedora/frysk/proc/TestGoAndGo.java,
+	com/redhat/fedora/frysk/proc/TestStep.java,
+	com/redhat/fedora/frysk/proc/TestStopAndGo.java,
+	com/redhat/fedora/frysk/proc/TestUnpaused.java: Replace request
+	events with anonymous objects.
+
 	* com/redhat/fedora/frysk/proc/TaskState.java: Add attaching
 	state; handle RequestAttach.
 	* com/redhat/fedora/frysk/proc/ProcState.java: Add states
