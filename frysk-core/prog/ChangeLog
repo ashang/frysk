@@ -1,0 +1,86 @@
+2005-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* util/run.java: Update to match proc/ changes.
+
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* x86isa/x86modify.S: New assembler test.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+	
+	* kill/zombie.c: When the child detects that the parent has
+	exited, notify the manager.
+
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/detach.c (snooze): Add, use.
+	* kill/zombie.c: New file.
+
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/detach.c: Make STDOUT unbuffered.  Except in signal
+	handlers, unmask SIGUSR1 and SIGUSR2.
+
+	* kill/detach.c: Add background and polling arguments.
+
+2005-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/detach.c: New file.
+
+2005-08-23  Andrew Cagney  <cagney@redhat.com>
+	
+	* util/run.java: Update to match proc/ changes.
+
+2005-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/suspend.c (main): Add <clone> command line parameter,
+	create <clones> tasks before suspending.
+
+	* util/run.java: Update to match proc/ changes.
+
+2005-08-17  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/suspend.c, kill/loop.c: Use tkill so that the signal is
+	delivered to an exact thread.
+
+2005-08-14  Andrew Cagney  <cagney@redhat.com>
+
+	* util/run.java: Update to match proc/ changes.
+	
+2005-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* util/run.java: Update to match proc/ changes.
+
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+
+	* util/run.java: Fix ECJ build errors.
+
+2005-08-04  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/suspend.c: New file.
+	* kill/loop.c: New file.
+
+2005-07-28  Andrew Cagney  <cagney@redhat.com>
+	    Jeff Johnston  <jjohnstn@redhat.com>
+	    Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* fib/clone.c: New file.
+	* fib/fork.c: New file.
+	* perf/README: New file.
+	* perf/clone.c: New file.
+	* perf/clone.sh: New file.
+	* perf/fork.c: New file.
+	* print/argc.c: New file.
+	* print/argv.c: New file.
+	* print/auxv.c: New file.
+	* print/envp.c: New file.
+	* step/infThreadLoop.c: New file.
+	* syscall/exec.c: New file.
+	* syscall/syscallloop.c: New file.
+	* syscall/syscalls.c: New file.
+	* syscall/threadexec.c: New file.
+	* terminated/infloop.c: New file.
+	* util/auxv.java: New file.
+	* util/run.java: New file.
+	* x86isa/x86regs.S: New file.
+

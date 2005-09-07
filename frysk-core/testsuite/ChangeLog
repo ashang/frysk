@@ -1,0 +1,7 @@
+2005-08-24  Tarun Khanna  <tkhanna@redhat.com>
+
+	* expr: New directory to store DejaGNU test scripts for the
+	expression parser.
+	* expr/CppParser.exp: New expect test script for testing the
+	expression parser.
+
