@@ -1,4 +1,10 @@
 2005-09-07  Andrew Cagney  <cagney@redhat.com>
+	
+	* com/redhat/fedora/frysk/proc/Proc.java,
+	com/redhat/fedora/frysk/proc/ProcEvent.java,
+	com/redhat/fedora/frysk/proc/Task.java,
+	com/redhat/fedora/frysk/proc/TaskEvent.java: Simplify, exploit
+	nested classes ability to access containg classes variables.
 
 	* com/redhat/fedora/frysk/proc/Host.java,
 	com/redhat/fedora/frysk/proc/Manager.java: Move taskPool to Host.
