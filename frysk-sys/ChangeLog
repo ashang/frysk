@@ -1,3 +1,7 @@
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* autogen.sh: Do not pass util/ to Makefile.gen.sh.
+
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
 	* .project: Add dependency on frysk-imports.

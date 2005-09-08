@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 ./common/Makefile.gen.sh \
+    util \
     /usr/share/java/junit.jar \
     /usr/share/java/antlr.jar \
     jline/jline.jar \

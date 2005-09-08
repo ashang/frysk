@@ -23,6 +23,9 @@ AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/cniinner/Makefile 
 
 AC_PROG_RANLIB
 
+AC_PROG_CXX
+test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
+
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
 

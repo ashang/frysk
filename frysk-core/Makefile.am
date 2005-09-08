@@ -42,10 +42,12 @@ com/redhat/fedora/frysk/expr/CppParser.java: $(srcdir)/com/redhat/fedora/frysk/e
 	antlr -o com/redhat/fedora/frysk/expr $(srcdir)/com/redhat/fedora/frysk/expr/cpp.g
 	echo $(srcdir)
 
+GEN_CLASSPATH += ../frysk-imports/$(GEN_CLASSDIR)
 GEN_CLASSPATH += ../frysk-sys/$(GEN_CLASSDIR)
 GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
+LDADD += ../frysk-imports/libfrysk-imports.a
 LDADD += ../frysk-sys/libfrysk-sys.a
 LDADD += ../frysk-imports/libjline.a
 LDADD += ../frysk-imports/libantlr.a

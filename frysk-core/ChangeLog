@@ -1,3 +1,7 @@
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH, LDADD): Add frysk-imports.
+
 2005-09-06  Tarun Khanna  <tkhanna@redhat.com>
 
 	* Makefile.am:	Added support for tunning dejagnu tests.

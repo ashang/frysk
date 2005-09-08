@@ -1,0 +1,24 @@
+#!/bin/sh -e
+
+# Find a file that might contain AT_* macro definitions
+
+auxv=
+for f in /usr/include/sys/auxv.h /usr/include/elf.h ; do
+    test -r $f && auxv=$f
+done
+if test x"$auxv" = x ; then
+    echo "No auxv file found"
+    exit 1
+fi
+
+
+# Grub through the file generating a mkjava.sh table
+
+sed -n < $auxv '
+/#define AT_/ {
+  s,#define AT_,,
+  s,/\*,,
+  s,\*/,,
+  p
+}
+'

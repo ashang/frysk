@@ -1,3 +1,8 @@
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Add AM_PROG_CXX.
+	* autogen.sh: Pass util/ to Makefile.gen.sh.
+
 2005-09-07 Igor Foox <ifoox@redhat.com> 
 	*  rpm-specs/frysk-libgtk-java.spec: Added patch for Boxed to supress 
 	un-needed debug output.
