@@ -1,3 +1,7 @@
+2005-09-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cdtparser.jar: Added
+
 2005-09-08  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Add AM_PROG_CXX.
