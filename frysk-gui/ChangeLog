@@ -1,0 +1,5 @@
+2005-09-08  Igor Foox  <ifoox@redhat.com>
+
+	* ChangeLog: new file.
+	* configure.ac,Makefile.am (CLEANFILES): @JAVA_LIBRARY_PATH@ and 
+	@RPATH@	to remove need	for setting LD_LIBRARY_PATH before running.
