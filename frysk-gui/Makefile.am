@@ -45,23 +45,23 @@ EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(JGCOMMON_CFLAGS)
 
 
 LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a  ../frysk-imports/libantlr.a
-noinst_PROGRAMS += com/redhat/fedora/frysk/gui/Procpop
-#com/redhat/fedora/frysk/gui/Procpop:EggTrayIcon/libEggTrayIcon.so
-com_redhat_fedora_frysk_gui_Procpop_SOURCES += $(GEN_SOURCES) 
-com_redhat_fedora_frysk_gui_Procpop_CLASSPATH = $(GEN_CLASSPATH) 
+noinst_PROGRAMS += com/redhat/fedora/frysk/gui/FryskGui
+#com/redhat/fedora/frysk/gui/FryskGui:EggTrayIcon/libEggTrayIcon.so
+com_redhat_fedora_frysk_gui_FryskGui_SOURCES += $(GEN_SOURCES) 
+com_redhat_fedora_frysk_gui_FryskGui_CLASSPATH = $(GEN_CLASSPATH) 
 
-#com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/opt/lib
-#com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/to/scratch/swagiaal/frysk/frysk-gui/EggTrayIcon 
-#com_redhat_fedora_frysk_gui_Procpop_LDFLAGS += -Wl,-rpath,/opt/lib/libgtkjava-2.7.so  # -LEggTrayIcon
-#om_redhat_fedora_frysk_gui_Procpop_LDFLAGS =  $(GTK_JAVA_LIBS) #-L/opt/lib -lgtkjava #$(GTK_JAVA_LIBS)
+#com_redhat_fedora_frysk_gui_FryskGui_LDFLAGS += -Wl,-rpath,/opt/lib
+#com_redhat_fedora_frysk_gui_FryskGui_LDFLAGS += -Wl,-rpath,/to/scratch/swagiaal/frysk/frysk-gui/EggTrayIcon 
+#com_redhat_fedora_frysk_gui_FryskGui_LDFLAGS += -Wl,-rpath,/opt/lib/libgtkjava-2.7.so  # -LEggTrayIcon
+#com_redhat_fedora_frysk_gui_FryskGui_LDFLAGS =  $(GTK_JAVA_LIBS) #-L/opt/lib -lgtkjava #$(GTK_JAVA_LIBS)
 
-com_redhat_fedora_frysk_gui_Procpop_LDADD = -LEggTrayIcon -lEggTrayIcon 
-com_redhat_fedora_frysk_gui_Procpop_LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a  ../frysk-imports/libantlr.a
-com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
-com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GLADE_JAVA_LIBS)
-com_redhat_fedora_frysk_gui_Procpop_LDADD += $(GNOME_JAVA_LIBS) 
-com_redhat_fedora_frysk_gui_Procpop_LDADD += $(CAIRO_JAVA_LIBS)
-com_redhat_fedora_frysk_gui_Procpop_LDADD += $(JGCOMMON_LIBS)
+com_redhat_fedora_frysk_gui_FryskGui_LDADD = -LEggTrayIcon -lEggTrayIcon 
+com_redhat_fedora_frysk_gui_FryskGui_LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a  ../frysk-imports/libantlr.a
+com_redhat_fedora_frysk_gui_FryskGui_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
+com_redhat_fedora_frysk_gui_FryskGui_LDADD += $(GLADE_JAVA_LIBS)
+com_redhat_fedora_frysk_gui_FryskGui_LDADD += $(GNOME_JAVA_LIBS) 
+com_redhat_fedora_frysk_gui_FryskGui_LDADD += $(CAIRO_JAVA_LIBS)
+com_redhat_fedora_frysk_gui_FryskGui_LDADD += $(JGCOMMON_LIBS)
 
 GCJFLAGS += -fjni 
 
