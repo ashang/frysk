@@ -66,17 +66,6 @@ AC_MSG_RESULT($CAIROJAR)
 AC_SUBST(CAIROJAR)
 ##################################
 
-## gnome-java ####################
-PKG_CHECK_MODULES(GNOME_JAVA, gnome2-java >= 2.10.0)
-AC_SUBST(GNOME_JAVA_CFLAGS)
-AC_SUBST(GNOME_JAVA_LIBS)
-
-AC_MSG_CHECKING(for gnome2java jar file)
-JAVAGNOME_JAR=`$PKG_CONFIG --variable classpath gnome2-java`
-AC_MSG_RESULT($JAVAGNOME_JAR)
-AC_SUBST(JAVAGNOME_JAR)
-##################################
-
 ## gj-common #####################
 PKG_CHECK_MODULES(JGCOMMON, jg-common >= 0.1)
 AC_SUBST(JGCOMMON_CFLAGS)
@@ -88,6 +77,11 @@ JGCOMMON_JAR=`$PKG_CONFIG --variable classpath jg-common`
 AC_MSG_RESULT($JGCOMMON_JAR)
 AC_SUBST(JGCOMMON_JAR)
 ##################################
+
+RPATH=-Wl,-rpath,`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
+AC_SUBST(RPATH)
+JAVA_LIBRARY_PATH=-Djava.library.path=$PWD/EggTrayIcon:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
+AC_SUBST(JAVA_LIBRARY_PATH)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-sys frysk-core])
