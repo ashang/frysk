@@ -1,3 +1,7 @@
+2005-09-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Fix typos
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Move com/redhat/fedora/frysk/gui/ to frysk/gui/.
