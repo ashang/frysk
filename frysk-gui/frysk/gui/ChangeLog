@@ -4,72 +4,56 @@
 
 2005-09-08  Adam Jocksch  <ajocksch@redhat.com>
 
-	* SourceWindow.java: moved to srcwin/
+	* SourceWindow.java: Moved to srcwin/
 
 2005-09-08  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* Exported file related ChangeLog entries to monitor/ChangeLog
+	* Exported file related ChangeLog entries to monitor/ChangeLog.
 	* ActionPool.java: Moved to monitor/
-	* AllProcWidget.java: ditto
-	* EggTrayIcon.java: ditto
-	* FryskErrorFileHandler.java: ditto	
-	* LogWindow.java: ditto	
-	* ObserversMenu.java: ditto	
-	* ProcData.java: ditto	
-	* ProcDataModel.java: ditto				
-	* Saveable.java: ditto		
-	* TaskData.java: ditto		
-	* ThreadMenu.java: ditto		
-	* TrayIcon.java: ditto		
-	* WatchMenu.java: ditto		
-	* WindowManager.java: ditto	
-	* Procpop.java: Renamed to FryskGui.java
+	* AllProcWidget.java: Ditto.
+	* EggTrayIcon.java: Ditto.
+	* FryskErrorFileHandler.java: Ditto.
+	* LogWindow.java: Ditto.
+	* ObserversMenu.java: Ditto.
+	* ProcData.java: Ditto.
+	* ProcDataModel.java: Ditto.
+	* Saveable.java: Ditto.
+	* TaskData.java: Ditto.
+	* ThreadMenu.java: Ditto.
+	* TrayIcon.java: Ditto.
+	* WatchMenu.java: Ditto.
+	* WindowManager.java: Ditto.
+	* Procpop.java: Renamed to FryskGui.java.
 	
 
 2005-09-07  Sami Wagiaalla  <swagiaal@redhat.com>	 
 
-
-	* Procpop.java (importPreferences): fixed the loading problem
+	* Procpop.java (importPreferences): Fixed the loading problem.
 
 2005-09-07  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* Procpop.java (setupErrorLogging): Add a MemoryHandler to Logger
-	(setupErrorLogging): Use FryskErrorFileHandler
+	* Procpop.java (setupErrorLogging): Add a MemoryHandler to Logger.
+	(setupErrorLogging): Use FryskErrorFileHandler.
 
 2005-09-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* glade/procpop.glade: Added gui components for the split
+	* glade/procpop.glade: Added gui components for the split.
 
 2005-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* Procpop.java (setupErrorLogging): Added
-	(Procpop): Make errors be logged to logfile
-	(importPreferences): ditto
-	(importPreferences): downgrade warning on file not found
-	(main): ditto
-	(setupErrorLogging): Made logfile timestamp saner
+	* Procpop.java (setupErrorLogging): Added.
+	(Procpop): Make errors be logged to logfile.
+	(importPreferences): Ditto.
+	(importPreferences): Downgrade warning on file not found.
+	(main): Ditto.
+	(setupErrorLogging): Made logfile timestamp saner.
 
 2005-09-01  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* Procpop.java: Added GLADE_FILE, GLADE_DEV_PATH, GLADE_PKG_PATH constants
-	(Procpop): Added a glade fall back location
-	(main): Added some throws for preferences. Moved to its own function
+	* Procpop.java: Added GLADE_FILE, GLADE_DEV_PATH, GLADE_PKG_PATH constants.
+	(Procpop): Added a glade fall back location.
+	(main): Added some throws for preferences. Moved to its own function.
 	
 2005-07-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* Procpop.java: implemented and incorperated preferances model
-
-	
-
-
-	
-
-
-
-
-
-
-
-
-
-
+	* Procpop.java: Implemented and incorperated preferances model.
