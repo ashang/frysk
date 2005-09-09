@@ -1,4 +1,9 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: New file.
+
 2005-09-10  Igor Foox  <ifoox@redhat.com>
+
 	* EggTrayIcon/libEggTrayIcon.c: Updated to reflect previous
 	domain move.
 
