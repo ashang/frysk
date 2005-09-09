@@ -33,4 +33,9 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
 
+JUNIT_JAR=/usr/share/java/junit.jar
+AC_SUBST([JUNIT_JAR])
+ANTLR_JAR=/usr/share/java/antlr.jar
+AC_SUBST([ANTLR_JAR])
+
 AC_OUTPUT

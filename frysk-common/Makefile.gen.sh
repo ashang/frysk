@@ -18,23 +18,36 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 if test $# -eq 0 ; then
-    echo "Usage: $0 <directory> ... <path-to-jni-jar> ..." 1>&2
+    cat <<EOF 1>&2
+Usage:
+	$0 <source-dir>... <.jar-file>... <_JAR-macro>...
+<source-dir>:
+Search source directory for .java, .mkjava, .shjava, .c and .cxx
+files.  For each, generate a corresponding automake entry.
+<.jar-file>:
+Generate rule to compile the .jar files into a JNI object file.
+<_JAR-macro>:
+Generate rules to compile the corresponding .jar file into a JNI
+object file, include autoconf substitution entry for @_JAR@.
+EOF
     exit 1
 fi
 
 dirs=
 jars=
+JARS=
 while test $# -gt 0
 do
   case "$1" in
       *.jar ) jars="${jars} $1" ;;
+      *_JAR ) JARS="${JARS} $1" ;;
       * ) dirs="${dirs} $1" ;;
   esac
   shift
 done
 dirs=`echo ${dirs}`
 jars=`echo ${jars}`
-
+JARS=`echo ${JARS}`
 
 # Generate the list of source files
 
@@ -66,10 +79,26 @@ has_main ()
 
 print_header Makefile.gen.in arguments: ${dirs} ${jars}
 echo GEN_DIRS = ${dirs}
-echo GEN_JARS = ${jars}
+echo GEN_JARS = ${jars} ${JARS}
 
 
-# Generate rules to compile any .jar files
+# Generate rules to compile any .jar and _JAR files.
+
+print_jar_rule ()
+{
+  cat <<EOF
+$1.jar: \$($2_JAR)
+	cp \$($2_JAR) .
+noinst_LIBRARIES += lib$1.a
+lib$1_a_LIBADD = $1.o
+$1.o: $1.jar
+lib$1_a_SOURCES = 
+CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
+lib$1.so: lib$1.a
+noinst_PROGRAMS += lib$1.so $1.db
+$1.db: lib$1.so $1.jar
+EOF
+}
 
 for jar in x ${jars}
 do
@@ -78,19 +107,19 @@ do
   B=`echo $b | tr '[a-z]' '[A-Z]'`
   echo ""
   print_header "... $jar"
-  cat <<EOF
-${B}_JAR = ${jar}
-${b}.jar: \$(${B}_JAR)
-	cp \$(${B}_JAR) .
-noinst_LIBRARIES += lib${b}.a
-lib${b}_a_LIBADD = ${b}.o
-${b}.o: ${b}.jar
-lib${b}_a_SOURCES = 
-CLEANFILES += ${b}.jar ${b}.o lib${b}.a lib${b}.so
-lib${b}.so: lib${b}.a
-noinst_PROGRAMS += lib${b}.so ${b}.db
-${b}.db: lib${b}.so ${b}.jar
-EOF
+  echo ${B}_JAR = ${jar}
+  print_jar_rule ${b} ${B}
+done
+
+for jar in x ${JARS}
+do
+  test ${jar} = x && continue
+  B=`basename ${jar} _JAR`
+  b=`echo ${B} | tr '[A-Z]' '[a-z]'`
+  echo ""
+  print_header "... $jar"
+  echo ${B}_JAR = @${B}_JAR@
+  print_jar_rule ${b} ${B}
 done
 
 

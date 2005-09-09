@@ -1,3 +1,8 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: For an _JAR macro, generate .jar rules.  Expand
+	usage.
+
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Do not set CLEANFILES.

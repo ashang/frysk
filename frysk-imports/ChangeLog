@@ -1,3 +1,9 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Add code to substitute JUNIT_JAR and ANTLR_JAR.
+	* autogen.sh: Replace path-to junit.jar and path-to antlr.jar with
+	JUNIT_JAR and ANTLR_JAR.
+
 2005-09-08  Andrew Cagney  <cagney@redhat.com>
 
 	* cdtparser.jar: Deleted.

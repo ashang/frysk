@@ -19,8 +19,8 @@
 
 ./common/Makefile.gen.sh \
     util \
-    /usr/share/java/junit.jar \
-    /usr/share/java/antlr.jar \
+    JUNIT_JAR \
+    ANTLR_JAR \
     jline/jline.jar \
     jargs/jargs.jar
     
