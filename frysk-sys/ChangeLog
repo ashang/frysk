@@ -1,5 +1,7 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
+
 	* autogen.sh, Makefile.am: Update to reflect move of
 	com.redhat.fedora.frysk to frysk.
 

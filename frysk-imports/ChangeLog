@@ -1,5 +1,7 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
+
 	* tests/anoncall/Makefile.am (clean-local): Add -f to "rm", and
 	also delete PASS and FAIL.
 

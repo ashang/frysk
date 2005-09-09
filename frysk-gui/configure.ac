@@ -24,6 +24,8 @@ AM_PROG_CC_C_O
 
 AC_PROG_CC(gcc)
 AM_PROG_GCJ(gcj)
+AC_CHECK_PROG(JAVAC,javac)
+AC_SUBST(JAVAC)
 AC_PROG_RANLIB(ranlib)
 
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lib/pkgconfig

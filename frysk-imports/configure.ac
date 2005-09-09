@@ -38,4 +38,7 @@ AC_SUBST([JUNIT_JAR])
 ANTLR_JAR=/usr/share/java/antlr.jar
 AC_SUBST([ANTLR_JAR])
 
+AC_CHECK_PROGS(JAVAC, javac)
+AC_SUBST(JAVAC)
+
 AC_OUTPUT

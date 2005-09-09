@@ -1,5 +1,8 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (JAVAC): Set to @JAVAC@, remove -1.4 from
+	JAVACFLAGS.
+
 	* Makefile.gen.sh: For an _JAR macro, generate .jar rules.  Expand
 	usage.
 

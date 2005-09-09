@@ -31,6 +31,8 @@ test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
 
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
+AC_CHECK_PROGS(JAVAC, javac)
+AC_SUBST(JAVAC)
 
 AM_PROG_AS
 AC_PROG_YACC()

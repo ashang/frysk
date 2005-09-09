@@ -1,5 +1,7 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
+
 	* configure.ac: Simplify, remove AC_SUBST for variables already
 	defined and stubsituted by PKG_CHECK_MODULES.
 	* Makefile.am: Clean up deleting all commented out definitions.

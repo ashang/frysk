@@ -43,10 +43,9 @@ DBPATH = $(subst $(space),:,$(strip \
 	$(foreach dir,$(patsubst %/$(GEN_CLASSDIR),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
 	))
 
-JAVAC = javac
+JAVAC = @JAVAC@
 JAVACFLAGS = \
 	-g \
-	-1.4 \
 	-sourcepath $(SOURCEPATH) \
 	-classpath $(CLASSPATH)
 
