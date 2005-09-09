@@ -1,5 +1,7 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Simplify, sinclude common/acinclude.m4.
+	
 	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
 
 	* configure.ac: Simplify, remove AC_SUBST for variables already

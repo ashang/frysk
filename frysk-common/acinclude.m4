@@ -16,11 +16,21 @@
 # along with FRYSK; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-AC_PREREQ(2.59)
-AC_INIT(accudog, 0.0)
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
-sinclude(common/acinclude.m4)
+AC_PROG_RANLIB
 
-AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
+AC_PROG_CXX
+test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
+
+AM_PROG_GCJ
+test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
+test "x$GCJ" = x && AC_MSG_ERROR([no acceptable GCJ compiler found in \$(PATH)])
+
+AC_CHECK_PROGS(JAVAC, javac)
+test "x$JAVAC" = x && AC_MSG_ERROR([no acceptable Java compiler found in \$(PATH)])
+
+AC_PROG_CC
+AM_PROG_CC_C_O
+test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
+
+AM_PROG_AS

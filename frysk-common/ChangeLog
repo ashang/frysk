@@ -1,5 +1,7 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* acinclude.m4: New file.
+
 	* Makefile.rules (JAVAC): Set to @JAVAC@, remove -1.4 from
 	JAVACFLAGS.
 
