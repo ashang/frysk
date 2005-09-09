@@ -1,6 +1,7 @@
 2005-09-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Fix typos
+	Rename window to Frysk
 
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
