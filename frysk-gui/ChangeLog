@@ -1,5 +1,12 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Simplify, remove AC_SUBST for variables already
+	defined and stubsituted by PKG_CHECK_MODULES.
+	* Makefile.am: Clean up deleting all commented out definitions.
+	Append LDADD to all program specific LDADD files.  Define
+	AM_GCJFLAGS instead of GCJFLAGS.  Do not link against
+	EggTrayIcon.a.
+
 	* .cvsignore: New file.
 
 2005-09-10  Igor Foox  <ifoox@redhat.com>

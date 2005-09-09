@@ -42,54 +42,29 @@ EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
                                        EggTrayIcon/libEggTrayIcon.c 
 EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(JGCOMMON_CFLAGS)
 
-
+# Hack, need to compile frysk.gui.monitor.EggTrayIcon.java with JNI.
+AM_GCJFLAGS += -fjni 
 
 LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a  ../frysk-imports/libfrysk-imports.a ../frysk-imports/libantlr.a
 LDFLAGS = @JAVA_LIBRARY_PATH@ @RPATH@
 noinst_PROGRAMS += frysk/gui/FryskGui
-#frysk/gui/FryskGui:EggTrayIcon/libEggTrayIcon.so
 frysk_gui_FryskGui_SOURCES += $(GEN_SOURCES) 
 frysk_gui_FryskGui_CLASSPATH = $(GEN_CLASSPATH) 
 
-#frysk_gui_FryskGui_LDFLAGS += -Wl,-rpath,/opt/lib
-#frysk_gui_FryskGui_LDFLAGS += -Wl,-rpath,/to/scratch/swagiaal/frysk/frysk-gui/EggTrayIcon 
-#frysk_gui_FryskGui_LDFLAGS += -Wl,-rpath,/opt/lib/libgtkjava-2.7.so  # -LEggTrayIcon
-#frysk_gui_FryskGui_LDFLAGS =  $(GTK_JAVA_LIBS) #-L/opt/lib -lgtkjava #$(GTK_JAVA_LIBS)
-
-frysk_gui_FryskGui_LDADD = -LEggTrayIcon -lEggTrayIcon 
-frysk_gui_FryskGui_LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a ../frysk-imports/libfrysk-imports.a ../frysk-imports/libantlr.a
+frysk_gui_FryskGui_LDADD = $(LDADD)
 frysk_gui_FryskGui_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
 frysk_gui_FryskGui_LDADD += $(GLADE_JAVA_LIBS)
 frysk_gui_FryskGui_LDADD += $(GNOME_JAVA_LIBS) 
 frysk_gui_FryskGui_LDADD += $(CAIRO_JAVA_LIBS)
 frysk_gui_FryskGui_LDADD += $(JGCOMMON_LIBS)
 
-GCJFLAGS += -fjni 
-
-
 noinst_PROGRAMS += frysk/gui/test/SourceWinTest
 
 frysk_gui_test_SourceWinTest_SOURCES += $(GEN_SOURCES)
 frysk_gui_test_SourceWinTest_CLASSPATH = $(GEN_CLASSPATH)
-frysk_gui_test_SourceWinTest_LDFLAGS += -W1,-rpath,
-#frysk_gui_test_SourceWinTest_LDADD = -lEggTrayIcon 
-frysk_gui_test_SourceWinTest_LDADD = ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a ../frysk-imports/libfrysk-imports.a ../frysk-imports/libantlr.a
+frysk_gui_test_SourceWinTest_LDADD = $(LDADD)
 frysk_gui_test_SourceWinTest_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
 frysk_gui_test_SourceWinTest_LDADD += $(GLADE_JAVA_LIBS)
 frysk_gui_test_SourceWinTest_LDADD += $(GNOME_JAVA_LIBS) 
 frysk_gui_test_SourceWinTest_LDADD += $(CAIRO_JAVA_LIBS) 
 frysk_gui_test_SourceWinTest_LDADD += $(JGCOMMON_LIBS)
-
-
-
-#noinst_PROGRAMS += frysk/gui/test/Test1
-
-#frysk_gui_test_Test1_SOURCES += $(GEN_SOURCES) 
-#frysk_gui_test_Test1_CLASSPATH = $(GEN_CLASSPATH) 
-#frysk_gui_test_Test1_LDADD = -lEggTrayIcon 
-#frysk_gui_test_Test1_LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a ../frysk-imports/libantlr.a
-#frysk_gui_test_Test1_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
-#frysk_gui_test_Test1_LDADD += $(GLADE_JAVA_LIBS)
-#frysk_gui_test_Test1_LDADD += $(GNOME_JAVA_LIBS) 
-#frysk_gui_test_Test1_LDADD += $(CAIRO_JAVA_LIBS)
-#frysk_gui_test_Test1_LDADD += $(JGCOMMON_LIBS)

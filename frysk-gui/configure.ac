@@ -28,55 +28,27 @@ AC_PROG_RANLIB(ranlib)
 
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lib/pkgconfig
 
-### gtk-java #####################
+dnl For EggTrayIcon
 PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
-AC_SUBST(GTK_CFLAGS)
-##################################
 
-### gtk-java #####################
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
-AC_SUBST(GTK_JAVA_CFLAGS)
-AC_SUBST(GTK_JAVA_LIBS)
-
 AC_MSG_CHECKING(for gtk2-java jar file)
 GTK2_JAR=`$PKG_CONFIG --variable classpath gtk2-java`
 AC_MSG_RESULT($GTK2_JAR)
 AC_SUBST(GTK2_JAR)
-##################################
 
-##################################
 PKG_CHECK_MODULES(GLADE_JAVA, glade-java >= 2.7.0)
-AC_SUBST(GLADE_JAVA_CFLAGS)
-AC_SUBST(GLADE_JAVA_LIBS)
-
 AC_MSG_CHECKING(for glade-java jar file)
 GLADE_JAR=`$PKG_CONFIG --variable classpath glade-java`
 AC_MSG_RESULT($GLADE_JAR)
 AC_SUBST(GLADE_JAR)
-##################################
 
-## cairo #########################
-PKG_CHECK_MODULES(CAIRO_JAVA, cairo-java >= 0.5.0)
-AC_SUBST(CAIRO_JAVA_CFLAGS)
-AC_SUBST(CAIRO_JAVA_LIBS)
-
-AC_MSG_CHECKING(for cairo-java jar file)
-CAIROJAR=`$PKG_CONFIG --variable classpath cairo-java`
-AC_MSG_RESULT($CAIROJAR)
-AC_SUBST(CAIROJAR)
-##################################
-
-## gj-common #####################
 PKG_CHECK_MODULES(JGCOMMON, jg-common >= 0.1)
-AC_SUBST(JGCOMMON_CFLAGS)
-AC_SUBST(JGCOMMON_LIBS)
-AC_SUBST(JGCOMMON_JNILIBS)
-
 AC_MSG_CHECKING(for jg-common jar file)
 JGCOMMON_JAR=`$PKG_CONFIG --variable classpath jg-common`
 AC_MSG_RESULT($JGCOMMON_JAR)
 AC_SUBST(JGCOMMON_JAR)
-##################################
+
 
 RPATH=-Wl,-rpath,`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
