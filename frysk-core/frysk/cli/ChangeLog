@@ -1,0 +1,28 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/cli/ to frysk/cli/.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+	
+	* hpd/.cvsignore: New.
+
+2005-08-19  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* hpd/doc-files/parsetree.png: New.
+	* hpd/doc-files/package.html: New.
+
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* hpd/TaskSet.java: Delete java.util.Arrays import.
+
+2005-08-13  Ivan Pantuyev <ipantuye@redhat.com>
+	
+	* hpd/CLI.java: New.
+	* hpd/CommandHandler.java: New.
+	* hpd/PTNode.java: New.
+	* hpd/ParserHelper.java: New.
+	* hpd/Preprocessor.java: New.
+	* hpd/SetNotationParser.java: New.
+	* hpd/SetParserTest.java: New.
+	* hpd/TaskSet.java: New.
+

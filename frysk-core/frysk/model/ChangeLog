@@ -1,0 +1,70 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/model/ to frysk/model/.
+
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: New.
+
+2005-07-22  Andrew Cagney  <cagney@redhat.com>
+
+	* RegisterSet.java: Remove reference to package proc.
+		
+2005-07-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Abi.java: New file.
+	* Action.java: New file.
+	* Address.java: New file.
+	* Block.java: New file.
+	* Breakpoint.java: New file.
+	* Cli.java: New file.
+	* Command.java: New file.
+	* Condition.java: New file.
+	* Corefile.java: New file.
+	* Cwd.java: New file.
+	* DebugInfo.java: New file.
+	* DebugSymbol.java: New file.
+	* Debuginfo.java: New file.
+	* Event.java: New file.
+	* Exception.java: New file.
+	* Expression.java: New file.
+	* File.java: New file.
+	* Frame.java: New file.
+	* Function.java: New file.
+	* Futex.java: New file.
+	* Gui.java: New file.
+	* HeaderFile.java: New file.
+	* Language.java: New file.
+	* LineTable.java: New file.
+	* Location.java: New file.
+	* Map.java: New file.
+	* MemoryLocation.java: New file.
+	* Method.java: New file.
+	* Mi.java: New file.
+	* MinimalSymbol.java: New file.
+	* Mutex.java: New file.
+	* ObjectFile.java: New file.
+	* Operand.java: New file.
+	* Operator.java: New file.
+	* Pie.java: New file.
+	* PosixThread.java: New file.
+	* Program.java: New file.
+	* Protocol.java: New file.
+	* RegisterLocation.java: New file.
+	* RegisterSet.java: New file.
+	* Section.java: New file.
+	* Segment.java: New file.
+	* Semaphore.java: New file.
+	* SharedLibrary.java: New file.
+	* Signal.java: New file.
+	* SourceFile.java: New file.
+	* Stack.java: New file.
+	* State.java: New file.
+	* Symbol.java: New file.
+	* SymbolTable.java: New file.
+	* Terminal.java: New file.
+	* Thread.java: New file.
+	* Tracepoint.java: New file.
+	* Type.java: New file.
+	* Variable.java: New file.
+	* Watchpoint.java: New file.

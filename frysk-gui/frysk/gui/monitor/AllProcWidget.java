@@ -1,0 +1,369 @@
+/*
+ * Created on 8-Jul-05
+ *
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+package frysk.gui.monitor;
+
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.prefs.Preferences;
+
+import javax.swing.ListModel;
+
+import org.gnu.glade.LibGlade;
+import org.gnu.glib.GObject;
+import org.gnu.glib.PropertyNotificationListener;
+import org.gnu.gtk.Button;
+import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.ComboBox;
+import org.gnu.gtk.Entry;
+import org.gnu.gtk.ProgressBar;
+import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.SpinButton;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeModel;
+import org.gnu.gtk.TreeModelFilter;
+import org.gnu.gtk.TreeModelFilterVisibleMethod;
+import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeSelection;
+import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.VPaned;
+import org.gnu.gtk.Widget;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.KeyEvent;
+import org.gnu.gtk.event.KeyListener;
+import org.gnu.gtk.event.MouseEvent;
+import org.gnu.gtk.event.MouseListener;
+import org.gnu.gtk.event.SpinEvent;
+import org.gnu.gtk.event.SpinListener;
+import org.gnu.gtk.event.TreeModelEvent;
+import org.gnu.gtk.event.TreeModelListener;
+import org.gnu.gtk.event.TreeSelectionEvent;
+import org.gnu.gtk.event.TreeSelectionListener;
+
+import frysk.gui.FryskGui;
+import frysk.gui.monitor.ProcDataModel.FilterType;
+
+public class AllProcWidget extends Widget implements ButtonListener, Saveable{
+
+	private SpinButton refreshSpinButton;
+	private Button refreshButton;
+	private Button holdButton;
+	
+	private TreeView procTreeView;
+	private TreeView threadTreeView;
+	private ScrolledWindow scrolledWindow;
+
+	private ProgressBar progressBar;
+	
+	private ComboBox filterCombobox;
+	private Entry filterEntry;
+	private Button filterSetButton;
+	
+	private ProcDataModel psDataModel;
+	private VPaned vPane;
+	private TreeModelFilter procFilter;
+	private TreeModelFilter threadFilter;
+	
+	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	
+	public AllProcWidget(LibGlade glade) throws IOException {
+		super((glade.getWidget("allProcVBox")).getHandle());
+		
+		this.refreshSpinButton   = (SpinButton)  glade.getWidget("refreshSpinButton");
+		this.refreshButton       = (Button)      glade.getWidget("refreshButton");
+		this.holdButton          = (Button)      glade.getWidget("holdButton");
+		
+		this.procTreeView        = (TreeView)    glade.getWidget("procTreeView");
+		this.threadTreeView      = (TreeView)    glade.getWidget("threadTreeView");
+		
+		this.scrolledWindow      = (ScrolledWindow) glade.getWidget("treeViewScrollWindow");
+		this.vPane               = (VPaned)  glade.getWidget("vPane");
+		
+		this.filterCombobox      = (ComboBox)    glade.getWidget("filterComboBox");
+		this.filterEntry         = (Entry)       glade.getWidget("filterEntry");
+		this.filterSetButton     = (Button)      glade.getWidget("filterSetButton");
+				
+		this.refreshButton.addListener(this);
+		this.refreshSpinButton.addListener(new SpinListener(){
+			public void spinEvent(SpinEvent event) {
+				if(event.getType() == SpinEvent.Type.VALUE_CHANGED){
+					psDataModel.setRefreshTime(refreshSpinButton.getIntValue());
+				}
+			}			
+		});
+		
+		
+		this.psDataModel = new ProcDataModel();
+		psDataModel.setFilterON(true);
+		
+		this.mountProcModel(this.psDataModel);
+		this.threadViewInit(psDataModel);
+		
+		this.procTreeView.getSelection().addListener(new TreeSelectionListener(){
+			public void selectionChangedEvent(TreeSelectionEvent event) {
+				if(procTreeView.getSelection().getSelectedRows().length > 0){
+					TreePath selected = procTreeView.getSelection().getSelectedRows()[0];
+					mountThreadModel(psDataModel, selected);
+				}
+			}
+		});
+		
+		this.filterEntry.addListener(new KeyListener(){
+			public boolean keyEvent(KeyEvent event) {
+				if(event.getKeyval() == 65293 && event.getType() == KeyEvent.Type.KEY_PRESSED){
+					setFilter();
+					refresh();
+				}
+				return false;
+			}
+		});
+		
+		this.procTreeView.addListener(new MouseListener(){
+
+			public boolean mouseEvent(MouseEvent event) {
+				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
+						& event.getButtonPressed() == MouseEvent.BUTTON3){
+					
+					ProcData data = getSelectedProc();
+					if(data != null) WatchMenu.getMenu().popup(data);
+					
+                    System.out.println("click : " + data);
+                    return true;
+				}
+				return false;
+			}
+		});
+		
+		this.threadTreeView.addListener(new MouseListener(){
+
+			public boolean mouseEvent(MouseEvent event) {
+				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
+						& event.getButtonPressed() == MouseEvent.BUTTON3){
+					
+					TaskData data = getSelectedThread();
+					if(data != null) ThreadMenu.getMenu().popup(data);
+					
+                    System.out.println("click : " + data);
+                    return true;
+				}
+				return false;
+			}
+		});
+		
+	}
+	
+	
+	public void mountProcModel(final ProcDataModel psDataModel){
+		
+//		this.procTreeView.setModel(psDataModel.getModel());
+		
+		this.procFilter = new TreeModelFilter(psDataModel.getModel());
+		
+		procFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
+
+			public boolean filter(TreeModel model, TreeIter iter) {
+
+				if(model.getValue(iter, psDataModel.getThreadParentDC()) == -1){
+					return true;
+				}else{
+					return false;
+				}
+			}
+			
+		});
+		
+		this.procTreeView.setModel(procFilter);
+		this.procTreeView.setSearchDataColumn(psDataModel.getCommandDC());
+		
+		TreeViewColumn pidCol = new TreeViewColumn();
+		TreeViewColumn commandCol = new TreeViewColumn();
+		
+		CellRendererText cellRendererText3 = new CellRendererText();
+		pidCol.packStart(cellRendererText3, false);
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.TEXT ,psDataModel.getPidDC());
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());		
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());		
+
+		CellRendererText cellRendererText4 = new CellRendererText();
+		commandCol.packStart(cellRendererText4, false);
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.TEXT ,psDataModel.getCommandDC());
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
+
+		pidCol.setTitle("PID");
+		commandCol.setTitle("Command");
+		
+		pidCol.setVisible(true);
+		commandCol.setVisible(true);
+
+		this.procTreeView.appendColumn(pidCol);
+		this.procTreeView.appendColumn(commandCol);
+		
+		psDataModel.getModel().addListener(new PropertyNotificationListener(){
+			public void notify(GObject arg0, String arg1) {
+				System.out.println("Notification : " + arg1);
+			}
+		});
+		
+		psDataModel.getModel().addListener(new TreeModelListener(){
+
+			public void treeModelEvent(TreeModelEvent event) {
+				procTreeView.expandAll();
+			}
+			
+		});
+		
+		this.procTreeView.expandAll();
+	}
+	
+	
+	public void mountThreadModel(final ProcDataModel psDataModel, final TreePath relativeRoot ){
+		final TreePath root = this.procFilter.convertPathToChildPath(relativeRoot);
+		this.threadFilter = new TreeModelFilter(psDataModel.getModel(), root);
+		
+		threadFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
+
+			public boolean filter(TreeModel model, TreeIter iter) {
+				if(relativeRoot == null ) {
+					return false;
+				}
+				if(model.getValue(iter, psDataModel.getThreadParentDC()) == procFilter.getValue(procFilter.getIter(relativeRoot), psDataModel.getPidDC())){
+					return true;
+				}else{
+					return false;
+				}
+				
+			}
+		});
+		
+		this.threadTreeView.setModel(threadFilter);
+	}
+
+	private void threadViewInit(ProcDataModel procDataModel){
+		TreeViewColumn pidCol = new TreeViewColumn();
+		TreeViewColumn commandCol = new TreeViewColumn();
+		TreeViewColumn threadParentCol = new TreeViewColumn();
+		
+		CellRendererText cellRendererText3 = new CellRendererText();
+		pidCol.packStart(cellRendererText3, false);
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.TEXT ,psDataModel.getPidDC());
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());		
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());		
+
+		CellRendererText cellRendererText4 = new CellRendererText();
+		commandCol.packStart(cellRendererText4, false);
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.TEXT ,psDataModel.getCommandDC());
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
+
+		pidCol.setTitle("PID");
+		commandCol.setTitle("Entry Functions");
+		
+		pidCol.setVisible(true);
+		commandCol.setVisible(true);
+
+		this.threadTreeView.appendColumn(pidCol);
+		this.threadTreeView.appendColumn(commandCol);
+		
+		psDataModel.getModel().addListener(new TreeModelListener(){
+
+			public void treeModelEvent(TreeModelEvent event) {
+				threadTreeView.expandAll();
+			}
+			
+		});
+		
+		this.threadTreeView.expandAll();
+	}
+	
+	public void buttonEvent(ButtonEvent event) {
+		if(this.refreshButton.equals(event.getSource()) 
+				&& event.getType() == ButtonEvent.Type.CLICK){
+			this.refresh();
+		}
+		
+		if(this.filterSetButton.equals(event.getSource())
+				&& event.getType() == ButtonEvent.Type.CLICK){
+			this.setFilter();
+		}
+	}
+	
+	private void setFilter() {
+		int active = this.filterCombobox.getActive();
+		switch(active){
+		
+		case 0:
+			this.psDataModel.setFilter(ProcDataModel.FilterType.NONE, 0);
+			break;
+		
+		case 1:
+			this.psDataModel.setFilter(ProcDataModel.FilterType.UID, Integer.parseInt(this.filterEntry.getText()));
+			break;
+		
+		case 2:
+			this.psDataModel.setFilter(ProcDataModel.FilterType.PID, Integer.parseInt(this.filterEntry.getText()));
+			break;
+		
+		case 3:
+			this.psDataModel.setFilter(ProcDataModel.FilterType.COMMAND, this.filterEntry.getText());
+			break;
+		
+		default:
+			return;
+		}
+	}
+
+	private void refresh(){
+		try {
+			this.psDataModel.refresh();
+		} catch (IOException e) {
+			errorLog.log(Level.SEVERE,"Cannot refresh",e);
+		}
+	}
+
+	private ProcData getSelectedProc(){
+		TreeSelection ts = this.procTreeView.getSelection();
+		TreePath[] tp = ts.getSelectedRows();
+		if(tp.length == 0){ 
+			return null;
+		}
+		
+		TreeModel model = this.procFilter;
+		ProcData data   = (ProcData)model.getValue(model.getIter(tp[0]), this.psDataModel.getProcDataDC());
+		int pid         = model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+
+		return data;
+	}
+
+	private TaskData getSelectedThread(){
+		TreeSelection ts = this.threadTreeView.getSelection();
+		TreePath[] tp = ts.getSelectedRows();
+		if(tp.length == 0){ 
+			return null;
+		}
+		
+		TreeModel model = this.threadFilter;
+		TaskData data   = (TaskData)model.getValue(model.getIter(tp[0]), this.psDataModel.getProcDataDC());
+		int pid         = model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+
+		return data;
+	}
+
+	public void save(Preferences prefs) {
+		prefs.putInt("vPane.position", this.vPane.getPosition());
+	}
+
+
+	public void load(Preferences prefs) {
+		int position = prefs.getInt("vPane.position", this.vPane.getPosition());
+		
+		this.vPane.setPosition(position);
+	}
+	
+}

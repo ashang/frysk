@@ -1,0 +1,61 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/event/ to frysk/event/.
+
+2005-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Rename TimerEvent's "removeEvent" to "remove".
+	For "runPolling", remove the timer event.
+	* TestEventLoop.java: Update.
+	
+	* TestEventLoop.java: Add "testSignalHandler".
+	* SignalEvent.java: Add "hashCode" and "equals", remove
+	"compareTo".
+	* EventLoop.java: Add "remove" for SignalEvent.  Rename
+	"addSignalEvent" to "addHandler", handle duplicate handlers.
+	Rename "signalEvents" to "signalHandlers".  Add "processSignal".
+
+2005-08-14  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Fix comments.
+	
+	* TestEventLoop.java: Fix race condition in "testEventLoop", add
+	"testScheduleBeforeRun", simplify other tests.
+	
+	* EventLoop.java: Replace "stop" with "requestStop".  In "run",
+	process pending events first.
+	
+2005-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Add public methods "runPolling" and
+	"runPending", update to use "run".
+
+2005-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java, TestEventLoop.java: Add removeEvent for timer
+	events, test.
+
+	* Event.java, EventLoop.java, SignalEvent.java,
+	TestEventLoop.java, TimerEvent.java: Add support for periodic
+	timers to TimerEvent, test.
+
+	* EventLoop.java: On creation, clear Poll's SignalSet.
+	* TestEventLoop.java: Convert to junit.
+
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+	
+	* .cvsignore: New.
+	* EventLoop.java: Fix ECJ build errors.
+
+2005-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Update to use the static Poll.SignalSet methods.
+
+2005-07-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Event.java: New file.
+	* EventLoop.java: New file.
+	* PollEvent.java: New file.
+	* SignalEvent.java: New file.
+	* TestEventLoop.java: New file.
+	* TimerEvent.java: New file.

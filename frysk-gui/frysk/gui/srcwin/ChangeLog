@@ -1,0 +1,93 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/gui/srcwin/ to frysk/gui/srcwin/.
+
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* cparser/CDTParser.java: Delete.
+	* cparser/SimpleParser.java: Ditto.
+	* SourceBuffer.java: Revert switch to CDTParser.
+
+2005-09-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java: moved from com.redhat.fedora.frysk.gui
+	* cparser/SimpleParser.java (parse): added support for bitshift and quote characters
+	* cparser/CDTParser.java: Added
+	* SourceBuffer.java (loadFile): changed to use CDTParser
+	(addFunction): Added overloaded method to take char offset from start of file
+	(addVaraible): Changed to use only character offset, not line number
+
+2005-09-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cparser/SimpleParser.java: Added to repository
+
+	* SourceBuffer.java (loadFile): Changed to use SimpleParser instead of CTagsParser
+
+	* SourceWindow.java (createActions): Changed icon for run action to run.png
+
+2005-09-06 Adam Jocksch <ajocksch@redhat.com>
+
+	* cparser: removed all but CTagsParser.java
+
+	* VariableLocation.java: changed to Variable.java
+	now inherits from CodeItem
+
+	* CodeItem.java: Added
+
+	* StaticParser.java: Added
+
+2005-09-01 Adam Jocksch <ajocksch@redhat.com>
+	
+	* SourceWindow.java: added createActions, createMenus
+	(createToolbar): toolbar now created from Action objects
+	(attachEvents): removed calls to attach to menu/toolbar items
+	(doRun): status of Actions now toggled
+	(debuggerCommand): removed
+	(menuEvent): removed
+	(toolButtonEvent): removed
+	removed MenuListener and ToolButtonListener interfaces
+
+2005-08-23 Adam Jocksch <ajocksch@redhat.com>
+	
+	* SourceViewWidget.java (mouseEvent): Added code to toggle breakpoint
+
+2005-08-22 Adam Jocksch <ajocksch@redhat.com>
+	
+	* SourceViewWidget.java: Added "mouseEvent"
+	(initialize): Added self as a MouseEvent Listener
+	
+	* SourceBuffer.java (processFunction): fixed repeated parsing bug
+	
+	* VariableList.java: Added
+	
+	* VariableLocation.java: Added
+
+2005-08-17 Adam Jocksch <ajocksch@redhat.com>
+	
+	* SourceBuffer.java (updatePreferences): replaced set*Color
+	(SourceBuffer): Moved initialization of TextTags here from getData
+	
+	* PreferenceWindow.java 
+	(setupButtons): added syntax highlighting options
+	(buttonEvent): Saves syntax highlighting options
+	
+	*SourceViewWidget.java 
+	(refresh): added call to SourceBuffer::updatePreferences
+
+2005-08-18 Adam Jocksch <ajocksch@redhat.com>
+
+	* SourceWindow.java: Added dummy methods for debugger calls
+	(menuItemEvent): Added listeners to menu items
+
+2005-07-15  Adam Jocksch <ajocksch@redhat.com>
+	
+	* SourceText.java 
+	(SourceTest): Removed previously commented-out observer
+	
+2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceTest.java - added to repository, runs Source window mockup
+	
+	* SourceBuffer.java - Added displaying of line numbers next to lines
+	
+	* SourceViewWidget.java - Removed double-click/right-click add breakpoints to fix JVM crashes on quit

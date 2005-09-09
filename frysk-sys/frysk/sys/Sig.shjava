@@ -1,0 +1,35 @@
+#!/bin/sh -e
+
+# Grub through the file generating a mkjava.sh table
+
+gcc -dD -E /usr/include/signal.h | sed -n '
+/SIGRTMAX/ d
+/SIGRTMIN/ d
+/SIGUNUSED/ d
+/STKSZ/ d
+/#define SIG[A-Z][A-Z0-9]* / {
+  s,\([[:space:]]\)SIG,\1,g
+  s,#define ,,
+  s,/\*,,
+  s,\*/,,
+  p
+}
+' | awk '{
+    # SIGNAL VALUE
+    if ($2 ~ /[A-Z]/) {
+	    # VALUE is ASCII (i.e., another signal), save
+	    saved[$1] = $2
+    } else if ($2 in value2sig) {
+	    # VALUE is duplicated, save the reference
+	    saved[$1] = value2sig[$2]
+    } else {
+	    value2sig[$2] = $1
+	    print
+    }
+}
+END {
+    for (s in saved) {
+	print s, saved[s], "-"
+    }
+}
+'

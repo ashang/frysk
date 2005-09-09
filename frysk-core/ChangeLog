@@ -1,3 +1,8 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* autogen.sh, Makefile.am: Update to reflect move of
+	com.redhat.fedora.frysk to frysk.
+
 2005-09-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH, LDADD): Add frysk-imports.

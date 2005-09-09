@@ -23,7 +23,7 @@ package prog.util;
 
 import util.PrintWriter;
 import util.eio.*;
-import com.redhat.fedora.frysk.proc.Auxv;
+import frysk.proc.Auxv;
 import java.io.File;
 import java.io.FileInputStream;
 

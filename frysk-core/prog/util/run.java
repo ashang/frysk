@@ -25,9 +25,9 @@ package prog.util;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.redhat.fedora.frysk.proc.Manager;
-import com.redhat.fedora.frysk.proc.Proc;
-import com.redhat.fedora.frysk.proc.Task;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
+import frysk.proc.Task;
 
 class run
 {

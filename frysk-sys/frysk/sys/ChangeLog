@@ -1,0 +1,122 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/sys/ to frysk/sys/.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Rename wait to waitAll, waitNohang to waitAllNoHang,
+	signaled to terminated, and zombied to disappeared.
+
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Fork.cxx: For daemon, reap the original child's pid.
+
+2005-08-26  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* cni/Wait.cxx: Add __WALL flag for regular wait without WNOHANG.
+
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Fork.java, cni/Fork.cxx: Add method "daemon".
+
+2005-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Signal.cxx (kill, tkill): Throw an exception if the kill
+	fails.
+
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx, Ptrace.java: Don't catch Errno.Esrch.
+
+	* cni/Errno.cxx, Errno.java: Handle ECHILD adding Echild sub-class
+
+2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Errno.java: Add Esrch class to represent ESRCH errno (process
+	not found).
+	* Ptrace.java: Change prototypes of cont, singleStep, sysCall, and
+	setOptions methods to return an int.
+	* Wait.java: Add zombied observer.
+	* XXX.java: Add infCloneLoop.
+	* cni/Errno.cxx: Add support for new Errno.Esrch class.
+	* cni/Ptrace.cxx: For cont, singleStep, sysCall, and setOptions,
+	use a try/catch to gracefully handle an ESRCH error and return an
+	error code.
+	* cni/Wait.cxx (PTRACE_EVENT_FORK, PTRACE_EVENT_CLONE): Handle an
+	Esrch error thrown when getting the event msg and in such a case,
+	call the zombied observer.
+	* cni/XXX.cxx (infCloneLoop): New test.
+
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shjava: Use "gcc -dD" and /usr/include/signal.h.
+
+2005-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Fork.java, Pid.java, cni/Fork.cxx, Pid.cxx: New.
+
+	* Wait.java: Add "wait" method, delete "Observer.unknown".
+	* cni/Wait.cxx (processStatus, wait): New.
+	(waitNoHang): Use processStatus.
+
+2005-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx, Poll.java: Add SignalSet.empty.
+
+2005-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Delete TestJUnits.java.
+
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Ignore TestJUnits.java.
+	* ExampleJUnitTest.java: New.
+
+	* .cvsignore: Add Sig.java.
+
+2005-07-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java, cni/Wait.cxx: Delete the one parameter "stopped"
+	observer.
+
+2005-07-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shjava: New file.
+
+	* cni/XXX.cxx, sys/XXX.java: New files.  Copy in infLoop,
+	infThreadLoop and suspendedProg methods from proc.SysUtils.
+
+	* cni/Signal.cxx, Signal.java: New files.
+
+2005-07-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Delete "stop" wait observer.
+	* cni/Wait.cxx: Enable all the wait observers.
+
+2005-07-28  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx: For WIFEXITED, call Observer.exited.
+	
+	* Wait.java: Uncomment all the commented out observers and add a
+	new method "unknown", but always call "stop" observer.
+
+2005-07-27  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx, Poll.java: Make SignalSet static, drop SignalSet
+	paramter from poll method.
+
+2005-07-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Errno.java: Add missing serialVersionUID.
+
+	* .cvsignore: Exclude more generated files.
+
+2005-07-21  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/.cvsignore: New file.
+
+2005-07-19  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Ptrace.cxx, cni/Poll.cxx, cni/Itimer.cxx, cni/Errno.cxx,
+	cni/Errno.hxx, Ptrace.java, Poll.java, Itimer.java, Errno.java:
+	New file.

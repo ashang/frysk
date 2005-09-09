@@ -1,0 +1,21 @@
+<html>
+<head>
+</head>
+<body>
+<h2>BUILDING:</h2>
+<ul>
+<li>To build a recursive automake is used, located in src/jline. The invocation of the Makefile.am is specified through
+the main Makefile.am and configure.ac, grep those for "jline" if you want to make changes.
+<li>The current version has references to native windows code removed in Terminal.java and WindowsTermnial.java removed
+entirely.
+<li>Changed obsolete java code in ConsoleReader:692 to code that doesn't give warnings, but supposedly that throws an
+exception on OS X.
+</ul>
+
+<h2>Command line handling:</h2>
+<ul>
+<li>Command has to get preprocessed at first using Preprocessor, what
+this does is handle multiline and ';' combined commands.
+</ul>
+</body>
+</html>

@@ -1,0 +1,311 @@
+// This file is part of FRYSK.
+//
+// Copyright 2005, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// FRYSK is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+package frysk.event;
+
+import frysk.sys.Itimer;
+import frysk.sys.Signal;
+import frysk.sys.Sig;
+import frysk.sys.Pid;
+import junit.framework.TestCase;
+
+/**
+ * Test the EventLoop object.
+ *
+ * Creates two timer events, then uses the underlying OS to also
+ * schedule a signal tiggered by an operating system timer.  Confirms
+ * that all three are delivered.
+ */
+
+public class TestEventLoop
+    extends TestCase
+{
+    EventLoop eventLoop;
+
+    public void setUp ()
+    {
+	eventLoop = new EventLoop ();
+	eventLoop.addHandler (new SignalEvent (Sig.INT)
+	    {
+		public void execute ()
+		{
+		    fail ("Got CNTRL-C");
+		}
+	    });
+    }
+
+    /**
+     * Test countdown timers, and signals.
+     */
+    public void testEventLoop ()
+    {
+	class Counters
+	{
+	    int numberOfSignalEvents;
+	    int numberOfTimerEvents;
+	}
+	final Counters counters = new Counters ();
+	eventLoop.addTimerEvent (new TimerEvent (250)
+	    {
+		Counters count = counters;
+		public void execute ()
+		{
+		    assertEquals (0, count.numberOfSignalEvents);
+		    assertEquals (0, count.numberOfTimerEvents);
+		    count.numberOfTimerEvents += 1;
+		}
+	    });
+	eventLoop.addHandler (new SignalEvent (Itimer.real (500))
+	    {
+		Counters count = counters;
+		public void execute ()
+		{
+		    assertEquals (0, count.numberOfSignalEvents);
+		    assertEquals (1, count.numberOfTimerEvents);
+		    count.numberOfSignalEvents += 1;
+		}
+	    });
+	eventLoop.addTimerEvent (new TimerEvent (750)
+	    {
+		Counters count = counters;
+		public void execute ()
+		{
+		    assertEquals (1, count.numberOfSignalEvents);
+		    assertEquals (1, count.numberOfTimerEvents);
+		    count.numberOfTimerEvents++;
+		    eventLoop.requestStop ();
+		}
+	    });
+	eventLoop.run ();
+
+	// Check the final count.
+	assertEquals ("SignalEvent count", 1, counters.numberOfSignalEvents);
+	assertEquals ("TimerEvent count", 2, counters.numberOfTimerEvents);
+    }
+
+    /**
+     * Test the periodic timer.
+     */
+    public void testPeriodicTimer ()
+    {
+	class CountingTimer extends TimerEvent
+	{
+	    int count;
+	    int limit;
+	    CountingTimer (long first, long period, int limit)
+	    {
+		super (first, period);
+		this.limit = limit;
+	    }
+	    public void execute ()
+	    {
+		assertTrue ("Timer Runaway", count < limit);
+		count += getCount ();
+	    }
+	}
+	CountingTimer countingTimer = new CountingTimer (50, 200, 3);
+
+	eventLoop.addTimerEvent (countingTimer);
+	eventLoop.addTimerEvent (new TimerEvent (500)
+	    {
+		public void execute ()
+		{
+		    eventLoop.requestStop ();
+		}
+	    });
+	eventLoop.run ();
+				 
+	// Check the final count.
+	assertEquals ("Period Timer Count", 3, countingTimer.count);
+    }
+
+    /**
+     * Test the removal of a timer.
+     */
+    public void testTimerRemoval ()
+    {
+	// A timer that removes it's "timerToRemove" member.
+	class TimerRemover
+	    extends TimerEvent
+	{
+	    TimerEvent timerToRemove;
+	    TimerRemover (long time)
+	    {
+		super (time);
+	    }
+	    public void execute ()
+	    {
+		assertNotNull ("There is a timer to remove", timerToRemove);
+		eventLoop.remove (timerToRemove);
+	    }
+	}
+
+	// A timer that fails if executed.
+	class FailTimer extends TimerEvent
+	{
+	    FailTimer (long time)
+	    {
+		super (time);
+	    }
+	    public void execute ()
+	    {
+		fail ("Timer Should Not Execute");
+	    }
+	}
+
+	// Create two timers scheduled to run in sequence. The first
+	// ("timerRemover"), when executes, removes the second
+	// ("timerToRemove").  The removeTimer must be created before
+	// "timerToRemove" to guarentee that its scheduled run-time is
+	// earlier.
+	TimerRemover timerRemover = new TimerRemover (1);
+	TimerEvent timerToRemove = new FailTimer (2);
+	timerRemover.timerToRemove = timerToRemove;
+
+	// Insert these timers into the list.
+	eventLoop.addTimerEvent (timerToRemove);
+	eventLoop.addTimerEvent (timerRemover);
+
+	// Finally, create a timer that shuts the event-loop down.
+	eventLoop.addTimerEvent (new TimerEvent (3)
+	    {
+		public void execute ()
+		{
+		    eventLoop.requestStop ();
+		}
+	    });
+
+	eventLoop.run ();
+    }
+
+
+    /**
+     * Test that events scheduled before run are processed.
+     *
+     * This checks that any synchronous events appended before the
+     * event loop is started are always run.
+     */
+    public void testScheduleBeforeRun ()
+    {
+	class DidExecute
+	    implements Event
+	{
+	    boolean ran = false;
+	    public void execute ()
+	    {
+		ran = true;
+	    }
+	}
+
+	// Schedule an immediate event that sets a marker indicating
+	// that it ran.
+	DidExecute firstExecute = new DidExecute ();
+	eventLoop.appendEvent (firstExecute);
+
+	// Schedule an immediate event that shuts down the event loop.
+	eventLoop.appendEvent (new Event ()
+	    {
+		public void execute ()
+		{
+		    eventLoop.requestStop ();
+		}
+	    });
+
+
+	// Schedule a further immediate event that sets a marker
+	// indicating that it ran.
+	DidExecute secondExecute = new DidExecute ();
+	eventLoop.appendEvent (secondExecute);
+
+	// Schedule a timer event that, here, will never be executed
+	// since the above stop event will first be processed
+	// preventing the processing of asynchronous events.
+	eventLoop.addTimerEvent (new TimerEvent (0)
+	    {
+		public void execute ()
+		{
+		    fail ("Timer event should not run");
+		}
+	    });
+
+	eventLoop.run ();
+
+	assertTrue ("First synchronous event executed", firstExecute.ran);
+	assertTrue ("Second synchronous event executed", firstExecute.ran);
+    }
+
+    /**
+     * Test adding and removing a signal handler.
+     *
+     * This adds / removes / adds a SIGCHLD handler (by default
+     * SIGCHLD signals are ignored).and then checks that when it is
+     * installed the event occures, but when it is un-installed, the
+     * event is lost.
+     */
+    public void testSignalHandler ()
+    {
+	class SignalFired 
+	    extends SignalEvent
+	{
+	    SignalFired (int sig)
+	    {
+		super (sig);
+	    }
+	    int count;
+	    public void execute ()
+	    {
+		count++;
+		eventLoop.requestStop ();		
+	    }
+	}
+	SignalFired handler = new SignalFired (Sig.CHLD);
+
+	// Add a handler for SIGCHILD, shoot the signal (which makes
+	// it pending since there is a handler), and then run the loop
+	// checking that it did, indeed fire.
+	eventLoop.addHandler (handler);
+	Signal.tkill (Pid.get (), Sig.CHLD);
+	eventLoop.runPolling (0);
+	assertEquals ("One Sig.CHLD was received.", 1, handler.count);
+
+	// Remove the handler, send a further signal, check that it
+	// wasn't received.
+	eventLoop.remove (handler);
+	Signal.tkill (Pid.get (), Sig.CHLD);
+	eventLoop.runPolling (0);
+	assertEquals ("Still only one Sig.CHLD (no additions).",
+		      1, handler.count);
+	
+	// Re-add the CHLD handler, but this time twice - the
+	// second add should be ignored, make certain it's again
+	// receiving signal events.
+	eventLoop.addHandler (handler);
+	eventLoop.addHandler (handler);
+	Signal.tkill (Pid.get (), Sig.CHLD);
+	eventLoop.runPolling (0);
+	assertEquals ("Second Sig.CHLD received.", 2, handler.count);
+
+	// Finally remove the handler and again check no signal was
+	// received (if the handler was duplicated in the signal pool
+	// then it might still see the signal).
+	eventLoop.remove (handler);
+	Signal.tkill (Pid.get (), Sig.CHLD);
+	eventLoop.runPolling (0);
+	assertEquals ("No further SIGCHLDs.", 2, handler.count);
+    }
+}

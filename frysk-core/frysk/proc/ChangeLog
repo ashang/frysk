@@ -1,0 +1,961 @@
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Move com/redhat/fedora/frysk/proc/ to frysk/proc/.
+
+2005-09-07  Andrew Cagney  <cagney@redhat.com>
+	
+	* Proc.java, ProcEvent.java, Task.java, TaskEvent.java: Simplify,
+	exploit nested classes ability to access containg classes
+	variables.
+
+	* Host.java, Manager.java: Move taskPool to Host.
+	* Proc.java, ProcEvent.java, ProcState.java, Task.java,
+	TaskEvent.java, TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestExiting.java, TestGoAndGo.java,
+	TestI386Regs.java, TestPaused.java, TestProcStop.java,
+	TestProcStopAndGo.java, TestProcStopAndGo2.java,
+	TestProcStopAndStop.java, TestRun.java, TestStop.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestSyscall.java,
+	TestSyscall2.java, TestSyscallOpen.java, TestTerminated.java:
+	Update.
+
+2005-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java, ProcState.java, Task.java, TaskEvent.java,
+	TaskState.java, TestGoAndGo.java, TestStep.java,
+	TestStopAndGo.java, TestUnpaused.java: Replace request events with
+	anonymous objects.
+
+	* TaskState.java: Add attaching state; handle RequestAttach.
+	* ProcState.java: Add states AttachingToMainTask, and
+	AttachingToOtherTasks; handle requestAttachingContinue.
+	* LinuxTask.java, Task.java: Add sendAttach.
+
+2005-09-06  Andrew Cagney  <cagney@redhat.com>
+
+	* HostState.java, LinuxHost.java, Proc.java, ProcEvent.java,
+	ProcState.java, State.java: Replace request events with anonymous
+	objects.
+
+	* ProcState.java, TaskState.java, LinuxProc.java, LinuxHost.java:
+	Instead of the state machine, make requestRefresh responsible for
+	removing the child.
+
+2005-09-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java: Delete traceExec.
+	* LinuxTask.java, TestLib.java: Update.
+	
+	* LinuxTask.java: Always enable traceClone.
+	* Task.java: Delete traceClone.
+	* TestLib.java, TestAttachCloningThreads.java, TestStep.java:
+	Update.
+
+	* ProcState.java, ProcEvent.java: Add and handle TaskAttached.
+
+	* TaskState.java, TaskEvent.java, TaskState.java: Add and handle
+	RequestAttach.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+	
+	* PsEvent.java, PsListener.java, PsObserver.java: Delete.
+
+	* TestTerminated.java, TestSyscallOpen.java, TestSyscall.java,
+	TestSyscall2.java, TestStep.java, TestI386Regs.java,
+	TestI386Modify.java, TestExiting.java: Remove try / catch wrapping
+	Host.requestCreateProc.
+
+	* TestLib.java: Add methods assertRunUntilStop and runPending.
+	
+	* TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestClone.java, TestExec.java,
+	TestExiting.java, TestFork.java, TestGoAndGo.java,
+	TestI386Modify.java, TestI386Regs.java, TestPaused.java,
+	TestProcGet.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestRun.java,
+	TestStep.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestSyscall.java, TestSyscall2.java,
+	TestSyscallOpen.java, TestTerminated.java, TestUnpaused.java: Use.
+
+2005-08-31  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestAttach.java: Change to not use static variables or classes.
+	* TestAttachCloningThreads.java: Ditto.
+	* TestAttachThreads.java: Ditto.
+	* TestExiting.java: Ditto.
+	* TestGoAndGo.java: Ditto.
+	* TestI386Modify.java: Ditto.
+	* TestI386Regs.java: Ditto.
+	* TestPaused.java: Ditto.
+	* TestProcStop.java: Ditto.
+	* TestProcStopAndGo.java: Ditto.
+	* TestProcStopAndGo2.java: Ditto.
+	* TestProcStopAndStop.java: Ditto.
+	* TestStep.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestStopAndGo.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+	* TestTerminated.java: Ditto.
+	* TestUnpaused.java: Ditto.
+
+2005-08-31  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: Add method processAttachedDestroy, use
+	throughout.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRefresh.java: Add	testRefreshZombie.
+	* TaskState.java: When requestRemove, and a process with no
+	threads, do not remove it from its parent.
+	
+	* Proc.java: Move code removing a process with no tasks from here
+	...
+	* TaskState.java: ... to here.
+
+	* Proc.java: Move calls to taskDestroyed.notify from here ...
+	* TaskState.java: To here.
+
+	* Proc.java: Add procDestroyed observer.  Change procRemoved to a
+	simple TaskObserver.
+	* TestAttach.java, TestAttachThreads.java, TestExiting.java,
+	TestLib.java, TestTerminated.java: Update.
+	
+	* TestI386Modify.java: Disable for moment.
+
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestI386Modify.java: Use runPolling to put upper limit on time
+	for test to complete.
+
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* I386Linux.java: Specify little-endianness for generic memory.
+	* Register.java: Add put method.
+	* TestI386Modify.java: New test.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: Rename state "dead" to "destroyed".
+	* TestRefresh.java: Update.
+
+	* TestLib.java, LinuxHost.java: Update to match changes to
+	Wait.java, vis rename wait to waitAll, waitNohang to
+	waitAllNoHang, signaled to terminated, and zombied to disappeared.
+
+	* TestProcGet.java: Add testGetCommand.
+	* Proc.java: Make getCommand abstract.
+	* LinuxProc.java: Add getStat and getCommand.
+
+2005-08-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestLib.java (tearDown): Add comments regarding use of SIGCONT.
+
+2005-08-30  Andrew Cagney  <cagney@redhat.com>
+	
+	* TestLib.java: Add ZombieChild.fryParent.
+	* LinuxProc.java: Don't crash when a process has no tasks.
+	* LinuxHost.java: Handle a process becomming a daemon
+	(re-parenting).  Refresh all processes not just the added ones.
+	* TestRefresh.java: Add testRefreshDaemon.
+
+2005-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRefresh.java: Add "testParentChild".
+	* Proc.java: Add constructor parameterized by Host, ProcId, and
+	Stat.
+	* LinuxHost.java: Add "updateProc".  Use LinuxProc.Stat to get the
+	parent ID.  Update a process parent first.
+	* LinuxProc.java: Add "Stat".  Add constructor parameterized by
+	Host, ProcId, and Stat.
+	
+	* Linux.java: Break up.
+	* LinuxProc.java: New.
+	* LinuxTask.java: New.
+	* LinuxHost.java, I386Linux.java, TestUnpaused.java: Update.
+
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Make DetachedChild a sub-class of DaemonChild.
+	Add ZombieChild.
+	* TestRefresh.java: Update.
+
+	* TestRefresh.java: Add testRepeatedHostRefresh.  Add class
+	ChildTracker, use.
+	* LinuxHost.java: In sendRefresh, use a ProcId, instead of TaskId,
+	when searching for a process.
+
+2005-08-26  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestLib.java (tearDown): Fix to wait indefinitely for all events
+	before verifying that a particular registered child is gone.
+	* TestStep.java: Switch over to use TestLib registerChild and
+	StopEventLoopOnProcDestroy methods.
+
+2005-08-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Id.java: Fix "equals", cast to an Id not TaskId.
+	* Host.java, HostEvent.java, HostState.java, Linux.java,
+	LinuxHost.java, Proc.java, ProcEvent.java, TaskEvent.java,
+	TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestGoAndGo.java, TestPaused.java,
+	TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java,
+	TestRefresh.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestUnpaused.java: Use ProcId instead of
+	TaskId where applicable.
+
+	* ProcId.java: New.
+
+	* Id.java: New file.
+	* TaskId.java: Extend Id.
+
+	* Proc.java: Replace requestAttach, and requestDetach with
+	requestAttachedCont, requestAttachedStop and requestDetachedCont.
+	* HostState.java, LinuxHost.java, ProcEvent.java, ProcState.java:
+	Update to match.
+	
+	* Manager.java: Note that Host.procAdded and Host.procRemoved are
+	prefered.
+	* Proc.java: Add taskAdded observer.
+	* Host.java: Add procAdded and procRemoved observers.
+	* Task.java, TaskState.java, TestClone.java, TestExec.java,
+	TestFork.java, TestLib.java, TestProcGet.java, TestRefresh.java,
+	TestRun.java: Use.
+
+2005-08-25  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestAttachCloningThreads.java: Change to use TestLib
+	registerChild and StopEventLoopOnProcDestroy methods.
+	* TestAttach.java: Ditto.
+	* TestAttachThreads.java: Ditto.
+	* TestExiting.java: Ditto.
+	* TestGoAndGo.java: Ditto.
+	* TestPaused.java: Ditto.
+	* TestProcStopAndGo2.java: Ditto.
+	* TestProcStopAndGo.java: Ditto.
+	* TestProcStopAndStop.java: Ditto.
+	* TestProcStop.java: Ditto.
+	* TestStopAndGo.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestTerminated.java: Ditto.
+	* TestUnpaused.java: Ditto plus change testcase to properly stop
+	and detach program.
+	* TestLib.java (tearDown): Add issuing a SIGCONT before SIGKILL so
+	that any processes stuck with pending SIGSTOPs will get the
+	SIGKILL and die properly.
+
+2005-08-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRefresh.java: Add testRefreshAll.
+	* HostState.java: Pass refreshAll to sendRefresh.
+	* LinuxHost.java: Add refreshAll to sendRefresh.
+	* Host.java: Add refreshAll parameter to requestRefresh and
+	sendRefresh.
+
+	* TestRefresh.java: Extend testProcRefresh to check that the task
+	list tracks task creation and deletion.
+	
+	* Linux.java: Request that any lost tasks be removed.  When
+	applicable, create a detached task.
+	* Task.java: Add "requestRemoval" and a detached constructor.
+	* TaskEvent.java: Add RequestRemoval.
+	* TaskState.java: Handle RequestRemoval.
+
+	* TestLib.java: For TaskCounter and ProcCounter, add LinkedLists
+	"discovered" and "removed" that contain the added and removed
+	tasks/procs/.  Change numberDiscovered and numberRemoved to
+	methods.
+	* TestClone.java, TestExec.java, TestFork.java, TestLib.java,
+	TestRun.java: Update.
+
+	* TestLib.java: Refactor DetachedChild into Child, DetachedChild,
+	and DaemonChild.  Implement using prog/kill/detach.
+
+2005-08-24  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestAttach.java: Fix comments.
+	* TestPaused.java: Ditto.
+	* TestProcStopAndGo2.java: Ditto.
+	* TestUnpaused.java: Ditto.
+
+2005-08-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Replace WatchForProc with PidCounter.  Add
+	DetachedChild.reap.
+	* TestRefresh.java: Really add file.
+	
+2005-08-23  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestAttach.java: Switch to JUnit and remove println messages.
+	* TestAttachCloningThreads.java: Ditto.
+	* TestAttachThreads.java: Ditto.
+	* TestExiting.java: Ditto.
+	* TestGoAndGo.java: Ditto.
+	* TestI386Regs.java: Ditto.
+	* TestPaused.java: Ditto.
+	* TestProcStopAndGo2.java: Ditto.
+	* TestProcStopAndGo.java: Ditto.
+	* TestProcStopAndStop.java: Ditto.
+	* TestProcStop.java: Ditto.
+	* TestStep.java: Ditto.
+	* TestStopAndGo.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+	* TestTerminated.java: Ditto.
+	* TestUnpaused.java: Ditto.
+
+2005-08-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Manager.java: Replace	"procDestroyed" with "procRemoved".
+	* Proc.java: Replace taskDestroyed with taskRemoved.
+	* Host.java, TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestClone.java, TestExec.java,
+	TestExiting.java, TestFork.java, TestGoAndGo.java,
+	TestI386Regs.java, TestLib.java, TestPaused.java,
+	TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestRun.java,
+	TestStep.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestSyscall.java, TestSyscall2.java,
+	TestSyscallOpen.java, TestTerminated.java, TestUnpaused.java:
+	Update.
+
+	* TestHost.java: Replace with ...
+	* TestRefresh.java: New file.
+	* ProcEvent.java: Add RequestRemoval.
+	* ProcState.java: Add "destroyed" state, handle RequestRemoval
+	event.
+	* LinuxHost.java: Send a RequestRemoval message to each removed
+	process.
+	* TestLib.java: Add WatchForProc.  Make ProcCounter implement
+	Cloneable, add "save" method.
+
+	* TestLib.java: For TaskCounter and ProcCounter, rename
+	numberCreated to numberDiscovered.
+	* TestRun.java, TestFork.java, TestClone.java, TestExec.java:
+	Update.
+
+	* Proc.java: Rename taskCreated to taskDiscovered.
+	* TaskState.java, TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestExiting.java, TestGoAndGo.java,
+	TestI386Regs.java, TestLib.java, TestPaused.java,
+	TestProcGet.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestStep.java,
+	TestStop.java, TestStopAndGo.java, TestStopAndStop.java,
+	TestSyscall.java, TestSyscall2.java, TestSyscallOpen.java,
+	TestTerminated.java, TestUnpaused.java: Update.
+
+2005-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Linux.java: Implement Proc .sendRefresh".  In Proc .sendAttach,
+	also add the main task.
+	* Proc.java: Add requestRefresh, and sendRefresh.  In Proc, only
+	add the main task when attached.
+	* ProcEvent.java: Add RequestRefresh.
+	* ProcState.java: Handle RequestRefresh.
+	* TestHost.java: Add testProcRefresh.
+
+	* TestPaused.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestStop.java,
+	TestStopAndStop.java, TestUnpaused.java: Compare TaskId values,
+	instead of TaskId addresses.
+
+	* TestLib.java: Add DetachedChild constructor with "clones"
+	parameter.
+
+	* TestLib.java: In tearDown, discard any Errno.Echild when killing
+	processes.
+
+	* Manager.java: Rename "procCreated" to "procDiscovered".
+	* Host.java, TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestExiting.java, TestGoAndGo.java,
+	TestI386Regs.java, TestLib.java, TestPaused.java,
+	TestProcGet.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestStep.java,
+	TestStop.java, TestStopAndGo.java, TestStopAndStop.java,
+	TestSyscall.java, TestSyscall2.java, TestSyscallOpen.java,
+	TestTerminated.java, TestUnpaused.java: Update.
+
+	* TestLib.java, LinuxHost.java: Update to match event changes.
+
+2005-08-19  Andrew Cagney  <cagney@redhat.com>
+
+	* TestHost.java: Don't import com.redhat.fedora.frysk.sys.Pid,
+	com.redhat.fedora.frysk.sys.Fork, or
+	com.redhat.fedora.frysk.event.SignalEvent.
+	* TestExec.java: Don't import java.util.Observer, or
+	java.util.Observable.
+
+	* LinuxHost.java: Add PollWaitOnSigChld, based on
+	PollWaitPidEvent.
+	* Manager.java: Update.
+	* Linux.java: Delete EventLoop and PollWaitPidEvent.
+
+	* TaskEvent.java: Delete .detachHackXXX.
+	* TaskState.java: Update.
+	* TestAttachSuspended.java, TestDetach.java,
+	TestDetachThreads.java, TestReattachThreads.java: Delete.
+
+	* TestLib.java: Add DetachedChild.
+	* TestHost.java: Use DetachedChild.
+
+	* Task.java: Add getProc, getEntryPointAddress, and getPid.  Make
+	"proc" and "id" protected.
+
+2005-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Add ExecCounter.
+	* TestThreadExec.java: Delete.
+	* TestExec.java: Merge in TestThreadExec, rewrite using JUnit,
+	check that the exec'd program did run.
+
+	* TestProcGet.java: New.
+	* TestLib.java: Add TmpFile.getFile.
+	* TestAuxv.java: Delete.
+
+2005-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* TestClone.java: Delete println call, Enable commented out
+	assertEquals calls.
+	* TestRun.java: Delete unused
+	java.io.File import.
+	
+	* TestLib.java: Add TmpFile.
+	* TestRun.java: Use.
+
+2005-08-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Add TaskCounter.
+	* TestFork.java: Delete unused import of java.io;
+	* TestClone.java: Convert to JUnit.
+
+	* TestLib.java: Add Fibonacci.
+	* TestFork.java: Convert to JUnit, simplify.
+
+	* TestFork.java: Extend LibTest.
+	* TestClone.java: Extend LibTest.
+
+	* TestLib.java: Add ProcCounter.
+	* TestRun.java: Use.
+
+	* TestLib.java: Replace addStopEventLoopOnProcDestroy with the
+	class StopEventLoopOnProcDestroy.
+	* TestRun.java: Update.
+
+	* Proc.java: Add requestDetach.
+	* ProcState.java: Handle RequestDetach.
+	* ProcEvent.java: Add RequestDetach.
+
+2005-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStep.java, TaskState.java: Delete calls to
+	isNewTaskLeftStopped.
+	* ProcState.java, Proc.java: Delete isNewTaskLeftStopped.
+	
+	* ProcState.java: Simplify "unattached" state, when "running"
+	handle TaskForked.
+	* Proc.java: Add "attached" parameter to constructors, set initial
+	state to "running" when "attached".
+	* Host.java: Delete "createProc".
+	* LinuxHost.java, LinuxHost.java: Update.
+
+	* Linux.java: For fork, create both ProcEvent.TaskForked and
+	TaskEvent.Forked events.
+	* ProcState.java: Handke ProcEvent.TaskForked.
+	* ProcEvent.java: Add TaskForked.
+	* TaskState.java: Do not add the forked process.
+	
+	* ProcState.java: Create the new task as runnable.
+	* Task.java: Add "runnable" parameter to Task constructor, set
+	"state" accordingly.
+	* I386Linux.java: Add "runnable" parameter to Task constructor.
+	* Linux.java: Replace "createTask" with "newTask" add "runnable"
+	to Task constructor.
+	* Proc.java: Replace "createTask" with "newTask".
+	* TaskState.java: Replace state "starting" with "startRunning" and
+	"startStopped".
+	
+	* Proc.java: Add dummy versions of getCommand, and getPid.
+
+	* TaskState.java: For Cloned, don't add the new task.
+	* ProcState.java: Handle TaskCloned.
+	* TaskEvent.java: Add TaskCloned.
+	* Linux.java: For clone, create both ProcEvent.TaskCloned and
+	TaskEvent.cloned events.
+	
+	* TaskEvent.java: Make all variable members protected, add public
+	accessors.  Add Task parameterized constructor.
+	* TaskState.java: Update.
+	
+	* TaskEvent.java: Parameterize event constructors with the TaskId,
+	find the corresponding task during "execute".
+	* Linux.java: Delete local event classes, create TaskEvents, with
+	taskId's, instead.
+
+2005-08-15  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java: Move "go", "stop" and AllStopped to the states
+	that they apply to.
+
+	* TestLib.java: Add "sigKill" method.
+	* Task.java: Delete "kill".
+	* Linux.java: Delete "kill".
+	* TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachThreads.java, TestDetachThreads.java, TestExiting.java,
+	TestPaused.java, TestReattachThreads.java, TestTerminated.java,
+	TestUnpaused.java: Use Signal.kill instead.
+
+	* TestPsObserver.java: Delete.
+
+2005-08-14  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcEvent.java: Add "unattached" state, handle RequestAttach.
+	* Proc.java: Add "requestAttach" and
+	"sendAttach", default "state" to "unattached".
+	* LinuxHost.java: For "sendAttachProc", send the request to the
+	just-created process.
+	* Linux.java: Add "sendAttach".
+	* HostState.java: For RequestAttach, when the process already
+	exists, just pass the request on.
+
+	* ProcEvent.java: Parameterize constructors with "proc".
+	* Proc.java: Delete "process", pass "proc" to ProcEvent
+	constructors.
+	* ProcState.java: Update.
+
+	* Host.java: Add "sendAttachProc", for "requestAttachProc", append
+	a RequestAttachProc event.
+	* HostEvent.java: Add RequestAttachProc.
+	* HostState.java: Handle RequestAttachProc.
+	* LinuxHost.java: Replace "equestAttachProc" with
+	"sendAttachProc".
+	
+	* Host.java: Replace "attachProc" with "requestAttachProc".
+	* LinuxHost.java: Update.
+	* TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachSuspended.java, TestAttachThreads.java,
+	TestDetachThreads.java, TestGoAndGo.java, TestPaused.java,
+	TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java,
+	TestReattachThreads.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestUnpaused.java: Simplify.
+	
+	* LinuxHost.java: Replace "createProc" by "sendCreateProc".
+	* HostState.java: Handle "RequestCreateProc".
+	* HostEvent.java: Add "RequestCreateProc".
+	* Host.java: Replace "createProc" with "sendCreateProc" and
+	"requestCreateProc".
+	* TestAuxv.java, TestClone.java, TestDetach.java, TestExec.java,
+	TestExiting.java, TestFork.java, TestI386Regs.java, TestRun.java,
+	TestStep.java, TestSyscall.java, TestSyscall2.java,
+	TestSyscallOpen.java, TestTerminated.java, TestThreadExec.java:
+	Update.
+
+	* Manager.java: Add "resetXXX".
+	* TestLib.java: Add "addStopEventLoopOnProcDestroy", make
+	"tearDown" more robust, have "setUp" call "resetXXX".
+	* TestRun.java: Convert to JUnit.
+
+	* TestAttach.java, TestAttachCloningThreads.java,
+	TestAttachSuspended.java, TestAttachThreads.java, TestAuxv.java,
+	TestClone.java, TestDetach.java, TestDetachThreads.java,
+	TestExec.java, TestExiting.java, TestFork.java, TestGoAndGo.java,
+	TestHost.java, TestI386Regs.java, TestPaused.java,
+	TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java,
+	TestPsObserver.java, TestReattachThreads.java, TestRun.java,
+	TestStep.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestSyscall.java, TestSyscall2.java,
+	TestSyscallOpen.java, TestTerminated.java, TestThreadExec.java,
+	TestUnpaused.java: Update to match event/ changes.
+
+	* TaskEvent.java: Add "execute" to all classes.
+	* Linux.java: Update.
+	* Task.java: Delete "process".
+	* LinuxHost.java: Update.
+	* HostState.java: Update.
+	* HostEvent.java: Call state.process directly.
+	* Host.java: Rename "refresh" to "sendRefresh".  Delete "process".
+
+	* Task.java: Add "send" prefix to cont, stepi, step, and
+	setOptions.
+	* Linux.java: Update.
+	* TaskState.java: Update.
+	
+2005-08-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java: Make cont, stepi, and setOptions return void.
+	* Task.java: Only return the zombied state when a zombied event.
+	* Linux.java: For cont ,stepi, and setOptions, instead of
+	returning -1, append a Zombied event to the event queue.
+	
+	* Linux.java: Wrap ptrace calls in try catch block.
+	
+	* Linux.java: Delete Proc.attached.
+	* Host.java: Update.
+
+	* TestHost.java: Delete junit.framework.TestCase import.
+	* TestAttachCloningThreads.java: Delete
+	com.redhat.fedora.frysk.sys.Signal import.
+
+	* TestLib.java: New.
+	* TestHost.java: Extend TestLib, simplify.
+
+2005-08-12  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Linux.java (Linux.Task): Change cont, stepi, and setOptions
+	methods to return an int.
+	(Linux.PollWaitPidEvent): Fix all TaskEvent execute methods to
+	verify a task is non-null before accessing its process method.
+	(Linux.PollWaitPidEvent.ZombiedTaskEvent): New TaskEvent class.
+	* Proc.java: Change add (Task) method to not notify observers
+	about Task creation.
+	* PsObserver.java: Comment out debugging println.
+	* Task.java: Add the new Task to the Proc at the point of
+	construction.  Change the prototypes of the cont, stepi, and
+	setOptions methods to return an int.  Add new process method to
+	handle a TaskEvent.Zombied event.  Change the toString method to
+	print out the Task's state.
+	* TaskEvent.java (TaskEvent.Zombied): New class.
+	* TaskState.java: Add zombied state support.  Change every call to
+	Ptrace.cont(), Ptrace.setOptions(), and Ptrace.stepi() to check
+	for a return code and to change to zombied state should the call
+	fail.  For starting state, the first StoppedEvent now results in
+	notifying observers of a newly created Task.  Previously, this
+	action added the Task to the Proc, but this is now done in Task
+	construction.  Add multiple additional process events for starting
+	state.  Add new zombied state that waits for termination or exit.
+	* TestHost.java: Add new zombied observer.
+	* TestPsObserver.java: Change test to no longer be threaded and
+	instead use timer support.
+	* TestAttachCloningThreads.java: New test.
+
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java: Delete unused import of java.util.Set.
+
+2005-08-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestHost.java: New.
+	* HostState.java: Handle RefreshRequest.
+	* HostEvent.java: Add sub-class RequestRefresh.
+	* Host.java: Make "state" protected.  Add abstract method
+	"refresh", and method requestRefresh.
+
+	* Host.java: Change procPool to a Map, add "getProc" method.
+
+	* Linux.java: Remove "unknown" from Wait.Observer.
+
+2005-08-08  Andrew Cagney  <cagney@redhat.com>
+
+	* HostState.java: New.
+	* HostEvent.java: New.
+	* Host.java: Add HostState.
+
+	* State.java: New.
+	* ProcState.java,
+	* TaskState.java: Extend State.
+
+	* Manager.java: Move procSet to...
+	* Host.java: ... here.
+	* Proc.java, TestAttach.java, TestAttachSuspended.java,
+	TestAttachThreads.java, TestDetach.java, TestDetachThreads.java,
+	TestExiting.java, TestGoAndGo.java, TestI386Regs.java,
+	TestPaused.java, TestProcStopAndGo2.java, TestProcStopAndGo.java,
+	TestProcStopAndStop.java, TestProcStop.java,
+	TestReattachThreads.java, TestRun.java, TestStep.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestStop.java,
+	TestSyscall2.java, TestSyscall.java, TestSyscallOpen.java,
+	TestTerminated.java: Update.
+
+2005-08-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Linux.java: Delete unused imports.
+
+	* Proc.java: Add "host" to constructor.
+	* Linux.java, LinuxHost.java: Update.
+
+	* Proc.java: Add createTask.
+	* TaskFactory.java: Delete.
+	* I386Linux.java Linux.java LinuxHost.java Manager.java
+	TaskState.java TestI386Regs.java TestStep.java
+	TestSyscallOpen.java: Update.
+
+	* Proc.java: Add "host".
+	* TaskFactory.java: Delete createProc, moved to Host.
+	* Host.java: Add createProc.
+	* Linux.java, TaskState.java, LinuxHost.java: Update.
+	* Proc.java: Make "parent" private.  Replace getPid with
+	getTaskId: Update.
+
+	* ProcFactory.java: Delete.
+	* LinuxHost.java: New.
+	* Manager.java: Replace "procFactory" with Host.
+	* Linux.java: Delete "ProcFactory".
+	* Host.java, TestAttach.java, TestAttachSuspended.java,
+	TestAttachThreads.java, TestAuxv.java, TestClone.java,
+	TestDetach.java, TestDetachThreads.java, TestExec.java,
+	TestExiting.java, TestFork.java, TestGoAndGo.java,
+	TestI386Regs.java, TestPaused.java, TestProcStopAndGo2.java,
+	TestProcStopAndGo.java, TestProcStopAndStop.java,
+	TestProcStop.java, TestReattachThreads.java, TestRun.java,
+	TestStep.java, TestStopAndGo.java, TestStopAndStop.java,
+	TestStop.java, TestSyscall2.java, TestSyscall.java,
+	TestSyscallOpen.java, TestTerminated.java, TestThreadExec.java,
+	TestUnpaused.java: Update.
+
+2005-08-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java: New.
+
+	* EventLoop.java: Delete.
+	* Linux.java: Extend event.EventLoop instead of proc.EventLoop.
+	* Manager.java: Update.
+
+2005-08-05  Andrew Cagney  <cagney@redhat.com>
+
+	Fix problems building under eclipse.
+	* .cvsignore: New.
+	* EventLoop.java, Linux.java, Manager.java, ProcFactory.java,
+	PsObserver.java, TestGoAndGo.java: Fix ECJ build errors.
+
+	* Linux.java: Clean up imports - explicitly import Wait, File,
+	Iterator, and Collection.
+
+2005-08-04  Andrew Cagney  <cagney@redhat.com>
+
+	* AllStoppedProcEvent.java: Delete.
+	* ProcEvent.java: Add AllStopped sub-class.
+	* Proc.java, ProcState.java, TestProcStop.java,
+	TestProcStopAndGo.java, TestProcStopAndGo2.java,
+	TestProcStopAndStop.java, TestStep.java: Update.
+	
+2005-08-03  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java: New file.
+	* Proc.java: Copy state code to ProcState.
+	* ClonedTaskEvent.java, ExecedTaskEvent.java,
+	ExitedTaskEvent.java, ExitingTaskEvent.java, ForkedTaskEvent.java,
+	RequestGoTaskEvent.java, RequestStepiTaskEvent.java,
+	RequestStopTaskEvent.java, SignaledTaskEvent.java,
+	StoppedTaskEvent.java, SyscallTaskEvent.java,
+	TerminatedTaskEvent.java, TrappedTaskEvent.java: Delete ...
+	* TaskEvent.java: .. moved into here.
+	* Linux.java, Task.java, TaskState.java, TestAttach.java,
+	TestAttachSuspended.java, TestAttachThreads.java, TestDetach.java,
+	TestDetachThreads.java, TestExiting.java, TestGoAndGo.java,
+	TestI386Regs.java, TestPaused.java, TestProcStopAndGo2.java,
+	TestProcStopAndGo.java, TestProcStopAndStop.java,
+	TestProcStop.java, TestReattachThreads.java, TestStep.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestStop.java,
+	TestSyscall2.java, TestSyscall.java, TestSyscallOpen.java,
+	TestTerminated.java, TestUnpaused.java: Update.
+
+	* TaskState.java: New file.
+	* Task.java: Move state machine to TaskState.
+	* TestUnpaused.java, TestPaused.java, TestStop.java,
+	TestStopAndStop.java: Update.
+
+2005-08-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java: Delete unused variables startRequest, stopRequest,
+	and stepRequest from the state machine.
+
+	* Linux.java, Task.java: Delete stopTask, make operation names
+	consistent.
+	* TestAttach.java, TestAttachThreads.java, TestDetachThreads.java,
+	TestExiting.java, TestPaused.java, TestReattachThreads.java,
+	TestTerminated.java, TestUnpaused.java: Update.
+
+	* RequestStepiTaskEvent.java: New.
+	* Task.java: Replace "step" with "requestStepi".  Inject a
+	RequestStepiTaskEvent into the event queue and handle in the state
+	machine.
+	* TestStep.java: Update.
+
+	* RequestGoTaskEvent.java: New.
+	* Task.java: Replace "go" with "requestGo".  Inject a
+	RequestGoTaskEvent into the event queue and handle in the state
+	machine.
+	* TestUnpaused.java, TestGoAndGo.java, TestStopAndGo.java,
+	TestGoAndGo.java, TestStep.java, Proc.java: Update.
+
+	* RequestStopTaskEvent.java: New.
+	* Task.java: Replace "stop" with "requestStop".  Inject a
+	RequestStopTaskEvent into the event queue and handle in the state
+	machine.
+	* TestUnpaused.java, TestPaused.java, TestStopAndStop.java,
+	TestStop.java, TestStopAndGo.java, TestGoAndGo.java, Proc.java:
+	Update.
+
+2005-08-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Linux.java: Convert SIGSTOP into StoppedTaskEvent.
+	* TestDetachThreads.java, TestDetach.java,
+	TestAttachSuspended.java: Check for StoppedTaskEvent instead of
+	SignaledTaskEvent.
+	* Task.java: Handle StoppedTaskEvent.
+	* StoppedTaskEvent.java: Add member detachHackXXX.
+	* TestReattachThreads.java: Simplify.
+	
+	* TestSyscallOpen.java, TestSyscall.java: Instead of
+	SignaledTaskEvent, check for TrappedTaskEvent.
+	* Proc.java, TestStep.java: Instead of SignaledTaskEvent, cast to
+	TaskEvent,
+	* Task.java: For State, handle TrappedTaskEvent, delete
+	unnecessary SignalledTaskEvent cases.
+	* Linux.java: For stop with SIGTRAP, create a TrappedTaskEvent.
+
+2005-07-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Linux.java: Parameterize the TaskEvent constructors.
+
+	* Task.java: For State, add "name" member, set using an explicit
+	 constructor parameter.  Clean up toString methods.
+
+	* Linux.java: Delete the one parameter "stopped" observer.
+
+	* Task.java: Add "process" methods for SignaledTaskEvent and
+	TrappedTaskEvent.
+	* Linux.java: Add local SignaledTaskEvent and TrappedTaskEvent
+	methods.
+
+	* SignaledTaskEvent.java: New.
+	* TrappedTaskEvent.java: New.
+	* Linux.java, Proc.java, StoppedTaskEvent.java, Task.java,
+	TestAttachSuspended.java, TestDetach.java, TestDetachThreads.java,
+	TestI386Regs.java, TestReattachThreads.java, TestStep.java,
+	TestSyscall.java, TestSyscallOpen.java, TestUnpaused.java: Replace
+	StoppedTaskEvent with SignaledTaskEvent.
+
+	* ClonedTaskEvent.java, ExecedTaskEvent.java,
+	ExitedTaskEvent.java, ExitingTaskEvent.java, ForkedTaskEvent.java,
+	StoppedTaskEvent.java, SyscallTaskEvent.java, TaskEvent.java,
+	TerminatedTaskEvent.java: Delete unnecessary public constructor
+	and unused "execute" method.
+	* EventLoop.java: Delete unused
+	TaskEvent instances.
+
+2005-07-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Linux.java, Task.java: Delete "isTrapSig" and "isStopSig".
+
+	* SysUtils.Java, cni/SysUtils.cxx: Delete files, signal functions
+	replaced by sys.Sig.
+	* Linux.java, Task.java, TestAttach.java, TestAttachThreads.java,
+	TestDetach.java, TestDetachThreads.java, TestExiting.java,
+	TestPaused.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java,
+	TestReattachThreads.java, TestStep.java, TestStop.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestTerminated.java,
+	TestUnpaused.java: Use sys.Sig.
+
+	* SysUtils.java, cni/SysUtils.cxx: Delete "infLoop",
+	"infThreadLoop", and "suspendedProg"; moved to sys.XXX.
+	* TestDetachThreads.java, TestUnpaused.java,
+	TestProcStopAndGo2.java, TestReattachThreads.java,
+	TestAttachThreads.java, TestAttach.java, TestProcStop.java,
+	TestPaused.java, TestStop.java, TestStopAndStop.java,
+	TestProcStopAndStop.java, TestStopAndGo.java,
+	TestAttachSuspended.java, TestGoAndGo.java,
+	TestProcStopAndGo.java: Update to use sys.XXX.
+
+	* SysUtils.java, cni/SysUtils.cxx: Delete "kill" and "tkill".
+	* TestAttachSuspended.java, TestDetach.java,
+	TestDetachThreads.java, TestGoAndGo.java, TestPaused.java,
+	TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java,
+	TestReattachThreads.java, TestStep.java, TestStop.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestUnpaused.java: Use
+	Signal.kill.
+
+	* cni/SysUtils.cxx, SysUtils.java: Add sigchld.
+	* Linux.java: Use SysUtils.
+	* cni/Linux.cxx: Delete.
+	
+	* cni/Linux.cxx: Don't include "Linux$EventLoop$WaitEvent.h".
+
+2005-07-29  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Linux.cxx: Delete "WaitEvet.execute" and corresponding
+	support routines.
+	* Linux.java: Replace WaitEvent observer with individual
+	Wait.Observer's.
+
+2005-07-28  Andrew Cagney  <cagney@redhat.com>
+	    Jeff Johnston  <jjohnstn@redhat.com>
+	    Sami Wagiaalla  <swagiaal@redhat.com>
+	
+	* AllStoppedProcEvent.java: New file.
+	* Auxv.java: New file.
+	* ByteOrder.java: New file.
+	* ClonedTaskEvent.java: New file.
+	* EventLoop.java: New file.
+	* ExecedTaskEvent.java: New file.
+	* ExitedTaskEvent.java: New file.
+	* ExitingTaskEvent.java: New file.
+	* ForkedTaskEvent.java: New file.
+	* I386Linux.java: New file.
+	* Isa.java: New file.
+	* Linux.java: New file.
+	* Manager.java: New file.
+	* PowerPcLinux.java: New file.
+	* Proc.java: New file.
+	* ProcEvent.java: New file.
+	* ProcEventObservable.java: New file.
+	* ProcFactory.java: New file.
+	* PsEvent.java: New file.
+	* PsListener.java: New file.
+	* PsObserver.java: New file.
+	* Register.java: New file.
+	* StoppedTaskEvent.java: New file.
+	* SysUtils.java: New file.
+	* Syscall.java: New file.
+	* SyscallEventInfo.java: New file.
+	* SyscallTaskEvent.java: New file.
+	* Task.java: New file.
+	* TaskEvent.java: New file.
+	* TaskEventObservable.java: New file.
+	* TaskFactory.java: New file.
+	* TaskId.java: New file.
+	* TerminatedTaskEvent.java: New file.
+	* TestAttach.java: New file.
+	* TestAttachSuspended.java: New file.
+	* TestAttachThreads.java: New file.
+	* TestAuxv.java: New file.
+	* TestClone.java: New file.
+	* TestDetach.java: New file.
+	* TestDetachThreads.java: New file.
+	* TestExec.java: New file.
+	* TestExiting.java: New file.
+	* TestFork.java: New file.
+	* TestGoAndGo.java: New file.
+	* TestI386Regs.java: New file.
+	* TestPaused.java: New file.
+	* TestProcStop.java: New file.
+	* TestProcStopAndGo.java: New file.
+	* TestProcStopAndGo2.java: New file.
+	* TestProcStopAndStop.java: New file.
+	* TestPsObserver.java: New file.
+	* TestReattachThreads.java: New file.
+	* TestRun.java: New file.
+	* TestStep.java: New file.
+	* TestStop.java: New file.
+	* TestStopAndGo.java: New file.
+	* TestStopAndStop.java: New file.
+	* TestSyscall.java: New file.
+	* TestSyscall2.java: New file.
+	* TestSyscallOpen.java: New file.
+	* TestTerminated.java: New file.
+	* TestThreadExec.java: New file.
+	* TestUnpaused.java: New file.
+	* X8664Linux.java: New file.
+	* cni/Linux.cxx: New file.
+	* cni/SysUtils.cxx: New file.

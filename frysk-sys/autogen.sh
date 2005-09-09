@@ -19,7 +19,7 @@
 
 # Generate everything (always run with --add-missing).
 
-sh -eu ./common/Makefile.gen.sh com
+sh -eu ./common/Makefile.gen.sh frysk
 
 echo "Running aclocal ..."
 aclocal

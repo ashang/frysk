@@ -1,0 +1,6 @@
+*.class
+.deps
+.dirstamp
+*.classes
+*.h
+Sig.java

@@ -22,24 +22,25 @@ include Makefile.gen
 
 AUTOMAKE_OPTIONS = dejagnu
 
-GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParser.java
-GEN_SOURCES += com/redhat/fedora/frysk/expr/CppLexer.java
-GEN_SOURCES += com/redhat/fedora/frysk/expr/CppParserTokenTypes.java
+GEN_SOURCES += frysk/expr/CppParser.java
+GEN_SOURCES += frysk/expr/CppLexer.java
+GEN_SOURCES += frysk/expr/CppParserTokenTypes.java
 
-BUILT_SOURCES += com/redhat/fedora/frysk/expr/CppParser.java \
-  com/redhat/fedora/frysk/expr/CppLexer.java \
-  com/redhat/fedora/frysk/expr/CppParserTokenTypes.java
+BUILT_SOURCES += \
+	frysk/expr/CppParser.java \
+	frysk/expr/CppLexer.java \
+	frysk/expr/CppParserTokenTypes.java
 
-CLEANFILES+= com/redhat/fedora/frysk/expr/CppParser.java \
-	com/redhat/fedora/frysk/expr/CppLexer.java	\
-	com/redhat/fedora/frysk/expr/CppParserTokenTypes.java	\
-	com/redhat/fedora/frysk/expr/CppParserTokenTypes.txt
+CLEANFILES+= \
+	frysk/expr/CppParser.java \
+	frysk/expr/CppLexer.java \
+	frysk/expr/CppParserTokenTypes.java \
+	frysk/expr/CppParserTokenTypes.txt
 
+frysk/expr/CppLexer.java frysk/expr/CppParserTokenTypes.java: frysk/expr/CppParser.java 
 
-com/redhat/fedora/frysk/expr/CppLexer.java com/redhat/fedora/frysk/expr/CppParserTokenTypes.java: com/redhat/fedora/frysk/expr/CppParser.java 
-
-com/redhat/fedora/frysk/expr/CppParser.java: $(srcdir)/com/redhat/fedora/frysk/expr/cpp.g
-	antlr -o com/redhat/fedora/frysk/expr $(srcdir)/com/redhat/fedora/frysk/expr/cpp.g
+frysk/expr/CppParser.java: $(srcdir)/frysk/expr/cpp.g
+	antlr -o frysk/expr $(srcdir)/frysk/expr/cpp.g
 	echo $(srcdir)
 
 GEN_CLASSPATH += ../frysk-imports/$(GEN_CLASSDIR)
