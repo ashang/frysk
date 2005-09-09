@@ -1,3 +1,7 @@
+2005-09-08  Andrew Cagney  <cagney@redhat.com>
+
+	* cdtparser.jar: Deleted.
+
 2005-09-08  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cdtparser.jar: Added
