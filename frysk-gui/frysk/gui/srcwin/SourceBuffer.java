@@ -32,12 +32,18 @@ import frysk.gui.srcwin.cparser.SimpleParser;
  */
 public class SourceBuffer extends TextBuffer {
 	
+	/* CONSTANTS */
 	
+	private static final String COMMENT_TAG = "COMMENT";
+	private static final String GLOBAL_TAG = "GLOBAL";
 	private static final String FUNCTION_TAG = "FUNCTION";
 	private static final String ID_TAG = "ID";
 	private static final String LITERAL_TAG = "TYPE";
 	private static final String CURRENT_LINE = "currentLine";
 	private static final String FOUND_TEXT = "foundText";
+	
+	/* END CONSTANTS */
+	
 	protected Vector lines;
 	protected SourceLineReader lineParser;
 	
@@ -98,8 +104,8 @@ public class SourceBuffer extends TextBuffer {
 		this.functionTag = this.createTag(FUNCTION_TAG);
 		this.idTag = this.createTag(ID_TAG);
 		this.literalTag = this.createTag(LITERAL_TAG);
-		this.globalTag = this.createTag("GLOBAL");
-		this.commentTag = this.createTag("COMMENT");
+		this.globalTag = this.createTag(GLOBAL_TAG);
+		this.commentTag = this.createTag(COMMENT_TAG);
 		this.functionTag.setPriority(this.getTextTagTable().getSize() - 1);
 	}
 	
@@ -278,11 +284,11 @@ public class SourceBuffer extends TextBuffer {
 		this.idTag.setWeight(Weight.intern(weight));
 
 		// Global variable syntax highlighting
-		r = currentNode.getInt("global_r", 65535);
-		g = currentNode.getInt("global_g", 30000);
-		b = currentNode.getInt("global_b", 0);
+		r = currentNode.getInt(SourceViewWidget.GLOBAL_R, 65535);
+		g = currentNode.getInt(SourceViewWidget.GLOBAL_G, 30000);
+		b = currentNode.getInt(SourceViewWidget.GLOBAL_B, 0);
 		this.globalTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt("global_weight", Weight.NORMAL.getValue());
+		weight = currentNode.getInt(SourceViewWidget.GLOBAL_WEIGHT, Weight.NORMAL.getValue());
 		this.globalTag.setWeight(Weight.intern(weight));
 		
 		// Function syntax highlighting
@@ -294,11 +300,11 @@ public class SourceBuffer extends TextBuffer {
 		this.functionTag.setWeight(Weight.intern(weight));
 		
 		// comment syntax highlighting
-		r = currentNode.getInt("comment_r", 10000);
-		g = currentNode.getInt("comment_g", 30000);
-		b = currentNode.getInt("comment_b", 10000);
+		r = currentNode.getInt(SourceViewWidget.COMMENT_R, 10000);
+		g = currentNode.getInt(SourceViewWidget.COMMENT_G, 30000);
+		b = currentNode.getInt(SourceViewWidget.COMMENT_B, 10000);
 		this.commentTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt("commment_weight", Weight.NORMAL.getValue());
+		weight = currentNode.getInt(SourceViewWidget.COMMMENT_WEIGHT, Weight.NORMAL.getValue());
 		this.commentTag.setWeight(Weight.intern(weight));
 	}
 	
@@ -321,8 +327,6 @@ public class SourceBuffer extends TextBuffer {
 		
 		// clear the already found work
 		this.removeTag(FOUND_TEXT, this.getStartIter(), this.getEndIter());
-		
-		boolean found = false;
 		
 		// Work through the whole buffer from the start
 		for(int i = this.endCurrentFind.getLineNumber(); i < this.getLineCount(); i++){
@@ -509,7 +513,7 @@ public class SourceBuffer extends TextBuffer {
 		if(!v.isGlobal())
 			this.applyTag(ID_TAG, this.getIter(v.getLine(), v.getCol()), this.getIter(v.getLine(), v.getCol()+v.getName().length()));
 		else
-			this.applyTag("GLOBAL", this.getIter(v.getLine(), v.getCol()), this.getIter(v.getLine(), v.getCol()+v.getName().length()));
+			this.applyTag(GLOBAL_TAG, this.getIter(v.getLine(), v.getCol()), this.getIter(v.getLine(), v.getCol()+v.getName().length()));
 		this.varList.addVariable(v);
 	}
 	
@@ -518,7 +522,7 @@ public class SourceBuffer extends TextBuffer {
 	}
 	
 	public void addComment(int lineStart, int colStart, int lineEnd, int colEnd){
-		this.applyTag("COMMENT", this.getIter(lineStart, colStart), this.getIter(lineEnd, colEnd));
+		this.applyTag(COMMENT_TAG, this.getIter(lineStart, colStart), this.getIter(lineEnd, colEnd));
 	}
 	
 	/*-------------------*

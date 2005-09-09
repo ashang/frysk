@@ -1,3 +1,16 @@
+2005-09-09  ajocksch  <ajocksch@toothpaste.toronto.redhat.com>
+
+	* cparser/CTagsParser.java: Added comments.
+	(escapeChars): Removed.
+	
+	* SourceViewWidget.java: Created new constants for comment, global tags
+	
+	* SourceBuffer.java (getNextLine): Removed extraneous variables.
+	Refactored strings into constants.
+	
+	* SourceWindow.java (SourceWindow): Window now hidden until loading complete.
+	Excess constants pruned.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Move com/redhat/fedora/frysk/gui/srcwin/ to frysk/gui/srcwin/.

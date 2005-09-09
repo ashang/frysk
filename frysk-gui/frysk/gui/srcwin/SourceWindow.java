@@ -46,14 +46,8 @@ import org.gnu.gtk.event.LifeCycleListener;
 
 public class SourceWindow implements ButtonListener, EntryListener, 
 									ComboBoxListener{
-
-	private static final String TERMINATE_NAME = "terminateButton";
-	private static final String STOP_NAME = "stopButton";
-	private static final String STOP_PNG = "stop.png";
-	private static final String MENU_PREFIX = "menu_";
-	private static final String FIND_TEXT = "findText";
-	private static final String LINE_ENTRY = "lineEntry";
-	/* BEGIN CONSTANTS */
+	/* CONSTANTS*/
+	
 	// Glade information
 	private static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
 	private static final String GLADE_FILE = "frysk_source.glade";
@@ -72,8 +66,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private static final String NEXT_PNG = "next.png"; //$NON-NLS-1$
 	private static final String STEP_PNG = "step.png"; //$NON-NLS-1$
 	private static final String RUN_PNG = "run.png";
-	private static final String RUN_NAME = "runButton"; //$NON-NLS-1$
-	
 	// Image files - search bar
 	private static final String HIGHLIGHT_PNG = "highlight.png"; //$NON-NLS-1$
 	private static final String FIND_GO_PNG = "findGo.png"; //$NON-NLS-1$
@@ -83,16 +75,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	// Directory where images are stored
 	private static final String IMAGES_DIR = "frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
 	
-	// Widget names - Toolbar
-	private static final String STACK_BOTTOM_NAME = "stackBottomButton"; //$NON-NLS-1$
-	private static final String STACK_UP_NAME = "stackUpButton"; //$NON-NLS-1$
-	private static final String STACK_DOWN_NAME = "stackDownButton"; //$NON-NLS-1$
-	private static final String NEXT_ASM_NAME = "nextAsmButton"; //$NON-NLS-1$
-	private static final String STEP_ASM_NAME = "stepAsmButton"; //$NON-NLS-1$
-	private static final String CONT_NAME = "contButton"; //$NON-NLS-1$
-	private static final String FINISH_NAME = "finishButton"; //$NON-NLS-1$
-	private static final String NEXT_NAME = "nextButton"; //$NON-NLS-1$
-	private static final String STEP_NAME = "stepButton"; //$NON-NLS-1$
 	private static final String FILE_SELECTOR = "fileSelector";
 	private static final String VIEW_COMBO_BOX = "viewComboBox";
 	private static final String FUNC_SELECTOR = "funcSelector";
@@ -107,10 +89,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private static final String LINE_LABEL = "lineLabel"; //$NON-NLS-1$
 	private static final String FIND_LABEL = "findLabel"; //$NON-NLS-1$
 	private static final String FIND_BOX = "findBox";
+	private static final String FIND_TEXT = "findText";
+	private static final String LINE_ENTRY = "lineEntry";
 	
-	// Menu item names
-	private static final String FIND = "find";
-	private static final String PREFERENCES = "preferences";
 	/* END CONSTANTS */
 	
 	private LibGlade glade;
@@ -150,8 +131,10 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			e.printStackTrace();
 		}
 
+		this.glade.getWidget(SOURCE_WINDOW).hideAll();
+		
 		AccelGroup ag = new AccelGroup();
-		((Window) this.glade.getWidget("sourceWindow")).addAccelGroup(ag);
+		((Window) this.glade.getWidget(SOURCE_WINDOW)).addAccelGroup(ag);
 		
 		this.createActions(ag);
 		this.createMenus();
@@ -164,7 +147,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		try {
 			prefs.clear();
 		} catch (BackingStoreException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		/*--------------------------------------*
@@ -185,13 +167,13 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			((ComboBoxEntry) this.glade.getWidget(FUNC_SELECTOR)).appendText(((String) funcs.get(i)).split("_")[0]);
 		
 		((ComboBoxEntry) this.glade.getWidget(FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
-//		((ComboBoxEntry) this.glade.getWidget(FUNC_SELECTOR)).setActive(0); //$NON-NLS-1$
 		((ComboBox) this.glade.getWidget(VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 		
 		((SourceBuffer) this.view.getBuffer()).toggleBreakpoint(8);
 		this.view.setCurrentLine(0);
 		
 		((ScrolledWindow) this.glade.getWidget(TEXT_WINDOW)).add(this.view);
+		this.glade.getWidget(SOURCE_WINDOW).showAll();
 	}
 
 	/**

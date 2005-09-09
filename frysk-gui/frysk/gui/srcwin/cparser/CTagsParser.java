@@ -1,5 +1,6 @@
 /**
- * 
+ * The CTagsParser attemps to do a basic parser of a C/C++ source file by using
+ * ctags to generate the information
  */
 package frysk.gui.srcwin.cparser;
 
@@ -64,7 +65,6 @@ public class CTagsParser implements StaticParser {
 			// Get information from tags file
 			String[] parts = line.split("\t");
 			String name = parts[0];
-			String regep = parts[2];
 			String type = parts[3];
 			int lineNum = Integer.parseInt(parts[4].split(":")[1]);
 			
@@ -94,20 +94,5 @@ public class CTagsParser implements StaticParser {
 		}
 		
 		reader.close();
-	}
-
-	private String escapeChars(String s){
-		String ret = "";
-		
-		for(int i = 0; i < s.length(); i++){
-			char c = s.charAt(i);
-			
-			if(c == '{' || c == '}')
-				ret += "\\";
-			
-			ret += c;
-		}
-		
-		return ret;
 	}
 }

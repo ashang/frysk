@@ -1,5 +1,6 @@
 /**
- * 
+ * The class that implements this interface should parse the given source file for
+ * statically available information
  */
 package frysk.gui.srcwin;
 
@@ -11,7 +12,6 @@ import java.io.IOException;
  *
  */
 public interface StaticParser {
-	
 	/**
 	 * Parses the given file for syntax and other static information and stores the
 	 * info in the specified buffer

@@ -38,7 +38,8 @@ import org.gnu.pango.Layout;
  */
 public class SourceViewWidget extends TextView implements ExposeListener, MouseListener{
 
-	/* BEGIN CONSTANTS */
+	/* CONSTANTS */
+	
 	public static final String LNF_NODE = "lnf";
 	public static final String SYNTAX_NODE = "syntax";
 	
@@ -72,6 +73,32 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	public static final String SHOW_LINE_NUMBERS = "showLineNumbers";
 	public static final String SHOW_EXEC_MARKERS = "showExecMarkers";
+	
+	public static final String FUNCTION_WEIGHT = "function_weight";
+	public static final String FUNCTION_R = "function_r";
+	public static final String FUNCTION_G = "function_b";
+	public static final String FUNCTION_B = "function_g";
+	
+	public static final String ID_WEIGHT = "id_weight";
+	public static final String ID_B = "id_b";
+	public static final String ID_G = "id_g";
+	public static final String ID_R = "id_r";
+	
+	public static final String LITERAL_WEIGHT = "literal_weight";
+	public static final String LITERAL_B = "literal_b";
+	public static final String LITERAL_G = "literal_g";
+	public static final String LITERAL_R = "literal_r";
+	
+	public static final String GLOBAL_G = "global_g";
+	public static final String GLOBAL_R = "global_r";
+	public static final String GLOBAL_B = "global_b";
+	public static final String GLOBAL_WEIGHT = "global_weight";
+	
+	public static final String COMMENT_R = "comment_r";
+	public static final String COMMENT_G = "comment_g";
+	public static final String COMMENT_B = "comment_b";
+	public static final String COMMMENT_WEIGHT = "commment_weight";
+	
 	/* END CONSTANTS */
 	
 	// my SourceBuffer
@@ -83,18 +110,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	// How far to start writing breakpoints, etc. from the left side of the margin
 	private int marginWriteOffset;
-	public static final String FUNCTION_WEIGHT = "function_weight";
-	public static final String FUNCTION_R = "function_r";
-	public static final String FUNCTION_G = "function_b";
-	public static final String FUNCTION_B = "function_g";
-	public static final String ID_WEIGHT = "id_weight";
-	public static final String LITERAL_WEIGHT = "literal_weight";
-	public static final String ID_B = "id_b";
-	public static final String ID_G = "id_g";
-	public static final String ID_R = "id_r";
-	public static final String LITERAL_B = "literal_b";
-	public static final String LITERAL_G = "literal_g";
-	public static final String LITERAL_R = "literal_r";
 
 	
 	/**
