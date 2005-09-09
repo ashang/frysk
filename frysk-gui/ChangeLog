@@ -1,3 +1,7 @@
+2005-09-10  Igor Foox  <ifoox@redhat.com>
+	* EggTrayIcon/libEggTrayIcon.c: Updated to reflect previous
+	domain move.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* autogen.sh, Makefile.am: Update to reflect move of
