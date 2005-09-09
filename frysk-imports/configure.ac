@@ -23,9 +23,16 @@ AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/cniinner/Makefile 
 
 sinclude(common/acinclude.m4)
 
+AC_MSG_CHECKING([for junit.jar])
 JUNIT_JAR=/usr/share/java/junit.jar
+test -r ${JUNIT_JAR} || AC_MSG_ERROR([no junit.jar file found]);
 AC_SUBST([JUNIT_JAR])
+AC_MSG_RESULT([$JUNIT_JAR])
+
+AC_MSG_CHECKING([for antlr.jar])
 ANTLR_JAR=/usr/share/java/antlr.jar
+test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
 AC_SUBST([ANTLR_JAR])
+AC_MSG_RESULT([$ANTLR_JAR])
 
 AC_OUTPUT

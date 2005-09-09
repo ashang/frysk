@@ -24,7 +24,6 @@ test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
 
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
-test "x$GCJ" = x && AC_MSG_ERROR([no acceptable GCJ compiler found in \$(PATH)])
 
 AC_CHECK_PROGS(JAVAC, javac)
 test "x$JAVAC" = x && AC_MSG_ERROR([no acceptable Java compiler found in \$(PATH)])

@@ -1,5 +1,7 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Check that $(JUNIT_JAR) and $(ANTLR_JAR) exist.
+
 	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
 
 	* tests/anoncall/Makefile.am (clean-local): Add -f to "rm", and
