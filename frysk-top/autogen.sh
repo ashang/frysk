@@ -17,7 +17,7 @@
 # along with FRYSK; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-for d in frysk-imports frysk-sys frysk-core
+for d in frysk-imports frysk-sys frysk-core frysk-gui
 do
     ( test -d $d && cd $d && ./autogen.sh )
 done

@@ -22,7 +22,8 @@ CLEANFILES =
 SUBDIRS = \
 	frysk-imports \
 	frysk-sys \
-	frysk-core
+	frysk-core \
+	frysk-gui
 
 empty=
 space=$(empty) $(empty)

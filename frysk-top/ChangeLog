@@ -1,3 +1,8 @@
+2005-09-09  Igor Foox <ifoox@redhat.com>
+
+	* Makefile.am, configure.ac, autogen.sh: Added frysk-gui
+	to build system.
+
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (doxygen, javadoc): Add rules.
