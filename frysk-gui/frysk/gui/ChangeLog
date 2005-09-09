@@ -1,7 +1,9 @@
 2005-09-09  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* glade/procpop.glade: Fix typos
-	Rename window to Frysk
+	* FryskGui.java (FryskGui): Make sure all exceptions are
+	thrown and passed to calling ErrorLogger.
+	* glade/procpop.glade: Fix typos.
+	Rename window to Frysk.
 
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 

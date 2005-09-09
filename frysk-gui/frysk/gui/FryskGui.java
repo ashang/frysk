@@ -50,7 +50,7 @@ public class FryskGui implements LifeCycleListener, Saveable{
 	
 	
 	
-	FryskGui() throws GladeXMLException, FileNotFoundException {
+	FryskGui() throws GladeXMLException, FileNotFoundException, IOException {
 		
 		/*
 		 * The location of the glade file may need to be modified here,
@@ -67,25 +67,21 @@ public class FryskGui implements LifeCycleListener, Saveable{
 			} catch (FileNotFoundException missingFile2) {
 				throw missingFile2;
 
-			} catch (GladeXMLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (GladeXMLException xmlException) {
+				throw xmlException;
+			} catch (IOException ioException) {
+				throw ioException;
 			}
 		} catch (GladeXMLException malformedXML) {
 			throw malformedXML;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
 
 		try {
 			WindowManager.theManager.initWindows(glade);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw e;
 		}
 
 	}
@@ -175,27 +171,20 @@ public class FryskGui implements LifeCycleListener, Saveable{
 	        date_handle = "frysk_gui_error_log_"+format.format(new Date()).toString();
 			
 	        try {
-
 				handler = new FryskErrorFileHandler(date_handle,true);
-				
-			
 	    	} catch (Exception e) {
 				e.printStackTrace();
 			}
 	    	
 	    	return handler;
-			
 	}
 
 	private static void setupErrorLogging() {
 	    // Get a logger; the logger is automatically created if
         // it doesn't already exist
-
-   
-	        errorLogFile = Logger.getLogger(ERROR_LOG_ID);
-	        errorLogFile.addHandler(buildHandler());
-	
-        // Add to the desired logger
+  
+        errorLogFile = Logger.getLogger(ERROR_LOG_ID);
+        errorLogFile.addHandler(buildHandler());
 	}
 	
 	private static  Preferences importPreferences(String location) {
