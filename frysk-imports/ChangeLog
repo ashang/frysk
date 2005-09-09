@@ -1,5 +1,8 @@
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
+	* tests/anoncall/Makefile.am (clean-local): Add -f to "rm", and
+	also delete PASS and FAIL.
+
 	* configure.ac: Add code to substitute JUNIT_JAR and ANTLR_JAR.
 	* autogen.sh: Replace path-to junit.jar and path-to antlr.jar with
 	JUNIT_JAR and ANTLR_JAR.

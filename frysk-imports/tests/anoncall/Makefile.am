@@ -9,4 +9,5 @@ FAIL:
 	test -r FAIL
 
 clean-local:
-	rm Anon Anon*.class
+	rm -f Anon Anon*.class FAIL PASS
+
