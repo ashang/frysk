@@ -26,5 +26,6 @@ SUBDIRS = \
 	jline \
 	jargs \
 	tests/cniinner \
-	tests/anoncall
+	tests/anoncall \
+	tests/werror
 

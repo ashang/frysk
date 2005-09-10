@@ -1,3 +1,9 @@
+2005-09-10  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac, Makefile.am: Add sub-directory tests/werror.
+	* tests/werror/Makefile.am, tests/werror/Werror.java,
+	tests/werror/.cvsignore: New files.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Check that $(JUNIT_JAR) and $(ANTLR_JAR) exist.
