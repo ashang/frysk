@@ -38,7 +38,7 @@
 # exception.
 
 AC_PREREQ(2.59)
-AC_INIT(frysk-imports, 0.0)
+AC_INIT(frysk, 0.0)
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/cniinner/Makefile tests/anoncall/Makefile tests/werror/Makefile])
 

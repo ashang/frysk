@@ -1,5 +1,7 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Set package name to "frysk".
+
 	* COPYING, EXCEPTION: New files; copyright of all files updated.
 
 	* EggTrayIcon/libEggTrayIcon.c, EggTrayIcon/eggtrayicon.c,
