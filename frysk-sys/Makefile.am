@@ -39,3 +39,6 @@
 
 include common/Makefile.rules
 include Makefile.gen
+
+AM_CXXFLAGS += -I$(srcdir)/../frysk-imports/include
+
