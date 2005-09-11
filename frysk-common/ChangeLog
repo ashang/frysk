@@ -1,5 +1,8 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Install any programs found below a bin/ or
+	sbin/ directory.
+
 	* Makefile.rules, Makefile.gen.sh: Append GCJ libraries to
 	GEN_GCJ_LDADD instead of LDADD.  Link java programs against
 	GEN_GCJ_LDADD.

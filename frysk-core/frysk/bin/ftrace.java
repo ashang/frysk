@@ -37,11 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package prog.util;
-
-/** Runs the program, along with any sub-programs.
- *
+/**
+ * Runs the program, along with any sub-programs.
  */
+
+package frysk.bin;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -50,7 +50,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 
-class run
+class ftrace
 {
     static class TaskCreatedObserver
 	implements Observer

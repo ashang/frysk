@@ -19,16 +19,24 @@
 
 if test $# -eq 0 ; then
     cat <<EOF 1>&2
-Usage:
-	$0 <source-dir>... <.jar-file>... <_JAR-macro>...
+Usage: $0 <source-dir>... <.jar-file>... <_JAR-macro>...
+
 <source-dir>:
+
 Search source directory for .java, .mkjava, .shjava, .c and .cxx
-files.  For each, generate a corresponding automake entry.
-<.jar-file>:
-Generate rule to compile the .jar files into a JNI object file.
-<_JAR-macro>:
+files.  For each, generate a corresponding automake entry.  If the
+file contains a main program, also generate automake to build the
+corresponding program.  Any program located under either a bin/, or
+sbin/ sub-directory, will be installed in the corresponding bin/ or
+sbin/ destination directory.
+
+<.jar-file> or <_JAR-macro>:
+
 Generate rules to compile the corresponding .jar file into a JNI
-object file, include autoconf substitution entry for @_JAR@.
+object file.  In the case of _JAR files, initialize the Makefile
+variable to @_JAR@; it is assumed that configure.ac contains logic to
+perform that substitution.
+
 EOF
     exit 1
 fi
@@ -66,6 +74,15 @@ print_header ()
 # $@
 EOF
     echo "$@" 1>&2
+}
+
+echo_PROGRAMS ()
+{
+    case "$1" in
+	*/bin/* ) echo "bin_PROGRAMS += $1" ;;
+	*/sbin/* ) echo "sbin_PROGRAMS += $1" ;;
+        * ) echo "noinst_PROGRAMS += $1" ;;
+    esac
 }
 
 has_main ()
@@ -200,7 +217,7 @@ for suffix in .java ; do
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK)"
-	    echo "noinst_PROGRAMS += ${name}"
+	    echo_PROGRAMS ${name}
 	    echo "${name_}_LDFLAGS = --main=${class}"
 	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
 	fi
@@ -221,7 +238,7 @@ for suffix in .cxx .c ; do
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES = ${file}"
 	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
-	    echo "noinst_PROGRAMS += ${name}"
+	    echo_PROGRAMS ${name}
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi

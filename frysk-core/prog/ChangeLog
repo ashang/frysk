@@ -1,3 +1,7 @@
+2005-09-11  Andrew Cagney  <cagney@redhat.com>
+
+	* util/run.java: Delete.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* util/run.java, util/auxv.java: Update to match
