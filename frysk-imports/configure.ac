@@ -35,4 +35,9 @@ test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
 AC_SUBST([ANTLR_JAR])
 AC_MSG_RESULT([$ANTLR_JAR])
 
+dnl For EggTrayIcon
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lib/pkgconfig
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
+PKG_CHECK_MODULES(JGCOMMON, jg-common >= 0.1)
+
 AC_OUTPUT

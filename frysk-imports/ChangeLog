@@ -1,5 +1,11 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* EggTrayIcon/libEggTrayIcon.c, EggTrayIcon/eggtrayicon.c,
+	EggTrayIcon/eggtrayicon.h: New files; copied from frysk-gui.
+	* Makefile.am: Add rules for EggTrayIcon.
+	* configure.ac: Set PKG_CONFIG_PATH; check for gtk+-2.0 and
+	jg-common.
+
 	* include/linux.ptrace.h: Copy to here from frysk-sys/include/.
 
 2005-09-10  Andrew Cagney  <cagney@redhat.com>

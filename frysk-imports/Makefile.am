@@ -28,4 +28,13 @@ SUBDIRS = \
 	tests/cniinner \
 	tests/anoncall \
 	tests/werror
+
+noinst_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
+EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
+EggTrayIcon_libEggTrayIcon_so_LDFLAGS  = $(GTK_JAVA_LIBS) $(GTK_LIBS) $(JGCOMMON_LIBS) -lgtkjni -ljgjni-0.1
+EggTrayIcon_libEggTrayIcon_so_LDFLAGS += $(CAIRO_JAVA_LIBS)
 
+noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
+EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
+                                       EggTrayIcon/libEggTrayIcon.c 
+EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(JGCOMMON_CFLAGS)

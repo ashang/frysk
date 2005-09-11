@@ -45,9 +45,6 @@ sinclude(common/acinclude.m4)
 
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lib/pkgconfig
 
-dnl For EggTrayIcon
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
-
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)
 GTK2_JAR=`$PKG_CONFIG --variable classpath gtk2-java`
@@ -69,7 +66,7 @@ AC_SUBST(JGCOMMON_JAR)
 
 RPATH=-Wl,-rpath,`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
-JAVA_LIBRARY_PATH=-Djava.library.path=$PWD/EggTrayIcon:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
+JAVA_LIBRARY_PATH=-Djava.library.path=`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(JAVA_LIBRARY_PATH)
 
 AC_CONFIG_FILES([Makefile])
