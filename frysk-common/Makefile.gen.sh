@@ -293,6 +293,21 @@ echo 'BUILT_SOURCES += $(GEN_BUILT_H)'
 
 
 
+
+# Form a list of all the .glade files, these are installed in
+# PREFIX/share/PACKAGE/glade/.
+
+print_header "... glade_DATA"
+echo "gladedir = \$(pkgdatadir)/glade"
+echo "glade_DATA ="
+find ${dirs} -type f -name '*.glade' | while read file
+do
+  echo glade_DATA += ${file}
+done
+
+
+
+
 # Form a list of all the JUnit tests.  Anything named *Test*, that
 # does not contain a main method is considered a candidate for the
 # list.
