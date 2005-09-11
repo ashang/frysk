@@ -111,6 +111,10 @@ do
   print_jar_rule ${b} ${B}
 done
 
+# These imports are included in the built sources to ensure that they
+# have been compiled _before_ any files in this directory.  Otherwize
+# JAVAC complains about these files not yet existing.
+
 for jar in x ${JARS}
 do
   test ${jar} = x && continue
@@ -119,6 +123,7 @@ do
   echo ""
   print_header "... $jar"
   echo ${B}_JAR = @${B}_JAR@
+  echo BUILT_SOURCES += $b.jar
   print_jar_rule ${b} ${B}
 done
 

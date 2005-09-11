@@ -94,7 +94,7 @@ public class Scanner {
 	throws IOException
     {
 	long val = 0;
-	int count = 0;;
+	int count = 0;
 	while (true) {
 	    char c = java.lang.Character.toLowerCase (lookAhead);
 	    int i = "0123456789abcdef".indexOf (c);
