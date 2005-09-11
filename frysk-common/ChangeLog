@@ -1,5 +1,7 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* COPYING, EXCEPTION: New files; copyright of all files updated.
+
 	* Makefile.gen.sh: Install any programs found below a bin/ or
 	sbin/ directory.
 

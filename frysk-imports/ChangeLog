@@ -1,5 +1,7 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* COPYING, EXCEPTION: New files; copyright of all files updated.
+
 	* EggTrayIcon/libEggTrayIcon.c, EggTrayIcon/eggtrayicon.c,
 	EggTrayIcon/eggtrayicon.h: New files; copied from frysk-gui.
 	* Makefile.am: Add rules for EggTrayIcon.
