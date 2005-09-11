@@ -137,7 +137,7 @@ public class ProcDataModel {
 		this.refreshTimer = new TimerEvent(0, sec*1000){
 			public void execute() { 
 				Manager.host.requestRefresh(true); 
-			};
+			}
 		};
 		Manager.eventLoop.addTimerEvent(refreshTimer);
 	}

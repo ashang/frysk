@@ -11,8 +11,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import javax.swing.ListModel;
-
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
@@ -47,7 +45,6 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.FryskGui;
-import frysk.gui.monitor.ProcDataModel.FilterType;
 
 public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 

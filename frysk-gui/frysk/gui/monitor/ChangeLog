@@ -1,3 +1,9 @@
+2005-09-10  Andrew Cagney  <cagney@redhat.com>
+
+	* AllProcWidget.java: Don't import javax.swing.ListModel, and
+	frysk.gui.monitor.ProcDataModel.FilterType, unused.
+	* ProcDataModel.java: Delete unnecessary semicolon.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Move com/redhat/fedora/frysk/gui/monitor/ to frysk/gui/monitor/.

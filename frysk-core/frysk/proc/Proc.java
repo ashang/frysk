@@ -91,7 +91,7 @@ public abstract class Proc
 	// If there is a parent (process 1 is parentless) add this to
 	// its list of children.
 	if (parent != null) {
-	    this.parent = parent;;;;
+	    this.parent = parent;
 	    parent.add (this);
 	}
 	// Keep the host informed.

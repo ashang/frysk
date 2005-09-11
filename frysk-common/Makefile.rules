@@ -46,6 +46,7 @@ DBPATH = $(subst $(space),:,$(strip \
 JAVAC = @JAVAC@
 JAVACFLAGS = \
 	-g \
+	-warn:+semicolon \
 	-sourcepath $(SOURCEPATH) \
 	-classpath $(CLASSPATH)
 
@@ -113,8 +114,11 @@ BUILT_SOURCES += $(SHJAVA_BUILT)
 SUFFIXES += .classes
 .java.classes:
 	mkdir -p $(GEN_CLASSDIR)
-	rm -f $(GEN_CLASSDIR)/$*.class $(GEN_CLASSDIR)/$*\$$*.class
-	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) $<
+	rm -f $(GEN_CLASSDIR)/$*.class $(GEN_CLASSDIR)/$*\$$*.class $*.log
+	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) $< 2>&1 | tee $*.log
+	if test -s $*.log ; \
+	then rm $*.log ; false ; \
+	fi
 	echo '# $<' > $*.classes.tmp
 	( cd $(GEN_CLASSDIR) && ls $*.class $*\$$*.class 2>/dev/null ) \
 		| sed -e 's,.class$$,,' \

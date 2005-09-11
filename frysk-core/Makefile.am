@@ -22,27 +22,8 @@ include Makefile.gen
 
 AUTOMAKE_OPTIONS = dejagnu
 
-GEN_SOURCES += frysk/expr/CppParser.java
-GEN_SOURCES += frysk/expr/CppLexer.java
-GEN_SOURCES += frysk/expr/CppParserTokenTypes.java
+include frysk/expr/Makefile.inc
 
-BUILT_SOURCES += \
-	frysk/expr/CppParser.java \
-	frysk/expr/CppLexer.java \
-	frysk/expr/CppParserTokenTypes.java
-
-CLEANFILES+= \
-	frysk/expr/CppParser.java \
-	frysk/expr/CppLexer.java \
-	frysk/expr/CppParserTokenTypes.java \
-	frysk/expr/CppParserTokenTypes.txt
-
-frysk/expr/CppLexer.java frysk/expr/CppParserTokenTypes.java: frysk/expr/CppParser.java 
-
-frysk/expr/CppParser.java: $(srcdir)/frysk/expr/cpp.g
-	antlr -o frysk/expr $(srcdir)/frysk/expr/cpp.g
-	echo $(srcdir)
-
 GEN_CLASSPATH += ../frysk-imports/$(GEN_CLASSDIR)
 GEN_CLASSPATH += ../frysk-sys/$(GEN_CLASSDIR)
 GEN_CLASSPATH += ../frysk-imports/jline.jar

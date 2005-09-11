@@ -21,7 +21,6 @@ package frysk.expr;
 import antlr.TokenStream;
 import antlr.Token;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.FileNotFoundException;
 import antlr.TokenStreamException;
 
