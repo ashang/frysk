@@ -25,6 +25,7 @@ noinst_PROGRAMS =
 bin_PROGRAMS =
 noinst_LIBRARIES =
 LDADD = 
+GEN_GCJ_LDADD = 
 check_SCRIPTS =
 TESTS =
 GEN_CLASSPATH =
@@ -193,12 +194,12 @@ SUFFIXES += .db
 TestRunner_SOURCES = TestRunner.java
 TestRunner_LINK = ${GCJLINK}
 TestRunner_LDFLAGS = --main=TestRunner
+TestRunner_LDADD = $(LIBJUNIT) $(GEN_GCJ_LDADD)
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_BUILT_CLASSES += TestRunner.classes
 CLEANFILES += TestRunner.java
-LDADD += $(LIBJUNIT)
 LIBJUNIT ?= ../frysk-imports/libjunit.a
 
 TestRunner.java: common/TestRunner.sh Makefile

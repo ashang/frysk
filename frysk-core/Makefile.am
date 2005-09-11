@@ -50,11 +50,11 @@ GEN_CLASSPATH += ../frysk-sys/$(GEN_CLASSDIR)
 GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
-LDADD += ../frysk-imports/libfrysk-imports.a
-LDADD += ../frysk-sys/libfrysk-sys.a
-LDADD += ../frysk-imports/libjline.a
-LDADD += ../frysk-imports/libantlr.a
-LDADD += ../frysk-imports/libjunit.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
+GEN_GCJ_LDADD += ../frysk-imports/libjline.a
+GEN_GCJ_LDADD += ../frysk-imports/libantlr.a
+GEN_GCJ_LDADD += ../frysk-imports/libjunit.a
 
 # XXX: This needs to be make less-architecture independant.
 

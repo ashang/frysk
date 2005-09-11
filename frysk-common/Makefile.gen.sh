@@ -148,7 +148,7 @@ ${dir}.jar: \$(GEN_BUILT_CLASSES)
 		| ( cd \$(GEN_CLASSDIR) && fastjar -@ -cf \$@ )
 	mv \$(GEN_CLASSDIR)/\$@ \$@
 noinst_PROGRAMS += ${dir}.jar
-LDADD += lib${dir}.a
+GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
 noinst_LIBRARIES += lib${dir}.a
 lib${dir}.so: lib${dir}.a
@@ -202,6 +202,7 @@ for suffix in .java ; do
 	    echo "${name_}_LINK = \$(GCJLINK)"
 	    echo "noinst_PROGRAMS += ${name}"
 	    echo "${name_}_LDFLAGS = --main=${class}"
+	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
 	fi
     done
 done

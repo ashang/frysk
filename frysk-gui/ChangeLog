@@ -1,5 +1,7 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am: Instead of LDADD, append to GEN_GCJ_LDADD.
+
 	* Makefile.am: Delete rules for EggTrayIcon.
 	* configure.ac: Update path to EggTrayIcon directory in
 	JAVA_LIBRARY_PATH.  Do not check for gtk+-2.0.

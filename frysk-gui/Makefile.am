@@ -54,13 +54,15 @@ GEN_CLASSPATH += /usr/lib
 # Hack, need to compile frysk.gui.monitor.EggTrayIcon.java with JNI.
 AM_GCJFLAGS += -fjni 
 
-LDADD += ../frysk-core/libfrysk-core.a ../frysk-sys/libfrysk-sys.a  ../frysk-imports/libfrysk-imports.a ../frysk-imports/libantlr.a
+GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
+GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-imports/libantlr.a
 LDFLAGS = @JAVA_LIBRARY_PATH@ @RPATH@
 noinst_PROGRAMS += frysk/gui/FryskGui
 frysk_gui_FryskGui_SOURCES += $(GEN_SOURCES) 
 frysk_gui_FryskGui_CLASSPATH = $(GEN_CLASSPATH) 
 
-frysk_gui_FryskGui_LDADD = $(LDADD)
 frysk_gui_FryskGui_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
 frysk_gui_FryskGui_LDADD += $(GLADE_JAVA_LIBS)
 frysk_gui_FryskGui_LDADD += $(GNOME_JAVA_LIBS) 
@@ -71,7 +73,6 @@ noinst_PROGRAMS += frysk/gui/test/SourceWinTest
 
 frysk_gui_test_SourceWinTest_SOURCES += $(GEN_SOURCES)
 frysk_gui_test_SourceWinTest_CLASSPATH = $(GEN_CLASSPATH)
-frysk_gui_test_SourceWinTest_LDADD = $(LDADD)
 frysk_gui_test_SourceWinTest_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
 frysk_gui_test_SourceWinTest_LDADD += $(GLADE_JAVA_LIBS)
 frysk_gui_test_SourceWinTest_LDADD += $(GNOME_JAVA_LIBS) 
