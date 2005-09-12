@@ -1,5 +1,7 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am: Install libEggTrayIcon.so in libdir.
+
 	* configure.ac: Set package name to "frysk".
 
 	* COPYING, EXCEPTION: New files; copyright of all files updated.
