@@ -124,9 +124,9 @@ SUFFIXES += .javain
 .javain.java:
 	rm -f $*.tmp
 	sed < $< \
-		-e 's,@''prefix@,$(prefix),g' \
-		-e 's,@''datadir@,$(datadir),g' \
-		-e 's,@''gladedir@,$(gladedir),g' \
+		-e 's,[@]prefix[@],$(prefix),g' \
+		-e 's,[@]datadir[@],$(datadir),g' \
+		-e 's,[@]gladedir[@],$(gladedir),g' \
 		> $*.tmp
 	mv -f $*.tmp $@
 

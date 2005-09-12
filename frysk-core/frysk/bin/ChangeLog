@@ -1,5 +1,7 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.javain: Make public.
+
 	* Config.javain: New file.
 
 	* ftrace.java: New file.

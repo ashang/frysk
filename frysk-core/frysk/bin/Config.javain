@@ -43,7 +43,7 @@
 
 package frysk.bin;
 
-class Config
+public class Config
 {
 	public static final String PREFIX = "@prefix@";
 	public static final String DATADIR = "@datadir@";

@@ -1,5 +1,8 @@
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules: Wrap the @ in @prefix@ in [] so that configure
+	doesn't substitute it.
+	
 	* Makefile.rules, Makefile.gen.sh: Generate rules for .javain
 	files.
 	
