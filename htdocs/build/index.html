@@ -7,6 +7,10 @@ body { font-family : Helvetica, Arial, sans-serif ; margin : 0em; }
 a   { color : #000000; }
 a:hover { text-decoration : underline; background : #eeeeee;}
 h1 { font-size: 18px; }
+h2 { font-size: 16px; margin-bottom: 0px;
+    padding-left: 2em;
+    font-style: italic; }
+h2 + p { margin-top: 0px;}
 pre { margin-left: 20px; }
 div#footer {position: absolute; width: 100%; top: 0; left: 0; top: auto; bottom: 0; font-size: 10pt; background: #eee; padding: 0px; color: #111; text-align: center; line-height:150%;}
 </style>
@@ -107,12 +111,45 @@ Create a separate build directory, and build in there:<br>
 For eclipse, check out the <tt>cvs</tt> module <tt>frysk-eclipse</tt>.
 
 
-<h1>Related information</h1>
-<p> Some of the dependencies for Frysk are in development or newly released (i.e.
-Java-GNOME packages, GTK+ stack), therefore it may be difficult to find these in pre-packaged form if you are not able to use our supplied packages. You can build these 
+<h1>Special requirements</h1>
+<p> If you are interested in trying frysk on other distributions, or cannot use our prepackaged required dependencies then you will need to find packages for your distribution or compile all the required packages from source. Some of the dependencies for Frysk are in development or newly released (i.e.
+Java-GNOME packages, GTK+ stack), therefore it may be difficult to find these in pre-packaged form if you are not able to use our supplied packages. Others, such as antlr or JUnit, may be easier to find. You can build these 
 packages from source, and frysk should detect their existance in the standard /usr or
 non-standard /opt. However, please note that installing the whole stack from source
 is a formidable task.
+</p>
+
+<h2> Dependency versions </h2>
+<p>
+For the brave here are the absolutely required 
+packages and versions:
+</p>
+
+<ul>
+    <li> <tt> antlr </tt> 1.7.4 </li>
+    <li> <tt> JUnit </tt> (version: to be determined) </li>
+    <li> <tt> GCJ </tt>  4.0.0 </li>
+    <li> A 1.4.2-compatible Java compiler
+        (<tt> ECJ </tt>  is strongly encouraged
+ for compatibility reasons) </li>
+    <li> <tt> fontconfig </tt>  3.2.3 </li>
+    <li> <tt> cairo </tt>  1.0.0 </li>
+    <li> <tt> pango </tt>  1.10.0 </li>
+    <li> <tt> GTK+ </tt>  2.8.0 </li>
+    <li> <tt> jg-common </tt>  0.1 </li>
+    <li> <tt> cairo-java </tt>  0.9.3 </li>
+    <li> <tt> libgtk-java </tt> 2.7.0 </li>
+    <li> <tt> libglade-java </tt>  2.11.4 </li>
+</ul>
+
+<p>
+Please note that some of these packages may have
+ dependencies. Based on our testing on FC4, the
+ above are the bare minimum packages that are
+ needed, however this may differ on your
+ distribution based on what versions are
+ installed.
+</p>
 
 <h1> Related Links </h1>
 
