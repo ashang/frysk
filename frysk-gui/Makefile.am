@@ -58,23 +58,11 @@ GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
 GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libantlr.a
-LDFLAGS = @JAVA_LIBRARY_PATH@ @RPATH@
-noinst_PROGRAMS += frysk/gui/FryskGui
-frysk_gui_FryskGui_SOURCES += $(GEN_SOURCES) 
-frysk_gui_FryskGui_CLASSPATH = $(GEN_CLASSPATH) 
-
-frysk_gui_FryskGui_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
-frysk_gui_FryskGui_LDADD += $(GLADE_JAVA_LIBS)
-frysk_gui_FryskGui_LDADD += $(GNOME_JAVA_LIBS) 
-frysk_gui_FryskGui_LDADD += $(CAIRO_JAVA_LIBS)
-frysk_gui_FryskGui_LDADD += $(JGCOMMON_LIBS)
-
-noinst_PROGRAMS += frysk/gui/test/SourceWinTest
-
-frysk_gui_test_SourceWinTest_SOURCES += $(GEN_SOURCES)
-frysk_gui_test_SourceWinTest_CLASSPATH = $(GEN_CLASSPATH)
-frysk_gui_test_SourceWinTest_LDADD += $(GTK_JAVA_LIBS) -lgtkjni -ljgjni-0.1
-frysk_gui_test_SourceWinTest_LDADD += $(GLADE_JAVA_LIBS)
-frysk_gui_test_SourceWinTest_LDADD += $(GNOME_JAVA_LIBS) 
-frysk_gui_test_SourceWinTest_LDADD += $(CAIRO_JAVA_LIBS) 
-frysk_gui_test_SourceWinTest_LDADD += $(JGCOMMON_LIBS)
+GEN_GCJ_LDADD += $(GLADE_JAVA_LIBS)
+GEN_GCJ_LDADD += $(GTK_JAVA_LIBS)
+GEN_GCJ_LDADD += -lgtkjni -ljgjni-0.1
+GEN_GCJ_LDADD += $(GLADE_JAVA_LIBS)
+GEN_GCJ_LDADD += $(GNOME_JAVA_LIBS) 
+GEN_GCJ_LDADD += $(CAIRO_JAVA_LIBS)
+GEN_GCJ_LDADD += $(JGCOMMON_LIBS)
+LDFLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@

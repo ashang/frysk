@@ -63,11 +63,8 @@ JGCOMMON_JAR=`$PKG_CONFIG --variable classpath jg-common`
 AC_MSG_RESULT($JGCOMMON_JAR)
 AC_SUBST(JGCOMMON_JAR)
 
-
-RPATH=-Wl,-rpath,`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
+RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
-JAVA_LIBRARY_PATH=-Djava.library.path=`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common| sed -e 's/ /:/' -e 's/-L//'  -e 's/:*$//'`
-AC_SUBST(JAVA_LIBRARY_PATH)
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-sys frysk-core])
