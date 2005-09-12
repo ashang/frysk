@@ -50,14 +50,7 @@ SUBDIRS = \
 	tests/anoncall \
 	tests/werror
 
-# Clueless automake: Use a phony DATA entry to convince AUTOMAKE that
-# it really should install a .so file into LIBDIR.  The obvious
-# choice, lib_LIBRARIES, attracts an error because .so isn't a valid
-# extention (serious!); while LTLIBRARIES insists that the world
-# should use libtool.
-
-sodir = $(libdir)
-so_DATA = EggTrayIcon/libEggTrayIcon.so
+solib_DATA += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
 EggTrayIcon_libEggTrayIcon_so_LDFLAGS  = $(GTK_JAVA_LIBS) $(GTK_LIBS) $(JGCOMMON_LIBS) -lgtkjni -ljgjni-0.1
 EggTrayIcon_libEggTrayIcon_so_LDFLAGS += $(CAIRO_JAVA_LIBS)

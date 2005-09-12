@@ -1,3 +1,7 @@
+2005-09-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (solib_DATA): Set, instead of so_DATA.
+
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Install libEggTrayIcon.so in libdir.

@@ -1,3 +1,7 @@
+2005-09-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (solib_DATA, solibdir): Define.
+
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules: Wrap the @ in @prefix@ in [] so that configure

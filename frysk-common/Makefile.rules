@@ -187,6 +187,15 @@ SUFFIXES += .so
 		-Wl,--soname,$@,-z,-defs
 	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
 	mv $@.tmp $@
+
+# Clueless automake: Use a phony DATA entry to convince AUTOMAKE that
+# it really should install a .so file into LIBDIR.  The obvious
+# choice, lib_LIBRARIES, attracts an error because .so isn't a valid
+# extention (serious!); mean while LTLIBRARIES insists that the world
+# should use LIBTOOL.
+
+solibdir = $(libdir)
+solib_DATA =
 
 # Assembler rule.
 
