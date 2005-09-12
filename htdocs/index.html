@@ -77,7 +77,7 @@ Bugzilla
 
 <h1>Building frysk</h1>
 
-Preparation:<b>
+Preparation:<br>
 
 <ul>
 
@@ -85,81 +85,88 @@ Preparation:<b>
 href="http://fedora.redhat.com/download/">Fedora Core 4</a> on an i386
 platform.
 
-<li>Install the following additional RPMs from the standard
-distribution:<b>
+<li>Download and install the following additional RPMs from the
+standard distribution (note that they have dependencies, and the
+dependencies should also be installed):<br>
 
-<tt>java-1.4.2-gcj-compat-devel</tt><b>
+<tt>java-1.4.2-gcj-compat-devel</tt><br>
 
-<tt>junit</tt><b>
+<tt>junit</tt><br>
 
-<tt>antlr</tt><b>
+<tt>antlr</tt><br>
 
 <li>Download and install the following additional RPMS (they will be
-installed into <tt>/opt</tt>):<b>
+installed into <tt>/opt</tt>):<br>
 
-<a href="build/frysk-cairo-1.0.0-1.i386.rpm">frysk-cairo-1.0.0-1.i386.rpm</a><b>
+<a href="build/frysk-cairo-1.0.0-1.i386.rpm">frysk-cairo-1.0.0-1.i386.rpm</a><br>
 
-<a href="build/frysk-cairo-debuginfo-1.0.0-1.i386.rpm">frysk-cairo-debuginfo-1.0.0-1.i386.rpm</a><b>
+<a href="build/frysk-cairo-debuginfo-1.0.0-1.i386.rpm">frysk-cairo-debuginfo-1.0.0-1.i386.rpm</a><br>
 
-<a href="build/frysk-cairo-devel-1.0.0-1.i386.rpm">frysk-cairo-devel-1.0.0-1.i386.rpm</a><b>
+<a href="build/frysk-cairo-devel-1.0.0-1.i386.rpm">frysk-cairo-devel-1.0.0-1.i386.rpm</a><br>
 
-<a href="build/frysk-cairo-java-0.9.3-1.i386.rpm">frysk-cairo-java-0.9.3-1.i386.rpm</a><b>
+<a href="build/frysk-cairo-java-0.9.3-1.i386.rpm">frysk-cairo-java-0.9.3-1.i386.rpm</a><br>
 
-<a href="build/frysk-cairo-java-0.9.3-2.i386.rpm">frysk-cairo-java-0.9.3-2.i386.rpm</a><b>
+<a href="build/frysk-cairo-java-0.9.3-2.i386.rpm">frysk-cairo-java-0.9.3-2.i386.rpm</a><br>
 
-<a href="build/frysk-cairo-java-debuginfo-0.9.3-1.i386.rpm">frysk-cairo-java-debuginfo-0.9.3-1.i386.rpm</a><b>
+<a href="build/frysk-cairo-java-debuginfo-0.9.3-1.i386.rpm">frysk-cairo-java-debuginfo-0.9.3-1.i386.rpm</a><br>
 
-<a href="build/frysk-cairo-java-debuginfo-0.9.3-2.i386.rpm">frysk-cairo-java-debuginfo-0.9.3-2.i386.rpm</a><b>
+<a href="build/frysk-cairo-java-debuginfo-0.9.3-2.i386.rpm">frysk-cairo-java-debuginfo-0.9.3-2.i386.rpm</a><br>
 
-<a href="build/frysk-fontconfig-2.3.2-1.i386.rpm">frysk-fontconfig-2.3.2-1.i386.rpm</a><b>
+<a href="build/frysk-fontconfig-2.3.2-1.i386.rpm">frysk-fontconfig-2.3.2-1.i386.rpm</a><br>
 
-<a href="build/frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm">frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm</a><b>
+<a href="build/frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm">frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm</a><br>
 
-<a href="build/frysk-fontconfig-devel-2.3.2-1.i386.rpm">frysk-fontconfig-devel-2.3.2-1.i386.rpm</a><b>
+<a href="build/frysk-fontconfig-devel-2.3.2-1.i386.rpm">frysk-fontconfig-devel-2.3.2-1.i386.rpm</a><br>
 
-<a href="build/frysk-glib2-2.8.1-1.i386.rpm">frysk-glib2-2.8.1-1.i386.rpm</a><b>
+<a href="build/frysk-glib2-2.8.1-1.i386.rpm">frysk-glib2-2.8.1-1.i386.rpm</a><br>
 
-<a href="build/frysk-glib2-debuginfo-2.8.1-1.i386.rpm">frysk-glib2-debuginfo-2.8.1-1.i386.rpm</a><b>
+<a href="build/frysk-glib2-debuginfo-2.8.1-1.i386.rpm">frysk-glib2-debuginfo-2.8.1-1.i386.rpm</a><br>
 
-<a href="build/frysk-glib2-devel-2.8.1-1.i386.rpm">frysk-glib2-devel-2.8.1-1.i386.rpm</a><b>
+<a href="build/frysk-glib2-devel-2.8.1-1.i386.rpm">frysk-glib2-devel-2.8.1-1.i386.rpm</a><br>
 
-<a href="build/frysk-gtk2-2.8.3-1.i386.rpm">frysk-gtk2-2.8.3-1.i386.rpm</a><b>
+<a href="build/frysk-gtk2-2.8.3-1.i386.rpm">frysk-gtk2-2.8.3-1.i386.rpm</a><br>
 
-<a href="build/frysk-gtk2-debuginfo-2.8.3-1.i386.rpm">frysk-gtk2-debuginfo-2.8.3-1.i386.rpm</a><b>
+<a href="build/frysk-gtk2-debuginfo-2.8.3-1.i386.rpm">frysk-gtk2-debuginfo-2.8.3-1.i386.rpm</a><br>
 
-<a href="build/frysk-gtk2-devel-2.8.3-1.i386.rpm">frysk-gtk2-devel-2.8.3-1.i386.rpm</a><b>
+<a href="build/frysk-gtk2-devel-2.8.3-1.i386.rpm">frysk-gtk2-devel-2.8.3-1.i386.rpm</a><br>
 
-<a href="build/frysk-jg-common-0.1-1.i386.rpm">frysk-jg-common-0.1-1.i386.rpm</a><b>
+<a href="build/frysk-jg-common-0.1-1.i386.rpm">frysk-jg-common-0.1-1.i386.rpm</a><br>
 
-<a href="build/frysk-jg-common-debuginfo-0.1-1.i386.rpm">frysk-jg-common-debuginfo-0.1-1.i386.rpm</a><b>
+<a href="build/frysk-jg-common-debuginfo-0.1-1.i386.rpm">frysk-jg-common-debuginfo-0.1-1.i386.rpm</a><br>
 
-<a href="build/frysk-libglade-java-2.11.4-2.i386.rpm">frysk-libglade-java-2.11.4-2.i386.rpm</a><b>
+<a href="build/frysk-libglade-java-2.11.4-2.i386.rpm">frysk-libglade-java-2.11.4-2.i386.rpm</a><br>
 
-<a href="build/frysk-libglade-java-debuginfo-2.11.4-2.i386.rpm">frysk-libglade-java-debuginfo-2.11.4-2.i386.rpm</a><b>
+<a href="build/frysk-libglade-java-debuginfo-2.11.4-2.i386.rpm">frysk-libglade-java-debuginfo-2.11.4-2.i386.rpm</a><br>
 
-<a href="build/frysk-libgtk-java-2.7.0-6.i386.rpm">frysk-libgtk-java-2.7.0-6.i386.rpm</a><b>
+<a href="build/frysk-libgtk-java-2.7.0-6.i386.rpm">frysk-libgtk-java-2.7.0-6.i386.rpm</a><br>
 
-<a href="build/frysk-libgtk-java-debuginfo-2.7.0-6.i386.rpm">frysk-libgtk-java-debuginfo-2.7.0-6.i386.rpm</a><b>
+<a href="build/frysk-libgtk-java-debuginfo-2.7.0-6.i386.rpm">frysk-libgtk-java-debuginfo-2.7.0-6.i386.rpm</a><br>
 
-<a href="build/frysk-pango-1.10.0-1.i386.rpm">frysk-pango-1.10.0-1.i386.rpm</a><b>
+<a href="build/frysk-pango-1.10.0-1.i386.rpm">frysk-pango-1.10.0-1.i386.rpm</a><br>
 
-<a href="build/frysk-pango-debuginfo-1.10.0-1.i386.rpm">frysk-pango-debuginfo-1.10.0-1.i386.rpm</a><b>
+<a href="build/frysk-pango-debuginfo-1.10.0-1.i386.rpm">frysk-pango-debuginfo-1.10.0-1.i386.rpm</a><br>
 
-<a href="build/frysk-pango-devel-1.10.0-1.i386.rpm">frysk-pango-devel-1.10.0-1.i386.rpm</a><b>
+<a href="build/frysk-pango-devel-1.10.0-1.i386.rpm">frysk-pango-devel-1.10.0-1.i386.rpm</a><br>
 
 </ul>
 
-Check out frysk:<b>
+<h2>Command Line Build<h2>
+
+Check out frysk:<br>
 
 <tt>cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk</tt>
 
-Build the configuration files:<b>
+Build the configuration files:<br>
 
-<tt>( cd frysk && ./autogen.sh )</tt><b>
+<tt>( cd frysk && ./autogen.sh )</tt><br>
 
-Create a separate build directory, and build:<b>
+Create a separate build directory, and build in there:<br>
 
 <tt>( mkdir build && cd build && ../frysk/configure && make)</tt>
+
+<h2>Eclipse Build</h2>
+
+For eclipse, check out the <tt>cvs</tt> module <tt>frysk-eclipse</tt>.
 
 
 <h1>Related information</h1>
