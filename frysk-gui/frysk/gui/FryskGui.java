@@ -40,6 +40,7 @@
 package frysk.gui;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -70,212 +71,210 @@ import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Manager;
 
-public class FryskGui
-    implements LifeCycleListener, Saveable
-{
-	
-    LibGlade glade;
-    private static Logger errorLogFile = null;
-	
-    private static final String SETTINGSFILE = ".settings";
-    private static final String GLADE_FILE = "procpop.glade";
-    private static final String GLADE_DEV_PATH = "frysk/gui/glade/";
-    private static final String GLADE_PKG_PATH = "glade/"; 
-    public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
+public class FryskGui implements LifeCycleListener, Saveable {
 
-	
-    static {
-	System.loadLibrary("EggTrayIcon");
-    }
-	
-    FryskGui (String glade_dir)
-	throws GladeXMLException, FileNotFoundException, IOException
-    {
-		
-	/*
-	 * The location of the glade file may need to be modified
-	 * here, depending on where the program is being run from. If
-	 * the directory that the src directory is in is used as the
-	 * root, this should work without modification
-	 */
-		
-	try {
-	    glade = new LibGlade (glade_dir + GLADE_FILE, this);
-	} catch (FileNotFoundException missingFile) {
-	    try {
-		glade = new LibGlade (GLADE_PKG_PATH + GLADE_FILE, this);
-	    } catch (FileNotFoundException missingFile2) {
-		throw missingFile2;
+	LibGlade glade;
 
-	    } catch (GladeXMLException xmlException) {
-		throw xmlException;
-	    } catch (IOException ioException) {
-		throw ioException;
-	    }
-	} catch (GladeXMLException malformedXML) {
-	    throw malformedXML;
-	} catch (IOException e) {
-	    throw e;
+	private static Logger errorLogFile = null;
+
+	private static final String SETTINGSFILE = ".settings";
+
+	private static final String GLADE_FILE = "procpop.glade";
+
+	private static final String GLADE_DEV_PATH = "frysk/gui/glade/";
+
+	private static final String GLADE_PKG_PATH = "glade/";
+
+	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
+
+	static {
+		System.loadLibrary("EggTrayIcon");
 	}
 
-	try {
-	    WindowManager.theManager.initWindows (glade);
-	} catch (IOException e) {
-	    throw e;
-	}
+	FryskGui(String glade_dir) throws GladeXMLException, FileNotFoundException,
+			IOException {
 
-    }
-	
-	
-    public static void mainGui (String[] args, String glade_dir)
-    {
+		/*
+		 * The location of the glade file may need to be modified
+		 * here, depending on where the program is being run from. If
+		 * the directory that the src directory is in is used as the
+		 * root, this should work without modification
+		 */
 
-	Gtk.init (args);
-		
-	//-------------------GUInea pigs-------------------
-	// System.out.println("infLoop PID : " + SysUtils.infLoop ());
-	// System.out.println("infThreadLoop PID : " + SysUtils.infThreadLoop (2));
-	//-------------------------------------------------
+		try {
+			glade = new LibGlade(glade_dir + GLADE_FILE, this);
+		} catch (FileNotFoundException missingFile) {
+			try {
+				glade = new LibGlade(GLADE_PKG_PATH + GLADE_FILE, this);
+			} catch (FileNotFoundException missingFile2) {
+				throw missingFile2;
 
-	TrayIcon trayIcon;
-	FryskGui procpop = null;
-	Preferences prefs = null;
-		
-		
-	setupErrorLogging ();
-
-
-	try {
-	    procpop = new FryskGui (glade_dir);
-	} catch (GladeXMLException e1) {
-	    errorLogFile.log (Level.SEVERE,"procpop.glade XML is badly formed",e1);
-	    System.exit (1);
-	} catch (FileNotFoundException e1) {
-	    errorLogFile.log (Level.SEVERE,"ProcPop glade XML file not found",e1);
-	    System.exit (1);
-	} catch (IOException e1) {
-	    errorLogFile.log (Level.SEVERE,"IOException: ",e1);
-	    System.exit (1);
-	}
-		
-	prefs = importPreferences (SETTINGSFILE);
-		
-	trayIcon = new TrayIcon ("Accudog", "", 
-				new Image ("gui/images/accudog.jpg"));
-
-	trayIcon.setMenuButton (TrayIcon.BUTTON_3);
-	trayIcon.setWindowButton (TrayIcon.BUTTON_1);
-	trayIcon.addPopupWindow (WindowManager.theManager.procpopWindow);
-		
-	// right click menu
-	Menu popupMenu = new Menu ();
-	MenuItem quitItem = new MenuItem ("Quit", false);
-	quitItem.addListener (new MenuItemListener () {
-		public void menuItemEvent (MenuItemEvent arg0) {
-		    Gtk.mainQuit ();
+			} catch (GladeXMLException xmlException) {
+				throw xmlException;
+			} catch (IOException ioException) {
+				throw ioException;
+			}
+		} catch (GladeXMLException malformedXML) {
+			throw malformedXML;
+		} catch (IOException e) {
+			throw e;
 		}
-	    });
-	popupMenu.add (quitItem);
 
-	trayIcon.setPopupMenu (popupMenu);
-		
-	Thread backendStarter = new Thread (new Runnable (){
-		public void run () {
-		    Manager.eventLoop.run ();
+		try {
+			WindowManager.theManager.initWindows(glade);
+		} catch (IOException e) {
+			throw e;
 		}
-	    });
-	backendStarter.start ();
-		
-	procpop.load (prefs);
-		
-	Gtk.main ();
-		
-	Manager.eventLoop.requestStop ();
-	procpop.save (prefs);
-		
-	try {
-	    // Export the node to a file
-	    prefs.exportSubtree (new FileOutputStream (SETTINGSFILE));
-	} catch  (Exception e) {
-	    errorLogFile.log (Level.SEVERE,"Errors exporting preferences",e);
 
 	}
 
-    }
+	public static void mainGui(String[] args, String glade_dir) {
 
-    public static void main (String[] args)
-    {
-	mainGui (args, GLADE_DEV_PATH);
-    }
-	
-    private static FileHandler buildHandler ()
-    {
-	FileHandler handler = null;
-	SimpleDateFormat format = 
-	    new SimpleDateFormat ("yyyyMMdd-hhmmss");
-	String date_handle = null;
-	date_handle = "frysk_gui_error_log_"+format.format (new Date ()).toString ();
-			
-	try {
-	    handler = new FryskErrorFileHandler (date_handle,true);
-	} catch (Exception e) {
-	    e.printStackTrace ();
+		Gtk.init(args);
+
+		//-------------------GUInea pigs-------------------
+		// System.out.println("infLoop PID : " + SysUtils.infLoop ());
+		// System.out.println("infThreadLoop PID : " + SysUtils.infThreadLoop (2));
+		//-------------------------------------------------
+
+		TrayIcon trayIcon;
+		FryskGui procpop = null;
+		Preferences prefs = null;
+
+		setupErrorLogging();
+
+		try {
+			procpop = new FryskGui(glade_dir);
+		} catch (GladeXMLException e1) {
+			errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed",
+					e1);
+			System.exit(1);
+		} catch (FileNotFoundException e1) {
+			errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found",
+					e1);
+			System.exit(1);
+		} catch (IOException e1) {
+			errorLogFile.log(Level.SEVERE, "IOException: ", e1);
+			System.exit(1);
+		}
+
+		prefs = importPreferences(SETTINGSFILE);
+
+		trayIcon = new TrayIcon("Accudog", "", new Image(
+				"gui/images/accudog.jpg"));
+
+		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
+		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
+		trayIcon.addPopupWindow(WindowManager.theManager.procpopWindow);
+
+		// right click menu
+		Menu popupMenu = new Menu();
+		MenuItem quitItem = new MenuItem("Quit", false);
+		quitItem.addListener(new MenuItemListener() {
+			public void menuItemEvent(MenuItemEvent arg0) {
+				Gtk.mainQuit();
+			}
+		});
+		popupMenu.add(quitItem);
+
+		trayIcon.setPopupMenu(popupMenu);
+
+		Thread backendStarter = new Thread(new Runnable() {
+			public void run() {
+				Manager.eventLoop.run();
+			}
+		});
+		backendStarter.start();
+
+		procpop.load(prefs);
+
+		Gtk.main();
+
+		Manager.eventLoop.requestStop();
+		procpop.save(prefs);
+
+		try {
+			// Export the node to a file
+			prefs.exportSubtree(new FileOutputStream(SETTINGSFILE));
+		} catch (Exception e) {
+			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e);
+
+		}
+
 	}
-	    	
-	return handler;
-    }
 
-    private static void setupErrorLogging ()
-    {
-	// Get a logger; the logger is automatically created if it
-        // doesn't already exist
-  
-        errorLogFile = Logger.getLogger (ERROR_LOG_ID);
-        errorLogFile.addHandler (buildHandler ());
-    }
-	
-    private static  Preferences importPreferences (String location)
-    {
-	InputStream is = null;
-	Preferences prefs = null;
-		
-        try {
-	    is = new BufferedInputStream (new FileInputStream (location));
-	    Preferences.importPreferences (is);
-	} catch (FileNotFoundException e1) {
-	    errorLogFile.log (Level.WARNING, location + " not found. Will be created on program exit", e1);
-	} catch (IOException e) {
-	    errorLogFile.log (Level.SEVERE, location + " io error", e);
-	} catch (InvalidPreferencesFormatException e) {
-	    errorLogFile.log (Level.SEVERE, location + " Invalid Format", e);
+	public static void main(String[] args) {
+		mainGui(args, GLADE_DEV_PATH);
 	}
-		
-	prefs = Preferences.userRoot ();
-	return prefs;
-		
-    }
-    public void lifeCycleEvent (LifeCycleEvent arg0)
-    {
-	Gtk.mainQuit ();
-    }
 
-    public boolean lifeCycleQuery (LifeCycleEvent arg0)
-    {
-	Gtk.mainQuit ();
-	return false;
-    }
+	private static FileHandler buildHandler() {
+		FileHandler handler = null;
+		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-hhmmss");
+		String date_handle = null;
+		date_handle = "frysk_gui_error_log_"
+				+ format.format(new Date()).toString();
+		File log_dir = new File(System.getProperty("user.home") + "/"
+				+ ".frysk" + "/" + "logs" + "/");
 
-    public void save (Preferences prefs)
-    {
-	WindowManager.theManager.save
-	    (Preferences.userRoot ().node (prefs.absolutePath ()
-					   + "theManager"));
-    }
+		if (!log_dir.exists())
+			log_dir.mkdirs();
 
-    public void load (Preferences prefs)
-    {
-	WindowManager.theManager.load
-	    (Preferences.userRoot ().node (prefs.absolutePath ()
-					   + "theManager"));		
-    }
+		try {
+
+			handler = new FryskErrorFileHandler(log_dir.getAbsolutePath()
+					+ "/" + date_handle, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return handler;
+	}
+
+	private static void setupErrorLogging() {
+		// Get a logger; the logger is automatically created if it
+		// doesn't already exist
+
+		errorLogFile = Logger.getLogger(ERROR_LOG_ID);
+		errorLogFile.addHandler(buildHandler());
+	}
+
+	private static Preferences importPreferences(String location) {
+		InputStream is = null;
+		Preferences prefs = null;
+
+		try {
+			is = new BufferedInputStream(new FileInputStream(location));
+			Preferences.importPreferences(is);
+		} catch (FileNotFoundException e1) {
+			errorLogFile.log(Level.WARNING, location
+					+ " not found. Will be created on program exit", e1);
+		} catch (IOException e) {
+			errorLogFile.log(Level.SEVERE, location + " io error", e);
+		} catch (InvalidPreferencesFormatException e) {
+			errorLogFile.log(Level.SEVERE, location + " Invalid Format", e);
+		}
+
+		prefs = Preferences.userRoot();
+		return prefs;
+
+	}
+
+	public void lifeCycleEvent(LifeCycleEvent arg0) {
+		Gtk.mainQuit();
+	}
+
+	public boolean lifeCycleQuery(LifeCycleEvent arg0) {
+		Gtk.mainQuit();
+		return false;
+	}
+
+	public void save(Preferences prefs) {
+		WindowManager.theManager.save(Preferences.userRoot().node(
+				prefs.absolutePath() + "theManager"));
+	}
+
+	public void load(Preferences prefs) {
+		WindowManager.theManager.load(Preferences.userRoot().node(
+				prefs.absolutePath() + "theManager"));
+	}
 }

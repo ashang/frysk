@@ -1,3 +1,8 @@
+2005-09-12  Phil Muldoon  <pmuldoon@redhat.com>
+	
+	* FryskGui.java: Reformat.
+	(buildHandler): Write logs to user.home/.frysk/logs
+
 2005-09-12  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskGui.java: Re-indent.  Move "main" code to "mainGui", add
