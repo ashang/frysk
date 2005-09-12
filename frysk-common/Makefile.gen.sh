@@ -44,9 +44,9 @@ Usage: $0 <source-dir>... <.jar-file>... <_JAR-macro>...
 
 <source-dir>:
 
-Search source directory for .java, .mkjava, .shjava, .c and .cxx
-files.  For each, generate a corresponding automake entry.  If the
-file contains a main program, also generate automake to build the
+Search source directory for .java, .mkjava, .shjava, .javain, .c and
+.cxx files.  For each, generate a corresponding automake entry.  If
+the file contains a main program, also generate automake to build the
 corresponding program.  Any program located under either a bin/, or
 sbin/ sub-directory, will be installed in the corresponding bin/ or
 sbin/ destination directory.
@@ -203,7 +203,7 @@ EOF
 
 
 
-for suffix in .mkjava .shjava ; do
+for suffix in .mkjava .shjava .javain ; do
     print_header "... ${suffix}"
     SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
     echo "GEN_BUILT${SUFFIX} ="
@@ -216,6 +216,7 @@ for suffix in .mkjava .shjava ; do
 	echo "GEN_BUILT_CLASSES += ${d}/${b}.classes"
 	echo "${d}/${b}.classes: ${d}/${b}.o"
 	echo "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
+	echo "BUILT_SOURCES += ${d}/${b}.java"
     done
 done
 

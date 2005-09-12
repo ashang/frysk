@@ -106,7 +106,6 @@ SUFFIXES += .mkjava
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
 $(MKJAVA_BUILT): $(MKJAVA)
-BUILT_SOURCES += $(MKJAVA_BUILT)
 
 # Rule for building a .java file from a shell|mkjava pipeline.
 
@@ -117,8 +116,19 @@ SUFFIXES += .shjava
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
 $(SHJAVA_BUILT): $(MKJAVA)
-BUILT_SOURCES += $(SHJAVA_BUILT)
 
+# Mimic autoconf's behavior, by doing it in the Makefile all the
+# variables are automatically expanded.
+
+SUFFIXES += .javain
+.javain.java:
+	rm -f $*.tmp
+	sed < $< \
+		-e 's,@''prefix@,$(prefix),g' \
+		-e 's,@''datadir@,$(datadir),g' \
+		-e 's,@''gladedir@,$(gladedir),g' \
+		> $*.tmp
+	mv -f $*.tmp $@
 
 
 # Since a single .java file can result in multiple .class files (due
