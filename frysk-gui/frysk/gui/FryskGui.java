@@ -101,13 +101,17 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		 * root, this should work without modification
 		 */
 
-		try {
+		try {// command line glade_dir
 			glade = new LibGlade(glade_dir + GLADE_FILE, this);
 		} catch (FileNotFoundException missingFile) {
-			try {
-				glade = new LibGlade(GLADE_PKG_PATH + GLADE_FILE, this);
+			try {// autoconf glade_dir
+				glade = new LibGlade(frysk.bin.Config.GLADEDIR+"/"+GLADE_FILE, this);
 			} catch (FileNotFoundException missingFile2) {
-				throw missingFile2;
+				try{ // default glade_dir
+					glade = new LibGlade(GLADE_PKG_PATH + GLADE_FILE, this);
+				}catch(FileNotFoundException missingFile3){
+					throw missingFile;
+				}
 
 			} catch (GladeXMLException xmlException) {
 				throw xmlException;
