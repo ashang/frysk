@@ -127,6 +127,7 @@ print_jar_rule ()
   cat <<EOF
 $1.jar: \$($2_JAR)
 	cp \$($2_JAR) .
+BUILT_SOURCES += $1.jar
 noinst_LIBRARIES += lib$1.a
 lib$1_a_LIBADD = $1.o
 $1.o: $1.jar
@@ -142,10 +143,15 @@ for jar in x ${jars}
 do
   test ${jar} = x && continue
   b=`basename ${jar} .jar`
+  d=`dirname ${jar}`
   B=`echo $b | tr '[a-z]' '[A-Z]'`
   echo ""
   print_header "... $jar"
   echo ${B}_JAR = ${jar}
+cat <<EOF
+\$(${B}_JAR):
+	cd ${d} && \$(MAKE) \$(AM_MAKEFLAGS) ${b}.jar
+EOF
   print_jar_rule ${b} ${B}
 done
 
@@ -161,7 +167,6 @@ do
   echo ""
   print_header "... $jar"
   echo ${B}_JAR = @${B}_JAR@
-  echo BUILT_SOURCES += $b.jar
   print_jar_rule ${b} ${B}
 done
 

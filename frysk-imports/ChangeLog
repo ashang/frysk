@@ -1,3 +1,8 @@
+2005-09-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Replace EggTrayIcon_libEggTrayIcon_so_LDFLAGS with
+	GEN_GCJ_LDADD.
+
 2005-09-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (solib_DATA): Set, instead of so_DATA.
