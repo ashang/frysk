@@ -1,3 +1,7 @@
+2005-09-13  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Replace util.eio.* with explict imports.
+
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* util/run.java: Delete.

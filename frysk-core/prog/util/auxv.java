@@ -36,14 +36,16 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package prog.util;
 
-/** Print the auxilary vector found in the specified file.
- *
+/**
+ * Print the auxilary vector found in the specified file.
  */
 
+package prog.util;
+
+import util.eio.ByteBuffer;
+import util.eio.ArrayByteBuffer;
 import util.PrintWriter;
-import util.eio.*;
 import frysk.proc.Auxv;
 import java.io.File;
 import java.io.FileInputStream;
