@@ -164,7 +164,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	
 	public SourceWindow() {
 		try {
-			this.glade = new LibGlade(System.frysk.bin.Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
+			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
 		} catch (Exception e){
 			e.printStackTrace();
 		}
