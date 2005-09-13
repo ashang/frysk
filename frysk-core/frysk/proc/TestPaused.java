@@ -37,19 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.sys.Signal;
-import frysk.sys.Sig;
-import frysk.sys.XXX;
-
 /**
  * Check that a task will go into paused state.  This occurs when a
  * task is requested to stop and the task stops due to another event
  * already in the pipe.  The task goes into paused state to denote
  * that the original stop request is still out there.
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.Signal;
+import frysk.sys.Sig;
+import frysk.sys.XXX;
 
 public class TestPaused
     extends TestLib

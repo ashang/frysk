@@ -39,7 +39,8 @@
 
 package frysk.proc;
 
-import java.util.*;
+import java.util.LinkedList;
+import util.eio.ByteBuffer;
 
 abstract public class Task
 {
@@ -97,8 +98,8 @@ abstract public class Task
     }
 
     // Contents of a task.
-    util.eio.ByteBuffer memory;
-    util.eio.ByteBuffer[] registerBank;
+    ByteBuffer memory;
+    ByteBuffer[] registerBank;
 
     // Flags indicating the intended state of various trace options.
     // Typically the thread has to first be stopped before the option

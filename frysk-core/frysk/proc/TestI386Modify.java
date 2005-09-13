@@ -36,9 +36,6 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.proc;
-
-import java.util.*;
 
 /**
  * Check that registers and memory can be modified for I386.
@@ -51,6 +48,11 @@ import java.util.*;
  * will verify the new register values and will not issue the exit syscall
  * unless everything is correct.
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
 
 public class TestI386Modify
    extends TestLib

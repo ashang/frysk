@@ -39,7 +39,8 @@
 
 package frysk.proc;
 
-import java.util.*;
+import java.util.Observer;
+import java.util.Observable;
 import frysk.sys.XXX;
 import frysk.sys.Sig;
 import frysk.sys.Signal;

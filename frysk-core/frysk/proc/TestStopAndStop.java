@@ -37,11 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.sys.XXX;
-
 /**
  * Check that task can be stopped and that extraneous stop requests
  * are properly ignored.
@@ -51,6 +46,12 @@ import frysk.sys.XXX;
  * We then stop all tasks and when all tasks are verified to be stopped
  * we finally detach.
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.XXX;
 
 public class TestStopAndStop
     extends TestLib

@@ -37,16 +37,17 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.event.EventLoop;
-
 /**
  * Manager of all operations within the proc model.
  *
  * Come here first; there's only one manager (well at least for the
- * moment).  */
+ * moment).
+ */
+
+package frysk.proc;
+
+import java.util.Observable;
+import frysk.event.EventLoop;
 
 public class Manager
 {

@@ -37,12 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.sys.Sig;
-import frysk.sys.Signal;
-
 /**
  * Check that we can detect a program that is exiting (i.e. before
  * it has already exited).
@@ -51,6 +45,13 @@ import frysk.sys.Signal;
  * a timer to kill the program with a SIGKILL.  We expect to get
  * an exiting event before we get the exited event.
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.Sig;
+import frysk.sys.Signal;
 
 public class TestExiting
     extends TestLib

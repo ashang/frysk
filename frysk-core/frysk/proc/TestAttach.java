@@ -36,9 +36,11 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.proc;
 
-import java.util.*;
+import java.util.Observer;
+import java.util.Observable;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.sys.XXX;

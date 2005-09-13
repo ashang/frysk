@@ -36,14 +36,15 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.proc;
-
-import java.util.*;
 
 /**
  * Check that I386 registers can be accessed.
- *
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
 
 public class TestI386Regs
     extends TestLib

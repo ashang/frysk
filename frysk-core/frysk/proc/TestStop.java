@@ -37,15 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.sys.XXX;
-
 /**
  * Check that tasks of a process can be manually stopped.
  *
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.XXX;
 
 public class TestStop
     extends TestLib

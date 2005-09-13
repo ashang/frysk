@@ -37,20 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.sys.Signal;
-import frysk.sys.Sig;
-import frysk.sys.XXX;
-
 /**
  * Check that if a task is requested to stop and receives a natural
  * stop event first, that the task goes into the paused state.  When continued,
  * the task will go into the unpaused state and finally when the requested
  * SIGSTOP gets received, it will go back into the normal running state.
- *
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.Signal;
+import frysk.sys.Sig;
+import frysk.sys.XXX;
 
 public class TestUnpaused
     extends TestLib

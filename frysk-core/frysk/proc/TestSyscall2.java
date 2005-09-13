@@ -36,9 +36,6 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.proc;
-
-import java.util.*;
 
 /**
  * Check that syscall events are detected.
@@ -47,6 +44,11 @@ import java.util.*;
  * parameters and return codes can be displayed.  That information must
  * be taken from registers specific to each platform.
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
 
 public class TestSyscall2
     extends TestLib

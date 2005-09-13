@@ -37,15 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import frysk.sys.Sig;
-
 /**
  * Check that assembler instruction stepping works.
- *
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.Sig;
 
 public class TestStep
     extends TestLib

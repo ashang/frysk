@@ -39,7 +39,9 @@
 
 package frysk.proc;
 
-import util.eio.*;
+import util.eio.ByteOrder;
+import util.eio.ByteBuffer;
+import util.eio.PtraceByteBuffer;
 
 class I386Linux
 {
@@ -115,11 +117,11 @@ class I386Linux
 	    // as /proc/mem cannot be written to.
 	    memory = new PtraceByteBuffer (pid, PtraceByteBuffer.Area.DATA,
 	 			           0xffffffffl);
-	    memory.order (util.eio.ByteOrder.LITTLE_ENDIAN);
+	    memory.order (ByteOrder.LITTLE_ENDIAN);
             registerBank = new ByteBuffer[] {
                 new PtraceByteBuffer (pid, PtraceByteBuffer.Area.USR)
             };
-	    registerBank[0].order (util.eio.ByteOrder.LITTLE_ENDIAN);
+	    registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
         }
 	public frysk.proc.Isa getIsa ()
 	{

@@ -36,9 +36,11 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.proc;
 
-import util.eio.*;
+import util.eio.ByteBuffer;
+import util.eio.ByteOrder;
 
 public class Register
 {
@@ -62,7 +64,7 @@ public class Register
     {
 	ByteBuffer b = task.registerBank[bank];
 	long val = 0;
-	if (b.order () == util.eio.ByteOrder.LITTLE_ENDIAN) {
+	if (b.order () == ByteOrder.LITTLE_ENDIAN) {
 	    for (int i = offset + length - 1; i >= offset; i--) {
 	        val = val << 8 | (b.get (i) & 0xff);
 	    }
@@ -78,7 +80,7 @@ public class Register
     public void put (frysk.proc.Task task, long val)
     {
 	ByteBuffer b = task.registerBank[bank];
-	if (b.order () == util.eio.ByteOrder.LITTLE_ENDIAN) {
+	if (b.order () == ByteOrder.LITTLE_ENDIAN) {
 	    for (int i = offset; i < offset + length; i++) {
 	        b.putByte (i, (byte)(val & 0xff));
 	        val = val >> 8;

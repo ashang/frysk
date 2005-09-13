@@ -37,15 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.proc;
-
-import java.util.*;
-import util.PrintWriter;
-
 /**
  * Check that a specific syscall event can be detected.  In this case,
  * an open syscall to a particular file.
  */
+
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import util.PrintWriter;
 
 public class TestSyscallOpen
     extends TestLib

@@ -1,3 +1,18 @@
+2005-09-13  Andrew Cagney  <cagney@redhat.com>
+
+	* I386Linux.java, Isa.java, Manager.java, Proc.java,
+	ProcEventObservable.java, Register.java, Task.java,
+	TaskEventObservable.java, TestAttach.java,
+	TestAttachCloningThreads.java, TestAttachThreads.java,
+	TestExiting.java, TestGoAndGo.java, TestI386Modify.java,
+	TestI386Regs.java, TestPaused.java, TestProcStop.java,
+	TestProcStopAndGo.java, TestProcStopAndGo2.java,
+	TestProcStopAndStop.java, TestStep.java, TestStop.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestSyscall.java,
+	TestSyscall2.java, TestSyscallOpen.java, TestTerminated.java,
+	TestUnpaused.java: Replace util.eio.* and java.util.* with
+	explicit imports.
+
 2005-09-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Delete stray semicolons.
