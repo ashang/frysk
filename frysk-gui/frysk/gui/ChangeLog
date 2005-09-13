@@ -1,3 +1,7 @@
+2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* test/SourceWinTest.java: Renamed to SourceWinRunner.java.
+
 2005-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FryskGui.java (FryskGui): Added Config.GLADEDIR to the search path

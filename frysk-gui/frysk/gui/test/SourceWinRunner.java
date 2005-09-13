@@ -51,7 +51,7 @@ import frysk.gui.srcwin.SourceWindow;
  *
  */
 
-public class SourceWinTest {
+public class SourceWinRunner {
 
 	public static void main(String[] args) {
 		Gtk.init(args);
