@@ -1,5 +1,8 @@
 2005-09-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (EggTrayIcon_libEggTrayIcon_so_LDADD)
+	(noinst_PROGRAMS): Replace GEN_GCJ_LDADD.
+
 	* Makefile.am: Replace EggTrayIcon_libEggTrayIcon_so_LDFLAGS with
 	GEN_GCJ_LDADD.
 

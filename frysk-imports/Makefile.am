@@ -51,12 +51,14 @@ SUBDIRS = \
 	tests/werror
 
 solib_DATA += EggTrayIcon/libEggTrayIcon.so
+noinst_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
-GEN_GCJ_LDADD += $(GTK_JAVA_LIBS)
-GEN_GCJ_LDADD += $(GTK_LIBS)
-GEN_GCJ_LDADD += $(JGCOMMON_LIBS)
-GEN_GCJ_LDADD += -lgtkjni -ljgjni-0.1
-GEN_GCJ_LDADD += $(CAIRO_JAVA_LIBS)
+EggTrayIcon_libEggTrayIcon_so_LDADD =
+EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_JAVA_LIBS)
+EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_LIBS)
+EggTrayIcon_libEggTrayIcon_so_LDADD += $(JGCOMMON_LIBS)
+EggTrayIcon_libEggTrayIcon_so_LDADD += -lgtkjni -ljgjni-0.1
+EggTrayIcon_libEggTrayIcon_so_LDADD += $(CAIRO_JAVA_LIBS)
 
 noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
 EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
