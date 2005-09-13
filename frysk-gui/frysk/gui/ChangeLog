@@ -1,7 +1,11 @@
+2005-09-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* FryskGui.java (FryskGui): Added Config.GLADEDIR to the search path
+	for .glade files.
+
 2005-09-12  Phil Muldoon  <pmuldoon@redhat.com>
 	
-	* FryskGui.java: Reformat.
-	(buildHandler): Write logs to user.home/.frysk/logs
+	* FryskGui.java (buildHandler): Write logs to user.home/.frysk/logs
 
 2005-09-12  Andrew Cagney  <cagney@redhat.com>
 
