@@ -1,4 +1,8 @@
-2005-09-09  ajocksch  <ajocksch@toothpaste.toronto.redhat.com>
+2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Changed glade path to refer to frysk.bin.Config.GLADEPATH.
+
+2005-09-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cparser/CTagsParser.java: Added comments.
 	(escapeChars): Removed.

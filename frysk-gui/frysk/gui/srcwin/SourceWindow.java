@@ -80,7 +80,7 @@ import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
-
+import frysk.bin.Config;
 
 public class SourceWindow implements ButtonListener, EntryListener, 
 									ComboBoxListener{
@@ -89,7 +89,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	// Glade information
 	private static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
 	private static final String GLADE_FILE = "frysk_source.glade";
-	private static final String GLADE_PATH = "frysk-gui/frysk/gui/srcwin/glade/";
+
 	private static final String SOURCE_WINDOW = "sourceWindow";
 	private static final String TEXT_WINDOW = "textWindow";
 	
@@ -164,7 +164,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	
 	public SourceWindow() {
 		try {
-			this.glade = new LibGlade(GLADE_PATH+GLADE_FILE, this); //$NON-NLS-1$
+			this.glade = new LibGlade(frysk.bin.Config.GLADEDIR+GLADE_FILE, this); //$NON-NLS-1$
 		} catch (Exception e){
 			e.printStackTrace();
 		}
