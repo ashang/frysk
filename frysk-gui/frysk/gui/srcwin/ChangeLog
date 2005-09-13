@@ -1,5 +1,9 @@
 2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (SourceWindow): Fixed typo in loading glade file.  
+
+2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
+
 	* SourceWindow.java (SourceWindow): Changed glade path to refer to frysk.bin.Config.GLADEPATH.
 
 2005-09-09  Adam Jocksch  <ajocksch@redhat.com>
