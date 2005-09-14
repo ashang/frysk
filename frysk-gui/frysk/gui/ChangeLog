@@ -1,3 +1,8 @@
+2005-09-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* FryskGui.java (mainGui): takes an array of Strings representing glade dirs
+	and searches them untill a glade file is found.
+
 2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* test/SourceWinTest.java: Renamed to SourceWinRunner.java.

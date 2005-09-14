@@ -49,6 +49,6 @@ class frysk
 {
     public static void main (String[] args)
     {
-	FryskGui.mainGui (args, Config.GLADEDIR + "/");
+	FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
     }
 }

@@ -91,7 +91,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		System.loadLibrary("EggTrayIcon");
 	}
 
-	FryskGui(String glade_dir) throws GladeXMLException, FileNotFoundException,
+	FryskGui(String[] glade_dirs) throws GladeXMLException, FileNotFoundException,
 			IOException {
 
 		/*
@@ -101,28 +101,20 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		 * root, this should work without modification
 		 */
 
-		try {// command line glade_dir
-			glade = new LibGlade(glade_dir + GLADE_FILE, this);
-		} catch (FileNotFoundException missingFile) {
-			try {// autoconf glade_dir
-				glade = new LibGlade(frysk.bin.Config.GLADEDIR+"/"+GLADE_FILE, this);
-			} catch (FileNotFoundException missingFile2) {
-				try{ // default glade_dir
-					glade = new LibGlade(GLADE_PKG_PATH + GLADE_FILE, this);
-				}catch(FileNotFoundException missingFile3){
+		for (int i = 0; i < glade_dirs.length; i++) {
+			try {// command line glade_dir
+				glade = new LibGlade(glade_dirs[i] + GLADE_FILE, this);
+			} catch (FileNotFoundException missingFile) {
+				if(i == glade_dirs.length -1){
 					throw missingFile;
+				}else{
+					errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found",missingFile);
+					continue;
 				}
-
-			} catch (GladeXMLException xmlException) {
-				throw xmlException;
-			} catch (IOException ioException) {
-				throw ioException;
 			}
-		} catch (GladeXMLException malformedXML) {
-			throw malformedXML;
-		} catch (IOException e) {
-			throw e;
+			break;
 		}
+		
 
 		try {
 			WindowManager.theManager.initWindows(glade);
@@ -132,7 +124,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 	}
 
-	public static void mainGui(String[] args, String glade_dir) {
+	public static void mainGui(String[] args, String[] glade_dirs) {
 
 		Gtk.init(args);
 
@@ -148,7 +140,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		setupErrorLogging();
 
 		try {
-			procpop = new FryskGui(glade_dir);
+			procpop = new FryskGui(glade_dirs);
 		} catch (GladeXMLException e1) {
 			errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed",
 					e1);
@@ -208,7 +200,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	}
 
 	public static void main(String[] args) {
-		mainGui(args, GLADE_DEV_PATH);
+		mainGui(args, new String[] {GLADE_PKG_PATH, GLADE_DEV_PATH});
 	}
 
 	private static FileHandler buildHandler() {
