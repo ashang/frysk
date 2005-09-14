@@ -101,14 +101,15 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		 * root, this should work without modification
 		 */
 
+		String searchPath = new String();
 		for (int i = 0; i < glade_dirs.length; i++) {
 			try {// command line glade_dir
 				glade = new LibGlade(glade_dirs[i] + GLADE_FILE, this);
 			} catch (FileNotFoundException missingFile) {
+				searchPath += glade_dirs[i] + "\n";
 				if(i == glade_dirs.length -1){
-					throw missingFile;
+					throw new FileNotFoundException("Glade file not found in path " + searchPath);
 				}else{
-					errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found",missingFile);
 					continue;
 				}
 			}
