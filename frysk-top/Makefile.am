@@ -50,7 +50,9 @@ empty=
 space=$(empty) $(empty)
 SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%,$(SUBDIRS)) \
-	$(patsubst %,$(top_builddir)/%,$(SUBDIRS))
+	$(patsubst %,$(top_builddir)/%,$(SUBDIRS)) \
+	$(srcdir)/frysk-imports/jargs/src \
+	$(srcdir)/frysk-imports/jline/src
 SOURCEPATH = $(subst $(space),:,$(strip $(SOURCEDIRS)))
 
 
@@ -74,7 +76,7 @@ javadoc: javadoc/$(PACKAGE_LIST)
 		-d javadoc \
 		-use \
 		-linksource \
-		-subpackages frysk:util
+		-subpackages frysk:util:jline:jargs
 javadoc/$(PACKAGE_LIST):
 	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
 	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)
