@@ -57,7 +57,7 @@ public class SourceWinRunner {
 		Gtk.init(args);
 		
 		SourceWindow s = new SourceWindow();
-		
+		s.toString(); //FIXME: hack to make compiler warning go away
 		Gtk.main();
 	}
 
