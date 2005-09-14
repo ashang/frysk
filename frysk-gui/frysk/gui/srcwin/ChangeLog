@@ -2,9 +2,9 @@
 
 	* StaticParser.java (parse): Removed public identifier to get rid of compiler warning.
 
-	* SourceWindow.java: Added constants for class specifier properties.
+	* SourceViewWidget.java: Added constants for class specifier properties.
 	
-	* SourceBuffer.java (updatePreferences): Changed to reference new constants in SourceWindow.java.
+	* SourceBuffer.java (updatePreferences): Changed to reference new constants in SourceViewWidget.java.
 
 2005-09-14  Adam Jocksch  <ajocksch@redhat.com>
 
