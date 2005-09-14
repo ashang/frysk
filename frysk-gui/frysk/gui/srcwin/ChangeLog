@@ -3,6 +3,7 @@
 	* StaticParser.java (parse): Removed public identifier to get rid of compiler warning.
 
 	* SourceViewWidget.java: Added constants for class specifier properties.
+	(drawMargin): Added colored margins for expanded inline code.
 	
 	* SourceBuffer.java (updatePreferences): Changed to reference new constants in SourceViewWidget.java.
 

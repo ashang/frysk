@@ -453,16 +453,23 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		
 		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(false); i++){
 			
+			// get the current line height, etc.
+			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
+			int iconStart = lineHeight/2;
+			
 			if(linesIgnored < totalInlinedLines){
 				linesIgnored++;
+				
+				// draw background for the expanded lines
+				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
+				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
+						this.marginWriteOffset+20, lineHeight);
+				context.setRGBForeground(new Color(r,g,b));
+				
 				currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
 				i--;
 				continue;
 			}
-			
-			// get the current line height, etc.
-			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
-			int iconStart = lineHeight/2;
 			
 			// For the current line, draw background using the currentLine color
 			if(i == this.buf.getCurrentLine()){
