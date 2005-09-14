@@ -38,6 +38,9 @@
 // exception.
 package frysk.gui.srcwin;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 /**
  * This class represents a line of source code. Specifically it knows about 
  * whether the line is breakable, and whether there is a breakpoint set on this
@@ -53,18 +56,22 @@ public class SourceCodeLine {
 	private boolean breakpointSet;
 	private String source;
 	
+	private Vector inlinedLines;
+	private boolean isExpanded;
 	
 	public SourceCodeLine(){
 		this("", false);
 	}
 	public SourceCodeLine(String code){
-		this(code, true);	
+		this(code, true);
+		this.inlinedLines = new Vector();
 	}
 	
 	public SourceCodeLine(String code, boolean breakable){
 		this.setSource(code);
 		this.setBreakable(breakable);
 		this.setBreakpoint(false);
+		this.inlinedLines = new Vector();
 	}
 	public void setSource(String source) {
 		this.source = source;
@@ -85,5 +92,25 @@ public class SourceCodeLine {
 		return breakable;
 	}
 	
+	public void addInlineLine(String line){
+		this.inlinedLines.add(line);
+	}
 	
+	public Iterator getInlineLines(){
+		return this.inlinedLines.iterator();
+	}
+	
+	public boolean hasInlineLines(){
+		return (this.inlinedLines.size() != 0);
+	}
+	public boolean isExpanded() {
+		return isExpanded;
+	}
+	public void setExpanded(boolean isExpanded) {
+		this.isExpanded = isExpanded;
+	}
+	
+	public int getNumInlinedLines(){
+		return this.inlinedLines.size();
+	}
 }

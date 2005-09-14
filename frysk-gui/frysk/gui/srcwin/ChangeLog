@@ -1,3 +1,12 @@
+2005-09-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceCodeLine.java: Added ability to have inlined code.
+	(addInlinedLine): Added.
+	(getInlinedLines): Ditto.
+	(hasInlinedLines): Ditto.
+	(isExpanded): Ditto.
+	(getNumInlinedLines): Ditto.
+
 2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Fixed typo in loading glade file.  
