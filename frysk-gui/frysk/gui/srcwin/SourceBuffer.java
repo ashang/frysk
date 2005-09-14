@@ -322,11 +322,11 @@ public class SourceBuffer extends TextBuffer {
 		this.commentTag.setWeight(Weight.intern(weight));
 		
 		// Type syntax highlighting
-		r = currentNode.getInt("class_r", 10000);
-		g = currentNode.getInt("class_g", 10000);
-		b = currentNode.getInt("class_b", 10000);
+		r = currentNode.getInt(SourceViewWidget.CLASS_R, 10000);
+		g = currentNode.getInt(SourceViewWidget.CLASS_G, 10000);
+		b = currentNode.getInt(SourceViewWidget.CLASS_B, 10000);
 		this.classTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt("class_weight", Weight.BOLD.getValue());
+		weight = currentNode.getInt(SourceViewWidget.CLASS_WEIGHT, Weight.BOLD.getValue());
 		this.classTag.setWeight(Weight.intern(weight));
 		
 		// Inlined tag background

@@ -141,6 +141,11 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	public static final String COMMENT_B = "comment_b";
 	public static final String COMMMENT_WEIGHT = "commment_weight";
 	
+	public static final String CLASS_R = "class_r";
+	public static final String CLASS_G = "class_g";
+	public static final String CLASS_B = "class_b";
+	public static final String CLASS_WEIGHT = "class_weight";
+	
 	/* END CONSTANTS */
 	
 	// my SourceBuffer

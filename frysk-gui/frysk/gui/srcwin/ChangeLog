@@ -1,5 +1,13 @@
 2005-09-14  Adam Jocksch  <ajocksch@redhat.com>
 
+	* StaticParser.java (parse): Removed public identifier to get rid of compiler warning.
+
+	* SourceWindow.java: Added constants for class specifier properties.
+	
+	* SourceBuffer.java (updatePreferences): Changed to reference new constants in SourceWindow.java.
+
+2005-09-14  Adam Jocksch  <ajocksch@redhat.com>
+
 	* SourceCodeLine.java: Added ability to have inlined code.
 	(addInlinedLine): Added.
 	(getInlinedLines): Ditto.

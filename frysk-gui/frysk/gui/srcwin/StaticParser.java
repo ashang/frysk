@@ -57,5 +57,5 @@ public interface StaticParser {
 	 * @param filename The file to parse
 	 * @param buffer The source buffer to put the resulting data in
 	 */
-	public void parse(String filename, SourceBuffer buffer) throws IOException;
+	void parse(String filename, SourceBuffer buffer) throws IOException;
 }
