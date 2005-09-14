@@ -49,7 +49,7 @@ package frysk.gui.srcwin;
  */
 
 public class Variable extends CodeItem {
-	private boolean global = false;
+	private boolean isMember = false;
 	
 	private Variable prev = null;
 	private Variable next = null;
@@ -68,9 +68,9 @@ public class Variable extends CodeItem {
 	 * @param startCol Start of the column span (wrt the line it's on)
 	 * @param endCol End of the column span (wrt the line it's on)
 	 */
-	public Variable(String name, int lineNum, int startCol, boolean global){
+	public Variable(String name, int lineNum, int startCol, boolean member){
 		super(name, lineNum, startCol);
-		this.global = global;
+		this.isMember = member;
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class Variable extends CodeItem {
 		return this.name+":("+this.line+"-"+this.col+")";
 	}
 
-	public boolean isGlobal() {
-		return global;
+	public boolean isMember() {
+		return isMember;
 	}
 }

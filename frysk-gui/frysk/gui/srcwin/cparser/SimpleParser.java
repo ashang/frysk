@@ -90,7 +90,7 @@ public class SimpleParser implements StaticParser {
 					t.text.equals("class") || t.text.equals("return") || t.text.equals("struct") ||
 					t.text.equals("public") || t.text.equals("private") ||
 					t.text.equals("protected") || t.text.equals("do")){
-				buffer.addLitereal(t.lineNum, t.colNum, t.text.length());
+				buffer.addLiteral(t.lineNum, t.colNum, t.text.length());
 			}
 			else if(t.text.equals("{")){
 				this.scopeDepth++;

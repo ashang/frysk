@@ -1,3 +1,8 @@
+2005-09-14  Adam Jocksch <ajocksch@redhat.com
+
+	* Makefile.am (GEN_CLASSPATH): Added frysk-imports/cdtparser.jar.
+	(GEN_GCJ_LDADD): Added frysk-imports/libcdtparser.a.
+
 2005-09-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Simplify; append all libraries to GEN_GCJ_LDADD.

@@ -166,7 +166,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		try {
 			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
 		} catch (Exception e){
-			e.printStackTrace();
+			try{
+				this.glade = new LibGlade("../srcwin/glade/"+GLADE_FILE, this);
+			}
+			catch (Exception e2){
+				e2.printStackTrace();
+			}
 		}
 
 		this.glade.getWidget(SOURCE_WINDOW).hideAll();

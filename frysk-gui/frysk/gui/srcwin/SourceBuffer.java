@@ -1,41 +1,3 @@
-// This file is part of the program FRYSK.
-//
-// Copyright 2005, Red Hat Inc.
-//
-// FRYSK is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
-//
-// FRYSK is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with FRYSK; if not, write to the Free Software Foundation,
-// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
-// In addition, as a special exception, Red Hat, Inc. gives You the
-// additional right to link the code of FRYSK with code not covered
-// under the GNU General Public License ("Non-GPL Code") and to
-// distribute linked combinations including the two, subject to the
-// limitations in this paragraph. Non-GPL Code permitted under this
-// exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
-// Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
-// resulting work to be covered by the GNU General Public
-// License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
-// used in conjunction with FRYSK except the Non-GPL Code covered by
-// this exception. If you modify this file, you may extend this
-// exception to your version of the file, but you are not obligated to
-// do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
-// exception.
 package frysk.gui.srcwin;
 
 
@@ -44,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -56,7 +19,7 @@ import org.gnu.gtk.TextTagTable;
 import org.gnu.javagnome.Handle;
 import org.gnu.pango.Weight;
 
-import frysk.gui.srcwin.cparser.SimpleParser;
+import frysk.gui.srcwin.cparser.CDTParser;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -72,8 +35,9 @@ public class SourceBuffer extends TextBuffer {
 	
 	/* CONSTANTS */
 	
+	private static final String INLINE_TAG = "INLINE";
 	private static final String COMMENT_TAG = "COMMENT";
-	private static final String GLOBAL_TAG = "GLOBAL";
+	private static final String MEMBER_TAG = "MEMBER";
 	private static final String FUNCTION_TAG = "FUNCTION";
 	private static final String ID_TAG = "ID";
 	private static final String LITERAL_TAG = "TYPE";
@@ -97,9 +61,12 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag foundText;
 	private TextTag functionTag;
 	private TextTag idTag;
-	private TextTag globalTag;
+	private TextTag memberTag;
 	private TextTag literalTag;
 	private TextTag commentTag;
+	private TextTag classTag;
+	
+	private TextTag inlinedTag;
 	
 	private VariableList varList;
 		
@@ -142,9 +109,12 @@ public class SourceBuffer extends TextBuffer {
 		this.functionTag = this.createTag(FUNCTION_TAG);
 		this.idTag = this.createTag(ID_TAG);
 		this.literalTag = this.createTag(LITERAL_TAG);
-		this.globalTag = this.createTag(GLOBAL_TAG);
+		this.memberTag = this.createTag(MEMBER_TAG);
 		this.commentTag = this.createTag(COMMENT_TAG);
+		this.classTag = this.createTag("CLASS");	
 		this.functionTag.setPriority(this.getTextTagTable().getSize() - 1);
+		
+		this.inlinedTag = this.createTag(INLINE_TAG);
 	}
 	
 	/**
@@ -185,6 +155,10 @@ public class SourceBuffer extends TextBuffer {
 		
 		SourceCodeLine line = lineParser.getNextLine();
 		while (line != null){
+			if(this.getLineCount() == 9){
+				line.addInlineLine("Test");
+			}
+			
 			// append new row
 			TextIter endOfText = this.getEndIter();
 			
@@ -203,12 +177,14 @@ public class SourceBuffer extends TextBuffer {
 
 		this.varList = new VariableList(this.getLineCount());
 		
-		this.staticParser = new SimpleParser();
+		this.staticParser = new CDTParser();
 		try {
 			this.staticParser.parse(filename, this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println(this.getLineCount());
 	}
 	
 	/**
@@ -325,9 +301,9 @@ public class SourceBuffer extends TextBuffer {
 		r = currentNode.getInt(SourceViewWidget.GLOBAL_R, 65535);
 		g = currentNode.getInt(SourceViewWidget.GLOBAL_G, 30000);
 		b = currentNode.getInt(SourceViewWidget.GLOBAL_B, 0);
-		this.globalTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
+		this.memberTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(SourceViewWidget.GLOBAL_WEIGHT, Weight.NORMAL.getValue());
-		this.globalTag.setWeight(Weight.intern(weight));
+		this.memberTag.setWeight(Weight.intern(weight));
 		
 		// Function syntax highlighting
 		r = currentNode.getInt(SourceViewWidget.FUNCTION_R, 0);
@@ -344,6 +320,20 @@ public class SourceBuffer extends TextBuffer {
 		this.commentTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(SourceViewWidget.COMMMENT_WEIGHT, Weight.NORMAL.getValue());
 		this.commentTag.setWeight(Weight.intern(weight));
+		
+		// Type syntax highlighting
+		r = currentNode.getInt("class_r", 10000);
+		g = currentNode.getInt("class_g", 10000);
+		b = currentNode.getInt("class_b", 10000);
+		this.classTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
+		weight = currentNode.getInt("class_weight", Weight.BOLD.getValue());
+		this.classTag.setWeight(Weight.intern(weight));
+		
+		// Inlined tag background
+		r = currentNode.getInt(SourceViewWidget.INLINE_R, 65535);
+		g = currentNode.getInt(SourceViewWidget.INLINE_G, 65535);
+		b = currentNode.getInt(SourceViewWidget.INLINE_B, 0);
+		this.inlinedTag.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 	}
 	
 	/**
@@ -539,6 +529,17 @@ public class SourceBuffer extends TextBuffer {
 		return functions;
 	}
 	
+	/**
+	 * Adds a function to the buffer to be highlighted. If declaration is set the function
+	 * will be added to the list of functions that the user can jump to using the menu.
+	 * Note that this function differens from addFunction(String name, int offset, boolean declaration)
+	 * in that offset is from the start of lineNum, not from the start of the file
+	 * 
+	 * @param name The name of the function
+	 * @param lineNum The line the function occurs on
+	 * @param col The offset from the start of the line
+	 * @param declaration Whether this is a declaration
+	 */
 	public void addFunction(String name, int lineNum, int col, boolean declaration){
 		this.applyTag(FUNCTION_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+name.length()));
 		if(declaration){
@@ -547,20 +548,160 @@ public class SourceBuffer extends TextBuffer {
 		}
 	}
 	
+	/**
+	 * Adds a function to the buffer to be highlighted. If declaration is set the function
+	 * will be added to the list of functions that the user can jump to using the menu. Note
+	 * that this function differs from addFunction(String name, int lineNum, int col, boolean declaration)
+	 * in that offset is the offset from the beginning of the file (in characters), not the start of
+	 * the current line
+	 * 
+	 * @param name The name of the function
+	 * @param offset The offset from the start of the file
+	 * @param declaration Whether the function is a declaration
+	 */
+	public void addFunction(String name, int offset, boolean declaration){
+		this.applyTag(FUNCTION_TAG, this.getIter(offset), this.getIter(offset+name.length()));
+		if(declaration){
+			this.createMark(name+"_FUNC", this.getIter(offset), true);
+			this.functions.add(name+"_FUNC");
+		}
+	}
+	
+	/**
+	 * Adds a variable to be highlighted in the window
+	 * @param v The variable to be highlighted
+	 */
 	public void addVariable(Variable v){
-		if(!v.isGlobal())
-			this.applyTag(ID_TAG, this.getIter(v.getLine(), v.getCol()), this.getIter(v.getLine(), v.getCol()+v.getName().length()));
+		if(!v.isMember())
+			this.applyTag(ID_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
 		else
-			this.applyTag(GLOBAL_TAG, this.getIter(v.getLine(), v.getCol()), this.getIter(v.getLine(), v.getCol()+v.getName().length()));
+			this.applyTag(MEMBER_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
 		this.varList.addVariable(v);
 	}
 	
-	public void addLitereal(int lineNum, int col, int length){
+	/**
+	 * Adds a literal to be highlighted in the text
+	 * 
+	 * @param lineNum The line number
+	 * @param col The offset from the start of the line
+	 * @param length The length of the literal
+	 */
+	public void addLiteral(int lineNum, int col, int length){
 		this.applyTag(LITERAL_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+length));
 	}
 	
+	/**
+	 * Adds a literal to be highlighted in the text
+	 * 
+	 * @param offset The offset from the start of the file
+	 * @param length The length of the literal
+	 */
+	public void addLiteral(int offset, int length){
+		this.applyTag(LITERAL_TAG, this.getIter(offset), this.getIter(offset+length));
+	}
+	
+	/**
+	 * Adds a comment to be highlighted in the text
+	 * 
+	 * @param lineStart The line the comment starts on
+	 * @param colStart The offset from the the start of the line that the comment starts on
+	 * @param lineEnd The line the comment ends on
+	 * @param colEnd the offset from the start of the line that the comment ends on
+	 */
 	public void addComment(int lineStart, int colStart, int lineEnd, int colEnd){
 		this.applyTag(COMMENT_TAG, this.getIter(lineStart, colStart), this.getIter(lineEnd, colEnd));
+	}
+	
+	/**
+	 * Adds a class identifier to be highlighted in the text
+	 * 
+	 * @param offset The offset from the beginning of the file
+	 * @param length The length of the identifier
+	 */
+	public void addClass(int offset, int length){
+		this.applyTag("CLASS", this.getIter(offset), this.getIter(offset+length));		
+	}
+	
+	/**
+	 * Returns true if the given line contains inlined code
+	 * 
+	 * @param lineNum The line to check
+	 * @return True if the line has inlined code, false otherwise
+	 */
+	public boolean hasInlinedLines(int lineNum){
+		return ((SourceCodeLine) this.lines.elementAt(lineNum)).hasInlineLines();
+	}
+	
+	/**
+	 * Returns true if the given line contains inlined code and is expanded. If the
+	 * given line doesn't have inlined code false is returned by default
+	 * 
+	 * @param lineNum The line to check
+	 * @return True if the the line contains expanded inline code, false otherwise
+	 */
+	public boolean isExpanded(int lineNum){
+		return ((SourceCodeLine) this.lines.elementAt(lineNum)).isExpanded();
+	}
+	
+	/**
+	 * Toggles the expanded state of the provided line. If the line doesn have inlined
+	 * code this call has no effect 
+	 * 
+	 * @param lineNum The line to expand inlined code in
+	 */
+	
+	public void toggleExpanded(int lineNum){
+		SourceCodeLine line = (SourceCodeLine) this.lines.elementAt(lineNum);
+		if(!line.hasInlineLines())
+			return;
+		
+		line.setExpanded(!line.isExpanded());
+		
+		TextIter insertPoint = this.getLineIter(lineNum+1);
+		
+		if(line.isExpanded()){	
+			Iterator i = line.getInlineLines();
+			String toInsert = "";
+			while(i.hasNext())
+				toInsert += ((String) i.next())+"\n";
+			
+			this.insertText(insertPoint, toInsert);
+			
+			// insertPoint's been invalidated by the insertion, re-create it to add
+			// the highlighting
+			insertPoint = this.getLineIter(lineNum+1);
+			TextIter end = this.getIter(insertPoint.getOffset()+toInsert.length());
+			this.applyTag(INLINE_TAG, insertPoint, end);
+		}
+		else{
+			TextIter end = this.getLineIter(lineNum+line.getNumInlinedLines()+1);
+			this.removeTag(INLINE_TAG, insertPoint, end);
+			this.deleteText(insertPoint, end);
+		}
+	}
+	
+	/**
+	 * Returns the number of inlined lines for the gives source line.
+	 * 
+	 * @param lineNum The line to get info for
+	 * @return The number of lines of inlined code
+	 */
+	public int getNumInlinedLines(int lineNum){
+		return ((SourceCodeLine) this.lines.elementAt(lineNum)).getNumInlinedLines();
+	}
+	
+	/**
+	 * Returns the number of lines in the given file, with the option to include
+	 * inlined code in that count
+	 * 
+	 * @param includeInlindes Whether to include inlined code in the line count
+	 * @return The number of lines in the file
+	 */
+	public int getLineCount(boolean includeInlindes){
+		if(includeInlindes)
+			return this.getLineCount();
+		else
+			return this.lines.size();
 	}
 	
 	/*-------------------*

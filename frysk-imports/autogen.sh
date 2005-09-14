@@ -42,6 +42,7 @@
     util \
     JUNIT_JAR \
     ANTLR_JAR \
+    CDTPARSER_JAR \
     jline/jline.jar \
     jargs/jargs.jar
     

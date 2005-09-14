@@ -7,6 +7,35 @@
 	(isExpanded): Ditto.
 	(getNumInlinedLines): Ditto.
 
+	* SourceBuffer.java: Added Inline Code, class identifier, and Member Variable tags.
+	(loadFile): Added small test of inlining code to hardcoded line.
+	(loadFile): Made switch to CDTParser from SimpleParser.
+	(updatePreferences): Loads values for class and inline tags.
+	(addFunction): Added overloaded version that takes offset from start of file.
+	(addVariable): Changed to treat variable offset as from start of file
+	(addLiteral): Added overloaded version that takes offset from start of file.
+	(addLiteral): Fixed typo in name of previous version.
+	(addClass): Added.
+	(hasIndentedLines): Added.
+	(isExpanded): Added.
+	(toggleExpanded): Added.
+	(getNumInlinedLines): Added.
+	(getLineCount): Added overloaded version that can optionally include inlined code.
+
+	* SourceViewWidget.java: Added constants for inline code color.
+	(SourceViewWidget): For MouseListener type of button now filtered at lower level.
+	(SourceViewWidget): Left clicks now detected in margin, used to trigger inline expansion.
+	(drawMargin): Pushed common variables to higher scope in function.
+	(drawMargin): Added ability to skip over expanded inlined code.
+	(drawMargin): Draws mark, color in margin if line contains inlined code.
+
+	* SourceWindow.java (SourceWindow): Now try a second location for glade file.
+
+	* Variable.java: Changed isGlobal to isMember.
+	(isGlobal): Refactored to isMember.
+
+	* cparser/CDTParser.java: Added.
+
 2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Fixed typo in loading glade file.  

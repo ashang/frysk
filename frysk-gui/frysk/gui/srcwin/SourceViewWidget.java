@@ -81,6 +81,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	public static final String LNF_NODE = "lnf";
 	public static final String SYNTAX_NODE = "syntax";
 	
+	public static final String INLINE_B = "inline_b";
+	public static final String INLINE_G = "inline_g";
+	public static final String INLINE_R = "inline_r";
+	
 	public static final String TEXT_B = "textB";
 	public static final String TEXT_G = "textG";
 	public static final String TEXT_R = "textR";
@@ -269,8 +273,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			return true;
 		}
 		// right-click on the border means toggle a breakpoint
-		else if(event.getButtonPressed() == MouseEvent.BUTTON3 
-				&& event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
+		else if(event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
 				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)){
 			Point p = this.windowToBufferCoords(TextWindowType.TEXT, 0, y);
 			
@@ -278,7 +281,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			final int lineNum = iter.getLineNumber();
 			
 			// only popup a window if the line is executable
-			if(this.buf.isLineExecutable(lineNum)){
+			if(event.getButtonPressed() == MouseEvent.BUTTON3 &&
+					this.buf.isLineExecutable(lineNum)){
 				Menu m = new Menu();
 				MenuItem mi = new MenuItem("Toggle Breakpoint", false);
 				m.append(mi);
@@ -289,6 +293,12 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				});
 				m.popup();
 				m.showAll();
+			}
+			
+			if(event.getButtonPressed() == MouseEvent.BUTTON1 &&
+					this.buf.hasInlinedLines(lineNum)){
+				this.buf.toggleExpanded(lineNum);
+				this.refresh();
 			}
 		}
 		
@@ -416,19 +426,75 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		b = this.lnfPrefs.getInt(LINE_NUM_B, 0);
 		context.setRGBForeground(new Color(r,g,b));
 		
-		int currentHeight = 0;
+		// get inline color
+		int inlineR = this.lnfPrefs.getInt(INLINE_R, 65535);
+		int inlineG = this.lnfPrefs.getInt(INLINE_G, 65535);
+		int inlineB = this.lnfPrefs.getInt(INLINE_B, 0);
 		
-		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount() -1; i++){
+		// gets current line color
+		int lineR = this.lnfPrefs.getInt(CURRENT_LINE_R, 30000);
+		int lineG = this.lnfPrefs.getInt(CURRENT_LINE_G, 65535);
+		int lineB = this.lnfPrefs.getInt(CURRENT_LINE_B, 30000);
+		
+		// gets executable mark color
+		int markR = this.lnfPrefs.getInt(MARK_R, 0);
+		int markG = this.lnfPrefs.getInt(MARK_G, 0);
+		int markB = this.lnfPrefs.getInt(MARK_B, 0);
+		
+		int currentHeight = 0;		
+		int linesIgnored = 0;
+		int actualIndex = 0;
+		int totalInlinedLines = 0;
+		
+		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(false); i++){
+			
+			if(linesIgnored < totalInlinedLines){
+				linesIgnored++;
+				currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+				i--;
+				continue;
+			}
+			
+			// get the current line height, etc.
+			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
+			int iconStart = lineHeight/2;
+			
 			// For the current line, draw background using the currentLine color
 			if(i == this.buf.getCurrentLine()){
-				int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
-				
-				int lineR = this.lnfPrefs.getInt(CURRENT_LINE_R, 30000);
-				int lineG = this.lnfPrefs.getInt(CURRENT_LINE_G, 65535);
-				int lineB = this.lnfPrefs.getInt(CURRENT_LINE_B, 30000);
 				context.setRGBForeground(new Color(lineR, lineG, lineB));
 				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
 					this.marginWriteOffset+20, lineHeight);
+				context.setRGBForeground(new Color(r,g,b));
+			}
+			
+			
+			// If it is executable, draw a mark
+			if(showMarks && this.buf.isLineExecutable(i)){
+				context.setRGBForeground(new Color(markR,markG,markB));
+				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+currentHeight+iconStart, 
+						this.marginWriteOffset+12, actualFirstStart+currentHeight+iconStart);
+				context.setRGBForeground(new Color(r,g,b));
+			}
+			
+			if(this.buf.hasInlinedLines(i)){
+				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
+				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
+						this.marginWriteOffset+20, lineHeight);
+				context.setRGBForeground(new Color(r,g,b));
+				
+				Layout lo = new Layout(this.getContext());
+				lo.setWidth(7);
+				if(this.buf.isExpanded(i)){
+					lo.setText("--");
+					totalInlinedLines += this.buf.getNumInlinedLines(i);
+				}
+				else{
+					lo.setText("+");
+					linesIgnored = 0;
+				}
+				
+				context.setRGBForeground(new Color(markR,markG,markB));
+				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+currentHeight, lo);
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
@@ -442,23 +508,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+currentHeight, lo);
 			}
 			
-			// If it is executable, draw a mark
-			if(showMarks && this.buf.isLineExecutable(i)){
-				int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
-				int iconStart = lineHeight/2;
-				
-				int markR = this.lnfPrefs.getInt(MARK_R, 0);
-				int markG = this.lnfPrefs.getInt(MARK_G, 0);
-				int markB = this.lnfPrefs.getInt(MARK_B, 0);
-				context.setRGBForeground(new Color(markR,markG,markB));
-				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+currentHeight+iconStart, 
-						this.marginWriteOffset+12, actualFirstStart+currentHeight+iconStart);
-				context.setRGBForeground(new Color(r,g,b));
-			}
-			
 			// draw breakpoints
 			if(this.buf.isLineBroken(i)){
-				int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
 				int iconHeight = lineHeight - 8;
 				
 				context.setRGBForeground(new Color(65535,0,0));
@@ -467,8 +518,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			}
 			
 			// update height for next line
-			currentHeight += this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
+			currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
 		}
+		
 	}
 	
 }
