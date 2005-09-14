@@ -1,7 +1,11 @@
+2005-09-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FryskGui.java (buildHandler): Make error logging non-session based.
+
 2005-09-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* FryskGui.java (mainGui): takes an array of Strings representing glade dirs
-	and searches them untill a glade file is found.
+	* FryskGui.java (mainGui): Takes an array of Strings representing glade 
+	dirs and searches them untill a glade file is found.
 
 2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
 

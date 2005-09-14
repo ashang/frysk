@@ -46,8 +46,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -206,10 +204,6 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 	private static FileHandler buildHandler() {
 		FileHandler handler = null;
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-hhmmss");
-		String date_handle = null;
-		date_handle = "frysk_gui_error_log_"
-				+ format.format(new Date()).toString();
 		File log_dir = new File(System.getProperty("user.home") + "/"
 				+ ".frysk" + "/" + "logs" + "/");
 
@@ -219,7 +213,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		try {
 
 			handler = new FryskErrorFileHandler(log_dir.getAbsolutePath()
-					+ "/" + date_handle, true);
+					+ "/" + "frysk_monitor_error.log", true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
