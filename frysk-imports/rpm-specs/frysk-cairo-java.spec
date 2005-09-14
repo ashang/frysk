@@ -7,7 +7,7 @@
 
 %define	name_base	cairo-java
 %define	version		0.9.3
-%define	release		1
+%define	release		2
 
 Summary:	Java bindings for the Cairo library
 Name:		frysk-%{name_base}
@@ -17,6 +17,7 @@ License:	LGPL
 Group:		Development/Libraries
 URL:		http://java-gnome.sourceforge.net
 Source:		%{name_base}-%{version}.tar.bz2
+Patch0:		cairo-java-0.9.3-pkgConfigDependency.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 Requires:	frysk-gtk2 >= 2.8.0,frysk-cairo >= 0.9.2, frysk-jg-common >= 0.1
@@ -33,6 +34,7 @@ frysk Execution Analysis Tool, it is not intended for general use.
 %prep
 
 %setup -q -n %{name_base}-%{version}
+%patch0 -p0
 
 # hack.  java-gnome should distribute the result of "make dist"
 #ln -s autogen.sh configure

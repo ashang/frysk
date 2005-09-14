@@ -9,7 +9,7 @@
 
 %define	name_base	libglade-java
 %define	version		2.11.4
-%define release		1	
+%define release		2
 
 Summary:	Java bindings for libglade
 Name:		frysk-%{name_base}
@@ -19,6 +19,7 @@ License:	LGPL
 Group:		Development/Libraries
 URL:		http://java-gnome.sourceforge.net
 Source:		%{name_base}-%{version}.tar.bz2
+Patch0:		libglade-java-2.11.4-pkgConfigDependency.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 Requires:	libglade2 >= 2.5.0
 BuildRequires:  libglade2-devel >= 2.5.0, gcc-java >= 3.3.3
@@ -36,6 +37,7 @@ frysk Execution Analysis Tool, it is not intended for general use.
 
 %prep
 %setup -q -n %{name_base}-%{version}
+%patch0 -p0
 
 %build
 export PKG_CONFIG_PATH=%{_libdir}/pkgconfig
