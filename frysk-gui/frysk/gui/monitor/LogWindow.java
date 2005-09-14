@@ -54,7 +54,6 @@ import org.gnu.gtk.TextView;
 import org.gnu.gtk.Window;
 
 import frysk.proc.Manager;
-import frysk.proc.Proc;
 
 /**
  * @author sami wagiaalla
@@ -71,7 +70,6 @@ public class LogWindow extends Window implements Observer, Saveable{
 	
 	static int count = 0;
 	public void update(Observable observable, Object obj) {
-		Proc proc = (Proc) obj;
 		
 		TextBuffer tb = this.logTextView.getBuffer();
 		tb.insertText("event "+(count++)+" : ");

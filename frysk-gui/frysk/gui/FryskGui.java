@@ -161,7 +161,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
 		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
-		trayIcon.addPopupWindow(WindowManager.theManager.procpopWindow);
+		trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);
 
 		// right click menu
 		Menu popupMenu = new Menu();

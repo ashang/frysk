@@ -59,7 +59,7 @@ public class WindowManager implements Saveable{
 	/**
 	 * Public instances of the windows
 	 * {*/
-	public ProcpopWindow procpopWindow;
+	public MainWindow mainWindow;
 	public LogWindow logWindow;
 	/**}*/
 	
@@ -68,20 +68,20 @@ public class WindowManager implements Saveable{
 	}
 	
 	public void initWindows(LibGlade glade) throws IOException{
-		this.procpopWindow = new ProcpopWindow(glade);
-		this.procpopWindow.showAll();
+		this.mainWindow = new MainWindow(glade);
+		this.mainWindow.showAll();
 		
 		this.logWindow = new LogWindow(glade);
 		this.logWindow.showAll();
 	}
 
 	public void save(Preferences prefs) {
-		procpopWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/procpopWindow"));
+		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
 	}
 
 	public void load(Preferences prefs) {
-		procpopWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/procpopWindow"));
+		mainWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
 	}
 }
