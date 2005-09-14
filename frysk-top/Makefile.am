@@ -60,22 +60,21 @@ SOURCEPATH = $(subst $(space),:,$(strip $(SOURCEDIRS)))
 JAVADOC = gjdoc
 API = j2se/1.4.2/docs/api
 PACKAGE_LIST = $(API)/package-list
-CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
+JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
 javadoc: javadoc/$(PACKAGE_LIST)
-	CLASSPATH=$(CLASSPATH) \
+	CLASSPATH=$(JAVADOC_CLASSPATH) \
 	$(JAVADOC) \
 		-linkoffline \
 			http://java.sun.com/$(API) \
 			javadoc/$(PACKAGE_LIST) \
 		-sourcepath $(SOURCEPATH) \
-		-package \
 		-overview $(srcdir)/overview.html \
 		-source 1.4 \
 		-d javadoc \
 		-use \
 		-linksource \
-		-subpackages com:util
+		-subpackages frysk:util
 javadoc/$(PACKAGE_LIST):
 	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
 	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)
