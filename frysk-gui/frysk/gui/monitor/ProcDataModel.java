@@ -39,7 +39,6 @@
 package frysk.gui.monitor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -51,7 +50,6 @@ import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnInt;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
-import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
@@ -67,7 +65,6 @@ import frysk.proc.Task;
 public class ProcDataModel {
 	
 	private TreeStore treeStore;
-	private ListStore listStore;
 	
 	private TreeModelFilter filteredStore;
 	
@@ -91,12 +88,7 @@ public class ProcDataModel {
 	private String stringFilterArgument;
 
 	private boolean filterON;
-		
-	private ArrayList progressListeners;
-	
-	private int totalEeventCount;
-	private int handledEventCount;
-	
+			
 	private TimerEvent refreshTimer;
 	
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
@@ -142,9 +134,6 @@ public class ProcDataModel {
 		this.currentFilter = FilterType.NONE;
 		
 		this.filterON = true;
-	
-		this.totalEeventCount = 0;
-		this.handledEventCount = 0;
 
 		this.refreshTimer = new TimerEvent(0, 5000){
 			public void execute() {
@@ -153,9 +142,6 @@ public class ProcDataModel {
 		};
 		
 		Manager.eventLoop.addTimerEvent( this.refreshTimer );
-	
-		this.progressListeners = new ArrayList();
-		
 		
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
@@ -344,10 +330,8 @@ public class ProcDataModel {
 		if(result){
 			TreeIter parent = iter.getParent();
 			while(this.treeStore.isIterValid(parent)){
-				//System.out.println("--> " + parent);
 				treeStore.setValue(parent, visibleDC, true);
 				parent = parent.getParent();
-				//System.out.print("-");
 			}
 		}
 		return result;
@@ -372,16 +356,12 @@ public class ProcDataModel {
 	class ProcCreatedObserver implements Observer{
     	public void update (Observable o, Object obj){
             final Proc proc = (Proc) obj;
-          System.out.println ("-->PID: " + proc.getPid());
           
             proc.taskDiscovered.addObserver (taskCreatedObserver);
             proc.taskRemoved.addObserver (taskDestroyedObserver);
-            
-          System.out.println("---Adding taskCreatedObserver--");
-            
+           
             org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				 public void run() {
-					System.out.println ("-->PARENT: " + proc.getParent());
 					
 					// get an iterator pointing to the parent
 					TreeIter parent;
@@ -405,8 +385,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, procDataDC, (new ProcData(proc)));
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, threadParentDC, -1); // -1 == N/A
-					bottomUpFilter(treeStore, iter);
-
+					
 				 }
 			});
         }
@@ -417,8 +396,15 @@ public class ProcDataModel {
 		public void update(Observable o, Object obj) {
 			final Proc proc = (Proc)obj;
 			TreeIter iter = (TreeIter) iterHash.get(proc.getId());
+			try{
+			if(iter == null){
+				throw new NullPointerException("proc " + proc + " Not found in TreeIter HasTable. Cannot be removed");
+			}
 			treeStore.removeRow(iter);
 			iterHash.remove(proc.getId());
+			}catch (NullPointerException e) {
+				errorLog.log(Level.WARNING,"proc " + proc + " Not found in TreeIter HasTable. Cannot be removed",e);
+			}
 		}
 	}
 	
@@ -451,7 +437,6 @@ public class ProcDataModel {
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
 					treeStore.setValue(iter, procDataDC, (new TaskData(task)));
-					bottomUpFilter(treeStore, iter);
 					
 				}
 			});

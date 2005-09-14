@@ -211,6 +211,7 @@ public class ActionPool {
 			// first. But we dont have a handle on threads yet
 			data.getProc().taskExeced
 					.addObserver(WindowManager.theManager.logWindow);
+			data.add(new TaskExecObserver());
 		}
 
 		public void execute(TaskData data) {

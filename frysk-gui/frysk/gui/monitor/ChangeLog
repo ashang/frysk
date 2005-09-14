@@ -1,3 +1,18 @@
+2005-09-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* AllProcWidget.java: now creates a status widget for each proc (still buggy)
+	* ObserverRoot.java: new file
+	* TaskExecObserver.java: new file
+	* GuiData.java (getObservers): new file
+	* StatusWidget.java (StatusWidget): new file
+
+2005-09-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* AllProcWidget.java (getSelectedProc): cleared some unused variable/imports warnings
+	* ProcDataModel.java (ProcDataModel): cleared some unused variable/imports warnings 
+	* MainWindow.java: Renamed ProcpopWindow to MainWindow
+	cleared some unused variable/imports warnings
+
 2005-09-10  Andrew Cagney  <cagney@redhat.com>
 
 	* AllProcWidget.java: Don't import javax.swing.ListModel, and

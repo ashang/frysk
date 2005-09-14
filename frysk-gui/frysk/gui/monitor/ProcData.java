@@ -50,7 +50,7 @@ package frysk.gui.monitor;
 
 import frysk.proc.Proc;
 
-public class ProcData {
+public class ProcData  extends GuiData{
 	private Proc proc;
 	
 	ProcData(Proc proc){

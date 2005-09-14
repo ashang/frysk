@@ -56,8 +56,6 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.ProgressBar;
-import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
@@ -67,6 +65,7 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.VBox;
 import org.gnu.gtk.VPaned;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ButtonEvent;
@@ -92,10 +91,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	
 	private TreeView procTreeView;
 	private TreeView threadTreeView;
-	private ScrolledWindow scrolledWindow;
-
-	private ProgressBar progressBar;
-	
+		
 	private ComboBox filterCombobox;
 	private Entry filterEntry;
 	private Button filterSetButton;
@@ -105,10 +101,14 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	private TreeModelFilter procFilter;
 	private TreeModelFilter threadFilter;
 	
+	private VBox statusVbox;
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	
-	public AllProcWidget(LibGlade glade) throws IOException {
-		super((glade.getWidget("allProcVBox")).getHandle());
+	private LibGlade glade;
+	
+	public AllProcWidget(LibGlade libGlade) throws IOException {
+		super((libGlade.getWidget("allProcVBox")).getHandle());
+		this.glade = libGlade;
 		
 		this.refreshSpinButton   = (SpinButton)  glade.getWidget("refreshSpinButton");
 		this.refreshButton       = (Button)      glade.getWidget("refreshButton");
@@ -117,13 +117,14 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		this.procTreeView        = (TreeView)    glade.getWidget("procTreeView");
 		this.threadTreeView      = (TreeView)    glade.getWidget("threadTreeView");
 		
-		this.scrolledWindow      = (ScrolledWindow) glade.getWidget("treeViewScrollWindow");
 		this.vPane               = (VPaned)  glade.getWidget("vPane");
 		
 		this.filterCombobox      = (ComboBox)    glade.getWidget("filterComboBox");
 		this.filterEntry         = (Entry)       glade.getWidget("filterEntry");
 		this.filterSetButton     = (Button)      glade.getWidget("filterSetButton");
-				
+	
+		this.statusVbox          = (VBox)        glade.getWidget("statusVbox");
+		
 		this.refreshButton.addListener(this);
 		this.refreshSpinButton.addListener(new SpinListener(){
 			public void spinEvent(SpinEvent event) {
@@ -145,6 +146,23 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 				if(procTreeView.getSelection().getSelectedRows().length > 0){
 					TreePath selected = procTreeView.getSelection().getSelectedRows()[0];
 					mountThreadModel(psDataModel, selected);
+					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), psDataModel.getProcDataDC());
+					if(!data.hasStatusWidget()){
+						try {
+							data.setStatusWidget(new StatusWidget(glade));
+						} catch (ClassNotFoundException e) {
+							errorLog.log(Level.SEVERE,"Cannot clone StatusWidget",e);
+						}
+						data.getStatusWidget().setName(data.getProc().getCommand());
+						
+					}
+					
+					Widget widgets[] = statusVbox.getChildren();
+					for (int i = 0; i < widgets.length; i++) {
+						statusVbox.remove(widgets[i]);
+					}
+					
+					statusVbox.add(data.getStatusWidget());
 				}
 			}
 		});
@@ -283,7 +301,6 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	private void threadViewInit(ProcDataModel procDataModel){
 		TreeViewColumn pidCol = new TreeViewColumn();
 		TreeViewColumn commandCol = new TreeViewColumn();
-		TreeViewColumn threadParentCol = new TreeViewColumn();
 		
 		CellRendererText cellRendererText3 = new CellRendererText();
 		pidCol.packStart(cellRendererText3, false);
@@ -321,6 +338,11 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		if(this.refreshButton.equals(event.getSource()) 
 				&& event.getType() == ButtonEvent.Type.CLICK){
 			this.refresh();
+		}
+		
+		if(this.holdButton.equals(event.getSource()) 
+				&& event.getType() == ButtonEvent.Type.CLICK){
+			this.psDataModel.stopRefreshing();
 		}
 		
 		if(this.filterSetButton.equals(event.getSource())
@@ -371,7 +393,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		
 		TreeModel model = this.procFilter;
 		ProcData data   = (ProcData)model.getValue(model.getIter(tp[0]), this.psDataModel.getProcDataDC());
-		int pid         = model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+		model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
 
 		return data;
 	}
@@ -385,7 +407,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		
 		TreeModel model = this.threadFilter;
 		TaskData data   = (TaskData)model.getValue(model.getIter(tp[0]), this.psDataModel.getProcDataDC());
-		int pid         = model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+		model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
 
 		return data;
 	}

@@ -45,7 +45,7 @@ import frysk.proc.Task;
  * to the process but is gui specific. Used to pass data to ActionPool Actions.
  * Actions also manipulate data stored in here to keep it up to date.
  */
-public class TaskData {
+public class TaskData extends GuiData{
 
 	private Task task;
 
