@@ -6,7 +6,7 @@
 %define _defaultdocdir %{_prefix}/share/doc
 
 %define	name_base	cairo-java
-%define	version		0.9.3
+%define	version		1.0.0
 %define	release		2
 
 Summary:	Java bindings for the Cairo library
@@ -16,11 +16,11 @@ Release:	%{release}
 License:	LGPL
 Group:		Development/Libraries
 URL:		http://java-gnome.sourceforge.net
-Source:		%{name_base}-%{version}.tar.bz2
-Patch0:		cairo-java-0.9.3-pkgConfigDependency.patch
+Source:		%{name_base}-%{version}.tar.gz
+Patch0:		cairo-java-1.0.0-pkgConfigDependency.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
-Requires:	frysk-gtk2 >= 2.8.0,frysk-cairo >= 0.9.2, frysk-jg-common >= 0.1
+Requires:	frysk-gtk2 >= 2.8.0,frysk-cairo >= 1.0.0 , frysk-glib-java >= 0.2
 BuildRequires:  frysk-gtk2-devel >= 2.8.0, gcc-java >= 3.3.3, docbook-utils
 ExclusiveArch:	i386 ppc s390
 
@@ -36,19 +36,9 @@ frysk Execution Analysis Tool, it is not intended for general use.
 %setup -q -n %{name_base}-%{version}
 %patch0 -p0
 
-# hack.  java-gnome should distribute the result of "make dist"
-#ln -s autogen.sh configure
-#mv autogen.sh configure
-
 %build 
 export PKG_CONFIG_PATH=%{_libdir}/pkgconfig
 
-# hack, we need to generate the configure script, setting this vairable will
-# make autogen not call ./configure after it's done
-export AUTOGEN_SUBDIR_MODE=yes
-./autogen.sh
-
-# and now finally, configure
 %configure
 make
 
@@ -59,7 +49,7 @@ make  DESTDIR=$RPM_BUILD_ROOT install
 rm $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 # rename doc dir to reflect package rename
-mv $RPM_BUILD_ROOT/opt/share/doc/%{name_base}-%{version} $RPM_BUILD_ROOT/opt/share/doc/%{name}-%{version}
+mv $RPM_BUILD_ROOT%{_docdir}/%{name_base}-%{version} $RPM_BUILD_ROOT/%{_docdir}/%{name}-%{version}
 
 %post
 /sbin/ldconfig

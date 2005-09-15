@@ -8,7 +8,7 @@
 %define configure_args --without-gnome
 
 %define	name_base	libglade-java
-%define	version		2.11.4
+%define	version		2.12.0
 %define release		2
 
 Summary:	Java bindings for libglade
@@ -18,12 +18,12 @@ Release:	%{release}
 License:	LGPL
 Group:		Development/Libraries
 URL:		http://java-gnome.sourceforge.net
-Source:		%{name_base}-%{version}.tar.bz2
-Patch0:		libglade-java-2.11.4-pkgConfigDependency.patch
+Source:		%{name_base}-%{version}.tar.gz
+Patch0:		libglade-java-2.12.0-pkgConfigDependency.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 Requires:	libglade2 >= 2.5.0
 BuildRequires:  libglade2-devel >= 2.5.0, gcc-java >= 3.3.3
-BuildRequires:	frysk-libgtk-java >= 2.7.0
+BuildRequires:	frysk-libgtk-java >= 2.8.0
 BuildRequires:	java-devel >= 1.4.2
 ExclusiveArch:	i386 ppc x86_64
 
@@ -42,17 +42,8 @@ frysk Execution Analysis Tool, it is not intended for general use.
 %build
 export PKG_CONFIG_PATH=%{_libdir}/pkgconfig
 
-# hack, we need to generate the configure script, setting this vairable will
-# make autogen not call ./configure after it's done
-export AUTOGEN_SUBDIR_MODE=yes
-./autogen.sh
-
-# and now finally, configure
 %configure %{configure_args}
 
-# FIXME: find a better solution for this
-#sed -i 's/^pic_flag=\"\"/pic_flag=\"\ \-fPIC\"/' libtool 
-#sed -i 's/^compiler_c_o=\"no\"/compiler_c_o=\"yes\"/' libtool 
 mkdir -p doc/api/
 make
 

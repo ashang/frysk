@@ -1,3 +1,24 @@
+2005-09-15  Igor Foox  <ifoox@redhat.com>
+
+	* rpm-specs/frysk-libglade-java.spec: Updated to require sources to
+	reflect move to glib-java.  Bumped version to 2.12.0.  Bumped required
+	libgtk-java version to 2.8.0.   Removed call to autogen.sh as it was 
+	redundant.   Removed hardcoding of /opt/share/doc.
+	* rpm-specs/frysk-libgtk-java.spec: Updated to require glib-java
+	instead of jg-common.  Updated sources to reflect move to glib-java.
+	Bumped version to 2.8.0.  Bumped required cairo-java version to 1.0.0.
+	Removed call to autogen.sh as it was redundant.  Removed %{changelog}
+	section (redundant with this ChangeLog).  Removed hardcoding of 
+	/opt/share/doc.
+	* rpm-specs/frysk-cairo-java.spec: Updated to require glib-java instead
+	of jg-common.  Updated sources to reflect move to glib-java.  Bumped 
+	version	to 1.0.0.  Bumped required cairo version to 1.0.0.  Removed call
+	to autogen.sh as it was redundant.  Rmoved hardcoding of /opt/share/doc.
+	* rpm-specs/frysk-jg-common.spec: Renamed to frysk-glib-java.spec. 
+	Removed hardcoding of /opt/share/doc.  Updated to use new glib-java
+	sources instead of jg-common. Bumped version to 0.2.  Removed call
+	to autogen.sh as it was redundant.
+
 2005-09-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* configure.ac (CDTPARSER_JAR): Changed path to /opt/share/java.
