@@ -51,7 +51,7 @@ AC_SUBST([JUNIT_JAR])
 AC_MSG_RESULT([$JUNIT_JAR])
 
 AC_MSG_CHECKING([for cdtparser.jar])
-CDTPARSER_JAR=/usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.0/cdtparser.jar
+CDTPARSER_JAR=/opt/share/java/cdtparser-3.0.0.jar
 test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
 AC_SUBST([CDTPARSER_JAR])
 AC_MSG_RESULT([$CDTPARSER_JAR])
