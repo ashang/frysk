@@ -16,7 +16,7 @@ import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextTag;
 import org.gnu.gtk.TextTagTable;
-import org.gnu.javagnome.Handle;
+import org.gnu.glib.Handle;
 import org.gnu.pango.Weight;
 
 import frysk.gui.srcwin.cparser.CDTParser;

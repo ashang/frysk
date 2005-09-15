@@ -39,7 +39,7 @@
 package frysk.gui.monitor;
 
 import org.gnu.gtk.Plug;
-import org.gnu.javagnome.Handle;
+import org.gnu.glib.Handle;
 
 public class EggTrayIcon extends Plug{
 	EggTrayIcon(String name){

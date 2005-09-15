@@ -1,4 +1,13 @@
-2005-09-14  Adam Jocksch <ajocksch@redhat.com
+2005-09-15  Igor Foox <ifoox@redhat.com>
+
+	* configure.ac: Changed all references to jg-common to glib-java.
+	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
+	* frysk/gui/monitor/EggTrayIcon.java, 
+	frysk/gui/srcwin/SourceBuffer.java, 
+	frysk/gui/srcwin/SourceViewWidget.java: Changed references to
+	org.gnu.javagnome to org.gnu.glib. 
+
+005-09-14  Adam Jocksch <ajocksch@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH): Added frysk-imports/cdtparser.jar.
 	(GEN_GCJ_LDADD): Added frysk-imports/libcdtparser.a.

@@ -57,13 +57,13 @@ GLADE_JAR=`$PKG_CONFIG --variable classpath glade-java`
 AC_MSG_RESULT($GLADE_JAR)
 AC_SUBST(GLADE_JAR)
 
-PKG_CHECK_MODULES(JGCOMMON, jg-common >= 0.1)
-AC_MSG_CHECKING(for jg-common jar file)
-JGCOMMON_JAR=`$PKG_CONFIG --variable classpath jg-common`
+PKG_CHECK_MODULES(JGCOMMON, glib-java >= 0.2)
+AC_MSG_CHECKING(for glib-java jar file)
+JGCOMMON_JAR=`$PKG_CONFIG --variable classpath glib-java`
 AC_MSG_RESULT($JGCOMMON_JAR)
 AC_SUBST(JGCOMMON_JAR)
 
-RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java jg-common | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
+RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
 
 AC_CONFIG_FILES([Makefile])

@@ -58,7 +58,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
-import org.gnu.javagnome.Handle;
+import org.gnu.glib.Handle;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 

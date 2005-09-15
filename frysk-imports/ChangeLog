@@ -1,5 +1,10 @@
 2005-09-15  Igor Foox  <ifoox@redhat.com>
 
+	* configure.ac: Changed all references to jg-common to glib-java.
+	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
+
+2005-09-15  Igor Foox  <ifoox@redhat.com>
+
 	* rpm-specs/frysk-libglade-java.spec: Updated to require sources to
 	reflect move to glib-java.  Bumped version to 2.12.0.  Bumped required
 	libgtk-java version to 2.8.0.   Removed call to autogen.sh as it was 
