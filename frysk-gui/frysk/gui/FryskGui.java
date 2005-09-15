@@ -74,15 +74,13 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	LibGlade glade;
 
 	private static Logger errorLogFile = null;
-
 	private static final String SETTINGSFILE = ".settings";
-
 	private static final String GLADE_FILE = "procpop.glade";
-
 	private static final String GLADE_DEV_PATH = "frysk/gui/glade/";
-
 	private static final String GLADE_PKG_PATH = "glade/";
-
+	private static final String FRYSK_CONFIG = System.getProperty("user.home")
+			+ "/" + ".frysk" + "/";
+	
 	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
 	static {
@@ -153,7 +151,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			System.exit(1);
 		}
 
-		prefs = importPreferences(SETTINGSFILE);
+		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
 
 		trayIcon = new TrayIcon("Accudog", "", new Image(
 				"gui/images/accudog.jpg"));
@@ -190,7 +188,10 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		try {
 			// Export the node to a file
-			prefs.exportSubtree(new FileOutputStream(SETTINGSFILE));
+			File checkFrysk = new File(FRYSK_CONFIG);
+			if (!checkFrysk.exists())
+				checkFrysk.mkdirs();
+			prefs.exportSubtree(new FileOutputStream(FRYSK_CONFIG + SETTINGSFILE));
 		} catch (Exception e) {
 			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e);
 
@@ -204,8 +205,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 	private static FileHandler buildHandler() {
 		FileHandler handler = null;
-		File log_dir = new File(System.getProperty("user.home") + "/"
-				+ ".frysk" + "/" + "logs" + "/");
+		File log_dir = new File(FRYSK_CONFIG + "logs" + "/");
 
 		if (!log_dir.exists())
 			log_dir.mkdirs();

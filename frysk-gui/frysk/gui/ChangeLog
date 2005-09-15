@@ -1,6 +1,13 @@
+2005-09-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FryskGui.java: Added FRYSK_CONFIG. Moved .settings to FRYSK_CONFIG.
+	(mainGui): Added FRYSK_CONFIG Location check.
+
 2005-09-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java (buildHandler): Make error logging non-session based.
+	Added FRYSK_CONFIG.	Moved .settings to FRYSK_CONFIG.
+	
 
 2005-09-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
