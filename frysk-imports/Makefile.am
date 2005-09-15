@@ -56,11 +56,11 @@ EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
 EggTrayIcon_libEggTrayIcon_so_LDADD =
 EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_JAVA_LIBS)
 EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(JGCOMMON_LIBS)
+EggTrayIcon_libEggTrayIcon_so_LDADD += $(GLIB_JAVA_LIBS)
 EggTrayIcon_libEggTrayIcon_so_LDADD += -lgtkjni -lglibjni
 EggTrayIcon_libEggTrayIcon_so_LDADD += $(CAIRO_JAVA_LIBS)
 
 noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
 EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
                                        EggTrayIcon/libEggTrayIcon.c 
-EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(JGCOMMON_CFLAGS)
+EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(GLIB_JAVA_CFLAGS)

@@ -1,7 +1,9 @@
 2005-09-15  Igor Foox  <ifoox@redhat.com>
 
 	* configure.ac: Changed all references to jg-common to glib-java.
+	Change JGCOMMON variable to GLIB_JAVA.
 	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
+	Change JGCOMMON variable to GLIB_JAVA.
 
 2005-09-15  Igor Foox  <ifoox@redhat.com>
 
