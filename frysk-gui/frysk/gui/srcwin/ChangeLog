@@ -1,3 +1,8 @@
+2005-09-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (createMenus): Added casts to fix compilation error.
+	(createToolbar): Ditto.
+
 2005-09-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* StaticParser.java (parse): Removed public identifier to get rid of compiler warning.

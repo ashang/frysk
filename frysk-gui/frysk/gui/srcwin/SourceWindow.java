@@ -67,6 +67,7 @@ import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.ToggleAction;
 import org.gnu.gtk.ToolBar;
+import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
@@ -404,7 +405,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// File menu
 		MenuItem menu = new MenuItem("File", true);
 		
-		MenuItem mi = this.close.createMenuItem();
+		MenuItem mi = (MenuItem) this.close.createMenuItem();
 		Menu tmp = new Menu();
 //		tmp.setAccelPath("<sourceWin>/File");
 		tmp.append(mi);
@@ -424,7 +425,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 //		tmp.setAccelPath("<sourceWin>/Edit");
 //		tmp.setAccelGroup(ag);
 		
-		mi = this.copy.createMenuItem();
+		mi = (MenuItem) this.copy.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Edit/Copy");
 //		AccelMap.changeEntry("<sourceWin>/Edit/Copy", KeySymbol.c, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
@@ -432,7 +433,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
 		
-		mi = this.find.createMenuItem();
+		mi = (MenuItem) this.find.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Edit/Find");
 //		AccelMap.changeEntry("<sourceWin>/Edit/Find", KeySymbol.f, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
@@ -440,7 +441,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
 		
-		mi = this.prefsLaunch.createMenuItem();
+		mi = (MenuItem) this.prefsLaunch.createMenuItem();
 		tmp.append(mi);
 		
 		menu.setSubmenu(tmp);
@@ -453,32 +454,32 @@ public class SourceWindow implements ButtonListener, EntryListener,
 //		tmp.setAccelPath("<sourceWin>/Program");
 //		tmp.setAccelGroup(ag);
 		
-		mi = this.run.createMenuItem();
+		mi = (MenuItem) this.run.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/Run");
 //		AccelMap.changeEntry("<sourceWin>/Program/Run", KeySymbol.r, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.step.createMenuItem();
+		mi = (MenuItem) this.step.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/Step");
 //		AccelMap.changeEntry("<sourceWin>/Program/Step", KeySymbol.s, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.next.createMenuItem();
+		mi = (MenuItem) this.next.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/Next");
 //		AccelMap.changeEntry("<sourceWin>/Program/Next", KeySymbol.n, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.finish.createMenuItem();
+		mi = (MenuItem) this.finish.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/Finish");
 //		AccelMap.changeEntry("<sourceWin>/Program/Finish", KeySymbol.f, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.cont.createMenuItem();
+		mi = (MenuItem) this.cont.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/Continue");
 //		AccelMap.changeEntry("<sourceWin>/Program/Continue", KeySymbol.c, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.terminate.createMenuItem();
+		mi = (MenuItem) this.terminate.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/Terminate");
 //		AccelMap.changeEntry("<sourceWin>/Program/Terminate", KeySymbol.t, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
@@ -486,12 +487,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
 		
-		mi = this.stepAsm.createMenuItem();
+		mi = (MenuItem) this.stepAsm.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/StepAsm");
 //		AccelMap.changeEntry("<sourceWin>/Program/StepAsm", KeySymbol.s, ModifierType.SHIFT_MASK.or(ModifierType.MOD1_MASK), true);
 		tmp.append(mi);
 		
-		mi = this.nextAsm.createMenuItem();
+		mi = (MenuItem) this.nextAsm.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Program/NextAsm");
 //		AccelMap.changeEntry("<sourceWin>/Program/NextAsm", KeySymbol.n, ModifierType.SHIFT_MASK.or(ModifierType.MOD1_MASK), true);
 		tmp.append(mi);
@@ -506,17 +507,17 @@ public class SourceWindow implements ButtonListener, EntryListener,
 //		tmp.setAccelPath("<sourceWin>/Stack");
 //		tmp.setAccelGroup(ag);
 		
-		mi = this.stackUp.createMenuItem();
+		mi = (MenuItem) this.stackUp.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Stack/Up");
 //		AccelMap.changeEntry("<sourceWin>/Stack/Up", KeySymbol.Up, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.stackDown.createMenuItem();
+		mi = (MenuItem) this.stackDown.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Stack/Down");
 //		AccelMap.changeEntry("<sourceWin>/Stack/Down", KeySymbol.Down, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
 		
-		mi = this.stackBottom.createMenuItem();
+		mi = (MenuItem) this.stackBottom.createMenuItem();
 //		mi.setAccelPath("<sourceWin>/Stack/Bottom");
 //		AccelMap.changeEntry("<sourceWin>/Stack/Bottom", KeySymbol.Down, ModifierType.CONTROL_MASK.or(ModifierType.SHIFT_MASK), true);
 		tmp.append(mi);
@@ -535,18 +536,18 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// Create tooltips
 		ToolBar toolbar = (ToolBar) this.glade.getWidget(GLADE_TOOLBAR_NAME);
 
-		toolbar.insert(this.run.createToolItem(), 0);
-		toolbar.insert(this.step.createToolItem(), 1);
-		toolbar.insert(this.next.createToolItem(), 2);
-		toolbar.insert(this.cont.createToolItem(), 3);
-		toolbar.insert(this.finish.createToolItem(), 4);
-		toolbar.insert(new SeparatorToolItem(),5);
-		toolbar.insert(this.stepAsm.createToolItem(), 6);
-		toolbar.insert(this.nextAsm.createToolItem(), 7);
-		toolbar.insert(new SeparatorToolItem(), 8);
-		toolbar.insert(this.stackUp.createToolItem(), 9);
-		toolbar.insert(this.stackDown.createToolItem(), 10);
-		toolbar.insert(this.stackBottom.createToolItem(), 11);
+		toolbar.insert((ToolItem) this.run.createToolItem(), 0);
+		toolbar.insert((ToolItem) this.step.createToolItem(), 1);
+		toolbar.insert((ToolItem) this.next.createToolItem(), 2);
+		toolbar.insert((ToolItem) this.cont.createToolItem(), 3);
+		toolbar.insert((ToolItem) this.finish.createToolItem(), 4);
+		toolbar.insert((ToolItem) new SeparatorToolItem(),5);
+		toolbar.insert((ToolItem) this.stepAsm.createToolItem(), 6);
+		toolbar.insert((ToolItem) this.nextAsm.createToolItem(), 7);
+		toolbar.insert((ToolItem) new SeparatorToolItem(), 8);
+		toolbar.insert((ToolItem) this.stackUp.createToolItem(), 9);
+		toolbar.insert((ToolItem) this.stackDown.createToolItem(), 10);
+		toolbar.insert((ToolItem) this.stackBottom.createToolItem(), 11);
 		
 		this.glade.getWidget(GLADE_TOOLBAR_NAME).showAll();
 	}
