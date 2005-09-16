@@ -1,3 +1,15 @@
+2005-09-16  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html, doc-files/arch-compiler.fig,
+	doc-files/arch-cpu.fig, doc-files/arch-distrib.fig,
+	doc-files/arch-interfaces.fig, doc-files/arch-jdwp.fig,
+	doc-files/arch-lang-thread.fig, doc-files/arch-layer-arch.fig,
+	doc-files/arch-layers.fig, doc-files/arch-machine.fig,
+	doc-files/arch-request-notify.fig, doc-files/arch-step-call.fig,
+	doc-files/arch-strace-gcore.fig, doc-files/arch-thread-db.fig,
+	doc-files/notes-signal-race.fig, doc-files/proc-state.fig,
+	doc-files/proc-tree.fig: New files.
+	
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Move com/redhat/fedora/frysk/model/ to frysk/model/.
