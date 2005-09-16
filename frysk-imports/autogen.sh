@@ -43,6 +43,7 @@
     JUNIT_JAR \
     ANTLR_JAR \
     CDTPARSER_JAR \
+    JDOM_JAR \
     jline/jline.jar \
     jargs/jargs.jar
     

@@ -1,3 +1,10 @@
+2005-09-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* configure.ac: Added check for jdom.jar.
+	Added JDOM_JAR variable.
+
+	* autogen.sh: Added JDOM_JAR to things to build.
+
 2005-09-15  Igor Foox  <ifoox@redhat.com>
 
 	* configure.ac: Changed all references to jg-common to glib-java.

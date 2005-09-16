@@ -56,6 +56,12 @@ test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
 AC_SUBST([CDTPARSER_JAR])
 AC_MSG_RESULT([$CDTPARSER_JAR])
 
+AC_MSG_CHECKING([for jdom.jar])
+JDOM_JAR=/usr/share/java/jdom.jar
+test -r ${JDOM_JAR} || AC_MSG_ERROR([no jdom.jar file found]);
+AC_SUBST([JDOM_JAR])
+AC_MSG_RESULT([$JDOM_JAR])
+
 AC_MSG_CHECKING([for antlr.jar])
 ANTLR_JAR=/usr/share/java/antlr.jar
 test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
