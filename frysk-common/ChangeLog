@@ -1,3 +1,9 @@
+2005-09-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Generate GEN_FIG.
+	* Makefile.rules: Add rules to build .jpg, .pdf, .eps, .gif and
+	.txt files from a .fig file.
+
 2005-09-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (JARS): Add sub-directory .jar files to

@@ -265,3 +265,21 @@ clean-local: clean-local-po
 .PHONY: clean-local-po
 clean-local-po:
 	find * -name '*.Po' -exec cp /dev/null \{\} \;
+
+SUFFIXES += .fig .jpg .pdf .eps .gif .txt
+.fig.jpg:
+	mkdir -p `dirname $@`
+	fig2dev -L jpeg $< $@
+.fig.pdf:
+	mkdir -p `dirname $@`
+	fig2dev -L pdf $< $@
+.fig.eps:
+	mkdir -p `dirname $@`
+	fig2dev -L eps $< $@
+.fig.gif:
+	mkdir -p `dirname $@`
+	fig2dev -L gif $< $@
+.fig.txt:
+	mkdir -p `dirname $@`
+	echo "@center See the @sc{pdf} or @sc{html} documentation." > $@
+BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)

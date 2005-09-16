@@ -313,6 +313,17 @@ done
 
 
 
+# Form a list of all the .fig files, they need to be compiled into
+# .jpg.
+
+print_header "... GEN_FIG = .fig"
+echo GEN_FIG =
+find ${dirs} -type f -name '*.fig' | while read f
+do
+  echo GEN_FIG += $f
+done
+
+
 
 # Form a list of all the JUnit tests.  Anything named *Test*, that
 # does not contain a main method is considered a candidate for the
