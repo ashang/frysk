@@ -1,3 +1,8 @@
+2005-09-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (javadoc): On overview page, separate frysk* and
+	imported packages into separate groups.
+
 2005-09-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (javadoc): Add jargs, and jline to documentation.

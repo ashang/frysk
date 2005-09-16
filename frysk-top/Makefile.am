@@ -76,7 +76,11 @@ javadoc: javadoc/$(PACKAGE_LIST)
 		-d javadoc \
 		-use \
 		-linksource \
-		-subpackages frysk:util:jline:jargs
+		-doctitle '<em>FRYSK</em> - An Execution Analysis Tool' \
+		-windowtitle 'FRYSK' \
+		-group "FRYSK" 'frysk*' \
+		-group "Imported Packages" 'jline*:jargs*:util*' \
+		-subpackages 'frysk:util:jline:jargs'
 javadoc/$(PACKAGE_LIST):
 	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
 	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)
