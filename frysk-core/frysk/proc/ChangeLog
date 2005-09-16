@@ -1,3 +1,8 @@
+2005-09-16  Andrew Cagney  <cagney@redhat.com>
+
+	* doc-files/proc-tree.fig, doc-files/proc-state.fig: New files.
+	* package.html: New file.
+
 2005-09-13  Andrew Cagney  <cagney@redhat.com>
 
 	* I386Linux.java, Isa.java, Manager.java, Proc.java,
