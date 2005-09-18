@@ -1,0 +1,61 @@
+<html>
+<body>
+Description of the FRYSK Event Loop.
+
+<h2>Overview</h2>
+
+The FRYSK event-loop, in conjunction with {@link frysk.sys}, provide a
+set of event driven interface to the linux kernel.  The event-loop
+directly handles the following events:
+
+<p>
+
+<ul>
+<li>timeouts and count-down timers
+<li>signals
+<li>file descriptors
+</ul>
+
+<p>
+
+Each is discussed below.
+
+<h2>Timeouts and Count-Down Timers</h2>
+
+The event loop provides both once-only, and repeating timers.  See
+{@link frysk.event.TimerEvent} for more information.
+
+<h2>Signals</h2>
+
+The event loop provides signal event notifiers.  Note that a signal
+event is delivered outside of the signal handler.  See {@link
+frysk.event.SignalEvent} for more information.
+
+<h2>File Descriptors</h2>
+
+The event loop provides file descriptor event notifiers.  See {@link
+frysk.event.PollEvent} for more information.
+
+<h2>Process (wait) Events</h2>
+
+By binding calls to {@link frysk.sys.Wait.waitNoHang} to the {@link
+frysk.sys.Sig#CHLD} signal using a {@link frysk.event.SignalEvent},
+<code>wait</code> events can be processed by the event-loop.
+
+<h2>Event Starvation</h2>
+
+Event Starvation occurs when a single constantly re-occurring event is
+dispatched in preference to other events.  The frysk event-loop
+addresses this by processing events using two distinct phases:
+
+<ul>
+<li>accumulation of pending events
+<li>dispatch of pending events
+</ul>
+
+<br>
+Doing this ensures that all existing pending events are processed
+before any new events are scheduled.
+
+</body>
+</html>
