@@ -1,0 +1,26 @@
+<html>
+<body>
+
+This package exports interfaces to the underlying native linux system.
+
+<h2>Overview</h2>
+
+The {@link frysk.sys} package provides the client with direct access
+to a number of underlying linux kernel and <code>libc</code>
+interfaces.
+
+<p>
+
+Note that, where possible, the interfaces have attempted to be
+event-driven friendly.  For instance, {@link frysk.sys.Wait} notifies
+the client of wait status information by calling the applicable {@link
+frysk.sys.Wait#Observer} method and not by returning a status object.
+
+<h2>Errors</h2>
+
+Should an underlying system call return an error indication then that
+error is propagated up the call chain by throwing a {@link
+frysk.sys.Errno} run-time exception.
+
+</body>
+</html>
