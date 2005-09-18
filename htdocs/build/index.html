@@ -14,6 +14,8 @@
 
 <h1> Building Frysk </h1>
 
+<h2>Preparation</h2>
+
 <li>It is assumed that you're running <a
 href="http://fedora.redhat.comdownload/">Fedora Core 4</a> on an i386
 platform.
@@ -22,46 +24,58 @@ platform.
 that they have dependencies, and the dependencies should also be
 installed):<br>
 
-<tt>java-1.4.2-gcj-compat-devel</tt><br>
+<ul>
 
-<tt>junit</tt><br>
+<li><tt>java-1.4.2-gcj-compat-devel</tt><br>
 
-<tt>antlr</tt><br>
+<li><tt>junit</tt><br>
 
-<li>Download and install the following non-standard RPMS (they will be
-installed into <tt>/opt</tt>):<br>
-<h2> Updated 2005-09-15: </h2>
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libgtk-java-debuginfo-2.8.0-1.i386.rpm">frysk-libgtk-java-debuginfo-2.8.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libgtk-java-2.8.0-1.i386.rpm">frysk-libgtk-java-2.8.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libglade-java-debuginfo-2.12.0-2.i386.rpm">frysk-libglade-java-debuginfo-2.12.0-2.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libglade-java-2.12.0-2.i386.rpm">frysk-libglade-java-2.12.0-2.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib-java-0.2-1.i386.rpm">frysk-glib-java-0.2-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib-java-debuginfo-0.2-1.i386.rpm">frysk-glib-java-debuginfo-0.2-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-java-debuginfo-1.0.0-2.i386.rpm">frysk-cairo-java-debuginfo-1.0.0-2.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-java-1.0.0-2.i386.rpm">frysk-cairo-java-1.0.0-2.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cdtparser-3.0.0-2.i386.rpm">frysk-cdtparser-3.0.0-2.i386.rpm</a><br />
-<a href="http://www.jpackage.org/rpm.php?id=501">jdom-1.0-1jpp.noarch.rpm</a><br />
-
-<h2> Updated 2005-09-10: </h2>
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-pango-devel-1.10.0-1.i386.rpm">frysk-pango-devel-1.10.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-pango-debuginfo-1.10.0-1.i386.rpm">frysk-pango-debuginfo-1.10.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-pango-1.10.0-1.i386.rpm">frysk-pango-1.10.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-gtk2-devel-2.8.3-1.i386.rpm">frysk-gtk2-devel-2.8.3-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-gtk2-debuginfo-2.8.3-1.i386.rpm">frysk-gtk2-debuginfo-2.8.3-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-gtk2-2.8.3-1.i386.rpm">frysk-gtk2-2.8.3-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib2-devel-2.8.1-1.i386.rpm">frysk-glib2-devel-2.8.1-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib2-debuginfo-2.8.1-1.i386.rpm">frysk-glib2-debuginfo-2.8.1-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib2-2.8.1-1.i386.rpm">frysk-glib2-2.8.1-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-fontconfig-devel-2.3.2-1.i386.rpm">frysk-fontconfig-devel-2.3.2-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm">frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-fontconfig-2.3.2-1.i386.rpm">frysk-fontconfig-2.3.2-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-debuginfo-1.0.0-1.i386.rpm">frysk-cairo-debuginfo-1.0.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-devel-1.0.0-1.i386.rpm">frysk-cairo-devel-1.0.0-1.i386.rpm</a><br />
-<a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-1.0.0-1.i386.rpm">frysk-cairo-1.0.0-1.i386.rpm</a><br />
+<li><tt>antlr</tt><br>
 
 </ul>
 
-<h3>Command Line Build</h3>
+<li>Download and install the following non-standard RPMS (they will be
+installed into <tt>/opt</tt>):<br>
+
+<br> <b>Updated 2005-09-15:</b>
+
+<ul>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libgtk-java-debuginfo-2.8.0-1.i386.rpm">frysk-libgtk-java-debuginfo-2.8.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libgtk-java-2.8.0-1.i386.rpm">frysk-libgtk-java-2.8.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libglade-java-debuginfo-2.12.0-2.i386.rpm">frysk-libglade-java-debuginfo-2.12.0-2.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-libglade-java-2.12.0-2.i386.rpm">frysk-libglade-java-2.12.0-2.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib-java-0.2-1.i386.rpm">frysk-glib-java-0.2-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib-java-debuginfo-0.2-1.i386.rpm">frysk-glib-java-debuginfo-0.2-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-java-debuginfo-1.0.0-2.i386.rpm">frysk-cairo-java-debuginfo-1.0.0-2.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-java-1.0.0-2.i386.rpm">frysk-cairo-java-1.0.0-2.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cdtparser-3.0.0-2.i386.rpm">frysk-cdtparser-3.0.0-2.i386.rpm</a>
+<li><a href="http://www.jpackage.org/rpm.php?id=501">jdom-1.0-1jpp.noarch.rpm</a>
+</ul>
+
+<br><b> Updated 2005-09-10:</b>
+
+<ul>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-pango-devel-1.10.0-1.i386.rpm">frysk-pango-devel-1.10.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-pango-debuginfo-1.10.0-1.i386.rpm">frysk-pango-debuginfo-1.10.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-pango-1.10.0-1.i386.rpm">frysk-pango-1.10.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-gtk2-devel-2.8.3-1.i386.rpm">frysk-gtk2-devel-2.8.3-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-gtk2-debuginfo-2.8.3-1.i386.rpm">frysk-gtk2-debuginfo-2.8.3-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-gtk2-2.8.3-1.i386.rpm">frysk-gtk2-2.8.3-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib2-devel-2.8.1-1.i386.rpm">frysk-glib2-devel-2.8.1-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib2-debuginfo-2.8.1-1.i386.rpm">frysk-glib2-debuginfo-2.8.1-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-glib2-2.8.1-1.i386.rpm">frysk-glib2-2.8.1-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-fontconfig-devel-2.3.2-1.i386.rpm">frysk-fontconfig-devel-2.3.2-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm">frysk-fontconfig-debuginfo-2.3.2-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-fontconfig-2.3.2-1.i386.rpm">frysk-fontconfig-2.3.2-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-debuginfo-1.0.0-1.i386.rpm">frysk-cairo-debuginfo-1.0.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-devel-1.0.0-1.i386.rpm">frysk-cairo-devel-1.0.0-1.i386.rpm</a>
+<li><a href="ftp://sources.redhat.com/pub/frysk/build/frysk-cairo-1.0.0-1.i386.rpm">frysk-cairo-1.0.0-1.i386.rpm</a>
+
+</ul>
+
+</ul>
+
+<h2>Command Line Build</h2>
 
 Check out frysk:<br>
 
@@ -75,24 +89,29 @@ Create a separate build directory, and build in there:<br>
 
 <tt>( mkdir build && cd build && ../frysk/configure && make)</tt><br>
 
-<h3>Eclipse Build</h3>
+<h2>Eclipse Build</h2>
 
 For eclipse, check out the <tt>cvs</tt> module <tt>frysk-eclipse</tt>.
 
 
-<h1>Special requirements</h1>
-<p> If you are interested in trying frysk on other distributions, or cannot use our prepackaged required dependencies then you will need to find packages for your distribution or compile all the required packages from source. Some of the dependencies for Frysk are in development or newly released (i.e.
-Java-GNOME packages, GTK+ stack), therefore it may be difficult to find these in pre-packaged form if you are not able to use our supplied packages. Others, such as antlr or JUnit, may be easier to find. You can build these 
-packages from source, and frysk should detect their existance in the standard /usr or
-non-standard /opt. However, please note that installing the whole stack from source
-is a formidable task.
+<h1>Other Systems</h1>
+
+<p> If you are interested in trying frysk on other distributions, or
+cannot use our prepackaged required dependencies then you will need to
+find packages for your distribution or compile all the required
+packages from source. Some of the dependencies for Frysk are in
+development or newly released (i.e.  Java-GNOME packages, GTK+ stack),
+therefore it may be difficult to find these in pre-packaged form if
+you are not able to use our supplied packages. Others, such as antlr
+or JUnit, may be easier to find. You can build these packages from
+source, and frysk should detect their existance in the standard /usr
+or non-standard /opt. However, please note that installing the whole
+stack from source is a formidable task.
 </p>
 
-<h2> Dependency versions </h2>
 <p>
 For the brave here are the absolutely required 
 packages and versions:
-</p>
 
 <ul>
     <li> <tt> antlr </tt> 2.7.4 </li>
@@ -112,12 +131,10 @@ packages and versions:
 </ul>
 
 <p>
-Please note that some of these packages may have
- dependencies. Based on our testing on FC4, the
- above are the bare minimum packages that are
- needed, however this may differ on your
- distribution based on what versions are
- installed.
+Please note that some of these packages may have dependencies. Based
+on our testing on FC4, the above are the bare minimum packages that
+are needed, however this may differ on your distribution based on what
+versions are installed.
 </p>
 
 <h1> Related Links </h1>
