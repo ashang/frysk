@@ -1,3 +1,8 @@
+2005-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Add jargs.
+	* autogen.sh: Replace "util" with "inua".
+
 2005-09-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* configure.ac: Added check for jdom.jar.

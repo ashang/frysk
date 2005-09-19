@@ -1,3 +1,7 @@
+2005-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Import inua instead of util.
+
 2005-09-13  Andrew Cagney  <cagney@redhat.com>
 
 	* util/auxv.java: Replace util.eio.* with explict imports.

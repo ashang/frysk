@@ -39,7 +39,7 @@
 # exception.
 
 ./common/Makefile.gen.sh \
-    util \
+    inua \
     JUNIT_JAR \
     ANTLR_JAR \
     CDTPARSER_JAR \

@@ -47,8 +47,8 @@ import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import util.eio.ByteBuffer;
-import util.eio.PtraceByteBuffer;
+import inua.eio.ByteBuffer;
+import inua.eio.PtraceByteBuffer;
 
 public class LinuxTask
     extends Task

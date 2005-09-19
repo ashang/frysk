@@ -39,8 +39,8 @@
 
 package frysk.proc;
 
-import util.eio.ByteBuffer;
-import util.eio.ByteOrder;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 public class Register
 {

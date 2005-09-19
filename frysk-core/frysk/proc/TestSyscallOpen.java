@@ -46,7 +46,7 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import util.PrintWriter;
+import inua.PrintWriter;
 
 public class TestSyscallOpen
     extends TestLib

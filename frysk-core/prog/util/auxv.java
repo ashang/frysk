@@ -43,9 +43,9 @@
 
 package prog.util;
 
-import util.eio.ByteBuffer;
-import util.eio.ArrayByteBuffer;
-import util.PrintWriter;
+import inua.eio.ByteBuffer;
+import inua.eio.ArrayByteBuffer;
+import inua.PrintWriter;
 import frysk.proc.Auxv;
 import java.io.File;
 import java.io.FileInputStream;

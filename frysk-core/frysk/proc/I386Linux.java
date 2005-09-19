@@ -39,9 +39,9 @@
 
 package frysk.proc;
 
-import util.eio.ByteOrder;
-import util.eio.ByteBuffer;
-import util.eio.PtraceByteBuffer;
+import inua.eio.ByteOrder;
+import inua.eio.ByteBuffer;
+import inua.eio.PtraceByteBuffer;
 
 class I386Linux
 {

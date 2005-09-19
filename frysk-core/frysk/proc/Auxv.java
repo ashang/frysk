@@ -38,8 +38,8 @@
 // exception.
 package frysk.proc;
 
-import util.eio.ByteBuffer;
-import util.PrintWriter;
+import inua.eio.ByteBuffer;
+import inua.PrintWriter;
 
 public class Auxv
 {
@@ -53,15 +53,15 @@ public class Auxv
     public String toString ()
     {
 	return ("[Auxv"
-		+ "type=" + util.elf.AT.toString (type)
+		+ "type=" + inua.elf.AT.toString (type)
 		+ "val=" + val
 		+ "]");
     }
     public PrintWriter print (PrintWriter w)
     {
 	w.print (-5, type);
-	w.print (-21, util.elf.AT.toString (type));
-	w.print (-32, util.elf.AT.toPrintString (type));
+	w.print (-21, inua.elf.AT.toString (type));
+	w.print (-32, inua.elf.AT.toPrintString (type));
 	w.print (val);
 	w.println ();
 	return w;

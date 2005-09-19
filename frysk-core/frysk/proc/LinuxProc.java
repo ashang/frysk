@@ -52,9 +52,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-import util.Scanner;
-import util.eio.ArrayByteBuffer;
-import util.eio.ByteBuffer;
+import inua.Scanner;
+import inua.eio.ArrayByteBuffer;
+import inua.eio.ByteBuffer;
 
 public class LinuxProc
     extends Proc

@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import java.util.LinkedList;
-import util.eio.ByteBuffer;
+import inua.eio.ByteBuffer;
 
 abstract public class Task
 {

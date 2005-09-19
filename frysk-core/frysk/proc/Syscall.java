@@ -38,7 +38,7 @@
 // exception.
 package frysk.proc;
 
-import util.PrintWriter;
+import inua.PrintWriter;
 
 class Syscall
 {

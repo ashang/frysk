@@ -41,7 +41,7 @@ package frysk.proc;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
-import util.eio.ByteOrder;
+import inua.eio.ByteOrder;
 
 class Isa
 {

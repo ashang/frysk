@@ -97,7 +97,7 @@ public class TestProcGet
 	// Compare the AUXV as printed against that extracted using
 	// Proc.getAuxv.
 	try {
-	    util.Scanner reader = new util.Scanner (tmpFile.getFile ());
+	    inua.Scanner reader = new inua.Scanner (tmpFile.getFile ());
 	    for (int i = 0; i < auxv.length; i++) {
 		if (auxv[i].type == 0)
 		    break;
