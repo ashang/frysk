@@ -1,3 +1,9 @@
+2005-09-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* configure.ac: No longer checks for cdtparser.jar.
+
+	* autogen.sh: CDTPARSER_JAR removed from builds.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH, GEN_GCJ_LDADD): Add jargs.

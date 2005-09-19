@@ -50,12 +50,6 @@ test -r ${JUNIT_JAR} || AC_MSG_ERROR([no junit.jar file found]);
 AC_SUBST([JUNIT_JAR])
 AC_MSG_RESULT([$JUNIT_JAR])
 
-AC_MSG_CHECKING([for cdtparser.jar])
-CDTPARSER_JAR=/opt/share/java/cdtparser.jar
-test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
-AC_SUBST([CDTPARSER_JAR])
-AC_MSG_RESULT([$CDTPARSER_JAR])
-
 AC_MSG_CHECKING([for jdom.jar])
 JDOM_JAR=/usr/share/java/jdom.jar
 test -r ${JDOM_JAR} || AC_MSG_ERROR([no jdom.jar file found]);
