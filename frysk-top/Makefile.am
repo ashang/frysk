@@ -64,7 +64,7 @@ API = j2se/1.4.2/docs/api
 PACKAGE_LIST = $(API)/package-list
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
-javadoc: javadoc/$(PACKAGE_LIST)
+javadoc: javadoc/$(PACKAGE_LIST) all
 	CLASSPATH=$(JAVADOC_CLASSPATH) \
 	$(JAVADOC) \
 		-linkoffline \
@@ -79,11 +79,14 @@ javadoc: javadoc/$(PACKAGE_LIST)
 		-doctitle '<em>FRYSK</em> - An Execution Analysis Tool' \
 		-windowtitle 'FRYSK' \
 		-group "FRYSK Packages" 'frysk*' \
-		-group "Imported Packages" 'jline*:jargs*:util*' \
-		-subpackages 'frysk:util:jline:jargs'
+		-group "Imported Packages" 'jline*:jargs*:inua*' \
+		-subpackages 'frysk:inua:jline:jargs'
 javadoc/$(PACKAGE_LIST):
 	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
 	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)
+.PHONY: upload-javadoc
+upload-javadoc:
+	rsync --delete -a -v javadoc sources.redhat.com:/sourceware/www/sourceware/htdocs/frysk
 CLEANFILES += javadoc
 
 # Generate DOXYGEN documentation.
