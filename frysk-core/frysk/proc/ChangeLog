@@ -1,3 +1,9 @@
+2005-09-18  Andrew Cagney  <cagney@redhat.com>
+
+	* package.html: Add more detail.
+	* doc-files/task-tree.fig: New file.
+	* doc-files/proc-tree.fig: Simplify.
+
 2005-09-16  Andrew Cagney  <cagney@redhat.com>
 
 	* doc-files/proc-tree.fig, doc-files/proc-state.fig: New files.
