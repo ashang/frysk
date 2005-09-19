@@ -78,7 +78,7 @@ javadoc: javadoc/$(PACKAGE_LIST)
 		-linksource \
 		-doctitle '<em>FRYSK</em> - An Execution Analysis Tool' \
 		-windowtitle 'FRYSK' \
-		-group "FRYSK" 'frysk*' \
+		-group "FRYSK Packages" 'frysk*' \
 		-group "Imported Packages" 'jline*:jargs*:util*' \
 		-subpackages 'frysk:util:jline:jargs'
 javadoc/$(PACKAGE_LIST):

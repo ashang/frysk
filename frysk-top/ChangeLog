@@ -1,3 +1,9 @@
+2005-09-18  Andrew Cagney  <cagney@redhat.com>
+
+	* overview.html: Rewrite.
+	* Makefile.am: Change title of frysk's packages to "FRYSK
+	Packages".
+
 2005-09-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (javadoc): On overview page, separate frysk* and

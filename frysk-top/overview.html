@@ -1,3 +1,210 @@
+<html>
 <body>
-This is frysk.
+
+An overview of FRYSK, an Execution Analysis Tool.
+
+<h2>Overview</h2>
+
+At a high level, FRYSK's architecture can be viewed as a collection of
+clients that interact with FRYSK's core.  FRYSK's core providing
+clients with alternate models of the system.
+
+<p>
+
+<p><img src="frysk/model/doc-files/arch-interfaces.jpg" alt="Frysk Interfaces"/><br>
+
+<p>
+
+FRYSK then uses the target system's kernel interfaces to maintain its
+internal models.
+
+<p>
+
+Each of the components that make up FRYSK are discussed below.
+
+<h2>FRYSK's Core</h2>
+
+<h3>A Layered Architecture</h3>
+
+An application running on a linux system can modeled at several
+different levels, each level providing a different of abstraction.
+For instance a distributed application, consisting of multiple
+processes and threads, running across multiple physical machines can
+be viewed, or modeled, as:
+
+<ul>
+<li>
+A shared-memory multi-processor executing machine instructions on a
+local machine.
+<li>
+A multi-threaded program written in <sc>C</sc> and using <sc>POSIX</sc>
+threads.
+<li>
+A distributed application, made up of a number of programs distributed
+across multiple machines.
+</ul>
+
+<br>
+Each level of abstraction (or model) being implemented using the
+layers below.
+
+<p>
+
+This can be depicted visually as:
+
+<p><img src="frysk/model/doc-files/arch-layer-arch.jpg" alt="Layed Architecture"/>
+
+<p>
+
+This structure is characterized as <cite>The Layered
+Architecture</cite>, and key benefits and characteristics of this
+architecture include:
+
+<p>
+Benefits:
+
+<ul>
+<li>
+Segmentation of high-level from low-level issues.
+<li>
+The implementation details of a layer are hidden (abstracted) from
+other layers.
+<li>
+Many upper layers can share the services of a lower layer.
+</ul>
+
+<p>
+Dynamics:
+
+<ul>
+<li>
+Requests percolate downward between layers.
+<li>
+Notifications percolate upward between layers.
+<li>
+Layers can improve performance by caching requests.
+</ul>
+
+<p>
+
+In addition, a layered architecture, permits the distribution of
+components across a network.  For instance, in the case of a cluster,
+and dependent on the performance requirements, one or more components
+may be local or remote:
+
+<p><img src="frysk/model/doc-files/arch-distrib.jpg" alt="Distributed Linux Process Layer"/>
+
+<p>
+
+For further discussion of layered architectures, see <a
+href="http://www.stevenblack.com/PTN-Layers.asp">Layered
+Architecture</a>.
+
+<h3>Kernel Interface</h3>
+
+At the lowest level, is FRYSK's interface to underlying operating
+system (or kernel).  The interface is implemented using {@link
+frysk.sys}, kernel level events as they arrive, being managed using
+{@link frysk.event} (FRYSK's event loop).
+
+<p>
+
+For instance, when implementing single-step, the kernel will generate
+stop events as illustrated by:
+
+<p><img src="frysk/model/doc-files/arch-request-notify.jpg" alt="Single-step Requests and Notifications"/>
+
+<p>
+
+For further information, see {@link frysk.sys}, and {@link
+frysk.event}.
+
+<h3>Process Model</h3>
+
+The Linux Process Layer abstracts the Kernel
+Layer, multi-processor machine in more exacting details.  This
+abstraction models individual registers, the program-counter, and
+hardware breakpoints and watchpoints.  It also implements more complex
+operations such as step-out-of-range (implemented using lower-level
+primitives).
+
+<p>
+
+See {@link frysk.proc}, for more information.
+
+<h3>Language Model</h3>
+
+The language model provides a source-language view of the running
+application.  The model includes abstractions for high-level language
+concepts such as thread, frame and variable.
+
+<p>
+
+High level language support is implemented within this layer.
+
+<p><img src="frysk/model/doc-files/arch-lang-thread.jpg" alt=" Source Level Components"/>
+
+<p>
+
+See {@link frysk.lang}, for more information.
+
+<h3>Application Model</h3>
+
+For an application distributed across multiple nodes of a cluster,
+there is an additional Cluster Layer, providing an overriding model of
+the system being debugged.
+
+<h2>Command Line Interpreter</h2>
+
+Built into FRYSK is a command line interpreter based on the
+specification published by the High Performance Debugger Forum.
+
+<p>
+
+Additional interpreters (such as <code>adb</code>), and scripting
+languages (such as <code>scheme</code> and <code>Python</code>) may be
+added at some stage in the future.
+
+<p>
+
+See {@link frysk.cli.hpd} for more information in FRYSK's existing
+interpreter.
+
+<h2>Clients</h2>
+
+<h3>GUI</h3>
+
+See {@link frysk.gui} for a more detailed description of FRYSK's
+graphical interface.
+
+<h3>Command Line Utilities</h3>
+
+Frysk includes a number of command line utilities, at present they
+include: {@link frysk.bin.ftrace} to trace the system calls of running
+processes, {@link frysk.bin.fstack} to print the current stack of a
+running process.  These utilities are implemented by directly
+interacting with FRYSK's process model:
+
+<p><img src="frysk/model/doc-files/arch-strace-gcore.jpg" alt=" Debug Utilities"/>
+
+<p>
+
+In the future, a stand-alone command-line tool, that provides a
+wrapper around FRYSK's built in High Performance Debugger Interpreter,
+or more traditional debugger interface (such as <code>adb</code>) may
+be added.  For the moment, that interface is only available via the
+GUI.
+
+<h3>Eclipse</h3>
+
+There are many ways that Eclipse can exploit FRYSK.  For instance, by
+using <code>libgcj_db</code> library, along with knowledge of the
+internals of a Java Virtual Machine (<sc>JVM</sc>) running within a
+process, an abstract model of a Java Virtual Machine can then be
+constructed.  That model being exported to Eclipse using the Java
+Debug Wire Protocol (<sc>JDWP</sc>).
+
+<p><img src="frysk/model/doc-files/arch-jdwp.jpg" alt="A Java Debug Wire Protocol Application Model"/>
+
 </body>
+</html>
