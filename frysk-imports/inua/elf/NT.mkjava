@@ -1,0 +1,5 @@
+PRSTATUS 1 prstatus structure
+FPREGSET 2 floating point registers
+PRPSINFO 3 prpsinfo structure
+TASKSTRUCT 4 task structure
+AUXV 6 auxiliary vector

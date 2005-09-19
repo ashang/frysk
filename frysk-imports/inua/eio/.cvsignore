@@ -1,0 +1,9 @@
+*.class
+.deps
+.dirstamp
+*.classes
+*.h
+TestGet
+TestMmap
+TestPut
+TestWordSize
