@@ -63,6 +63,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
+import frysk.bin.Config;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.TrayIcon;
@@ -200,7 +201,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	}
 
 	public static void main(String[] args) {
-		mainGui(args, new String[] {GLADE_PKG_PATH, GLADE_DEV_PATH});
+		mainGui(args, new String[] {GLADE_PKG_PATH, GLADE_DEV_PATH, Config.GLADEDIR});
 	}
 
 	private static FileHandler buildHandler() {

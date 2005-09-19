@@ -1,3 +1,7 @@
+2005-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* FryskGui.java: Added Config.GLADEDIR back to the search path.
+
 2005-09-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java: Added FRYSK_CONFIG. Moved .settings to FRYSK_CONFIG.
@@ -11,8 +15,9 @@
 
 2005-09-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* FryskGui.java (mainGui): Takes an array of Strings representing glade 
-	dirs and searches them untill a glade file is found.
+	* FryskGui.java (mainGui): takes an array of Strings representing glade dirs
+	and searches them untill a glade file is found.
+	(FryskGui): mainGui throws one exception when the entire search fails.
 
 2005-09-13  Adam Jocksch  <ajocksch@redhat.com>
 
