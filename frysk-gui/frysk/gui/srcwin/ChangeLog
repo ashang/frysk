@@ -1,3 +1,13 @@
+2005-09-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* dom: Added.
+
+	* dom/DOMGetter.java: Ditto.
+
+	* dom/DOMImage.java: Ditto.
+
+	* dom/DOMSource.java: Ditto.
+
 2005-09-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (createMenus): Added casts to fix compilation error.
