@@ -1,7 +1,8 @@
 2005-09-20  Phil Muldoon  <pmuldoon@redhat.com>
 	
 	* build.xml: New File. Experimental Eclipse build.
-	* .project: Modified to work with build.xml above.
+	* .project: Modified to work with build.xml above. 
+	Fixed <projects> typo
 
 2005-09-20  Adam Jocksch  <ajocksch@redhat.com>
 

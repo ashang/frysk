@@ -4,7 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>frysk-imports</project>
-		<project>frysk-core</projects>
+		<project>frysk-core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
