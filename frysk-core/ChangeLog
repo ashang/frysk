@@ -1,3 +1,18 @@
+2005-09-20  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* frysk/proc/TestLib.java (ExitWaitObserver): New class to
+	wait for exit-type events.
+	(tearDown): Fix kill / waiting logic to prevent infinite waits.
+	* frysk/proc/TestExiting.java: Register the test pid for tear down
+	purposes.
+	* frysk/proc/TestI386Regs.java: Ditto.
+	* frysk/proc/TestSyscall.java: Ditto.
+	* frysk/proc/TestSyscall2.java: Ditto.
+	* frysk/proc/TestSyscallOpen.java: Ditto.
+	* frysk/proc/TestTerminated.java: Ditto.
+	* frysk/proc/TestI386Modify.java: Ditto.  As well, uncomment out
+	the test as the new TestLib tearDown logic can now handle this.
+
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Set package name to "frysk".

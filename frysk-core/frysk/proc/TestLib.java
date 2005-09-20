@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import frysk.sys.Errno;
+import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.sys.Fork;
@@ -626,6 +627,32 @@ public class TestLib
 	public void disappeared (int pid) { }
     }
 
+    class ExitWaitObserver
+	implements Wait.Observer
+    {
+	boolean exited;
+	int pid;
+	ExitWaitObserver ()
+	{
+	    this.exited = false;
+	}
+ 	public void cloneEvent (int pid, int clone) { this.pid = pid; }
+ 	public void forkEvent (int pid, int child) { this.pid = pid; }
+ 	public void exitEvent (int pid, int status) { this.pid = pid; }
+ 	public void execEvent (int pid) { this.pid = pid; }
+ 	public void syscallEvent (int pid) { this.pid = pid; }
+ 	public void stopped (int pid, int signal) { this.pid = pid; }
+ 	public void exited (int pid, int status, boolean coreDumped) { 
+	    this.pid = pid;
+	    exited = true; 
+	}
+ 	public void terminated (int pid, int signal, boolean coreDumped) { 
+	    this.pid = pid;
+	    exited = true;
+	}
+	public void disappeared (int pid) { this.pid = pid; }
+    }
+
     class FailWaitObserver
 	implements Wait.Observer
     {
@@ -696,15 +723,17 @@ public class TestLib
     {
 	IgnoreWaitObserver ignoreWaits = new IgnoreWaitObserver ();
 
-	// Kill of any children.
+	// Kill off any children.
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
 	    try {
-		// Issue a SIGCONT before killing the process
-		// to handle the case where there is a child
-		// stuck with a pending SIGSTOP.
-		Signal.kill (child.intValue (), Sig.CONT);
+		// For each registered child, send a SIGKILL to terminate
+		// the child and also send a SIGCONT in case the child
+		// is currently stopped by PTRACE.  If stopped by
+		// PTRACE, the child must be continued for any subsequent
+		// events to be found by waitpid below.
 		Signal.kill (child.intValue (), Sig.KILL);
+		Signal.kill (child.intValue (), Sig.CONT);
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it (expecting the occasional kill).
@@ -713,31 +742,68 @@ public class TestLib
 
 	// We need to wait indefinitely for any event.  This will
 	// catch exit events for cloned tasks of the registered
-	// child pids.  If we do not wait for these events, the
+	// child pids.  If we do not drain these clone exit events, the
 	// registered pids may remain in Zombied state indefinitely.
+	// When we get an event, if it is not an exit event, then
+	// we need to try detaching the pid in case we have gotten
+	// a PTRACE event we asked for.  This will allow the kill
+	// to be received and we will eventually see it.
 	try {
+	    ExitWaitObserver exitChecker = new ExitWaitObserver ();
 	    while (true) {
-	    	Wait.waitAll (-1, ignoreWaits);
+		exitChecker.exited = false;
+	    	Wait.waitAll (-1, exitChecker);
+		if (!exitChecker.exited) {
+		    Ptrace.detach (exitChecker.pid, 0);
+		}
   	    }
 	}
         catch (Errno.Echild e) {
 	    // No more events.
         }
 
-	// Verify the children are gone by waiting on their pids until
-	// each gets an Errno.Echild (i.e., child doesn't exist).
-	for (Iterator i = children.iterator (); i.hasNext (); ) {
-	    Integer child = (Integer) i.next ();
-	    try {
-		while (true) {
-		    Wait.waitAll (child.intValue (), ignoreWaits);
-		}
-	    }
-	    catch (Errno.Echild e) {
-		continue;
-	    }
-	}
+	// Kill of any children.
+//	for (Iterator i = children.iterator (); i.hasNext (); ) {
+//	    Integer child = (Integer) i.next ();
+//	    try {
+//		// Issue a SIGCONT before killing the process
+//		// to handle the case where there is a child
+//		// stuck with a pending SIGSTOP.
+//		Signal.kill (child.intValue (), Sig.CONT);
+//		Signal.kill (child.intValue (), Sig.KILL);
+//	    }
+//	    catch (Errno.Esrch e) {
+//		// Toss it (expecting the occasional kill).
+//	    }
+//	}
+//
+//	// We need to wait indefinitely for any event.  This will
+//	// catch exit events for cloned tasks of the registered
+//	// child pids.  If we do not wait for these events, the
+//	// registered pids may remain in Zombied state indefinitely.
+//	try {
+//	    while (true) {
+//	    	Wait.waitAll (-1, ignoreWaits);
+// 	    }
+//	}
+//       catch (Errno.Echild e) {
+//	    // No more events.
+//       }
 
+//	// Verify the children are gone by waiting on their pids until
+//	// each gets an Errno.Echild (i.e., child doesn't exist).
+//	for (Iterator i = children.iterator (); i.hasNext (); ) {
+//	    Integer child = (Integer) i.next ();
+//	    try {
+//		while (true) {
+//		    Wait.waitAll (child.intValue (), ignoreWaits);
+//		}
+//	    }
+//	    catch (Errno.Echild e) {
+//		continue;
+//	    }
+//	}
+//
 	// Zap any stray files.
 	deleteTmpFiles ();
     }

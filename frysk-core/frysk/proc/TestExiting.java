@@ -68,6 +68,7 @@ public class TestExiting
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    registerChild (proc.getId ().hashCode ());
 	    proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
 	    proc.taskDestroyed.addObserver (new TaskTerminatedObserver ());
 	    proc.taskExiting.addObserver (new TaskExitingObserver ());

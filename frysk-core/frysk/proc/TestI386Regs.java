@@ -120,6 +120,7 @@ public class TestI386Regs
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    registerChild (proc.getId ().hashCode ());
             proc.taskDiscovered.addObserver
                 (new Observer () {
                         public void update (Observable o, Object obj)
