@@ -1,0 +1,17 @@
+<project name="frysk-gui" default="all">
+        <target name="all" depends="makefile">
+                <exec executable="make"/>
+        </target>
+        <available property="makefile-available" file="Makefile"/>
+        <available property="configure-available" file="configure"/>
+        <target name="makefile" depends="configure" unless="makefile-available">
+                <exec executable="/bin/sh">
+                        <arg line="./configure"/>
+                </exec>
+        </target>
+        <target name="configure" unless="configure-available">
+                <exec executable="/bin/sh">
+                        <arg line="./autogen.sh"/>
+                </exec>
+        </target>
+</project>
