@@ -13,6 +13,7 @@ public class GuiData {
 	
 	public GuiData(){
 		this.statusWidget = null;
+		this.observers = new LinkedList();
 	}
 	
 	public void add(TaskExecObserver observer){
