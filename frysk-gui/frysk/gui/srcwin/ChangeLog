@@ -8,6 +8,10 @@
 
 	* dom/DOMSource.java: Ditto.
 
+	* dom/DOMLine.java: Ditto.
+
+	* dom/DOMTag.java: Ditto.
+
 2005-09-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (createMenus): Added casts to fix compilation error.
