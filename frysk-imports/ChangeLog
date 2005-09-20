@@ -1,3 +1,8 @@
+2005-09-20  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* .classpath: Add frysk-imports generated .jars to
+	project .classpath.
+
 2005-09-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* configure.ac: No longer checks for cdtparser.jar.

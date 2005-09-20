@@ -24,5 +24,11 @@
 		<attributes>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/frysk-imports/antlr.jar"/>
+	<classpathentry kind="lib" path="/frysk-imports/frysk-imports.jar"/>
+	<classpathentry kind="lib" path="/frysk-imports/jargs.jar"/>
+	<classpathentry kind="lib" path="/frysk-imports/jdom.jar"/>
+	<classpathentry kind="lib" path="/frysk-imports/jline.jar"/>
+	<classpathentry kind="lib" path="/frysk-imports/junit.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
