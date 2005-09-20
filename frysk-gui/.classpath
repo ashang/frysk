@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/frysk-core/frysk-core.jar"/>
+	<classpathentry kind="lib" path="/frysk-imports/frysk-imports.jar"/>
+	<classpathentry kind="lib" path="/opt/share/java/cairo1.0.jar"/>
+	<classpathentry kind="lib" path="/opt/share/java/cdtparser.jar"/>
+	<classpathentry kind="lib" path="/opt/share/java/glade2.12.jar"/>
+	<classpathentry kind="lib" path="/opt/share/java/glib0.2.jar"/>
+	<classpathentry kind="lib" path="/opt/share/java/gtk2.8.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
