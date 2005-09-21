@@ -2,6 +2,20 @@
 
 	* TestI386Modify.java: Disable for moment.
 
+2005-09-20  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestLib.java (ExitWaitObserver): New class to wait for exit-type
+	events.
+	(tearDown): Fix kill / waiting logic to prevent infinite waits.
+	* TestExiting.java: Register the test pid for tear down purposes.
+	* TestI386Regs.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+	* TestTerminated.java: Ditto.
+	* TestI386Modify.java: Ditto.  As well, uncomment out the test as
+	the new TestLib tearDown logic can now handle this.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Auxv.java, I386Linux.java, Isa.java, LinuxProc.java,
