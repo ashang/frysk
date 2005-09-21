@@ -41,6 +41,7 @@ public class DOMLine {
 	public static final String NUMBER_ATTR = "number";
 	
 	private Element myElement;
+	private Vector inlines;
 	
 	/**
 	 * Creates a new DOMLine using the given data as it's element. data must be a node with
@@ -49,6 +50,7 @@ public class DOMLine {
 	 */
 	public DOMLine(Element data){
 		this.myElement = data;
+		this.inlines = new Vector();
 	}
 	
 	/**
@@ -155,5 +157,9 @@ public class DOMLine {
 		}
 		
 		return null;
+	}
+	
+	public Iterator getInlines(){
+		return this.inlines.iterator();
 	}
 }

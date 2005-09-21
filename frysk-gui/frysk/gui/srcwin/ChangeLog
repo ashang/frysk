@@ -1,5 +1,16 @@
 2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
 
+	* dom/DOMInlinedFunc.java: Added.
+
+	* dom/DOMInlinedInstance.java: Added.
+
+	* dom/DOMImage.java (getInlinedFunctions): Added.
+
+	* dom/DOMLine.java: Added private member inlines.
+	(getInlines): Added.
+
+2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
+
 	* dom/DOMSource.java: fixed warning about serialVersionUID not 
 	being found and Added javadoc comments. Extracted constants.
 

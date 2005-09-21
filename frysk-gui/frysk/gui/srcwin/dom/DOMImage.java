@@ -59,4 +59,13 @@ public class DOMImage {
 		return v.iterator();
 	}
 	
+	public Iterator getInlinedFunctions(){
+		Iterator iter = this.myElement.getChildren(DOMInlineFunc.INLINE_NODE).iterator();
+		Vector v = new Vector();
+		
+		while(iter.hasNext())
+			v.add(new DOMInlineFunc((Element) iter.next()));
+		
+		return v.iterator();
+	}
 }
