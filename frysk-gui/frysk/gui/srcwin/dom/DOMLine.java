@@ -59,6 +59,8 @@ public class DOMLine {
 		final String theType = type;
 		
 		Iterator iter = this.myElement.getContent(new Filter() {
+			static final long serialVersionUID = 1L;
+
 			public boolean matches(Object arg0) {
 				Element elem = (Element) arg0;
 				
@@ -74,5 +76,17 @@ public class DOMLine {
 			v.add(new DOMTag((Element) iter.next()));
 		
 		return v.iterator();
+	}
+	
+	public DOMTag getTag(int index){
+		Iterator iter = this.myElement.getChildren().iterator();
+		
+		while(iter.hasNext()){
+			DOMTag tag = new DOMTag((Element) iter.next());
+			if(tag.isInRange(index))
+				return tag;
+		}
+		
+		return null;
 	}
 }

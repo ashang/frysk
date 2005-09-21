@@ -42,6 +42,7 @@ public class DOMSource {
 		final int lineNum = num;
 		
 		Iterator iter = this.myElement.getContent(new Filter() {
+			static final long serialVersionUID = 1L;			
 			public boolean matches(Object arg0) {
 				Element elem = (Element) arg0;
 				
@@ -59,6 +60,7 @@ public class DOMSource {
 		DOMLine val = new DOMLine((Element) iter.next());
 		
 		if(iter.hasNext()){
+			// TODO: Throw exception? 
 			// This should not be happening: duplicate source lines!
 		}
 		

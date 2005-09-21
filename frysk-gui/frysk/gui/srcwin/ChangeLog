@@ -1,3 +1,10 @@
+2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* dom/DOMSource.java: fixed warning about serialVersionUID not 
+	being found.
+
+	* dom/DOMLine.java: Ditto.
+
 2005-09-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* dom: Added.
