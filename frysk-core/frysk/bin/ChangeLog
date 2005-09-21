@@ -1,3 +1,7 @@
+2005-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain: Add BUILDDIR and SRCDIR.
+
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain: Make public.

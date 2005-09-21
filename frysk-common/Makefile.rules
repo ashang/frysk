@@ -120,13 +120,18 @@ $(SHJAVA_BUILT): $(MKJAVA)
 # Mimic autoconf's behavior, by doing it in the Makefile all the
 # variables are automatically expanded.
 
+# Don't be confused by top_builddir and top_srcdir, they are actually
+# the directory corresponding to current sub-directory (frysk-gui,
+# frysk-core, ...).
+
 SUFFIXES += .javain
 .javain.java:
 	rm -f $*.tmp
 	sed < $< \
 		-e 's,[@]prefix[@],$(prefix),g' \
 		-e 's,[@]datadir[@],$(datadir),g' \
-		-e 's,[@]gladedir[@],$(gladedir),g' \
+		-e 's,[@]builddir[@],$(top_builddir),g' \
+		-e 's,[@]srcdir[@],$(top_srcdir),g' \
 		> $*.tmp
 	mv -f $*.tmp $@
 

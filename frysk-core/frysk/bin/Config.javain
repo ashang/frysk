@@ -48,4 +48,6 @@ public class Config
 	public static final String PREFIX = "@prefix@";
 	public static final String DATADIR = "@datadir@";
 	public static final String GLADEDIR = "@gladedir@";
+	public static final String BUILDDIR = "@builddir@";
+	public static final String SRCDIR = "@srcdir@";
 }

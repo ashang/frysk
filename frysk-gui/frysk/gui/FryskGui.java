@@ -201,7 +201,10 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	}
 
 	public static void main(String[] args) {
-		mainGui(args, new String[] {GLADE_PKG_PATH, GLADE_DEV_PATH, Config.GLADEDIR});
+		mainGui(args, new String[]
+		    { GLADE_PKG_PATH, GLADE_DEV_PATH,
+		      Config.SRCDIR + "/../frysk-gui/" + GLADE_DEV_PATH,
+		    });
 	}
 
 	private static FileHandler buildHandler() {

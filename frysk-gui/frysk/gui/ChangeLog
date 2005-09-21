@@ -1,3 +1,8 @@
+2005-09-19  Andrew Cagney  <cagney@redhat.com>
+
+	* FryskGui.java: Replace Config.GLADEDIR with Config.SRCDIR with
+	glade directory appended.
+
 2005-09-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FryskGui.java: Added Config.GLADEDIR back to the search path.
