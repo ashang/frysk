@@ -105,7 +105,7 @@ SUFFIXES += .mkjava
 	$(SHELL) $(MKJAVA) < $(srcdir)/$*.mkjava > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-$(MKJAVA_BUILT): $(MKJAVA)
+$(GEN_BUILT_MKJAVA): $(MKJAVA)
 
 # Rule for building a .java file from a shell|mkjava pipeline.
 

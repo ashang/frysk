@@ -164,6 +164,13 @@ parse_class ()
     echo "${sp}    default: return \"${_path}_0x\" + Long.toHexString (i);"
     echo "${sp}    }"
     echo "${sp}  }"
+    echo "${sp}"
+    echo "${sp}  static public String toPrintString (long i, String def)"
+    echo "${sp}  {"
+    echo "${toPrintString}"
+    echo "${sp}    default: return def;"
+    echo "${sp}    }"
+    echo "${sp}  }"
     echo "${sp}}"
 }
 

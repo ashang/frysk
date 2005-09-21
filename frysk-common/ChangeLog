@@ -1,3 +1,9 @@
+2005-09-21  Andrew Cagney  <cagney@redhat.com>
+
+	* mkjava.sh: Generate a toPrintString method that takes a default
+	value.
+	* Makefile.rules ($(GEN_BUILT_MKJAVA)): Depend on $(MKJAVA).
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.javain.java): Set builddir and srcdir.
