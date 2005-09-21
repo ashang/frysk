@@ -1,9 +1,17 @@
 2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
 
 	* dom/DOMSource.java: fixed warning about serialVersionUID not 
-	being found.
+	being found and Added javadoc comments. Extracted constants.
 
-	* dom/DOMLine.java: Ditto.
+	* dom/DOMGetter.java: Added javadoc comments and extracted constants.
+
+	* dom/DOMImage.java: Ditto.
+
+	* dom/DOMTag.java: Ditto.
+	
+	* dom/DOMLine.java: Added javadoc comments and extracted constants.
+	(getTag): Index can now be relative to line or start of file.
+	
 
 2005-09-20  Adam Jocksch  <ajocksch@redhat.com>
 
