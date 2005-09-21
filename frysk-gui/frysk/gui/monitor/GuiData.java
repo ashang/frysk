@@ -8,40 +8,50 @@ import java.util.LinkedList;
  */
 public class GuiData {
 	
-	StatusWidget statusWidget;
+	InfoWidget infoWidget;
 	LinkedList observers;
 	
+	public GuiObservable observerAdded;
+	public GuiObservable observerRemoved;
+	
 	public GuiData(){
-		this.statusWidget = null;
+		this.infoWidget = null;
+		this.observerAdded = new GuiObservable();
+		this.observerRemoved = new GuiObservable();
 		this.observers = new LinkedList();
 	}
 	
 	public void add(TaskExecObserver observer){
-		this.observers.add(observer);
-		observer.setRunnable(new Runnable(){
 
+		observer.setRunnable(new Runnable(){
 			public void run() {
 				System.out.println("GuiData: Recieved taskForkedEvent");
 			}
-			
 		});
-		
+
+		this.observers.add(observer);
+		this.observerAdded.notifyObservers(observer);
+	}
+	
+	public void remove(ObserverRoot observer){
+		this.observers.remove(observer);
+		this.observerRemoved.notifyObservers(observer);
 	}
 	
 	public LinkedList getObservers(){
 		return this.observers;
 	}
 	
-	public void setStatusWidget(StatusWidget widget){
-		this.statusWidget = widget;
+	public void setStatusWidget(InfoWidget widget){
+		this.infoWidget = widget;
 	}
 	
-	public StatusWidget getStatusWidget(){
-		return this.statusWidget;
+	public InfoWidget getStatusWidget(){
+		return this.infoWidget;
 	}
 	
 	public boolean hasStatusWidget(){
-		return (this.statusWidget != null);
+		return (this.infoWidget != null);
 	}
 	
 	

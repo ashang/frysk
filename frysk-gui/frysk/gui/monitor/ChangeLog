@@ -1,3 +1,22 @@
+2005-09-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* NotifyingLabel.java: new file: a lable that changes color when the object it is 
+	observing calls update, and resets color when it is selected.
+	* InfoWidget.java (InfoWidget): new file: provies a NoteBook which statusWidget is
+	the first page of.
+	* AllProcWidget.java: Changed to using infoWidget instead of statusWidget
+	* GuiObservable.java (notifyObservers): new file: GuiObserver automatically sets
+	hasChanged boolean when notifyObservers() is called.
+	* GuiData.java (GuiData): Changed Observables to GuiObservables.
+	* StatusWidget.java : Created the design.
+	Connected Attached observers list to proper observables. 
+
+2005-09-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcDataModel.java: ProcDestroyed was incorrectly being handled outside the gui
+	event loop...Fixed.
+	added NullPointer check to TaskDestroyedObserver
+	
 2005-09-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* GuiData.java (GuiData): Fixed AddExecObserver NullPointerException

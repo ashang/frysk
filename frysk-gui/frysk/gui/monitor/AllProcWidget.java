@@ -148,13 +148,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 					mountThreadModel(psDataModel, selected);
 					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), psDataModel.getProcDataDC());
 					if(!data.hasStatusWidget()){
-						try {
-							data.setStatusWidget(new StatusWidget(glade));
-						} catch (ClassNotFoundException e) {
-							errorLog.log(Level.SEVERE,"Cannot clone StatusWidget",e);
-						}
-						data.getStatusWidget().setName(data.getProc().getCommand());
-						
+						data.setStatusWidget(new InfoWidget(data));
 					}
 					
 					Widget widgets[] = statusVbox.getChildren();

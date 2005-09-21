@@ -395,16 +395,20 @@ public class ProcDataModel {
 	class ProcDestroyedObserver implements Observer{
 		public void update(Observable o, Object obj) {
 			final Proc proc = (Proc)obj;
-			TreeIter iter = (TreeIter) iterHash.get(proc.getId());
-			try{
-			if(iter == null){
-				throw new NullPointerException("proc " + proc + " Not found in TreeIter HasTable. Cannot be removed");
-			}
-			treeStore.removeRow(iter);
-			iterHash.remove(proc.getId());
-			}catch (NullPointerException e) {
-				errorLog.log(Level.WARNING,"proc " + proc + " Not found in TreeIter HasTable. Cannot be removed",e);
-			}
+			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+				public void run() {
+					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
+					try{
+						if(iter == null){
+							throw new NullPointerException("proc " + proc + " Not found in TreeIter HasTable. Cannot be removed");
+						}
+						treeStore.removeRow(iter);
+						iterHash.remove(proc.getId());
+					}catch (NullPointerException e) {
+						errorLog.log(Level.WARNING,"proc " + proc + " Not found in TreeIter HasTable. Cannot be removed",e);
+					}
+				}
+			});
 		}
 	}
 	
@@ -449,8 +453,15 @@ public class ProcDataModel {
 				public void run() {
 					final Task task = (Task) obj;
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
-					treeStore.removeRow(iter);
-					iterHash.remove(task.getTaskId());
+					try{
+						if(iter == null){
+							throw new NullPointerException("task " + task + " Not found in TreeIter HasTable. Cannot be removed");
+						}
+						treeStore.removeRow(iter);
+						iterHash.remove(task.getTaskId());
+					}catch (NullPointerException e) {
+						errorLog.log(Level.WARNING,"trying to remove task before it is added",e);
+					}
 				}
 			});
 		}

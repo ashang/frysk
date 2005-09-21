@@ -176,8 +176,7 @@ public class ActionPool {
 		}
 
 		public void execute(TaskData data) {
-			//XXX: to be implement in the back end:	data.getTask().requestStop();
-			//data.getTask().
+			//XXX: data.getTask().requestStop(); is not public 
 		}
 	}
 
