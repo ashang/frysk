@@ -17,8 +17,13 @@ public class DOMInlineFunc {
 	private static final String END_ATTR = "end";
 	public static final String START_ATTR = "start";
 	public static final String NAME_ATTR = "name";
-	private Element myElement;
 	public static final String INLINE_NODE = "inline";
+	
+//	public static DOMInlineFunc createDOMInlineFunc(String name, int start, int end){
+//		
+//	}
+	
+	private Element myElement;
 	
 	public DOMInlineFunc(Element data){
 		this.myElement = data;
@@ -81,5 +86,9 @@ public class DOMInlineFunc {
 			v.add(new DOMLine((Element) iter.next()));
 		
 		return v.iterator();
+	}
+	
+	protected Element getElement(){
+		return this.myElement;
 	}
 }

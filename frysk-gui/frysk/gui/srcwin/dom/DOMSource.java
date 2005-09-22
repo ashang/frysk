@@ -27,6 +27,23 @@ public class DOMSource {
 	 */
 	public static final String SOURCE_NODE = "source";
 	
+	public static DOMSource createDOMSource(String filename, String path){
+		Element source = new Element(SOURCE_NODE);
+		source.setAttribute(FILENAME_ATTR, filename);
+		source.setAttribute(FILEPATH_ATTR, path);
+		
+		return new DOMSource(source);
+	}
+	
+	public static DOMSource createDOMSource(DOMImage parent, String filename, String path){
+		Element source = new Element(SOURCE_NODE);
+		source.setAttribute(FILENAME_ATTR, filename);
+		source.setAttribute(FILEPATH_ATTR, path);
+		parent.getElement().addContent(source);
+		
+		return new DOMSource(source);
+	}
+	
 	private Element myElement;
 	
 	/**
@@ -98,5 +115,13 @@ public class DOMSource {
 		}
 		
 		return val;
+	}
+	
+	public void addLine(DOMLine line){
+		this.myElement.addContent(line.getElement());
+	}
+	
+	protected Element getElement(){
+		return this.myElement;
 	}
 }

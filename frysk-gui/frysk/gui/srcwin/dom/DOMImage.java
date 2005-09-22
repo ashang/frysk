@@ -22,6 +22,19 @@ public class DOMImage {
 	 * name of the image
 	 */
 	public static final String NAME_ATTR = "name";
+	/**
+	 * name of the node in the tree
+	 */
+	public static final String IMAGE_NODE = "image";
+	
+	public static DOMImage createDOMImage(String name, String ccpath){
+		Element image = new Element(IMAGE_NODE);
+		image.setAttribute(NAME_ATTR, name);
+		image.setAttribute(CCPATH_ATTR, ccpath);
+		
+		return new DOMImage(image);
+	}
+	
 	private Element myElement;
 	
 	/**
@@ -67,5 +80,17 @@ public class DOMImage {
 			v.add(new DOMInlineFunc((Element) iter.next()));
 		
 		return v.iterator();
+	}
+	
+	public void addSource(DOMSource source){
+		this.myElement.addContent(source.getElement());
+	}
+	
+	public void addInlineFunction(DOMInlineFunc function){
+		this.myElement.addContent(0, function.getElement());
+	}
+	
+	protected Element getElement(){
+		return this.myElement;
 	}
 }

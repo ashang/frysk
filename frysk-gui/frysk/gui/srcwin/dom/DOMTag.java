@@ -28,7 +28,24 @@ public class DOMTag {
 	 */
 	public static final String TAG_NODE = "tag";
 	
-	public Element myElement;
+	public static DOMTag createDOMTag(String type, int start, int end){
+		Element tag = new Element(TAG_NODE);
+		tag.setAttribute(TYPE_ATTR, type);
+		tag.setAttribute(START_ATTR, ""+start);
+		tag.setAttribute(END_ATTR, ""+end);
+		return new DOMTag(tag);
+	}
+	
+	public static DOMTag createDOMTag(DOMLine parent, String type, int start, int end){
+		Element tag = new Element(TAG_NODE);
+		tag.setAttribute(TYPE_ATTR, type);
+		tag.setAttribute(START_ATTR, ""+start);
+		tag.setAttribute(END_ATTR, ""+end);
+		parent.getElement().addContent(tag);
+		return new DOMTag(tag);
+	}
+	
+	private Element myElement;
 	
 	/**
 	 * Creates a new DOMTag using the given data as it's Element. data much be of name "tag"
@@ -69,5 +86,9 @@ public class DOMTag {
 			return true;
 		
 		return false;
+	}
+	
+	protected Element getElement(){
+		return this.myElement;
 	}
 }

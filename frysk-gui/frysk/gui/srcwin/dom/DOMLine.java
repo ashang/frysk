@@ -4,7 +4,6 @@
 package frysk.gui.srcwin.dom;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import org.jdom.Element;
@@ -29,10 +28,6 @@ public class DOMLine {
 	 */
 	public static final String OFFSET_ATTR = "offset";
 	/**
-	 * The length of the line
-	 */
-	public static final String LENGTH_ATTR = "length";
-	/**
 	 * The name of the Element node
 	 */
 	public static final String LINE_NODE = "line";
@@ -40,6 +35,27 @@ public class DOMLine {
 	 * The number of this line
 	 */
 	public static final String NUMBER_ATTR = "number";
+	
+	public static DOMLine createDOMLine(int lineNum, int offset, String text, boolean executable){
+		Element line = new Element(LINE_NODE);
+		line.setText(text);
+		line.setAttribute(NUMBER_ATTR, ""+lineNum);
+		line.setAttribute(OFFSET_ATTR, ""+offset);
+		line.setAttribute(EXECUTABLE_ATTR, ""+executable);
+		
+		return new DOMLine(line);
+	}
+	
+	public static DOMLine createDOMLine(DOMSource parent, int lineNum, int offset, String text, boolean executable){
+		Element line = new Element(LINE_NODE);
+		line.setText(text);
+		line.setAttribute(NUMBER_ATTR, ""+lineNum);
+		line.setAttribute(OFFSET_ATTR, ""+offset);
+		line.setAttribute(EXECUTABLE_ATTR, ""+executable);
+		parent.getElement().addContent(line);
+		
+		return new DOMLine(line);
+	}
 	
 	private Element myElement;
 	private Vector inlines;
@@ -174,5 +190,13 @@ public class DOMLine {
 				return false;
 			}
 		}).size() != 0;
+	}
+	
+	public void addTag(DOMTag tag){
+		this.myElement.addContent(tag.getElement());
+	}
+	
+	protected Element getElement(){
+		return this.myElement;
 	}
 }

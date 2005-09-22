@@ -1,5 +1,26 @@
 2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
 
+	* dom/DOMTag.java (createDOMTag): Added.
+	(getElement): Added.
+
+	* dom/DOMLine.java: Removed extraneous import.
+	(createDOMLine): Added.
+	(getElement): Added.
+	(addTag): Added.
+
+	* dom/DOMSource.java (createDOMSource): Added.
+	(getElement): Added.
+	(addLine): Added.
+
+	* dom/DOMImage.java (createDOMImage): Added.
+	(getElement): Added.
+	(addSource): Added.
+	(addInlinedFunction): Added.
+
+	* dom/DOMInlinedFunc.java (getElement): Added.
+
+2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
+
 	* dom/DOMLine.java (hasBreakpoint): Added.
 
 2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
