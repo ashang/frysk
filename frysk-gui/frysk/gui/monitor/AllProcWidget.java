@@ -80,6 +80,8 @@ import org.gnu.gtk.event.TreeModelEvent;
 import org.gnu.gtk.event.TreeModelListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
+import org.gnu.gtk.event.TreeViewColumnEvent;
+import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
 
@@ -160,7 +162,8 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 				}
 			}
 		});
-		
+		this.procTreeView.setHeadersClickable(true);
+
 		this.filterEntry.addListener(new KeyListener(){
 			public boolean keyEvent(KeyEvent event) {
 				if(event.getKeyval() == 65293 && event.getType() == KeyEvent.Type.KEY_PRESSED){
@@ -244,7 +247,18 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
 
 		pidCol.setTitle("PID");
+		pidCol.addListener(new TreeViewColumnListener(){
+			public void columnClickedEvent(TreeViewColumnEvent arg0) {
+				procTreeView.setSearchDataColumn(psDataModel.getPidDC());
+			}
+		});
 		commandCol.setTitle("Command");
+		commandCol.addListener(new TreeViewColumnListener(){
+			public void columnClickedEvent(TreeViewColumnEvent arg0) {
+				procTreeView.setSearchDataColumn(psDataModel.getCommandDC());
+			}
+		});
+		
 		
 		pidCol.setVisible(true);
 		commandCol.setVisible(true);

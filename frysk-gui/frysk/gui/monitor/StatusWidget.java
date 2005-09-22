@@ -11,17 +11,25 @@ import java.util.Observer;
 
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
+import org.gnu.gtk.Menu;
+import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.ShadowType;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
+import org.gnu.gtk.event.MenuItemEvent;
+import org.gnu.gtk.event.MenuItemListener;
+import org.gnu.gtk.event.MouseEvent;
+import org.gnu.gtk.event.MouseListener;
 import org.gnu.pango.FontDescription;
 
 public class StatusWidget extends VBox{
@@ -70,24 +78,39 @@ public class StatusWidget extends VBox{
 	}
 	
 	private TreeView initAttacheObserversTreeView(){
-		TreeView treeView = new TreeView();
-		final DataColumnString observersDC = new DataColumnString();
-		DataColumn[] columns = new DataColumn[1];
-		columns[0] = observersDC;
+		final TreeView treeView = new TreeView();
+		final DataColumnString nameDC = new DataColumnString();
+		final DataColumnObject observersDC = new DataColumnObject();
+		DataColumn[] columns = new DataColumn[2];
+		columns[0] = nameDC;
+		columns[1] = observersDC;
 		final ListStore listStore = new ListStore(columns);
-		System.out.println("Adding Observers to : " + ((ProcData)this.data).getProc().getPid() );
+		treeView.setHeadersVisible(false);
+		
+		// handle add evets
 		this.data.observerAdded.addObserver(new Observer(){
 			public void update(Observable observable, Object obj) {
 				ObserverRoot observer = (ObserverRoot) obj;
 				TreeIter iter = listStore.appendRow();
-				listStore.setValue(iter, observersDC, observer.getName());
-				System.out.println("ObserverAObserver-----------------------");
+				listStore.setValue(iter, nameDC, observer.getName());
+				listStore.setValue(iter, observersDC, observer);
 			}
 		});
 		
+		// handle remove evets
 		this.data.observerRemoved.addObserver(new Observer(){
-			public void update(Observable arg0, Object arg1) {
-				System.out.println("ObserverRemovedObserver-----------------------");
+			public void update(Observable o, Object obj) {
+				TreeIter iter = listStore.getFirstIter();
+				ObserverRoot observer = (ObserverRoot)obj;
+				ObserverRoot myObserver;
+				while(iter != null){
+					myObserver = (ObserverRoot) listStore.getValue(iter, observersDC);
+					if(myObserver == observer){
+						listStore.removeRow(iter);
+						break;
+					}
+					iter = iter.getNextIter();
+				}
 			}
 		});
 		
@@ -95,8 +118,34 @@ public class StatusWidget extends VBox{
 		CellRendererText cellRendererText = new CellRendererText();
 		TreeViewColumn observersCol = new TreeViewColumn();
 		observersCol.packStart(cellRendererText, false);
-		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , observersDC);
+		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
 		treeView.appendColumn(observersCol);
+		
+		final Menu menu = new Menu();
+		MenuItem item = new MenuItem("Remove", false);
+		item.addListener(new MenuItemListener() {
+			public void menuItemEvent(MenuItemEvent event) {
+				TreePath path = (treeView.getSelection().getSelectedRows())[0];
+				data.remove((ObserverRoot) listStore.getValue(listStore.getIter(path), observersDC));
+			}
+		});
+		menu.add(item);
+		menu.showAll();
+		
+		treeView.addListener(new MouseListener(){
+
+			public boolean mouseEvent(MouseEvent event) {
+				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
+						& event.getButtonPressed() == MouseEvent.BUTTON3){
+					if((treeView.getSelection().getSelectedRows()).length > 0){
+						menu.popup();						
+					}
+                    return true;
+				}
+				return false;
+			}
+		});
+		
 		
 		return treeView;
 	}

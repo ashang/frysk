@@ -1,3 +1,9 @@
+2005-09-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* AllProcWidget.java : Clicking a column now changes the search column to the one
+	clicked. this feature is still a little laggy improvements comming soon.
+	* StatusWidget.java (initAttacheObserversTreeView): Added remove observer code
+
 2005-09-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* NotifyingLabel.java: new file: a lable that changes color when the object it is 
