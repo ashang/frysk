@@ -1,0 +1,13 @@
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.java: Import frysk.Config.
+	* Rename again to frysk/bindir/.
+
+	* Rename from frysk/bin/ to
+	frysk/thisisnotthebindirectoryusedbyanddeletedbyant/.
+
+2005-09-12  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.java: New file.
+
+

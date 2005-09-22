@@ -1,0 +1,4 @@
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain: Moved from frysk/bin/.
+

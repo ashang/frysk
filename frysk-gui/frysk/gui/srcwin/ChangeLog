@@ -1,3 +1,8 @@
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* SourceWindow.java: Import frysk.Config, instead of
+	frysk.bin.Config.
+
 2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* dom/DOMInlineFunc (createDOMInlineFunc): Added.

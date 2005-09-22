@@ -1,3 +1,11 @@
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javin: Move to frysk/.
+	* Rename again to frysk/bindir/.
+
+	* Rename from frysk/bin/ to
+	frysk/thisisnotthebindirectoryusedbyanddeletedbyant/.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain: Add BUILDDIR and SRCDIR.

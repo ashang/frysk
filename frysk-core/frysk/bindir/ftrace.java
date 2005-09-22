@@ -41,7 +41,7 @@
  * Runs the program, along with any sub-programs.
  */
 
-package frysk.bin;
+package frysk.bindir;
 
 import java.util.Observable;
 import java.util.Observer;

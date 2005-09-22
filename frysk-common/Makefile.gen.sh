@@ -47,8 +47,8 @@ Usage: $0 <source-dir>... <.jar-file>... <_JAR-macro>...
 Search source directory for .java, .mkjava, .shjava, .javain, .c and
 .cxx files.  For each, generate a corresponding automake entry.  If
 the file contains a main program, also generate automake to build the
-corresponding program.  Any program located under either a bin/, or
-sbin/ sub-directory, will be installed in the corresponding bin/ or
+corresponding program.  Any program located under either bindir/, or
+sbindir/ sub-directory, will be installed in the corresponding bin/ or
 sbin/ destination directory.
 
 <.jar-file> or <_JAR-macro>:
@@ -100,8 +100,8 @@ EOF
 echo_PROGRAMS ()
 {
     case "$1" in
-	*/bin/* ) echo "bin_PROGRAMS += $1" ;;
-	*/sbin/* ) echo "sbin_PROGRAMS += $1" ;;
+	*/bindir/* ) echo "bin_PROGRAMS += $1" ;;
+	*/sbindir/* ) echo "sbin_PROGRAMS += $1" ;;
         * ) echo "noinst_PROGRAMS += $1" ;;
     esac
 }

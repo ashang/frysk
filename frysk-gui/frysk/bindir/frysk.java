@@ -38,16 +38,18 @@
 // exception.
 
 /**
- * Contains all the built-time configuration information.
+ * Runs frysk.
  */
 
-package frysk.bin;
+package frysk.bindir;
 
-public class Config
+import frysk.Config;
+import frysk.gui.FryskGui;
+
+class frysk
 {
-	public static final String PREFIX = "@prefix@";
-	public static final String DATADIR = "@datadir@";
-	public static final String GLADEDIR = "@gladedir@";
-	public static final String BUILDDIR = "@builddir@";
-	public static final String SRCDIR = "@srcdir@";
+    public static void main (String[] args)
+    {
+	FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
+    }
 }
