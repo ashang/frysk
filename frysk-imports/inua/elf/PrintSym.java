@@ -75,12 +75,7 @@ public class PrintSym
 
 	String shndxToString (int shndx)
 	{
-	    switch (shndx) {
-	    case SHN.UNDEF: return "UND";
-	    case SHN.ABS: return "ABS";
-	    case SHN.COMMON: return "COM";
-	    default: return Integer.toString (shndx);
-	    }
+	    return SHN.toPrintString (shndx, Long.toString (shndx));
 	}
 
 	void buildSym (long position,
@@ -134,4 +129,3 @@ public class PrintSym
 	}
     }
 }
-

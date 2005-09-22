@@ -95,26 +95,29 @@ public class PrintPhdr
 	o.print ("  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align");
 	o.println ();
 	for (int i = 0; i < phdrs.length; i++) {
+	    Phdr phdr = phdrs[i];
 	    o.print ("  ");
-	    o.print (-14,PT.toShortString (phdrs[i].type));
+	    o.print (-14,PT.toShortString (phdr.type));
 	    o.print (" 0x");
-	    o.printx (6, '0', phdrs[i].offset);
+	    o.printx (6, '0', phdr.offset);
 	    o.print (" 0x");
-	    o.printx (8, '0', phdrs[i].vaddr);
+	    o.printx (8, '0', phdr.vaddr);
 	    o.print (" 0x");
-	    o.printx (8, '0', phdrs[i].paddr);
+	    o.printx (8, '0', phdr.paddr);
 	    o.print (" 0x");
-	    o.printx (5, '0', phdrs[i].filesz);
+	    o.printx (5, '0', phdr.filesz);
 	    o.print (" 0x");
-	    o.printx (5, '0', phdrs[i].memsz);
+	    o.printx (5, '0', phdr.memsz);
 	    o.print (' ');
-	    o.print (flagsToString(phdrs[i]));
+	    o.print (flagsToString(phdr));
 	    o.print (" 0x");
-	    o.printx (phdrs[i].align);
+	    o.printx (phdr.align);
 	    o.println ();
-	    if (phdrs[i].type == PT.INTERP) {
+	    if (phdr.type == PT.INTERP) {
 		// cheat
-		o.print ("      [Requesting program interpreter: /lib/ld.so.1]");
+		o.print ("      [Requesting program interpreter: ");
+		o.print (elf.buffer.getString (phdr.offset, phdr.filesz));
+		o.print ("]");
 		o.println ();
 	    }
 	}

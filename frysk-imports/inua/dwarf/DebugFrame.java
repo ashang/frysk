@@ -168,7 +168,7 @@ public class DebugFrame
 	long augmentationDataPosition;
 
 	// The table of registers
-	FrameUnwindTable registerRules = new FrameUnwindTable ();
+	FrameUnwindTable registerRules;
 
 	CommonInformationEntry (Format theFormat, long thePosition,
 				long theLength, long theCidID)
@@ -191,6 +191,7 @@ public class DebugFrame
 			  + augmentationDataLength);
 	    }
 	    initialInstructions = position ();
+	    registerRules = new FrameUnwindTable (returnAddressRegister);
 	}
     }
     private final void parseCommonInformationEntry (Builder builder,
@@ -266,9 +267,9 @@ public class DebugFrame
 	    // Establish the initial row
 	    RegisterRuleSet initialRow =
 		(RegisterRuleSet) cie.registerRules.finalSet.clone ();
-	    FrameUnwindTable registerRules = new FrameUnwindTable ();
 	    initialRow.location = initialLocation;
-	    registerRules.clear (initialRow, cie.returnAddressRegister);
+	    FrameUnwindTable registerRules
+		= new FrameUnwindTable (initialRow, cie.returnAddressRegister);
 	    parseCallFrameInstructions (builder, registerRules,
 					cie, limit);
 	}
@@ -334,11 +335,20 @@ public class DebugFrame
 	    unwindTable.newRow (unwindTable.finalSet.location
 				+ operand[0]);
 	    break;
+	case DW.CFA.advance_loc2:
+	    operand[0] = getUHALF ();
+	    unwindTable.newRow (unwindTable.finalSet.location
+				+ operand[0]);
+	    break;
 	case DW.CFA.register:
 	    operand[0] = getUnsignedLEB128 ();
 	    operand[1] = getUnsignedLEB128 ();
 	    unwindTable.finalSet.put (operand[0], RegisterRule.REGISTER,
 				      operand[1]);
+	    break;
+	case DW.CFA.GNU_args_size:
+	    operand[0] = getUnsignedLEB128 ();
+	    // Do nothing.
 	    break;
 	default:
 	    System.out.println ("Warning: unsupported opcode "
@@ -468,19 +478,18 @@ public class DebugFrame
 	public long returnAddressRegister;
 	RegisterRuleSet initialRow;
 	public RegisterRuleSet finalSet;
-	FrameUnwindTable ()
+	FrameUnwindTable (RegisterRuleSet initialRow,
+			  long returnAddressRegister)
 	{
 	    rows = new java.util.ArrayList ();
-	    clear (new RegisterRuleSet (), -1);
+	    rows.add (initialRow);
+	    finalSet = initialRow;
+	    this.initialRow = initialRow;
+	    this.returnAddressRegister = returnAddressRegister;
 	}
-	void clear (RegisterRuleSet theInitialRow,
-		    long theReturnAddressRegister)
+	FrameUnwindTable (long returnAddressRegister)
 	{
-	    rows.clear ();
-	    rows.add (theInitialRow);
-	    initialRow = theInitialRow;
-	    finalSet = theInitialRow;
-	    returnAddressRegister = theReturnAddressRegister;
+	    this (new RegisterRuleSet (), returnAddressRegister);
 	}
 	void newRow (long location)
 	{

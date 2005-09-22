@@ -186,18 +186,19 @@ public class PrintDebugFrame
 		// compat with readelf
 		o.print ("DW_CFA_def_cfa_reg");
 		break;
-		default:
-		    o.print (DW.CFA.toString(opcode));
+	    default:
+		o.print (DW.CFA.toString(opcode));
 	    }
 	    switch (opcode) {
 	    case DW.CFA.nop:
 		break;
 	    case DW.CFA.advance_loc:
 	    case DW.CFA.advance_loc1:
+	    case DW.CFA.advance_loc2:
 		o.print (": ");
 		o.print (operand[0]);
 		o.print (" to ");
-		o.printx (table.finalSet.location);
+		o.printx (8, '0', table.finalSet.location);
 		break;
 	    case DW.CFA.offset:
 	    case DW.CFA.offset_extended:
@@ -213,6 +214,7 @@ public class PrintDebugFrame
 		o.print (" ofs ");
 		o.print (operand[1]);
 		break;
+	    case DW.CFA.GNU_args_size:
 	    case DW.CFA.def_cfa_offset:
 		o.print (": ");
 		o.print (operand[0]);

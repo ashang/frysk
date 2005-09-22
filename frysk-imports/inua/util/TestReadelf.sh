@@ -1,13 +1,13 @@
 #!/bin/sh
 
 READELF=readelf
-readelf=./prog/readelf/readelf
+readelf=./inua/util/readelf
 
 TIME ()
 {
     # On PPC both I/O and faults give back zero
     /usr/bin/time \
-	--format=' real %e user %U sys %S faults %F/%R switch %c waits %w' \
+	--format=" real %e user %U sys %S faults %F/%R switch %c waits %w $1" \
 	"$@"
 }
 
@@ -50,11 +50,22 @@ fi | while read opt ; do
     dir=tmp/$opt
     mkdir -p ${dir}
 
-    echo "Option: ${opt}"
-    TIME ${readelf} --wide ${opt} ${readelf} | sed -e 's/@.*$//' > /tmp/$$.gdi
-    TIME ${READELF} --wide ${opt} ${readelf} | sed -e 's/@.*$//' > /tmp/$$.gnu
-    mv /tmp/$$.gdi $dir/gdi
-    mv /tmp/$$.gnu $dir/gnu
+    opts="${opt} --wide ${readelf}"
+    echo "Options: ${opts}"
+    cat <<EOF | while read file command ; do
+gdi ${readelf}
+gnu ${READELF}
+EOF
+        TIME ${command} ${opts} | case "${opt}" in
+	      --debug-dump=frame* )
+	          # XXX: Discard the .eh_frame section, contains really weird
+	          # auxiliary information.
+	          sed -e '/The section .eh_frame contains:/,/The section .debug_frame contains:/ d'
+	          ;;
+	      * ) sed -e 's/@.*$//' ;
+              esac  > /tmp/$$.${file}
+	mv /tmp/$$.${file} $dir/${file}
+    done
     if cmp $dir/gdi $dir/gnu; then
 	:
     else

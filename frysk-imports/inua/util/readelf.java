@@ -76,14 +76,14 @@ class readelf
 	CmdLineParser.Option helpOption = parser.addBooleanOption ('H', "help");
 	CmdLineParser.Option fileHeaderOption = parser.addBooleanOption ('h', "file-header");
 	CmdLineParser.Option programHeadersOption = parser.addBooleanOption ('l', "program-headers");
-	CmdLineParser.Option segmentsOption = parser.addBooleanOption ('l', "segments");
+	CmdLineParser.Option segmentsOption = parser.addBooleanOption ("segments");
 	CmdLineParser.Option sectionHeadersOption = parser.addBooleanOption ('S', "section-headers");
 	CmdLineParser.Option sectionsOption = parser.addBooleanOption ('S', "sections");
 	CmdLineParser.Option sectionGroupsOption = parser.addBooleanOption ('g', "section-groups");
 	CmdLineParser.Option headersOption = parser.addBooleanOption ('e', "headers");
 	CmdLineParser.Option symsOption = parser.addBooleanOption ('s', "syms");
+	CmdLineParser.Option symbolsOption = parser.addBooleanOption ("symbols");
 	CmdLineParser.Option notesOption = parser.addBooleanOption ('n', "notes");
-	CmdLineParser.Option symbolsOption = parser.addBooleanOption ('s', "symbols");
 	CmdLineParser.Option wideOption = parser.addBooleanOption ('W', "wide");
 	CmdLineParser.Option debugDumpOption = parser.addStringOption ("debug-dump");
 
@@ -96,16 +96,19 @@ class readelf
             System.exit (2);
         }
 
-	boolean fileHeader = ((Boolean)parser.getOptionValue (fileHeaderOption)).booleanValue ();
-	boolean programHeaders = ((Boolean) parser.getOptionValue (programHeadersOption)).booleanValue ();
-	boolean sectionHeaders = ((Boolean) parser.getOptionValue (sectionHeadersOption)).booleanValue ();
-	boolean sectionGroups = ((Boolean) parser.getOptionValue (sectionGroupsOption)).booleanValue ();
-	boolean headers = ((Boolean) parser.getOptionValue (headersOption)).booleanValue ();
-	boolean symbols = ((Boolean) parser.getOptionValue (symbolsOption)).booleanValue ();
-	boolean wide = ((Boolean) parser.getOptionValue (wideOption)).booleanValue ();
-	boolean notes = ((Boolean) parser.getOptionValue (notesOption)).booleanValue ();
+	boolean fileHeader = ((Boolean)parser.getOptionValue (fileHeaderOption, Boolean.FALSE)).booleanValue ();
+	boolean programHeaders = (((Boolean) parser.getOptionValue (programHeadersOption, Boolean.FALSE)).booleanValue ()
+				  || ((Boolean) parser.getOptionValue (segmentsOption, Boolean.FALSE)).booleanValue ());
+	boolean sectionHeaders = (((Boolean) parser.getOptionValue (sectionHeadersOption, Boolean.FALSE)).booleanValue ()
+				  || ((Boolean) parser.getOptionValue (sectionsOption, Boolean.FALSE)).booleanValue ());
+	boolean sectionGroups = ((Boolean) parser.getOptionValue (sectionGroupsOption, Boolean.FALSE)).booleanValue ();
+	boolean headers = ((Boolean) parser.getOptionValue (headersOption, Boolean.FALSE)).booleanValue ();
+	boolean syms = (((Boolean) parser.getOptionValue (symsOption, Boolean.FALSE)).booleanValue ()
+			   || ((Boolean) parser.getOptionValue (symbolsOption, Boolean.FALSE)).booleanValue ());
+	boolean wide = ((Boolean) parser.getOptionValue (wideOption, Boolean.FALSE)).booleanValue ();
+	boolean notes = ((Boolean) parser.getOptionValue (notesOption, Boolean.FALSE)).booleanValue ();
 
-	String arg = (String) parser.getOptionValue (debugDumpOption);
+	String arg = (String) parser.getOptionValue (debugDumpOption, "");
 	boolean debugDumpLine = arg.equals ("line");
 	boolean debugDumpInfo = arg.equals ("info");
 	boolean debugDumpAbbrev = arg.equals ("abbrev");
@@ -137,7 +140,7 @@ class readelf
 		    new PrintShdr (elf).print (o, headers);
 		if (headers || programHeaders)
 		    new PrintPhdr (elf).print (o, headers);
-		if (symbols)
+		if (syms)
 		    new PrintSym (elf).print (o);
 
 		if (debugDumpLine)
@@ -164,6 +167,11 @@ class readelf
 		    new PrintDebugLoc (elf).print (o);
 		if (notes)
 		    new PrintNote (elf).print (o);
+		if (sectionGroups) {
+		    o.println ();
+		    o.println ("There are no section groups in this file.");
+		}
+		    
 	    }
 	} catch (Exception e) {
 	    throw new RuntimeException (e);

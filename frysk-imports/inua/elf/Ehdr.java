@@ -34,7 +34,10 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.elf;
+
+import inua.eio.ByteOrder;
 
 public class Ehdr
 {
@@ -55,11 +58,6 @@ public class Ehdr
     public byte[] ident;
     public byte[] header;
 
-    int halfSize;
-    int wordSize;
-    int addrSize;
-    int offSize;
-
     public Ehdr (ElfBuffer buffer)
     {
 	// Pull in the ident and verify it.
@@ -76,16 +74,10 @@ public class Ehdr
 	/* Get the word size.  */
 	switch (ident[EI.CLASS]) {
 	case ELF.CLASS._32:
-	    halfSize = 2;
-	    wordSize = 4;
-	    addrSize = 4;
-	    offSize = 4;
+	    buffer.buffer.wordSize (4);
 	    break;
 	case ELF.CLASS._64:
-	    halfSize = 2;
-	    wordSize = 4;
-	    addrSize = 8;
-	    offSize = 8;
+	    buffer.buffer.wordSize (8);
 	    break;
 	default:
 	    throw new RuntimeException ("Bad class");
@@ -94,19 +86,14 @@ public class Ehdr
 	/* Select a reader (...).  */
 	switch (ident[EI.DATA]) {
 	case ELF.DATA._2LSB:
-	    //	    new LittleEndianFile (wordSize, scratchFile);
+	    buffer.buffer.order (ByteOrder.LITTLE_ENDIAN);
 	    break;
 	case ELF.DATA._2MSB:
-	    //	new BigEndianFile (wordSize, scratchFile);
+	    buffer.buffer.order (ByteOrder.BIG_ENDIAN);
 	    break;
 	default:
 	    throw new RuntimeException ("Bad byte order");
 	}
-
-	// Pull in the body
-	// int bodySize = (8 * halfSize + 2 * wordSize + 1 * addrSize
-	// 		+ 2 * offSize);
-	// body = elf.buffer.get (bodySize);
 
 	type = buffer.getSignedHalf ();
 	machine = buffer.getSignedHalf ();

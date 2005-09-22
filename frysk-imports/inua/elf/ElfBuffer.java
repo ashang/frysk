@@ -34,9 +34,11 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.elf;
 
-import inua.eio.*;
+import inua.eio.ByteBuffer;
+import inua.eio.MmapByteBuffer;
 
 public class ElfBuffer
 {
@@ -54,6 +56,7 @@ public class ElfBuffer
 
     public ElfBuffer slice (long offset, long length)
     {
+	ByteBuffer b = buffer.slice (offset, length);
 	return new ElfBuffer (buffer.slice (offset, length));
     }
 
@@ -145,10 +148,40 @@ public class ElfBuffer
 	return this;
     }
 
+    public ElfBuffer get (long p, long l, StringBuffer string)
+    {
+	string.setLength (0);
+	long offset = p;
+	long limit = p + l;
+	while (offset < limit && offset < buffer.limit ()) {
+	    byte b = getSignedByte (offset);
+	    if (b == 0) // Still valid?
+		break;
+	    string.append ((char) b);
+	    offset++;
+	}
+	return this;
+    }
+
+    public String getString ()
+    {
+	StringBuffer buf = new StringBuffer ();
+	get (buf);
+	return buf.toString ();
+    }
+
     public String getString (long p)
     {
 	StringBuffer buf = new StringBuffer ();
 	get (p, buf);
 	return buf.toString ();
     }
+
+    public String getString (long p, long l)
+    {
+	StringBuffer buf = new StringBuffer ();
+	get (p, l, buf);
+	return buf.toString ();
+    }
+
 }

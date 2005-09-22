@@ -34,14 +34,16 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package inua;
 
 /**
  * Pool of objects, call recycle to start reusing them.
  *
  */
 
-import java.util.*;
+package inua;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Pool
 {

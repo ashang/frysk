@@ -289,10 +289,7 @@ class DebugLine
 	case DW.LNE.end_sequence:
 	    break;
 	case DW.LNE.set_address:
-	    stateMachine.address = 0;
-	    for (int b = 1; b < numBytes; b++)
-		stateMachine.address = ((stateMachine.address << 8)
-					| (getUBYTE (instruction + b) & 0xff));
+	    stateMachine.address = getU (instruction + 1, numBytes - 1);
 	    break;
 	default:
 	    System.err.println(".debug_line: ignoring extended opcode "

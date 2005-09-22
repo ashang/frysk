@@ -59,13 +59,21 @@ public class ArrayByteBuffer
 
     public ArrayByteBuffer (byte[] bytes, long off, long len)
     {
-	super (off, len);
+	super (off, off + len);
 	array = bytes;
     }
 
     public ArrayByteBuffer (byte[] bytes)
     {
 	this (bytes, 0, bytes.length);
+    }
+
+    protected ByteBuffer subBuffer (ByteBuffer parent, long lowerExtreem,
+				    long upperExtreem)
+    {
+	return new ArrayByteBuffer (((ArrayByteBuffer)parent).array,
+				    lowerExtreem,
+				    upperExtreem - lowerExtreem);
     }
 
     public boolean isReadOnly ()

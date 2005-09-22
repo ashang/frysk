@@ -104,6 +104,22 @@ class DebugSection
     public final short getUBYTE (long index) { return section.getUByte (index); }
     public final int getUHALF (long index) { return section.getUShort (index); }
 
+    /**
+     * Return a an unsigned value extracted at <<index>>, <<numBytes>>
+     * in length.
+     */
+    public final long getU (long index, int numBytes)
+    {
+	switch (numBytes) {
+	case 1: return section.getUByte (index);
+	case 2: return section.getUShort (index);
+	case 4: return section.getUInt (index);
+	case 8: return section.getULong (index);
+	default:
+	    throw new RuntimeException ("bad switch");
+	}
+    }
+
     public final void skipToZeroUBYTE ()
     {
 	while (true) {

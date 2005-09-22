@@ -34,6 +34,11 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
+/**
+ * A ByteBuffer.  Just like {@link java.nio.ByteBuffer} only 64-bit.
+ */
+
 package inua.eio;
 
 public abstract class ByteBuffer
@@ -46,7 +51,13 @@ public abstract class ByteBuffer
 	wordSize (4);
     }
 
+    /**
+     * Read a single byte at CARET.
+     */
     protected abstract int peek (long caret);
+    /**
+     * Write VAL (as a single byte), to CARET.
+     */
     protected abstract void poke (long caret, int val);
 
     protected long peek (long caret, byte[] bytes,
@@ -169,23 +180,19 @@ public abstract class ByteBuffer
 	return wrap (bytes, 0, bytes.length);
     }
 
+    /**
+     * Given BUFFER, return a new subBuffer.  Used by {@link #slice}.
+     */
+    protected ByteBuffer subBuffer (ByteBuffer buffer, long lowerExtreem,
+				    long upperExtreem)
+    {
+	throw new RuntimeException ("not implemented");
+    }
+
     public ByteBuffer slice (long off, long len)
     {
-	ByteBuffer newSlice;
-	try {
-	    Class[] constructorArgsClass = new Class[] {
-		long.class, long.class
-	    };
-	    java.lang.reflect.Constructor constructor =
-		getClass ().getConstructor (constructorArgsClass);
-	    Object[] constructorArgs = new Object[] {
-		new Long (lowWater + off), new Long (lowWater + off + len)
-	    };
-	    newSlice = (ByteBuffer) constructor.newInstance (constructorArgs);
-	}
-	catch (Exception e) {
-	    throw new RuntimeException (e);
-	}
+	ByteBuffer newSlice = subBuffer (this, lowWater + off,
+					 lowWater + off + len);
 	newSlice.order (order ());
 	newSlice.wordSize (wordSize ());
 	return newSlice;

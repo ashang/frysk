@@ -70,10 +70,11 @@ public class MmapByteBuffer
 	this (new Mmap (name));
     }
 
-    public ByteBuffer slice (long off, long len)
+    protected ByteBuffer subBuffer (ByteBuffer parent, long lowExtreem,
+				    long highExtreem)
     {
-	return new MmapByteBuffer (map, lowWater + off,
-				   lowWater + off + len);
+	return new MmapByteBuffer (((MmapByteBuffer)parent).map,
+				   lowExtreem, highExtreem);
     }
 
 

@@ -71,10 +71,7 @@ public class PrintEhdr
 
     static String identVersionToString (Ehdr ehdr)
     {
-	switch (ehdr.ident[EI.VERSION]) {
-	case EV.CURRENT: return EV.CURRENT + " (current)";
-	default: return "???";
-	}
+	return EV.toPrintString (ehdr.ident[EI.VERSION]);
     }
 
     static String identOsAbiToString (Ehdr ehdr)
@@ -84,18 +81,12 @@ public class PrintEhdr
 
     static String typeToString (Ehdr ehdr)
     {
-	switch (ehdr.type) {
-	case ET.EXEC: return "EXEC (Executable file)";
-	default: return "???";
-	}
+	return ET.toPrintString (ehdr.type);
     }
 
     static String machineToString (Ehdr ehdr)
     {
-	switch (ehdr.machine) {
-	case EM.PPC: return "PowerPC";
-	default: return "???";
-	}
+	return EM.toPrintString (ehdr.machine);
     }
 
     public void print (PrintWriter o)

@@ -34,6 +34,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.eio;
 
 public class PtraceByteBuffer
@@ -41,10 +42,12 @@ public class PtraceByteBuffer
 {
     static public class Area
     {
-	protected int area;
-	private Area (int area)
+	protected int peek;
+	protected int poke;
+	private Area (int peek, int poke)
 	{
-	    this.area = area;
+	    this.peek = peek;
+	    this.poke = poke;
 	}
 	static private native Area textArea ();
 	static private native Area dataArea ();
@@ -70,11 +73,7 @@ public class PtraceByteBuffer
 	this.area = area;
     }
     protected native int peek (long index);
-    protected void poke (long index, int value)
-    {
-	throw new RuntimeException ("not implemented");
-    }
+    protected native void poke (long index, int value);
     protected native long peek (long index, byte[] bytes, long off,
 				long len);
 }
-

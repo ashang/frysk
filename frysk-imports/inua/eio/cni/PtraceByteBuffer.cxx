@@ -34,6 +34,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <sys/types.h>
 #include <sys/ptrace.h>
 #include <stdlib.h>
@@ -52,26 +53,28 @@
 inua::eio::PtraceByteBuffer$Area*
 inua::eio::PtraceByteBuffer$Area::textArea ()
 {
-#ifdef PT_READ_I
-  return new PtraceByteBuffer$Area (PT_READ_I);
+#if defined PT_READ_I && defined PT_WRITE_I
+  return new PtraceByteBuffer$Area (PT_READ_I, PT_WRITE_I);
 #else
   return NULL;
 #endif
 }
+
 inua::eio::PtraceByteBuffer$Area*
 inua::eio::PtraceByteBuffer$Area::dataArea ()
 {
-#ifdef PT_READ_D
-  return new PtraceByteBuffer$Area (PT_READ_D);
+#if defined PT_READ_D && defined PT_WRITE_D
+  return new PtraceByteBuffer$Area (PT_READ_D, PT_WRITE_D);
 #else
   return NULL;
 #endif
 }
+
 inua::eio::PtraceByteBuffer$Area*
 inua::eio::PtraceByteBuffer$Area::usrArea ()
 {
-#ifdef PT_READ_U
-  return new PtraceByteBuffer$Area (PT_READ_U);
+#if defined PT_READ_U && defined PT_WRITE_U
+  return new PtraceByteBuffer$Area (PT_READ_U, PT_WRITE_U);
 #else
   return NULL;
 #endif
@@ -80,7 +83,7 @@ inua::eio::PtraceByteBuffer$Area::usrArea ()
 jint
 inua::eio::PtraceByteBuffer::peek (jlong addr)
 {
-  enum __ptrace_request pt_peek = (enum __ptrace_request) area->area;
+  const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
   union
   {
     int word;
@@ -105,7 +108,7 @@ jlong
 inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
 				   jlong off, jlong len)
 {
-  enum __ptrace_request pt_peek = (enum __ptrace_request) area->area;
+  const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
   jbyte *bytes = elements (buf);
   union
   {
@@ -117,14 +120,10 @@ inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
   if (len == 0)
     return 0;
 
-  /* Word align the address, transfer one word.  */
-  long paddr = addr & -sizeof (int);
-  long xfer = sizeof (int);
+  // Word align the address.
+  unsigned long paddr = addr & -sizeof (int);
 
-  /* Adjust the xfer size according to the upper bound.  */
-  if (xfer > (addr + len) - addr)
-    xfer = (addr + len) - addr;
-
+  // Read an entire word.
   errno = 0;
   tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
   if (errno != 0) {
@@ -132,8 +131,50 @@ inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
     ::exit (errno);
   }
 
-  for (int i = addr - paddr; i < xfer; i++)
-    bytes[i - (addr - paddr)] = tmp.byte[i];
+  /* Adjust the xfer size to ensure that it doesn't exceed the size of
+     the single word being transfered.  */
+  unsigned long pend = addr + len;
+  if (pend > paddr + sizeof (int))
+    pend = paddr + sizeof (int);
 
-  return xfer - (addr - paddr);
+  for (unsigned long a = addr; a < pend; a++)
+    bytes[a - addr] = tmp.byte[a - paddr];
+
+  return pend - addr;
+}
+
+void
+inua::eio::PtraceByteBuffer::poke (jlong addr, jint byte)
+{
+  const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
+  const enum __ptrace_request pt_poke = (enum __ptrace_request) area->poke;
+  union
+  {
+    int word;
+    jbyte byte[sizeof (int)];
+  }
+  tmp;
+
+  /* Word align the address, transfer one word.  */
+  long paddr = addr & -sizeof (int);
+
+  // Perform a read ...
+  errno = 0;
+  tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
+  if (errno != 0) {
+    ::perror ("ptrace");
+    ::exit (errno);
+  }
+
+  // ... modify ...
+  tmp.byte[addr & (sizeof (int) - 1)] = byte;
+
+  // ... write.
+  errno = 0;
+  ::ptrace (pt_poke, pid, (char *) paddr, tmp.word);
+  if (errno != 0) {
+    ::perror ("ptrace");
+    ::exit (errno);
+  }
+
 }

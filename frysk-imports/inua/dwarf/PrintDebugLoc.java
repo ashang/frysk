@@ -34,9 +34,12 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.dwarf;
 
-import java.util.*;
+import java.util.Set;
+import java.util.Iterator;
+import java.util.TreeSet;
 import inua.PrintWriter;
 
 public class PrintDebugLoc

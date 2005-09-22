@@ -34,11 +34,18 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.EOFException;
+import java.io.CharConversionException;
 
-public class Scanner {
+public class Scanner
+{
 
     public boolean debug;
 

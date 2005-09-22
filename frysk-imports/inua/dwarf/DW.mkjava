@@ -383,6 +383,9 @@ expression 0x10
 offset_extended_sf 0x11
 def_cfa_sf 0x12
 def_cfa_offset_sf 0x13
+GNU_window_save 0x2d
+GNU_args_size 0x2e
+GNU_negative_offset_extended 0x2f
 lo_user 0x1c
 hi_user 0x3f
 .
