@@ -1,5 +1,7 @@
 2005-09-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (tearDown): Simplify reap / detach code.
+
 	* TestI386Modify.java: Disable for moment.
 
 2005-09-20  Jeff Johnston  <jjohnstn@redhat.com>

@@ -627,32 +627,6 @@ public class TestLib
 	public void disappeared (int pid) { }
     }
 
-    class ExitWaitObserver
-	implements Wait.Observer
-    {
-	boolean exited;
-	int pid;
-	ExitWaitObserver ()
-	{
-	    this.exited = false;
-	}
- 	public void cloneEvent (int pid, int clone) { this.pid = pid; }
- 	public void forkEvent (int pid, int child) { this.pid = pid; }
- 	public void exitEvent (int pid, int status) { this.pid = pid; }
- 	public void execEvent (int pid) { this.pid = pid; }
- 	public void syscallEvent (int pid) { this.pid = pid; }
- 	public void stopped (int pid, int signal) { this.pid = pid; }
- 	public void exited (int pid, int status, boolean coreDumped) { 
-	    this.pid = pid;
-	    exited = true; 
-	}
- 	public void terminated (int pid, int signal, boolean coreDumped) { 
-	    this.pid = pid;
-	    exited = true;
-	}
-	public void disappeared (int pid) { this.pid = pid; }
-    }
-
     class FailWaitObserver
 	implements Wait.Observer
     {
@@ -723,16 +697,24 @@ public class TestLib
     {
 	IgnoreWaitObserver ignoreWaits = new IgnoreWaitObserver ();
 
-	// Kill off any children.
+	// Sig.KILL all the registered children.  Once that signal is
+	// processed the task will die.
+
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
+	    int pid = child.intValue ();
 	    try {
-		// For each registered child, send a SIGKILL to terminate
-		// the child and also send a SIGCONT in case the child
-		// is currently stopped by PTRACE.  If stopped by
-		// PTRACE, the child must be continued for any subsequent
-		// events to be found by waitpid below.
 		Signal.kill (child.intValue (), Sig.KILL);
+	    }
+	    catch (Errno.Esrch e) {
+		// Toss it (expecting the occasional kill).
+	    }
+	    // Note that there's a problem here with both stopped and
+	    // attached tasks.  The Sig.KILL won't be delivered, and
+	    // consequently the task won't exit, until that task has
+	    // been continued.  Work around this by also sending each
+	    // task a continue.
+	    try {
 		Signal.kill (child.intValue (), Sig.CONT);
 	    }
 	    catch (Errno.Esrch e) {
@@ -740,71 +722,69 @@ public class TestLib
 	    }
 	}
 
-	// We need to wait indefinitely for any event.  This will
-	// catch exit events for cloned tasks of the registered
-	// child pids.  If we do not drain these clone exit events, the
-	// registered pids may remain in Zombied state indefinitely.
-	// When we get an event, if it is not an exit event, then
-	// we need to try detaching the pid in case we have gotten
-	// a PTRACE event we asked for.  This will allow the kill
-	// to be received and we will eventually see it.
+	// Completely drain the wait event queue.  Doing this firstly
+	// ensures that there are no oustanding events to confuse the
+	// next test run; secondly reaps any exited childrean
+	// eliminating zombies; and finally makes certain that all
+	// attached tasks have been terminated.
+	//
+	// For attached tasks, which will generate non-exit wait
+	// events (clone et.al.), the task is detached / killed.
+	// Doing that frees up the task so that it can run to exit.
+
 	try {
-	    ExitWaitObserver exitChecker = new ExitWaitObserver ();
 	    while (true) {
-		exitChecker.exited = false;
-	    	Wait.waitAll (-1, exitChecker);
-		if (!exitChecker.exited) {
-		    Ptrace.detach (exitChecker.pid, 0);
-		}
+	    	Wait.waitAll (-1, new Wait.Observer ()
+		    {
+			private void detach (int pid)
+			{
+			    // Detach with a KILL signal which will
+			    // force the task to exit.
+			    Ptrace.detach (pid, Sig.KILL);
+			}
+			public void cloneEvent (int pid, int clone)
+			{
+			    detach (pid);
+			}
+			public void forkEvent (int pid, int child)
+			{
+			    detach (pid);
+			}
+			public void exitEvent (int pid, int status)
+			{
+			    detach (pid);
+			}
+			public void execEvent (int pid)
+			{
+			    detach (pid);
+			}
+			public void syscallEvent (int pid)
+			{
+			    detach (pid);
+			}
+			public void stopped (int pid, int signal)
+			{
+			    detach (pid);
+			}
+			public void exited (int pid, int status, boolean coreDumped)
+			{
+			}
+			public void terminated (int pid, int signal, boolean coreDumped)
+			{
+			}
+			public void disappeared (int pid)
+			{
+			    detach (pid);
+			}
+		    });
   	    }
 	}
         catch (Errno.Echild e) {
 	    // No more events.
         }
 
-	// Kill of any children.
-//	for (Iterator i = children.iterator (); i.hasNext (); ) {
-//	    Integer child = (Integer) i.next ();
-//	    try {
-//		// Issue a SIGCONT before killing the process
-//		// to handle the case where there is a child
-//		// stuck with a pending SIGSTOP.
-//		Signal.kill (child.intValue (), Sig.CONT);
-//		Signal.kill (child.intValue (), Sig.KILL);
-//	    }
-//	    catch (Errno.Esrch e) {
-//		// Toss it (expecting the occasional kill).
-//	    }
-//	}
-//
-//	// We need to wait indefinitely for any event.  This will
-//	// catch exit events for cloned tasks of the registered
-//	// child pids.  If we do not wait for these events, the
-//	// registered pids may remain in Zombied state indefinitely.
-//	try {
-//	    while (true) {
-//	    	Wait.waitAll (-1, ignoreWaits);
-// 	    }
-//	}
-//       catch (Errno.Echild e) {
-//	    // No more events.
-//       }
+	// Remove any stray files.
 
-//	// Verify the children are gone by waiting on their pids until
-//	// each gets an Errno.Echild (i.e., child doesn't exist).
-//	for (Iterator i = children.iterator (); i.hasNext (); ) {
-//	    Integer child = (Integer) i.next ();
-//	    try {
-//		while (true) {
-//		    Wait.waitAll (child.intValue (), ignoreWaits);
-//		}
-//	    }
-//	    catch (Errno.Echild e) {
-//		continue;
-//	    }
-//	}
-//
-	// Zap any stray files.
 	deleteTmpFiles ();
     }
 }
