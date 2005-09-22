@@ -1,3 +1,7 @@
+2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* dom/DOMLine.java (hasBreakpoint): Added.
+
 2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
 
 	* dom/DOMInlinedFunc.java: Added.

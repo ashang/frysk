@@ -4,6 +4,7 @@
 package frysk.gui.srcwin.dom;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.jdom.Element;
@@ -64,7 +65,7 @@ public class DOMLine {
 	 * @return The length of this line in characters
 	 */
 	public int getLength(){
-		return Integer.parseInt(this.myElement.getAttributeValue(LENGTH_ATTR));
+		return this.myElement.getText().length();
 	}
 	
 	/**
@@ -161,5 +162,17 @@ public class DOMLine {
 	
 	public Iterator getInlines(){
 		return this.inlines.iterator();
+	}
+	
+	public boolean hasBreakpoint(){
+		return this.myElement.getContent(new Filter() {
+			private static final long serialVersionUID = 1L;
+			public boolean matches(Object arg0) {
+				Element elem = (Element) arg0;
+				if(elem.getAttributeValue(DOMTag.TYPE_ATTR).equals("breakpoint"))
+					return true;
+				return false;
+			}
+		}).size() != 0;
 	}
 }
