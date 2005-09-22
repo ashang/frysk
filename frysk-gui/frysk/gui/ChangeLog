@@ -1,3 +1,7 @@
+2005-09-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Fix typos.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskGui.java: Replace Config.GLADEDIR with Config.SRCDIR with
@@ -15,7 +19,7 @@
 2005-09-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java (buildHandler): Make error logging non-session based.
-	Added FRYSK_CONFIG.	Moved .settings to FRYSK_CONFIG.
+	Added FRYSK_CONFIG. Moved .settings to FRYSK_CONFIG.
 	
 
 2005-09-14  Sami Wagiaalla  <swagiaal@redhat.com>

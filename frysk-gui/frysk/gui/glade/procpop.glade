@@ -54,7 +54,7 @@
 
 <widget class="GtkWindow" id="procpopWindow">
   <property name="visible">True</property>
-  <property name="title" translatable="yes">window1</property>
+  <property name="title" translatable="yes">Frysk</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -501,7 +501,7 @@ Command</property>
 			  <child>
 			    <widget class="GtkLabel" id="label5">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">X of x processies shown</property>
+			      <property name="label" translatable="yes">X of x Processes shown</property>
 			      <property name="use_underline">False</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -539,7 +539,7 @@ Command</property>
 		  <child>
 		    <widget class="GtkLabel" id="allPageLabel">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">All processies</property>
+		      <property name="label" translatable="yes">Processes</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
