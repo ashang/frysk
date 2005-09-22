@@ -46,8 +46,18 @@ test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
 
-AC_CHECK_PROGS(JAVAC, javac)
+# Prefer ECJ over JAVAC.
+AC_CHECK_PROGS(JAVAC, ecj javac)
 test "x$JAVAC" = x && AC_MSG_ERROR([no acceptable Java compiler found in \$(PATH)])
+
+# Only add -warn flags when the compiler is known to be ECJ.
+AC_MSG_CHECKING([java flags])
+JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)'
+case ${JAVAC} in
+ecj ) JAVACFLAGS="-warn:+semicolon ${JAVACFLAGS}" ;;
+esac
+AC_SUBST([JAVACFLAGS])
+AC_MSG_RESULT(${JAVACFLAGS})
 
 AC_PROG_CC
 AM_PROG_CC_C_O

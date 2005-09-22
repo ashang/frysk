@@ -1,5 +1,8 @@
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (JAVACFLAGS), acinclude.m4 (JAVACFLAGS): Only add
+	-warn:+semicolon when ECJ.
+
 	* Makefile.gen.sh: Update, install files from bindir/ into bin/,
 	and sbindir/ into sbin/.
 

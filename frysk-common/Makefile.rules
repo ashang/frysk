@@ -66,11 +66,7 @@ DBPATH = $(subst $(space),:,$(strip \
 	))
 
 JAVAC = @JAVAC@
-JAVACFLAGS = \
-	-g \
-	-warn:+semicolon \
-	-sourcepath $(SOURCEPATH) \
-	-classpath $(CLASSPATH)
+JAVACFLAGS = @JAVACFLAGS@
 
 
 # XXX: GCJ: I think there should be a -Wextraneous-throws; I think
