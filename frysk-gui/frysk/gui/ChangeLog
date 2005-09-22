@@ -1,6 +1,6 @@
 2005-09-22  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* glade/procpop.glade: Fix typos.
+	* glade/procpop.glade: Fix typos. Set Default Size to 640x480.
 
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
