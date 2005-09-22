@@ -72,24 +72,18 @@ public class DOMImage {
 		return v.iterator();
 	}
 	
-	public Iterator getInlinedFunctions(){
-		Iterator iter = this.myElement.getChildren(DOMInlineFunc.INLINE_NODE).iterator();
-		Vector v = new Vector();
-		
-		while(iter.hasNext())
-			v.add(new DOMInlineFunc((Element) iter.next()));
-		
-		return v.iterator();
-	}
-	
+	/**
+	 * Adds a source file to this image
+	 * @param source The source file to add
+	 */
 	public void addSource(DOMSource source){
 		this.myElement.addContent(source.getElement());
 	}
 	
-	public void addInlineFunction(DOMInlineFunc function){
-		this.myElement.addContent(0, function.getElement());
-	}
-	
+	/**
+	 * This function should only be used internally within the frysk source dom
+	 * @return The JDom element at the core of this node
+	 */
 	protected Element getElement(){
 		return this.myElement;
 	}

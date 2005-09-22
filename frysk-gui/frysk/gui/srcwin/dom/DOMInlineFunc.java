@@ -19,9 +19,24 @@ public class DOMInlineFunc {
 	public static final String NAME_ATTR = "name";
 	public static final String INLINE_NODE = "inline";
 	
-//	public static DOMInlineFunc createDOMInlineFunc(String name, int start, int end){
-//		
-//	}
+	public static DOMInlineFunc createDOMInlineFunc(String name, int start, int end){
+		Element func = new Element(INLINE_NODE);
+		func.setAttribute(NAME_ATTR, name);
+		func.setAttribute(START_ATTR, ""+start);
+		func.setAttribute(END_ATTR, ""+end);
+		
+		return new DOMInlineFunc(func);
+	}
+	
+	public static DOMInlineFunc createDOMInlineFunc(DOMImage parent, String name, int start, int end){
+		Element func = new Element(INLINE_NODE);
+		func.setAttribute(NAME_ATTR, name);
+		func.setAttribute(START_ATTR, ""+start);
+		func.setAttribute(END_ATTR, ""+end);
+		parent.getElement().addContent(0, func); // We want functions, then lines		
+		
+		return new DOMInlineFunc(func);
+	}
 	
 	private Element myElement;
 	

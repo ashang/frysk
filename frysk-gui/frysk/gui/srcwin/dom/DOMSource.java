@@ -121,6 +121,34 @@ public class DOMSource {
 		this.myElement.addContent(line.getElement());
 	}
 	
+	/**
+	 * @return An iterator to all the inlined function declarations in this source file
+	 */
+	public Iterator getInlinedFunctions(){
+		Iterator iter = this.myElement.getChildren(DOMInlineFunc.INLINE_NODE).iterator();
+		Vector v = new Vector();
+		
+		while(iter.hasNext())
+			v.add(new DOMInlineFunc((Element) iter.next()));
+		
+		return v.iterator();
+	}
+	
+	/**
+	 * Adds an inline function to this source. By convention the inline function declarations
+	 * are added earlier in the xml schema than the line table
+	 * 
+	 * @param function The inlined function declaration to add
+	 */
+	public void addInlineFunction(DOMInlineFunc function){
+		// Add the functions at the top, lines on the bottom
+		this.myElement.addContent(0, function.getElement());
+	}
+	
+	/**
+	 * This method should only be used internally from the frysk source window dom
+	 * @return The Jdom element at the core of this node 
+	 */
 	protected Element getElement(){
 		return this.myElement;
 	}
