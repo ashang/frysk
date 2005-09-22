@@ -1,3 +1,17 @@
+2005-09-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Pool.java, Scanner.java, dwarf/DW.mkjava, dwarf/DebugFrame.java,
+	dwarf/DebugLine.java, dwarf/DebugSection.java,
+	dwarf/PrintDebugFrame.java, dwarf/PrintDebugLoc.java,
+	dwarf/PrintDebugRanges.java, eio/ArrayByteBuffer.java,
+	eio/ByteBuffer.java, eio/ByteFileBuffer.java,
+	eio/MmapByteBuffer.java, eio/PtraceByteBuffer.java,
+	eio/cni/PtraceByteBuffer.cxx, elf/EM.mkjava, elf/ET.mkjava,
+	elf/EV.mkjava, elf/Ehdr.java, elf/ElfBuffer.java,
+	elf/PrintEhdr.java, elf/PrintPhdr.java, elf/PrintSym.java,
+	elf/SymSection.java, util/Test.sh, util/TestReadelf.sh,
+	util/readelf.java:  Update; Fixes i386 problems.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* dwarf/Format.java, dwarf/DebugPubs.java, dwarf/Reference.java,
