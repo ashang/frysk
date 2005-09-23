@@ -86,23 +86,23 @@ abstract class ProcState
     }
     ProcState processRequestRemoval (Proc proc)
     {
-	throw unhandled (proc);
+	throw unhandled (proc, "RequestRemoval");
     }
     ProcState processRequestAttachedStop (Proc proc)
     {
-	throw unhandled (proc);
+	throw unhandled (proc, "RequestAttachedStop");
     }
     ProcState processRequestAttachedContinue (Proc proc)
     {
-	throw unhandled (proc);
+	throw unhandled (proc, "RequestAttachedContinue");
     }
     ProcState processRequestDetachedContinue (Proc proc)
     {
-	throw unhandled (proc);
+	throw unhandled (proc, "RequestDetachedContinue");
     }
     ProcState processRequestRefresh (Proc proc)
     {
-	throw unhandled (proc);
+	throw unhandled (proc, "RequestRefresh");
     }
 
     /**

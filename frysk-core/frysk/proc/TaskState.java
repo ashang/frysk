@@ -104,23 +104,23 @@ class TaskState
     }
     TaskState processRequestStop (Task task)
     {
-	throw unhandled (task);
+	throw unhandled (task, "RequestStop");
     }
     TaskState processRequestContinue (Task task)
     {
-	throw unhandled (task);
+	throw unhandled (task, "RequestContinue");
     }
     TaskState processRequestStepInstruction (Task task)
     {
-	throw unhandled (task);
+	throw unhandled (task, "RequestStepInstruction");
     }
     TaskState processRequestRemoval (Task task)
     {
-	throw unhandled (task);
+	throw unhandled (task, "RequestRemoval");
     }
     TaskState processRequestAttach (Task task)
     {
-	throw unhandled (task);
+	throw unhandled (task, "RequestAttach");
     }
 
     /**

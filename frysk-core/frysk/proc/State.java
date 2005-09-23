@@ -54,18 +54,15 @@ class State
     }
     protected RuntimeException unhandled (Object what, Event event)
     {
-	return new RuntimeException (what
-				     + " in state \""
-				     + name
-				     + "\" did not handle "
-				     + event);
+	return unhandled (what, event.toString ());
     }
-    protected RuntimeException unhandled (Object what)
+    protected RuntimeException unhandled (Object what, String event)
     {
 	return new RuntimeException (what
 				     + " in state \""
 				     + name
-				     + "\" did not handle event"
+				     + "\" did not handle "
+				     + event
 				     );
     }
 }
