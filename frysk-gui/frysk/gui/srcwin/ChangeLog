@@ -6,6 +6,8 @@
 	* dom/DOMTestCreate.java: renamed to DOMTestDOMFrysk.java
 	
 	* dom/DOMGetter.java: merged into DOMFrysk and deleted
+	
+	* dom/DOMTestDOMFrysk: removed unneeded imports and variables
 
 2005-09-21  Rick Moseley  <rmoseley@redhat.com>
 
