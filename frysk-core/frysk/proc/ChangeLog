@@ -1,3 +1,8 @@
+2005-09-23  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestI386Modify.java: Reenabled now that poke logic has
+	been updated and test works.
+
 2005-09-23  Andrew Cagney  <cagney@redhat.com>
 
 	* State.java: Add String parameter to "unhandled" method.

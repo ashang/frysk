@@ -187,21 +187,21 @@ public class TestI386Modify
 
     public void testI386Modify ()
     {
-//         Manager.procDiscovered.addObserver (pdo);
-//   	// Create program making syscalls
-//   	    Manager.host.requestCreateProc ( new String[]
-//             {
-//   		"./prog/x86isa/x86modify"
-//   	    });
+	Manager.procDiscovered.addObserver (pdo);
+	// Create program making syscalls
+	Manager.host.requestCreateProc ( new String[]
+	{
+ 	    "./prog/x86isa/x86modify"
+	});
 
-//         Manager.procRemoved.addObserver (new ProcRemovedObserver ());
-//   	   assertRunUntilStop ("run \"x86modify\" to exit");
+	Manager.procRemoved.addObserver (new ProcRemovedObserver ());
+	assertRunUntilStop ("run \"x86modify\" to exit");
 
-//         assertTrue ("Proc destruction confirmed", exited);
-//         assertTrue ("Exit syscall found", exitSyscall);
-//  	assertEquals ("Manager has no tasks left", 0, 
-// 		      Manager.host.taskPool.size ());
-//         assertEquals ("Manager has no processes left", 0, 
-//  		      Manager.host.procPool.size ());
+	assertTrue ("Proc destruction confirmed", exited);
+	assertTrue ("Exit syscall found", exitSyscall);
+	assertEquals ("Manager has no tasks left", 0, 
+ 		      Manager.host.taskPool.size ());
+	assertEquals ("Manager has no processes left", 0, 
+  		      Manager.host.procPool.size ());
    }
 }
