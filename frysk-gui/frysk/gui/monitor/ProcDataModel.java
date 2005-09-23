@@ -201,7 +201,7 @@ public class ProcDataModel {
 			errorLog.log(Level.WARNING,"Cannot set filter",e);
 		}
 		this.stringFilterArgument = argument;
-		this.refilter();
+//		this.refilter();
 	}
 	
 	private void refilter() {
@@ -339,7 +339,7 @@ public class ProcDataModel {
 	
 	public void setFilterON(boolean filterON) {
 		this.filterON = filterON;
-		this.refilter();
+//		this.refilter();
 	}
 
 	public boolean isFilterON() {
@@ -460,7 +460,7 @@ public class ProcDataModel {
 						treeStore.removeRow(iter);
 						iterHash.remove(task.getTaskId());
 					}catch (NullPointerException e) {
-						errorLog.log(Level.WARNING,"trying to remove task before it is added",e);
+						errorLog.log(Level.WARNING,"trying to remove task " + task + " before it is added",e);
 					}
 				}
 			});

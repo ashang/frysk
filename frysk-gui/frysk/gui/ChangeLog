@@ -1,3 +1,10 @@
+2005-09-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Added statusWidget VBox to allow for a sopt to add
+	a statusWidget when a proc is selected.
+	* FryskGui.java: the backend event loop is now started /after/ the window
+	shown.
+
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskGui.java: Import frysk.Config, instead of frysk.bin.Config.

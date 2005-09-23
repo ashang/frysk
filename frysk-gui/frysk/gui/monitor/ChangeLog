@@ -1,3 +1,10 @@
+2005-09-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcDataModel.java: Removed calls to refilter.
+	* NotifyingLabel.java (NotifyingLabel): Removed call buggy to ExposeEvent.
+	* GuiData.java (GuiData): refactored setStatusWidget to setInfoWidget.
+	* AllProcWidget.java (selectionChangedEvent): StatusWidget -> InfoWidget.
+
 2005-09-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* AllProcWidget.java : Clicking a column now changes the search column to the one

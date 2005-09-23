@@ -178,12 +178,12 @@ public class FryskGui implements LifeCycleListener, Saveable {
 				Manager.eventLoop.run();
 			}
 		});
+		
+		procpop.load(prefs);
 		backendStarter.start();
 
-		procpop.load(prefs);
-
 		Gtk.main();
-
+		
 		Manager.eventLoop.requestStop();
 		procpop.save(prefs);
 

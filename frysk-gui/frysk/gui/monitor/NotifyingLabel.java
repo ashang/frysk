@@ -10,20 +10,18 @@ import java.util.Observer;
 import org.gnu.gdk.Color;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.StateType;
-import org.gnu.gtk.event.ExposeEvent;
-import org.gnu.gtk.event.ExposeListener;
 
 public class NotifyingLabel extends Label implements Observer {
 
 	public NotifyingLabel(String label) {
 		super(label);
 
-		this.addListener(new ExposeListener(){
-			public boolean exposeEvent(ExposeEvent arg0) {
-				setForegroundColor(StateType.NORMAL, Color.BLACK);
-				return false;
-			}
-		});
+//		this.addListener(new ExposeListener(){
+//			public boolean exposeEvent(ExposeEvent arg0) {
+//				setForegroundColor(StateType.NORMAL, Color.BLACK);
+//				return false;
+//			}
+//		});
 	}
 
 	public void update(Observable arg0, Object arg1) {

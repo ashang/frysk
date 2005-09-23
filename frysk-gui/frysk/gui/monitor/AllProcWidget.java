@@ -149,8 +149,8 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 					TreePath selected = procTreeView.getSelection().getSelectedRows()[0];
 					mountThreadModel(psDataModel, selected);
 					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), psDataModel.getProcDataDC());
-					if(!data.hasStatusWidget()){
-						data.setStatusWidget(new InfoWidget(data));
+					if(!data.hasWidget()){
+						data.setInfoWidget(new InfoWidget(data));
 					}
 					
 					Widget widgets[] = statusVbox.getChildren();
@@ -158,7 +158,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 						statusVbox.remove(widgets[i]);
 					}
 					
-					statusVbox.add(data.getStatusWidget());
+					statusVbox.add(data.getInfoWidget());
 				}
 			}
 		});

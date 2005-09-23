@@ -15,7 +15,6 @@ public class GuiData {
 	public GuiObservable observerRemoved;
 	
 	public GuiData(){
-		this.infoWidget = null;
 		this.observerAdded = new GuiObservable();
 		this.observerRemoved = new GuiObservable();
 		this.observers = new LinkedList();
@@ -42,15 +41,15 @@ public class GuiData {
 		return this.observers;
 	}
 	
-	public void setStatusWidget(InfoWidget widget){
+	public void setInfoWidget(InfoWidget widget){
 		this.infoWidget = widget;
 	}
 	
-	public InfoWidget getStatusWidget(){
+	public InfoWidget getInfoWidget(){
 		return this.infoWidget;
 	}
 	
-	public boolean hasStatusWidget(){
+	public boolean hasWidget(){
 		return (this.infoWidget != null);
 	}
 	
