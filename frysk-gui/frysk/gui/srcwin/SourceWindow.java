@@ -112,7 +112,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private static final String FIND_NEXT_PNG = "findNext.png"; //$NON-NLS-1$
 	
 	// Directory where images are stored
-	private static final String IMAGES_DIR = "frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
+	private static final String IMAGES_DIR = "/home/ajocksch/frysk/frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
 	
 	private static final String FILE_SELECTOR = "fileSelector";
 	private static final String VIEW_COMBO_BOX = "viewComboBox";
@@ -164,16 +164,16 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action stackBottom;
 	
 	public SourceWindow() {
-		try {
-			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
-		} catch (Exception e){
+//		try {
+//			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
+//		} catch (Exception e){
 			try{
-				this.glade = new LibGlade("../srcwin/glade/"+GLADE_FILE, this);
+				this.glade = new LibGlade("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/glade/"+GLADE_FILE, this);
 			}
 			catch (Exception e2){
 				e2.printStackTrace();
 			}
-		}
+//		}
 
 		this.glade.getWidget(SOURCE_WINDOW).hideAll();
 		
@@ -200,11 +200,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// create the actual sourceview widget
 		this.view = new SourceViewWidget(this.prefs);
 		
-		try {
-			((SourceBuffer) this.view.getBuffer()).loadFile("/home/ajocksch/workspace/Insight Test/main.cpp");
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+		PCLocation loc = new PCLocation("/home/ajocksch/workspace/Insight Test/main.cpp", 2);
+		PCLocation loc2 = new PCLocation("/home/ajocksch/workspace/Insight Test/main2.cpp", 2);
+		loc.setNextScope(loc2);
+		PCLocation loc3 = new PCLocation("/home/ajocksch/workspace/Insight Test/main3.cpp", 2);
+		loc2.setNextScope(loc3);
+		this.view.load(loc);
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
 		for(int i = 0; i < funcs.size(); i++)
@@ -214,7 +215,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		((ComboBox) this.glade.getWidget(VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 		
 		((SourceBuffer) this.view.getBuffer()).toggleBreakpoint(8);
-		this.view.setCurrentLine(0);
 		
 		((ScrolledWindow) this.glade.getWidget(TEXT_WINDOW)).add(this.view);
 		this.glade.getWidget(SOURCE_WINDOW).showAll();

@@ -1,4 +1,22 @@
-<<<<<<< ChangeLog
+2005-09-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* PCLocation.java: Added.
+
+	* SourceBuffer.java: Changed start/endCurrentLine to TextMarks.
+	(setCurrentLine): Changed to reflect above change to TextMark.
+	(getCurrentLine): Ditto.
+
+	* SourceViewWidget.java: Added member 'inlined' for inlined code.
+	(SourceViewWidget):  Changed handling of mouse events in margin to 
+	expand inlined code.
+	(load): Added.
+	(toggleChild): Added.
+	(drawMargin): Commented out unused (for now) variables.
+	(getHeight): Added.
+
+	* SourceWindow.java (SourceWindow): Use PCLocation to load data into
+	SourceViewWidget.
+
 2005-09-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMCreate.java: merged into DOMFrysk.java and deleted
@@ -9,13 +27,7 @@
 	
 	* dom/DOMTestDOMFrysk: removed unneeded imports and variables
 
-2005-09-21  Rick Moseley  <rmoseley@redhat.com>
-
-	* dom/DOMCreate.java: Added.
 	
-	* dom/DOMTestCreate.java: Added.
-	
-=======
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Import frysk.Config, instead of
@@ -56,7 +68,12 @@
 
 	* dom/DOMLine.java (hasBreakpoint): Added.
 
->>>>>>> 1.19
+2005-09-21  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMCreate.java: Added.
+	
+	* dom/DOMTestCreate.java: Added.
+	
 2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
 
 	* dom/DOMInlinedFunc.java: Added.

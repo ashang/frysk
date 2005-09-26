@@ -11,12 +11,13 @@ import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
+import org.gnu.glib.Handle;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextIter;
+import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextTag;
 import org.gnu.gtk.TextTagTable;
-import org.gnu.glib.Handle;
 import org.gnu.pango.Weight;
 
 import frysk.gui.srcwin.cparser.CDTParser;
@@ -51,8 +52,8 @@ public class SourceBuffer extends TextBuffer {
 	
 	private Vector functions;
 	
-	private TextIter startCurrentLine;
-	private TextIter endCurrentLine;
+	private TextMark startCurrentLine;
+	private TextMark endCurrentLine;
 	
 	private TextIter startCurrentFind;
 	private TextIter endCurrentFind;
@@ -183,8 +184,6 @@ public class SourceBuffer extends TextBuffer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		System.out.println(this.getLineCount());
 	}
 	
 	/**
@@ -228,7 +227,7 @@ public class SourceBuffer extends TextBuffer {
 		if(this.startCurrentLine == null)
 			return -1;
 		
-		return this.startCurrentLine.getLineNumber();
+		return this.getIter(this.startCurrentLine).getLineNumber();
 	}
 
 	
@@ -238,24 +237,26 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void setCurrentLine(int currentLine) {
 		
-		// If not an executable line, no tag should be set
-		if(!((SourceCodeLine) this.lines.get(currentLine)).isExecutable()){
-			// Clear the tag if one already existed
-			if(this.startCurrentLine != null && this.endCurrentLine != null){
-				this.removeTag(this.currentLine, this.startCurrentLine, this.endCurrentLine);
-				this.startCurrentLine = null;
-				this.endCurrentLine = null;
-			}
-			
-			return;
-		}
+//		// If not an executable line, no tag should be set
+//		if(!((SourceCodeLine) this.lines.get(currentLine)).isExecutable()){
+//			// Clear the tag if one already existed
+//			if(this.startCurrentLine != null && this.endCurrentLine != null){
+//				this.removeTag(this.currentLine, this.startCurrentLine, this.endCurrentLine);
+//				this.startCurrentLine = null;
+//				this.endCurrentLine = null;
+//			}
+//			
+//			return;
+//		}
+		
+		System.out.println("line: "+currentLine);
 		
 		// Line is executable
-		this.startCurrentLine = this.getIter(currentLine, 0);
-		int lineLength = this.getText(this.startCurrentLine, this.getEndIter(), true).indexOf("\n");
-		this.endCurrentLine = this.getIter(currentLine, lineLength);
+		this.startCurrentLine = this.createMark("currentLineStart", this.getIter(currentLine-1, 0), true);
+		int lineLength = this.getText(this.getIter(this.startCurrentLine), this.getEndIter(), true).indexOf("\n");
+		this.endCurrentLine = this.createMark("currentLineEnd", this.getIter(currentLine-1, lineLength), true);
 		
-		this.applyTag(this.currentLine, this.startCurrentLine, this.endCurrentLine);
+		this.applyTag(this.currentLine, this.getIter(this.startCurrentLine), this.getIter(this.endCurrentLine));
 	}
 	
 	/**
