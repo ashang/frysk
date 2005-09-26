@@ -81,7 +81,7 @@ import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
-import frysk.Config;
+//import frysk.Config;
 
 public class SourceWindow implements ButtonListener, EntryListener, 
 									ComboBoxListener{

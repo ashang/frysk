@@ -1,5 +1,12 @@
 2005-09-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java: Commented out (for now) unused import to fix warning.
+
+	* PCLocation.java: Added depth identifier.
+	Changed next/prevScope to protected.
+
+2005-09-27  Adam Jocksch  <ajocksch@redhat.com>
+
 	* PCLocation.java: Added.
 
 	* SourceBuffer.java: Changed start/endCurrentLine to TextMarks.

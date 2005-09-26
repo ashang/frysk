@@ -11,12 +11,15 @@ public class PCLocation {
 	private String filename;
 	private int lineNum;
 	
-	PCLocation nextScope;
-	PCLocation prevScope;
+	private int depth;
+	
+	protected PCLocation nextScope;
+	protected PCLocation prevScope;
 	
 	public PCLocation(String filename, int line){
 		this.filename = filename;
 		this.lineNum = line;
+		this.depth = 0;
 	}
 
 	public String getFilename() {
@@ -33,6 +36,7 @@ public class PCLocation {
 
 	public void setNextScope(PCLocation inlineData) {
 		this.nextScope = inlineData;
+		inlineData.depth = this.depth + 1;
 	}
 
 	public int getLineNum() {
