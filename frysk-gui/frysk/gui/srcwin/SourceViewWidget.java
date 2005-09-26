@@ -52,7 +52,6 @@ import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextBuffer;
-import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TextWindowType;
@@ -160,10 +159,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	// How far to start writing breakpoints, etc. from the left side of the margin
 	private int marginWriteOffset;
-
-	private SourceViewWidget inlined;
 	
-	private boolean isExpanded = false;
+	protected boolean expanded = false;
 	
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
@@ -376,8 +373,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 	
 	public void load(PCLocation data){
-		System.out.println("here");
-		
 		try {
 			this.buf.loadFile(data.getFilename());
 		} catch (FileNotFoundException e) {
@@ -389,11 +384,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		}
 		this.setCurrentLine(data.getLineNum());
 		
-		PCLocation loc = data.getInlineData();
-		if(loc != null){
-			this.inlined = new SourceViewWidget(this.topPrefs);
-			this.inlined.load(loc);
-		}
+		InlineHandler.init(data, this.topPrefs, this);
 	}
 	
 	/*---------------------------*
@@ -420,33 +411,12 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 
 	public void toggleChild() {
-		int line = this.buf.getCurrentLine();
-		
-		if(this.inlined != null){
-			if(!isExpanded){
-				this.buf.insertText(this.buf.getLineIter(line+1), "\n");
-				TextChildAnchor anchor = this.getBuffer().createChildAnchor(this.buf.getLineIter(line+1));
-				this.addChild(this.inlined, anchor);
-				this.inlined.setMinimumSize(800,this.inlined.getHeight());
-				this.inlined.setBorderWidth(1);
-				this.inlined.showAll();
-				this.isExpanded = true;
-			}
-			else{
-				this.remove(this.inlined);
-				this.buf.deleteText(this.buf.getLineIter(line+1), this.buf.getIter(this.buf.getLineIter(line+1).getOffset()+2));
-				this.isExpanded = false;
-			}
-		}
-		
-		this.setMinimumSize(800, this.getHeight());
-	}
-	
-	public int getHeight(){
-		if(this.inlined != null && this.isExpanded)
-			return 75+this.inlined.getHeight();
+		if(!expanded)
+			expanded = InlineHandler.moveDown();
 		else
-			return 75;
+			expanded = !InlineHandler.moveUp(this);
+		
+		System.out.println(expanded);
 	}
 	
 	/*
@@ -505,7 +475,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		int markB = this.lnfPrefs.getInt(MARK_B, 0);
 		
 		int currentHeight = 0;		
-		int linesIgnored = 0;
 		int actualIndex = 0;
 		int totalInlinedLines = 0;
 		
@@ -515,14 +484,15 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
 			int iconStart = lineHeight/2;
 			
-			if(linesIgnored < totalInlinedLines){
-				linesIgnored++;
+			if(totalInlinedLines == 1){
 				
 				// draw background for the expanded lines
 //				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
 //				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
 //						this.marginWriteOffset+20, lineHeight);
 //				context.setRGBForeground(new Color(r,g,b));
+				
+				totalInlinedLines = 0;
 				
 				currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
 				i--;
@@ -546,24 +516,20 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
-			if(i == this.buf.getCurrentLine() && this.inlined != null){
+			if(i == this.buf.getCurrentLine()){
 //				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
 //				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
 //						this.marginWriteOffset+20, lineHeight);
 //				context.setRGBForeground(new Color(r,g,b));
 				
 				context.setRGBForeground(new Color(markR,markG,markB));
-				drawingArea.drawRectangle(context, true, this.marginWriteOffset+5, actualFirstStart+currentHeight+4, lineHeight-8, lineHeight-8);
-				context.setRGBForeground(Color.YELLOW);
-				drawingArea.drawRectangle(context, true, this.marginWriteOffset+6, actualFirstStart+currentHeight+5, lineHeight-10, lineHeight-10);
-				context.setRGBForeground(new Color(markR,markG,markB));
-				drawingArea.drawLine(context, this.marginWriteOffset+6, actualFirstStart+currentHeight+4+((lineHeight-8)/2), this.marginWriteOffset+12, actualFirstStart+currentHeight+4+((lineHeight-8)/2));
-				if(!isExpanded){
-					drawingArea.drawLine(context, this.marginWriteOffset+9, actualFirstStart+currentHeight+4, this.marginWriteOffset+9, actualFirstStart+currentHeight+lineHeight-6);
-				}
+				Layout lo = new Layout(this.getContext());
+				lo.setAlignment(Alignment.RIGHT);
+				lo.setText("i");
+				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+currentHeight, lo);
 				context.setRGBForeground(new Color(r,g,b));
 				
-				if(this.isExpanded)
+				if(this.expanded)
 					totalInlinedLines = 1;
 				else
 					totalInlinedLines = 0;

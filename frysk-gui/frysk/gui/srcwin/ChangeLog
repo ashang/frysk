@@ -1,11 +1,27 @@
-2005-09-27  Adam Jocksch  <ajocksch@redhat.com>
+2005-09-26  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (load): Added.
+
+	* InlineHandler.java: Added.
+
+	* SourceViewWidget.java (load): Removed debug output.
+	Now initializes InlineHandler to deal with inlined code.
+	(toggleChild): Now uses InlineHandler::toggleTopmost;
+	(drawMargin): refactored to removed excess variables.
+	(drawMargin): Changed sign for inlined code to 'i'.
+
+	* SourceWindow.java (SourceWindow): Changed example text to load.
+
+	* PCLocation.java (getInlineData): Refactored to getNextScope.
+
+2005-09-26  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java: Commented out (for now) unused import to fix warning.
 
 	* PCLocation.java: Added depth identifier.
 	Changed next/prevScope to protected.
 
-2005-09-27  Adam Jocksch  <ajocksch@redhat.com>
+2005-09-26  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PCLocation.java: Added.
 

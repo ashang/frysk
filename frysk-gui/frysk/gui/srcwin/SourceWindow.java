@@ -202,9 +202,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		PCLocation loc = new PCLocation("/home/ajocksch/workspace/Insight Test/main.cpp", 2);
 		PCLocation loc2 = new PCLocation("/home/ajocksch/workspace/Insight Test/main2.cpp", 2);
-		loc.setNextScope(loc2);
+		loc.link(loc2);
 		PCLocation loc3 = new PCLocation("/home/ajocksch/workspace/Insight Test/main3.cpp", 2);
-		loc2.setNextScope(loc3);
+		loc2.link(loc3);
+		PCLocation loc4 = new PCLocation("/home/ajocksch/workspace/Insight Test/main4.cpp", 2);
+		loc3.link(loc4);
+		loc4.link(new PCLocation("/home/ajocksch/workspace/Insight Test/main5.cpp", 2));
 		this.view.load(loc);
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();

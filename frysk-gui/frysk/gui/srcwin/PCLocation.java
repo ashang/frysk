@@ -30,7 +30,7 @@ public class PCLocation {
 		this.filename = filename;
 	}
 
-	public PCLocation getInlineData() {
+	public PCLocation getNextScope() {
 		return nextScope;
 	}
 
