@@ -43,7 +43,7 @@ AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
 sinclude(common/acinclude.m4)
 
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/lib/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
 
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)
@@ -64,8 +64,8 @@ AC_MSG_RESULT($GLIB_JAVA_JAR)
 AC_SUBST(GLIB_JAVA_JAR)
 
 AC_MSG_CHECKING([for  libcdtparser])
-CDTPARSER_JAR=/opt/share/java/cdtparser.jar
-CDTPARSER_LIBS=/opt/lib/libcdtparser.jar.so
+CDTPARSER_JAR=/opt/frysk/share/java/cdtparser.jar
+CDTPARSER_LIBS=/opt/frysk/lib/libcdtparser.jar.so
 test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
 AC_SUBST([CDTPARSER_JAR])
 AC_MSG_RESULT([$CDTPARSER_JAR])
