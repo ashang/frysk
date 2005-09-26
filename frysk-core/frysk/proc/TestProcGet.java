@@ -120,10 +120,9 @@ public class TestProcGet
     public void testGetCommand ()
     {
 	Child child = new DaemonChild ();
-	Manager.host.requestRefresh ();
-	Manager.eventLoop.runPending ();
+	Proc childProc = child.findProcUsingRefresh ();
 
 	assertEquals ("Child's name", "detach",
-		      child.findProc ().getCommand ());
+		      childProc.getCommand ());
     }
 }

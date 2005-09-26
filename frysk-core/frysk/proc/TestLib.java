@@ -150,14 +150,29 @@ public class TestLib
 	    }
 	}
 	/**
-	 * Find/return the child's Proc.
+	 * Find/return the child's Proc, polling /proc if necessary.
 	 */
-	Proc findProc ()
+	Proc findProcUsingRefresh (boolean refreshTasks)
 	{
+	    // See if it is already known.
 	    if (proc == null) {
 		proc = Manager.host.getProc (new ProcId (pid));
 	    }
+	    // Try polling /proc.
+	    if (proc == null) {
+		Manager.host.requestRefresh (refreshTasks);
+		Manager.eventLoop.runPending ();
+		proc = Manager.host.getProc (new ProcId (pid));
+	    }
 	    return proc;
+	}
+	/**
+	 * Like {@link findProcUsingRefresh (boolean)}, but do not
+	 * refresh the task list.
+	 */
+	Proc findProcUsingRefresh ()
+	{
+	    return findProcUsingRefresh (false);
 	}
 	private Proc proc;
     }

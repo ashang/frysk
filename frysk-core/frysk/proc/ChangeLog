@@ -1,3 +1,9 @@
+2005-09-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Replace Child.findProc with
+	Child.findProcUsingRefresh.
+	* TestRefresh.java, TestProcGet.java: Update.
+
 2005-09-23  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* TestI386Modify.java: Reenabled now that poke logic has

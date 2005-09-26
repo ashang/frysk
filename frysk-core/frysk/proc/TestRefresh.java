@@ -291,9 +291,7 @@ public class TestRefresh
 	
 	// Do a refresh, find the zombie maker, check it has one child
 	// process, save it.
-	Manager.host.requestRefresh ();
-	Manager.eventLoop.runPending ();
-	Proc zombieParent = zombie.findProc ();
+	Proc zombieParent = zombie.findProcUsingRefresh ();
 	assertEquals ("Zombie maker has one child",
 		      1, zombieParent.children.size ());
 	Proc zombieChild = (Proc) zombieParent.children.iterator().next();
@@ -331,11 +329,10 @@ public class TestRefresh
 	ZombieChild zombie = new ZombieChild ();
 	zombie.addChild ();
 	
-	// Do a refresh, find the zombie maker, check that it's child
-	// has one task and no processes.
-	Manager.host.requestRefresh (true);
-	Manager.eventLoop.runPending ();
-	Proc zombieParent = zombie.findProc ();
+	// Do a refresh (that includes updating the task list), find
+	// the zombie maker, check that it's child has one task and no
+	// processes.
+	Proc zombieParent = zombie.findProcUsingRefresh (true);
 	assertEquals ("Zombie maker has one child",
 		      1, zombieParent.children.size ());
 	Proc zombieChild = (Proc) zombieParent.children.iterator().next();
