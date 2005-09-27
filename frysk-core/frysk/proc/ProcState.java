@@ -157,10 +157,27 @@ abstract class ProcState
 	    proc.sendRefresh ();
 	    if (proc.taskPool.size () == 1) {
 		event.task.requestContinue ();
+		proc.observableAttachedContinue.notify (proc);
 		return running;
 	    }
-	    else
-		return new AttachingToOtherTasks (proc, event);
+	    else {
+		// Track the number of un-attached tasks using a local
+		// map.  As each task reports that its been attached
+		// the map is srunk.  Remove the main task as that has
+		// already been attached.
+		Map unattachedTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		unattachedTasks.remove (new TaskId (proc.getPid ()));
+		// Ask the other tasks to attach.
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    if (t.getPid () == proc.getPid ())
+			continue;
+		    t.requestAttach ();
+		}
+		return new AttachingToOtherTasks (proc, unattachedTasks);
+	    }
 	}
     }
 
@@ -173,26 +190,15 @@ abstract class ProcState
 	extends ProcState
     {
 	Map unattachedTasks;
-	AttachingToOtherTasks (Proc proc, ProcEvent.TaskAttached event)
+	AttachingToOtherTasks (Proc proc, Map unattachedTasks)
 	{
 	    super ("AttachingWaitingForOtherTasks");
-	    // Track the number of un-attached tasks using a local
-	    // map.  As each task reports that its been attached the
-	    // map is srunk.  Remove the main task as that has already
-	    // been attached.
-	    unattachedTasks = (Map) (((HashMap)proc.taskPool).clone ());
-	    unattachedTasks.remove (new TaskId (proc.getPid ()));
-	    // Ask the other tasks to attach.
-	    for (Iterator i = proc.taskPool.values ().iterator ();
-		 i.hasNext (); ) {
-		Task t = (Task) i.next ();
-		if (t.getPid () == proc.getPid ())
-		    continue;
-		t.requestAttach ();
-	    }
+	    this.unattachedTasks = unattachedTasks;
 	}
 	ProcState process (Proc proc, ProcEvent.TaskAttached event)
 	{
+	    // As each task reports that it has been attached, remove
+	    // it from the pool, wait until there are none left.
 	    unattachedTasks.remove (event.task.id);
 	    if (unattachedTasks.size () > 0)
 		return this;
@@ -203,6 +209,7 @@ abstract class ProcState
 		Task t = (Task) i.next ();
 		t.requestContinue ();
 	    }
+	    proc.observableAttachedContinue.notify (proc);
 	    return running;
 	}
     }

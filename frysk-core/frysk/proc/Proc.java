@@ -340,6 +340,14 @@ public abstract class Proc
 
     public abstract Auxv[] getAuxv ();
 
+    /**
+     * The process has transitioned to the attached / continue state.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public Manager.ProcObservable observableAttachedContinue = new Manager.ProcObservable ();
+
     public String toString ()
     {
 	return ("[Proc"
