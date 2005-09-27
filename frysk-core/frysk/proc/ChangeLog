@@ -1,5 +1,8 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestAttachThreads.java, TestAttach.java: Delete, replaced by
+	TestProcStates.java.
+
 	* TaskObservable.java: New, moved from Proc.java.
 	* ProcObservable.java: New, moved from Manager.java.
 	* Proc.java: Update.	
