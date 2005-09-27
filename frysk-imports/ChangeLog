@@ -53,7 +53,6 @@
 	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
 	Change JGCOMMON variable to GLIB_JAVA.
 
->>>>>>> 1.39
 2005-09-15  Igor Foox  <ifoox@redhat.com>
 
 	* rpm-specs/frysk-libglade-java.spec: Updated to require sources to
