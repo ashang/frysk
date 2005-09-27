@@ -1,3 +1,9 @@
+2005-09-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ActionPool.java (execute): Added eventLog observer.
+	* EventLogger.java (EventLogger): Added.
+	
+
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcDataModel.java: Instead of frysk .proc .Manager

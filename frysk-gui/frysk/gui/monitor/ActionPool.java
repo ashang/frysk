@@ -69,6 +69,7 @@ public class ActionPool {
 	
 	/** Observers that can be added to a process */
 	public LinkedList processObservers;
+	private EventLogger eventLog;
 
 	/** } */
 
@@ -129,10 +130,15 @@ public class ActionPool {
 		}
 
 		public void execute(ProcData data) {
-			System.out.println("sending Manager.host.requestAttachProc");
+//			System.out.println("sending Manager.host.requestAttachProc");
+//			data.getProc().observableAttachedContinue
+//					.addObserver(WindowManager.theManager.logWindow);
+//			data.getProc().observableAttachedContinue.addObserver(eventLog);
+//			data.getProc().requestAttachedContinue();
 			Manager.host.observableProcAdded.addObserver
-			    (WindowManager.theManager.logWindow);
-			
+			    (WindowManager.theManager.logWindow);			
+			Manager.host.observableProcAdded.addObserver(eventLog);
+			System.out.println("Get proc returns: " + Manager.host.getProc(data.getProc().getId()));
 			Manager.host.requestAttachProc(data.getProc().getId());
 		}
 
@@ -152,6 +158,10 @@ public class ActionPool {
 		}
 
 		public void execute(final ProcData data) {
+		Manager.host.observableProcRemoved.addObserver
+		    (WindowManager.theManager.logWindow);			
+		Manager.host.observableProcRemoved.addObserver
+	    (eventLog);
 			data.getProc().requestDetachedContinue();
 		}
 
@@ -210,6 +220,9 @@ public class ActionPool {
 			// first. But we dont have a handle on threads yet
 			data.getProc().taskExeced
 					.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExeced
+			.addObserver(eventLog);
+			
 			data.add(new TaskExecObserver());
 		}
 
@@ -231,6 +244,9 @@ public class ActionPool {
 			// dont have a handle on threads yet
 			data.getProc().observableTaskRemoved
 			    .addObserver(WindowManager.theManager.logWindow);
+			data.getProc().observableTaskRemoved
+		    .addObserver(eventLog);
+
 		}
 
 		public void execute(TaskData data) {
@@ -251,6 +267,9 @@ public class ActionPool {
 			// first. But we dont have a handle on threads yet
 			data.getProc().taskExiting
 					.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExiting
+			.addObserver(eventLog);
+			
 		}
 
 		public void execute(TaskData data) {
