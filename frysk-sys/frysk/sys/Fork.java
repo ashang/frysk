@@ -39,35 +39,59 @@
 
 package frysk.sys;
 
+/**
+ * Create a child process (using fork) that immediatly performs some
+ * sort of exec.
+ */
+
 public final class Fork
 {
     /**
      * Create a child process running ARGV[0] with arguments
      * ARGV[1..].
+     *
+     * Also wire up IN, OUT, and ERR.
      */
     public static native int exec (String in, String out, String err,
-				    String[] argv);
+				   String[] argv);
+    /**
+     * Create a child process running ARGV[0] with arguments
+     * ARGV[1..].
+     */
     public static final int exec (String[] argv)
     {
 	return exec (null, null, null, argv);
     }
 
     /**
-     * Create a child process marked for tracing.
+     * Create a child process running ARGV[0] with arguments
+     * ARGV[1...]; mark the process for tracing.
+     *
+     * Also wire up IN, OUT, and ERR.
      */
     public static native int ptrace (String in, String out, String err,
 				     String[] argv);
+    /**
+     * Create a child process running ARGV[0] with arguments
+     * ARGV[1...]; mark the process for tracing.
+     */
     public static final int ptrace (String[] argv)
     {
-	return exec (null, null, null, argv);
+	return ptrace (null, null, null, argv);
     }
 
     /**
-     * Create a "daemon" process (A daemon has process ID 1 as its
-     * parent).
+     * Create a "daemon" process running ARGV[0] with arguments
+     * ARGV[1...]; a daemon has process ID 1 as its parent.
+     *
+     * Also wire up IN, OUT, and ERR.
      */
     public static native int daemon (String in, String out, String err,
 				     String[] argv);
+    /**
+     * Create a "daemon" process running ARGV[0] with arguments
+     * ARGV[1...]; a daemon has process ID 1 as its parent.
+     */
     public static final int daemon (String[] argv)
     {
 	return daemon (null, null, null, argv);
