@@ -1,4 +1,4 @@
-%define _prefix /opt
+%define _prefix /opt/frysk
 %define _sysconfdir %{_prefix}/etc
 %define _localstatedir %{_prefix}/var
 %define _infodir %{_prefix}/share/info
@@ -14,7 +14,7 @@
 Summary:   A vector graphics library
 Name:      frysk-%{name_base}
 Version:   1.0.0
-Release:   1
+Release:   3
 URL:       http://cairographics.org
 Source0:   %{name_base}-%{version}.tar.gz
 License:   LGPL/MPL
@@ -65,7 +65,7 @@ frysk Execution Analysis Tool, it is not intended for general use.
 %setup -q -n %{name_base}-%{version}
 
 %build
-%configure  --enable-pdf --enable-warnings --disable-glitz --disable-quartz \
+%configure  --enable-warnings --disable-glitz --disable-quartz \
 	--disable-atsui --disable-xcb --disable-win32 \
 	--disable-gtk-doc
 make
@@ -97,6 +97,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gtk-doc/*
 
 %changelog
+* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 1.0.0-3
+- Changed installation prefix from /opt to /opt/frysk.
+
+- Removed --enable-pdf configure option.
+
 * Wed Aug 24 2005 Kristian Høgsberg <krh@redhat.com> - 1.0.0-1
 - Update to cairo-1.0.0.
 - Drop cairo-0.9.2-cache-eviction-fix.patch and

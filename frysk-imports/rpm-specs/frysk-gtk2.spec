@@ -1,4 +1,4 @@
-%define _prefix /opt
+%define _prefix /opt/frysk
 %define _sysconfdir %{_prefix}/etc
 %define _localstatedir %{_prefix}/var
 %define _infodir %{_prefix}/share/info
@@ -25,7 +25,7 @@
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X.
 Name: frysk-%{name_base}
 Version: %{base_version}
-Release: 1
+Release: 2
 License: LGPL
 Group: System Environment/Libraries
 Source: gtk+-%{version}.tar.bz2
@@ -277,6 +277,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc tmpdocs/examples
 
 %changelog
+* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.8.3-2
+- Changed installation prefix from /opt to /opt/frysk.
+
 * Mon Aug 15 2005 Matthias Clasen <mclasen@redhat.com> 2.8.0-1
 - Newer upstream version
 

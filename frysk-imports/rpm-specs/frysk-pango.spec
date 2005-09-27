@@ -1,4 +1,4 @@
-%define _prefix /opt
+%define _prefix /opt/frysk
 %define _sysconfdir %{_prefix}/etc
 %define _localstatedir %{_prefix}/var
 %define _infodir %{_prefix}/share/info
@@ -18,7 +18,7 @@
 Summary: System for layout and rendering of internationalized text.
 Name: frysk-%{name_base}
 Version: 1.10.0
-Release: 1
+Release: 2
 License: LGPL
 Group: System Environment/Libraries
 Source: http://ftp.gnome.org/pub/gnome/sources/pango/1.8/pango-%{version}.tar.bz2
@@ -199,6 +199,9 @@ esac
 
 
 %changelog
+* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 1.10.0-2
+- Changed installation prefix from /opt to /opt/frysk.
+
 * Wed Aug 17 2005 Owen Taylor <otaylor@redhat.com> - 1.10.0-1
 - Upgrade to 1.10.0
 

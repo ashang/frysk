@@ -1,4 +1,25 @@
 2005-09-26  Igor Foox  <ifoox@redhat.com>
+	
+	* rpm-specs/frysk-glib2.spec: Updated to glib2-2.8.2.
+	
+	* rpm-specs/frysk-cairo-java.spec, 
+	rpm-specs/frysk-cairo.spec,
+	rpm-specs/frysk-fontconfig.spec, 
+	rpm-specs/frysk-glib2.spec, 
+	rpm-specs/frysk-glib-java.spec, 
+	rpm-specs/frysk-gtk2.spec, 
+	rpm-specs/frysk-libglade-java.spec, 
+	rpm-specs/frysk-libgtk-java.spec,
+	frysk-pango.spec: Changed optional installation prefix from /opt to
+	/opt/frysk.
+
+	* rpm-specs/frysk-cairo-java.spec, 
+	rpm-specs/frysk-libgtk-java.spec,
+	rpm-specs/frysk-glib-java.spec, 
+	rpm-specs/frysk-libglade-java.spec:Conditionalized the 'frysk-' prefix.
+	Removed unnecessary patches. Did some other minor clean-ups.
+
+2005-09-26  Igor Foox  <ifoox@redhat.com>
 
 	* configure.ac: Changed PKG_CONFIG_PATH to /opt/frysk from /opt.
 
@@ -32,6 +53,7 @@
 	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
 	Change JGCOMMON variable to GLIB_JAVA.
 
+>>>>>>> 1.39
 2005-09-15  Igor Foox  <ifoox@redhat.com>
 
 	* rpm-specs/frysk-libglade-java.spec: Updated to require sources to

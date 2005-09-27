@@ -1,4 +1,4 @@
-%define _prefix /opt
+%define _prefix /opt/frysk
 %define _sysconfdir %{_prefix}/etc
 %define _localstatedir %{_prefix}/var
 %define _infodir %{_prefix}/share/info
@@ -8,11 +8,11 @@
 %define name_base glib2
 Summary: A library of handy utility functions.
 Name: frysk-%{name_base}
-Version: 2.8.1
+Version: 2.8.2
 Release: 1
 License: LGPL
 Group: System Environment/Libraries
-Source: glib-%{version}.tar.bz2
+Source: glib-%{version}.tar.gz
 Source2: glib2.sh
 Source3: glib2.csh
 Conflicts: libgnomeui <= 2.2.0
@@ -107,6 +107,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*
 
 %changelog
+* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.8.2-1
+- Imported glib2-2.8.2
+
+- Changed installation prefix from /opt to /opt/frysk.
+
 * Sat Aug 23 2005 Matthias Clasen <mclasen@redhat.com> - 2.8.1-1
 - New upstream version
 - Drop patches

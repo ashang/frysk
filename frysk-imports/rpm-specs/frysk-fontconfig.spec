@@ -1,4 +1,4 @@
-%define _prefix /opt
+%define _prefix /opt/frysk
 %define _sysconfdir %{_prefix}/etc
 %define _localstatedir %{_prefix}/var
 %define _infodir %{_prefix}/share/info
@@ -12,7 +12,7 @@
 Summary: Font configuration and customization library
 Name: frysk-%{name_base}
 Version: 2.3.2
-Release: 1
+Release: 2
 License: MIT
 Group: System Environment/Libraries
 Source: http://fontconfig.org/release/fontconfig-%{version}.tar.gz
@@ -148,6 +148,9 @@ fi
 %{_mandir}/man3/*
 
 %changelog
+* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.3.2-2
+- Changed installation prefix from /opt to /opt/frysk.
+
 * Fri Jul 22 2005 Kristian Høgsberg <krh@redhat.com> - 2.3.2-1
 - Update to fontconfig-2.3.2.  Drop
 
