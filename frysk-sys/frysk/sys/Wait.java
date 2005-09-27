@@ -37,12 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.sys;
+
 /**
  * Wait for an event from either a process, task, or all processes and
  * tasks.
  */
-
-package frysk.sys;
 
 public final class Wait
 {

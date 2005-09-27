@@ -1,5 +1,9 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* ExampleJUnitTest.java: Delete.
+	* Errno.java, Itimer.java, Pid.java, Poll.java, Ptrace.java,
+	Signal.java, Wait.java: Add more documentation.
+
 	* Fork.java: Have "ptrace" should call "ptrace", not "exec".
 	Update comments.
 

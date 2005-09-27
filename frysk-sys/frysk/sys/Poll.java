@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.sys;
+
 /**
  * Poll like interface for waiting on kernel events.
  *
@@ -46,8 +48,6 @@
  * (which extends this object) is notified via the abstract notify
  * methods.
  */
-
-package frysk.sys;
 
 public final class Poll
 {

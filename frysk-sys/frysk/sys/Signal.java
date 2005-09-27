@@ -37,15 +37,20 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Misc system calls.
- *
- */
-
 package frysk.sys;
+
+/**
+ * Signal handling.
+ */
 
 public class Signal
 {
+    /**
+     * Deliver SIG to process PID.
+     */
     public static native void kill (int pid, int sig);
+    /**
+     * Deliver SIG to task (or thread) LWP.
+     */
     public static native void tkill (int lwp, int sig);
 }

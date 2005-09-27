@@ -39,8 +39,18 @@
 
 package frysk.sys;
 
+/**
+ * Get process information.
+ */
+
 public final class Pid
 {
+    /**
+     * Returns the process ID of this process.
+     */
     public static native int get ();
+    /**
+     * Returns the process ID of the parent to this process.
+     */
     public static native int getParent ();
 }

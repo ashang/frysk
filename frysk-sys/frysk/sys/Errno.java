@@ -37,68 +37,85 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.sys;
+
 /**
  * Host Errors, thrown by this directory.
- *
  */
-
-package frysk.sys;
 
 public class Errno
     extends RuntimeException
 {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Bad file descriptor.
+     */
     static public class Ebadf
 	extends Errno
     {
         private static final long serialVersionUID = 1L;
 
-    protected Ebadf (String message)
+	protected Ebadf (String message)
 	{
 	    super (message);
 	}
     }
+    /**
+     * Not enough space.
+     */
     static public class Enomem
 	extends Errno
     {
         private static final long serialVersionUID = 1L;
 
-    protected Enomem (String message)
+	protected Enomem (String message)
 	{
 	    super (message);
 	}
     }
+    /**
+     * Bad address.
+     */
     static public class Efault
 	extends Errno
     {
         private static final long serialVersionUID = 1L;
 
-    protected Efault (String message)
+	protected Efault (String message)
 	{
 	    super (message);
 	}
     }
+    /**
+     * Invalid argument.
+     */
     static public class Einval
 	extends Errno
     {
         private static final long serialVersionUID = 1L;
 
-    protected Einval (String message)
+	protected Einval (String message)
 	{
 	    super (message);
 	}
     }
+    /**
+     * No such process.
+     */
     static public class Esrch
 	extends Errno
     {
         private static final long serialVersionUID = 1L;
 
-    protected Esrch (String message)
+	protected Esrch (String message)
 	{
 	    super (message);
 	}
     }
+    /**
+     * No child process.
+     */
     static public class Echild
 	extends Errno
     {
@@ -109,11 +126,15 @@ public class Errno
 	}
     }
 
-    private String message;
+    /**
+     * Returns the error message string for this error.
+     */
     public String toString ()
     {
 	return message;
     }
+    private String message;
+
     protected Errno (String message)
     {
 	this.message = message;

@@ -39,21 +39,68 @@
 
 package frysk.sys;
 
+/**
+ * Trace a process.
+ */
+
 public final class Ptrace
 {
+    /**
+     * Attach to the process specified by PID.
+     */
     public static native void attach (int pid);
+    /**
+     * Detach from the process specified by PID.
+     */
     public static native void detach (int pid, int sig);
+    /**
+     * Single-step (instruction step) the process specified by PID, if
+     * SIG is non-zero, deliver the signal.
+     */
     public static native void singleStep (int pid, int sig);
+    /**
+     * Continue the process specified by PID, if SIG is non-zero,
+     * deliver the signal.
+     */
     public static native void cont (int pid, int sig);
+    /**
+     * Continue the process specified by PID, stopping when there is a
+     * system-call; if SIG is non-zero deliver the signal.
+     */
     public static native void sysCall (int pid, int sig);
+    /**
+     * Feltch the auxilary information associated with PID's last WAIT
+     * event.
+     */
     public static native long getEventMsg (int pid);
-    // Uses TRACEME.
+    /**
+     * Create an attached child process.  Uses PT_TRACEME.
+     */
     public native static int child (String in, String out, String err,
 				    String[] args);
+    /**
+     * Set PID's trace options.  OPTIONS is formed by or'ing the
+     * values returned by the option* methods below.
+     */
     public static native void setOptions (int pid, long options);
+    /**
+     * Return the bitmask for enabling clone tracing.
+     */
     public static native long optionTraceClone ();
+    /**
+     * Return the bitmask for enabling fork tracing.
+     */
     public static native long optionTraceFork ();
+    /**
+     * Return the bitmask for enabling exit tracing.
+     */
     public static native long optionTraceExit ();
+    /**
+     * Return the bitmask for enabling SYSGOOD(?} tracing.
+     */
     public static native long optionTraceSysgood ();
+    /**
+     * Return the bitmask for enabling exec tracing.
+     */
     public static native long optionTraceExec ();
 }
