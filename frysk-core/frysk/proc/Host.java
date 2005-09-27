@@ -84,14 +84,14 @@ public abstract class Host
     void add (Proc proc)
     {
 	Manager.procDiscovered.notify (proc);
-	procAdded.notify (proc);
+	observableProcAdded.notify (proc);
 	procPool.put (proc.id, proc);
     }
     void remove (Proc proc)
     {
 	procPool.remove (proc.id);
 	Manager.procRemoved.notify (proc);
-	procRemoved.notify (proc);
+	observableProcRemoved.notify (proc);
     }
     public Iterator getProcIterator ()
     {
@@ -154,7 +154,6 @@ public abstract class Host
 	    (new HostEvent.RequestAttachProc (this, id));
     }
 
-
     /**
      * A process has been added.  Possible reasons include a process
      * referesh, and a fork.
@@ -162,14 +161,15 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public Manager.ProcObservable procAdded = new Manager.ProcObservable ();
+    public ProcObservable observableProcAdded = new ProcObservable ();
+
     /*
      * An existing process has been removed.  Possible reasons include
-     * that the process is no longer listed in the system process
-     * tables (and presumably exited).
+     * the process is no longer listed in the system process table
+     * (and presumably has exited).
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public Manager.ProcObservable procRemoved = new Manager.ProcObservable ();
+    public ProcObservable observableProcRemoved = new ProcObservable ();
 }

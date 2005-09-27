@@ -439,7 +439,7 @@ public class TestLib
 	}
 	protected TaskCounter ()
 	{
-	    Manager.host.procAdded.addObserver (new Observer ()
+	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -489,7 +489,7 @@ public class TestLib
 	 */
 	ProcCounter ()
 	{
-	    Manager.host.procAdded.addObserver (new Observer ()
+	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -542,7 +542,7 @@ public class TestLib
 	int numberExecs;
 	ExecCounter ()
 	{
-	    Manager.host.procAdded.addObserver (new Observer ()
+	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {

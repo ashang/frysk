@@ -46,21 +46,10 @@
 
 package frysk.proc;
 
-import java.util.Observable;
 import frysk.event.EventLoop;
 
 public class Manager
 {
-    public static class ProcObservable
-	extends Observable
-    {
-	protected void notify (Proc proc)
-	{
-	    setChanged ();
-	    notifyObservers (proc);
-	}
-    }
-
     /**
      * Use host.procAdded.
      */

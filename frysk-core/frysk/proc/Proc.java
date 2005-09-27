@@ -267,16 +267,6 @@ public abstract class Proc
 	host.remove (this);
     }
 
-    public class TaskObservable
-	extends Observable
-    {
-	protected void notify (Task task)
-	{
-	    setChanged ();
-	    notifyObservers (task);
-	}
-    }
-
     static class TaskForcedStopObserver
         implements Observer
     {
@@ -346,7 +336,7 @@ public abstract class Proc
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public Manager.ProcObservable observableAttachedContinue = new Manager.ProcObservable ();
+    public ProcObservable observableAttachedContinue = new ProcObservable ();
 
     public String toString ()
     {

@@ -61,8 +61,8 @@ public class TestRefresh
 	ChildTracker (Child child)
 	{
 	    this.child = child;
-	    added = new PidCounter (child.pid, Manager.host.procAdded);
-	    removed = new PidCounter (child.pid, Manager.host.procRemoved);
+	    added = new PidCounter (child.pid, Manager.host.observableProcAdded);
+	    removed = new PidCounter (child.pid, Manager.host.observableProcRemoved);
 	}
 	Proc proc;
 	void verifyAdd (String reason, int tasks)
