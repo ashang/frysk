@@ -148,7 +148,7 @@ public class ProcDataModel {
 		this.taskCreatedObserver = new TaskCreatedObserver();
 		this.taskDestroyedObserver = new TaskDestroyedObserver ();
 		
-		Manager.procDiscovered.addObserver(this.procCreatedObserver);
+		Manager.host.observableProcAdded.addObserver(this.procCreatedObserver);
 		Manager.procRemoved.addObserver(this.procDestroyedObserver);
 	}
 	

@@ -1,5 +1,9 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* ActionPool.java, LogWindow.java, ProcDataModel.java: : Instead
+	of frysk .proc .Manager .procDiscovered, use frysk .proc .Host
+	.observableProcAdded.
+	
 	* ActionPool.java, ProcDataModel.java: Use observableTaskRemoved,
 	instead of taskRemoved.
 

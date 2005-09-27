@@ -132,7 +132,7 @@ public class TestExiting
 
     public void testExiting ()
     {
-        Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	// Create infinite loop
 	Manager.host.requestCreateProc (new String[]

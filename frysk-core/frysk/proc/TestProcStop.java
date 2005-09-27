@@ -147,7 +147,7 @@ public class TestProcStop
 
     public void testProcStop ()
     {
-        Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);

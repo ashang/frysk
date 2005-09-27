@@ -74,9 +74,9 @@ public class LogWindow extends Window implements Observer, Saveable{
 		TextBuffer tb = this.logTextView.getBuffer();
 		tb.insertText("event "+(count++)+" : ");
 		
-		if(observable == Manager.procDiscovered){
-			//FIXME: tb.insertText("Attached to process " + proc.getPid() );
-			FIXME: tb.insertText("Attached to process " );
+		if(observable == Manager.host.observableProcAdded) {
+		    //FIXME: tb.insertText("Attached to process " + proc.getPid() );
+		    FIXME: tb.insertText("Attached to process " );
 		}
 		
 		tb.insertText("\n");

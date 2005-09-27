@@ -156,7 +156,7 @@ public class TestI386Regs
 
     public void testI386Regs ()
     {
-        Manager.procDiscovered.addObserver (pco);
+        Manager.host.observableProcAdded.addObserver (pco);
  	// Create program making an exit syscall");
 	Manager.host.requestCreateProc (new String[]
 	    {

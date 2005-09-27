@@ -130,8 +130,8 @@ public class ActionPool {
 
 		public void execute(ProcData data) {
 			System.out.println("sending Manager.host.requestAttachProc");
-			Manager.procDiscovered
-					.addObserver(WindowManager.theManager.logWindow);
+			Manager.host.observableProcAdded.addObserver
+			    (WindowManager.theManager.logWindow);
 			
 			Manager.host.requestAttachProc(data.getProc().getId());
 		}

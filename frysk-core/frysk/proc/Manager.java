@@ -37,6 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import frysk.event.EventLoop;
+
 /**
  * Manager of all operations within the proc model.
  *
@@ -44,24 +48,13 @@
  * moment).
  */
 
-package frysk.proc;
-
-import frysk.event.EventLoop;
-
 public class Manager
 {
-    /**
-     * Use host.procAdded.
-     */
-    static public ProcObservable procDiscovered = new ProcObservable ();
     /**
      * Use host.procRemoved.
      */
     static public ProcObservable procRemoved = new ProcObservable ();
 	
-    // static public PsObserver     psObserver = new PsObserver ();
-
-
     // The host (for moment only the local native host).
 
     // XXX: Should have the LinuxHost, along with any other host
@@ -73,7 +66,6 @@ public class Manager
 
     static void resetXXX ()
     {
-	procDiscovered = new ProcObservable ();
 	procRemoved = new ProcObservable ();
 	eventLoop = new EventLoop ();
 	host = new LinuxHost (eventLoop);

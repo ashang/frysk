@@ -187,7 +187,7 @@ public class TestI386Modify
 
     public void testI386Modify ()
     {
-	Manager.procDiscovered.addObserver (pdo);
+	Manager.host.observableProcAdded.addObserver (pdo);
 	// Create program making syscalls
 	Manager.host.requestCreateProc ( new String[]
 	{

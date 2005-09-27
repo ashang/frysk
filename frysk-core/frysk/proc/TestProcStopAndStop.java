@@ -169,7 +169,7 @@ public class TestProcStopAndStop
 
     public void testProcStopAndStop ()
     {
-        Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);

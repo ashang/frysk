@@ -211,7 +211,7 @@ public class TestStep
 
     public void testStep ()
     {
-        Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	// Create threaded infinite loop
 	Manager.host.requestCreateProc (new String[]

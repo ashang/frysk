@@ -119,7 +119,7 @@ public class TestSyscall2
     public void testSyscall2 ()
     {
 	String arg = "10000";
-        Manager.procDiscovered.addObserver (pco);
+        Manager.host.observableProcAdded.addObserver (pco);
 	Manager.host.requestCreateProc ( new String[]
 	    {
  		"./prog/syscall/syscallloop",

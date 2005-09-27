@@ -1,5 +1,15 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Manager.java: Delete procDiscovered.
+	* Host.java, TestAttachCloningThreads.java, TestExiting.java,
+	TestGoAndGo.java, TestI386Modify.java, TestI386Regs.java,
+	TestPaused.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestStep.java,
+	TestStop.java, TestStopAndGo.java, TestStopAndStop.java,
+	TestSyscall.java, TestSyscall2.java, TestSyscallOpen.java,
+	TestTerminated.java, TestUnpaused.java: Instead of Manager
+	.procDiscovered, use Host .observableProcAdded.
+
 	* Proc.java: Rename taskAdded to observableTaskAdded, and
 	taskRemoved to observableTaskRemoved.
 	* Task.java, TaskState.java, TestGoAndGo.java, TestLib.java,

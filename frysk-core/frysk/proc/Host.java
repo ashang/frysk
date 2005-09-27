@@ -83,7 +83,6 @@ public abstract class Host
     protected Map procPool = new HashMap ();
     void add (Proc proc)
     {
-	Manager.procDiscovered.notify (proc);
 	observableProcAdded.notify (proc);
 	procPool.put (proc.id, proc);
     }

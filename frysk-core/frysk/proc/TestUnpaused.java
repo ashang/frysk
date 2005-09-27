@@ -274,7 +274,7 @@ public class TestUnpaused
 
     public void testUnpaused ()
     {
-        Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	int pid = XXX.infThreadLoop (2);
 	Manager.host.requestAttachProc (new ProcId (pid));
