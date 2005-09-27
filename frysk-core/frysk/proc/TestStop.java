@@ -71,7 +71,7 @@ public class TestStop
             Proc proc = (Proc) obj;
 	    pid = proc.id.hashCode ();
             proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
-	    proc.taskRemoved.addObserver (new TaskDestroyedObserver ());
+	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
     }
  

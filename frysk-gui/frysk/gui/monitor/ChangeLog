@@ -1,3 +1,8 @@
+2005-09-27  Andrew Cagney  <cagney@redhat.com>
+
+	* ActionPool.java, ProcDataModel.java: Use observableTaskRemoved,
+	instead of taskRemoved.
+
 2005-09-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcDataModel.java: Removed calls to refilter.

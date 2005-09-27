@@ -120,7 +120,7 @@ abstract public class Task
 	proc.add (this);
 	proc.host.add (this);
 	proc.taskDiscovered.notify (this);
-	proc.taskAdded.notify (this);
+	proc.observableTaskAdded.notify (this);
     }
 
     // all the info on a task

@@ -37,10 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Runs the program, along with any sub-programs.
- */
-
 package frysk.bindir;
 
 import java.util.Observable;
@@ -49,6 +45,10 @@ import java.util.Observer;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+
+/**
+ * Runs the program, along with any sub-programs.
+ */
 
 class ftrace
 {
@@ -82,8 +82,8 @@ class ftrace
 	{
 	    count++;
 	    Proc proc = (Proc) obj;
-	    proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
-	    proc.taskRemoved.addObserver (new TaskDestroyedObserver ());
+	    proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
+	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
 	}
     }
 
@@ -111,8 +111,10 @@ class ftrace
 	    return;
 	}
 
-	Manager.procDiscovered.addObserver (new ProcCreatedObserver ());
-	Manager.procRemoved.addObserver (new ProcDestroyedObserver ());
+	Manager.host.observableProcAdded.addObserver
+	    (new ProcCreatedObserver ());
+	Manager.host.observableProcRemoved.addObserver
+	    (new ProcDestroyedObserver ());
 	Manager.host.requestCreateProc (args);
 	Manager.eventLoop.run ();
 	System.out.println ("Tasks Created " +

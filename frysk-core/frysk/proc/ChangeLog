@@ -1,5 +1,13 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Rename taskAdded to observableTaskAdded, and
+	taskRemoved to observableTaskRemoved.
+	* Task.java, TaskState.java, TestGoAndGo.java, TestLib.java,
+	TestPaused.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestStep.java,
+	TestStop.java, TestStopAndGo.java, TestStopAndStop.java,
+	TestUnpaused.java: Update.
+	
 	* TestAttachThreads.java, TestAttach.java: Delete, replaced by
 	TestProcStates.java.
 

@@ -226,10 +226,11 @@ public class ActionPool {
 		}
 
 		public void execute(ProcData data) {
-			// FIXME: according to test case must do proc.task.traceExec = true
-			// first. But we dont have a handle on threads yet
-			data.getProc().taskRemoved
-					.addObserver(WindowManager.theManager.logWindow);
+			// FIXME: according to test case must do
+			// proc.task.traceExec = true first. But we
+			// dont have a handle on threads yet
+			data.getProc().observableTaskRemoved
+			    .addObserver(WindowManager.theManager.logWindow);
 		}
 
 		public void execute(TaskData data) {

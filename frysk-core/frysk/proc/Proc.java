@@ -294,9 +294,28 @@ public abstract class Proc
         }
     }
 
+    /**
+     * Notify of the addition of a task attached to this process.
+     *
+     * This event indicates the presence of the task, not that it is
+     * attached or detached.  When ever a task is attached a {@link
+     * Task.observableAttachedContinue} or {@link
+     * Task.observableAttachedStopped} event also occures.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public TaskObservable observableTaskAdded = new TaskObservable ();
+    /**
+     * Notify of the removal of a task attached to this process.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public TaskObservable observableTaskRemoved = new TaskObservable ();
+
     public TaskForcedStopObserver stopObserver = new TaskForcedStopObserver ();
     protected Map taskPool = new HashMap ();
-    public TaskObservable taskAdded = new TaskObservable ();
     public TaskObservable taskDiscovered = new TaskObservable ();
     void add (Task task)
     {
@@ -312,12 +331,11 @@ public abstract class Proc
 	taskPool.values().removeAll (tasks);
 	host.removeTasks (tasks);
     }
-    public TaskObservable taskRemoved = new TaskObservable ();
     /** Tempoary observer, for code needing an exit-status.  */
     public TaskEventObservable taskDestroyed = new TaskEventObservable ();
     void remove (Task task)
     {
-	taskRemoved.notify (task);
+	observableTaskRemoved.notify (task);
 	taskPool.remove (task.id);
 	host.remove (task);
     }

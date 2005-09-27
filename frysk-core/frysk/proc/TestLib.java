@@ -444,7 +444,7 @@ public class TestLib
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
-			proc.taskAdded.addObserver (new Observer ()
+			proc.observableTaskAdded.addObserver (new Observer ()
 			    {
 				public void update (Observable o, Object obj)
 				{
@@ -452,7 +452,7 @@ public class TestLib
 				    added.add (task);
 				}
 			    });
-			proc.taskRemoved.addObserver (new Observer ()
+			proc.observableTaskRemoved.addObserver (new Observer ()
 			    {
 				public void update (Observable o, Object obj)
 				{
@@ -497,7 +497,7 @@ public class TestLib
 			added.add (proc);
 			// Need to tell system that you want to track
 			// fork events.
-			proc.taskAdded.addObserver (new Observer () {
+			proc.observableTaskAdded.addObserver (new Observer () {
 				public void update (Observable o, Object obj)
 				{
 				    Task task = (Task) obj;
@@ -547,7 +547,7 @@ public class TestLib
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
-			proc.taskAdded.addObserver (new Observer ()
+			proc.observableTaskAdded.addObserver (new Observer ()
 			    {
 				public void update (Observable o, Object obj)
 				{
