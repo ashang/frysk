@@ -194,7 +194,8 @@ public class TestI386Modify
  	    "./prog/x86isa/x86modify"
 	});
 
-	Manager.procRemoved.addObserver (new ProcRemovedObserver ());
+	Manager.host.observableProcRemoved.addObserver
+	    (new ProcRemovedObserver ());
 	assertRunUntilStop ("run \"x86modify\" to exit");
 
 	assertTrue ("Proc destruction confirmed", exited);

@@ -506,7 +506,7 @@ public class TestLib
 			    });
 		    }
 		});
-	    Manager.procRemoved.addObserver (new Observer ()
+	    Manager.host.observableProcRemoved.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -681,7 +681,7 @@ public class TestLib
     {
 	StopEventLoopOnProcDestroy ()
 	{
-	    Manager.procRemoved.addObserver (new Observer ()
+	    Manager.host.observableProcRemoved.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {

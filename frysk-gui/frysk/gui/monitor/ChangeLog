@@ -1,5 +1,8 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcDataModel.java: Instead of frysk .proc .Manager
+	.procRemoved, use frysk .proc .Host .observableProcRemoved.
+
 	* ActionPool.java, LogWindow.java, ProcDataModel.java: : Instead
 	of frysk .proc .Manager .procDiscovered, use frysk .proc .Host
 	.observableProcAdded.

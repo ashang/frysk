@@ -126,7 +126,8 @@ public class TestSyscall2
 		arg
  	    });
 
-        Manager.procRemoved.addObserver (new ProcDestroyedObserver ());
+        Manager.host.observableProcRemoved.addObserver
+	    (new ProcDestroyedObserver ());
 
  	assertRunUntilStop ("run \"syscallloop\" until exit");
 

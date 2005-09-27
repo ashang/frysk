@@ -163,7 +163,8 @@ public class TestI386Regs
  		"./prog/x86isa/x86regs"
  	    });
 
-        Manager.procRemoved.addObserver (new ProcDestroyedObserver ());
+        Manager.host.observableProcRemoved.addObserver
+	    (new ProcDestroyedObserver ());
 
  	assertRunUntilStop ("run \"x86regs\" until exit");
 

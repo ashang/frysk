@@ -89,7 +89,6 @@ public abstract class Host
     void remove (Proc proc)
     {
 	procPool.remove (proc.id);
-	Manager.procRemoved.notify (proc);
 	observableProcRemoved.notify (proc);
     }
     public Iterator getProcIterator ()

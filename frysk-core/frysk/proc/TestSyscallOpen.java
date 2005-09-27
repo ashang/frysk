@@ -164,7 +164,8 @@ public class TestSyscallOpen
  		"./prog/syscall/syscalls"
  	    });
 
-        Manager.procRemoved.addObserver (new ProcDestroyedObserver ());
+        Manager.host.observableProcRemoved.addObserver
+	    (new ProcDestroyedObserver ());
 
  	assertRunUntilStop ("run \"syscalls\" until exit");
 	

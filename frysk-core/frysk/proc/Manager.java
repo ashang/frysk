@@ -50,11 +50,6 @@ import frysk.event.EventLoop;
 
 public class Manager
 {
-    /**
-     * Use host.procRemoved.
-     */
-    static public ProcObservable procRemoved = new ProcObservable ();
-	
     // The host (for moment only the local native host).
 
     // XXX: Should have the LinuxHost, along with any other host
@@ -66,7 +61,6 @@ public class Manager
 
     static void resetXXX ()
     {
-	procRemoved = new ProcObservable ();
 	eventLoop = new EventLoop ();
 	host = new LinuxHost (eventLoop);
     }
