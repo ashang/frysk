@@ -293,7 +293,10 @@ public abstract class Proc
 	children.remove (child);
     }
 
-    public void detach ()
+    /**
+     * Use requestDetachedContinue.
+     */
+    void detach ()
     {
 	host.removeTasks (taskPool.values ());
 	if (parent != null)
