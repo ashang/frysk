@@ -249,8 +249,6 @@ public class SourceBuffer extends TextBuffer {
 //			return;
 //		}
 		
-		System.out.println("line: "+currentLine);
-		
 		// Line is executable
 		this.startCurrentLine = this.createMark("currentLineStart", this.getIter(currentLine-1, 0), true);
 		int lineLength = this.getText(this.getIter(this.startCurrentLine), this.getEndIter(), true).indexOf("\n");

@@ -114,17 +114,11 @@ public class CDTParser implements StaticParser {
 			}
 		}
 		
-		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {
-			System.out.println("Typedef decl");
-		}
+		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {}
 
-		public void acceptEnumerationSpecifier(IASTEnumerationSpecifier arg0) {
-			System.out.println("enum spec");
-		}	
+		public void acceptEnumerationSpecifier(IASTEnumerationSpecifier arg0) {}	
 
-		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {
-			System.out.println("Namespace decl");
-		}
+		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {}
 
 		public void enterClassSpecifier(IASTClassSpecifier arg0) {
 			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
@@ -140,9 +134,7 @@ public class CDTParser implements StaticParser {
 			buffer.addClass(arg0.getOffset(), arg0.getName().length());
 		}
 
-		public void acceptTypedefReference(IASTTypedefReference arg0) {
-			System.out.println("Typedef ref");
-		}
+		public void acceptTypedefReference(IASTTypedefReference arg0) {}
 
 		public void acceptVariableReference(IASTVariableReference arg0) {
 			buffer.addVariable(new Variable(arg0.getName(), 0, arg0.getOffset(), false));
@@ -152,9 +144,7 @@ public class CDTParser implements StaticParser {
 			buffer.addFunction(arg0.getName(), arg0.getOffset(), false);
 		}
 
-		public void acceptFieldReference(IASTFieldReference arg0) {
-			System.out.println("Field ref");
-		}
+		public void acceptFieldReference(IASTFieldReference arg0) {}
 
 		public void acceptParameterReference(IASTParameterReference arg0) {
 			buffer.addVariable(new Variable(arg0.getName(), 0, arg0.getOffset(), false));			
@@ -197,34 +187,34 @@ public class CDTParser implements StaticParser {
 		}
 		
 		/* UNIMPLEMENTED INTERFACE FUNCTIIONS */
-		public void enterCodeBlock(IASTCodeScope arg0) {System.out.println("Code block enter");}
-		public void acceptMacro(IASTMacro arg0) {System.out.println("Macro");}
-		public void acceptUsingDirective(IASTUsingDirective arg0) {System.out.println("Using directive");}
-		public void acceptUsingDeclaration(IASTUsingDeclaration arg0) {System.out.println("Using declaration");}
-		public void acceptASMDefinition(IASTASMDefinition arg0) {System.out.println("ASM def");}
-		public void acceptElaboratedForewardDeclaration(IASTElaboratedTypeSpecifier arg0) {System.out.println("Foreword");}
-		public void exitFunctionBody(IASTFunction arg0) {System.out.println("Func body exit");}
-		public void exitCodeBlock(IASTCodeScope arg0) {System.out.println("block exit");}
-		public void enterCompilationUnit(IASTCompilationUnit arg0) {System.out.println("Enter compl unit");}
-		public void enterInclusion(IASTInclusion arg0) {System.out.println("Enter inclusion");}
-		public void enterLinkageSpecification(IASTLinkageSpecification arg0) {System.out.println("Linkage spec enter");}
-		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {System.out.println("Template decl enter");}
-		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {System.out.println("Template spec enter");}
-		public void exitMethodBody(IASTMethod arg0) {System.out.println("Method body exit");}
-		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {System.out.println("Template inst enter");}
-		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {System.out.println("Template param ref");}
-		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {System.out.println("Enum ref");}
-		public void acceptNamespaceReference(IASTNamespaceReference arg0) {System.out.println("Namespace ref");}
-		public void acceptEnumerationReference(IASTEnumerationReference arg0) {System.out.println("Enum ref");}
-		public void acceptFriendDeclaration(IASTDeclaration arg0) {System.out.println("Friend decl");}
-		public void exitTemplateDeclaration(IASTTemplateDeclaration arg0) {System.out.println("Template decl exit");}
-		public void exitTemplateSpecialization(IASTTemplateSpecialization arg0) {System.out.println("Template spec exit");}
-		public void exitTemplateExplicitInstantiation(IASTTemplateInstantiation arg0) {System.out.println("Template explicit exit");}
-		public void exitLinkageSpecification(IASTLinkageSpecification arg0) {System.out.println("Linkage spec exit");}
-		public void exitClassSpecifier(IASTClassSpecifier arg0) {System.out.println("Class spec exit");}
-		public void exitNamespaceDefinition(IASTNamespaceDefinition arg0) {System.out.println("Namespace def exit");}
-		public void exitInclusion(IASTInclusion arg0) {System.out.println("Inclusion exit");}
-		public void exitCompilationUnit(IASTCompilationUnit arg0) {System.out.println("Comp unit exit");}
+		public void enterCodeBlock(IASTCodeScope arg0) {}
+		public void acceptMacro(IASTMacro arg0) {}
+		public void acceptUsingDirective(IASTUsingDirective arg0) {}
+		public void acceptUsingDeclaration(IASTUsingDeclaration arg0) {}
+		public void acceptASMDefinition(IASTASMDefinition arg0) {}
+		public void acceptElaboratedForewardDeclaration(IASTElaboratedTypeSpecifier arg0) {}
+		public void exitFunctionBody(IASTFunction arg0) {}
+		public void exitCodeBlock(IASTCodeScope arg0) {}
+		public void enterCompilationUnit(IASTCompilationUnit arg0) {}
+		public void enterInclusion(IASTInclusion arg0) {}
+		public void enterLinkageSpecification(IASTLinkageSpecification arg0) {}
+		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {}
+		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {}
+		public void exitMethodBody(IASTMethod arg0) {}
+		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {}
+		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {}
+		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {}
+		public void acceptNamespaceReference(IASTNamespaceReference arg0) {}
+		public void acceptEnumerationReference(IASTEnumerationReference arg0) {}
+		public void acceptFriendDeclaration(IASTDeclaration arg0) {}
+		public void exitTemplateDeclaration(IASTTemplateDeclaration arg0) {}
+		public void exitTemplateSpecialization(IASTTemplateSpecialization arg0) {}
+		public void exitTemplateExplicitInstantiation(IASTTemplateInstantiation arg0) {}
+		public void exitLinkageSpecification(IASTLinkageSpecification arg0) {}
+		public void exitClassSpecifier(IASTClassSpecifier arg0) {}
+		public void exitNamespaceDefinition(IASTNamespaceDefinition arg0) {}
+		public void exitInclusion(IASTInclusion arg0) {}
+		public void exitCompilationUnit(IASTCompilationUnit arg0) {}
 		public CodeReader createReader(String arg0, Iterator arg1) {
 			return null;
 		}

@@ -415,8 +415,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			expanded = InlineHandler.moveDown();
 		else
 			expanded = !InlineHandler.moveUp(this);
-		
-		System.out.println(expanded);
 	}
 	
 	/*
@@ -460,9 +458,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		context.setRGBForeground(new Color(r,g,b));
 		
 		// get inline color
-//		int inlineR = this.lnfPrefs.getInt(INLINE_R, 65535);
-//		int inlineG = this.lnfPrefs.getInt(INLINE_G, 65535);
-//		int inlineB = this.lnfPrefs.getInt(INLINE_B, 0);
+		int inlineR = this.lnfPrefs.getInt(INLINE_R, 65535);
+		int inlineG = this.lnfPrefs.getInt(INLINE_G, 65535);
+		int inlineB = this.lnfPrefs.getInt(INLINE_B, 0);
 		
 		// gets current line color
 		int lineR = this.lnfPrefs.getInt(CURRENT_LINE_R, 30000);
@@ -523,6 +521,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 //				context.setRGBForeground(new Color(r,g,b));
 				
 				context.setRGBForeground(new Color(markR,markG,markB));
+				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
 				Layout lo = new Layout(this.getContext());
 				lo.setAlignment(Alignment.RIGHT);
 				lo.setText("i");

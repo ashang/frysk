@@ -1,3 +1,16 @@
+2005-09-28  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineHandler.java (moveUp): Fixed errors keeping track of current scope.
+	(moveDown): Ditto.
+	(moveDown): Added ellipsis w/ tooltip when levels of code are hidden.
+	
+	* SourceViewWidget.java (toggleChild): Removed debugging output.
+	(drawMargin): First attempt at putting a background behind the 'i' in margin.
+	
+	* SourceBuffer.java (setCurrentLine): Removed debugging output.
+	
+	* cparser/CDTParser.java (ParserCallBack): Removed debugging output.
+
 2005-09-26  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (load): Added.

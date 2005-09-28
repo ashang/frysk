@@ -5,8 +5,13 @@ package frysk.gui.srcwin;
 
 import java.util.prefs.Preferences;
 
+import org.gnu.gtk.EventBox;
+import org.gnu.gtk.Justification;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
+import org.gnu.gtk.ToolTips;
+import org.gnu.gtk.VBox;
 
 
 /**
@@ -69,6 +74,7 @@ public class InlineHandler{
 				
 				parent.addChild(bottom, anchor);
 				bottom.showAll();
+				parent.draw();
 			}
 			
 			// bottom exists, now do the case where it doesn't have a next
@@ -85,25 +91,59 @@ public class InlineHandler{
 				
 				bottom.nextLevel.prevLevel = bottom;
 				bottom = bottom.nextLevel;
+				
+				bottom.prevLevel.draw();
 			}
 			// general case - move bottom to bottom.prevLevel
 			else{
-				InlineViewer tmp = bottom.prevLevel;
+				VBox box = new VBox(false, 0);
+				box.setBorderWidth(1);
+				InlineViewer tmp = new InlineViewer(myPrefs); 
+				tmp.load(bottom.prevLevel.getScope());
+				tmp.setBorderWidth(0);
+				
+				Label l = new Label("...");
+				l.setJustification(Justification.LEFT);
+				EventBox b = new EventBox();
+				b.add(l);
+				ToolTips t = new ToolTips();
+				t.setTip(b, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+				box.packEnd(b);
+				box.packEnd(tmp);
+				l = new Label("...");
+				l.setJustification(Justification.LEFT);
+				b = new EventBox();
+				b.add(l);
+				t.setTip(b, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+				box.packEnd(b);
 				
 				tmp.load(bottom.getScope());
 				
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
 				
-				SourceBuffer buf = (SourceBuffer) tmp.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
+				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
+				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+				buf.deleteText(line, buf.getIter(line.getOffset()+1));
 				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 				
+				parent.addChild(box, anchor);
+				
+				buf = (SourceBuffer) tmp.getBuffer();
+				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
+				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+				
 				tmp.addChild(bottom, anchor);
-				bottom.showAll();
+				tmp.nextLevel = bottom;
+				bottom.prevLevel = tmp;
+				box.showAll();
+				
+				tmp.expanded = true;
 				
 				bottom.prevLevel = tmp;
 				tmp.nextLevel = bottom;
+				
+				parent.draw();
 			}
 		}
 		
@@ -121,13 +161,51 @@ public class InlineHandler{
 			// Code here to move the contents of the top viewer into the lower
 			// viewer and add the top viewer's parent content into the top viewer
 			if(top.nextScope == clicked.getScope()){
-				SourceBuffer buf = (SourceBuffer) clicked.getBuffer();
+				InlineViewer tmp = new InlineViewer(myPrefs);
+				tmp.load(clicked.getScope());
+				
+				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
 				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-				buf.deleteText(line, buf.getIter(line.getOffset()+2));
-					
-				bottom = clicked;
+				buf.deleteText(line, buf.getIter(line.getOffset()+1));
+				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+				
+				parent.addChild(tmp, anchor);
+				
+				bottom = tmp;
 				currentBottom = clicked.getScope(); 
 				clicked.nextLevel = null;
+				parent.draw();
+			}
+			else if(clicked.getScope().prevScope == top.nextScope){
+				InlineViewer tmp = new InlineViewer(myPrefs);
+				tmp.load(top.nextScope);
+				
+				bottom = new InlineViewer(myPrefs);
+				bottom.load(clicked.getScope());
+				
+				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
+				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+				buf.deleteText(line, buf.getIter(line.getOffset()+1));
+				TextChildAnchor anchor = buf.createChildAnchor(line);
+				
+				parent.addChild(tmp, anchor);
+				tmp.showAll();
+				
+				buf = (SourceBuffer) tmp.getBuffer();
+				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
+				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+				
+				tmp.nextLevel = bottom;
+				bottom.prevLevel = tmp;
+				bottom.nextLevel = null;
+				
+				bottom.expanded = false;
+				tmp.expanded = true;
+				currentBottom = clicked.getScope();
+				tmp.addChild(bottom, anchor);
+				
+				tmp.draw();
+				
 			}
 			else{
 				InlineViewer tmp = clicked;
@@ -141,7 +219,13 @@ public class InlineHandler{
 				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 				
 				tmp.addChild(bottom, anchor);
+				tmp.nextLevel = bottom;
+				bottom.prevLevel = tmp;
 				bottom.showAll();
+				
+				currentBottom = bottom.getScope();
+				
+				tmp.draw();
 				
 				return false;
 			}
