@@ -304,33 +304,6 @@ public abstract class Proc
 	host.remove (this);
     }
 
-    static class TaskForcedStopObserver
-        implements Observer
-    {
-        public void update (Observable o, Object obj)
-        {
-            TaskEvent e = (TaskEvent) obj;
-	    Task task = e.task;
-	    Proc proc = task.proc;
-	    Collection allTasks = proc.taskPool.values();
-	    Iterator i = allTasks.iterator ();
-	    boolean allStopped = true;
-	    while (i.hasNext ()) {
-		Task t = (Task)i.next ();
-		if (!t.isStopped () 
-		    && t.id.hashCode () != task.id.hashCode ()) {
-		    allStopped = false;
-		    break;
-		}
-	    }
-	    if (allStopped) {
-		// all stopped
-		ProcEvent.AllStopped event = new ProcEvent.AllStopped (proc);
-		event.execute ();
-	    }
-        }
-    }
-
     /**
      * Notify of the addition of a task attached to this process.
      *
@@ -351,7 +324,31 @@ public abstract class Proc
      */
     public TaskObservable observableTaskRemoved = new TaskObservable ();
 
-    public TaskForcedStopObserver stopObserver = new TaskForcedStopObserver ();
+    public Observer stopObserver = new Observer ()
+	{
+	    public void update (Observable o, Object obj)
+	    {
+		TaskEvent e = (TaskEvent) obj;
+		Task task = e.task;
+		Proc proc = task.proc;
+		Collection allTasks = proc.taskPool.values();
+		Iterator i = allTasks.iterator ();
+		boolean allStopped = true;
+		while (i.hasNext ()) {
+		    Task t = (Task)i.next ();
+		    if (!t.isStopped () 
+			&& t.id.hashCode () != task.id.hashCode ()) {
+			allStopped = false;
+			break;
+		    }
+		}
+		if (allStopped) {
+		    // all stopped
+		    ProcEvent.AllStopped event = new ProcEvent.AllStopped (proc);
+		    event.execute ();
+		}
+	    }
+	};
     protected Map taskPool = new HashMap ();
     public TaskObservable taskDiscovered = new TaskObservable ();
     void add (Task task)
