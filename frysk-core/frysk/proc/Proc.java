@@ -356,6 +356,14 @@ public abstract class Proc
      */
     public ProcObservable observableAttachedContinue = new ProcObservable ();
 
+    /**
+     * The process has transitioned to the detached / continue state.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public ProcObservable observableDetachedContinue = new ProcObservable ();
+
     public String toString ()
     {
 	return ("[Proc"

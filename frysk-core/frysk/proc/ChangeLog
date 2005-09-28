@@ -1,5 +1,18 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStates.java: Add tests
+	testOneTaskAttachedContinueToDetachedContinue, and
+	testMultiTaskAttachedContinueToDetachedContinue.
+	* TestLib.java: Add class AttachedChild.
+	* TaskState.java: Add state "detaching"; handle
+	processRequestDetach.
+	* Task.java: Add "sendDetach", and "requestDetach".
+	* ProcState.java: Add state DetachingAllTasks; handle
+	ProcEvent.TaskDetached, and processRequestDetachedContinue.
+	* ProcEvent.java: Add "TaskDetached".
+	* Proc.java: Add "observableDetachedContinue".
+	* LinuxTask.java: Implement "sendDetach".
+
 	* HostEvent.java, HostState.java, Isa.java, LinuxHost.java,
 	LinuxProc.java, LinuxTask.java, Proc.java, TestClone.java,
 	TestExec.java, TestExiting.java, TestFork.java, TestGoAndGo.java,

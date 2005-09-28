@@ -302,6 +302,47 @@ public class TestLib
     }
 
     /**
+     * Create an attached child process.
+     */
+    protected class AttachedChild
+	extends DaemonChild
+    {
+	protected int startChild (String stdin, String stdout, String stderr,
+				  String[] argv)
+	{
+	    // Capture the child process id as it flys past.
+	    class PidObserver
+		implements Observer
+	    {
+		int pid;
+		public void update (Observable o, Object obj)
+		{
+		    Proc proc = (Proc) obj;
+		    pid = proc.getPid ();
+		    Manager.eventLoop.requestStop ();
+		    Manager.host.observableProcAdded.deleteObserver (this);
+		}
+	    }
+	    PidObserver pidObserver = new PidObserver ();
+	    Manager.host.observableProcAdded.addObserver (pidObserver);
+	    // Start the child process, run the event loop until the
+	    // pid is known.
+	    Manager.host.requestCreateProc (stdin, stdout, stderr, argv);
+	    assertRunUntilStop ("starting attached child");
+	    // Return that captured PID.
+	    return pidObserver.pid;
+	}
+	AttachedChild ()
+	{
+	    super ();
+	}
+	AttachedChild (int clones)
+	{
+	    super (clones);
+	}
+    }
+
+    /**
      * Create a daemon process that, on demand, creates a child
      * process that can, when requested, be turned into a zombie.
      */

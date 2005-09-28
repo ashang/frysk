@@ -43,8 +43,8 @@ import java.util.Observer;
 import java.util.Observable;
 
 /**
- * Test a Proc's state transitions: detached; attachedRunning;
- * attachedStopped; and destroyed.
+ * Test that a Proc correctly transitions between the states: unattached,
+ * attachedContinue attachedStop; and destroyed.
  */
 
 public class TestProcStates
@@ -54,7 +54,7 @@ public class TestProcStates
      * Check that it is possible to attach / continue a single tasked
      * process.
      */
-    public void testAttachContinueProcess ()
+    public void testOneTaskDetachedContinueToAttachedContinue ()
     {
 	Child child = new DaemonChild ();
 	Proc proc = child.findProcUsingRefresh ();
@@ -79,7 +79,7 @@ public class TestProcStates
      * the former there is no need to also attach to the non-main
      * tasks.
      */
-    public void testAttachContinueTasks ()
+    public void testMultiTaskDetachedContinueToAttachedContinue ()
     {
 	Child child = new DaemonChild (2);
 	Proc proc = child.findProcUsingRefresh ();
@@ -96,21 +96,47 @@ public class TestProcStates
 	assertRunUntilStop ("attaching to process");
     }
 
-//     /**
-//      * Check that it is possible to detach / continue an attached
-//      * single tasked child process started via fork / exec.
-//      */
-//     public void testDetachContinueProcess ()
-//     {
-//     }
+    /**
+     * Check that it is possible to detach / continue an attached
+     * single tasked child process started via fork / exec.
+     */
+    public void testOneTaskAttachedContinueToDetachedContinue ()
+    {
+	Child child = new AttachedChild ();
+	Proc proc = child.findProcUsingRefresh ();
 
-//     /**
-//      * Check that it is possible to detach /continue a multi-tasked
-//      * child process started via fork / exec.
-//      */
-//     public void testDetachContinueTasks ()
-//     {
-//     }
+	// Request that the child be detached; wait for it to ack.
+	proc.observableDetachedContinue.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
+	proc.requestDetachedContinue ();
+	assertRunUntilStop ("detaching from a process");
+    }
+
+    /**
+     * Check that it is possible to detach / continue a multi-tasked
+     * child process started via fork / exec.
+     */
+    public void testMultiTaskAttachedContinueToDetachedContinue ()
+    {
+	Child child = new AttachedChild (2);
+	Proc proc = child.findProcUsingRefresh ();
+
+	// Request that the child be detached; wait for it to ack.
+	proc.observableDetachedContinue.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
+	proc.requestDetachedContinue ();
+	assertRunUntilStop ("detaching from a process");
+    }
 
 //     /**
 //      * Check that it is possible to attach / detach a single tasked

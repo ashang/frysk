@@ -136,6 +136,10 @@ public class LinuxTask
 	    appendZombiedEvent ();
 	}
     }
+    protected void sendDetach (int sig)
+    {
+	Ptrace.detach (pid, sig);
+    }
     public String toString ()
     {
 	return "Linux" + super.toString ();

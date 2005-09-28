@@ -192,4 +192,26 @@ abstract class ProcEvent
 	    return ("{TaskAttached" + super.toString () + "}");
 	}
     }
+
+    /**
+     * A task detached.
+     */
+    static class TaskDetached
+	extends ProcEvent
+    {
+	Task task;
+	TaskDetached (Proc proc, Task task)
+	{
+	    super (proc);
+	    this.task = task;
+	}
+	public void execute ()
+	{
+ 	    proc.state = proc.state.process (proc, this);
+	}
+	public String toString ()
+	{
+	    return ("{TaskDetached" + super.toString () + "}");
+	}
+    }
 }

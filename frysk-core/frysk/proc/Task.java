@@ -142,6 +142,7 @@ abstract public class Task
     protected abstract void sendStop ();
     protected abstract void sendSetOptions ();
     protected abstract void sendAttach ();
+    protected abstract void sendDetach (int sig);
 
     protected LinkedList queuedEvents = new LinkedList ();
 
@@ -218,6 +219,21 @@ abstract public class Task
 		public void execute ()
 		{
 		    state = state.processRequestAttach (Task.this);
+		}
+	    });
+    }
+    /**
+     * Request that the task detach itself (if it isn't already).
+     * Notify containing process once detached; the task is allowed to
+     * run free.
+     */
+    void requestDetach ()
+    {
+	Manager.eventLoop.appendEvent (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processRequestDetach (Task.this);
 		}
 	    });
     }

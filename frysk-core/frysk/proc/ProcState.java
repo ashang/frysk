@@ -84,6 +84,10 @@ abstract class ProcState
     {
 	throw unhandled (proc, event);
     }
+    ProcState process (Proc proc, ProcEvent.TaskDetached event)
+    {
+	throw unhandled (proc, event);
+    }
     ProcState processRequestRemoval (Proc proc)
     {
 	throw unhandled (proc, "RequestRemoval");
@@ -113,7 +117,14 @@ abstract class ProcState
 	{
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
-		return new AttachingToMainTask (proc);
+		// XXX: Instead of doing a full refresh, should
+		// instead just pull out (with a local refresh) the
+		// main task.
+		proc.sendRefresh ();
+		// Grab the main task and attach to that.
+		Task task = Manager.host.get (new TaskId (proc.getPid ()));
+		task.requestAttach ();
+		return new AttachingToMainTask ();
 	    }
 	    ProcState processRequestRefresh (Proc proc)
 	    {
@@ -140,15 +151,9 @@ abstract class ProcState
     static class AttachingToMainTask
 	extends ProcState
     {
-	AttachingToMainTask (Proc proc)
+	AttachingToMainTask ()
 	{
 	    super ("AttachingWaitingForMainTask");
-	    // XXX: Instead of doing a full refresh, should instead
-	    // just pull out (with a local refresh) the main task.
-	    proc.sendRefresh ();
-	    // Grab the main task and attach to that.
-	    Task task = Manager.host.get (new TaskId (proc.getPid ()));
-	    task.requestAttach ();
 	}
 	ProcState process (Proc proc, ProcEvent.TaskAttached event)
 	{
@@ -189,7 +194,7 @@ abstract class ProcState
     class AttachingToOtherTasks
 	extends ProcState
     {
-	Map unattachedTasks;
+	private Map unattachedTasks;
 	AttachingToOtherTasks (Proc proc, Map unattachedTasks)
 	{
 	    super ("AttachingWaitingForOtherTasks");
@@ -211,6 +216,33 @@ abstract class ProcState
 	    }
 	    proc.observableAttachedContinue.notify (proc);
 	    return running;
+	}
+    }
+
+    /**
+     * In the process of detaching; waiting for all tasks to report
+     * back that they have successfully detached.
+     */
+    static class DetachingAllTasks
+	extends ProcState
+    {
+	private Map attachedTasks;
+	DetachingAllTasks (Map attachedTasks)
+	{
+	    super ("DetachingAllTasks");
+	    this.attachedTasks = attachedTasks;
+	}
+	ProcState process (Proc proc, ProcEvent.TaskDetached event)
+	{
+	    // As each task reports that it has detached, remove it
+	    // from the list.  Once there are none left the detach is
+	    // done.
+	    attachedTasks.remove (event.task.id);
+	    if (attachedTasks.size () > 0)
+		return this;
+	    // All done, notify.
+	    proc.observableDetachedContinue.notify (proc);
+	    return unattached;
 	}
     }
 
@@ -267,6 +299,17 @@ abstract class ProcState
 		proc.sendNewAttachedChild (event.getForkId ());
 		// The process has already been added to the tree.
 		return running;
+	    }
+	    ProcState processRequestDetachedContinue (Proc proc)
+	    {
+		Map attachedTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.requestDetach ();
+		}
+		return new DetachingAllTasks (attachedTasks);
 	    }
 	};
 

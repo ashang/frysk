@@ -122,6 +122,10 @@ class TaskState
     {
 	throw unhandled (task, "RequestAttach");
     }
+    TaskState processRequestDetach (Task task)
+    {
+	throw unhandled (task, "RequestDetach");
+    }
 
     /**
      * An attached task was destroyed, notify observers and, when the
@@ -375,6 +379,11 @@ class TaskState
 	    {
 		return running;
 	    }
+	    TaskState processRequestDetach (Task task)
+	    {
+		task.sendStop ();
+		return detaching;
+	    }
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
 		task.stopEvent.notify (event);
@@ -439,6 +448,18 @@ class TaskState
     	    {
 		return zombied;
     	    }
+	};
+
+    static TaskState detaching = new TaskState ("detaching")
+	{
+	    TaskState process (Task task, TaskEvent.Stopped event)
+	    {
+		// XXX: Need to hang onto the signal that was about to
+		// be delivered?
+		task.sendDetach (0);
+		Manager.eventLoop.appendEvent (new ProcEvent.TaskDetached (task.proc, task));
+		return unattached;
+	    }
 	};
 
     static TaskState stepping = new TaskState ("stepping")
