@@ -1,5 +1,8 @@
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add AttachedChild constructor for creating a
+	busy-loop process.
+
 	* Proc.java: In "toString", print the current "state".
 	
 	* TaskState.java: Handle processPerformStop, and

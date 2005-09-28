@@ -340,6 +340,10 @@ public class TestLib
 	{
 	    super (clones);
 	}
+	AttachedChild (int clones, boolean polling)
+	{
+	    super (clones, polling);
+	}
     }
 
     /**
