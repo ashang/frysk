@@ -37,14 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
 /**
  * Check that a program can be run to completion.
  *
  * A scratch file is created.  The program "rm -f TMPFILE" is then
  * run.  That the tmp file has been removed is then checked.
  */
-
-package frysk.proc;
 
 public class TestRun
     extends TestLib

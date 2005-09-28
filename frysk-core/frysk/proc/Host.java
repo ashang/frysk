@@ -37,18 +37,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * A host machine.
- *
- * A HOST has processes which contain threads.
- */
-
 package frysk.proc;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
+
+/**
+ * A host machine.
+ *
+ * A HOST has processes which contain threads.
+ */
 
 public abstract class Host
 {

@@ -37,6 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.XXX;
+
 /**
  * Check that a process can be stopped and recontinued.
  *
@@ -47,12 +53,6 @@
  * timer.  We again use the stop() method to stop the process
  * and then we detach ().
  */
-
-package frysk.proc;
-
-import java.util.Observer;
-import java.util.Observable;
-import frysk.sys.XXX;
 
 public class TestProcStopAndGo
     extends TestLib

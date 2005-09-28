@@ -37,6 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+
 /**
  * Check that registers and memory can be modified for I386.
  * This test case runs an assembler program that will terminate successfully
@@ -48,11 +53,6 @@
  * will verify the new register values and will not issue the exit syscall
  * unless everything is correct.
  */
-
-package frysk.proc;
-
-import java.util.Observer;
-import java.util.Observable;
 
 public class TestI386Modify
    extends TestLib

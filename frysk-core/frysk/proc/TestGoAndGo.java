@@ -37,6 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.XXX;
+
 /**
  * Check that a running program can handle extraneous go requests.
  *
@@ -44,12 +50,6 @@
  * A timer is set up to detach from the program after a specified interval.
  * We then send a signal to the program to allow it to end.
  */
-
-package frysk.proc;
-
-import java.util.Observer;
-import java.util.Observable;
-import frysk.sys.XXX;
 
 public class TestGoAndGo
     extends TestLib

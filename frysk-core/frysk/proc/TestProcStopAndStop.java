@@ -37,6 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.XXX;
+
 /**
  * Check that a process with all its threads can be stopped and once
  * stopped, a subsequent process stop request will result in
@@ -47,12 +53,6 @@
  * We then use the Proc.stop() method to stop the process and wait
  * for notification so we can issue detach().
  */
-
-package frysk.proc;
-
-import java.util.Observer;
-import java.util.Observable;
-import frysk.sys.XXX;
 
 public class TestProcStopAndStop
     extends TestLib

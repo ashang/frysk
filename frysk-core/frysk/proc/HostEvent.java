@@ -37,15 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import frysk.event.Event;
+
 /**
  * Possible host events.
  *
  * Eventually this can encompass things like host down, et.al.
  */
-
-package frysk.proc;
-
-import frysk.event.Event;
 
 abstract class HostEvent
     implements Event

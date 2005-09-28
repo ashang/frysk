@@ -37,10 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Linux implementation of Task.
- */
-
 package frysk.proc;
 
 import frysk.sys.Errno;
@@ -49,6 +45,10 @@ import frysk.sys.Sig;
 import frysk.sys.Signal;
 import inua.eio.ByteBuffer;
 import inua.eio.PtraceByteBuffer;
+
+/**
+ * Linux implementation of Task.
+ */
 
 public class LinuxTask
     extends Task

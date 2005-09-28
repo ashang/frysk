@@ -37,10 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * A Linux Host.
- */
-
 package frysk.proc;
 
 import frysk.event.EventLoop;
@@ -54,6 +50,10 @@ import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
+
+/**
+ * A Linux Host.
+ */
 
 public class LinuxHost
     extends Host

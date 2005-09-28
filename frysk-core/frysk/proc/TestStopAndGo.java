@@ -37,16 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Check that tasks can be manually stopped and restarted.
- *
- */
-
 package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.XXX;
+
+/**
+ * Check that tasks can be manually stopped and restarted.
+ */
 
 public class TestStopAndGo
     extends TestLib

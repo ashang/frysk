@@ -37,10 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Linux implementation of Proc.
- */
-
 package frysk.proc;
 
 import frysk.sys.Ptrace;
@@ -55,6 +51,10 @@ import java.util.HashMap;
 import inua.Scanner;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
+
+/**
+ * Linux implementation of Proc.
+ */
 
 public class LinuxProc
     extends Proc

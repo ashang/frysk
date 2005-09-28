@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
 /**
  * Check that clone (task create and delete) events are detected.
  *
@@ -44,8 +46,6 @@
  * tasks.  It then checks that the number of task create and delete
  * events matches the expected.
  */
-
-package frysk.proc;
 
 public class TestClone
     extends TestLib

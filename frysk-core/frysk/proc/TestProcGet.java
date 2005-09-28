@@ -37,14 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Test Proc's public get methods.
- */
-
 package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
+
+/**
+ * Test Proc's public get methods.
+ */
 
 public class TestProcGet
     extends TestLib

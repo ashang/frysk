@@ -37,14 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Check that I386 registers can be accessed.
- */
-
 package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
+
+/**
+ * Check that I386 registers can be accessed.
+ */
 
 public class TestI386Regs
     extends TestLib

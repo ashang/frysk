@@ -1,5 +1,16 @@
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
+	* HostEvent.java, HostState.java, Isa.java, LinuxHost.java,
+	LinuxProc.java, LinuxTask.java, Proc.java, TestClone.java,
+	TestExec.java, TestExiting.java, TestFork.java, TestGoAndGo.java,
+	TestI386Modify.java, TestI386Regs.java, TestPaused.java,
+	TestProcGet.java, TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndGo2.java, TestProcStopAndStop.java, TestRun.java,
+	TestStep.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestSyscall.java, TestSyscall2.java,
+	TestSyscallOpen.java, TestTerminated.java, TestUnpaused.java: More
+	comment tweaks.
+	
 	* Manager.java: Delete procRemoved.
 	* Host.java, TestI386Modify.java, TestI386Regs.java, TestLib.java,
 	TestSyscall.java, TestSyscall2.java, TestSyscallOpen.java: Instead

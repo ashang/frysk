@@ -37,11 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
 /**
  * Possible host states.
  */
-
-package frysk.proc;
 
 class HostState
     extends State

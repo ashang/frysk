@@ -37,10 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * A UNIX Process, containing tasks, memory, ...
- */
-
 package frysk.proc;
 
 import java.util.Collection;
@@ -51,6 +47,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
+
+/**
+ * A UNIX Process, containing tasks, memory, ...
+ */
 
 public abstract class Proc
 {

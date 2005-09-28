@@ -37,6 +37,13 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
+import java.util.Observer;
+import java.util.Observable;
+import frysk.sys.Sig;
+import frysk.sys.Signal;
+
 /**
  * Check that process termination event is detected.
  *
@@ -44,13 +51,6 @@
  * A timer is set up to SIGKILL the program after a specified interval.
  * We expect to see the TaskTerminatedEvent with the SIGKILL code.
  */
-
-package frysk.proc;
-
-import java.util.Observer;
-import java.util.Observable;
-import frysk.sys.Sig;
-import frysk.sys.Signal;
 
 public class TestTerminated
     extends TestLib

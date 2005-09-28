@@ -37,14 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
 /**
  * Test the exec event.
  *
  * The exec needs to completly replace the existing (possibly
  * multi-threaded) process with an entirely new one.
  */
-
-package frysk.proc;
 
 public class TestExec
     extends TestLib

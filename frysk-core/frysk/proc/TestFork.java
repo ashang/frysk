@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.proc;
+
 /**
  * Check that fork (new new) events are detected.
  *
@@ -44,8 +46,6 @@
  * sub-processes.  Check that the number of processes created and
  * destroyed matches what is expected.
  */
-
-package frysk.proc;
 
 public class TestFork
     extends TestLib

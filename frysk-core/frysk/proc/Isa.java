@@ -36,12 +36,17 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.proc;
 
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 import inua.eio.ByteOrder;
+
+/**
+ * Instruction Set Architecture.
+ */
 
 class Isa
 {
