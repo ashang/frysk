@@ -18,7 +18,8 @@ public class DOMTestDOMFrysk {
 	Document data = new Document(root);
 	DOMFrysk dom = new DOMFrysk(data);
 	pc = new BigInteger("25");
-	dom.DOMSetPC(pc);
+	dom.setPC(pc);
+	System.out.println("PC = " + dom.getPC());
 	dom.printDOM();
 	
 	}

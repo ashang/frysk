@@ -1,3 +1,11 @@
+2005-09-23  Rick Moseley  <rmoseley@redhat.com>	
+	
+	* dom/DOMFrysk.java: rename to setPC
+	
+	* dom/DOMFrysk.java: add getPC method
+	
+	* dom/DOMTestDOMFrysk.java: add test for getPC method
+
 2005-09-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineHandler.java (moveUp): Fixed errors keeping track of current scope.

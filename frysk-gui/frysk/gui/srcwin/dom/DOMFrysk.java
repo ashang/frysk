@@ -22,9 +22,9 @@ public class DOMFrysk {
 	 * The pid of the process this DOM represents
 	 */
 	public static final String PID_ATTR = "pid";
-	private static final String pcElement = "PC";
+	private static final String PC_ATTR = "PC";
 	public static final String pcValue = "value";
-	private static final Element pcName = new Element(pcElement);
+	private static final Element pcName = new Element(PC_ATTR);
 
 	private Document data;
 
@@ -94,10 +94,21 @@ public class DOMFrysk {
 	}
 	
 	/**
+	 * 
+	 * @return BigInteger program counter
+	 */
+	public BigInteger getPC() {
+		BigInteger bInt = 
+			new BigInteger(this.data.getRootElement().getChild(PC_ATTR
+					).getAttribute(pcValue).getValue());
+		return bInt;	
+	}
+	
+	/**
 	 * Set the PC counter value in the DOM
 	 */
-	public void DOMSetPC(BigInteger pc) {
-		this.data.getRootElement().getChild(pcElement).setAttribute(pcValue,
+	public void setPC(BigInteger pc) {
+		this.data.getRootElement().getChild(PC_ATTR).setAttribute(pcValue,
 				pc.toString());
 	}
 
