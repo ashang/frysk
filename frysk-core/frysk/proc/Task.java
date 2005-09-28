@@ -191,49 +191,51 @@ abstract public class Task
     }
 
     /**
-     * Request that the task be removed (it is no longer listed in the
-     * system process table and, presumably, has exited).
+     * (Internal) Tell the task to remove itself (it is no longer
+     * listed in the system process table and, presumably, has
+     * exited).
      *
      * This method is package local.  Only proc/ internals should be
      * making this request.
      */
-    void requestRemoval ()
+    void performRemoval ()
     {
 	Manager.eventLoop.appendEvent (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processRequestRemoval (Task.this);
+		    state = state.processPerformRemoval (Task.this);
 		}
 	    });
     }
     /**
-     * Request that the task attach itself (if it isn't already).
-     * Notify parent once attached; the task is left in the stopped
-     * state.
+     * (Internal) Tell the task to attach itself (if it isn't
+     * already).  Notify the containing process once the operation has
+     * been completed.  The task is left in the stopped state.
      */
-    void requestAttach ()
+    void performAttach ()
     {
 	Manager.eventLoop.appendEvent (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processRequestAttach (Task.this);
+		    state = state.processPerformAttach (Task.this);
 		}
 	    });
     }
+
     /**
-     * Request that the task detach itself (if it isn't already).
-     * Notify containing process once detached; the task is allowed to
-     * run free.
+     * (Internal) Tell the task to detach itself (if it isn't
+     * already).  Notify the containing process once the operation has
+     * been processed; the task is allowed to run free.
      */
-    void requestDetach ()
+    void performDetach ()
     {
 	Manager.eventLoop.appendEvent (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processRequestDetach (Task.this);
+		    state = state.processPerformDetach (Task.this);
 		}
 	    });
     }

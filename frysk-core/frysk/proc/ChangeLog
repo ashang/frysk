@@ -1,3 +1,11 @@
+2005-09-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java: Add performAttach, performDetach, and performRemoval.
+	* Proc.java: Add performTaskAttachCompleted, and
+	performTaskDetachCompleted.
+	* ProcEvent.java: Delete TaskAttached, and TaskDetached.
+	* TaskState.java, ProcState.java, LinuxProc.java: Update.
+
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* TestProcStates.java: Add tests

@@ -114,17 +114,17 @@ class TaskState
     {
 	throw unhandled (task, "RequestStepInstruction");
     }
-    TaskState processRequestRemoval (Task task)
+    TaskState processPerformRemoval (Task task)
     {
-	throw unhandled (task, "RequestRemoval");
+	throw unhandled (task, "PerformRemoval");
     }
-    TaskState processRequestAttach (Task task)
+    TaskState processPerformAttach (Task task)
     {
-	throw unhandled (task, "RequestAttach");
+	throw unhandled (task, "PerformAttach");
     }
-    TaskState processRequestDetach (Task task)
+    TaskState processPerformDetach (Task task)
     {
-	throw unhandled (task, "RequestDetach");
+	throw unhandled (task, "PerformDetach");
     }
 
     /**
@@ -156,11 +156,11 @@ class TaskState
      */
     static TaskState unattached = new TaskState ("unattached")
 	{
-	    TaskState processRequestRemoval (Task task)
+	    TaskState processPerformRemoval (Task task)
 	    {
 		return destroyed;
 	    }
-	    TaskState processRequestAttach (Task task)
+	    TaskState processPerformAttach (Task task)
 	    {
 		task.sendAttach ();
 		return attaching;
@@ -176,7 +176,7 @@ class TaskState
 	    {
 		// XXX: Need to hang onto the signal that was about to
 		// be delivered?
-		Manager.eventLoop.appendEvent (new ProcEvent.TaskAttached (task.proc, task));
+		task.proc.performTaskAttachCompleted (task);
 		task.sendSetOptions ();
 		return stopped;
 	    }
@@ -185,7 +185,7 @@ class TaskState
 		// Outch, the task disappeared before the attach
 		// reached it, just abandon this one (but ack the
 		// operation regardless).
-		Manager.eventLoop.appendEvent (new ProcEvent.TaskAttached (task.proc, task));		
+		task.proc.performTaskAttachCompleted (task);
 		task.proc.remove (task);
 		return destroyed;
     	    }
@@ -379,7 +379,7 @@ class TaskState
 	    {
 		return running;
 	    }
-	    TaskState processRequestDetach (Task task)
+	    TaskState processPerformDetach (Task task)
 	    {
 		task.sendStop ();
 		return detaching;
@@ -457,7 +457,7 @@ class TaskState
 		// XXX: Need to hang onto the signal that was about to
 		// be delivered?
 		task.sendDetach (0);
-		Manager.eventLoop.appendEvent (new ProcEvent.TaskDetached (task.proc, task));
+		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
 	};
@@ -765,11 +765,12 @@ class TaskState
 		task.syscallEvent.notify (event);
 		return destroyed;
 	    }
-	    TaskState processRequestAttach (Task task)
+	    TaskState processPerformAttach (Task task)
 	    {
 		// Lie; the Proc wants to know that the operation has
-		// been processed more than it succeeded.
-		Manager.eventLoop.appendEvent (new ProcEvent.TaskAttached (task.proc, task));
+		// been processed rather than the request was
+		// successful.
+		task.proc.performTaskAttachCompleted (task);
 		return destroyed;
 	    }
 	};

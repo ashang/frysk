@@ -230,6 +230,40 @@ public abstract class Proc
     }
 
     /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its attach.
+     */
+    void performTaskAttachCompleted (final Task theTask)
+    {
+	Manager.eventLoop.appendEvent (new ProcEvent ()
+	    {
+		Task task = theTask;
+		public void execute ()
+		{
+		    state = state.processPerformTaskAttachCompleted (Proc.this,
+								     task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its detach.
+     */
+    void performTaskDetachCompleted (final Task theTask)
+    {
+	Manager.eventLoop.appendEvent (new ProcEvent ()
+	    {
+		Task task = theTask;
+		public void execute ()
+		{
+		    state = state.processPerformTaskDetachCompleted (Proc.this,
+								     task);
+		}
+	    });
+    }
+
+    /**
      * Use requestAttachedStop.
      */
     void stop ()

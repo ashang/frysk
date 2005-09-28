@@ -185,7 +185,7 @@ public class LinuxProc
 	    // XXX: Should there be a TaskEvent.schedule(), instead of
 	    // Manager .eventLoop .appendEvent for injecting the event
 	    // into the event loop?
-	    task.requestRemoval ();
+	    task.performRemoval ();
 	    remove (task);
 	}
     }

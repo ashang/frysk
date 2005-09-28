@@ -80,14 +80,6 @@ abstract class ProcState
     {
 	throw unhandled (proc, event);
     }
-    ProcState process (Proc proc, ProcEvent.TaskAttached event)
-    {
-	throw unhandled (proc, event);
-    }
-    ProcState process (Proc proc, ProcEvent.TaskDetached event)
-    {
-	throw unhandled (proc, event);
-    }
     ProcState processRequestRemoval (Proc proc)
     {
 	throw unhandled (proc, "RequestRemoval");
@@ -108,6 +100,14 @@ abstract class ProcState
     {
 	throw unhandled (proc, "RequestRefresh");
     }
+    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
+    {
+	throw unhandled (proc, "PerformTaskAttachCompleted");
+    }
+    ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
+    {
+	throw unhandled (proc, "PerformTaskDetachCompleted");
+    }
 
     /**
      * The process is running free (or at least was the last time its
@@ -123,7 +123,7 @@ abstract class ProcState
 		proc.sendRefresh ();
 		// Grab the main task and attach to that.
 		Task task = Manager.host.get (new TaskId (proc.getPid ()));
-		task.requestAttach ();
+		task.performAttach ();
 		return new AttachingToMainTask ();
 	    }
 	    ProcState processRequestRefresh (Proc proc)
@@ -155,13 +155,13 @@ abstract class ProcState
 	{
 	    super ("AttachingWaitingForMainTask");
 	}
-	ProcState process (Proc proc, ProcEvent.TaskAttached event)
+	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	{
 	    // Get an up-to-date list of all tasks.  Now that the main
 	    // task has stopped, all other tasks should be frozen.
 	    proc.sendRefresh ();
 	    if (proc.taskPool.size () == 1) {
-		event.task.requestContinue ();
+		task.requestContinue ();
 		proc.observableAttachedContinue.notify (proc);
 		return running;
 	    }
@@ -179,7 +179,7 @@ abstract class ProcState
 		    Task t = (Task) i.next ();
 		    if (t.getPid () == proc.getPid ())
 			continue;
-		    t.requestAttach ();
+		    t.performAttach ();
 		}
 		return new AttachingToOtherTasks (proc, unattachedTasks);
 	    }
@@ -200,11 +200,11 @@ abstract class ProcState
 	    super ("AttachingWaitingForOtherTasks");
 	    this.unattachedTasks = unattachedTasks;
 	}
-	ProcState process (Proc proc, ProcEvent.TaskAttached event)
+	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	{
 	    // As each task reports that it has been attached, remove
 	    // it from the pool, wait until there are none left.
-	    unattachedTasks.remove (event.task.id);
+	    unattachedTasks.remove (task.id);
 	    if (unattachedTasks.size () > 0)
 		return this;
 	    // All attached, let them go, and mark this as
@@ -232,12 +232,12 @@ abstract class ProcState
 	    super ("DetachingAllTasks");
 	    this.attachedTasks = attachedTasks;
 	}
-	ProcState process (Proc proc, ProcEvent.TaskDetached event)
+	ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
 	{
 	    // As each task reports that it has detached, remove it
 	    // from the list.  Once there are none left the detach is
 	    // done.
-	    attachedTasks.remove (event.task.id);
+	    attachedTasks.remove (task.id);
 	    if (attachedTasks.size () > 0)
 		return this;
 	    // All done, notify.
@@ -307,7 +307,7 @@ abstract class ProcState
 		for (Iterator i = proc.taskPool.values ().iterator ();
 		     i.hasNext (); ) {
 		    Task t = (Task) i.next ();
-		    t.requestDetach ();
+		    t.performDetach ();
 		}
 		return new DetachingAllTasks (attachedTasks);
 	    }
