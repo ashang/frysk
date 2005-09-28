@@ -69,7 +69,7 @@ public class ActionPool {
 	
 	/** Observers that can be added to a process */
 	public LinkedList processObservers;
-	private EventLogger eventLog;
+	private EventLogger eventLog =  new EventLogger();
 
 	/** } */
 
@@ -130,16 +130,17 @@ public class ActionPool {
 		}
 
 		public void execute(ProcData data) {
-//			System.out.println("sending Manager.host.requestAttachProc");
-//			data.getProc().observableAttachedContinue
-//					.addObserver(WindowManager.theManager.logWindow);
-//			data.getProc().observableAttachedContinue.addObserver(eventLog);
-//			data.getProc().requestAttachedContinue();
-			Manager.host.observableProcAdded.addObserver
-			    (WindowManager.theManager.logWindow);			
-			Manager.host.observableProcAdded.addObserver(eventLog);
-			System.out.println("Get proc returns: " + Manager.host.getProc(data.getProc().getId()));
-			Manager.host.requestAttachProc(data.getProc().getId());
+			System.out.println("sending Manager.host.requestAttachProc");
+			data.getProc().observableAttachedContinue
+					.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().observableAttachedContinue.addObserver(eventLog);
+			data.getProc().requestAttachedContinue();
+//			Manager.host.observableProcAdded.addObserver
+//			    (WindowManager.theManager.logWindow);	
+//			System.out.println("About to: " + data.getProc().toString());
+//			Manager.host.observableProcAdded.addObserver(eventLog);
+//			System.out.println("Get proc returns: " + Manager.host.getProc(data.getProc().getId()));
+//			Manager.host.requestAttachProc(data.getProc().getId());
 		}
 
 		/**

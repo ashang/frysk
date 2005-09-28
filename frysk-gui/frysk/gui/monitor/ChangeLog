@@ -1,3 +1,8 @@
+2005-09-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ActionPool.java: Actually instantiate eventLog.	
+	(Attach.execute): Change method of attaching.
+
 2005-09-27  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ActionPool.java (execute): Added eventLog observer.
