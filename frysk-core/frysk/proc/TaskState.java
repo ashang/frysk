@@ -126,6 +126,14 @@ class TaskState
     {
 	throw unhandled (task, "PerformDetach");
     }
+    TaskState processPerformStop (Task task)
+    {
+	throw unhandled (task, "PerformStop");
+    }
+    TaskState processPerformContinue (Task task)
+    {
+	throw unhandled (task, "PerformContinue");
+    }
 
     /**
      * An attached task was destroyed, notify observers and, when the
@@ -370,20 +378,6 @@ class TaskState
 	    {
 		return true;
 	    }
-	    TaskState processRequestStop (Task task)
-	    {
-		task.sendStop ();
-		return stopping;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		return running;
-	    }
-	    TaskState processPerformDetach (Task task)
-	    {
-		task.sendStop ();
-		return detaching;
-	    }
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
 		task.stopEvent.notify (event);
@@ -448,6 +442,34 @@ class TaskState
     	    {
 		return zombied;
     	    }
+	    TaskState processRequestStop (Task task)
+	    {
+		task.sendStop ();
+		return stopping;
+	    }
+	    TaskState processRequestContinue (Task task)
+	    {
+		return running;
+	    }
+	    TaskState processPerformDetach (Task task)
+	    {
+		task.sendStop ();
+		return detaching;
+	    }
+	    TaskState processPerformStop (Task task)
+	    {
+		task.sendStop ();
+		return performingStop;
+	    }
+	};
+
+    static TaskState performingStop = new TaskState ("performingStop")
+	{
+	    TaskState process (Task task, TaskEvent.Stopped event)
+	    {
+		task.proc.performTaskStopCompleted (task);
+		return stopped;
+	    }
 	};
 
     static TaskState detaching = new TaskState ("detaching")
@@ -577,6 +599,16 @@ class TaskState
 	    {
 		return true;
 	    }
+    	    TaskState process (Task task, TaskEvent.Zombied event)
+    	    {
+		return zombied;
+    	    }
+	    TaskState process (Task task, TaskEvent.Terminated event)
+	    {
+		task.proc.remove (event.task);
+		processAttachedDestroy (task, event);
+		return destroyed;
+	    }
 	    TaskState processRequestStop (Task task)
 	    {
 		return stopped;
@@ -591,16 +623,14 @@ class TaskState
 		task.sendStepInstruction (0);
 		return stepping;
 	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
+	    TaskState processPerformContinue (Task task)
 	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
+		// XXX: Need to save the stop signal so that the
+		// continue is correct.
+		task.sendContinue (0);
+		task.proc.performTaskContinueCompleted (task);
+		return running;
 	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
 
     static TaskState paused = new TaskState ("paused")

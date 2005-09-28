@@ -108,6 +108,14 @@ abstract class ProcState
     {
 	throw unhandled (proc, "PerformTaskDetachCompleted");
     }
+    ProcState processPerformTaskStopCompleted (Proc proc, Task task)
+    {
+	throw unhandled (proc, "PerformTaskStopCompleted");
+    }
+    ProcState processPerformTaskContinueCompleted (Proc proc, Task task)
+    {
+	throw unhandled (proc, "PerformTaskContinueCompleted");
+    }
 
     /**
      * The process is running free (or at least was the last time its
@@ -311,7 +319,44 @@ abstract class ProcState
 		}
 		return new DetachingAllTasks (attachedTasks);
 	    }
+	    ProcState processRequestAttachedStop (Proc proc)
+	    {
+		Map runningTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performStop ();
+		}
+		return new StoppingAllTasks (runningTasks);
+	    }
 	};
+
+    /**
+     * All the tasks have been sent a stop request, waiting for each,
+     * in turn, to acknowledge.
+     */
+    static class StoppingAllTasks
+	extends ProcState
+    {
+	private Map runningTasks;
+	StoppingAllTasks (Map runningTasks)
+	{
+	    super ("StoppingAllTasks");
+	    this.runningTasks = runningTasks;
+	}
+	ProcState processPerformTaskStopCompleted (Proc proc, Task task)
+	{
+	    // Wait until all the tasks have processed the stop
+	    // request.
+	    runningTasks.remove (task.id);
+	    if (runningTasks.size () > 0)
+		return this;
+	    // All stopped.
+	    proc.observableAttachedStop.notify (proc);
+	    return stopped;
+	}
+    }
 
     static ProcState stopping = new ProcState ("stopping")
 	{
@@ -369,5 +414,42 @@ abstract class ProcState
 		// XXX: ???
 		return running;
 	    }
+	    ProcState processRequestAttachedContinue (Proc proc)
+	    {
+		Map stoppedTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performContinue ();
+		}
+		return new ContinuingAllTasks (stoppedTasks);
+	    }
 	};
+
+    /**
+     * All tasks have been sent a continue request, wait for each in
+     * turn to report back that the request has been processed.
+     */
+    static class ContinuingAllTasks
+	extends ProcState
+    {
+	private Map stoppedTasks;
+	ContinuingAllTasks (Map stoppedTasks)
+	{
+	    super ("ContinupingAllTasks");
+	    this.stoppedTasks = stoppedTasks;
+	}
+	ProcState processPerformTaskContinueCompleted (Proc proc, Task task)
+	{
+	    // Wait until all the tasks have processed the continue
+	    // request.
+	    stoppedTasks.remove (task.id);
+	    if (stoppedTasks.size () > 0)
+		return this;
+	    // All continuped.
+	    proc.observableAttachedContinue.notify (proc);
+	    return running;
+	}
+    }
 }

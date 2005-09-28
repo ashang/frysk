@@ -51,10 +51,10 @@ public class TestProcStates
     extends TestLib
 {
     /**
-     * Check that it is possible to attach / continue a single tasked
-     * process.
+     * Transition a single tasked process from detached/continue to
+     * attached/continue.
      */
-    public void testOneTaskDetachedContinueToAttachedContinue ()
+    public void testSingleTaskDetachedContinueToAttachedContinue ()
     {
 	Child child = new DaemonChild ();
 	Proc proc = child.findProcUsingRefresh ();
@@ -69,15 +69,17 @@ public class TestProcStates
 	    });
 	proc.requestAttachedContinue ();
 	assertRunUntilStop ("attaching to process");
+
+	// XXX: Prove that it is attached and running?
     }
 
     /**
-     * Check that it is possible to attach / continue a multi-tasked
-     * process.
+     * Transition a multi-tasked process from detached/continue to
+     * attached/continue.
      *
-     * The single and multi-task cases exercise different paths - for
-     * the former there is no need to also attach to the non-main
-     * tasks.
+     * The single- and multi-task cases involve different code paths -
+     * for the latter a two stage process is involved, first attach to
+     * the main task, and second attach to the remaining tasks.
      */
     public void testMultiTaskDetachedContinueToAttachedContinue ()
     {
@@ -94,13 +96,16 @@ public class TestProcStates
 	    });
 	proc.requestAttachedContinue ();
 	assertRunUntilStop ("attaching to process");
+
+	// XXX: Prove that it is attached and running?
     }
 
     /**
-     * Check that it is possible to detach / continue an attached
-     * single tasked child process started via fork / exec.
+     * Transition a single-tasked process from attached/continue to
+     * detach/continue (the process being created using a fork and
+     * then exec).
      */
-    public void testOneTaskAttachedContinueToDetachedContinue ()
+    public void testSingleTaskAttachedContinueToDetachedContinue ()
     {
 	Child child = new AttachedChild ();
 	Proc proc = child.findProcUsingRefresh ();
@@ -115,11 +120,14 @@ public class TestProcStates
 	    });
 	proc.requestDetachedContinue ();
 	assertRunUntilStop ("detaching from a process");
+
+	// XXX: Prove that it is detached and running?
     }
 
     /**
-     * Check that it is possible to detach / continue a multi-tasked
-     * child process started via fork / exec.
+     * Transition a multi-tasked process from attached/continue to
+     * detached/continue (the process being created using a fork and
+     * then exec).
      */
     public void testMultiTaskAttachedContinueToDetachedContinue ()
     {
@@ -136,6 +144,84 @@ public class TestProcStates
 	    });
 	proc.requestDetachedContinue ();
 	assertRunUntilStop ("detaching from a process");
+
+	// XXX: Prove that it is detached and running?
+    }
+
+    /**
+     * Transition a single-tasked process from attached/continue to
+     * attached/stop and back again.
+     */
+    public void testSingleTaskAttachedContinueAndAttachedStopped ()
+    {
+	Child child = new AttachedChild ();
+	Proc proc = child.findProcUsingRefresh ();
+
+	// Request that the child stop, wait for an ack.
+	proc.observableAttachedStop.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		    o.deleteObserver (this);
+		}
+	    });
+	proc.requestAttachedStop ();
+	assertRunUntilStop ("stopping a process");
+
+	// XXX: Prove that it has continued?
+
+	// Request that the child continue, wait for an ack.
+	proc.observableAttachedContinue.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		    o.deleteObserver (this);
+		}
+	    });
+	proc.requestAttachedContinue ();
+	assertRunUntilStop ("stopping a process");
+
+	// XXX: Prove that it has continued?
+    }
+
+    /**
+     * Transition a multi-tasked process from attached/continue to
+     * attached/stop and back again.
+     */
+    public void testMultiTaskAttachedContinueAndAttachedStopped ()
+    {
+	Child child = new AttachedChild (2);
+	Proc proc = child.findProcUsingRefresh ();
+
+	// Request that the child stop, wait for an ack.
+	proc.observableAttachedStop.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		    o.deleteObserver (this);
+		}
+	    });
+	proc.requestAttachedStop ();
+	assertRunUntilStop ("stopping a process");
+
+	// XXX: Prove that it has continued?
+
+	// Request that the child continue, wait for an ack.
+	proc.observableAttachedContinue.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		    o.deleteObserver (this);
+		}
+	    });
+	proc.requestAttachedContinue ();
+	assertRunUntilStop ("stopping a process");
+
+	// XXX: Prove that it has continued?
     }
 
 //     /**

@@ -1,5 +1,17 @@
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Handle processPerformStop, and
+	processPerformContinue, add state performingStop.
+	* Task.java: Add performStop, and performContinue.
+	* ProcState.java: Handle processPerformTaskStopCompleted, and
+	processPerformTaskContinueCompleted.  Add states StoppingAllTasks,
+	and ContinuingAllTasks.
+	* Proc.java: Add performTaskStopCompleted,
+	performTaskContinueCompleted, and observableAttachedStop.
+	* TestProcStates.java: Add
+	testSingleTaskAttachedContinueAndAttachedStop, and
+	testMultiTaskAttachedContinueAndAttacheStop.
+
 	* Proc.java: Replace requestRemoval, with performRemoval.
 	* ProcState.java, LinuxHost.java: Update.
 

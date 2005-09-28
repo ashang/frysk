@@ -240,6 +240,36 @@ abstract public class Task
 	    });
     }
 
+    /**
+     * (Internal) Tell the task to stop itself.  Notify the containing
+     * process once the operation has been processed.
+     */
+    void performStop ()
+    {
+	Manager.eventLoop.appendEvent (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformStop (Task.this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the task to continue itself.  Notify the
+     * containing process once the operation has been processed.
+     */
+    void performContinue ()
+    {
+	Manager.eventLoop.appendEvent (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformContinue (Task.this);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();

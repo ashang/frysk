@@ -264,6 +264,40 @@ public abstract class Proc
     }
 
     /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its stop request.
+     */
+    void performTaskStopCompleted (final Task theTask)
+    {
+	Manager.eventLoop.appendEvent (new ProcEvent ()
+	    {
+		Task task = theTask;
+		public void execute ()
+		{
+		    state = state.processPerformTaskStopCompleted (Proc.this,
+								   task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the contained task has
+     * completed the continue request.
+     */
+    void performTaskContinueCompleted (final Task theTask)
+    {
+	Manager.eventLoop.appendEvent (new ProcEvent ()
+	    {
+		Task task = theTask;
+		public void execute ()
+		{
+		    state = state.processPerformTaskContinueCompleted
+			(Proc.this, task);
+		}
+	    });
+    }
+
+    /**
      * Use requestAttachedStop.
      */
     void stop ()
@@ -389,6 +423,14 @@ public abstract class Proc
      * Should more formally define the observable and the event.
      */
     public ProcObservable observableAttachedContinue = new ProcObservable ();
+
+    /**
+     * The process has transitioned to the attached / stop state.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public ProcObservable observableAttachedStop = new ProcObservable ();
 
     /**
      * The process has transitioned to the detached / continue state.
