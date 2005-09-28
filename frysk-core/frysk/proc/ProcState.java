@@ -80,7 +80,7 @@ abstract class ProcState
     {
 	throw unhandled (proc, event);
     }
-    ProcState processRequestRemoval (Proc proc)
+    ProcState processPerformRemoval (Proc proc)
     {
 	throw unhandled (proc, "RequestRemoval");
     }
@@ -131,7 +131,7 @@ abstract class ProcState
 		proc.sendRefresh ();
 		return unattached;
 	    }
-	    ProcState processRequestRemoval (Proc proc)
+	    ProcState processPerformRemoval (Proc proc)
 	    {
 		if (proc.taskPool.size () > 0) {
 		    throw new RuntimeException ("XXX: What about a dieing proc's tasks, have a dieing state and force a proc refresh?");

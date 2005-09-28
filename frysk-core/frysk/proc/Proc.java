@@ -215,16 +215,16 @@ public abstract class Proc
 	    });
     }
     /**
-     * Request that a process that is no longer listed in the system
-     * table remove itself.
+     * (Internal) Tell the process that is no longer listed in the
+     * system table remove itself.
      */
-    public void requestRemoval ()
+    void performRemoval ()
     {
 	Manager.eventLoop.appendEvent (new ProcEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processRequestRemoval (Proc.this);
+		    state = state.processPerformRemoval (Proc.this);
 		}
 	    });
     }

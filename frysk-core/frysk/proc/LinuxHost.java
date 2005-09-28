@@ -159,7 +159,7 @@ public class LinuxHost
 	    // XXX: Should there be a ProcEvent.schedule(), instead of
 	    // Manager .eventLoop .appendEvent for injecting the event
 	    // into the event loop?
-	    proc.requestRemoval ();
+	    proc.performRemoval ();
 	    remove (proc);
 	}
     }
