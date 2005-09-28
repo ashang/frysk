@@ -37,8 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.event;
+
+/**
+ * An event from a file descriptor.
+ */
 
 abstract class PollEvent
     implements Event

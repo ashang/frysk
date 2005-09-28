@@ -37,10 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Implements an event loop.
- */
-
 package frysk.event;
 
 import frysk.sys.Poll;
@@ -49,6 +45,10 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.Iterator;
+
+/**
+ * Implements an event loop.
+ */
 
 public class EventLoop
 {

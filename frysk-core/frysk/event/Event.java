@@ -37,8 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.event;
+
+/**
+ * The event interface.
+ */
 
 public interface Event
 {

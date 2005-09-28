@@ -37,8 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.event;
+
+/**
+ * An event due to a signal.
+ */
 
 public class SignalEvent
     implements Event
