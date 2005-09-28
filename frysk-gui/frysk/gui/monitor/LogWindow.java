@@ -54,6 +54,7 @@ import org.gnu.gtk.TextView;
 import org.gnu.gtk.Window;
 
 import frysk.proc.Manager;
+import frysk.proc.Proc;
 
 /**
  * @author sami wagiaalla
@@ -62,10 +63,14 @@ import frysk.proc.Manager;
 public class LogWindow extends Window implements Observer, Saveable{
 	
 	public TextView logTextView;
-	
+    public AttachedContinueObserver attachedContinueObserver;
+    public DetachedContinueObserver detachedContinueObserver;
+    
 	public LogWindow(LibGlade glade){
 		super(((Window)glade.getWidget("logWindow")).getHandle());
 		this.logTextView = (TextView) glade.getWidget("logTextView");
+        this.attachedContinueObserver = new AttachedContinueObserver();
+        this.detachedContinueObserver = new DetachedContinueObserver();
 	}
 	
 	static int count = 0;
@@ -82,6 +87,23 @@ public class LogWindow extends Window implements Observer, Saveable{
 		tb.insertText("\n");
 		
 	}
+	
+    class AttachedContinueObserver implements Observer{
+        public void update(Observable arg0, Object arg1) {
+    			TextBuffer tb = logTextView.getBuffer();
+    			tb.insertText("event "+(count++)+" : ");
+    		    tb.insertText("Attached to process " + ((Proc)arg1).getPid() );
+                
+        }
+    }
+
+    class DetachedContinueObserver implements Observer{
+        public void update(Observable arg0, Object arg1) {
+			TextBuffer tb = logTextView.getBuffer();
+			tb.insertText("event "+(count++)+" : ");
+		    tb.insertText("Detached from process " + ((Proc)arg1).getPid() );
+        }
+}
 	
 	public void save(Preferences prefs) {
 		// TODO Auto-generated method stub

@@ -1,11 +1,14 @@
 2005-09-28  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* LogWindow.java (AttachedContinueObserver): Added.
+	(DetachedContinueObserver): Added
 	* EventLogger.java (EventFileHandler): Added.
 	(AttachedContinueObserver): swagiaal patch
 	(DetachedContinueObserver): swagiaal patch
 	* ActionPool.java: Actually instantiate eventLog.	
 	(Attach.execute): Change method of attaching.
 	Changed method of adding observers.
+	Fixed LogWindow observers.
 
 2005-09-27  Phil Muldoon  <pmuldoon@redhat.com>
 
