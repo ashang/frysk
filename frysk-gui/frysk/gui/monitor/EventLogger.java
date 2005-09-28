@@ -39,10 +39,12 @@
 package frysk.gui.monitor;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import frysk.proc.Manager;
@@ -54,46 +56,94 @@ import frysk.proc.Proc;
  */
 public class EventLogger implements Observer {
 
+        private static final String FRYSK_CONFIG = System.getProperty("user.home")
+        + "/" + ".frysk" + "/";
+        public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog";
+        private Logger eventLogFile = null;
 
-	private static final String FRYSK_CONFIG = System.getProperty("user.home")
-	+ "/" + ".frysk" + "/";
-	public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog";
-	private Logger eventLogFile = null;
-	
-	EventLogger()
-	{
-		
-		eventLogFile = Logger.getLogger(EVENT_LOG_ID);
-		eventLogFile.addHandler(buildHandler());
-	}
-	
-	
-	private FileHandler buildHandler() {
-		FileHandler handler = null;
-		File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/");
 
-		if (!log_dir.exists())
-			log_dir.mkdirs();
+        class EventFileHandler extends FileHandler {
 
-		try {
+        	public EventFileHandler(String arg0, boolean arg1) throws IOException, SecurityException {
+        		super(arg0, arg1);
+        		// TODO Auto-generated constructor stub
+        	}
+        	public synchronized void publish(LogRecord arg) {
+        		
+        		// As this is going to log exceptions, and as frysk might be kill -9'd
+        		// I've not found a way to let normal FileHandlers do an explicit flush
+        		// after each log event. So we found logfiles that were incomplete.
+        		// So will cause and explicit flush after each publish, until we figure out
+        		// otherwise.
+        		
+        		super.publish(arg);
+        		super.flush();
+        	}
 
-			handler = new FileHandler(log_dir.getAbsolutePath()
-					+ "/" + "frysk_event_log.log", true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return handler;
-	}
-	
-	public void update(Observable observable, Object arg1) {
-		if(observable == Manager.host.observableProcAdded ){
-			eventLogFile.log(Level.INFO,"Attached to process "  + ((Proc)arg1).getPid() );
-		}
-		if(observable == Manager.host.observableProcRemoved){
-			eventLogFile.log(Level.INFO,"Detached from  process "  + ((Proc)arg1).getPid() );
-		}
 
-	}
+        }
 
+        /**{
+         * Local Observers
+         * */
+        public AttachedContinueObserver attachedContinueObserver;
+        public DetachedContinueObserver detachedContinueObserver;
+        /** }*/
+        
+        EventLogger()
+        {
+                this.attachedContinueObserver = new AttachedContinueObserver();
+                this.detachedContinueObserver = new DetachedContinueObserver();
+                
+                eventLogFile = Logger.getLogger(EVENT_LOG_ID);
+                eventLogFile.addHandler(buildHandler());
+        }
+        
+        
+        private FileHandler buildHandler() {
+                FileHandler handler = null;
+                File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/");
+
+                if (!log_dir.exists())
+                        log_dir.mkdirs();
+
+                try {
+
+                        handler = new EventFileHandler(log_dir.getAbsolutePath()
+                                        + "/" + "frysk_event_log.log", true);
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+                
+                return handler;
+        }
+        
+        public void update(Observable observable, Object arg1) {
+                // this function should not be used anymore
+                if(observable == Manager.host.observableProcAdded ){
+                        eventLogFile.log(Level.INFO,"Attached to process "  + ((Proc)arg1).getPid() );
+                }
+                if(observable == Manager.host.observableProcRemoved){
+                        eventLogFile.log(Level.INFO,"Detached from  process "  + ((Proc)arg1).getPid() );
+                }
+
+        }
+        
+        class AttachedContinueObserver implements Observer{
+                public void update(Observable arg0, Object arg1) {
+                        eventLogFile.log(Level.INFO,"Attached to process "  + ((Proc)arg1).getPid() );
+                        System.out.println( "Attached to process "  + ((Proc)arg1).getPid() );
+                }
+        }
+        
+        class DetachedContinueObserver implements Observer{
+                public void update(Observable arg0, Object arg1) {
+                        eventLogFile.log(Level.INFO,"Detached to process "  + ((Proc)arg1).getPid() );
+                        System.out.println( "Detached to process "  + ((Proc)arg1).getPid() );
+                }
+        }
+        
+                
 }
+        
+

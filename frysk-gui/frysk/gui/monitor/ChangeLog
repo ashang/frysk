@@ -1,7 +1,11 @@
 2005-09-28  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* EventLogger.java (EventFileHandler): Added.
+	(AttachedContinueObserver): swagiaal patch
+	(DetachedContinueObserver): swagiaal patch
 	* ActionPool.java: Actually instantiate eventLog.	
 	(Attach.execute): Change method of attaching.
+	Changed method of adding observers.
 
 2005-09-27  Phil Muldoon  <pmuldoon@redhat.com>
 
