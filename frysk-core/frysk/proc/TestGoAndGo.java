@@ -127,7 +127,7 @@ public class TestGoAndGo
 	    if (++taskStopCount == 3) {
 	        Manager.eventLoop.addTimerEvent (new GoTimerEvent (mainTask, 0));
 	    } else if (taskStopCount == 6) {
-		e.task.proc.detach ();
+		Manager.eventLoop.requestStop ();
 	    }
  	}
     }
@@ -192,9 +192,6 @@ public class TestGoAndGo
         // Register child to be removed at end of test
         registerChild (pid);
 
-        // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
-
 	assertRunUntilStop ("XXX: run until?");
 
 	assertEquals ("Task creation events = 3", 3,
@@ -207,7 +204,5 @@ public class TestGoAndGo
 		      taskStopCount);
 	assertEquals ("No task destroyed events", 0,
 		      taskDestroyedCount);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }

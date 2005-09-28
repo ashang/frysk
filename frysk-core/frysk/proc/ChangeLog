@@ -1,5 +1,8 @@
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestGoAndGo.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java: Eliminate call to "Proc .detach".
+
 	* TestLib.java: Add AttachedChild constructor for creating a
 	busy-loop process.
 

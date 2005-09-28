@@ -139,7 +139,7 @@ public class TestStopAndStop
 			      thread1.state);
 		assertEquals ("Thread2 is stopped", TaskState.stopped,
 			      thread2.state);
-		task.proc.detach ();
+		Manager.eventLoop.requestStop ();
 	    }
         }
     }
@@ -192,9 +192,6 @@ public class TestStopAndStop
         // Register child to be removed at end of test
         registerChild (pid);
 
-        // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
-
 	assertRunUntilStop ("XXX: run until?");
 
 	assertEquals ("Task created events = 3", 3,
@@ -203,7 +200,5 @@ public class TestStopAndStop
 		      taskStopCount);
 	assertEquals ("No task destroyed events", 0,
 		      taskDestroyedCount);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }
