@@ -1,5 +1,7 @@
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: In "toString", print the current "state".
+	
 	* TaskState.java: Handle processPerformStop, and
 	processPerformContinue, add state performingStop.
 	* Task.java: Add performStop, and performContinue.

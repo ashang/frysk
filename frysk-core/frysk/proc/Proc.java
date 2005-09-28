@@ -444,6 +444,7 @@ public abstract class Proc
     {
 	return ("[Proc"
 		+ ",id=" + id
+		+ ",state=" + state
 		+ "]");
     }
 }
