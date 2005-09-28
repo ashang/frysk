@@ -1,5 +1,9 @@
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStop.java, TestProcStopAndGo.java,
+	TestProcStopAndStop.java, TestProcStopAndGo2.java: Eliminate call
+	to "Proc .detach".
+
 	* TestGoAndGo.java, TestStop.java, TestStopAndGo.java,
 	TestStopAndStop.java: Eliminate call to "Proc .detach".
 

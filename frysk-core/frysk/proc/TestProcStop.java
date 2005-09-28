@@ -123,7 +123,7 @@ public class TestProcStop
 	    allStoppedCount++;
 	    ProcEvent.AllStopped e = (ProcEvent.AllStopped)obj;
 	    Proc proc = e.proc;
-	    proc.detach ();
+	    Manager.eventLoop.requestStop ();
         }
     }
 
@@ -156,9 +156,6 @@ public class TestProcStop
         // Register child to be removed at end of test
         registerChild (pid);
 
-        // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
-
 	assertRunUntilStop ("XXX: run until?");
 
 	assertEquals ("Task create events = 3", 3,
@@ -167,7 +164,5 @@ public class TestProcStop
 		      allStoppedCount);
 	assertEquals ("No task destroyed events received", 0,
 		      taskDestroyedCount);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }
