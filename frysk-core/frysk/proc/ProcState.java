@@ -123,7 +123,7 @@ abstract class ProcState
      */
     static ProcState unattached = new ProcState ("unattached")
 	{
-	    ProcState processRequestAttachedContinue (Proc proc)
+	    private ProcState processRequestAttach (Proc proc, boolean stop)
 	    {
 		// XXX: Instead of doing a full refresh, should
 		// instead just pull out (with a local refresh) the
@@ -132,7 +132,15 @@ abstract class ProcState
 		// Grab the main task and attach to that.
 		Task task = Manager.host.get (new TaskId (proc.getPid ()));
 		task.performAttach ();
-		return new AttachingToMainTask ();
+		return new AttachingToMainTask (stop);
+	    }
+	    ProcState processRequestAttachedContinue (Proc proc)
+	    {
+		return processRequestAttach (proc, false);
+	    }
+	    ProcState processRequestAttachedStop (Proc proc)
+	    {
+		return processRequestAttach (proc, true);
 	    }
 	    ProcState processRequestRefresh (Proc proc)
 	    {
@@ -159,9 +167,11 @@ abstract class ProcState
     static class AttachingToMainTask
 	extends ProcState
     {
-	AttachingToMainTask ()
+	private boolean stop;
+	AttachingToMainTask (boolean stop)
 	{
 	    super ("AttachingWaitingForMainTask");
+	    this.stop = stop;
 	}
 	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	{
@@ -169,9 +179,15 @@ abstract class ProcState
 	    // task has stopped, all other tasks should be frozen.
 	    proc.sendRefresh ();
 	    if (proc.taskPool.size () == 1) {
-		task.requestContinue ();
-		proc.observableAttachedContinue.notify (proc);
-		return running;
+		if (stop) {
+		    proc.observableAttachedStop.notify (proc);
+		    return stopped;
+		}
+		else {
+		    task.requestContinue ();
+		    proc.observableAttachedContinue.notify (proc);
+		    return running;
+		}
 	    }
 	    else {
 		// Track the number of un-attached tasks using a local
@@ -189,7 +205,7 @@ abstract class ProcState
 			continue;
 		    t.performAttach ();
 		}
-		return new AttachingToOtherTasks (proc, unattachedTasks);
+		return new AttachingToOtherTasks (unattachedTasks, stop);
 	    }
 	}
     }
@@ -203,10 +219,12 @@ abstract class ProcState
 	extends ProcState
     {
 	private Map unattachedTasks;
-	AttachingToOtherTasks (Proc proc, Map unattachedTasks)
+	private boolean stop;
+	AttachingToOtherTasks (Map unattachedTasks, boolean stop)
 	{
 	    super ("AttachingWaitingForOtherTasks");
 	    this.unattachedTasks = unattachedTasks;
+	    this.stop = stop;
 	}
 	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	{
@@ -215,7 +233,12 @@ abstract class ProcState
 	    unattachedTasks.remove (task.id);
 	    if (unattachedTasks.size () > 0)
 		return this;
-	    // All attached, let them go, and mark this as
+	    // All attached ...
+	    if (stop) {
+		proc.observableAttachedStop.notify (proc);
+		return stopped;
+	    }
+	    // .., let them go, and mark this as
 	    // attached/running.
 	    for (Iterator i = proc.taskPool.values().iterator ();
 		 i.hasNext (); ) {

@@ -1,3 +1,10 @@
+2005-09-29  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java: Handle requestAttachedStop.
+	* TestProcStates.java: Add
+	testSingleTaskDetachedContinueToAttachedStop, and
+	testMultiTaskDetachedContinueToAttachedStop.
+
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestPaused.java, TestUnpaused.java: Eliminate call to "Proc

@@ -77,9 +77,9 @@ public class TestProcStates
      * Transition a multi-tasked process from detached/continue to
      * attached/continue.
      *
-     * The single- and multi-task cases involve different code paths -
-     * for the latter a two stage process is involved, first attach to
-     * the main task, and second attach to the remaining tasks.
+     * The single- and multi-task cases involve different code paths.
+     * For the latter, a two stage process is involved: first attach
+     * to the main task; and second attach to the remaining tasks.
      */
     public void testMultiTaskDetachedContinueToAttachedContinue ()
     {
@@ -224,19 +224,67 @@ public class TestProcStates
 	// XXX: Prove that it has continued?
     }
 
+    /**
+     * Transition a single-tasked process from the detached/continued
+     * to attached/stopped state.
+     */
+    public void testSingleTaskDetachedContinueToAttachedStop ()
+    {
+	Child child = new DaemonChild ();
+	Proc proc = child.findProcUsingRefresh ();
+
+	// Request that the child be attached; wait for it to ack.
+	proc.observableAttachedStop.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
+	proc.requestAttachedStop ();
+	assertRunUntilStop ("attaching to process");
+
+	// XXX: Prove that it is attached and running?
+    }
+
+    /**
+     * Transition a multi-tasked process from the detached/continued
+     * to attached stopped state.
+     */
+    public void testMultiTaskDetachedContinueToAttachedStop ()
+    {
+	Child child = new DaemonChild (2);
+	Proc proc = child.findProcUsingRefresh ();
+
+	// Request that the child be attached; wait for it to ack.
+	proc.observableAttachedStop.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
+	proc.requestAttachedStop ();
+	assertRunUntilStop ("attaching to process");
+
+	// XXX: Prove that it is attached and running?
+    }
+
 //     /**
-//      * Check that it is possible to attach / detach a single tasked
-//      * child process.
+//      * Transition a single-tasked process from the detached/continued
+//      * to attached/stopped state.
 //      */
-//     public void testReattachProcess ()
+//     public void testSingleTaskAttachedStopToDetachedContinue ()
 //     {
+// 	fail ("oops");
 //     }
 
 //     /**
-//      * Check that it is possible to attach / detach a multi-tasked
-//      * child process.
+//      * Transition a multi-tasked process from the detached/continued
+//      * to attached stopped state.
 //      */
-//     public void testReattachTasks ()
+//     public void testMultiTaskAttachedStopToDetachedContinue ()
 //     {
+// 	fail ("oops");
 //     }
 }
