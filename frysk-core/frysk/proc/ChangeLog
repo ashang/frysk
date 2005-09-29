@@ -1,5 +1,10 @@
 2005-09-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStopAndGo2.java, TestProcStopAndStop.java,
+	TestProcStopAndGo.java, TestProcStop.java: Delete, replaced by
+	TestProcStates.java.
+	* TestProcStates.java: Add notes listing more tests.
+
 	* ProcState.java: Handle requestAttachedStop.
 	* TestProcStates.java: Add
 	testSingleTaskDetachedContinueToAttachedStop, and

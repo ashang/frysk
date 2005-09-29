@@ -270,20 +270,35 @@ public class TestProcStates
 	// XXX: Prove that it is attached and running?
     }
 
-//     /**
-//      * Transition a single-tasked process from the detached/continued
-//      * to attached/stopped state.
-//      */
+    /**
+     * XXX: Transition a single-tasked process from the
+     * detached/continued to attached/stopped state.
+     */
 //     public void testSingleTaskAttachedStopToDetachedContinue ()
 //     {
 // 	fail ("oops");
 //     }
 
-//     /**
-//      * Transition a multi-tasked process from the detached/continued
-//      * to attached stopped state.
-//      */
+    /**
+     * XXX: Transition a multi-tasked process from the
+     * detached/continued to attached stopped state.
+     */
 //     public void testMultiTaskAttachedStopToDetachedContinue ()
+//     {
+// 	fail ("oops");
+//     }
+    /**
+     * XXX: Transition a multi-tasked process from continued to
+     * continued.
+     */
+//     public void testMultiTaskAttachedStopToAttachedStop ()
+//     {
+// 	fail ("oops");
+//     }
+    /**
+     * XXX: Transition a multi-tasked process from stopped to stopped.
+     */
+//     public void testMultiTaskAttachedContinueToAttachedContinue ()
 //     {
 // 	fail ("oops");
 //     }
