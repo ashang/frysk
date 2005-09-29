@@ -64,10 +64,6 @@ abstract class ProcState
     {
 	throw new RuntimeException (proc + " " + this + " unhandled stop");
     }
-    ProcState go (Proc proc)
-    {
-	throw new RuntimeException (proc + " " + this + " unhandled go");
-    }
     ProcState process (Proc proc, ProcEvent.AllStopped event)
     {
 	throw unhandled (proc, event);
@@ -310,11 +306,6 @@ abstract class ProcState
 		// XXX: ???
 		return running;
 	    }
-	    ProcState go (Proc proc)
-	    {
-		proc.startAllTasks ();
-		return running;
-	    }
 	    ProcState process (Proc proc, ProcEvent.AllStopped event)
 	    {
 		return proc.state;
@@ -386,11 +377,6 @@ abstract class ProcState
 	    ProcState stop (Proc proc)
 	    {
 		return stopping;
-	    }
-	    ProcState go (Proc proc)
-	    {
-		proc.startAllTasks ();
-		return running;
 	    }
 	    ProcState process (Proc proc, ProcEvent.AllStopped event)
 	    {

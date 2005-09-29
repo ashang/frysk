@@ -304,13 +304,6 @@ public abstract class Proc
     {
 	state = state.stop (this);
     }
-    /**
-     * Use requestAttachedCont.
-     */
-    void go ()
-    {
-	state = state.go (this);
-    }
 
     boolean isStopped ()
     {
