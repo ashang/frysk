@@ -1,5 +1,10 @@
 2005-09-28  Andrew Cagney  <cagney@redhat.com>
 
+	* TestPaused.java, TestUnpaused.java: Eliminate call to "Proc
+	.detach".
+	* TestLib.java: Detach all processes.
+	* LinuxProc.java, Proc.java: Delete "detach".
+
 	* TestProcStop.java, TestProcStopAndGo.java,
 	TestProcStopAndStop.java, TestProcStopAndGo2.java: Eliminate call
 	to "Proc .detach".

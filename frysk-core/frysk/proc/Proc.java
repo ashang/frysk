@@ -328,17 +328,6 @@ public abstract class Proc
     }
 
     /**
-     * Use requestDetachedContinue.
-     */
-    void detach ()
-    {
-	host.removeTasks (taskPool.values ());
-	if (parent != null)
-            parent.remove (this);
-	host.remove (this);
-    }
-
-    /**
      * Notify of the addition of a task attached to this process.
      *
      * This event indicates the presence of the task, not that it is

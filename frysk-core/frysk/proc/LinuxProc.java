@@ -44,7 +44,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -219,19 +218,6 @@ public class LinuxProc
 	new LinuxProc (this, childId, true);
     }
 
-    public void detach ()
-    {
-	Collection c = taskPool.values ();
-	Iterator i = c.iterator();
-	while (i.hasNext ()) {
-	    LinuxTask task = (LinuxTask)i.next ();
-	    if (task.ptraceAttached || task.id.id == id.id) {
-		Ptrace.detach (task.id.hashCode (), 0);
-		task.ptraceAttached = false;
-	    }
-	}
-	super.detach ();
-    }
     Task newTask (TaskId id, boolean runnable)
     {
 	// XXX: Should be abstracted.

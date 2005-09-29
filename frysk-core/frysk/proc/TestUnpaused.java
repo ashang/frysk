@@ -136,7 +136,6 @@ public class TestUnpaused
 	{
 	    ProcEvent pe = (ProcEvent)obj;
 	    LinuxProc p = (LinuxProc)pe.proc;
-	    p.detach ();
 	    Manager.eventLoop.requestStop ();
 	}
     }
@@ -281,9 +280,6 @@ public class TestUnpaused
 
 	// Register child to be removed at end of test
 	registerChild (pid);	
-
-        // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
 
 	assertRunUntilStop ("XXX: run until?");
 

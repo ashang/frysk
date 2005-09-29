@@ -764,21 +764,28 @@ public class TestLib
 	    Integer child = (Integer) i.next ();
 	    int pid = child.intValue ();
 	    try {
-		Signal.kill (child.intValue (), Sig.KILL);
+		Signal.kill (pid, Sig.KILL);
 	    }
 	    catch (Errno.Esrch e) {
-		// Toss it (expecting the occasional kill).
+		// Toss it.
 	    }
 	    // Note that there's a problem here with both stopped and
 	    // attached tasks.  The Sig.KILL won't be delivered, and
 	    // consequently the task won't exit, until that task has
 	    // been continued.  Work around this by also sending each
-	    // task a continue.
+	    // task a continue ...
 	    try {
-		Signal.kill (child.intValue (), Sig.CONT);
+		Signal.kill (pid, Sig.CONT);
 	    }
 	    catch (Errno.Esrch e) {
-		// Toss it (expecting the occasional kill).
+		// Toss it.
+	    }
+	    // ... and a detach.
+	    try {
+		Ptrace.detach (pid, Sig.KILL);
+	    }
+	    catch (Errno.Esrch e) {
+		// Toss it.
 	    }
 	}
 

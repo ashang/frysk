@@ -90,6 +90,8 @@ public class TestPaused
 	    assertEquals ("No terminated event before task creation", 0,
 			  taskDestroyedCount);
 	    taskCreatedCount++;
+	    // Register child to be removed at end of test
+	    registerChild (task.id.id);
 	    if (task.id.id == task.proc.id.id)
 		mainTask = task;
 	    else if (thread1 == null)
@@ -137,7 +139,7 @@ public class TestPaused
 			      thread1.state);
 		assertEquals ("Thread 2 is paused", TaskState.paused,
 			      thread2.state);
-		task.proc.detach ();
+		Manager.eventLoop.requestStop ();
 	    }
         }
     }
@@ -190,12 +192,6 @@ public class TestPaused
 	int pid = XXX.infThreadLoop (2);
 	Manager.host.requestAttachProc (new ProcId (pid));
 
-        // Register child to be removed at end of test
-        registerChild (pid);
-
-        // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
-
 	assertRunUntilStop ("XXX: run until?");
 
 	assertEquals ("TaskCreatedEvents received = 3", 3,
@@ -204,10 +200,5 @@ public class TestPaused
 		      taskStopCount);
 	assertEquals ("No TaskDestroyedEvents received", 0,
 		      taskDestroyedCount);
-	assertEquals ("No tasks left", 0,
-		      Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0,
-		      Manager.host.procPool.size ());
-	Signal.kill (pid, Sig.KILL);
     }
 }
