@@ -1,3 +1,8 @@
+2005-09-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineHandler.java (moveDown): Moved the ellipsis into the InlineViewer.
+	(moveUp): Ditto.
+
 2005-09-23  Rick Moseley  <rmoseley@redhat.com>	
 	
 	* dom/DOMFrysk.java: rename to setPC

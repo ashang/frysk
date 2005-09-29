@@ -11,7 +11,6 @@ import org.gnu.gtk.Label;
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.ToolTips;
-import org.gnu.gtk.VBox;
 
 
 /**
@@ -96,26 +95,21 @@ public class InlineHandler{
 			}
 			// general case - move bottom to bottom.prevLevel
 			else{
-				VBox box = new VBox(false, 0);
-				box.setBorderWidth(1);
 				InlineViewer tmp = new InlineViewer(myPrefs); 
 				tmp.load(bottom.prevLevel.getScope());
 				tmp.setBorderWidth(0);
 				
 				Label l = new Label("...");
 				l.setJustification(Justification.LEFT);
-				EventBox b = new EventBox();
-				b.add(l);
+				EventBox b1 = new EventBox();
+				b1.add(l);
 				ToolTips t = new ToolTips();
-				t.setTip(b, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-				box.packEnd(b);
-				box.packEnd(tmp);
+				t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
 				l = new Label("...");
 				l.setJustification(Justification.LEFT);
-				b = new EventBox();
-				b.add(l);
-				t.setTip(b, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-				box.packEnd(b);
+				EventBox b2 = new EventBox();
+				b2.add(l);
+				t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
 				
 				tmp.load(bottom.getScope());
 				
@@ -127,16 +121,21 @@ public class InlineHandler{
 				buf.deleteText(line, buf.getIter(line.getOffset()+1));
 				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 				
-				parent.addChild(box, anchor);
+				parent.addChild(tmp, anchor);
 				
 				buf = (SourceBuffer) tmp.getBuffer();
 				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
 				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 				
 				tmp.addChild(bottom, anchor);
+				buf.insertText(buf.getStartIter(), "\n");
+				tmp.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
+				tmp.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
+				
+				
 				tmp.nextLevel = bottom;
 				bottom.prevLevel = tmp;
-				box.showAll();
+				tmp.showAll();
 				
 				tmp.expanded = true;
 				
@@ -208,24 +207,55 @@ public class InlineHandler{
 				
 			}
 			else{
-				InlineViewer tmp = clicked;
-				tmp.load(tmp.getScope().prevScope);
+				InlineViewer tmp = new InlineViewer(myPrefs);
+				tmp.load(clicked.getScope().getPrevScope()); 
+				tmp.load(bottom.prevLevel.getScope());
+				tmp.setBorderWidth(0);
+				
+				Label l = new Label("...");
+				l.setJustification(Justification.LEFT);
+				EventBox b1 = new EventBox();
+				b1.add(l);
+				ToolTips t = new ToolTips();
+				t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+				l = new Label("...");
+				l.setJustification(Justification.LEFT);
+				EventBox b2 = new EventBox();
+				b2.add(l);
+				t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+				
+				tmp.load(bottom.getScope());
 				
 				bottom = new InlineViewer(myPrefs);
-				bottom.load(tmp.getScope().nextScope);
+				bottom.load(currentBottom);
 				
-				SourceBuffer buf = (SourceBuffer) tmp.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
+				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
+				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+				buf.deleteText(line, buf.getIter(line.getOffset()+1));
 				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 				
+				parent.addChild(tmp, anchor);
+				
+				buf = (SourceBuffer) tmp.getBuffer();
+				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
+				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+				
 				tmp.addChild(bottom, anchor);
+				buf.insertText(buf.getStartIter(), "\n");
+				tmp.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
+				tmp.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
+				
+				
 				tmp.nextLevel = bottom;
 				bottom.prevLevel = tmp;
-				bottom.showAll();
+				tmp.showAll();
 				
-				currentBottom = bottom.getScope();
+				tmp.expanded = true;
 				
-				tmp.draw();
+				bottom.prevLevel = tmp;
+				tmp.nextLevel = bottom;
+				
+				parent.draw();
 				
 				return false;
 			}
