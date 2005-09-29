@@ -171,58 +171,6 @@ public class ActionPool {
 			}
 	}
 
-	public class Attach extends Action {
-
-		public Attach() {
-			this.name = "Attach";
-			this.toolTip = "Attach to a running process";
-		}
-
-		public void execute(ProcData data) {
-			System.out.println("sending Manager.host.requestAttachProc");
-			data.getProc().observableAttachedContinue
-					.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().observableAttachedContinue.addObserver(eventLog.attachedContinueObserver);
-			data.getProc().requestAttachedContinue();
-//			Manager.host.observableProcAdded.addObserver
-//			    (WindowManager.theManager.logWindow);	
-//			System.out.println("About to: " + data.getProc().toString());
-//			Manager.host.observableProcAdded.addObserver(eventLog);
-//			System.out.println("Get proc returns: " + Manager.host.getProc(data.getProc().getId()));
-//			Manager.host.requestAttachProc(data.getProc().getId());
-		}
-
-		/**
-		 * This Action does not apply to Tasks.
-		 * */
-		public void execute(TaskData data) {
-			
-		}
-	}
-
-	public class Detach extends Action {
-		
-		public Detach() {
-			this.name = "Detach";
-			this.toolTip = "Dettach from an attached process";
-		}
-
-		public void execute(final ProcData data) {
-		Manager.host.observableProcRemoved.addObserver
-		    (WindowManager.theManager.logWindow);			
-		Manager.host.observableProcRemoved.addObserver
-	    (eventLog.detachedContinueObserver);
-			data.getProc().requestDetachedContinue();
-		}
-
-		/**
-		 * This Action does not apply to Tasks.
-		 * */
-		public void execute(TaskData data) {
-			
-		}
-	}
-
 	public class Stop extends Action {
 		
 		public Stop() {
