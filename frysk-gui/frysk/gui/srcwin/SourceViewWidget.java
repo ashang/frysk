@@ -52,6 +52,7 @@ import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextBuffer;
+import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TextWindowType;
@@ -385,6 +386,20 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		this.setCurrentLine(data.getLineNum());
 		
 		InlineHandler.init(data, this.topPrefs, this);
+	}
+	
+	public void setSubscopeAtCurrentLine(SourceViewWidget child){
+		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+		buf.deleteText(line, buf.getIter(line.getOffset()+1));
+		TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+		
+		this.addChild(child, anchor);
+		this.expanded = true;
+	}
+	
+	public void clearSubscopeAtCurrentLine(){
+		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+		buf.deleteText(line, buf.getIter(line.getOffset()+2));
 	}
 	
 	/*---------------------------*

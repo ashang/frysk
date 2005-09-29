@@ -153,6 +153,8 @@ public class InlineHandler{
 		if(!initialized || currentBottom.prevScope == null)
 			return false;
 		
+		currentBottom = clicked.getScope();
+		
 		if(verboseMode){
 			// Code here to collapse the lower viewers until we reach the one that was clicked
 		}
@@ -163,15 +165,9 @@ public class InlineHandler{
 				InlineViewer tmp = new InlineViewer(myPrefs);
 				tmp.load(clicked.getScope());
 				
-				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
-				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-				buf.deleteText(line, buf.getIter(line.getOffset()+1));
-				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
-				
-				parent.addChild(tmp, anchor);
-				
-				bottom = tmp;
-				currentBottom = clicked.getScope(); 
+				parent.setSubscopeAtCurrentLine(tmp);
+		
+				bottom = tmp; 
 				clicked.nextLevel = null;
 				parent.draw();
 			}
@@ -182,26 +178,10 @@ public class InlineHandler{
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(clicked.getScope());
 				
-				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
-				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-				buf.deleteText(line, buf.getIter(line.getOffset()+1));
-				TextChildAnchor anchor = buf.createChildAnchor(line);
-				
-				parent.addChild(tmp, anchor);
+				parent.setSubscopeAtCurrentLine(tmp);
 				tmp.showAll();
-				
-				buf = (SourceBuffer) tmp.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
-				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
-				
-				tmp.nextLevel = bottom;
-				bottom.prevLevel = tmp;
-				bottom.nextLevel = null;
-				
-				bottom.expanded = false;
-				tmp.expanded = true;
-				currentBottom = clicked.getScope();
-				tmp.addChild(bottom, anchor);
+
+				tmp.setSubscopeAtCurrentLine(bottom);
 				
 				tmp.draw();
 				
@@ -209,7 +189,6 @@ public class InlineHandler{
 			else{
 				InlineViewer tmp = new InlineViewer(myPrefs);
 				tmp.load(clicked.getScope().getPrevScope()); 
-				tmp.load(bottom.prevLevel.getScope());
 				tmp.setBorderWidth(0);
 				
 				Label l = new Label("...");
@@ -224,23 +203,15 @@ public class InlineHandler{
 				b2.add(l);
 				t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
 				
-				tmp.load(bottom.getScope());
-				
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
 				
-				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
-				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-				buf.deleteText(line, buf.getIter(line.getOffset()+1));
-				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+				parent.setSubscopeAtCurrentLine(tmp);
 				
-				parent.addChild(tmp, anchor);
+				SourceBuffer buf = (SourceBuffer) tmp.getBuffer();
 				
-				buf = (SourceBuffer) tmp.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
-				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+				tmp.setSubscopeAtCurrentLine(bottom);
 				
-				tmp.addChild(bottom, anchor);
 				buf.insertText(buf.getStartIter(), "\n");
 				tmp.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
 				tmp.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
@@ -268,9 +239,7 @@ public class InlineHandler{
 		if(!initialized)
 			return false;
 		
-		SourceBuffer buf = (SourceBuffer) parent.getBuffer();
-		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-		buf.deleteText(line, buf.getIter(line.getOffset()+2));
+		parent.clearSubscopeAtCurrentLine();
 		
 		parent.refresh();
 		currentBottom = top;

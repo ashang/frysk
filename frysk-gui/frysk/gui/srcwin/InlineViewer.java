@@ -56,4 +56,10 @@ public class InlineViewer extends SourceViewWidget {
 		this.scope = scope;
 	}
 
+	public void setSubscopeAtCurrentLine(InlineViewer viewer){
+		super.setSubscopeAtCurrentLine(viewer);
+		
+		viewer.prevLevel = this;
+		this.nextLevel = viewer;
+	}
 }

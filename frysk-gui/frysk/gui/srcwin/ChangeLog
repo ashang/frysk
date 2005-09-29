@@ -1,5 +1,19 @@
 2005-09-29  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineHandler.java (moveDown): Extracted sections into 
+	SourceViewWidget::setSubscopeAtCurrentLine.
+	(moveUp): Ditto, also moved common fields out of if statements.
+	(moveUp(SourceViewWidget)): Refactored parts into 
+	SourceViewWidget::clearSubscopeAtCurrentLine
+	
+	* SourceViewWidget.java (setSubscopeAtCurrentLocation): Added.
+	(clearSubscopeAtCurrentLocation): Ditto.
+	
+	* InlineViewer (setSubscopeAtCurrentLoction): Added.
+	
+
+2005-09-29  Adam Jocksch  <ajocksch@redhat.com>
+
 	* InlineHandler.java (moveDown): Moved the ellipsis into the InlineViewer.
 	(moveUp): Ditto.
 
