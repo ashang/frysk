@@ -5,13 +5,6 @@ package frysk.gui.srcwin;
 
 import java.util.prefs.Preferences;
 
-import org.gnu.gtk.EventBox;
-import org.gnu.gtk.Justification;
-import org.gnu.gtk.Label;
-import org.gnu.gtk.TextChildAnchor;
-import org.gnu.gtk.TextIter;
-import org.gnu.gtk.ToolTips;
-
 
 /**
  * @author ajocksch
@@ -67,11 +60,7 @@ public class InlineHandler{
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
 				
-				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
-				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
-				
-				parent.addChild(bottom, anchor);
+				parent.setSubscopeAtCurrentLine(bottom);
 				bottom.showAll();
 				parent.draw();
 			}
@@ -81,66 +70,23 @@ public class InlineHandler{
 				bottom.nextLevel = new InlineViewer(myPrefs);
 				bottom.nextLevel.load(currentBottom);
 				
-				SourceBuffer buf = (SourceBuffer) bottom.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
-				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
-				
-				bottom.addChild(bottom.nextLevel, anchor);
+				bottom.setSubscopeAtCurrentLine(bottom.nextLevel);
 				bottom.nextLevel.showAll();
-				
-				bottom.nextLevel.prevLevel = bottom;
-				bottom = bottom.nextLevel;
-				
 				bottom.prevLevel.draw();
 			}
 			// general case - move bottom to bottom.prevLevel
 			else{
-				InlineViewer tmp = new InlineViewer(myPrefs); 
+				InlineViewer tmp = new InlineViewer(myPrefs, true); 
 				tmp.load(bottom.prevLevel.getScope());
-				tmp.setBorderWidth(0);
-				
-				Label l = new Label("...");
-				l.setJustification(Justification.LEFT);
-				EventBox b1 = new EventBox();
-				b1.add(l);
-				ToolTips t = new ToolTips();
-				t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-				l = new Label("...");
-				l.setJustification(Justification.LEFT);
-				EventBox b2 = new EventBox();
-				b2.add(l);
-				t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-				
+								
 				tmp.load(bottom.getScope());
 				
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
 				
-				SourceBuffer buf = (SourceBuffer) parent.getBuffer();
-				TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-				buf.deleteText(line, buf.getIter(line.getOffset()+1));
-				TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
-				
-				parent.addChild(tmp, anchor);
-				
-				buf = (SourceBuffer) tmp.getBuffer();
-				buf.insertText(buf.getLineIter(buf.getCurrentLine()+1), "\n");
-				anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
-				
-				tmp.addChild(bottom, anchor);
-				buf.insertText(buf.getStartIter(), "\n");
-				tmp.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
-				tmp.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
-				
-				
-				tmp.nextLevel = bottom;
-				bottom.prevLevel = tmp;
+				parent.setSubscopeAtCurrentLine(tmp);
+				tmp.setSubscopeAtCurrentLine(bottom);
 				tmp.showAll();
-				
-				tmp.expanded = true;
-				
-				bottom.prevLevel = tmp;
-				tmp.nextLevel = bottom;
 				
 				parent.draw();
 			}
@@ -187,44 +133,16 @@ public class InlineHandler{
 				
 			}
 			else{
-				InlineViewer tmp = new InlineViewer(myPrefs);
+				InlineViewer tmp = new InlineViewer(myPrefs, true);
 				tmp.load(clicked.getScope().getPrevScope()); 
 				tmp.setBorderWidth(0);
-				
-				Label l = new Label("...");
-				l.setJustification(Justification.LEFT);
-				EventBox b1 = new EventBox();
-				b1.add(l);
-				ToolTips t = new ToolTips();
-				t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-				l = new Label("...");
-				l.setJustification(Justification.LEFT);
-				EventBox b2 = new EventBox();
-				b2.add(l);
-				t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
 				
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
 				
 				parent.setSubscopeAtCurrentLine(tmp);
-				
-				SourceBuffer buf = (SourceBuffer) tmp.getBuffer();
-				
 				tmp.setSubscopeAtCurrentLine(bottom);
-				
-				buf.insertText(buf.getStartIter(), "\n");
-				tmp.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
-				tmp.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
-				
-				
-				tmp.nextLevel = bottom;
-				bottom.prevLevel = tmp;
 				tmp.showAll();
-				
-				tmp.expanded = true;
-				
-				bottom.prevLevel = tmp;
-				tmp.nextLevel = bottom;
 				
 				parent.draw();
 				

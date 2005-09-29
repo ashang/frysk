@@ -5,6 +5,11 @@ package frysk.gui.srcwin;
 
 import java.util.prefs.Preferences;
 
+import org.gnu.gtk.EventBox;
+import org.gnu.gtk.Justification;
+import org.gnu.gtk.Label;
+import org.gnu.gtk.ToolTips;
+
 /**
  * @author ajocksch
  *
@@ -16,12 +21,19 @@ public class InlineViewer extends SourceViewWidget {
 	
 	private PCLocation scope;
 	
+	private boolean showEllipsis;
+	
+	public InlineViewer(Preferences parentPrefs){
+		this(parentPrefs, false);
+	}
+	
 	/**
 	 * @param parentPrefs
 	 */
-	public InlineViewer(Preferences parentPrefs) {
+	public InlineViewer(Preferences parentPrefs, boolean showEllipsis) {
 		super(parentPrefs);
 		this.setBorderWidth(1);
+		this.showEllipsis = showEllipsis;
 	}
 	
 	public void toggleChild(){
@@ -46,6 +58,27 @@ public class InlineViewer extends SourceViewWidget {
 		
 		this.setCurrentLine(current.getLineNum());
 		this.scope = current;
+		
+		if(showEllipsis){
+			Label l = new Label("...");
+			l.setJustification(Justification.LEFT);
+			EventBox b1 = new EventBox();
+			b1.add(l);
+			ToolTips t = new ToolTips();
+			t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+			l = new Label("...");
+			l.setJustification(Justification.LEFT);
+			EventBox b2 = new EventBox();
+			b2.add(l);
+			t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+			
+			buf.insertText(buf.getStartIter(), "\n");
+			this.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
+			this.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
+			
+			b1.showAll();
+			b2.showAll();
+		}
 	}
 
 	public PCLocation getScope() {
