@@ -171,158 +171,198 @@ public class ActionPool {
 			}
 	}
 
-        public class Stop extends Action {
-                
-                public Stop() {
-                        this.name = "Stop";
-                        this.toolTip = "Stop current process";
-                }
+	public class Attach extends Action {
 
-                public void execute(final ProcData data) {
-                        data.getProc().requestAttachedStop();
-                        System.out.println("sending proc.requestAttachedStop() for " + data.getProc());
-                }
+		public Attach() {
+			this.name = "Attach";
+			this.toolTip = "Attach to a running process";
+		}
 
-                public void execute(TaskData data) {
-                        //XXX: data.getTask().requestStop(); is not public 
-                }
-        }
+		public void execute(ProcData data) {
+			System.out.println("sending Manager.host.requestAttachProc");
+			data.getProc().observableAttachedContinue
+					.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().observableAttachedContinue.addObserver(eventLog.attachedContinueObserver);
+			data.getProc().requestAttachedContinue();
+//			Manager.host.observableProcAdded.addObserver
+//			    (WindowManager.theManager.logWindow);	
+//			System.out.println("About to: " + data.getProc().toString());
+//			Manager.host.observableProcAdded.addObserver(eventLog);
+//			System.out.println("Get proc returns: " + Manager.host.getProc(data.getProc().getId()));
+//			Manager.host.requestAttachProc(data.getProc().getId());
+		}
 
-        public class Resume extends Action {
-                
-                public Resume() {
-                        this.name = "Resume";
-                        this.toolTip = "Resume execution of the current process";
-                }
+		/**
+		 * This Action does not apply to Tasks.
+		 * */
+		public void execute(TaskData data) {
+			
+		}
+	}
 
-                public void execute(final ProcData data) {
-                        data.getProc().requestAttachedContinue();
-                        System.out.println("sending proc.requestAttachedContinue() for " + data.getProc());
-                }
+	public class Detach extends Action {
+		
+		public Detach() {
+			this.name = "Detach";
+			this.toolTip = "Dettach from an attached process";
+		}
 
-                public void execute(TaskData data) {
-                        //XXX: to be implement in the back end: data.getTask().requestContinue();
-                        //data.getTask().
-                }
-        }
+		public void execute(final ProcData data) {
+		Manager.host.observableProcRemoved.addObserver
+		    (WindowManager.theManager.logWindow);			
+		Manager.host.observableProcRemoved.addObserver
+	    (eventLog.detachedContinueObserver);
+			data.getProc().requestDetachedContinue();
+		}
 
-        public class AddExecObserver extends Action {
+		/**
+		 * This Action does not apply to Tasks.
+		 * */
+		public void execute(TaskData data) {
+			
+		}
+	}
 
-                public AddExecObserver() {
-                        this.name = "Exec Observer";
-                        this.toolTip = "Listen for exec events on the selected process/thread";
-                }
+	public class Stop extends Action {
+		
+		public Stop() {
+			this.name = "Stop";
+			this.toolTip = "Stop current process";
+		}
 
-                public void execute(ProcData data) {
-                        //DialogManager.showWarnDialog(toolTip);
-                        
-                        // FIXME: according to test case must do proc.task.traceExec = true
-                        // first. But we dont have a handle on threads yet
-                        data.getProc().taskExeced
-                                        .addObserver(WindowManager.theManager.logWindow);
-                        data.getProc().taskExeced
-                        .addObserver(eventLog);
-                        
-                        data.add(new TaskExecObserver());
-                }
+		public void execute(final ProcData data) {
+			data.getProc().requestAttachedStop();
+			System.out.println("sending proc.requestAttachedStop() for " + data.getProc());
+		}
 
-                public void execute(TaskData data) {
-                        //XXX
-                }
-        }
+		public void execute(TaskData data) {
+			//XXX: data.getTask().requestStop(); is not public 
+		}
+	}
 
-        public class AddTaskDestroyObserver extends Action {
+	public class Resume extends Action {
+		
+		public Resume() {
+			this.name = "Resume";
+			this.toolTip = "Resume execution of the current process";
+		}
 
-                public AddTaskDestroyObserver() {
-                        this.name = "Task Destroyed Observer";
-                        this.toolTip = "Listen for task destroyed events on the selected process";
-                }
+		public void execute(final ProcData data) {
+			data.getProc().requestAttachedContinue();
+			System.out.println("sending proc.requestAttachedContinue() for " + data.getProc());
+		}
 
-                public void execute(ProcData data) {
-                        // FIXME: according to test case must do
-                        // proc.task.traceExec = true first. But we
-                        // dont have a handle on threads yet
-                        data.getProc().observableTaskRemoved
-                            .addObserver(WindowManager.theManager.logWindow);
-                        data.getProc().observableTaskRemoved
-                    .addObserver(eventLog);
+		public void execute(TaskData data) {
+			//XXX: to be implement in the back end:	data.getTask().requestContinue();
+			//data.getTask().
+		}
+	}
 
-                }
+	public class PrintState extends Action {
+		
+		public PrintState() {
+			this.name = "Print State";
+			this.toolTip = "Print the state of the selected process or thread";
+		}
 
-                public void execute(TaskData data) {
-                        // TODO Auto-generated method stub
-                        
-                }
-        }
+		public void execute(final ProcData data) {
+			System.out.println("Proc State : " + data.getProc());
+		}
 
-        public class AddTaskExitingObserver extends Action {
+		public void execute(TaskData data) {
+			System.out.println("Proc State : " + data.getTask());
+		}
+	}
+	
+	public class AddExecObserver extends Action {
 
-                public AddTaskExitingObserver() {
-                        this.name = "Task Exit Observer";
-                        this.toolTip = "Listen for task exit events on the selected process";
-                }
+		public AddExecObserver() {
+			this.name = "Exec Observer";
+			this.toolTip = "Listen for exec events on the selected process/thread";
+		}
 
-                public void execute(ProcData data) {
-                        // FIXME: according to test case must do proc.task.traceExec = true
-                        // first. But we dont have a handle on threads yet
-                        data.getProc().taskExiting
-                                        .addObserver(WindowManager.theManager.logWindow);
-                        data.getProc().taskExiting
-                        .addObserver(eventLog);
-                        
-                }
+		public void execute(ProcData data) {
+			TaskExecObserver taskExecObserver = new TaskExecObserver();
 
-                public void execute(TaskData data) {
-                        // TODO Auto-generated method stub
-                        
-                }
-        }
+			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExeced.addObserver(eventLog);
+			data.getProc().taskExeced.addObserver(taskExecObserver);
+			data.add(taskExecObserver);
+		}
 
-        /**
-         * Actions: A publicly available instance of each action this might not be
-         * nessecery... thoughts ? {
-         */
-        
-        public Attach attach;
-        public Detach detach;
-        public Stop   stop;
-        public Resume resume;
-        
-        public AddExecObserver addExecObserver;
-        public AddTaskDestroyObserver addTaskDestroyObserver;
-        public AddTaskExitingObserver addTaskExitingObserver;
-        
-        /** } */
+		public void execute(TaskData data) {
+			//XXX
+		}
+	}
 
-        /**
-         * Initializes all the public actions and adds them to the apporpriet list.
-         * When adding a new action instantiate it publicly and initialized here,
-         * and add it to its list.
-         */
-        private void initActions() {
-                this.attach = new Attach();
-                this.processActions.add(this.attach);
+	public class AddExitingObserver extends Action {
 
-                this.detach = new Detach();
-                this.processActions.add(this.detach);
+		public AddExitingObserver() {
+			this.name = "Exiting Observer";
+			this.toolTip = "Listen for task exit events on the selected process";
+		}
 
-                this.stop = new Stop();
-                this.processActions.add(this.stop);
-                this.threadActions.add (this.stop);
-                
-                this.resume = new Resume();
-                this.processActions.add(this.resume);
-                this.threadActions.add (this.resume);
-                
-                this.addExecObserver = new AddExecObserver();
-                this.processObservers.add(this.addExecObserver);
+		public void execute(ProcData data) {
+			TaskExitingObserver taskExitingObserver = new TaskExitingObserver();
 
-                
-                this.addTaskDestroyObserver = new AddTaskDestroyObserver();
-                this.processObservers.add(this.addTaskDestroyObserver);
+			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExeced.addObserver(eventLog);
+			data.getProc().taskExeced.addObserver(taskExitingObserver);
 
-                this.addTaskExitingObserver = new AddTaskExitingObserver();
-                this.processObservers.add(this.addTaskExitingObserver);
-        }
+			data.add(taskExitingObserver);
+		}
+
+		public void execute(TaskData data) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+
+	/**
+	 * Actions: A publicly available instance of each action this might not be
+	 * nessecery... thoughts ? {
+	 */
+	
+	public Attach attach;
+	public Detach detach;
+	public Stop   stop;
+	public Resume resume;
+	public PrintState printState;
+	
+	public AddExecObserver addExecObserver;
+	public AddExitingObserver addExitingObserver;
+	
+	/** } */
+
+	/**
+	 * Initializes all the public actions and adds them to the apporpriet list.
+	 * When adding a new action instantiate it publicly and initialized here,
+	 * and add it to its list.
+	 */
+	private void initActions() {
+		this.attach = new Attach();
+		this.processActions.add(this.attach);
+
+		this.detach = new Detach();
+		this.processActions.add(this.detach);
+
+		this.stop = new Stop();
+		this.processActions.add(this.stop);
+		this.threadActions.add (this.stop);
+		
+		this.resume = new Resume();
+		this.processActions.add(this.resume);
+		this.threadActions.add (this.resume);
+		
+		this.addExecObserver = new AddExecObserver();
+		this.processObservers.add(this.addExecObserver);
+
+		this.addExitingObserver = new AddExitingObserver();
+		this.processObservers.add(this.addExitingObserver);
+		
+		this.printState = new PrintState();
+		this.processActions.add(this.printState);
+		this.threadActions.add (this.printState);
+	}
 
 }

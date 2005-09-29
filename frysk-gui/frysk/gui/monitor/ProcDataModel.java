@@ -357,9 +357,9 @@ public class ProcDataModel {
     	public void update (Observable o, Object obj){
             final Proc proc = (Proc) obj;
           
-            proc.taskDiscovered.addObserver (taskCreatedObserver);
+            proc.observableTaskAdded.addObserver (taskCreatedObserver);
             proc.observableTaskRemoved.addObserver (taskDestroyedObserver);
-           
+            
             org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				 public void run() {
 					

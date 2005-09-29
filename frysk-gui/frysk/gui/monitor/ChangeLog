@@ -1,3 +1,9 @@
+2005-09-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* GuiData.java: Added add(TaskExitingObserver).
+	* ActionPool.java: Added TaskExiting Observer and fixed TaskExec
+	Observer.
+
 2005-09-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LogWindow.java (AttachedContinueObserver): Added.

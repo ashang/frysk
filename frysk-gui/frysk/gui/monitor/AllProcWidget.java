@@ -395,6 +395,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	private ProcData getSelectedProc(){
 		TreeSelection ts = this.procTreeView.getSelection();
 		TreePath[] tp = ts.getSelectedRows();
+
 		if(tp.length == 0){ 
 			return null;
 		}
@@ -409,6 +410,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	private TaskData getSelectedThread(){
 		TreeSelection ts = this.threadTreeView.getSelection();
 		TreePath[] tp = ts.getSelectedRows();
+
 		if(tp.length == 0){ 
 			return null;
 		}

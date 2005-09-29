@@ -64,5 +64,5 @@ public class ProcData  extends GuiData{
 	public Proc getProc() {
 		return proc;
 	}
-	
+
 }

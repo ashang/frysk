@@ -8,8 +8,8 @@ package frysk.gui.monitor;
 
 import java.util.Observable;
 
-import org.gnu.gtk.Notebook;
 import org.gnu.gdk.Window;
+import org.gnu.gtk.Notebook;
 
 public class InfoWidget extends Notebook {
 	private StatusWidget statusWidget;
@@ -24,7 +24,7 @@ public class InfoWidget extends Notebook {
 		NotifyingLabel statusWidgetLabel = new NotifyingLabel("Status");
 		this.statusWidget = new StatusWidget(data);
 		this.statusWidget.notifyUser.addObserver(statusWidgetLabel);
-		this.appendPage(statusWidget, statusWidgetLabel);
+		this.appendPage(statusWidget, statusWidgetLabel);		
 		//========================================
 				
 		this.showAll();

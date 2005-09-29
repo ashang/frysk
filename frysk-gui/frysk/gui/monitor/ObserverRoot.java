@@ -1,5 +1,7 @@
 package frysk.gui.monitor;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -14,11 +16,13 @@ public class ObserverRoot implements Observer{
 		protected String toolTip;
 		protected String name;
 
+		LinkedList runnables;
 		Runnable onUpdate;
 		
 		public ObserverRoot(String name, String toolTip){
 			this.toolTip = toolTip;
 			this.name = name;
+			this.runnables = new LinkedList();
 		}
 		
 		public String getToolTip() {
@@ -38,12 +42,17 @@ public class ObserverRoot implements Observer{
 		}
 		
 		public void update(Observable o, Object obj) {
-			this.onUpdate.run();
+			ListIterator iter = runnables.listIterator();
+			while(iter.hasNext()){
+				Runnable runnable = (Runnable) iter.next();
+				runnable.run();
+			}
 		}
 		
-		public void setRunnable(Runnable runnable){
-			this.onUpdate = runnable;
+		public void addRunnable(Runnable runnable){
+			this.runnables.add(runnable);
 		}
+		
 	}
 	
 	
