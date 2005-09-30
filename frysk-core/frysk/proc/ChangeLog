@@ -1,5 +1,11 @@
 2005-09-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStates.java: Add
+	testMultiTaskAttachedContinueToAttachedContinue, and
+	testMultiTaskAttachedStopToAttachedStop.
+	* ProcState.java: When stopped, handle processRequestAttachedStop;
+	and when running, handle processRequestAttachedContinue.
+	
 	* TestProcStates.java: Refactor.  Add
 	testSingleTaskAttachedStopToDetachedContinue, and
 	testMultiTaskAttachedStopToDetachedContinue.

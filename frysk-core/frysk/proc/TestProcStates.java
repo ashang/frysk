@@ -206,18 +206,23 @@ public class TestProcStates
 	requestDetachedContinue (proc);
     }
     /**
-     * XXX: Transition a multi-tasked process from continued to
-     * continued.
+     * Transition a multi-tasked process from continued to continued.
      */
-//     public void testMultiTaskAttachedContinueToAttachedContinue ()
-//     {
-// 	fail ("oops");
-//     }
+    public void testMultiTaskAttachedContinueToAttachedContinue ()
+    {
+	Child child = new AttachedChild (2);
+	Proc proc = child.findProcUsingRefresh ();
+	requestAttachedContinue (proc);
+	requestAttachedContinue (proc);
+    }
     /**
-     * XXX: Transition a multi-tasked process from stopped to stopped.
+     * Transition a multi-tasked process from stopped to stopped.
      */
-//     public void testMultiTaskAttachedStopToAttachedStop ()
-//     {
-// 	fail ("oops");
-//     }
+    public void testMultiTaskAttachedStopToAttachedStop ()
+    {
+	Child child = new AttachedChild (2);
+	Proc proc = child.findProcUsingRefresh ();
+	requestAttachedStop (proc);
+	requestAttachedStop (proc);
+    }
 }

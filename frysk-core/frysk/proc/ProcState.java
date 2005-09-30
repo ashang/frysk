@@ -322,6 +322,11 @@ abstract class ProcState
 		// The process has already been added to the tree.
 		return running;
 	    }
+	    ProcState processRequestAttachedContinue (Proc proc)
+	    {
+		proc.observableAttachedContinue.notify (proc);
+		return running;
+	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
 		Map attachedTasks
@@ -422,6 +427,11 @@ abstract class ProcState
 		event.execute ();
 		// XXX: ???
 		return running;
+	    }
+	    ProcState processRequestAttachedStop (Proc proc)
+	    {
+		proc.observableAttachedStop.notify (proc);
+		return stopped;
 	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
