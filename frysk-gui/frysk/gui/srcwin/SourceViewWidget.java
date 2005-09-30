@@ -161,6 +161,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	// How far to start writing breakpoints, etc. from the left side of the margin
 	private int marginWriteOffset;
 	
+	private TextChildAnchor anchor;
+	
 	protected boolean expanded = false;
 	
 	/**
@@ -307,7 +309,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			if(event.getButtonPressed() == MouseEvent.BUTTON1 &&
 					lineNum == this.buf.getCurrentLine()){
 				this.toggleChild();
-				this.refresh();
 			}
 		}
 		
@@ -390,16 +391,21 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	public void setSubscopeAtCurrentLine(SourceViewWidget child){
 		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
-		buf.deleteText(line, buf.getIter(line.getOffset()+1));
-		TextChildAnchor anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+		
+		if(anchor != null)
+			buf.deleteText(line, buf.getIter(line.getOffset()+1));
+		else
+			buf.insertText(line, "\n");
+		this.anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 		
 		this.addChild(child, anchor);
-		this.expanded = true;
 	}
 	
 	public void clearSubscopeAtCurrentLine(){
 		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
 		buf.deleteText(line, buf.getIter(line.getOffset()+2));
+		
+		this.anchor = null;
 	}
 	
 	/*---------------------------*
@@ -426,10 +432,12 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 
 	public void toggleChild() {
-		if(!expanded)
+		if(!expanded){
 			expanded = InlineHandler.moveDown();
-		else
+		}
+		else{
 			expanded = !InlineHandler.moveUp(this);
+		}
 	}
 	
 	/*
@@ -437,8 +445,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * drawn. Called either in response to an expose event or when a preference 
 	 * changes
 	 */
-	private void drawMargin(){
-		
+	protected void drawMargin(){
 		Window drawingArea = this.getWindow(TextWindowType.LEFT);
 		
 		// draw the background for the margin
@@ -465,7 +472,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		// get the line numbers we'll be drawing
 		int firstLine = firstIter.getLineNumber();
 		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
-		
+
 		// Get Color to draw the text in
 		r = this.lnfPrefs.getInt(LINE_NUM_R, 0);
 		g = this.lnfPrefs.getInt(LINE_NUM_G, 0);
@@ -491,14 +498,26 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		int actualIndex = 0;
 		int totalInlinedLines = 0;
 		
+		int drawingHeight = 0;
+		int gapHeight = 0;
+		
+		// If the refresh is starting after the current line, we have to add that offset in to
+		// make sure the gap in line numbers is maintained
+		if(expanded && firstLine > this.buf.getCurrentLine())
+			gapHeight = this.getLineYRange(this.getBuffer().getLineIter(this.buf.getCurrentLine()+1)).getHeight();
+		
 		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(false); i++){
+		
+			if(i > this.buf.getCurrentLine())
+				drawingHeight = currentHeight + gapHeight;
+			else
+				drawingHeight = currentHeight;
 			
 			// get the current line height, etc.
 			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
 			int iconStart = lineHeight/2;
 			
 			if(totalInlinedLines == 1){
-				
 				// draw background for the expanded lines
 //				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
 //				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
@@ -506,8 +525,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 //				context.setRGBForeground(new Color(r,g,b));
 				
 				totalInlinedLines = 0;
-				
-				currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+			
+				gapHeight = this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+ 
 				i--;
 				continue;
 			}
@@ -515,7 +535,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			// For the current line, draw background using the currentLine color
 			if(i == this.buf.getCurrentLine()){
 				context.setRGBForeground(new Color(lineR, lineG, lineB));
-				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
+				drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
 					this.marginWriteOffset+20, lineHeight);
 				context.setRGBForeground(new Color(r,g,b));
 			}
@@ -524,8 +544,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			// If it is executable, draw a mark
 			if(showMarks && this.buf.isLineExecutable(i)){
 				context.setRGBForeground(new Color(markR,markG,markB));
-				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+currentHeight+iconStart, 
-						this.marginWriteOffset+12, actualFirstStart+currentHeight+iconStart);
+				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
+						this.marginWriteOffset+12, actualFirstStart+drawingHeight+iconStart);
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
@@ -540,7 +560,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				Layout lo = new Layout(this.getContext());
 				lo.setAlignment(Alignment.RIGHT);
 				lo.setText("i");
-				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+currentHeight, lo);
+				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
 				context.setRGBForeground(new Color(r,g,b));
 				
 				if(this.expanded)
@@ -556,7 +576,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				lo.setWidth(this.marginWriteOffset);
 				lo.setText(""+(i+1));
 				
-				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+currentHeight, lo);
+				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+drawingHeight, lo);
 			}
 			
 			// draw breakpoints

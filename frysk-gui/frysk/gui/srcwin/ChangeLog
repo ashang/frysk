@@ -1,3 +1,20 @@
+2005-09-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceViewWidget.java (drawMargin): Changed to protected.
+	(drawMargin): Fixed bug where gap for inline code in line numbers wasn't
+	being obeyed (bug #1398)
+	(setSubscopeAtCurrentLine): Added checks for pre-existing child anchor.
+	(clearSubscopeAtCurrentLine): Nullifies old child anchor.
+	(mouseEvent): Removed unecesary refresh.
+	
+	* InlineHandler.java (moveDown): Fixed bug where upper scope wouldn't
+	change.
+	(moveDown): Removed unnecesary refresh commands.
+	(moveUp): Ditto.
+	
+	* InlineViewer.java (drawMargin): Added.
+	(toggleChild): Calls now set expanded.
+
 2005-09-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineHandler.java (moveDown): Refactored ellipsis code into 

@@ -59,10 +59,8 @@ public class InlineHandler{
 			if(bottom == null){
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
-				
 				parent.setSubscopeAtCurrentLine(bottom);
-				bottom.showAll();
-				parent.draw();
+				parent.drawMargin();
 			}
 			
 			// bottom exists, now do the case where it doesn't have a next
@@ -71,8 +69,7 @@ public class InlineHandler{
 				bottom.nextLevel.load(currentBottom);
 				
 				bottom.setSubscopeAtCurrentLine(bottom.nextLevel);
-				bottom.nextLevel.showAll();
-				bottom.prevLevel.draw();
+				bottom = bottom.nextLevel;
 			}
 			// general case - move bottom to bottom.prevLevel
 			else{
@@ -86,9 +83,6 @@ public class InlineHandler{
 				
 				parent.setSubscopeAtCurrentLine(tmp);
 				tmp.setSubscopeAtCurrentLine(bottom);
-				tmp.showAll();
-				
-				parent.draw();
 			}
 		}
 		
@@ -115,7 +109,6 @@ public class InlineHandler{
 		
 				bottom = tmp; 
 				clicked.nextLevel = null;
-				parent.draw();
 			}
 			else if(clicked.getScope().prevScope == top.nextScope){
 				InlineViewer tmp = new InlineViewer(myPrefs);
@@ -125,12 +118,7 @@ public class InlineHandler{
 				bottom.load(clicked.getScope());
 				
 				parent.setSubscopeAtCurrentLine(tmp);
-				tmp.showAll();
-
 				tmp.setSubscopeAtCurrentLine(bottom);
-				
-				tmp.draw();
-				
 			}
 			else{
 				InlineViewer tmp = new InlineViewer(myPrefs, true);
@@ -142,10 +130,7 @@ public class InlineHandler{
 				
 				parent.setSubscopeAtCurrentLine(tmp);
 				tmp.setSubscopeAtCurrentLine(bottom);
-				tmp.showAll();
-				
-				parent.draw();
-				
+					
 				return false;
 			}
 		}

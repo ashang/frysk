@@ -95,4 +95,11 @@ public class InlineViewer extends SourceViewWidget {
 		viewer.prevLevel = this;
 		this.nextLevel = viewer;
 	}
+	
+	protected void drawMargin(){
+		if(!showEllipsis){
+			super.drawMargin();
+			return;
+		}
+	}
 }
