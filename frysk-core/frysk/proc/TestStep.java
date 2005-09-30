@@ -204,7 +204,7 @@ public class TestStep
         public void execute ()
         {
             if (task != null) {
-	        task.proc.stop ();
+	        task.proc.stopAllTasks ();
 	    }
         }
     }

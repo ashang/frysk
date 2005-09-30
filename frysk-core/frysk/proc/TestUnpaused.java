@@ -129,17 +129,6 @@ public class TestUnpaused
 
     StopEventObserver stopEventObserver = new StopEventObserver ();
 
-    class AllStoppedObserver
-	implements Observer
-    {
-	public void update (Observable o, Object obj)
-	{
-	    ProcEvent pe = (ProcEvent)obj;
-	    LinuxProc p = (LinuxProc)pe.proc;
-	    Manager.eventLoop.requestStop ();
-	}
-    }
-
     class RunningCheckTimerEvent
         extends frysk.event.TimerEvent
     {
@@ -167,8 +156,7 @@ public class TestUnpaused
 	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));
 		    return;
 		}
-		mainTask.proc.allStopped.addObserver (new AllStoppedObserver ());
-		mainTask.proc.stop ();
+		Manager.eventLoop.requestStop ();
 	    }
 	}
     }
@@ -285,8 +273,7 @@ public class TestUnpaused
 
 	assertEquals ("TaskCreatedEvents received = 3", 3,
 		      taskCreatedCount);
-	assertEquals ("Forced StopTaskEvents received = 6", 6,
-		      taskStopCount);
+	assertEquals ("Forced StopTaskEvents", 3, taskStopCount);
 	assertEquals ("No TaskDestroyedEvents received", 0,
 		      taskDestroyedCount);
     }

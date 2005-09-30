@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -59,10 +58,6 @@ abstract class ProcState
     boolean isStopped ()
     {
 	return false;
-    }
-    ProcState stop (Proc proc)
-    {
-	throw new RuntimeException (proc + " " + this + " unhandled stop");
     }
     ProcState process (Proc proc, ProcEvent.AllStopped event)
     {
@@ -282,30 +277,6 @@ abstract class ProcState
 
     static ProcState running = new ProcState ("running")
 	{
-	    ProcState stop (Proc proc)
-	    {
-		// Check if we are already stopped.
-		Collection allTasks = proc.taskPool.values();
-		Iterator i = allTasks.iterator ();
-		boolean allStopped = true;
-		while (i.hasNext ()) {
-		    Task t = (Task)i.next ();
-		    if (!t.isStopped ()) {
-			allStopped = false;
-			break;
-		    }
-		}
-		if (!allStopped) {
-		    // Must stop tasks that are not yet stopped
-		    proc.stopAllTasks ();
-		    return stopping;
-		}
-		// Otherwise we are stopped as expected, notify observers
-		ProcEvent.AllStopped event = new ProcEvent.AllStopped (proc);
-		event.execute ();
-		// XXX: ???
-		return running;
-	    }
 	    ProcState process (Proc proc, ProcEvent.AllStopped event)
 	    {
 		return proc.state;
@@ -377,22 +348,6 @@ abstract class ProcState
 	}
     }
 
-    static ProcState stopping = new ProcState ("stopping")
-	{
-	    ProcState stop (Proc proc)
-	    {
-		return stopping;
-	    }
-	    ProcState process (Proc proc, ProcEvent.AllStopped event)
-	    {
-		proc.allStopped.notify (event);
-		// Only change state if observer did not restart process
-		if (proc.state == stopping)
-		    return stopped;
-		return proc.state;
-	    }
-	};
-
     static ProcState stopped = new ProcState ("stopped")
 	{
 	    boolean isStopped ()
@@ -401,32 +356,7 @@ abstract class ProcState
 	    }
 	    ProcState process (Proc proc, ProcEvent.AllStopped event)
 	    {
-		proc.allStopped.notify (event);
 		return stopped;
-	    }
-	    ProcState stop (Proc proc)
-	    {
-		// Check if we are already stopped.
-		Collection allTasks = proc.taskPool.values();
-		Iterator i = allTasks.iterator ();
-		boolean allStopped = true;
-		while (i.hasNext ()) {
-		    Task t = (Task)i.next ();
-		    if (!t.isStopped ()) {
-			allStopped = false;
-			break;
-		    }
-		}
-		if (!allStopped) {
-		    // Must stop tasks that are not yet stopped
-		    proc.stopAllTasks ();
-		    return stopping;
-		}
-		// Otherwise we are stopped as expected, notify observers
-		ProcEvent.AllStopped event = new ProcEvent.AllStopped (proc);
-		event.execute ();
-		// XXX: ???
-		return running;
 	    }
 	    ProcState processRequestAttachedStop (Proc proc)
 	    {

@@ -1,3 +1,11 @@
+2005-09-30  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java: Delete method "stop", and state "stopping".
+	* Proc.java: Delete "stop", and allStopped.
+	* TestStep.java: Replace call to Proc .stop with Proc
+	.stopAllTasks.
+	* TestUnpaused.java: Delete AllStoppedObserver.
+
 2005-09-29  Andrew Cagney  <cagney@redhat.com>
 
 	* TestProcStates.java: Add

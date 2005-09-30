@@ -297,14 +297,6 @@ public abstract class Proc
 	    });
     }
 
-    /**
-     * Use requestAttachedStop.
-     */
-    void stop ()
-    {
-	state = state.stop (this);
-    }
-
     boolean isStopped ()
     {
 	return state.isStopped ();
@@ -394,7 +386,6 @@ public abstract class Proc
     // (should they be per-task?).
     public TaskEventObservable taskExiting = new TaskEventObservable ();
     public TaskEventObservable taskExeced = new TaskEventObservable ();
-    public ProcEventObservable allStopped = new ProcEventObservable ();
 
     public abstract Auxv[] getAuxv ();
 
