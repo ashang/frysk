@@ -1,5 +1,14 @@
 2005-09-29  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcStates.java: Refactor.  Add
+	testSingleTaskAttachedStopToDetachedContinue, and
+	testMultiTaskAttachedStopToDetachedContinue.
+	* ProcState.java: Handle processRequestDetachedContinue when in
+	stopped state.
+	* TaskState.java: Handle processPerformDetach when in stopped
+	state.
+	* TestLib.java: Add RequestEventLoopStopObserver.
+
 	* Proc.java: Delete method "go".
 	* ProcState.java: Delete code handling "go".
 

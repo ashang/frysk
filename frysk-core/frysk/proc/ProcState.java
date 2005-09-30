@@ -434,6 +434,17 @@ abstract class ProcState
 		}
 		return new ContinuingAllTasks (stoppedTasks);
 	    }
+	    ProcState processRequestDetachedContinue (Proc proc)
+	    {
+		Map attachedTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performDetach ();
+		}
+		return new DetachingAllTasks (attachedTasks);
+	    }
 	};
 
     /**

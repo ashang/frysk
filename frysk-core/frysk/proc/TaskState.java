@@ -631,6 +631,14 @@ class TaskState
 		task.proc.performTaskContinueCompleted (task);
 		return running;
 	    }
+	    TaskState processPerformDetach (Task task)
+	    {
+		// XXX: Need to hang onto the signal that was about to
+		// be delivered?
+		task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
 	};
 
     static TaskState paused = new TaskState ("paused")
