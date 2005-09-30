@@ -78,50 +78,65 @@ public class LogWindow extends Window implements Observer, Saveable{
 	
 	static int count = 0;
 	public void update(Observable observable, Object obj) {
+		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+			 public void run() {
+				 TextBuffer tb = logTextView.getBuffer();
+				 tb.insertText("event "+(count++)+" : ");
 		
-		TextBuffer tb = this.logTextView.getBuffer();
-		tb.insertText("event "+(count++)+" : ");
-		
-		tb.insertText("\n");
-		
+				 tb.insertText("\n");
+			 }
+		});
 	}
 	
     class AttachedContinueObserver implements Observer{
-        public void update(Observable arg0, Object arg1) {
-    			TextBuffer tb = logTextView.getBuffer();
-    			tb.insertText("event "+(count++)+" : ");
-    		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX attached " + " \n");
-                
+        public void update(Observable arg0, final Object arg1) {
+        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+        		public void run() {
+        			TextBuffer tb = logTextView.getBuffer();
+        			tb.insertText("event "+(count++)+" : ");
+        			tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX attached " + " \n");
+        		 }
+    		});     
         }
     }
 
     class AttachedStopObserver implements Observer{
-        public void update(Observable arg0, Object arg1) {
-    			TextBuffer tb = logTextView.getBuffer();
-    			tb.insertText("event "+(count++)+" : ");
-    		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX stopped" + " \n");
-    		    System.out.println("Got here");
-                
+        public void update(Observable arg0, final Object arg1) {
+        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+        		public void run() {
+        			TextBuffer tb = logTextView.getBuffer();
+        			tb.insertText("event "+(count++)+" : ");
+        		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX stopped" + " \n");
+        		    System.out.println("Got here");
+        		 }
+    		});
         }
     }
 
     class AttachedResumeObserver implements Observer{
-        public void update(Observable arg0, Object arg1) {
-    			TextBuffer tb = logTextView.getBuffer();
-    			tb.insertText("event "+(count++)+" : ");
-    		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX resumed" + " \n");
-                
+        public void update(Observable arg0, final Object arg1) {
+        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+        		public void run() {
+        			TextBuffer tb = logTextView.getBuffer();
+        			tb.insertText("event "+(count++)+" : ");
+        		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX resumed" + " \n");
+        		 }
+    		});
         }
     }
 
     
     class DetachedContinueObserver implements Observer{
-        public void update(Observable arg0, Object arg1) {
-			TextBuffer tb = logTextView.getBuffer();
-			tb.insertText("event "+(count++)+" : ");
-		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX detached " + " \n");
+        public void update(Observable arg0, final Object arg1) {
+        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+        		public void run() {
+        			TextBuffer tb = logTextView.getBuffer();
+        			tb.insertText("event "+(count++)+" : ");
+        		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX detached " + " \n");
+        		 }
+    		});
         }
-}
+    }
 	
 	public void save(Preferences prefs) {
 		// TODO Auto-generated method stub
