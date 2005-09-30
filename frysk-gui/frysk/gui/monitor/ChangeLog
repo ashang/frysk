@@ -1,3 +1,7 @@
+2005-09-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* LogWindow.java: Synchronized observerable updates with GUI loop (CustomEvents.add).
+
 2005-09-30  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ActionPool.java (Stop.execute): Added observer plumbing.
