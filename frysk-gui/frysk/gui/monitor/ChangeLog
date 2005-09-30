@@ -1,3 +1,16 @@
+2005-09-30  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ActionPool.java (Stop.execute): Added observer plumbing.
+	(Resume.execute): Added observer plumbing.
+	* LogWindow.java (AttachedStopObserver): Added.
+	(AttachedResumeObserver):  Added.
+	* EventLogger.java (AttachedContinueObserver.update): Changed
+	Log format.
+	(DetachedContinueObserver.update): Changed Log format.
+	(AttachedStopObserver): Added.	
+	(AttachedResumeObserver): Added
+	(buildHandler): Changed formatter to SimpleFormatter.
+
 2005-09-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* GuiData.java: Added add(TaskExitingObserver).

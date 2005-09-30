@@ -46,8 +46,9 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
-import frysk.proc.Manager;
+
 import frysk.proc.Proc;
 
 /**
@@ -88,12 +89,16 @@ public class EventLogger implements Observer {
          * */
         public AttachedContinueObserver attachedContinueObserver;
         public DetachedContinueObserver detachedContinueObserver;
+        public AttachedStopObserver attachedStopObserver;
+        public AttachedResumeObserver attachedResumeObserver;
         /** }*/
         
         EventLogger()
         {
                 this.attachedContinueObserver = new AttachedContinueObserver();
                 this.detachedContinueObserver = new DetachedContinueObserver();
+                this.attachedStopObserver = new AttachedStopObserver();
+                this.attachedResumeObserver = new AttachedResumeObserver();
                 
                 eventLogFile = Logger.getLogger(EVENT_LOG_ID);
                 eventLogFile.addHandler(buildHandler());
@@ -115,33 +120,39 @@ public class EventLogger implements Observer {
                         e.printStackTrace();
                 }
                 
+                handler.setFormatter(new SimpleFormatter());
                 return handler;
         }
         
         public void update(Observable observable, Object arg1) {
                 // this function should not be used anymore
-                if(observable == Manager.host.observableProcAdded ){
-                        eventLogFile.log(Level.INFO,"Attached to process "  + ((Proc)arg1).getPid() );
-                }
-                if(observable == Manager.host.observableProcRemoved){
-                        eventLogFile.log(Level.INFO,"Detached from  process "  + ((Proc)arg1).getPid() );
-                }
+   
 
         }
         
         class AttachedContinueObserver implements Observer{
                 public void update(Observable arg0, Object arg1) {
-                        eventLogFile.log(Level.INFO,"Attached to process "  + ((Proc)arg1).getPid() );
-                        System.out.println( "Attached to process "  + ((Proc)arg1).getPid() );
+                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX attached ");
                 }
         }
         
         class DetachedContinueObserver implements Observer{
                 public void update(Observable arg0, Object arg1) {
-                        eventLogFile.log(Level.INFO,"Detached to process "  + ((Proc)arg1).getPid() );
-                        System.out.println( "Detached to process "  + ((Proc)arg1).getPid() );
+                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX detached ");
                 }
         }
+        
+        class AttachedStopObserver implements Observer{
+                public void update(Observable arg0, Object arg1) {
+                    eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX stopped");
+            }
+        }
+        
+        class AttachedResumeObserver implements Observer{
+            public void update(Observable arg0, Object arg1) {
+                eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX resumed");
+        }
+    }
         
                 
 }

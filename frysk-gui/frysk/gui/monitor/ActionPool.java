@@ -179,6 +179,8 @@ public class ActionPool {
 		}
 
 		public void execute(final ProcData data) {
+            data.getProc().observableAttachedStop.addObserver(eventLog.attachedStopObserver);
+			data.getProc().observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
 			data.getProc().requestAttachedStop();
 			System.out.println("sending proc.requestAttachedStop() for " + data.getProc());
 		}
@@ -196,6 +198,8 @@ public class ActionPool {
 		}
 
 		public void execute(final ProcData data) {
+            data.getProc().observableAttachedContinue.addObserver(eventLog.attachedResumeObserver);
+            data.getProc().observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
 			data.getProc().requestAttachedContinue();
 			System.out.println("sending proc.requestAttachedContinue() for " + data.getProc());
 		}

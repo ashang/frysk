@@ -53,7 +53,6 @@ import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.Window;
 
-import frysk.proc.Manager;
 import frysk.proc.Proc;
 
 /**
@@ -65,12 +64,16 @@ public class LogWindow extends Window implements Observer, Saveable{
 	public TextView logTextView;
     public AttachedContinueObserver attachedContinueObserver;
     public DetachedContinueObserver detachedContinueObserver;
+    public AttachedStopObserver attachedStopObserver;
+    public AttachedResumeObserver attachedResumeObserver;
     
 	public LogWindow(LibGlade glade){
 		super(((Window)glade.getWidget("logWindow")).getHandle());
 		this.logTextView = (TextView) glade.getWidget("logTextView");
         this.attachedContinueObserver = new AttachedContinueObserver();
         this.detachedContinueObserver = new DetachedContinueObserver();
+        this.attachedStopObserver = new AttachedStopObserver();
+        this.attachedResumeObserver = new AttachedResumeObserver();
 	}
 	
 	static int count = 0;
@@ -78,11 +81,6 @@ public class LogWindow extends Window implements Observer, Saveable{
 		
 		TextBuffer tb = this.logTextView.getBuffer();
 		tb.insertText("event "+(count++)+" : ");
-		
-		if(observable == Manager.host.observableProcAdded) {
-		    //FIXME: tb.insertText("Attached to process " + proc.getPid() );
-		    FIXME: tb.insertText("Attached to process " );
-		}
 		
 		tb.insertText("\n");
 		
@@ -92,16 +90,36 @@ public class LogWindow extends Window implements Observer, Saveable{
         public void update(Observable arg0, Object arg1) {
     			TextBuffer tb = logTextView.getBuffer();
     			tb.insertText("event "+(count++)+" : ");
-    		    tb.insertText("Attached to process " + ((Proc)arg1).getPid() );
+    		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX attached " + " \n");
                 
         }
     }
 
+    class AttachedStopObserver implements Observer{
+        public void update(Observable arg0, Object arg1) {
+    			TextBuffer tb = logTextView.getBuffer();
+    			tb.insertText("event "+(count++)+" : ");
+    		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX stopped" + " \n");
+    		    System.out.println("Got here");
+                
+        }
+    }
+
+    class AttachedResumeObserver implements Observer{
+        public void update(Observable arg0, Object arg1) {
+    			TextBuffer tb = logTextView.getBuffer();
+    			tb.insertText("event "+(count++)+" : ");
+    		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX resumed" + " \n");
+                
+        }
+    }
+
+    
     class DetachedContinueObserver implements Observer{
         public void update(Observable arg0, Object arg1) {
 			TextBuffer tb = logTextView.getBuffer();
 			tb.insertText("event "+(count++)+" : ");
-		    tb.insertText("Detached from process " + ((Proc)arg1).getPid() );
+		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX detached " + " \n");
         }
 }
 	
