@@ -83,25 +83,6 @@ abstract class ProcEvent
 		+ "]");
     }
 
-    static class AllStopped
-	extends ProcEvent
-    {
-	AllStopped (Proc proc)
-	{
-	    super (proc);
-	}
-	public void execute ()
-	{
-	    proc.state = proc.state.process (proc, this);
-	}
-	public String toString ()
-	{
-	    return ("[AllStopped"
-		    + super.toString ()
-		    + "]");
-	}
-    }
-
     /**
      * A task cloned.
      *

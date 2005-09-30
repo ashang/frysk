@@ -59,10 +59,6 @@ abstract class ProcState
     {
 	return false;
     }
-    ProcState process (Proc proc, ProcEvent.AllStopped event)
-    {
-	throw unhandled (proc, event);
-    }
     ProcState process (Proc proc, ProcEvent.TaskCloned event)
     {
 	throw unhandled (proc, event);
@@ -277,10 +273,6 @@ abstract class ProcState
 
     static ProcState running = new ProcState ("running")
 	{
-	    ProcState process (Proc proc, ProcEvent.AllStopped event)
-	    {
-		return proc.state;
-	    }
 	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
 	    {
 		proc.newTask (event.getCloneId (), true);
@@ -353,10 +345,6 @@ abstract class ProcState
 	    boolean isStopped ()
 	    {
 		return true;
-	    }
-	    ProcState process (Proc proc, ProcEvent.AllStopped event)
-	    {
-		return stopped;
 	    }
 	    ProcState processRequestAttachedStop (Proc proc)
 	    {

@@ -1,5 +1,8 @@
 2005-09-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Delete stopObserver.
+	* ProcEvent.java, ProcState.java: Delete AllStopped.
+
 	* ProcState.java: Delete method "stop", and state "stopping".
 	* Proc.java: Delete "stop", and allStopped.
 	* TestStep.java: Replace call to Proc .stop with Proc
