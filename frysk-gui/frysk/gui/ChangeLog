@@ -1,3 +1,7 @@
+2005-09-30  Andrew Cagney  <cagney@redhat.com>
+
+	* FryskGui.java: Append ABS_SRCDIR to glade search path list.
+
 2005-09-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* common/dialogs/Dialog.java: new file. root dialog.

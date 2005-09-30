@@ -1,3 +1,8 @@
+2005-09-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.javain.java): Substitue abs_builddir,
+	abs_srcdir, bindir, libdir, and libexecdir.
+
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (JAVACFLAGS), acinclude.m4 (JAVACFLAGS): Only add
