@@ -40,9 +40,6 @@ package frysk.gui.monitor;
 
 import java.util.LinkedList;
 
-//import frysk.gui.common.dialogs.DialogManager;
-import frysk.proc.Manager;
-
 /**
  * @author Sami Wagiaalla
  * Singelton; only one action pool. Flyweight;
@@ -155,12 +152,11 @@ public class ActionPool {
 			}
 	
 			public void execute(final ProcData data) {
-	
-				Manager.host.observableProcRemoved
-						.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
-				Manager.host.observableProcRemoved
-						.addObserver(eventLog.detachedContinueObserver);
-				data.getProc().requestDetachedContinue();
+                System.out.println("sending data.getProc().requestDetachedContinue();");
+                data.getProc().observableDetachedContinue
+                                .addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
+                data.getProc().observableDetachedContinue.addObserver(eventLog.detachedContinueObserver);
+  				data.getProc().requestDetachedContinue();
 			}
 	
 			/**

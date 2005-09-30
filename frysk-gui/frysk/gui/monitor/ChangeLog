@@ -2,6 +2,8 @@
 
 	* ActionPool.java (Stop.execute): Added observer plumbing.
 	(Resume.execute): Added observer plumbing.
+	(Detach.execute): Change from Manager to data.getProc().
+	Add corrects observers.
 	* LogWindow.java (AttachedStopObserver): Added.
 	(AttachedResumeObserver):  Added.
 	* EventLogger.java (AttachedContinueObserver.update): Changed
