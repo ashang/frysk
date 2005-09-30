@@ -1,5 +1,10 @@
 2005-09-30  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineViewer (drawMargin): Added code to draw margin for scopes with
+	ellipsis visible.
+
+2005-09-30  Adam Jocksch  <ajocksch@redhat.com>
+
 	* SourceViewWidget.java (drawMargin): Changed to protected.
 	(drawMargin): Fixed bug where gap for inline code in line numbers wasn't
 	being obeyed (bug #1398)

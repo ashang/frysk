@@ -60,7 +60,6 @@ public class InlineHandler{
 				bottom = new InlineViewer(myPrefs);
 				bottom.load(currentBottom);
 				parent.setSubscopeAtCurrentLine(bottom);
-				parent.drawMargin();
 			}
 			
 			// bottom exists, now do the case where it doesn't have a next

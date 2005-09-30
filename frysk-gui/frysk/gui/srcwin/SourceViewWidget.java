@@ -155,11 +155,11 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	protected SourceBuffer buf;
 	
 	// preferences model nodes
-	private Preferences topPrefs;
-	private Preferences lnfPrefs;
+	protected Preferences topPrefs;
+	protected Preferences lnfPrefs;
 	
 	// How far to start writing breakpoints, etc. from the left side of the margin
-	private int marginWriteOffset;
+	protected int marginWriteOffset;
 	
 	private TextChildAnchor anchor;
 	

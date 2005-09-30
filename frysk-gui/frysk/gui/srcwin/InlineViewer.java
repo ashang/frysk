@@ -5,10 +5,18 @@ package frysk.gui.srcwin;
 
 import java.util.prefs.Preferences;
 
+import org.gnu.gdk.Color;
+import org.gnu.gdk.Drawable;
+import org.gnu.gdk.GC;
+import org.gnu.gdk.Window;
 import org.gnu.gtk.EventBox;
 import org.gnu.gtk.Justification;
 import org.gnu.gtk.Label;
+import org.gnu.gtk.TextIter;
+import org.gnu.gtk.TextWindowType;
 import org.gnu.gtk.ToolTips;
+import org.gnu.pango.Alignment;
+import org.gnu.pango.Layout;
 
 /**
  * @author ajocksch
@@ -101,5 +109,161 @@ public class InlineViewer extends SourceViewWidget {
 			super.drawMargin();
 			return;
 		}
+			
+		Window drawingArea = this.getWindow(TextWindowType.LEFT);
+		
+		// draw the background for the margin
+		GC context = new GC((Drawable) drawingArea);
+		int r = this.lnfPrefs.getInt(MARGIN_R, 54741);
+		int g = this.lnfPrefs.getInt(MARGIN_G, 56283);
+		int b = this.lnfPrefs.getInt(MARGIN_B, 65535);
+		context.setRGBForeground(new Color(r, g, b));
+		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
+		
+		// get preference settings
+		boolean showLines = this.lnfPrefs.getBoolean(SHOW_LINE_NUMBERS, true);
+		boolean showMarks = this.lnfPrefs.getBoolean(SHOW_EXEC_MARKERS, true);
+		
+		// get the y coordinates for the top and bottom of the window
+		int minY = drawingArea.getClipRegion().getClipbox().getY();
+		int maxY = minY+drawingArea.getClipRegion().getClipbox().getHeight();
+		
+		// find out what the actual starting coordinates of the first line on screen is
+		TextIter firstIter = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, minY));
+		VerticalLineRange firstRange = this.getLineYRange(firstIter);
+		int actualFirstStart = this.bufferToWindowCoords(TextWindowType.LEFT, 0, firstRange.getY()).getY();
+		
+		// get the line numbers we'll be drawing
+		int firstLine = firstIter.getLineNumber();
+		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
+
+		// Get Color to draw the text in
+		r = this.lnfPrefs.getInt(LINE_NUM_R, 0);
+		g = this.lnfPrefs.getInt(LINE_NUM_G, 0);
+		b = this.lnfPrefs.getInt(LINE_NUM_B, 0);
+		context.setRGBForeground(new Color(r,g,b));
+		
+		// get inline color
+		int inlineR = this.lnfPrefs.getInt(INLINE_R, 65535);
+		int inlineG = this.lnfPrefs.getInt(INLINE_G, 65535);
+		int inlineB = this.lnfPrefs.getInt(INLINE_B, 0);
+		
+		// gets current line color
+		int lineR = this.lnfPrefs.getInt(CURRENT_LINE_R, 30000);
+		int lineG = this.lnfPrefs.getInt(CURRENT_LINE_G, 65535);
+		int lineB = this.lnfPrefs.getInt(CURRENT_LINE_B, 30000);
+		
+		// gets executable mark color
+		int markR = this.lnfPrefs.getInt(MARK_R, 0);
+		int markG = this.lnfPrefs.getInt(MARK_G, 0);
+		int markB = this.lnfPrefs.getInt(MARK_B, 0);
+		
+		int currentHeight = 0;		
+		int actualIndex = 0;
+		int totalInlinedLines = 0;
+		
+		int drawingHeight = 0;
+		int gapHeight = 0;
+		
+		// If the refresh is starting after the current line, we have to add that offset in to
+		// make sure the gap in line numbers is maintained
+		if(expanded && firstLine > this.buf.getCurrentLine())
+			gapHeight = this.getLineYRange(this.getBuffer().getLineIter(this.buf.getCurrentLine()+1)).getHeight();
+		
+		boolean firstTime = true;
+		
+		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(false); i++){
+		
+			if(i > this.buf.getCurrentLine())
+				drawingHeight = currentHeight + gapHeight;
+			else
+				drawingHeight = currentHeight;
+			
+			// get the current line height, etc.
+			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
+			int iconStart = lineHeight/2;
+			
+			if(firstTime){
+				firstTime = false;
+				currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+				i--;
+				continue;
+			}
+			
+			if(totalInlinedLines == 1){
+				// draw background for the expanded lines
+//				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
+//				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
+//						this.marginWriteOffset+20, lineHeight);
+//				context.setRGBForeground(new Color(r,g,b));
+				
+				totalInlinedLines = 0;
+			
+				gapHeight = this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+ 
+				i--;
+				continue;
+			}
+			
+			// For the current line, draw background using the currentLine color
+			if(i == this.buf.getCurrentLine() - 1){
+				context.setRGBForeground(new Color(lineR, lineG, lineB));
+				drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
+					this.marginWriteOffset+20, lineHeight);
+				context.setRGBForeground(new Color(r,g,b));
+			}
+			
+			
+			// If it is executable, draw a mark
+			if(showMarks && this.buf.isLineExecutable(i)){
+				context.setRGBForeground(new Color(markR,markG,markB));
+				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
+						this.marginWriteOffset+12, actualFirstStart+drawingHeight+iconStart);
+				context.setRGBForeground(new Color(r,g,b));
+			}
+			
+			if(i == this.buf.getCurrentLine() - 1){
+//				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
+//				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
+//						this.marginWriteOffset+20, lineHeight);
+//				context.setRGBForeground(new Color(r,g,b));
+				
+				context.setRGBForeground(new Color(markR,markG,markB));
+				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
+				Layout lo = new Layout(this.getContext());
+				lo.setAlignment(Alignment.RIGHT);
+				lo.setText("i");
+				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
+				context.setRGBForeground(new Color(r,g,b));
+				
+				if(this.expanded)
+					totalInlinedLines = 1;
+				else
+					totalInlinedLines = 0;
+			}
+			
+			// Draw line numbers
+			if(showLines){
+				Layout lo = new Layout(this.getContext());
+				lo.setAlignment(Alignment.RIGHT);
+				lo.setWidth(this.marginWriteOffset);
+				lo.setText(""+(i+1));
+				
+				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+drawingHeight, lo);
+			}
+			
+			// draw breakpoints
+			if(this.buf.isLineBroken(i)){
+				int iconHeight = lineHeight - 8;
+				
+				context.setRGBForeground(new Color(65535,0,0));
+				drawingArea.drawRectangle(context, true, this.marginWriteOffset+5, actualFirstStart+currentHeight+4, iconHeight, iconHeight);
+				context.setRGBForeground(new Color(r,g,b));
+			}
+			
+			// update height for next line
+			currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+		}
+		
 	}
 }
