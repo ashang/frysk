@@ -65,6 +65,14 @@ import org.gnu.gtk.event.MouseListener;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
+import frysk.gui.srcwin.PreferenceConstants.Background;
+import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
+import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
+import frysk.gui.srcwin.PreferenceConstants.Inline;
+import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
+import frysk.gui.srcwin.PreferenceConstants.Margin;
+import frysk.gui.srcwin.PreferenceConstants.Text;
+
 /** 
  * This class is used to add some functionality to TextView that may be needed
  * by the source window but is not directly available or easily accessible in
@@ -79,79 +87,6 @@ import org.gnu.pango.Layout;
  */
 public class SourceViewWidget extends TextView implements ExposeListener, MouseListener{
 
-	/* CONSTANTS */
-	
-	public static final String LNF_NODE = "lnf";
-	public static final String SYNTAX_NODE = "syntax";
-	
-	public static final String INLINE_B = "inline_b";
-	public static final String INLINE_G = "inline_g";
-	public static final String INLINE_R = "inline_r";
-	
-	public static final String TEXT_B = "textB";
-	public static final String TEXT_G = "textG";
-	public static final String TEXT_R = "textR";
-
-	public static final String MARK_B = "markB";
-	public static final String MARK_G = "markG";
-	public static final String MARK_R = "markR";	
-	
-	public static final String BG_B = "bgB";
-	public static final String BG_G = "bgG";
-	public static final String BG_R = "bgR";
-
-	public static final String MARGIN_B = "marginB";
-	public static final String MARGIN_G = "marginG";
-	public static final String MARGIN_R = "marginR";
-
-	public static final String LINE_NUM_B = "lineNumB";
-	public static final String LINE_NUM_G = "lineNumG";
-	public static final String LINE_NUM_R = "lineNumR";
-	
-	public static final String CURRENT_LINE_R = "currentLineR";
-	public static final String CURRENT_LINE_G = "currentLineG";
-	public static final String CURRENT_LINE_B = "currentLineB";
-
-	public static final String SEARCH_G = "searchG";
-	public static final String SEARCH_B = "searchB";
-	public static final String SEARCH_R = "searchR";
-	
-	public static final String SHOW_LINE_NUMBERS = "showLineNumbers";
-	public static final String SHOW_EXEC_MARKERS = "showExecMarkers";
-	public static final String SHOW_TOOLBAR = "showToolbar";
-	
-	public static final String FUNCTION_WEIGHT = "function_weight";
-	public static final String FUNCTION_R = "function_r";
-	public static final String FUNCTION_G = "function_b";
-	public static final String FUNCTION_B = "function_g";
-	
-	public static final String ID_WEIGHT = "id_weight";
-	public static final String ID_B = "id_b";
-	public static final String ID_G = "id_g";
-	public static final String ID_R = "id_r";
-	
-	public static final String LITERAL_WEIGHT = "literal_weight";
-	public static final String LITERAL_B = "literal_b";
-	public static final String LITERAL_G = "literal_g";
-	public static final String LITERAL_R = "literal_r";
-	
-	public static final String GLOBAL_G = "global_g";
-	public static final String GLOBAL_R = "global_r";
-	public static final String GLOBAL_B = "global_b";
-	public static final String GLOBAL_WEIGHT = "global_weight";
-	
-	public static final String COMMENT_R = "comment_r";
-	public static final String COMMENT_G = "comment_g";
-	public static final String COMMENT_B = "comment_b";
-	public static final String COMMMENT_WEIGHT = "commment_weight";
-	
-	public static final String CLASS_R = "class_r";
-	public static final String CLASS_G = "class_g";
-	public static final String CLASS_B = "class_b";
-	public static final String CLASS_WEIGHT = "class_weight";
-	
-	/* END CONSTANTS */
-	
 	// my SourceBuffer
 	protected SourceBuffer buf;
 	
@@ -176,7 +111,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		this.buf = new SourceBuffer();
 		this.setBuffer(this.buf);
 		this.topPrefs = parentPrefs;
-		this.lnfPrefs = parentPrefs.node(LNF_NODE);
+		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
 		this.initialize();
 	}
 	
@@ -191,7 +126,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		super(gtk_text_view_new_with_buffer(buffer.getHandle()));
 		this.buf = buffer;
 		this.topPrefs = parentPrefs;
-		this.lnfPrefs = parentPrefs.node(LNF_NODE);
+		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
 		this.initialize();
 	}
 
@@ -211,20 +146,20 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 */
 	public void refresh(){
 		// Look & Feel
-		int r = this.lnfPrefs.getInt(TEXT_R, 0);
-		int g = this.lnfPrefs.getInt(TEXT_G, 0);
-		int b = this.lnfPrefs.getInt(TEXT_B, 0);
+		int r = this.lnfPrefs.getInt(Text.R, 0);
+		int g = this.lnfPrefs.getInt(Text.G, 0);
+		int b = this.lnfPrefs.getInt(Text.B, 0);
 		this.setTextColor(StateType.NORMAL, new Color(r,g,b));
 		
-		r = this.lnfPrefs.getInt(BG_R, 65535);
-		g = this.lnfPrefs.getInt(BG_G, 65535);
-		b = this.lnfPrefs.getInt(BG_B, 65535);
+		r = this.lnfPrefs.getInt(Background.R, 65535);
+		g = this.lnfPrefs.getInt(Background.G, 65535);
+		b = this.lnfPrefs.getInt(Background.B, 65535);
 		this.setBaseColor(StateType.NORMAL, new Color(r,g,b));
 	
 		this.buf.updatePreferences(this.topPrefs);
 		
 		// Sidebar
-		if(this.lnfPrefs.getBoolean(SHOW_LINE_NUMBERS, true)){
+		if(this.lnfPrefs.getBoolean(LineNumbers.SHOW, true)){
 			Layout lo = new Layout(this.getContext());
 			lo.setText(""+this.buf.getLineCount()+1);
 			this.marginWriteOffset = lo.getPixelWidth();
@@ -450,15 +385,15 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		
 		// draw the background for the margin
 		GC context = new GC((Drawable) drawingArea);
-		int r = this.lnfPrefs.getInt(MARGIN_R, 54741);
-		int g = this.lnfPrefs.getInt(MARGIN_G, 56283);
-		int b = this.lnfPrefs.getInt(MARGIN_B, 65535);
+		int r = this.lnfPrefs.getInt(Margin.R, 54741);
+		int g = this.lnfPrefs.getInt(Margin.G, 56283);
+		int b = this.lnfPrefs.getInt(Margin.B, 65535);
 		context.setRGBForeground(new Color(r, g, b));
 		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
 		
 		// get preference settings
-		boolean showLines = this.lnfPrefs.getBoolean(SHOW_LINE_NUMBERS, true);
-		boolean showMarks = this.lnfPrefs.getBoolean(SHOW_EXEC_MARKERS, true);
+		boolean showLines = this.lnfPrefs.getBoolean(LineNumbers.SHOW, true);
+		boolean showMarks = this.lnfPrefs.getBoolean(ExecMarks.SHOW, true);
 		
 		// get the y coordinates for the top and bottom of the window
 		int minY = drawingArea.getClipRegion().getClipbox().getY();
@@ -474,25 +409,25 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
 
 		// Get Color to draw the text in
-		r = this.lnfPrefs.getInt(LINE_NUM_R, 0);
-		g = this.lnfPrefs.getInt(LINE_NUM_G, 0);
-		b = this.lnfPrefs.getInt(LINE_NUM_B, 0);
+		r = this.lnfPrefs.getInt(LineNumbers.R, 0);
+		g = this.lnfPrefs.getInt(LineNumbers.G, 0);
+		b = this.lnfPrefs.getInt(LineNumbers.B, 0);
 		context.setRGBForeground(new Color(r,g,b));
 		
 		// get inline color
-		int inlineR = this.lnfPrefs.getInt(INLINE_R, 65535);
-		int inlineG = this.lnfPrefs.getInt(INLINE_G, 65535);
-		int inlineB = this.lnfPrefs.getInt(INLINE_B, 0);
+		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
+		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
+		int inlineB = this.lnfPrefs.getInt(Inline.B, 0);
 		
 		// gets current line color
-		int lineR = this.lnfPrefs.getInt(CURRENT_LINE_R, 30000);
-		int lineG = this.lnfPrefs.getInt(CURRENT_LINE_G, 65535);
-		int lineB = this.lnfPrefs.getInt(CURRENT_LINE_B, 30000);
+		int lineR = this.lnfPrefs.getInt(CurrentLine.R, 30000);
+		int lineG = this.lnfPrefs.getInt(CurrentLine.G, 65535);
+		int lineB = this.lnfPrefs.getInt(CurrentLine.B, 30000);
 		
 		// gets executable mark color
-		int markR = this.lnfPrefs.getInt(MARK_R, 0);
-		int markG = this.lnfPrefs.getInt(MARK_G, 0);
-		int markB = this.lnfPrefs.getInt(MARK_B, 0);
+		int markR = this.lnfPrefs.getInt(ExecMarks.R, 0);
+		int markG = this.lnfPrefs.getInt(ExecMarks.G, 0);
+		int markB = this.lnfPrefs.getInt(ExecMarks.B, 0);
 		
 		int currentHeight = 0;		
 		int actualIndex = 0;

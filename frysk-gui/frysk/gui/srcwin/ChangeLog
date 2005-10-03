@@ -1,3 +1,17 @@
+2005-10-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* GladeConstants.java: Added.
+	
+	* SourceWindow.java: Refactored constants to GladeConstants.java.
+	
+	* SourceViewWidget.java: Ditto.
+	
+	* PreferenceWindow.java: Ditto.
+	
+	* PreferenceConstants.java: Added.
+	
+	* SourceViewWidget.javaL Refactored constants to PreferenceConstants.java.
+
 2005-10-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFrysk.java: renamed pcValue to value

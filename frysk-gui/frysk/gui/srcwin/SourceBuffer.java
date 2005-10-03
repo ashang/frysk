@@ -20,6 +20,15 @@ import org.gnu.gtk.TextTag;
 import org.gnu.gtk.TextTagTable;
 import org.gnu.pango.Weight;
 
+import frysk.gui.srcwin.PreferenceConstants.Classes;
+import frysk.gui.srcwin.PreferenceConstants.Comments;
+import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
+import frysk.gui.srcwin.PreferenceConstants.Functions;
+import frysk.gui.srcwin.PreferenceConstants.GlobalVariables;
+import frysk.gui.srcwin.PreferenceConstants.ID;
+import frysk.gui.srcwin.PreferenceConstants.Inline;
+import frysk.gui.srcwin.PreferenceConstants.Keywords;
+import frysk.gui.srcwin.PreferenceConstants.Search;
 import frysk.gui.srcwin.cparser.CDTParser;
 
 /**
@@ -264,74 +273,74 @@ public class SourceBuffer extends TextBuffer {
 	 * @param topNode The new model to be displayed
 	 */
 	public void updatePreferences(Preferences topNode){
-		Preferences currentNode = topNode.node(SourceViewWidget.LNF_NODE);
+		Preferences currentNode = topNode.node(GladeConstants.LNF_NODE);
 		
 		// update current line color
-		int r = currentNode.getInt(SourceViewWidget.CURRENT_LINE_R, 0);
-		int g = currentNode.getInt(SourceViewWidget.CURRENT_LINE_G, 0);
-		int b = currentNode.getInt(SourceViewWidget.CURRENT_LINE_B, 0);
+		int r = currentNode.getInt(CurrentLine.R, 0);
+		int g = currentNode.getInt(CurrentLine.G, 0);
+		int b = currentNode.getInt(CurrentLine.B, 0);
 		this.currentLine.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		
 		// Search color
-		r = currentNode.getInt(SourceViewWidget.SEARCH_R, 65535);
-		g = currentNode.getInt(SourceViewWidget.SEARCH_G, 32200);
-		b = currentNode.getInt(SourceViewWidget.SEARCH_B, 0);
+		r = currentNode.getInt(Search.R, 65535);
+		g = currentNode.getInt(Search.G, 32200);
+		b = currentNode.getInt(Search.B, 0);
 		this.foundText.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		
-		currentNode = topNode.node(SourceViewWidget.SYNTAX_NODE);
+		currentNode = topNode.node(GladeConstants.SYNTAX_NODE);
 		
 		// Literal syntax highlighting
-		r = currentNode.getInt(SourceViewWidget.LITERAL_R, 30000);
-		g = currentNode.getInt(SourceViewWidget.LITERAL_G, 0);
-		b = currentNode.getInt(SourceViewWidget.LITERAL_B, 30000);
+		r = currentNode.getInt(Keywords.R, 30000);
+		g = currentNode.getInt(Keywords.G, 0);
+		b = currentNode.getInt(Keywords.B, 30000);
 		this.literalTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		int weight = currentNode.getInt(SourceViewWidget.LITERAL_WEIGHT, Weight.BOLD.getValue());
+		int weight = currentNode.getInt(Keywords.WEIGHT, Weight.BOLD.getValue());
 		this.literalTag.setWeight(Weight.intern(weight));
 		
 		// ID syntax highlighting
-		r = currentNode.getInt(SourceViewWidget.ID_R, 0);
-		g = currentNode.getInt(SourceViewWidget.ID_G, 30000);
-		b = currentNode.getInt(SourceViewWidget.ID_B, 0);
+		r = currentNode.getInt(ID.R, 0);
+		g = currentNode.getInt(ID.G, 30000);
+		b = currentNode.getInt(ID.B, 0);
 		this.idTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt(SourceViewWidget.ID_WEIGHT, Weight.NORMAL.getValue());
+		weight = currentNode.getInt(ID.WEIGHT, Weight.NORMAL.getValue());
 		this.idTag.setWeight(Weight.intern(weight));
 
 		// Global variable syntax highlighting
-		r = currentNode.getInt(SourceViewWidget.GLOBAL_R, 65535);
-		g = currentNode.getInt(SourceViewWidget.GLOBAL_G, 30000);
-		b = currentNode.getInt(SourceViewWidget.GLOBAL_B, 0);
+		r = currentNode.getInt(GlobalVariables.R, 65535);
+		g = currentNode.getInt(GlobalVariables.G, 30000);
+		b = currentNode.getInt(GlobalVariables.B, 0);
 		this.memberTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt(SourceViewWidget.GLOBAL_WEIGHT, Weight.NORMAL.getValue());
+		weight = currentNode.getInt(GlobalVariables.WEIGHT, Weight.NORMAL.getValue());
 		this.memberTag.setWeight(Weight.intern(weight));
 		
 		// Function syntax highlighting
-		r = currentNode.getInt(SourceViewWidget.FUNCTION_R, 0);
-		g = currentNode.getInt(SourceViewWidget.FUNCTION_G, 0);
-		b = currentNode.getInt(SourceViewWidget.FUNCTION_B, 65535);
+		r = currentNode.getInt(Functions.R, 0);
+		g = currentNode.getInt(Functions.G, 0);
+		b = currentNode.getInt(Functions.B, 65535);
 		this.functionTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt(SourceViewWidget.FUNCTION_WEIGHT, Weight.BOLD.getValue());
+		weight = currentNode.getInt(Functions.WEIGHT, Weight.BOLD.getValue());
 		this.functionTag.setWeight(Weight.intern(weight));
 		
 		// comment syntax highlighting
-		r = currentNode.getInt(SourceViewWidget.COMMENT_R, 10000);
-		g = currentNode.getInt(SourceViewWidget.COMMENT_G, 30000);
-		b = currentNode.getInt(SourceViewWidget.COMMENT_B, 10000);
+		r = currentNode.getInt(Comments.R, 10000);
+		g = currentNode.getInt(Comments.G, 30000);
+		b = currentNode.getInt(Comments.B, 10000);
 		this.commentTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt(SourceViewWidget.COMMMENT_WEIGHT, Weight.NORMAL.getValue());
+		weight = currentNode.getInt(Comments.WEIGHT, Weight.NORMAL.getValue());
 		this.commentTag.setWeight(Weight.intern(weight));
 		
 		// Type syntax highlighting
-		r = currentNode.getInt(SourceViewWidget.CLASS_R, 10000);
-		g = currentNode.getInt(SourceViewWidget.CLASS_G, 10000);
-		b = currentNode.getInt(SourceViewWidget.CLASS_B, 10000);
+		r = currentNode.getInt(Classes.R, 10000);
+		g = currentNode.getInt(Classes.G, 10000);
+		b = currentNode.getInt(Classes.B, 10000);
 		this.classTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-		weight = currentNode.getInt(SourceViewWidget.CLASS_WEIGHT, Weight.BOLD.getValue());
+		weight = currentNode.getInt(Classes.WEIGHT, Weight.BOLD.getValue());
 		this.classTag.setWeight(Weight.intern(weight));
 		
 		// Inlined tag background
-		r = currentNode.getInt(SourceViewWidget.INLINE_R, 65535);
-		g = currentNode.getInt(SourceViewWidget.INLINE_G, 65535);
-		b = currentNode.getInt(SourceViewWidget.INLINE_B, 0);
+		r = currentNode.getInt(Inline.R, 65535);
+		g = currentNode.getInt(Inline.G, 65535);
+		b = currentNode.getInt(GladeConstants.INLINE_B, 0);
 		this.inlinedTag.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 	}
 	

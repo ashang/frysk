@@ -18,6 +18,12 @@ import org.gnu.gtk.ToolTips;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
+import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
+import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
+import frysk.gui.srcwin.PreferenceConstants.Inline;
+import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
+import frysk.gui.srcwin.PreferenceConstants.Margin;
+
 /**
  * @author ajocksch
  *
@@ -114,15 +120,15 @@ public class InlineViewer extends SourceViewWidget {
 		
 		// draw the background for the margin
 		GC context = new GC((Drawable) drawingArea);
-		int r = this.lnfPrefs.getInt(MARGIN_R, 54741);
-		int g = this.lnfPrefs.getInt(MARGIN_G, 56283);
-		int b = this.lnfPrefs.getInt(MARGIN_B, 65535);
+		int r = this.lnfPrefs.getInt(Margin.R, 54741);
+		int g = this.lnfPrefs.getInt(Margin.G, 56283);
+		int b = this.lnfPrefs.getInt(Margin.B, 65535);
 		context.setRGBForeground(new Color(r, g, b));
 		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
 		
 		// get preference settings
-		boolean showLines = this.lnfPrefs.getBoolean(SHOW_LINE_NUMBERS, true);
-		boolean showMarks = this.lnfPrefs.getBoolean(SHOW_EXEC_MARKERS, true);
+		boolean showLines = this.lnfPrefs.getBoolean(LineNumbers.SHOW, true);
+		boolean showMarks = this.lnfPrefs.getBoolean(ExecMarks.SHOW, true);
 		
 		// get the y coordinates for the top and bottom of the window
 		int minY = drawingArea.getClipRegion().getClipbox().getY();
@@ -138,25 +144,25 @@ public class InlineViewer extends SourceViewWidget {
 		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
 
 		// Get Color to draw the text in
-		r = this.lnfPrefs.getInt(LINE_NUM_R, 0);
-		g = this.lnfPrefs.getInt(LINE_NUM_G, 0);
-		b = this.lnfPrefs.getInt(LINE_NUM_B, 0);
+		r = this.lnfPrefs.getInt(LineNumbers.R, 0);
+		g = this.lnfPrefs.getInt(LineNumbers.G, 0);
+		b = this.lnfPrefs.getInt(LineNumbers.B, 0);
 		context.setRGBForeground(new Color(r,g,b));
 		
 		// get inline color
-		int inlineR = this.lnfPrefs.getInt(INLINE_R, 65535);
-		int inlineG = this.lnfPrefs.getInt(INLINE_G, 65535);
-		int inlineB = this.lnfPrefs.getInt(INLINE_B, 0);
+		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
+		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
+		int inlineB = this.lnfPrefs.getInt(GladeConstants.INLINE_B, 0);
 		
 		// gets current line color
-		int lineR = this.lnfPrefs.getInt(CURRENT_LINE_R, 30000);
-		int lineG = this.lnfPrefs.getInt(CURRENT_LINE_G, 65535);
-		int lineB = this.lnfPrefs.getInt(CURRENT_LINE_B, 30000);
+		int lineR = this.lnfPrefs.getInt(CurrentLine.R, 30000);
+		int lineG = this.lnfPrefs.getInt(CurrentLine.G, 65535);
+		int lineB = this.lnfPrefs.getInt(CurrentLine.B, 30000);
 		
 		// gets executable mark color
-		int markR = this.lnfPrefs.getInt(MARK_R, 0);
-		int markG = this.lnfPrefs.getInt(MARK_G, 0);
-		int markB = this.lnfPrefs.getInt(MARK_B, 0);
+		int markR = this.lnfPrefs.getInt(ExecMarks.R, 0);
+		int markG = this.lnfPrefs.getInt(ExecMarks.G, 0);
+		int markB = this.lnfPrefs.getInt(ExecMarks.B, 0);
 		
 		int currentHeight = 0;		
 		int actualIndex = 0;
