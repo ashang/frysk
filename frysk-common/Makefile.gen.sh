@@ -115,12 +115,14 @@ has_main ()
 }
 
 
-print_header Makefile.gen.in arguments: ${dirs} ${jars}
-echo GEN_DIRS = ${dirs}
-echo GEN_JARS = ${jars} ${JARS}
+GEN_ARGS="${dirs} ${jars} ${JARS}"
+print_header Makefile.gen.in arguments: ${GEN_ARGS}
+echo GEN_ARGS="${GEN_ARGS}"
 
 
 # Generate rules to compile any .jar and _JAR files.
+
+echo GEN_JARS=
 
 print_jar_rule ()
 {
@@ -128,6 +130,7 @@ print_jar_rule ()
 $1.jar: \$($2_JAR)
 	cp \$($2_JAR) .
 BUILT_SOURCES += $1.jar
+GEN_JARS += $1.jar
 noinst_LIBRARIES += lib$1.a
 lib$1_a_LIBADD = $1.o
 $1.o: $1.jar
@@ -201,6 +204,7 @@ ${dir}.db: lib${dir}.so ${dir}.jar
 	gcj-dbtool -a \$@.tmp ${dir}.jar lib${dir}.so
 	mv \$@.tmp \$@
 noinst_PROGRAMS += ${dir}.db
+\$(GEN_BUILT_CLASSES): \$(GEN_JARS)
 EOF
 
 
