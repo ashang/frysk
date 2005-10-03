@@ -2,7 +2,9 @@
 
 	* StatusWidget.java (StatusWidget): Remove unused variable for 
 	ecj 3.1 warnings.
+	Removed unused imports.
 	* InfoWidget.java (InfoWidget): Ditto.
+	Removed unused imports.
 	* ProcDataModel.java (refilter): Remove temporarily.
 
 2005-09-30  Sami Wagiaalla  <swagiaal@redhat.com>

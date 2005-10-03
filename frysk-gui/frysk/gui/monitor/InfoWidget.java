@@ -8,7 +8,6 @@ package frysk.gui.monitor;
 
 import java.util.Observable;
 
-import org.gnu.gdk.Window;
 import org.gnu.gtk.Notebook;
 
 public class InfoWidget extends Notebook {
