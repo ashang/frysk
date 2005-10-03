@@ -104,8 +104,6 @@ class ftrace
 
     public static void main (String[] args)
     {
-	int n;
-
 	if (args.length == 0) {
 	    System.out.println ("Usage: program args ...");
 	    return;
