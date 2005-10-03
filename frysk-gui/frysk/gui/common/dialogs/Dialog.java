@@ -9,7 +9,7 @@ package frysk.gui.common.dialogs;
 
 public class Dialog extends org.gnu.gtk.Dialog {
 
-	private String message;
+	//private String message;
 	
 	public Dialog(){
 		super();

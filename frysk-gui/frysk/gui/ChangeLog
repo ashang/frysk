@@ -1,3 +1,7 @@
+2005-10-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* common/dialogs/Dialog.java (Dialog): Remove for ecj 3.1 warnings.
+
 2005-09-30  Andrew Cagney  <cagney@redhat.com>
 
 	* FryskGui.java: Append ABS_SRCDIR to glade search path list.
