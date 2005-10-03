@@ -226,7 +226,6 @@ public class TestUnpaused
     {
 	public void update (Observable o, Object obj)
 	{
-	    TaskEvent e = (TaskEvent) obj;
 	    if (++taskStopCount == 3) {
 	        Manager.eventLoop.addTimerEvent (new AllStoppedTimerEvent (mainTask, 0));
 	    }

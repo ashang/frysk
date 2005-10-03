@@ -76,7 +76,6 @@ public class TestSyscall
             else if (e instanceof TaskEvent.Syscall) {
 	        syscallTaskEventCount++;
 	        syscallState ^= 1;
-                TaskEvent.Syscall ste = (TaskEvent.Syscall)e;
 	    }
  	}
     }

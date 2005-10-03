@@ -140,7 +140,6 @@ public class LinuxHost
 	// removed processes.
 	List added = new LinkedList ();
 	HashMap removed = (HashMap) ((HashMap)procPool).clone ();
-	ProcId searchId = new ProcId ();
 	for (int i = 0; i < pids.length; i++) {
 	    updateProc (new ProcId (Integer.parseInt (pids[i])),
 			added, removed);

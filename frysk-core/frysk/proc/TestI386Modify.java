@@ -96,15 +96,11 @@ public class TestI386Modify
 	    }
             else if (e instanceof TaskEvent.Syscall) {
 	        syscallState ^= 1;
-                TaskEvent.Syscall ste = (TaskEvent.Syscall)e;
 		I386Linux.SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
 		// The low-level assembler code performs an exit syscall
 		// and sets up the registers with simple values.  We
 		// want to verify that all the registers are as expected.
 		if (syscallState == 1) {
-		    char[] ch = new char[21];
-		    long arg1, arg2;
-		    int index = 0;
 		    // verify that exit syscall occurs
 		    syscallNum = syscall.number (e.task);
 		    if (syscallNum == 20) { 

@@ -592,13 +592,18 @@ public class TestLib
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable o, Object obj)
-				{
-				    Task task = (Task) obj;
-				}
-			    });
+
+			// XXX: Disable for moment, will be needed
+			// once the exec observer is bound to the
+			// task.
+
+// 			proc.observableTaskAdded.addObserver (new Observer ()
+// 			    {
+// 				public void update (Observable o, Object obj)
+// 				{
+// 				    Task task = (Task) obj;
+// 				}
+// 			    });
 			proc.taskExeced.addObserver (new Observer ()
 			    {
 				public void update (Observable o, Object obj)
@@ -768,8 +773,6 @@ public class TestLib
 
     public void tearDown ()
     {
-	IgnoreWaitObserver ignoreWaits = new IgnoreWaitObserver ();
-
 	// Sig.KILL all the registered children.  Once that signal is
 	// processed the task will die.
 

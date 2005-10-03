@@ -58,8 +58,6 @@ public class TestExec
 	ExecCounter execCounter = new ExecCounter ();
 	new StopEventLoopOnProcDestroy ();
 
-	ProcCounter procCounter = new ProcCounter ();
-
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
@@ -86,7 +84,6 @@ public class TestExec
     {
 	TaskCounter taskCounter = new TaskCounter ();
 	ExecCounter execCounter = new ExecCounter ();
-	ProcCounter procCounter = new ProcCounter ();
 	new StopEventLoopOnProcDestroy ();
 
 	// Create a temp file, the exec will remove.  That way it's

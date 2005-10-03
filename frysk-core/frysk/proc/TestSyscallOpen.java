@@ -79,15 +79,10 @@ public class TestSyscallOpen
             else if (e instanceof TaskEvent.Syscall) {
 	        syscallTaskEventCount++;
 	        inSyscall = !inSyscall;
-                TaskEvent.Syscall ste = (TaskEvent.Syscall)e;
 		I386Linux.SyscallEventInfo syscallEventInfo
 		    = new I386Linux.SyscallEventInfo ();
 		int syscallNum = syscallEventInfo.number (e.task);
-		Syscall syscall = Syscall.syscallByNum (syscallNum);
 		if (inSyscall) {
-		    char[] ch = new char[21];
-		    long arg1, arg2;
-		    int index = 0;
 		    // syscall.printCall (writer, e.task, syscallEventInfo);
 		    // verify that open attempted for file a.file
 		    if (syscallNum == 5) { 

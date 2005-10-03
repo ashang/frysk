@@ -120,7 +120,6 @@ public class TestStopAndGo
 	int stopCount;
 	public void update (Observable o, Object obj)
 	{
-	    TaskEvent e = (TaskEvent) obj;
 	    if (++taskStopCount == 3) {
 	        Manager.eventLoop.addTimerEvent (new GoTimerEvent (mainTask, 0));
 	    } else if (taskStopCount == 6) {

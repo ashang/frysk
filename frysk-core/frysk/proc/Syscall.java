@@ -87,7 +87,6 @@ class Syscall
 	if (addr == 0)
 	    writer.print ("0x0");
 	else {
-	    int index = 0;
 	    writer.print ("\"");
 	    StringBuffer x = new StringBuffer ();
 	    task.memory.get (addr, 20, x);

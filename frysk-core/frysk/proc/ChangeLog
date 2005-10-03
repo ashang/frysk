@@ -1,3 +1,17 @@
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java: Delete unused local "searchId".
+	* Syscall.java: Delete unused local "index".
+	* TestExec.java: Delete unused local "procCounter".
+	* TestI386Modify.java, TestI386Regs.java: Delete unused local
+	"ste", "ch", "arg1", "arg2", and "index".
+	* TestLib.java: Delete unused locals "proc", and "ignoreWaits".
+	* TestGoAndGo.java, TestPaused.java, TestStep.java, TestStop.java,
+	TestStopAndGo.java, TestUnpaused.java: Delete unused local "e".
+	* TestSyscall.java: Delete unused local "ste".
+	* TestSyscallOpen.java: Delete unused local "ste", "syscall", "ch",
+	"arg1", "arg2", and "index".
+	
 2005-09-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Delete stopObserver.
