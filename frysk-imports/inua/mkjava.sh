@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # From the VENUS project.  Copyright 2004, 2005, Andrew Cagney
+# Licenced under the terms of the Eclipse Public Licence.
+# Licenced under the terms of the GNU CLASSPATH Licence.
 
 if test $# -ne 1 ; then
     echo "Usage: $0 <java/file/name>"
@@ -20,19 +22,45 @@ info ()
     echo 1>&2 "$@"
 }
 
+line=dummy
+comment=
 get_token ()
 {
-    token=
+    # EOF.
+    if test x"${line}" = x ; then
+	false
+	return
+    fi
+    # Break down the previously read token.
+    read token value print <<EOF
+${line}
+EOF
+    # Find the next token.
+    comment=
     while true ; do
-	if read token value print ; then
-	    if test x"$token" != x && expr "$token" : '[^#]' > /dev/null ; then
+	if read line ; then
+	    if expr "${line}" : '#' > /dev/null ; then
+		comment="${comment}
+${line}"
+	    elif test x"${line}" = x \
+		|| expr "${line}" : ' *$' > /dev/null ; then
+		:
+	    else
 		break
 	    fi
 	else
-	    false
-	    return
+	    break
 	fi
     done
+}
+
+print_comment ()
+{
+    if test x"${comment}" != x ; then
+	echo "$1/**"
+	echo "${comment}" | sed -e "1 d" -e "s,^#,$1 *,"
+	echo "$1 */"
+    fi
 }
 
 print_member ()
@@ -54,6 +82,7 @@ print_member ()
 	public|private|protected|import|boolean|float) name=_${name} ;;
         [0-9]*) name=_${name} ;;
     esac
+    print_comment "${sp}  "
     echo "${sp}  static public final int $name = ${value};"
     if test -z "${op}" ; then
 	if test ! -z "${mask}" ; then
@@ -86,6 +115,7 @@ parse_class ()
     local toShortString="${sp}    switch ((int) i) {"
     local toPrintString="${sp}    switch ((int) i) {"
 
+    print_comment "${sp}"
     echo "${sp}${scope} class ${class}"
     echo "${sp}{"
     while get_token ; do
@@ -142,6 +172,10 @@ parse_class ()
     done
     _path=`echo "${path}" | sed -e 's,\.,_,'`
     echo "${sp}"
+    echo "${sp}  /**"
+    echo "${sp}   * Returns the full underscore delimited name of the"
+    echo "${sp}   * field corresponding to the value I."
+    echo "${sp}   */"
     echo "${sp}  static public String toString (long i)"
     echo "${sp}  {"
     echo "${toString}"
@@ -149,6 +183,10 @@ parse_class ()
     echo "${sp}    }"
     echo "${sp}  }"
     echo "${sp}"
+    echo "${sp}  /**"
+    echo "${sp}   * Returns the just the final name of the field"
+    echo "${sp}   * corresponding to the value I."
+    echo "${sp}   */"
     echo "${sp}  static public String toShortString (long i)"
     echo "${sp}  {"
     echo "${toShortString}"
@@ -156,44 +194,30 @@ parse_class ()
     echo "${sp}    }"
     echo "${sp}  }"
     echo "${sp}"
+    echo "${sp}  /**"
+    echo "${sp}   * Returns the printable (or user readable) name for the"
+    echo "${sp}   * field corresponding to the value I."
+    echo "${sp}   */"
     echo "${sp}  static public String toPrintString (long i)"
     echo "${sp}  {"
     echo "${toPrintString}"
     echo "${sp}    default: return \"${_path}_0x\" + Long.toHexString (i);"
     echo "${sp}    }"
     echo "${sp}  }"
+    echo "${sp}"
+    echo "${sp}  /**"
+    echo "${sp}   * Returns the printable (or user readable) name for the"
+    echo "${sp}   * field corresponding to the value I, or DEF is there"
+    echo "${sp}   * is no such field."
+    echo "${sp}   */"
+    echo "${sp}  static public String toPrintString (long i, String def)"
+    echo "${sp}  {"
+    echo "${toPrintString}"
+    echo "${sp}    default: return def;"
+    echo "${sp}    }"
+    echo "${sp}  }"
     echo "${sp}}"
 }
-
-create_class_file ()
-{
-    local package=$1
-    local class=$2
-    local file
-    local dir
-
-    if test "$package" = "" ; then
-	fatal "Missing @package"
-    fi
-
-    file=`echo $package.${class} | sed -e 's,\.,/,g'`
-    dir=`dirname $file`
-    mkdir -p $dir
-    info File $file.java
-
-    exec > $file.new
-    echo "package $package;"
-    echo ""
-    parse_class "" "public" ${class} ${class}
-    exec 1>&2
-
-    if test -r $file.java && cmp $file.new $file.java > /dev/null ; then
-	:
-    else
-	mv $file.new $file.java
-    fi
-}
-
 
 # The command line argument is the name of the file to create; but the
 # actual java is written to stdout.
@@ -202,6 +226,9 @@ package=`dirname $1 | tr '[/]' '[.]'`
 info Package $package
 echo "package $package;"
 echo ""
+
+# Prime the look-a-head pump.
+get_token
 
 class=`basename $1 .java`
 parse_class "" "public" ${class} ${class}

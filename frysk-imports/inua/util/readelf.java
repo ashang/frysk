@@ -96,6 +96,8 @@ class readelf
             System.exit (2);
         }
 
+	// boolean help =
+	((Boolean)parser.getOptionValue (helpOption, Boolean.FALSE)).booleanValue ();
 	boolean fileHeader = ((Boolean)parser.getOptionValue (fileHeaderOption, Boolean.FALSE)).booleanValue ();
 	boolean programHeaders = (((Boolean) parser.getOptionValue (programHeadersOption, Boolean.FALSE)).booleanValue ()
 				  || ((Boolean) parser.getOptionValue (segmentsOption, Boolean.FALSE)).booleanValue ());
@@ -105,7 +107,8 @@ class readelf
 	boolean headers = ((Boolean) parser.getOptionValue (headersOption, Boolean.FALSE)).booleanValue ();
 	boolean syms = (((Boolean) parser.getOptionValue (symsOption, Boolean.FALSE)).booleanValue ()
 			   || ((Boolean) parser.getOptionValue (symbolsOption, Boolean.FALSE)).booleanValue ());
-	boolean wide = ((Boolean) parser.getOptionValue (wideOption, Boolean.FALSE)).booleanValue ();
+	// boolean wide = 
+	((Boolean) parser.getOptionValue (wideOption, Boolean.FALSE)).booleanValue ();
 	boolean notes = ((Boolean) parser.getOptionValue (notesOption, Boolean.FALSE)).booleanValue ();
 
 	String arg = (String) parser.getOptionValue (debugDumpOption, "");

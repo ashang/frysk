@@ -44,7 +44,9 @@ public class PtraceByteBuffer
     {
 	protected int peek;
 	protected int poke;
-	private Area (int peek, int poke)
+	// XXX: ECJ 3.1 complains if this is private - it can't see
+	// that the CNI code is calling it.
+	protected Area (int peek, int poke)
 	{
 	    this.peek = peek;
 	    this.poke = poke;

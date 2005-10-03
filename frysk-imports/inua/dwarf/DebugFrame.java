@@ -34,6 +34,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.dwarf;
 
 import inua.eio.ByteBuffer;
@@ -170,13 +171,13 @@ public class DebugFrame
 	// The table of registers
 	FrameUnwindTable registerRules;
 
-	CommonInformationEntry (Format theFormat, long thePosition,
-				long theLength, long theCidID)
+	CommonInformationEntry (Format format, long position,
+				long length, long cidID)
 	{
-	    format = theFormat;
-	    position = thePosition;
-	    length = theLength;
-	    cieID = theCidID;
+	    this.format = format;
+	    this.position = position;
+	    this.length = length;
+	    this.cieID = cidID;
 	    version = getUBYTE ();
 	    augmentation = position ();
 	    skipToZeroUBYTE ();
@@ -394,11 +395,11 @@ public class DebugFrame
 	public long register;
 	public int rule;
 	public long operand;
-	RegisterRule (long theRegister, int theRule, long theOperand)
+	RegisterRule (long register, int rule, long operand)
 	{
-	    register = theRegister;
-	    rule = theRule;
-	    operand = theOperand;
+	    this.register = register;
+	    this.rule = rule;
+	    this.operand = operand;
 	}
 	public int compareTo (Object o)
 	{
@@ -444,9 +445,9 @@ public class DebugFrame
 	public class SetIterator
 	{
 	    java.util.Iterator list;
-	    SetIterator (java.util.Iterator theList)
+	    SetIterator (java.util.Iterator list)
 	    {
-		list = theList;
+		this.list = list;
 	    }
 	    public boolean hasNext ()
 	    {
@@ -505,9 +506,9 @@ public class DebugFrame
 	public class RowIterator
 	{
 	    java.util.ListIterator list;
-	    RowIterator (java.util.ListIterator theList)
+	    RowIterator (java.util.ListIterator list)
 	    {
-		list = theList;
+		this.list = list;
 	    }
 	    public boolean hasNext ()
 	    {

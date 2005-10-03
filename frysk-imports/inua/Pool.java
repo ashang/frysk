@@ -35,22 +35,23 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Pool of objects, call recycle to start reusing them.
- *
- */
-
 package inua;
 
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Object pool, call recycle to start reusing them.
+ */
+
 public class Pool
 {
-    java.lang.reflect.Constructor constructor;
-    Object[] constructorArgs;
+    private java.lang.reflect.Constructor constructor;
+    private Object[] constructorArgs;
 
-    // A simple pool.
+    /**
+     * A simple pool.
+     */
     public Pool (Class sample)
     {
 	try {
@@ -64,9 +65,11 @@ public class Pool
 	}
     }
 
-    // A pool where each object's constructor is parameterized with
-    // PARAM (It does an exact match of PARAM's class, is that a good
-    // idea?).
+    /**
+     * A pool where each object's constructor is parameterized with
+     * PARAM (It does an exact match of PARAM's class, is that a good
+     * idea?).
+     */
     public Pool (Class sample, Object param)
     {
 	try {
@@ -80,8 +83,12 @@ public class Pool
 	}
     }
 
-    List pool = new ArrayList ();
-    int nextEvent = 0;
+    private List pool = new ArrayList ();
+    private int nextEvent = 0;
+
+    /**
+     * Return an object from the pool.
+     */
     public Object get ()
     {
 	if (nextEvent >= pool.size ()) {
@@ -94,6 +101,9 @@ public class Pool
 	}
 	return pool.get (nextEvent++);
     }
+    /**
+     * Recycle all objects from the pool.
+     */
     public void recycle ()
     {
 	nextEvent = 0;

@@ -34,7 +34,15 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-/** PrintWriter
+
+package inua;
+
+import java.io.Writer;
+import java.io.OutputStream;
+
+/**
+ * An extension to Java's Writer object adding lots of convenient
+ * print methods.
  *
  * Some background.  Java has three I/O models: streams (1.0), readers
  * and writers (1.1), and nio (1.4).  What isn't so obvious is which
@@ -55,33 +63,44 @@
  * think this is true :-).
  */
 
-package inua;
-
 public class PrintWriter
     extends java.io.PrintWriter
 {
     // PrintWriter stdout = new PrintWriter (System.out);
     // PrintWriter stderr = new PrintWriter (System.err);
 
-    public PrintWriter (java.io.Writer writer)
+    /**
+     * Construct from a Writer.
+     */
+    public PrintWriter (Writer writer)
     {
 	super (writer);
     }
-    public PrintWriter (java.io.Writer writer, boolean flush)
+    /**
+     * Construct from a Writer, possibly enable auto-flush.
+     */
+    public PrintWriter (Writer writer, boolean flush)
     {
 	super (writer, flush);
     }
-
-    public PrintWriter (java.io.OutputStream out)
+    /**
+     * Construct from an OutputStream.
+     */
+    public PrintWriter (OutputStream out)
     {
 	super (out);
     }
-
-    public PrintWriter (java.io.OutputStream out, boolean flush)
+    /**
+     * Construct from an OutputStream, possibly enable auto-flush.
+     */
+    public PrintWriter (OutputStream out, boolean flush)
     {
 	super (out, flush);
     }
 
+    /**
+     * Pad the output with WIDTH characters of PADDING.
+     */
     private final PrintWriter pad (int width, char padding)
     {
 	for (int i = 0; i < width; i++)
@@ -89,6 +108,11 @@ public class PrintWriter
 	return this;
     }
 
+    /**
+     * Print a String in a field at least |WIDTH| characters wide,
+     * padding with PADDING when necessary.  If WIDTH is +ve, add
+     * padding on the left, otherwize add padding on the right.
+     */
     public final PrintWriter print (int width, char padding, String s)
     {
 	if (width >= 0) {
@@ -101,11 +125,21 @@ public class PrintWriter
 	}
 	return this;
     }
+    /**
+     * Print a String in a field at least |WIDTH| characters wide,
+     * padding with spaces when necessary.  If WIDTH is +ve, add
+     * padding on the left, otherwize add padding on the right.
+     */
     public final PrintWriter print (int width, String s)
     {
 	return print (width, ' ', s);
     }
 
+    /**
+     * Print a character in a field at least |WIDTH| characters wide,
+     * padding with PADDING when necessary.  If WIDTH is +ve, add
+     * padding on the left, otherwize add padding on the right.
+     */
     public final PrintWriter print (int width, char padding, char c)
     {
 	if (width >= 0) {
@@ -118,12 +152,23 @@ public class PrintWriter
 	}
 	return this;
     }
+    /**
+     * Print a character in a field at least |WIDTH| characters wide,
+     * padding with spaces when necessary.  If WIDTH is +ve, add
+     * padding on the left, otherwize add padding on the right.
+     */
     public final PrintWriter print (int width, char c)
     {
 	return print (width, ' ', c);
     }
 
+    /**
+     * Scratch buffer (used for printing numbers).
+     */
     private char[] buffer = new char[64];
+    /**
+     * Print buffer[offset...], padding out to |WIDTH| when necessary.
+     */
     private final PrintWriter printBuffer (int width, char padding, int offset)
     {
 	int length = buffer.length - offset;
@@ -138,9 +183,16 @@ public class PrintWriter
 	return this;
     }
 
+    /**
+     * Decimal to hex converter.
+     */
     static private final char[] dec = {
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
+    /**
+     * Convert V into a decimal string stored in BUFFER, return the
+     * offset of the first character.
+     */
     private final int toDec (long v)
     {
 	int start = buffer.length;
@@ -157,18 +209,27 @@ public class PrintWriter
 	    buffer[--start] = '-';
 	return start;
     }
-    // Print L in decimal, if L is less than |WIDTH| characters pad to
-    // WIDTH with PADDING.
+    /**
+     * Print L in decimal, if L is less than |WIDTH| characters pad to
+     * WIDTH with PADDING.
+     */
     public final PrintWriter print (int width, char padding, long l)
     {
 	return printBuffer (width, padding, toDec (l));
     }
+    /**
+     * Print L in decimal, if L is less than |WIDTH| characters pad to
+     * WIDTH with spaces.
+     */
     public final PrintWriter print (int width, long l)
     {
 	return print (width, ' ', l);
     }
 
-    // Print V in decimal, always include a leading sign.
+    /**
+     * Print V in decimal, always include a leading sign.  If L is
+     * less than |WIDTH| characters pad with PADDING.
+     */
     public final PrintWriter printp (int width, char padding, long l)
     {
 	int length = toDec (l);
@@ -176,19 +237,33 @@ public class PrintWriter
 	    buffer[--length] = '+';
 	return printBuffer (width, ' ', length);
     }
+    /**
+     * Print V in decimal, always include a leading sign.  If L is
+     * less than |WIDTH| characters pad with spaces.
+     */
     public final PrintWriter printp (int width, long l)
     {
 	return printp (width, ' ', l);
     }
+    /**
+     * Print V in decimal, always include a leading sign.
+     */
     public final PrintWriter printp (long l)
     {
 	return printp (0, l);
     }
 
-    static final char[] hex = {
+    /**
+     * Hex to char converter.
+     */
+    static private final char[] hex = {
 	'0', '1', '2', '3', '4', '5', '6', '7',
 	'8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
     };
+    /**
+     * Convert V to an unsigned hexadecimal string, of up to WIDTH
+     * characters, stored in buffer, return the start of the string.
+     */
     private final int toHex (int width, long v)
     {
 	int start = buffer.length;
@@ -199,14 +274,25 @@ public class PrintWriter
 	} while (v != 0 && (v != -1 || start + width > buffer.length));
 	return start;
     }
+    /**
+     * Print L as a hexadecimal string, padding out to |WIDTH| with
+     * PADDING when necessary.
+     */
     public final PrintWriter printx (int width, char padding, long l)
     {
 	return printBuffer (width, padding, toHex (16, l));
     }
+    /**
+     * Print L as a hexadecimal string, padding out to |WIDTH| with
+     * spaces when necessary.
+     */
     public final PrintWriter printx (int width, long l)
     {
 	return printx (width, ' ', l);
     }
+    /**
+     * Print L as a hexadecimal string.
+     */
     public final PrintWriter printx (long l)
     {
 	return printx (0, ' ', l);

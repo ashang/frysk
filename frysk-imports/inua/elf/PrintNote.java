@@ -49,7 +49,6 @@ public class PrintNote
 
     public void print (PrintWriter o)
     {
-	Ehdr ehdr = elf.getEhdr ();
 	Phdr phdrs[] = elf.getPhdrs ();
 	for (int i = 0; i < phdrs.length; i++) {
 	    Phdr phdr = phdrs[i];

@@ -57,11 +57,11 @@ gdi ${readelf}
 gnu ${READELF}
 EOF
         TIME ${command} ${opts} | case "${opt}" in
-	      --debug-dump=frame* )
-	          # XXX: Discard the .eh_frame section, contains really weird
-	          # auxiliary information.
-	          sed -e '/The section .eh_frame contains:/,/The section .debug_frame contains:/ d'
-	          ;;
+#	      --debug-dump=frame* )
+#	          # XXX: Discard the .eh_frame section, contains really weird
+#	          # auxiliary information.
+#	          sed -e '/The section .eh_frame contains:/,/The section .debug_frame contains:/ d'
+#	          ;;
 	      * ) sed -e 's/@.*$//' ;
               esac  > /tmp/$$.${file}
 	mv /tmp/$$.${file} $dir/${file}

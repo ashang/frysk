@@ -56,7 +56,6 @@ public class ElfBuffer
 
     public ElfBuffer slice (long offset, long length)
     {
-	ByteBuffer b = buffer.slice (offset, length);
 	return new ElfBuffer (buffer.slice (offset, length));
     }
 

@@ -69,7 +69,6 @@ class DebugAranges
 
     public void construct (Builder builder)
     {
-	long offset = 0;
 	while (hasRemaining ()) {
 	    parseAddressRangeSet (builder);
 	}

@@ -44,6 +44,9 @@ import java.io.IOException;
 import java.io.EOFException;
 import java.io.CharConversionException;
 
+/**
+ * A very simplistic tokenizer.
+ */
 public class Scanner
 {
 
@@ -198,4 +201,3 @@ public class Scanner
 	return val.toString ();
     }
 }
-
