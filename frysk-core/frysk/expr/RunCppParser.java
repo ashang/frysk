@@ -183,7 +183,8 @@ public class RunCppParser
 	    
 	    try {
 	      parser.start();
-	      AST t = parser.getAST();
+	      // AST t = parser.getAST();
+	      parser.getAST ();
 	    }
 	    catch (TabException exTab) {
 	      sCompletionArray = TabCompletion(exTab.getAst(), exTab.getTabExpression().trim());

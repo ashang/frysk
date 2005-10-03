@@ -51,25 +51,16 @@ CLEANFILES += CppParserTokenTypes.java CppParserTokenTypes.tmp
 
 frysk/expr/CppLexer.java: frysk/expr/CppParser.java
 frysk/expr/CppParserTokenTypes.java: frysk/expr/CppParser.java
-frysk/expr/CppParser.java: $(srcdir)/frysk/expr/cpp.g
+frysk/expr/CppParser.java: \
+		$(srcdir)/frysk/expr/cpp.g \
+		$(srcdir)/frysk/expr/CppLexer.sed \
+		$(srcdir)/frysk/expr/CppParser.sed
 	antlr $(srcdir)/frysk/expr/cpp.g
 	mv CppParserTokenTypes.java frysk/expr/CppParserTokenTypes.java
 	mv CppParserTokenTypes.txt frysk/expr/CppParserTokenTypes.txt
-	sed < CppLexer.java > CppLexer.tmp \
-		-e '/import antlr.ANTLRException;/d' \
-		-e '/import antlr.CharScanner;/d' \
-		-e '/import antlr.MismatchedCharException;/d' \
-		-e '/import antlr.SemanticException;/d' \
-		-e '/import antlr.CommonToken;/d'
+	sed -f $(srcdir)/frysk/expr/CppLexer.sed < CppLexer.java > CppLexer.tmp
 	rm CppLexer.java
 	mv CppLexer.tmp frysk/expr/CppLexer.java
-	sed < CppParser.java > CppParser.tmp \
-		-e '/import antlr.TokenStreamIOException;/d' \
-		-e '/import antlr.ANTLRException;/d' \
-		-e '/import antlr.LLkParser;/d' \
-		-e '/import antlr.MismatchedTokenException;/d' \
-		-e '/import antlr.SemanticException;/d' \
-		-e '/import java.util.Hashtable;/d' \
-		-e `expr 1529 + 6`' s/};/}/'
+	sed -f $(srcdir)/frysk/expr/CppParser.sed < CppParser.java > CppParser.tmp
 	mv CppParser.tmp frysk/expr/CppParser.java
 	echo $(srcdir)
