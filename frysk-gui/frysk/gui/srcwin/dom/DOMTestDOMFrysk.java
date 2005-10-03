@@ -35,20 +35,35 @@ public class DOMTestDOMFrysk {
 			System.out.println("Duplicate imaqe add test failed.");
 		}
 		if (dom.getPC().equals(pc)) {
-			System.out.println("Get PC test passed. pc = " + dom.getPC());
+			System.out.println("Get PC test passed.");
 		} else {
 			System.out.println("Get PC test failed.");
 		}
-		if (dom.getImage("test_image_2").getName().equals("test_image_2.")) {
-			System.out.println("DOMGetImage test passed for test_image_2.");
+		if (dom.getImage("test_image_2").getName() == "test_image_2") {
+			System.out.println("DOMGetImage test passed.");
 		} else {
-			System.out.println("DOMGetImage test failed for test_image_2.");
+			System.out.println("DOMGetImage test failed.");
 		}
-//		if (dom.getImage("abc_xyz").equals(null)) {
-//			System.out.println("DOMGetImage test passed for abc_xyz");
-//		} else {
-//			System.out.println("DOMGetImage test failed for abc_xyz");
-//		}
+		if (dom.addPID(256)) {
+			System.out.println("addPID test passed.");
+		} else {
+			System.out.println("addPID test failed.");
+		}
+		if (dom.addPID(12)) {
+			System.out.println("Trying to add second PID test failed.");
+		} else {
+			System.out.println("Trying to add second PID test passed.");
+		}
+		if (dom.getPID() == 256) {
+			System.out.println("Trying to get PID value test passed.");
+		} else {
+			System.out.println("Trying to get PID value test failed.");
+		}
+		if (dom.getImage("abc_xyz") == null) {
+			System.out.println("DOMGetImage test for invalid image name passed.");
+		} else {
+			System.out.println("DOMGetImage test for invalid image name failed.");
+		}
 		System.out.println("\n\n");
 		dom.printDOM();
 	}

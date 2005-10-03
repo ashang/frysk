@@ -22,6 +22,8 @@ public class DOMFrysk {
 	 * The pid of the process this DOM represents
 	 */
 	private static final String PID_ATTR = "pid";
+	
+	private static final Element pidValue = new Element(PID_ATTR);
 
 	private static final String PC_ATTR = "PC";
 
@@ -32,7 +34,7 @@ public class DOMFrysk {
 	private static final Element pcName = new Element(PC_ATTR);
 
 	private static final String IMAGE_ATTR = "image";
-
+	
 	private Document data;
 
 	/**
@@ -70,6 +72,21 @@ public class DOMFrysk {
 		return true;
 	}
 
+	/**
+	 * Add the PID to the DOM
+	 * 
+	 * @param an int containing the PID
+	 */
+	
+	public boolean addPID(int pid) {
+		// Make sure there is not a PID already there before adding
+		if (this.data.getRootElement().getChild(PID_ATTR) != null)
+			return false;
+		this.data.getRootElement().addContent(pidValue);
+		this.data.getRootElement().getChild(PID_ATTR).setAttribute("value",
+				Integer.toString(pid));
+		return true;
+	}
 	/**
 	 * checkImageDup - check to see if there is a duplicate image name
 	 * 
@@ -135,8 +152,8 @@ public class DOMFrysk {
 	 * @return The PID of the process that this DOM represents
 	 */
 	public int getPID() {
-		return Integer.parseInt(this.data.getRootElement().getAttribute(
-				PID_ATTR).getValue());
+		return Integer.parseInt(this.data.getRootElement().getChild(
+				PID_ATTR).getAttribute(pcValue).getValue());
 	}
 
 	/**

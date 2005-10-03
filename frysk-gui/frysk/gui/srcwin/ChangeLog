@@ -1,5 +1,14 @@
 2005-10-03  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMFrysk.java: added addPID() method
+						 modified getPID() method
+						 
+	* dom/DOMTestDOMFrysk.java: added addPPID()/getPID() tests
+								added DOMGetImage tests
+								made test messages all look similar
+
+2005-10-03  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMFrysk.java: added addImage() method
 						 added checkImageDup() method
 						 modified getImage() method
