@@ -12,11 +12,22 @@ import org.jdom.Element;
 public class DOMTestDOMFrysk {
 	private static BigInteger pc;
 
+	private static Element root = new Element("Frysk_test");
+
+	private static Document data = new Document(root);
+
+	private static DOMFrysk dom = new DOMFrysk(data);
+
 	public static void main(String[] args) {
 
-		Element root = new Element("Frysk_test");
-		Document data = new Document(root);
-		DOMFrysk dom = new DOMFrysk(data);
+		testDOMFrysk();
+		testDOMImage();
+		System.out.println("\n\n");
+		dom.printDOM();
+	}
+
+	public static void testDOMFrysk() {
+
 		pc = new BigInteger("25");
 		dom.setPC(pc);
 		if (dom.addImage("test_image", "/home/xyz", "/usr/src/redhat")) {
@@ -39,11 +50,6 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("Get PC test failed.");
 		}
-		if (dom.getImage("test_image_2").getName() == "test_image_2") {
-			System.out.println("DOMGetImage test passed.");
-		} else {
-			System.out.println("DOMGetImage test failed.");
-		}
 		if (dom.addPID(256)) {
 			System.out.println("addPID test passed.");
 		} else {
@@ -60,11 +66,31 @@ public class DOMTestDOMFrysk {
 			System.out.println("Trying to get PID value test failed.");
 		}
 		if (dom.getImage("abc_xyz") == null) {
-			System.out.println("DOMGetImage test for invalid image name passed.");
+			System.out
+					.println("DOMGetImage test for invalid image name passed.");
 		} else {
-			System.out.println("DOMGetImage test for invalid image name failed.");
+			System.out
+					.println("DOMGetImage test for invalid image name failed.");
 		}
-		System.out.println("\n\n");
-		dom.printDOM();
+	}
+
+	public static void testDOMImage() {
+		DOMImage testDOMImage = dom.getImage("test_image_2");
+		if (testDOMImage.getName() == "test_image_2") {
+			System.out.println("DOMGetImage test passed.");
+			if (testDOMImage.getCCPath() != "/usr/src/redhat") {
+				System.out.println("DOMImage.getCCPath test failed.");
+			} else {
+				System.out.println("DOMImage.getCCPath test passed.");
+			}
+			if (testDOMImage.getName() == "test_image_2") {
+				System.out.println("DOMImage.getName test passed.");
+			} else {
+				System.out.println("DOMImage.getName test failed.");
+			}
+		} else {
+			System.out.println("DOMGetImage test failed.");
+		}
+		
 	}
 }

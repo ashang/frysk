@@ -1,3 +1,11 @@
+2005-10-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMFrysk.java: renamed pcValue to value
+
+	* dom/DOMTestDOMFrysk.java: split test suite into 2 new methods:
+		testDOMFrysk() and testDOMImage()
+		added tests for DOMImage.getCCPath() and DOMImage.getName()
+
 2005-10-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (launchPreferenceWindow): Now calls refresh in 

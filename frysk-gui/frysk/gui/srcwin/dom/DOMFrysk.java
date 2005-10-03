@@ -27,7 +27,7 @@ public class DOMFrysk {
 
 	private static final String PC_ATTR = "PC";
 
-	private static final String pcValue = "value";
+	private static final String value = "value";
 
 	private static final String CCPATH_ATTR = "CCPATH";
 
@@ -153,7 +153,7 @@ public class DOMFrysk {
 	 */
 	public int getPID() {
 		return Integer.parseInt(this.data.getRootElement().getChild(
-				PID_ATTR).getAttribute(pcValue).getValue());
+				PID_ATTR).getAttribute(value).getValue());
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class DOMFrysk {
 	 */
 	public BigInteger getPC() {
 		BigInteger bInt = new BigInteger(this.data.getRootElement().getChild(
-				PC_ATTR).getAttribute(pcValue).getValue());
+				PC_ATTR).getAttribute(value).getValue());
 		return bInt;
 	}
 
@@ -177,7 +177,7 @@ public class DOMFrysk {
 	 * Set the PC counter value in the DOM
 	 */
 	public void setPC(BigInteger pc) {
-		this.data.getRootElement().getChild(PC_ATTR).setAttribute(pcValue,
+		this.data.getRootElement().getChild(PC_ATTR).setAttribute(value,
 				pc.toString());
 	}
 
