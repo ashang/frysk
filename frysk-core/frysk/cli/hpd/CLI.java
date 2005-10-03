@@ -96,7 +96,6 @@ public class CLI
 	private Preprocessor prepro;
 	private String prompt;
 	private Hashtable handlers;
-	private Hashtable aliases;
 
 	/*
 	 * Public methods
