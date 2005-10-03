@@ -70,7 +70,7 @@ public class TestTerminated
         {
             Proc proc = (Proc) obj;
 	    registerChild (proc.getId ().hashCode ());
-            proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
+            proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    proc.taskDestroyed.addObserver (new TaskDestroyedObserver ());
         }
     }

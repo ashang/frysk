@@ -119,7 +119,7 @@ public class TestSyscallOpen
         {
             Proc proc = (Proc) obj;
 	    registerChild (proc.getId ().hashCode ());
-            proc.taskDiscovered.addObserver
+            proc.observableTaskAdded.addObserver
                 (new Observer () {
                         public void update (Observable o, Object obj)
                         {

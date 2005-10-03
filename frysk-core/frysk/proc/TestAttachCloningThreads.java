@@ -66,7 +66,7 @@ public class TestAttachCloningThreads
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
-            proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
+            proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
         }
     }
  

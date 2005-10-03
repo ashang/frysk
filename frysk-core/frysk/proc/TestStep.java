@@ -74,7 +74,7 @@ public class TestStep
 	    pid = proc.id.hashCode ();
 	    // Register pid for removal at end of test
 	    registerChild (pid);
-            proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
+            proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
     }

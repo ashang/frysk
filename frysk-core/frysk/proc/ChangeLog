@@ -1,5 +1,13 @@
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTerminated.java, TestSyscallOpen.java, TestSyscall.java,
+	TestSyscall2.java, TestStep.java, TestStopAndStop.java,
+	TestStopAndGo.java, TestGoAndGo.java, TestI386Regs.java,
+	TestI386Modify.java, TestAttachCloningThreads.java,
+	TestExiting.java, TestPaused.java, TestStop.java,
+	TestUnpaused.java: Replace Proc .taskDiscovered with Proc
+	.observableTaskAdded.
+
 	* TaskState.java: Move observableTaskAdded from here ...
 	* Task.java (Task): ... and from here ...
 	* Proc.java (add (Task)): .. to here.

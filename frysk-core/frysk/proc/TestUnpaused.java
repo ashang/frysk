@@ -74,7 +74,7 @@ public class TestUnpaused
         {
             Proc proc = (Proc) obj;
 	    pid = proc.id.hashCode ();
-            proc.taskDiscovered.addObserver (new TaskCreatedObserver ());
+            proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
     }
