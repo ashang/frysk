@@ -118,6 +118,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	public static final String SHOW_LINE_NUMBERS = "showLineNumbers";
 	public static final String SHOW_EXEC_MARKERS = "showExecMarkers";
+	public static final String SHOW_TOOLBAR = "showToolbar";
 	
 	public static final String FUNCTION_WEIGHT = "function_weight";
 	public static final String FUNCTION_R = "function_r";
@@ -164,7 +165,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	private TextChildAnchor anchor;
 	
 	protected boolean expanded = false;
-	
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.

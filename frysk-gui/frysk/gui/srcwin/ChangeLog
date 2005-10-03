@@ -1,3 +1,13 @@
+2005-10-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (launchPreferenceWindow): Now calls refresh in 
+	SourceWindow.
+	(refresh): Added.
+	
+	* PreferenceWindow.java (setupButtons): Status of "Show Toolbar" now
+	updated.
+	(buttonEvent): Status of "Show Toolbar" saved into prefs model.
+
 2005-10-03  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFrysk.java: added addPID() method

@@ -262,6 +262,19 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		}
 	}
 	
+	/**
+	 * To be called internally when a change in the preference model occurs. Updates
+	 * the window and children to reflect the new changes
+	 */
+	public void refresh(){
+		this.view.refresh();
+		
+		if(this.prefs.node(SourceViewWidget.LNF_NODE).getBoolean(SourceViewWidget.SHOW_TOOLBAR, true))
+			this.glade.getWidget(GLADE_TOOLBAR_NAME).showAll();
+		else
+			this.glade.getWidget(GLADE_TOOLBAR_NAME).hideAll();
+	}
+	
 	/***********************************
 	 * PRIVATE METHODS
 	 ***********************************/
@@ -625,7 +638,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 			public void lifeCycleEvent(LifeCycleEvent event) {
 				if(event.isOfType(LifeCycleEvent.Type.HIDE))
-					SourceWindow.this.view.refresh();
+					SourceWindow.this.refresh();
 			}
 		});
 	}

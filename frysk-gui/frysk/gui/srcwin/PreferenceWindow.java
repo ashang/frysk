@@ -86,6 +86,7 @@ public class PreferenceWindow implements ButtonListener{
 	
 	private static final String LINE_NUM_CHECK = "lineNumCheck"; //$NON-NLS-1$
 	private static final String MARKER_CHECK = "markerCheck"; //$NON-NLS-1$
+	private static final String TOOLBAR_CHECK = "toolbarCheck";
 	
 	private static final String MARK_COLOR = "markColor"; //$NON-NLS-1$
 	private static final String LINE_NUM_COLOR = "lineNumColor"; //$NON-NLS-1$
@@ -201,6 +202,9 @@ public class PreferenceWindow implements ButtonListener{
 			
 			flag = ((CheckButton) this.glade.getWidget(MARKER_CHECK)).getState();
 			this.myPrefs.node(SourceViewWidget.LNF_NODE).putBoolean(SourceViewWidget.SHOW_EXEC_MARKERS, flag);
+			
+			flag = ((CheckButton) this.glade.getWidget(TOOLBAR_CHECK)).getState();
+			this.myPrefs.node(SourceViewWidget.LNF_NODE).putBoolean(SourceViewWidget.SHOW_TOOLBAR, flag);
 			
 			Weight w = Weight.BOLD;
 			flag = ((CheckButton) this.glade.getWidget(LITERAL_BOLD_BUTTON)).getState();
@@ -333,6 +337,11 @@ public class PreferenceWindow implements ButtonListener{
 		flag = this.myPrefs.node(SourceViewWidget.LNF_NODE).getBoolean(SourceViewWidget.SHOW_EXEC_MARKERS, true);
 		cb2 = (CheckButton) this.glade.getWidget(MARKER_CHECK);
 		cb2.setLabel(Messages.getString("PreferenceWindow.6")); //$NON-NLS-1$
+		cb2.setState(flag);
+		
+		flag = this.myPrefs.node(SourceViewWidget.LNF_NODE).getBoolean(SourceViewWidget.SHOW_TOOLBAR, true);
+		cb2 = (CheckButton) this.glade.getWidget(TOOLBAR_CHECK);
+		cb2.setLabel("Show Toolbar");
 		cb2.setState(flag);
 		
 		flag = false;
