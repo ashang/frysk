@@ -40,7 +40,6 @@
 package frysk.proc;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
@@ -124,26 +123,6 @@ public abstract class Proc
 	host.add (this);
     }
     
-    protected void startAllTasks ()
-    {
-	Collection tasks = taskPool.values ();
-	Iterator i = tasks.iterator ();
-	while (i.hasNext ()) {
-	    Task t = (Task)i.next ();
-	    t.requestContinue ();
-	}
-    }
-
-    protected void stopAllTasks ()
-    {
-	Collection tasks = taskPool.values ();
-	Iterator i = tasks.iterator ();
-	while (i.hasNext ()) {
-	    Task t = (Task)i.next ();
-	    t.requestStop ();
-	}
-    }
-
     abstract void sendAttach ();
     abstract void sendNewAttachedChild (ProcId childId);
     abstract void sendRefresh ();

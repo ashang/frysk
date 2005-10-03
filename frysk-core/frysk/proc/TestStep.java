@@ -42,6 +42,7 @@ package frysk.proc;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Sig;
+import java.util.Iterator;
 
 /**
  * Check that assembler instruction stepping works.
@@ -203,7 +204,11 @@ public class TestStep
         public void execute ()
         {
             if (task != null) {
-	        task.proc.stopAllTasks ();
+		Iterator i = task.proc.taskPool.values().iterator ();
+		while (i.hasNext ()) {
+		    Task t = (Task)i.next ();
+		    t.requestStop ();
+		}
 	    }
         }
     }

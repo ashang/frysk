@@ -1,5 +1,8 @@
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStep.java: Inline call to stopAllTasks.
+	* Proc.java: Delete startAllTasks, and stopAllTasks.
+
 	* LinuxHost.java: Delete unused local "searchId".
 	* Syscall.java: Delete unused local "index".
 	* TestExec.java: Delete unused local "procCounter".
