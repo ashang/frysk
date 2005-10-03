@@ -64,7 +64,9 @@ public final class Poll
     public static final class SignalSet
     {
 	private SignalSet () {} // Disallow construction.
-	private static gnu.gcj.RawDataManaged signalSet;
+	// XXX: ECJ 3.1 can't see that the CNI code uses this and,
+	// hence, complains that it is never used.
+	protected static gnu.gcj.RawDataManaged signalSet;
 	static native gnu.gcj.RawDataManaged get ();
 	public static native void add (int signum);
 	public static native void empty ();
