@@ -1,13 +1,14 @@
 # The idea is simple, validate that this works before trying to build
 # anything else.
 
-all-local: FAIL
+# Passes with gcc 4.0.1.
 
-FAIL:
+all-local: TEST
+TEST:
 	gcj -g --main=Anon $(srcdir)/Anon.java -o Anon
 	if ./Anon ; then touch PASS ; else touch FAIL ; fi
-	test -r FAIL
+	touch TEST
 
 clean-local:
-	rm -f Anon Anon*.class FAIL PASS
+	rm -f Anon Anon*.class FAIL PASS TEST
 

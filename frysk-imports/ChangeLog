@@ -1,3 +1,7 @@
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/anoncall/Makefile.am: Do not expect the test to fail.
+
 2005-09-26  Igor Foox  <ifoox@redhat.com>
 	
 	* rpm-specs/frysk-glib2.spec: Updated to glib2-2.8.2.
