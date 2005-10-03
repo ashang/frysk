@@ -308,14 +308,30 @@ public abstract class Proc
      * Should more formally define the observable and the event.
      */
     public TaskObservable observableTaskRemoved = new TaskObservable ();
-
+    /**
+     * Poll of tasks belonging to this Proc.
+     */
     protected Map taskPool = new HashMap ();
-    public TaskObservable taskDiscovered = new TaskObservable ();
+    /**
+     * Add the Task to this Proc.
+     */
     void add (Task task)
     {
 	taskPool.put (task.id, task);
+	observableTaskAdded.notify (task);
     }
-    // Eliminate all but TASK.
+    /**
+     * Remove Task from this Proc.
+     */
+    void remove (Task task)
+    {
+	observableTaskRemoved.notify (task);
+	taskPool.remove (task.id);
+	host.remove (task);
+    }
+    /**
+     * Remove all but Task from this Proc.
+     */
     void retain (Task task)
     {
 	Collection tasks = taskPool.values();
@@ -323,14 +339,11 @@ public abstract class Proc
 	taskPool.values().removeAll (tasks);
 	host.removeTasks (tasks);
     }
+
+    /** Tempoary observer.  */
+    public TaskObservable taskDiscovered = new TaskObservable ();
     /** Tempoary observer, for code needing an exit-status.  */
     public TaskEventObservable taskDestroyed = new TaskEventObservable ();
-    void remove (Task task)
-    {
-	observableTaskRemoved.notify (task);
-	taskPool.remove (task.id);
-	host.remove (task);
-    }
 
     // Other observable events, for the moment keep these in the proc
     // (should they be per-task?).

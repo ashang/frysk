@@ -1,5 +1,9 @@
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Move observableTaskAdded from here ...
+	* Task.java (Task): ... and from here ...
+	* Proc.java (add (Task)): .. to here.
+
 	* TestStep.java: Inline call to stopAllTasks.
 	* Proc.java: Delete startAllTasks, and stopAllTasks.
 

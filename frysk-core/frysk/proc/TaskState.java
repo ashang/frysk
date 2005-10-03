@@ -208,7 +208,6 @@ class TaskState
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
 		task.proc.taskDiscovered.notify (task);
-		task.proc.observableTaskAdded.notify (task);
 		task.sendSetOptions ();
 		task.stopEvent.notify (event);
 		task.sendContinue (0);
@@ -217,7 +216,6 @@ class TaskState
 	    TaskState process (Task task, TaskEvent.Trapped event)
 	    {
 		task.proc.taskDiscovered.notify (task);
-		task.proc.observableTaskAdded.notify (task);
 		task.sendSetOptions ();
 		task.stopEvent.notify (event);
 		task.sendContinue (0);
@@ -259,14 +257,12 @@ class TaskState
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
 		task.proc.taskDiscovered.notify (task);
-		task.proc.observableTaskAdded.notify (task);
 		task.sendSetOptions ();
 		return stopped;
 	    }
 	    TaskState process (Task task, TaskEvent.Trapped event)
 	    {
 		task.proc.taskDiscovered.notify (task);
-		task.proc.observableTaskAdded.notify (task);
 		task.sendSetOptions ();
 		return stopped;
 	    }
