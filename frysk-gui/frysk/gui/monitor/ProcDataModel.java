@@ -204,13 +204,13 @@ public class ProcDataModel {
 //		this.refilter();
 	}
 	
-	private void refilter() {
-		TreeIter iter = this.treeStore.getFirstIter();
-		while(iter != null){
-			this.topDownFilter(treeStore, iter);
-			iter = iter.getNextIter();
-		}
-	}
+//	private void refilter() {
+//		TreeIter iter = this.treeStore.getFirstIter();
+//		while(iter != null){
+//			this.topDownFilter(treeStore, iter);
+//			iter = iter.getNextIter();
+//		}
+//	}
 
 	/**
 	 * check the give type and sets the current filter type to it

@@ -17,7 +17,7 @@ public class InfoWidget extends Notebook {
 	
 	public InfoWidget(ProcData data){
 		
-		Window myWindow = this.getWindow();
+		//Window myWindow = this.getWindow();
 		
 		this.notifyUser = new Observable();
 		//========================================

@@ -41,7 +41,7 @@ public class StatusWidget extends VBox{
 	
 	public StatusWidget(ProcData data){
 		super(false,0);
-		FontDescription font = new FontDescription();
+		//FontDescription font = new FontDescription();
 		this.notifyUser = new Observable();
 		this.data = data;
 		

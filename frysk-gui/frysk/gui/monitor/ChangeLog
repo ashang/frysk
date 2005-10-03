@@ -1,6 +1,14 @@
+2005-10-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StatusWidget.java (StatusWidget): Remove unused variable for 
+	ecj 3.1 warnings.
+	* InfoWidget.java (InfoWidget): Ditto.
+	* ProcDataModel.java (refilter): Remove temporarily.
+
 2005-09-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* LogWindow.java: Synchronized observerable updates with GUI loop (CustomEvents.add).
+	* LogWindow.java: Synchronized observerable updates with 
+	GUI loop (CustomEvents.add).
 
 2005-09-30  Phil Muldoon  <pmuldoon@redhat.com>
 
