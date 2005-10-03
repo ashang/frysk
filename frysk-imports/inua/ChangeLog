@@ -1,3 +1,12 @@
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Pool.java, Print.java, PrintWriter.java, Scanner.java,
+	mkjava.sh, package.html, dwarf/DebugAranges.java,
+	dwarf/DebugFrame.java, dwarf/package.html,
+	eio/PtraceByteBuffer.java, eio/package.html, elf/ElfBuffer.java,
+	elf/PrintNote.java, elf/package.html, util/TestReadelf.sh,
+	util/readelf.java: Update; more doco; ecj 3.1 warnings.
+	
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Pool.java, Scanner.java, dwarf/DW.mkjava, dwarf/DebugFrame.java,
