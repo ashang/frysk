@@ -1,3 +1,15 @@
+2005-10-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* GladeConstants.java: Deleted.
+	
+	* SourceWindow.java: Ditto.
+	
+	* PreferenceWindow.java: Constants refactored back in.
+	Renamed constants referring to 'Literals' to refer to 'keywords'.
+	
+	* glade/frysk_source_prefs.glade: Changed name of literal* widgets to
+	keyword*.
+
 2005-10-04  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMImage.java: added addSource() method

@@ -152,7 +152,7 @@ public class InlineViewer extends SourceViewWidget {
 		// get inline color
 		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
 		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
-		int inlineB = this.lnfPrefs.getInt(GladeConstants.INLINE_B, 0);
+		int inlineB = this.lnfPrefs.getInt(Inline.B, 0);
 		
 		// gets current line color
 		int lineR = this.lnfPrefs.getInt(CurrentLine.R, 30000);

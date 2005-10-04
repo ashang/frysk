@@ -525,7 +525,7 @@
 		      <property name="spacing">0</property>
 
 		      <child>
-			<widget class="GtkLabel" id="literalColorLabel">
+			<widget class="GtkLabel" id="keywordColorLabel">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes"></property>
 			  <property name="use_underline">False</property>
@@ -550,7 +550,7 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkColorButton" id="literalColorButton">
+			<widget class="GtkColorButton" id="keywordColorButton">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="use_alpha">False</property>
@@ -571,7 +571,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkCheckButton" id="literalBoldButton">
+		    <widget class="GtkCheckButton" id="keywordBoldButton">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes"></property>

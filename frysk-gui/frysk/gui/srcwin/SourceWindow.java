@@ -85,6 +85,61 @@ import org.gnu.gtk.event.LifeCycleListener;
 
 public class SourceWindow implements ButtonListener, EntryListener, 
 									ComboBoxListener{
+	/*
+	 * GLADE CONSTANTS
+	 */
+	// Search bar widgets
+	public static final String LINE_ENTRY = "lineEntry";
+	public static final String FIND_TEXT = "findText";
+	public static final String FIND_BOX = "findBox";
+	public static final String FIND_LABEL = "findLabel"; //$NON-NLS-1$
+	public static final String LINE_LABEL = "lineLabel"; //$NON-NLS-1$
+	public static final String NEXT_FIND = "nextFind"; //$NON-NLS-1$
+	public static final String PREV_FIND = "prevFind"; //$NON-NLS-1$
+	public static final String HIGHLIGHT_FIND = "highlightFind"; //$NON-NLS-1$
+	public static final String CASE_FIND = "caseFind"; //$NON-NLS-1$
+	public static final String GOTO_BUTTON = "gotoButton"; //$NON-NLS-1$
+	public static final String CLOSE_FIND = "closeFind"; //$NON-NLS-1$
+	
+	// Widget names - toolbar
+	public static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
+	public static final String FILE_SELECTOR = "fileSelector";
+	public static final String VIEW_COMBO_BOX = "viewComboBox";
+	public static final String FUNC_SELECTOR = "funcSelector";
+
+	// Directory where images are stored
+	public static final String IMAGES_DIR = "/home/ajocksch/frysk/frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
+	
+	// Image files - search bar
+	public static final String FIND_NEXT_PNG = "findNext.png"; //$NON-NLS-1$
+	public static final String FIND_PREV_PNG = "findPrev.png"; //$NON-NLS-1$
+	public static final String FIND_GO_PNG = "findGo.png"; //$NON-NLS-1$
+	public static final String HIGHLIGHT_PNG = "highlight.png"; //$NON-NLS-1$
+
+	// Names of the image files - Toolbar
+	public static final String STACK_BOTTOM_PNG = "stack_bottom.png"; //$NON-NLS-1$
+	public static final String RUN_PNG = "run.png";
+	public static final String STEP_PNG = "step.png"; //$NON-NLS-1$
+	public static final String NEXT_PNG = "next.png"; //$NON-NLS-1$
+	public static final String FINISH_PNG = "finish.png"; //$NON-NLS-1$
+	public static final String CONTINUE_PNG = "continue.png"; //$NON-NLS-1$
+	public static final String STEP_ASM_PNG = "step_asm.png"; //$NON-NLS-1$
+	public static final String NEXT_ASM_PNG = "next_asm.png"; //$NON-NLS-1$
+	public static final String STACK_DOWN_PNG = "stack_down.png"; //$NON-NLS-1$
+	public static final String STACK_UP_PNG = "stack_up.png"; //$NON-NLS-1$
+
+	// Widget that the SourceViewWidget will be placed in
+	public static final String TEXT_WINDOW = "textWindow";
+	
+	// Name of the top level window
+	public static final String SOURCE_WINDOW = "sourceWindow";
+	
+	// Glade file to use 
+	public static final String GLADE_FILE = "frysk_source.glade";
+	/*
+	 * END GLADE CONSTANTS
+	 */
+	
 	private LibGlade glade;
 	
 	private Preferences prefs;
@@ -120,17 +175,17 @@ public class SourceWindow implements ButtonListener, EntryListener,
 //			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
 //		} catch (Exception e){
 			try{
-				this.glade = new LibGlade("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/glade/"+GladeConstants.GLADE_FILE, this);
+				this.glade = new LibGlade("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/glade/"+SourceWindow.GLADE_FILE, this);
 			}
 			catch (Exception e2){
 				e2.printStackTrace();
 			}
 //		}
 
-		this.glade.getWidget(GladeConstants.SOURCE_WINDOW).hideAll();
+		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 		
 		AccelGroup ag = new AccelGroup();
-		((Window) this.glade.getWidget(GladeConstants.SOURCE_WINDOW)).addAccelGroup(ag);
+		((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
 		
 		this.createActions(ag);
 		this.createMenus();
@@ -164,15 +219,15 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
 		for(int i = 0; i < funcs.size(); i++)
-			((ComboBoxEntry) this.glade.getWidget(GladeConstants.FUNC_SELECTOR)).appendText(((String) funcs.get(i)).split("_")[0]);
+			((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).appendText(((String) funcs.get(i)).split("_")[0]);
 		
-		((ComboBoxEntry) this.glade.getWidget(GladeConstants.FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
-		((ComboBox) this.glade.getWidget(GladeConstants.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
+		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
+		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 		
 		((SourceBuffer) this.view.getBuffer()).toggleBreakpoint(8);
 		
-		((ScrolledWindow) this.glade.getWidget(GladeConstants.TEXT_WINDOW)).add(this.view);
-		this.glade.getWidget(GladeConstants.SOURCE_WINDOW).showAll();
+		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
+		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).showAll();
 	}
 
 	/**
@@ -190,14 +245,14 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	public void entryEvent(EntryEvent event) {
 		if(event.isOfType(EntryEvent.Type.DELETE_TEXT))
-			this.glade.getWidget(GladeConstants.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.WHITE);
+			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.WHITE);
 		
 		if(event.isOfType(EntryEvent.Type.CHANGED)){
-			String text = ((Entry) this.glade.getWidget(GladeConstants.FIND_TEXT)).getText();
-			boolean matchCase = ((CheckButton) this.glade.getWidget(GladeConstants.CASE_FIND)).getState();
+			String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT)).getText();
+			boolean matchCase = ((CheckButton) this.glade.getWidget(SourceWindow.CASE_FIND)).getState();
 			
 			if(!this.view.findNext(text, matchCase))
-				this.glade.getWidget(GladeConstants.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.RED);
+				this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.RED);
 			else
 				this.view.scrollToFound();
 		}
@@ -221,10 +276,10 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	public void refresh(){
 		this.view.refresh();
 		
-		if(this.prefs.node(GladeConstants.LNF_NODE).getBoolean(PreferenceConstants.SHOW_TOOLBAR, true))
-			this.glade.getWidget(GladeConstants.GLADE_TOOLBAR_NAME).showAll();
+		if(this.prefs.node(PreferenceConstants.LNF_NODE).getBoolean(PreferenceConstants.SHOW_TOOLBAR, true))
+			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
 		else
-			this.glade.getWidget(GladeConstants.GLADE_TOOLBAR_NAME).hideAll();
+			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
 	}
 	
 	/***********************************
@@ -239,25 +294,25 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		IconSet set = null;
 		try {
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.RUN_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.RUN_PNG));
 			fac.addIconSet("frysk-run", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.STEP_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STEP_PNG));
 			fac.addIconSet("frysk-step", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.NEXT_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.NEXT_PNG));
 			fac.addIconSet("frysk-next", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.FINISH_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FINISH_PNG));
 			fac.addIconSet("frysk-finish", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.CONTINUE_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.CONTINUE_PNG));
 			fac.addIconSet("frysk-continue", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.NEXT_ASM_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.NEXT_ASM_PNG));
 			fac.addIconSet("frysk-next-asm", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.STEP_ASM_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STEP_ASM_PNG));
 			fac.addIconSet("frysk-step-asm", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.STACK_BOTTOM_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_BOTTOM_PNG));
 			fac.addIconSet("frysk-stack-bottom", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.STACK_DOWN_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_DOWN_PNG));
 			fac.addIconSet("frysk-stack-down", set);
-			set = new IconSet(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.STACK_UP_PNG));
+			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_UP_PNG));
 			fac.addIconSet("frysk-stack-up", set);
 		} catch (Exception e){
 			e.printStackTrace();
@@ -288,7 +343,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 							GtkStockItem.FIND.getString());
 		this.find.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
-				SourceWindow.this.glade.getWidget(GladeConstants.FIND_BOX).showAll();
+				SourceWindow.this.glade.getWidget(SourceWindow.FIND_BOX).showAll();
 			}
 		});		
 		this.prefsLaunch = new Action("prefs", "Preferences", "Edit Preferences",
@@ -502,7 +557,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private void createToolBar(){
 		
 		// Create tooltips
-		ToolBar toolbar = (ToolBar) this.glade.getWidget(GladeConstants.GLADE_TOOLBAR_NAME);
+		ToolBar toolbar = (ToolBar) this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME);
 
 		toolbar.insert((ToolItem) this.run.createToolItem(), 0);
 		toolbar.insert((ToolItem) this.step.createToolItem(), 1);
@@ -517,7 +572,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		toolbar.insert((ToolItem) this.stackDown.createToolItem(), 10);
 		toolbar.insert((ToolItem) this.stackBottom.createToolItem(), 11);
 		
-		this.glade.getWidget(GladeConstants.GLADE_TOOLBAR_NAME).showAll();
+		this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
 	}
 	
 	/**
@@ -525,32 +580,32 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void createSearchBar(){
 		// Add text to widgets
-		((Label) this.glade.getWidget(GladeConstants.FIND_LABEL)).setLabel(Messages.getString("SourceWindow.12")); //$NON-NLS-1$
-		((Label) this.glade.getWidget(GladeConstants.LINE_LABEL)).setLabel(Messages.getString("SourceWindow.13")); //$NON-NLS-1$
+		((Label) this.glade.getWidget(SourceWindow.FIND_LABEL)).setLabel(Messages.getString("SourceWindow.12")); //$NON-NLS-1$
+		((Label) this.glade.getWidget(SourceWindow.LINE_LABEL)).setLabel(Messages.getString("SourceWindow.13")); //$NON-NLS-1$
 		
-		((Button) this.glade.getWidget(GladeConstants.NEXT_FIND)).setLabel(Messages.getString("SourceWindow.14")); //$NON-NLS-1$
-		((Button) this.glade.getWidget(GladeConstants.PREV_FIND)).setLabel(Messages.getString("SourceWindow.15")); //$NON-NLS-1$
-		((Button) this.glade.getWidget(GladeConstants.HIGHLIGHT_FIND)).setLabel(Messages.getString("SourceWindow.16")); //$NON-NLS-1$
-		((Button) this.glade.getWidget(GladeConstants.CASE_FIND)).setLabel(Messages.getString("SourceWindow.17")); //$NON-NLS-1$
-		((Button) this.glade.getWidget(GladeConstants.GOTO_BUTTON)).setLabel(Messages.getString("SourceWindow.18")); //$NON-NLS-1$
+		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setLabel(Messages.getString("SourceWindow.14")); //$NON-NLS-1$
+		((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setLabel(Messages.getString("SourceWindow.15")); //$NON-NLS-1$
+		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setLabel(Messages.getString("SourceWindow.16")); //$NON-NLS-1$
+		((Button) this.glade.getWidget(SourceWindow.CASE_FIND)).setLabel(Messages.getString("SourceWindow.17")); //$NON-NLS-1$
+		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setLabel(Messages.getString("SourceWindow.18")); //$NON-NLS-1$
 		
 		// Add icons
 		try {
-			((Button) this.glade.getWidget(GladeConstants.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.HIGHLIGHT_PNG)));
-			((Button) this.glade.getWidget(GladeConstants.NEXT_FIND)).setImage(new Image(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.FIND_NEXT_PNG)));
-			((Button) this.glade.getWidget(GladeConstants.PREV_FIND)).setImage(new Image(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.FIND_PREV_PNG)));
-			((Button) this.glade.getWidget(GladeConstants.GOTO_BUTTON)).setImage(new Image(new Pixbuf(GladeConstants.IMAGES_DIR+GladeConstants.FIND_GO_PNG)));
+			((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.HIGHLIGHT_PNG)));
+			((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FIND_NEXT_PNG)));
+			((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FIND_PREV_PNG)));
+			((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FIND_GO_PNG)));
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 		
 		// add Tooltips
 		ToolTips t = new ToolTips();
-		t.setTip(this.glade.getWidget(GladeConstants.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(GladeConstants.PREV_FIND), Messages.getString("SourceWindow.21"), Messages.getString("SourceWindow.22")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(GladeConstants.HIGHLIGHT_FIND), Messages.getString("SourceWindow.23"), Messages.getString("SourceWindow.24")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(GladeConstants.GOTO_BUTTON), Messages.getString("SourceWindow.25"), Messages.getString("SourceWindow.46")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(GladeConstants.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
+		t.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$
+		t.setTip(this.glade.getWidget(SourceWindow.PREV_FIND), Messages.getString("SourceWindow.21"), Messages.getString("SourceWindow.22")); //$NON-NLS-1$ //$NON-NLS-2$
+		t.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND), Messages.getString("SourceWindow.23"), Messages.getString("SourceWindow.24")); //$NON-NLS-1$ //$NON-NLS-2$
+		t.setTip(this.glade.getWidget(SourceWindow.GOTO_BUTTON), Messages.getString("SourceWindow.25"), Messages.getString("SourceWindow.46")); //$NON-NLS-1$ //$NON-NLS-2$
+		t.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	/**
@@ -559,17 +614,17 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private void attachEvents(){
 		
 		// Buttons in searchBar
-		((Button) this.glade.getWidget(GladeConstants.HIGHLIGHT_FIND)).addListener(this);
-		((Button) this.glade.getWidget(GladeConstants.PREV_FIND)).addListener(this);
-		((Button) this.glade.getWidget(GladeConstants.NEXT_FIND)).addListener(this);
-		((Button) this.glade.getWidget(GladeConstants.CLOSE_FIND)).addListener(this);
-		((Button) this.glade.getWidget(GladeConstants.GOTO_BUTTON)).addListener(this);
+		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).addListener(this);
+		((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).addListener(this);
+		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).addListener(this);
+		((Button) this.glade.getWidget(SourceWindow.CLOSE_FIND)).addListener(this);
+		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).addListener(this);
 		
 		// Text field in search bar
-		((Entry) this.glade.getWidget(GladeConstants.FIND_TEXT)).addListener(this);
+		((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT)).addListener(this);
 		
 		// function jump box
-		((ComboBoxEntry) this.glade.getWidget(GladeConstants.FUNC_SELECTOR)).addListener(this);
+		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).addListener(this);
 	}
 	
 	/**
@@ -604,23 +659,23 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private void handleButtonClicked(ButtonEvent event){
 		String buttonName = ((Button) event.getSource()).getName();
 		
-		if(buttonName.equals(GladeConstants.CLOSE_FIND))
-			this.glade.getWidget(GladeConstants.FIND_BOX).hideAll();
+		if(buttonName.equals(SourceWindow.CLOSE_FIND))
+			this.glade.getWidget(SourceWindow.FIND_BOX).hideAll();
 		
-		else if(buttonName.equals(GladeConstants.GOTO_BUTTON)){
-			int gotoLine = Integer.parseInt(((Entry) this.glade.getWidget(GladeConstants.LINE_ENTRY)).getText());
+		else if(buttonName.equals(SourceWindow.GOTO_BUTTON)){
+			int gotoLine = Integer.parseInt(((Entry) this.glade.getWidget(SourceWindow.LINE_ENTRY)).getText());
 			this.view.scrollToLine(gotoLine);
 		}
 		
-		boolean findNext = buttonName.equals(GladeConstants.NEXT_FIND);
-		boolean findPrevious = buttonName.equals(GladeConstants.PREV_FIND);
-		boolean highlightAll = buttonName.equals(GladeConstants.HIGHLIGHT_FIND);
+		boolean findNext = buttonName.equals(SourceWindow.NEXT_FIND);
+		boolean findPrevious = buttonName.equals(SourceWindow.PREV_FIND);
+		boolean highlightAll = buttonName.equals(SourceWindow.HIGHLIGHT_FIND);
 		
 		if(findNext || findPrevious || highlightAll){
-			boolean caseSensitive = ((CheckButton) this.glade.getWidget(GladeConstants.CASE_FIND)).getState();
-			String text = ((Entry) this.glade.getWidget(GladeConstants.FIND_TEXT)).getText();
+			boolean caseSensitive = ((CheckButton) this.glade.getWidget(SourceWindow.CASE_FIND)).getState();
+			String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT)).getText();
 			
-			this.glade.getWidget(GladeConstants.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.WHITE);
+			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.WHITE);
 			
 			boolean result = false;
 			
@@ -634,7 +689,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 				result = this.view.highlightAll(text, caseSensitive);
 			
 			if(!result)
-				this.glade.getWidget(GladeConstants.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.RED);
+				this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.RED);
 			else
 				if(!highlightAll)
 					this.view.scrollToFound();
@@ -648,9 +703,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		this.running = !this.running;
 		
 		// Toggle status of toolbar buttons
-		this.glade.getWidget(GladeConstants.FILE_SELECTOR).setSensitive(!running);
-		this.glade.getWidget(GladeConstants.FUNC_SELECTOR).setSensitive(!running);
-		this.glade.getWidget(GladeConstants.VIEW_COMBO_BOX).setSensitive(!running);
+		this.glade.getWidget(SourceWindow.FILE_SELECTOR).setSensitive(!running);
+		this.glade.getWidget(SourceWindow.FUNC_SELECTOR).setSensitive(!running);
+		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(!running);
 		
 		// Toggle status of actions
 		this.step.setSensitive(!running);

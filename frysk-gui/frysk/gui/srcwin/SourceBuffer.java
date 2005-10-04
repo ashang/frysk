@@ -273,7 +273,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param topNode The new model to be displayed
 	 */
 	public void updatePreferences(Preferences topNode){
-		Preferences currentNode = topNode.node(GladeConstants.LNF_NODE);
+		Preferences currentNode = topNode.node(PreferenceConstants.LNF_NODE);
 		
 		// update current line color
 		int r = currentNode.getInt(CurrentLine.R, 0);
@@ -287,7 +287,7 @@ public class SourceBuffer extends TextBuffer {
 		b = currentNode.getInt(Search.B, 0);
 		this.foundText.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		
-		currentNode = topNode.node(GladeConstants.SYNTAX_NODE);
+		currentNode = topNode.node(PreferenceConstants.SYNTAX_NODE);
 		
 		// Literal syntax highlighting
 		r = currentNode.getInt(Keywords.R, 30000);
@@ -340,7 +340,7 @@ public class SourceBuffer extends TextBuffer {
 		// Inlined tag background
 		r = currentNode.getInt(Inline.R, 65535);
 		g = currentNode.getInt(Inline.G, 65535);
-		b = currentNode.getInt(GladeConstants.INLINE_B, 0);
+		b = currentNode.getInt(Inline.B, 0);
 		this.inlinedTag.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 	}
 	

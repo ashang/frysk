@@ -172,12 +172,12 @@ public class PreferenceConstants {
 	}
 	
 	// Node names in the preference hierarchy
-	public static final String LNF_NODE = "lnf";
-	public static final String SYNTAX_NODE = "syntax";
 	
 	/**
 	 * Whether or not to show the toolbar
 	 */
 	public static final String SHOW_TOOLBAR = "showToolbar";
+	public static final String LNF_NODE = "lnf";
+	public static final String SYNTAX_NODE = "syntax";
 
 }
