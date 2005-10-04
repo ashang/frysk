@@ -1,3 +1,7 @@
+2005-10-04  Andrew Cagney  <cagney@redhat.com>
+
+	* ftrace.java: Use Host .requestCreateAttachedContinuedProc.
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java: Delete unused local variable "n".

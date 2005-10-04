@@ -57,11 +57,11 @@ public class TestClone
  	TaskCounter taskCounter = new TaskCounter ();
 	new StopEventLoopOnProcDestroy ();
 
-	Manager.host.requestCreateProc (null, "/dev/null", null,
-					new String[] {
-					    "./prog/fib/clone",
-					    Integer.toString (fibCount)
-					});
+	Manager.host.requestCreateAttachedContinuedProc
+	    (null, "/dev/null", null, new String[] {
+		"./prog/fib/clone",
+		Integer.toString (fibCount)
+	    });
 	
 	assertRunUntilStop ("run \"clone\" to exit");
 

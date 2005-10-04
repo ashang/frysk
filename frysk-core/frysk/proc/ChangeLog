@@ -1,5 +1,14 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java: Replace sendCreateProc with sendCreateAttachedProc.
+	Replace requestCreateProc with requestCreateAttachedContinuedProc,
+	and the private performCreateAttachedProc.
+	* TestTerminated.java, TestSyscallOpen.java, TestSyscall.java,
+	TestSyscall2.java, TestStep.java, TestRun.java, TestProcGet.java,
+	TestLib.java, TestI386Regs.java, TestI386Modify.java,
+	TestFork.java, TestExiting.java, TestExec.java, TestClone.java,
+	LinuxHost.java, HostState.java: Update.
+
 	* Host.java: Create nested HostEvents.
 	* HostState.java: Replace existing "process" methods with
 	"processRequestRefresh", "processRequestCreateProc", and

@@ -61,11 +61,12 @@ public class TestExec
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
-	Manager.host.requestCreateProc (null, "/dev/null", null,
-					new String[] {
-					    "./prog/syscall/exec",
-					    "/bin/rm", tmpFile.toString (),
-					});
+	Manager.host.requestCreateAttachedContinuedProc
+	    (null, "/dev/null", null,
+	     new String[] {
+		"./prog/syscall/exec",
+		"/bin/rm", tmpFile.toString (),
+	    });
 
 	assertRunUntilStop ("run \"exec\" until exit");
 
@@ -89,11 +90,12 @@ public class TestExec
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
-	Manager.host.requestCreateProc (null, "/dev/null", null,
-					new String[] {
-					    "./prog/syscall/threadexec",
-					    "/bin/rm", tmpFile.toString (),
-					});
+	Manager.host.requestCreateAttachedContinuedProc
+	    (null, "/dev/null", null,
+	     new String[] {
+		"./prog/syscall/threadexec",
+		"/bin/rm", tmpFile.toString (),
+	    });
 
 	assertRunUntilStop ("run \"threadexec\" to exit");
 

@@ -102,8 +102,8 @@ public abstract class Host
 
     // Refresh the list of processes.
     abstract void sendRefresh (boolean refreshAll);
-    abstract void sendCreateProc (String stdin, String stdout,
-				  String stderr, String[] args);
+    abstract void sendCreateAttachedProc (String stdin, String stdout,
+					  String stderr, String[] args);
     abstract void sendAttachProc (ProcId id);
 
     protected HostState state = HostState.running;
@@ -135,13 +135,13 @@ public abstract class Host
     }
 
     /**
-     * Request that an attached, but running process be created on the
-     * host.
+     * (Internal) Tell this host to create an attached, possibly
+     * running, process.
      */
-    public void requestCreateProc (final String stdinArg,
-				   final String stdoutArg,
-				   final String stderrArg,
-				   final String[] argsArg)
+    private void performCreateAttachedProc (final String stdinArg,
+					    final String stdoutArg,
+					    final String stderrArg,
+					    final String[] argsArg)
     {
 	Manager.eventLoop.appendEvent (new HostEvent ("RequestCreateProc")
 	    {
@@ -151,19 +151,28 @@ public abstract class Host
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    state = state.processRequestCreateProc (Host.this,
-							    stdin, stdout,
-							    stderr, args);
+		    state = state.processCreateAttachedProc
+			(Host.this, stdin, stdout, stderr, args);
 		}
 	    });
     }
     /**
-     * Create a new process, stdin, stdout, and stderr are shared with
-     * this process.
+     * Request that a new attached and running process (with stdin,
+     * stdout, and stderr are shared with this process) be created.
      */
-    public final void requestCreateProc (String[] args)
+    public final void requestCreateAttachedContinuedProc (String[] args)
     {
-	requestCreateProc (null, null, null, args);
+	performCreateAttachedProc (null, null, null, args);
+    }
+    /**
+     * Request that a new attached and running process created.
+     */
+    public final void requestCreateAttachedContinuedProc (String stdin,
+							  String stdout,
+							  String stderr,
+							  String[] args)
+    {
+	performCreateAttachedProc (stdin, stdout, stderr, args);
     }
 
     /**

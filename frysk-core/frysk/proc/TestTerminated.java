@@ -126,8 +126,8 @@ public class TestTerminated
         Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	// Create infinite loop
-	Manager.host.requestCreateProc (new String[]
-	    {
+	Manager.host.requestCreateAttachedContinuedProc
+	    (new String[] {
 		"./prog/terminated/infloop"
 	    });
 

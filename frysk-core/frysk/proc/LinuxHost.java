@@ -163,8 +163,8 @@ public class LinuxHost
 	}
     }
 
-    void sendCreateProc (String in, String out, String err,
-			 String[] args)
+    void sendCreateAttachedProc (String in, String out, String err,
+				 String[] args)
     {
 	int pid = Ptrace.child (in, out, err, args);
 	new LinuxProc (this, new ProcId (pid), true);

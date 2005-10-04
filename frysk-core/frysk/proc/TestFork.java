@@ -58,11 +58,11 @@ public class TestFork
 	ProcCounter procCounter = new ProcCounter ();
 	new StopEventLoopOnProcDestroy ();
 
-	Manager.host.requestCreateProc (null, "/dev/null", null,
-					new String[] {
-					    "./prog/fib/fork",
-					    Integer.toString (n)
-					});
+	Manager.host.requestCreateAttachedContinuedProc
+	    (null, "/dev/null", null, new String[] {
+		"./prog/fib/fork",
+		Integer.toString (n)
+	    });
 
 	assertRunUntilStop ("run \"fork\" until exit");
 

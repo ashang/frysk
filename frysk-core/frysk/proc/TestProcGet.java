@@ -84,10 +84,10 @@ public class TestProcGet
 	TmpFile tmpFile = new TmpFile ();
 	CaptureAuxv captureAuxv = new CaptureAuxv ();
 	new StopEventLoopOnProcDestroy ();
-	Manager.host.requestCreateProc (null, tmpFile.toString (), null,
-					new String[] {
-					    "./prog/print/auxv"
-					});
+	Manager.host.requestCreateAttachedContinuedProc
+	    (null, tmpFile.toString (), null, new String[] {
+		"./prog/print/auxv"
+	    });
 
 	assertRunUntilStop ("run \"auxv\" to completion");
 

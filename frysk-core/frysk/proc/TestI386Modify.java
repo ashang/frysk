@@ -185,10 +185,10 @@ public class TestI386Modify
     {
 	Manager.host.observableProcAdded.addObserver (pdo);
 	// Create program making syscalls
-	Manager.host.requestCreateProc ( new String[]
-	{
- 	    "./prog/x86isa/x86modify"
-	});
+	Manager.host.requestCreateAttachedContinuedProc ( new String[]
+	    {
+		"./prog/x86isa/x86modify"
+	    });
 
 	Manager.host.observableProcRemoved.addObserver
 	    (new ProcRemovedObserver ());

@@ -154,8 +154,8 @@ public class TestSyscallOpen
     {
         Manager.host.observableProcAdded.addObserver (pco);
  	// Create program making syscalls
-	Manager.host.requestCreateProc (new String[]
-	    {
+	Manager.host.requestCreateAttachedContinuedProc
+	    (new String[] {
  		"./prog/syscall/syscalls"
  	    });
 

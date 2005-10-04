@@ -113,7 +113,7 @@ class ftrace
 	    (new ProcCreatedObserver ());
 	Manager.host.observableProcRemoved.addObserver
 	    (new ProcDestroyedObserver ());
-	Manager.host.requestCreateProc (args);
+	Manager.host.requestCreateAttachedContinuedProc (args);
 	Manager.eventLoop.run ();
 	System.out.println ("Tasks Created " +
 			    Long.toString (TaskCreatedObserver.count));

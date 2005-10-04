@@ -153,10 +153,10 @@ public class TestI386Regs
     {
         Manager.host.observableProcAdded.addObserver (pco);
  	// Create program making an exit syscall");
-	Manager.host.requestCreateProc (new String[]
-	    {
- 		"./prog/x86isa/x86regs"
- 	    });
+	Manager.host.requestCreateAttachedContinuedProc
+	    (new String[] {
+		"./prog/x86isa/x86regs"
+	    });
 
         Manager.host.observableProcRemoved.addObserver
 	    (new ProcDestroyedObserver ());

@@ -218,8 +218,8 @@ public class TestStep
         Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
 
 	// Create threaded infinite loop
-	Manager.host.requestCreateProc (new String[]
-	    {
+	Manager.host.requestCreateAttachedContinuedProc
+	    (new String[] {
                 "./prog/step/infThreadLoop"
             });
 
