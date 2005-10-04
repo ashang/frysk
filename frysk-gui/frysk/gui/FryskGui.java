@@ -87,10 +87,6 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	
 	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
-	static {
-		System.loadLibrary("EggTrayIcon");
-	}
-
 	FryskGui(String[] glade_dirs) throws GladeXMLException, FileNotFoundException,
 			IOException {
 

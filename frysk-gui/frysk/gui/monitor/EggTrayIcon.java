@@ -42,6 +42,10 @@ import org.gnu.gtk.Plug;
 import org.gnu.glib.Handle;
 
 public class EggTrayIcon extends Plug{
+	static {
+		System.loadLibrary("EggTrayIcon");
+	}
+
 	EggTrayIcon(String name){
 		super(egg_tray_icon_new(name));
 	}

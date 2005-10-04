@@ -47,7 +47,17 @@ public class GuiData {
 	
 	public void remove(ObserverRoot observer){
 		this.observers.remove(observer);
-		this.observerRemoved.notifyObservers(observer);
+		this.observerRemoved.notifyObservers(observer);	
+	}
+	
+	public void remove(TaskExecObserver observer){
+		remove((ObserverRoot)observer);
+		ActionPool.theActionPool.addExecObserver.removeObservers(this);
+	}
+	
+	public void remove(TaskExitingObserver observer){
+		remove((ObserverRoot)observer);
+		ActionPool.theActionPool.addExitingObserver.removeObservers(this);
 	}
 	
 	public LinkedList getObservers(){

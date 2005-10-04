@@ -42,10 +42,11 @@ import java.util.LinkedList;
 
 /**
  * @author Sami Wagiaalla
- * Singelton; only one action pool. Flyweight;
+ * Singleton; only one action pool. Flyweight;
  * instanciate Action objects here, then just call execute() from
- * anywhere in the GUI. Provies a place for extendors to add their
- * actions. Provies a place for menues to grab their dynamically
+ * anywhere in the GUI.
+ * ActionPool Provies a place for extendors to add their
+ * actions. Provies a place for menus to grab their dynamically
  * extendable contents. Avoids rewriting of code, and copying of objects
  * (Ex, a MenuItem, ToolBar button, maybe even CLI, all call execute on
  * the same Action object)
@@ -67,9 +68,10 @@ public class ActionPool {
         
         /** Observers that can be added to a process */
         public LinkedList processObservers;
-        private EventLogger eventLog =  new EventLogger();
-
+       
         /** } */
+
+        private EventLogger eventLog =  new EventLogger();
 
         public ActionPool() {
                 this.processActions = new LinkedList();
@@ -87,10 +89,38 @@ public class ActionPool {
                         this.toolTip = new String();
                 }
 
+                /**
+                 * Delegates the call to the appropriet function.
+                 * Either @ProcData or 
+                 * */
+                public void execute(GuiData data){
+                	if(data instanceof ProcData){
+                		this.execute((ProcData)data);
+                	}
+                	
+                	if(data instanceof TaskData){
+                		this.execute((TaskData)data);
+                	}
+                }
+                
+                public void removeObservers(GuiData data){
+                	if(data instanceof ProcData){
+                		this.removeObservers((ProcData)data);
+                	}
+                	
+                	if(data instanceof TaskData){
+                		this.removeObservers((TaskData)data);
+                	}
+                }
+
                 public abstract void execute(ProcData data);
 
                 public abstract void execute(TaskData data);
 
+                public abstract void removeObservers(ProcData data);
+
+                public abstract void removeObservers(TaskData data);
+                
                 public void execute(ProcData[] data) {
                         for (int i = 0; i < data.length; i++) {
                                 this.execute(data[i]);
@@ -128,20 +158,30 @@ public class ActionPool {
                 }
 
                 public void execute(ProcData data) {
-                        System.out.println("sending Manager.host.requestAttachProc");
-                        data.getProc().observableAttachedContinue
-                                        .addObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
-                        data.getProc().observableAttachedContinue.addObserver(eventLog.attachedContinueObserver);
-                        data.getProc().requestAttachedContinue();
-
+                        
+                	data.getProc().observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
+                	data.getProc().observableAttachedContinue.addObserver(eventLog.attachedContinueObserver);
+                       
+                	data.getProc().requestAttachedContinue();
                 }
 
                 /**
                  * This Action does not apply to Tasks.
                  * */
                 public void execute(TaskData data) {
-                        
+
                 }
+
+				public void removeObservers(ProcData data) {
+                    data.getProc().observableAttachedContinue.deleteObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
+                    data.getProc().observableAttachedContinue.deleteObserver(eventLog.attachedContinueObserver);
+				}
+
+				public void removeObservers(TaskData data) {
+					// TODO Auto-generated method stub
+					
+				}
+
         }
 
         public class Detach extends Action {
@@ -165,6 +205,15 @@ public class ActionPool {
 			public void execute(TaskData data) {
 	
 			}
+
+			public void removeObservers(ProcData data) {
+				data.getProc().observableDetachedContinue.deleteObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
+				data.getProc().observableDetachedContinue.deleteObserver(eventLog.detachedContinueObserver);
+			}
+
+			public void removeObservers(TaskData data) {
+				
+			}
 	}
 
 	public class Stop extends Action {
@@ -183,6 +232,16 @@ public class ActionPool {
 
 		public void execute(TaskData data) {
 			//XXX: data.getTask().requestStop(); is not public 
+		}
+
+		public void removeObservers(ProcData data) {
+			data.getProc().observableAttachedStop.deleteObserver(eventLog.attachedStopObserver);
+			data.getProc().observableAttachedStop.deleteObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
+		}
+
+		public void removeObservers(TaskData data) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
@@ -204,6 +263,16 @@ public class ActionPool {
 			//XXX: to be implement in the back end:	data.getTask().requestContinue();
 			//data.getTask().
 		}
+
+		public void removeObservers(ProcData data) {
+			data.getProc().observableAttachedContinue.deleteObserver(eventLog.attachedResumeObserver);
+            data.getProc().observableAttachedContinue.deleteObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
+		}
+
+		public void removeObservers(TaskData data) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	public class PrintState extends Action {
@@ -219,6 +288,16 @@ public class ActionPool {
 
 		public void execute(TaskData data) {
 			System.out.println("Proc State : " + data.getTask());
+		}
+
+		public void removeObservers(ProcData data) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void removeObservers(TaskData data) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 	
@@ -241,6 +320,16 @@ public class ActionPool {
 		public void execute(TaskData data) {
 			//XXX
 		}
+
+		public void removeObservers(ProcData data) {
+			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExeced.deleteObserver(eventLog);
+		}
+
+		public void removeObservers(TaskData data) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	public class AddExitingObserver extends Action {
@@ -253,9 +342,9 @@ public class ActionPool {
 		public void execute(ProcData data) {
 			TaskExitingObserver taskExitingObserver = new TaskExitingObserver();
 
-			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.addObserver(eventLog);
-			data.getProc().taskExeced.addObserver(taskExitingObserver);
+			data.getProc().taskExiting.addObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExiting.addObserver(eventLog);
+			data.getProc().taskExiting.addObserver(taskExitingObserver);
 
 			data.add(taskExitingObserver);
 		}
@@ -264,13 +353,22 @@ public class ActionPool {
 			// TODO Auto-generated method stub
 			
 		}
+
+		public void removeObservers(ProcData data) {
+			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExiting.deleteObserver(eventLog);
+		}
+
+		public void removeObservers(TaskData data) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	/**
-	 * Actions: A publicly available instance of each action this might not be
-	 * nessecery... thoughts ? {
+	 * Actions: A publicly available instance of each action.
+	 * {
 	 */
-	
 	public Attach attach;
 	public Detach detach;
 	public Stop   stop;
@@ -279,8 +377,7 @@ public class ActionPool {
 	
 	public AddExecObserver addExecObserver;
 	public AddExitingObserver addExitingObserver;
-	
-	/** } */
+	/**}*/
 
 	/**
 	 * Initializes all the public actions and adds them to the apporpriet list.

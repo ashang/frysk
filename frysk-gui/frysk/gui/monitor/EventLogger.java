@@ -93,7 +93,7 @@ public class EventLogger implements Observer {
         public AttachedResumeObserver attachedResumeObserver;
         /** }*/
         
-        EventLogger()
+        public EventLogger()
         {
                 this.attachedContinueObserver = new AttachedContinueObserver();
                 this.detachedContinueObserver = new DetachedContinueObserver();

@@ -5,6 +5,8 @@ import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.gnu.glib.CustomEvents;
+
 /**
  * A more sofisticate implementer of Observer.
  * provides name and tooltip strings for gui display perposis.
@@ -42,11 +44,15 @@ public class ObserverRoot implements Observer{
 		}
 		
 		public void update(Observable o, Object obj) {
-			ListIterator iter = runnables.listIterator();
-			while(iter.hasNext()){
-				Runnable runnable = (Runnable) iter.next();
-				runnable.run();
-			}
+			CustomEvents.addEvent(new Runnable(){
+				public void run() {
+					ListIterator iter = runnables.listIterator();
+					while(iter.hasNext()){
+						Runnable runnable = (Runnable) iter.next();
+						runnable.run();
+					}
+				}
+			});
 		}
 		
 		public void addRunnable(Runnable runnable){

@@ -1,3 +1,16 @@
+2005-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StatusWidget.java: I preperation fro adding the time line widget
+	the log window in StatusWidget reports observable events recieved 
+	for its particular task.
+	* ObserverRoot.java (update): Execution of 'update' is done within
+	the event loop now (CustomEvents.add).
+	* ActionPool.java: Added removeObservers() to all actions to 
+	remove any observers they have added to the back end;
+	* GuiData.java: Added code for removing observers for GuiData.
+	* EventLogger.java (EventLogger): Changed visibility to public.
+	* EggTrayIcon.java: Moved load library from FryskGui.java to here.
+
 2005-10-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StatusWidget.java (StatusWidget): Remove unused variable for 

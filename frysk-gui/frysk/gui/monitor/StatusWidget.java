@@ -6,6 +6,8 @@
  */
 package frysk.gui.monitor;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -36,7 +38,7 @@ public class StatusWidget extends VBox{
 	Label nameLabel;
 	private GuiData data;
 	private TextView logTextView;
-	public Observable notifyUser;
+	public  Observable notifyUser;
 	
 	public StatusWidget(ProcData data){
 		super(false,0);
@@ -54,7 +56,7 @@ public class StatusWidget extends VBox{
 		//========================================
 		
 		//========================================
-		this.logTextView = new TextView();
+		initLogTextView();
 		ScrolledWindow logScrolledWindow = new ScrolledWindow();
 		logScrolledWindow.add(logTextView);
 		this.packStart(logScrolledWindow, true, true, 0);
@@ -147,5 +149,44 @@ public class StatusWidget extends VBox{
 		
 		
 		return treeView;
+	}
+
+
+	private void initLogTextView(){
+		this.logTextView = new TextView();
+		LinkedList observers = this.data.getObservers();
+		ListIterator iter = observers.listIterator();
+		while(iter.hasNext()){
+			final ObserverRoot observer = (ObserverRoot) iter.next();
+			observer.addRunnable(new Runnable(){
+				public void run() {
+					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+				}
+			});
+		}
+		
+		this.data.observerAdded.addObserver(new Observer(){
+
+			public void update(Observable arg0, Object obj) {
+				final ObserverRoot observer = (ObserverRoot)obj;
+				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
+				observer.addRunnable(new Runnable(){
+					public void run() {
+						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+					}
+				});
+			}
+			
+		});
+		
+		this.data.observerRemoved.addObserver(new Observer(){
+
+			public void update(Observable arg0, Object obj) {
+				ObserverRoot observer = (ObserverRoot)obj;
+				logTextView.getBuffer().insertText("Event: " + observer.getName() + " removed\n");
+			}
+			
+		});
+		
 	}
 }
