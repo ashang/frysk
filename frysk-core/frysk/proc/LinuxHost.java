@@ -69,12 +69,6 @@ public class LinuxHost
 	eventLoop.addHandler (new PollWaitOnSigChld ());
     }
 
-    void sendAttachProc (ProcId id)
-    {
-	LinuxProc proc = new LinuxProc (this, id, false);
-	proc.requestAttachedContinue ();
-    }
-
     /**
      * Either add or update a process, however, before doing that
      * determine the parent and ensure that it has been updated.

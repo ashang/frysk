@@ -1,5 +1,7 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxHost.java, Host.java: Delete sendAttachProc.
+	
 	* Host.java: Delete requestAttachProc.
 	* HostState.java: Update.
 	* TestUnpaused.java, TestStop.java, TestStopAndStop.java,

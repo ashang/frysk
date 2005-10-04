@@ -104,7 +104,6 @@ public abstract class Host
     abstract void sendRefresh (boolean refreshAll);
     abstract void sendCreateAttachedProc (String stdin, String stdout,
 					  String stderr, String[] args);
-    abstract void sendAttachProc (ProcId id);
 
     protected HostState state = HostState.running;
 
