@@ -63,6 +63,12 @@ GLIB_JAVA_JAR=`$PKG_CONFIG --variable classpath glib-java`
 AC_MSG_RESULT($GLIB_JAVA_JAR)
 AC_SUBST(GLIB_JAVA_JAR)
 
+PKG_CHECK_MODULES(VTE_JAVA, vte-java >= 0.11.11)
+AC_MSG_CHECKING(for libvte-java jar file)
+VTE_JAVA_JAR=`$PKG_CONFIG --variable classpath vte-java`
+AC_MSG_RESULT($VTE_JAVA_JAR)
+AC_SUBST(VTE_JAVA_JAR)
+
 AC_MSG_CHECKING([for  libcdtparser])
 CDTPARSER_JAR=/opt/frysk/share/java/cdtparser.jar
 CDTPARSER_LIBS=/opt/frysk/lib/libcdtparser.jar.so
@@ -73,7 +79,7 @@ test -r ${CDTPARSER_LIBS} || AC_MSG_ERROR([no libcdtparser.jar.so file found]);
 AC_SUBST([CDTPARSER_LIBS])
 AC_MSG_RESULT([$CDTPARSER_LIBS])
 
-RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
+RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
 
 AC_CONFIG_FILES([Makefile])

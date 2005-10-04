@@ -1,3 +1,12 @@
+2005-10-03  Igor Foox  <ifoox@redhat.com>
+
+	* frysk/gui/monitor/ConsoleWindow.java: Added a stub class for the
+	console window.
+	* Makefile.am, configure.am: Added machinery to compile libvte-java
+	related files.
+	* frysk/gui/FryskGui.java: Added context menu item in the status icon
+	to call up the console window.
+
 2005-09-26  Igor Foox  <ifoox@redhat.com>
 
 	* configure.ac: Changed PKG_CONFIG_PATH to /opt/frysk from /opt.

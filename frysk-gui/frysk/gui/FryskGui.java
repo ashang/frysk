@@ -70,6 +70,9 @@ import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Manager;
 
+
+import frysk.gui.monitor.ConsoleWindow;
+
 public class FryskGui implements LifeCycleListener, Saveable {
 
 	LibGlade glade;
@@ -161,8 +164,11 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
 		trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);
 
-		// right click menu
+		// 		right click menu
 		Menu popupMenu = new Menu();
+		trayIcon.setPopupMenu(popupMenu);
+		
+		// Quit 
 		MenuItem quitItem = new MenuItem("Quit", false);
 		quitItem.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0) {
@@ -170,8 +176,16 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			}
 		});
 		popupMenu.add(quitItem);
+		
+		// Console Window
+		MenuItem consoleWindowItem = new MenuItem("Console Window", false);
+		consoleWindowItem.addListener(new MenuItemListener() {
+			public void menuItemEvent(MenuItemEvent arg0){
+				new ConsoleWindow();
+			}
+		});
+		popupMenu.prepend(consoleWindowItem);
 
-		trayIcon.setPopupMenu(popupMenu);
 
 		Thread backendStarter = new Thread(new Runnable() {
 			public void run() {
