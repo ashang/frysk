@@ -46,9 +46,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
-
 import frysk.proc.Proc;
 
 /**
@@ -120,7 +117,7 @@ public class EventLogger implements Observer {
                         e.printStackTrace();
                 }
                 
-                handler.setFormatter(new SimpleFormatter());
+                handler.setFormatter(new EventFormatter());
                 return handler;
         }
         
@@ -132,25 +129,25 @@ public class EventLogger implements Observer {
         
         class AttachedContinueObserver implements Observer{
                 public void update(Observable arg0, Object arg1) {
-                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX attached ");
+                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Attached ");
                 }
         }
         
         class DetachedContinueObserver implements Observer{
                 public void update(Observable arg0, Object arg1) {
-                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX detached ");
+                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Detached ");
                 }
         }
         
         class AttachedStopObserver implements Observer{
                 public void update(Observable arg0, Object arg1) {
-                    eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX stopped");
+                    eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Stopped");
             }
         }
         
         class AttachedResumeObserver implements Observer{
             public void update(Observable arg0, Object arg1) {
-                eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" on Host XXX resumed");
+                eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Resumed");
         }
     }
         
