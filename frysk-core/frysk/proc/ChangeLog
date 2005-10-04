@@ -1,5 +1,9 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStep.java: Move PidChild call to ProcCreatedObserver, delete
+	global "pid".
+	* TestLib.java: In class Child, always register the pid.
+
 	* TestStep.java, TestAttachCloningThreads.java: Replace
 	StopEventLoopOnProcDestroy with PidChild and Child
 	.stopEventLoopOnDestroy.

@@ -136,11 +136,12 @@ public class TestLib
 	    waitForAck ();
 	}
 	/**
-	 * Fudge up a child object using PID.
+	 * Fudge up a Child object using PID.
 	 */
 	protected Child (int pid)
 	{
 	    this.pid = pid;
+	    registerChild (pid);
 	}
 	/**
 	 * Attempt to kill the child.  Return false if the child

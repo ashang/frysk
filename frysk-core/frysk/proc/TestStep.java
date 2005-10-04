@@ -54,7 +54,6 @@ public class TestStep
     Task mainTask;
     Task thread1;
     Task thread2;
-    int pid;
     long numberOfTimerEvents;
     int taskCreatedCount;
     int taskDestroyedCount;
@@ -71,9 +70,9 @@ public class TestStep
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
-	    pid = proc.id.hashCode ();
-	    // Register pid for removal at end of test
-	    registerChild (pid);
+	    int pid = proc.id.hashCode ();
+	    // Shut things down when PID exits.
+	    new PidChild (pid).stopEventLoopOnDestroy ();
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
@@ -222,10 +221,6 @@ public class TestStep
 	    (new String[] {
                 "./prog/step/infThreadLoop"
             });
-
-        // Once a proc destroyed has been seen stop the event loop.
-	Child child = new PidChild (pid);
-        child.stopEventLoopOnDestroy ();
 
 	assertRunUntilStop ("run \"infThreadLoop\" until exit");
 
