@@ -224,7 +224,8 @@ public class TestStep
             });
 
         // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
+	Child child = new PidChild (pid);
+        child.stopEventLoopOnDestroy ();
 
 	assertRunUntilStop ("run \"infThreadLoop\" until exit");
 

@@ -118,7 +118,8 @@ public class TestAttachCloningThreads
         registerChild (pid);
 
         // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
+	Child child = new PidChild (pid);
+        child.stopEventLoopOnDestroy ();
 
 	assertRunUntilStop ("XXX: run until?");
 

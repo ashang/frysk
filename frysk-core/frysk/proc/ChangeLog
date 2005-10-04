@@ -1,5 +1,11 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStep.java, TestAttachCloningThreads.java: Replace
+	StopEventLoopOnProcDestroy with PidChild and Child
+	.stopEventLoopOnDestroy.
+	* TestLib.java: Add class PidChild.  Add method
+	stopEventLoopOnDestroy to Child class.
+
 	* Host.java, HostState.java: Add "Perform" prefix to
 	PerformCreateAttachedProc event.
 

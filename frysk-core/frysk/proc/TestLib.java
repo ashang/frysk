@@ -136,6 +136,13 @@ public class TestLib
 	    waitForAck ();
 	}
 	/**
+	 * Fudge up a child object using PID.
+	 */
+	protected Child (int pid)
+	{
+	    this.pid = pid;
+	}
+	/**
 	 * Attempt to kill the child.  Return false if the child
 	 * doesn't appear to exist.
 	 */
@@ -175,6 +182,42 @@ public class TestLib
 	    return findProcUsingRefresh (false);
 	}
 	private Proc proc;
+	/**
+	 * Request that the event-loop be stopped should this process
+	 * ever be destroyed.
+	 *
+	 * This does not use {@link Host#requestRefresh}, instead
+	 * watching for the remove (destroy) event to go by.
+	 */
+	public void stopEventLoopOnDestroy ()
+	{
+ 	    Manager.host.observableProcRemoved.addObserver (new Observer ()
+ 		{
+ 		    public void update (Observable o, Object obj)
+ 		    {
+ 			Proc proc = (Proc) obj;
+			if (proc.getPid () == pid)
+ 			    Manager.eventLoop.requestStop ();
+ 		    }
+ 		});
+	}
+    }
+
+    /**
+     * Create a child object corresponding to an existing PID.
+     */
+    protected class PidChild
+	extends Child
+    {
+	PidChild (int pid)
+	{
+	    super (pid);
+	}
+	protected int startChild (String stdin, String stdout, String stderr,
+				  String[] argv)
+	{
+	    throw new RuntimeException ("should not be here");
+	}
     }
 
     /**
