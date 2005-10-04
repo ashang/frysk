@@ -1,11 +1,14 @@
 2005-10-04  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ActionPool.java (AddExecObserver.execute): 
+	Added EventLogger observer
 	* EventFormatter.java (format): Added.
 	* EventLogger.java (AttachedContinueObserver):  Changed log msg.
 	(DetachedContinueObserver): Ditto.
 	(AttachedStopObserver): Ditto.
 	(AttachedResumeObserver): Ditto.
 	(buildHandler): Changed Formatter to EventFormatter.
+	(TaskExecObserver): Added
 
 2005-10-04  Sami Wagiaalla  <swagiaal@redhat.com>
 

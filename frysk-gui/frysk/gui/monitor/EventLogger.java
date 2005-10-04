@@ -88,6 +88,7 @@ public class EventLogger implements Observer {
         public DetachedContinueObserver detachedContinueObserver;
         public AttachedStopObserver attachedStopObserver;
         public AttachedResumeObserver attachedResumeObserver;
+        public TaskExecObserver taskExecObserver; 
         /** }*/
         
         public EventLogger()
@@ -96,6 +97,7 @@ public class EventLogger implements Observer {
                 this.detachedContinueObserver = new DetachedContinueObserver();
                 this.attachedStopObserver = new AttachedStopObserver();
                 this.attachedResumeObserver = new AttachedResumeObserver();
+                this.taskExecObserver = new TaskExecObserver();
                 
                 eventLogFile = Logger.getLogger(EVENT_LOG_ID);
                 eventLogFile.addHandler(buildHandler());
@@ -127,6 +129,9 @@ public class EventLogger implements Observer {
 
         }
         
+        
+        // Attach/Detach/Stop/Resume Observers
+        
         class AttachedContinueObserver implements Observer{
                 public void update(Observable arg0, Object arg1) {
                         eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Attached ");
@@ -149,6 +154,17 @@ public class EventLogger implements Observer {
             public void update(Observable arg0, Object arg1) {
                 eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Resumed");
         }
+            
+        // Proc action observers
+            
+        class TaskExecObserver implements Observer {
+            public void update(Observable arg0, Object arg1) {
+            	System.out.println("Process Exec is " + arg1);
+                eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Execed");
+        }
+
+        }
+        // Task observers
     }
         
                 

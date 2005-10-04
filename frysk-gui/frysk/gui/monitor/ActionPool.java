@@ -312,7 +312,7 @@ public class ActionPool {
 			TaskExecObserver taskExecObserver = new TaskExecObserver();
 
 			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.addObserver(eventLog);
+			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
 			data.getProc().taskExeced.addObserver(taskExecObserver);
 			data.add(taskExecObserver);
 		}
