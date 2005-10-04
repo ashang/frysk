@@ -1,5 +1,8 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java, HostState.java: Add "Perform" prefix to
+	PerformCreateAttachedProc event.
+
 	* Host.java: Replace sendCreateProc with sendCreateAttachedProc.
 	Replace requestCreateProc with requestCreateAttachedContinuedProc,
 	and the private performCreateAttachedProc.

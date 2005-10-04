@@ -143,7 +143,7 @@ public abstract class Host
 					    final String stderrArg,
 					    final String[] argsArg)
     {
-	Manager.eventLoop.appendEvent (new HostEvent ("RequestCreateProc")
+	Manager.eventLoop.appendEvent (new HostEvent ("PerformCreateProc")
 	    {
 		String stdin = stdinArg;
 		String stdout = stdoutArg;
@@ -151,7 +151,7 @@ public abstract class Host
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    state = state.processCreateAttachedProc
+		    state = state.processPerformCreateAttachedProc
 			(Host.this, stdin, stdout, stderr, args);
 		}
 	    });
