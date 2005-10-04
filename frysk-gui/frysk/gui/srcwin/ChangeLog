@@ -1,5 +1,16 @@
 2005-10-04  Adam Jocksch  <ajocksch@redhat.com>
 
+	* PreferenceConstants.java: Added default values for r,g,b triplets.
+	
+	* SourceBuffer.java (updatePreferences): Uses default values from 
+	PreferenceConstants.java.
+	
+	* SourceViewWidget.java (refresh): Ditto.
+	
+	* PreferenceWindow.java (setupButtons): Ditto.
+
+2005-10-04  Adam Jocksch  <ajocksch@redhat.com>
+
 	* GladeConstants.java: Deleted.
 	
 	* SourceWindow.java: Ditto.

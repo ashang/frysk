@@ -146,14 +146,14 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 */
 	public void refresh(){
 		// Look & Feel
-		int r = this.lnfPrefs.getInt(Text.R, 0);
-		int g = this.lnfPrefs.getInt(Text.G, 0);
-		int b = this.lnfPrefs.getInt(Text.B, 0);
+		int r = this.lnfPrefs.getInt(Text.R, Text.R_DEFAULT);
+		int g = this.lnfPrefs.getInt(Text.G, Text.G_DEFAULT);
+		int b = this.lnfPrefs.getInt(Text.B, Text.B_DEFAULT);
 		this.setTextColor(StateType.NORMAL, new Color(r,g,b));
 		
-		r = this.lnfPrefs.getInt(Background.R, 65535);
-		g = this.lnfPrefs.getInt(Background.G, 65535);
-		b = this.lnfPrefs.getInt(Background.B, 65535);
+		r = this.lnfPrefs.getInt(Background.R, Background.R_DEFAULT);
+		g = this.lnfPrefs.getInt(Background.G, Background.G_DEFAULT);
+		b = this.lnfPrefs.getInt(Background.B, Background.B_DEFAULT);
 		this.setBaseColor(StateType.NORMAL, new Color(r,g,b));
 	
 		this.buf.updatePreferences(this.topPrefs);

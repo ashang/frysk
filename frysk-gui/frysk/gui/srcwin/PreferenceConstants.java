@@ -18,6 +18,9 @@ public class PreferenceConstants {
 		public static final String B = "inline_b";
 		public static final String G = "inline_g";
 		public static final String R = "inline_r";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 65535;
+		public static final int R_DEFAULT = 65535;
 	}
 	
 	/**
@@ -29,6 +32,9 @@ public class PreferenceConstants {
 		public static final String B = "textB";
 		public static final String G = "textG";
 		public static final String R = "textR";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 0;
+		public static final int R_DEFAULT = 0;
 	}
 	
 	/**
@@ -41,6 +47,9 @@ public class PreferenceConstants {
 		public static final String G = "markG";
 		public static final String R = "markR";
 		public static final String SHOW = "showExecMarkers";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 0;
+		public static final int R_DEFAULT = 0;
 	}
 	
 	/**
@@ -52,6 +61,9 @@ public class PreferenceConstants {
 		public static final String B = "bgB";
 		public static final String G = "bgG";
 		public static final String R = "bgR";
+		public static final int B_DEFAULT = 65535;
+		public static final int G_DEFAULT = 65535;
+		public static final int R_DEFAULT = 65535;
 	}
 	
 	/**
@@ -63,6 +75,9 @@ public class PreferenceConstants {
 		public static final String B = "marginB";
 		public static final String G = "marginG";
 		public static final String R = "marginR";
+		public static final int B_DEFAULT = 65535;
+		public static final int G_DEFAULT = 56283;
+		public static final int R_DEFAULT = 54741;
 	}
 	
 	/**
@@ -74,7 +89,10 @@ public class PreferenceConstants {
 		public static final String B = "lineNumB";
 		public static final String G = "lineNumG";
 		public static final String R = "lineNumR";
-		public static final String SHOW = "showLineNumbers";	
+		public static final String SHOW = "showLineNumbers";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 0;
+		public static final int R_DEFAULT = 0;	
 	}
 	
 	/**
@@ -86,6 +104,9 @@ public class PreferenceConstants {
 		public static final String R = "currentLineR";
 		public static final String G = "currentLineG";
 		public static final String B = "currentLineB";
+		public static final int B_DEFAULT = 30000;
+		public static final int G_DEFAULT = 65535;
+		public static final int R_DEFAULT = 30000;
 	}
 	
 	/**
@@ -98,6 +119,9 @@ public class PreferenceConstants {
 		public static final String R = "function_r";
 		public static final String G = "function_b";
 		public static final String B = "function_g";
+		public static final int B_DEFAULT = 65535;
+		public static final int G_DEFAULT = 0;
+		public static final int R_DEFAULT = 0;
 	}
 	
 	/**
@@ -110,6 +134,9 @@ public class PreferenceConstants {
 		public static final String B = "id_b";
 		public static final String G = "id_g";
 		public static final String R = "id_r";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 30000;
+		public static final int R_DEFAULT = 0;
 	}
 	
 	/**
@@ -122,6 +149,9 @@ public class PreferenceConstants {
 		public static final String B = "keyword_b";
 		public static final String G = "keyword_g";
 		public static final String R = "keyword_r";
+		public static final int B_DEFAULT = 30000;
+		public static final int G_DEFAULT = 0;
+		public static final int R_DEFAULT = 30000;
 	}
 	
 	/**
@@ -134,6 +164,9 @@ public class PreferenceConstants {
 		public static final String R = "global_r";
 		public static final String B = "global_b";
 		public static final String WEIGHT = "global_weight";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 30000;
+		public static final int R_DEFAULT = 65535;
 	}
 	
 	/**
@@ -146,6 +179,9 @@ public class PreferenceConstants {
 		public static final String G = "comment_g";
 		public static final String B = "comment_b";
 		public static final String WEIGHT = "commment_weight";
+		public static final int B_DEFAULT = 10000;
+		public static final int G_DEFAULT = 30000;
+		public static final int R_DEFAULT = 10000;
 	}
 	
 	/**
@@ -158,6 +194,9 @@ public class PreferenceConstants {
 		public static final String G = "class_g";
 		public static final String B = "class_b";
 		public static final String WEIGHT = "class_weight";
+		public static final int B_DEFAULT = 10000;
+		public static final int G_DEFAULT = 10000;
+		public static final int R_DEFAULT = 10000;
 	}
 	
 	/**
@@ -169,6 +208,9 @@ public class PreferenceConstants {
 		public static final String G = "searchG";
 		public static final String B = "searchB";
 		public static final String R = "searchR";
+		public static final int B_DEFAULT = 0;
+		public static final int G_DEFAULT = 32200;
+		public static final int R_DEFAULT = 65535;
 	}
 	
 	// Node names in the preference hierarchy

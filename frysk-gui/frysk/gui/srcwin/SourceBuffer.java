@@ -44,16 +44,14 @@ import frysk.gui.srcwin.cparser.CDTParser;
 public class SourceBuffer extends TextBuffer {
 	
 	/* CONSTANTS */
-	
 	private static final String INLINE_TAG = "INLINE";
 	private static final String COMMENT_TAG = "COMMENT";
 	private static final String MEMBER_TAG = "MEMBER";
 	private static final String FUNCTION_TAG = "FUNCTION";
 	private static final String ID_TAG = "ID";
-	private static final String LITERAL_TAG = "TYPE";
+	private static final String KEYWORD_TAG = "TYPE";
 	private static final String CURRENT_LINE = "currentLine";
 	private static final String FOUND_TEXT = "foundText";
-	
 	/* END CONSTANTS */
 	
 	protected Vector lines;
@@ -71,8 +69,8 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag foundText;
 	private TextTag functionTag;
 	private TextTag idTag;
-	private TextTag memberTag;
-	private TextTag literalTag;
+	private TextTag globalTag;
+	private TextTag keywordTag;
 	private TextTag commentTag;
 	private TextTag classTag;
 	
@@ -118,8 +116,8 @@ public class SourceBuffer extends TextBuffer {
 		this.foundText = this.createTag(FOUND_TEXT);
 		this.functionTag = this.createTag(FUNCTION_TAG);
 		this.idTag = this.createTag(ID_TAG);
-		this.literalTag = this.createTag(LITERAL_TAG);
-		this.memberTag = this.createTag(MEMBER_TAG);
+		this.keywordTag = this.createTag(KEYWORD_TAG);
+		this.globalTag = this.createTag(MEMBER_TAG);
 		this.commentTag = this.createTag(COMMENT_TAG);
 		this.classTag = this.createTag("CLASS");	
 		this.functionTag.setPriority(this.getTextTagTable().getSize() - 1);
@@ -276,71 +274,71 @@ public class SourceBuffer extends TextBuffer {
 		Preferences currentNode = topNode.node(PreferenceConstants.LNF_NODE);
 		
 		// update current line color
-		int r = currentNode.getInt(CurrentLine.R, 0);
-		int g = currentNode.getInt(CurrentLine.G, 0);
-		int b = currentNode.getInt(CurrentLine.B, 0);
+		int r = currentNode.getInt(CurrentLine.R, CurrentLine.R_DEFAULT);
+		int g = currentNode.getInt(CurrentLine.G, CurrentLine.G_DEFAULT);
+		int b = currentNode.getInt(CurrentLine.B, CurrentLine.B_DEFAULT);
 		this.currentLine.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		
 		// Search color
-		r = currentNode.getInt(Search.R, 65535);
-		g = currentNode.getInt(Search.G, 32200);
-		b = currentNode.getInt(Search.B, 0);
+		r = currentNode.getInt(Search.R, Search.R_DEFAULT);
+		g = currentNode.getInt(Search.G, Search.G_DEFAULT);
+		b = currentNode.getInt(Search.B, Search.B_DEFAULT);
 		this.foundText.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		
 		currentNode = topNode.node(PreferenceConstants.SYNTAX_NODE);
 		
-		// Literal syntax highlighting
-		r = currentNode.getInt(Keywords.R, 30000);
-		g = currentNode.getInt(Keywords.G, 0);
-		b = currentNode.getInt(Keywords.B, 30000);
-		this.literalTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
+		// keyword syntax highlighting
+		r = currentNode.getInt(Keywords.R, Keywords.R_DEFAULT);
+		g = currentNode.getInt(Keywords.G, Keywords.G_DEFAULT);
+		b = currentNode.getInt(Keywords.B, Keywords.B_DEFAULT);
+		this.keywordTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		int weight = currentNode.getInt(Keywords.WEIGHT, Weight.BOLD.getValue());
-		this.literalTag.setWeight(Weight.intern(weight));
+		this.keywordTag.setWeight(Weight.intern(weight));
 		
 		// ID syntax highlighting
-		r = currentNode.getInt(ID.R, 0);
-		g = currentNode.getInt(ID.G, 30000);
-		b = currentNode.getInt(ID.B, 0);
+		r = currentNode.getInt(ID.R, ID.R_DEFAULT);
+		g = currentNode.getInt(ID.G, ID.G_DEFAULT);
+		b = currentNode.getInt(ID.B, ID.B_DEFAULT);
 		this.idTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(ID.WEIGHT, Weight.NORMAL.getValue());
 		this.idTag.setWeight(Weight.intern(weight));
 
 		// Global variable syntax highlighting
-		r = currentNode.getInt(GlobalVariables.R, 65535);
-		g = currentNode.getInt(GlobalVariables.G, 30000);
-		b = currentNode.getInt(GlobalVariables.B, 0);
-		this.memberTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
+		r = currentNode.getInt(GlobalVariables.R, GlobalVariables.R_DEFAULT);
+		g = currentNode.getInt(GlobalVariables.G, GlobalVariables.G_DEFAULT);
+		b = currentNode.getInt(GlobalVariables.B, GlobalVariables.B_DEFAULT);
+		this.globalTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(GlobalVariables.WEIGHT, Weight.NORMAL.getValue());
-		this.memberTag.setWeight(Weight.intern(weight));
+		this.globalTag.setWeight(Weight.intern(weight));
 		
 		// Function syntax highlighting
-		r = currentNode.getInt(Functions.R, 0);
-		g = currentNode.getInt(Functions.G, 0);
-		b = currentNode.getInt(Functions.B, 65535);
+		r = currentNode.getInt(Functions.R, Functions.R_DEFAULT);
+		g = currentNode.getInt(Functions.G, Functions.G_DEFAULT);
+		b = currentNode.getInt(Functions.B, Functions.B_DEFAULT);
 		this.functionTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(Functions.WEIGHT, Weight.BOLD.getValue());
 		this.functionTag.setWeight(Weight.intern(weight));
 		
 		// comment syntax highlighting
-		r = currentNode.getInt(Comments.R, 10000);
-		g = currentNode.getInt(Comments.G, 30000);
-		b = currentNode.getInt(Comments.B, 10000);
+		r = currentNode.getInt(Comments.R, Comments.R_DEFAULT);
+		g = currentNode.getInt(Comments.G, Comments.G_DEFAULT);
+		b = currentNode.getInt(Comments.B, Comments.B_DEFAULT);
 		this.commentTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(Comments.WEIGHT, Weight.NORMAL.getValue());
 		this.commentTag.setWeight(Weight.intern(weight));
 		
-		// Type syntax highlighting
-		r = currentNode.getInt(Classes.R, 10000);
-		g = currentNode.getInt(Classes.G, 10000);
-		b = currentNode.getInt(Classes.B, 10000);
+		// class identifier highlighting
+		r = currentNode.getInt(Classes.R, Classes.R_DEFAULT);
+		g = currentNode.getInt(Classes.G, Classes.G_DEFAULT);
+		b = currentNode.getInt(Classes.B, Classes.B_DEFAULT);
 		this.classTag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
 		weight = currentNode.getInt(Classes.WEIGHT, Weight.BOLD.getValue());
 		this.classTag.setWeight(Weight.intern(weight));
 		
 		// Inlined tag background
-		r = currentNode.getInt(Inline.R, 65535);
-		g = currentNode.getInt(Inline.G, 65535);
-		b = currentNode.getInt(Inline.B, 0);
+		r = currentNode.getInt(Inline.R, Inline.R_DEFAULT);
+		g = currentNode.getInt(Inline.G, Inline.G_DEFAULT);
+		b = currentNode.getInt(Inline.B, Inline.B_DEFAULT);
 		this.inlinedTag.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 	}
 	
@@ -595,7 +593,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the literal
 	 */
 	public void addLiteral(int lineNum, int col, int length){
-		this.applyTag(LITERAL_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+length));
+		this.applyTag(KEYWORD_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+length));
 	}
 	
 	/**
@@ -605,7 +603,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the literal
 	 */
 	public void addLiteral(int offset, int length){
-		this.applyTag(LITERAL_TAG, this.getIter(offset), this.getIter(offset+length));
+		this.applyTag(KEYWORD_TAG, this.getIter(offset), this.getIter(offset+length));
 	}
 	
 	/**

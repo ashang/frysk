@@ -76,7 +76,7 @@ import frysk.gui.srcwin.PreferenceConstants.Text;
 
 public class PreferenceWindow implements ButtonListener{
 
-	/*
+	/*	
 	 * GLADE CONSTANTS
 	 */
 	// Path to and name of the glade file to use
@@ -283,54 +283,54 @@ public class PreferenceWindow implements ButtonListener{
 	
 	private void setupButtons(){
 		// Setup Colors
-		int r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.R, 0);
-		int g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.G, 0);
-		int b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.B, 0);
+		int r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.R, Text.R_DEFAULT);
+		int g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.G, Text.G_DEFAULT);
+		int b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.B, Text.B_DEFAULT);
 		ColorButton cb = (ColorButton) this.glade.getWidget(TEXT_COLOR);
 		cb.setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.R, 65535);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.G, 65535);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.B, 65535);
+		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.R, Background.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.G, Background.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.B, Background.B_DEFAULT);
 		cb = (ColorButton) this.glade.getWidget(BACKGROUND_COLOR);
 		cb.setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.R, 54741);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.G, 56283);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.B, 65535);
+		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.R, Margin.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.G, Margin.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.B, Margin.B_DEFAULT);
 		cb = (ColorButton) this.glade.getWidget(SIDEBAR_COLOR);
 		cb.setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.R, 0);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.G, 0);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.B, 0);
+		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.R, LineNumbers.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.G, LineNumbers.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.B, LineNumbers.B_DEFAULT);
 		cb = (ColorButton) this.glade.getWidget(LINE_NUM_COLOR);
 		cb.setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.R, 0);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.G, 0);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.B, 0);
+		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.R, ExecMarks.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.G, ExecMarks.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.B, ExecMarks.B_DEFAULT);
 		cb = (ColorButton) this.glade.getWidget(MARK_COLOR);
 		cb.setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.R, 30000);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.G, 65535);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.B, 30000);
+		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.R, CurrentLine.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.G, CurrentLine.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.B, CurrentLine.B_DEFAULT);
 		((ColorButton) this.glade.getWidget(CURRENT_LINE_COLOR)).setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.R, 30000);
-		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.G, 0);
-		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.B, 30000);
+		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.R, Keywords.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.G, Keywords.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.B, Keywords.B_DEFAULT);
 		((ColorButton) this.glade.getWidget(PreferenceWindow.KEYWORD_COLOR)).setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.R, 0);
-		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.G, 30000);
-		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.B, 0);
+		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.R, ID.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.G, ID.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.B, ID.B_DEFAULT);
 		((ColorButton) this.glade.getWidget(PreferenceWindow.ID_COLOR)).setColor(new Color(r,g,b));
 		
-		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.R, 0);
-		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.G, 0);
-		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.B, 65535);
+		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.R, Functions.R_DEFAULT);
+		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.G, Functions.G_DEFAULT);
+		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.B, Functions.B_DEFAULT);
 		((ColorButton) this.glade.getWidget(PreferenceWindow.FUNCTION_COLOR)).setColor(new Color(r,g,b));
 		
 		// Set the label text
