@@ -53,7 +53,6 @@ public class TestStopAndGo
     Task mainTask;
     Task thread1;
     Task thread2;
-    int pid;
     int taskCreatedCount;
     int taskDestroyedCount;
     int taskStopCount;
@@ -66,11 +65,16 @@ public class TestStopAndGo
     class ProcCreatedObserver
         implements Observer
     {
-	Task task;
+	int pid;
+	ProcCreatedObserver (int pid)
+	{
+	    this.pid = pid;
+	}
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
-	    pid = proc.id.hashCode ();
+	    if (proc.id.hashCode () != pid)
+		return;
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
@@ -175,15 +179,12 @@ public class TestStopAndGo
 
     public void testStopAndGo ()
     {
-        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
-
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);
+	Child child = new PidChild (pid);
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
 	Manager.host.requestAttachProc (new ProcId (pid));
                                                                                 
-        // Register child to be removed at end of test
-        registerChild (pid);
-
 	assertRunUntilStop ("XXX: run until?");
 
 	assertEquals ("Task created events received = 3", 3,

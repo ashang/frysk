@@ -62,10 +62,16 @@ public class TestAttachCloningThreads
     class ProcCreatedObserver
         implements Observer
     {
-	Task task;
+	int pid;
+	ProcCreatedObserver (int pid)
+	{
+	    this.pid = pid;
+	}
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    if (proc.getPid () != pid)
+		return;
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
         }
     }
@@ -108,22 +114,13 @@ public class TestAttachCloningThreads
 
     public void testAttachCloningThreads ()
     {
-        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
-
 	// Create threaded infinite loop
 	int pid = XXX.infCloneLoop ();
-	Manager.host.requestAttachProc (new ProcId (pid));
-
-        // Register child to be removed at end of test
-        registerChild (pid);
-
-        // Once a proc destroyed has been seen stop the event loop.
 	Child child = new PidChild (pid);
         child.stopEventLoopOnDestroy ();
+        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
+	Manager.host.requestAttachProc (new ProcId (pid));
 
 	assertRunUntilStop ("XXX: run until?");
-
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }

@@ -1,5 +1,11 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestAttachCloningThreads.java, TestGoAndGo.java,
+	TestPaused.java, TestStop.java, TestStopAndGo.java,
+	TestStopAndStop.java, TestUnpaused.java: Use TestLib .PidChild.
+	Parameterize ProcCreatedObserver with the process pid.  Delete
+	registerChild call, handled by PidChild.
+
 	* TestStep.java: Move PidChild call to ProcCreatedObserver, delete
 	global "pid".
 	* TestLib.java: In class Child, always register the pid.
