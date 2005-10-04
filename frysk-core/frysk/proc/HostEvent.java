@@ -50,82 +50,13 @@ import frysk.event.Event;
 abstract class HostEvent
     implements Event
 {
-    Host host;
-    protected HostEvent (Host host)
+    String name;
+    protected HostEvent (String name)
     {
-	this.host = host;
+	this.name = name;
     }
     public String toString ()
     {
-	return ("[HostEvent"
-		+ ",host" + host
-		+ "]");
+	return ("[HostEvent" + name + "]");
     }
-
-    /**
-     * Update the Host's state.
-     *
-     * Some of the Host's state is tracked synchronously (using
-     * attach) while the rest is tracked asynchronously (using polls).
-     * This requests that any polled state be refreshed.
-     */
-    static class RequestRefresh
-	extends HostEvent
-    {
-	boolean refreshAll;
-	RequestRefresh (Host host, boolean refreshAll)
-	{
-	    super (host);
-	    this.refreshAll = refreshAll;
-	}
-	public void execute ()
-	{
-	    host.state = host.state.process (host, this);
-	}
-    }
-
-    /**
-     * Request the creation of a running, but attached process on the
-     * host.
-     */
-    static class RequestCreateProc
-	extends HostEvent
-    {
-	String stdin;
-	String stdout;
-	String stderr;
-	String[] args;
-	RequestCreateProc (Host host, String stdin, String stdout,
-			   String stderr, String[] args)
-	{
-	    super (host);
-	    this.stdin = stdin;
-	    this.stdout = stdout;
-	    this.stderr = stderr;
-	    this.args = args;
-	}
-	public void execute ()
-	{
-	    host.state = host.state.process (host, this);
-	}
-    }
-
-    /**
-     * Request an attach to the specified process.
-     */
-    static class RequestAttachProc
-	extends HostEvent
-    {
-	ProcId id;
-	RequestAttachProc (Host host, ProcId id)
-	{
-	    super (host);
-	    this.id = id;
-	}
-	public void execute ()
-	{
-	    host.state = host.state.process (host, this);
-	}
-    }
-
 }

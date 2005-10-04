@@ -50,35 +50,37 @@ class HostState
     {
 	super (state);
     }
-    HostState process (Host host, HostEvent.RequestRefresh event)
+    HostState processRequestRefresh (Host host, boolean refreshAll)
     {
-	throw unhandled (host, event);
+	throw unhandled (host, "RequestRefresh");
     }
-    HostState process (Host host, HostEvent.RequestCreateProc event)
+    HostState processRequestCreateProc (Host host, String stdin,
+					String stdout, String stderr,
+					String[] args)
     {
-	throw unhandled (host, event);
+	throw unhandled (host, "RequestCreateProc");
     }
-    HostState process (Host host, HostEvent.RequestAttachProc event)
+    HostState processRequestAttachProc (Host host, ProcId id)
     {
-	throw unhandled (host, event);
+	throw unhandled (host, "RequestAttachProc");
     }
 
     static HostState running = new HostState ("running")
 	{
-	    HostState process (Host host, HostEvent.RequestRefresh event)
+	    HostState processRequestRefresh (Host host, boolean refreshAll)
 	    {
-		host.sendRefresh (event.refreshAll);
+		host.sendRefresh (refreshAll);
 		return running;
 	    }
-	    HostState process (Host host, HostEvent.RequestCreateProc event)
+	    HostState processRequestCreateProc (Host host, String stdin,
+						String stdout, String stderr,
+						String[] args)
 	    {
-		host.sendCreateProc (event.stdin, event.stdout, event.stderr,
-				     event.args);
+		host.sendCreateProc (stdin, stdout, stderr, args);
 		return running;
 	    }
-	    HostState process (Host host, HostEvent.RequestAttachProc event)
+	    HostState processRequestAttachProc (Host host, ProcId id)
 	    {
-		ProcId id = event.id;
 		Proc proc = host.getProc (id);
 		if (proc != null)
 		    // The process is already known, pass the request

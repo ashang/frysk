@@ -113,10 +113,17 @@ public abstract class Host
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
      */
-    public void requestRefresh (boolean refreshAll)
+    public void requestRefresh (final boolean refreshAllArg)
     {
-	Manager.eventLoop.appendEvent
-	    (new HostEvent.RequestRefresh (this, refreshAll));
+	Manager.eventLoop.appendEvent (new HostEvent ("RequestRefresh")
+	    {
+		boolean refreshAll = refreshAllArg;
+		public void execute ()
+		{
+		    state = state.processRequestRefresh (Host.this,
+							 refreshAll);
+		}
+	    });
     }
     /**
      * Request that the Host scan the system's process tables
@@ -131,13 +138,29 @@ public abstract class Host
      * Request that an attached, but running process be created on the
      * host.
      */
-    public void requestCreateProc (String stdin, String stdout,
-				   String stderr, String[] args)
+    public void requestCreateProc (final String stdinArg,
+				   final String stdoutArg,
+				   final String stderrArg,
+				   final String[] argsArg)
     {
-	Manager.eventLoop.appendEvent
-	    (new HostEvent.RequestCreateProc (this, stdin, stdout, stderr,
-					      args));
+	Manager.eventLoop.appendEvent (new HostEvent ("RequestCreateProc")
+	    {
+		String stdin = stdinArg;
+		String stdout = stdoutArg;
+		String stderr = stderrArg;
+		String[] args = argsArg;
+		public void execute ()
+		{
+		    state = state.processRequestCreateProc (Host.this,
+							    stdin, stdout,
+							    stderr, args);
+		}
+	    });
     }
+    /**
+     * Create a new process, stdin, stdout, and stderr are shared with
+     * this process.
+     */
     public final void requestCreateProc (String[] args)
     {
 	requestCreateProc (null, null, null, args);
@@ -146,10 +169,16 @@ public abstract class Host
     /**
      * Request that the process be attached.
      */
-    public void requestAttachProc (ProcId id)
+    public void requestAttachProc (final ProcId idArg)
     {
-	Manager.eventLoop.appendEvent
-	    (new HostEvent.RequestAttachProc (this, id));
+	Manager.eventLoop.appendEvent (new HostEvent ("RequestAttachProc")
+	    {
+		ProcId id = idArg;
+		public void execute ()
+		{
+		    state = state.processRequestAttachProc (Host.this, id);
+		}
+	    });
     }
 
     /**

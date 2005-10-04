@@ -1,3 +1,12 @@
+2005-10-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java: Create nested HostEvents.
+	* HostState.java: Replace existing "process" methods with
+	"processRequestRefresh", "processRequestCreateProc", and
+	"processRequestAttachProc".
+	* HostEvent.java: Delete RequestRefresh, RequestCreateProc, and
+	RequestAttachProc.
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTerminated.java, TestSyscallOpen.java, TestSyscall.java,
