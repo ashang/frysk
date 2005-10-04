@@ -1,3 +1,7 @@
+2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom.DOMImage.java: added back in accidentally deleted getElement method
+
 2005-10-04  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PreferenceConstants.java: Added default values for r,g,b triplets.

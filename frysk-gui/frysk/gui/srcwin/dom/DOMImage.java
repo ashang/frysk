@@ -93,4 +93,12 @@ public class DOMImage {
 		
 		return v.iterator();
 	}
+	
+	/**
+	 * This function should only be used internally within the frysk source dom
+	 * @return The JDom element at the core of this node
+	 */
+	protected Element getElement() {
+		return this.myElement;
+	}
 }
