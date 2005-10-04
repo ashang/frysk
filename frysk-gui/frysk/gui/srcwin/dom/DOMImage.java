@@ -21,9 +21,7 @@ public class DOMImage {
 	/**
 	 * name of the image
 	 */
-	public static final String NAME_ATTR = "name";
-	public static final String SOURCE_ATTR = "source";
-	public static final String PATH_ATTR = "path";
+	//public static final String NAME_ATTR = "name";
 	private Element myElement;
 	
 	/**
@@ -42,9 +40,9 @@ public class DOMImage {
 	 */
 	public boolean addSource(String source_name, String path) {
 		
-		Element sourceNameElement = new Element(SOURCE_ATTR);
-		sourceNameElement.setAttribute(NAME_ATTR, source_name);
-		sourceNameElement.setAttribute(PATH_ATTR, path);
+		Element sourceNameElement = new Element(DOMSource.SOURCE_NODE);
+		sourceNameElement.setAttribute(DOMSource.FILENAME_ATTR, source_name);
+		sourceNameElement.setAttribute(DOMSource.FILEPATH_ATTR, path);
 		this.myElement.addContent(sourceNameElement);
 		return true;
 	}
@@ -54,9 +52,17 @@ public class DOMImage {
 	 * @return The name of the image
 	 */
 	public String getName(){
-		return this.myElement.getAttributeValue(NAME_ATTR);
+		return this.myElement.getAttributeValue(DOMSource.FILENAME_ATTR);
 	}
 	
+	/**
+	 * Sets the CCPATH of the current image
+	 * @param image_name
+	 */
+	public void setCCPath(String image_name) {
+		this.myElement.setAttribute(CCPATH_ATTR, image_name);
+		return;
+	}
 	/**
 	 * 
 	 * @param name what the name of the image will be

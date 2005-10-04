@@ -66,7 +66,7 @@ public class DOMFrysk {
 		if (checkImageDup(image_name))
 			return false;
 		Element imageNameElement = new Element(IMAGE_ATTR);
-		imageNameElement.setAttribute(DOMImage.NAME_ATTR, image_name);
+		imageNameElement.setAttribute(DOMSource.FILENAME_ATTR, image_name);
 		imageNameElement.setAttribute(CCPATH_ATTR, CCPATH);
 		this.data.getRootElement().addContent(imageNameElement);
 		return true;
@@ -99,7 +99,7 @@ public class DOMFrysk {
 		while (i.hasNext()) {
 			Element elem = (Element) i.next(); 
 			if (elem.getQualifiedName().equals(IMAGE_ATTR)) {
-				if (elem.getAttributeValue(DOMImage.NAME_ATTR)
+				if (elem.getAttributeValue(DOMSource.FILENAME_ATTR)
 						.equals(image))
 					return true;
 			}
@@ -139,7 +139,7 @@ public class DOMFrysk {
 		while (i.hasNext()) {
 			Element elem = (Element) i.next();
 			if (elem.getQualifiedName().equals(IMAGE_ATTR)) {
-				if (elem.getAttributeValue(DOMImage.NAME_ATTR)
+				if (elem.getAttributeValue(DOMSource.FILENAME_ATTR)
 						.equals(name))
 					return new DOMImage(elem);
 			}

@@ -1,4 +1,13 @@
 2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+	* dom/DOMFrysk.java: standardize constant names with DOMSource
+	
+	* dom/DOMImage.java: ditto
+						 add setCCPath() method
+						 
+	* dom/DOMTestDOMFrysk.java: added test for set CCPath()
+						   made test output messages more uniform
+
+2005-10-04  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom.DOMImage.java: added back in accidentally deleted getElement method
 
