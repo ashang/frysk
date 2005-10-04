@@ -1,3 +1,9 @@
+2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMImage.java: added addSource() method
+	
+	* dom/DOMTestDOMFrysk.java: added tests for above
+
 2005-10-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* GladeConstants.java: Added.

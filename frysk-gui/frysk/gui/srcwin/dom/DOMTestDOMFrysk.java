@@ -91,6 +91,11 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("DOMGetImage test failed.");
 		}
+		if (testDOMImage.addSource("test_source", "/home/xyz")) {
+			System.out.println("DOMImage.addSource test passed.");
+		} else {
+			System.out.println("DOMImage.addsource test failed.");
+		}
 		
 	}
 }
