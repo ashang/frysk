@@ -176,21 +176,6 @@ public abstract class Host
     }
 
     /**
-     * Request that the process be attached.
-     */
-    public void requestAttachProc (final ProcId idArg)
-    {
-	Manager.eventLoop.appendEvent (new HostEvent ("RequestAttachProc")
-	    {
-		ProcId id = idArg;
-		public void execute ()
-		{
-		    state = state.processRequestAttachProc (Host.this, id);
-		}
-	    });
-    }
-
-    /**
      * A process has been added.  Possible reasons include a process
      * referesh, and a fork.
      *

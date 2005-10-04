@@ -1,5 +1,12 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java: Delete requestAttachProc.
+	* HostState.java: Update.
+	* TestUnpaused.java, TestStop.java, TestStopAndStop.java,
+	TestStopAndGo.java, TestPaused.java, TestGoAndGo.java,
+	TestAttachCloningThreads.java: Replace Host .requestAttachProc,
+	with Proc .requestAttach.
+	
 	* TestAttachCloningThreads.java, TestGoAndGo.java,
 	TestPaused.java, TestStop.java, TestStopAndGo.java,
 	TestStopAndStop.java, TestUnpaused.java: Use TestLib .PidChild.

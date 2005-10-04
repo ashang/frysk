@@ -60,10 +60,6 @@ class HostState
     {
 	throw unhandled (host, "PerformCreateAttachedProc");
     }
-    HostState processRequestAttachProc (Host host, ProcId id)
-    {
-	throw unhandled (host, "RequestAttachProc");
-    }
 
     static HostState running = new HostState ("running")
 	{
@@ -79,17 +75,6 @@ class HostState
 							String[] args)
 	    {
 		host.sendCreateAttachedProc (stdin, stdout, stderr, args);
-		return running;
-	    }
-	    HostState processRequestAttachProc (Host host, ProcId id)
-	    {
-		Proc proc = host.getProc (id);
-		if (proc != null)
-		    // The process is already known, pass the request
-		    // on.
-		    proc.requestAttachedContinue ();
-		else
-		    host.sendAttachProc (id);
 		return running;
 	    }
 	};

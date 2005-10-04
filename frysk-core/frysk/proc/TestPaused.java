@@ -193,7 +193,7 @@ public class TestPaused
 	int pid = XXX.infThreadLoop (2);
 	Child child = new PidChild (pid);
         Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
-	Manager.host.requestAttachProc (new ProcId (pid));
+	child.findProcUsingRefresh ().requestAttachedContinue ();
 
 	assertRunUntilStop ("XXX: run until?");
 

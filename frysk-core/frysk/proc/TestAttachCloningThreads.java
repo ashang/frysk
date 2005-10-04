@@ -119,8 +119,7 @@ public class TestAttachCloningThreads
 	Child child = new PidChild (pid);
         child.stopEventLoopOnDestroy ();
         Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
-	Manager.host.requestAttachProc (new ProcId (pid));
-
+	child.findProcUsingRefresh ().requestAttachedContinue ();
 	assertRunUntilStop ("XXX: run until?");
     }
 }
