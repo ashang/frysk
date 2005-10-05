@@ -1,7 +1,14 @@
-2005-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LogWidget.java: Added missing file.
+	* LogWindow.java: Removed.
+
+2005-10-05  Sami Wagiaalla  <swagiaal@redhat.com>	
+
 
 	* AllProcWidget.java : Removed all the fitlers code.
 	* WindowManager.java: Renamed LogWindow to LogWidget.
+	
 
 2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
 
