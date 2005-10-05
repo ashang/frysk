@@ -74,7 +74,11 @@ public class InlineViewer extends SourceViewWidget {
 		this.scope = current;
 		
 		if(showEllipsis){
-			Label l = new Label("...");
+			Label l = null;
+			if(this.scope.getDepth() > 2)
+				l = new Label(this.scope.getDepth()-1+" inlined scopes hidden...");
+			else
+				l = new Label(this.scope.getDepth()-1+" inlined scope hidden...");
 			l.setJustification(Justification.LEFT);
 			EventBox b1 = new EventBox();
 			b1.add(l);
@@ -106,6 +110,8 @@ public class InlineViewer extends SourceViewWidget {
 	public void setSubscopeAtCurrentLine(InlineViewer viewer){
 		super.setSubscopeAtCurrentLine(viewer);
 		
+		this.expanded = true;
+		
 		viewer.prevLevel = this;
 		this.nextLevel = viewer;
 	}
@@ -115,7 +121,7 @@ public class InlineViewer extends SourceViewWidget {
 			super.drawMargin();
 			return;
 		}
-			
+		
 		Window drawingArea = this.getWindow(TextWindowType.LEFT);
 		
 		// draw the background for the margin
@@ -173,14 +179,14 @@ public class InlineViewer extends SourceViewWidget {
 		
 		// If the refresh is starting after the current line, we have to add that offset in to
 		// make sure the gap in line numbers is maintained
-		if(expanded && firstLine > this.buf.getCurrentLine())
+		if(expanded && firstLine+1 > this.buf.getCurrentLine())
 			gapHeight = this.getLineYRange(this.getBuffer().getLineIter(this.buf.getCurrentLine()+1)).getHeight();
 		
 		boolean firstTime = true;
 		
 		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(false); i++){
 		
-			if(i > this.buf.getCurrentLine())
+			if(i+1 > this.buf.getCurrentLine())
 				drawingHeight = currentHeight + gapHeight;
 			else
 				drawingHeight = currentHeight;
