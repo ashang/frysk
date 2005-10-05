@@ -1,3 +1,7 @@
+2005-10-04  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Add border (4) to  GtkNoteBook.
+
 2005-10-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* common/dialogs/Dialog.java (Dialog): Remove for ecj 3.1 warnings.
