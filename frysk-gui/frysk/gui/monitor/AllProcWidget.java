@@ -54,8 +54,6 @@ import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.ComboBox;
-import org.gnu.gtk.Entry;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
@@ -70,8 +68,6 @@ import org.gnu.gtk.VPaned;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.KeyEvent;
-import org.gnu.gtk.event.KeyListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.SpinEvent;
@@ -94,16 +90,12 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	private TreeView procTreeView;
 	private TreeView threadTreeView;
 		
-	private ComboBox filterCombobox;
-	private Entry filterEntry;
-	private Button filterSetButton;
-	
 	private ProcDataModel psDataModel;
 	private VPaned vPane;
 	private TreeModelFilter procFilter;
 	private TreeModelFilter threadFilter;
 	
-	private VBox statusVbox;
+	private VBox statusWidget;
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	
 	private LibGlade glade;
@@ -121,11 +113,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		
 		this.vPane               = (VPaned)  glade.getWidget("vPane");
 		
-		this.filterCombobox      = (ComboBox)    glade.getWidget("filterComboBox");
-		this.filterEntry         = (Entry)       glade.getWidget("filterEntry");
-		this.filterSetButton     = (Button)      glade.getWidget("filterSetButton");
-	
-		this.statusVbox          = (VBox)        glade.getWidget("statusVbox");
+		this.statusWidget          = (VBox)        glade.getWidget("statusWidget");
 		
 		this.refreshButton.addListener(this);
 		this.refreshSpinButton.addListener(new SpinListener(){
@@ -153,26 +141,16 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 						data.setInfoWidget(new InfoWidget(data));
 					}
 					
-					Widget widgets[] = statusVbox.getChildren();
+					Widget widgets[] = statusWidget.getChildren();
 					for (int i = 0; i < widgets.length; i++) {
-						statusVbox.remove(widgets[i]);
+						statusWidget.remove(widgets[i]);
 					}
 					
-					statusVbox.add(data.getInfoWidget());
+					statusWidget.add(data.getInfoWidget());
 				}
 			}
 		});
 		this.procTreeView.setHeadersClickable(true);
-
-		this.filterEntry.addListener(new KeyListener(){
-			public boolean keyEvent(KeyEvent event) {
-				if(event.getKeyval() == 65293 && event.getType() == KeyEvent.Type.KEY_PRESSED){
-					setFilter();
-					refresh();
-				}
-				return false;
-			}
-		});
 		
 		this.procTreeView.addListener(new MouseListener(){
 
@@ -353,37 +331,8 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 			this.psDataModel.stopRefreshing();
 		}
 		
-		if(this.filterSetButton.equals(event.getSource())
-				&& event.getType() == ButtonEvent.Type.CLICK){
-			this.setFilter();
-		}
 	}
 	
-	private void setFilter() {
-		int active = this.filterCombobox.getActive();
-		switch(active){
-		
-		case 0:
-			this.psDataModel.setFilter(ProcDataModel.FilterType.NONE, 0);
-			break;
-		
-		case 1:
-			this.psDataModel.setFilter(ProcDataModel.FilterType.UID, Integer.parseInt(this.filterEntry.getText()));
-			break;
-		
-		case 2:
-			this.psDataModel.setFilter(ProcDataModel.FilterType.PID, Integer.parseInt(this.filterEntry.getText()));
-			break;
-		
-		case 3:
-			this.psDataModel.setFilter(ProcDataModel.FilterType.COMMAND, this.filterEntry.getText());
-			break;
-		
-		default:
-			return;
-		}
-	}
-
 	private void refresh(){
 		try {
 			this.psDataModel.refresh();

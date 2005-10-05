@@ -1,3 +1,8 @@
+2005-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* AllProcWidget.java : Removed all the fitlers code.
+	* WindowManager.java: Renamed LogWindow to LogWidget.
+
 2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* EventLogger.java (TaskExecRunnable): Change cast

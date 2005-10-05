@@ -196,9 +196,10 @@ public class ActionPool {
 	
 			public void execute(final ProcData data) {
                 System.out.println("sending data.getProc().requestDetachedContinue();");
-                data.getProc().observableDetachedContinue
-                                .addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
+                
+                data.getProc().observableDetachedContinue.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
                 data.getProc().observableDetachedContinue.addObserver(eventLog.detachedContinueObserver);
+                
   				data.getProc().requestDetachedContinue();
 			}
 	
@@ -229,6 +230,7 @@ public class ActionPool {
 		public void execute(final ProcData data) {
             data.getProc().observableAttachedStop.addObserver(eventLog.attachedStopObserver);
 			data.getProc().observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
+			
 			data.getProc().requestAttachedStop();
 		}
 
@@ -257,6 +259,7 @@ public class ActionPool {
 		public void execute(final ProcData data) {
             data.getProc().observableAttachedContinue.addObserver(eventLog.attachedResumeObserver);
             data.getProc().observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
+            
 			data.getProc().requestAttachedContinue();
 		}
 
@@ -315,6 +318,7 @@ public class ActionPool {
 			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
 			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
 			data.getProc().taskExeced.addObserver(taskExecObserver);
+			
 			data.add(taskExecObserver);
 		}
 

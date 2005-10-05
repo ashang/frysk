@@ -1,3 +1,7 @@
+2005-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Removed LogWindow and imbedded it in procpop.
+
 2005-10-04  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Add border (4) to  GtkNoteBook.

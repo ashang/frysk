@@ -60,7 +60,7 @@ public class WindowManager implements Saveable{
 	 * Public instances of the windows
 	 * {*/
 	public MainWindow mainWindow;
-	public LogWindow logWindow;
+	public LogWidget logWindow;
 	/**}*/
 	
 	public WindowManager(){
@@ -71,7 +71,7 @@ public class WindowManager implements Saveable{
 		this.mainWindow = new MainWindow(glade);
 		this.mainWindow.showAll();
 		
-		this.logWindow = new LogWindow(glade);
+		this.logWindow = new LogWidget(glade);
 		this.logWindow.showAll();
 	}
 
