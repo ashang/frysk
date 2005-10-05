@@ -2,8 +2,7 @@
 <html>
 <head>
 <title>Frysk Page</title>
-<link rel="stylesheet" type="text/css"
- href="/frysk/mainstyle.css"/ >
+<link rel="stylesheet" type="text/css" href="mainstyle.css"/ >
 </head>
 
 <body>
@@ -14,19 +13,27 @@
 
 <h1>Overview</h1>
 
-<p>The Frysk project aims to produce a Execution Analysis Tool that
-lets linux application developers and system administrators take a
-deeper look at their running applications.  We aim to both focus on
-and exploit the capability of a pure open-source Linux Environments.
+<p>
+
+The <em>frysk</em> project aims to produce a Execution Analysis Tool
+that lets linux application developers and system administrators take
+a deeper look at their running system.  We aim to both focus on, and
+exploit, the capability of a pure open-source Linux Environments.
+
 </p>
 
-<h1>Get involved</h1>
+<h1>Get Involved</h1>
 
-<h2>Mailing Lists</h2>
 
-<p>Current project members include Red Hat.  Sign up to the <a
-href="http://sources.redhat.com//ml/frysk/">public mailing list</a> by
-filling in your e-mail address and submitting this form:
+<dl>
+
+<dt><strong>Subscribe to the mailing list</strong></dt>
+
+<dd>
+
+Sign up to the <a href="http://sources.redhat.com/ml/frysk/">public
+mailing list</a> by filling in your e-mail address and submitting this
+form:
 
 <blockquote>
 <form method="get" action="http://sources.redhat.com/cgi-bin/ml-request">
@@ -49,34 +56,81 @@ filling in your e-mail address and submitting this form:
 </form>
 </blockquote>
 
-<h2>Source Code</h2>
+</dd>
 
-Standard sourceware-style CVS service is also available:
-</p>
+<dt><strong>Get the source code</strong></dt>
+
+<dd>
+
+The <em>frysk</em> source code is made freely available using the
+standard sourceware-style services.
+
+<dl>
+
+<dt>Anonymous CVS</dt>
+
+<dd>
+
+First login to the CVS server as anonymous:
 
 <pre>
 cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk login
-{enter "anoncvs" as the password}
+</pre>
+{enter "anoncvs" as the password}<br>
+The list of modules can then be listed with.
+<pre>
 cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co -c
 </pre>
 
-Browse the CVS repository <a
+More details on how to download and build <em>frysk</em> can be found
+<a href="build/">here</a>.
+
+</dd>
+
+<dt>Web CVS</dt>
+
+<dd>
+
+The <em>frysk</em> sources can be browsed using <a
 href="http://sources.redhat.com/cgi-bin/cvsweb.cgi/?cvsroot=frysk">using
-cvsweb</a>.<p>
+cvsweb</a>.
 
-Monitor CVS commits using the <a
+</dd>
+
+<dt>Monitor CVS commits</dt>
+
+<dd>
+
+CVS commits can be monitored by subscribing to the <a
 href="http://sources.redhat.com/ml/frysk-cvs/">frysk-cvs</a> mailing
-list.<p>
+list.
 
-Request CVS write access using <a
+</dd>
+
+<dt>CVS write access</dt>
+
+<dd>
+
+People needing CVS write access can request it using <a
 href="http://sources.redhat.com/cgi-bin/pdw/ps_form.cgi">this handy
 dandy little form</a>.<p>
 
-<h2>Bug Reports</h2>
+</dd>
+
+</dl>
+
+More details on how to download and build <em>frysk</em> can be found
+<a href="build/">here</a>.
+
+<dt><strong>Report Problems</strong></dt>
+
+<dd>
 
 FRYSK's bugs and progress are tracked using <a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED">
 Bugzilla</a>.
+
+</dd>
 
 <h1>Building Frysk</h1>
 
@@ -84,10 +138,20 @@ To build frysk follow these <a href="build/">instructions</a>.
 
 <h1>Documentation</h1>
 
-FRYSK's internals are built from the source using javadoc, and can be
-built using <code>make javadoc</code>.  An occasionally updated <a
-href="javadoc/">snapshot</a> of the documentation is also available
-online.
+<dl>
+
+<dt><strong>Internals</strong></dt>
+
+<dd>
+
+<em>Frysk's</em> internal documentation is built from the source using
+javadoc (use the command <code>make javadoc</code>).  In addition, an
+occasionally updated <a href="javadoc/">snapshot</a> of the
+documentation is available online.
+
+</dd>
+
+</dl>
 
 </div>
 
