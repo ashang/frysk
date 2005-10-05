@@ -11,6 +11,8 @@
 	(setSubscopeAtCurrentLine): Now sets expanded to be true
 	(drawMargin): Fixed off by one error when ellipsis were shown.
 
+	* PCLocation.java (getDepth): Added.
+
 2005-10-05  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFrysk.java: moved printDOM method to DOMTestDOMFrysk

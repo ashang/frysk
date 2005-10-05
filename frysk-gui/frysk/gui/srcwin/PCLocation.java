@@ -64,4 +64,8 @@ public class PCLocation {
 		this.setNextScope(next);
 		next.setPrevScope(this);
 	}
+
+	public int getDepth() {
+		return depth;
+	}
 }
