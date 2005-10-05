@@ -46,7 +46,10 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
 import frysk.proc.Proc;
+import frysk.proc.TaskEvent;
+
 
 /**
  * @author pmuldoon
@@ -88,7 +91,8 @@ public class EventLogger implements Observer {
         public DetachedContinueObserver detachedContinueObserver;
         public AttachedStopObserver attachedStopObserver;
         public AttachedResumeObserver attachedResumeObserver;
-        public TaskExecObserver taskExecObserver; 
+        public EventTaskExecObserver eventTaskExecObserver; 
+        public EventTaskExitingObserver eventTaskExitingObserver;
         /** }*/
         
         public EventLogger()
@@ -97,7 +101,8 @@ public class EventLogger implements Observer {
                 this.detachedContinueObserver = new DetachedContinueObserver();
                 this.attachedStopObserver = new AttachedStopObserver();
                 this.attachedResumeObserver = new AttachedResumeObserver();
-                this.taskExecObserver = new TaskExecObserver();
+                this.eventTaskExecObserver = new EventTaskExecObserver();
+                this.eventTaskExitingObserver = new EventTaskExitingObserver();
                 
                 eventLogFile = Logger.getLogger(EVENT_LOG_ID);
                 eventLogFile.addHandler(buildHandler());
@@ -153,21 +158,22 @@ public class EventLogger implements Observer {
         class AttachedResumeObserver implements Observer{
             public void update(Observable arg0, Object arg1) {
                 eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Resumed");
+            }
         }
             
         // Proc action observers
             
-        class TaskExecObserver implements Observer {
+        class EventTaskExecObserver implements Observer {
             public void update(Observable arg0, Object arg1) {
-            	System.out.println("Process Exec is " + arg1);
-                eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Execed");
+                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)arg1).getTask().getPid() +" Host XXX Execed");
+            }
         }
-
+            
+        class EventTaskExitingObserver implements Observer {
+            public void update(Observable arg0, Object arg1) {
+                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)arg1).getTask().getPid() +" Host XXX Exiting");
+            }
         }
-        // Task observers
-    }
-        
-                
 }
         
 

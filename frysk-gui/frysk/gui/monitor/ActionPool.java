@@ -227,7 +227,6 @@ public class ActionPool {
             data.getProc().observableAttachedStop.addObserver(eventLog.attachedStopObserver);
 			data.getProc().observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
 			data.getProc().requestAttachedStop();
-			System.out.println("sending proc.requestAttachedStop() for " + data.getProc());
 		}
 
 		public void execute(TaskData data) {
@@ -256,7 +255,6 @@ public class ActionPool {
             data.getProc().observableAttachedContinue.addObserver(eventLog.attachedResumeObserver);
             data.getProc().observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
 			data.getProc().requestAttachedContinue();
-			System.out.println("sending proc.requestAttachedContinue() for " + data.getProc());
 		}
 
 		public void execute(TaskData data) {
@@ -312,7 +310,7 @@ public class ActionPool {
 			TaskExecObserver taskExecObserver = new TaskExecObserver();
 
 			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
+			data.getProc().taskExeced.addObserver(eventLog.eventTaskExecObserver);
 			data.getProc().taskExeced.addObserver(taskExecObserver);
 			data.add(taskExecObserver);
 		}
@@ -323,7 +321,7 @@ public class ActionPool {
 
 		public void removeObservers(ProcData data) {
 			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.deleteObserver(eventLog);
+			data.getProc().taskExeced.deleteObserver(eventLog.eventTaskExecObserver);
 		}
 
 		public void removeObservers(TaskData data) {
@@ -343,7 +341,7 @@ public class ActionPool {
 			TaskExitingObserver taskExitingObserver = new TaskExitingObserver();
 
 			data.getProc().taskExiting.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExiting.addObserver(eventLog);
+			data.getProc().taskExiting.addObserver(eventLog.eventTaskExitingObserver);
 			data.getProc().taskExiting.addObserver(taskExitingObserver);
 
 			data.add(taskExitingObserver);
@@ -356,6 +354,7 @@ public class ActionPool {
 
 		public void removeObservers(ProcData data) {
 			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
+			data.getProc().taskExiting.deleteObserver(eventLog.eventTaskExitingObserver);
 			data.getProc().taskExiting.deleteObserver(eventLog);
 		}
 
