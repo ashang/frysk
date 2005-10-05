@@ -1,3 +1,10 @@
+2005-10-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: For ProcCounter, replace numberAdded and
+	numberRemoved with getAdjustNumberAdded and
+	getAdustedNumberRemoved.  Add getAdjustedHostProcPoolSize.
+	* TestRun.java, TestFork.java: Update.
+	
 2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* TaskEvent.java: Change class scope to public.

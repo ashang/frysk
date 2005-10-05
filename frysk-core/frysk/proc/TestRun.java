@@ -70,14 +70,14 @@ public class TestRun
 	assertRunUntilStop ("run \"rm\" to exit");
 
 	assertEquals ("One process created",
-		      1, procCounter.numberAdded ());
+		      1, procCounter.getAdjustedNumberAdded ());
 	assertEquals ("One process destroyed",
-		      1, procCounter.numberRemoved ());
+		      1, procCounter.getAdjustedNumberRemoved ());
 	assertFalse ("The file no longer exists",
 		     tmpFile.stillExists ());
 	assertEquals ("The MANAGER dropped the sole TASK",
 		      0, Manager.host.taskPool.size ());
 	assertEquals ("The MANAGER has no processes",
-		      0, Manager.host.procPool.size ());
+		      0, procCounter.getAdjustedHostProcPoolSize ());
     }
 }

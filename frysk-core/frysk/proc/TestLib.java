@@ -564,21 +564,41 @@ public class TestLib
     protected class ProcCounter
 	implements Cloneable
     {
+	// Base count.
 	LinkedList added = new LinkedList ();
-	int numberAdded ()
+	private int baseAdded;
+	/**
+	 * Get the number of procs added (adjusted for the number
+	 * added by getSelf).
+	 */
+	int getAdjustedNumberAdded ()
 	{
-	    return added.size ();
+	    return added.size () - baseAdded;
 	}
 	LinkedList removed = new LinkedList ();
-	int numberRemoved ()
+	private int baseRemoved;
+	/**
+	 * Return the number of Procs removed (adjusted for the number
+	 * of procs created by getSelf).
+	 */
+	int getAdjustedNumberRemoved ()
 	{
-	    return removed.size ();
+	    return removed.size () - baseRemoved;
+	}
+	/**
+	 * Return the size of the Host's ProcPool (adjusted for the
+	 * number of procs created by getSelf).
+	 */
+	int getAdjustedHostProcPoolSize ()
+	{
+	    return Manager.host.procPool.size () - (baseAdded - baseRemoved);
 	}
 	/**
 	 * Create a new ProcCounter.
 	 */
 	ProcCounter ()
 	{
+	    // Set up observers to count proc add and delete events.
 	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
@@ -586,7 +606,7 @@ public class TestLib
 			Proc proc = (Proc) obj;
 			added.add (proc);
 			// Need to tell system that you want to track
-			// fork events.
+			// clone events.
 			proc.observableTaskAdded.addObserver (new Observer () {
 				public void update (Observable o, Object obj)
 				{
@@ -604,6 +624,11 @@ public class TestLib
 			removed.add (proc);
 		    }
 		});
+	    // How force a getSelf () which creates a number of
+	    // add/deletes, and then save that.
+	    Manager.host.getSelf ();
+	    baseAdded = getAdjustedNumberAdded ();
+	    baseRemoved = getAdjustedNumberRemoved ();
 	}
 	/**
 	 * Return a copy of the ProcCounter.  The copy will not be

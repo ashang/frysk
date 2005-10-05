@@ -69,8 +69,8 @@ public class TestFork
 	Fibonacci fib = new Fibonacci (n);
 
 	assertEquals ("Proc's created matches fib.callCount",
-		      fib.callCount, procCounter.numberAdded ());
+		      fib.callCount, procCounter.getAdjustedNumberAdded ());
 	assertEquals ("Proc's destroyed matches fib.callCount",
-		      fib.callCount, procCounter.numberRemoved ());
+		      fib.callCount, procCounter.getAdjustedNumberRemoved ());
     }
 }
