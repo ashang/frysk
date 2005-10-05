@@ -1,5 +1,6 @@
 2005-10-04  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* InfoWidget.java (InfoWidget): Set BorderWidth to 4.
 	* ActionPool.java (AddExecObserver.execute): 
 	Added EventLogger observer
 	* EventFormatter.java (format): Added.

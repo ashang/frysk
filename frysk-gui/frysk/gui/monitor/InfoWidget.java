@@ -18,6 +18,7 @@ public class InfoWidget extends Notebook {
 		
 		//Window myWindow = this.getWindow();
 		
+		this.setBorderWidth(4);
 		this.notifyUser = new Observable();
 		//========================================
 		NotifyingLabel statusWidgetLabel = new NotifyingLabel("Status");
