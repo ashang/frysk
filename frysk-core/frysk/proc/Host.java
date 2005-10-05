@@ -199,4 +199,14 @@ public abstract class Host
      * found on this host.
      */
     public abstract Proc getSelf ();
+
+    /**
+     * Print this.
+     */
+    public String toString ()
+    {
+	return ("{" + super.toString ()
+		+ ",state=" + state
+		+ "}");
+    }
 }

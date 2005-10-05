@@ -1,5 +1,8 @@
 2005-10-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java, Task.java, Proc.java: Include the super's name in
+	toString.
+	
 	* Proc.java, LinuxProc.java: Rationalize constructor methods.
 	* LinuxHost.java: Update.
 	

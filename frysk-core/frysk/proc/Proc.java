@@ -369,9 +369,9 @@ public abstract class Proc
 
     public String toString ()
     {
-	return ("[Proc"
+	return ("{" + super.toString ()
 		+ ",id=" + id
 		+ ",state=" + state
-		+ "]");
+		+ "}");
     }
 }

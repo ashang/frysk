@@ -289,10 +289,10 @@ abstract public class Task
 
     public String toString ()
     {
-	return "[Task"
-	    + ",id=" + id
-	    + ",proc=" + proc
-	    + ",state=" + state
-	    + "]";
+	return ("{" + super.toString ()
+		+ ",id=" + id
+		+ ",proc=" + proc
+		+ ",state=" + state
+		+ "}");
     }
 }
