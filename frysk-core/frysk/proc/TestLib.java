@@ -805,10 +805,11 @@ public class TestLib
 		{
 		    public void update (Observable o, Object obj)
 		    {
-			Proc process = (Proc) obj;
-			if (process.parent == null) {
-			    Manager.eventLoop.requestStop ();
-			}
+			Proc proc = (Proc) obj;
+			if (proc.parent != null
+			    && proc.parent != proc.host.getSelf ())
+			    return;
+			Manager.eventLoop.requestStop ();
 		    }
 		});
 	}

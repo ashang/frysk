@@ -1,5 +1,10 @@
 2005-10-05  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: For StopEventLoopOnProcDestroy, check that the
+	proc is a child of frysk using getSelf.
+	* TestExiting.java, TestTerminated.java: Ditto for
+	ProcCreatedObserver.
+	
 	* TestLib.java: For ProcCounter, replace numberAdded and
 	numberRemoved with getAdjustNumberAdded and
 	getAdustedNumberRemoved.  Add getAdjustedHostProcPoolSize.

@@ -69,6 +69,11 @@ public class TestTerminated
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    // XXX: Could instead just add the observer to
+	    // Host.getSelf.
+	    if (proc.parent != null
+		&& proc.parent != proc.host.getSelf ())
+		return;
 	    registerChild (proc.getId ().hashCode ());
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    proc.taskDestroyed.addObserver (new TaskDestroyedObserver ());
