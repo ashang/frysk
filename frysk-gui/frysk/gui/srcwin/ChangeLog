@@ -1,4 +1,15 @@
+2005-10-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMFrysk.java: moved printDOM method to DOMTestDOMFrysk
+						 removed uneeded imports and variable for above
+						 
+	* dom/DOMImage.java: added addInlineFunction method
+	
+	* dom/DOMTestDOMFrysk.java: added tests for addInlineFunction
+								added printDOM method from DOMFrysk.java
+
 2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMFrysk.java: standardize constant names with DOMSource
 	
 	* dom/DOMImage.java: ditto

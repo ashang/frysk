@@ -19,9 +19,13 @@ public class DOMImage {
 	 */
 	public static final String CCPATH_ATTR = "CCPATH";
 	/**
-	 * name of the image
+	 * name of the inline element
 	 */
-	//public static final String NAME_ATTR = "name";
+	public static final String INLINE_NODE = "inline";
+	
+	public static final String INLINENAME_ATTR = "inlinename";
+	public static final String LINENO_ATTR = "line_no";
+	public static final String LINENO = "index";
 	private Element myElement;
 	
 	/**
@@ -47,6 +51,24 @@ public class DOMImage {
 		return true;
 	}
 	
+	/**
+	 * adds an inline function to an image
+	 * @param name of the inline function
+	 * @param an array of Strings containing the lines in the function
+	 */
+	public boolean addInlineFunction(String inline_name, String[] lines) {
+		
+		Element inlineNameElement = new Element(INLINE_NODE);
+		inlineNameElement.setAttribute(INLINENAME_ATTR, inline_name);
+		this.myElement.addContent(inlineNameElement);
+		for (int i=0; i<lines.length; i++) {
+			Element lineNumber = new Element(LINENO_ATTR);
+			lineNumber.setAttribute(LINENO, String.valueOf(i+1));
+			lineNumber.setText(lines[i]);
+			inlineNameElement.addContent(lineNumber);
+		}
+		return true;
+	}
 	
 	/**
 	 * @return The name of the image

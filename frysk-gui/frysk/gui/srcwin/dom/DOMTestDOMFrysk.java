@@ -8,6 +8,8 @@ import frysk.gui.srcwin.dom.DOMFrysk;
 import java.math.BigInteger;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 public class DOMTestDOMFrysk {
 	private static BigInteger pc;
@@ -17,13 +19,15 @@ public class DOMTestDOMFrysk {
 	private static Document data = new Document(root);
 
 	private static DOMFrysk dom = new DOMFrysk(data);
+	
+	private static String[] func1_lines = { "testfunc() {", "x=y", "int i =x", "}" }; 
 
 	public static void main(String[] args) {
 
 		testDOMFrysk();
 		testDOMImage();
 		System.out.println("\n\n");
-		dom.printDOM();
+		printDOM();
 	}
 
 	public static void testDOMFrysk() {
@@ -103,6 +107,24 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMImage.setCCPath");
 		}
+		if (testDOMImage.addInlineFunction("func1", func1_lines)) {
+			System.out.println("passed...DOMImage.addInlineFunction...first one");
+		} else {
+			System.out.println("failed...DOMImage.addInlineFunction...first one");
+		}
 
+	}
+	
+	/**
+	 * Print out the DOM in XML format
+	 */
+	public static void printDOM() {
+			try {
+				XMLOutputter outputter = new XMLOutputter(Format
+						.getPrettyFormat());
+				outputter.output(data, System.out);
+			} catch (java.io.IOException e) {
+				e.printStackTrace();
+			}
 	}
 }

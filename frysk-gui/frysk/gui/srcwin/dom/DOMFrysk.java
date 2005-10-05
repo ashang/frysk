@@ -5,8 +5,6 @@ import java.util.Vector;
 import java.math.BigInteger;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
-import org.jdom.output.Format;
 
 /**
  * DOMFrysk serves as an access point to the document object model for the frysk
@@ -16,7 +14,6 @@ import org.jdom.output.Format;
  */
 
 public class DOMFrysk {
-	private static final boolean debug = true;
 
 	/**
 	 * The pid of the process this DOM represents
@@ -179,21 +176,6 @@ public class DOMFrysk {
 	public void setPC(BigInteger pc) {
 		this.data.getRootElement().getChild(PC_ATTR).setAttribute(value,
 				pc.toString());
-	}
-
-	/**
-	 * Print out the DOM in XML format
-	 */
-	public void printDOM() {
-		if (debug) {
-			try {
-				XMLOutputter outputter = new XMLOutputter(Format
-						.getPrettyFormat());
-				outputter.output(this.data, System.out);
-			} catch (java.io.IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	/**
