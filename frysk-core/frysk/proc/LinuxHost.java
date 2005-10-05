@@ -44,6 +44,7 @@ import frysk.event.SignalEvent;
 import frysk.sys.Ptrace;
 import frysk.sys.Wait;
 import frysk.sys.Sig;
+import frysk.sys.Pid;
 import java.util.Iterator;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -73,45 +74,59 @@ public class LinuxHost
      * Either add or update a process, however, before doing that
      * determine the parent and ensure that it has been updated.
      */
-    private Proc updateProc (ProcId procId, List added,
-			     HashMap removed)
+    private class ProcChanges
     {
-	Proc proc = (Proc) procPool.get (procId);
-	if (proc == null) {
-	    // New process, first add its parent to the procPool (if
-	    // it hasn't been added already).
-	    LinuxProc.Stat stat = new LinuxProc.Stat (procId);
-	    Proc parent = null;
-	    if (stat.ppid != 0) {
-		ProcId parentId = new ProcId (stat.ppid);
-		parent = (Proc) procPool.get (parentId);
-		if (parent == null && stat.ppid != 0)
-		    parent = updateProc (parentId, added, removed);
-	    }
-	    // .. and then add this process.
-	    proc = new LinuxProc (this, parent, procId, stat);
-	    added.add (proc);
-	}
-	else if (removed.get (procId) != null) {
-	    // An existing process that hasn't yet been updated.
-	    // Still need to check that it's parent didn't changed
-	    // (assuming there is one).
-	    LinuxProc.Stat stat = new LinuxProc.Stat (procId);
-	    if (stat.ppid > 0) {
-		Proc oldParent = proc.getParent ();
-		if (oldParent.getPid () != stat.ppid) {
-		    // Transfer ownership
-		    Proc newParent =  updateProc (new ProcId (stat.ppid),
-						  added, removed);
-		    oldParent.remove (proc);
-		    proc.parent = newParent;
-		    newParent.add (proc);
+	/**
+	 * ADDED accumulates all the tasks added as things are
+	 * updated.  */
+	List added = new LinkedList ();
+	/**
+	 * REMOVED starts with the full list of processes and then
+	 * works backwards removing any that are processed, by the end
+	 * it contains processes that no longer exist.
+	 */ 
+	HashMap removed = (HashMap) ((HashMap)procPool).clone ();
+	/**
+	 * Update PROCID, either adding it 
+	 */
+	Proc update (ProcId procId)
+	{
+	    Proc proc = (Proc) procPool.get (procId);
+	    if (proc == null) {
+		// New process, first add its parent to the procPool
+		// (if it hasn't been added already).
+		LinuxProc.Stat stat = new LinuxProc.Stat (procId);
+		Proc parent = null;
+		if (stat.ppid != 0) {
+		    ProcId parentId = new ProcId (stat.ppid);
+		    parent = (Proc) procPool.get (parentId);
+		    if (parent == null && stat.ppid != 0)
+			parent = update (parentId);
 		}
+		// .. and then add this process.
+		proc = new LinuxProc (LinuxHost.this, parent, procId, stat);
+		added.add (proc);
 	    }
-	    removed.remove (procId);
+	    else if (removed.get (procId) != null) {
+		// An existing process that hasn't yet been updated.
+		// Still need to check that it's parent didn't changed
+		// (assuming there is one).
+		LinuxProc.Stat stat = new LinuxProc.Stat (procId);
+		if (stat.ppid > 0) {
+		    Proc oldParent = proc.getParent ();
+		    if (oldParent.getPid () != stat.ppid) {
+			// Transfer ownership
+			Proc newParent =  update (new ProcId (stat.ppid));
+			oldParent.remove (proc);
+			proc.parent = newParent;
+			newParent.add (proc);
+		    }
+		}
+		removed.remove (procId);
+	    }
+	    return proc;
 	}
-	return proc;
-   }
+    }
 
     void sendRefresh (boolean refreshAll)
     {
@@ -127,19 +142,16 @@ public class LinuxHost
 			    && Character.isDigit (name.charAt (0)));
 		}
 	    });
-	// Compare this against the existing procPool.  ADDED
-	// accumulates any processes added to the procPool.  REMOVED,
-	// starting with all known processes has any existing
-	// processes removed, so that by the end it contains a set of
-	// removed processes.
-	List added = new LinkedList ();
-	HashMap removed = (HashMap) ((HashMap)procPool).clone ();
+	// Compare PROCS against the existing procPool.  Accumuldate
+	// both a list of ADDED and REMOVED processes (for the latter
+	// it is computed by starting with a set of all processes and
+	// then remove the processes still present).
+	ProcChanges procChanges = new ProcChanges ();
 	for (int i = 0; i < pids.length; i++) {
-	    updateProc (new ProcId (Integer.parseInt (pids[i])),
-			added, removed);
+	    procChanges.update (new ProcId (Integer.parseInt (pids[i])));
 	}
 	if (refreshAll) {
-	    // Update individual process.
+	    // Changes individual process.
 	    for (Iterator i = procPool.values ().iterator(); i.hasNext (); ) {
 		LinuxProc proc = (LinuxProc) i.next ();
 		proc.sendRefresh ();
@@ -147,7 +159,8 @@ public class LinuxHost
 	}
 	// Tell each process that no longer exists that it has been
 	// destroyed.
-	for (Iterator i = removed.values().iterator(); i.hasNext();) {
+	for (Iterator i = procChanges.removed.values().iterator();
+	     i.hasNext();) {
 	    Proc proc = (Proc) i.next ();
 	    // XXX: Should there be a ProcEvent.schedule(), instead of
 	    // Manager .eventLoop .appendEvent for injecting the event
@@ -259,4 +272,14 @@ public class LinuxHost
 	    Wait.waitAllNoHang (waitObserver);
 	}
     }
+
+    public Proc getSelf ()
+    {
+	if (self == null) {
+	    ProcChanges procChanges = new ProcChanges ();
+	    self = procChanges.update (new ProcId (Pid.get ()));
+	}
+	return self;
+    }
+    private Proc self;
 }

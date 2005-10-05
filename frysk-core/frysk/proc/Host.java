@@ -47,7 +47,8 @@ import java.util.Iterator;
 /**
  * A host machine.
  *
- * A HOST has processes which contain threads.
+ * A HOST has processes which contain threads.  A HOST also has a
+ * process that is running this code - frysk is self aware.
  */
 
 public abstract class Host
@@ -192,4 +193,10 @@ public abstract class Host
      * Should more formally define the observable and the event.
      */
     public ProcObservable observableProcRemoved = new ProcObservable ();
+
+    /**
+     * Return the process corresponding to this running frysk instance
+     * found on this host.
+     */
+    public abstract Proc getSelf ();
 }

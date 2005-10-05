@@ -1,5 +1,10 @@
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestHostGet.java: New.
+	* Host.java: Add getSelf.
+	* LinuxHost.java: Implement getSelf.  Refactor updateProc into
+	ProcChanges.
+
 	* LinuxHost.java, Host.java: Delete sendAttachProc.
 	
 	* Host.java: Delete requestAttachProc.
