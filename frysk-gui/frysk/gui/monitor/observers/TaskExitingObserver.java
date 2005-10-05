@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package frysk.gui.monitor;
+package frysk.gui.monitor.observers;
 
 public class TaskExitingObserver extends ObserverRoot {
 

@@ -1,4 +1,4 @@
-package frysk.gui.monitor;
+package frysk.gui.monitor.observers;
 
 /**
  * Added to observe Exec events.

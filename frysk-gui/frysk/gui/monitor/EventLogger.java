@@ -47,6 +47,14 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import frysk.gui.monitor.observers.AttachedContinueObserver;
+import frysk.gui.monitor.observers.AttachedResumeObserver;
+import frysk.gui.monitor.observers.AttachedStopObserver;
+import frysk.gui.monitor.observers.DetachedContinueObserver;
+import frysk.gui.monitor.observers.ObserverRunnable;
+import frysk.gui.monitor.observers.TaskExecObserver;
+import frysk.gui.monitor.observers.TaskExitingObserver;
+
 import frysk.proc.Proc;
 import frysk.proc.TaskEvent;
 
@@ -89,20 +97,31 @@ public class EventLogger implements Observer {
          * */
         public AttachedContinueObserver attachedContinueObserver;
         public DetachedContinueObserver detachedContinueObserver;
-        public AttachedStopObserver attachedStopObserver;
-        public AttachedResumeObserver attachedResumeObserver;
-        public EventTaskExecObserver eventTaskExecObserver; 
-        public EventTaskExitingObserver eventTaskExitingObserver;
+        public AttachedStopObserver     attachedStopObserver;
+        public AttachedResumeObserver   attachedResumeObserver;
+        public TaskExecObserver         taskExecObserver; 
+        public TaskExitingObserver      taskExitingObserver;
         /** }*/
         
         public EventLogger()
         {
                 this.attachedContinueObserver = new AttachedContinueObserver();
+                this.attachedContinueObserver.addRunnable(new AttachedContinueRunnable());
+                
                 this.detachedContinueObserver = new DetachedContinueObserver();
+                this.detachedContinueObserver.addRunnable(new DetachedContinueRunnable());
+                
                 this.attachedStopObserver = new AttachedStopObserver();
+                this.attachedStopObserver.addRunnable(new AttachedStopRunnable());
+                
                 this.attachedResumeObserver = new AttachedResumeObserver();
-                this.eventTaskExecObserver = new EventTaskExecObserver();
-                this.eventTaskExitingObserver = new EventTaskExitingObserver();
+                this.attachedResumeObserver.addRunnable(new AttachedResumeRunnable());
+             
+                this.taskExecObserver = new TaskExecObserver();
+                this.taskExecObserver.addRunnable(new TaskExecRunnable());
+
+                this.taskExitingObserver = new TaskExitingObserver();
+                this.taskExitingObserver.addRunnable(new TaskExitingRunnable());
                 
                 eventLogFile = Logger.getLogger(EVENT_LOG_ID);
                 eventLogFile.addHandler(buildHandler());
@@ -137,43 +156,47 @@ public class EventLogger implements Observer {
         
         // Attach/Detach/Stop/Resume Observers
         
-        class AttachedContinueObserver implements Observer{
-                public void update(Observable arg0, Object arg1) {
-                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Attached ");
-                }
+        class AttachedContinueRunnable implements ObserverRunnable{
+        	public void run(Observable o, Object obj) {
+        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Attached ");					
+        	}
         }
         
-        class DetachedContinueObserver implements Observer{
-                public void update(Observable arg0, Object arg1) {
-                        eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Detached ");
-                }
+        class DetachedContinueRunnable implements ObserverRunnable{
+        	public void run(Observable o, Object obj) {
+        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Detached ");					
+        	}
         }
         
-        class AttachedStopObserver implements Observer{
-                public void update(Observable arg0, Object arg1) {
-                    eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Stopped");
-            }
+        class AttachedStopRunnable implements ObserverRunnable{
+        	public void run(Observable o, Object obj) {
+        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Stopped");		
+        	}
         }
         
-        class AttachedResumeObserver implements Observer{
-            public void update(Observable arg0, Object arg1) {
-                eventLogFile.log(Level.INFO,"PID " + ((Proc)arg1).getPid() +" Host XXX Resumed");
-            }
+
+        class AttachedResumeRunnable implements ObserverRunnable{
+        	public void run(Observable o, Object obj) {
+        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Resumed");
+        	}        	
         }
             
         // Proc action observers
             
-        class EventTaskExecObserver implements Observer {
-            public void update(Observable arg0, Object arg1) {
-                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)arg1).getTask().getPid() +" Host XXX Execed");
-            }
+        class TaskExecRunnable implements ObserverRunnable {
+			public void run(Observable o, Object obj) {
+		    	System.out.println("Process Exec is " + obj);
+                eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Execed");				
+			}
         }
-            
-        class EventTaskExitingObserver implements Observer {
-            public void update(Observable arg0, Object arg1) {
-                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)arg1).getTask().getPid() +" Host XXX Exiting");
-            }
+        
+        // Task observers    
+        class TaskExitingRunnable implements ObserverRunnable {
+			public void run(Observable o, Object obj) {
+                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)obj).getTask().getPid() +" Host XXX Exiting");
+			}
         }
+        
 }
         
 

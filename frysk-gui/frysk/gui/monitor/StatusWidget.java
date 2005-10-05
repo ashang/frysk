@@ -33,6 +33,9 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.ObserverRunnable;
+
 public class StatusWidget extends VBox{
 
 	Label nameLabel;
@@ -158,9 +161,9 @@ public class StatusWidget extends VBox{
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
 			final ObserverRoot observer = (ObserverRoot) iter.next();
-			observer.addRunnable(new Runnable(){
-				public void run() {
-					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+			observer.addRunnable(new ObserverRunnable(){
+				public void run(Observable o, Object obj) {
+					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");					
 				}
 			});
 		}
@@ -170,8 +173,8 @@ public class StatusWidget extends VBox{
 			public void update(Observable arg0, Object obj) {
 				final ObserverRoot observer = (ObserverRoot)obj;
 				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
-				observer.addRunnable(new Runnable(){
-					public void run() {
+				observer.addRunnable(new ObserverRunnable(){
+					public void run(Observable o, Object obj) {
 						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 					}
 				});

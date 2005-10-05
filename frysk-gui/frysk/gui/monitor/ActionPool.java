@@ -40,6 +40,9 @@ package frysk.gui.monitor;
 
 import java.util.LinkedList;
 
+import frysk.gui.monitor.observers.TaskExecObserver;
+import frysk.gui.monitor.observers.TaskExitingObserver;
+
 /**
  * @author Sami Wagiaalla
  * Singleton; only one action pool. Flyweight;
@@ -310,7 +313,7 @@ public class ActionPool {
 			TaskExecObserver taskExecObserver = new TaskExecObserver();
 
 			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.addObserver(eventLog.eventTaskExecObserver);
+			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
 			data.getProc().taskExeced.addObserver(taskExecObserver);
 			data.add(taskExecObserver);
 		}
@@ -321,7 +324,7 @@ public class ActionPool {
 
 		public void removeObservers(ProcData data) {
 			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.deleteObserver(eventLog.eventTaskExecObserver);
+			data.getProc().taskExeced.deleteObserver(eventLog.taskExecObserver);
 		}
 
 		public void removeObservers(TaskData data) {
@@ -341,7 +344,7 @@ public class ActionPool {
 			TaskExitingObserver taskExitingObserver = new TaskExitingObserver();
 
 			data.getProc().taskExiting.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExiting.addObserver(eventLog.eventTaskExitingObserver);
+			data.getProc().taskExiting.addObserver(eventLog.taskExitingObserver);
 			data.getProc().taskExiting.addObserver(taskExitingObserver);
 
 			data.add(taskExitingObserver);
@@ -354,7 +357,7 @@ public class ActionPool {
 
 		public void removeObservers(ProcData data) {
 			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExiting.deleteObserver(eventLog.eventTaskExitingObserver);
+			data.getProc().taskExiting.deleteObserver(eventLog.taskExitingObserver);
 			data.getProc().taskExiting.deleteObserver(eventLog);
 		}
 

@@ -1,8 +1,13 @@
 package frysk.gui.monitor;
 
 import java.util.LinkedList;
+import java.util.Observable;
 
 import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.ObserverRunnable;
+import frysk.gui.monitor.observers.TaskExecObserver;
+import frysk.gui.monitor.observers.TaskExitingObserver;
 
 /**
  * Used to store a pointer to objects in the backend, and extra data that is
@@ -29,18 +34,18 @@ public class GuiData {
 	
 	public void add(TaskExecObserver observer){
 		this.add((ObserverRoot)observer);
-		observer.addRunnable(new Runnable(){
-			public void run() {
-				DialogManager.showWarnDialog("Recieved TaskExec Event !");
+		observer.addRunnable(new ObserverRunnable(){
+			public void run(Observable o, Object obj) {
+				DialogManager.showWarnDialog("Recieved TaskExec Event !");				
 			}
 		});
 	}
 	
 	public void add(TaskExitingObserver observer) {
 		this.add((ObserverRoot)observer);
-		observer.addRunnable(new Runnable(){
-			public void run() {
-				DialogManager.showWarnDialog("Recieved TaskExiting Event !");
+		observer.addRunnable(new ObserverRunnable(){
+			public void run(Observable o, Object obj) {
+				DialogManager.showWarnDialog("Recieved TaskExiting Event !");				
 			}
 		});
 	}

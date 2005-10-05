@@ -1,4 +1,4 @@
-package frysk.gui.monitor;
+package frysk.gui.monitor.observers;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -10,7 +10,7 @@ import org.gnu.glib.CustomEvents;
 /**
  * A more sofisticate implementer of Observer.
  * provides name and tooltip strings for gui display perposis.
- * Takes a Runnable object that can be used by instanciaters to 
+ * Takes an Runnable object that can be used by instanciaters to 
  * customize the behaviour of the observer.
  * */
 public class ObserverRoot implements Observer{
@@ -19,7 +19,6 @@ public class ObserverRoot implements Observer{
 		protected String name;
 
 		LinkedList runnables;
-		Runnable onUpdate;
 		
 		public ObserverRoot(String name, String toolTip){
 			this.toolTip = toolTip;
@@ -44,18 +43,21 @@ public class ObserverRoot implements Observer{
 		}
 		
 		public void update(Observable o, Object obj) {
+			final Observable myObservable = o;
+			final Object     myObj = obj;
+			
 			CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					ListIterator iter = runnables.listIterator();
 					while(iter.hasNext()){
-						Runnable runnable = (Runnable) iter.next();
-						runnable.run();
+						ObserverRunnable runnable = (ObserverRunnable) iter.next();
+						runnable.run(myObservable, myObj);
 					}
 				}
 			});
 		}
 		
-		public void addRunnable(Runnable runnable){
+		public void addRunnable(ObserverRunnable runnable){
 			this.runnables.add(runnable);
 		}
 		

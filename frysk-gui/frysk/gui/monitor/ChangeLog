@@ -1,3 +1,26 @@
+2005-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
+ 
+	* GuiData.java: changed from using Runnables to ObserverRunnables.
+	* StatusWidget.java: ditto.
+	* EventLogger.java: Changed Observers to ObserverRunnables, and added
+	the	ObserverRunnables to Observers isntanciated from package 
+	frysk.gui.monitor.observers.
+	* ActionPool.java: Renamed eventTaskExecObserver to taskExecObserver,
+	and eventTaskExitingObserver to taskExitingObserver.
+	* observers/TaskExecObserver.java: new file.
+	* observers/ObserverRunnable.java (run): new interface; provies
+	run(Observerable, Obj) to allow passing arguments form update to 
+	clients of an observer.
+	* observers/AttachedContinueObserver.java: new file.
+    * observers/AttachedResumeObserver.java: new file.
+    * observers/AttachedStopObserver.java: new file.
+    * observers/DetachedContinueObserver.java: new file.
+    * observers/ObserverRoot.java: new file.
+    * observers/ObserverRunnable.java: new file.
+    * observers/TaskExecObserver.java: new file.
+    * observers/TaskExitingObserver.java: new file.
+	
+
 2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* EventLogger.java (EventTaskExitingObserver): Added.
