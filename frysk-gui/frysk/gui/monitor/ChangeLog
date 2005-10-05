@@ -1,3 +1,8 @@
+2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* EventLogger.java (TaskExecRunnable): Change cast
+	from Proc to TaskEvent. Fixes casting error.
+
 2005-10-05  Sami Wagiaalla  <swagiaal@redhat.com>
  
 	* GuiData.java: changed from using Runnables to ObserverRunnables.
@@ -24,6 +29,7 @@
 2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* EventLogger.java (EventTaskExitingObserver): Added.
+	(run): 
 	* ActionPool.java (execute): Added taskExiting to
 	EventLogger
 

@@ -186,7 +186,7 @@ public class EventLogger implements Observer {
         class TaskExecRunnable implements ObserverRunnable {
 			public void run(Observable o, Object obj) {
 		    	System.out.println("Process Exec is " + obj);
-                eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Execed");				
+                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)obj).getTask().getPid() +" Host XXX Execed");				
 			}
         }
         
