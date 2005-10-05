@@ -175,7 +175,7 @@ public class LinuxHost
 				 String[] args)
     {
 	int pid = Ptrace.child (in, out, err, args);
-	new LinuxProc (this, null, new ProcId (pid), true, null);
+	new LinuxProc (getSelf (), new ProcId (pid));
     }
 
     // When there's a SIGCHLD, poll the kernel's waitpid() queue
