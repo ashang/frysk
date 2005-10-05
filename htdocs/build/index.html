@@ -3,7 +3,7 @@
 <head>
 <title>Building Frysk</title>
 <link rel="stylesheet" type="text/css"
- href="/frysk/mainstyle.css"/ >
+ href="../mainstyle.css"/ >
 </head>
 
 <body>
@@ -14,63 +14,116 @@
 
 <h1> Building Frysk </h1>
 
-<h2>Preparation</h2>
+These notes assume that <em>frysk</em> is being built on a <a
+href="http://fedora.redhat.comdownload/">Fedora Core 4</a> i386
+system.
 
-<ul>
+<p>
 
-<li>It is assumed that you're running <a
-href="http://fedora.redhat.comdownload/">Fedora Core 4</a> on an i386
-platform.
+Building on other GNU/Linux systems is certainly possible.  People
+have managed to build <em>frysk</em> on both Red Hat Enterprize Linux
+4 and Fedora Raw Hide.
 
-<li>Install the following RPMs from the standard distribution (note
+<dl>
+
+<dt><strong>Install additional standard RPMS</strong</dt>
+
+<dd>
+
+Install the following RPMs from the standard distribution (note
 that they have dependencies, and the dependencies should also be
-installed):<br>
+installed):
 
+<pre>
+java-1.4.2-gcj-compat-devel
+junit
+antlr
+xfig
+</pre>
 
-<li><tt>java-1.4.2-gcj-compat-devel</tt><br>
+You can do this by entering the command:
 
-<li><tt>junit</tt><br>
+<pre>
+yum install java-1.4.2-gcj-compat-devel junit antlr xfig
+</pre>
 
-<li><tt>antlr</tt><br>
+<dd>
 
-<li><tt>xfig</tt><br>
+<dt><strong>Install jdom from the fedora-devel repository</strong></dt>
 
-<li>Install jdom from the fedora-devel repository. You can do this by entering
-the command <tt>yum --enablerepo=development install jdom</tt>.
-It is  highly recommended that you only install the jdom package from
+<dd>
+
+You can do this by entering the command:
+
+<pre>
+yum --enablerepo=development install jdom
+</pre>
+
+It is highly recommended that you only install the jdom package from
 development, all dependancies should be installed with the development
 repository disabled.
-</li>
 
-<li>Download and install the all of the non-standard RPMS. You can do this by downloading the following
-yum repository <a href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo">configuration file</a> 
-and put it into <tt>/etc/yum.repos.d/</tt> (you'll need to be root). Then run 
-<tt> yum install 'frysk*'</tt>. This should install all the needed packages. In the future you can update the individual packages through yum, or just run <tt>yum update 'frysk*'</tt>. The quotes are important, otherwise the shell eats away the * and yum gets confused.
+</dd>
 
-</ul>
+<dt><strong>Download and install the non-standard RPMS</strong></dt>
 
-<h2>Command Line Build</h2>
+<dd>
+
+You can do this by downloading the following yum repository <a
+href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo">configuration
+file</a> and copying it into the <tt>/etc/yum.repos.d/</tt> directory
+(you'll need to be root). Then run:
+
+<pre>
+yum install 'frysk*'
+</pre>
+
+This will install all the needed non-standard packages. In the future
+you can update the individual packages through yum, or just run
+<tt>yum update 'frysk*'</tt>. The quotes are important, otherwise the
+shell eats away the * and yum gets confused.
+
+</dd>
+
+<dt><strong>Command Line Build</strong></dt>
+
+<dd>
 
 Check out frysk:<br>
 
-<tt>cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk</tt><br>
+<pre>
+cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk
+</pre>
 
-Build the configuration files:<br>
+Build the configuration files:
 
-<tt>( cd frysk && ./autogen.sh )</tt><br>
+<pre>
+( cd frysk && ./autogen.sh )
+</pre>
 
 Create a separate build directory, and build in there:<br>
 
-<tt>( mkdir build && cd build && ../frysk/configure && make)</tt><br>
+<pre>
+( mkdir build && cd build && ../frysk/configure && make)
+</pre>
 
-<h2>Eclipse Build</h2>
+</dd>
+
+<dt><strong>Eclipse Build</strong></dt>
+
+<dd>
 
 For eclipse, check out the <tt>cvs</tt> module <tt>frysk-eclipse</tt>.
 
+</dd>
+
+</dl>
 
 <h1>Other Systems</h1>
 
-<p> If you are interested in trying frysk on other distributions, or
+<p>
+
+If you are interested in trying frysk on other distributions, or
 cannot use our prepackaged required dependencies then you will need to
 find packages for your distribution or compile all the required
 packages from source. Some of the dependencies for Frysk are in
@@ -81,11 +134,10 @@ or JUnit, may be easier to find. You can build these packages from
 source, and frysk should detect their existance in the standard /usr
 or non-standard /opt. However, please note that installing the whole
 stack from source is a formidable task.
-</p>
 
 <p>
-For the brave here are the absolutely required 
-packages and versions:
+
+For the brave here are the absolutely required packages and versions:
 
 <ul>
     <li> <tt> antlr </tt> 2.7.4 </li>
@@ -105,26 +157,12 @@ packages and versions:
 </ul>
 
 <p>
+
 Please note that some of these packages may have dependencies. Based
 on our testing on FC4, the above are the bare minimum packages that
 are needed, however this may differ on your distribution based on what
 versions are installed.
-</p>
 
-<h1> Related Links </h1>
-
-<ul>
-    <li> Anltr: <a href="http://www.antlr.org/">http://www.antlr.org/</a> </li>
-    <li> JUnit: <a href="http://www.junit.org">http://www.junit.org </a> </li>
-    <li> GCJ: <a href="http://gcc.gnu.org/java/">http://gcc.gnu.org/java/</a> </li>
-    <li> ECJ: <a href="http://www.eclipse.org/jdt/index.html">
-		http://www.eclipse.org/jdt/index.html</a></li>
-    <li> GTK+: <a href="http://www.gtk.org/">http://www.gtk.org/</a> </li>
-    <li> Cairo: <a href="http://www.cairographics.org/introduction">
-		http://www.cairographics.org/introduction</a> </li>
-    <li> Java-GNOME: <a href="http://java-gnome.sourceforge.net/cgi-bin/bin/view">
-		http://java-gnome.sourceforge.net/cgi-bin/bin/view</a> </li>
-</ul>
 </div>
 
 </body>
