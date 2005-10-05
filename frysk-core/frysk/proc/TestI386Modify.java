@@ -145,16 +145,17 @@ public class TestI386Modify
     class ProcDiscoveredObserver
         implements Observer
     {
- 	Task task;
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    if (!isChildOfMine (proc))
+		return;
 	    registerChild (proc.getId ().hashCode ());
             proc.observableTaskAdded.addObserver
                 (new Observer () {
                         public void update (Observable o, Object obj)
                         {
-                            task = (Task) obj;
+                            Task task = (Task) obj;
  			    task.traceSyscall = true;
  			    task.syscallEvent.addObserver (taskEventObserver);
  			    task.stopEvent.addObserver (taskEventObserver);
@@ -173,7 +174,7 @@ public class TestI386Modify
 	public void update (Observable o, Object obj)
 	{
 	    Proc process = (Proc) obj;
-	    if (process.parent == null) {
+	    if (isChildOfMine (process)) {
 	        syscallState ^= 1;  // we won't return from exit syscall
  	        exited = true;
 		Manager.eventLoop.requestStop ();
@@ -198,7 +199,5 @@ public class TestI386Modify
 	assertTrue ("Exit syscall found", exitSyscall);
 	assertEquals ("Manager has no tasks left", 0, 
  		      Manager.host.taskPool.size ());
-	assertEquals ("Manager has no processes left", 0, 
-  		      Manager.host.procPool.size ());
    }
 }

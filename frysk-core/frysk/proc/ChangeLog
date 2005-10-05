@@ -1,5 +1,10 @@
 2005-10-05  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add method isChildOfMine.  Use.
+	* TestTerminated.java, TestSyscallOpen.java, TestSyscall.java,
+	TestSyscall2.java, TestI386Regs.java, TestI386Modify.java,
+	TestStep.java, TestExiting.java: Use.
+
 	* Host.java, Task.java, Proc.java: Include the super's name in
 	toString.
 	

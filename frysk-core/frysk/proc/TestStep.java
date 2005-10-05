@@ -70,6 +70,8 @@ public class TestStep
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    if (!isChildOfMine (proc))
+		return;
 	    int pid = proc.id.hashCode ();
 	    // Shut things down when PID exits.
 	    new PidChild (pid).stopEventLoopOnDestroy ();

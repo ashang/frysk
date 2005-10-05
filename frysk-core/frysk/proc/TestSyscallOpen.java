@@ -118,6 +118,8 @@ public class TestSyscallOpen
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    if (!isChildOfMine (proc))
+		return;
 	    registerChild (proc.getId ().hashCode ());
             proc.observableTaskAdded.addObserver
                 (new Observer () {
@@ -141,7 +143,7 @@ public class TestSyscallOpen
 	public void update (Observable o, Object obj)
 	{
 	    Proc process = (Proc) obj;
-	    if (process.parent == null) {
+	    if (isChildOfMine (process)) {
  	        inSyscall = !inSyscall;  // we won't return from exit syscall
  	        exited = true;
 		Manager.eventLoop.requestStop ();
@@ -173,6 +175,5 @@ public class TestSyscallOpen
 	assertTrue ("Open of a.file failed", expectedRcFound);
 	assertTrue ("Process exited", exited);
 	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }

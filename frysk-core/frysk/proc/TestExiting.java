@@ -68,10 +68,7 @@ public class TestExiting
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
-	    // XXX: Could instead just add the observer to
-	    // Host.getSelf.
-	    if (proc.parent != null
-		&& proc.parent != proc.host.getSelf ())
+	    if (! isChildOfMine (proc))
 		return;
 	    registerChild (proc.getId ().hashCode ());
 	    proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
@@ -157,6 +154,5 @@ public class TestExiting
 	assertEquals ("SIGILL received at termination", Sig.KILL,
 		      taskTerminatedEventSig);
 	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }

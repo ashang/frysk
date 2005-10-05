@@ -83,6 +83,30 @@ public class TestLib
     }
 
     /**
+     * Is the process a child of this process?  Do not use
+     * host.getSelf() as that, in some situtations, can lead to
+     * infinite recursion.
+     */
+    boolean isChildOfMine (Proc proc)
+    {
+	// Process 1 has no parent so can't be a child of mine.  Do
+	// this first as no parent implies .parent==null and that
+	// would match a later check.
+	if (proc.getPid () == 1)
+	    return false;
+	// XXX: Old style broken check from days when children did not
+	// get parent set.
+	if (proc.parent == null)
+	    return true;
+	// The parent's pid match this process, assume that is
+	// sufficient.  Would need a very very long running system for
+	// that to not be the case.
+	if (proc.parent.getPid () == Pid.get ())
+	    return true;
+	return false;
+    }
+
+    /**
      * Manage a child process.
      *
      * Create a child process and then block until the child has
@@ -362,6 +386,8 @@ public class TestLib
 		public void update (Observable o, Object obj)
 		{
 		    Proc proc = (Proc) obj;
+		    if (!isChildOfMine (proc))
+			return;
 		    pid = proc.getPid ();
 		    Manager.eventLoop.requestStop ();
 		    Manager.host.observableProcAdded.deleteObserver (this);
@@ -833,6 +859,7 @@ public class TestLib
     List children;
     void registerChild (int child)
     {
+	assertTrue ("child is not process 1", child != 1);
 	children.add (new Integer (child));
     }
 

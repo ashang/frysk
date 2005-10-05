@@ -85,6 +85,8 @@ public class TestSyscall2
         public void update (Observable o, Object obj)
         {
             Proc proc = (Proc) obj;
+	    if (!isChildOfMine (proc))
+		return;
 	    registerChild (proc.getId ().hashCode ());
             proc.observableTaskAdded.addObserver
                 (new Observer () {
@@ -107,7 +109,7 @@ public class TestSyscall2
 	public void update (Observable o, Object obj)
 	{
 	    Proc process = (Proc) obj;
-	    if (process.parent == null) {
+	    if (isChildOfMine (process)) {
  	        syscallState ^= 1;  // we won't return from exit syscall
  	        exited = true;
 		Manager.eventLoop.requestStop ();
@@ -136,6 +138,5 @@ public class TestSyscall2
 	assertEquals ("Even number of syscall events", 0, syscallState);
 	assertTrue ("Exited", exited);
 	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
-	assertEquals ("No processes left", 0, Manager.host.procPool.size ());
     }
 }
