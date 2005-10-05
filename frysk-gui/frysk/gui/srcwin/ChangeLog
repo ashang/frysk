@@ -1,3 +1,9 @@
+2005-10-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMImage.java: modifed getInlinedFunctions method
+	
+	* dom/DOMTestDOMFrysk.java: added test for above
+
 2005-10-05  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (load): Added note of how many scopes hidden to 

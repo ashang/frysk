@@ -21,11 +21,11 @@ public class DOMImage {
 	/**
 	 * name of the inline element
 	 */
-	public static final String INLINE_NODE = "inline";
 	
 	public static final String INLINENAME_ATTR = "inlinename";
 	public static final String LINENO_ATTR = "line_no";
 	public static final String LINENO = "index";
+	public static final String INLINE_NODE = "inline";
 	private Element myElement;
 	
 	/**
@@ -113,11 +113,11 @@ public class DOMImage {
 	}
 	
 	public Iterator getInlinedFunctions(){
-		Iterator iter = this.myElement.getChildren(DOMInlineFunc.INLINE_NODE).iterator();
+		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();
 		Vector v = new Vector();
 		
 		while(iter.hasNext())
-			v.add(new DOMInlineFunc((Element) iter.next()));
+			v.add((Element) iter.next());
 		
 		return v.iterator();
 	}

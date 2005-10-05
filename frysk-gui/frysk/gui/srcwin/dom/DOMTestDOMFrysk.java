@@ -6,6 +6,7 @@ package frysk.gui.srcwin.dom;
 
 import frysk.gui.srcwin.dom.DOMFrysk;
 import java.math.BigInteger;
+import java.util.Iterator;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -20,7 +21,10 @@ public class DOMTestDOMFrysk {
 
 	private static DOMFrysk dom = new DOMFrysk(data);
 	
-	private static String[] func1_lines = { "testfunc() {", "x=y", "int i =x", "}" }; 
+	private static String[] func1_lines = { "testfunc1() {", "x=y", "int i =x", "}" };
+	
+	private static String[] func2_lines = { "testfunc2() {", "int j = 2;", 
+					"int k = 3;", "int l = j = k;", "}" };
 
 	public static void main(String[] args) {
 
@@ -108,10 +112,36 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMImage.setCCPath");
 		}
 		if (testDOMImage.addInlineFunction("func1", func1_lines)) {
-			System.out.println("passed...DOMImage.addInlineFunction...first one");
+			System.out.println("passed...DOMImage.addInlineFunction...func1");
 		} else {
-			System.out.println("failed...DOMImage.addInlineFunction...first one");
+			System.out.println("failed...DOMImage.addInlineFunction...func1");
 		}
+		if (testDOMImage.addInlineFunction("func2", func2_lines)) {
+			System.out.println("passed...DOMImage.addInlineFunction...func2");
+		} else {
+			System.out.println("failed...DOMImage.addInlineFunction...func2");
+		}
+		Iterator iter = testDOMImage.getInlinedFunctions();
+		int ctr = 0;
+		//Vector v = new Vector();
+		while (iter.hasNext()) {
+			Element test_inlined = (Element) iter.next();
+			ctr++;
+			String inlinename = 
+				test_inlined.getAttributeValue(DOMImage.INLINENAME_ATTR).toString();
+			if (ctr == 1 && (inlinename == "func1")) {
+				System.out.println("passed...DOMImage.getInlinedFunctions..." 
+						+ inlinename);
+				continue;
+			}
+			if (ctr == 2 && (inlinename == "func2")) {
+				System.out.println("passed...DOMImage.getInlinedFunctions..."
+						+ inlinename);
+				continue;
+			}
+			System.out.println("failed...DOMImagegetInlinedFunctions");
+		}
+		
 
 	}
 	
