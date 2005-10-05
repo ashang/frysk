@@ -41,7 +41,7 @@ package frysk.proc;
 
 import frysk.event.Event;
 
-abstract class TaskEvent
+public abstract class TaskEvent
     implements Event
 {
     protected Task task;

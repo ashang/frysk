@@ -1,3 +1,7 @@
+2005-10-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TaskEvent.java: Change class scope to public.
+
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestHostGet.java: New.
