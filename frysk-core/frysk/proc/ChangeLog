@@ -1,5 +1,8 @@
 2005-10-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java, LinuxProc.java: Rationalize constructor methods.
+	* LinuxHost.java: Update.
+	
 	* TestLib.java: For StopEventLoopOnProcDestroy, check that the
 	proc is a child of frysk using getSelf.
 	* TestExiting.java, TestTerminated.java: Ditto for

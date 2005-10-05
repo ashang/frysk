@@ -83,14 +83,21 @@ public abstract class Proc
 
     abstract Task newTask (TaskId id, boolean runnable);
 
-    Proc (Host host, ProcId id, boolean attached)
+    /**
+     * Create a new process.
+     */
+    Proc (Host host, Proc parent, ProcId id, boolean attached)
     {
 	this.host = host;
 	this.id = id;
+	this.parent = parent;
 	if (attached)
 	    state = ProcState.running;
 	else
 	    state = ProcState.unattached;
+	// Keep parent informed.
+	if (parent != null)
+	    parent.add (this);
 	// Keep our manager informed.
 	host.add (this);
 	// ... and add the main task.
@@ -99,28 +106,12 @@ public abstract class Proc
 	    // a further system-poll to get the info.
 	    newTask (new TaskId (id.id), true);
     }
-    Proc (Proc parent, ProcId id, boolean attached)
-    {
-	this (parent.host, id, attached);
-	this.parent = parent;
-	parent.add (this);
-    }
     /**
-     * Create a new detached process.
+     * Create a new attached process.
      */
-    Proc (Host host, Proc parent, ProcId procId)
+    Proc (Proc parent, ProcId id)
     {
-	this.host = host;
-	this.id = procId;
-	state = ProcState.unattached;
-	// If there is a parent (process 1 is parentless) add this to
-	// its list of children.
-	if (parent != null) {
-	    this.parent = parent;
-	    parent.add (this);
-	}
-	// Keep the host informed.
-	host.add (this);
+	this (parent.host, parent, id, true);
     }
     
     abstract void sendAttach ();

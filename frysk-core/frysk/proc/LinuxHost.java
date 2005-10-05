@@ -104,7 +104,8 @@ public class LinuxHost
 			parent = update (parentId);
 		}
 		// .. and then add this process.
-		proc = new LinuxProc (LinuxHost.this, parent, procId, stat);
+		proc = new LinuxProc (LinuxHost.this, parent, procId, false,
+				      stat);
 		added.add (proc);
 	    }
 	    else if (removed.get (procId) != null) {
@@ -174,7 +175,7 @@ public class LinuxHost
 				 String[] args)
     {
 	int pid = Ptrace.child (in, out, err, args);
-	new LinuxProc (this, new ProcId (pid), true);
+	new LinuxProc (this, null, new ProcId (pid), true, null);
     }
 
     // When there's a SIGCHLD, poll the kernel's waitpid() queue

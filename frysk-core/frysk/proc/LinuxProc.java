@@ -128,17 +128,14 @@ public class LinuxProc
     }
 
     private Auxv[] auxv;
-    LinuxProc (Host host, ProcId pid, boolean attached)
+    LinuxProc (Proc parent, ProcId pid)
     {
-	super (host, pid, attached);
+	super (parent, pid);
     }
-    LinuxProc (Proc parent, ProcId pid, boolean attached)
+    LinuxProc (Host host, Proc parent, ProcId procId, boolean attached,
+	       Stat stat)
     {
-	super (parent, pid, attached);
-    }
-    LinuxProc (Host host, Proc parent, ProcId procId, Stat stat)
-    {
-	super (host, parent, procId);
+	super (host, parent, procId, attached);
 	this.stat = stat;
     }
     void sendRefresh ()
@@ -215,7 +212,7 @@ public class LinuxProc
     void sendNewAttachedChild (ProcId childId)
     {
 	// A forked child starts out attached.
-	new LinuxProc (this, childId, true);
+	new LinuxProc (this, childId);
     }
 
     Task newTask (TaskId id, boolean runnable)
