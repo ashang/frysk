@@ -1,5 +1,8 @@
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: In setUp, add an observer that registers any child
+	process.
+	
 	* TestLib.java: Change children to a set.  Replace
 	StopEventLoopOnProcDestroy with
 	addStopEventLoopOnChildProcRemovedObserver.

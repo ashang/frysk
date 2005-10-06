@@ -830,14 +830,6 @@ public class TestLib
 		    Proc proc = (Proc) obj;
 		    if (!isChildOfMine (proc))
 			return;
-		    // Just to be sure, also register the child
-		    // process, and any known tasks, here.
-		    registerChild (proc.getPid ());
-		    for (Iterator i = proc.taskPool.values().iterator ();
-			 i.hasNext (); ) {
-			Task task = (Task) i.next ();
-			registerChild (task.getTid ());
-		    }
 		    // Shut things down.
 		    Manager.eventLoop.requestStop ();
 		}
@@ -861,10 +853,10 @@ public class TestLib
     // run.
     private Set children;
     /**
-     * Add the child to the set of children that should be killed off
+     * Add the pid to the set of children that should be killed off
      * after the test has run.
      */
-    void registerChild (int child)
+    protected final void registerChild (int child)
     {
 	assertTrue ("child is not process 1", child != 1);
 	children.add (new Integer (child));
@@ -874,6 +866,26 @@ public class TestLib
     {
 	children = new HashSet ();
 	Manager.resetXXX ();
+	// Add every child process, and its tasks, to the set of
+	// children that should be killed off after the test has run.
+	Manager.host.observableProcAdded.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Proc proc = (Proc) obj;
+		    if (isChildOfMine (proc)) {
+			registerChild (proc.getPid ());
+			proc.observableTaskAdded.addObserver (new Observer ()
+			    {
+				public void update (Observable o, Object obj)
+				{
+				    Task task = (Task) obj;
+				    registerChild (task.getTid ());
+				}
+			    });
+		    }
+		}
+	    });
     }
 
     public void tearDown ()
