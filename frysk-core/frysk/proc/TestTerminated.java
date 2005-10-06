@@ -134,7 +134,7 @@ public class TestTerminated
 	    });
 
         // Once a proc destroyed has been seen stop the event loop.
-        new StopEventLoopOnProcDestroy ();
+	addStopEventLoopOnChildProcRemovedObserver ();
 
 	assertRunUntilStop ("run \"infloop\" until exit");
 

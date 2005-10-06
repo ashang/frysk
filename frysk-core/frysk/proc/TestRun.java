@@ -59,7 +59,7 @@ public class TestRun
 	ProcCounter procCounter = new ProcCounter ();
 
 	// Once a proc destroyed has been seen stop the event loop.
-	new StopEventLoopOnProcDestroy ();
+	addStopEventLoopOnChildProcRemovedObserver ();
 
 	// Create a program that removes the above tempoary file, when
 	// it exits the event loop will be shutdown.

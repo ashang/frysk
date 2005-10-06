@@ -50,6 +50,8 @@ import frysk.event.SignalEvent;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -816,29 +818,30 @@ public class TestLib
     }
 
     /**
-     * Observer that tells the event loop to stop when the "top"
-     * process has been removed.
-     *
-     * XXX: The heuristic being used here needs to be improved; It
-     * won't work well when the process pool includes unattached
-     * processes addeved via refresh.
+     * Add an observer that will stop the event loop when a child
+     * process (to this process) exits.
      */
-    protected class StopEventLoopOnProcDestroy
+    protected void addStopEventLoopOnChildProcRemovedObserver ()
     {
-	StopEventLoopOnProcDestroy ()
-	{
-	    Manager.host.observableProcRemoved.addObserver (new Observer ()
+	Manager.host.observableProcRemoved.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
 		{
-		    public void update (Observable o, Object obj)
-		    {
-			Proc proc = (Proc) obj;
-			if (proc.parent != null
-			    && proc.parent != proc.host.getSelf ())
-			    return;
-			Manager.eventLoop.requestStop ();
+		    Proc proc = (Proc) obj;
+		    if (!isChildOfMine (proc))
+			return;
+		    // Just to be sure, also register the child
+		    // process, and any known tasks, here.
+		    registerChild (proc.getPid ());
+		    for (Iterator i = proc.taskPool.values().iterator ();
+			 i.hasNext (); ) {
+			Task task = (Task) i.next ();
+			registerChild (task.getTid ());
 		    }
-		});
-	}
+		    // Shut things down.
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
     }
 
     /**
@@ -854,9 +857,13 @@ public class TestLib
 	}
     }
 
-    // Maintain a list of children that are killed off after each test
+    // Maintain a set of children that are killed off after each test
     // run.
-    List children;
+    private Set children;
+    /**
+     * Add the child to the set of children that should be killed off
+     * after the test has run.
+     */
     void registerChild (int child)
     {
 	assertTrue ("child is not process 1", child != 1);
@@ -865,7 +872,7 @@ public class TestLib
 
     public void setUp ()
     {
-	children = new LinkedList ();
+	children = new HashSet ();
 	Manager.resetXXX ();
     }
 

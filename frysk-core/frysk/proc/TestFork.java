@@ -56,7 +56,7 @@ public class TestFork
 	int n = 10;
 
 	ProcCounter procCounter = new ProcCounter ();
-	new StopEventLoopOnProcDestroy ();
+	addStopEventLoopOnChildProcRemovedObserver ();
 
 	Manager.host.requestCreateAttachedContinuedProc
 	    (null, "/dev/null", null, new String[] {

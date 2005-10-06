@@ -1,5 +1,12 @@
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Change children to a set.  Replace
+	StopEventLoopOnProcDestroy with
+	addStopEventLoopOnChildProcRemovedObserver.
+	* TestTerminated.java, TestRun.java, TestProcGet.java,
+	TestFork.java, TestExiting.java, TestExec.java, TestClone.java:
+	Update.
+
 	* Task.java: Replace getPid with getTid.  Make getTid, and
 	getTaskId final.
 	* LinuxTask.java: Delete "pid", "addMemoryAndRegisters", and

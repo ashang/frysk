@@ -55,7 +55,7 @@ public class TestClone
 	int fibCount = 10;
 
  	TaskCounter taskCounter = new TaskCounter ();
-	new StopEventLoopOnProcDestroy ();
+	addStopEventLoopOnChildProcRemovedObserver ();
 
 	Manager.host.requestCreateAttachedContinuedProc
 	    (null, "/dev/null", null, new String[] {

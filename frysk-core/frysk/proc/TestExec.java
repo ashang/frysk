@@ -56,7 +56,7 @@ public class TestExec
     public void testProcExec ()
     {
 	ExecCounter execCounter = new ExecCounter ();
-	new StopEventLoopOnProcDestroy ();
+	addStopEventLoopOnChildProcRemovedObserver ();
 
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
@@ -85,7 +85,7 @@ public class TestExec
     {
 	TaskCounter taskCounter = new TaskCounter ();
 	ExecCounter execCounter = new ExecCounter ();
-	new StopEventLoopOnProcDestroy ();
+	addStopEventLoopOnChildProcRemovedObserver ();
 
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
