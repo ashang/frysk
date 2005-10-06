@@ -204,7 +204,7 @@ abstract class ProcState
 		for (Iterator i = proc.taskPool.values ().iterator ();
 		     i.hasNext (); ) {
 		    Task t = (Task) i.next ();
-		    if (t.getPid () == proc.getPid ())
+		    if (t.getTid () == proc.getPid ())
 			continue;
 		    t.performAttach ();
 		}

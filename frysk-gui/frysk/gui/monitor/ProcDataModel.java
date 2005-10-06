@@ -437,7 +437,7 @@ public class ProcDataModel {
 					iterHash.put(task.getTaskId(), iter);
 					
 					treeStore.setValue(iter, commandDC, Long.toHexString(task.getEntryPointAddress()));
-					treeStore.setValue(iter, pidDC, task.getPid());
+					treeStore.setValue(iter, pidDC, task.getTid());
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
 					treeStore.setValue(iter, procDataDC, (new TaskData(task)));

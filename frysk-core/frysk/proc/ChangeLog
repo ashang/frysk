@@ -1,5 +1,11 @@
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Replace getPid with getTid.  Make getTid, and
+	getTaskId final.
+	* LinuxTask.java: Delete "pid", "addMemoryAndRegisters", and
+	"ptraceAttached".  Use getTid.
+	* I386Linux.java, ProcState.java, LinuxProc.java: Update.
+	
 	* Host.java, HostState.java, I386Linux.java, LinuxHost.java,
 	LinuxProc.java, LinuxTask.java, Proc.java, ProcState.java,
 	Task.java, TaskState.java: Replace "runnable" with "attached" and

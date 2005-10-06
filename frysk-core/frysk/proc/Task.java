@@ -50,7 +50,7 @@ abstract public class Task
     /**
      * Return the task's corresponding TaskId.
      */
-    public TaskId getTaskId ()
+    public final TaskId getTaskId ()
     {
 	return id;
     }
@@ -58,7 +58,7 @@ abstract public class Task
     /**
      * Return the task's process id.
      */
-    public int getPid ()
+    public final int getTid ()
     {
 	return id.id;
     }

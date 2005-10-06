@@ -114,14 +114,14 @@ class I386Linux
         Task (Proc process, TaskId tid, boolean running)
         {
             super (process, tid, running);
-            this.pid = tid.hashCode ();
-	    // For writing, at least, we are forced to use PTRACE
-	    // as /proc/mem cannot be written to.
-	    memory = new PtraceByteBuffer (pid, PtraceByteBuffer.Area.DATA,
+	    // For writing at least, PTRACE must be used as /proc/mem
+	    // cannot be written to.
+	    memory = new PtraceByteBuffer (getTid (),
+					   PtraceByteBuffer.Area.DATA,
 	 			           0xffffffffl);
 	    memory.order (ByteOrder.LITTLE_ENDIAN);
             registerBank = new ByteBuffer[] {
-                new PtraceByteBuffer (pid, PtraceByteBuffer.Area.USR)
+                new PtraceByteBuffer (getTid (), PtraceByteBuffer.Area.USR)
             };
 	    registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
         }

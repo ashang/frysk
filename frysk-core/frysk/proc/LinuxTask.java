@@ -43,8 +43,6 @@ import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import inua.eio.ByteBuffer;
-import inua.eio.PtraceByteBuffer;
 
 /**
  * Linux implementation of Task.
@@ -53,17 +51,6 @@ import inua.eio.PtraceByteBuffer;
 public class LinuxTask
     extends Task
 {
-    protected int pid;
-    protected boolean ptraceAttached;
-    
-    private void addMemoryAndRegisters ()
-    {
-	memory = new PtraceByteBuffer (pid, PtraceByteBuffer.Area.DATA);
-	registerBank = new ByteBuffer[] {
-	    new PtraceByteBuffer (pid, PtraceByteBuffer.Area.USR)
-	};
-    }
-    
     /**
      * Create a detached task.  For detached tasks, RUNNING makes no
      * sennse.
@@ -71,8 +58,6 @@ public class LinuxTask
     LinuxTask (Proc process, TaskId id)
     {
 	super (process, id);
-	this.pid = id.hashCode ();
-	addMemoryAndRegisters ();
     }
 
     /**
@@ -81,8 +66,6 @@ public class LinuxTask
     LinuxTask (Proc process, TaskId id, boolean running)
     {
 	super (process, id, running);
-	this.pid = id.hashCode ();
-	addMemoryAndRegisters ();
     }
 
     private void appendZombiedEvent ()
@@ -94,9 +77,9 @@ public class LinuxTask
     {
 	try {
 	    if (traceSyscall)
-		Ptrace.sysCall (pid, sig);
+		Ptrace.sysCall (getTid (), sig);
 	    else
-		Ptrace.cont (pid, sig);
+		Ptrace.cont (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
 	    appendZombiedEvent ();
@@ -105,7 +88,7 @@ public class LinuxTask
     protected void sendStepInstruction (int sig)
     {
 	try {
-	    Ptrace.singleStep (pid, sig);
+	    Ptrace.singleStep (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
 	    appendZombiedEvent ();
@@ -127,7 +110,7 @@ public class LinuxTask
 	    if (traceSyscall)
 		options |= Ptrace.optionTraceSysgood ();
 	    options |= Ptrace.optionTraceExec ();
-	    Ptrace.setOptions (pid, options);
+	    Ptrace.setOptions (getTid (), options);
 	}
 	catch (Errno.Esrch e) {
 	    appendZombiedEvent ();
@@ -136,7 +119,7 @@ public class LinuxTask
     protected void sendAttach ()
     {
 	try {
-	    Ptrace.attach (pid);
+	    Ptrace.attach (getTid ());
 	}
 	catch (Errno.Esrch e) {
 	    appendZombiedEvent ();
@@ -144,7 +127,7 @@ public class LinuxTask
     }
     protected void sendDetach (int sig)
     {
-	Ptrace.detach (pid, sig);
+	Ptrace.detach (getTid (), sig);
     }
     public String toString ()
     {

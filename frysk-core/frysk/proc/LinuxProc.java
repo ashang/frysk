@@ -212,7 +212,6 @@ public class LinuxProc
 		Ptrace.attach (tid);
 	    TaskId newTid = new TaskId (tid);
 	    LinuxTask t = (LinuxTask) newAttachedTask (newTid, running);
-	    t.ptraceAttached = true;
 	}
     }
     void sendNewAttachedChild (ProcId childId, boolean running)
@@ -234,7 +233,7 @@ public class LinuxProc
 	    // use getPid() and a missing getIsa().
 	    ByteBuffer b;
 	    LinuxTask pid = (LinuxTask) taskPool.values().iterator().next ();
-	    String auxvName = "/proc/" + pid.pid + "/auxv";
+	    String auxvName = "/proc/" + getPid () + "/auxv";
 	    // Due to Linux kernel tackyness, need to slurp in the
 	    // AUXV and then create an ByteBuffer from that.
 	    try {
