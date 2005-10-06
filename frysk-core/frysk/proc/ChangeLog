@@ -1,5 +1,12 @@
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java, HostState.java, I386Linux.java, LinuxHost.java,
+	LinuxProc.java, LinuxTask.java, Proc.java, ProcState.java,
+	Task.java, TaskState.java: Replace "runnable" with "attached" and
+	"running", pass through out.  Replace newTask with
+	newAttachedTask.  Further consolidate Task, Proc, and Host
+	constructors.  Add startRunning and startStopped to Proc states.
+	
 	* TaskState.java, ProcState.java, HostState.java: Add method
 	initial, make all state variables and classes private.
 	* TestPaused.java, TestRefresh.java, TestStop.java,

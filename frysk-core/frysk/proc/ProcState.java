@@ -54,16 +54,17 @@ abstract class ProcState
     /**
      * Return the Proc's initial state.
      */
-    static ProcState initial (Proc proc)
+    static ProcState initial (Proc proc, boolean attached, boolean running)
     {
-	return unattached;
-    }
-    static ProcState initial (Proc proc, boolean attached)
-    {
-	if (attached)
-	    return running;
-	else
-	     return unattached;
+	if (attached) {
+	    if (running)
+		return startRunning;
+	    else
+		return startStopped;
+	}
+	else {
+	    return unattached;
+	}
     }
 
     protected ProcState (String state)
@@ -290,13 +291,99 @@ abstract class ProcState
 	{
 	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
 	    {
-		proc.newTask (event.getCloneId (), true);
+		proc.newAttachedTask (event.getCloneId (), true);
 		// The clone has already been added to the tree.
 		return running;
 	    }
 	    ProcState process (Proc proc, ProcEvent.TaskForked event)
 	    {
-		proc.sendNewAttachedChild (event.getForkId ());
+		proc.sendNewAttachedChild (event.getForkId (), true);
+		// The process has already been added to the tree.
+		return running;
+	    }
+	    ProcState processRequestAttachedContinue (Proc proc)
+	    {
+		proc.observableAttachedContinue.notify (proc);
+		return running;
+	    } 
+	    ProcState processRequestDetachedContinue (Proc proc)
+	    {
+		Map attachedTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performDetach ();
+		}
+		return new DetachingAllTasks (attachedTasks);
+	    }
+	    ProcState processRequestAttachedStop (Proc proc)
+	    {
+		Map runningTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performStop ();
+		}
+		return new StoppingAllTasks (runningTasks);
+	    }
+	};
+
+    private static ProcState startStopped = new ProcState ("startStopped")
+	{
+	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
+	    {
+		proc.newAttachedTask (event.getCloneId (), false);
+		// The clone has already been added to the tree.
+		return running;
+	    }
+	    ProcState process (Proc proc, ProcEvent.TaskForked event)
+	    {
+		proc.sendNewAttachedChild (event.getForkId (), false);
+		// The process has already been added to the tree.
+		return running;
+	    }
+	    ProcState processRequestAttachedContinue (Proc proc)
+	    {
+		proc.observableAttachedContinue.notify (proc);
+		return running;
+	    } 
+	    ProcState processRequestDetachedContinue (Proc proc)
+	    {
+		Map attachedTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performDetach ();
+		}
+		return new DetachingAllTasks (attachedTasks);
+	    }
+	    ProcState processRequestAttachedStop (Proc proc)
+	    {
+		Map runningTasks
+		    = (Map) (((HashMap)proc.taskPool).clone ());
+		for (Iterator i = proc.taskPool.values ().iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performStop ();
+		}
+		return new StoppingAllTasks (runningTasks);
+	    }
+	};
+
+    private static ProcState startRunning = new ProcState ("startRunning")
+	{
+	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
+	    {
+		proc.newAttachedTask (event.getCloneId (), true);
+		// The clone has already been added to the tree.
+		return running;
+	    }
+	    ProcState process (Proc proc, ProcEvent.TaskForked event)
+	    {
+		proc.sendNewAttachedChild (event.getForkId (), true);
 		// The process has already been added to the tree.
 		return running;
 	    }

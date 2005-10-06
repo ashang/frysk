@@ -109,27 +109,35 @@ abstract public class Task
     public boolean traceSyscall;  	// Trace syscall entry and exit
 
     /**
-     * Create a new task, it is not attached (so RUNNABLE doesn't make
+     * Create a new, possibly attached, possibly running, task.
+     */
+    private Task (Proc proc, TaskId id, boolean attached, boolean running)
+    {
+	this.proc = proc;
+	this.id = id;
+	state = TaskState.initial (this, attached, running);
+	proc.add (this);
+	proc.host.add (this);
+	// XXX: For backward compatibility.
+	if (!attached)
+	    proc.taskDiscovered.notify (this);
+    }
+
+    /**
+     * Create a new task, it is not attached (so RUNNING doesn't make
      * sense).
      */
     Task (Proc proc, TaskId id)
     {
-	this.proc = proc;
-	this.id = id;
-	state = TaskState.initial (this);
-	proc.add (this);
-	proc.host.add (this);
-	proc.taskDiscovered.notify (this);
+	this (proc, id, false, true);
     }
 
-    // all the info on a task
-    Task (Proc proc, TaskId id, boolean runnable)
+    /**
+     * Create a new task, it is attached.
+     */
+    Task (Proc proc, TaskId id, boolean running)
     {
-	this.proc = proc;
-	this.id = id;
-	state = TaskState.initial (this, runnable);
-	proc.add (this);
-	proc.host.add (this);
+	this (proc, id, true, running);
     }
 
     // Send operation to corresponding underlying [kernel] task.

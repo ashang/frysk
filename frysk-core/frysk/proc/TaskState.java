@@ -45,16 +45,17 @@ class TaskState
     /**
      * Return the tasks initial state.
      */
-    static TaskState initial (Task task)
+    static TaskState initial (Task task, boolean attached, boolean running)
     {
-	return unattached;
-    }
-    static TaskState initial (Task task, boolean runnable)
-    {
-	if (runnable)
-	    return startRunning;
-	else
-	    return startStopped;
+	if (attached) {
+	    if (running)
+		return startRunning;
+	    else
+		return startStopped;
+	}
+	else {
+	    return unattached;
+	}
     }
 
     protected TaskState (String state)

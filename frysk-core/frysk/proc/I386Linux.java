@@ -108,10 +108,12 @@ class I386Linux
         extends LinuxTask
     {
 	Isa isa = isaSingleton ();
-        Task (frysk.proc.Proc process, TaskId tid,
-	      boolean runnable)
+	/**
+	 * Create an attached, possibly running, task.
+	 */
+        Task (Proc process, TaskId tid, boolean running)
         {
-            super (process, tid, runnable);
+            super (process, tid, running);
             this.pid = tid.hashCode ();
 	    // For writing, at least, we are forced to use PTRACE
 	    // as /proc/mem cannot be written to.

@@ -61,9 +61,9 @@ class HostState
     {
 	throw unhandled (host, "RequestRefresh");
     }
-    HostState processPerformCreateAttachedProc (Host host, String stdin,
-						String stdout, String stderr,
-						String[] args)
+    HostState processPerformCreateAttachedProc (Host host, boolean running,
+						String stdin, String stdout,
+						String stderr, String[] args)
     {
 	throw unhandled (host, "PerformCreateAttachedProc");
     }
@@ -76,13 +76,15 @@ class HostState
 		return running;
 	    }
 	    HostState processPerformCreateAttachedProc (Host host,
+							boolean running,
 							String stdin,
 							String stdout,
 							String stderr,
 							String[] args)
 	    {
-		host.sendCreateAttachedProc (stdin, stdout, stderr, args);
-		return running;
+		host.sendCreateAttachedProc (running, stdin, stdout, stderr,
+					     args);
+		return HostState.running;
 	    }
 	};
 }

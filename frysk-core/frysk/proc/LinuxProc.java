@@ -128,15 +128,21 @@ public class LinuxProc
     }
 
     private Auxv[] auxv;
-    LinuxProc (Proc parent, ProcId pid)
+    /**
+     * Create a new detached process.  RUNNING makes no sense here.
+     * Since PARENT could be NULL, also explicitly pass in the host.
+     */
+    LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
-	super (parent, pid);
-    }
-    LinuxProc (Host host, Proc parent, ProcId procId, boolean attached,
-	       Stat stat)
-    {
-	super (host, parent, procId, attached);
+	super (host, parent, pid);
 	this.stat = stat;
+    }
+    /**
+     * Create a new, attached, and possibly running, process.
+     */
+    LinuxProc (Proc parent, ProcId procId, boolean running)
+    {
+	super (parent, procId, running);
     }
     void sendRefresh ()
     {
@@ -185,7 +191,7 @@ public class LinuxProc
 	    remove (task);
 	}
     }
-    void sendAttach ()
+    void sendAttach (boolean running)
     {
 	Ptrace.attach (id.id);
 	File tasks = new File ("/proc/" + id.id, "task");
@@ -205,20 +211,20 @@ public class LinuxProc
 	    if (tid != id.id)
 		Ptrace.attach (tid);
 	    TaskId newTid = new TaskId (tid);
-	    LinuxTask t = (LinuxTask) newTask (newTid, true);
+	    LinuxTask t = (LinuxTask) newAttachedTask (newTid, running);
 	    t.ptraceAttached = true;
 	}
     }
-    void sendNewAttachedChild (ProcId childId)
+    void sendNewAttachedChild (ProcId childId, boolean running)
     {
 	// A forked child starts out attached.
-	new LinuxProc (this, childId);
+	new LinuxProc (this, childId, running);
     }
 
-    Task newTask (TaskId id, boolean runnable)
+    Task newAttachedTask (TaskId id, boolean running)
     {
 	// XXX: Should be abstracted.
-	return new I386Linux.Task (this, id, runnable);
+	return new I386Linux.Task (this, id, running);
     }
     public Auxv[] getAuxv ()
     {

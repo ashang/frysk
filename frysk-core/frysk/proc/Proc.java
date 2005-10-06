@@ -81,38 +81,49 @@ public abstract class Proc
      */
     abstract public String getCommand ();
 
-    abstract Task newTask (TaskId id, boolean runnable);
+    /**
+     * Create a new attached, possibly running, task.
+     */
+    abstract Task newAttachedTask (TaskId id, boolean running);
 
     /**
-     * Create a new process.
+     * Create a new, possibly attached, possibly running, process.
      */
-    Proc (Host host, Proc parent, ProcId id, boolean attached)
+    private Proc (Host host, Proc parent, ProcId id, boolean attached,
+		  boolean running)
     {
 	this.host = host;
 	this.id = id;
 	this.parent = parent;
-	state = ProcState.initial (this, attached);
+	state = ProcState.initial (this, attached, running);
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add (this);
 	// Keep our manager informed.
 	host.add (this);
-	// ... and add the main task.
-	if (attached)
-	    // XXX: Only do this when attached; when detached require
-	    // a further system-poll to get the info.
-	    newTask (new TaskId (id.id), true);
     }
     /**
-     * Create a new attached process.
+     * Create a new detached process.  RUNNING makes no sense here.
+     * Since PARENT could be NULL here, also explicitly pass in the
+     * host.
      */
-    Proc (Proc parent, ProcId id)
+    Proc (Host host, Proc parent, ProcId id)
     {
-	this (parent.host, parent, id, true);
+	this (host, parent, id, false, true);
+    }
+    /**
+     * Create a new attached, possibly running, process.
+     */
+    Proc (Proc parent, ProcId id, boolean running)
+    {
+	this (parent.host, parent, id, true, running);
+	// XXX: Only do this when attached; when detached require a
+	// further system-poll to get the info.
+	newAttachedTask (new TaskId (id.id), running);
     }
     
-    abstract void sendAttach ();
-    abstract void sendNewAttachedChild (ProcId childId);
+    abstract void sendAttach (boolean running);
+    abstract void sendNewAttachedChild (ProcId childId, boolean running);
     abstract void sendRefresh ();
 
     /**

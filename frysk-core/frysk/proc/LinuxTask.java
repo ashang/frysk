@@ -64,6 +64,10 @@ public class LinuxTask
 	};
     }
     
+    /**
+     * Create a detached task.  For detached tasks, RUNNING makes no
+     * sennse.
+     */
     LinuxTask (Proc process, TaskId id)
     {
 	super (process, id);
@@ -71,10 +75,12 @@ public class LinuxTask
 	addMemoryAndRegisters ();
     }
 
-    LinuxTask (Proc process, TaskId id,
-	  boolean runnable)
+    /**
+     * Create an attached, possibly running, task.
+     */
+    LinuxTask (Proc process, TaskId id, boolean running)
     {
-	super (process, id, runnable);
+	super (process, id, running);
 	this.pid = id.hashCode ();
 	addMemoryAndRegisters ();
     }

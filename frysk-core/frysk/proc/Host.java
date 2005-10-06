@@ -111,8 +111,9 @@ public abstract class Host
 
     // Refresh the list of processes.
     abstract void sendRefresh (boolean refreshAll);
-    abstract void sendCreateAttachedProc (String stdin, String stdout,
-					  String stderr, String[] args);
+    abstract void sendCreateAttachedProc (boolean running, String stdin,
+					  String stdout, String stderr,
+					  String[] args);
 
     /**
      * The current state of this host.
@@ -156,13 +157,15 @@ public abstract class Host
      * (Internal) Tell this host to create an attached, possibly
      * running, process.
      */
-    private void performCreateAttachedProc (final String stdinArg,
+    private void performCreateAttachedProc (final boolean runningArg,
+					    final String stdinArg,
 					    final String stdoutArg,
 					    final String stderrArg,
 					    final String[] argsArg)
     {
-	Manager.eventLoop.appendEvent (new HostEvent ("PerformCreateProc")
+	Manager.eventLoop.appendEvent (new HostEvent ("PerformCreateAttachedProc")
 	    {
+		boolean running = runningArg;
 		String stdin = stdinArg;
 		String stdout = stdoutArg;
 		String stderr = stderrArg;
@@ -170,7 +173,7 @@ public abstract class Host
 		public void execute ()
 		{
 		    state = state.processPerformCreateAttachedProc
-			(Host.this, stdin, stdout, stderr, args);
+			(Host.this, running, stdin, stdout, stderr, args);
 		}
 	    });
     }
@@ -180,7 +183,7 @@ public abstract class Host
      */
     public final void requestCreateAttachedContinuedProc (String[] args)
     {
-	performCreateAttachedProc (null, null, null, args);
+	performCreateAttachedProc (true, null, null, null, args);
     }
     /**
      * Request that a new attached and running process created.
@@ -190,7 +193,7 @@ public abstract class Host
 							  String stderr,
 							  String[] args)
     {
-	performCreateAttachedProc (stdin, stdout, stderr, args);
+	performCreateAttachedProc (true, stdin, stdout, stderr, args);
     }
 
     /**
