@@ -125,8 +125,8 @@ public class TestUnpaused
 	public void update (Observable o, Object obj)
 	{
 	    TaskEvent.Signaled ste = (TaskEvent.Signaled)obj;
-	    assertEquals ("Expect task to be running", TaskState.running,
-			  ste.task.state);
+	    assertEquals ("task state", "running",
+			  ste.task.getStateString ());
 	    ste.task.requestStop ();  // Extraneous stop
 	}
     }
@@ -148,15 +148,15 @@ public class TestUnpaused
 	{
             if (task != null) {
 		mainTask.requestContinue ();  // Extraneous go
-		if (mainTask.state != TaskState.running) {
+		if (!"running".equals (mainTask.getStateString ())) {
 	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));	
 		    return;
 		}
-		else if (thread1.state != TaskState.running) {
+		else if (!"running".equals (thread1.getStateString ())) {
 	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));
 		    return;
 		}
-		else if (thread2.state != TaskState.running) {
+		else if (!"running".equals (thread2.getStateString ())) {
 	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));
 		    return;
 		}
@@ -180,12 +180,12 @@ public class TestUnpaused
         public void execute ()
         {
             if (task != null) {
-		assertEquals ("Main task unpaused", mainTask.state,
-			      TaskState.unpaused);
-		assertEquals ("Thread1 is unpaused", thread1.state,
-			      TaskState.unpaused);
-		assertEquals ("Thread2 is unpaused", thread2.state,
-			      TaskState.unpaused);
+		assertEquals ("main task state", "unpaused",
+			      mainTask.getStateString ());
+		assertEquals ("task 1 state", "unpaused",
+			      thread1.getStateString ());
+		assertEquals ("task 2 state", "unpaused",
+			      thread2.getStateString ());
 		mainTask.stopEvent.addObserver (stopEventObserver);
 		thread1.stopEvent.addObserver (stopEventObserver);
 		thread2.stopEvent.addObserver (stopEventObserver);
@@ -209,12 +209,12 @@ public class TestUnpaused
         public void execute ()
         {
             if (task != null) {
-		assertEquals ("Main task is paused", mainTask.state,
-			      TaskState.paused);
-		assertEquals ("Thread1 is paused", thread1.state,
-			      TaskState.paused);
-		assertEquals ("Thread2 is paused", thread2.state,
-			      TaskState.paused);
+		assertEquals ("main task state", "paused",
+			      mainTask.getStateString ());
+		assertEquals ("task 1 state", "paused",
+			      thread1.getStateString ());
+		assertEquals ("task 2 state", "paused",
+			      thread2.getStateString ());
 		mainTask.requestContinue ();
 		mainTask.requestContinue ();  // Extraneous go
 		thread1.requestContinue ();

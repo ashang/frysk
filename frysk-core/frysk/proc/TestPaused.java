@@ -136,13 +136,13 @@ public class TestPaused
         public void execute ()
         {
             if (task != null) {
-		assertEquals ("Main task is paused", TaskState.paused,
-			      mainTask.state);
+		assertEquals ("main task state", "paused",
+			      mainTask.getStateString ());
 		mainTask.requestStop ();  // Extraneous stop
-		assertEquals ("Thread 1 is paused", TaskState.paused,
-			      thread1.state);
-		assertEquals ("Thread 2 is paused", TaskState.paused,
-			      thread2.state);
+		assertEquals ("thread 1 state", "paused",
+			      thread1.getStateString ());
+		assertEquals ("thread 2 state", "paused",
+			      thread2.getStateString ());
 		Manager.eventLoop.requestStop ();
 	    }
         }

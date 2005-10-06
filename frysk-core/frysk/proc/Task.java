@@ -116,7 +116,7 @@ abstract public class Task
     {
 	this.proc = proc;
 	this.id = id;
-	this.state = TaskState.unattached;
+	state = TaskState.initial (this);
 	proc.add (this);
 	proc.host.add (this);
 	proc.taskDiscovered.notify (this);
@@ -127,10 +127,7 @@ abstract public class Task
     {
 	this.proc = proc;
 	this.id = id;
-	if (runnable)
-	    state = TaskState.startRunning;
-	else
-	    state = TaskState.startStopped;
+	state = TaskState.initial (this, runnable);
 	proc.add (this);
 	proc.host.add (this);
     }
@@ -145,7 +142,17 @@ abstract public class Task
 
     protected LinkedList queuedEvents = new LinkedList ();
 
-    TaskState state;
+    /**
+     * The current state of this task.
+     */
+    /* XXX: private */ TaskState state;
+    /**
+     * Return the state represented as a simple string.
+     */
+    public String getStateString ()
+    {
+	return state.toString ();
+    }
 
     /**
      * Event requesting that the task stop.

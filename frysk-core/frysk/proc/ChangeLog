@@ -1,3 +1,14 @@
+2005-10-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java, ProcState.java, HostState.java: Add method
+	initial, make all state variables and classes private.
+	* TestPaused.java, TestRefresh.java, TestStop.java,
+	TestStopAndStop.java, TestUnpaused.java: Use .getStateString when
+	comparing states.
+	* Task.java, Proc.java, Host.java: Use State .initial.  Add method
+	getStateString.
+	* State.java: Change toString to return the simple name.
+
 2005-10-05  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxHost.java: In sendCreateAttachedProc, set the sub-processes

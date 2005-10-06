@@ -91,10 +91,7 @@ public abstract class Proc
 	this.host = host;
 	this.id = id;
 	this.parent = parent;
-	if (attached)
-	    state = ProcState.running;
-	else
-	    state = ProcState.unattached;
+	state = ProcState.initial (this, attached);
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add (this);
@@ -118,7 +115,17 @@ public abstract class Proc
     abstract void sendNewAttachedChild (ProcId childId);
     abstract void sendRefresh ();
 
-    ProcState state = ProcState.unattached;
+    /**
+     * The current state of this process.
+     */
+    /* XXX: private */ ProcState state;
+    /**
+     * Return the state represented as a simple string.
+     */
+    public String getStateString ()
+    {
+	return state.toString ();
+    }
 
     /**
      * Request that the process be both attached and running.

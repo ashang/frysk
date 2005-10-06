@@ -48,9 +48,12 @@ class State
     {
 	this.name = name;
     }
+    /**
+     * Return the name of this state as a string.
+     */
     public String toString ()
     {
-	return "[" + name + "State]";
+	return name;
     }
     protected RuntimeException unhandled (Object what, Event event)
     {

@@ -135,14 +135,14 @@ public class TestStopAndStop
         public void execute ()
         {
             if (task != null) {
-		assertEquals ("Main task stopped", TaskState.stopped,
-			      mainTask.state);
+		assertEquals ("main task state", "stopped",
+			      mainTask.getStateString ());
 		mainTask.requestStop (); // Extraneous stop
 		thread1.requestStop ();  // Extraneous stop
-		assertEquals ("Thread1 is stopped", TaskState.stopped,
-			      thread1.state);
-		assertEquals ("Thread2 is stopped", TaskState.stopped,
-			      thread2.state);
+		assertEquals ("task 1 state", "stopped",
+			      thread1.getStateString ());
+		assertEquals ("task 2 state", "stopped",
+			      thread2.getStateString ());
 		Manager.eventLoop.requestStop ();
 	    }
         }

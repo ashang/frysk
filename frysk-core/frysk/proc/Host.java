@@ -53,6 +53,14 @@ import java.util.Iterator;
 
 public abstract class Host
 {
+    /**
+     * The host corresponds to a specific system.
+     */
+    Host ()
+    {
+	state = HostState.initial (this);
+    }
+
     // Maintain a collection of all known Tasks.
 
     // There's no new task observer here.  It's the responsibility of
@@ -106,7 +114,17 @@ public abstract class Host
     abstract void sendCreateAttachedProc (String stdin, String stdout,
 					  String stderr, String[] args);
 
-    protected HostState state = HostState.running;
+    /**
+     * The current state of this host.
+     */
+    private HostState state;
+    /**
+     * Return the state represented as a simple string.
+     */
+    public String getStateString ()
+    {
+	return state.toString ();
+    }
 
     /**
      * Request that the Host scan the system's process tables

@@ -46,6 +46,13 @@ package frysk.proc;
 class HostState
     extends State
 {
+    /**
+     * Return the hosts initial state.
+     */
+    static HostState initial (Host host)
+    {
+	return running;
+    }
     protected HostState (String state)
     {
 	super (state);
@@ -61,7 +68,7 @@ class HostState
 	throw unhandled (host, "PerformCreateAttachedProc");
     }
 
-    static HostState running = new HostState ("running")
+    private static HostState running = new HostState ("running")
 	{
 	    HostState processRequestRefresh (Host host, boolean refreshAll)
 	    {

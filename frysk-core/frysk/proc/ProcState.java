@@ -51,6 +51,21 @@ import java.util.HashMap;
 abstract class ProcState
     extends State
 {
+    /**
+     * Return the Proc's initial state.
+     */
+    static ProcState initial (Proc proc)
+    {
+	return unattached;
+    }
+    static ProcState initial (Proc proc, boolean attached)
+    {
+	if (attached)
+	    return running;
+	else
+	     return unattached;
+    }
+
     protected ProcState (String state)
     {
 	super (state);
@@ -108,7 +123,7 @@ abstract class ProcState
      * The process is running free (or at least was the last time its
      * status was checked).
      */
-    static ProcState unattached = new ProcState ("unattached")
+    private static ProcState unattached = new ProcState ("unattached")
 	{
 	    private ProcState processRequestAttach (Proc proc, boolean stop)
 	    {
@@ -151,7 +166,7 @@ abstract class ProcState
      * In the process of attaching, the main task has been sent an
      * attach request, waiting for it to finish.
      */
-    static class AttachingToMainTask
+    private static class AttachingToMainTask
 	extends ProcState
     {
 	private boolean stop;
@@ -241,7 +256,7 @@ abstract class ProcState
      * In the process of detaching; waiting for all tasks to report
      * back that they have successfully detached.
      */
-    static class DetachingAllTasks
+    private static class DetachingAllTasks
 	extends ProcState
     {
 	private Map attachedTasks;
@@ -267,11 +282,11 @@ abstract class ProcState
     /**
      * The process has been destroyed.
      */
-    static ProcState destroyed = new ProcState ("destroyed")
+    private static ProcState destroyed = new ProcState ("destroyed")
 	{
 	};
 
-    static ProcState running = new ProcState ("running")
+    private static ProcState running = new ProcState ("running")
 	{
 	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
 	    {
@@ -318,7 +333,7 @@ abstract class ProcState
      * All the tasks have been sent a stop request, waiting for each,
      * in turn, to acknowledge.
      */
-    static class StoppingAllTasks
+    private static class StoppingAllTasks
 	extends ProcState
     {
 	private Map runningTasks;
@@ -340,7 +355,7 @@ abstract class ProcState
 	}
     }
 
-    static ProcState stopped = new ProcState ("stopped")
+    private static ProcState stopped = new ProcState ("stopped")
 	{
 	    boolean isStopped ()
 	    {
@@ -379,7 +394,7 @@ abstract class ProcState
      * All tasks have been sent a continue request, wait for each in
      * turn to report back that the request has been processed.
      */
-    static class ContinuingAllTasks
+    private static class ContinuingAllTasks
 	extends ProcState
     {
 	private Map stoppedTasks;

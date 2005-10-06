@@ -42,6 +42,21 @@ package frysk.proc;
 class TaskState
     extends State
 {
+    /**
+     * Return the tasks initial state.
+     */
+    static TaskState initial (Task task)
+    {
+	return unattached;
+    }
+    static TaskState initial (Task task, boolean runnable)
+    {
+	if (runnable)
+	    return startRunning;
+	else
+	    return startStopped;
+    }
+
     protected TaskState (String state)
     {
 	super (state);
@@ -162,7 +177,7 @@ class TaskState
      * The task isn't attached (it was presumably detected using a
      * probe of the system process list).
      */
-    static TaskState unattached = new TaskState ("unattached")
+    private static TaskState unattached = new TaskState ("unattached")
 	{
 	    TaskState processPerformRemoval (Task task)
 	    {
@@ -178,7 +193,7 @@ class TaskState
     /**
      * The task is in the process of being attached.
      */
-    static TaskState attaching = new TaskState ("attaching")
+    private static TaskState attaching = new TaskState ("attaching")
 	{
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
@@ -203,7 +218,7 @@ class TaskState
      * Task just starting out, wait for it to become ready, and then
      * let it run.
      */
-    static TaskState startRunning = new TaskState ("startRunning")
+    private static TaskState startRunning = new TaskState ("startRunning")
 	{
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
@@ -252,7 +267,7 @@ class TaskState
      * Task just starting out, wait for it to become ready, but put it
      * into the stopped start.
      */
-    static TaskState startStopped = new TaskState ("startStopped")
+    private static TaskState startStopped = new TaskState ("startStopped")
 	{
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
@@ -295,7 +310,7 @@ class TaskState
 	};
 
     // A manually stopped task.
-    static TaskState stopping = new TaskState ("stopping")
+    private static TaskState stopping = new TaskState ("stopping")
 	{
 	    TaskState processRequestStop (Task task)
 	    {
@@ -368,7 +383,7 @@ class TaskState
 	};
 
     // Keep the task running.
-    static TaskState running = new TaskState ("running")
+    private static TaskState running = new TaskState ("running")
 	{
 	    boolean isRunning ()
 	    {
@@ -459,7 +474,7 @@ class TaskState
 	    }
 	};
 
-    static TaskState performingStop = new TaskState ("performingStop")
+    private static TaskState performingStop = new TaskState ("performingStop")
 	{
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
@@ -468,7 +483,7 @@ class TaskState
 	    }
 	};
 
-    static TaskState detaching = new TaskState ("detaching")
+    private static TaskState detaching = new TaskState ("detaching")
 	{
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
@@ -480,7 +495,7 @@ class TaskState
 	    }
 	};
 
-    static TaskState stepping = new TaskState ("stepping")
+    private static TaskState stepping = new TaskState ("stepping")
 	{
 	    TaskState process (Task task, TaskEvent.Trapped event)
 	    {
@@ -533,7 +548,7 @@ class TaskState
     	    }
 	};
 
-    static TaskState steppingPaused = new TaskState ("steppingPaused")
+    private static TaskState steppingPaused = new TaskState ("steppingPaused")
 	{
 	    TaskState process (Task task, TaskEvent.Signaled event)
 	    {
@@ -589,7 +604,7 @@ class TaskState
     	    }
 	};
 
-    static TaskState stopped = new TaskState ("stopped")
+    private static TaskState stopped = new TaskState ("stopped")
 	{
 	    boolean isStopped ()
 	    {
@@ -637,7 +652,7 @@ class TaskState
 	    }
 	};
 
-    static TaskState paused = new TaskState ("paused")
+    private static TaskState paused = new TaskState ("paused")
 	{
 	    boolean isStopped ()
 	    {
@@ -664,7 +679,7 @@ class TaskState
     	    }
 	};
 
-    static TaskState unpaused = new TaskState ("unpaused")
+    private static TaskState unpaused = new TaskState ("unpaused")
 	{
 	    boolean isRunning ()
 	    {
@@ -727,7 +742,7 @@ class TaskState
     	    }
 	};
 
-    static TaskState zombied = new TaskState ("zombied")
+    private static TaskState zombied = new TaskState ("zombied")
 	{
 	    TaskState process (Task task, TaskEvent.Stopped event)
 	    {
@@ -777,7 +792,7 @@ class TaskState
     	    }
 	};
 
-    static TaskState destroyed = new TaskState ("destroyed") 
+    private static TaskState destroyed = new TaskState ("destroyed") 
 	{
 	    boolean isStopped ()
 	    {

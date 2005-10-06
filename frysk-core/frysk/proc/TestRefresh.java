@@ -76,8 +76,8 @@ public class TestRefresh
 			  1, added.count);
 	    assertEquals (reason + ", child removed nunce",
 			  0, removed.count);
-	    assertEquals (reason + ", child unattached",
-			  ProcState.unattached, proc.state);
+	    assertEquals (reason + ", child state",
+			  "unattached", proc.getStateString ());
 	}
 	void verifyRemove (String reason)
 	{
@@ -87,8 +87,8 @@ public class TestRefresh
 			  1, added.count);
 	    assertEquals (reason + ", child removed once",
 			  1, removed.count);
-	    assertEquals (reason + ", child in destroyed state",
-			  ProcState.destroyed, proc.state);
+	    assertEquals (reason + ", child state",
+			  "destroyed", proc.getStateString ());
 	}
     }
 
@@ -191,8 +191,8 @@ public class TestRefresh
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
- 	    assertEquals ("Task " + task + " in the unattached state",
- 			  TaskState.unattached, task.state);
+ 	    assertEquals ("task " + task + " state", "unattached",
+			  task.getStateString ());
  	}
 
 	// Tell the child to drop two tasks.  Check that the refresh
@@ -209,15 +209,15 @@ public class TestRefresh
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
-	    assertEquals ("Task " + task + " in the unattached state",
-			  TaskState.unattached, task.state);
+	    assertEquals ("Task " + task + " state", "unattached",
+			  task.getStateString ());
  	}
 	assertEquals ("After kill, one task was removed",
 		      2, taskCount.numberRemoved ());
 	for (Iterator i = taskCount.removed.iterator (); i.hasNext (); ) {
 	    Task task = (Task) i.next ();
-	    assertEquals ("Removed task " + task + " state",
-			  TaskState.destroyed, task.state);
+	    assertEquals ("removed task state", "destroyed",
+			  task.getStateString ());
 	}
 
 	// Finally, tell the child to add a task back.  Check that the
