@@ -1,3 +1,16 @@
+2005-10-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineHandler.java: Removed member CurrentBottom, added firstVisible
+	and lastVisible.
+	(init): Changed to match above refactoring.
+	(moveDown): Number of scopes visible now based on prefernce, changed
+	to reflect this.
+	(moveUp): Ditto.
+
+	* InlineViewer.java (load): Added check to automatically hide ellipses.
+	(moveDown): Added.
+	(setSubscopeAtCurrentLine): Sets so the child does not show ellipses.
+
 2005-10-07  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMImage.java: changed addSource/AddInlineFunction to return void

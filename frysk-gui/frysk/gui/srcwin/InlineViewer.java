@@ -64,6 +64,9 @@ public class InlineViewer extends SourceViewWidget {
 	}
 	
 	public void load(PCLocation current){
+	    if(current.getDepth() == 1)
+            this.showEllipsis = false;
+        
 		try {
 			this.buf.loadFile(current.getFilename());
 		} catch (Exception e){
@@ -98,6 +101,17 @@ public class InlineViewer extends SourceViewWidget {
 			b2.showAll();
 		}
 	}
+    
+    public void moveDown(){
+        if(this.prevLevel == null)
+            this.showEllipsis = true;
+        else
+            this.showEllipsis = false;
+        
+        this.remove(this.nextLevel);
+        this.clearSubscopeAtCurrentLine();
+        this.load(this.scope.nextScope);
+    }
 
 	public PCLocation getScope() {
 		return scope;
@@ -110,12 +124,18 @@ public class InlineViewer extends SourceViewWidget {
 	public void setSubscopeAtCurrentLine(InlineViewer viewer){
 		super.setSubscopeAtCurrentLine(viewer);
 		
+        viewer.showEllipsis = false;
 		this.expanded = true;
 		
 		viewer.prevLevel = this;
 		this.nextLevel = viewer;
 	}
 	
+//    public void clearSubscopeAtCurrentLine(){
+//        this.remove(this.nextLevel);
+//        super.clearSubscopeAtCurrentLine();
+//    }
+    
 	protected void drawMargin(){
 		if(!showEllipsis){
 			super.drawMargin();
