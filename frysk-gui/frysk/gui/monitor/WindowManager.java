@@ -59,8 +59,10 @@ public class WindowManager implements Saveable{
 	/**
 	 * Public instances of the windows
 	 * {*/
+	public MenuBar    menuBar;
 	public MainWindow mainWindow;
 	public LogWidget logWindow;
+	public PreferencesWindow prefsWindow;
 	/**}*/
 	
 	public WindowManager(){
@@ -73,6 +75,10 @@ public class WindowManager implements Saveable{
 		
 		this.logWindow = new LogWidget(glade);
 		this.logWindow.showAll();
+		
+		this.prefsWindow = new PreferencesWindow(glade);
+		//this.prefsWindow.showAll();
+		this.menuBar = new MenuBar(glade);
 	}
 
 	public void save(Preferences prefs) {

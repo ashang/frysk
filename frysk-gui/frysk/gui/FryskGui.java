@@ -65,6 +65,7 @@ import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.Config;
 import frysk.gui.monitor.FryskErrorFileHandler;
+import frysk.gui.monitor.PreferenceWidget;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
@@ -192,6 +193,9 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		procpop.load(prefs);
 		backendStarter.start();
 
+		WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
+		WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));
+		WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
 		Gtk.main();
 		
 		Manager.eventLoop.requestStop();

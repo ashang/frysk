@@ -1,3 +1,11 @@
+2005-10-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* PreferencesWindow.java: new file.
+	* PreferenceWidget.java: new file.
+	* MenuBar.java: new file.
+	* WindowManager.java: Added declarations for menuBar and
+	perferanceWindow.
+
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
 	* ThreadMenu.java, ProcDataModel.java, EventLogger.java: For
