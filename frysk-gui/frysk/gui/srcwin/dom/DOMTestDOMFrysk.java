@@ -100,10 +100,15 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMImage.getName");
 		}
 
-		if (testDOMImage.addSource("test_source", "/home/xyz")) {
-			System.out.println("passed...DOMImage.addSource");
+		if (testDOMImage.addSource("test_source1", "/home/xyz")) {
+			System.out.println("passed...DOMImage.addSource...test_source1");
 		} else {
-			System.out.println("failed...DOMImage.addsource");
+			System.out.println("failed...DOMImage.addsource...test_source1");
+		}
+		if (testDOMImage.addSource("test_source2", "/var/tmp")) {
+			System.out.println("passed...DOMImage.addSource...test_source2");
+		} else {
+			System.out.println("failed...DOMImage.addsource...test_spurce2");
 		}
 		testDOMImage.setCCPath("/usr/local/share");
 		if (testDOMImage.getCCPath() == "/usr/local/share") {
@@ -123,7 +128,6 @@ public class DOMTestDOMFrysk {
 		}
 		Iterator iter = testDOMImage.getInlinedFunctions();
 		int ctr = 0;
-		//Vector v = new Vector();
 		while (iter.hasNext()) {
 			Element test_inlined = (Element) iter.next();
 			ctr++;
@@ -139,9 +143,34 @@ public class DOMTestDOMFrysk {
 						+ inlinename);
 				continue;
 			}
-			System.out.println("failed...DOMImagegetInlinedFunctions");
+			System.out.println("failed...DOMImage.getInlinedFunctions");
+		}
+		if (testDOMImage.getSource("test_source1") != null) { 
+			System.out.println("passed...DOMImage.getSource");
+		} else {
+			System.out.println("failed...DOMImage.getSource");
+		}
+		Iterator iter_sources = testDOMImage.getSources();
+		ctr = 0;
+		while (iter_sources.hasNext()) {
+			Element test_sources = (Element) iter_sources.next();
+			ctr++;
+			String inlinename = 
+				test_sources.getAttributeValue(DOMSource.FILENAME_ATTR);
+			if (ctr == 1 && (inlinename == "test_source1")) {
+				System.out.println("passed...DOMImage.getSources..." 
+						+ inlinename);
+				continue;
+			}
+			if (ctr == 2 && (inlinename == "test_source2")) {
+				System.out.println("passed...DOMImage.getSources..."
+						+ inlinename);
+				continue;
+			}
+			System.out.println("failed...DOMImage.getSources..." + inlinename);
 		}
 		
+
 
 	}
 	

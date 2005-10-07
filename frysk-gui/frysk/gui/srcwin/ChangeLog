@@ -1,3 +1,9 @@
+2005-10-07  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMImage.java: add getSource method
+	
+	* dom/DOMTestDOMFrysk.java: add tests for getSource/getSources
+	
 2005-10-05  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMImage.java: modifed getInlinedFunctions method

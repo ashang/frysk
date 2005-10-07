@@ -103,15 +103,33 @@ public class DOMImage {
 	 * @return an iterator to all the source files contained in this image.
 	 */
 	public Iterator getSources(){
-		Iterator iter = this.myElement.getChildren(DOMSource.SOURCE_NODE).iterator();
-		Vector v = new Vector();
-		
-		while(iter.hasNext())
-			v.add(new DOMSource((Element) iter.next()));
-		
-		return v.iterator();
+		return this.myElement.getChildren(DOMSource.SOURCE_NODE).iterator();
 	}
 	
+	/**
+	 * Attempts to fetch an image of the given name from the DOM. If no image is
+	 * found returns null
+	 * 
+	 * @param name
+	 *            The name of the image to look for
+	 * @return The DOMSource corresponding to the element, or null if no such
+	 *         element exists
+	 */
+	public DOMSource getSource(String name) {
+		Iterator i = this.myElement.getChildren().iterator();
+
+		while (i.hasNext()) {
+			Element elem = (Element) i.next();
+			if (elem.getQualifiedName().equals(DOMSource.SOURCE_NODE)) {
+				if (elem.getAttributeValue(DOMSource.FILENAME_ATTR)
+						.equals(name))
+					return new DOMSource(elem);
+			}
+		}
+
+		return null;
+	}
+
 	public Iterator getInlinedFunctions(){
 		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();
 		Vector v = new Vector();
