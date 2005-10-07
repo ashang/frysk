@@ -149,7 +149,7 @@ public abstract class Proc
      */
     public void requestAttachedContinue ()
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
@@ -165,7 +165,7 @@ public abstract class Proc
      */
     public void requestAttachedStop ()
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
@@ -181,7 +181,7 @@ public abstract class Proc
      */
     public void requestDetachedContinue ()
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
@@ -195,7 +195,7 @@ public abstract class Proc
      */
     public void requestRefresh ()
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
@@ -209,7 +209,7 @@ public abstract class Proc
      */
     void performRemoval ()
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
@@ -224,7 +224,7 @@ public abstract class Proc
      */
     void performTaskAttachCompleted (final Task theTask)
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
@@ -241,7 +241,7 @@ public abstract class Proc
      */
     void performTaskDetachCompleted (final Task theTask)
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
@@ -258,7 +258,7 @@ public abstract class Proc
      */
     void performTaskStopCompleted (final Task theTask)
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
@@ -275,7 +275,7 @@ public abstract class Proc
      */
     void performTaskContinueCompleted (final Task theTask)
     {
-	Manager.eventLoop.appendEvent (new ProcEvent ()
+	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()

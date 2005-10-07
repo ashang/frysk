@@ -1,5 +1,9 @@
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java: Make pendingEvents a synchronizedList.  Rename
+	.appendEvent to .add.  Add method .addToPending.
+	* TestEventLoop.java: Update.
+	
 	* Signal.java: New.
 	* SignalEvent.java: Extend Signal.java.
 	* EventLoop.java: Update.  Make .signalHandlers a Map.  Rename

@@ -134,7 +134,7 @@ public abstract class Host
      */
     public void requestRefresh (final boolean refreshAllArg)
     {
-	Manager.eventLoop.appendEvent (new HostEvent ("RequestRefresh")
+	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
 	    {
 		boolean refreshAll = refreshAllArg;
 		public void execute ()
@@ -163,7 +163,7 @@ public abstract class Host
 					    final String stderrArg,
 					    final String[] argsArg)
     {
-	Manager.eventLoop.appendEvent (new HostEvent ("PerformCreateAttachedProc")
+	Manager.eventLoop.add (new HostEvent ("PerformCreateAttachedProc")
 	    {
 		boolean running = runningArg;
 		String stdin = stdinArg;

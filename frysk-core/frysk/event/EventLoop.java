@@ -55,6 +55,9 @@ import java.util.HashMap;
 
 public class EventLoop
 {
+    /**
+     * Create an event loop.
+     */
     public EventLoop ()
     {
 	// Make certain that the global signal set is empty.
@@ -94,6 +97,7 @@ public class EventLoop
 	pollEvents.add (fd);
     }
 
+
     /**
      * Collection of signals; assume that very few signals are being
      * watched and hence that a small map is sufficient.
@@ -128,17 +132,30 @@ public class EventLoop
 	Signal lookup = new Signal (signum);
 	SignalEvent handler = (SignalEvent) signalHandlers.get (lookup);
 	if (handler != null)
-	    appendEvent (handler);
+	    addToPending (handler);
     }
 
+
+    /** 
+     * Maintain a FIFO of events that are ready to be processed.
+     */
+    private List pendingEvents
+	= Collections.synchronizedList (new LinkedList ());
     /**
      * Append an event to the end of the queue of pending events.
      */
-    public void appendEvent (Event e)
+    private void addToPending (Event e)
     {
 	pendingEvents.add (e);
     }
-    private List pendingEvents = new LinkedList ();
+    /**
+     * Add the event to the end of the queue of events that need to be
+     * processed.  If necessary, interrupt the event thread.
+     */
+    public void add (Event e)
+    {
+	addToPending (e);
+    }
 
     Poll.Fds pollFds = new Poll.Fds ();
     Poll.Observer pollObserver = new Poll.Observer () {
@@ -184,7 +201,7 @@ public class EventLoop
 	    // re-insert it into the timer queue.
 	    if (timer.reSchedule (time))
 		add (timer);
-	    appendEvent (timer);
+	    addToPending (timer);
 	}
     }
 

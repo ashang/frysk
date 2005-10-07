@@ -201,10 +201,8 @@ public class LinuxHost
 		    // task.
 		    TaskId taskId = new TaskId (pid);
 		    TaskId cloneId = new TaskId (clone);
-		    eventLoop.appendEvent
-			(new TaskEvent.Cloned (taskId, cloneId));
-		    eventLoop.appendEvent
-			(new ProcEvent.TaskCloned (taskId, cloneId));
+		    eventLoop.add (new TaskEvent.Cloned (taskId, cloneId));
+		    eventLoop.add (new ProcEvent.TaskCloned (taskId, cloneId));
 		}
 		public void forkEvent (int pid, int child)
 		{
@@ -212,59 +210,49 @@ public class LinuxHost
 		    // containing process that a fork occured.
 		    TaskId taskId = new TaskId (pid);
 		    ProcId childId = new ProcId (child);
-		    eventLoop.appendEvent
-			(new TaskEvent.Forked (taskId, childId));
-		    eventLoop.appendEvent
-			(new ProcEvent.TaskForked (taskId, childId));
+		    eventLoop.add (new TaskEvent.Forked (taskId, childId));
+		    eventLoop.add (new ProcEvent.TaskForked (taskId, childId));
 		}
 		public void exitEvent (int pid, int status)
 		{
-		    eventLoop.appendEvent
-			(new TaskEvent.Exiting (new TaskId (pid), status));
+		    eventLoop.add (new TaskEvent.Exiting (new TaskId (pid),
+							  status));
 		}
 		public void execEvent (int pid)
 		{
-		    eventLoop.appendEvent
-			(new TaskEvent.Execed (new TaskId (pid)));
+		    eventLoop.add (new TaskEvent.Execed (new TaskId (pid)));
 		}
 		public void disappeared (int pid)
 		{
-		    eventLoop.appendEvent
-			(new TaskEvent.Zombied (new TaskId (pid)));
+		    eventLoop.add (new TaskEvent.Zombied (new TaskId (pid)));
 		}
 		public void syscallEvent (int pid)
 		{
-		    eventLoop.appendEvent
-			(new TaskEvent.Syscall (new TaskId (pid)));
+		    eventLoop.add (new TaskEvent.Syscall (new TaskId (pid)));
 		}
 		public void stopped (int pid, int sig)
 		{
 		    switch (sig) {
 		    case Sig.STOP:
-			eventLoop.appendEvent
-			    (new TaskEvent.Stopped (new TaskId (pid)));
+			eventLoop.add (new TaskEvent.Stopped (new TaskId (pid)));
 			break;
 		    case Sig.TRAP:
-			eventLoop.appendEvent
-			    (new TaskEvent.Trapped (new TaskId (pid)));
+			eventLoop.add (new TaskEvent.Trapped (new TaskId (pid)));
 			break;
 		    default:
-			eventLoop.appendEvent
-			    (new TaskEvent.Signaled (new TaskId (pid),
-						     sig));
+			eventLoop.add (new TaskEvent.Signaled (new TaskId (pid), sig));
 			break;
 		    }
 		}
 		public void exited (int pid, int status, boolean coreDumped)
 		{
-		    eventLoop.appendEvent
-			(new TaskEvent.Exited (new TaskId (pid), status));
+		    eventLoop.add (new TaskEvent.Exited (new TaskId (pid),
+							 status));
 		}
 		public void terminated (int pid, int signal, boolean coreDumped)
 		{
-		    eventLoop.appendEvent
-			(new TaskEvent.Terminated (new TaskId (pid),
-						   signal));
+		    eventLoop.add (new TaskEvent.Terminated (new TaskId (pid),
+							     signal));
 		}
 	    };
 	public final void execute ()

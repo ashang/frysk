@@ -236,10 +236,10 @@ public class TestEventLoop
 	// Schedule an immediate event that sets a marker indicating
 	// that it ran.
 	DidExecute firstExecute = new DidExecute ();
-	eventLoop.appendEvent (firstExecute);
+	eventLoop.add (firstExecute);
 
 	// Schedule an immediate event that shuts down the event loop.
-	eventLoop.appendEvent (new Event ()
+	eventLoop.add (new Event ()
 	    {
 		public void execute ()
 		{
@@ -251,7 +251,7 @@ public class TestEventLoop
 	// Schedule a further immediate event that sets a marker
 	// indicating that it ran.
 	DidExecute secondExecute = new DidExecute ();
-	eventLoop.appendEvent (secondExecute);
+	eventLoop.add (secondExecute);
 
 	// Schedule a timer event that, here, will never be executed
 	// since the above stop event will first be processed

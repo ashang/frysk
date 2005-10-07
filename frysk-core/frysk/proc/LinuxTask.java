@@ -70,7 +70,7 @@ public class LinuxTask
 
     private void appendZombiedEvent ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent.Zombied (this.id));
+	Manager.eventLoop.add (new TaskEvent.Zombied (this.id));
     }
 
     protected void sendContinue (int sig)

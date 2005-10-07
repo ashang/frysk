@@ -167,7 +167,7 @@ abstract public class Task
      */
     void requestStop ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -181,7 +181,7 @@ abstract public class Task
      */
     void requestContinue ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -195,7 +195,7 @@ abstract public class Task
      */
     void requestStepInstruction ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -214,7 +214,7 @@ abstract public class Task
      */
     void performRemoval ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -229,7 +229,7 @@ abstract public class Task
      */
     void performAttach ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -245,7 +245,7 @@ abstract public class Task
      */
     void performDetach ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -260,7 +260,7 @@ abstract public class Task
      */
     void performStop ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
@@ -275,7 +275,7 @@ abstract public class Task
      */
     void performContinue ()
     {
-	Manager.eventLoop.appendEvent (new TaskEvent ()
+	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
