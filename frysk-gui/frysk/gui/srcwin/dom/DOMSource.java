@@ -27,7 +27,7 @@ public class DOMSource {
 	 */
 	public static final String SOURCE_NODE = "source";
 	
-	public static DOMSource createDOMSource(String filename, String path){
+/*	public static DOMSource createDOMSource(String filename, String path){
 		Element source = new Element(SOURCE_NODE);
 		source.setAttribute(FILENAME_ATTR, filename);
 		source.setAttribute(FILEPATH_ATTR, path);
@@ -42,7 +42,7 @@ public class DOMSource {
 		parent.getElement().addContent(source);
 		
 		return new DOMSource(source);
-	}
+	}  */
 	
 	private Element myElement;
 	
@@ -56,10 +56,26 @@ public class DOMSource {
 	}
 	
 	/**
+	 * @param name to set the filename to
+	 * @return true = set name worked, false if not
+	 */
+	
+	public void setFileName(String name) {
+		this.myElement.setAttribute(FILENAME_ATTR, name);
+	}
+	/**
 	 * @return The name of the file
 	 */
 	public String getFileName(){
 		return this.myElement.getAttributeValue(FILENAME_ATTR);
+	}
+	
+	/**
+	 * @param new path to set the FILEPATH_ATTR to
+	 * @return  true if successful, false if not
+	 */
+	public void setFilePath(String path) {
+		this.myElement.setAttribute(FILEPATH_ATTR, path);
 	}
 	
 	/**

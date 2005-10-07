@@ -42,13 +42,12 @@ public class DOMImage {
 	 * @param path
 	 * @return
 	 */
-	public boolean addSource(String source_name, String path) {
+	public void addSource(String source_name, String path) {
 		
 		Element sourceNameElement = new Element(DOMSource.SOURCE_NODE);
 		sourceNameElement.setAttribute(DOMSource.FILENAME_ATTR, source_name);
 		sourceNameElement.setAttribute(DOMSource.FILEPATH_ATTR, path);
 		this.myElement.addContent(sourceNameElement);
-		return true;
 	}
 	
 	/**
@@ -56,7 +55,7 @@ public class DOMImage {
 	 * @param name of the inline function
 	 * @param an array of Strings containing the lines in the function
 	 */
-	public boolean addInlineFunction(String inline_name, String[] lines) {
+	public void addInlineFunction(String inline_name, String[] lines) {
 		
 		Element inlineNameElement = new Element(INLINE_NODE);
 		inlineNameElement.setAttribute(INLINENAME_ATTR, inline_name);
@@ -67,7 +66,6 @@ public class DOMImage {
 			lineNumber.setText(lines[i]);
 			inlineNameElement.addContent(lineNumber);
 		}
-		return true;
 	}
 	
 	/**
@@ -129,6 +127,27 @@ public class DOMImage {
 
 		return null;
 	}
+	
+	/**
+	 * attempts to fetch an inlined function DOM element
+	 * @param name of the inlined function to return
+	 * @return the DOMImage corresponding to the element, or null if no such
+	 * 	element exists
+	 */
+	public Element getInlineFunction(String name) {
+		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();
+		while (iter.hasNext()) {
+			Element node = (Element) iter.next();
+			if (node.getAttributeValue(INLINENAME_ATTR) == name)
+				return node;
+		}
+		return null;
+	}
+	
+	/**
+	 * fetches all of the inlined functions for this DOMImage 
+	 * @return an iterator of all of the inlined functions for this DOMImage
+	 */
 
 	public Iterator getInlinedFunctions(){
 		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();

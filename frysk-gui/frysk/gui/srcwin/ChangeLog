@@ -1,5 +1,15 @@
 2005-10-07  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMImage.java: changed addSource/AddInlineFunction to return void
+						 added getInlineFunction method
+						 
+	* dom/DOMSource.java: added setFileName/setFilePath methods
+	
+	* dom/DOMTestDOMFrysk.java: added tests for above additons/changes
+							more work on test messages to make them clearer
+
+2005-10-07  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMImage.java: add getSource method
 	
 	* dom/DOMTestDOMFrysk.java: add tests for getSource/getSources
