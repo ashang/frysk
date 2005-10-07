@@ -61,7 +61,7 @@ public class TestEventLoop
     public void setUp ()
     {
 	eventLoop = new EventLoop ();
-	eventLoop.addHandler (new SignalEvent (Sig.INT)
+	eventLoop.add (new SignalEvent (Sig.INT)
 	    {
 		public void execute ()
 		{
@@ -91,7 +91,7 @@ public class TestEventLoop
 		    count.numberOfTimerEvents += 1;
 		}
 	    });
-	eventLoop.addHandler (new SignalEvent (Itimer.real (500))
+	eventLoop.add (new SignalEvent (Itimer.real (500))
 	    {
 		Counters count = counters;
 		public void execute ()
@@ -299,7 +299,7 @@ public class TestEventLoop
 	// Add a handler for SIGCHILD, shoot the signal (which makes
 	// it pending since there is a handler), and then run the loop
 	// checking that it did, indeed fire.
-	eventLoop.addHandler (handler);
+	eventLoop.add (handler);
 	Signal.tkill (Pid.get (), Sig.CHLD);
 	eventLoop.runPolling (0);
 	assertEquals ("One Sig.CHLD was received.", 1, handler.count);
@@ -315,8 +315,8 @@ public class TestEventLoop
 	// Re-add the CHLD handler, but this time twice - the
 	// second add should be ignored, make certain it's again
 	// receiving signal events.
-	eventLoop.addHandler (handler);
-	eventLoop.addHandler (handler);
+	eventLoop.add (handler);
+	eventLoop.add (handler);
 	Signal.tkill (Pid.get (), Sig.CHLD);
 	eventLoop.runPolling (0);
 	assertEquals ("Second Sig.CHLD received.", 2, handler.count);

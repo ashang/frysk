@@ -40,18 +40,40 @@
 package frysk.event;
 
 /**
- * An event due to a signal.
+ * A Signal wrapper object, useful for doing SignalEvent lookups..
  */
 
-public abstract class SignalEvent
-    extends Signal
-    implements Event
+public class Signal
 {
+    private int signal;
     /**
-     * Create a Signal based event.
+     * Return the signal value.
      */
-    public SignalEvent (int signal)
+    public int getSignal ()
     {
-	super (signal);
+	return signal;
+    }
+    /**
+     * Hash on the signal value.
+     */
+    public int hashCode ()
+    {
+	return signal;
+    }
+    /**
+     * To signal events are identical if they catch the identical
+     * signal.
+     */
+    public boolean equals (Object o)
+    {
+	return (o instanceof Signal
+		&& ((Signal)o).signal == signal);
+    }
+    /**
+     * Create a signal event handler for SIGNAL.
+     */
+    public Signal (int signal)
+    {
+	this.signal = signal;
     }
 }

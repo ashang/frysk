@@ -1,5 +1,11 @@
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Signal.java: New.
+	* SignalEvent.java: Extend Signal.java.
+	* EventLoop.java: Update.  Make .signalHandlers a Map.  Rename
+	.addHandler to .add.
+	* TestEventLoop.java: Update.
+
 	* TimerEvent.java: Add .getTimeMillis, modify .reSchedule so that
 	it returns true if a re-schedule is required.  Rename .value to
 	.timeMillis, and .period to .periodMills, make private.

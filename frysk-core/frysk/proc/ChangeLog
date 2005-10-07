@@ -1,5 +1,8 @@
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java, LinuxHost.java: Update, EventLoop .addHandler
+	renamed to .add.
+
 	* TestAttachCloningThreads.java, TestExiting.java,
 	TestGoAndGo.java, TestPaused.java, TestStep.java, TestStop.java,
 	TestStopAndGo.java, TestStopAndStop.java, TestTerminated.java,

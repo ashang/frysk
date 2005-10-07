@@ -67,7 +67,7 @@ public class LinuxHost
     LinuxHost (EventLoop eventLoop)
     {
 	this.eventLoop = eventLoop;
-	eventLoop.addHandler (new PollWaitOnSigChld ());
+	eventLoop.add (new PollWaitOnSigChld ());
     }
 
     /**

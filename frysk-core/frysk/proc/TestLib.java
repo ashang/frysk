@@ -129,7 +129,8 @@ public class TestLib
 	 */
 	protected void setupAckHandler ()
 	{
-	    Manager.eventLoop.addHandler (new SignalEvent (ackSignal) {
+	    Manager.eventLoop.add (new SignalEvent (ackSignal)
+		{
 		    public void execute ()
 		    {
 			Manager.eventLoop.requestStop ();

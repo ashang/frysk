@@ -45,8 +45,9 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Iterator;
 import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Implements an event loop.
@@ -93,24 +94,21 @@ public class EventLoop
 	pollEvents.add (fd);
     }
 
-
-    // Array of signals; assume that very few signals are being
-    // watched and hence that a small array is sufficient.
-    private List signalHandlers = new ArrayList ();
+    /**
+     * Collection of signals; assume that very few signals are being
+     * watched and hence that a small map is sufficient.
+     */
+    private Map signalHandlers = Collections.synchronizedMap (new HashMap ());
     /**
      * Add the signal handler, signals are processed and then
      * delivered using the event-loop.
      */
-    public void addHandler (SignalEvent sig)
+    public void add (SignalEvent sig)
     {
-	int index = signalHandlers.indexOf (sig);
-	if (index < 0) {
-	    // New.
-	    signalHandlers.add (sig);
-	    Poll.SignalSet.add (sig.signal);
-	}
-	else
-	    signalHandlers.set (index, sig);
+	Object old = signalHandlers.put (sig, sig);
+	if (old == null)
+	    // New signal, tell Poll.
+	    Poll.SignalSet.add (sig.getSignal ());
     }
     /**
      * Remove the signal event handler, further occurances of the
@@ -119,7 +117,7 @@ public class EventLoop
     public void remove (SignalEvent sig)
     {
 	signalHandlers.remove (sig);
-	// Poll.SignalSet.remove (sig.signal);
+	// XXX: Poll.SignalSet.remove (sig.signal);
     }
     /**
      * Process the signal; find the applicable handler and append the
@@ -127,14 +125,10 @@ public class EventLoop
      */
     void processSignal (int signum)
     {
-	Iterator handlers = signalHandlers.iterator ();
-	while (handlers.hasNext ()) {
-	    SignalEvent event = (SignalEvent) handlers.next ();
-	    if (event.signal == signum) {
-		appendEvent (event);
-		return;
-	    }
-	}
+	Signal lookup = new Signal (signum);
+	SignalEvent handler = (SignalEvent) signalHandlers.get (lookup);
+	if (handler != null)
+	    appendEvent (handler);
     }
 
     /**
