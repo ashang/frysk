@@ -84,7 +84,7 @@ public class TestExiting
 	{
 	    Task task = (Task) obj;
 	    task.traceExit = true;
-	    Manager.eventLoop.addTimerEvent (new KillTimerEvent (task, 100));
+	    Manager.eventLoop.add (new KillTimerEvent (task, 100));
 	}
     }
 

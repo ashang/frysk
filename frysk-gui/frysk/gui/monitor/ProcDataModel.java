@@ -141,7 +141,7 @@ public class ProcDataModel {
 			}
 		};
 		
-		Manager.eventLoop.addTimerEvent( this.refreshTimer );
+		Manager.eventLoop.add (this.refreshTimer);
 		
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
@@ -163,7 +163,7 @@ public class ProcDataModel {
 				Manager.host.requestRefresh(true); 
 			}
 		};
-		Manager.eventLoop.addTimerEvent(refreshTimer);
+		Manager.eventLoop.add (refreshTimer);
 	}
 	
 	/**

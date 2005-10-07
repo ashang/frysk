@@ -43,8 +43,10 @@ import frysk.sys.Poll;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Iterator;
+import java.util.Collections;
 
 /**
  * Implements an event loop.
@@ -58,14 +60,24 @@ public class EventLoop
 	Poll.SignalSet.empty ();
     }
     
-    // List of timer events.  Sorted by the timer's date so that the
-    // first event always defines the next timeout.
-
-    private TreeMap timerEvents = new TreeMap ();
-    public void addTimerEvent (TimerEvent t)
+    /**
+     * List of timer events.  Ordered by the timer's expiry time (that
+     * way the first timer event always determines the next timeout).
+     */
+    private SortedMap timerEvents
+	= Collections.synchronizedSortedMap (new TreeMap ());
+    /**
+     * Add a timer event that will expire at some stage in the future.
+     * The actual time is determined by {@link
+     * TimerEvent.getTimeMillis}.
+     */
+    public void add (TimerEvent t)
     {
 	timerEvents.put (t, t);
     }
+    /**
+     * Remove the timer event from the event queue.
+     */
     public void remove (TimerEvent t)
     {
 	timerEvents.remove (t);
@@ -73,7 +85,7 @@ public class EventLoop
     }
 
 
-    // Array of poll() events; not implemented.
+    // Array of poll() events; not fully implemented.
 
     private ArrayList pollEvents = new ArrayList ();
     public void addPollEvent (PollEvent fd)
@@ -155,7 +167,7 @@ public class EventLoop
 	    // Since the timerEvents are sorted by time just need to
 	    // pull off and check the first event.
 	    TimerEvent nextTimer = (TimerEvent) timerEvents.firstKey ();
-	    long timeout = (nextTimer.value
+	    long timeout = (nextTimer.getTimeMillis ()
 			    - java.lang.System.currentTimeMillis ());
 	    if (timeout < 0)
 		timeout = 0;
@@ -171,15 +183,13 @@ public class EventLoop
 	long time = java.lang.System.currentTimeMillis ();
 	while (!timerEvents.isEmpty ()) {
 	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
-	    if (timer.value > time)
+	    if (timer.getTimeMillis () > time)
 		break;
 	    timerEvents.remove (timer);
-	    // If it's a periodic timer re-schedule it for
-	    // some time into the future.
-	    if (timer.period > 0) {
-		timer.reSchedule (time);
-		timerEvents.put (timer, timer);
-	    }
+	    // See if the timer wants to re-schedule itself, if so
+	    // re-insert it into the timer queue.
+	    if (timer.reSchedule (time))
+		add (timer);
 	    appendEvent (timer);
 	}
     }
@@ -233,7 +243,7 @@ public class EventLoop
 	    }
 	}
 	Timeout timer = new Timeout (timeout);
-	addTimerEvent (timer);
+	add (timer);
 	run ();
 	remove (timer);
 	return !timer.expired;

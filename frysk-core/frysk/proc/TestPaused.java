@@ -103,7 +103,7 @@ public class TestPaused
 	    else if (task.id.hashCode () != thread1.id.hashCode ())
 		thread2 = task;
 	    if (taskCreatedCount == 3)
-	        Manager.eventLoop.addTimerEvent (new DetachTimerEvent (mainTask, 500));
+	        Manager.eventLoop.add (new DetachTimerEvent (mainTask, 500));
 	    task.requestedStopEvent.addObserver (taskEventObserver);
 	}
     }
@@ -154,7 +154,7 @@ public class TestPaused
 	public void update (Observable o, Object obj)
 	{
 	    if (++taskStopCount == 3) {
-	        Manager.eventLoop.addTimerEvent (new AllStoppedTimerEvent (mainTask, 0));
+	        Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
 	    }
  	}
     }

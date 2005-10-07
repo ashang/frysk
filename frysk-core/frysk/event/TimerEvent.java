@@ -43,48 +43,61 @@ package frysk.event;
 /**
  * A timer event.
  *
- * Fires MILLISECONDS into the future (possibly repeated at PERIOD
+ * Fires MILLISECONDS into the future (possibly repeated at PERIODMILLIS
  * intervals).
  */
 
 public abstract class TimerEvent
     implements Event, Comparable
 {
-    long value;
-    long period = 0;
+    private long timeMillis;
+    private long periodMillis = 0;
 
     /**
-     * Create a once-only timer that schedules an event VALUE
+     * Create a once-only timer that schedules an event TIMEMILLIS
      * milliseconds into the future.
      */
-    public TimerEvent (long value)
+    public TimerEvent (long offsetMillis)
     {
-	this.value = value + System.currentTimeMillis ();
+	this.timeMillis = offsetMillis + System.currentTimeMillis ();
     }
 
     /**
-     * Create an interval timer that schedules its first event VALUE
+     * Create an interval timer that schedules its first event OFFSETMILLIS
      * milliseconds into the future, and then schedules further events
-     * every PERIOD milliseconds after that.  Should a backlog of
+     * every PERIODMILLIS milliseconds after that.  Should a backlog of
      * events form (where the next event becomes due before the
      * previous event has been delivered) then only a single event
      * will be delivered.  The method getCount returns the number of
      * events that should have been delivered.
      */
-    public TimerEvent (long value, long period)
+    public TimerEvent (long offsetMillis, long periodMillis)
     {
-	this.value = value + System.currentTimeMillis ();
-	this.period = period;
+	this.timeMillis = offsetMillis + System.currentTimeMillis ();
+	this.periodMillis = periodMillis;
     }
 
+    /**
+     * Timer events are ordered by time.
+     */
     public int compareTo (Object o)
     {
-	return (int) (value - ((TimerEvent)o).value);
+	return (int) (timeMillis - ((TimerEvent)o).timeMillis);
+    }
+
+    /**
+     * Return the time, in milliseconds, that this timer event is next
+     * expected to fire.
+     */
+    public long getTimeMillis ()
+    {
+	return timeMillis;
     }
 
     /**
      * For the interval timer, return the number of intervals since
-     * the last period timer event was delivered.
+     * the last periodMillis timer event was delivered.  See {@link
+     * #TimerEvent (long, long)}.
      */
     public long getCount ()
     {
@@ -93,11 +106,19 @@ public abstract class TimerEvent
     private long count = 1;
 
     /**
-     * For the interval timer, compute the time until the next event.
+     * Update the timer expired timer (setting the count since last
+     * fire, and any re-schedule time).  Return true if the timer
+     * needs to be scheduled further.
      */
-    void reSchedule (long currentTime)
+    boolean reSchedule (long currentTimeMillis)
     {
-	count = (currentTime - value) / period + 1;
-	value = value + period * count;
+	if (periodMillis > 0) {
+	    count = (currentTimeMillis - timeMillis) / periodMillis + 1;
+	    timeMillis = timeMillis + periodMillis * count;
+	    return true;
+	}
+	else {
+	    return false;
+	}
     }
 }

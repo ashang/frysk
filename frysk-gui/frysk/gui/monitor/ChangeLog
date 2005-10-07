@@ -1,3 +1,8 @@
+2005-10-07  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcDataModel.java: Update, EventTimer .addTimerEvent renamed to
+	.add.
+
 2005-10-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* MainWindow.java (dragEnded): Added code for reparenting the draged

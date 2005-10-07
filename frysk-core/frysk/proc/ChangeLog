@@ -1,3 +1,11 @@
+2005-10-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestAttachCloningThreads.java, TestExiting.java,
+	TestGoAndGo.java, TestPaused.java, TestStep.java, TestStop.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestTerminated.java,
+	TestUnpaused.java: Update, EventTimer .addTimerEvent renamed to
+	.add.
+
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRun.java: Rename testRun to testCreateAttachedContinuedProc.

@@ -89,7 +89,7 @@ public class TestTerminated
 			  taskDestroyedCount);
 	    taskCreatedCount++;
 	    assertEquals ("Only one task created", 1, taskCreatedCount);
-	    Manager.eventLoop.addTimerEvent (new KillTimerEvent (task, 100));
+	    Manager.eventLoop.add (new KillTimerEvent (task, 100));
 	}
     }
 

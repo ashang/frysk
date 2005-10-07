@@ -100,7 +100,7 @@ public class TestStopAndGo
 		thread2 = task;
 	    task.requestedStopEvent.addObserver (taskEventObserver);
 	    if (taskCreatedCount == 3)
-	        Manager.eventLoop.addTimerEvent (new StopTimerEvent (mainTask, 100));
+	        Manager.eventLoop.add (new StopTimerEvent (mainTask, 100));
 	}
     }
 
@@ -125,7 +125,7 @@ public class TestStopAndGo
 	public void update (Observable o, Object obj)
 	{
 	    if (++taskStopCount == 3) {
-	        Manager.eventLoop.addTimerEvent (new GoTimerEvent (mainTask, 0));
+	        Manager.eventLoop.add (new GoTimerEvent (mainTask, 0));
 	    } else if (taskStopCount == 6) {
 		Manager.eventLoop.requestStop ();
 	    }
@@ -173,7 +173,7 @@ public class TestStopAndGo
 	    mainTask.requestContinue ();
 	    thread1.requestContinue ();
 	    thread2.requestContinue ();
-	    Manager.eventLoop.addTimerEvent (new StopTimerEvent (mainTask, 0));
+	    Manager.eventLoop.add (new StopTimerEvent (mainTask, 0));
         }
     }
 

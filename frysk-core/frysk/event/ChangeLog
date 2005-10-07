@@ -1,3 +1,12 @@
+2005-10-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TimerEvent.java: Add .getTimeMillis, modify .reSchedule so that
+	it returns true if a re-schedule is required.  Rename .value to
+	.timeMillis, and .period to .periodMills, make private.
+	* EventLoop.java: Update.  Make .timerEvents a SortedMap, rename
+	.addTimerEvent to .add,
+	* TestEventLoop.java: Update.
+	
 2005-09-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Event.java, EventLoop.java, PollEvent.java, SignalEvent.java:

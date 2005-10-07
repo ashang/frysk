@@ -101,7 +101,7 @@ public class TestUnpaused
 	    else if (task.id.hashCode () != thread1.id.hashCode ())
 		thread2 = task;
 	    if (taskCreatedCount == 3)
-	        Manager.eventLoop.addTimerEvent (new StopTimerEvent (mainTask, 500));
+	        Manager.eventLoop.add (new StopTimerEvent (mainTask, 500));
 	    task.requestedStopEvent.addObserver (taskEventObserver);
 	}
     }
@@ -149,15 +149,15 @@ public class TestUnpaused
             if (task != null) {
 		mainTask.requestContinue ();  // Extraneous go
 		if (!"running".equals (mainTask.getStateString ())) {
-	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));	
+	 	    Manager.eventLoop.add (new RunningCheckTimerEvent (mainTask, 500));	
 		    return;
 		}
 		else if (!"running".equals (thread1.getStateString ())) {
-	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));
+	 	    Manager.eventLoop.add (new RunningCheckTimerEvent (mainTask, 500));
 		    return;
 		}
 		else if (!"running".equals (thread2.getStateString ())) {
-	 	    Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));
+	 	    Manager.eventLoop.add (new RunningCheckTimerEvent (mainTask, 500));
 		    return;
 		}
 		Manager.eventLoop.requestStop ();
@@ -189,7 +189,7 @@ public class TestUnpaused
 		mainTask.stopEvent.addObserver (stopEventObserver);
 		thread1.stopEvent.addObserver (stopEventObserver);
 		thread2.stopEvent.addObserver (stopEventObserver);
-	 	Manager.eventLoop.addTimerEvent (new RunningCheckTimerEvent (mainTask, 500));
+	 	Manager.eventLoop.add (new RunningCheckTimerEvent (mainTask, 500));
 	    }
         }
     }
@@ -220,7 +220,7 @@ public class TestUnpaused
 		thread1.requestContinue ();
 		thread1.requestContinue ();   // Extraneous go
 		thread2.requestContinue ();
-		Manager.eventLoop.addTimerEvent (new UnpausedTimerEvent (mainTask, 0));
+		Manager.eventLoop.add (new UnpausedTimerEvent (mainTask, 0));
 	    }
         }
     }
@@ -231,7 +231,7 @@ public class TestUnpaused
 	public void update (Observable o, Object obj)
 	{
 	    if (++taskStopCount == 3) {
-	        Manager.eventLoop.addTimerEvent (new AllStoppedTimerEvent (mainTask, 0));
+	        Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
 	    }
  	}
     }

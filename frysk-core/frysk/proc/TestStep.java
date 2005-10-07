@@ -90,7 +90,7 @@ public class TestStep
 		TaskEvent.Signaled e = (TaskEvent.Signaled) obj;
 		if (e.signal == Sig.SEGV) {
 		    startedLoop = true;	     
-		    Manager.eventLoop.addTimerEvent (new DetachTimerEvent (mainTask, 500));
+		    Manager.eventLoop.add (new DetachTimerEvent (mainTask, 500));
 		}
 	    }
 	}
@@ -184,7 +184,7 @@ public class TestStep
 	public void update (Observable o, Object obj)
 	{
 	    if (++taskStopCount == 3) {
-	        Manager.eventLoop.addTimerEvent (new AllStoppedTimerEvent (mainTask, 0));
+	        Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
 	    }
  	}
     }

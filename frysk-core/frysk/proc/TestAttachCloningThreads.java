@@ -89,7 +89,7 @@ public class TestAttachCloningThreads
 	    if (task.id.hashCode () == task.proc.id.hashCode ())
 		mainTask = task;
 	    if (eventCount == 200)
-	        Manager.eventLoop.addTimerEvent (new KillTimerEvent (mainTask, 100));
+	        Manager.eventLoop.add (new KillTimerEvent (mainTask, 100));
 	}
     }
 

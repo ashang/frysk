@@ -102,7 +102,7 @@ public class TestStopAndStop
 	    else if (task.id.hashCode () != thread1.id.hashCode ())
 		thread2 = task;
 	    if (taskCreatedCount == 3)
-	        Manager.eventLoop.addTimerEvent (new DetachTimerEvent (mainTask, 100));
+	        Manager.eventLoop.add (new DetachTimerEvent (mainTask, 100));
 	    task.requestedStopEvent.addObserver (taskEventObserver);
 	}
     }
@@ -156,7 +156,7 @@ public class TestStopAndStop
 	    TaskEvent e = (TaskEvent) obj;
 	    e.task.requestStop ();  // Extraneous stop
 	    if (++taskStopCount == 3) {
-	        Manager.eventLoop.addTimerEvent (new AllStoppedTimerEvent (mainTask, 0));
+	        Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
 	    }
  	}
     }

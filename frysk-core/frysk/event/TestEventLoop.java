@@ -81,7 +81,7 @@ public class TestEventLoop
 	    int numberOfTimerEvents;
 	}
 	final Counters counters = new Counters ();
-	eventLoop.addTimerEvent (new TimerEvent (250)
+	eventLoop.add (new TimerEvent (250)
 	    {
 		Counters count = counters;
 		public void execute ()
@@ -101,7 +101,7 @@ public class TestEventLoop
 		    count.numberOfSignalEvents += 1;
 		}
 	    });
-	eventLoop.addTimerEvent (new TimerEvent (750)
+	eventLoop.add (new TimerEvent (750)
 	    {
 		Counters count = counters;
 		public void execute ()
@@ -141,8 +141,8 @@ public class TestEventLoop
 	}
 	CountingTimer countingTimer = new CountingTimer (50, 200, 3);
 
-	eventLoop.addTimerEvent (countingTimer);
-	eventLoop.addTimerEvent (new TimerEvent (500)
+	eventLoop.add (countingTimer);
+	eventLoop.add (new TimerEvent (500)
 	    {
 		public void execute ()
 		{
@@ -199,11 +199,11 @@ public class TestEventLoop
 	timerRemover.timerToRemove = timerToRemove;
 
 	// Insert these timers into the list.
-	eventLoop.addTimerEvent (timerToRemove);
-	eventLoop.addTimerEvent (timerRemover);
+	eventLoop.add (timerToRemove);
+	eventLoop.add (timerRemover);
 
 	// Finally, create a timer that shuts the event-loop down.
-	eventLoop.addTimerEvent (new TimerEvent (3)
+	eventLoop.add (new TimerEvent (3)
 	    {
 		public void execute ()
 		{
@@ -256,7 +256,7 @@ public class TestEventLoop
 	// Schedule a timer event that, here, will never be executed
 	// since the above stop event will first be processed
 	// preventing the processing of asynchronous events.
-	eventLoop.addTimerEvent (new TimerEvent (0)
+	eventLoop.add (new TimerEvent (0)
 	    {
 		public void execute ()
 		{
