@@ -96,7 +96,16 @@ public class MainWindow extends Window implements Saveable{
 			}
 
 			public void dragEnded(EndDragEvent event) {
-				System.out.println("dragEnded");
+				System.out.println("dragEnded at " + event.getDragContext().getDestination());
+				if(event.getDragContext().getDestination() == null){
+					Window window = new Window();
+					Notebook newNotebook = new Notebook();
+					noteBook.getPage(0).reparent(newNotebook);
+//					noteBook.removePage(0);
+//					newNotebook.appendPage(noteBook.getPage(0), new Label("test"));
+					window.add(newNotebook);
+					window.showAll();
+				}
 			}
 
 			public void dataRequested(RequestDragDataEvent arg0) {

@@ -1,5 +1,7 @@
 2005-10-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* MainWindow.java (dragEnded): Added code for reparenting the draged
+	notebook page to a new one outside the window.
 	* PreferencesWindow.java: new file.
 	* PreferenceWidget.java: new file.
 	* MenuBar.java: new file.
