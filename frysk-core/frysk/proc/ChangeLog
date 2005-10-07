@@ -1,5 +1,11 @@
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRun.java: Rename testRun to testCreateAttachedContinuedProc.
+	Add testCreateAttachedStoppedProc.
+	* Host.java: Add requestCreateAttachedStoppedProc.
+	* ProcState.java, TaskState.java: Simplify startRunning state.
+	Fix startStopped state.
+
 	* Proc.java: Rename newAttachedTask to sendNewAttachedTask.
 	* LinuxProc.java, ProcState.java: Update.
 

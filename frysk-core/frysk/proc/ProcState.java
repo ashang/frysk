@@ -332,44 +332,10 @@ abstract class ProcState
 
     private static ProcState startStopped = new ProcState ("startStopped")
 	{
-	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
+	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	    {
-		proc.sendNewAttachedTask (event.getCloneId (), false);
-		// The clone has already been added to the tree.
-		return running;
-	    }
-	    ProcState process (Proc proc, ProcEvent.TaskForked event)
-	    {
-		proc.sendNewAttachedChild (event.getForkId (), false);
-		// The process has already been added to the tree.
-		return running;
-	    }
-	    ProcState processRequestAttachedContinue (Proc proc)
-	    {
-		proc.observableAttachedContinue.notify (proc);
-		return running;
-	    } 
-	    ProcState processRequestDetachedContinue (Proc proc)
-	    {
-		Map attachedTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performDetach ();
-		}
-		return new DetachingAllTasks (attachedTasks);
-	    }
-	    ProcState processRequestAttachedStop (Proc proc)
-	    {
-		Map runningTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performStop ();
-		}
-		return new StoppingAllTasks (runningTasks);
+		proc.observableAttachedStop.notify (proc);
+		return stopped;
 	    }
 	};
 

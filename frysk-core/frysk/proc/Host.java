@@ -195,6 +195,24 @@ public abstract class Host
     {
 	performCreateAttachedProc (true, stdin, stdout, stderr, args);
     }
+    /**
+     * Request that a new attached but stopped process (with stdin,
+     * stdout, and stderr are shared with this process) be created.
+     */
+    public final void requestCreateAttachedStoppedProc (String[] args)
+    {
+	performCreateAttachedProc (false, null, null, null, args);
+    }
+    /**
+     * Request that a new attached but stopped process be created.
+     */
+    public final void requestCreateAttachedStoppedProc (String stdin,
+							String stdout,
+							String stderr,
+							String[] args)
+    {
+	performCreateAttachedProc (false, stdin, stdout, stderr, args);
+    }
 
     /**
      * A process has been added.  Possible reasons include a process

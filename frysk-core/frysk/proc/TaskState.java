@@ -237,15 +237,6 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processRequestStop (Task task)
-	    {
-		task.sendSetOptions ();
-		return stopping;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		return startRunning;
-	    }
 	    TaskState process (Task task, TaskEvent.Terminated event)
 	    {
 		// This can happen if the whole process gets killed.
@@ -253,16 +244,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
     /**
      * Task just starting out, wait for it to become ready, but put it
@@ -270,44 +251,13 @@ class TaskState
      */
     private static TaskState startStopped = new TaskState ("startStopped")
 	{
-	    TaskState process (Task task, TaskEvent.Stopped event)
-	    {
-		task.proc.taskDiscovered.notify (task);
-		task.sendSetOptions ();
-		return stopped;
-	    }
 	    TaskState process (Task task, TaskEvent.Trapped event)
 	    {
 		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
+		task.proc.performTaskAttachCompleted (task);
 		return stopped;
 	    }
-	    TaskState processRequestStop (Task task)
-	    {
-		task.sendSetOptions ();
-		return stopping;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		return startRunning;
-	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		// This can happen if the whole process gets killed.
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
 
     // A manually stopped task.

@@ -39,6 +39,10 @@
 
 package frysk.proc;
 
+import java.util.Observer;
+import java.util.Observable;
+
+
 /**
  * Check that a program can be run to completion.
  *
@@ -49,7 +53,10 @@ package frysk.proc;
 public class TestRun
     extends TestLib
 {
-    public void testRun ()
+    /**
+     * Check that a free running sub-process can be created.
+     */
+    public void testCreateAttachedContinuedProc ()
     {
 	TmpFile tmpFile = new TmpFile ();
 	assertNotNull ("Temporary file created", tmpFile);
@@ -73,11 +80,62 @@ public class TestRun
 		      1, procCounter.getAdjustedNumberAdded ());
 	assertEquals ("One process destroyed",
 		      1, procCounter.getAdjustedNumberRemoved ());
-	assertFalse ("The file no longer exists",
-		     tmpFile.stillExists ());
-	assertEquals ("The MANAGER dropped the sole TASK",
+	assertFalse ("the file exists", tmpFile.stillExists ());
+	assertEquals ("Number of manager tasks",
 		      0, Manager.host.taskPool.size ());
-	assertEquals ("The MANAGER has no processes",
+	assertEquals ("Number of manager processes",
 		      0, procCounter.getAdjustedHostProcPoolSize ());
+    }
+
+    /**
+     * Check that a stopped (at entry point) sub-process can be
+     * created.
+     */
+
+    public void testCreateAttachedStoppedProc ()
+    {
+	TmpFile tmpFile = new TmpFile ();
+	assertNotNull ("Temporary file created", tmpFile);
+
+	// Add an observer that counts the number of proc create
+	// events.
+	ProcCounter procCounter = new ProcCounter ();
+
+	// Create a program that removes the above tempoary file, when
+	// it exits the event loop will be shutdown.
+	String[] command = new String[] {"rm", "-f", tmpFile.toString () };
+	Manager.host.requestCreateAttachedStoppedProc (command);
+
+	// Set up an observer that, when the process arrives attached
+	// stopped, it stops the event loop.
+	Manager.host.observableProcAdded.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Proc proc = (Proc) obj;
+		    if (!isChildOfMine (proc))
+			return;
+		    proc.observableAttachedStop.addObserver (new Observer ()
+			{
+			    public void update (Observable o, Object obj)
+			    {			    
+				Manager.eventLoop.requestStop ();
+			    }
+			});
+		}
+	    });
+
+
+	// Run the event loop, cap it at 5 seconds.
+	assertRunUntilStop ("run \"rm\" to exit");
+
+	assertEquals ("processes created", 1,
+		      procCounter.getAdjustedNumberAdded ());
+	assertEquals ("processes destroyed", 0,
+		      procCounter.getAdjustedNumberRemoved ());
+	assertTrue ("tmp file exists", tmpFile.stillExists ());
+	assertEquals ("manager tasks", 1, Manager.host.taskPool.size ());
+	assertEquals ("manager processes", 1,
+		      procCounter.getAdjustedHostProcPoolSize ());
     }
 }
