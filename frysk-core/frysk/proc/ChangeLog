@@ -1,5 +1,8 @@
 2005-10-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Rename newAttachedTask to sendNewAttachedTask.
+	* LinuxProc.java, ProcState.java: Update.
+
 	* TestLib.java: In setUp, add an observer that registers any child
 	process.
 	

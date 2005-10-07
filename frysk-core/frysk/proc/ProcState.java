@@ -291,7 +291,7 @@ abstract class ProcState
 	{
 	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
 	    {
-		proc.newAttachedTask (event.getCloneId (), true);
+		proc.sendNewAttachedTask (event.getCloneId (), true);
 		// The clone has already been added to the tree.
 		return running;
 	    }
@@ -334,7 +334,7 @@ abstract class ProcState
 	{
 	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
 	    {
-		proc.newAttachedTask (event.getCloneId (), false);
+		proc.sendNewAttachedTask (event.getCloneId (), false);
 		// The clone has already been added to the tree.
 		return running;
 	    }
@@ -377,7 +377,7 @@ abstract class ProcState
 	{
 	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
 	    {
-		proc.newAttachedTask (event.getCloneId (), true);
+		proc.sendNewAttachedTask (event.getCloneId (), true);
 		// The clone has already been added to the tree.
 		return running;
 	    }

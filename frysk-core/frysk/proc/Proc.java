@@ -82,11 +82,6 @@ public abstract class Proc
     abstract public String getCommand ();
 
     /**
-     * Create a new attached, possibly running, task.
-     */
-    abstract Task newAttachedTask (TaskId id, boolean running);
-
-    /**
      * Create a new, possibly attached, possibly running, process.
      */
     private Proc (Host host, Proc parent, ProcId id, boolean attached,
@@ -119,11 +114,19 @@ public abstract class Proc
 	this (parent.host, parent, id, true, running);
 	// XXX: Only do this when attached; when detached require a
 	// further system-poll to get the info.
-	newAttachedTask (new TaskId (id.id), running);
+	sendNewAttachedTask (new TaskId (id.id), running);
     }
     
-    abstract void sendAttach (boolean running);
+    /**
+     * Create a new, attached, possibly running, task.
+     */
+    abstract void sendNewAttachedTask (TaskId id, boolean running);
+    /**
+     * Create a new, attached, possibly running, child process.
+     */
     abstract void sendNewAttachedChild (ProcId childId, boolean running);
+
+    abstract void sendAttach (boolean running);
     abstract void sendRefresh ();
 
     /**

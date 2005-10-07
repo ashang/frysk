@@ -211,7 +211,7 @@ public class LinuxProc
 	    if (tid != id.id)
 		Ptrace.attach (tid);
 	    TaskId newTid = new TaskId (tid);
-	    LinuxTask t = (LinuxTask) newAttachedTask (newTid, running);
+	    sendNewAttachedTask (newTid, running);
 	}
     }
     void sendNewAttachedChild (ProcId childId, boolean running)
@@ -220,10 +220,10 @@ public class LinuxProc
 	new LinuxProc (this, childId, running);
     }
 
-    Task newAttachedTask (TaskId id, boolean running)
+    void sendNewAttachedTask (TaskId id, boolean running)
     {
 	// XXX: Should be abstracted.
-	return new I386Linux.Task (this, id, running);
+	new I386Linux.Task (this, id, running);
     }
     public Auxv[] getAuxv ()
     {
