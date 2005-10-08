@@ -1,3 +1,8 @@
+2005-10-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.sh: Add class Results, extends ResultPrinter.  Use
+	Results to print each failure as soon as it occures.
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (GEN_ARGS): Define.
