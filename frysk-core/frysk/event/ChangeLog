@@ -1,5 +1,9 @@
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java: Extend Thread.  Set .tid in .runEventLoop.  Wrap
+	.runEventLoop code in a try.finally to ensure that on return
+	.isGoingToBlock is clear.
+
 	* TestEventLoop.java: Add SleepThread to testAsync.
 
 	* TestEventLoop.java: Add testAsync, and helper classes

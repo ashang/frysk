@@ -55,6 +55,7 @@ import java.util.HashMap;
  */
 
 public class EventLoop
+    extends Thread
 {
     /**
      * Create an event loop, re-initialize any static data.
@@ -73,10 +74,8 @@ public class EventLoop
      * The EventLoop's thread ID.  If a thread, other than the
      * EventLoop thread modifies any of the event queues, the event
      * thread will need to be woken up.
-     *
-     * Don't you dare switch threads on this code.
      */
-    private int tid = Tid.get ();
+    private int tid = -1;
     /**
      * The event loop will enter a blocking poll.  This state is
      * entered after the pending event queue, along with any other
@@ -85,7 +84,7 @@ public class EventLoop
      * come along (such as a new event, timer, or signal handler), the
      * event thread will need to be woken up.
      */
-    private volatile boolean isGoingToBlock;
+    private volatile boolean isGoingToBlock = false;
     /**
      * If the event loop is blocking, wake it up.  The event loop
      * blocks when it has nothing better to do (app pending events
@@ -95,6 +94,7 @@ public class EventLoop
     private synchronized void wakeupIfBlocked ()
     {
 	if (isGoingToBlock) {
+	    // Assert: tid > 0
 	    frysk.sys.Signal.tkill (tid, Sig.IO);
 	    isGoingToBlock = false;
 	}
@@ -281,22 +281,27 @@ public class EventLoop
      */
     private void runEventLoop (boolean pendingOnly)
     {
-	stop = pendingOnly;
-	while (true) {
-	    // Drain any pending events.
-	    for (Event e = remove (); e != null; e = remove ()) {
-		e.execute ();
-	    }
-	    // {@link #remove()} will have set {@link
-	    // #isGoingToBlock}.
-	    if (stop) {
+	try {
+	    // Assert: isGoingToBlock == false
+	    tid = Tid.get ();
+	    stop = pendingOnly;
+	    while (true) {
+		// Drain any pending events.
+		for (Event e = remove (); e != null; e = remove ()) {
+		    e.execute ();
+		}
+		// {@link #remove()} will have set {@link
+		// #isGoingToBlock}.
+		if (stop)
+		    break;
+		long timeout = getTimerEventMillisecondTimeout ();
+		Poll.poll (pollFds, pollObserver, timeout);
 		isGoingToBlock = false;
-		break;
+		checkForTimerEvents ();
 	    }
-	    long timeout = getTimerEventMillisecondTimeout ();
-	    Poll.poll (pollFds, pollObserver, timeout);
+	}
+	finally {
 	    isGoingToBlock = false;
-	    checkForTimerEvents ();
 	}
     }
     /**
