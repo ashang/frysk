@@ -1,5 +1,10 @@
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java: Add .remove, and .runEventLoop.  Rewrite
+	.runPending, .runPolling, and .run to use .runEventLoop.  Replace
+	.millisecondsToNextTimer with getTimerEventMillisecondTimeout.
+	Relocate .requestStop, and .checForTimerEvents.
+
 	* TestEventLoop.java: Use Tid.get, add .eventTid replacing Pid.get
 	calls.
 

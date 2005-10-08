@@ -87,7 +87,46 @@ public class EventLoop
 	timerEvents.remove (t);
 	pendingEvents.remove (t);
     }
-
+    /**
+     * Return the number of milliseconds until the next timer, or -1
+     * if there is no pending timer (-1 implies an infinite timeout).
+     */
+    private long getTimerEventMillisecondTimeout ()
+    {
+	if (timerEvents.isEmpty ())
+	    return -1; // MilliSeconds; no timeout.
+	else {
+	    // Since the timerEvents are sorted by time just need to
+	    // pull off and check the first event.
+	    TimerEvent nextTimer = (TimerEvent) timerEvents.firstKey ();
+	    long timeout = (nextTimer.getTimeMillis ()
+			    - java.lang.System.currentTimeMillis ());
+	    if (timeout < 0) {
+		timeout = 0;
+	    }
+	    return timeout;
+	}
+    }
+    /**
+     * Move any expired timer events onto the event queue.  Since the
+     * timer queue is ordered by time, the loop need only check the
+     * front of the queue.
+     */
+    private void checkForTimerEvents ()
+    {
+	long time = java.lang.System.currentTimeMillis ();
+	while (!timerEvents.isEmpty ()) {
+	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
+	    if (timer.getTimeMillis () > time)
+		break;
+	    timerEvents.remove (timer);
+	    pendingEvents.add (timer);
+	    // See if the timer wants to re-schedule itself, if so
+	    // re-insert it into the timer queue.
+	    if (timer.reSchedule (time))
+		timerEvents.put (timer, timer);
+	}
+    }
 
     // Array of poll() events; not fully implemented.
 
@@ -156,6 +195,19 @@ public class EventLoop
     {
 	addToPending (e);
     }
+    /**
+     * Remove the next pending event, return null if no further events
+     * are pending.
+     */
+    private Event remove ()
+    {
+	if (pendingEvents.isEmpty ()) {
+	    return null;
+	}
+	else {
+	    return (Event) pendingEvents.remove (0);
+	}
+    }
 
     Poll.Fds pollFds = new Poll.Fds ();
     Poll.Observer pollObserver = new Poll.Observer () {
@@ -167,48 +219,48 @@ public class EventLoop
 		throw new RuntimeException ("should not happen");
 	    }
 	};
-
-    // Compute the number of milliseconds until the next timer, or -1
-    // if there is no pending timer (that implies infinite time).
-    private long millisecondsToNextTimer ()
+    /**
+     * Run the event-loop.  If pendingOnly, stop after processing all
+     * pending events.
+     *
+     * The event loop is stopped by calling requestStop (that stops
+     * the event loop once all pending events have been processed).
+     * Any existing pending events are always processed before
+     * performing the first poll.
+     */
+    private void runEventLoop (boolean pendingOnly)
     {
-	if (timerEvents.isEmpty ())
-	    return -1; // MilliSeconds; no timeout.
-	else {
-	    // Since the timerEvents are sorted by time just need to
-	    // pull off and check the first event.
-	    TimerEvent nextTimer = (TimerEvent) timerEvents.firstKey ();
-	    long timeout = (nextTimer.getTimeMillis ()
-			    - java.lang.System.currentTimeMillis ());
-	    if (timeout < 0)
-		timeout = 0;
-	    return timeout;
-	}
-    }
-
-    // Move any expired timer events onto the event queue.  Since
-    // these are ordered the loop only needs to iterate over the first
-    // few timers.
-    private void checkForTimerEvents ()
-    {
-	long time = java.lang.System.currentTimeMillis ();
-	while (!timerEvents.isEmpty ()) {
-	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
-	    if (timer.getTimeMillis () > time)
+	stop = pendingOnly;
+	while (true) {
+	    // Drain any pending events.
+	    for (Event e = remove (); e != null; e = remove ()) {
+		e.execute ();
+	    }
+	    if (stop) {
 		break;
-	    timerEvents.remove (timer);
-	    // See if the timer wants to re-schedule itself, if so
-	    // re-insert it into the timer queue.
-	    if (timer.reSchedule (time))
-		add (timer);
-	    addToPending (timer);
+	    }
+	    long timeout = getTimerEventMillisecondTimeout ();
+	    Poll.poll (pollFds, pollObserver, timeout);
+	    checkForTimerEvents ();
 	}
     }
+    /**
+     * Request that the event-loop stop.  The event loop stops once
+     * all pending events have been processed.
+     *
+     * Can be called asynchronously.
+     */
+    public void requestStop ()
+    {
+	stop = true;
+    }
+    private volatile boolean stop;
+
 
     /**
      * Run the event loop until there are no pending events.  Of
      * course, if more events are appended to the pending queue, then
-     * they two are processed.
+     * they too are processed.
      *
      * For testing only.
      *
@@ -217,10 +269,7 @@ public class EventLoop
      */
     public void runPending ()
     {
-	while (pendingEvents.size () > 0) {
-	    Event e = (Event) pendingEvents.remove (0);
-	    e.execute ();
-	}
+	runEventLoop (true);
     }
 
     /**
@@ -255,7 +304,8 @@ public class EventLoop
 	}
 	Timeout timer = new Timeout (timeout);
 	add (timer);
-	run ();
+	runEventLoop (false);
+	// Always remove the timer, even when it didn't expire.
 	remove (timer);
 	return !timer.expired;
     }
@@ -270,24 +320,7 @@ public class EventLoop
      */
     public void run ()
     {
-	stop = false;
-	while (true) {
-	    runPending ();
-	    if (stop) break;
-	    Poll.poll (pollFds, pollObserver, millisecondsToNextTimer ());
-	    checkForTimerEvents ();
-	}
+	runEventLoop (false);
     }
 
-    /**
-     * Request that the event-loop stop.
-     *
-     * Can be called asynchronously.
-     */
-    public void requestStop ()
-    {
-	stop = true;
-    }
-
-    private volatile boolean stop;
 }
