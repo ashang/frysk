@@ -411,6 +411,31 @@ public class TestEventLoop
 		{
 		    public void execute ()
 		    {
+			new SleepThread ().start ();
+		    }
+		});
+	    Signal.tkill (eventTid, Sig.CHLD);
+	}
+    }
+    /**
+     * This thread asynchronously, and after 100 milliseconds, adds a
+     * final stop request.
+     */
+    private class SleepThread
+	extends Thread
+    {
+	public void run ()
+	{
+	    try {
+		sleep (100);
+	    }
+	    catch (InterruptedException e) {
+		fail ("sleep interrupted");
+	    }
+	    eventLoop.add (new Event ()
+		{
+		    public void execute ()
+		    {
 			eventLoop.requestStop ();
 		    }
 		});

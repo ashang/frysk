@@ -1,5 +1,7 @@
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestEventLoop.java: Add SleepThread to testAsync.
+
 	* TestEventLoop.java: Add testAsync, and helper classes
 	EventThread, TimerThread, and SignalThread.
 	* EventLoop.java: Add private .tid, .isGoingToBlock,
