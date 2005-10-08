@@ -42,7 +42,7 @@ package frysk.event;
 import frysk.sys.Itimer;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
-import frysk.sys.Pid;
+import frysk.sys.Tid;
 import junit.framework.TestCase;
 
 /**
@@ -57,6 +57,7 @@ public class TestEventLoop
     extends TestCase
 {
     EventLoop eventLoop;
+    int eventTid;
 
     public void setUp ()
     {
@@ -68,6 +69,7 @@ public class TestEventLoop
 		    fail ("Got CNTRL-C");
 		}
 	    });
+	eventTid = Tid.get ();
     }
 
     /**
@@ -300,14 +302,14 @@ public class TestEventLoop
 	// it pending since there is a handler), and then run the loop
 	// checking that it did, indeed fire.
 	eventLoop.add (handler);
-	Signal.tkill (Pid.get (), Sig.CHLD);
+	Signal.tkill (eventTid, Sig.CHLD);
 	eventLoop.runPolling (0);
 	assertEquals ("One Sig.CHLD was received.", 1, handler.count);
 
 	// Remove the handler, send a further signal, check that it
 	// wasn't received.
 	eventLoop.remove (handler);
-	Signal.tkill (Pid.get (), Sig.CHLD);
+	Signal.tkill (eventTid, Sig.CHLD);
 	eventLoop.runPolling (0);
 	assertEquals ("Still only one Sig.CHLD (no additions).",
 		      1, handler.count);
@@ -317,7 +319,7 @@ public class TestEventLoop
 	// receiving signal events.
 	eventLoop.add (handler);
 	eventLoop.add (handler);
-	Signal.tkill (Pid.get (), Sig.CHLD);
+	Signal.tkill (eventTid, Sig.CHLD);
 	eventLoop.runPolling (0);
 	assertEquals ("Second Sig.CHLD received.", 2, handler.count);
 
@@ -325,7 +327,7 @@ public class TestEventLoop
 	// received (if the handler was duplicated in the signal pool
 	// then it might still see the signal).
 	eventLoop.remove (handler);
-	Signal.tkill (Pid.get (), Sig.CHLD);
+	Signal.tkill (eventTid, Sig.CHLD);
 	eventLoop.runPolling (0);
 	assertEquals ("No further SIGCHLDs.", 2, handler.count);
     }

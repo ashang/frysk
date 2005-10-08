@@ -1,3 +1,8 @@
+2005-10-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TestEventLoop.java: Use Tid.get, add .eventTid replacing Pid.get
+	calls.
+
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java: Make pendingEvents a synchronizedList.  Rename
