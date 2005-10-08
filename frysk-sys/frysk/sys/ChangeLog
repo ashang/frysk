@@ -1,3 +1,7 @@
+2005-10-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Tid.java, cni/Tid.cxx: New.
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Poll.java: Make SignalSet.signalSet protected; work around ECJ
