@@ -331,4 +331,90 @@ public class TestEventLoop
 	eventLoop.runPolling (0);
 	assertEquals ("No further SIGCHLDs.", 2, handler.count);
     }
+
+    /**
+     * Check that asynchronous events wake up the event loop.
+     *
+     * Create a chain of events, each relying on the previous, and
+     * each relying on being processed in a timely manner -- the
+     * entire operation must complete before the event-loop master
+     * timer expires.
+     */
+    public void testAsync ()
+    {
+	// Set up a dummy Sig.CHLD handler, this should never occure
+	// as it is overridden by an asynchronous thread before the
+	// signal is delivered.
+	eventLoop.add (new SignalEvent (Sig.CHLD)
+	    {
+		public void execute ()
+		{
+		    fail ("dummy signal handler run");
+		}
+	    });
+	// Get the ball rolling, create the first thread from within
+	// the running event loop.
+	eventLoop.add (new TimerEvent (0)
+	    {
+		public void execute ()
+		{
+		    new EventThread ().start ();
+		}
+	    });
+	assertTrue ("run events before master timer expires",
+		    eventLoop.runPolling (5000));
+    }
+    /**
+     * This thread asynchronously adds an event to the event loop.
+     */
+    private class EventThread
+	extends Thread
+    {
+	public void run ()
+	{
+	    eventLoop.add (new Event ()
+		{
+		    public void execute ()
+		    {
+			new TimerThread ().start ();
+		    }
+		});
+	}
+    }
+    /**
+     * This thread asynchronously adds a timer to the event loop.
+     */
+    private class TimerThread
+	extends Thread
+    {
+	public void run ()
+	{
+	    eventLoop.add (new TimerEvent (0)
+		{
+		    public void execute ()
+		    {
+			new SignalThread ().start ();
+		    }
+		});
+	}
+    }
+    /**
+     * This thread asynchronously adds a signal handler, and code to
+     * trigger the signal, to the event loop.
+     */
+    private class SignalThread 
+	extends Thread
+    {
+	public void run ()
+	{
+	    eventLoop.add (new SignalEvent (Sig.CHLD)
+		{
+		    public void execute ()
+		    {
+			eventLoop.requestStop ();
+		    }
+		});
+	    Signal.tkill (eventTid, Sig.CHLD);
+	}
+    }
 }

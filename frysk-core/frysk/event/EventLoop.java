@@ -40,12 +40,13 @@
 package frysk.event;
 
 import frysk.sys.Poll;
-import java.util.ArrayList;
+// import frysk.sys.Signal;
+import frysk.sys.Sig;
+import frysk.sys.Tid;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -56,33 +57,68 @@ import java.util.HashMap;
 public class EventLoop
 {
     /**
-     * Create an event loop.
+     * Create an event loop, re-initialize any static data.
      */
     public EventLoop ()
     {
 	// Make certain that the global signal set is empty.
 	Poll.SignalSet.empty ();
+	// Sig.IO is used to wake up a blocked event loop when an
+	// asynchronous event arrives.
+	Poll.SignalSet.add (Sig.IO);
     }
     
+
+    /**
+     * The EventLoop's thread ID.  If a thread, other than the
+     * EventLoop thread modifies any of the event queues, the event
+     * thread will need to be woken up.
+     *
+     * Don't you dare switch threads on this code.
+     */
+    private int tid = Tid.get ();
+    /**
+     * The event loop will enter a blocking poll.  This state is
+     * entered after the pending event queue, along with any other
+     * tasks (signals, timers), have been processed leaving the event
+     * thread with nothing to do.  Should some new asynchronus task
+     * come along (such as a new event, timer, or signal handler), the
+     * event thread will need to be woken up.
+     */
+    private volatile boolean isGoingToBlock;
+    /**
+     * If the event loop is blocking, wake it up.  The event loop
+     * blocks when it has nothing better to do (app pending events
+     * have been processed, all timers and signals have been handled).
+     * See {@link #remove()} for where this flag is set.
+     */
+    private synchronized void wakeupIfBlocked ()
+    {
+	if (isGoingToBlock) {
+	    frysk.sys.Signal.tkill (tid, Sig.IO);
+	    isGoingToBlock = false;
+	}
+    }
+
     /**
      * List of timer events.  Ordered by the timer's expiry time (that
      * way the first timer event always determines the next timeout).
      */
-    private SortedMap timerEvents
-	= Collections.synchronizedSortedMap (new TreeMap ());
+    private SortedMap timerEvents = new TreeMap ();
     /**
      * Add a timer event that will expire at some stage in the future.
      * The actual time is determined by {@link
      * TimerEvent.getTimeMillis}.
      */
-    public void add (TimerEvent t)
+    public synchronized void add (TimerEvent t)
     {
 	timerEvents.put (t, t);
+	wakeupIfBlocked ();
     }
     /**
      * Remove the timer event from the event queue.
      */
-    public void remove (TimerEvent t)
+    public synchronized void remove (TimerEvent t)
     {
 	timerEvents.remove (t);
 	pendingEvents.remove (t);
@@ -91,7 +127,7 @@ public class EventLoop
      * Return the number of milliseconds until the next timer, or -1
      * if there is no pending timer (-1 implies an infinite timeout).
      */
-    private long getTimerEventMillisecondTimeout ()
+    private synchronized long getTimerEventMillisecondTimeout ()
     {
 	if (timerEvents.isEmpty ())
 	    return -1; // MilliSeconds; no timeout.
@@ -102,6 +138,8 @@ public class EventLoop
 	    long timeout = (nextTimer.getTimeMillis ()
 			    - java.lang.System.currentTimeMillis ());
 	    if (timeout < 0) {
+		// A zero timer implies no block.
+		isGoingToBlock = false;
 		timeout = 0;
 	    }
 	    return timeout;
@@ -112,7 +150,7 @@ public class EventLoop
      * timer queue is ordered by time, the loop need only check the
      * front of the queue.
      */
-    private void checkForTimerEvents ()
+    private synchronized void checkForTimerEvents ()
     {
 	long time = java.lang.System.currentTimeMillis ();
 	while (!timerEvents.isEmpty ()) {
@@ -128,12 +166,17 @@ public class EventLoop
 	}
     }
 
-    // Array of poll() events; not fully implemented.
 
-    private ArrayList pollEvents = new ArrayList ();
-    public void addPollEvent (PollEvent fd)
+    /**
+     * Set of FDs that should be polled, not fully implemented.
+     */
+    private Poll.Fds pollFds = new Poll.Fds ();
+    /**
+     * Add FD to events that should be polled.
+     */
+    public synchronized void add (PollEvent fd)
     {
-	pollEvents.add (fd);
+	wakeupIfBlocked ();
     }
 
 
@@ -141,67 +184,73 @@ public class EventLoop
      * Collection of signals; assume that very few signals are being
      * watched and hence that a small map is sufficient.
      */
-    private Map signalHandlers = Collections.synchronizedMap (new HashMap ());
+    private Map signalHandlers = new HashMap ();
     /**
      * Add the signal handler, signals are processed and then
      * delivered using the event-loop.
      */
-    public void add (SignalEvent sig)
+    public synchronized void add (SignalEvent sig)
     {
 	Object old = signalHandlers.put (sig, sig);
 	if (old == null)
 	    // New signal, tell Poll.
 	    Poll.SignalSet.add (sig.getSignal ());
+	wakeupIfBlocked ();
     }
     /**
      * Remove the signal event handler, further occurances of the
      * signal are discarded.
      */
-    public void remove (SignalEvent sig)
+    public synchronized void remove (SignalEvent sig)
     {
 	signalHandlers.remove (sig);
 	// XXX: Poll.SignalSet.remove (sig.signal);
     }
     /**
-     * Process the signal; find the applicable handler and append the
-     * corresponding delivery event.
+     * Process the signal.  Find the applicable handler and, if
+     * present, append the corresponding delivery event.  Since a
+     * signal delivery un-blocks the poll, the event thread is no
+     * longer going to block.
      */
-    void processSignal (int signum)
+    private synchronized void processSignal (int signum)
     {
 	Signal lookup = new Signal (signum);
 	SignalEvent handler = (SignalEvent) signalHandlers.get (lookup);
 	if (handler != null)
-	    addToPending (handler);
+	    pendingEvents.add (handler);
+	isGoingToBlock = false;
     }
 
 
     /** 
      * Maintain a FIFO of events that are ready to be processed.
      */
-    private List pendingEvents
-	= Collections.synchronizedList (new LinkedList ());
-    /**
-     * Append an event to the end of the queue of pending events.
-     */
-    private void addToPending (Event e)
-    {
-	pendingEvents.add (e);
-    }
+    private List pendingEvents = new LinkedList ();
     /**
      * Add the event to the end of the queue of events that need to be
      * processed.  If necessary, interrupt the event thread.
      */
-    public void add (Event e)
+    public synchronized void add (Event e)
     {
-	addToPending (e);
+	pendingEvents.add (e);
+	wakeupIfBlocked ();
     }
     /**
-     * Remove the next pending event, return null if no further events
-     * are pending.
+     * Remove the pending event.
      */
-    private Event remove ()
+    public synchronized void remove (Event e)
+    {
+	pendingEvents.remove (e);
+    }
+    /**
+     * Remove and return the first pending event, or null if there are
+     * no pending event.  Also set the isGoingToBlock flag (after all
+     * with the event queue empty there is nothing better to do).
+     */
+    private synchronized Event remove ()
     {
 	if (pendingEvents.isEmpty ()) {
+	    isGoingToBlock = true;
 	    return null;
 	}
 	else {
@@ -209,8 +258,10 @@ public class EventLoop
 	}
     }
 
-    Poll.Fds pollFds = new Poll.Fds ();
-    Poll.Observer pollObserver = new Poll.Observer () {
+    /**
+     * Handle anything that comes back from the poll call.
+     */
+    private Poll.Observer pollObserver = new Poll.Observer () {
 	    public void signal (int signum) {
 		processSignal (signum);
 	    }
@@ -236,11 +287,15 @@ public class EventLoop
 	    for (Event e = remove (); e != null; e = remove ()) {
 		e.execute ();
 	    }
+	    // {@link #remove()} will have set {@link
+	    // #isGoingToBlock}.
 	    if (stop) {
+		isGoingToBlock = false;
 		break;
 	    }
 	    long timeout = getTimerEventMillisecondTimeout ();
 	    Poll.poll (pollFds, pollObserver, timeout);
+	    isGoingToBlock = false;
 	    checkForTimerEvents ();
 	}
     }
@@ -253,6 +308,7 @@ public class EventLoop
     public void requestStop ()
     {
 	stop = true;
+	wakeupIfBlocked ();
     }
     private volatile boolean stop;
 

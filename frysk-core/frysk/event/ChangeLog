@@ -1,5 +1,14 @@
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestEventLoop.java: Add testAsync, and helper classes
+	EventThread, TimerThread, and SignalThread.
+	* EventLoop.java: Add private .tid, .isGoingToBlock,
+	.wakeupIfBlocked.  In constructor, add Sig.IO to the signal set.
+	Instead of synchronised .timerEvents, .pendingEvents, and
+	.signalHandlers, make the accessor methods synchronised.  Add
+	.wakeupIfBlocked calls, and updates to .isGoingToBlock where
+	needed.
+
 	* EventLoop.java: Add .remove, and .runEventLoop.  Rewrite
 	.runPending, .runPolling, and .run to use .runEventLoop.  Replace
 	.millisecondsToNextTimer with getTimerEventMillisecondTimeout.
