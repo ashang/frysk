@@ -59,7 +59,7 @@ callPtrace (int request, pid_t pid, void *addr, long data, const char *what)
   errno = 0;
   long result = ::ptrace ((enum __ptrace_request) request, pid, addr, data);
   if (errno != 0)
-    throwErrno (errno, what);
+    throwErrno (errno, what, "process", pid);
   return result;
 }
 

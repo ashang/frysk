@@ -156,7 +156,7 @@ frysk::sys::Fork::daemon (jstring in, jstring out,
   int status;
   errno = 0;
   if (waitpid (v, &status, 0) < 0)
-    throwErrno (errno, "waitpid");
+    throwErrno (errno, "waitpid", "process", v);
 
   // printf ("v %d pid %d\n", v, pid);
 

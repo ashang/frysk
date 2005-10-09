@@ -111,11 +111,11 @@ processStatus (int pid, int status,
 	observer->stopped (pid, signum);
       break;
     default:
-      throwException ("Unknown waitpid stopped event");
+      throwRuntimeException ("Unknown waitpid stopped event");
     }
   }
   else
-    throwException ("Unknown status");
+    throwRuntimeException ("Unknown status");
 }
 
 /* Keep polling the waitpid queue moving everything to the eventqueue
@@ -136,7 +136,7 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
       case ECHILD:
 	return;
       default:
-	throwErrno (errno, "waitpid");
+	throwErrno (errno, "waitpid", "process", -1);
       }
     // Process the result.
     processStatus (pid, status, observer);
@@ -152,7 +152,7 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::Wait$Observer* observer)
   errno = 0;
   int pid = ::waitpid (wpid, &status, __WALL);
   if (pid <= 0)
-    throwErrno (errno, "waitpid");
+    throwErrno (errno, "waitpid", "process", wpid);
   // Process the result.
   processStatus (pid, status, observer);
 }

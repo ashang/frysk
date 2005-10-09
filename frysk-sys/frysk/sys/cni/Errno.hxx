@@ -37,5 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+// <<prefix>>: <<err-message>>
 extern void throwErrno (int err, const char *prefix);
-extern void throwException (const char *prefix);
+// <<prefix>>: <<err-message>> (<<suffix>>)
+extern void throwErrno (int err, const char *prefix, const char *suffix);
+// <<prefix>>: <<err-message>> (<<suffix>> <<val>>)
+extern void throwErrno (int err, const char *prefix, const char *suffix,
+			int val);
+extern void throwRuntimeException (const char *prefix);

@@ -1,3 +1,10 @@
+2005-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Errno.cxx, cni/Errno.hxx: Add throwErrno methods that take a
+	suffix, and a suffix and val.  Rename throwException to
+	throwRuntimeException.
+	* cni/Fork.cxx, cni/Ptrace.cxx, cni/Signal.cxx, cni/Wait.cxx: Use.
+	
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Tid.java, cni/Tid.cxx: New.

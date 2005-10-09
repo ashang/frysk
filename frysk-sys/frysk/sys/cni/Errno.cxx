@@ -52,19 +52,9 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
-void
-throwErrno (int err, const char *prefix)
+static void
+throwErrno (int err, jstring jmessage)
 {
-  jstring jmessage;
-  {
-    char* message;
-    if (::asprintf (&message, "%s: %s", prefix, strerror (err)) < 0) {
-      throw new frysk::sys::Errno ();
-    }
-    jmessage = JvNewStringLatin1 (message, strlen (message));
-    ::free (message);
-  }
-
   switch (err) {
 #ifdef EBADF
   case EBADF:
@@ -96,7 +86,48 @@ throwErrno (int err, const char *prefix)
 }
 
 void
-throwException (const char *message)
+throwErrno (int err, const char *prefix, const char *suffix)
+{
+  jstring jmessage;
+  char* message;
+  if (::asprintf (&message, "%s: %s (%s)",
+		  prefix, strerror (err), suffix) < 0) {
+    throw new frysk::sys::Errno ();
+  }
+  jmessage = JvNewStringLatin1 (message, strlen (message));
+  ::free (message);
+  throwErrno (err, jmessage);
+}
+
+void
+throwErrno (int err, const char *prefix, const char *suffix, int val)
+{
+  jstring jmessage;
+  char* message;
+  if (::asprintf (&message, "%s: %s (%s %d)",
+		  prefix, strerror (err), suffix) < 0) {
+    throw new frysk::sys::Errno ();
+  }
+  jmessage = JvNewStringLatin1 (message, strlen (message));
+  ::free (message);
+  throwErrno (err, jmessage);
+}
+
+void
+throwErrno (int err, const char *prefix)
+{
+  jstring jmessage;
+  char* message;
+  if (::asprintf (&message, "%s: %s", prefix, strerror (err)) < 0) {
+    throw new frysk::sys::Errno ();
+  }
+  jmessage = JvNewStringLatin1 (message, strlen (message));
+  ::free (message);
+  throwErrno (err, jmessage);
+}
+
+void
+throwRuntimeException (const char *message)
 {
   throw new java::lang::RuntimeException
     (JvNewStringLatin1 (message, strlen (message)));

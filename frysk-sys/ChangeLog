@@ -1,3 +1,7 @@
+2005-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Add frysk-imports to class and link paths.
+
 2005-09-11  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Set package name to "frysk".

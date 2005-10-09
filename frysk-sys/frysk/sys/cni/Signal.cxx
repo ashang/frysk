@@ -52,7 +52,7 @@ frysk::sys::Signal::tkill (jint tid, jint sig)
 {
   errno = 0;
   if (::syscall (__NR_tkill, tid, sig) < 0)
-    throwErrno (errno, "tkill");
+    throwErrno (errno, "tkill", "task", tid);
 }
 
 void
@@ -60,5 +60,5 @@ frysk::sys::Signal::kill (jint pid, jint sig)
 {
   errno = 0;
   if (::kill (pid, sig) < 0)
-    throwErrno (errno, "kill");
+    throwErrno (errno, "kill", "process", pid);
 }
