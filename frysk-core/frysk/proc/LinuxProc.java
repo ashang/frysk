@@ -42,14 +42,12 @@ package frysk.proc;
 import frysk.sys.Ptrace;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-import inua.Scanner;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
+import frysk.sys.proc.Stat;
 
 /**
  * Linux implementation of Proc.
@@ -59,68 +57,17 @@ public class LinuxProc
     extends Proc
 {
     /**
-     * The contents of a Linux /proc/PID/stat file.
-     */
-    static class Stat
-    {
-	/**
-	 * Read in the stat file for procId (well at least part of
-	 * it).
-	 */
-	Stat (ProcId procId)
-	{
-	    Scanner scanner;
-	    try {
-		String statName = "/proc/" + procId.id + "/stat";
-		scanner = new Scanner (statName);
-	    }
-	    catch (FileNotFoundException e) {
-		// Fine, the stat buffer (and probably process) just
-		// diappeared.
-		return;
-	    }
-	    catch (IOException e) {
-		// Botched initialization, just skip.
-		return;
-	    }
-	    try {
-		pid = (int) scanner.readDecimalLong ();
-		scanner.skipWhitespace ();
-		scanner.skipByte ('(');
-		StringBuffer b = new StringBuffer ();
-		// XXX: Need to implement this by scanning from the
-		// end of the line back towards the ')'.
-		while (true) {
-		    char c = scanner.readByte ();
-		    if (c == ')') break;
-		    b.append (c);
-		}
-		comm = b.toString ();
-		scanner.skipWhitespace ();
-		state = scanner.readByte ();
-		scanner.skipWhitespace ();
-		ppid = (int) scanner.readDecimalLong ();
-	    }
-	    catch (IOException e) {
-		// Oops, some sort of scanning error.
-		throw new RuntimeException (e);
-	    }
-	}
-	int pid;
-	String comm;
-	char state;
-	int ppid;
-    }
-    /**
      * If it hasn't already been read, read the stat structure.
      */
-    protected Stat getStat ()
+    private Stat getStat ()
     {
-	if (stat == null)
-	    stat = new Stat (id);
+	if (stat == null) {
+	    stat = new Stat ();
+	    stat.refresh (id.id);
+	}
 	return stat;
     }
-    private Stat stat;
+    Stat stat;
 
     public String getCommand ()
     {

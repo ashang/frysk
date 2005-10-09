@@ -1,3 +1,8 @@
+2005-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java, LinuxProc.java: Use frysk.sys.proc.Stat.  Better
+	handle a lost /proc/PID/stat file.
+
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java, LinuxHost.java, LinuxTask.java, Proc.java, Task.java:

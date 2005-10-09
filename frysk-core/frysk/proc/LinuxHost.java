@@ -45,6 +45,7 @@ import frysk.sys.Ptrace;
 import frysk.sys.Wait;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
+import frysk.sys.proc.Stat;
 import java.util.Iterator;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -89,34 +90,53 @@ public class LinuxHost
 	/**
 	 * Update PROCID, either adding it 
 	 */
-	Proc update (ProcId procId)
+	Proc update (int pid)
 	{
+	    ProcId procId = new ProcId (pid);
 	    Proc proc = (Proc) procPool.get (procId);
 	    if (proc == null) {
-		// New process, first add its parent to the procPool
-		// (if it hasn't been added already).
-		LinuxProc.Stat stat = new LinuxProc.Stat (procId);
+		// New, unknown process. Try to find both the process
+		// and its parent.  In the case of a daemon process, a
+		// second attempt may be needed.
+		Stat stat = new Stat ();
 		Proc parent = null;
-		if (stat.ppid != 0) {
-		    ProcId parentId = new ProcId (stat.ppid);
-		    parent = (Proc) procPool.get (parentId);
-		    if (parent == null && stat.ppid != 0)
-			parent = update (parentId);
+		int attempt = 0;
+		while (true) {
+		    // Should take no more than two attempts - one for
+		    // a normal process, and one for a daemon.
+		    if (attempt++ >= 2)
+			return null;
+		    // Scan in the process's stat file.  Of course, if
+		    // the stat file disappeared indicating that the
+		    // process exited, return NULL.
+		    if (!stat.refresh (procId.id))
+			return null;
+		    // Find the parent, every process, except process
+		    // 1, has a parent.
+		    if (pid <= 1)
+			break;
+		    parent = update (stat.ppid);
+		    if (parent != null)
+			break;
 		}
 		// .. and then add this process.
 		proc = new LinuxProc (LinuxHost.this, parent, procId, stat);
 		added.add (proc);
 	    }
 	    else if (removed.get (procId) != null) {
-		// An existing process that hasn't yet been updated.
-		// Still need to check that it's parent didn't changed
-		// (assuming there is one).
-		LinuxProc.Stat stat = new LinuxProc.Stat (procId);
-		if (stat.ppid > 0) {
+		// Process 1 never gets a [new] parent.
+		if (pid > 1) {
+		    Stat stat = ((LinuxProc)proc).stat;
+		    // An existing process that hasn't yet been
+		    // updated.  Still need check that its parent
+		    // didn't change (assuming there is one).
+		    if (!stat.refresh (pid))
+			// Oops, just disappeared.
+			return null;
 		    Proc oldParent = proc.getParent ();
 		    if (oldParent.getPid () != stat.ppid) {
 			// Transfer ownership
-			Proc newParent =  update (new ProcId (stat.ppid));
+			Proc newParent = update (stat.ppid);
 			oldParent.remove (proc);
 			proc.parent = newParent;
 			newParent.add (proc);
@@ -148,7 +168,7 @@ public class LinuxHost
 	// then remove the processes still present).
 	ProcChanges procChanges = new ProcChanges ();
 	for (int i = 0; i < pids.length; i++) {
-	    procChanges.update (new ProcId (Integer.parseInt (pids[i])));
+	    procChanges.update (Integer.parseInt (pids[i]));
 	}
 	if (refreshAll) {
 	    // Changes individual process.
@@ -265,7 +285,7 @@ public class LinuxHost
     {
 	if (self == null) {
 	    ProcChanges procChanges = new ProcChanges ();
-	    self = procChanges.update (new ProcId (Pid.get ()));
+	    self = procChanges.update (Pid.get ());
 	}
 	return self;
     }
