@@ -1,5 +1,7 @@
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java, LinuxHost.java: Use frysk.sys.proc.ScanDir.
+
 	* LinuxHost.java, LinuxProc.java: Use frysk.sys.proc.Stat.  Better
 	handle a lost /proc/PID/stat file.
 

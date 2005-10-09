@@ -47,11 +47,10 @@ import frysk.sys.Sig;
 import frysk.sys.Pid;
 import frysk.sys.proc.Stat;
 import java.util.Iterator;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
+import frysk.sys.proc.ScanDir;
 
 /**
  * A Linux Host.
@@ -150,26 +149,16 @@ public class LinuxHost
 
     void sendRefresh (boolean refreshAll)
     {
-	// Create an array of process IDs.
-	File procs = new File ("/proc");
-	String[] pids = procs.list (new FilenameFilter ()
+	final ProcChanges procChanges = new ProcChanges ();
+	ScanDir scanDir = new ScanDir ()
 	    {
-		public boolean accept(File dir, String name)
+		ProcChanges changes = procChanges;
+		public void process (int pid)
 		{
-		    // Assume that only valid PID's start with a
-		    // digit.
-		    return (name.length () > 0
-			    && Character.isDigit (name.charAt (0)));
+		    changes.update (pid);
 		}
-	    });
-	// Compare PROCS against the existing procPool.  Accumuldate
-	// both a list of ADDED and REMOVED processes (for the latter
-	// it is computed by starting with a set of all processes and
-	// then remove the processes still present).
-	ProcChanges procChanges = new ProcChanges ();
-	for (int i = 0; i < pids.length; i++) {
-	    procChanges.update (Integer.parseInt (pids[i]));
-	}
+	    };
+	scanDir.refresh ();
 	if (refreshAll) {
 	    // Changes individual process.
 	    for (Iterator i = procPool.values ().iterator(); i.hasNext (); ) {

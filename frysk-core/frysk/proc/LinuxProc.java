@@ -40,14 +40,13 @@
 package frysk.proc;
 
 import frysk.sys.Ptrace;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import inua.eio.ArrayByteBuffer;
 import inua.eio.ByteBuffer;
 import frysk.sys.proc.Stat;
+import frysk.sys.proc.ScanDir;
 
 /**
  * Linux implementation of Proc.
@@ -93,43 +92,36 @@ public class LinuxProc
     }
     void sendRefresh ()
     {
-	// Create an array of task IDs.
-	File tasks = new File ("/proc/" + id.id, "task");
-	String[] pids = tasks.list (new FilenameFilter ()
-	    {
-		public boolean accept(File dir, String name)
-		{
-		    // Assume that only valid PID's start with a
-		    // digit.
-		    return (name.length () > 0
-			    && Character.isDigit (name.charAt (0)));
-		}
-	    });
-	if (pids == null)
-	    pids = new String[] { };
 	// Compare this against the existing taskPool.  ADDED
 	// accumulates any tasks added to the taskPool.  REMOVED,
 	// starting with all known tasks has any existing tasks
 	// removed, so that by the end it contains a set of
 	// removed tasks.
-	Map added = new HashMap ();
-	HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
-	TaskId searchId = new TaskId ();
-	for (int i = 0; i < pids.length; i++) {
-	    int pid = Integer.parseInt (pids[i]);
-	    searchId.id = pid;
-	    if (removed.containsKey (searchId)) {
-		removed.remove (searchId);
-	    }
-	    else {
-		// Add the process (it currently isn't attached).
-		Task newTask = new LinuxTask (this, new TaskId (pid));
-		added.put (newTask.id, newTask);
+	class TaskDir
+	    extends ScanDir
+	{
+	    Map added = new HashMap ();
+	    HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
+	    TaskId searchId = new TaskId ();
+	    public void process (int pid)
+	    {
+		searchId.id = pid;
+		if (removed.containsKey (searchId)) {
+		    removed.remove (searchId);
+		}
+		else {
+		    // Add the process (it currently isn't attached).
+		    Task newTask = new LinuxTask (LinuxProc.this,
+						  new TaskId (pid));
+		    added.put (newTask.id, newTask);
+		}
 	    }
 	}
+	TaskDir tasks = new TaskDir ();
+	tasks.refresh (id.id);
 	// Tell each task that no longer exists that it has been
 	// removed.
-	for (Iterator i = removed.values().iterator(); i.hasNext();) {
+	for (Iterator i = tasks.removed.values().iterator(); i.hasNext();) {
 	    Task task = (Task) i.next ();
 	    // XXX: Should there be a TaskEvent.schedule(), instead of
 	    // Manager .eventLoop .appendEvent for injecting the event
@@ -138,28 +130,21 @@ public class LinuxProc
 	    remove (task);
 	}
     }
-    void sendAttach (boolean running)
+    void sendAttach (final boolean runningArg)
     {
 	Ptrace.attach (id.id);
-	File tasks = new File ("/proc/" + id.id, "task");
-	String[] pids = tasks.list (new FilenameFilter ()
+	ScanDir tasks = new ScanDir ()
 	    {
-		public boolean accept(File dir, String name)
+		boolean running = runningArg;
+		public void process (int tid)
 		{
-		    // Assume that only valid PID's start with a
-		    // digit.
-		    return (name.length () > 0
-			    && Character.isDigit (name.charAt (0)));
+		    if (tid != id.id)
+			Ptrace.attach (tid);
+		    TaskId newTid = new TaskId (tid);
+		    sendNewAttachedTask (newTid, running);
 		}
-	    });
-	// Iterate over the pid's adding them as tasks.
-	for (int i = 0; i < pids.length; i++) {
-	    int tid = Integer.parseInt (pids[i]);
-	    if (tid != id.id)
-		Ptrace.attach (tid);
-	    TaskId newTid = new TaskId (tid);
-	    sendNewAttachedTask (newTid, running);
-	}
+	    };
+	tasks.refresh (id.id);
     }
     void sendNewAttachedChild (ProcId childId, boolean running)
     {

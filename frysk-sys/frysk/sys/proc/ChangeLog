@@ -1,5 +1,7 @@
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/ScanDir.cxx, ScanDir.java: New.
+
 	* cni/slurp.hxx, cni/slurp.cxx: New.
 	* cni/Stat.cxx: Use.
 
