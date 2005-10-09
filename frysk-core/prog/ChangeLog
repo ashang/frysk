@@ -1,3 +1,8 @@
+2005-10-09  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/zombie.c (del_proc): Use access to check that the task has
+	exited.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* util/auxv.java: Import inua instead of util.

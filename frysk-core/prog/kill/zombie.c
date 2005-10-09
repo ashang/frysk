@@ -48,6 +48,9 @@
 #include <stdio.h>
 #include <string.h>
 
+_syscall2(int, tkill, pid_t, tid, int, sig)
+
+
 
 // Simple snooze for roughly SECONDS and then exit.
 
@@ -68,8 +71,6 @@ snooze (int seconds)
 }
 
 
-_syscall2(int, tkill, pid_t, tid, int, sig);
-
 struct manager {
   pid_t pid;
   int sig;
@@ -128,6 +129,12 @@ del_proc (int sig)
   if (proc != 0) {
     printf ("-%d", proc);
     kill (proc, SIGKILL);
+    // Now wait for the /proc/PID/task/PID directory to disappear
+    // indicating that the task really has become a zombie.
+    char *task;
+    asprintf (&task, "/proc/%d/task/%d", proc, proc);
+    while (access (task, R_OK) == 0);
+    free (task);
     proc = 0;
     printf ("\n");
     notify_manager ();
