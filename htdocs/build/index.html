@@ -75,12 +75,12 @@ file</a> and copying it into the <tt>/etc/yum.repos.d/</tt> directory
 (you'll need to be root). Then run:
 
 <pre>
-yum install 'frysk*'
+yum install --exclude '*debuginfo' 'frysk*'
 </pre>
 
 This will install all the needed non-standard packages. In the future
 you can update the individual packages through yum, or just run
-<tt>yum update 'frysk*'</tt>. The quotes are important, otherwise the
+<tt>yum update 'frysk*'</tt>.  The quotes are important, otherwise the
 shell eats away the * and yum gets confused.
 
 </dd>
