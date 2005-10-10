@@ -23,8 +23,7 @@ public class DOMImage {
 	 */
 	
 	public static final String INLINENAME_ATTR = "inlinename";
-	public static final String LINENO_ATTR = "line_no";
-	public static final String LINENO = "index";
+	
 	public static final String INLINE_NODE = "inline";
 	private Element myElement;
 	
@@ -61,8 +60,8 @@ public class DOMImage {
 		inlineNameElement.setAttribute(INLINENAME_ATTR, inline_name);
 		this.myElement.addContent(inlineNameElement);
 		for (int i=0; i<lines.length; i++) {
-			Element lineNumber = new Element(LINENO_ATTR);
-			lineNumber.setAttribute(LINENO, String.valueOf(i+1));
+			Element lineNumber = new Element(DOMSource.LINENO_NODE);
+			lineNumber.setAttribute(DOMSource.LINENO_ATTR, String.valueOf(i+1));
 			lineNumber.setText(lines[i]);
 			inlineNameElement.addContent(lineNumber);
 		}

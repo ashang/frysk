@@ -1,3 +1,15 @@
+2005-10-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMImage.java: removed LINENO/LINENO_ATTR variables
+	
+	* dom/DOMSource.java: import java.math.BigInteger
+						  added LINENO/LINENO_ATTR variables
+						  added varibles for adding lines to DOM
+						  added addLine method
+						  
+	* dom/DOMTestDOMFrysk.java: added test of DOMSource.addLine method
+								cleaned up a lot of variables
+
 2005-10-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineHandler.java: Removed member CurrentBottom, added firstVisible

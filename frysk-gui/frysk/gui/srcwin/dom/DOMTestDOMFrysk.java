@@ -20,12 +20,25 @@ public class DOMTestDOMFrysk {
 	private static Document data = new Document(root);
 
 	private static DOMFrysk dom = new DOMFrysk(data);
+	
+	private static String[] main_prog = { "int c(){", "   do_something();",
+		"}" };
+	
+	private static int[] start_index = { 1, 12, 28};
+	
+	private static int[] end_index = {11, 27, 29 };
+	
+	private static String[] inline_funcs = { "do_something", "b", "f" };
+	
+	private static Boolean[] is_inline = { Boolean.valueOf(false),
+			Boolean.valueOf(true), Boolean.valueOf(false) };
 
-	private static String[] func1_lines = { "testfunc1() {", "x=y", "int i =x",
-			"}" };
+	private static String[] do_something = { "void do_something(){", 
+		"   b();", "}" };
 
-	private static String[] func2_lines = { "testfunc2() {", "int j = 2;",
-			"int k = 3;", "int l = j = k;", "}" };
+	private static String[] b = { "void b() {", "f();", "}" };
+	
+	private static String[] f = { "void f(){" , "syscall_here();", "}" };
 
 	public static void main(String[] args) {
 
@@ -134,18 +147,24 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMImage.setCCPath");
 		}
-		testDOMImage.addInlineFunction("func1", func1_lines);
-		if (testDOMImage.getInlineFunction("func1") != null) {
-			System.out.println("passed...DOMImage.addInlineFunction...func1");
+		testDOMImage.addInlineFunction(inline_funcs[0], do_something);
+		if (testDOMImage.getInlineFunction(inline_funcs[0]) != null) {
+			System.out.println("passed...DOMImage.addInlineFunction..." +
+					inline_funcs[0]);
 		} else {
-			System.out.println("failed...DOMImage.addInlineFunction...func1");
+			System.out.println("failed...DOMImage.addInlineFunction..." +
+					inline_funcs[0]);
 		}
-		testDOMImage.addInlineFunction("func2", func2_lines);
-		if (testDOMImage.getInlineFunction("func2") != null) {
-			System.out.println("passed...DOMImage.addInlineFunction...func2");
+		testDOMImage.addInlineFunction(inline_funcs[1], b);
+		if (testDOMImage.getInlineFunction(inline_funcs[1]) != null) {
+			System.out.println("passed...DOMImage.addInlineFunction..." +
+					inline_funcs[1]);
 		} else {
-			System.out.println("failed...DOMImage.addInlineFunction...func2");
+			System.out.println("failed...DOMImage.addInlineFunction..."+
+					inline_funcs[1]);
 		}
+		testDOMImage.addInlineFunction("f", f);
+		
 		Iterator iter = testDOMImage.getInlinedFunctions();
 		int ctr = 0;
 		while (iter.hasNext()) {
@@ -153,12 +172,17 @@ public class DOMTestDOMFrysk {
 			ctr++;
 			String inlinename = test_inlined.getAttributeValue(
 					DOMImage.INLINENAME_ATTR).toString();
-			if (ctr == 1 && (inlinename == "func1")) {
+			if (ctr == 1 && (inlinename == inline_funcs[ctr-1])) {
 				System.out.println("passed...DOMImage.getInlinedFunctions..."
 						+ inlinename);
 				continue;
 			}
-			if (ctr == 2 && (inlinename == "func2")) {
+			if (ctr == 2 && (inlinename == inline_funcs[ctr-1])) {
+				System.out.println("passed...DOMImage.getInlinedFunctions..."
+						+ inlinename);
+				continue;
+			}
+			if (ctr == 3 && (inlinename == inline_funcs[ctr-1])) {
 				System.out.println("passed...DOMImage.getInlinedFunctions..."
 						+ inlinename);
 				continue;
@@ -224,6 +248,14 @@ public class DOMTestDOMFrysk {
 			System.out.println("passed...DOMSource.setFilePath");
 		} else {
 			System.out.println("failed...DOMSource.setFilePath");
+		}
+		BigInteger no_bytes = BigInteger.valueOf(4);
+		Boolean is_executable = Boolean.valueOf(true);
+		BigInteger pc = BigInteger.valueOf(25842);
+		for (int ctr = 0; ctr < main_prog.length; ctr++) {
+			testDOMSource.addLine(ctr+1, main_prog[ctr], is_executable, 
+					is_inline[ctr],	start_index[ctr], end_index[ctr], pc);
+			pc = pc.add(no_bytes);
 		}
 	}
 
