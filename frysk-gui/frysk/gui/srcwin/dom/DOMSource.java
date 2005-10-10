@@ -119,13 +119,9 @@ public class DOMSource {
 	 * @return An iterator over all of the lines in this file
 	 */
 	public Iterator getLines(){
-		Iterator iter = this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
-		Vector v = new Vector();
-		
-		while(iter.hasNext())
-			v.add(new DOMLine((Element) iter.next()));
-		
-		return v.iterator();
+		Iterator iter = 
+			this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
+		return iter;
 	}
 	
 	/**

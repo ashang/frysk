@@ -1,5 +1,11 @@
 2005-10-10  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMSource.java: modded getLines() method
+	
+	* dom/DOMTestDOMFrysk.java: added test for getLines() method
+
+2005-10-10  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMSource.java: screw-up, missed checking it in with the below entry
 
 2005-10-10  Rick Moseley  <rmoseley@redhat.com>
