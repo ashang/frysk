@@ -5,6 +5,7 @@ package frysk.gui.srcwin.dom;
 
 import java.util.Iterator;
 import java.util.Vector;
+import java.math.BigInteger;
 
 import org.jdom.Element;
 import org.jdom.filter.Filter;
@@ -26,6 +27,21 @@ public class DOMSource {
 	 * Name of this node in the DOM tree
 	 */
 	public static final String SOURCE_NODE = "source";
+	public static final String LINENO_NODE = "line";
+	// line number in the file
+	public static final String LINENO_ATTR = "index";
+	// program counter attribute
+	public static final String PC_ATTR = "pc";
+	// starting character index of this line from the beginning of the file
+	public static final String START_ATTR = "start_index";
+	// ending character index of this line from the beginning of the file
+	public static final String END_ATTR = "end_index";
+	// text of the source line
+	public static final String TEXT_ATTR = "text";
+	// is this statement executable
+	public static final String EXECUTABLE_ATTR = "is_executable";
+	// is this an inline function statement
+	public static final String INLINE_ATTR = "inline";
 	
 /*	public static DOMSource createDOMSource(String filename, String path){
 		Element source = new Element(SOURCE_NODE);
@@ -85,6 +101,20 @@ public class DOMSource {
 		return this.myElement.getAttributeValue(FILEPATH_ATTR);
 	}
 	
+	public void addLine(int lineno, String text, Boolean is_executable, 
+			Boolean is_inline, int start_index, int end_index,
+			BigInteger pc) {
+		
+		Element sourceLineElement = new Element(LINENO_NODE);
+		sourceLineElement.setAttribute(LINENO_ATTR, Integer.toString(lineno));
+		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
+		sourceLineElement.setAttribute(START_ATTR, Integer.toString(start_index));
+		sourceLineElement.setAttribute(END_ATTR, Integer.toString(end_index));
+		sourceLineElement.setAttribute(TEXT_ATTR, text);
+		sourceLineElement.setAttribute(EXECUTABLE_ATTR, is_executable.toString());
+		sourceLineElement.setAttribute(INLINE_ATTR, is_inline.toString());
+		this.myElement.addContent(sourceLineElement);
+	}
 	/**
 	 * @return An iterator over all of the lines in this file
 	 */

@@ -1,5 +1,9 @@
 2005-10-10  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMSource.java: screw-up, missed checking it in with the below entry
+
+2005-10-10  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMImage.java: removed LINENO/LINENO_ATTR variables
 	
 	* dom/DOMSource.java: import java.math.BigInteger
