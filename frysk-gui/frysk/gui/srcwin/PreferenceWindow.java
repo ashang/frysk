@@ -80,7 +80,7 @@ public class PreferenceWindow implements ButtonListener{
 	 * GLADE CONSTANTS
 	 */
 	// Path to and name of the glade file to use
-	public static final String GLADE_PATH = "frysk-gui/frysk/gui/srcwin/glade/"; //$NON-NLS-1$
+	public static final String GLADE_PATH = "frysk-gui/frysk/gui/glade/"; //$NON-NLS-1$
 	public static final String GLADE_FILE = "frysk_source_prefs.glade"; //$NON-NLS-1$
 
 	// name of the top window
