@@ -210,12 +210,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// create the actual sourceview widget
 		this.view = new SourceViewWidget(this.prefs);
 		
-		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp", 2);
-		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", 2);
+		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp", 5);
+		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", 12);
 		loc.link(loc2);
-		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", 2);
+		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", 5);
 		loc2.link(loc3);
-		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", 2);
+		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", 20);
 		loc3.link(loc4);
 		loc4.link(new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", 2));
 		this.view.load(loc);

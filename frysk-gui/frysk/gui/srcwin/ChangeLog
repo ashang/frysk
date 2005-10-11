@@ -1,5 +1,19 @@
 2005-10-11  Adam Jocksch  <ajocksch@redhat.com>
 
+	* testfiles: Added.
+
+	* testfiels/test.cpp: Added.
+
+	* testfiels/test2.cpp: Added.
+
+	* testfiles/test3.cpp: Added.
+
+	* testfiles/test4.cpp: Added.
+
+	* testfiles/test5.cpp: Added.
+
+2005-10-11  Adam Jocksch  <ajocksch@redhat.com>
+
 	* SourceWindow.java (createActions): Accelerators are now added to 
 	each action.
 	(createMenus): Removed commented out accelerator code.
