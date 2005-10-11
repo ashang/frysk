@@ -74,17 +74,17 @@ class TaskState
     {
 	return false;
     }
-    TaskState process (Task task, TaskEvent.Signaled event)
+    TaskState processPerformSignaled (Task task, int sig)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformSignaled");
     }
-    TaskState process (Task task, TaskEvent.Stopped event)
+    TaskState processPerformStopped (Task task)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformStopped");
     }
-    TaskState process (Task task, TaskEvent.Trapped event)
+    TaskState processPerformTrapped (Task task)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformTrapped");
     }
     TaskState process (Task task, TaskEvent.Syscall event)
     {
@@ -196,10 +196,8 @@ class TaskState
      */
     private static TaskState attaching = new TaskState ("attaching")
 	{
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformStopped (Task task)
 	    {
-		// XXX: Need to hang onto the signal that was about to
-		// be delivered?
 		task.proc.performTaskAttachCompleted (task);
 		task.sendSetOptions ();
 		return stopped;
@@ -221,28 +219,29 @@ class TaskState
      */
     private static TaskState startRunning = new TaskState ("startRunning")
 	{
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformStopped (Task task)
 	    {
 		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
+		// XXX: Fixme, notify here takes the TaskEvent, and
+		// internal task events should not be propogated back
+		// to the client.
+		TaskEvent event = new TaskEvent.Stopped (task);
 		task.stopEvent.notify (event);
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState process (Task task, TaskEvent.Trapped event)
+	    TaskState processPerformTrapped (Task task)
 	    {
 		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
+		// XXX: Fixme, notify here takes the TaskEvent, and
+		// internal task events should not be propogated back
+		// to the client.
+		TaskEvent event = new TaskEvent.Trapped (task);
 		task.stopEvent.notify (event);
 		task.sendContinue (0);
 		return running;
-	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		// This can happen if the whole process gets killed.
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
 	    }
 	};
     /**
@@ -251,7 +250,7 @@ class TaskState
      */
     private static TaskState startStopped = new TaskState ("startStopped")
 	{
-	    TaskState process (Task task, TaskEvent.Trapped event)
+	    TaskState processPerformTrapped (Task task)
 	    {
 		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
@@ -267,21 +266,21 @@ class TaskState
 	    {
 		return stopping;
 	    }
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformStopped (Task task)
 	    {
+		// XXX: Fixme, notify here takes the TaskEvent, and
+		// internal task events should not be propogated back
+		// to the client.
+		TaskEvent event = new TaskEvent.Stopped (task);
 		task.requestedStopEvent.notify (event);
 		return stopped;
 	    }
-	    TaskState process (Task task, TaskEvent.Signaled event)
+	    TaskState processPerformTrapped (Task task)
 	    {
-		task.requestedStopEvent.notify (event);
-		// For any other stop, we distinguish that we are
-		// stopped, but not as we expected.
-		task.stopEvent.notify (event);
-		return paused;
-	    }
-	    TaskState process (Task task, TaskEvent.Trapped event)
-	    {
+		// XXX: Fixme, notify here takes the TaskEvent, and
+		// internal task events should not be propogated back
+		// to the client.
+		TaskEvent event = new TaskEvent.Trapped (task);
 		task.requestedStopEvent.notify (event);
 		// For any other stop, we distinguish that we are
 		// stopped, but not as we expected.
@@ -332,22 +331,14 @@ class TaskState
 	    {
 		return true;
 	    }
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformSignaled (Task task, int sig)
 	    {
+		// XXX: Fixme, notify here takes the TaskEvent, and
+		// internal task events should not be propogated back
+		// to the client.
+		TaskEvent event = new TaskEvent.Signaled (task, sig);
 		task.stopEvent.notify (event);
-		task.sendContinue (0);
-		return running;
-	    }
-	    TaskState process (Task task, TaskEvent.Signaled event)
-	    {
-		task.stopEvent.notify (event);
-		task.sendContinue (event.signal);
-		return running;
-	    }
-	    TaskState process (Task task, TaskEvent.Trapped event)
-	    {
-		task.stopEvent.notify (event);
-		task.sendContinue (0);
+		task.sendContinue (sig);
 		return running;
 	    }
 	    TaskState process (Task task, TaskEvent.Syscall event)
@@ -419,7 +410,7 @@ class TaskState
 
     private static TaskState performingStop = new TaskState ("performingStop")
 	{
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformStopped (Task task)
 	    {
 		task.proc.performTaskStopCompleted (task);
 		return stopped;
@@ -428,10 +419,8 @@ class TaskState
 
     private static TaskState detaching = new TaskState ("detaching")
 	{
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformStopped (Task task)
 	    {
-		// XXX: Need to hang onto the signal that was about to
-		// be delivered?
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
@@ -440,8 +429,12 @@ class TaskState
 
     private static TaskState stepping = new TaskState ("stepping")
 	{
-	    TaskState process (Task task, TaskEvent.Trapped event)
+	    TaskState processPerformTrapped (Task task)
 	    {
+		// XXX: Fixme, notify here takes the TaskEvent, and
+		// internal task events should not be propogated back
+		// to the client.
+		TaskEvent event = new TaskEvent.Trapped (task);
 		// We are waiting for a SIGTRAP to indicate step done.
 		task.stepEvent.notify (event);
 		return stopped;
@@ -485,15 +478,6 @@ class TaskState
 
     private static TaskState steppingPaused = new TaskState ("steppingPaused")
 	{
-	    TaskState process (Task task, TaskEvent.Signaled event)
-	    {
-		// For any other stop, we process the event
-		// and continue, but we are not stepped yet.
-		// We don't notify for SIGSTOP events.
-		task.stopEvent.notify (event);
-		task.sendStepInstruction (event.signal);
-		return steppingPaused;
-	    }
 	    TaskState process (Task task, TaskEvent.Syscall event)
 	    {
 		task.syscallEvent.notify (event);
@@ -616,7 +600,7 @@ class TaskState
 	    {
 		return unpaused;
 	    }
-	    TaskState process (Task task, TaskEvent.Stopped event)
+	    TaskState processPerformStopped (Task task)
 	    {
 		task.sendContinue (0);
 		return running;
@@ -661,11 +645,6 @@ class TaskState
 
     private static TaskState zombied = new TaskState ("zombied")
 	{
-	    TaskState process (Task task, TaskEvent.Stopped event)
-	    {
-		// Ignore.
-		return zombied;
-	    }
 	    TaskState process (Task task, TaskEvent.Trapped event)
 	    {
 		// Ignore.
@@ -708,12 +687,6 @@ class TaskState
 	    boolean isDead ()
 	    {
 		return true;
-	    }
-	    TaskState process (Task task, TaskEvent.Signaled event)
-	    {
-		// Ignore any subsequent stop events which may
-		// have been forced by us.
-		return destroyed;
 	    }
 	    TaskState process (Task task, TaskEvent.Syscall event)
 	    {

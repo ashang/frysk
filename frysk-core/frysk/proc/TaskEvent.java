@@ -201,9 +201,9 @@ public abstract class TaskEvent
 	extends TaskEvent
     {
 	protected int signal;
-	Signaled (TaskId taskId, int signal)
+	Signaled (Task task, int signal)
 	{
-	    super (taskId);
+	    super (task);
 	    this.signal = signal;
 	}
 	public int getSignal ()
@@ -212,10 +212,7 @@ public abstract class TaskEvent
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{
@@ -232,16 +229,13 @@ public abstract class TaskEvent
     static class Stopped
 	extends TaskEvent
     {
-	Stopped (TaskId taskId)
+	Stopped (Task task)
 	{
-	    super (taskId);
+	    super (task);
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{
@@ -311,16 +305,13 @@ public abstract class TaskEvent
     static class Trapped
 	extends TaskEvent
     {
-	Trapped (TaskId taskId)
+	Trapped (Task task)
 	{
-	    super (taskId);
+	    super (task);
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{

@@ -1,5 +1,14 @@
 2005-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Handle .processPerformedCloned,
+	.processPerformedTrapped, and .processPerformedSignaled, instead
+	of TaskEvent .Stopped, .Trapped, and .Signaled.
+	* Task.java: Add .performSignaled, .performStopped, and
+	.performTrapped.
+	* LinuxHost.java: Use Task .performStopped, .performTrapped, and
+	.performSignaled.
+	* TaskEvent.java: Simplify .Stopped, .Trapped and .Signaled.
+
 	* TaskState.java: Handle processPerformForked, instead of
 	TaskEvent .Forked.
 	* ProcState.java: Delete code handling ProcEvent.TaskForked.
@@ -7,7 +16,7 @@
 	* TaskEvent.java: Delete Forked.
 	* Task.java: Add performForked.
 	* LinuxHost.java: Use Task .performForked.
-	
+
 	* TaskState.java: Handle processPerformCloned, instead of
 	TaskEvent.Cloned.
 	* TaskEvent.java: Delete Cloned.

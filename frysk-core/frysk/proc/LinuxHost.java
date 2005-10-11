@@ -210,7 +210,7 @@ public class LinuxHost
 		    // the heels of this event is a clone.stopped
 		    // event, and the clone Task must be created
 		    // before that event arrives.
-		    Task task = Manager.host.get (new TaskId (pid));
+		    Task task = get (new TaskId (pid));
 		    Task clone = new I386Linux.Task (task.proc,
 						     new TaskId (clonePid),
 						     true);
@@ -218,7 +218,13 @@ public class LinuxHost
 		}
 		public void forkEvent (int pid, int childPid)
 		{
-		    Task task = Manager.host.get (new TaskId (pid));
+		    // Find the task, create the new process under it
+		    // (well ok the task's process) and then notify
+		    // the task of what happened.  Note that hot on
+		    // the heels of this fork event is the child's
+		    // stop event, the fork Proc must be created
+		    // before that event arrives.
+		    Task task = get (new TaskId (pid));
 		    Proc child = new LinuxProc (task.proc,
 						new ProcId (childPid),
 						true);
@@ -243,15 +249,16 @@ public class LinuxHost
 		}
 		public void stopped (int pid, int sig)
 		{
+		    Task task = get (new TaskId (pid));
 		    switch (sig) {
 		    case Sig.STOP:
-			eventLoop.add (new TaskEvent.Stopped (new TaskId (pid)));
+			task.performStopped ();
 			break;
 		    case Sig.TRAP:
-			eventLoop.add (new TaskEvent.Trapped (new TaskId (pid)));
+			task.performTrapped ();
 			break;
 		    default:
-			eventLoop.add (new TaskEvent.Signaled (new TaskId (pid), sig));
+			task.performSignaled (sig);
 			break;
 		    }
 		}

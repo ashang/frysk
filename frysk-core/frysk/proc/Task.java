@@ -315,6 +315,47 @@ abstract public class Task
 	    });
     }
 
+    /**
+     * (internal) This task stopped.
+     */
+    void performStopped ()
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformStopped (Task.this);
+		}
+	    });
+    }
+    /**
+     * (internal) This task encountered a trap.
+     */
+    void performTrapped ()
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformTrapped (Task.this);
+		}
+	    });
+    }
+    /**
+     * (internal) This task received a signal.
+     */
+    void performSignaled (final int sigArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		int sig = sigArg;
+		public void execute ()
+		{
+		    state = state.processPerformSignaled (Task.this, sig);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();
