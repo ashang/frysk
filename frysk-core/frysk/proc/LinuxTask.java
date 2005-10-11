@@ -68,11 +68,6 @@ public class LinuxTask
 	super (process, id, running);
     }
 
-    private void appendZombiedEvent ()
-    {
-	Manager.eventLoop.add (new TaskEvent.Zombied (this.id));
-    }
-
     protected void sendContinue (int sig)
     {
 	try {
@@ -82,7 +77,7 @@ public class LinuxTask
 		Ptrace.cont (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    appendZombiedEvent ();
+	    performZombied ();
 	}
     }
     protected void sendStepInstruction (int sig)
@@ -91,7 +86,7 @@ public class LinuxTask
 	    Ptrace.singleStep (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    appendZombiedEvent ();
+	    performZombied ();
 	}
     }
     protected void sendStop ()
@@ -113,7 +108,7 @@ public class LinuxTask
 	    Ptrace.setOptions (getTid (), options);
 	}
 	catch (Errno.Esrch e) {
-	    appendZombiedEvent ();
+	    performZombied ();
 	}
     }
     protected void sendAttach ()
@@ -122,7 +117,7 @@ public class LinuxTask
 	    Ptrace.attach (getTid ());
 	}
 	catch (Errno.Esrch e) {
-	    appendZombiedEvent ();
+	    performZombied ();
 	}
     }
     protected void sendDetach (int sig)

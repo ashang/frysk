@@ -86,29 +86,29 @@ class TaskState
     {
 	throw unhandled (task, "PerformTrapped");
     }
-    TaskState process (Task task, TaskEvent.Syscall event)
+    TaskState processPerformSyscalled (Task task)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformSyscalled");
     }
-    TaskState process (Task task, TaskEvent.Exited event)
+    TaskState processPerformExited (Task task, int status)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformExited");
     }
     TaskState processPerformExiting (Task task, int status)
     {
 	throw unhandled (task, "PerformExiting");
     }
-    TaskState process (Task task, TaskEvent.Terminated event)
+    TaskState processPerformTerminated (Task task, int signal)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformTerminated");
     }
-    TaskState process (Task task, TaskEvent.Execed event)
+    TaskState processPerformExeced (Task task)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformExeced");
     }
-    TaskState process (Task task, TaskEvent.Zombied event)
+    TaskState processPerformZombied (Task task)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformZombied");
     }
     TaskState processRequestStop (Task task)
     {
@@ -202,7 +202,7 @@ class TaskState
 		task.sendSetOptions ();
 		return stopped;
 	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
+    	    TaskState processPerformZombied (Task task)
     	    {
 		// Outch, the task disappeared before the attach
 		// reached it, just abandon this one (but ack the
@@ -242,6 +242,13 @@ class TaskState
 		task.stopEvent.notify (event);
 		task.sendContinue (0);
 		return running;
+	    }
+	    TaskState processPerformTerminated (Task task, int signal)
+	    {
+		TaskEvent event = new TaskEvent.Terminated (task, signal);
+		task.proc.remove (event.task);
+		processAttachedDestroy (task, event);
+		return destroyed;
 	    }
 	};
     /**
@@ -287,35 +294,6 @@ class TaskState
 		task.stopEvent.notify (event);
 		return paused;
 	    }
-	    TaskState process (Task task, TaskEvent.Syscall event)
-	    {
-		task.syscallEvent.notify (event);
-		task.sendContinue (0);
-		return stopping;
-	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Execed event)
-	    {
-		task.proc.taskExeced.notify (event);
-		// Remove all tasks, retaining just this one.
-		task.proc.retain (task);
-		return stopping;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
 
     // Keep the task running.
@@ -335,14 +313,16 @@ class TaskState
 		task.sendContinue (sig);
 		return running;
 	    }
-	    TaskState process (Task task, TaskEvent.Syscall event)
+	    TaskState processPerformSyscalled (Task task)
 	    {
+		TaskEvent event = new TaskEvent.Syscall (task);
 		task.syscallEvent.notify (event);
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
+	    TaskState processPerformExited (Task task, int status)
 	    {
+		TaskEvent event = new TaskEvent.Exited (task, status);
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
@@ -354,21 +334,23 @@ class TaskState
 		task.sendContinue (status);
 		return running;
 	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
+	    TaskState processPerformTerminated (Task task, int signal)
 	    {
+		TaskEvent event = new TaskEvent.Terminated (task, signal);
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Execed event)
+	    TaskState processPerformExeced (Task task)
 	    {
+		TaskEvent event = new TaskEvent.Execed (task);
 		task.proc.taskExeced.notify (event);
 		// Remove all tasks, retaining just this one.
 		task.proc.retain (task);
 		task.sendContinue (0);
 		return running;
 	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
+    	    TaskState processPerformZombied (Task task)
     	    {
 		return zombied;
     	    }
@@ -434,68 +416,6 @@ class TaskState
 		task.stepEvent.notify (event);
 		return stopped;
 	    }
-	    TaskState process (Task task, TaskEvent.Syscall event)
-	    {
-		task.syscallEvent.notify (event);
-		task.sendContinue (0);
-		return stepping;
-	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Execed event)
-	    {
-		task.proc.taskExeced.notify (event);
-		// Remove all tasks, retaining just this one.
-		task.proc.retain (task);
-		return stopped;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
-	};
-
-    private static TaskState steppingPaused = new TaskState ("steppingPaused")
-	{
-	    TaskState process (Task task, TaskEvent.Syscall event)
-	    {
-		task.syscallEvent.notify (event);
-		task.sendContinue (0);
-		return stepping;
-	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Execed event)
-	    {
-		task.proc.taskExeced.notify (event);
-		// Remove all tasks, retaining just this one.
-		task.proc.retain (task);
-		return stopped;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
 
     private static TaskState stopped = new TaskState ("stopped")
@@ -503,16 +423,6 @@ class TaskState
 	    boolean isStopped ()
 	    {
 		return true;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
 	    }
 	    TaskState processRequestStop (Task task)
 	    {
@@ -561,16 +471,6 @@ class TaskState
 		task.sendContinue (0);
 		return unpaused;
 	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
 
     private static TaskState unpaused = new TaskState ("unpaused")
@@ -588,63 +488,18 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState process (Task task, TaskEvent.Syscall event)
-	    {
-		task.syscallEvent.notify (event);
-		task.sendContinue (0);
-		return unpaused;
-	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Execed event)
-	    {
-		task.proc.taskExeced.notify (event);
-		// Remove all tasks, retaining just this one.
-		task.proc.retain (task);
-		task.sendContinue (0);
-		return unpaused;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
-    	    {
-		return zombied;
-    	    }
 	};
 
     private static TaskState zombied = new TaskState ("zombied")
 	{
-	    TaskState process (Task task, TaskEvent.Trapped event)
+	    TaskState processPerformTerminated (Task task, int signal)
 	    {
-		// Ignore.
-		return zombied;
-	    }
-	    TaskState process (Task task, TaskEvent.Execed event)
-	    {
-		// Too late to do anything.
-		return zombied;
-	    }
-	    TaskState process (Task task, TaskEvent.Exited event)
-	    {
+		TaskEvent event = new TaskEvent.Exited (task, signal);
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Terminated event)
-	    {
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-    	    TaskState process (Task task, TaskEvent.Zombied event)
+    	    TaskState processPerformZombied (Task task)
     	    {
 		return zombied;
     	    }
@@ -659,12 +514,6 @@ class TaskState
 	    boolean isDead ()
 	    {
 		return true;
-	    }
-	    TaskState process (Task task, TaskEvent.Syscall event)
-	    {
-		// Process any leftover syscall event.
-		task.syscallEvent.notify (event);
-		return destroyed;
 	    }
 	    TaskState processPerformAttach (Task task)
 	    {

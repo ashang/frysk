@@ -1,5 +1,16 @@
 2005-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxTask.java: Use .performZombied.
+	* TaskState.java: Handle .performZombied, .performSyscalled,
+	.performExited, .performTerminated, and .performExeced, instead of
+	TaskEvent .Zombied, .Syscall, .Terminated, .Exited, and .Execed.
+	* Task.java: Add .performZombied, .performSyscalled,
+	.performExited, .performTerminated, and .performExeced.
+	* LinuxHost.java: Use Task .performZombied, .performSyscalled,
+	.performExited, .performTerminated, and .performExeced.
+	* TaskEvent.java: Simplify .Zombied, .Syscall, .Exited,
+	.Terminated, and .Execed.
+	
 	* TaskState.java: Handle .performExiting, instead of TaskEvent
 	.Exiting.
 	* TaskEvent.java: Simplify .Exiting.

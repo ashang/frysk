@@ -237,15 +237,18 @@ public class LinuxHost
 		}
 		public void execEvent (int pid)
 		{
-		    eventLoop.add (new TaskEvent.Execed (new TaskId (pid)));
+		    Task task = get (new TaskId (pid));
+		    task.performExeced ();
 		}
 		public void disappeared (int pid)
 		{
-		    eventLoop.add (new TaskEvent.Zombied (new TaskId (pid)));
+		    Task task = get (new TaskId (pid));
+		    task.performZombied ();
 		}
 		public void syscallEvent (int pid)
 		{
-		    eventLoop.add (new TaskEvent.Syscall (new TaskId (pid)));
+		    Task task = get (new TaskId (pid));
+		    task.performSyscalled ();
 		}
 		public void stopped (int pid, int sig)
 		{
@@ -264,13 +267,13 @@ public class LinuxHost
 		}
 		public void exited (int pid, int status, boolean coreDumped)
 		{
-		    eventLoop.add (new TaskEvent.Exited (new TaskId (pid),
-							 status));
+		    Task task = get (new TaskId (pid));
+		    task.performExited (status);
 		}
 		public void terminated (int pid, int signal, boolean coreDumped)
 		{
-		    eventLoop.add (new TaskEvent.Terminated (new TaskId (pid),
-							     signal));
+		    Task task = get (new TaskId (pid));
+		    task.performTerminated (signal);
 		}
 	    };
 	public final void execute ()

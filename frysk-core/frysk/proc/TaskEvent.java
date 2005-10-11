@@ -90,16 +90,13 @@ public abstract class TaskEvent
     static class Execed
 	extends TaskEvent
     {
-	Execed (TaskId taskId)
+	Execed (Task task)
 	{
-	    super (taskId);
+	    super (task);
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{
@@ -115,9 +112,9 @@ public abstract class TaskEvent
 	extends TaskEvent
     {
 	protected int status;
-	Exited (TaskId taskId, int status)
+	Exited (Task task, int status)
 	{
-	    super (taskId);
+	    super (task);
 	    this.status = status;
 	}
 	public int getStatus ()
@@ -126,10 +123,7 @@ public abstract class TaskEvent
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{
@@ -173,16 +167,13 @@ public abstract class TaskEvent
     static class Zombied
 	extends TaskEvent
     {
-	Zombied (TaskId taskId)
+	Zombied (Task task)
 	{
-	    super (taskId);
+	    super (task);
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{
@@ -248,16 +239,13 @@ public abstract class TaskEvent
     static class Syscall
 	extends TaskEvent
     {
-	Syscall (TaskId taskId)
+	Syscall (Task task)
 	{
-	    super (taskId);
+	    super (task);
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{
@@ -273,17 +261,14 @@ public abstract class TaskEvent
 	extends TaskEvent
     {
 	protected int signal;
-	Terminated (TaskId taskId, int signal)
+	Terminated (Task task, int signal)
 	{
-	    super (taskId);
+	    super (task);
 	    this.signal = signal;
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{

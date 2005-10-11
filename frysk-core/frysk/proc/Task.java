@@ -371,6 +371,79 @@ abstract public class Task
 	    });
     }
 
+    /**
+     * (internal) The task as turned into a zombie (it was killed).
+     */
+    void performZombied ()
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformZombied (Task.this);
+		}
+	    });
+    }
+
+    /**
+     * (internal) The task is performing a system call.
+     */
+    void performSyscalled ()
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformSyscalled (Task.this);
+		}
+	    });
+    }
+
+    /**
+     * (internal) The task has exited.
+     */
+    void performExited (final int statusArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		int status = statusArg;
+		public void execute ()
+		{
+		    state = state.processPerformExited (Task.this, status);
+		}
+	    });
+    }
+
+    /**
+     * (internal) The task was terminated (using a signal).
+     */
+    void performTerminated (final int signalArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		int signal = signalArg;
+		public void execute ()
+		{
+		    state = state.processPerformTerminated (Task.this, signal);
+		}
+	    });
+    }
+
+    /**
+     * (internal) The task has execed, overlaying itself with another
+     * program.
+     */
+    void performExeced ()
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		public void execute ()
+		{
+		    state = state.processPerformExeced (Task.this);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();
