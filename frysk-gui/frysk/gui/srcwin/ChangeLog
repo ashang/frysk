@@ -1,3 +1,14 @@
+2005-10-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMImage.java: change LINENO_ATTR to use NUMBER_ATTR from DOMSource
+	
+	* dom/DOMLine.java: added LENGTH_ATTR variable
+	
+	* dom/DOMSource.java: Use variables from DOMLine instead of local ones
+					add getLineNum1 method as alternative to getLineNum
+					
+	* dom/DOMTestDOMFrysk.java: add test for getLineNum1 method
+
 2005-10-11  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade: Moved all glade files (frysk_source.glade{p},

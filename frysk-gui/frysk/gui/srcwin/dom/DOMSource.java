@@ -12,6 +12,7 @@ import org.jdom.filter.Filter;
 
 /**
  * DOMSource represents a source code file within the frysk source window dom
+ * 
  * @author ajocksch
  */
 public class DOMSource {
@@ -28,43 +29,35 @@ public class DOMSource {
 	 */
 	public static final String SOURCE_NODE = "source";
 	public static final String LINENO_NODE = "line";
-	// line number in the file
-	public static final String LINENO_ATTR = "index";
 	// program counter attribute
 	public static final String PC_ATTR = "pc";
-	// starting character index of this line from the beginning of the file
-	public static final String START_ATTR = "start_index";
 	// ending character index of this line from the beginning of the file
 	public static final String END_ATTR = "end_index";
 	// text of the source line
 	public static final String TEXT_ATTR = "text";
-	// is this statement executable
-	public static final String EXECUTABLE_ATTR = "is_executable";
-	// is this an inline function statement
-	public static final String INLINE_ATTR = "inline";
 	
-/*	public static DOMSource createDOMSource(String filename, String path){
-		Element source = new Element(SOURCE_NODE);
-		source.setAttribute(FILENAME_ATTR, filename);
-		source.setAttribute(FILEPATH_ATTR, path);
-		
-		return new DOMSource(source);
-	}
-	
-	public static DOMSource createDOMSource(DOMImage parent, String filename, String path){
-		Element source = new Element(SOURCE_NODE);
-		source.setAttribute(FILENAME_ATTR, filename);
-		source.setAttribute(FILEPATH_ATTR, path);
-		parent.getElement().addContent(source);
-		
-		return new DOMSource(source);
-	}  */
+/*
+ * public static DOMSource createDOMSource(String filename, String path){
+ * Element source = new Element(SOURCE_NODE); source.setAttribute(FILENAME_ATTR,
+ * filename); source.setAttribute(FILEPATH_ATTR, path);
+ * 
+ * return new DOMSource(source); }
+ * 
+ * public static DOMSource createDOMSource(DOMImage parent, String filename,
+ * String path){ Element source = new Element(SOURCE_NODE);
+ * source.setAttribute(FILENAME_ATTR, filename);
+ * source.setAttribute(FILEPATH_ATTR, path);
+ * parent.getElement().addContent(source);
+ * 
+ * return new DOMSource(source); }
+ */
 	
 	private Element myElement;
 	
 	/**
-	 * Creates a new DOMSource object with the given data as it's Element. data must be a 
-	 * node with name "source"
+	 * Creates a new DOMSource object with the given data as it's Element. data
+	 * must be a node with name "source"
+	 * 
 	 * @param data
 	 */
 	public DOMSource(Element data){
@@ -72,7 +65,8 @@ public class DOMSource {
 	}
 	
 	/**
-	 * @param name to set the filename to
+	 * @param name
+	 *            to set the filename to
 	 * @return true = set name worked, false if not
 	 */
 	
@@ -87,8 +81,9 @@ public class DOMSource {
 	}
 	
 	/**
-	 * @param new path to set the FILEPATH_ATTR to
-	 * @return  true if successful, false if not
+	 * @param new
+	 *            path to set the FILEPATH_ATTR to
+	 * @return true if successful, false if not
 	 */
 	public void setFilePath(String path) {
 		this.myElement.setAttribute(FILEPATH_ATTR, path);
@@ -106,13 +101,13 @@ public class DOMSource {
 			BigInteger pc) {
 		
 		Element sourceLineElement = new Element(LINENO_NODE);
-		sourceLineElement.setAttribute(LINENO_ATTR, Integer.toString(lineno));
+		sourceLineElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineno));
 		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
-		sourceLineElement.setAttribute(START_ATTR, Integer.toString(start_index));
+		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(start_index));
 		sourceLineElement.setAttribute(END_ATTR, Integer.toString(end_index));
 		sourceLineElement.setAttribute(TEXT_ATTR, text);
-		sourceLineElement.setAttribute(EXECUTABLE_ATTR, is_executable.toString());
-		sourceLineElement.setAttribute(INLINE_ATTR, is_inline.toString());
+		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, is_executable.toString());
+		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, is_inline.toString());
 		this.myElement.addContent(sourceLineElement);
 	}
 	/**
@@ -125,10 +120,13 @@ public class DOMSource {
 	}
 	
 	/**
-	 * Attempts to return the DOMLine corresponding to the given line in the file. If no 
-	 * tags exist on that line then null is returned.
-	 * @param num The line number to get
-	 * @return The DOMLine corresponding to the line, or null if no tags exist on that line
+	 * Attempts to return the DOMLine corresponding to the given line in the
+	 * file. If no tags exist on that line then null is returned.
+	 * 
+	 * @param num
+	 *            The line number to get
+	 * @return The DOMLine corresponding to the line, or null if no tags exist
+	 *         on that line
 	 */
 	public DOMLine getLineNum(int num){
 		final int lineNum = num;
@@ -152,19 +150,47 @@ public class DOMSource {
 		DOMLine val = new DOMLine((Element) iter.next());
 		
 		if(iter.hasNext()){
-			// TODO: Throw exception? 
+			// TODO: Throw exception?
 			// This should not be happening: duplicate source lines!
 		}
 		
 		return val;
 	}
 	
+	/**
+	 * Attempts to return the DOMLine corresponding to the given line in the
+	 * file. If no tags exist on that line then null is returned.
+	 * (This is alternative to the above getLineNum() method, if the
+	 * above is determined to not be necessary, delete it and rename this
+	 * one to getLineNum().
+	 * 
+	 * @param num
+	 *            The line number to get
+	 * @return The DOMLine corresponding to the line, or null if no tags exist
+	 *         on that line
+	 */
+	public DOMLine getLineNum1(int num) {
+		Iterator iter = 
+			this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
+		while (iter.hasNext()) {
+			Element line = (Element) iter.next();
+			String lineno = line.getAttributeValue(DOMLine.NUMBER_ATTR);
+			if (num == Integer.parseInt(lineno)) {
+				DOMLine val = new DOMLine((Element) line);
+				return val;
+			}
+		}
+		return null;
+	}
+	
+	
 	public void addLine(DOMLine line){
 		this.myElement.addContent(line.getElement());
 	}
 	
 	/**
-	 * @return An iterator to all the inlined function declarations in this source file
+	 * @return An iterator to all the inlined function declarations in this
+	 *         source file
 	 */
 	public Iterator getInlinedFunctions(){
 		Iterator iter = this.myElement.getChildren(DOMInlineFunc.INLINE_NODE).iterator();
@@ -177,10 +203,11 @@ public class DOMSource {
 	}
 	
 	/**
-	 * Adds an inline function to this source. By convention the inline function declarations
-	 * are added earlier in the xml schema than the line table
+	 * Adds an inline function to this source. By convention the inline function
+	 * declarations are added earlier in the xml schema than the line table
 	 * 
-	 * @param function The inlined function declaration to add
+	 * @param function
+	 *            The inlined function declaration to add
 	 */
 	public void addInlineFunction(DOMInlineFunc function){
 		// Add the functions at the top, lines on the bottom
@@ -188,8 +215,10 @@ public class DOMSource {
 	}
 	
 	/**
-	 * This method should only be used internally from the frysk source window dom
-	 * @return The Jdom element at the core of this node 
+	 * This method should only be used internally from the frysk source window
+	 * dom
+	 * 
+	 * @return The Jdom element at the core of this node
 	 */
 	protected Element getElement(){
 		return this.myElement;

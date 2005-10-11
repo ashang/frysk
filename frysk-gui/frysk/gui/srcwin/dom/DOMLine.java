@@ -28,6 +28,10 @@ public class DOMLine {
 	 */
 	public static final String OFFSET_ATTR = "offset";
 	/**
+	 * The length of the line including the \n
+	 */
+	public static final String LENGTH_ATTR = "length";
+	/**
 	 * The name of the Element node
 	 */
 	public static final String LINE_NODE = "line";

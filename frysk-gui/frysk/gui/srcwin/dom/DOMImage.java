@@ -61,7 +61,7 @@ public class DOMImage {
 		this.myElement.addContent(inlineNameElement);
 		for (int i=0; i<lines.length; i++) {
 			Element lineNumber = new Element(DOMSource.LINENO_NODE);
-			lineNumber.setAttribute(DOMSource.LINENO_ATTR, String.valueOf(i+1));
+			lineNumber.setAttribute(DOMLine.NUMBER_ATTR, String.valueOf(i+1));
 			lineNumber.setText(lines[i]);
 			inlineNameElement.addContent(lineNumber);
 		}

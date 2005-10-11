@@ -276,6 +276,14 @@ public class DOMTestDOMFrysk {
 			}
 		}
 		System.out.println("passed...DOMSource.addLine/getLines");
+		
+		DOMLine testDOMLine = testDOMSource.getLineNum1(2);
+		if (testDOMLine.getElement().getAttributeValue(DOMSource.TEXT_ATTR)
+				== main_prog[1]) {
+			System.out.println("passed...DOMSource.getLineNum1");
+		} else {
+			System.out.println("failed...DOMSource.getLineNum1");
+		}
 	}
 
 	/**
