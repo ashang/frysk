@@ -178,7 +178,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 //			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
 //		} catch (Exception e){
 			try{
-				this.glade = new LibGlade("frysk-gui/frysk/gui/srcwin/glade/"+SourceWindow.GLADE_FILE, this);
+				this.glade = new LibGlade("frysk-gui/frysk/gui/glade/"+SourceWindow.GLADE_FILE, this);
 			}
 			catch (Exception e2){
 				e2.printStackTrace();
@@ -227,7 +227,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 		
-		((SourceBuffer) this.view.getBuffer()).toggleBreakpoint(8);
+//		((SourceBuffer) this.view.getBuffer()).toggleBreakpoint(8);
 		
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).showAll();

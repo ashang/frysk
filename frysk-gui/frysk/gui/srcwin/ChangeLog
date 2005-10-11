@@ -1,5 +1,10 @@
 2005-10-11  Adam Jocksch  <ajocksch@redhat.com>
 
+	* glade: Moved all glade files (frysk_source.glade{p},
+	frysk_source_prefs.glade{p}) to ../glade.
+
+2005-10-11  Adam Jocksch  <ajocksch@redhat.com>
+
 	* testfiles: Added.
 
 	* testfiels/test.cpp: Added.

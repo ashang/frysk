@@ -26,74 +26,8 @@
       <property name="spacing">0</property>
 
       <child>
-	<widget class="GtkMenuBar" id="menubar1">
+	<widget class="GtkMenuBar" id="menubar">
 	  <property name="visible">True</property>
-
-	  <child>
-	    <widget class="GtkMenuItem" id="file">
-	      <property name="visible">True</property>
-	      <property name="stock_item">GNOMEUIINFO_MENU_FILE_TREE</property>
-
-	      <child>
-		<widget class="GtkMenu" id="file_menu">
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="close">
-		      <property name="visible">True</property>
-		      <property name="stock_item">GNOMEUIINFO_MENU_CLOSE_ITEM</property>
-		      <signal name="activate" handler="closeWindow" last_modification_time="Thu, 07 Jul 2005 20:28:00 GMT"/>
-		    </widget>
-		  </child>
-		</widget>
-	      </child>
-	    </widget>
-	  </child>
-
-	  <child>
-	    <widget class="GtkMenuItem" id="edit1">
-	      <property name="visible">True</property>
-	      <property name="stock_item">GNOMEUIINFO_MENU_EDIT_TREE</property>
-
-	      <child>
-		<widget class="GtkMenu" id="edit1_menu">
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="copy1">
-		      <property name="visible">True</property>
-		      <property name="stock_item">GNOMEUIINFO_MENU_COPY_ITEM</property>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkSeparatorMenuItem" id="separator2">
-		      <property name="visible">True</property>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="properties1">
-		      <property name="visible">True</property>
-		      <property name="stock_item">GNOMEUIINFO_MENU_FIND_ITEM</property>
-		      <signal name="activate" handler="showFindBar" last_modification_time="Thu, 07 Jul 2005 20:29:20 GMT"/>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkSeparatorMenuItem" id="separator3">
-		      <property name="visible">True</property>
-		    </widget>
-		  </child>
-
-		  <child>
-		    <widget class="GtkImageMenuItem" id="preferences">
-		      <property name="visible">True</property>
-		      <property name="stock_item">GNOMEUIINFO_MENU_PREFERENCES_ITEM</property>
-		    </widget>
-		  </child>
-		</widget>
-	      </child>
-	    </widget>
-	  </child>
 	</widget>
 	<packing>
 	  <property name="padding">0</property>
@@ -111,192 +45,6 @@
 	  <property name="show_arrow">True</property>
 
 	  <child>
-	    <widget class="GtkToolButton" id="runButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Run</property>
-	      <property name="label" translatable="yes">&lt;run&gt;</property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="stepButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Step</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="nextButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Next</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="finishButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Finish</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="contButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Continue</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkSeparatorToolItem" id="separatortoolitem1">
-	      <property name="visible">True</property>
-	      <property name="draw">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">False</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="stepAsmButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Step Assembly Instruction</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="nextAsmButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Next Assembly Instruction</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkSeparatorToolItem" id="separatortoolitem2">
-	      <property name="visible">True</property>
-	      <property name="draw">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">False</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="stackDownButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Down One Stack Frame</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="stackUpButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">Up One Stack Frame</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
-	    <widget class="GtkToolButton" id="stackBottomButton">
-	      <property name="visible">True</property>
-	      <property name="tooltip" translatable="yes">To Bottom Stack Frame</property>
-	      <property name="label" translatable="yes"></property>
-	      <property name="use_underline">True</property>
-	      <property name="visible_horizontal">True</property>
-	      <property name="visible_vertical">True</property>
-	      <property name="is_important">False</property>
-	    </widget>
-	    <packing>
-	      <property name="expand">False</property>
-	      <property name="homogeneous">True</property>
-	    </packing>
-	  </child>
-
-	  <child>
 	    <widget class="GtkSeparatorToolItem" id="separatortoolitem3">
 	      <property name="visible">True</property>
 	      <property name="draw">True</property>
@@ -310,18 +58,19 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkToolItem" id="toolitem1">
+	    <widget class="GtkToolItem" id="toolitem5">
 	      <property name="visible">True</property>
 	      <property name="visible_horizontal">True</property>
 	      <property name="visible_vertical">True</property>
 	      <property name="is_important">False</property>
 
 	      <child>
-		<widget class="GtkComboBox" id="fileComboBox">
+		<widget class="GtkComboBoxEntry" id="fileSelector">
 		  <property name="visible">True</property>
 		  <property name="items" translatable="yes">file1.c
 file2.c</property>
 		  <property name="add_tearoffs">False</property>
+		  <property name="has_frame">True</property>
 		  <property name="focus_on_click">True</property>
 		</widget>
 	      </child>
@@ -333,19 +82,18 @@ file2.c</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkToolItem" id="toolitem2">
+	    <widget class="GtkToolItem" id="toolitem6">
 	      <property name="visible">True</property>
 	      <property name="visible_horizontal">True</property>
 	      <property name="visible_vertical">True</property>
 	      <property name="is_important">False</property>
 
 	      <child>
-		<widget class="GtkComboBox" id="funcComboBox">
+		<widget class="GtkComboBoxEntry" id="funcSelector">
 		  <property name="visible">True</property>
-		  <property name="items" translatable="yes">func1
-func2
-func3</property>
+		  <property name="items" translatable="yes"></property>
 		  <property name="add_tearoffs">False</property>
+		  <property name="has_frame">True</property>
 		  <property name="focus_on_click">True</property>
 		</widget>
 	      </child>
@@ -370,7 +118,7 @@ func3</property>
 	  </child>
 
 	  <child>
-	    <widget class="GtkToolItem" id="toolitem4">
+	    <widget class="GtkToolItem" id="toolitem7">
 	      <property name="visible">True</property>
 	      <property name="visible_horizontal">True</property>
 	      <property name="visible_vertical">True</property>
@@ -459,9 +207,9 @@ MIXED</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkLabel" id="label1">
+		<widget class="GtkLabel" id="findLabel">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Find:</property>
+		  <property name="label" translatable="yes"></property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_RIGHT</property>
@@ -472,7 +220,7 @@ MIXED</property>
 		  <property name="xpad">8</property>
 		  <property name="ypad">0</property>
 		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-		  <property name="width_chars">5</property>
+		  <property name="width_chars">-1</property>
 		  <property name="single_line_mode">False</property>
 		  <property name="angle">0</property>
 		</widget>
@@ -510,7 +258,7 @@ MIXED</property>
 		  <property name="focus_on_click">True</property>
 
 		  <child>
-		    <widget class="GtkAlignment" id="alignment1">
+		    <widget class="GtkAlignment" id="alignment5">
 		      <property name="visible">True</property>
 		      <property name="xalign">0.5</property>
 		      <property name="yalign">0.5</property>
@@ -522,13 +270,13 @@ MIXED</property>
 		      <property name="right_padding">0</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox2">
+			<widget class="GtkHBox" id="hbox7">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">2</property>
 
 			  <child>
-			    <widget class="GtkImage" id="image1">
+			    <widget class="GtkImage" id="image27">
 			      <property name="visible">True</property>
 			      <property name="stock">gtk-go-down</property>
 			      <property name="icon_size">4</property>
@@ -545,9 +293,9 @@ MIXED</property>
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="label2">
+			    <widget class="GtkLabel" id="label9">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Next</property>
+			      <property name="label" translatable="yes"> </property>
 			      <property name="use_underline">True</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -564,8 +312,8 @@ MIXED</property>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
-			      <property name="expand">True</property>
-			      <property name="fill">True</property>
+			      <property name="expand">False</property>
+			      <property name="fill">False</property>
 			    </packing>
 			  </child>
 			</widget>
@@ -588,7 +336,7 @@ MIXED</property>
 		  <property name="focus_on_click">True</property>
 
 		  <child>
-		    <widget class="GtkAlignment" id="alignment2">
+		    <widget class="GtkAlignment" id="alignment6">
 		      <property name="visible">True</property>
 		      <property name="xalign">0.5</property>
 		      <property name="yalign">0.5</property>
@@ -600,13 +348,13 @@ MIXED</property>
 		      <property name="right_padding">0</property>
 
 		      <child>
-			<widget class="GtkHBox" id="hbox3">
+			<widget class="GtkHBox" id="hbox8">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">2</property>
 
 			  <child>
-			    <widget class="GtkImage" id="image2">
+			    <widget class="GtkImage" id="image28">
 			      <property name="visible">True</property>
 			      <property name="stock">gtk-go-up</property>
 			      <property name="icon_size">4</property>
@@ -623,9 +371,9 @@ MIXED</property>
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="label3">
+			    <widget class="GtkLabel" id="label10">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Previous</property>
+			      <property name="label" translatable="yes"> </property>
 			      <property name="use_underline">True</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -701,7 +449,7 @@ MIXED</property>
 			  <child>
 			    <widget class="GtkLabel" id="label4">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Highlight</property>
+			      <property name="label" translatable="yes"></property>
 			      <property name="use_underline">True</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -738,7 +486,7 @@ MIXED</property>
 		<widget class="GtkCheckButton" id="caseFind">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Match Case</property>
+		  <property name="label" translatable="yes"></property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -767,7 +515,7 @@ MIXED</property>
 	      <property name="spacing">5</property>
 
 	      <child>
-		<widget class="GtkLabel" id="label7">
+		<widget class="GtkLabel" id="lineLabel">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes"></property>
 		  <property name="use_underline">False</property>
@@ -776,11 +524,11 @@ MIXED</property>
 		  <property name="wrap">False</property>
 		  <property name="selectable">False</property>
 		  <property name="xalign">0.5</property>
-		  <property name="yalign">0.5</property>
+		  <property name="yalign">0.490000009537</property>
 		  <property name="xpad">0</property>
 		  <property name="ypad">0</property>
 		  <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-		  <property name="width_chars">1</property>
+		  <property name="width_chars">-1</property>
 		  <property name="single_line_mode">False</property>
 		  <property name="angle">0</property>
 		</widget>
@@ -792,9 +540,9 @@ MIXED</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkLabel" id="label5">
+		<widget class="GtkLabel" id="gotoLabel">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">Goto Line: </property>
+		  <property name="label" translatable="yes"></property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -836,7 +584,7 @@ MIXED</property>
 	      </child>
 
 	      <child>
-		<widget class="GtkButton" id="gotoLine">
+		<widget class="GtkButton" id="gotoButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="relief">GTK_RELIEF_NONE</property>
@@ -861,7 +609,7 @@ MIXED</property>
 			  <property name="spacing">2</property>
 
 			  <child>
-			    <widget class="GtkImage" id="image5">
+			    <widget class="GtkImage" id="image26">
 			      <property name="visible">True</property>
 			      <property name="stock">gtk-jump-to</property>
 			      <property name="icon_size">4</property>
@@ -878,9 +626,9 @@ MIXED</property>
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="labge">
+			    <widget class="GtkLabel" id="label8">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">Go</property>
+			      <property name="label" translatable="yes"> </property>
 			      <property name="use_underline">True</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
