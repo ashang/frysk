@@ -82,39 +82,4 @@ abstract class ProcEvent
 		+ ",proc" + proc
 		+ "]");
     }
-
-    /**
-     * A task forked.
-     *
-     * This takes the TaskId of the forking task, and not the
-     * containing proc.  See TaskEvent.Cloned for further discussion.
-     */
-    static class TaskForked
-	extends ProcEvent
-    {
-	protected ProcId forkId;
-	TaskForked (TaskId taskId, ProcId forkId)
-	{
-	    super (taskId);
-	    this.forkId = forkId;
-	}
-	public ProcId getForkId ()
-	{
-	    return forkId;
-	}
-	public void execute ()
-	{
- 	    proc = getProcFromTaskId ();
- 	    if (proc == null)
- 		return;
- 	    proc.state = proc.state.process (proc, this);
-	}
-	public String toString ()
-	{
-	    return ("[TaskForked"
-		    + super.toString ()
-		    + ",forkId=" + forkId
-		    + "]");
-	}
-    }
 }

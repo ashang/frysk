@@ -75,10 +75,6 @@ abstract class ProcState
     {
 	return false;
     }
-    ProcState process (Proc proc, ProcEvent.TaskForked event)
-    {
-	throw unhandled (proc, event);
-    }
     ProcState processPerformRemoval (Proc proc)
     {
 	throw unhandled (proc, "RequestRemoval");
@@ -285,12 +281,6 @@ abstract class ProcState
 
     private static ProcState running = new ProcState ("running")
 	{
-	    ProcState process (Proc proc, ProcEvent.TaskForked event)
-	    {
-		proc.sendNewAttachedChild (event.getForkId (), true);
-		// The process has already been added to the tree.
-		return running;
-	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
 		proc.observableAttachedContinue.notify (proc);
@@ -331,12 +321,6 @@ abstract class ProcState
 
     private static ProcState startRunning = new ProcState ("startRunning")
 	{
-	    ProcState process (Proc proc, ProcEvent.TaskForked event)
-	    {
-		proc.sendNewAttachedChild (event.getForkId (), true);
-		// The process has already been added to the tree.
-		return running;
-	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
 		proc.observableAttachedContinue.notify (proc);

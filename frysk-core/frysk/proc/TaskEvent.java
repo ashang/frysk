@@ -171,37 +171,6 @@ public abstract class TaskEvent
     }
 
     /**
-     * This task has forked, creating a new child process and task.
-     */
-    static class Forked
-	extends TaskEvent
-    {
-	protected ProcId forkId;
-	Forked (TaskId taskId, ProcId forkId)
-	{
-	    super (taskId);
-	    this.forkId = forkId;
-	}
-	public ProcId getForkId ()
-	{
-	    return forkId;
-	}
-	public void execute ()
-	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
-	}
-	public String toString ()
-	{
-	    return ("[Forked" + super.toString ()
-		    + ",forkId=" + forkId
-		    + "]");
-	}
-    }
-
-    /**
      * This task has terminated and is in a zombie state.
      */
     static class Zombied

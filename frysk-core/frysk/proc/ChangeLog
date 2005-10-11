@@ -1,5 +1,12 @@
 2005-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Handle processPerformForked, instead of
+	TaskEvent .Forked.
+	* ProcState.java: Delete code handling ProcEvent.TaskForked.
+	* ProcEvent.java: Delete TaskForked.
+	* TaskEvent.java: Delete Forked.
+	* Task.java: Add performForked.
+	
 	* TaskState.java: Handle processPerformCloned, instead of
 	TaskEvent.Cloned.
 	* TaskEvent.java: Delete Cloned.

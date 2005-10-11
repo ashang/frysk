@@ -216,14 +216,19 @@ public class LinuxHost
 						     true);
 		    task.performCloned (clone);
 		}
-		public void forkEvent (int pid, int child)
+		public void forkEvent (int pid, int childPid)
 		{
-		    // Notify both the forking task, and the
-		    // containing process that a fork occured.
-		    TaskId taskId = new TaskId (pid);
-		    ProcId childId = new ProcId (child);
-		    eventLoop.add (new TaskEvent.Forked (taskId, childId));
-		    eventLoop.add (new ProcEvent.TaskForked (taskId, childId));
+// 		    // Notify both the forking task, and the
+// 		    // containing process that a fork occured.
+// 		    TaskId taskId = new TaskId (pid);
+// 		    ProcId childId = new ProcId (child);
+// 		    eventLoop.add (new TaskEvent.Forked (taskId, childId));
+// 		    eventLoop.add (new ProcEvent.TaskForked (taskId, childId));
+		    Task task = Manager.host.get (new TaskId (pid));
+		    Proc child = new LinuxProc (task.proc,
+						new ProcId (childPid),
+						true);
+		    task.performForked (child);
 		}
 		public void exitEvent (int pid, int status)
 		{

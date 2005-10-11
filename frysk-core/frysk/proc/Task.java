@@ -299,6 +299,22 @@ abstract public class Task
 	    });
     }
 
+    /**
+     * (internal) This task forked creating an entirely new child
+     * process.
+     */
+    void performForked (final Proc forkArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		Proc fork = forkArg;
+		public void execute ()
+		{
+		    state = state.processPerformForked (Task.this, fork);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();
