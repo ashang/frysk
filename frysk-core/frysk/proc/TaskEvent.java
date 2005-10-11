@@ -85,37 +85,6 @@ public abstract class TaskEvent
     }
 
     /**
-     * This task has cloned, creating a new CHILD task.
-     */
-    static class Cloned
-	extends TaskEvent
-    {
-	protected TaskId cloneId;
-	Cloned (TaskId taskId, TaskId cloneId)
-	{
-	    super (taskId);
-	    this.cloneId = cloneId;
-	}
-	public TaskId getCloneId ()
-	{
-	    return cloneId;
-	}
-	public void execute ()
-	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
-	}
-	public String toString ()
-	{
-	    return ("[Cloned" + super.toString ()
-		    + ",cloneId=" + cloneId
-		    + "]");
-	}
-    }
-
-    /**
      * This task has forked, creating a new child process and task.
      */
     static class Execed

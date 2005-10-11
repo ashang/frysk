@@ -1,3 +1,12 @@
+2005-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: Handle processPerformCloned, instead of
+	TaskEvent.Cloned.
+	* TaskEvent.java: Delete Cloned.
+	* Task.java: Add performCloned.
+	* ProcState.java: Delete code handling TaskCloned.
+	* ProcEvent.java: Delete TaskCloned.
+
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxProc.java, LinuxHost.java: Use frysk.sys.proc.ScanDir.

@@ -75,10 +75,6 @@ abstract class ProcState
     {
 	return false;
     }
-    ProcState process (Proc proc, ProcEvent.TaskCloned event)
-    {
-	throw unhandled (proc, event);
-    }
     ProcState process (Proc proc, ProcEvent.TaskForked event)
     {
 	throw unhandled (proc, event);
@@ -289,12 +285,6 @@ abstract class ProcState
 
     private static ProcState running = new ProcState ("running")
 	{
-	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
-	    {
-		proc.sendNewAttachedTask (event.getCloneId (), true);
-		// The clone has already been added to the tree.
-		return running;
-	    }
 	    ProcState process (Proc proc, ProcEvent.TaskForked event)
 	    {
 		proc.sendNewAttachedChild (event.getForkId (), true);
@@ -341,12 +331,6 @@ abstract class ProcState
 
     private static ProcState startRunning = new ProcState ("startRunning")
 	{
-	    ProcState process (Proc proc, ProcEvent.TaskCloned event)
-	    {
-		proc.sendNewAttachedTask (event.getCloneId (), true);
-		// The clone has already been added to the tree.
-		return running;
-	    }
 	    ProcState process (Proc proc, ProcEvent.TaskForked event)
 	    {
 		proc.sendNewAttachedChild (event.getForkId (), true);

@@ -203,15 +203,18 @@ public class LinuxHost
 	}
 	Wait.Observer waitObserver = new Wait.Observer ()
 	    {
-		public void cloneEvent (int pid, int clone)
+		public void cloneEvent (int pid, int clonePid)
 		{
-		    // Tell the task that it cloned, and the
-		    // containing process that there is a new
-		    // task.
-		    TaskId taskId = new TaskId (pid);
-		    TaskId cloneId = new TaskId (clone);
-		    eventLoop.add (new TaskEvent.Cloned (taskId, cloneId));
-		    eventLoop.add (new ProcEvent.TaskCloned (taskId, cloneId));
+		    // Find the task, create its new peer, and then
+		    // tell the task what happened.  Note that hot on
+		    // the heels of this event is a clone.stopped
+		    // event, and the clone Task must be created
+		    // before that event arrives.
+		    Task task = Manager.host.get (new TaskId (pid));
+		    Task clone = new I386Linux.Task (task.proc,
+						     new TaskId (clonePid),
+						     true);
+		    task.performCloned (clone);
 		}
 		public void forkEvent (int pid, int child)
 		{

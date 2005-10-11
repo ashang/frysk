@@ -284,6 +284,21 @@ abstract public class Task
 	    });
     }
 
+    /**
+     * (internal) This task cloned creating the new Task cloneArg.
+     */
+    void performCloned (final Task cloneArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		Task clone = cloneArg;
+		public void execute ()
+		{
+		    state = state.processPerformCloned (Task.this, clone);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();

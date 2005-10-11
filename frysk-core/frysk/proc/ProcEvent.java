@@ -84,40 +84,6 @@ abstract class ProcEvent
     }
 
     /**
-     * A task cloned.
-     *
-     * This takes the TaskId of the cloning task, and not the
-     * containing proc.  See TaskEvent.Cloned for further discussion.
-     */
-    static class TaskCloned
-	extends ProcEvent
-    {
-	protected TaskId cloneId;
-	TaskCloned (TaskId taskId, TaskId cloneId)
-	{
-	    super (taskId);
-	    this.cloneId = cloneId;
-	}
-	public TaskId getCloneId ()
-	{
-	    return cloneId;
-	}
-	public void execute ()
-	{
- 	    proc = getProcFromTaskId ();
- 	    if (proc == null)
- 		return;
- 	    proc.state = proc.state.process (proc, this);
-	}
-	public String toString ()
-	{
-	    return ("[TaskCloned"
-		    + super.toString ()
-		    + "]");
-	}
-    }
-
-    /**
      * A task forked.
      *
      * This takes the TaskId of the forking task, and not the

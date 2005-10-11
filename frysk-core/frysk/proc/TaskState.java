@@ -102,10 +102,6 @@ class TaskState
     {
 	throw unhandled (task, event);
     }
-    TaskState process (Task task, TaskEvent.Cloned event)
-    {
-	throw unhandled (task, event);
-    }
     TaskState process (Task task, TaskEvent.Forked event)
     {
 	throw unhandled (task, event);
@@ -149,6 +145,10 @@ class TaskState
     TaskState processPerformContinue (Task task)
     {
 	throw unhandled (task, "PerformContinue");
+    }
+    TaskState processPerformCloned (Task task, Task clone)
+    {
+	throw unhandled (task, "PerformCloned");
     }
 
     /**
@@ -312,10 +312,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Cloned event)
-	    {
-		return stopping;
-	    }
 	    TaskState process (Task task, TaskEvent.Forked event)
 	    {
 		return stopping;
@@ -382,11 +378,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Cloned event)
-	    {
-		task.sendContinue (0);
-		return running;
-	    }
 	    TaskState process (Task task, TaskEvent.Forked event)
 	    {
 		task.sendContinue (0);
@@ -422,6 +413,11 @@ class TaskState
 	    {
 		task.sendStop ();
 		return performingStop;
+	    }
+	    TaskState processPerformCloned (Task task, Task clone)
+	    {
+		task.sendContinue (0);
+		return running;
 	    }
 	};
 
@@ -478,10 +474,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Cloned event)
-	    {
-		return stepping;
-	    }
 	    TaskState process (Task task, TaskEvent.Forked event)
 	    {
 		return stepping;
@@ -533,10 +525,6 @@ class TaskState
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Cloned event)
-	    {
-		return steppingPaused;
 	    }
 	    TaskState process (Task task, TaskEvent.Forked event)
 	    {
@@ -669,11 +657,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Cloned event)
-	    {
-		task.sendContinue (0);
-		return unpaused;
-	    }
 	    TaskState process (Task task, TaskEvent.Forked event)
 	    {
 		task.sendContinue (0);
@@ -706,11 +689,6 @@ class TaskState
 		return zombied;
 	    }
 	    TaskState process (Task task, TaskEvent.Forked event)
-	    {
-		// Ignore.
-		return zombied;
-	    }
-	    TaskState process (Task task, TaskEvent.Cloned event)
 	    {
 		// Ignore.
 		return zombied;
