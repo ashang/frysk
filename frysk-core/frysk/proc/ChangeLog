@@ -6,6 +6,7 @@
 	* ProcEvent.java: Delete TaskForked.
 	* TaskEvent.java: Delete Forked.
 	* Task.java: Add performForked.
+	* LinuxHost.java: Use Task .performForked.
 	
 	* TaskState.java: Handle processPerformCloned, instead of
 	TaskEvent.Cloned.
@@ -13,6 +14,7 @@
 	* Task.java: Add performCloned.
 	* ProcState.java: Delete code handling TaskCloned.
 	* ProcEvent.java: Delete TaskCloned.
+	* LinuxHost.java: Use Task .performCloned.
 
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
