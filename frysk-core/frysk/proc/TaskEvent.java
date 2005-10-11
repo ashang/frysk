@@ -146,9 +146,9 @@ public abstract class TaskEvent
 	extends TaskEvent
     {
 	protected int signal;
-	Exiting (TaskId taskId, int signal)
+	Exiting (Task task, int signal)
 	{
-	    super (taskId);
+	    super (task);
 	    this.signal = signal;
 	}
 	public int getSignal ()
@@ -157,10 +157,7 @@ public abstract class TaskEvent
 	}
 	public void execute ()
 	{
-	    task = Manager.host.get (taskId);
-	    if (task == null)
-		return;
-	    task.state = task.state.process (task, this);
+	    throw new RuntimeException ("should not happen");
 	}
 	public String toString ()
 	{

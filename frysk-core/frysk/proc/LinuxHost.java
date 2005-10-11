@@ -232,8 +232,8 @@ public class LinuxHost
 		}
 		public void exitEvent (int pid, int status)
 		{
-		    eventLoop.add (new TaskEvent.Exiting (new TaskId (pid),
-							  status));
+		    Task task = get (new TaskId (pid));
+		    task.performExiting (status);
 		}
 		public void execEvent (int pid)
 		{

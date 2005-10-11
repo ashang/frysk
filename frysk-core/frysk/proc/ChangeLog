@@ -1,5 +1,11 @@
 2005-10-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Handle .performExiting, instead of TaskEvent
+	.Exiting.
+	* TaskEvent.java: Simplify .Exiting.
+	* Task.java: Add .performExiting.
+	* LinuxHost.java: Use Task .performExiting.
+	
 	* TaskState.java: Handle .processPerformedCloned,
 	.processPerformedTrapped, and .processPerformedSignaled, instead
 	of TaskEvent .Stopped, .Trapped, and .Signaled.

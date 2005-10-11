@@ -94,9 +94,9 @@ class TaskState
     {
 	throw unhandled (task, event);
     }
-    TaskState process (Task task, TaskEvent.Exiting event)
+    TaskState processPerformExiting (Task task, int status)
     {
-	throw unhandled (task, event);
+	throw unhandled (task, "PerformExiting");
     }
     TaskState process (Task task, TaskEvent.Terminated event)
     {
@@ -299,12 +299,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Exiting event)
-	    {
-		task.proc.taskExiting.notify (event);
-		task.sendContinue (event.signal);
-		return unpaused;
-	    }
 	    TaskState process (Task task, TaskEvent.Terminated event)
 	    {
 		task.proc.remove (event.task);
@@ -353,10 +347,11 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Exiting event)
+	    TaskState processPerformExiting (Task task, int status)
 	    {
+		TaskEvent event = new TaskEvent.Exiting (task, status);
 		task.proc.taskExiting.notify (event);
-		task.sendContinue (event.signal);
+		task.sendContinue (status);
 		return running;
 	    }
 	    TaskState process (Task task, TaskEvent.Terminated event)
@@ -451,12 +446,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Exiting event)
-	    {
-		task.proc.taskExiting.notify (event);
-		task.sendContinue (event.signal);
-		return stepping;
-	    }
 	    TaskState process (Task task, TaskEvent.Terminated event)
 	    {
 		task.proc.remove (event.task);
@@ -489,12 +478,6 @@ class TaskState
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
-	    }
-	    TaskState process (Task task, TaskEvent.Exiting event)
-	    {
-		task.proc.taskExiting.notify (event);
-		task.sendContinue (event.signal);
-		return steppingPaused;
 	    }
 	    TaskState process (Task task, TaskEvent.Terminated event)
 	    {
@@ -617,12 +600,6 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
-	    TaskState process (Task task, TaskEvent.Exiting event)
-	    {
-		task.proc.taskExiting.notify (event);
-		task.sendContinue (event.signal);
-		return unpaused;
-	    }
 	    TaskState process (Task task, TaskEvent.Terminated event)
 	    {
 		task.proc.remove (event.task);
@@ -651,11 +628,6 @@ class TaskState
 		return zombied;
 	    }
 	    TaskState process (Task task, TaskEvent.Execed event)
-	    {
-		// Too late to do anything.
-		return zombied;
-	    }
-	    TaskState process (Task task, TaskEvent.Exiting event)
 	    {
 		// Too late to do anything.
 		return zombied;

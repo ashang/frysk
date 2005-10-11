@@ -356,6 +356,21 @@ abstract public class Task
 	    });
     }
 
+    /**
+     * (internal) The task is in the process of exiting.
+     */
+    void performExiting (final int statusArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		int status = statusArg;
+		public void execute ()
+		{
+		    state = state.processPerformExiting (Task.this, status);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();
