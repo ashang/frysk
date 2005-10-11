@@ -43,9 +43,12 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
+import org.gnu.gdk.KeyValue;
+import org.gnu.gdk.ModifierType;
 import org.gnu.gdk.Pixbuf;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.AccelGroup;
+import org.gnu.gtk.AccelMap;
 import org.gnu.gtk.Action;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CheckButton;
@@ -108,7 +111,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	public static final String FUNC_SELECTOR = "funcSelector";
 
 	// Directory where images are stored
-	public static final String IMAGES_DIR = "/home/ajocksch/frysk/frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
+	public static final String IMAGES_DIR = "frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
 	
 	// Image files - search bar
 	public static final String FIND_NEXT_PNG = "findNext.png"; //$NON-NLS-1$
@@ -175,7 +178,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 //			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
 //		} catch (Exception e){
 			try{
-				this.glade = new LibGlade("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/glade/"+SourceWindow.GLADE_FILE, this);
+				this.glade = new LibGlade("frysk-gui/frysk/gui/srcwin/glade/"+SourceWindow.GLADE_FILE, this);
 			}
 			catch (Exception e2){
 				e2.printStackTrace();
@@ -207,14 +210,14 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// create the actual sourceview widget
 		this.view = new SourceViewWidget(this.prefs);
 		
-		PCLocation loc = new PCLocation("/home/ajocksch/workspace/Insight Test/main.cpp", 2);
-		PCLocation loc2 = new PCLocation("/home/ajocksch/workspace/Insight Test/main2.cpp", 2);
+		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp", 2);
+		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", 2);
 		loc.link(loc2);
-		PCLocation loc3 = new PCLocation("/home/ajocksch/workspace/Insight Test/main3.cpp", 2);
+		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", 2);
 		loc2.link(loc3);
-		PCLocation loc4 = new PCLocation("/home/ajocksch/workspace/Insight Test/main4.cpp", 2);
+		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", 2);
 		loc3.link(loc4);
-		loc4.link(new PCLocation("/home/ajocksch/workspace/Insight Test/main5.cpp", 2));
+		loc4.link(new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", 2));
 		this.view.load(loc);
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
@@ -319,18 +322,19 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		}
 		fac.addDefault();
 		
+		// Close action
 		this.close = new Action("close", "Close", "Close Window", GtkStockItem.CLOSE.getString());
-//		this.close.setAccelGroup(ag);
-//		this.close.setAccelPath("<sourceWin>/File/Close");
-//		this.close.connectAccelerator();
+		this.close.setAccelGroup(ag);
+		this.close.setAccelPath("<sourceWin>/File/Close");
 		this.close.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				Gtk.mainQuit();
 			}
 		});
-//		AccelMap.changeEntry("<sourceWin>/File/Close", KeySymbol.x, ModifierType.CONTROL_MASK, true);
-//		ag.connect("<sourceWin>/File/Close");
+		AccelMap.changeEntry("<sourceWin>/File/Close", KeyValue.x, ModifierType.CONTROL_MASK, true);
+		this.close.connectAccelerator();
 		
+		// Copy action
 		this.copy = new Action("copy", "Copy", "Copy Selected Text to the Clipboard",
 							GtkStockItem.COPY.getString());
 		this.copy.addListener(new ActionListener() {
@@ -338,7 +342,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 				System.out.println("<copy />");
 			}
 		});
+		this.copy.setAccelGroup(ag);
+		this.copy.setAccelPath("<sourceWin>/Edit/Copy");
+		AccelMap.changeEntry("<sourceWin>/Edit/Copy", KeyValue.c, ModifierType.CONTROL_MASK, true);
+		this.copy.connectAccelerator();
 		
+		// Find action
 		this.find = new Action("find", "Find", "Find Text in the Current Buffer",
 							GtkStockItem.FIND.getString());
 		this.find.addListener(new ActionListener() {
@@ -346,6 +355,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 				SourceWindow.this.glade.getWidget(SourceWindow.FIND_BOX).showAll();
 			}
 		});		
+		this.find.setAccelGroup(ag);
+		this.find.setAccelPath("<sourceWin>/Edit/Find");
+		AccelMap.changeEntry("<sourceWin>/Edit/Find", KeyValue.f, ModifierType.CONTROL_MASK, true);
+		this.find.connectAccelerator();
+		
+		// Launch preference window action
 		this.prefsLaunch = new Action("prefs", "Preferences", "Edit Preferences",
 							GtkStockItem.PREFERENCES.getString());
 		this.prefsLaunch.addListener(new ActionListener() {
@@ -354,73 +369,136 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			}
 		});
 		
+		// Run program action
 		this.run = new ToggleAction("run", "Run", Messages.getString("SourceWindow.26"), "frysk-run");
 		this.run.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doRun();
 			}
 		});
+		this.run.setAccelGroup(ag);
+		this.run.setAccelPath("<sourceWin>/Program/Run");
+		AccelMap.changeEntry("<sourceWin>/Program/Run", KeyValue.r, ModifierType.MOD1_MASK, true);
+		this.run.connectAccelerator();
+		
+		// Step action
 		this.step = new Action("step", "Step", Messages.getString("SourceWindow.28"), "frysk-step");
 		this.step.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStep();
 			}
 		});
+		this.step.setAccelGroup(ag);
+		this.step.setAccelPath("<sourceWin>/Program/Step");
+		AccelMap.changeEntry("<sourceWin>/Program/Step", KeyValue.s, ModifierType.MOD1_MASK, true);
+		this.step.connectAccelerator();
+		
+		// Next action
 		this.next = new Action("next", "Next", Messages.getString("SourceWindow.30"), "frysk-next");
 		this.next.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doNext();
 			}
 		});
+		this.next.setAccelGroup(ag);
+		this.next.setAccelPath("<sourceWin>/Program/Next");
+		AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n, ModifierType.MOD1_MASK, true);
+		this.next.connectAccelerator();
+		
+		// Finish action
 		this.finish = new Action("finish", "Finish", Messages.getString("SourceWindow.32"), "frysk-finish");
 		this.finish.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doFinish();		
 			}
 		});
+		this.finish.setAccelGroup(ag);
+		this.finish.setAccelPath("<sourceWin>/Program/Finish");
+		AccelMap.changeEntry("<sourceWin>/Program/Finish", KeyValue.f, ModifierType.MOD1_MASK, true);
+		this.finish.connectAccelerator();
+		
+		// Continue action
 		this.cont = new Action("continue", "Continue", Messages.getString("SourceWindow.34"), "frysk-continue");
 		this.cont.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doContinue();
 			}
 		});
+		this.cont.setAccelGroup(ag);
+		this.cont.setAccelPath("<sourceWin>/Program/Continue");
+		AccelMap.changeEntry("<sourceWin>/Program/Continue", KeyValue.c, ModifierType.MOD1_MASK, true);
+		this.cont.connectAccelerator();
+		
+		// Terminate action
 		this.terminate = new Action("terminate", "Terminate", "Kill Currently Executing Program", "");
 		this.terminate.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doTerminate();
 			}
 		});
+		this.terminate.setAccelGroup(ag);
+		this.terminate.setAccelPath("<sourceWin>/Program/Terminate");
+		AccelMap.changeEntry("<sourceWin>/Program/Terminate", KeyValue.t, ModifierType.MOD1_MASK, true);
+		
+		// Step assembly instruction action
 		this.stepAsm = new Action("stepAsm", "Step Assembly Instruction", Messages.getString("SourceWindow.36"), "frysk-step-asm");
 		this.stepAsm.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doAsmStep();
 			}
 		});
+		this.stepAsm.setAccelGroup(ag);
+		this.stepAsm.setAccelPath("<sourceWin>/Program/Step Assembly");
+		AccelMap.changeEntry("<sourceWin>/Program/Step Assembly", KeyValue.s, ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK), true);
+		this.stepAsm.connectAccelerator();
+		
+		// Next assembly instruction action
 		this.nextAsm = new Action("nextAsm", "Next Assembly Instruction", Messages.getString("SourceWindow.38"), "frysk-next-asm");
 		this.nextAsm.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doAsmNext();
 			}
 		});
+		this.nextAsm.setAccelGroup(ag);
+		this.nextAsm.setAccelPath("<sourceWin>/Program/Next Assembly");
+		AccelMap.changeEntry("<sourceWin>/Program/Next Assembly", KeyValue.n, ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK), true);
+		this.nextAsm.connectAccelerator();
 		
+		// Bottom of stack action
 		this.stackBottom = new Action("stackBottom", "To Bottom of Stack", Messages.getString("SourceWindow.44"), "frysk-stack-bottom");
 		this.stackBottom.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackBottom();
 			}
 		});
+		this.stackBottom.setAccelGroup(ag);
+		this.stackBottom.setAccelPath("<sourceWin>/Stack/Bottom");
+		AccelMap.changeEntry("<sourceWin>/Stack/Bottom", KeyValue.Down, ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK), true);
+		this.stackBottom.connectAccelerator();
+	
+		// Stack down action
 		this.stackDown = new Action("stackDown", "Down One Stack Frame", Messages.getString("SourceWindow.40"), "frysk-stack-down");
 		this.stackDown.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackDown();
 			}
 		});
+		this.stackDown.setAccelGroup(ag);
+		this.stackDown.setAccelPath("<sourceWin>/Stack/Down");
+		AccelMap.changeEntry("<sourceWin>/Stack/Down", KeyValue.Down, ModifierType.MOD1_MASK, true);
+		this.stackDown.connectAccelerator();
+		
+		// Stack up action
 		this.stackUp = new Action("stack Up", "Up One Stack Frame", Messages.getString("SourceWindow.42"), "frysk-stack-up");
 		this.stackUp.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackUp();
 			}
 		});
+		this.stackUp.setAccelGroup(ag);
+		this.stackUp.setAccelPath("<sourceWin>/Stack/Up");
+		AccelMap.changeEntry("<sourceWin>/Stack/Up", KeyValue.Up, ModifierType.MOD1_MASK, true);
+		this.stackUp.connectAccelerator();
 	}
 	
 	
@@ -430,12 +508,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		MenuItem mi = (MenuItem) this.close.createMenuItem();
 		Menu tmp = new Menu();
-//		tmp.setAccelPath("<sourceWin>/File");
 		tmp.append(mi);
-//		tmp.setAccelGroup(ag);
-		
-//		mi.setAccelPath("<sourceWin>/File/Close");
-//		AccelMap.changeEntry("<sourceWin>/File/Close", KeySymbol.x, ModifierType.CONTROL_MASK, true);
 		
 		menu.setSubmenu(tmp);
 		
@@ -445,20 +518,14 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// Edit Menu
 		menu = new MenuItem("Edit", true);
 		tmp = new Menu();
-//		tmp.setAccelPath("<sourceWin>/Edit");
-//		tmp.setAccelGroup(ag);
 		
 		mi = (MenuItem) this.copy.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Edit/Copy");
-//		AccelMap.changeEntry("<sourceWin>/Edit/Copy", KeySymbol.c, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
 
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.find.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Edit/Find");
-//		AccelMap.changeEntry("<sourceWin>/Edit/Find", KeySymbol.f, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
 		
 		mi = new MenuItem(); // Seperator
@@ -474,75 +541,48 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// Program Menu
 		menu = new MenuItem("Program", false);
 		tmp = new Menu();
-//		tmp.setAccelPath("<sourceWin>/Program");
-//		tmp.setAccelGroup(ag);
 		
 		mi = (MenuItem) this.run.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/Run");
-//		AccelMap.changeEntry("<sourceWin>/Program/Run", KeySymbol.r, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.step.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/Step");
-//		AccelMap.changeEntry("<sourceWin>/Program/Step", KeySymbol.s, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.next.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/Next");
-//		AccelMap.changeEntry("<sourceWin>/Program/Next", KeySymbol.n, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.finish.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/Finish");
-//		AccelMap.changeEntry("<sourceWin>/Program/Finish", KeySymbol.f, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.cont.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/Continue");
-//		AccelMap.changeEntry("<sourceWin>/Program/Continue", KeySymbol.c, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.terminate.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/Terminate");
-//		AccelMap.changeEntry("<sourceWin>/Program/Terminate", KeySymbol.t, ModifierType.MOD1_MASK, true);
 		tmp.append(mi);
 		
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.stepAsm.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/StepAsm");
-//		AccelMap.changeEntry("<sourceWin>/Program/StepAsm", KeySymbol.s, ModifierType.SHIFT_MASK.or(ModifierType.MOD1_MASK), true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.nextAsm.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Program/NextAsm");
-//		AccelMap.changeEntry("<sourceWin>/Program/NextAsm", KeySymbol.n, ModifierType.SHIFT_MASK.or(ModifierType.MOD1_MASK), true);
 		tmp.append(mi);
 		
 		menu.setSubmenu(tmp);
 		((MenuBar) this.glade.getWidget("menubar")).append(menu);
 		
-		
 		// Stack menu
 		menu = new MenuItem("Stack", false);
 		tmp = new Menu();
-//		tmp.setAccelPath("<sourceWin>/Stack");
-//		tmp.setAccelGroup(ag);
 		
 		mi = (MenuItem) this.stackUp.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Stack/Up");
-//		AccelMap.changeEntry("<sourceWin>/Stack/Up", KeySymbol.Up, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.stackDown.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Stack/Down");
-//		AccelMap.changeEntry("<sourceWin>/Stack/Down", KeySymbol.Down, ModifierType.CONTROL_MASK, true);
 		tmp.append(mi);
 		
 		mi = (MenuItem) this.stackBottom.createMenuItem();
-//		mi.setAccelPath("<sourceWin>/Stack/Bottom");
-//		AccelMap.changeEntry("<sourceWin>/Stack/Bottom", KeySymbol.Down, ModifierType.CONTROL_MASK.or(ModifierType.SHIFT_MASK), true);
 		tmp.append(mi);
 		
 		menu.setSubmenu(tmp);
@@ -555,8 +595,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 * Adds the icons and assigns tooltips to the toolbar items
 	 */
 	private void createToolBar(){
-		
-		// Create tooltips
 		ToolBar toolbar = (ToolBar) this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME);
 
 		toolbar.insert((ToolItem) this.run.createToolItem(), 0);
