@@ -1,3 +1,10 @@
+2005-10-11  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.sh: Add .printProblem to print the Throwable in short
+	form.  Call from .addError, and .addFailure.  Delete the
+	.printDefects stub so that the stack is printed at the end of the
+	run.
+
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.sh: Add class Results, extends ResultPrinter.  Use

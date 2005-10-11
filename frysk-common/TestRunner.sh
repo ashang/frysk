@@ -31,20 +31,21 @@ public class TestRunner
 	{
 	    System.out.println ();
 	}
+	private void printProblem (String what, Throwable t)
+        {
+            System.out.print (" ");
+	    System.out.println (what);
+	    System.out.print ("  ");
+	    System.out.print (t);
+        }
+
 	public void addError (Test test, java.lang.Throwable t)
 	{
-	    System.out.print (" ERROR: ");
-	    t.printStackTrace ();
+	    printProblem ("ERROR", t);
 	}
 	public void addFailure (Test test, AssertionFailedError t)
 	{
-	    System.out.print (" FAIL: ");
-	    t.printStackTrace ();
-	}
-	protected void printDefects(java.util.Enumeration booBoos,
-				    int count, java.lang.String type)
-	{
-	    // Do nothing.
+	    printProblem ("FAIL", t);
 	}
 	Results (PrintStream stream)
 	{
