@@ -24,11 +24,11 @@ public class DOMTestDOMFrysk {
 	private static String[] main_prog = { "int c(){\n", "   do_something();\n",
 			"}\n" };
 
-	private static int[] start_index = { 1, 12, 28 };
+	private static int[] offset_index = { 1, 12, 28 };
 
-	private static int[] length = { main_prog[0].length(),
-									main_prog[1].length(),
-									main_prog[2].length() };
+	//private static int[] length = { main_prog[0].length(),
+	//								main_prog[1].length(),
+	//								main_prog[2].length() };
 
 	private static String[] inline_funcs = { "do_something", "b", "f" };
 
@@ -262,7 +262,7 @@ public class DOMTestDOMFrysk {
 		BigInteger pc = BigInteger.valueOf(25842);
 		for (int ctr = 0; ctr < main_prog.length; ctr++) {
 			testDOMSource.addLine(ctr + 1, main_prog[ctr], is_executable,
-					is_inline[ctr], start_index[ctr], length[ctr], pc);
+					is_inline[ctr], Boolean.FALSE, offset_index[ctr], pc);
 			pc = pc.add(no_bytes);
 		}
 
@@ -309,6 +309,57 @@ public class DOMTestDOMFrysk {
 		} else {
 			System. out.println("failed...DOMLine.getLength");
 		}
+		
+		if (testDOMLine.getText() == main_prog[1]) {
+			System.out.println("passed...DOMLine.getText");
+		} else {
+			System.out.println("failed...DOMLine.getText");
+		}
+		
+		String text = "   do_something_else();\n";
+		testDOMLine.setText(text);
+		if (testDOMLine.getText() == text) {
+			System.out.println("passed...DOMLine.setText");
+		} else {
+			System.out.println("failed...DOMLine.setText");
+		}
+		
+		if (testDOMLine.getOffset() == offset_index[1]) {
+			System.out.println("passed...DOMLine.getOffset");
+		} else {
+			System.out.println("failed...DOMLine.getOffset");
+		}
+		
+		int offset = offset_index[1] + 1;
+		testDOMLine.setOffset(offset);
+		if (testDOMLine.getOffset() == (offset_index[1] + 1)) {
+			System.out.println("passed...DOMLine.setOffset");
+		} else {
+			System.out.println("failed...DOMLine.setOffset");
+		}
+		testDOMLine.setOffset(offset_index[1]);
+		
+		if (testDOMLine.isExecutable()) {
+			System.out.println("passed...DOMLine.isExecutable");
+		} else {
+			System.out.println("failed...DOMLine.isExecutable");
+		}
+		
+		testDOMLine.setExecutable(false);
+		if (!testDOMLine.isExecutable()) {
+			System.out.println("passed...DOMLine.setExecutable");
+		} else {
+			System.out.println("failed...DOMLine.setExecutable");
+		}
+		testDOMLine.setExecutable(true);
+		
+		if (testDOMLine.hasInlinedCode()) {
+			System.out.println("passed...DOMLine.hasInlineCode");
+		} else {
+			System.out.println("failed...DOMLine.hasInlineCode");
+		}
+		
+		
 	}
 
 	/**

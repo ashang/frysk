@@ -24,6 +24,10 @@ public class DOMLine {
 	 */
 	public static final String HAS_INLINE_ATTR = "has_inline";
 	/**
+	 * Whether this line has inlined code or not
+	 */
+	public static final String HAS_BREAK_ATTR = "has_break";
+	/**
 	 * The offset in characters from the start of the file
 	 */
 	public static final String OFFSET_ATTR = "offset";
@@ -96,17 +100,42 @@ public class DOMLine {
 	}
 	
 	/**
+	 * sets the offset of the line from the beginning of the file
+	 */
+	public void setOffset(int offset) {
+		this.myElement.setAttribute(OFFSET_ATTR, Integer.toString(offset));
+	}
+	
+	/**
 	 * @return Whether or not this line contains inlined code
 	 */
 	public boolean hasInlinedCode(){
-		return Boolean.getBoolean(this.myElement.getAttributeValue(HAS_INLINE_ATTR));
+		//return Boolean.getBoolean(this.myElement.getAttributeValue(HAS_INLINE_ATTR));
+//		//for some reason the original Boolean.getBoolean did not work
+		//    as advertised, so went back to the old tried and true
+		if (this.myElement.getAttributeValue(HAS_INLINE_ATTR) == "true")
+			return true;
+
+		return false;
 	}
 	
 	/**
 	 * @return Whether or not this line is executable
 	 */
 	public boolean isExecutable(){
-		return Boolean.getBoolean(this.myElement.getAttributeValue(EXECUTABLE_ATTR));
+		// for some reason the original Boolean.getBoolean did not work
+		//    as advertised, so went back to the old tried and true
+		if (this.myElement.getAttributeValue(EXECUTABLE_ATTR) == "true")
+			return true;
+
+		return false;
+	}
+	
+	/**
+	 * sets the executable attribute for this line
+	 */
+	public void setExecutable(boolean executable) {
+		this.myElement.setAttribute(EXECUTABLE_ATTR,Boolean.toString(executable));
 	}
 	
 	/**
@@ -115,6 +144,21 @@ public class DOMLine {
 	public int getInlinedCodeCount(){
 		// TODO: does this need to be an attribute or refer to the earlier nodes? 
 		return 0;
+	}
+	
+	/**
+	 * get the text associated with this line
+	 * @return the text of this line
+	 */
+	public String getText() {
+		return this.myElement.getAttributeValue(DOMSource.TEXT_ATTR);
+	}
+	
+	/**
+	 * set the text for this line to the incoming string
+	 */
+	public void setText(String text) {
+		this.myElement.setAttribute(DOMSource.TEXT_ATTR, text);
 	}
 	
 	/**

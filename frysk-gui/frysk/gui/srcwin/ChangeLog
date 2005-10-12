@@ -1,3 +1,15 @@
+2005-10-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMLine.java: added setText/getText/setOffset/getOffset methods
+						modded hasInlinedCode/isExecutable method
+						
+	* dom/DOMTestDOMFrysk: added tests for above methods
+						
+	* dom/DOMSource.java: added HAS_BREAK attribute
+						  added some much needed comments for addLine
+						  renamed some vars to make them more uniform
+						  changed calling params for addLine
+
 2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Now takes an array of possible

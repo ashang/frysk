@@ -93,18 +93,31 @@ public class DOMSource {
 		return this.myElement.getAttributeValue(FILEPATH_ATTR);
 	}
 	
+	/**
+	 * creates a line Element under this source Element
+	 * 
+	 * @param lineno - line number to add
+	 * @param text - text of the line to add
+	 * @param is_executable - is this line executable
+	 * @param is_inline - does this line contain an inline function
+	 * @param has_break - does this line have a breakpoint
+	 * @param offset_index - character offset of this line from the start
+	 * 				of the file 
+	 * @param pc
+	 */
 	public void addLine(int lineno, String text, Boolean is_executable, 
-			Boolean is_inline, int start_index, int length,
+			Boolean is_inline, Boolean has_break, int offset_index,
 			BigInteger pc) {
 		
 		Element sourceLineElement = new Element(LINENO_NODE);
 		sourceLineElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineno));
 		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
-		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(start_index));
-		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(length));
+		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset_index));
+		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(text.length()));
 		sourceLineElement.setAttribute(TEXT_ATTR, text);
 		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, is_executable.toString());
 		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, is_inline.toString());
+		sourceLineElement.setAttribute(DOMLine.HAS_BREAK_ATTR, has_break.toString());
 		this.myElement.addContent(sourceLineElement);
 	}
 	/**
