@@ -134,6 +134,7 @@ SUFFIXES += .javain
 		-e 's,[@]abs_builddir[@],@abs_top_builddir@,g' \
 		-e 's,[@]abs_srcdir[@],@abs_top_srcdir@,g' \
 		-e 's,[@]gladedir[@],$(gladedir),g' \
+		-e 's,[@]imagedir[@],$(imagedir),g' \
 		> $*.tmp
 	mv -f $*.tmp $@
 

@@ -3,6 +3,9 @@
 	* Makefile.gen.sh: Added frysk/gui/images to the files that will be
 	copied over during 'make install'.
 
+	* Makefile.rules: Added substitution for @imagedir@ to add IMAGEDIR
+	constant to frysk-core/frysk/Config.javain
+
 2005-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.sh: Add .printProblem to print the Throwable in short
