@@ -53,7 +53,7 @@ class frysk
     {
     	if(args.length == 0)
     		FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
-    	else if(args[0] == "--sourcewin"){
+    	else if(args[0].equals("--sourcewin")){
     		String[] newArgs = new String[args.length - 1];
     		
     		for(int i = 1; i < args.length; i++)
@@ -63,7 +63,6 @@ class frysk
     				new String[] {Config.GLADEDIR + "/"}, 
     				Config.IMAGEDIR+"/");
 
-    		
     	}
     }
 }

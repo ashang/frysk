@@ -1,5 +1,9 @@
 2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* frysk.java (main): Fixed silly .equals error with comparing strings.
+
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
 	* frysk.java (main): Added check for '--sourcewin' parameter, launches
 	Source Window instead of procpop if found
 
