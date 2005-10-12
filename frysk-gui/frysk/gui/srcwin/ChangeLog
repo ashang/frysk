@@ -12,6 +12,11 @@
 
 2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Messages.java: Now uses PropertyResourceBundle and gets path to
+	messages.properties from Config.PKGDATADIR.
+
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
 	* SourceWindow.java (SourceWindow): Now takes an array of possible
 	paths to glade files as well as a path for image files.
 
