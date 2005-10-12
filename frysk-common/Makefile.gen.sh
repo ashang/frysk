@@ -333,6 +333,17 @@ do
   echo image_DATA += ${file}
 done
 
+# Form a list of all the .properties files, these need to be copied over
+# after install
+
+print_head "... properties_DATA"
+echo "propertydir = \$(pkgdatadir)"
+echo "property_DATA ="
+find ${dirs} -type f -name '*.properties' | while read file
+do
+  echo image_DATA += ${file}
+done
+
 # Form a list of all the .fig files, they need to be compiled into
 # .jpg.
 
