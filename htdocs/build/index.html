@@ -75,7 +75,7 @@ file</a> and copying it into the <tt>/etc/yum.repos.d/</tt> directory
 (you'll need to be root). Then run:
 
 <pre>
-yum install --exclude '*debuginfo' 'frysk*'
+yum --exclude '*debuginfo' install 'frysk*'
 </pre>
 
 This will install all the needed non-standard packages. In the future
