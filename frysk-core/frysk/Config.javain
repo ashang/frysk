@@ -57,4 +57,7 @@ public class Config
 
 	public static final String GLADEDIR = "@gladedir@";
 	public static final String IMAGEDIR = "@imagedir@";
+	public static final String PKGDATADIR = "@pkgdatadir@";
+	public static final String PKGLIBDIR = "@pkglibdir@";
+	public static final String PKGINCLUDEDIR = "@pkgincludedir@";
 }

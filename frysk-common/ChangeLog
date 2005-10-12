@@ -1,4 +1,9 @@
-2005-10-12  Adam Jocksch <ajocksch@redhat.com>
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.rules: Changed @propertydir@ to @pkgdatadir@.
+	Added substitutions for pkglibdir and pkgincludedir.
+
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.gen.sh: Added rule to copy over .properties files after
 	make install.

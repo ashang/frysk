@@ -135,7 +135,9 @@ SUFFIXES += .javain
 		-e 's,[@]abs_srcdir[@],@abs_top_srcdir@,g' \
 		-e 's,[@]gladedir[@],$(gladedir),g' \
 		-e 's,[@]imagedir[@],$(imagedir),g' \
-		-e 's,[@]propertydir[@],$(propertydir),g' \
+		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
+		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
+		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
 		> $*.tmp
 	mv -f $*.tmp $@
 

@@ -38,15 +38,34 @@
 // exception.
 package frysk.gui.srcwin;
 
+import frysk.Config;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 public class Messages {
-	private static final String BUNDLE_NAME = "frysk.gui.srcwin.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = Config.BUILDDIR+"/messages.properties"; //$NON-NLS-1$
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-			.getBundle(BUNDLE_NAME);
+	private static ResourceBundle RESOURCE_BUNDLE;
 
+	static{
+		
+		try {
+			Messages.RESOURCE_BUNDLE = new PropertyResourceBundle(new FileInputStream(new File(BUNDLE_NAME)));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	private Messages() {
 	}
 
