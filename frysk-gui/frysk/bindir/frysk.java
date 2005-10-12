@@ -63,7 +63,7 @@ class frysk
     				new String[] {Config.GLADEDIR + "/"}, 
     				Config.IMAGEDIR+"/");
 
-    		}
+    		
     	}
     }
 }
