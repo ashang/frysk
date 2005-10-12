@@ -315,7 +315,16 @@ do
   echo glade_DATA += ${file}
 done
 
+# Form a list of all the image files, these are installed in
+# PREFIX/share/PACKAGE/images/.
 
+print_header "... image_DATA"
+echo "imagedir = \$(pkgdatadir)/images"
+echo "image_DATA ="
+find ${dirs} -type f -name '*.png' -o -name '*.jpg' | while read file
+do
+  echo image_DATA += ${file}
+done
 
 # Form a list of all the .fig files, they need to be compiled into
 # .jpg.
