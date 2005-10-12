@@ -8,7 +8,6 @@ import java.util.Vector;
 import java.math.BigInteger;
 
 import org.jdom.Element;
-import org.jdom.filter.Filter;
 
 /**
  * DOMSource represents a source code file within the frysk source window dom
@@ -31,8 +30,6 @@ public class DOMSource {
 	public static final String LINENO_NODE = "line";
 	// program counter attribute
 	public static final String PC_ATTR = "pc";
-	// ending character index of this line from the beginning of the file
-	public static final String END_ATTR = "end_index";
 	// text of the source line
 	public static final String TEXT_ATTR = "text";
 	
@@ -97,14 +94,14 @@ public class DOMSource {
 	}
 	
 	public void addLine(int lineno, String text, Boolean is_executable, 
-			Boolean is_inline, int start_index, int end_index,
+			Boolean is_inline, int start_index, int length,
 			BigInteger pc) {
 		
 		Element sourceLineElement = new Element(LINENO_NODE);
 		sourceLineElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineno));
 		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
 		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(start_index));
-		sourceLineElement.setAttribute(END_ATTR, Integer.toString(end_index));
+		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(length));
 		sourceLineElement.setAttribute(TEXT_ATTR, text);
 		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, is_executable.toString());
 		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, is_inline.toString());
@@ -128,7 +125,7 @@ public class DOMSource {
 	 * @return The DOMLine corresponding to the line, or null if no tags exist
 	 *         on that line
 	 */
-	public DOMLine getLineNum(int num){
+	/*public DOMLine getLine(int num){
 		final int lineNum = num;
 		
 		Iterator iter = this.myElement.getContent(new Filter() {
@@ -155,21 +152,21 @@ public class DOMSource {
 		}
 		
 		return val;
-	}
+	}  */
 	
 	/**
 	 * Attempts to return the DOMLine corresponding to the given line in the
 	 * file. If no tags exist on that line then null is returned.
 	 * (This is alternative to the above getLineNum() method, if the
 	 * above is determined to not be necessary, delete it and rename this
-	 * one to getLineNum().
+	 * one to getLine().
 	 * 
 	 * @param num
 	 *            The line number to get
 	 * @return The DOMLine corresponding to the line, or null if no tags exist
 	 *         on that line
 	 */
-	public DOMLine getLineNum1(int num) {
+	public DOMLine getLine(int num) {
 		Iterator iter = 
 			this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
 		while (iter.hasNext()) {

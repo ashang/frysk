@@ -1,5 +1,20 @@
 2005-10-11  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMTestDOMFrysk.java: add testDOMLine method
+				change name of getLineNum1 method to getLine
+				added test for DOMLine.getLineNum
+				added test for DOMLine.getLength
+				
+	* dom/DOMSource.java: change getLineNum1 name to getLine
+				change END_ATTR to LENGTH_ATTR from DOMLine
+				rename getLineNum1 to getLineNum & comment out
+				  old getLineNum for now, may delete later
+				  
+	* dom/DOMLine.java: comment out *possibly* unneeded constructors
+					fix getLength method
+
+2005-10-11  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMImage.java: change LINENO_ATTR to use NUMBER_ATTR from DOMSource
 	
 	* dom/DOMLine.java: added LENGTH_ATTR variable

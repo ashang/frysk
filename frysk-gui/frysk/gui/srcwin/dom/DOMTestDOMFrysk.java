@@ -4,7 +4,7 @@
 
 package frysk.gui.srcwin.dom;
 
-import frysk.gui.srcwin.dom.DOMFrysk;
+//import frysk.gui.srcwin.dom.*;
 import java.math.BigInteger;
 import java.util.Iterator;
 import org.jdom.Document;
@@ -26,7 +26,9 @@ public class DOMTestDOMFrysk {
 
 	private static int[] start_index = { 1, 12, 28 };
 
-	private static int[] end_index = { 11, 27, 29 };
+	private static int[] length = { main_prog[0].length(),
+									main_prog[1].length(),
+									main_prog[2].length() };
 
 	private static String[] inline_funcs = { "do_something", "b", "f" };
 
@@ -44,7 +46,8 @@ public class DOMTestDOMFrysk {
 
 		testDOMFrysk();
 		testDOMImage();
-		testDOMSource();
+		testDOMsource();
+		testDOMLine();
 		System.out.println("\n\n");
 		printDOM();
 	}
@@ -223,10 +226,10 @@ public class DOMTestDOMFrysk {
 	 * test the DOMSource class methods
 	 * 
 	 */
-	public static void testDOMSource() {
+	public static void testDOMsource() {
 
-		DOMImage testDOMImage = dom.getImage("test_image_2");
-		DOMSource testDOMSource = testDOMImage.getSource("test_source2");
+		final DOMImage testDOMImage = dom.getImage("test_image_2");
+		final DOMSource testDOMSource = testDOMImage.getSource("test_source2");
 
 		if (testDOMSource.getFileName() == "test_source2") {
 			System.out.println("\npassed...DOMSource.getFileName");
@@ -259,7 +262,7 @@ public class DOMTestDOMFrysk {
 		BigInteger pc = BigInteger.valueOf(25842);
 		for (int ctr = 0; ctr < main_prog.length; ctr++) {
 			testDOMSource.addLine(ctr + 1, main_prog[ctr], is_executable,
-					is_inline[ctr], start_index[ctr], end_index[ctr], pc);
+					is_inline[ctr], start_index[ctr], length[ctr], pc);
 			pc = pc.add(no_bytes);
 		}
 
@@ -276,13 +279,35 @@ public class DOMTestDOMFrysk {
 			}
 		}
 		System.out.println("passed...DOMSource.addLine/getLines");
-		
-		DOMLine testDOMLine = testDOMSource.getLineNum1(2);
-		if (testDOMLine.getElement().getAttributeValue(DOMSource.TEXT_ATTR)
+
+		final DOMLine testDOMLine = testDOMSource.getLine(2);
+		if (testDOMLine.getElement().getAttributeValue(DOMSource.TEXT_ATTR) 
 				== main_prog[1]) {
-			System.out.println("passed...DOMSource.getLineNum1");
+			System.out.println("passed...DOMSource.getLine/DOMLine.getElement");
 		} else {
-			System.out.println("failed...DOMSource.getLineNum1");
+			System.out.println("failed...DOMSource.getLine/DOMLine.getElement");
+		}
+	}
+
+	/**
+	 * Test the DOMLine class
+	 *
+	 */
+	public static void testDOMLine() {
+		final int line_no = 2;
+		final DOMImage testDOMImage = dom.getImage("test_image_2");
+		final DOMSource testDOMSource = testDOMImage.getSource("test_source1.1");
+		final DOMLine testDOMLine = testDOMSource.getLine(line_no);
+
+		if (testDOMLine.getLineNum() == line_no) {
+			System.out.println("\npassed...DOMLine.getLineNum");
+		} else {
+			System.out.println("\nfailed...DOMLine.getLineNum");
+		}
+		if (testDOMLine.getLength() == main_prog[1].length()) {
+			System.out.println("passed...DOMLine.getLength");
+		} else {
+			System. out.println("failed...DOMLine.getLength");
 		}
 	}
 

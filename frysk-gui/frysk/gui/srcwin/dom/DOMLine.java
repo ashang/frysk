@@ -40,7 +40,7 @@ public class DOMLine {
 	 */
 	public static final String NUMBER_ATTR = "number";
 	
-	public static DOMLine createDOMLine(int lineNum, int offset, String text, boolean executable){
+/*	public static DOMLine createDOMLine(int lineNum, int offset, String text, boolean executable){
 		Element line = new Element(LINE_NODE);
 		line.setText(text);
 		line.setAttribute(NUMBER_ATTR, ""+lineNum);
@@ -59,7 +59,7 @@ public class DOMLine {
 		parent.getElement().addContent(line);
 		
 		return new DOMLine(line);
-	}
+	} */
 	
 	private Element myElement;
 	private Vector inlines;
@@ -85,7 +85,7 @@ public class DOMLine {
 	 * @return The length of this line in characters
 	 */
 	public int getLength(){
-		return this.myElement.getText().length();
+		return Integer.parseInt(this.myElement.getAttributeValue(LENGTH_ATTR));
 	}
 	
 	/**
