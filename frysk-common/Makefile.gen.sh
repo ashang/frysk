@@ -127,6 +127,7 @@ echo GEN_JARS=
 print_jar_rule ()
 {
   cat <<EOF
+# print_jar_rule $1 $2
 $1.jar: \$($2_JAR)
 	cp \$($2_JAR) .
 BUILT_SOURCES += $1.jar
@@ -135,6 +136,9 @@ noinst_LIBRARIES += lib$1.a
 lib$1_a_LIBADD = $1.o
 $1.o: $1.jar
 lib$1_a_SOURCES = 
+lib$1_so_SOURCES =
+$1_so_SOURCES = 
+$1_db_SOURCES =
 CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
 lib$1.so: lib$1.a
 noinst_PROGRAMS += lib$1.so $1.db
@@ -196,6 +200,9 @@ ${dir}.jar: \$(GEN_BUILT_CLASSES)
 noinst_PROGRAMS += ${dir}.jar
 GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
+lib${_dir}_so_SOURCES =
+${_dir}_db_SOURCES = 
+${_dir}_jar_SOURCES =
 noinst_LIBRARIES += lib${dir}.a
 lib${dir}.so: lib${dir}.a
 noinst_PROGRAMS += lib${dir}.so

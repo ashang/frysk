@@ -1,3 +1,9 @@
+2005-10-12  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.gen.sh, Makefile.rules: Added xxx_SOURCES targets to ensure
+	that automake will not automatically infere an xxx.c dependency for
+	an xxx.db or xxx.jar file (also gij.sh).
+
 2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.gen.sh: Added frysk/gui/images to the files that will be

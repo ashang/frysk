@@ -258,6 +258,7 @@ TestRunner.java: common/TestRunner.sh Makefile
 # Build a wrapper script for GIJ so that running the interpreter is
 # easier.
 noinst_PROGRAMS += gij.sh
+gij_sh_SOURCES = 
 gij.sh: Makefile
 	rm -f gij.tmp
 	echo '#!/bin/sh' >> gij.tmp
