@@ -53,6 +53,7 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.pango.Weight;
 
+import frysk.gui.common.Messages;
 import frysk.gui.srcwin.PreferenceConstants.Background;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;

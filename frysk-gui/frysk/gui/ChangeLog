@@ -1,3 +1,9 @@
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* common/Messages.java: Moved from srcwin.
+
+	* common/messages.properties: Ditto.
+
 2005-10-12  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Add Programs tab.
