@@ -111,7 +111,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	public static final String FUNC_SELECTOR = "funcSelector";
 
 	// Directory where images are stored
-	public static final String IMAGES_DIR = "frysk-gui/frysk/gui/images/"; //$NON-NLS-1$
+	public static String IMAGES_DIR = null; //$NON-NLS-1$
 	
 	// Image files - search bar
 	public static final String FIND_NEXT_PNG = "findNext.png"; //$NON-NLS-1$
@@ -173,18 +173,28 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action stackDown;
 	private Action stackBottom;
 	
-	public SourceWindow() {
-//		try {
-//			this.glade = new LibGlade(Config.GLADEDIR+"/"+GLADE_FILE, this); //$NON-NLS-1$
-//		} catch (Exception e){
+	public SourceWindow(String[] gladePaths, String imagePath) {
+		for(int i = 0; i < gladePaths.length; i++){
 			try{
-				this.glade = new LibGlade("frysk-gui/frysk/gui/glade/"+SourceWindow.GLADE_FILE, this);
+				this.glade = new LibGlade(gladePaths[i]+SourceWindow.GLADE_FILE, this);
 			}
-			catch (Exception e2){
-				e2.printStackTrace();
+			catch (Exception e){
+				// If we don't find the glade file, continue looking
+				this.glade = null;
+				continue;
 			}
-//		}
+			// If we've found it, break
+			break;
+		}
+		
+		// If we don't have a glade file by this point, bail
+		if(glade == null){
+			System.err.println("Could not file source window glade file! Exiting.");
+			System.exit(1);
+		}
 
+		IMAGES_DIR = imagePath;
+		
 		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 		
 		AccelGroup ag = new AccelGroup();
@@ -318,7 +328,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_UP_PNG));
 			fac.addIconSet("frysk-stack-up", set);
 		} catch (Exception e){
-			e.printStackTrace();
+			System.err.println("Error loading images! Exiting");
+			System.exit(1);
 		}
 		fac.addDefault();
 		

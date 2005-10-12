@@ -1,3 +1,8 @@
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* frysk.java (main): Added check for '--sourcewin' parameter, launches
+	Source Window instead of procpop if found
+
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk.java: Import frysk.Config.

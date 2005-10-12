@@ -1,3 +1,8 @@
+2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Now takes an array of possible
+	paths to glade files as well as a path for image files.
+
 2005-10-11  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMTestDOMFrysk.java: add testDOMLine method

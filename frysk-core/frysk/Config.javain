@@ -56,4 +56,5 @@ public class Config
 	public static final String ABS_BUILDDIR = "@abs_builddir@";
 
 	public static final String GLADEDIR = "@gladedir@";
+	public static final String IMAGEDIR = "@imagedir@";
 }

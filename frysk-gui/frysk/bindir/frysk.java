@@ -45,11 +45,25 @@ package frysk.bindir;
 
 import frysk.Config;
 import frysk.gui.FryskGui;
+import frysk.gui.test.SourceWinRunner;
 
 class frysk
 {
     public static void main (String[] args)
     {
-	FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
+    	if(args.length == 0)
+    		FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
+    	else if(args[0] == "--sourcewin"){
+    		String[] newArgs = new String[args.length - 1];
+    		
+    		for(int i = 1; i < args.length; i++)
+    			newArgs[i-1] = args[i];
+    		
+    		SourceWinRunner.mainSourceWin(newArgs, 
+    				new String[] {Config.GLADEDIR + "/"}, 
+    				Config.IMAGEDIR+"/");
+
+    		}
+    	}
     }
 }
