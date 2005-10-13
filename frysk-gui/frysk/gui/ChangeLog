@@ -1,3 +1,7 @@
+2005-10-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Added list to browse stack.
+
 2005-10-13  Phil Muldoon  <pmuldoon@redhat.com>
 
         * glade/procpop.glade: Added Customer Observer window.

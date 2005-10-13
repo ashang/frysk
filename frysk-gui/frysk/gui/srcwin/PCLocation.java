@@ -9,6 +9,7 @@ package frysk.gui.srcwin;
  */
 public class PCLocation {
 	private String filename;
+	private String function;
 	private int lineNum;
 	
 	private int depth;
@@ -16,10 +17,14 @@ public class PCLocation {
 	protected PCLocation nextScope;
 	protected PCLocation prevScope;
 	
-	public PCLocation(String filename, int line){
+	protected PCLocation parentScope;	
+	protected PCLocation inlineScope;
+	
+	public PCLocation(String filename, String function, int line){
 		this.filename = filename;
 		this.lineNum = line;
 		this.depth = 0;
+		this.function = function;
 	}
 
 	public String getFilename() {
@@ -34,11 +39,6 @@ public class PCLocation {
 		return nextScope;
 	}
 
-	public void setNextScope(PCLocation inlineData) {
-		this.nextScope = inlineData;
-		inlineData.depth = this.depth + 1;
-	}
-
 	public int getLineNum() {
 		return lineNum;
 	}
@@ -51,21 +51,35 @@ public class PCLocation {
 		return prevScope;
 	}
 
-	public void setPrevScope(PCLocation prevScope) {
-		this.prevScope = prevScope;
-	}
-	
-	public void link(PCLocation next){
+	public void addNextScope(PCLocation next){
 		if(this.nextScope != null){
-			next.setNextScope(this.nextScope);
-			this.nextScope.setPrevScope(next);
+			next.nextScope = this.nextScope;
+			this.nextScope.depth++;
+			this.nextScope.prevScope = next;
 		}
 		
-		this.setNextScope(next);
-		next.setPrevScope(this);
+		this.nextScope = next;
+		next.depth = this.depth + 1;
+		next.prevScope = this;
 	}
-
+	
+	public void addInlineScope(PCLocation child){
+		if(this.inlineScope != null){
+			child.inlineScope = this.inlineScope;
+			this.inlineScope.depth++;
+			this.inlineScope.parentScope = child;
+		}
+		
+		this.inlineScope = child;
+		child.depth = this.depth + 1;
+		child.parentScope = this;
+	}
+	
 	public int getDepth() {
 		return depth;
+	}
+
+	public String getFunction() {
+		return function;
 	}
 }

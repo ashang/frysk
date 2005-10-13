@@ -1,3 +1,27 @@
+2005-10-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* PCLocation.java: Added inlineScope and parentScope variables.
+	(setNextScope): Removed.
+	(setPrevScope): Removed.
+	(link): Renamed to addNextScope.
+	(addInlineScope): Added.
+	
+	* InlineHandler.java: All methods now refernece PCLocation.inlineScope over
+	PCLocation.nextScope.
+	(moveDown): No longer assumes existance of inlined scopes.
+	
+	* SourceViewWidget.java (load): No longer stays expanded when new file is 
+	loaded.
+	
+	* SourceWindow.java: Now implements TreeSelectionListener.
+	Member variable dataColumns added.
+	(SourceWindow): Creation of PCLocation objects now uses refactored methods.
+	(SourceWindow): Call to populateStackBrowser(PCLocation) added.
+	(populateStackBrowser): Added.
+	(addEvents): Adds TreeSelectionListener to stack browser.
+	(selectionChangedEvent): Added.
+	
+
 2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Messages.java: Moved to ../common.

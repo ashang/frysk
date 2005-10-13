@@ -71,9 +71,12 @@ public class InlineHandler{
              * Base case #1: No levels of inline code are being shown 
 			 */
 			if(lastVisible == null){
+				if(top.inlineScope == null)
+					return false;
+				
                 System.out.println("making first scope");
 				lastVisible = new InlineViewer(myPrefs);
-				lastVisible.load(top.nextScope);
+				lastVisible.load(top.inlineScope);
                 firstVisible = lastVisible;
 				parent.setSubscopeAtCurrentLine(lastVisible);
 			}
@@ -83,9 +86,9 @@ public class InlineHandler{
              * keep appending.
 			 */
 			else if(scopeDiff < numLevels){
-                System.out.println("adding scope");
+				
                 // Do a quick check to make sure there are more levels to show...
-                if(lastVisible.getScope().nextScope == null)
+                if(lastVisible.getScope().inlineScope == null)
                     return false;
                 
 				lastVisible.nextLevel = new InlineViewer(myPrefs);
@@ -99,7 +102,7 @@ public class InlineHandler{
 			 */
 			else{
                 // Check to see that we _can_ move down
-                if(lastVisible.getScope().nextScope == null)
+                if(lastVisible.getScope().inlineScope == null)
                     return false;
                 
 				InlineViewer current = firstVisible;
@@ -117,7 +120,7 @@ public class InlineHandler{
                 }
                 
                 // load the new scope in the last frame
-                current.load(current.getScope().nextScope);
+                current.load(current.getScope().inlineScope);
                 current.prevLevel.setSubscopeAtCurrentLine(current);
                 
                 // we want to return false here so the last level doesn't think it's expanded
@@ -162,7 +165,7 @@ public class InlineHandler{
                 
                 InlineViewer prev = null;
                 InlineViewer current = firstVisible;
-                PCLocation currentLocation = top.nextScope;
+                PCLocation currentLocation = top.inlineScope;
                 
                 for(int i = 1; i <= depth; i++){
                     current = new InlineViewer(myPrefs);
@@ -177,7 +180,7 @@ public class InlineHandler{
                         prev.setSubscopeAtCurrentLine(current);
                     
                     prev = current;
-                    currentLocation = currentLocation.nextScope;
+                    currentLocation = currentLocation.inlineScope;
                 }
                 
                 lastVisible = current;
@@ -200,10 +203,10 @@ public class InlineHandler{
                 
                 InlineViewer prev = null;
                 InlineViewer current = firstVisible;
-                PCLocation currentLocation = top.nextScope;
+                PCLocation currentLocation = top.inlineScope;
                 
                 for(int i = 1; i < startDepth; i++)
-                    currentLocation = currentLocation.nextScope;
+                    currentLocation = currentLocation.inlineScope;
                 
                 for(int i = startDepth; i <= depth; i++){
                     current = new InlineViewer(myPrefs, i == startDepth);
@@ -218,7 +221,7 @@ public class InlineHandler{
                         prev.setSubscopeAtCurrentLine(current);
                     
                     prev = current;
-                    currentLocation = currentLocation.nextScope;
+                    currentLocation = currentLocation.inlineScope;
                 }
                 
                 lastVisible = current;

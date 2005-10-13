@@ -320,6 +320,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			e.printStackTrace();
 		}
 		this.setCurrentLine(data.getLineNum());
+		this.expanded = false;
 		
 		InlineHandler.init(data, this.topPrefs, this);
 	}

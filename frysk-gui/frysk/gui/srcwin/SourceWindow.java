@@ -51,9 +51,14 @@ import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
 import org.gnu.gtk.Action;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.CellRenderer;
+import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.ComboBoxEntry;
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnObject;
+import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.GtkStockItem;
@@ -61,10 +66,12 @@ import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.IconSet;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
+import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextMark;
@@ -72,6 +79,10 @@ import org.gnu.gtk.ToggleAction;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeModel;
+import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
 import org.gnu.gtk.event.ActionListener;
@@ -83,13 +94,15 @@ import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.gtk.event.TreeSelectionEvent;
+import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Messages;
 
 //import frysk.Config;
 
 public class SourceWindow implements ButtonListener, EntryListener, 
-									ComboBoxListener{
+									ComboBoxListener, TreeSelectionListener{
 	/*
 	 * GLADE CONSTANTS
 	 */
@@ -174,6 +187,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action stackUp;
 	private Action stackDown;
 	private Action stackBottom;
+	private DataColumn[] dataColumns;
 	
 	public SourceWindow(String[] gladePaths, String imagePath) {
 		for(int i = 0; i < gladePaths.length; i++){
@@ -222,15 +236,17 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// create the actual sourceview widget
 		this.view = new SourceViewWidget(this.prefs);
 		
-		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp", 5);
-		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", 12);
-		loc.link(loc2);
-		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", 5);
-		loc2.link(loc3);
-		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", 20);
-		loc3.link(loc4);
-		loc4.link(new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", 2));
-		this.view.load(loc);
+		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
+		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
+		loc.addNextScope(loc2);
+		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
+		loc2.addNextScope(loc3);
+		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
+		loc3.addInlineScope(loc4);
+		loc3.addNextScope(new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
+		
+		this.populateStackBrowser(loc);
+//		this.view.load(loc);
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
 		for(int i = 0; i < funcs.size(); i++)
@@ -659,6 +675,39 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		t.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
+	private void populateStackBrowser(PCLocation top){
+		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
+		
+		dataColumns = new DataColumn[] {new DataColumnString(), new DataColumnObject()};
+		ListStore listModel = new ListStore(dataColumns);
+		
+		TreeIter iter  = null;
+		
+		while(top != null){
+			iter = listModel.appendRow();
+			System.out.println(top.getFunction());
+			
+			if(top.inlineScope == null)			
+				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction());
+			else
+				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction()+"  (i)");
+			listModel.setValue(iter, (DataColumnObject) dataColumns[1], top);
+			
+			top = top.nextScope;
+		}
+		stackList.setModel(listModel);
+				
+		TreeViewColumn column = new TreeViewColumn();
+		CellRenderer renderer = new CellRendererText();
+		column.packStart(renderer, true);
+		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, dataColumns[0]);
+		column.setTitle("Function");
+		stackList.appendColumn(column);
+		
+		stackList.getSelection().setMode(SelectionMode.SINGLE);
+		stackList.showAll();
+	}
+	
 	/**
 	 * Assigns Listeners to the widgets that we need to listen for events from
 	 */
@@ -676,6 +725,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		// function jump box
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).addListener(this);
+		
+		// Stack browser
+		((TreeView) this.glade.getWidget("stackBrowser")).getSelection().addListener(this);
 	}
 	
 	/**
@@ -851,5 +903,14 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void doStackBottom(){
 		System.out.println("Stack bottom");
+	}
+
+	public void selectionChangedEvent(TreeSelectionEvent arg0) {
+		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
+		TreeModel model = view.getModel();
+		
+		PCLocation selected = (PCLocation) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
+		
+		this.view.load(selected);
 	}
 }
