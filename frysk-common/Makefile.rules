@@ -162,7 +162,7 @@ SUFFIXES += .classes
 	then rm $*.log ; false ; \
 	fi
 	echo '# $<' > $*.classes.tmp
-	( cd $(GEN_CLASSDIR) && ls $*.class $*\$$*.class 2>/dev/null ) \
+	( cd $(GEN_CLASSDIR) > /dev/null && ls $*.class $*\$$*.class 2>/dev/null ) \
 		| sed -e 's,.class$$,,' \
 		| sort -f \
 		> $*.classes.tmp

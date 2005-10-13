@@ -38,7 +38,7 @@
 // exception.
 package frysk.gui.common;
 
-//import frysk.Config;
+import frysk.Config;
 
 import java.io.File;
 import java.io.FileInputStream;
