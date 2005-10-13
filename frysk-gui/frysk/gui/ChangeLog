@@ -1,3 +1,7 @@
+2005-10-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+        * glade/procpop.glade: Added Customer Observer window.
+
 2005-10-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* test/SourceWinRunner.java: Fixed typo for running through eclipse.
