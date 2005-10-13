@@ -56,7 +56,7 @@ public class SourceWinRunner {
 	public static void main(String[] args) {
 		Gtk.init(args);
 		
-		SourceWindow s = new SourceWindow(new String[] {"frysk-gui/frysk/gui/glade/"}, "frysk-gui/gui/images/");
+		SourceWindow s = new SourceWindow(new String[] {"frysk-gui/frysk/gui/glade/"}, "frysk-gui/frysk/gui/images/");
 		s.toString(); //FIXME: hack to make compiler warning go away
 		Gtk.main();
 	}

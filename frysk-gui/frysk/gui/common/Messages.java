@@ -38,7 +38,7 @@
 // exception.
 package frysk.gui.common;
 
-import frysk.Config;
+//import frysk.Config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,6 +50,7 @@ import java.util.ResourceBundle;
 
 public class Messages {
 	private static final String BUNDLE_NAME = Config.PKGDATADIR+"/messages.properties"; //$NON-NLS-1$
+//	private static final String BUNDLE_NAME = "frysk-gui/frysk/gui/common"+"/messages.properties"; //$NON-NLS-1$
 
 	private static ResourceBundle RESOURCE_BUNDLE;
 
