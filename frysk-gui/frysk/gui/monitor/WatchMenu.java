@@ -92,7 +92,7 @@ public class WatchMenu extends Menu{
 			this.add(item);
 		}
 		
-		final ObserversMenu menu = new ObserversMenu();
+		final ObserversMenu menu = new ObserversMenu(ActionPool.theActionPool.processObservers);
 		MenuItem item = new MenuItem("Add observer ", false);
 		item.setSubmenu(menu);
 

@@ -15,11 +15,13 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
+import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.ShadowType;
 import org.gnu.gtk.TextView;
@@ -49,20 +51,21 @@ public class StatusWidget extends VBox{
 		this.notifyUser = new Observable();
 		this.data = data;
 		
+		VBox mainVbox = new VBox(false, 0);
+		
 		//========================================
-		this.nameLabel = new Label(data.getProc().getCommand());
-		HBox hbox1 = new HBox(false,0);
-		this.nameLabel.setBooleanProperty("expand", false);
-		hbox1.packStart(this.nameLabel, false, false, 5);
-		hbox1.packStart(new Label(""), true, false, 0);
-		this.packStart(hbox1, false, false, 0);
+		Frame frame = new Frame(data.getProc().getCommand());
+		frame.add(mainVbox);
+		this.add(frame);
 		//========================================
 		
 		//========================================
 		initLogTextView();
 		ScrolledWindow logScrolledWindow = new ScrolledWindow();
 		logScrolledWindow.add(logTextView);
-		this.packStart(logScrolledWindow, true, true, 0);
+		logScrolledWindow.setShadowType(ShadowType.IN);
+		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+		mainVbox.packStart(logScrolledWindow, true, true, 0);
 		//========================================
 		
 		//========================================
@@ -74,8 +77,9 @@ public class StatusWidget extends VBox{
 		ScrolledWindow scrolledWindow = new ScrolledWindow();
 		scrolledWindow.add(initAttacheObserversTreeView());
 		scrolledWindow.setShadowType(ShadowType.IN);
+		scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
 		vbox.packStart(scrolledWindow, true, true, 0);
-		this.add(vbox);
+		mainVbox.add(vbox);
 		//========================================
 
 		this.showAll();

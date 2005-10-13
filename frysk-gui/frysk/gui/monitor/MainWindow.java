@@ -47,9 +47,11 @@ import org.gnu.gdk.DragAction;
 import org.gnu.gdk.ModifierType;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.DestDefaults;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.TargetEntry;
 import org.gnu.gtk.TargetFlags;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.DeleteDragDataEvent;
 import org.gnu.gtk.event.DragMotionEvent;
@@ -83,7 +85,7 @@ public class MainWindow extends Window implements Saveable{
 		
 		this.noteBook = (Notebook) glade.getWidget("noteBook");
 				
-		TargetEntry[] entries = new TargetEntry[1];
+		final TargetEntry[] entries = new TargetEntry[1];
 		entries[0] = new TargetEntry("tap", TargetFlags.NO_RESTRICTION, 0);
 		
 		this.noteBook.setDragSource(ModifierType.BUTTON1_MASK, entries , DragAction.COPY);
@@ -100,10 +102,14 @@ public class MainWindow extends Window implements Saveable{
 				if(event.getDragContext().getDestination() == null){
 					Window window = new Window();
 					Notebook newNotebook = new Notebook();
-					noteBook.getPage(0).reparent(newNotebook);
-//					noteBook.removePage(0);
-//					newNotebook.appendPage(noteBook.getPage(0), new Label("test"));
+//					noteBook.getPage(0).reparent(newNotebook);
+					Widget widget = noteBook.getPage(noteBook.getCurrentPage());
+					noteBook.removePage(0);
+					newNotebook.appendPage(widget, new Label("test"));
+					noteBook.setDragSource(ModifierType.BUTTON1_MASK, entries , DragAction.COPY);
+					newNotebook.setDragDestination(DestDefaults.ALL, entries, DragAction.COPY);
 					window.add(newNotebook);
+					window.realize();
 					window.showAll();
 				}
 			}

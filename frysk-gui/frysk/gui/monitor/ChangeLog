@@ -1,3 +1,18 @@
+2005-10-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ThreadMenu.java, WatchMenu.java: added calls for dynamically
+	instanciating the appropriate ObserverMenu.
+	* TaskData.java (add): new function for adding SyscallObserver.
+	* StatusWidget.java: Minor eye candy; replace procName lable by frame,
+	removed always show scrol bars around textbox and treeview.
+	* ObserversMenu.java: Removed Singleton instanciation. ObserversMenu
+	now takes items linked list as an argument, and is instanciated by
+	parent menu.
+	* MainWindow.java: Minor modifications to drag and drop code ( only 
+	testing features).
+	* ActionPool.java: Added threadObservers linked list.
+	Added AddSyscallObserver Action.
+
 2005-10-07  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcDataModel.java: Update, EventTimer .addTimerEvent renamed to

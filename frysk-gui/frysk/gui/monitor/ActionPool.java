@@ -39,9 +39,12 @@
 package frysk.gui.monitor;
 
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.Observer;
 
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskExitingObserver;
+import frysk.gui.monitor.observers.SyscallObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -72,14 +75,19 @@ public class ActionPool {
         /** Observers that can be added to a process */
         public LinkedList processObservers;
        
+        /** Observers that can be added to a thread */
+        public LinkedList threadObservers;
+       
         /** } */
 
         private EventLogger eventLog =  new EventLogger();
 
         public ActionPool() {
-                this.processActions = new LinkedList();
-                this.threadActions = new LinkedList();
+                this.processActions   = new LinkedList();
+                this.threadActions    = new LinkedList();
                 this.processObservers = new LinkedList();
+                this.threadObservers  = new LinkedList();
+                
                 this.initActions();
         }
 
@@ -371,6 +379,44 @@ public class ActionPool {
 		}
 	}
 
+	public class AddSyscallObserver extends Action {
+		
+		public AddSyscallObserver(){
+			this.name = "Syscall Observer";
+			this.toolTip = "Listen for system call events from the selected thread";
+		}
+		
+		public void execute(ProcData data) {
+			
+		}
+
+		public void execute(TaskData data) {
+			data.getTask().traceSyscall = true;
+			SyscallObserver observefrysk/gui/monitor/ActionPool.java
+r = new SyscallObserver();
+			data.getTask().syscallEvent.addObserver(observer);
+			data.getTask().syscallEvent.addObserver(new Observer(){
+
+				public void update(Observable arg0, Object arg1) {
+					System.out.println("------------------------------------");
+					System.out.println("System call event received");					
+					System.out.println("------------------------------------");
+				}
+				
+			});
+			data.add(observer);
+		}
+
+		public void removeObservers(ProcData data) {
+			
+		}
+
+		public void removeObservers(TaskData data) {
+			
+		}
+		
+	}
+	
 	/**
 	 * Actions: A publicly available instance of each action.
 	 * {
@@ -383,6 +429,8 @@ public class ActionPool {
 	
 	public AddExecObserver addExecObserver;
 	public AddExitingObserver addExitingObserver;
+	
+	public AddSyscallObserver addSyscallObserver;
 	/**}*/
 
 	/**
@@ -410,6 +458,9 @@ public class ActionPool {
 
 		this.addExitingObserver = new AddExitingObserver();
 		this.processObservers.add(this.addExitingObserver);
+	
+		this.addSyscallObserver = new AddSyscallObserver();
+		this.threadObservers.add(this.addSyscallObserver);
 		
 		this.printState = new PrintState();
 		this.processActions.add(this.printState);

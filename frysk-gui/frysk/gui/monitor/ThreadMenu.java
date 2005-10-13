@@ -84,7 +84,7 @@ public class ThreadMenu extends Menu {
 			this.add(item);
 		}
 		
-		final ObserversMenu menu = new ObserversMenu();
+		final ObserversMenu menu = new ObserversMenu(ActionPool.theActionPool.threadObservers);
 		MenuItem item = new MenuItem("Add observer ", false);
 		item.setSubmenu(menu);
 
@@ -102,7 +102,7 @@ public class ThreadMenu extends Menu {
 	}
 	
 	/**
-	 * Singilton pattern. Get the menu from here
+	 * Singelton pattern. Get the menu from here
 	 * and add it to any watch window or add more
 	 * items to it.
 	 * */

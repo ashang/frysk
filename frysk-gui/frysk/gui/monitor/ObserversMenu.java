@@ -57,7 +57,6 @@ import frysk.gui.monitor.ActionPool.Action;
  * or addition to WatchWindows.
  * */
 public class ObserversMenu extends Menu{
-	private static ObserversMenu menu = new ObserversMenu();
 	
 	/** the TaskData of the currently selected task */
 	private TaskData currentTask;
@@ -65,15 +64,15 @@ public class ObserversMenu extends Menu{
 	/** the ProcData of the currently selected process */
 	private ProcData currentProc;
 	
-	public ObserversMenu(){
+	public ObserversMenu(LinkedList actions){
 		super();
 		
-		LinkedList list = ActionPool.theActionPool.processObservers;
-		ListIterator iter = list.listIterator();
+		//LinkedList list = ActionPool.theActionPool.processObservers;
+		ListIterator iter = actions.listIterator();
 		
 		while(iter.hasNext()){
 			final Action action = (Action) iter.next();
-			//System.out.println(action.getName());
+		//	System.out.println(action.getName());
 			
 			MenuItem item = new MenuItem(action.getName(), false);
 			ToolTips tip = new ToolTips();
@@ -87,17 +86,8 @@ public class ObserversMenu extends Menu{
 			});
 			this.add(item);
 		}
-		
+
 		this.showAll();
-	}
-	
-	/**
-	 * Singilton pattern. Get the menu from here
-	 * and add it to any watch window or add more
-	 * items to it.
-	 * */
-	public static ObserversMenu getMenu(){
-		return menu;
 	}
 	
 	/**
