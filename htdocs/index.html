@@ -28,11 +28,69 @@ misbehaving in certain user-definable ways.
 <em>frysk</em> is free software and so is generally and freely
 available as both a research and development platform.
 
+<h1>Use Cases</h1>
+
+Here are a few examples of how <em>frysk</em> can help:
+
+<ul>
+
+<li>
+
+C., a compiler developer, spends a lot of time running the testsuite,
+constantly monitoring for compiler crashes.  For each crash, C. then
+has to go back and reproduce the failing scenario under a debugger so
+that they can determine what went wrong.  Using <em>frysk</em>, C.
+can set up:
+
+<ul>
+
+<li> an exit observer that alerts C. that the test compiler is
+crashing (and gives C. an opportunity to debug it).
+
+<li> a trace observer that logs key parts of compiler as it runs
+
+</ul>
+
+As soon as the compiler crashes, C. is alerted, and can start
+analyzing what went wrong.
+
 <p>
 
-Examples of <em>frysk</em> <a href="images/">snapshots and mockups</a>
-are available.  Answers to a few specific questions can be found on
-the <a href="faq/">FAQ</a>.
+<li>
+
+G., a GNU/Linux SysAdmin, is having trouble with the web server.
+Every so often, but always at 2am, the shopping-cart daemon will
+repeatedly crash when being started. G., using <em>frysk</em>, can
+implement a custom observer script that, when a repeated exec/crash is
+detected:
+
+<ul>
+
+<li> runs a pager to notify G. of the problem
+
+<li> snapshot the system
+
+<li> saves the trace log
+
+<li> disable the shopping-cart
+
+</ul
+
+G., on receiving the page, can first login and restart the server, and
+second save the captured state for later off-line analysis by the
+development group.
+
+</ul>
+
+In addition <a href="images/">snapshots and mockups</a> of
+<em>frysk</em> are available.
+
+<p>
+
+Answers to a few specific questions can be found on the <a
+href="faq/">FAQ</a>.
+
+
 
 <h1>Get Involved</h1>
 
