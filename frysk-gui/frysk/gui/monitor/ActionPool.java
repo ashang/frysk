@@ -392,8 +392,7 @@ public class ActionPool {
 
 		public void execute(TaskData data) {
 			data.getTask().traceSyscall = true;
-			SyscallObserver observefrysk/gui/monitor/ActionPool.java
-r = new SyscallObserver();
+			SyscallObserver observer = new SyscallObserver();
 			data.getTask().syscallEvent.addObserver(observer);
 			data.getTask().syscallEvent.addObserver(new Observer(){
 
