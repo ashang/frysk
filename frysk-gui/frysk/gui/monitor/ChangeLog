@@ -1,5 +1,6 @@
 2005-10-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/SyscallObserver.java: new file.
 	* ThreadMenu.java, WatchMenu.java: added calls for dynamically
 	instanciating the appropriate ObserverMenu.
 	* TaskData.java (add): new function for adding SyscallObserver.
