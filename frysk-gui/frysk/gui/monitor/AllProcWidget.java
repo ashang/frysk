@@ -96,6 +96,8 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	private TreeModelFilter threadFilter;
 	
 	private VBox statusWidget;
+	private InfoWidget infoWidget;
+	
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	
 	private LibGlade glade;
@@ -114,6 +116,9 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 		this.vPane               = (VPaned)  glade.getWidget("vPane");
 		
 		this.statusWidget          = (VBox)        glade.getWidget("statusWidget");
+		
+		this.infoWidget = new InfoWidget();
+		this.statusWidget.add(infoWidget);
 		
 		this.refreshButton.addListener(this);
 		this.refreshSpinButton.addListener(new SpinListener(){
@@ -138,18 +143,33 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 					mountThreadModel(psDataModel, selected);
 					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), psDataModel.getProcDataDC());
 					if(!data.hasWidget()){
-						data.setInfoWidget(new InfoWidget(data));
+						data.setWidget(new ProcStatusWidget(data));
 					}
 					
-					Widget widgets[] = statusWidget.getChildren();
-					for (int i = 0; i < widgets.length; i++) {
-						statusWidget.remove(widgets[i]);
-					}
+					infoWidget.setSelectedProc(data);
 					
-					statusWidget.add(data.getInfoWidget());
+					threadTreeView.getSelection().select(threadFilter.getFirstIter());
 				}
 			}
 		});
+		
+		
+		this.threadTreeView.getSelection().addListener(new TreeSelectionListener(){
+			public void selectionChangedEvent(TreeSelectionEvent event) {
+				if(procTreeView.getSelection().getSelectedRows().length > 0){
+					TreePath selected = threadTreeView.getSelection().getSelectedRows()[0];
+					TaskData data = (TaskData) threadFilter.getValue(threadFilter.getIter(selected), psDataModel.getProcDataDC());
+					if(!data.hasWidget()){
+						data.setWidget(new TaskStatusWidget(data));
+					}
+					
+					infoWidget.setSelectedTask(data);
+				}
+			}
+		});
+		
+		
+		
 		this.procTreeView.setHeadersClickable(true);
 		
 		this.procTreeView.addListener(new MouseListener(){

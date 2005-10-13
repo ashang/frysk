@@ -3,6 +3,8 @@ package frysk.gui.monitor;
 import java.util.LinkedList;
 import java.util.Observable;
 
+import org.gnu.gtk.Widget;
+
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.ObserverRunnable;
@@ -15,7 +17,7 @@ import frysk.gui.monitor.observers.TaskExitingObserver;
  */
 public class GuiData {
 	
-	InfoWidget infoWidget;
+	Widget widget;
 	LinkedList observers;
 	
 	public GuiObservable observerAdded;
@@ -69,16 +71,19 @@ public class GuiData {
 		return this.observers;
 	}
 	
-	public void setInfoWidget(InfoWidget widget){
-		this.infoWidget = widget;
+	public void setWidget(Widget widget){
+		if(this.widget != null){
+			throw new RuntimeException("Trying to set widget when widget is already set.");
+		}
+		this.widget = widget;
 	}
 	
-	public InfoWidget getInfoWidget(){
-		return this.infoWidget;
+	public Widget getWidget(){
+		return this.widget;
 	}
 	
 	public boolean hasWidget(){
-		return (this.infoWidget != null);
+		return (this.widget != null);
 	}
 	
 	

@@ -54,7 +54,7 @@ import frysk.proc.Task;
 public class TaskData extends GuiData{
 
 	private Task task;
-
+	
 	TaskData(Task task) {
 		this.task = task;
 	}

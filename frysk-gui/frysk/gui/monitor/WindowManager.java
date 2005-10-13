@@ -63,6 +63,7 @@ public class WindowManager implements Saveable{
 	public MainWindow mainWindow;
 	public LogWidget logWindow;
 	public PreferencesWindow prefsWindow;
+	public CustomeObserverWindow customeObserverWindow;
 	/**}*/
 	
 	public WindowManager(){
@@ -77,7 +78,10 @@ public class WindowManager implements Saveable{
 		this.logWindow.showAll();
 		
 		this.prefsWindow = new PreferencesWindow(glade);
-		//this.prefsWindow.showAll();
+
+		this.customeObserverWindow = new CustomeObserverWindow(glade);
+		this.customeObserverWindow.hideAll();
+		
 		this.menuBar = new MenuBar(glade);
 	}
 

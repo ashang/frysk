@@ -34,6 +34,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
+import org.gnu.pango.FontDescription;
 
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.ObserverRunnable;
@@ -43,9 +44,11 @@ public class StatusWidget extends VBox{
 	Label nameLabel;
 	private GuiData data;
 	private TextView logTextView;
+	private Frame frame;
+	
 	public  Observable notifyUser;
 	
-	public StatusWidget(ProcData data){
+	public StatusWidget(GuiData data){
 		super(false,0);
 		//FontDescription font = new FontDescription();
 		this.notifyUser = new Observable();
@@ -54,9 +57,11 @@ public class StatusWidget extends VBox{
 		VBox mainVbox = new VBox(false, 0);
 		
 		//========================================
-		Frame frame = new Frame(data.getProc().getCommand());
+		frame = new Frame("");
 		frame.add(mainVbox);
 		this.add(frame);
+		Label label = (Label) frame.getLabelWidget();
+		label.setFont(new FontDescription());
 		//========================================
 		
 		//========================================
@@ -195,5 +200,9 @@ public class StatusWidget extends VBox{
 			
 		});
 		
+	}
+	
+	public void setName(String name){
+		this.frame.setLabel(name);
 	}
 }

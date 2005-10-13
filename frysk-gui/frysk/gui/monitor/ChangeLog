@@ -1,11 +1,24 @@
 2005-10-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ProcStatusWidget.java: new file.
+	* CustomeObserverWindow.java: new file.
+	* TaskStatusWidget.java: new file.
+	* WindowManager.java: Added a handel for customObserverWindow and 
+	hid it by default.
+	* InfoWidget.java: added setSelectedProc and setSelectedTask.
+	* AllProcWidget.java: Added code to select first thread by default.
+	Added handling for creating threa status widget and showing it.
+	Changed InfoWidget to be one per class instead of per process.
+	* GuiData.java: Changed infoWidget handle to a generic StatusWidget
+	handle.
 	* observers/SyscallObserver.java: new file.
 	* ThreadMenu.java, WatchMenu.java: added calls for dynamically
 	instanciating the appropriate ObserverMenu.
 	* TaskData.java (add): new function for adding SyscallObserver.
 	* StatusWidget.java: Minor eye candy; replace procName lable by frame,
-	removed always show scrol bars around textbox and treeview.
+	Removed always show scrol bars around textbox and treeview.
+	Added setName function.
+	Changed constructor to take generic GuiData.
 	* ObserversMenu.java: Removed Singleton instanciation. ObserversMenu
 	now takes items linked list as an argument, and is instanciated by
 	parent menu.

@@ -13,6 +13,7 @@
 2005-10-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Added refresh period label and seperator.
+	Removed a place holding label.
 
 2005-10-12  Adam Jocksch  <ajocksch@redhat.com>
 
