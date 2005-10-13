@@ -2,7 +2,6 @@
 
 	* frysk/frysk-common/Makefile.rules: fixed a cd that was catting a
 	CWD into an awkward place
-	* frysk/gui/common/Messages.java: uncommented a commented import
 
 2005-10-03  Igor Foox  <ifoox@redhat.com>
 
