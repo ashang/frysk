@@ -15,11 +15,11 @@ JNIEXPORT jint JNICALL Java_frysk_gui_monitor_EggTrayIcon_egg_1tray_1icon_1get_1
 }
 
 JNIEXPORT jobject JNICALL Java_frysk_gui_monitor_EggTrayIcon_egg_1tray_1icon_1new_1for_1screen (JNIEnv *env, jclass c, jobject screen, jstring name){
-  return (jobject)getHandleFromPointer(env,egg_tray_icon_new_for_screen(screen,name));
+  return getGObjectHandle(env,egg_tray_icon_new_for_screen(screen,name));
 }
 
 JNIEXPORT jobject JNICALL Java_frysk_gui_monitor_EggTrayIcon_egg_1tray_1icon_1new (JNIEnv *env, jclass c, jstring name){
-  return (jobject)getHandleFromPointer(env,egg_tray_icon_new(name));
+  return getGObjectHandle(env,egg_tray_icon_new(name));
 }
 
 JNIEXPORT jint JNICALL Java_frysk_gui_monitor_EggTrayIcon_egg_1tray_1icon_1send_1message (JNIEnv *env, jclass c, jobject icon, jint timeout, jstring message, jint len){
