@@ -55,6 +55,7 @@ empty=
 space=$(empty) $(empty)
 GEN_BUILT_CLASSES =
 GEN_CLASSDIR = classes
+EXTRA_DIST = 
 
 # Make up some javacflags
 
@@ -295,3 +296,8 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 	mkdir -p `dirname $@`
 	echo "@center See the @sc{pdf} or @sc{html} documentation." > $@
 BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)
+
+
+# Add some needed files to the distribution
+EXTRA_DIST += 	common/Makefile.gen.sh \
+		common/mkjava.sh
