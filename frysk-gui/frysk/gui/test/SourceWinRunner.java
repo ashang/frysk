@@ -57,16 +57,16 @@ public class SourceWinRunner {
 	public static void main(String[] args) {
 		Gtk.init(args);
 		
-		SourceWindow s = new SourceWindow(new String[] {"frysk-gui/frysk/gui/glade/"}, "frysk-gui/frysk/gui/images/");
+		SourceWindow s = new SourceWindow(new String[] {"frysk-gui/frysk/gui/glade/", "../frysk/frysk-gui/frysk/gui/glade/"}, "../frysk/frysk-gui/frysk/gui/images/");
 		
-		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
-		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
+		PCLocation loc = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
+		PCLocation loc2 = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
 		loc.addNextScope(loc2);
-		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
+		PCLocation loc3 = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
 		loc2.addNextScope(loc3);
-		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
+		PCLocation loc4 = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
 		loc3.addInlineScope(loc4);
-		loc3.addNextScope(new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
+		loc3.addNextScope(new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
 		
 		s.populateStackBrowser(loc);
 		
@@ -77,7 +77,18 @@ public class SourceWinRunner {
 		Gtk.init(args);
 		
 		SourceWindow s = new SourceWindow(paths, imageDir);
-		s.toString(); //FIXME: Hack to make the compiiler warning go away
+		
+		PCLocation loc = new PCLocation("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
+		PCLocation loc2 = new PCLocation("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
+		loc.addNextScope(loc2);
+		PCLocation loc3 = new PCLocation("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
+		loc2.addNextScope(loc3);
+		PCLocation loc4 = new PCLocation("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
+		loc3.addInlineScope(loc4);
+		loc3.addNextScope(new PCLocation("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
+		
+		s.populateStackBrowser(loc);
+		
 		Gtk.main();
 	}
 

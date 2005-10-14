@@ -81,7 +81,6 @@ public class PreferenceWindow implements ButtonListener{
 	 * GLADE CONSTANTS
 	 */
 	// Path to and name of the glade file to use
-	public static final String GLADE_PATH = "frysk-gui/frysk/gui/glade/"; //$NON-NLS-1$
 	public static final String GLADE_FILE = "frysk_source_prefs.glade"; //$NON-NLS-1$
 
 	// name of the top window
@@ -138,9 +137,9 @@ public class PreferenceWindow implements ButtonListener{
 	 * Creates a new PreferenceWindow
 	 * @param myPrefs The preference model to load from 
 	 */
-	public PreferenceWindow(Preferences myPrefs){
+	public PreferenceWindow(Preferences myPrefs, String gladePath){
 		try {
-			this.glade = new LibGlade(GLADE_PATH+GLADE_FILE, this);
+			this.glade = new LibGlade(gladePath+GLADE_FILE, this);
 		} catch (Exception e){
 			e.printStackTrace();
 		}

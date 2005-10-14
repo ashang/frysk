@@ -159,6 +159,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 * END GLADE CONSTANTS
 	 */
 	
+	private String gladePath;
+	
 	private LibGlade glade;
 	
 	private Preferences prefs;
@@ -194,6 +196,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		for(int i = 0; i < gladePaths.length; i++){
 			try{
 				this.glade = new LibGlade(gladePaths[i]+SourceWindow.GLADE_FILE, this);
+				this.gladePath = gladePaths[i];
 			}
 			catch (Exception e){
 				// If we don't find the glade file, continue looking
@@ -738,7 +741,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void launchPreferencesWindow(){
 		if(this.prefWin == null)
-			this.prefWin = new PreferenceWindow(this.prefs);
+			this.prefWin = new PreferenceWindow(this.prefs, this.gladePath);
 		else
 			this.prefWin.show();
 		
