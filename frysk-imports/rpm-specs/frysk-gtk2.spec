@@ -17,7 +17,7 @@
 %define cairo_version %{cairo_base_version}-1
 %define libpng_version 2:1.2.2-16
 
-%define base_version 2.8.3
+%define base_version 2.8.4
 %define bin_version 2.4.0
 
 %define name_base gtk2
@@ -25,10 +25,10 @@
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X.
 Name: frysk-%{name_base}
 Version: %{base_version}
-Release: 2
+Release: 1
 License: LGPL
 Group: System Environment/Libraries
-Source: gtk+-%{version}.tar.bz2
+Source: gtk+-%{version}.tar.gz
 Source1: update-scripts.tar.gz
 
 # Biarch changes
@@ -277,6 +277,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc tmpdocs/examples
 
 %changelog
+* Tue Sep 27 2005 Igor Foox <ifoox@redhat.com> - 2.8.4-1
+- Imported GTK+-2.8.4
+
 * Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.8.3-2
 - Changed installation prefix from /opt to /opt/frysk.
 

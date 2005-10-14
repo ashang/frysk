@@ -13,7 +13,7 @@
 
 %define	name_base 	libgtk-java
 %define	version		2.8.0
-%define	release		6
+%define	release		11
 
 
 Summary:	Java bindings for GTK+
@@ -51,6 +51,8 @@ applications with IDEs like Eclipse.
 %prep
 
 %setup -q -n %{name_base}-%{version}
+
+# Patches for accelerators, remove when they get into upstream (2.8.1 ?)
 
 %build 
 # if either the C or Java packages has a prefix declared, then we will
@@ -121,6 +123,23 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Oct 14 2005  Igor Foox <ifoox@redhat.com> - 2.8.0-11
+- Updated sources to get bugfixes from upsteam.
+- Removed Accelerators patch.
+
+* Tue Oct 11 2005 Igor Foox <ifoox@redhat.com> - 2.8.0-10
+- Fixed linking error due to accelerators patch.
+
+* Fri Oct 07 2005 Igor Foox <ifoox@redhat.com> - 2.8.0-9
+- Added new version of accelerators patch.
+
+* Thu Oct 06 2005 Igor Foox <ifoox@redhat.com> - 2.8.0-8
+- Imported released 2.8.0 sources from upstream.
+- Added Adam Jocksch's patches for accelerators.
+
+* Thu Sep 29 2005 Igor Foox <ifoox@redhat.com> - 2.8.0-7
+- Updated sources, bugfixes.
+
 * Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.8.0-6
 - Changed optional installation prefix to /opt/frysk from opt.
 

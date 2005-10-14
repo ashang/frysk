@@ -1,3 +1,7 @@
+2005-10-14  Igor Foox  <ifoox@redhat.com>
+
+	* rpm-specs/*: Updated all spec files to conform to rawhide specs.
+
 2005-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* EggTrayIcon/libEggTrayIcon.c: changed to using getGObjectHandle().
@@ -5,6 +9,10 @@
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/anoncall/Makefile.am: Do not expect the test to fail.
+
+2005-09-27  Igor Foox  <ifoox@redhat.com>
+
+	* rpm-specs/frysk-gtk2.spec: Updated to gtk2-2.8.4.
 
 2005-09-26  Igor Foox  <ifoox@redhat.com>
 	

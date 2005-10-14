@@ -12,7 +12,7 @@
 
 %define	name_base	cairo-java
 %define	version		1.0.0
-%define	release		8
+%define	release		9
 
 
 Summary:	Java bindings for the Cairo library
@@ -110,6 +110,9 @@ rm -rf %{buildroot}
 %{_datadir}/java/*.zip
 
 %changelog
+* Mon Oct 05 2005 Igor Foox <ifoox@redhat.com> - 1.0.0-9
+- Imported released 1.0.0 sources from upstream.
+
 * Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 1.0.0-8
 - Changed optional installation prefix to /opt/frysk from opt.
 

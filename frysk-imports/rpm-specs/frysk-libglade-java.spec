@@ -13,7 +13,7 @@
 
 %define	name_base	libglade-java
 %define	version		2.12.0
-%define release		5
+%define release		6
 
 Summary:	Java bindings for libglade
 Name:		%{java_pkg_prefix}%{name_base}
@@ -109,7 +109,10 @@ rm -rf %{buildroot}
 %{_datadir}/java/*.zip
 
 %changelog
-* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.10.0-5
+* Mon Oct 05 2005 Igor Foox <ifoox@redhat.com> - 2.12.0-6
+- Imported released 2.12.0 sources from upstream.
+
+* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 2.12.0-5
 - Changed optional installation prefix to /opt/frysk from opt.
 
 * Sat Sep 24 2005 Igor Foox <ifoox@redhat.com> - 2.12.0-4

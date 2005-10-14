@@ -7,31 +7,35 @@
 %{?java_pkg_prefix: %define _mandir %{_prefix}/share/man }
 %{?java_pkg_prefix: %define _defaultdocdir %{_prefix}/share/doc }
 
+# The prefix for java-gnome package names
 %{!?c_pkg_prefix: %define c_pkg_prefix %{nil}}
 %{!?java_pkg_prefix: %define java_pkg_prefix %{nil}}
 
-# The prefix for java-gnome package names
-%define name_base glib-java
-Summary:   Base Library for the Java-GNOME libraries 
+%define name_base libvte-java
+
+Summary:   Wrapper library for GNOME VTE
 Name:      %{java_pkg_prefix}%{name_base}
-Version:   0.2.0
-Release:   8
+Version:   0.11.11
+Release:   5
 URL:       http://java-gnome.sourceforge.net
 Source0:   %{name_base}-%{version}.tar.gz
 License:   LGPL
 Group:     Development/Libraries
-BuildRoot: %{_tmppath}/glib-java
+BuildRoot: %{_tmppath}/libvte-java
 
 
 Requires: 	/sbin/ldconfig
-Requires: 	%{c_pkg_prefix}glib2 >= 2.7.0
-BuildRequires:  java-devel >= 1.4.2 %{c_pkg_prefix}glib2-devel >= 2.7.0
-BuildRequires:  gcc-java >= 3.3.3, docbook-utils
+Requires: 	%{java_pkg_prefix}glib-java >= 0.2
+Requires:	%{java_pkg_prefix}libgtk-java >= 2.8.0
+Requires:	vte >= 0.11.10
+BuildRequires:  java-devel >= 1.4.2, %{java_pkg_prefix}glib-java-devel >= 0.2
+BuildRequires:	%{java_pkg_prefix}libgtk-java-devel >= 2.8.0
+BuildRequires:  gcc-java >= 3.3.3, docbook-utils, vte-devel >= 0.11.10
 BuildRequires: 	pkgconfig
 
 %description 
-Glib-java is a base framework for the Java-GNOME libraries. Allowing the use of
-GNOME through Java.
+libvte-java is a Java wrapper library for the GNOME VTE library. Allowing access
+to the terminal widget from Java.
 
 %package        devel
 Summary:        Compressed Java source files for %{name}.
@@ -102,28 +106,21 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc doc/api AUTHORS ChangeLog COPYING INSTALL NEWS README 
-%dir %{_includedir}/%{name_base}
-%{_includedir}/%{name_base}/*
 %{_libdir}/*so*
 %{_libdir}/*la
 %{_libdir}/pkgconfig/*
 %{_datadir}/java/*.jar
-%dir %{_datadir}/%{name_base}
-%{_datadir}/%{name_base}/*
 
 %files devel
 %defattr(-,root,root)
 %{_datadir}/java/*.zip
 
 %changelog
-* Thu Oct 05 2005 Igor Foox <ifoox@redhat.com> - 0.2-8
-- Imported released 0.2 version from upstream. 
+* Tue Oct 04 2005 Igor Foox <ifoox@redhat.com> - 0.11.11-3
+- Added libs and jnilibs sections to vte-java.pc.
 
-* Thu Sep 29 2005 Igor Foox <ifoox@redhat.com> - 0.2-6
-- Update sources, to reflect dependency on glib-java.
+* Mon Oct 03 2005 Igor Foox <ifoox@redhat.com> - 0.11.11-2
+- Fixed bug, correct version no appears in vte-java.pc.
 
-* Mon Sep 26 2005 Igor Foox <ifoox@redhat.com> - 0.2-5
-- Changed optional installation prefix to /opt/frysk from opt.
-
-* Mon Sep 19 2005 Igor Foox <ifoox@redhat.com> - 0.2-2
-- Added to rawhide.
+* Mon Oct 03 2005 Igor Foox <ifoox@redhat.com> - 0.11.11-1
+- Created RPM.
