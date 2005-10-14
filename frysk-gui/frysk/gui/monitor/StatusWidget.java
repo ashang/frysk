@@ -60,8 +60,8 @@ public class StatusWidget extends VBox{
 		frame = new Frame("");
 		frame.add(mainVbox);
 		this.add(frame);
-		Label label = (Label) frame.getLabelWidget();
-		label.setFont(new FontDescription());
+//		Label label = (Label) frame.getLabelWidget();
+//		label.setFont(new FontDescription());
 		//========================================
 		
 		//========================================
