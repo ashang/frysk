@@ -148,7 +148,9 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 					
 					infoWidget.setSelectedProc(data);
 					
-					threadTreeView.getSelection().select(threadFilter.getFirstIter());
+					if(threadTreeView.getModel().getFirstIter() != null){
+						threadTreeView.getSelection().select(threadTreeView.getModel().getFirstIter());
+					}
 				}
 			}
 		});

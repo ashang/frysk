@@ -42,9 +42,9 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import frysk.gui.monitor.observers.SyscallObserver;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskExitingObserver;
-import frysk.gui.monitor.observers.SyscallObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -95,7 +95,18 @@ public class ActionPool {
                 protected String toolTip;
 
                 protected String name;
+                
+                class UnimplementedFunctionException extends RuntimeException{
+                	/**
+					 * Comment for <code>serialVersionUID</code>
+					 */
+					private static final long serialVersionUID = 1L;
 
+					UnimplementedFunctionException(Class theClass){
+                    	throw new RuntimeException( theClass.toString() + " has not implemented this function.");
+                	}
+                }
+                
                 public Action() {
                         this.toolTip = new String();
                 }
@@ -124,13 +135,21 @@ public class ActionPool {
                 	}
                 }
 
-                public abstract void execute(ProcData data);
+                public void execute(ProcData data){
+                	throw new UnimplementedFunctionException( this.getClass() );
+                }
 
-                public abstract void execute(TaskData data);
+                public void execute(TaskData data){
+                	throw new UnimplementedFunctionException( this.getClass() );
+                }
 
-                public abstract void removeObservers(ProcData data);
+                public void removeObservers(ProcData data){
+                	throw new UnimplementedFunctionException( this.getClass() );
+                }
 
-                public abstract void removeObservers(TaskData data);
+                public void removeObservers(TaskData data){
+                	throw new UnimplementedFunctionException( this.getClass() );
+                }
                 
                 public void execute(ProcData[] data) {
                         for (int i = 0; i < data.length; i++) {
@@ -176,21 +195,9 @@ public class ActionPool {
                 	data.getProc().requestAttachedContinue();
                 }
 
-                /**
-                 * This Action does not apply to Tasks.
-                 * */
-                public void execute(TaskData data) {
-
-                }
-
 				public void removeObservers(ProcData data) {
                     data.getProc().observableAttachedContinue.deleteObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
                     data.getProc().observableAttachedContinue.deleteObserver(eventLog.attachedContinueObserver);
-				}
-
-				public void removeObservers(TaskData data) {
-					// TODO Auto-generated method stub
-					
 				}
 
         }
@@ -242,18 +249,9 @@ public class ActionPool {
 			data.getProc().requestAttachedStop();
 		}
 
-		public void execute(TaskData data) {
-			//XXX: data.getTask().requestStop(); is not public 
-		}
-
 		public void removeObservers(ProcData data) {
 			data.getProc().observableAttachedStop.deleteObserver(eventLog.attachedStopObserver);
 			data.getProc().observableAttachedStop.deleteObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
-		}
-
-		public void removeObservers(TaskData data) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 
@@ -271,20 +269,11 @@ public class ActionPool {
 			data.getProc().requestAttachedContinue();
 		}
 
-		public void execute(TaskData data) {
-			//XXX: to be implement in the back end:	data.getTask().requestContinue();
-			//data.getTask().
-		}
-
 		public void removeObservers(ProcData data) {
 			data.getProc().observableAttachedContinue.deleteObserver(eventLog.attachedResumeObserver);
             data.getProc().observableAttachedContinue.deleteObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
 		}
 
-		public void removeObservers(TaskData data) {
-			// TODO Auto-generated method stub
-			
-		}
 	}
 
 	public class PrintState extends Action {
@@ -302,15 +291,6 @@ public class ActionPool {
 			System.out.println("Proc State : " + data.getTask());
 		}
 
-		public void removeObservers(ProcData data) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		public void removeObservers(TaskData data) {
-			// TODO Auto-generated method stub
-			
-		}
 	}
 	
 	public class AddExecObserver extends Action {
@@ -330,19 +310,11 @@ public class ActionPool {
 			data.add(taskExecObserver);
 		}
 
-		public void execute(TaskData data) {
-			//XXX
-		}
-
 		public void removeObservers(ProcData data) {
 			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
 			data.getProc().taskExeced.deleteObserver(eventLog.taskExecObserver);
 		}
 
-		public void removeObservers(TaskData data) {
-			// TODO Auto-generated method stub
-			
-		}
 	}
 
 	public class AddExitingObserver extends Action {
@@ -362,21 +334,12 @@ public class ActionPool {
 			data.add(taskExitingObserver);
 		}
 
-		public void execute(TaskData data) {
-			// TODO Auto-generated method stub
-			
-		}
-
 		public void removeObservers(ProcData data) {
 			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
 			data.getProc().taskExiting.deleteObserver(eventLog.taskExitingObserver);
 			data.getProc().taskExiting.deleteObserver(eventLog);
 		}
-
-		public void removeObservers(TaskData data) {
-			// TODO Auto-generated method stub
-			
-		}
+		
 	}
 
 	public class AddSyscallObserver extends Action {
@@ -386,10 +349,6 @@ public class ActionPool {
 			this.toolTip = "Listen for system call events from the selected thread";
 		}
 		
-		public void execute(ProcData data) {
-			
-		}
-
 		public void execute(TaskData data) {
 			data.getTask().traceSyscall = true;
 			SyscallObserver observer = new SyscallObserver();
@@ -406,16 +365,30 @@ public class ActionPool {
 			data.add(observer);
 		}
 
-		public void removeObservers(ProcData data) {
-			
-		}
-
 		public void removeObservers(TaskData data) {
 			
 		}
 		
 	}
 	
+	public class AddForkObserver extends Action {
+
+		public AddForkObserver() {
+			this.name = "Fork Observer";
+			this.toolTip = "Listen for process fork events on the selected process";
+		}
+
+		public void execute(ProcData data) {
+		//XXX	
+		}
+
+		public void removeObservers(ProcData data) {
+		//XXX
+		}
+		
+	}
+
+
 	/**
 	 * Actions: A publicly available instance of each action.
 	 * {

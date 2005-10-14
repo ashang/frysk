@@ -30,6 +30,7 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
+import org.gnu.gtk.VSeparator;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
@@ -53,14 +54,12 @@ public class StatusWidget extends VBox{
 		this.notifyUser = new Observable();
 		this.data = data;
 		
-		VBox mainVbox = new VBox(false, 0);
+		HBox mainVbox = new HBox(false, 0);
 		
 		//========================================
 		frame = new Frame("");
 		frame.add(mainVbox);
 		this.add(frame);
-//		Label label = (Label) frame.getLabelWidget();
-//		label.setFont(new FontDescription());
 		//========================================
 		
 		//========================================
@@ -70,6 +69,11 @@ public class StatusWidget extends VBox{
 		logScrolledWindow.setShadowType(ShadowType.IN);
 		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
 		mainVbox.packStart(logScrolledWindow, true, true, 0);
+		//========================================
+		
+		//========================================
+		VSeparator seperator = new VSeparator();
+		mainVbox.packStart(seperator, false, true, 5);
 		//========================================
 		
 		//========================================
@@ -83,7 +87,7 @@ public class StatusWidget extends VBox{
 		scrolledWindow.setShadowType(ShadowType.IN);
 		scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
 		vbox.packStart(scrolledWindow, true, true, 0);
-		mainVbox.add(vbox);
+		mainVbox.packStart(vbox, false, true, 0);
 		//========================================
 
 		this.showAll();

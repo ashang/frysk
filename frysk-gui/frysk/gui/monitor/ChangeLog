@@ -1,6 +1,14 @@
 2005-10-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ActionPool.java: Changed abstract methods in Action to regular
+	methods that throw and UnimplementedFucntionException if they are
+	not overwirtten in the child class.
+	* AllProcWidget.java: Fixed null pointer exception with rapid tree
+	slection changes.
+	* observers/ProcCloneObserver.java: New file.
+	* observers/ProcForkObserver.java: New file.
 	* StatusWidget.java (StatusWidget): Removed bad cast.
+	Changed layout, and added seperator.
 
 2005-10-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
