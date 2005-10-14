@@ -1,7 +1,41 @@
-/**
- * 
- */
-
+// This file is part of the program FRYSK.
+//
+// Copyright 2005, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+//
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
 package frysk.gui.srcwin.dom;
 
 //import frysk.gui.srcwin.dom.*;
@@ -25,10 +59,6 @@ public class DOMTestDOMFrysk {
 			"}\n" };
 
 	private static int[] offset_index = { 1, 12, 28 };
-
-	//private static int[] length = { main_prog[0].length(),
-	//								main_prog[1].length(),
-	//								main_prog[2].length() };
 
 	private static String[] inline_funcs = { "do_something", "b", "f" };
 
@@ -56,7 +86,6 @@ public class DOMTestDOMFrysk {
 	 * tests the DOMFrysk Class methods
 	 * 
 	 */
-
 	public static void testDOMFrysk() {
 
 		pc = new BigInteger("25");
@@ -117,7 +146,6 @@ public class DOMTestDOMFrysk {
 	 * tests the DOMImage Class methods
 	 * 
 	 */
-
 	public static void testDOMImage() {
 		DOMImage testDOMImage = dom.getImage("test_image_2");
 		if (testDOMImage.getName() == "test_image_2") {
@@ -281,8 +309,7 @@ public class DOMTestDOMFrysk {
 		System.out.println("passed...DOMSource.addLine/getLines");
 
 		final DOMLine testDOMLine = testDOMSource.getLine(2);
-		if (testDOMLine.getElement().getAttributeValue(DOMSource.TEXT_ATTR) 
-				== main_prog[1]) {
+		if (testDOMLine.getElement().getAttributeValue(DOMSource.TEXT_ATTR) == main_prog[1]) {
 			System.out.println("passed...DOMSource.getLine/DOMLine.getElement");
 		} else {
 			System.out.println("failed...DOMSource.getLine/DOMLine.getElement");
@@ -296,7 +323,8 @@ public class DOMTestDOMFrysk {
 	public static void testDOMLine() {
 		final int line_no = 2;
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
-		final DOMSource testDOMSource = testDOMImage.getSource("test_source1.1");
+		final DOMSource testDOMSource = testDOMImage
+				.getSource("test_source1.1");
 		final DOMLine testDOMLine = testDOMSource.getLine(line_no);
 
 		if (testDOMLine.getLineNum() == line_no) {
@@ -307,15 +335,15 @@ public class DOMTestDOMFrysk {
 		if (testDOMLine.getLength() == main_prog[1].length()) {
 			System.out.println("passed...DOMLine.getLength");
 		} else {
-			System. out.println("failed...DOMLine.getLength");
+			System.out.println("failed...DOMLine.getLength");
 		}
-		
+
 		if (testDOMLine.getText() == main_prog[1]) {
 			System.out.println("passed...DOMLine.getText");
 		} else {
 			System.out.println("failed...DOMLine.getText");
 		}
-		
+
 		String text = "   do_something_else();\n";
 		testDOMLine.setText(text);
 		if (testDOMLine.getText() == text) {
@@ -323,13 +351,13 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMLine.setText");
 		}
-		
+
 		if (testDOMLine.getOffset() == offset_index[1]) {
 			System.out.println("passed...DOMLine.getOffset");
 		} else {
 			System.out.println("failed...DOMLine.getOffset");
 		}
-		
+
 		int offset = offset_index[1] + 1;
 		testDOMLine.setOffset(offset);
 		if (testDOMLine.getOffset() == (offset_index[1] + 1)) {
@@ -338,13 +366,13 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMLine.setOffset");
 		}
 		testDOMLine.setOffset(offset_index[1]);
-		
+
 		if (testDOMLine.isExecutable()) {
 			System.out.println("passed...DOMLine.isExecutable");
 		} else {
 			System.out.println("failed...DOMLine.isExecutable");
 		}
-		
+
 		testDOMLine.setExecutable(false);
 		if (!testDOMLine.isExecutable()) {
 			System.out.println("passed...DOMLine.setExecutable");
@@ -352,14 +380,34 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMLine.setExecutable");
 		}
 		testDOMLine.setExecutable(true);
-		
+
 		if (testDOMLine.hasInlinedCode()) {
 			System.out.println("passed...DOMLine.hasInlineCode");
 		} else {
 			System.out.println("failed...DOMLine.hasInlineCode");
 		}
+
+		if (!testDOMLine.hasBreakPoint()) {
+			System.out.println("passed...DOMLine.hasBreakPoint");
+		} else {
+			System.out.println("failed...DOMLine.hasBreakPoint");
+		}
+
+		testDOMLine.setBreakPoint(true);
+		if (testDOMLine.hasBreakPoint()) {
+			System.out.println("passed...DOMLine.setBreakPoint");
+		} else {
+			System.out.println("failed...DOMLine.setBreakPoint");
+		}
 		
-		
+		testDOMLine.addInstance("do_something");
+		if (testDOMLine.getInstElement().
+				getAttributeValue(DOMInlineInstance.LINEINST_ATTR)
+				== "do_something") {
+			System.out.println("passed...DOMLine.addInstance/getInstElement");
+		} else {
+			System.out.println("failed...DOMLine.addInstance/getInstElement");
+		}
 	}
 
 	/**

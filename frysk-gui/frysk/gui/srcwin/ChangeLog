@@ -1,3 +1,28 @@
+2005-10-14  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMFrysk.java: Added Copyright/License information.
+	
+	* dom/DOMImage.java: Ditto.
+	
+	* dom/DOMTag.java: Ditto.
+	
+	* dom/DOMInlineFunc.java: Ditto.
+	
+	* dom/DOMSource.java: Ditto.
+	
+	* dom/DOMLine.java: Ditto.
+						added hasBreakPoint method.
+						when changing text, change the "length" attibute too.
+						added addInstance method.
+						added getInstElement method
+	
+	* dom/DOMInlineInstance.java: Added Copyright/License information.
+						added LINEINST_NODE, LINEINST_ATTR variables
+						
+	* dom/DOMTestDOMFrysk.java: Added Copyright/License information.
+								added tests for methods added to DOMLine.java
+								
+
 2005-10-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineHandler.java: Added Copyright/License information.
