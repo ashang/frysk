@@ -34,7 +34,6 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
-import org.gnu.pango.FontDescription;
 
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.ObserverRunnable;
