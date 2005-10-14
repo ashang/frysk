@@ -1,4 +1,9 @@
+2005-10-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Messages.java: Added comments to make it easier to build in/out of
+	eclipse.
+
 2005-10-13  Chris Moller <moller@mollerware.com>
 
-        * common/Messages.java: uncommented a commented import
+        * Messages.java: uncommented a commented import
 

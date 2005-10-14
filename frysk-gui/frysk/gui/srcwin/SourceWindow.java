@@ -56,6 +56,7 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.ComboBoxEntry;
+import org.gnu.gtk.Container;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
@@ -236,26 +237,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// create the actual sourceview widget
 		this.view = new SourceViewWidget(this.prefs);
 		
-		PCLocation loc = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
-		PCLocation loc2 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
-		loc.addNextScope(loc2);
-		PCLocation loc3 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
-		loc2.addNextScope(loc3);
-		PCLocation loc4 = new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
-		loc3.addInlineScope(loc4);
-		loc3.addNextScope(new PCLocation("frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
-		
-		this.populateStackBrowser(loc);
-//		this.view.load(loc);
-		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
 		for(int i = 0; i < funcs.size(); i++)
 			((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).appendText(((String) funcs.get(i)).split("_")[0]);
 		
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
-		
-//		((SourceBuffer) this.view.getBuffer()).toggleBreakpoint(8);
 		
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).showAll();
@@ -311,6 +298,54 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
 		else
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
+	}
+	
+	/**
+	 * Populates the stack browser window
+	 * @param top
+	 */
+	public void populateStackBrowser(PCLocation top){
+		((Container) this.view.getParent()).remove(this.view);
+		this.view = new SourceViewWidget(this.prefs);
+		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
+		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).showAll();
+		
+		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
+		
+		dataColumns = new DataColumn[] {new DataColumnString(), new DataColumnObject()};
+		ListStore listModel = new ListStore(dataColumns);
+		
+		TreeIter iter  = null;
+		TreeIter last = null;
+		
+		while(top != null){
+			iter = listModel.appendRow();
+			System.out.println(top.getFunction());
+			
+			if(top.inlineScope == null)			
+				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction());
+			else
+				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction()+"  (i)");
+			listModel.setValue(iter, (DataColumnObject) dataColumns[1], top);
+			
+			// Save the last node so we can select it
+			if(top.nextScope == null)
+				last = iter;
+			
+			top = top.nextScope;
+		}
+		stackList.setModel(listModel);
+				
+		TreeViewColumn column = new TreeViewColumn();
+		CellRenderer renderer = new CellRendererText();
+		column.packStart(renderer, true);
+		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, dataColumns[0]);
+		column.setTitle("Function");
+		stackList.appendColumn(column);
+		
+		stackList.getSelection().setMode(SelectionMode.SINGLE);
+		stackList.getSelection().select(last);
+		stackList.showAll();
 	}
 	
 	/***********************************
@@ -675,39 +710,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		t.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
-	private void populateStackBrowser(PCLocation top){
-		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
-		
-		dataColumns = new DataColumn[] {new DataColumnString(), new DataColumnObject()};
-		ListStore listModel = new ListStore(dataColumns);
-		
-		TreeIter iter  = null;
-		
-		while(top != null){
-			iter = listModel.appendRow();
-			System.out.println(top.getFunction());
-			
-			if(top.inlineScope == null)			
-				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction());
-			else
-				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction()+"  (i)");
-			listModel.setValue(iter, (DataColumnObject) dataColumns[1], top);
-			
-			top = top.nextScope;
-		}
-		stackList.setModel(listModel);
-				
-		TreeViewColumn column = new TreeViewColumn();
-		CellRenderer renderer = new CellRendererText();
-		column.packStart(renderer, true);
-		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, dataColumns[0]);
-		column.setTitle("Function");
-		stackList.appendColumn(column);
-		
-		stackList.getSelection().setMode(SelectionMode.SINGLE);
-		stackList.showAll();
-	}
-	
 	/**
 	 * Assigns Listeners to the widgets that we need to listen for events from
 	 */
@@ -726,7 +728,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// function jump box
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).addListener(this);
 		
-		// Stack browser
+//		// Stack browser
 		((TreeView) this.glade.getWidget("stackBrowser")).getSelection().addListener(this);
 	}
 	

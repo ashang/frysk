@@ -38,6 +38,7 @@
 // exception.
 package frysk.gui.common;
 
+// If you're trying to run the source window in eclipse, comment the next line out
 import frysk.Config;
 
 import java.io.File;
@@ -49,6 +50,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 public class Messages {
+	// Comment the first line and uncomment the second if running in eclipse
 	private static final String BUNDLE_NAME = Config.PKGDATADIR+"/messages.properties"; //$NON-NLS-1$
 //	private static final String BUNDLE_NAME = "frysk-gui/frysk/gui/common"+"/messages.properties"; //$NON-NLS-1$
 
