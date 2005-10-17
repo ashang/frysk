@@ -46,7 +46,7 @@ package frysk.gui.srcwin.dom;
  * @author ajocksch
  */
 public class DOMInlineInstance {
-	private DOMInlineFunc declaration;
+	private DOMFunction declaration;
 	private int start;
 	private int end;
 	
@@ -54,7 +54,7 @@ public class DOMInlineInstance {
 	
 	public static final String LINEINST_ATTR = "instance";
 	
-	public DOMInlineInstance(DOMInlineFunc declaration, int start, int end){
+	public DOMInlineInstance(DOMFunction declaration, int start, int end){
 		this.declaration = declaration;
 		this.start = start;
 		this.end = end;
@@ -77,7 +77,7 @@ public class DOMInlineInstance {
 	/** 
 	 * @return The original declaration of this inlined code
 	 */
-	public DOMInlineFunc getDeclaration(){
+	public DOMFunction getDeclaration(){
 		return this.declaration;
 	}
 }

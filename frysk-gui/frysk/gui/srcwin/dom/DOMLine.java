@@ -306,20 +306,24 @@ public class DOMLine {
 	/**
 	 * add an inline instance to this line
 	 */
-	public void addInstance(String instance) {
+	public void addInstance(String instance, int start_inline, int end_inline) {
 		Element inlineLineInstElement = 
 			new Element(DOMInlineInstance.LINEINST_NODE);
 		inlineLineInstElement.setAttribute(DOMInlineInstance.LINEINST_ATTR, 
 				instance);
+		inlineLineInstElement.setAttribute(OFFSET_ATTR, Integer.toString(start_inline));
+		inlineLineInstElement.setAttribute(LENGTH_ATTR, Integer.toString(end_inline));
 		this.myElement.addContent(inlineLineInstElement);
 	}
 	/**
 	 * get the inline instance of this line 
 	 * @return the JDOM Element of the inline instance
 	 */
-	public Element getInstElement() {
-		return this.myElement.getChild(DOMInlineInstance.LINEINST_NODE);
-	}
+/*	public DOMInlineInstance getInstElement() {
+		Element inst =  
+			this.myElement.getChild(DOMInlineInstance.LINEINST_NODE);
+		DOMInlineInstance val = new DOMInlineInstance((Element) inst);
+	} */
 	
 	/**
 	 * get the JDOM Element of this line

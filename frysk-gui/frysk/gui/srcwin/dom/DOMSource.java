@@ -239,11 +239,11 @@ public class DOMSource {
 	 *         source file
 	 */
 	public Iterator getInlinedFunctions(){
-		Iterator iter = this.myElement.getChildren(DOMInlineFunc.INLINE_NODE).iterator();
+		Iterator iter = this.myElement.getChildren(DOMFunction.INLINE_NODE).iterator();
 		Vector v = new Vector();
 		
 		while(iter.hasNext())
-			v.add(new DOMInlineFunc((Element) iter.next()));
+			v.add(new DOMFunction((Element) iter.next()));
 		
 		return v.iterator();
 	}
@@ -255,7 +255,7 @@ public class DOMSource {
 	 * @param function
 	 *            The inlined function declaration to add
 	 */
-	public void addInlineFunction(DOMInlineFunc function){
+	public void addInlineFunction(DOMFunction function){
 		// Add the functions at the top, lines on the bottom
 		this.myElement.addContent(0, function.getElement());
 	}

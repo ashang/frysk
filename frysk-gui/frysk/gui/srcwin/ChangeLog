@@ -1,3 +1,21 @@
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMFunction.java: renamed from DOMInlineFunc
+	
+	* dom/DOMImage.java: removed INLINENAME_ATTR
+						 added new addInlineFunction method
+						 getFunction now returns a DOMFunction type
+						 
+	* dom/DOMInlineInstance.java: renamed DOMInlineFunc to DOMFunction
+	
+	* dom/DOMLine.java: fixed addInstance bug
+						commented out getInstElement method for now
+						
+	* dom/DOMSource.java: more renaming of DOMInlineFunc to DOMFunction
+	
+	* dom/DOMTestDOMFrysk.java: modded to relfect above changes
+								added tests for the DOMFunction class
+
 2005-10-14  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFrysk.java: Added Copyright/License information.

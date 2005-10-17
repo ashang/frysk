@@ -57,9 +57,7 @@ public class DOMImage {
 	/**
 	 * name of the inline element
 	 */
-	
-	public static final String INLINENAME_ATTR = "inlinename";
-	
+		
 	public static final String INLINE_NODE = "inline";
 	private Element myElement;
 	
@@ -87,13 +85,22 @@ public class DOMImage {
 	
 	/**
 	 * adds an inline function to an image
-	 * @param name of the inline function
-	 * @param an array of Strings containing the lines in the function
+	 * @param inline_name is the name of the inline function
+	 * @param lines is an array of Strings containing the lines in the function
+	 * @param start_offset is the starting character offset from the beginning
+	 * 					of the file of the first character of the function
+	 * @param end_offset is the ending character offset from the beginning
+	 * 					of the file of the last character of the function
 	 */
-	public void addInlineFunction(String inline_name, String[] lines) {
+	public void addInlineFunction(String inline_name, String[] lines,
+			int start_offset, int end_offset) {
 		
 		Element inlineNameElement = new Element(INLINE_NODE);
-		inlineNameElement.setAttribute(INLINENAME_ATTR, inline_name);
+		inlineNameElement.setAttribute(DOMFunction.INLINENAME_ATTR, inline_name);
+		inlineNameElement.setAttribute(DOMFunction.START_ATTR, 
+				Integer.toString(start_offset));
+		inlineNameElement.setAttribute(DOMFunction.END_ATTR, 
+				Integer.toString(end_offset));
 		this.myElement.addContent(inlineNameElement);
 		for (int i=0; i<lines.length; i++) {
 			Element lineNumber = new Element(DOMSource.LINENO_NODE);
@@ -159,7 +166,6 @@ public class DOMImage {
 					return new DOMSource(elem);
 			}
 		}
-
 		return null;
 	}
 	
@@ -169,12 +175,12 @@ public class DOMImage {
 	 * @return the DOMImage corresponding to the element, or null if no such
 	 * 	element exists
 	 */
-	public Element getInlineFunction(String name) {
+	public DOMFunction getFunction(String name) {
 		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();
 		while (iter.hasNext()) {
 			Element node = (Element) iter.next();
-			if (node.getAttributeValue(INLINENAME_ATTR) == name)
-				return node;
+			if (node.getAttributeValue(DOMFunction.INLINENAME_ATTR) == name)
+				return new DOMFunction (node);
 		}
 		return null;
 	}
