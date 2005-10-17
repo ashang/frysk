@@ -42,9 +42,12 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
+import frysk.gui.monitor.observers.ProcCloneObserver;
+import frysk.gui.monitor.observers.ProcForkObserver;
 import frysk.gui.monitor.observers.SyscallObserver;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskExitingObserver;
+import frysk.proc.Manager;
 
 /**
  * @author Sami Wagiaalla
@@ -378,12 +381,36 @@ public class ActionPool {
 			this.toolTip = "Listen for process fork events on the selected process";
 		}
 
+		public void execute(TaskData data) {
+			data.getTask().traceFork = true;
+			
+			ProcForkObserver observer = new ProcForkObserver(data.getTask().getProc());
+			Manager.host.observableProcAdded.addObserver(observer);
+			data.add(observer);
+		}
+
+		public void removeObservers(TaskData data) {
+
+		}
+		
+	}
+
+
+	public class AddCloneObserver extends Action {
+
+		public AddCloneObserver() {
+			this.name = "Clone Observer";
+			this.toolTip = "Listens for clone events on the selected process";
+		}
+
 		public void execute(ProcData data) {
-		//XXX	
+			ProcCloneObserver observer = new ProcCloneObserver();
+			data.getProc().observableTaskAdded.addObserver(observer);
+			data.add(observer);
 		}
 
 		public void removeObservers(ProcData data) {
-		//XXX
+
 		}
 		
 	}
@@ -401,7 +428,9 @@ public class ActionPool {
 	
 	public AddExecObserver addExecObserver;
 	public AddExitingObserver addExitingObserver;
+	public AddForkObserver addForkObserver;
 	
+	public AddCloneObserver addCloneObserver;
 	public AddSyscallObserver addSyscallObserver;
 	/**}*/
 
@@ -430,10 +459,16 @@ public class ActionPool {
 
 		this.addExitingObserver = new AddExitingObserver();
 		this.processObservers.add(this.addExitingObserver);
-	
+
+		this.addCloneObserver = new AddCloneObserver();
+		this.processObservers.add(this.addForkObserver);
+
 		this.addSyscallObserver = new AddSyscallObserver();
 		this.threadObservers.add(this.addSyscallObserver);
-		
+
+		this.addForkObserver = new AddForkObserver();
+		this.threadObservers.add(this.addForkObserver);
+
 		this.printState = new PrintState();
 		this.processActions.add(this.printState);
 		this.threadActions.add (this.printState);

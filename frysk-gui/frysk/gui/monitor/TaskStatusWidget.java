@@ -10,7 +10,7 @@ public class TaskStatusWidget extends StatusWidget {
 
 	public TaskStatusWidget(TaskData data) {
 		super(data);
-		this.setName("" + data.getTask().getTid() + "  0x" + Long.toHexString(data.getTask().getEntryPointAddress()));
+		this.setName("Thread ID: " + data.getTask().getTid());
 	}
 
 }

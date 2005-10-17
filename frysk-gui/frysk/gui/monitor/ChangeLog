@@ -1,3 +1,11 @@
+2005-10-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TaskStatusWidget.java (TaskStatusWidget): Removed the thread entry
+	address from the label.
+	* observers/ProcForkObserver.java (update): Added special filter
+	to check for the new process's parent.
+	* ActionPool.java: Added actions for fork and clone observer.
+
 2005-10-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ActionPool.java: Changed abstract methods in Action to regular
