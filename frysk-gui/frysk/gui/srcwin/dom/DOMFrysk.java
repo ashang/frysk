@@ -40,7 +40,7 @@
 package frysk.gui.srcwin.dom;
 
 import java.util.Iterator;
-import java.util.Vector;
+//import java.util.Vector;
 import java.math.BigInteger;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -148,7 +148,7 @@ public class DOMFrysk {
 	 * 
 	 * @return
 	 */
-	public Iterator getImages() {
+/*	public Iterator getImages() {
 		Iterator i = this.data.getRootElement().getChildren().iterator();
 		Vector v = new Vector();
 
@@ -158,7 +158,7 @@ public class DOMFrysk {
 		}
 
 		return v.iterator();
-	}
+	} */
 
 	/**
 	 * Attempts to fetch an image of the given name from the DOM. If no image is
