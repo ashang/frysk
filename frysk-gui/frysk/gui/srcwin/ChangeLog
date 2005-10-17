@@ -1,3 +1,12 @@
+2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* PreferenceWindow.java (setupButtons): Show toolbar now defaults to false.
+	
+	* SourceWindow (SourceWindow): Find box is no longer shown on start,
+	fixing bug #1480, toolbar is only shown according to user preference.
+	(refresh): Added change to fix said bug.
+	(setupStackBrowser): No longer shows find box if it is hidden.
+
 2005-10-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFrysk.java: comment out getImages method for now

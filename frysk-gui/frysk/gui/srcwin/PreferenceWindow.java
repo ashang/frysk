@@ -362,7 +362,7 @@ public class PreferenceWindow implements ButtonListener{
 		cb2.setLabel(Messages.getString("PreferenceWindow.6")); //$NON-NLS-1$
 		cb2.setState(flag);
 		
-		flag = this.myPrefs.node(PreferenceConstants.LNF_NODE).getBoolean(PreferenceConstants.SHOW_TOOLBAR, true);
+		flag = this.myPrefs.node(PreferenceConstants.LNF_NODE).getBoolean(PreferenceConstants.SHOW_TOOLBAR, false);
 		cb2 = (CheckButton) this.glade.getWidget(TOOLBAR_CHECK);
 		cb2.setLabel("Show Toolbar");
 		cb2.setState(flag);

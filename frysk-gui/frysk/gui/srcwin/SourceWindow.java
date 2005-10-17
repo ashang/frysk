@@ -248,7 +248,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 		
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
-		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).showAll();
+		this.glade.getWidget(SOURCE_WINDOW).showAll();
+		this.glade.getWidget(FIND_BOX).hideAll();
+		this.refresh();
 	}
 
 	/**
@@ -297,7 +299,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	public void refresh(){
 		this.view.refresh();
 		
-		if(this.prefs.node(PreferenceConstants.LNF_NODE).getBoolean(PreferenceConstants.SHOW_TOOLBAR, true))
+		if(this.prefs.node(PreferenceConstants.LNF_NODE).getBoolean(PreferenceConstants.SHOW_TOOLBAR, false))
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
 		else
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
@@ -311,7 +313,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		((Container) this.view.getParent()).remove(this.view);
 		this.view = new SourceViewWidget(this.prefs);
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
-		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).showAll();
+		this.view.showAll();
 		
 		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
 		
