@@ -40,9 +40,11 @@
 AC_PREREQ(2.59)
 AC_INIT(frysk, 0.0)
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/cniinner/Makefile tests/anoncall/Makefile tests/werror/Makefile])
+AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/cniinner/Makefile tests/anoncall/Makefile tests/werror/Makefile tests/gcc_4_0_15/Makefile])
 
 sinclude(common/acinclude.m4)
+
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
 
 AC_MSG_CHECKING([for junit.jar])
 JUNIT_JAR=/usr/share/java/junit.jar
@@ -61,6 +63,24 @@ ANTLR_JAR=/usr/share/java/antlr.jar
 test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
 AC_SUBST([ANTLR_JAR])
 AC_MSG_RESULT([$ANTLR_JAR])
+
+PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
+AC_MSG_CHECKING(for gtk2-java jar file)
+GTK2_JAR=`$PKG_CONFIG --variable classpath gtk2-java`
+AC_MSG_RESULT($GTK2_JAR)
+AC_SUBST(GTK2_JAR)
+
+PKG_CHECK_MODULES(GLADE_JAVA, glade-java >= 2.7.0)
+AC_MSG_CHECKING(for glade-java jar file)
+GLADE_JAR=`$PKG_CONFIG --variable classpath glade-java`
+AC_MSG_RESULT($GLADE_JAR)
+AC_SUBST(GLADE_JAR)
+
+PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
+AC_MSG_CHECKING(for glib-java jar file)
+GLIB_JAVA_JAR=`$PKG_CONFIG --variable classpath glib-java`
+AC_MSG_RESULT($GLIB_JAVA_JAR)
+AC_SUBST(GLIB_JAVA_JAR)
 
 dnl For EggTrayIcon
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig

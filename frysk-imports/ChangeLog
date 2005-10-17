@@ -1,3 +1,16 @@
+2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/gcc_4_0_15: Added.
+
+	* tests/gcc_4_0_15/JNICrash.java: Added.
+
+	* tests/gcc_4_0_15/Makefile.am: Added.
+
+	* Makefile.am: Added tests/gcc_4_0_15 as a subdir.
+
+	* configure.ac: Added checks for Java-gnome libraries and added
+	tests/gcc_4_0_15 to AC_CONFIG_FILES.
+
 2005-10-14  Igor Foox  <ifoox@redhat.com>
 
 	* rpm-specs/*: Updated all spec files to conform to rawhide specs.
