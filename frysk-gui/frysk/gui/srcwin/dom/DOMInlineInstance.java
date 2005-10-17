@@ -39,6 +39,10 @@
 
 package frysk.gui.srcwin.dom;
 
+//import java.util.Vector;
+
+import org.jdom.Element;
+
 /**
  * DOMInlineInstance represents the instance of a piece of inlined code. It contains the 
  * information specific to this instance as well as a reference to the declaration to speed up
@@ -54,10 +58,25 @@ public class DOMInlineInstance {
 	
 	public static final String LINEINST_ATTR = "instance";
 	
+	private Element myElement;
+	
 	public DOMInlineInstance(DOMFunction declaration, int start, int end){
 		this.declaration = declaration;
 		this.start = start;
 		this.end = end;
+	}
+	
+	/**
+	 * Creates a new DOMLine using the given data as it's element. data must be a node with
+	 * name "inline".
+	 * @param data
+	 */
+	public DOMInlineInstance(Element data){
+		this.myElement = data;
+	}
+	
+	public Element getInlineInstance() {
+		return this.myElement;
 	}
 	
 	/**

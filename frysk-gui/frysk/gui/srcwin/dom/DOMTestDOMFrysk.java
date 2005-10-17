@@ -465,18 +465,18 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMLine.setBreakPoint");
 		}
 		
-		/* String test_inline = "do_something";
+		String test_inline = "do_something";
 		int start_inline = main_prog[1].indexOf(test_inline) + main_prog[0].length();
 		int end_inline = main_prog[1].indexOf(test_inline) + test_inline.length() +
 				main_prog[0].length();
-		testDOMLine.addInstance(test_inline, start_inline, end_inline);
-		if (testDOMLine.getInstElement().
+		testDOMLine.addInlineInst(test_inline, start_inline, end_inline);
+		if (testDOMLine.getInlineInst("do_something").
 				getAttributeValue(DOMInlineInstance.LINEINST_ATTR)
 				== test_inline) {
-			System.out.println("passed...DOMLine.addInstance/getInstElement");
+			System.out.println("passed...DOMLine.addInstance/getInlineInst");
 		} else {
-			System.out.println("failed...DOMLine.addInstance/getInstElement");
-		} */
+			System.out.println("failed...DOMLine.addInstance/getInlineInst");
+		} 
 	}
 	
 /*	public static void testDOMInlineInstance() {

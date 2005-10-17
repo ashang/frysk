@@ -1,5 +1,16 @@
 2005-10-17  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMInlineInstance.java: comment out of import of java.util.vector
+		added Element myElement
+		added DOMInlineInstance(Element) constructor
+		added getInlineInstance(Element) method
+		
+	* dom/DOMLine.java: reformatted
+	
+	* dom/DOMTestDOMFrysk.java: added tests for above new methods
+
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMSource.java: use getText/setText to get/set the text of a line
 	
 	* dom/DOMLine.java: use getText/setText methods to get/set the text of a line
@@ -8,7 +19,6 @@
 	* dom/DOMTestDOMFrysk.java: added getStartLine/getEndLine methods
 								use setText/getText methods as above
 			
-
 2005-10-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFunction.java: renamed from DOMInlineFunc
