@@ -5,6 +5,7 @@
 	* observers/ProcForkObserver.java (update): Added special filter
 	to check for the new process's parent.
 	* ActionPool.java: Added actions for fork and clone observer.
+	(initActions): Fixed exception on right click.
 
 2005-10-14  Sami Wagiaalla  <swagiaal@redhat.com>
 

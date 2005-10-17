@@ -461,7 +461,7 @@ public class ActionPool {
 		this.processObservers.add(this.addExitingObserver);
 
 		this.addCloneObserver = new AddCloneObserver();
-		this.processObservers.add(this.addForkObserver);
+		this.processObservers.add(this.addCloneObserver);
 
 		this.addSyscallObserver = new AddSyscallObserver();
 		this.threadObservers.add(this.addSyscallObserver);
