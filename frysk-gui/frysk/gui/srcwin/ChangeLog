@@ -1,3 +1,12 @@
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMLine.java: fix addTag method
+	
+	* dom/DOMTag.java: redo constructors
+	
+	* dom/DOMTestDOMFrysk.java: add tests for DOMTag methods getType,
+				getStart, getEnd
+
 2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PreferenceWindow.java (setupButtons): Show toolbar now defaults to false.

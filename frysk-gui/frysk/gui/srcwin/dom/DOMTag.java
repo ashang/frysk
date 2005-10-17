@@ -63,25 +63,24 @@ public class DOMTag {
 	 * The name of the DOM Element
 	 */
 	public static final String TAG_NODE = "tag";
+	private Element myElement;
 	
-	public static DOMTag createDOMTag(String type, int start, int end){
+/*	public DOMTag(String type, int start, int end){
 		Element tag = new Element(TAG_NODE);
 		tag.setAttribute(TYPE_ATTR, type);
 		tag.setAttribute(START_ATTR, ""+start);
 		tag.setAttribute(END_ATTR, ""+end);
-		return new DOMTag(tag);
-	}
+		this.myElement = tag;
+	}    */
 	
-	public static DOMTag createDOMTag(DOMLine parent, String type, int start, int end){
+	public DOMTag(DOMLine parent, String type, int start, int end){
 		Element tag = new Element(TAG_NODE);
 		tag.setAttribute(TYPE_ATTR, type);
 		tag.setAttribute(START_ATTR, ""+start);
 		tag.setAttribute(END_ATTR, ""+end);
 		parent.getElement().addContent(tag);
-		return new DOMTag(tag);
+		this.myElement = tag;
 	}
-	
-	private Element myElement;
 	
 	/**
 	 * Creates a new DOMTag using the given data as it's Element. data much be of name "tag"

@@ -397,13 +397,13 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("\nfailed...DOMLine.getLineNum");
 		}
-		if (testDOMLine.getLength() == main_prog[1].length()) {
+		if (testDOMLine.getLength() == main_prog[line_no-1].length()) {
 			System.out.println("passed...DOMLine.getLength");
 		} else {
 			System.out.println("failed...DOMLine.getLength");
 		}
 
-		if (testDOMLine.getText() == main_prog[1]) {
+		if (testDOMLine.getText() == main_prog[line_no-1]) {
 			System.out.println("passed...DOMLine.getText");
 		} else {
 			System.out.println("failed...DOMLine.getText");
@@ -470,13 +470,39 @@ public class DOMTestDOMFrysk {
 		int end_inline = main_prog[1].indexOf(test_inline) + test_inline.length() +
 				main_prog[0].length();
 		testDOMLine.addInlineInst(test_inline, start_inline, end_inline);
-		if (testDOMLine.getInlineInst("do_something").
+		if (testDOMLine.getInlineInst(test_inline).
 				getAttributeValue(DOMInlineInstance.LINEINST_ATTR)
 				== test_inline) {
 			System.out.println("passed...DOMLine.addInstance/getInlineInst");
 		} else {
 			System.out.println("failed...DOMLine.addInstance/getInlineInst");
-		} 
+		}
+		
+		String tag_type = "inline";
+		DOMTag tag = new DOMTag(testDOMLine, tag_type,
+				main_prog[1].indexOf(test_inline),
+				main_prog[1].indexOf(test_inline) + test_inline.length());
+		//testDOMLine.addTag(tag);
+		System.out.println("passed...DOMLine.addtag");
+		
+		if (tag.getType() == tag_type) {
+			System.out.println("\npassed...DOMTag.getType");
+		} else {
+			System.out.println("\nfailed...DOMTag.getType");
+		}
+		
+		if (tag.getStart() == main_prog[1].indexOf(test_inline)) {
+			System.out.println("passed...DOMTag.getStart");
+		} else {
+			System.out.println("failed...DOMTag.getStart");
+		}
+		
+		if (tag.getEnd() == 
+			main_prog[1].indexOf(test_inline) + test_inline.length()) {
+			System.out.println("passed...DOMTag.getEnd");
+		} else {
+			System.out.println("failed...DOMTag.getEnd");
+		}
 	}
 	
 /*	public static void testDOMInlineInstance() {

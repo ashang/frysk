@@ -312,7 +312,11 @@ public class DOMLine {
 	 * add a tag element to this line
 	 */
 	public void addTag(DOMTag tag) {
-		this.myElement.addContent(tag.getElement());
+		Element line_tag = new Element(DOMTag.TAG_NODE);
+		line_tag.setAttribute(DOMTag.TYPE_ATTR, tag.getType());
+		line_tag.setAttribute(DOMTag.START_ATTR, ""+tag.getStart());
+		line_tag.setAttribute(DOMTag.END_ATTR, ""+tag.getEnd());
+		this.myElement.addContent(line_tag);
 	}
 
 	/**
