@@ -86,10 +86,10 @@ public class DOMTestDOMFrysk {
 		printDOM();
 	}
 
-	/**
+	/**************************************************************************
 	 * tests the DOMFrysk Class methods
 	 * 
-	 */
+	 *************************************************************************/
 	public static void testDOMFrysk() {
 
 		pc = new BigInteger("25");
@@ -146,10 +146,10 @@ public class DOMTestDOMFrysk {
 		}
 	}
 	
-	/**
+	/**************************************************************************
 	 * tests the DOMImage Class methods
 	 * 
-	 */
+	 *************************************************************************/
 	public static void testDOMImage() {
 		DOMImage testDOMImage = dom.getImage("test_image_2");
 		if (testDOMImage.getName() == "test_image_2") {
@@ -257,9 +257,9 @@ public class DOMTestDOMFrysk {
 		}
 	}
 	
-	/**
+	/**************************************************************************
 	 * test the DOMFunction class methods
-	 */
+	 **************************************************************************/
 	public static void testDOMFunction() {
 		
 		final String func_name = "do_something";
@@ -298,6 +298,20 @@ public class DOMTestDOMFrysk {
 			System.out.println("passed...DOMFunction.getEnd");
 		} else {
 			System.out.println("failed...DOMFunction.getEnd");
+		}
+		
+		int start_line = testDOMFunction.getStartLine();
+		if (start_line == 1) {
+			System.out.println("passed...DOMFunction.getStartLine");
+		} else {
+			System.out.println("failed...DOMFunction.getStartLine");
+		}
+		
+		int end_line = testDOMFunction.getEndLine();
+		if (end_line == 3) {
+			System.out.println("passed...DOMFunction.getEndLine");
+		} else {
+			System.out.println("failed...DOMFunction.getEndLine");
 		}
 	}
 
@@ -349,7 +363,7 @@ public class DOMTestDOMFrysk {
 		int line_ctr = 0;
 		while (line_iter.hasNext()) {
 			Element line = (Element) line_iter.next();
-			String linetext = line.getAttributeValue(DOMSource.TEXT_ATTR);
+			String linetext = line.getText();
 			if (linetext == main_prog[line_ctr]) {
 				line_ctr++;
 			} else {
@@ -360,7 +374,7 @@ public class DOMTestDOMFrysk {
 		System.out.println("passed...DOMSource.addLine/getLines");
 
 		final DOMLine testDOMLine = testDOMSource.getLine(2);
-		if (testDOMLine.getElement().getAttributeValue(DOMSource.TEXT_ATTR) == main_prog[1]) {
+		if (testDOMLine.getElement().getText() == main_prog[1]) {
 			System.out.println("passed...DOMSource.getLine/DOMLine.getElement");
 		} else {
 			System.out.println("failed...DOMSource.getLine/DOMLine.getElement");

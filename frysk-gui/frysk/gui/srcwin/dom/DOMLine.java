@@ -205,15 +205,15 @@ public class DOMLine {
 	 * @return the text of this line
 	 */
 	public String getText() {
-		return this.myElement.getAttributeValue(DOMSource.TEXT_ATTR);
+		return this.myElement.getText();
 	}
 	
 	/**
 	 * set the text for this line to the incoming string
 	 */
 	public void setText(String text) {
-		this.myElement.setAttribute(DOMSource.TEXT_ATTR, text);
-		this.myElement.setAttribute(LENGTH_ATTR, text);
+		this.myElement.setText(text);
+		this.myElement.setAttribute(LENGTH_ATTR, Integer.toString(text.length()));
 	}
 	
 	/**

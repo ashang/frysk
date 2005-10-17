@@ -1,5 +1,16 @@
 2005-10-17  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMSource.java: use getText/setText to get/set the text of a line
+	
+	* dom/DOMLine.java: use getText/setText methods to get/set the text of a line
+						fix setText method bug for setting length
+	
+	* dom/DOMTestDOMFrysk.java: added getStartLine/getEndLine methods
+								use setText/getText methods as above
+			
+
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMFunction.java: renamed from DOMInlineFunc
 	
 	* dom/DOMImage.java: removed INLINENAME_ATTR

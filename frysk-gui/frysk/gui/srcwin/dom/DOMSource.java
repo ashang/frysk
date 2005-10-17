@@ -146,11 +146,11 @@ public class DOMSource {
 			BigInteger pc) {
 		
 		Element sourceLineElement = new Element(LINENO_NODE);
+		sourceLineElement.setText(text);
 		sourceLineElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineno));
 		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
 		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset_index));
 		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(text.length()));
-		sourceLineElement.setAttribute(TEXT_ATTR, text);
 		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, is_executable.toString());
 		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, is_inline.toString());
 		sourceLineElement.setAttribute(DOMLine.HAS_BREAK_ATTR, has_break.toString());
