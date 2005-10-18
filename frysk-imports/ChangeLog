@@ -12,6 +12,7 @@
 	tests/gcc_4_0_15/Makefile.am,
 	tests/werror/Makefile.am: Substituted EXTRA_DIST  for DIST_SOURCES to
 	aleviate automake warnings.
+	* /tests/anoncall/Makefile.am: Fixed typo.
 	
 2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
 

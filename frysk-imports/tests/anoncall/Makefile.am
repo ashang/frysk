@@ -3,7 +3,7 @@
 
 # Passes with gcc 4.0.1.
 
-EXTRA_DIST = $(srcdir)/Anon.jaa 
+EXTRA_DIST = $(srcdir)/Anon.java 
 
 all-local: TEST
 TEST:

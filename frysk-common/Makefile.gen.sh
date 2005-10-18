@@ -138,7 +138,6 @@ lib$1_a_LIBADD = $1.o
 $1.o: $1.jar
 lib$1_a_SOURCES = 
 lib$1_so_SOURCES =
-$1_so_SOURCES = 
 $1_db_SOURCES =
 CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
 lib$1.so: lib$1.a
