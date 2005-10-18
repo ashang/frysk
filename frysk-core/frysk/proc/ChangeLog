@@ -1,3 +1,8 @@
+2005-10-18  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestModify.java: New platform-independent test that
+	verifies memory modification.
+
 2005-10-11  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxTask.java: Use .performZombied.
