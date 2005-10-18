@@ -1,3 +1,4 @@
+
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, Red Hat Inc.
@@ -41,32 +42,13 @@
  * Location of a variable.
  */
 
-package frysk.lang;
-
-import inua.eio.*;
-
-class Location
-{
-  ArrayByteBuffer _location;
-  int _index;
-
-  Location(long capacity)  {
-    this(new ArrayByteBuffer(capacity));
+  package frysk.lang;
+  public class BaseTypes {
+    public static int baseTypeChar = 0;
+    public static int baseTypeShort = 1;
+    public static int baseTypeInteger = 2;
+    public static int baseTypeLong = 3;
+    public static int baseTypeFloat = 4;
+    public static int baseTypeDouble = 5;
+    public static int baseTypeLongDouble = 6;
   }
-
-  Location(ArrayByteBuffer location) {
-    this(location, 0);
-  }
-
-  Location(ArrayByteBuffer location, int index) {
-    _location = location;
-    _index = 0;
-  }
-
-  public ByteBuffer getByteBuffer() { return _location;}
-  int getInt() { return _location.getInt(_index); }
-  int getShort() { return _location.getShort(_index); }
-
-  void putInt(int value)  {_location.putInt(_index, value);}
-  void putShort(short value)  {_location.putShort(_index, value);}
-}

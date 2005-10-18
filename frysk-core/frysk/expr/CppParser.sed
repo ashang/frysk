@@ -4,7 +4,8 @@ s:\(import antlr.LLkParser;\):/* \1 */:
 s:\(import antlr.MismatchedTokenException;\):/* \1 */:
 s:\(import antlr.SemanticException;\):/* \1 */:
 s:\(import java.util.Hashtable;\):/* \1 */:
-1535 s:};:}:
+s:\(import frysk.lang.*;\):/* \1 */:
+1537 s:};:}:
 
 72 s:\(private String sInputExpression;\):/* \1 */:
 78 s:\(sInputExpression = sInput;\):/* \1 */:

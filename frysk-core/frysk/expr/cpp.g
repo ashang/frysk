@@ -79,6 +79,8 @@
 // version and license this file solely under the GPL without
 // exception.
     package frysk.expr;
+
+    import frysk.lang.*;
   }
 
   class CppParser extends Parser;
@@ -731,3 +733,23 @@
 	UnsignedSuffix            //{_ttype = UnsignedHexConst;}
       )*                         {_ttype = HEXADECIMALINT;}   
   ;
+
+  /*---------------------------------------------------------------------------------------
+  * The Tree Parser/Walker (evaluator)
+  *--------------------------------------------------------------------------------------*/
+
+  class CppTreeParser extends TreeParser;
+
+  options {
+    importVocab=CppParser;
+  }
+  
+  expr returns [Variable returnVar=null] 
+  { Variable v1, v2;}
+  :
+    #(PLUS  v1=expr v2=expr)  {returnVar = v1.getType().add(v1, v2);  }
+  |
+    i:DECIMALINT  {returnVar = IntegerType.newIntegerVariable(
+				(new IntegerType(4, Endian.BIG_ENDIAN)), (int)Integer.parseInt(i.getText()));}
+  ;
+

@@ -1,3 +1,4 @@
+
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, Red Hat Inc.
@@ -38,35 +39,16 @@
 // exception.
 
 /**
- * Location of a variable.
+ * Exception thrown when some operation is not defined for a type. 
+ * This happens when some operator opr is applied to objects of some type T but opr is not defined on T.
  */
 
 package frysk.lang;
+  public class OperationNotDefinedException
+  {
+    String sExceptionString;
 
-import inua.eio.*;
+    OperationNotDefinedException(String str) { sExceptionString = str; }
 
-class Location
-{
-  ArrayByteBuffer _location;
-  int _index;
-
-  Location(long capacity)  {
-    this(new ArrayByteBuffer(capacity));
+    public String toString() { return sExceptionString; }
   }
-
-  Location(ArrayByteBuffer location) {
-    this(location, 0);
-  }
-
-  Location(ArrayByteBuffer location, int index) {
-    _location = location;
-    _index = 0;
-  }
-
-  public ByteBuffer getByteBuffer() { return _location;}
-  int getInt() { return _location.getInt(_index); }
-  int getShort() { return _location.getShort(_index); }
-
-  void putInt(int value)  {_location.putInt(_index, value);}
-  void putShort(short value)  {_location.putShort(_index, value);}
-}

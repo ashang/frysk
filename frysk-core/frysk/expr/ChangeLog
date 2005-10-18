@@ -1,3 +1,16 @@
+2005-10-18  Tarun Khanna  <tkhanna@redhat.com>
+
+	* cpp.g:  Added expression evaluator (tree walker). 
+	* Makefile.inc:	Added commands to generate new expression evaluator
+	source files.(CppParserTokenTypes.java, CppParserTokenTypes.java, 
+	CppTreeParser.java).
+	* CppTreeParser.sed:  new sed file for commenting extra imports in 
+	CppTreeParser.java.
+	* CppLexer.sed:	modified.
+	* CppTreeParserTokenTypes.sed:	new sed file.
+	* CppParserTokenTypes.sed: new sed file.
+	* RunCppParser.java:  Added the expression evaluator code.
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.inc (frysk/expr/CppParser.java)

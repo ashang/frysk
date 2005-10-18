@@ -39,7 +39,43 @@
 
 package frysk.lang;
 
-class Type
+/**
+ * Holds the type of a Variable and also defines possible operations. 
+ * Classes extended from this type will have to define the individual operation that are defined on those types.
+ * e.g. addition operation may be defined for the integer type.
+ */
+
+public abstract class Type
 {
+  protected int _size;
+  protected int _endian;
+  protected int _typeId;
+  protected String _name;
+
+  Type(int size, int endian, int typeId)
+  {
+    this(size, endian, typeId, "");
+  }
+
+  Type(int size, int endian, int typeId, String name)
+  {
+    _size = size;
+    _endian = endian;
+    _typeId = typeId;
+    _name = name;
+  }
+
+  int getSize() { return _size;}
+  int getEndian() { return _endian;}
+  int getTypeId() { return _typeId;}
+  String getName() { return _name;}
+
+  public String toString() {return _name;}
+
+
+  public abstract Variable add(Variable var1, Variable var2); 
+  public abstract Variable newShortVariable(ShortType type, Variable val);
+  public abstract Variable newIntegerVariable(IntegerType type, Variable val);
+  public abstract Variable newVariable(Type type, Variable val);
 
 }

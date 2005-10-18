@@ -44,6 +44,7 @@ import antlr.collections.AST;
 import jline.*;
 import java.util.*;
 import antlr.*;
+import frysk.lang.*;
 
 /**
  * A Test framework for the C++ expression parser with tab auto completion.
@@ -260,13 +261,22 @@ public class RunCppParser
 	    String sInput;
 	    try {
 	      sInput = consReader.readLine("$");
+	      sInput += (char)3;
+
+	      CppLexer lexer = new CppLexer(new StringReader(sInput));
+	      CppParser parser = new CppParser(lexer);
+	      parser.start();
+
+	      CommonAST t = (CommonAST)parser.getAST();
+	      CppTreeParser treeParser = new CppTreeParser();
+	      Variable result = treeParser.expr(t);
+	      System.out.println(result.getInt());
 	    }
 	    catch (IOException ioe) {
 	      throw (new IOException(ioe.getMessage() + 
 		    "I/O exception in readLine"));
 
 	    }
-	    //sInput += (char)3;
 
 	    System.out.println(sInput);
 	}

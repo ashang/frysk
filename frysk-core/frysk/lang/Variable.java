@@ -39,9 +39,42 @@
 
 package frysk.lang;
 
-class Variable
+/**
+ * Stores the type and location of a variable
+ */
+
+public class Variable
 {
-    String name;
-    Type type;
-    Location location;
+    protected Type _type;
+    protected Location _location;
+    
+    public Variable(Type type)	{
+      this(type, (new Location(type.getSize())));
+    }
+
+    public Variable(Type type, Location location)
+    {
+       _type = type;
+       _location = location;
+    }
+
+
+    public Location getLocation()
+    {
+      return _location;
+    }
+
+    public Type getType()
+    {
+      return _type;
+    }
+
+    public int getShort() {
+      return _location.getShort();
+    }
+
+    public int getInt() {
+      return _location.getInt();
+    }
+
 }

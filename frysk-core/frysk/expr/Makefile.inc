@@ -39,28 +39,54 @@
 
 GEN_SOURCES += frysk/expr/CppParser.java
 GEN_SOURCES += frysk/expr/CppLexer.java
+GEN_SOURCES += frysk/expr/CppTreeParser.java
 GEN_SOURCES += frysk/expr/CppParserTokenTypes.java
+GEN_SOURCES += frysk/expr/CppTreeParserTokenTypes.java
 
 BUILT_SOURCES += frysk/expr/CppParser.java
+BUILT_SOURCES += frysk/expr/CppTreeParser.java
 BUILT_SOURCES += frysk/expr/CppLexer.java
 BUILT_SOURCES += frysk/expr/CppParserTokenTypes.java
+BUILT_SOURCES += frysk/expr/CppTreeParserTokenTypes.java
 
 CLEANFILES += CppParser.java CppParser.tmp
+CLEANFILES += CppTreeParser.java CppTreeParser.tmp
 CLEANFILES += CppLexer.java CppLexer.tmp
 CLEANFILES += CppParserTokenTypes.java CppParserTokenTypes.tmp
+CLEANFILES += CppTreeParserTokenTypes.java CppTreeParserTokenTypes.tmp
 
 frysk/expr/CppLexer.java: frysk/expr/CppParser.java
+frysk/expr/CppTreeParser.java: frysk/expr/CppParser.java
 frysk/expr/CppParserTokenTypes.java: frysk/expr/CppParser.java
+frysk/expr/CppTreeParserTokenTypes.java: frysk/expr/CppParser.java
 frysk/expr/CppParser.java: \
 		$(srcdir)/frysk/expr/cpp.g \
 		$(srcdir)/frysk/expr/CppLexer.sed \
+		$(srcdir)/frysk/expr/CppTreeParser.sed \
+		$(srcdir)/frysk/expr/CppTreeParserTokenTypes.sed \
+		$(srcdir)/frysk/expr/CppParserTokenTypes.sed \
 		$(srcdir)/frysk/expr/CppParser.sed
 	antlr $(srcdir)/frysk/expr/cpp.g
-	mv CppParserTokenTypes.java frysk/expr/CppParserTokenTypes.java
 	mv CppParserTokenTypes.txt frysk/expr/CppParserTokenTypes.txt
+	mv CppTreeParserTokenTypes.txt frysk/expr/CppParserTokenTypes.txt
+
 	sed -f $(srcdir)/frysk/expr/CppLexer.sed < CppLexer.java > CppLexer.tmp
 	rm CppLexer.java
 	mv CppLexer.tmp frysk/expr/CppLexer.java
+
+	sed -f $(srcdir)/frysk/expr/CppParserTokenTypes.sed < CppParserTokenTypes.java > CppParserTokenTypes.tmp
+	rm CppParserTokenTypes.java
+	mv CppParserTokenTypes.tmp frysk/expr/CppParserTokenTypes.java
+
 	sed -f $(srcdir)/frysk/expr/CppParser.sed < CppParser.java > CppParser.tmp
 	mv CppParser.tmp frysk/expr/CppParser.java
+
+	sed -f $(srcdir)/frysk/expr/CppTreeParser.sed < CppTreeParser.java > CppTreeParser.tmp
+	rm CppTreeParser.java
+	mv CppTreeParser.tmp frysk/expr/CppTreeParser.java
+
+	sed -f $(srcdir)/frysk/expr/CppTreeParserTokenTypes.sed < CppTreeParserTokenTypes.java > CppTreeParserTokenTypes.tmp
+	rm CppTreeParserTokenTypes.java
+	mv CppTreeParserTokenTypes.tmp frysk/expr/CppTreeParserTokenTypes.java
+
 	echo $(srcdir)

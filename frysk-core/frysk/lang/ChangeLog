@@ -1,3 +1,15 @@
+2005-10-18  Tarun Khanna  <tkhanna@redhat.com>
+
+	* Type.java: Modified file to define an abstract Type system.
+	* Location.java:  Modified file for storing variable location
+	* Variable.java:  Modified file to represent Variables.
+	* IntegerType.java: New.
+	* ShortType.java: New.
+	* BaseTypes.java: New.
+	* Endian.java:	New.
+	* TypeTest.java:  New.
+	* OperationNotDefinedException.java:  New.
+
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Move com/redhat/fedora/frysk/proc/ to frysk/lang/.
