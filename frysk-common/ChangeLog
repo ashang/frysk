@@ -1,3 +1,7 @@
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.rules: Added TestRunner.sh to EXTRA_DIST.
+
 2005-10-14  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.rules: Added an EXTRA_DIST variable and set it to hold
