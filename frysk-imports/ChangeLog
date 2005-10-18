@@ -1,3 +1,13 @@
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* jargs/Makefile.am, 
+	jline/Makefile.am, 
+	tests/anoncall/Makefile.am,
+	tests/cniinner/Makefile.am, 
+	tests/gcc_4_0_15/Makefile.am,
+	tests/werror/Makefile.am: Substituted EXTRA_DIST  for DIST_SOURCES to
+	aleviate automake warnings.
+	
 2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/gcc_4_0_15/Makefile.am: Changed rule to PASS, will no longer
@@ -17,7 +27,7 @@
 	tests/gcc_4_0_15/Makefile.am, 
 	tests/werror/Makefile.am: Added DIST_SOURCES variable to include the jargs sources in the 
 	distribution.
-	
+
 2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/gcc_4_0_15: Added.

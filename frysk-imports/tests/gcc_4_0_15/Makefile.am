@@ -2,7 +2,7 @@
 
 all-local: PASS
 
-DIST_SOURCES = $(srcdir)/JNICrash.java
+EXTRA_DIST = $(srcdir)/JNICrash.java
 
 PASS:
 	gcj -I$(srcdir)/.. -I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) $(GTK_JAVA_LIBS) -I$(datadir)/glib0.2.jar --main=gcc_4_0_15.JNICrash $(srcdir)/JNICrash.java

@@ -2,7 +2,7 @@ jargssrc=$(srcdir)/src/jargs/
 
 all-local: jargs.jar
 
-DIST_SOURCES = $(jargssrc)/gnu/CmdLineParser.java \
+EXTRA_DIST= $(jargssrc)/gnu/CmdLineParser.java \
 			   $(jargssrc)/examples/gnu/*.java \
 			   $(jargssrc)/test/gnu/*.java
 
