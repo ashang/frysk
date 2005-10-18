@@ -86,28 +86,7 @@ public class DOMLine {
 	 */
 	public static final String NUMBER_ATTR = "number";
 
-	/*
-	 * public static DOMLine createDOMLine(int lineNum, int offset, String text,
-	 * boolean executable){ Element line = new Element(LINE_NODE);
-	 * line.setText(text); line.setAttribute(NUMBER_ATTR, ""+lineNum);
-	 * line.setAttribute(OFFSET_ATTR, ""+offset);
-	 * line.setAttribute(EXECUTABLE_ATTR, ""+executable);
-	 * 
-	 * return new DOMLine(line); }
-	 * 
-	 * public static DOMLine createDOMLine(DOMSource parent, int lineNum, int
-	 * offset, String text, boolean executable){ Element line = new
-	 * Element(LINE_NODE); line.setText(text); line.setAttribute(NUMBER_ATTR,
-	 * ""+lineNum); line.setAttribute(OFFSET_ATTR, ""+offset);
-	 * line.setAttribute(EXECUTABLE_ATTR, ""+executable);
-	 * parent.getElement().addContent(line);
-	 * 
-	 * return new DOMLine(line); }
-	 */
-
 	private Element myElement;
-
-	private Vector inlines;
 
 	/**
 	 * Creates a new DOMLine using the given data as it's element. data must be
@@ -117,7 +96,6 @@ public class DOMLine {
 	 */
 	public DOMLine(Element data) {
 		this.myElement = data;
-		this.inlines = new Vector();
 	}
 
 	/**
@@ -152,7 +130,7 @@ public class DOMLine {
 	 * @return Whether or not this line contains inlined code
 	 */
 	public boolean hasInlinedCode() {
-		// return
+
 		// Boolean.getBoolean(this.myElement.getAttributeValue(HAS_INLINE_ATTR));
 		// //for some reason the original Boolean.getBoolean did not work
 		// as advertised, so went back to the old tried and true
@@ -232,13 +210,7 @@ public class DOMLine {
 	 * @return An iterator to all the of tags contained on this line of code
 	 */
 	public Iterator getTags() {
-		Iterator iter = this.myElement.getChildren(DOMTag.TAG_NODE).iterator();
-		Vector v = new Vector();
-
-		while (iter.hasNext())
-			v.add(new DOMTag((Element) iter.next()));
-
-		return v.iterator();
+		return this.myElement.getChildren(DOMTag.TAG_NODE).iterator();
 	}
 
 	/**
@@ -297,7 +269,8 @@ public class DOMLine {
 	}
 
 	public Iterator getInlines() {
-		return this.inlines.iterator();
+		return this.myElement.getChildren(DOMInlineInstance.LINEINST_NODE).
+				iterator();
 	}
 
 	/*
@@ -356,8 +329,6 @@ public class DOMLine {
 			String name = inst
 					.getAttributeValue(DOMInlineInstance.LINEINST_ATTR);
 			if (name == inst_name) {
-				//DOMInlineInstance instance = new DOMInlineInstance(
-					//	(Element) inst);
 				return inst;
 			}
 		}

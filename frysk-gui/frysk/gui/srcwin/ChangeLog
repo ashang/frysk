@@ -1,3 +1,10 @@
+2005-10-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMLine.java: modded getTags/getInLines
+						removed unused variables
+						
+	* dom/DOMTestDOMFrysk.java: added tests for the above
+	
 2005-10-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMLine.java: fix addTag method

@@ -482,8 +482,29 @@ public class DOMTestDOMFrysk {
 		DOMTag tag = new DOMTag(testDOMLine, tag_type,
 				main_prog[1].indexOf(test_inline),
 				main_prog[1].indexOf(test_inline) + test_inline.length());
-		//testDOMLine.addTag(tag);
 		System.out.println("passed...DOMLine.addtag");
+				
+		Iterator iter_gettags = testDOMLine.getTags();
+		while (iter_gettags.hasNext()) {
+			Element gettags = (Element) iter_gettags.next();
+			if (gettags.getAttributeValue(DOMTag.TYPE_ATTR) 
+					== tag_type) {
+				System.out.println("passed...DOMLine.getTags");
+			} else {
+				System.out.println("failed...DOMLine.getTags");
+			}
+		}
+		
+		Iterator iter_getinlines = testDOMLine.getInlines();
+		while (iter_getinlines.hasNext()) {
+			Element getinlines = (Element) iter_getinlines.next();
+			if (getinlines.getAttributeValue(DOMInlineInstance.LINEINST_ATTR)
+					== test_inline) {
+				System.out.println("passed...DOMLine.getInlines");
+			} else {
+				System.out.println("failed...DOMLine.getInlines");
+			}
+		}
 		
 		if (tag.getType() == tag_type) {
 			System.out.println("\npassed...DOMTag.getType");
@@ -503,6 +524,10 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMTag.getEnd");
 		}
+		
+		
+		
+		
 	}
 	
 /*	public static void testDOMInlineInstance() {
