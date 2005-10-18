@@ -1,3 +1,7 @@
+2005-10-18  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* modify/modify.c: New test for memory modification.
+
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/zombie.c (del_proc): Use access to check that the task has
