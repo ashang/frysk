@@ -1,6 +1,9 @@
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.rules: Added TestRunner.sh to EXTRA_DIST.
+	* Makefile.gen.sh: Added .hxx to .c and .cxx suffixes so that .hxx files are
+	now also distributed. Removed line in jar_print function that generated
+	automake warnings.
 
 2005-10-14  Igor Foox  <ifoox@redhat.com>
 

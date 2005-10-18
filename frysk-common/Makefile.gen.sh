@@ -109,8 +109,9 @@ echo_PROGRAMS ()
 has_main ()
 {
     case "$1" in
-	*.java ) grep ' main[ ]*[(]' $1 > /dev/null 2>&1 ;;
+		*.java ) grep ' main[ ]*[(]' $1 > /dev/null 2>&1 ;;
         *.c|*.cxx ) grep -e '^main[( ]' -e ' main[( ]' $1 > /dev/null 2>&1 ;;
+		* ) false ;; 
     esac
 }
 
@@ -264,7 +265,7 @@ done
 
 
 
-for suffix in .cxx .c ; do
+for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
     find ${dirs} \
 	-name "*${suffix}" -print \
