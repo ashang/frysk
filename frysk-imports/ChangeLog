@@ -1,3 +1,10 @@
+2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/gcc_4_0_15/Makefile.am: Changed rule to PASS, will no longer
+	run test once test has passed.
+	* tests/JNICrash.java: Changed so that program will not hand if test
+	passes.
+
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.am: Added EggTrayIcon/eggtrayicon.h to EXTRA_DIST. Added

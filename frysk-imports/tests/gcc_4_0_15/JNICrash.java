@@ -17,7 +17,7 @@ public class JNICrash {
 		b.insertText("This is another test\nThat will hopefully break");
 		b.createMark("TestMark", b.getLineIter(1), true);
 		
-		Gtk.main();
+		// We don't want to enter the main loop, either it will die by this point or it won't
 	}
 
 }
