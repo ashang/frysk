@@ -1,6 +1,10 @@
 # The idea is simple, validate that this works before trying to build
 # anything else.
 
+DIST_SOURCES = $(srcdir)/native.cxx \
+			  $(srcdir)/Parent.java \
+			  $(srcdir)/Child.java
+
 all-local: PASS
 
 PASS:

@@ -1,3 +1,16 @@
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Added EggTrayIcon/eggtrayicon.h to EXTRA_DIST. Added
+	include/linux.ptrace.h to noinst_HEADERS so it's included in the
+	distribution.
+	* jargs/Makefile.am, 
+	jline/Makefile.am, 
+	tests/anoncall/Makefile.am, 
+	tests/cniinner/Makefile.am,
+	tests/gcc_4_0_15/Makefile.am, 
+	tests/werror/Makefile.am: Added DIST_SOURCES variable to include the jargs sources in the 
+	distribution.
+	
 2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/gcc_4_0_15: Added.

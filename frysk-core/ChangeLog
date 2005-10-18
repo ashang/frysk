@@ -1,3 +1,9 @@
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Appended all .fig/png files as well as frysk/expr/cpp.g and
+	frysk/expr/*.sed to the EXTRA_DIST variable so that they are added to the
+	distribution.
+	
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Re-order GEN_CLASSPATH and GEN_GCJ_LDADD so that

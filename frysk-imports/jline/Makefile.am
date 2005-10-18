@@ -2,6 +2,9 @@ jlinesrc=$(srcdir)/src/jline/
 
 all-local: jline.jar
 
+DIST_SOURCES = $(jlinesrc)/*.java \
+			   $(jlinesrc)/*.properties
+
 CLEANFILES = jline.jar jline/*
 
 jline.jar: $(jlinesrc)/*.java

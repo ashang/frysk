@@ -73,3 +73,9 @@ GEN_GCJ_LDADD += $(GLIB_JAVA_LIBS)
 GEN_GCJ_LDADD += $(VTE_JAVA_LIBS)
 
 LDFLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
+
+EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \
+				$(srcdir)/frysk/gui/images/*.png \
+				$(srcdir)/frysk/gui/images/*.jpg \
+			 	$(srcdir)/frysk/gui/common/messages.properties
+

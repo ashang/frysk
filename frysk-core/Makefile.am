@@ -63,4 +63,10 @@ noinst_PROGRAMS += prog/x86isa/x86regs
 prog_x86isa_x86modify_SOURCES = prog/x86isa/x86modify.S
 noinst_PROGRAMS += prog/x86isa/x86modify
 
+EXTRA_DIST +=  	$(srcdir)/frysk/model/doc-files/*.fig \
+				$(srcdir)/frysk/proc/doc-files/*.fig \
+				$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png \
+				$(srcdir)/frysk/expr/cpp.g \
+				$(srcdir)/frysk/expr/*.sed
+
 RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite

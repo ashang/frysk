@@ -3,6 +3,8 @@
 
 # Passes with gcc 4.0.1.
 
+DIST_SOURCES = $(srcdir)/Anon.java 
+
 all-local: TEST
 TEST:
 	gcj -g --main=Anon $(srcdir)/Anon.java -o Anon

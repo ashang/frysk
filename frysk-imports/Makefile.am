@@ -63,9 +63,14 @@ EggTrayIcon_libEggTrayIcon_so_LDADD += $(CAIRO_JAVA_LIBS)
 
 noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
 EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
-                                       EggTrayIcon/libEggTrayIcon.c 
+                                       EggTrayIcon/libEggTrayIcon.c \
+									   EggTrayIcon/eggtrayicon.h
 
 EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(GLIB_JAVA_CFLAGS)
 
 GEN_CLASSPATH += jargs.jar
 GEN_GCJ_LDADD += libjargs.a
+
+# we need to get this into the distribution
+noinstdir = $(srcdir)
+noinst_HEADERS = include/linux.ptrace.h

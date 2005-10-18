@@ -1,7 +1,12 @@
-2005-10-13    <moller@mollerware.com>
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Appended all glade/png/jpg/properties files to the 
+	EXTRA_DIST variable so that they get included in the distribution.
+
+2005-10-13  Chris Moller  <moller@mollerware.com>
 
 	* frysk/frysk-common/Makefile.rules: fixed a cd that was catting a
-	CWD into an awkward place
+	CWD into an awkward place.
 
 2005-10-03  Igor Foox  <ifoox@redhat.com>
 

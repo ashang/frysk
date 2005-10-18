@@ -5,6 +5,8 @@ all-local: FAIL
 # 4.0.1-5) does not abort, and consequently this test is marked as a
 # FAIL.  The build system contains hacks to get around this.
 
+DIST_SOURCES = $(srcdir)/Werror.java
+
 FAIL: Werror.java Makefile
 	if gcj -Werror -Wall -c -o /dev/null $(srcdir)/Werror.java ; \
 	then touch FAIL ; \
