@@ -1,3 +1,8 @@
+2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/gcc_4_0_15/Makefile.am: Fixed test so that it will fail
+	properly.
+
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* jargs/Makefile.am, 
