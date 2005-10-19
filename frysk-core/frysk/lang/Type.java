@@ -65,15 +65,16 @@ public abstract class Type
     _name = name;
   }
 
-  int getSize() { return _size;}
-  int getEndian() { return _endian;}
-  int getTypeId() { return _typeId;}
-  String getName() { return _name;}
+  public int getSize() { return _size;}
+  public int getEndian() { return _endian;}
+  public int getTypeId() { return _typeId;}
+  public String getName() { return _name;}
 
   public String toString() {return _name;}
 
 
   public abstract Variable add(Variable var1, Variable var2); 
+  public abstract Variable assign(Variable var1, Variable var2); 
   public abstract Variable newShortVariable(ShortType type, Variable val);
   public abstract Variable newIntegerVariable(IntegerType type, Variable val);
   public abstract Variable newVariable(Type type, Variable val);

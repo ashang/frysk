@@ -8,7 +8,11 @@
     }
 
     public static Variable newShortVariable(ShortType type, short val)  {
-      Variable returnVar = new Variable(type);
+      return newShortVariable(type, "temp", val);
+    }
+    
+    public static Variable newShortVariable(ShortType type, String text, short val)  {
+      Variable returnVar = new Variable(type, text);
       returnVar.getLocation().putShort(val);
       return returnVar;
     }
@@ -18,13 +22,13 @@
     }
 
     public Variable newShortVariable(ShortType type, Variable val) {
-      Variable returnVar = new Variable(type);
+      Variable returnVar = new Variable(type, val.getText());
       returnVar.getLocation().putShort((short)(val.getShort()));
       return returnVar;
     }
 
     public Variable newIntegerVariable(IntegerType type, Variable val) {
-      Variable returnVar = new Variable(type);
+      Variable returnVar = new Variable(type, val.getText());
       returnVar.getLocation().putInt(val.getShort());
       return returnVar;
     }
@@ -36,6 +40,13 @@
 	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() + newVariable(var1.getType(), var2).getLocation().getShort()));
       else
 	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() + var2.getLocation().getShort()));
+    }
+
+    public Variable assign(Variable var1, Variable var2)  {
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort)
+	  ?  (short)(newVariable(var1.getType(), var2).getShort())
+	  : (short)(var2.getShort()));
+      return var1;
     }
 
     /*ShortType(int size, ShortType var)  {

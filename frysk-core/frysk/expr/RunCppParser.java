@@ -259,26 +259,30 @@ public class RunCppParser
 	    consReader.addCompletor(new ParserCompletor());
 	
 	    String sInput;
+	    Variable result;
+	    Map symTab = new HashMap();
 	    try {
 	      sInput = consReader.readLine("$");
-	      sInput += (char)3;
+	      while(!(sInput.equalsIgnoreCase("exit")))
+	      {
+		sInput += (char)3;
 
-	      CppLexer lexer = new CppLexer(new StringReader(sInput));
-	      CppParser parser = new CppParser(lexer);
-	      parser.start();
+		CppLexer lexer = new CppLexer(new StringReader(sInput));
+		CppParser parser = new CppParser(lexer);
+		parser.start();
 
-	      CommonAST t = (CommonAST)parser.getAST();
-	      CppTreeParser treeParser = new CppTreeParser();
-	      Variable result = treeParser.expr(t);
-	      System.out.println(result.getInt());
+		CommonAST t = (CommonAST)parser.getAST();
+		CppTreeParser treeParser = new CppTreeParser(4, 2, symTab);
+		result = treeParser.expr(t);
+		consReader.printString(String.valueOf(result.getInt()));
+		sInput = consReader.readLine("$");
+	      }
 	    }
 	    catch (IOException ioe) {
 	      throw (new IOException(ioe.getMessage() + 
 		    "I/O exception in readLine"));
 
 	    }
-
-	    System.out.println(sInput);
 	}
 	catch(IOException ioe){
 	  System.err.println("IO Exception: " + ioe);

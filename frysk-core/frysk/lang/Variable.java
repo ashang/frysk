@@ -47,14 +47,20 @@ public class Variable
 {
     protected Type _type;
     protected Location _location;
+    protected String _text;
     
     public Variable(Type type)	{
-      this(type, (new Location(type.getSize())));
+      this(type, "temp");
     }
 
-    public Variable(Type type, Location location)
+    public Variable(Type type, String text)	{
+      this(type, text, (new Location(type.getSize())));
+    }
+
+    public Variable(Type type, String text, Location location)
     {
        _type = type;
+       _text = text;
        _location = location;
     }
 
@@ -69,6 +75,10 @@ public class Variable
       return _type;
     }
 
+    public String getText() {
+      return _text;
+    }
+
     public int getShort() {
       return _location.getShort();
     }
@@ -77,4 +87,15 @@ public class Variable
       return _location.getInt();
     }
 
+    public void putShort(short val) {
+      _location.putShort(val);
+    }
+
+    public void putInt(int val) {
+      _location.putInt(val);
+    }
+
+    public String toString()  {
+      return _text;
+    }
 }

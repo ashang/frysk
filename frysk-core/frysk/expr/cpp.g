@@ -81,6 +81,7 @@
     package frysk.expr;
 
     import frysk.lang.*;
+    import java.util.*;
   }
 
   class CppParser extends Parser;
@@ -186,7 +187,7 @@
    *  Notice that the operator can by any assignment operator.
    */
   assignment_expression! throws TabException 
-  :	
+  :
     (c:conditional_expression
       (a:assign_op   r:remainder_expression)?)
     {
@@ -743,13 +744,40 @@
   options {
     importVocab=CppParser;
   }
+
+  {
+    IntegerType intType;
+    ShortType shortType;
+    Map symTab;
+    public CppTreeParser(int intSize, int shortSize, Map _symTab) {
+      this();
+      symTab = _symTab;
+      intType = new IntegerType(intSize, Endian.BIG_ENDIAN);
+      shortType = new ShortType(shortSize, Endian.LITTLE_ENDIAN);
+    }
+  }
+
   
   expr returns [Variable returnVar=null] 
   { Variable v1, v2;}
   :
     #(PLUS  v1=expr v2=expr)  {returnVar = v1.getType().add(v1, v2);  }
   |
-    i:DECIMALINT  {returnVar = IntegerType.newIntegerVariable(
-				(new IntegerType(4, Endian.BIG_ENDIAN)), (int)Integer.parseInt(i.getText()));}
+    i:DECIMALINT  {returnVar = IntegerType.newIntegerVariable(intType, Integer.parseInt(i.getText()));}
+  |
+    #(ASSIGNEQUAL v1=expr v2=expr)  {
+      if(v1.getType().getTypeId() != v2.getType().getTypeId())
+	v1 = v2.getType().newVariable(v2.getType(), v1);
+      v1.getType().assign(v1, v2);
+      returnVar = v1;
+      symTab.put(v1.getText(), v1);
+    }
+  |
+    ident:IDENT  {
+      if((returnVar = ((Variable)symTab.get(ident.getText()))) == null) {
+	returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
+	symTab.put(ident.getText(), returnVar);
+      }
+    }
   ;
 

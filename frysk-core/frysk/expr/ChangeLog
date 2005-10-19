@@ -1,3 +1,13 @@
+2005-10-19  Tarun Khanna  <tkhanna@redhat.com>
+
+	* CppLexer.sed: added some more comment patterns.
+	* CppParser.sed:  same..
+	* CppParserTokenTypes.sed:  same..
+	* CppTreeParserTokenTypes.sed:	same...
+	* RunCppParser.java:  added a minor symbol table support.
+	* cpp.g:  added some more rules to the evaluator and 
+	symbol table support.
+
 2005-10-18  Tarun Khanna  <tkhanna@redhat.com>
 
 	* cpp.g:  Added expression evaluator (tree walker). 

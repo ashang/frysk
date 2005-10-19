@@ -5,7 +5,8 @@ s:\(import antlr.MismatchedTokenException;\):/* \1 */:
 s:\(import antlr.SemanticException;\):/* \1 */:
 s:\(import java.util.Hashtable;\):/* \1 */:
 s:\(import frysk.lang.*;\):/* \1 */:
-1537 s:};:}:
+s:\(import java.util.\*;\):/* \1 */:
+1538 s:};:}:
 
 72 s:\(private String sInputExpression;\):/* \1 */:
 78 s:\(sInputExpression = sInput;\):/* \1 */:
