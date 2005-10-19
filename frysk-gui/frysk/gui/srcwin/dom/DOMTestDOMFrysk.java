@@ -288,6 +288,22 @@ public class DOMTestDOMFrysk {
 		}
 		System.out.println("passed...DOMFunction.getLines");
 		
+		Iterator getline_iter = testDOMFunction.getLinesIter();
+		int line_ctr = 0;
+		boolean failed = false;
+		while (getline_iter.hasNext()) {
+			Element get_line = (Element) getline_iter.next();
+			if (get_line.getText() != do_something[line_ctr]) {
+				failed = true;
+			}
+			line_ctr++;
+		}
+		if (failed) {
+			System.out.println("failed...DOMFunction.getLineIter");
+		} else {
+			System.out.println("passed...DOMFunction.getLineIter");
+		}
+		
 		if (testDOMFunction.getStart() == inline_start[0]) {
 			System.out.println("passed...DOMFunction.getStart");
 		} else {
@@ -524,8 +540,6 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMTag.getEnd");
 		}
-		
-		
 		
 		
 	}

@@ -1,3 +1,9 @@
+2005-10-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMFunction.java: added getLineIter method
+	
+	* dom/DOMTextDOMFrysk.java: added test for above
+	
 2005-10-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMLine.java: modded getTags/getInLines

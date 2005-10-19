@@ -130,16 +130,9 @@ public class DOMFunction {
 	/**
 	 * @return An iterator over the lines of code contained within the inlined block
 	 */
-//	public Iterator getLines(){
-//		return this.myElement.getChildren().iterator();
-		/* Iterator iter = this.myElement.getChildren().iterator();
-		Vector v = new Vector();
-		
-		while(iter.hasNext())
-			v.add(new DOMLine((Element) iter.next()));
-		
-		return v.iterator(); 
-	} */
+	public Iterator getLinesIter(){
+		return this.myElement.getChildren().iterator();
+	}
 	
 	/**
 	 * get the lines associated with the function
@@ -159,6 +152,11 @@ public class DOMFunction {
 		}
 		return lines;
 	}
+	
+	/**
+	 * returns the JDOM Element associated with this Function
+	 * @return JDOM Element
+	 */
 	protected Element getElement(){
 		return this.myElement;
 	}
