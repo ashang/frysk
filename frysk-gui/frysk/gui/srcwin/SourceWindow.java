@@ -665,7 +665,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void createToolBar(){
 		ToolBar toolbar = (ToolBar) this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME);
-
+		
 		toolbar.insert((ToolItem) this.run.createToolItem(), 0);
 		toolbar.insert((ToolItem) this.step.createToolItem(), 1);
 		toolbar.insert((ToolItem) this.next.createToolItem(), 2);
@@ -679,7 +679,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		toolbar.insert((ToolItem) this.stackDown.createToolItem(), 10);
 		toolbar.insert((ToolItem) this.stackBottom.createToolItem(), 11);
 		
-		this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
+		toolbar.showAll();
+		toolbar.setToolTips(true);
 	}
 	
 	/**
@@ -713,6 +714,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		t.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND), Messages.getString("SourceWindow.23"), Messages.getString("SourceWindow.24")); //$NON-NLS-1$ //$NON-NLS-2$
 		t.setTip(this.glade.getWidget(SourceWindow.GOTO_BUTTON), Messages.getString("SourceWindow.25"), Messages.getString("SourceWindow.46")); //$NON-NLS-1$ //$NON-NLS-2$
 		t.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
+		t.enable();
 	}
 	
 	/**
@@ -894,6 +896,15 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void doStackUp(){
 		System.out.println("Stack up");
+		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
+		
+		int selected = stackList.getSelection().getSelectedRows()[0].getIndices()[0];
+		
+		// Can't move above top stack
+		if(selected == 0)
+			return;
+		
+		stackList.getSelection().select(stackList.getModel().getIter(""+(selected-1)));
 	}
 	
 	/**
@@ -902,6 +913,20 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void doStackDown(){
 		System.out.println("Stack down");
+		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
+		
+		int selected = stackList.getSelection().getSelectedRows()[0].getIndices()[0];
+	
+		int max = 0;
+		TreeIter iter = stackList.getModel().getIter(""+max);
+		while(iter != null)
+			iter = stackList.getModel().getIter(""+max++);
+		
+		// Can't move below bottom stack
+		if(selected == max - 2)
+			return;
+		
+		stackList.getSelection().select(stackList.getModel().getIter(""+(selected+1)));
 	}
 	
 	/**
@@ -910,6 +935,14 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 */
 	private void doStackBottom(){
 		System.out.println("Stack bottom");
+		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
+		
+		int max = 0;
+		TreeIter iter = stackList.getModel().getIter(""+max);
+		while(iter != null)
+			iter = stackList.getModel().getIter(""+max++);
+		
+		stackList.getSelection().select(stackList.getModel().getIter(""+(max-2)));
 	}
 
 	public void selectionChangedEvent(TreeSelectionEvent arg0) {
@@ -918,6 +951,10 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		PCLocation selected = (PCLocation) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
 		
+		((Container) this.view.getParent()).remove(this.view);
+		this.view = new SourceViewWidget(this.prefs);
+		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.view.load(selected);
+		this.view.showAll();
 	}
 }

@@ -1,3 +1,16 @@
+2005-10-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (load): Changed formatting.
+	* SourceBuffer.java (loadFile): Removed old redundant lines,
+	switched back to SimpleParser due to bug #1503.
+	* SourceWindow.java (createToolbar): Added toolbar.enable().
+	(createSearchBar): Added call to enable tooltips.
+	(doStackUp): Implemented core logic of functions, now works.
+	(doStackDown): Ditto.
+	(doStackBottom): Ditto.
+	(selectionChangedEvent): Added code to refresh SourceViewWidget.
+	* cparser/CDTParser.java: Added debug output.
+
 2005-10-19  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMFunction.java: added getLineIter method

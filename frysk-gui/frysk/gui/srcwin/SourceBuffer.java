@@ -67,7 +67,7 @@ import frysk.gui.srcwin.PreferenceConstants.ID;
 import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
 import frysk.gui.srcwin.PreferenceConstants.Search;
-import frysk.gui.srcwin.cparser.CDTParser;
+import frysk.gui.srcwin.cparser.SimpleParser;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -200,32 +200,30 @@ public class SourceBuffer extends TextBuffer {
 		lineParser = new SourceLineReader(filename);
 		
 		SourceCodeLine line = lineParser.getNextLine();
+		
 		while (line != null){
-			if(this.getLineCount() == 9){
-				line.addInlineLine("Test");
-			}
 			
 			// append new row
 			TextIter endOfText = this.getEndIter();
-			
-			endOfText = this.getEndIter();
 			this.insertText(endOfText, line.getSource());
 			
 			endOfText = this.getEndIter();
 			this.insertText(("\n"));
-
+			
 			// add line to vector
 			lines.add(line);
 			
 			line = lineParser.getNextLine();
-
 		}
-
-		this.varList = new VariableList(this.getLineCount());
 		
-		this.staticParser = new CDTParser();
+		this.varList = new VariableList(this.getLineCount());
+
+		
+		this.staticParser = new SimpleParser();
 		try {
+			System.out.println("Parsing");
 			this.staticParser.parse(filename, this);
+			System.out.println("Done parsing");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

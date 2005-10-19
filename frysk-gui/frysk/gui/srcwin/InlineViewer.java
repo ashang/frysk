@@ -101,7 +101,7 @@ public class InlineViewer extends SourceViewWidget {
 	public void load(PCLocation current){
 	    if(current.getDepth() == 1)
             this.showEllipsis = false;
-        
+	    
 		try {
 			this.buf.loadFile(current.getFilename());
 		} catch (Exception e){
