@@ -80,12 +80,28 @@ public class DOMInlineInstance {
 	}
 	
 	/**
+	 * set the starting character of the inlined code
+	 */
+	public void setStart(int start) {
+			this.myElement.setAttribute(DOMFunction.START_ATTR, 
+					Integer.toString(start));
+			this.start = start;
+	}
+	/**
 	 * @return The start of the inlined instance as a character offset from the start of the file
 	 */
 	public int getStart(){
 		return this.start;
 	}
 	
+	/**
+	 * set the ending character of the inlined code
+	 */
+	public void setEnd(int end) {
+			this.myElement.setAttribute(DOMFunction.END_ATTR, 
+					Integer.toString(end));
+			this.end = end;
+	}
 	/**
 	 * @return The end of the instance as a character offset from the start of the file
 	 */

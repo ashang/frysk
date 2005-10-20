@@ -315,13 +315,35 @@ public class DOMLine {
 	}
 
 	/**
+	 * get the DOMInlineInstance associated with this instance
+	 * 
+	 * @param inst
+	 *            is the name of the instance to retrieve
+	 * @return the DOMInlineInstance of this instance
+	 */
+	public DOMInlineInstance getInlineInst(String inst_name) {
+
+		Iterator iter = this.myElement.getChildren().iterator();
+		while (iter.hasNext()) {
+			Element inst = (Element) iter.next();
+			String name = inst
+					.getAttributeValue(DOMInlineInstance.LINEINST_ATTR);
+			if (name == inst_name) {
+				DOMInlineInstance val = new DOMInlineInstance((Element) inst);
+				return val;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * get the JDOM Element associated with this instance
 	 * 
 	 * @param inst
 	 *            is the name of the instance to retrieve
 	 * @return the JDOM Element of this instance
 	 */
-	public Element getInlineInst(String inst_name) {
+	public Element getInlineElement(String inst_name) {
 
 		Iterator iter = this.myElement.getChildren().iterator();
 		while (iter.hasNext()) {
@@ -334,7 +356,6 @@ public class DOMLine {
 		}
 		return null;
 	}
-
 	/**
 	 * get the inline instance of this line
 	 * 

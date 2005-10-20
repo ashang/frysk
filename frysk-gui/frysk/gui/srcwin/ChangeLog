@@ -1,3 +1,11 @@
+2005-10-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMInlineInstance.java: added setStart/setEnd methods
+	
+	* dom/DOMLine.java: added getInlineInst method
+	
+	* dom/DOMTestDOMFrysk.java: added tests for the above
+
 2005-10-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (load): Changed formatting.

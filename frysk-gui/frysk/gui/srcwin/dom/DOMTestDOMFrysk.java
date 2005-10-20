@@ -82,6 +82,7 @@ public class DOMTestDOMFrysk {
 		testDOMFunction();
 		testDOMsource();
 		testDOMLine();
+		testDOMInlineInstance();
 		System.out.println("\n\n");
 		printDOM();
 	}
@@ -486,7 +487,7 @@ public class DOMTestDOMFrysk {
 		int end_inline = main_prog[1].indexOf(test_inline) + test_inline.length() +
 				main_prog[0].length();
 		testDOMLine.addInlineInst(test_inline, start_inline, end_inline);
-		if (testDOMLine.getInlineInst(test_inline).
+		if (testDOMLine.getInlineElement(test_inline).
 				getAttributeValue(DOMInlineInstance.LINEINST_ATTR)
 				== test_inline) {
 			System.out.println("passed...DOMLine.addInstance/getInlineInst");
@@ -540,20 +541,40 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMTag.getEnd");
 		}
-		
-		
 	}
 	
-/*	public static void testDOMInlineInstance() {
+	/**
+	 * Test the DOMInlineInstance class
+	 *
+	 */
+	
+	public static void testDOMInlineInstance() {
 		
+		final String inst = "do_something";
 		final int line_no = 2;
+		final int start_index = 10;
+		final int end_index = 20;
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
 		final DOMSource testDOMSource = testDOMImage
 				.getSource("test_source1.1");
 		final DOMLine testDOMLine = testDOMSource.getLine(line_no);
-		final DOMInlineInstance  testDOMInst = testDOMLine.getInstElement();
+		final DOMInlineInstance testDOMInlineInstance =
+			testDOMLine.getInlineInst(inst);
+
+		testDOMInlineInstance.setStart(start_index);
+		if (testDOMInlineInstance.getStart() == start_index) {
+			System.out.println("\npassed...DOMInlineInstance.setStart/getStart");
+		} else {
+			System.out.println("\nfailed...DOMInlineInstance.setStart/getStart");
+		}
 		
-	} */
+		testDOMInlineInstance.setEnd(end_index);
+		if (testDOMInlineInstance.getEnd() == end_index) {
+			System.out.println("passed...DOMInlineInstance.setEnd/getEnd");
+		} else {
+			System.out.println("failed...DOMInlineInstance.setEnd/getEnd");
+		}
+	}
 
 	/**
 	 * Print out the DOM in XML format
