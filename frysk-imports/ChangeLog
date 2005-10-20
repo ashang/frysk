@@ -1,3 +1,8 @@
+2005-10-20  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am, configure.ac: Add tests/samename.
+	* tests/samename/SameName.java, tests/samename/Makefile.am: New.
+
 2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/gcc_4_0_15/Makefile.am: Fixed test so that it will fail

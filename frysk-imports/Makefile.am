@@ -49,7 +49,8 @@ SUBDIRS = \
 	tests/cniinner \
 	tests/anoncall \
 	tests/werror \
-	tests/gcc_4_0_15
+	tests/gcc_4_0_15 \
+	tests/samename
 
 solib_DATA += EggTrayIcon/libEggTrayIcon.so
 noinst_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
