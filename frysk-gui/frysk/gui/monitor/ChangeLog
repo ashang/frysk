@@ -1,3 +1,8 @@
+2005-10-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* MainWindow.java: moved tear off tab code into its own class.
+	
+
 2005-10-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TaskStatusWidget.java (TaskStatusWidget): Removed the thread entry

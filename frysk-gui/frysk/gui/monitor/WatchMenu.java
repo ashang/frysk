@@ -113,7 +113,7 @@ public class WatchMenu extends Menu{
 	}
 	
 	/**
-	 * Singilton pattern. Get the menu from here
+	 * Singleton pattern. Get the menu from here
 	 * and add it to any watch window or add more
 	 * items to it.
 	 * */

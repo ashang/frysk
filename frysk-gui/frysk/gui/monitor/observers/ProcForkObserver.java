@@ -13,7 +13,7 @@ import frysk.proc.Proc;
 public class ProcForkObserver extends ObserverRoot {
 	
 	private Proc expectedParent;
-
+	
 	public ProcForkObserver(Proc parent) {
 		super("ProcForkObserver", "Fires when a proc forks");
 		this.expectedParent = parent;

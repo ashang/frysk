@@ -43,26 +43,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import org.gnu.gdk.DragAction;
-import org.gnu.gdk.ModifierType;
 import org.gnu.glade.LibGlade;
-import org.gnu.gtk.DestDefaults;
-import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
-import org.gnu.gtk.TargetEntry;
-import org.gnu.gtk.TargetFlags;
-import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
-import org.gnu.gtk.event.DeleteDragDataEvent;
-import org.gnu.gtk.event.DragMotionEvent;
-import org.gnu.gtk.event.DragOriginListener;
-import org.gnu.gtk.event.DragTargetListener;
-import org.gnu.gtk.event.DropDragEvent;
-import org.gnu.gtk.event.EndDragEvent;
-import org.gnu.gtk.event.LeaveDragDestinationEvent;
-import org.gnu.gtk.event.ReceiveDragDataEvent;
-import org.gnu.gtk.event.RequestDragDataEvent;
-import org.gnu.gtk.event.StartDragEvent;
 
 import frysk.gui.FryskGui;
 
@@ -83,68 +66,7 @@ public class MainWindow extends Window implements Saveable{
 			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e);
 		}
 		
-		this.noteBook = (Notebook) glade.getWidget("noteBook");
-				
-		final TargetEntry[] entries = new TargetEntry[1];
-		entries[0] = new TargetEntry("tap", TargetFlags.NO_RESTRICTION, 0);
-		
-		this.noteBook.setDragSource(ModifierType.BUTTON1_MASK, entries , DragAction.COPY);
-		this.noteBook.setDragDestination(DestDefaults.ALL, entries, DragAction.COPY);
-		
-		this.noteBook.addListener(new DragOriginListener(){
-
-			public void dragStarted(StartDragEvent event) {
-				System.out.println("dragStarted");
-			}
-
-			public void dragEnded(EndDragEvent event) {
-				System.out.println("dragEnded at " + event.getDragContext().getDestination());
-				if(event.getDragContext().getDestination() == null){
-					Window window = new Window();
-					Notebook newNotebook = new Notebook();
-//					noteBook.getPage(0).reparent(newNotebook);
-					Widget widget = noteBook.getPage(noteBook.getCurrentPage());
-					noteBook.removePage(0);
-					newNotebook.appendPage(widget, new Label("test"));
-					noteBook.setDragSource(ModifierType.BUTTON1_MASK, entries , DragAction.COPY);
-					newNotebook.setDragDestination(DestDefaults.ALL, entries, DragAction.COPY);
-					window.add(newNotebook);
-					window.realize();
-					window.showAll();
-				}
-			}
-
-			public void dataRequested(RequestDragDataEvent arg0) {
-				System.out.println("dataRequested");				
-			}
-
-			public void dataDeleted(DeleteDragDataEvent arg0) {
-				System.out.println("dataDeleted");				
-			}
-			
-		});
-		
-		this.noteBook.addListener(new DragTargetListener(){
-
-			public void destinationLeft(LeaveDragDestinationEvent arg0) {
-				System.out.println("----destinationLeft---");
-			}
-
-			public boolean dropped(DropDragEvent arg0) {
-				System.out.println("----dropped---");
-				return false;
-			}
-
-			public void dataReceived(ReceiveDragDataEvent arg0) {
-				 System.out.println("----dataReceived---");				
-			}
-
-			public boolean motionOcurred(DragMotionEvent arg0) {
-				System.out.println("motionOcurred");
-				return false;
-			}
-			
-		});
+		this.noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle());
 
 		this.showAll();
 	}
