@@ -52,10 +52,6 @@
 	* configure.ac: Added checks for Java-gnome libraries and added
 	tests/gcc_4_0_15 to AC_CONFIG_FILES.
 
-2005-10-14  Igor Foox  <ifoox@redhat.com>
-
-	* rpm-specs/*: Updated all spec files to conform to rawhide specs.
-
 2005-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* EggTrayIcon/libEggTrayIcon.c: changed to using getGObjectHandle().
@@ -63,31 +59,6 @@
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/anoncall/Makefile.am: Do not expect the test to fail.
-
-2005-09-27  Igor Foox  <ifoox@redhat.com>
-
-	* rpm-specs/frysk-gtk2.spec: Updated to gtk2-2.8.4.
-
-2005-09-26  Igor Foox  <ifoox@redhat.com>
-	
-	* rpm-specs/frysk-glib2.spec: Updated to glib2-2.8.2.
-	
-	* rpm-specs/frysk-cairo-java.spec, 
-	rpm-specs/frysk-cairo.spec,
-	rpm-specs/frysk-fontconfig.spec, 
-	rpm-specs/frysk-glib2.spec, 
-	rpm-specs/frysk-glib-java.spec, 
-	rpm-specs/frysk-gtk2.spec, 
-	rpm-specs/frysk-libglade-java.spec, 
-	rpm-specs/frysk-libgtk-java.spec,
-	frysk-pango.spec: Changed optional installation prefix from /opt to
-	/opt/frysk.
-
-	* rpm-specs/frysk-cairo-java.spec, 
-	rpm-specs/frysk-libgtk-java.spec,
-	rpm-specs/frysk-glib-java.spec, 
-	rpm-specs/frysk-libglade-java.spec:Conditionalized the 'frysk-' prefix.
-	Removed unnecessary patches. Did some other minor clean-ups.
 
 2005-09-26  Igor Foox  <ifoox@redhat.com>
 
@@ -123,27 +94,6 @@
 	* Makefile.am: Changed reference to libjgjni-0.1 to libglibjni.
 	Change JGCOMMON variable to GLIB_JAVA.
 
-2005-09-15  Igor Foox  <ifoox@redhat.com>
-
-	* rpm-specs/frysk-libglade-java.spec: Updated to require sources to
-	reflect move to glib-java.  Bumped version to 2.12.0.  Bumped required
-	libgtk-java version to 2.8.0.   Removed call to autogen.sh as it was 
-	redundant.   Removed hardcoding of /opt/share/doc.
-	* rpm-specs/frysk-libgtk-java.spec: Updated to require glib-java
-	instead of jg-common.  Updated sources to reflect move to glib-java.
-	Bumped version to 2.8.0.  Bumped required cairo-java version to 1.0.0.
-	Removed call to autogen.sh as it was redundant.  Removed %{changelog}
-	section (redundant with this ChangeLog).  Removed hardcoding of 
-	/opt/share/doc.
-	* rpm-specs/frysk-cairo-java.spec: Updated to require glib-java instead
-	of jg-common.  Updated sources to reflect move to glib-java.  Bumped 
-	version	to 1.0.0.  Bumped required cairo version to 1.0.0.  Removed call
-	to autogen.sh as it was redundant.  Rmoved hardcoding of /opt/share/doc.
-	* rpm-specs/frysk-jg-common.spec: Renamed to frysk-glib-java.spec. 
-	Removed hardcoding of /opt/share/doc.  Updated to use new glib-java
-	sources instead of jg-common. Bumped version to 0.2.  Removed call
-	to autogen.sh as it was redundant.
-
 2005-09-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* configure.ac (CDTPARSER_JAR): Changed path to /opt/share/java.
@@ -154,12 +104,6 @@
 
 	* configure.ac: Added CDTPARSER_JAR
 
-2005-09-14  Igor Foox  <ifoox@redhat.com>
-
-	* rpm-specs/frysk-cairo-java.spec, rpm-specs/frysk-libglade-java.spec,
-	rpm-specs/frysk-libgtk-java.spec: Updated rpm specs to include patches
-	to pkg-config dependencies.
- 
 2005-09-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EggTrayIcon_libEggTrayIcon_so_LDADD)
@@ -220,26 +164,9 @@
 	* configure.ac: Add AM_PROG_CXX.
 	* autogen.sh: Pass util/ to Makefile.gen.sh.
 
-2005-09-07 Igor Foox <ifoox@redhat.com> 
-	*  rpm-specs/frysk-libgtk-java.spec: Added patch for Boxed to supress 
-	un-needed debug output.
-
-2005-09-06  Igor Foox <ifoox@redhat.com>
-	* rpm-specs/frysk-libgtk-java.spec: Added patch for TreeModel constructor 
-	with a specified root.
-
 2005-09-02  Igor Foox  <ifoox@redhat.com>
 
-	* rpm-specs/frysk-cairo.spec, frysk-fontconfig.spec, frysk-glib2.spec,
-	frysk-gtk2.spec, frysk-pango.spec: Updated GTK+ stack specs with frysk
-	related changes.
-
-2005-09-02  Igor Foox  <ifoox@redhat.com>
-
-	* rpm-specs, rpm-specs/frysk-cairo.spec, frysk-fontconfig.spec, 
-	frysk-glib2.spec, frysk-gtk2.spec, frysk-pango.spec, 
-	frysk-jg-common.spec, frysk-cairo-java.spec,frysk-libgtk-java.spec, 
-	frysk-libglade-java.spec:  New files.
+	* rpm-specs: New directory.
 
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
