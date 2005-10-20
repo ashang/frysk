@@ -1,5 +1,7 @@
 2005-10-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TearOffNotebook.java : new file.
+	(dragEnded): removed code that requires a new javagnome patch.
 	* MainWindow.java: moved tear off tab code into its own class.
 	
 

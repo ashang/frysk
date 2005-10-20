@@ -90,7 +90,8 @@ public class TearOffNotebook extends Notebook {
 					TearOffNotebook newNotebook = new TearOffNotebook(window);
 
 					final Widget widget = getPage(getCurrentPage());
-					final Label  label  = new Label(getTabLabelText(widget));
+//					final Label  label  = new Label(getTabLabelText(widget));
+					final Label  label  = new Label("new");
 					removePage(getCurrentPage());
 					newNotebook.appendPage(widget, label);
 			
