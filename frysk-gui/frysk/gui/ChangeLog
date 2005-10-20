@@ -1,3 +1,7 @@
+2005-10-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* test/SourceWinRunner.java (main): Changed layout of test data.
+
 2005-10-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Some cosmotics and lables to procpop and

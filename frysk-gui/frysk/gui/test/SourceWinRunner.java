@@ -61,12 +61,12 @@ public class SourceWinRunner {
 		
 		PCLocation loc = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
 		PCLocation loc2 = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
-		loc.addNextScope(loc2);
+		loc.addInlineScope(loc2);
 		PCLocation loc3 = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
-		loc2.addNextScope(loc3);
+		loc2.addInlineScope(loc3);
 		PCLocation loc4 = new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
 		loc3.addInlineScope(loc4);
-		loc3.addNextScope(new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
+		loc.addNextScope(new PCLocation("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
 		
 		s.populateStackBrowser(loc);
 		

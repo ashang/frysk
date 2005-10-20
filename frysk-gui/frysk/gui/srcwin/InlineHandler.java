@@ -95,8 +95,6 @@ public class InlineHandler{
         else 
             scopeDiff = 0;
         
-        System.out.println(scopeDiff);
-        
 		if(verboseMode){
 			// Code here to create a new instance of InlineViewer and
 			// append it to the lowest child
@@ -106,12 +104,11 @@ public class InlineHandler{
              * Base case #1: No levels of inline code are being shown 
 			 */
 			if(lastVisible == null){
-				if(top.inlineScope == null)
+				if(!top.hasInlineScope())
 					return false;
 				
-                System.out.println("making first scope");
 				lastVisible = new InlineViewer(myPrefs);
-				lastVisible.load(top.inlineScope);
+				lastVisible.load(top.getInlineScope());
                 firstVisible = lastVisible;
 				parent.setSubscopeAtCurrentLine(lastVisible);
 			}
@@ -123,11 +120,11 @@ public class InlineHandler{
 			else if(scopeDiff < numLevels){
 				
                 // Do a quick check to make sure there are more levels to show...
-                if(lastVisible.getScope().inlineScope == null)
+                if(!lastVisible.getScope().hasInlineScope())
                     return false;
                 
 				lastVisible.nextLevel = new InlineViewer(myPrefs);
-				lastVisible.nextLevel.load(lastVisible.getScope().nextScope);
+				lastVisible.nextLevel.load(lastVisible.getScope().getInlineScope());
 				lastVisible.setSubscopeAtCurrentLine(lastVisible.nextLevel);
 				lastVisible = lastVisible.nextLevel;
 			}
@@ -137,12 +134,10 @@ public class InlineHandler{
 			 */
 			else{
                 // Check to see that we _can_ move down
-                if(lastVisible.getScope().inlineScope == null)
+                if(!lastVisible.getScope().hasInlineScope())
                     return false;
                 
 				InlineViewer current = firstVisible;
-                
-                System.out.println(current.prevLevel);
                 
                 while(current != lastVisible){
                     current.moveDown();
@@ -155,7 +150,7 @@ public class InlineHandler{
                 }
                 
                 // load the new scope in the last frame
-                current.load(current.getScope().inlineScope);
+                current.load(current.getScope().getInlineScope());
                 current.prevLevel.setSubscopeAtCurrentLine(current);
                 
                 // we want to return false here so the last level doesn't think it's expanded
@@ -198,27 +193,10 @@ public class InlineHandler{
                 firstVisible = null;
                 lastVisible = null;
                 
-                InlineViewer prev = null;
-                InlineViewer current = firstVisible;
-                PCLocation currentLocation = top.inlineScope;
+                PCLocation currentLocation = top.getInlineScope();
+                 
+                showScopes(1, depth, currentLocation);
                 
-                for(int i = 1; i <= depth; i++){
-                    current = new InlineViewer(myPrefs);
-                    current.load(currentLocation);
-                    
-                    // If this is the first one, add it to the parent
-                    if(i == 1){
-                        parent.setSubscopeAtCurrentLine(current);
-                        firstVisible = current;
-                    }
-                    else
-                        prev.setSubscopeAtCurrentLine(current);
-                    
-                    prev = current;
-                    currentLocation = currentLocation.inlineScope;
-                }
-                
-                lastVisible = current;
                 parent.showAll();                
             }
             /*
@@ -236,30 +214,10 @@ public class InlineHandler{
                 firstVisible = null;
                 lastVisible = null;
                 
-                InlineViewer prev = null;
-                InlineViewer current = firstVisible;
                 PCLocation currentLocation = top.inlineScope;
                 
-                for(int i = 1; i < startDepth; i++)
-                    currentLocation = currentLocation.inlineScope;
+                showScopes(startDepth, depth, currentLocation);
                 
-                for(int i = startDepth; i <= depth; i++){
-                    current = new InlineViewer(myPrefs, i == startDepth);
-                    current.load(currentLocation);
-                    
-                    // If this is the first one, add it to the parent
-                    if(i == startDepth){
-                        parent.setSubscopeAtCurrentLine(current);
-                        firstVisible = current;
-                    }
-                    else
-                        prev.setSubscopeAtCurrentLine(current);
-                    
-                    prev = current;
-                    currentLocation = currentLocation.inlineScope;
-                }
-                
-                lastVisible = current;
                 parent.showAll(); 
             }
 		}
@@ -281,4 +239,31 @@ public class InlineHandler{
 		return true;
 	}
 
+	
+	private static void showScopes(int startDepth, int endDepth, PCLocation topScope){
+		
+		for(int i = 1; i < startDepth; i++)
+            topScope = topScope.inlineScope;
+		
+		InlineViewer current = null;
+		InlineViewer prev = null;
+		
+		for(int i = startDepth; i <= endDepth; i++){
+            current = new InlineViewer(myPrefs, i == startDepth);
+            current.load(topScope);
+            
+            // If this is the first one, add it to the parent
+            if(i == startDepth){
+                parent.setSubscopeAtCurrentLine(current);
+                firstVisible = current;
+            }
+            else
+                prev.setSubscopeAtCurrentLine(current);
+            
+            prev = current;
+            topScope = topScope.inlineScope;
+        }
+		
+		lastVisible = current;
+	}
 }

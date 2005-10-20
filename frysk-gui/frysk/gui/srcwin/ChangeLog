@@ -1,3 +1,21 @@
+2005-10-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* PCLocation.java (getInlineScope): Added.
+	(getParentScope): Ditto.
+	(hasInlineScope): Ditto.
+	* InlineHandler.java (moveDown): Removed debugging output, refactored to
+	use above refactorings to PCLocation, fixed bug with next scope being
+	loaded instead of inline scope.
+	(showScopes): Added.
+	(moveUp): Refactored code out into showScopes, 
+	* SourceViewWidget.java: Created hasInlineCode member.
+	(load): Now sets hasInlineCode.
+	(showMargins): Inline code mark is now only drawn if hasInlineCode is set.
+	* InlineViewer.java (load): Now sets hasInlineCode.
+	(moveDown): Now properly loads next inline level, not next level on stack.
+	(showMargin): Inline code mark not drawn if no code present (identical to
+	fix in SourceViewWidget.java).
+
 2005-10-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMTag.java: added setType/setStart/setEnd methods

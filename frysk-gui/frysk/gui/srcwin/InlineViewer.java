@@ -110,6 +110,7 @@ public class InlineViewer extends SourceViewWidget {
 		
 		this.setCurrentLine(current.getLineNum());
 		this.scope = current;
+		this.hasInlineCode = this.scope.hasInlineScope();
 		
 		if(showEllipsis){
 			Label l = null;
@@ -145,7 +146,7 @@ public class InlineViewer extends SourceViewWidget {
         
         this.remove(this.nextLevel);
         this.clearSubscopeAtCurrentLine();
-        this.load(this.scope.nextScope);
+        this.load(this.scope.getInlineScope());
     }
 
 	public PCLocation getScope() {
@@ -289,7 +290,7 @@ public class InlineViewer extends SourceViewWidget {
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
-			if(i == this.buf.getCurrentLine() - 1){
+			if(this.scope.hasInlineScope() && i == this.buf.getCurrentLine() - 1){
 //				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
 //				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
 //						this.marginWriteOffset+20, lineHeight);

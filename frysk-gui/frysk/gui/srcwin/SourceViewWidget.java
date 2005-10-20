@@ -100,6 +100,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	private TextChildAnchor anchor;
 	
 	protected boolean expanded = false;
+	protected boolean hasInlineCode = false;
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.
@@ -321,6 +322,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		}
 		this.setCurrentLine(data.getLineNum());
 		this.expanded = false;
+		this.hasInlineCode = data.hasInlineScope();
 		
 		InlineHandler.init(data, this.topPrefs, this);
 	}
@@ -485,7 +487,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
-			if(i == this.buf.getCurrentLine()){
+			if(this.hasInlineCode && i == this.buf.getCurrentLine()){
 //				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
 //				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
 //						this.marginWriteOffset+20, lineHeight);

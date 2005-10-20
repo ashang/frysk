@@ -117,4 +117,16 @@ public class PCLocation {
 	public String getFunction() {
 		return function;
 	}
+
+	public PCLocation getParentScope() {
+		return parentScope;
+	}
+
+	public PCLocation getInlineScope() {
+		return inlineScope;
+	}
+	
+	public boolean hasInlineScope(){
+		return this.inlineScope != null;
+	}
 }
