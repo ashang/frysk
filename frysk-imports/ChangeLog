@@ -1,3 +1,12 @@
+2001-10-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am, configure.ac: Added tests/textiter, tests/gcjtreeiter,
+	removed tests/gcc_4_0_15
+	* tests/gcc_4_0_15: contents moved to tests/textiter.
+	* tests/gcjtreeiter: Added.
+	* tests/gcjtreeiter/Makefile.am: Added.
+	* tests/gcjtreeiter/IterTest.java: Added.
+
 2005-10-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am, configure.ac: Add tests/samename.
