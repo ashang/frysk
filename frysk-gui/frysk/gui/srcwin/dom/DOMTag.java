@@ -91,10 +91,24 @@ public class DOMTag {
 	}
 	
 	/**
+	 * change the type attribue of this tag
+	 */
+	public void setType(String type) {
+		this.myElement.setAttribute(TYPE_ATTR, type);
+	}
+	
+	/**
 	 * @return The type of the tag
 	 */
 	public String getType(){
 		return this.myElement.getAttributeValue(TYPE_ATTR);
+	}
+	
+	/**
+	 * set the starting character offset of this tag
+	 */
+	public void setStart(int start) {
+		this.myElement.setAttribute(START_ATTR, ""+start);
 	}
 	
 	/**
@@ -104,6 +118,12 @@ public class DOMTag {
 		return Integer.parseInt(this.myElement.getAttributeValue(START_ATTR));
 	}
 	
+	/**
+	 * set the ending character offset for this tag
+	 */
+	public void setEnd(int end) {
+		this.myElement.setAttribute(END_ATTR, ""+end);
+	}
 	/**
 	 * @return The ending offset of the tag from the start of the file
 	 */

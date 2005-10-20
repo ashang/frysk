@@ -529,10 +529,26 @@ public class DOMTestDOMFrysk {
 			System.out.println("\nfailed...DOMTag.getType");
 		}
 		
+		String new_tag_type = "keyword";
+		tag.setType(new_tag_type);
+		if (tag.getType() == new_tag_type) {
+			System.out.println("passed...DOMTag.setType");
+		} else {
+			System.out.println("failed...DOMTag.setType");
+		}
+		
 		if (tag.getStart() == main_prog[1].indexOf(test_inline)) {
 			System.out.println("passed...DOMTag.getStart");
 		} else {
 			System.out.println("failed...DOMTag.getStart");
+		}
+		
+		int new_start = 25;
+		tag.setStart(new_start);
+		if (tag.getStart() == new_start) {
+			System.out.println("passed...DOMTag.setStart");
+		} else {
+			System.out.println("failed...DOMTag.setStart");
 		}
 		
 		if (tag.getEnd() == 
@@ -540,6 +556,14 @@ public class DOMTestDOMFrysk {
 			System.out.println("passed...DOMTag.getEnd");
 		} else {
 			System.out.println("failed...DOMTag.getEnd");
+		}
+		
+		int new_end = 35;
+		tag.setEnd(new_end);
+		if (tag.getEnd() == new_end) {
+			System.out.println("passed...DOMTag.setEnd");
+		} else {
+			System.out.println("failed...DOMTag.setEnd");
 		}
 	}
 	

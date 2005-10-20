@@ -1,5 +1,11 @@
 2005-10-20  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMTag.java: added setType/setStart/setEnd methods
+	
+	* dom/DOMTestDOMFrysk.java: added tests for above
+
+2005-10-20  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMInlineInstance.java: added setStart/setEnd methods
 	
 	* dom/DOMLine.java: added getInlineInst method
