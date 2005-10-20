@@ -7,6 +7,9 @@
 	* tests/gcjtreeiter/Makefile.am: Added.
 	* tests/gcjtreeiter/IterTest.java: Added.
 
+	* tests/gcjtreeiter/.cvsignore: Added.
+	* tests/textiter/.cvsignore: Added.
+
 2005-10-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am, configure.ac: Add tests/samename.
