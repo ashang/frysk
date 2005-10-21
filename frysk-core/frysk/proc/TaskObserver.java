@@ -72,4 +72,136 @@ public interface TaskObserver
 	 */
 	boolean updateCloned (Task task, Task clone);
     }
+
+    /**
+     * Interface used to notify of Task forked (creating a new child
+     * process) events.
+     */
+    public interface Forked
+	extends TaskObserver
+    {
+	/**
+	 * Called when the Task has forked, creating a child Proc.
+	 * Return true if the observer wants the task to block.
+	 */
+	boolean updateForked (Task task, Proc child);
+    }
+
+    /**
+     * Interface used to notify of a Task exec (overlaying the process
+     * image with that of a new program).
+     */
+    public interface Execed
+	extends TaskObserver
+    {
+	/**
+	 * Called AFTER the Task has execed.  Return true if the
+	 * observer wants the task to block.
+	 */
+	boolean updateExeced (Task task);
+    }
+
+    /**
+     * Interface used to notify of a Task exiting.
+     */
+    public interface Exiting
+	extends TaskObserver
+    {
+	/**
+	 * Called while the Task is in the process of exiting, it
+	 * still exists but not much other than examining it can be
+	 * performed.  A +ve status indicates a normal exit, a -ve
+	 * status indicates termination due to a signal.  Return true
+	 * if the observer wants the task to block.
+	 */
+	boolean updateExiting (Task task, int status);
+    }
+
+    /**
+     * Interface used to notify of an exited Task (the task no
+     * longer exits).
+     */
+    public interface Exited
+	extends TaskObserver
+    {
+	/**
+	 * Called AFTER the Task has execed.
+	 */
+	boolean updateExeced (Task task, int status);
+    }
+
+    /**
+     * Interface used to notify of a terminated Task (the task no
+     * longer exists).
+     */
+    public interface Terminated
+	extends TaskObserver
+    {
+	/**
+	 * Called AFTER the Task has terminated.
+	 */
+	boolean updateTerminated (Task task, int status);
+    }
+
+    /**
+     * Interface used to notify that a Task has a pending signal.
+     */
+    public interface Signaled
+	extends TaskObserver
+    {
+	/**
+	 * The SIGNAL is pending delivery to the task.  Return true to
+	 * block the task's further execution.
+	 */
+	boolean updateTerminated (Task task, int signal);
+    }
+
+    /**
+     * Interface used to notify of a Task either entering, or exiting
+     * a system call.
+     */
+    public interface Syscall
+	extends TaskObserver
+    {
+	/**
+	 * The Task is entering a system call.  Return true to block
+	 * the task's further execution.
+	 */
+	boolean updateSysEnter (Task task, int syscall);
+	/**
+	 * The task is exiting a system call.  Return true to block
+	 * the task's further execution.
+	 */
+	boolean updateSysExit (Task task, int syscall);
+    }
+
+    /**
+     * Interface used to notify that a Task has executed a single
+     * instruction.
+     */
+    public interface Step
+	extends TaskObserver
+    {
+	/**
+	 * The task has executed one instruction.
+	 */
+	boolean updateStep (Task task);
+    }
+
+    /**
+     * Interface used to notify of a Task that the task's execution
+     * has reached a specific address.
+     */
+    public interface Breakpoint
+	extends TaskObserver
+    {
+	/**
+	 * Address of the breakpoint.
+	 */
+	long getAddress ();
+	/**
+	 * The task has hit the breakpoint.
+	 */
+	boolean updateBreakpoint (Task task);
+    }
 }

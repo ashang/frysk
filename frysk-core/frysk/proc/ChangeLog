@@ -1,5 +1,8 @@
 2005-10-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObserver.java: Add .Forked, .Execed, .Exiting, .Exited,
+	.Terminated, .Signaled, .Syscall, .Step, and .Breakpoint.
+	
 	* TestClone.java: Replace .testClone with .testTaskCloneObserver,
 	and .testBlockingTaskClonedObserver.
 	* TaskState.java: Add new state .blocked.  Add methods
