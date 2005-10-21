@@ -44,7 +44,7 @@ typedef enum {
 typedef struct {
   GdkColor color;
   GdkGC * gc;
-  PangoLayout * caption;
+  PangoLayout * title;
 } event_spec_s;
 
 typedef struct {
@@ -77,7 +77,7 @@ typedef struct _FtkStripchart {
 #define stripchart_event_spec_red(s, i)   (s)->event_specs[i].color.red
 #define stripchart_event_spec_green(s, i) (s)->event_specs[i].color.green
 #define stripchart_event_spec_blue(s, i)  (s)->event_specs[i].color.blue
-#define stripchart_event_spec_caption(s, i) (s)->event_specs[i].caption
+#define stripchart_event_spec_title(s, i) (s)->event_specs[i].title
 #define stripchart_events(s)              (s)->events
 #define stripchart_event(s,i)             (s)->events[i]
 #define stripchart_event_tv(s,i)          (s)->events[i]->tv
@@ -129,6 +129,14 @@ gboolean    ftk_stripchart_set_event_rgb_e (FtkStripchart * stripchart,
 gboolean    ftk_stripchart_set_event_rgb (FtkStripchart * stripchart,
 					  FtkStripchartTypeEnum type,
 					  gint red, gint green, gint blue);
+
+gboolean    ftk_stripchart_set_event_title_e (FtkStripchart * stripchart,
+					      FtkStripchartTypeEnum type,
+					      char * title,
+					      GError ** err);
+gboolean    ftk_stripchart_set_event_title (FtkStripchart * stripchart,
+					    FtkStripchartTypeEnum type,
+					    char * title);
 
 gboolean    ftk_stripchart_set_update_e  (FtkStripchart * stripchart,
 					  gint milliseconds,

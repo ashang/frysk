@@ -88,11 +88,11 @@ ftk_stripchart_expose( GtkWidget * widget,
   int draw_width;
   int draw_height;
   int base_y;
-  int caption_offset;
+  int title_offset;
   
-#define CAPTION_BASE_X_OFFSET  10
-#define CAPTION_ASCENT         16
-#define CAPTION_SPACING         10
+#define TITLE_BASE_X_OFFSET  10
+#define TITLE_ASCENT         16
+#define TITLE_SPACING         10
 #define BASE_OFFSET    15
 #define TIC_LENGTH      8
 
@@ -130,17 +130,17 @@ ftk_stripchart_expose( GtkWidget * widget,
 	stripchart_event_count(stripchart, i, FTK_STRIPCHART_TYPE_TOTAL);
   }
 
-  caption_offset = CAPTION_BASE_X_OFFSET;
+  title_offset = TITLE_BASE_X_OFFSET;
   for (i = FTK_STRIPCHART_TYPE_FORK; i < FTK_STRIPCHART_TYPE_LAST; i++) {
     int width;
     gdk_draw_layout (stripchart_pixmap (stripchart),
 		     stripchart_event_spec_gc(stripchart, i),
-		     caption_offset,
-		     draw_height - CAPTION_ASCENT,
-		     stripchart_event_spec_caption(stripchart, i));
-    pango_layout_get_pixel_size (stripchart_event_spec_caption(stripchart, i),
+		     title_offset,
+		     draw_height - TITLE_ASCENT,
+		     stripchart_event_spec_title(stripchart, i));
+    pango_layout_get_pixel_size (stripchart_event_spec_title(stripchart, i),
 				 &width, NULL);
-    caption_offset += width + CAPTION_SPACING;
+    title_offset += width + TITLE_SPACING;
   }
   
 		   
@@ -327,7 +327,7 @@ timer_init(FtkStripchart * stripchart, gint ms, GError ** err)
 
 typedef struct {
   GdkColor color;
-  char * caption;
+  char * title;
 } event_info_s;
 
 static event_info_s event_info[FTK_STRIPCHART_TYPE_LAST] = {
@@ -375,9 +375,9 @@ ftk_stripchart_init (FtkStripchart * stripchart)
       memcpy (&stripchart_event_spec_color (stripchart, i),
 	      &event_info[i].color, sizeof(GdkColor));
       stripchart_event_spec_gc (stripchart, i) = NULL;
-      stripchart_event_spec_caption(stripchart, i) =
+      stripchart_event_spec_title(stripchart, i) =
 	gtk_widget_create_pango_layout (GTK_WIDGET (stripchart),
-					event_info[i].caption);
+					event_info[i].title);
     }
   }
 
@@ -526,7 +526,55 @@ ftk_stripchart_set_event_rgb (FtkStripchart * stripchart,
 
 /*
  *
- *	setting range
+ *	setting event title
+ *
+ */
+
+gboolean
+ftk_stripchart_set_event_title_e (FtkStripchart * stripchart,
+				FtkStripchartTypeEnum type,
+				char * title,
+				GError ** err)
+{
+  GdkColor color;
+  
+  if (!FTK_IS_STRIPCHART (stripchart)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_STRIPCHART_WIDGET,	/* error code */
+		 "Invalid FtkStripchart widget.");
+    return FALSE;
+  }
+  if ((type < FTK_STRIPCHART_TYPE_TOTAL) ||
+      (type >= FTK_STRIPCHART_TYPE_LAST)) {
+    g_set_error (err,
+		 ftk_quark,			/* error domain */
+		 FTK_ERROR_INVALID_TYPE,	/* error code */
+		 "Invalid FtkStripchartTypeEnum %d.",
+		 type);
+    return FALSE;
+  }
+
+  pango_layout_set_text (stripchart_event_spec_title(stripchart, type),
+			 title, strlen (title));
+
+  return TRUE;
+}
+
+gboolean
+ftk_stripchart_set_event_title (FtkStripchart * stripchart,
+				FtkStripchartTypeEnum type,
+				char * title)
+{
+  return ftk_stripchart_set_event_title_e (stripchart,
+					   type,
+					   title,
+					   NULL);
+}
+
+/*
+ *
+ *	setting update
  *
  */
 

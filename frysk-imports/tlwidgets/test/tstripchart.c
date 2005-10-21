@@ -65,7 +65,10 @@ int main( int   argc,
 
   /* defaults are provided if you don't want to set this stuff */
   ftk_stripchart_set_event_rgb (FTK_STRIPCHART (stripchart1),
-				FTK_STRIPCHART_TYPE_FORK, 65535, 65535, 0);
+				FTK_STRIPCHART_TYPE_TERMINATE,
+				65535, 65535, 0); /* red + green = yellow */
+  ftk_stripchart_set_event_title (FTK_STRIPCHART (stripchart1),
+				  FTK_STRIPCHART_TYPE_FORK, "Spoon");
 
   /* _e suffixed versions of the fcns tell you if something screwed up */
   err = NULL;
