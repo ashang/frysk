@@ -1,3 +1,15 @@
+2005-10-21  Igor Foox  <ifoox@redhat.com>
+
+	* frysk-glib-java.spec: Fixed PKG_CONFIG_PATH pointing to lib instead of lib64 on
+	x86-64 when compiling with frysk- package name prefix.
+	* frysk-cairo-java.spec: Ditto.
+	* frysk-libgtk-java.spec: Ditto.
+	* frysk-libglade-java.spec: Ditto.
+	* frysk-libvte-java.spec: Ditto.
+
+	* cdtparser-3.0.0.spec: Fixed the installation of the .so into an
+	architecture dependent directory (lib or lib64 for now).
+
 2005-10-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cdtparser-3.0.0.spec: Version updated to 4.

@@ -6,19 +6,33 @@
 %define _defaultdocdir %{_prefix}/share/doc
 %define sourcefile %{name_base}-%{version}.jar
 
+
+# Architecture specific lib dir
+%define base_libdir_name lib
+
+%ifarch x86_64
+%define lib %{base_libdir_name}64
+%else
+%ifarch x86
+%define lib %{base_libdir_name}
+%endif
+%endif
+
+
 %define installdir $RPM_BUILD_ROOT%{_datadir}/java
-%define libdir $RPM_BUILD_ROOT%{_prefix}/lib
+%define libdir $RPM_BUILD_ROOT%{_prefix}/%{lib}
 
 %define name_base cdtparser
 Summary: C/C++ Parser from Eclipse CDT 3.0
 Name: frysk-%{name_base}
 Version: 3.0.0
-Release: 4
+Release: 5
 Group: Parsers
 License: EPL
 Source0: %{sourcefile}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
+Requires: java >= 1.4.2
 BuildRequires: gcc-java >= 4.0.0.1
 BuildRequires:  java-1.4.2-gcj-compat-devel >= 1.4.2.0-40jpp_18rh
 Requires(post,postun): java-1.4.2-gcj-compat >= 1.4.2.0-40jpp_18rh
@@ -60,11 +74,13 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %attr(0644,root,bin) %{_datadir}/java/%{sourcefile}
 %attr(0664,root,bin) %{_datadir}/java/%{name_base}.jar
-%attr(0644,root,bin) %{_prefix}/lib/lib%{sourcefile}.so
-%attr(0664,root,bin) %{_prefix}/lib/lib%{name_base}.jar.so
+%attr(0644,root,bin) %{_prefix}/%{lib}/lib%{sourcefile}.so
+%attr(0664,root,bin) %{_prefix}/%{lib}/lib%{name_base}.jar.so
 
 
 %changelog
+* Fri Oct 21 2005 Igor Foox <ifoox@redhat.com> - 3.0.0-5
+- Added architecture independent libdir definition (lib/lib64).
 * Mon Sep 19 2005 Adam Jocksch <ajocksch@redhat.com> - 3.0.0-3
 - Jar file now compiles to native so.
 * Thu Sep 15 2005 Adam Jocksch <ajocksch@redhat.com> - 3.0.0-1

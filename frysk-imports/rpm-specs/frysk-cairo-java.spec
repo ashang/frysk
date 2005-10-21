@@ -10,6 +10,18 @@
 %{!?c_pkg_prefix: %define c_pkg_prefix %{nil}}
 %{!?java_pkg_prefix: %define java_pkg_prefix %{nil}}
 
+# Architecture specific lib dir
+%define base_libdir_name lib
+
+%ifarch x86_64
+%define lib %{base_libdir_name}64
+%else
+%ifarch x86
+%define lib %{base_libdir_name}
+%endif
+%endif
+
+
 %define	name_base	cairo-java
 %define	version		1.0.0
 %define	release		9
@@ -53,7 +65,7 @@ applications with IDEs like Eclipse.
 # if either the C or Java packages has a prefix declared, then we will
 # add /opt/frysk/lib/pkgconfig to the pkgconfig path
 if  [  'x%{java_pkg_prefix}' != 'x' ] || [ 'x%{c_pkg_prefix}' != 'x' ]; then
-	export PKG_CONFIG_PATH=/opt/frysk/lib/pkgconfig
+	export PKG_CONFIG_PATH=/opt/frysk/%{lib}/pkgconfig
 fi
 
 %configure
