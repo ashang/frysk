@@ -41,6 +41,9 @@ package frysk.proc;
 
 import java.util.LinkedList;
 import inua.eio.ByteBuffer;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 abstract public class Task
 {
@@ -469,5 +472,83 @@ abstract public class Task
 		+ ",proc=" + proc
 		+ ",state=" + state
 		+ "}");
+    }
+
+
+    /**
+     * Set of interfaces currently blocking this task.
+     */
+    Set blockers = new HashSet ();
+    /**
+     * Request that the observer be removed fro this tasks set of
+     * blockers; once there are no blocking observers, this task
+     * resumes.
+     */
+    public void requestUnblock (final TaskObserver observerArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		TaskObserver observer = observerArg;
+		public void execute ()
+		{
+		    state = state.processRequestUnblock (Task.this, observer);
+		}
+	    });
+    }
+
+    /**
+     * Set of interfaces currently observing this task.
+     */
+    Set observers = new HashSet ();
+
+    /**
+     * Request that the Cloned observer be added to this task; once
+     * the add has been processed, acknowledge using the Cloned.ack
+     * method.
+     */
+    public void requestAddObserver (final TaskObserver observerArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		TaskObserver observer = observerArg;
+		public void execute ()
+		{
+		    state = state.processRequestAddObserver (Task.this, observer);
+		}
+	    });
+    }
+    /**
+     * Delete TaskObserver from this tasks set of observers; also delete it
+     * from the set of blockers.
+     */
+    public void requestDeleteObserver (final TaskObserver observerArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		TaskObserver observer = observerArg;
+		public void execute ()
+		{
+		    state = state.processRequestDeleteObserver (Task.this, observer);
+		}
+	    });
+    }
+    /**
+     * Notify all cloned observers that this task cloned.  Return true
+     * if this task should be left blocked.
+     */
+    boolean notifyCloned (Task clone)
+    {
+	for (Iterator i = observers.iterator ();
+	     i.hasNext (); ) {
+	    Object observer = i.next ();
+	    // XXX: This would work better if there were generics.
+	    if (observer instanceof TaskObserver.Cloned) {
+		TaskObserver.Cloned clonedObserver
+		    = (TaskObserver.Cloned) observer;
+		if (clonedObserver.updateCloned (this, clone))
+		    blockers.add (clonedObserver);
+	    }
+	}
+	return blockers.size () > 0;
     }
 }

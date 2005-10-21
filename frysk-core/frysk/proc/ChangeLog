@@ -1,3 +1,15 @@
+2005-10-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestClone.java: Replace .testClone with .testTaskCloneObserver,
+	and .testBlockingTaskClonedObserver.
+	* TaskState.java: Add new state .blocked.  Add methods
+	.processRequestUnblocked, .processRequestAddObserver, and
+	.processRequestDeleteObserver.
+	* Task.java: Add methods .requestUnblock, .requestAddObserver,
+	.requestDeleteObserver, and .notifyCloned.  Add local fields
+	.observers, and .blockers.
+	* TaskObserver.java: New file.
+
 2005-10-18  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* TestModify.java: New platform-independent test that

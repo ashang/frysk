@@ -150,6 +150,18 @@ class TaskState
     {
 	throw unhandled (task, "PerformForked");
     }
+    TaskState processRequestUnblock (Task task, TaskObserver observer)
+    {
+	throw unhandled (task, "RequestUnblock");
+    }
+    TaskState processRequestAddObserver (Task task, TaskObserver observer)
+    {
+	throw unhandled (task, "RequestAddObserver");
+    }
+    TaskState processRequestDeleteObserver (Task task, TaskObserver observer)
+    {
+	throw unhandled (task, "RequestDeleteObserver");
+    }
 
     /**
      * An attached task was destroyed, notify observers and, when the
@@ -250,6 +262,14 @@ class TaskState
 		processAttachedDestroy (task, event);
 		return destroyed;
 	    }
+	    TaskState processRequestAddObserver (Task task,
+						 TaskObserver observer)
+	    {
+		task.observers.add (observer);
+		observer.added (null); // Success
+		return startRunning;
+	    }
+
 	};
     /**
      * Task just starting out, wait for it to become ready, but put it
@@ -375,8 +395,13 @@ class TaskState
 	    }
 	    TaskState processPerformCloned (Task task, Task clone)
 	    {
-		task.sendContinue (0);
-		return running;
+		if (task.notifyCloned (clone)) {
+		    return blocked;
+		}
+		else {
+		    task.sendContinue (0);
+		    return running;
+		}
 	    }
 	    TaskState processPerformForked (Task task, Proc fork)
 	    {
@@ -415,6 +440,25 @@ class TaskState
 		// We are waiting for a SIGTRAP to indicate step done.
 		task.stepEvent.notify (event);
 		return stopped;
+	    }
+	};
+
+    /**
+     * The Task is blocked by a set of observers, remain in the state
+     * until all the observers have unblocked themselves.
+     */
+    private static TaskState blocked = new TaskState ("blocked")
+	{
+	    TaskState processRequestUnblock (Task task, TaskObserver observer)
+	    {
+		task.blockers.remove (observer);
+		if (task.blockers.size () == 0) {
+		    task.sendContinue (0);
+		    return running;
+		}
+		else {
+		    return blocked;
+		}
 	    }
 	};
 
