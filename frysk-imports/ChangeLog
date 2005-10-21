@@ -7,77 +7,30 @@
 	* Makefile.am (SUBDIRS): Replace tests/cniinner, tests/anoncall,
 	tests/werror, tests/gcjtreeiter, tests/samename, and
 	tests/textiter, with just tests/.
-	* tests/.cvsignore: New file.
-	* tests/Makefile.am: New file.
-	* tests/anoncall/Makefile.am: Delete.
-	* tests/cniinner/Makefile.am: Delete.
-	* tests/gcjtreeiter/Makefile.am: Delete.
-	* tests/samename/Makefile.am: Delete.
-	* tests/textiter/Makefile.am: Delete.
-	* tests/werror/Makefile.am: Delete.
-	* tests/gcc_4_0_15/Makefile.am: Delete.
-	* tests/gcc_4_0_15/JNICrash.java: Delete.
 	
 2001-10-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.am, configure.ac: Added tests/textiter, tests/gcjtreeiter,
 	removed tests/gcc_4_0_15
-	* tests/gcc_4_0_15: Contents moved to tests/textiter.
-	* tests/gcjtreeiter: Added.
-	* tests/gcjtreeiter/Makefile.am: Added.
-	* tests/gcjtreeiter/IterTest.java: Added.
-
-	* tests/gcjtreeiter/.cvsignore: Added.
-	* tests/textiter/.cvsignore: Added.
 
 2005-10-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am, configure.ac: Add tests/samename.
-	* tests/samename/SameName.java, tests/samename/Makefile.am: New.
-
-2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
-
-	* tests/gcc_4_0_15/Makefile.am: Fixed test so that it will fail
-	properly.
 
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
-	* jargs/Makefile.am, 
-	jline/Makefile.am, 
-	tests/anoncall/Makefile.am,
-	tests/cniinner/Makefile.am, 
-	tests/gcc_4_0_15/Makefile.am,
-	tests/werror/Makefile.am: Substituted EXTRA_DIST  for DIST_SOURCES to
-	aleviate automake warnings.
-	* /tests/anoncall/Makefile.am: Fixed typo.
+	* jargs/Makefile.am, jline/Makefile.am: Substituted EXTRA_DIST for
+	DIST_SOURCES to aleviate automake warnings.
 	
-2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
-
-	* tests/gcc_4_0_15/Makefile.am: Changed rule to PASS, will no longer
-	run test once test has passed.
-	* tests/JNICrash.java: Changed so that program will not hand if test
-	passes.
-
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.am: Added EggTrayIcon/eggtrayicon.h to EXTRA_DIST. Added
 	include/linux.ptrace.h to noinst_HEADERS so it's included in the
 	distribution.
-	* jargs/Makefile.am, 
-	jline/Makefile.am, 
-	tests/anoncall/Makefile.am, 
-	tests/cniinner/Makefile.am,
-	tests/gcc_4_0_15/Makefile.am, 
-	tests/werror/Makefile.am: Added DIST_SOURCES variable to include the jargs sources in the 
-	distribution.
+	* jargs/Makefile.am, jline/Makefile.am: Added DIST_SOURCES
+	variable to include the jargs sources in the distribution.
 
 2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
-
-	* tests/gcc_4_0_15: Added.
-
-	* tests/gcc_4_0_15/JNICrash.java: Added.
-
-	* tests/gcc_4_0_15/Makefile.am: Added.
 
 	* Makefile.am: Added tests/gcc_4_0_15 as a subdir.
 
@@ -87,10 +40,6 @@
 2005-10-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* EggTrayIcon/libEggTrayIcon.c: changed to using getGObjectHandle().
-
-2005-10-03  Andrew Cagney  <cagney@redhat.com>
-
-	* tests/anoncall/Makefile.am: Do not expect the test to fail.
 
 2005-09-26  Igor Foox  <ifoox@redhat.com>
 
@@ -167,17 +116,12 @@
 2005-09-10  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac, Makefile.am: Add sub-directory tests/werror.
-	* tests/werror/Makefile.am, tests/werror/Werror.java,
-	tests/werror/.cvsignore: New files.
 
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Check that $(JUNIT_JAR) and $(ANTLR_JAR) exist.
 
 	* configure.ac (JAVAC): Set using AC_CHECK_PROGS.
-
-	* tests/anoncall/Makefile.am (clean-local): Add -f to "rm", and
-	also delete PASS and FAIL.
 
 	* configure.ac: Add code to substitute JUNIT_JAR and ANTLR_JAR.
 	* autogen.sh: Replace path-to junit.jar and path-to antlr.jar with
@@ -203,13 +147,10 @@
 2005-09-01  Andrew Cagney  <cagney@redhat.com>
 
 	* .externalToolBuilders/AntBuilder.launch, .classpath, .project,
-	build.xml, tests/anoncall/.cvsignore: New files.
-	* .cvsignore, jargs/.cvsignore, jline/.cvsignore,
-	tests/cniinner/.cvsignore: Add more files.
+	build.xml: New files.
+	* .cvsignore, jargs/.cvsignore, jline/.cvsignore: Add more files.
 
 	* configure.ac, Makefile.am: Add subdirectory tests/anoncall.
-	* tests/anoncall/Anon.java,
-	* tests/anoncall/Makefile.am: New test; expected to FAIL.
 
 2005-08-30  Andrew Cagney  <cagney@redhat.com>
 
@@ -236,9 +177,6 @@
 2005-08-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am, configure.ac: Add directory tests/cniinner.
-	* tests/cniinner/.cvsignore, tests/cniinner/Child.java,
-	tests/cniinner/Makefile.am, tests/cniinner/Parent.java,
-	tests/cniinner/native.cxx: New.
 
 2005-08-11  Andrew Cagney  <cagney@redhat.com>
 

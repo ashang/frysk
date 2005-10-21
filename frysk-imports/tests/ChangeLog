@@ -1,0 +1,91 @@
+2005-10-21  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: New file.
+	* Makefile.am: New file.
+	* anoncall/Makefile.am: Delete.
+	* cniinner/Makefile.am: Delete.
+	* gcjtreeiter/Makefile.am: Delete.
+	* samename/Makefile.am: Delete.
+	* textiter/Makefile.am: Delete.
+	* werror/Makefile.am: Delete.
+	* gcc_4_0_15/Makefile.am: Delete.
+	* gcc_4_0_15/JNICrash.java: Delete.
+	
+2001-10-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15: Contents moved to textiter.
+	* gcjtreeiter: Added.
+	* gcjtreeiter/Makefile.am: Added.
+	* gcjtreeiter/IterTest.java: Added.
+
+	* gcjtreeiter/.cvsignore: Added.
+	* textiter/.cvsignore: Added.
+
+2005-10-20  Andrew Cagney  <cagney@redhat.com>
+
+	* samename/SameName.java, samename/Makefile.am: New.
+
+2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15/Makefile.am: Fixed test so that it will fail
+	properly.
+
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* anoncall/Makefile.am,
+	cniinner/Makefile.am, 
+	gcc_4_0_15/Makefile.am,
+	werror/Makefile.am: Substituted EXTRA_DIST  for DIST_SOURCES to
+	aleviate automake warnings.
+	* anoncall/Makefile.am: Fixed typo.
+	
+2005-10-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15/Makefile.am: Changed rule to PASS, will no longer
+	run test once test has passed.
+	* JNICrash.java: Changed so that program will not hand if test
+	passes.
+
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* anoncall/Makefile.am, 
+	cniinner/Makefile.am,
+	gcc_4_0_15/Makefile.am, 
+	werror/Makefile.am: Added DIST_SOURCES variable to include the jargs sources in the 
+	distribution.
+
+2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* gcc_4_0_15: Added.
+
+	* gcc_4_0_15/JNICrash.java: Added.
+
+	* gcc_4_0_15/Makefile.am: Added.
+
+2005-10-03  Andrew Cagney  <cagney@redhat.com>
+
+	* anoncall/Makefile.am: Do not expect the test to fail.
+
+2005-09-10  Andrew Cagney  <cagney@redhat.com>
+
+	* werror/Makefile.am, werror/Werror.java,
+	werror/.cvsignore: New files.
+
+2005-09-09  Andrew Cagney  <cagney@redhat.com>
+
+	* anoncall/Makefile.am (clean-local): Add -f to "rm", and
+	also delete PASS and FAIL.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* anoncall/.cvsignore: New files.
+	* cniinner/.cvsignore: Add more files.
+
+	* anoncall/Anon.java,
+	* anoncall/Makefile.am: New test; expected to FAIL.
+
+2005-08-12  Andrew Cagney  <cagney@redhat.com>
+
+	* cniinner/.cvsignore, cniinner/Child.java,
+	cniinner/Makefile.am, cniinner/Parent.java,
+	cniinner/native.cxx: New.
