@@ -1,0 +1,14 @@
+2005-Oct-21
+
+This is a test.  This is /only/ a test.
+
+But it's a working test.  To try it:
+
+	cd widgets
+	sudo make install
+	cd ../test
+	make
+	./tstripchart
+
+tstripchart.c can be used as an example of how to use the widget.
+
