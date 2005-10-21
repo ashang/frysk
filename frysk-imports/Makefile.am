@@ -46,12 +46,7 @@ include Makefile.gen
 SUBDIRS = \
 	jline \
 	jargs \
-	tests/cniinner \
-	tests/anoncall \
-	tests/werror \
-	tests/gcjtreeiter \
-	tests/samename \
-	tests/textiter
+	tests
 
 solib_DATA += EggTrayIcon/libEggTrayIcon.so
 noinst_PROGRAMS += EggTrayIcon/libEggTrayIcon.so

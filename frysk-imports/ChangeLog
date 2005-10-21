@@ -1,8 +1,28 @@
+2005-10-21  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CINFIG_FILES): Replace tests/cniinner/Makefile,
+	tests/anoncall/Makefile, tests/werror/Makefile,
+	tests/gcjtreeiter/Makefile, tests/samename/Makefile, and
+	tests/textiter/Makefile with just tests/Makefile.
+	* Makefile.am (SUBDIRS): Replace tests/cniinner, tests/anoncall,
+	tests/werror, tests/gcjtreeiter, tests/samename, and
+	tests/textiter, with just tests/.
+	* tests/.cvsignore: New file.
+	* tests/Makefile.am: New file.
+	* tests/anoncall/Makefile.am: Delete.
+	* tests/cniinner/Makefile.am: Delete.
+	* tests/gcjtreeiter/Makefile.am: Delete.
+	* tests/samename/Makefile.am: Delete.
+	* tests/textiter/Makefile.am: Delete.
+	* tests/werror/Makefile.am: Delete.
+	* tests/gcc_4_0_15/Makefile.am: Delete.
+	* tests/gcc_4_0_15/JNICrash.java: Delete.
+	
 2001-10-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.am, configure.ac: Added tests/textiter, tests/gcjtreeiter,
 	removed tests/gcc_4_0_15
-	* tests/gcc_4_0_15: contents moved to tests/textiter.
+	* tests/gcc_4_0_15: Contents moved to tests/textiter.
 	* tests/gcjtreeiter: Added.
 	* tests/gcjtreeiter/Makefile.am: Added.
 	* tests/gcjtreeiter/IterTest.java: Added.
