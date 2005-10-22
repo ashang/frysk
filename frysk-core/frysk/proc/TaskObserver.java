@@ -190,4 +190,23 @@ public interface TaskObserver
 	 */
 	boolean updateHit (Task task);
     }
+
+    /**
+     * Interface used to notify of a Task that has has been attached,
+     * and is about to resume execution in that state.  Only after a
+     * Task has been attached can its internals be manipulated
+     * (registers, memory, auxv).
+     *
+     * Adding this observer does not cause a Task to be attached.
+     *
+     * XXX: Place holder until a better named observer comes to be.
+     */
+    public interface Attached
+	extends TaskObserver
+    {
+	/**
+	 * The Task is attached.
+	 */
+	boolean updateAttached (Task task);
+    }
 }

@@ -67,12 +67,29 @@ public class TestProcGet
 			public void update (Observable o, Object obj)
 			{
 			    Proc proc = (Proc) obj;
-			    proc.taskDiscovered.addObserver (new Observer ()
+			    if (!isChildOfMine (proc))
+				return;
+			    proc.observableTaskAdded.addObserver (new Observer ()
 				{
-				    public void update (Observable o, Object obj)
+				    public void update (Observable o,
+							Object obj)
 				    {
 					Task task = (Task) obj;
-					auxv = task.proc.getAuxv ();
+					task.requestAddObserver (new TaskObserver.Attached ()
+					    {
+						public void added (Throwable t)
+						{
+						    assertNull ("added Throwable", t);
+						}
+						public void deleted ()
+						{
+						}
+						public boolean updateAttached (Task task)
+						{
+						    auxv = task.proc.getAuxv ();
+						    return false;
+						}
+					    });
 				    }
 				});
 			}

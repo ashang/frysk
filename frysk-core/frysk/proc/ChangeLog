@@ -1,5 +1,12 @@
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Delete .taskDiscovered.
+	* TaskObservable.java: Delete, merged into Proc.java.
+	* TaskObserver.java: Add .Attached.
+	* TaskState.java: Replace Proc .taskDiscovered, with Task
+	.notifyAttached.
+	* Task.java: Update; add .notifyAttached.
+	
 	* Observer.java: New file.
 	* TaskObserver.java: Extend Observer.
 

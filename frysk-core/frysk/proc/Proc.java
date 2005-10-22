@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Observable;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -302,6 +303,19 @@ public abstract class Proc
     }
 
     /**
+     * XXX: Temporary until .observable's are converted to
+     * .requestAddObserver.
+     */
+    public class TaskObservable
+	extends Observable
+    {
+	protected void notify (Task task)
+	{
+	    setChanged ();
+	    notifyObservers (task);
+	}
+    }
+    /**
      * Notify of the addition of a task attached to this process.
      *
      * This event indicates the presence of the task, not that it is
@@ -352,9 +366,7 @@ public abstract class Proc
 	host.removeTasks (tasks);
     }
 
-    /** Tempoary observer.  */
-    public TaskObservable taskDiscovered = new TaskObservable ();
-    /** Tempoary observer, for code needing an exit-status.  */
+    /** XXX: xTempoary observer, for code needing an exit-status.  */
     public TaskEventObservable taskDestroyed = new TaskEventObservable ();
 
     // Other observable events, for the moment keep these in the proc

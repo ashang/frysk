@@ -121,9 +121,6 @@ abstract public class Task
 	state = TaskState.initial (this, attached, running);
 	proc.add (this);
 	proc.host.add (this);
-	// XXX: For backward compatibility.
-	if (!attached)
-	    proc.taskDiscovered.notify (this);
     }
 
     /**
@@ -546,6 +543,25 @@ abstract public class Task
 		TaskObserver.Cloned clonedObserver
 		    = (TaskObserver.Cloned) observer;
 		if (clonedObserver.updateCloned (this, clone))
+		    blockers.add (clonedObserver);
+	    }
+	}
+	return blockers.size () > 0;
+    }
+    /**
+     * Notify all Attached observers that this task attached.  Return
+     * true if this task should be left blocked.
+     */
+    boolean notifyAttached ()
+    {
+	for (Iterator i = observers.iterator ();
+	     i.hasNext (); ) {
+	    Object observer = i.next ();
+	    // XXX: This would work better if there were generics.
+	    if (observer instanceof TaskObserver.Attached) {
+		TaskObserver.Attached clonedObserver
+		    = (TaskObserver.Attached) observer;
+		if (clonedObserver.updateAttached (this))
 		    blockers.add (clonedObserver);
 	    }
 	}

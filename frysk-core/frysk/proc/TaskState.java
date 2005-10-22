@@ -233,7 +233,6 @@ class TaskState
 	{
 	    TaskState processPerformStopped (Task task)
 	    {
-		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
 		// XXX: Fixme, notify here takes the TaskEvent, and
 		// internal task events should not be propogated back
@@ -241,17 +240,18 @@ class TaskState
 		TaskEvent event = new TaskEvent.Stopped (task);
 		task.stopEvent.notify (event);
 		task.sendContinue (0);
+		task.notifyAttached ();
 		return running;
 	    }
 	    TaskState processPerformTrapped (Task task)
 	    {
-		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
 		// XXX: Fixme, notify here takes the TaskEvent, and
 		// internal task events should not be propogated back
 		// to the client.
 		TaskEvent event = new TaskEvent.Trapped (task);
 		task.stopEvent.notify (event);
+		task.notifyAttached ();
 		task.sendContinue (0);
 		return running;
 	    }
@@ -279,9 +279,9 @@ class TaskState
 	{
 	    TaskState processPerformTrapped (Task task)
 	    {
-		task.proc.taskDiscovered.notify (task);
 		task.sendSetOptions ();
 		task.proc.performTaskAttachCompleted (task);
+		task.notifyAttached ();
 		return stopped;
 	    }
 	};
