@@ -1,3 +1,8 @@
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskObserver.java: Update names, .Step to .Instruction,
+	.Breakpoint to .Code.
+
 2005-10-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskObserver.java: Add .Forked, .Execed, .Exiting, .Exited,

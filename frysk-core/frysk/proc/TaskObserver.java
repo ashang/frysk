@@ -179,20 +179,20 @@ public interface TaskObserver
      * Interface used to notify that a Task has executed a single
      * instruction.
      */
-    public interface Step
+    public interface Instruction
 	extends TaskObserver
     {
 	/**
 	 * The task has executed one instruction.
 	 */
-	boolean updateStep (Task task);
+	boolean updateExecuted (Task task);
     }
 
     /**
      * Interface used to notify of a Task that the task's execution
-     * has reached a specific address.
+     * has reached a specific point in the code address space.
      */
-    public interface Breakpoint
+    public interface Code
 	extends TaskObserver
     {
 	/**
@@ -202,6 +202,6 @@ public interface TaskObserver
 	/**
 	 * The task has hit the breakpoint.
 	 */
-	boolean updateBreakpoint (Task task);
+	boolean updateHit (Task task);
     }
 }
