@@ -1,9 +1,12 @@
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* ActionPool.java: Do not set Task .traceFork.
+
 2005-10-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* TearOffNotebook.java : new file.
-	(dragEnded): removed code that requires a new javagnome patch.
-	* MainWindow.java: moved tear off tab code into its own class.
-	
+	* TearOffNotebook.java : New file.
+	(dragEnded): Removed code that requires a new javagnome patch.
+	* MainWindow.java: Moved tear off tab code into its own class.
 
 2005-10-17  Sami Wagiaalla  <swagiaal@redhat.com>
 

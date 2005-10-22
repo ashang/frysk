@@ -60,7 +60,6 @@ class ftrace
 	{
 	    count++;
 	    Task task = (Task) obj;
-	    task.traceFork = true;
 	}
     }
 

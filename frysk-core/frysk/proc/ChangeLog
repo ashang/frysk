@@ -1,5 +1,9 @@
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Delete .traceFork.
+	* TestLib.java: Update.
+	* LinuxTask.java: Assume fork tracing.
+
 	* TestTaskClonedObserver.java: Rename TestClone.java.
 
 	* TaskObserver.java: Update names, .Step to .Instruction,

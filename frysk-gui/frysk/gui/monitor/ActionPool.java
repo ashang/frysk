@@ -382,8 +382,6 @@ public class ActionPool {
 		}
 
 		public void execute(TaskData data) {
-			data.getTask().traceFork = true;
-			
 			ProcForkObserver observer = new ProcForkObserver(data.getTask().getProc());
 			Manager.host.observableProcAdded.addObserver(observer);
 			data.add(observer);

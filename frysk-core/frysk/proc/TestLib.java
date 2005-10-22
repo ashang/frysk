@@ -640,7 +640,6 @@ public class TestLib
 				public void update (Observable o, Object obj)
 				{
 				    Task task = (Task) obj;
-				    task.traceFork = true;
 				}
 			    });
 		    }

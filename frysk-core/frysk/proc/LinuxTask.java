@@ -96,10 +96,11 @@ public class LinuxTask
     protected void sendSetOptions ()
     {
 	try {
+	    // XXX: Should be selecting the trace flags based on the
+	    // contents of .observers.
 	    long options = 0;
 	    options |= Ptrace.optionTraceClone ();
-	    if (traceFork)
-		options |= Ptrace.optionTraceFork ();
+	    options |= Ptrace.optionTraceFork ();
 	    if (traceExit)
 		options |= Ptrace.optionTraceExit ();
 	    if (traceSyscall)

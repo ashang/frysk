@@ -1,3 +1,7 @@
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* ftrace.java: Do not set Task .traceFork.
+
 2005-10-04  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java: Use Host .requestCreateAttachedContinuedProc.

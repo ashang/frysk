@@ -104,10 +104,10 @@ abstract public class Task
     ByteBuffer memory;
     ByteBuffer[] registerBank;
 
-    // Flags indicating the intended state of various trace options.
-    // Typically the thread has to first be stopped before the option
-    // can change -> number of state transitions.
-    public boolean traceFork;
+    // XXX: Should be eliminated.  Flags indicating the intended state
+    // of various trace options.  Typically the thread has to first be
+    // stopped before the option can change -> number of state
+    // transitions.
     public boolean traceExit;
     public boolean traceSyscall;  	// Trace syscall entry and exit
 
