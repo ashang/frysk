@@ -1,5 +1,8 @@
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Observer.java: New file.
+	* TaskObserver.java: Extend Observer.
+
 	* Task.java: Delete .traceFork.
 	* TestLib.java: Update.
 	* LinuxTask.java: Assume fork tracing.
