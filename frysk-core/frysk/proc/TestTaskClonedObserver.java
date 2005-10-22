@@ -53,7 +53,7 @@ import java.util.Iterator;
  * events matches the expected.
  */
 
-public class TestClone
+public class TestTaskClonedObserver
     extends TestLib
 {
     static final int fibCount = 10;

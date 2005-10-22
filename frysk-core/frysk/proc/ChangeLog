@@ -1,5 +1,7 @@
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskClonedObserver.java: Rename TestClone.java.
+
 	* TaskObserver.java: Update names, .Step to .Instruction,
 	.Breakpoint to .Code.
 
