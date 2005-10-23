@@ -140,7 +140,7 @@ public class TestExiting
 		"./prog/terminated/infloop"
 	    });
 	
-	addStopEventLoopOnChildProcRemovedObserver ();
+	new StopEventLoopWhenChildProcRemoved ();
 
 	assertRunUntilStop ("run \"infloop\" until exit");
 

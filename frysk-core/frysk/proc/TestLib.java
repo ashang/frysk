@@ -934,22 +934,26 @@ public class TestLib
     }
 
     /**
-     * Add an observer that will stop the event loop when a child
-     * process (to this process) exits.
+     * A self installing observer that, when a child process
+     * disappears (i.e., exits), stops the event loop.
      */
-    protected void addStopEventLoopOnChildProcRemovedObserver ()
+    protected class StopEventLoopWhenChildProcRemoved
+	implements Observer
     {
-	Manager.host.observableProcRemoved.addObserver (new Observer ()
-	    {
-		public void update (Observable o, Object obj)
-		{
-		    Proc proc = (Proc) obj;
-		    if (!isChildOfMine (proc))
-			return;
-		    // Shut things down.
-		    Manager.eventLoop.requestStop ();
-		}
-	    });
+	boolean p;
+	StopEventLoopWhenChildProcRemoved ()
+	{
+	    Manager.host.observableProcRemoved.addObserver (this);
+	}
+	public void update (Observable o, Object obj)
+	{
+	    Proc proc = (Proc) obj;
+	    if (isChildOfMine (proc)) {
+		// Shut things down.
+		Manager.eventLoop.requestStop ();
+		p = true;
+	    }
+	}
     }
 
     /**

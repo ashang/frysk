@@ -100,7 +100,7 @@ public class TestProcGet
 
 	TmpFile tmpFile = new TmpFile ();
 	CaptureAuxv captureAuxv = new CaptureAuxv ();
-	addStopEventLoopOnChildProcRemovedObserver ();
+	new StopEventLoopWhenChildProcRemoved ();
 	Manager.host.requestCreateAttachedContinuedProc
 	    (null, tmpFile.toString (), null, new String[] {
 		"./prog/print/auxv"

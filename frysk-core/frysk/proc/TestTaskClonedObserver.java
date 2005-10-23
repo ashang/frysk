@@ -39,9 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Observer;
-import java.util.Observable;
-
 /**
  * Check that clone (task create and delete) events are detected.
  */
@@ -61,7 +58,7 @@ public class TestTaskClonedObserver
      */
     public void testTaskCloneObserver ()
     {
-	addStopEventLoopOnChildProcRemovedObserver ();
+	new StopEventLoopWhenChildProcRemoved ();
 	class CloneCounter
 	    extends TaskObserverBase
 	    implements TaskObserver.Cloned
@@ -105,26 +102,8 @@ public class TestTaskClonedObserver
 	// An object that, when the child process exits, both sets a
 	// flag to record that event, and requests that the event loop
 	// stop.
-	class ChildRemoved
-	{
-	    boolean p = false;
-	    ChildRemoved ()
-	    {
-		Manager.host.observableProcRemoved.addObserver (new Observer ()
-		    {
-			public void update (Observable o, Object obj)
-			{
-			    Proc proc = (Proc) obj;
-			    if (!isChildOfMine (proc))
-				return;
-			    // Shut things down.
-			    Manager.eventLoop.requestStop ();
-			    p = true;
-			}
-		    });
-	    }
-	}
-	ChildRemoved childRemoved = new ChildRemoved ();
+	StopEventLoopWhenChildProcRemoved childRemoved
+	    = new StopEventLoopWhenChildProcRemoved ();
 
 	// An object that, for every Task that clones, puts the
 	// cloning task into a blocked state, and requests that the

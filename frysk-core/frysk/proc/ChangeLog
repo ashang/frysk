@@ -1,5 +1,15 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add .StopEventLoopWhenChildProcRemoved, replaces
+	.addStopEventLoopOnChildProcRemovedObserver.
+	* TestTerminated.java: Update.
+	* TestTaskClonedObserver.java: Update.
+	* TestRun.java: Update.
+	* TestProcGet.java: Update.
+	* TestFork.java: Update.
+	* TestExiting.java: Update.
+	* TestExec.java: Update.
+	
 	* TestTaskClonedObserver.java: Use TestLib's .AddTaskObserver, and
 	TaskObserverBase.
 	* TestLib.java: Add method .isDescendantOfMine.  Add classes
