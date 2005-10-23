@@ -90,17 +90,13 @@ class TaskState
     {
 	throw unhandled (task, "PerformSyscalled");
     }
-    TaskState processPerformExited (Task task, int status)
-    {
-	throw unhandled (task, "PerformExited");
-    }
-    TaskState processPerformExiting (Task task, int status)
-    {
-	throw unhandled (task, "PerformExiting");
-    }
-    TaskState processPerformTerminated (Task task, int signal)
+    TaskState processPerformTerminated (Task task, boolean signal, int value)
     {
 	throw unhandled (task, "PerformTerminated");
+    }
+    TaskState processPerformTerminating (Task task, boolean signal, int value)
+    {
+	throw unhandled (task, "PerformTerminating");
     }
     TaskState processPerformExeced (Task task)
     {
@@ -255,9 +251,10 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processPerformTerminated (Task task, int signal)
+	    TaskState processPerformTerminated (Task task, boolean signal,
+						int value)
 	    {
-		TaskEvent event = new TaskEvent.Terminated (task, signal);
+		TaskEvent event = new TaskEvent.Terminated (task, value);
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
@@ -340,23 +337,22 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processPerformExited (Task task, int status)
+	    TaskState processPerformTerminating (Task task, boolean signal,
+						 int value)
 	    {
-		TaskEvent event = new TaskEvent.Exited (task, status);
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
-		return destroyed;
-	    }
-	    TaskState processPerformExiting (Task task, int status)
-	    {
-		TaskEvent event = new TaskEvent.Exiting (task, status);
+		TaskEvent event = new TaskEvent.Exiting (task, value);
 		task.proc.taskExiting.notify (event);
-		task.sendContinue (status);
+		task.sendContinue (value);
 		return running;
 	    }
-	    TaskState processPerformTerminated (Task task, int signal)
+	    TaskState processPerformTerminated (Task task, boolean signal,
+						int value)
 	    {
-		TaskEvent event = new TaskEvent.Terminated (task, signal);
+		TaskEvent event;
+		if (signal)
+		    event = new TaskEvent.Terminated (task, value);
+		else
+		    event = new TaskEvent.Exited (task, value);
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
@@ -536,9 +532,10 @@ class TaskState
 
     private static TaskState zombied = new TaskState ("zombied")
 	{
-	    TaskState processPerformTerminated (Task task, int signal)
+	    TaskState processPerformTerminated (Task task, boolean signal,
+						int value)
 	    {
-		TaskEvent event = new TaskEvent.Exited (task, signal);
+		TaskEvent event = new TaskEvent.Exited (task, value);
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;

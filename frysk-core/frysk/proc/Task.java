@@ -357,16 +357,19 @@ abstract public class Task
     }
 
     /**
-     * (internal) The task is in the process of exiting.
+     * (internal) The task is in the process of terminating.  If
+     * SIGNAL, VALUE is the signal, otherwize it is the exit status.
      */
-    void performExiting (final int statusArg)
+    void performTerminating (final boolean signalArg, final int valueArg)
     {
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
-		int status = statusArg;
+		boolean signal = signalArg;
+		int value = valueArg;
 		public void execute ()
 		{
-		    state = state.processPerformExiting (Task.this, status);
+		    state = state.processPerformTerminating (Task.this, signal,
+							     value);
 		}
 	    });
     }
@@ -400,31 +403,19 @@ abstract public class Task
     }
 
     /**
-     * (internal) The task has exited.
+     * (internal) The task has terminated; if SIGNAL, VALUE is the
+     * signal, otherwize it is the exit status.
      */
-    void performExited (final int statusArg)
+    void performTerminated (final boolean signalArg, final int valueArg)
     {
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
-		int status = statusArg;
+		boolean signal = signalArg;
+		int value = valueArg;
 		public void execute ()
 		{
-		    state = state.processPerformExited (Task.this, status);
-		}
-	    });
-    }
-
-    /**
-     * (internal) The task was terminated (using a signal).
-     */
-    void performTerminated (final int signalArg)
-    {
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		int signal = signalArg;
-		public void execute ()
-		{
-		    state = state.processPerformTerminated (Task.this, signal);
+		    state = state.processPerformTerminated (Task.this, signal,
+							    value);
 		}
 	    });
     }

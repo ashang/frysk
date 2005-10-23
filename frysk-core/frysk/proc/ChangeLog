@@ -1,5 +1,12 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Merge .performExited into .performTerminated.
+	Replace .performExiting into .performTerminating.
+	* LinuxHost.java: Update.
+	* TaskState.java: Replace .processPerformExiting with
+	.processPerformTerminating.  Merge .processPerformExited into
+	.processPerformTerminated.
+
 	* TestLib.java, LinuxHost.java: Update Wait .Observer objects so
 	that .eventExit has additional signal, and coreDumped parameters,
 	and .exited is merged into .terminated.

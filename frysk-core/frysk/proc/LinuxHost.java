@@ -234,7 +234,7 @@ public class LinuxHost
 				       boolean coreDumped)
 		{
 		    Task task = get (new TaskId (pid));
-		    task.performExiting (value);
+		    task.performTerminating (signal, value);
 		}
 		public void execEvent (int pid)
 		{
@@ -270,10 +270,7 @@ public class LinuxHost
 					boolean coreDumped)
 		{
 		    Task task = get (new TaskId (pid));
-		    if (signal)
-			task.performTerminated (value);
-		    else
-			task.performExited (value);
+		    task.performTerminated (signal, value);
 		}
 	    };
 	public final void execute ()
