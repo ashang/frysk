@@ -1,5 +1,10 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: When fork, call Task .notifyForked.
+	* Task.java: Add .notifyForked.
+	* TestTaskForkedObserver.java: New.
+	* TestFork.java: Delete.
+
 	* TestLib.java: Add .StopEventLoopWhenChildProcRemoved, replaces
 	.addStopEventLoopOnChildProcRemovedObserver.
 	* TestTerminated.java: Update.

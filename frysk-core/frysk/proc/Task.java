@@ -557,4 +557,23 @@ abstract public class Task
 	}
 	return blockers.size () > 0;
     }
+    /**
+     * Notify all Forked observers that this task forked.  Return true
+     * if this task should be left blocked.
+     */
+    boolean notifyForked (Proc fork)
+    {
+	for (Iterator i = observers.iterator ();
+	     i.hasNext (); ) {
+	    Object observer = i.next ();
+	    // XXX: This would work better if there were generics.
+	    if (observer instanceof TaskObserver.Forked) {
+		TaskObserver.Forked clonedObserver
+		    = (TaskObserver.Forked) observer;
+		if (clonedObserver.updateForked (this, fork))
+		    blockers.add (clonedObserver);
+	    }
+	}
+	return blockers.size () > 0;
+    }
 }

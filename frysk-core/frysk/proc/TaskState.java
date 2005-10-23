@@ -413,7 +413,10 @@ class TaskState
 	    }
 	    TaskState processPerformForked (Task task, Proc fork)
 	    {
-		task.sendContinue (0);
+		if (task.notifyForked (fork))
+		    return blocked;
+		else
+		    task.sendContinue (0);
 		return running;
 	    }
 	};
