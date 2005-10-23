@@ -88,45 +88,35 @@ public interface TaskObserver
     }
 
     /**
-     * Interface used to notify of a Task exiting.
+     * Interface used to notify of a Task that is terminating.
      */
-    public interface Exiting
+    public interface Terminating
 	extends TaskObserver
     {
 	/**
-	 * Called while the Task is in the process of exiting, it
-	 * still exists but not much other than examining it can be
-	 * performed.  A +ve status indicates a normal exit, a -ve
-	 * status indicates termination due to a signal.  Return true
-	 * if the observer wants the task to block.
+	 * Called while the Task is terminating; while the process
+	 * still exists not much other than examining it can be
+	 * performed.  If SIGNAL, the termination was forced
+	 * using signal VALUE, otherwize the termination is due to an
+	 * _exit(2) call.
 	 */
-	boolean updateExiting (Task task, int status);
+	boolean updateTerminating (Task task, boolean signal, int value);
     }
 
     /**
-     * Interface used to notify of an exited Task (the task no
+     * Interface used to notify that Task has terminated (the task no
      * longer exits).
-     */
-    public interface Exited
-	extends TaskObserver
-    {
-	/**
-	 * Called AFTER the Task has execed.
-	 */
-	boolean updateExeced (Task task, int status);
-    }
-
-    /**
-     * Interface used to notify of a terminated Task (the task no
-     * longer exists).
      */
     public interface Terminated
 	extends TaskObserver
     {
 	/**
-	 * Called AFTER the Task has terminated.
+	 * Called once the Task has terminated; the process no longer
+	 * exists.  If SIGNAL, the termination was forced using signal
+	 * VALUE, otherwize the termination is due to an _exit(2)
+	 * call.
 	 */
-	boolean updateTerminated (Task task, int status);
+	boolean updateTerminated (Task task, boolean signal, int value);
     }
 
     /**
