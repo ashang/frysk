@@ -52,42 +52,47 @@ public final class Wait
     public interface Observer
     {
 	/**
-	 * PID cloned, creating the new task CLONE.
+	 * The task PID got a clone event; CLONE is the new task's ID.
 	 */
  	void cloneEvent (int pid, int clone);
 	/**
-	 * PID forked, creating the new child process CHILD.
+	 * The task PID got a fork event; CHILD is the new process ID.
 	 */
  	void forkEvent (int pid, int child);
 	/**
-	 * PID is exiting with STATUS.
+	 * The task PID got an exit event; if SIGNAL, VALUE is the +ve
+	 * terminating signal, otherwize VALUE is the cardinal exit
+	 * status.
 	 */
- 	void exitEvent (int pid, int status);
+ 	void exitEvent (int pid, boolean signal, int value,
+			boolean coreDumped);
 	/**
-	 * PID execed, starting a new program.
+	 * The task PID got an exec event; the process has already
+	 * been overlayed.
 	 */
  	void execEvent (int pid);
 	/**
-	 * PID is either entering or exiting a system call.
+	 * The task PID got a syscall event; the task is either
+	 * entering or exiting a system call (helpful eh?).
 	 *
 	 * XXX: It isn't directly possible to determine which of enter
-	 * or exit is occuring.  */
+	 * or exit is occuring.
+	 */
  	void syscallEvent (int pid);
 	/**
-	 * PID stopped (possibly with SIGNAL).
+	 * The task PID stopped; if SIGNAL is non-zero, then SIGNAL is
+	 * pending.
 	 */
  	void stopped (int pid, int signal);
 	/**
-	 * PID exited cleanly with STATUS.
+	 * The task PID terminated (WIFEXITED, WIFSIGNALED); if
+	 * SIGNAL, VALUE is the +ve terminating signal, otherwize
+	 * VALUE is the cardinal exit status.
 	 */
- 	void exited (int pid, int status, boolean coreDumped);
+ 	void terminated (int pid, boolean signal, int value,
+			 boolean coreDumped);
 	/**
-	 * PID was destroyed by SIGNAL (the corresponding wait event
-	 * is WSIGNALED but that name just gets confusing).
-	 */
- 	void terminated (int pid, int signal, boolean coreDumped);
-	/**
-	 * PID disappeared.
+	 * The task PID disappeared.
 	 *
 	 * Received an event for PID but then that, by the time its
 	 * status was checked, the process had vanished.
@@ -104,4 +109,5 @@ public final class Wait
      * pending (provided that there are still potential events).
      */
     public native static void waitAll (int pid, Observer observer);
+
 }

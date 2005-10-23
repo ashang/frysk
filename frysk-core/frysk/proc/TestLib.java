@@ -358,10 +358,13 @@ public class TestLib
 		while (true) {
 		    Wait.waitAll (pid, new FailWaitObserver ("killing child")
 			{
-			    public void terminated (int pid, int signal,
+			    public void terminated (int pid, boolean signal,
+						    int value,
 						    boolean coreDumped)
 			    {
-				// Terminated is ok.
+				// Termination with signal is ok.
+				assertTrue ("terminated with signal",
+					    signal);
 			    }
 			});
 		}
@@ -781,12 +784,11 @@ public class TestLib
     {
  	public void cloneEvent (int pid, int clone) { }
  	public void forkEvent (int pid, int child) { }
- 	public void exitEvent (int pid, int status) { }
+ 	public void exitEvent (int pid, boolean signal, int value, boolean coreDumped) { }
  	public void execEvent (int pid) { }
  	public void syscallEvent (int pid) { }
  	public void stopped (int pid, int signal) { }
- 	public void exited (int pid, int status, boolean coreDumped) { }
- 	public void terminated (int pid, int signal, boolean coreDumped) { }
+ 	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { }
 	public void disappeared (int pid) { }
     }
 
@@ -800,12 +802,11 @@ public class TestLib
 	}
  	public void cloneEvent (int pid, int clone) { fail (message); }
  	public void forkEvent (int pid, int child) { fail (message); }
- 	public void exitEvent (int pid, int status) { fail (message); }
+ 	public void exitEvent (int pid, boolean signal, int value, boolean coreDumped) { fail (message); }
  	public void execEvent (int pid) { fail (message); }
  	public void syscallEvent (int pid) { fail (message); }
  	public void stopped (int pid, int signal) { fail (message); }
- 	public void exited (int pid, int status, boolean coreDumped) { fail (message); }
- 	public void terminated (int pid, int signal, boolean coreDumped) { fail (message); }
+ 	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { fail (message); }
 	public void disappeared (int pid) { fail (message); }
     }
 
@@ -950,7 +951,8 @@ public class TestLib
 			{
 			    detach (pid);
 			}
-			public void exitEvent (int pid, int status)
+			public void exitEvent (int pid, boolean signal,
+					       int value, boolean coreDumped)
 			{
 			    detach (pid);
 			}
@@ -966,10 +968,8 @@ public class TestLib
 			{
 			    detach (pid);
 			}
-			public void exited (int pid, int status, boolean coreDumped)
-			{
-			}
-			public void terminated (int pid, int signal, boolean coreDumped)
+			public void terminated (int pid, boolean signal,
+						int value, boolean coreDumped)
 			{
 			}
 			public void disappeared (int pid)

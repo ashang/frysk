@@ -230,10 +230,11 @@ public class LinuxHost
 						true);
 		    task.performForked (child);
 		}
-		public void exitEvent (int pid, int status)
+		public void exitEvent (int pid, boolean signal, int value,
+				       boolean coreDumped)
 		{
 		    Task task = get (new TaskId (pid));
-		    task.performExiting (status);
+		    task.performExiting (value);
 		}
 		public void execEvent (int pid)
 		{
@@ -265,15 +266,14 @@ public class LinuxHost
 			break;
 		    }
 		}
-		public void exited (int pid, int status, boolean coreDumped)
+		public void terminated (int pid, boolean signal, int value,
+					boolean coreDumped)
 		{
 		    Task task = get (new TaskId (pid));
-		    task.performExited (status);
-		}
-		public void terminated (int pid, int signal, boolean coreDumped)
-		{
-		    Task task = get (new TaskId (pid));
-		    task.performTerminated (signal);
+		    if (signal)
+			task.performTerminated (value);
+		    else
+			task.performExited (value);
 		}
 	    };
 	public final void execute ()

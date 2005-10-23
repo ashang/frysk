@@ -1,5 +1,9 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java, LinuxHost.java: Update Wait .Observer objects so
+	that .eventExit has additional signal, and coreDumped parameters,
+	and .exited is merged into .terminated.
+
 	* TaskObserver.java: Replace .Exiting with .Terminating; Merge
 	.Exited into .Terminated.
 

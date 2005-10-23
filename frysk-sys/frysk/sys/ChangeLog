@@ -1,3 +1,11 @@
+2005-10-23  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (WSTOPEVENT): Replace WEVENTSTATUS.
+	(processStatus): Update.  For PTRACE_EVENT_EXIT, extract the exit
+	signal and/or status.
+	* Wait.java: Add signal, and coreDumped parameters to .exitEvent.
+	Merge .exited into .terminated.  Update comments.
+
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Errno.cxx (throwRuntimeException): New function.

@@ -54,14 +54,25 @@
 #include "frysk/sys/Wait.h"
 #include "frysk/sys/Wait$Observer.h"
 
-#define WEVENTSTATUS(STATUS) (((STATUS) & 0xff0000) >> 16)
+/* Decode a wait status notification using the WIFxxx macros,
+   forwarding the decoded event, and its corresponding parameters, to
+   the applicable observer.
 
-/* Process a wait status notifying any relevant observers.
+   With one exception (WIFSTOPPED), the STATUS can be decoded using
+   the standard WIFxxx macros described in wait(2).
 
-   The event is determined by extracting bits from the STATUS.  For
-   some events an additional event-message (set in the kernel by a
-   call to "ptrace_notify" needs to be fetched).  The event is encoded
-   in the STATUS as ((EVENT << 8) | WIF) << 8 | SIGNAL).  */
+   For WIFSTOPPED, there is an additional undocumented STOPEVENT field
+   that when non-zero contains an event sub-category.  The kernel uses
+   a call to ptrace_notify() to pack the status, and the packed format
+   is ((STOPEVENT << 16) | ((STOPSIG & 0xff) << 8) | (IFSTOPPED)).
+
+   In addition, for certain of the WIFSTOPPED sub-events, the kernel
+   will save an additional undocumented auxilary value (exit code,
+   ...) in the per-thread current->ptrace_message field, and the value
+   can be fetched using PTRACE_GETEVENTMSG.  The details of the
+   auxilary values are described below.  */
+
+#define WSTOPEVENT(STATUS) (((STATUS) & 0xff0000) >> 16)
 
 void
 processStatus (int pid, int status,
@@ -70,15 +81,17 @@ processStatus (int pid, int status,
   if (0)
     ;
   else if (WIFEXITED (status))
-    observer->exited (pid, WEXITSTATUS (status), WCOREDUMP (status));
+    observer->terminated (pid, false, WEXITSTATUS (status),
+			  WCOREDUMP (status));
   else if (WIFSIGNALED (status))
-    observer->terminated (pid, WTERMSIG (status), WCOREDUMP (status));
+    observer->terminated (pid, true, WTERMSIG (status), WCOREDUMP (status));
   else if (WIFSTOPPED (status)) {
-    switch (WEVENTSTATUS (status)) {
+    switch (WSTOPEVENT (status)) {
     case PTRACE_EVENT_CLONE:
       try {
-	jint msg = (jint) frysk::sys::Ptrace::getEventMsg (pid);
-	observer->cloneEvent (pid, msg);
+	// The event message contains the thread-ID of the new clone.
+	jint clone = (jint) frysk::sys::Ptrace::getEventMsg (pid);
+	observer->cloneEvent (pid, clone);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
@@ -88,8 +101,10 @@ processStatus (int pid, int status,
       break;
     case PTRACE_EVENT_FORK:
       try {
-	jlong msg = frysk::sys::Ptrace::getEventMsg (pid);
-	observer->forkEvent (pid, msg);
+	// The event message contains the process-ID of the new
+	// process.
+	jlong fork = frysk::sys::Ptrace::getEventMsg (pid);
+	observer->forkEvent (pid, fork);
       } catch (frysk::sys::Errno$Esrch *err) {
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
@@ -98,7 +113,27 @@ processStatus (int pid, int status,
       }
       break;
     case PTRACE_EVENT_EXIT:
-      observer->exitEvent (pid, frysk::sys::Ptrace::getEventMsg (pid));
+      try {
+	// The event message contains the pending wait(2) status; need
+	// to decode that.
+	int exitStatus = frysk::sys::Ptrace::getEventMsg (pid);
+	if (WIFEXITED (exitStatus)) {
+	  observer->exitEvent (pid, false, WEXITSTATUS (exitStatus),
+			       WCOREDUMP (exitStatus));
+	}
+	else if (WIFSIGNALED (exitStatus)) {
+	  observer->exitEvent (pid, true, WTERMSIG (exitStatus),
+			       WCOREDUMP (exitStatus));
+	}
+	else {
+	  throwRuntimeException ("unknown exit event", "status", exitStatus);
+	}
+      } catch (frysk::sys::Errno$Esrch *err) {
+	// The PID disappeared after the WAIT message was created but
+	// before the getEventMsg could be extracted (most likely due
+	// to a KILL -9).  Notify observer.
+	observer->disappeared (pid);
+      }
       break;
     case PTRACE_EVENT_EXEC:
       observer->execEvent (pid);
