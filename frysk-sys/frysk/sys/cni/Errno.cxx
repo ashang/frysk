@@ -40,6 +40,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include <gcj/cni.h>
 
@@ -52,6 +53,29 @@
 #include "frysk/sys/Errno$Esrch.h"
 #include "frysk/sys/cni/Errno.hxx"
 
+/**
+ * Like vasprintf, only it returns a Java string.
+ */
+static jstring vajprintf (const char *fmt, ...)
+  __attribute__ ((format (printf, 1, 2)));
+static jstring
+vajprintf (const char *fmt, ...)
+{
+  jstring jmessage;
+  char* message = NULL;
+  va_list ap;
+  va_start (ap, fmt);
+  if (::vasprintf (&message, fmt, ap) < 0)
+    throw new frysk::sys::Errno ();
+  va_end (ap);
+  jmessage = JvNewStringLatin1 (message, strlen (message));
+  ::free (message);
+  return jmessage;
+}
+
+/**
+ * Create, and throw, an Errno.
+ */
 static void
 throwErrno (int err, jstring jmessage)
 {
@@ -88,42 +112,21 @@ throwErrno (int err, jstring jmessage)
 void
 throwErrno (int err, const char *prefix, const char *suffix)
 {
-  jstring jmessage;
-  char* message;
-  if (::asprintf (&message, "%s: %s (%s)",
-		  prefix, strerror (err), suffix) < 0) {
-    throw new frysk::sys::Errno ();
-  }
-  jmessage = JvNewStringLatin1 (message, strlen (message));
-  ::free (message);
-  throwErrno (err, jmessage);
+  throwErrno (err, vajprintf ("%s: %s (%s)", prefix, strerror (err), suffix));
 }
 
 void
 throwErrno (int err, const char *prefix, const char *suffix, int val)
 {
-  jstring jmessage;
-  char* message;
-  if (::asprintf (&message, "%s: %s (%s %d)",
-		  prefix, strerror (err), suffix) < 0) {
-    throw new frysk::sys::Errno ();
-  }
-  jmessage = JvNewStringLatin1 (message, strlen (message));
-  ::free (message);
-  throwErrno (err, jmessage);
+  throwErrno (err, vajprintf ("%s: %s (%s %d)", prefix, strerror (err),
+			      suffix, val));
+
 }
 
 void
 throwErrno (int err, const char *prefix)
 {
-  jstring jmessage;
-  char* message;
-  if (::asprintf (&message, "%s: %s", prefix, strerror (err)) < 0) {
-    throw new frysk::sys::Errno ();
-  }
-  jmessage = JvNewStringLatin1 (message, strlen (message));
-  ::free (message);
-  throwErrno (err, jmessage);
+  throwErrno (err, vajprintf ("%s: %s", prefix, strerror (err)));
 }
 
 void
@@ -131,4 +134,11 @@ throwRuntimeException (const char *message)
 {
   throw new java::lang::RuntimeException
     (JvNewStringLatin1 (message, strlen (message)));
+}
+
+void
+throwRuntimeException (const char *message, const char *suffix, int val)
+{
+  throw new java::lang::RuntimeException
+    (vajprintf ("%s (%s %d)", message, suffix, val));
 }

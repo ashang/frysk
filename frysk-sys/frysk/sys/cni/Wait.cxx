@@ -111,11 +111,11 @@ processStatus (int pid, int status,
 	observer->stopped (pid, signum);
       break;
     default:
-      throwRuntimeException ("Unknown waitpid stopped event");
+      throwRuntimeException ("Unknown waitpid stopped event", "process", pid);
     }
   }
   else
-    throwRuntimeException ("Unknown status");
+    throwRuntimeException ("Unknown status", "process", pid);
 }
 
 /* Keep polling the waitpid queue moving everything to the eventqueue

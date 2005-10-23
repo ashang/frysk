@@ -85,7 +85,7 @@ AM_GCJFLAGS = \
 
 AM_CXXFLAGS = \
 	-I$(srcdir) \
-	-I$(top_buildir) \
+	-I$(top_builddir) \
 	-Werror \
 	-Wall \
 	-fpic \

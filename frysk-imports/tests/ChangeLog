@@ -1,3 +1,10 @@
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Add copyright.
+	(werror/java.sh, werror/cxx.sh): New targets.
+	(werror/FAIL): Delete.
+	* werror/Werror.cxx: New file, contains -Wformat error.
+
 2005-10-21  Andrew Cagney  <cagney@redhat.com>
 
 	* .cvsignore: New file.

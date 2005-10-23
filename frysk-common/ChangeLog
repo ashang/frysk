@@ -1,3 +1,8 @@
+2005-10-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (AM_CXXFLAGS): Fix -I argument, $(top_builddir),
+	not $(top_buildir).
+
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.rules: Added TestRunner.sh to EXTRA_DIST.
