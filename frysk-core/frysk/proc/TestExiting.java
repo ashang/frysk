@@ -83,7 +83,6 @@ public class TestExiting
 	public void update (Observable o, Object obj)
 	{
 	    Task task = (Task) obj;
-	    task.traceExit = true;
 	    Manager.eventLoop.add (new KillTimerEvent (task, 100));
 	}
     }

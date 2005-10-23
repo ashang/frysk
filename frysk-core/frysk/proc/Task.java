@@ -108,7 +108,6 @@ abstract public class Task
     // of various trace options.  Typically the thread has to first be
     // stopped before the option can change -> number of state
     // transitions.
-    public boolean traceExit;
     public boolean traceSyscall;  	// Trace syscall entry and exit
 
     /**

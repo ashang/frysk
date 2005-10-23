@@ -1,5 +1,11 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Handle .processPerformTerminating in
+	startRunning, and zombied states.  Do not pass the terminating
+	exit status to Task .sendContinue.
+	* LinuxTask.java: Always enable exit tracing.
+	* Task.java: Delete .traceExit.
+	
 	* Task.java: Merge .performExited into .performTerminated.
 	Replace .performExiting into .performTerminating.
 	* LinuxHost.java: Update.

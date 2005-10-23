@@ -251,6 +251,15 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
+	    TaskState processPerformTerminating (Task task, boolean signal,
+						 int value)
+	    {
+		if (signal)
+		    task.sendContinue (value);
+		else
+		    task.sendContinue (0);
+		return running;
+	    }
 	    TaskState processPerformTerminated (Task task, boolean signal,
 						int value)
 	    {
@@ -342,7 +351,10 @@ class TaskState
 	    {
 		TaskEvent event = new TaskEvent.Exiting (task, value);
 		task.proc.taskExiting.notify (event);
-		task.sendContinue (value);
+		if (signal)
+		    task.sendContinue (value);
+		else
+		    task.sendContinue (0);
 		return running;
 	    }
 	    TaskState processPerformTerminated (Task task, boolean signal,
@@ -539,6 +551,17 @@ class TaskState
 		task.proc.remove (event.task);
 		processAttachedDestroy (task, event);
 		return destroyed;
+	    }
+	    TaskState processPerformTerminating (Task task, boolean signal,
+						 int value)
+	    {
+		TaskEvent event = new TaskEvent.Exiting (task, value);
+		task.proc.taskExiting.notify (event);
+// 		if (signal)
+// 		    task.sendContinue (value);
+// 		else
+// 		    task.sendContinue (0);
+		return zombied;
 	    }
     	    TaskState processPerformZombied (Task task)
     	    {

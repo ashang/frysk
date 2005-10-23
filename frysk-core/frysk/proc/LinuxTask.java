@@ -101,8 +101,7 @@ public class LinuxTask
 	    long options = 0;
 	    options |= Ptrace.optionTraceClone ();
 	    options |= Ptrace.optionTraceFork ();
-	    if (traceExit)
-		options |= Ptrace.optionTraceExit ();
+	    options |= Ptrace.optionTraceExit ();
 	    if (traceSyscall)
 		options |= Ptrace.optionTraceSysgood ();
 	    options |= Ptrace.optionTraceExec ();
