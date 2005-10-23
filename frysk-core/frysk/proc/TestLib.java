@@ -85,26 +85,42 @@ public class TestLib
     }
 
     /**
-     * Is the process a child of this process?  Do not use
-     * host.getSelf() as that, in some situtations, can lead to
+     * Is the Proc an immediate child of this Proc?  Do not use
+     * host.getSelf() as that, in certain situtations, can lead to
      * infinite recursion.
      */
     boolean isChildOfMine (Proc proc)
     {
+	// Process 1 has no parent so can't be a child of mine.
+	if (proc.getPid () == 1)
+	    return false;
+	// If the parent's pid matches this processes pid, assume that
+	// is sufficient.  Would need a very very long running system
+	// for that to not be the case.
+	if (proc.parent.getPid () == Pid.get ())
+	    return true;
+	return false;
+    }
+
+    /**
+     * Is the process a descendant of this process?  Do not use
+     * host.getSelf() as that, in certain situtations, can lead to
+     * infinite recursion.
+     */
+    boolean isDescendantOfMine (Proc proc)
+    {
+	// Climb the process tree looking for this process.
+	while (proc.getPid () > 1) {
+	    // The parent's pid match this process, assume that is
+	    // sufficient.  Would need a very very long running system
+	    // for that to not be the case.
+	    if (proc.parent.getPid () == Pid.get ())
+		return true;
+	    proc = proc.parent;
+	}
 	// Process 1 has no parent so can't be a child of mine.  Do
 	// this first as no parent implies .parent==null and that
 	// would match a later check.
-	if (proc.getPid () == 1)
-	    return false;
-	// XXX: Old style broken check from days when children did not
-	// get parent set.
-	if (proc.parent == null)
-	    return true;
-	// The parent's pid match this process, assume that is
-	// sufficient.  Would need a very very long running system for
-	// that to not be the case.
-	if (proc.parent.getPid () == Pid.get ())
-	    return true;
 	return false;
     }
 
@@ -491,6 +507,104 @@ public class TestLib
     }
 
     /**
+     * Adds the supplied TaskObserver to any of the child Proc's
+     * Task's.
+     */
+    class AddTaskObserver
+    {
+	TaskObserver observer;
+	/**
+	 * Create a new object that will watch for children, adding
+	 * TaskObserver to each child's Task.
+	 */
+	AddTaskObserver (TaskObserver o)
+	{
+	    observer = o;
+	    Manager.host.observableProcAdded.addObserver (new Observer ()
+		{
+		    public void update (Observable obj, Object o)
+		    {
+			Proc proc = (Proc) o;
+			if (!isDescendantOfMine (proc))
+			    return;
+			proc.observableTaskAdded.addObserver (new Observer ()
+			    {
+				public void update (Observable obj, Object o)
+				{
+				    Task task = (Task) o;
+				    task.requestAddObserver (observer);
+				}
+			    });
+		    }
+		});
+	}
+    }
+
+    /**
+     * A TaskObserver base class.  This provides a standard framework
+     * for implementing TaskObserver's - added and deleted methods,
+     * and logic to manage a set of tasks.
+     */
+    class TaskObserverBase
+	implements TaskObserver
+    {
+	/**
+	 * Count of number of times that this observer was added to a
+	 * Task's observer set.
+	 */
+	int addedCount;
+	public void added (Throwable e)
+	{
+	    assertNull ("Observer successfully added", e);
+	    addedCount++;
+	}
+	/**
+	 * Count of number of times this observer was deleted from a
+	 * Task's observer set.
+	 */
+	int deletedCount;
+	public void deleted ()
+	{
+	    deletedCount++;
+	}
+	/**
+	 * Set of tasks being managed.
+	 */
+	private Set tasks = new HashSet ();
+	/**
+	 * Add the Task to the Set of Task's.
+	 */
+	void addTask (Task task)
+	{
+	    tasks.add (task);
+	}
+	/**
+	 * Return the number of Task's currently in the Task Set.
+	 */
+	int countTasks ()
+	{
+	    return tasks.size ();
+	}
+	/**
+	 * Unblock all members of the Task Set.
+	 */
+	void unblockTasks ()
+	{
+	    for (Iterator i = tasks.iterator (); i.hasNext(); ) {
+		Task task = (Task) i.next ();
+		task.requestUnblock (this);
+	    }
+	}
+	/**
+	 * Clear the Task Set.
+	 */
+	void clearTasks ()
+	{
+	    tasks.clear ();
+	}
+    }
+
+    /**
      * Manipulate a temporary file..
      *
      * Creates a temporary file that is automatically removed on test
@@ -639,7 +753,8 @@ public class TestLib
 			added.add (proc);
 			// Need to tell system that you want to track
 			// clone events.
-			proc.observableTaskAdded.addObserver (new Observer () {
+			proc.observableTaskAdded.addObserver (new Observer ()
+			    {
 				public void update (Observable o, Object obj)
 				{
 				    Task task = (Task) obj;
@@ -867,14 +982,15 @@ public class TestLib
     {
 	children = new HashSet ();
 	Manager.resetXXX ();
-	// Add every child process, and its tasks, to the set of
-	// children that should be killed off after the test has run.
+	// Add every descendant of this process, and all their tasks,
+	// to the set of children that should be killed off after the
+	// test has run.
 	Manager.host.observableProcAdded.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
 		{
 		    Proc proc = (Proc) obj;
-		    if (isChildOfMine (proc)) {
+		    if (isDescendantOfMine (proc)) {
 			registerChild (proc.getPid ());
 			proc.observableTaskAdded.addObserver (new Observer ()
 			    {

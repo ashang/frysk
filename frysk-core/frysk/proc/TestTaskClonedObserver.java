@@ -39,18 +39,11 @@
 
 package frysk.proc;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Observer;
 import java.util.Observable;
-import java.util.Iterator;
 
 /**
  * Check that clone (task create and delete) events are detected.
- *
- * This creates a program that, in turn, creates lots and lots of
- * tasks.  It then checks that the number of task create and delete
- * events matches the expected.
  */
 
 public class TestTaskClonedObserver
@@ -59,53 +52,21 @@ public class TestTaskClonedObserver
     static final int fibCount = 10;
 
     /**
-     * Adds the supplied TaskObserver to any of the child Proc's
-     * Task's.
-     */
-    class AddTaskObserver
-    {
-	TaskObserver observer;
-	AddTaskObserver (TaskObserver o)
-	{
-	    observer = o;
-	    Manager.host.observableProcAdded.addObserver (new Observer ()
-		{
-		    public void update (Observable obj, Object o)
-		    {
-			Proc proc = (Proc) o;
-			if (!isChildOfMine (proc))
-			    return;
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable obj, Object o)
-				{
-				    Task task = (Task) o;
-				    task.requestAddObserver (observer);
-				}
-			    });
-		    }
-		});
-	}
-    }
-
-    /**
      * Test that Task.requestAddObserver (Clone) can be used to track
      * all clones by a child process.
+     *
+     * This creates a program that, in turn, creates lots and lots of
+     * tasks.  It then checks that the number of task create and
+     * delete events matches the expected.
      */
     public void testTaskCloneObserver ()
     {
 	addStopEventLoopOnChildProcRemovedObserver ();
 	class CloneCounter
+	    extends TaskObserverBase
 	    implements TaskObserver.Cloned
 	{
 	    int count;
-	    public void added (Throwable w)
-	    {
-		assertNull ("addObserver ack", w);
-	    }
-	    public void deleted ()
-	    {
-	    }
 	    public boolean updateCloned (Task task, Task clone)
 	    {
 		count++;
@@ -134,6 +95,10 @@ public class TestTaskClonedObserver
     /**
      * Test that Task.requestAddObserver (Clone) can be used to hold a
      * Tasks at the clone point.
+     *
+     * This creates a program that, in turn, creates lots and lots of
+     * tasks.  It then checks that the number of task create and
+     * delete events matches the expected.
      */
     public void testBlockingTaskCloneObserver ()
     {
@@ -167,35 +132,14 @@ public class TestTaskClonedObserver
 	// .blockedTasks.  The blocked Tasks can be unblocked using the
 	// .unblockTasks method.
 	class CloneStopper
+	    extends TaskObserverBase
 	    implements TaskObserver.Cloned
 	{
-	    // Maintain a set of tasks that were recently blocked.
-	    Set blockedTasks = new HashSet ();
-	    // Remember if/when the clone stopper is acked.
-	    int addedAcks;
-	    public void added (Throwable w)
-	    {
-		assertNull ("addObserver ack", w);
-		addedAcks++;
-	    }
-	    int deletedAcks;
-	    public void deleted ()
-	    {
-		deletedAcks++;
-	    }
 	    public boolean updateCloned (Task task, Task clone)
 	    {
-		blockedTasks.add (task);
+		addTask (task);
 		Manager.eventLoop.requestStop ();
 		return true;
-	    }
-	    void unblockTasks ()
-	    {
-		for (Iterator i = blockedTasks.iterator (); i.hasNext(); ) {
-		    Task task = (Task) i.next ();
-		    task.requestUnblock (this);
-		}
-		blockedTasks.clear ();
 	    }
 	}
 	CloneStopper cloneStopper = new CloneStopper ();
@@ -219,16 +163,17 @@ public class TestTaskClonedObserver
 	    loopCount++;
 	    assertRunUntilStop ("run \"clone\" until stop, number "
 				+ cloneCount + " of " + fib.callCount);
-	    cloneCount += cloneStopper.blockedTasks.size ();
+	    cloneCount += cloneStopper.countTasks ();
 	    cloneStopper.unblockTasks ();
+	    cloneStopper.clearTasks ();
 	}
 
 	// The first task, included in fib.callCount isn't included in
 	// the clone count.
 	assertEquals ("number of times cloneObserver added",
-		      fib.callCount, cloneStopper.addedAcks);
+		      fib.callCount, cloneStopper.addedCount);
 	assertEquals ("number of times cloneObserver deleted",
-		      0, cloneStopper.deletedAcks);
+		      0, cloneStopper.deletedCount);
 	assertEquals ("Number of clones", fib.callCount - 1, cloneCount);
 	assertTrue ("Child exited", childRemoved.p);
 	assertTrue ("At least two iterations of the clone loop",
