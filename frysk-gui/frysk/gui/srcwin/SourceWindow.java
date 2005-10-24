@@ -190,7 +190,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action stackUp;
 	private Action stackDown;
 	private Action stackBottom;
+	
+	// Data Columns for the stack browser
 	private DataColumn[] dataColumns;
+	
+	// Due to java-gnome bug #319415
+	private ToolTips tips;
 	
 	public SourceWindow(String[] gladePaths, String imagePath) {
 		for(int i = 0; i < gladePaths.length; i++){
@@ -219,6 +224,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		AccelGroup ag = new AccelGroup();
 		((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
+		
+		this.tips = new ToolTips();
 		
 		this.createActions(ag);
 		this.createMenus();
@@ -708,13 +715,11 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		}
 		
 		// add Tooltips
-		ToolTips t = new ToolTips();
-		t.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(SourceWindow.PREV_FIND), Messages.getString("SourceWindow.21"), Messages.getString("SourceWindow.22")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND), Messages.getString("SourceWindow.23"), Messages.getString("SourceWindow.24")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(SourceWindow.GOTO_BUTTON), Messages.getString("SourceWindow.25"), Messages.getString("SourceWindow.46")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
-		t.enable();
+		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$
+		tips.setTip(this.glade.getWidget(SourceWindow.PREV_FIND), Messages.getString("SourceWindow.21"), Messages.getString("SourceWindow.22")); //$NON-NLS-1$ //$NON-NLS-2$
+		tips.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND), Messages.getString("SourceWindow.23"), Messages.getString("SourceWindow.24")); //$NON-NLS-1$ //$NON-NLS-2$
+		tips.setTip(this.glade.getWidget(SourceWindow.GOTO_BUTTON), Messages.getString("SourceWindow.25"), Messages.getString("SourceWindow.46")); //$NON-NLS-1$ //$NON-NLS-2$
+		tips.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND), Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	/**

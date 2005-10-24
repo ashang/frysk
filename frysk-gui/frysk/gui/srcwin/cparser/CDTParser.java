@@ -69,10 +69,7 @@ public class CDTParser implements StaticParser {
 	public void parse(String filename, SourceBuffer buffer) throws IOException {
 		this.buffer = buffer;
 		
-		System.out.println("Creating callback");
-		
 		ParserCallBack callback = new ParserCallBack();
-		System.out.println("Creating parser");
 		IParser parser = ParserFactory.createParser(
 				ParserFactory.createScanner(filename, new ScannerInfo(), ParserMode.COMPLETE_PARSE,
 						ParserLanguage.CPP, callback, new NullLogService(), null),
@@ -81,7 +78,6 @@ public class CDTParser implements StaticParser {
 				ParserLanguage.CPP,
 				new NullLogService());
 		
-		System.out.println("Parsing");
 		if(!parser.parse())
 			System.err.println("Some errors found during parse");
 	}

@@ -1,3 +1,23 @@
+2005-10-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ColorConverter.java: Added javadoc comments.
+	* InlineHandler.java: Ditto.
+	(moveDown): Now returns void.
+	(moveUp): Ditto.
+	* InlineViewer.java: Refactored to reflect above changes to moveUp and
+	moveDown.
+	* SourceBuffer.java: Changed back to using CDTParser, hopefully will have
+	bug resolved soon.
+	* SourceViewWidget.java:
+	(setSubscopeAtCurrentLine): Now sets expanded to true.
+	(clearSubscopeAtCurrentLine): Ditto.
+	(toggleChild): Refactored to account for changes to InlineHandler.
+	* SourceWindow.java: Added tips member variable.
+	(SourceWindow): Initialize Tooltips.
+	(createSearchBar): Changes tooltips to use member instance (jg bug
+	#319415)
+	*cparser/CDTParser.java (parse): Removed debug output
+
 2005-10-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PCLocation.java (getInlineScope): Added.

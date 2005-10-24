@@ -61,6 +61,13 @@ public class InlineHandler{
     
 	private static Preferences myPrefs;
 	
+	/**
+	 * Initializes the data necessary for the handling of inline code
+	 * @param data The top level of the PCLocation tree
+	 * @param prefs The Preference model to use
+	 * @param parentWin The SourceViewWidget in which to place the inline code
+	 * @return Whether or not the initialization was successful
+	 */
 	public static boolean init(PCLocation data, Preferences prefs, SourceViewWidget parentWin){
 		// If there's only one scope, we have no nead of inline functions
 		if(data.nextScope == null)
@@ -85,9 +92,23 @@ public class InlineHandler{
 		return true;
 	}
 	
-	public static boolean moveDown(){
+	/**
+	 * Moves the level of inline code being viewed down one level. This generalizes to a 
+	 * number of different cases:
+	 * <ol>
+	 * <li>No inline code is being displayed, in which case the first inline
+	 * block is shown</li>
+	 * <li>Fewer than n inline levels are shown, where n is the max number of
+	 * levels of inline code that can be displayed (gotten from the preference
+	 * model). In this case another level of code is nested</li>
+	 * <li>n Levels of inline code are show, in which case each level is shifted
+	 * down one level and a notification is shown to the user saying that levels
+	 * of inline code have been hidden</li>
+	 * </ol> 
+	 */
+	public static void moveDown(){
 		if(!initialized)
-			return false;
+			return;
         
         int scopeDiff;
         if(lastVisible != null)
@@ -105,7 +126,7 @@ public class InlineHandler{
 			 */
 			if(lastVisible == null){
 				if(!top.hasInlineScope())
-					return false;
+					return;
 				
 				lastVisible = new InlineViewer(myPrefs);
 				lastVisible.load(top.getInlineScope());
@@ -121,7 +142,7 @@ public class InlineHandler{
 				
                 // Do a quick check to make sure there are more levels to show...
                 if(!lastVisible.getScope().hasInlineScope())
-                    return false;
+                    return;
                 
 				lastVisible.nextLevel = new InlineViewer(myPrefs);
 				lastVisible.nextLevel.load(lastVisible.getScope().getInlineScope());
@@ -135,7 +156,7 @@ public class InlineHandler{
 			else{
                 // Check to see that we _can_ move down
                 if(!lastVisible.getScope().hasInlineScope())
-                    return false;
+                    return;
                 
 				InlineViewer current = firstVisible;
                 
@@ -154,16 +175,22 @@ public class InlineHandler{
                 current.prevLevel.setSubscopeAtCurrentLine(current);
                 
                 // we want to return false here so the last level doesn't think it's expanded
-                return false;
+                return;
 			}
 		}
-		
-		return true;
 	}
 	
-	public static boolean moveUp(InlineViewer clicked){
+	/**
+	 * Moves the level of inline code viewed in the source window up a level. All scopes
+	 * below the level that was clicked are collapsed, and if there is need to hide scopes
+	 * (i.e. the number of scopes is greater than the maximum in the preference model) then
+	 * the excess scopes will be hidden in the same way as {@link #moveDown()}. Note that
+	 * this function is called from instances of InlineViewer, wheras 
+	 * @param clicked The level of inline code that was clicked.
+	 */
+	public static void moveUp(InlineViewer clicked){
 		if(!initialized)
-			return false; 
+			return; 
         
 		if(verboseMode){
 			// Code here to collapse the lower viewers until we reach the one that was clicked
@@ -221,13 +248,17 @@ public class InlineHandler{
                 parent.showAll(); 
             }
 		}
-		
-		return true;
 	}
 	
-	public static boolean moveUp(SourceViewWidget clicked){
+	/**
+	 * This function hides all the levels of inline code below the
+	 * level that was clicked, which in this case happens to be the
+	 * top level. {@see #moveUp(InlineViewer)} for more information.
+	 * @param clicked The SourceViewWidget at the top of the hierarchy
+	 */
+	public static void moveUp(SourceViewWidget clicked){
 		if(!initialized)
-			return false;
+			return;
 		
 		parent.clearSubscopeAtCurrentLine();
 		
@@ -235,11 +266,12 @@ public class InlineHandler{
         
 		lastVisible = null;
         firstVisible = null;
-		
-		return true;
 	}
 
-	
+	/*
+	 * Shows all the inline scopes in the tree rooted at topScope, from startDepth until
+	 * endDepth.
+	 */
 	private static void showScopes(int startDepth, int endDepth, PCLocation topScope){
 		
 		for(int i = 1; i < startDepth; i++)

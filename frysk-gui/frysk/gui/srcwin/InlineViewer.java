@@ -93,9 +93,9 @@ public class InlineViewer extends SourceViewWidget {
 		 */
 		
 		if(this.nextLevel == null)
-			this.expanded = InlineHandler.moveDown();
+			InlineHandler.moveDown();
 		else
-			this.expanded = !InlineHandler.moveUp(this);
+			InlineHandler.moveUp(this);
 	}
 	
 	public void load(PCLocation current){

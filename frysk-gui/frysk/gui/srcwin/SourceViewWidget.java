@@ -336,13 +336,14 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			buf.insertText(line, "\n");
 		this.anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
 		
+		this.expanded = true;
 		this.addChild(child, anchor);
 	}
 	
 	public void clearSubscopeAtCurrentLine(){
 		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
 		buf.deleteText(line, buf.getIter(line.getOffset()+2));
-		
+		this.expanded = false;
 		this.anchor = null;
 	}
 	
@@ -370,12 +371,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 
 	public void toggleChild() {
-		if(!expanded){
-			expanded = InlineHandler.moveDown();
-		}
-		else{
-			expanded = !InlineHandler.moveUp(this);
-		}
+		if(!expanded)
+			InlineHandler.moveDown();
+		else
+			InlineHandler.moveUp(this);
 	}
 	
 	/*

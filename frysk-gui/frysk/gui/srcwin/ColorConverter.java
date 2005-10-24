@@ -41,6 +41,13 @@ package frysk.gui.srcwin;
 import org.gnu.gdk.Color;
 
 public class ColorConverter {
+	/**
+	 * Takes the given color and returns the hex string that represents it.
+	 * The returned string is of the format understood by TextBuffer for applying to
+	 * TextTags.
+	 * @param c The color to convert
+	 * @return The hex string representing the color
+	 */
 	public static String colorToHexString(Color c){
 		String s = "#";
 		
