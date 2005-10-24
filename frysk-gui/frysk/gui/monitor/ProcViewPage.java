@@ -81,7 +81,7 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
 
-public class AllProcWidget extends Widget implements ButtonListener, Saveable{
+public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
 	private SpinButton refreshSpinButton;
 	private Button refreshButton;
@@ -102,7 +102,7 @@ public class AllProcWidget extends Widget implements ButtonListener, Saveable{
 	
 	private LibGlade glade;
 	
-	public AllProcWidget(LibGlade libGlade) throws IOException {
+	public ProcViewPage(LibGlade libGlade) throws IOException {
 		super((libGlade.getWidget("allProcVBox")).getHandle());
 		this.glade = libGlade;
 		

@@ -53,16 +53,17 @@ public class MainWindow extends Window implements Saveable{
 		
 	private Notebook noteBook;
 	
-	private AllProcWidget allProcWidget;
+	private ProcViewPage procViewPage;
+	private ProgramViewPage programViewPage;
 	
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	public MainWindow(LibGlade glade) throws IOException {
 		super(((Window)glade.getWidget("procpopWindow")).getHandle());
 		
 		try {
-			this.allProcWidget = new AllProcWidget(glade);
-		} catch (IOException e)
-		{
+			this.procViewPage = new ProcViewPage(glade);
+			this.programViewPage = new ProgramViewPage(glade);
+		} catch (IOException e){
 			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e);
 		}
 		
@@ -78,7 +79,7 @@ public class MainWindow extends Window implements Saveable{
 		prefs.putInt("size.height", this.getSize().getHeight());
 		prefs.putInt("size.width", this.getSize().getWidth());
 		
-		allProcWidget.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget"));
+		procViewPage.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget"));
 	}
 
 	public void load(Preferences prefs) {
@@ -90,7 +91,7 @@ public class MainWindow extends Window implements Saveable{
 		int height = prefs.getInt("size.height", this.getSize().getHeight());
 		this.resize(width, height);
 		
-		allProcWidget.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget"));
+		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget"));
 	}
 	
 }
