@@ -91,12 +91,12 @@ public class TestExiting
 	extends TaskObserverBase
 	implements TaskObserver.Terminated
     {
-	public boolean updateTerminated (Task task, boolean signal, int value)
+	public Action updateTerminated (Task task, boolean signal, int value)
 	{
 	    taskTerminatedCount++;
 	    assertTrue ("terminated with signal", signal);
 	    taskTerminatedEventSig = value;
-	    return false;
+	    return Action.CONTINUE;
 	}
     }
 
@@ -104,12 +104,12 @@ public class TestExiting
 	extends TaskObserverBase
 	implements TaskObserver.Terminating
     {
-	public boolean updateTerminating (Task task, boolean signal, int value)
+	public Action updateTerminating (Task task, boolean signal, int value)
 	{
 	    taskExitingCount++;
 	    assertEquals ("task terminated count", 0, taskTerminatedCount);
 	    taskExitingEventSig = value;
-	    return false;
+	    return Action.CONTINUE;
 	}
     }
 

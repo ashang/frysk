@@ -515,8 +515,8 @@ abstract public class Task
 	    });
     }
     /**
-     * Delete TaskObserver from this tasks set of observers; also delete it
-     * from the set of blockers.
+     * Delete TaskObserver from this tasks set of observers; also
+     * delete it from the set of blockers.
      */
     public void requestDeleteObserver (final TaskObserver observerArg)
     {
@@ -530,10 +530,10 @@ abstract public class Task
 	    });
     }
     /**
-     * Notify all cloned observers that this task cloned.  Return true
-     * if this task should be left blocked.
+     * Notify all cloned observers that this task cloned.  Return the
+     * number of blocking observers.
      */
-    boolean notifyCloned (Task clone)
+    int notifyCloned (Task clone)
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
@@ -542,17 +542,17 @@ abstract public class Task
 	    if (o instanceof TaskObserver.Cloned) {
 		TaskObserver.Cloned observer
 		    = (TaskObserver.Cloned) o;
-		if (observer.updateCloned (this, clone))
+		if (observer.updateCloned (this, clone) == Action.BLOCK)
 		    blockers.add (observer);
 	    }
 	}
-	return blockers.size () > 0;
+	return blockers.size ();
     }
     /**
      * Notify all Attached observers that this task attached.  Return
-     * true if this task should be left blocked.
+     * the number of blocking observers.
      */
-    boolean notifyAttached ()
+    int notifyAttached ()
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
@@ -561,17 +561,17 @@ abstract public class Task
 	    if (o instanceof TaskObserver.Attached) {
 		TaskObserver.Attached observer
 		    = (TaskObserver.Attached) o;
-		if (observer.updateAttached (this))
+		if (observer.updateAttached (this) == Action.BLOCK)
 		    blockers.add (observer);
 	    }
 	}
-	return blockers.size () > 0;
+	return blockers.size ();
     }
     /**
-     * Notify all Forked observers that this task forked.  Return true
-     * if this task should be left blocked.
+     * Notify all Forked observers that this task forked.  Return the
+     * number of blocking observers.
      */
-    boolean notifyForked (Proc fork)
+    int notifyForked (Proc fork)
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
@@ -580,18 +580,17 @@ abstract public class Task
 	    if (o instanceof TaskObserver.Forked) {
 		TaskObserver.Forked observer
 		    = (TaskObserver.Forked) o;
-		if (observer.updateForked (this, fork))
+		if (observer.updateForked (this, fork) == Action.BLOCK)
 		    blockers.add (observer);
 	    }
 	}
-	return blockers.size () > 0;
+	return blockers.size ();
     }
     /**
      * Notify all Terminated observers, of this Task's demise.  Return
-     * true if this task should be left blocked (does this make any
-     * sense?).
+     * the number of blocking observers.  (Does this make any sense?)
      */
-    boolean notifyTerminated (boolean signal, int value)
+    int notifyTerminated (boolean signal, int value)
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
@@ -600,18 +599,17 @@ abstract public class Task
 	    if (o instanceof TaskObserver.Terminated) {
 		TaskObserver.Terminated observer
 		    = (TaskObserver.Terminated) o;
-		if (observer.updateTerminated (this, signal, value))
+		if (observer.updateTerminated (this, signal, value) == Action.BLOCK)
 		    blockers.add (observer);
 	    }
 	}
-	return blockers.size () > 0;
+	return blockers.size ();
     }
     /**
-     * Notify all Terminating observers, of this Task's demise.  Return
-     * true if this task should be left blocked (does this make any
-     * sense?).
+     * Notify all Terminating observers, of this Task's demise.
+     * Return the number of blocking observers.
      */
-    boolean notifyTerminating (boolean signal, int value)
+    int notifyTerminating (boolean signal, int value)
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
@@ -620,18 +618,17 @@ abstract public class Task
 	    if (o instanceof TaskObserver.Terminating) {
 		TaskObserver.Terminating observer
 		    = (TaskObserver.Terminating) o;
-		if (observer.updateTerminating (this, signal, value))
+		if (observer.updateTerminating (this, signal, value) == Action.BLOCK)
 		    blockers.add (observer);
 	    }
 	}
-	return blockers.size () > 0;
+	return blockers.size ();
     }
     /**
-     * Notify all Execed observers, of this Task's demise.  Return
-     * true if this task should be left blocked (does this make any
-     * sense?).
+     * Notify all Execed observers, of this Task's demise.  Return the
+     * number of blocking observers.
      */
-    boolean notifyExeced ()
+    int notifyExeced ()
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
@@ -640,10 +637,10 @@ abstract public class Task
 	    if (o instanceof TaskObserver.Execed) {
 		TaskObserver.Execed observer
 		    = (TaskObserver.Execed) o;
-		if (observer.updateExeced (this))
+		if (observer.updateExeced (this) == Action.BLOCK)
 		    blockers.add (observer);
 	    }
 	}
-	return blockers.size () > 0;
+	return blockers.size ();
     }
 }

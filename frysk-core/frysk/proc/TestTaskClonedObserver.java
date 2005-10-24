@@ -64,10 +64,10 @@ public class TestTaskClonedObserver
 	    implements TaskObserver.Cloned
 	{
 	    int count;
-	    public boolean updateCloned (Task task, Task clone)
+	    public Action updateCloned (Task task, Task clone)
 	    {
 		count++;
-		return false;
+		return Action.CONTINUE;
 	    }
 	}
 	CloneCounter cloneCounter = new CloneCounter ();
@@ -114,11 +114,11 @@ public class TestTaskClonedObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Cloned
 	{
-	    public boolean updateCloned (Task task, Task clone)
+	    public Action updateCloned (Task task, Task clone)
 	    {
 		addTask (task);
 		Manager.eventLoop.requestStop ();
-		return true;
+		return Action.BLOCK;
 	    }
 	}
 	CloneStopper cloneStopper = new CloneStopper ();

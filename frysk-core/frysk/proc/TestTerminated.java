@@ -97,12 +97,12 @@ public class TestTerminated
 	extends TaskObserverBase
 	implements TaskObserver.Terminated
     {
-	public boolean updateTerminated (Task task, boolean signal, int value)
+	public Action updateTerminated (Task task, boolean signal, int value)
 	{
 	    taskDestroyedCount++;
 	    assertTrue ("task killed with signal", signal);
 	    taskDestroyedEventSig = value;
-	    return false;
+	    return Action.CONTINUE;
 	}
     }
 

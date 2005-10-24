@@ -64,10 +64,10 @@ public class TestTaskForkedObserver
 	    implements TaskObserver.Forked
 	{
 	    int count;
-	    public boolean updateForked (Task task, Proc proc)
+	    public Action updateForked (Task task, Proc proc)
 	    {
 		count++;
-		return false;
+		return Action.CONTINUE;
 	    }
 	}
 	ForkObserver forkObserver = new ForkObserver ();
@@ -116,12 +116,12 @@ public class TestTaskForkedObserver
 	    implements TaskObserver.Forked
 	{
 	    int count;
-	    public boolean updateForked (Task task, Proc proc)
+	    public Action updateForked (Task task, Proc proc)
 	    {
 		count++;
 		addTask (task);
 		Manager.eventLoop.requestStop ();
-		return true;
+		return Action.BLOCK;
 	    }
 	}
 	ForkStopper forkStopper = new ForkStopper ();

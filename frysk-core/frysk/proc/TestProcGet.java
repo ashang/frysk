@@ -84,10 +84,10 @@ public class TestProcGet
 						public void deleted ()
 						{
 						}
-						public boolean updateAttached (Task task)
+						public Action updateAttached (Task task)
 						{
 						    auxv = task.proc.getAuxv ();
-						    return false;
+						    return Action.CONTINUE;
 						}
 					    });
 				    }

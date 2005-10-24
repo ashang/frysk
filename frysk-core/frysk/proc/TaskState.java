@@ -367,7 +367,7 @@ class TaskState
 	    {
 		// Remove all tasks, retaining just this one.
 		task.proc.retain (task);
-		if (task.notifyExeced ()) {
+		if (task.notifyExeced () > 0) {
 		    return blocked;
 		}
 		else {
@@ -400,7 +400,7 @@ class TaskState
 	    }
 	    TaskState processPerformCloned (Task task, Task clone)
 	    {
-		if (task.notifyCloned (clone)) {
+		if (task.notifyCloned (clone) > 0) {
 		    return blocked;
 		}
 		else {
@@ -410,7 +410,7 @@ class TaskState
 	    }
 	    TaskState processPerformForked (Task task, Proc fork)
 	    {
-		if (task.notifyForked (fork))
+		if (task.notifyForked (fork) > 0)
 		    return blocked;
 		else
 		    task.sendContinue (0);

@@ -803,10 +803,10 @@ public class TestLib
 	implements TaskObserver.Execed
     {
 	int numberExecs;
-	public boolean updateExeced (Task task)
+	public Action updateExeced (Task task)
 	{
 	    numberExecs++;
-	    return false;
+	    return Action.CONTINUE;
 	}
 	ExecCounter ()
 	{

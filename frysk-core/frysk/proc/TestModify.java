@@ -182,13 +182,13 @@ public class TestModify
 	extends TaskObserverBase
 	implements TaskObserver.Terminated
     {
-	public boolean updateTerminated (Task task, boolean signal, int value)
+	public Action updateTerminated (Task task, boolean signal, int value)
 	{
 	    if (!signal) {
 	    	exitedTaskEventStatus = value;
 	    	exited = true;
 	    }
-	    return false;
+	    return Action.CONTINUE;
 	}
     }
 

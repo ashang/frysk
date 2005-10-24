@@ -54,9 +54,9 @@ public interface TaskObserver
     {
 	/**
 	 * Called when this TASK has cloned, creating CLONE.  Return
-	 * true if this observer wants this task to block.
+	 * Action.BLOCK if this observer wants this task to block.
 	 */
-	boolean updateCloned (Task task, Task clone);
+	Action updateCloned (Task task, Task clone);
     }
 
     /**
@@ -68,9 +68,9 @@ public interface TaskObserver
     {
 	/**
 	 * Called when the Task has forked, creating a child Proc.
-	 * Return true if the observer wants the task to block.
+	 * Return Action.BLOCK if the observer wants the task to block.
 	 */
-	boolean updateForked (Task task, Proc child);
+	Action updateForked (Task task, Proc child);
     }
 
     /**
@@ -81,10 +81,10 @@ public interface TaskObserver
 	extends TaskObserver
     {
 	/**
-	 * Called AFTER the Task has execed.  Return true if the
-	 * observer wants the task to block.
+	 * Called AFTER the Task has execed.  Return Action.BLOCK if
+	 * the observer wants the task to block.
 	 */
-	boolean updateExeced (Task task);
+	Action updateExeced (Task task);
     }
 
     /**
@@ -96,11 +96,12 @@ public interface TaskObserver
 	/**
 	 * Called while the Task is terminating; while the process
 	 * still exists not much other than examining it can be
-	 * performed.  If SIGNAL, the termination was forced
-	 * using signal VALUE, otherwize the termination is due to an
+	 * performed.  If SIGNAL, the termination was forced using
+	 * signal VALUE, otherwize the termination is due to an
 	 * _exit(2) call.
 	 */
-	boolean updateTerminating (Task task, boolean signal, int value);
+	Action updateTerminating (Task task, boolean signal,
+					   int value);
     }
 
     /**
@@ -116,7 +117,8 @@ public interface TaskObserver
 	 * VALUE, otherwize the termination is due to an _exit(2)
 	 * call.
 	 */
-	boolean updateTerminated (Task task, boolean signal, int value);
+	Action updateTerminated (Task task, boolean signal,
+					  int value);
     }
 
     /**
@@ -126,10 +128,10 @@ public interface TaskObserver
 	extends TaskObserver
     {
 	/**
-	 * The SIGNAL is pending delivery to the task.  Return true to
-	 * block the task's further execution.
+	 * The SIGNAL is pending delivery to the task.  Return
+	 * Action.BLOCK to block the task's further execution.
 	 */
-	boolean updateTerminated (Task task, int signal);
+	Action updateTerminated (Task task, int signal);
     }
 
     /**
@@ -140,15 +142,15 @@ public interface TaskObserver
 	extends TaskObserver
     {
 	/**
-	 * The Task is entering a system call.  Return true to block
-	 * the task's further execution.
+	 * The Task is entering a system call.  Return Action.BLOCK to
+	 * block the task's further execution.
 	 */
-	boolean updateSysEnter (Task task, int syscall);
+	Action updateSysEnter (Task task, int syscall);
 	/**
-	 * The task is exiting a system call.  Return true to block
-	 * the task's further execution.
+	 * The task is exiting a system call.  Return Action.BLOCK to
+	 * block the task's further execution.
 	 */
-	boolean updateSysExit (Task task, int syscall);
+	Action updateSysExit (Task task, int syscall);
     }
 
     /**
@@ -159,9 +161,10 @@ public interface TaskObserver
 	extends TaskObserver
     {
 	/**
-	 * The task has executed one instruction.
+	 * The task has executed one instruction.  Return Action.BLOCK
+	 * to block the task's further execution.
 	 */
-	boolean updateExecuted (Task task);
+	Action updateExecuted (Task task);
     }
 
     /**
@@ -176,9 +179,10 @@ public interface TaskObserver
 	 */
 	long getAddress ();
 	/**
-	 * The task has hit the breakpoint.
+	 * The task has hit the breakpoint.  Return Action.BLOCK to
+	 * block the task's further execution.
 	 */
-	boolean updateHit (Task task);
+	Action updateHit (Task task);
     }
 
     /**
@@ -197,6 +201,6 @@ public interface TaskObserver
 	/**
 	 * The Task is attached.
 	 */
-	boolean updateAttached (Task task);
+	Action updateAttached (Task task);
     }
 }

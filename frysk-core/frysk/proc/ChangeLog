@@ -1,3 +1,14 @@
+2005-10-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Action.java: New.  * TaskObserver.java: Change doc so that
+	observers return Action.BLOCK to to block.
+	* Task.java: Update .notifyCloned, .notifyAttached, .notifyForked,
+	.notifyTerminated, .notifyTerminating, .notifyExeced; have them
+	return the block count.
+	* TestTerminated.java, TestTaskForkedObserver.java,
+	TestTaskClonedObserver.java, TestProcGet.java, TestModify.java,
+	TestLib.java, TestExiting.java, TaskState.java: Update.
+
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java: Fold in TaskEventObservable.
