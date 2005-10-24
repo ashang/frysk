@@ -1,3 +1,9 @@
+2005-10-25  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java: New File.
+	* WindowManager.java: Added ProgramAddWindow handles.
+	Close window on startup.
+
 2005-10-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* MainWindow.java: Added a handle for ProgramViewPage.
