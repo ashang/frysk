@@ -9,7 +9,17 @@
 #include <gtk/gtk.h>
 #include "ftkstripchart.h"
 
-#define ALLOCATION_WIDTH 150
+#define ALLOCATION_WIDTH    150
+#define TITLE_BASE_X_OFFSET  10
+#define TITLE_ASCENT         16
+#define TITLE_SPACING        10
+#define BOTTOM_MARGIN        15
+#define TOP_MARGIN           18
+#define RIGHT_MARGIN         10
+#define TIC_LENGTH            8
+#define START_TS_X_OFFSET    10
+#define START_TS_Y_OFFSET     0
+#define BS_LENGTH 64
 
 GQuark ftk_quark;
 
@@ -30,7 +40,8 @@ ftk_stripchart_class_init (FtkStripchartClass *klass)
   ftk_stripchart_signals[FTK_STRIPCHART_SIGNAL]
     = g_signal_new ("ftkstripchart",
 		    G_TYPE_FROM_CLASS (klass),
-		    G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+		    G_SIGNAL_RUN_LAST,
+		    /*		    G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, */
 		    G_STRUCT_OFFSET (FtkStripchartClass, ftkstripchart),
 		    NULL, 
 		    NULL,                
@@ -49,7 +60,7 @@ ftk_stripchart_configure( GtkWidget * widget,
   GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
 
   //  fprintf (stderr, "configure\n");
-
+  
   if (stripchart_pixmap (stripchart))
     gdk_pixmap_unref(stripchart_pixmap (stripchart));
   stripchart_pixmap (stripchart) = gdk_pixmap_new(widget->parent->window,
@@ -90,14 +101,6 @@ ftk_stripchart_expose( GtkWidget * widget,
   int base_y;
   int title_offset;
   
-#define TITLE_BASE_X_OFFSET  10
-#define TITLE_ASCENT         16
-#define TITLE_SPACING         10
-#define BASE_OFFSET    15
-#define TIC_LENGTH      8
-
-#define float_tv(s,u) (((double)(s)) + (((double)(u))/1.0e6))
-  
   FtkStripchart * stripchart = FTK_STRIPCHART (widget);
   GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
 
@@ -119,7 +122,7 @@ ftk_stripchart_expose( GtkWidget * widget,
   d_bin_width = float_tv (stripchart_bin_width_secs(stripchart),
 			  stripchart_bin_width_secs(stripchart));
   bin_width =
-    lrint (((double)(draw_width)) * d_bin_width/d_range);
+    lrint (((double)(draw_width - RIGHT_MARGIN)) * d_bin_width/d_range);
 
   max_count = 0;
   for (i = stripchart_event_next (stripchart) - 1;  i >= 0;  i--) {
@@ -130,6 +133,9 @@ ftk_stripchart_expose( GtkWidget * widget,
 	stripchart_event_count(stripchart, i, FTK_STRIPCHART_TYPE_TOTAL);
   }
 
+
+  /* print legend in associated colors */
+  
   title_offset = TITLE_BASE_X_OFFSET;
   for (i = FTK_STRIPCHART_TYPE_FORK; i < FTK_STRIPCHART_TYPE_LAST; i++) {
     int width;
@@ -142,11 +148,41 @@ ftk_stripchart_expose( GtkWidget * widget,
 				 &width, NULL);
     title_offset += width + TITLE_SPACING;
   }
+
+
+  /* print beginning timestamp */
+
+  {
+    struct tm res;
+    char bs[BS_LENGTH];
+
+    localtime_r (&beginning.tv_sec, &res);
+    snprintf (bs, BS_LENGTH, "%02d:%02d:%02d.%04d",
+	      res.tm_hour, res.tm_min, res.tm_sec,
+	      beginning.tv_usec/100);
+    
+    pango_layout_set_text (stripchart_base_readout(stripchart),
+			   bs, strlen (bs));
+    gdk_draw_layout (stripchart_pixmap (stripchart),
+		     widget->style->white_gc,
+		     START_TS_X_OFFSET,
+		     START_TS_Y_OFFSET,
+		     stripchart_base_readout(stripchart));
+    
+    gdk_draw_layout (stripchart_pixmap (stripchart),
+		     widget->style->white_gc,
+		     START_TS_X_OFFSET + 200,
+		     START_TS_Y_OFFSET,
+		     stripchart_motion_readout(stripchart));
+  }
+
   
-		   
-  base_y = draw_height - BASE_OFFSET;
+  /* draw ticmarks */
+  
+  base_y = draw_height - BOTTOM_MARGIN;
   for (i = 0; i <= max_count; i++) {
-    int dy = lrint (((double)((draw_height - BASE_OFFSET) * i))
+    int dy = lrint (((double)((draw_height -
+			       (BOTTOM_MARGIN + TOP_MARGIN)) * i))
 		    / ((double)max_count));
     gdk_draw_line (stripchart_pixmap (stripchart),
 		   widget->style->white_gc,
@@ -155,6 +191,9 @@ ftk_stripchart_expose( GtkWidget * widget,
 		   draw_width,
 		   base_y - dy);
   }
+
+
+  /* draw histogram */
   
   for (i = stripchart_event_next (stripchart) - 1;  i >= 0;  i--) {
     if (timercmp (&stripchart_event_tv(stripchart, i), &beginning, <)) break;
@@ -167,15 +206,15 @@ ftk_stripchart_expose( GtkWidget * widget,
       d_this = float_tv (stripchart_event_tv_sec(stripchart, i),
 			 stripchart_event_tv_usec(stripchart, i));
       offset = (d_this - (d_beginning + d_bin_width))/d_range;
-      dx = lrint (offset * (double)(draw_width));
+      dx = lrint (offset * (double)(draw_width - RIGHT_MARGIN));
       
-      base_y = draw_height - BASE_OFFSET;
+      base_y = draw_height - BOTTOM_MARGIN;
       for (j = FTK_STRIPCHART_TYPE_FORK; j < FTK_STRIPCHART_TYPE_LAST; j++) {
 	if (0 < stripchart_event_count(stripchart, i, j)) {
-	  dy = lrint (((double)((draw_height - BASE_OFFSET) *
+	  dy = lrint (((double)((draw_height - (BOTTOM_MARGIN + TOP_MARGIN)) *
 				stripchart_event_count(stripchart, i, j)))
 		      / ((double)max_count));
-	
+	  
 	  gdk_draw_rectangle (stripchart_pixmap (stripchart),
 			      stripchart_event_spec_gc(stripchart, j),
 			      TRUE,
@@ -199,14 +238,17 @@ ftk_stripchart_expose( GtkWidget * widget,
 			draw_height);
 		      
 }
-  
+
+#if 0
 static void
 ftk_stripchart_stripchart( GtkWidget * widget,
 			   GdkEventExpose * event,
 			   gpointer data)
 {
-  fprintf (stderr, "ftkstripchart signal\n");
+  // fprintf (stderr, "ftkstripchart signal %d\n", GPOINTER_TO_INT (data));
+  ftk_stripchart_expose(widget, NULL, NULL);
 }
+#endif
 
 static void
 init_current_bin (FtkStripchart * stripchart)
@@ -224,7 +266,7 @@ static void
 timer_catcher (sigval_t sigval)
 {
   FtkStripchart * stripchart = GINT_TO_POINTER(sigval.sival_int);
-  ftk_stripchart_expose(GTK_WIDGET (stripchart), NULL, NULL);
+  //  ftk_stripchart_expose(GTK_WIDGET (stripchart), NULL, NULL);
   
   if (TRUE == stripchart_current_tv_modified(stripchart)) {
 
@@ -251,9 +293,11 @@ timer_catcher (sigval_t sigval)
   }
 
   
+  g_signal_emit (stripchart,
+		 ftk_stripchart_signals[FTK_STRIPCHART_SIGNAL],
+		 0);
 #if 0
-  g_signal_emit_by_name (GTK_OBJECT (refresh_button),
-                           "clicked");
+  g_signal_emit_by_name (GTK_OBJECT (stripchart_tc), "expose_event");
 #endif
 }
 
@@ -349,6 +393,64 @@ static event_info_s event_info[FTK_STRIPCHART_TYPE_LAST] = {
   }
 };
 
+static gint
+motion_notify_event( GtkWidget * widget,
+		     GdkEventMotion * event,
+		     gpointer data)
+{
+  int width;
+  int height;
+  char bs[BS_LENGTH];
+  FtkStripchart * stripchart = FTK_STRIPCHART (widget);
+  double frac =  (((double)(event->x)) /
+		  ((double)(widget->allocation.width - RIGHT_MARGIN)));
+  double d_range =
+    float_tv (stripchart_range_secs(stripchart),
+	      stripchart_range_secs(stripchart));
+  
+  pango_layout_get_pixel_size (stripchart_motion_readout(stripchart),
+			       &width, &height);
+  gdk_draw_rectangle (stripchart_pixmap (stripchart),
+		      widget->style->black_gc,
+		      TRUE,
+		      START_TS_X_OFFSET + 200,
+		      START_TS_Y_OFFSET,
+		      width, height);
+  if (1.0 >= frac) {
+    sprintf (bs, "%7.4f", d_range * frac);
+    pango_layout_set_text (stripchart_motion_readout(stripchart),
+			   bs, strlen (bs));
+  }
+  else {
+    pango_layout_set_text (stripchart_motion_readout(stripchart), "", 0);
+  }
+  gdk_draw_layout (stripchart_pixmap (stripchart),
+		   widget->style->white_gc,
+		   START_TS_X_OFFSET + 200,
+		   START_TS_Y_OFFSET,
+		   stripchart_motion_readout(stripchart));
+  pango_layout_get_pixel_size (stripchart_motion_readout(stripchart),
+			       &width, &height);
+  if (GDK_IS_PIXMAP (stripchart_pixmap (stripchart)))
+      gdk_draw_drawable(widget->window,
+			widget->style->bg_gc[GTK_WIDGET_STATE (widget)],
+			stripchart_pixmap (stripchart),
+			START_TS_X_OFFSET + 200,
+			START_TS_Y_OFFSET,
+			START_TS_X_OFFSET + 200,
+			START_TS_Y_OFFSET,
+			width,
+			height);
+  return TRUE;
+}
+
+#if 0
+static gint
+button_press_event( GtkWidget * widget, GdkEventMotion * event)
+{
+}
+#endif
+
 static void
 ftk_stripchart_init (FtkStripchart * stripchart)
 {
@@ -357,14 +459,31 @@ ftk_stripchart_init (FtkStripchart * stripchart)
   gtk_widget_set_size_request (GTK_WIDGET (da),
 			       FTK_STRIPCHART_INITIAL_WIDTH,
 			       FTK_STRIPCHART_INITIAL_HEIGHT);
+
   stripchart_pixmap (stripchart) = NULL;
   
   gtk_signal_connect (GTK_OBJECT (da), "expose_event",
 		      (GtkSignalFunc) ftk_stripchart_expose, NULL);
   gtk_signal_connect (GTK_OBJECT(da),"configure_event",
 		      (GtkSignalFunc) ftk_stripchart_configure, NULL);
-  gtk_signal_connect (GTK_OBJECT(stripchart),"ftkstripchart",
-		      (GtkSignalFunc) ftk_stripchart_stripchart, NULL);
+#if 0
+  gtk_signal_connect (GTK_OBJECT(da),"ftkstripchart",
+		      (GtkSignalFunc) ftk_stripchart_stripchart,
+		      GINT_TO_POINTER (67));
+#else
+  gtk_signal_connect (GTK_OBJECT(da),"ftkstripchart",
+		      (GtkSignalFunc) ftk_stripchart_expose, NULL);
+#endif
+
+  gtk_widget_set_events(GTK_WIDGET (da), 
+			GDK_POINTER_MOTION_MASK /* |
+						   GDK_BUTTON_PRESS_MASK*/);
+#if 0
+  gtk_signal_connect (GTK_OBJECT(da), "button_press_event",
+		      G_CALLBACK (button_press_event), NULL);
+#endif
+  gtk_signal_connect (GTK_OBJECT(da), "motion_notify_event",
+		      G_CALLBACK (motion_notify_event), stripchart);
 
   {
     int i;
@@ -380,6 +499,12 @@ ftk_stripchart_init (FtkStripchart * stripchart)
 					event_info[i].title);
     }
   }
+  
+  stripchart_base_readout(stripchart) =
+    gtk_widget_create_pango_layout (GTK_WIDGET (stripchart), "");
+  
+  stripchart_motion_readout(stripchart) =
+    gtk_widget_create_pango_layout (GTK_WIDGET (stripchart), "");
 
   stripchart_timer_set(stripchart) = FALSE;
 

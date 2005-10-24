@@ -65,6 +65,9 @@ typedef struct _FtkStripchart {
   gboolean timer_set;
   struct timeval range;
   struct timeval bin_width;
+  PangoLayout * base_readout;
+  PangoLayout * motion_readout;
+  double readout;
 } FtkStripchart;
 
 #define stripchart_drawingarea(s)	  (s)->drawingarea
@@ -103,7 +106,10 @@ typedef struct _FtkStripchart {
 #define stripchart_bin_width(s)           (s)->bin_width
 #define stripchart_bin_width_secs(s)      (s)->bin_width.tv_sec
 #define stripchart_bin_width_usecs(s)     (s)->bin_width.tv_usec
+#define stripchart_base_readout(s)        (s)->base_readout
+#define stripchart_motion_readout(s)      (s)->motion_readout
 
+#define float_tv(s,u) (((double)(s)) + (((double)(u))/1.0e6))
 
 typedef struct _FtkStripchartClass {
   GtkDrawingAreaClass parent_class;

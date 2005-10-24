@@ -73,7 +73,7 @@ int main( int   argc,
   /* _e suffixed versions of the fcns tell you if something screwed up */
   err = NULL;
   ftk_stripchart_set_update_e (FTK_STRIPCHART (stripchart1),
-			       1000, &err); /* ms bin width */
+			       1111, &err); /* ms bin width */
   if (NULL != err) {
     fprintf (stderr, "Unable to set update: %s\n", err->message);
     g_error_free (err);
