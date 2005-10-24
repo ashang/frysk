@@ -75,7 +75,7 @@
 		      <child>
 			<widget class="GtkMenuItem" id="prefrencesMenuItem">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">_Prefrences</property>
+			  <property name="label" translatable="yes">_Preferences</property>
 			  <property name="use_underline">True</property>
 			</widget>
 		      </child>

@@ -34,11 +34,12 @@ public class GuiData {
 		this.observerAdded.notifyObservers(observer);
 	}
 	
-	public void add(TaskExecObserver observer){
+	public void add(final TaskExecObserver observer){
 		this.add((ObserverRoot)observer);
 		observer.addRunnable(new ObserverRunnable(){
 			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Recieved TaskExec Event !");				
+				System.out.println(observer.toString());
+				DialogManager.showWarnDialog("Received TaskExec Event !");				
 			}
 		});
 	}
@@ -47,7 +48,7 @@ public class GuiData {
 		this.add((ObserverRoot)observer);
 		observer.addRunnable(new ObserverRunnable(){
 			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Recieved TaskExiting Event !");				
+				DialogManager.showWarnDialog("Received TaskExiting Event !");				
 			}
 		});
 	}

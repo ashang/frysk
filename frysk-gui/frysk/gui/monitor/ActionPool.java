@@ -209,7 +209,7 @@ public class ActionPool {
 
 			public Detach() {
 				this.name = "Detach";
-				this.toolTip = "Dettach from an attached process";
+				this.toolTip = "Detach from an attached process";
 			}
 	
 			public void execute(final ProcData data) {
