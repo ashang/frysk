@@ -1,5 +1,8 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* ActionPool.java: Replace use of Proc .taskExeced with runtime
+	exception throw.
+
 	* ActionPool.java: Replace use of Proc .taskExiting with runtime
 	exception throw.
 

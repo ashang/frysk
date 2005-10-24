@@ -1,5 +1,11 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Use TaskObserver .Execed.
+	* Task.java: Add .notifyExeced.
+	* TaskState.java: Replace Proc ..taskExeced with Task
+	.notifyExeced.
+	* Proc.java: Delete .taskExeced.
+	
 	* Proc.java: Delete .taskExiting.
 	* Task.java: Add .notifyTerminating.
 	* TestExiting.java: Use TaskObserver .Terminating.

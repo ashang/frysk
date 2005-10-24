@@ -365,12 +365,15 @@ class TaskState
 	    }
 	    TaskState processPerformExeced (Task task)
 	    {
-		TaskEvent event = new TaskEvent.Execed (task);
-		task.proc.taskExeced.notify (event);
 		// Remove all tasks, retaining just this one.
 		task.proc.retain (task);
-		task.sendContinue (0);
-		return running;
+		if (task.notifyExeced ()) {
+		    return blocked;
+		}
+		else {
+		    task.sendContinue (0);
+		    return running;
+		}
 	    }
     	    TaskState processPerformZombied (Task task)
     	    {

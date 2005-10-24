@@ -799,8 +799,15 @@ public class TestLib
      * Count the number of task exec calls.
      */
     protected class ExecCounter
+	extends TaskObserverBase
+	implements TaskObserver.Execed
     {
 	int numberExecs;
+	public boolean updateExeced (Task task)
+	{
+	    numberExecs++;
+	    return false;
+	}
 	ExecCounter ()
 	{
 	    Manager.host.observableProcAdded.addObserver (new Observer ()
@@ -808,23 +815,12 @@ public class TestLib
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
-
-			// XXX: Disable for moment, will be needed
-			// once the exec observer is bound to the
-			// task.
-
-// 			proc.observableTaskAdded.addObserver (new Observer ()
-// 			    {
-// 				public void update (Observable o, Object obj)
-// 				{
-// 				    Task task = (Task) obj;
-// 				}
-// 			    });
-			proc.taskExeced.addObserver (new Observer ()
+			proc.observableTaskAdded.addObserver (new Observer ()
 			    {
 				public void update (Observable o, Object obj)
 				{
-				    numberExecs++;
+				    Task task = (Task) obj;
+				    task.requestAddObserver (ExecCounter.this);
 				}
 			    });
 		    }

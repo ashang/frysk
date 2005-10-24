@@ -366,10 +366,6 @@ public abstract class Proc
 	host.removeTasks (tasks);
     }
 
-    // Other observable events, for the moment keep these in the proc
-    // (should they be per-task?).
-    public TaskEventObservable taskExeced = new TaskEventObservable ();
-
     public abstract Auxv[] getAuxv ();
 
     /**

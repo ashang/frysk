@@ -45,7 +45,7 @@ import java.util.Observer;
 import frysk.gui.monitor.observers.ProcCloneObserver;
 import frysk.gui.monitor.observers.ProcForkObserver;
 import frysk.gui.monitor.observers.SyscallObserver;
-import frysk.gui.monitor.observers.TaskExecObserver;
+// import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskExitingObserver;
 import frysk.proc.Manager;
 
@@ -304,18 +304,20 @@ public class ActionPool {
 		}
 
 		public void execute(ProcData data) {
-			TaskExecObserver taskExecObserver = new TaskExecObserver();
+		    throw new RuntimeException ("XXX: use TaskObserver .Execed");
+// 			TaskExecObserver taskExecObserver = new TaskExecObserver();
 
-			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
-			data.getProc().taskExeced.addObserver(taskExecObserver);
+// 			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
+// 			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
+// 			data.getProc().taskExeced.addObserver(taskExecObserver);
 			
-			data.add(taskExecObserver);
+// 			data.add(taskExecObserver);
 		}
 
 		public void removeObservers(ProcData data) {
-			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExeced.deleteObserver(eventLog.taskExecObserver);
+		    throw new RuntimeException ("XXX: Use TaskObserver .Execed");
+// 			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
+// 			data.getProc().taskExeced.deleteObserver(eventLog.taskExecObserver);
 		}
 
 	}
