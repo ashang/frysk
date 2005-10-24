@@ -1,6 +1,7 @@
 2005-10-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	glade/procpop.glade: Fix typos.
+	Add ProgramAddWindow.
 	monitor/ActionPool.java: Ditto.
 	monitor/GuiData.java: Ditto.
 
