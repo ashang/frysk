@@ -1,5 +1,8 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Fold in TaskEventObservable.
+	* TaskEventObservable.java: Delete file.
+
 	* TestLib.java: Use TaskObserver .Execed.
 	* Task.java: Add .notifyExeced.
 	* TaskState.java: Replace Proc ..taskExeced with Task

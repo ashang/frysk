@@ -44,6 +44,7 @@ import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Observable;
 
 abstract public class Task
 {
@@ -447,6 +448,15 @@ abstract public class Task
 	return state.isDead ();
     }
 
+    public class TaskEventObservable
+	extends Observable
+    {
+	protected void notify (TaskEvent event)
+	{
+	    setChanged ();
+	    notifyObservers (event);
+	}
+    }
     public TaskEventObservable syscallEvent = new TaskEventObservable ();
     public TaskEventObservable stopEvent = new TaskEventObservable ();
     public TaskEventObservable stepEvent = new TaskEventObservable ();
