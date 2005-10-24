@@ -150,18 +150,16 @@ public class TestModify
             Proc proc = (Proc) obj;
 	    if (!isChildOfMine (proc))
 		return;
-            proc.taskDestroyed.addObserver (new TaskTerminatedObserver ());
 	    registerChild (proc.getId ().hashCode ());
-            proc.observableTaskAdded.addObserver
-                (new Observer () {
-                        public void update (Observable o, Object obj)
-                        {
-                            Task task = (Task) obj;
- 			    task.stopEvent.addObserver (taskEventObserver);
-
-                        }
-                    }
-                 );
+            proc.observableTaskAdded.addObserver (new Observer ()
+		{
+		    public void update (Observable o, Object obj)
+		    {
+			Task task = (Task) obj;
+			task.requestAddObserver (new TaskTerminatedObserver ());
+			task.stopEvent.addObserver (taskEventObserver);
+		    }
+		});
         }
     }
 
@@ -181,15 +179,16 @@ public class TestModify
     }
 
     class TaskTerminatedObserver
-	implements Observer
+	extends TaskObserverBase
+	implements TaskObserver.Terminated
     {
-	public void update (Observable o, Object obj)
+	public boolean updateTerminated (Task task, boolean signal, int value)
 	{
-	    if (obj instanceof TaskEvent.Exited) {
-	    	TaskEvent.Exited taskEvent = (TaskEvent.Exited) obj;
-	    	exitedTaskEventStatus = taskEvent.status;
+	    if (!signal) {
+	    	exitedTaskEventStatus = value;
 	    	exited = true;
 	    }
+	    return false;
 	}
     }
 

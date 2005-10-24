@@ -171,13 +171,13 @@ class TaskState
      * XXX: GCJ botches the code gen for a call to this method, from
      * an anonymous inner class, when this method isn't static.
      */
-    protected static void processAttachedDestroy (Task task, TaskEvent event)
+    protected static void processAttachedTerminated (Task task, boolean signal,
+						     int value)
     {
-	task.proc.taskDestroyed.notify (event);
+	task.notifyTerminated (signal, value);
 	// A process with no tasks is dead ...?
 	if (task.proc.taskPool.size () == 0) {
-	    if (task.proc.parent != null)
-		task.proc.parent.remove (task.proc);
+	    task.proc.parent.remove (task.proc);
 	    task.proc.host.remove (task.proc);
 	}
     }
@@ -263,9 +263,8 @@ class TaskState
 	    TaskState processPerformTerminated (Task task, boolean signal,
 						int value)
 	    {
-		TaskEvent event = new TaskEvent.Terminated (task, value);
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
+		task.proc.remove (task);
+		processAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
 	    TaskState processRequestAddObserver (Task task,
@@ -360,13 +359,8 @@ class TaskState
 	    TaskState processPerformTerminated (Task task, boolean signal,
 						int value)
 	    {
-		TaskEvent event;
-		if (signal)
-		    event = new TaskEvent.Terminated (task, value);
-		else
-		    event = new TaskEvent.Exited (task, value);
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
+		task.proc.remove (task);
+		processAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
 	    TaskState processPerformExeced (Task task)
@@ -550,9 +544,8 @@ class TaskState
 	    TaskState processPerformTerminated (Task task, boolean signal,
 						int value)
 	    {
-		TaskEvent event = new TaskEvent.Exited (task, value);
-		task.proc.remove (event.task);
-		processAttachedDestroy (task, event);
+		task.proc.remove (task);
+		processAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
 	    TaskState processPerformTerminating (Task task, boolean signal,

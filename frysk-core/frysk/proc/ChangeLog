@@ -1,5 +1,12 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Delete .taskDestroyed.
+	* TaskState.java: Replace Proc .taskDestroyed, with Task
+	.notifyTerminated.
+	* Task.java: Add .notifyTerminated.
+	* TestTerminated.java, TestModify.java, TestExiting.java: Use
+	TaskObserver .Terminated.
+
 	* TaskState.java: When fork, call Task .notifyForked.
 	* Task.java: Add .notifyForked.
 	* TestTaskForkedObserver.java: New.

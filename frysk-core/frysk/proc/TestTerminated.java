@@ -73,7 +73,6 @@ public class TestTerminated
 		return;
 	    registerChild (proc.getId ().hashCode ());
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    proc.taskDestroyed.addObserver (new TaskDestroyedObserver ());
         }
     }
  
@@ -90,18 +89,20 @@ public class TestTerminated
 	    taskCreatedCount++;
 	    assertEquals ("Only one task created", 1, taskCreatedCount);
 	    Manager.eventLoop.add (new KillTimerEvent (task, 100));
+	    task.requestAddObserver (new TaskDestroyedObserver ());
 	}
     }
 
     class TaskDestroyedObserver
-	implements Observer
+	extends TaskObserverBase
+	implements TaskObserver.Terminated
     {
-	public void update (Observable o, Object obj)
+	public boolean updateTerminated (Task task, boolean signal, int value)
 	{
 	    taskDestroyedCount++;
-	    // If it wasn't a terminate event, the task will fail.
-	    TaskEvent.Terminated terminatedTaskEvent = (TaskEvent.Terminated) obj;
-	    taskDestroyedEventSig = terminatedTaskEvent.signal;
+	    assertTrue ("task killed with signal", signal);
+	    taskDestroyedEventSig = value;
+	    return false;
 	}
     }
 

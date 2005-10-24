@@ -576,4 +576,24 @@ abstract public class Task
 	}
 	return blockers.size () > 0;
     }
+    /**
+     * Notify all Terminated observers, of this Task's demise.  Return
+     * true if this task should be left blocked (does this make any
+     * sense?).
+     */
+    boolean notifyTerminated (boolean signal, int value)
+    {
+	for (Iterator i = observers.iterator ();
+	     i.hasNext (); ) {
+	    Object observer = i.next ();
+	    // XXX: This would work better if there were generics.
+	    if (observer instanceof TaskObserver.Terminated) {
+		TaskObserver.Terminated clonedObserver
+		    = (TaskObserver.Terminated) observer;
+		if (clonedObserver.updateTerminated (this, signal, value))
+		    blockers.add (clonedObserver);
+	    }
+	}
+	return blockers.size () > 0;
+    }
 }

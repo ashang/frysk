@@ -366,9 +366,6 @@ public abstract class Proc
 	host.removeTasks (tasks);
     }
 
-    /** XXX: xTempoary observer, for code needing an exit-status.  */
-    public TaskEventObservable taskDestroyed = new TaskEventObservable ();
-
     // Other observable events, for the moment keep these in the proc
     // (should they be per-task?).
     public TaskEventObservable taskExiting = new TaskEventObservable ();
