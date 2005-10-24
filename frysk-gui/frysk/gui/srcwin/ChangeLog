@@ -16,7 +16,7 @@
 	(SourceWindow): Initialize Tooltips.
 	(createSearchBar): Changes tooltips to use member instance (jg bug
 	#319415)
-	*cparser/CDTParser.java (parse): Removed debug output
+	* cparser/CDTParser.java (parse): Removed debug output
 
 2005-10-20  Adam Jocksch  <ajocksch@redhat.com>
 
