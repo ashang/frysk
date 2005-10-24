@@ -254,6 +254,7 @@ class TaskState
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)
 	    {
+		task.notifyTerminating (signal, value);
 		if (signal)
 		    task.sendContinue (value);
 		else
@@ -348,8 +349,7 @@ class TaskState
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)
 	    {
-		TaskEvent event = new TaskEvent.Exiting (task, value);
-		task.proc.taskExiting.notify (event);
+		task.notifyTerminating (signal, value);
 		if (signal)
 		    task.sendContinue (value);
 		else
@@ -551,8 +551,7 @@ class TaskState
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)
 	    {
-		TaskEvent event = new TaskEvent.Exiting (task, value);
-		task.proc.taskExiting.notify (event);
+		task.notifyTerminating (signal, value);
 // 		if (signal)
 // 		    task.sendContinue (value);
 // 		else

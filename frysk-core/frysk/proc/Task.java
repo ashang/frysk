@@ -527,13 +527,13 @@ abstract public class Task
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
-	    Object observer = i.next ();
+	    Object o = i.next ();
 	    // XXX: This would work better if there were generics.
-	    if (observer instanceof TaskObserver.Cloned) {
-		TaskObserver.Cloned clonedObserver
-		    = (TaskObserver.Cloned) observer;
-		if (clonedObserver.updateCloned (this, clone))
-		    blockers.add (clonedObserver);
+	    if (o instanceof TaskObserver.Cloned) {
+		TaskObserver.Cloned observer
+		    = (TaskObserver.Cloned) o;
+		if (observer.updateCloned (this, clone))
+		    blockers.add (observer);
 	    }
 	}
 	return blockers.size () > 0;
@@ -546,13 +546,13 @@ abstract public class Task
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
-	    Object observer = i.next ();
+	    Object o = i.next ();
 	    // XXX: This would work better if there were generics.
-	    if (observer instanceof TaskObserver.Attached) {
-		TaskObserver.Attached clonedObserver
-		    = (TaskObserver.Attached) observer;
-		if (clonedObserver.updateAttached (this))
-		    blockers.add (clonedObserver);
+	    if (o instanceof TaskObserver.Attached) {
+		TaskObserver.Attached observer
+		    = (TaskObserver.Attached) o;
+		if (observer.updateAttached (this))
+		    blockers.add (observer);
 	    }
 	}
 	return blockers.size () > 0;
@@ -565,13 +565,13 @@ abstract public class Task
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
-	    Object observer = i.next ();
+	    Object o = i.next ();
 	    // XXX: This would work better if there were generics.
-	    if (observer instanceof TaskObserver.Forked) {
-		TaskObserver.Forked clonedObserver
-		    = (TaskObserver.Forked) observer;
-		if (clonedObserver.updateForked (this, fork))
-		    blockers.add (clonedObserver);
+	    if (o instanceof TaskObserver.Forked) {
+		TaskObserver.Forked observer
+		    = (TaskObserver.Forked) o;
+		if (observer.updateForked (this, fork))
+		    blockers.add (observer);
 	    }
 	}
 	return blockers.size () > 0;
@@ -585,13 +585,33 @@ abstract public class Task
     {
 	for (Iterator i = observers.iterator ();
 	     i.hasNext (); ) {
-	    Object observer = i.next ();
+	    Object o = i.next ();
 	    // XXX: This would work better if there were generics.
-	    if (observer instanceof TaskObserver.Terminated) {
-		TaskObserver.Terminated clonedObserver
-		    = (TaskObserver.Terminated) observer;
-		if (clonedObserver.updateTerminated (this, signal, value))
-		    blockers.add (clonedObserver);
+	    if (o instanceof TaskObserver.Terminated) {
+		TaskObserver.Terminated observer
+		    = (TaskObserver.Terminated) o;
+		if (observer.updateTerminated (this, signal, value))
+		    blockers.add (observer);
+	    }
+	}
+	return blockers.size () > 0;
+    }
+    /**
+     * Notify all Terminating observers, of this Task's demise.  Return
+     * true if this task should be left blocked (does this make any
+     * sense?).
+     */
+    boolean notifyTerminating (boolean signal, int value)
+    {
+	for (Iterator i = observers.iterator ();
+	     i.hasNext (); ) {
+	    Object o = i.next ();
+	    // XXX: This would work better if there were generics.
+	    if (o instanceof TaskObserver.Terminating) {
+		TaskObserver.Terminating observer
+		    = (TaskObserver.Terminating) o;
+		if (observer.updateTerminating (this, signal, value))
+		    blockers.add (observer);
 	    }
 	}
 	return blockers.size () > 0;

@@ -72,7 +72,6 @@ public class TestExiting
 		return;
 	    registerChild (proc.getId ().hashCode ());
 	    proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    proc.taskExiting.addObserver (new TaskExitingObserver ());
         }
     }
 
@@ -83,6 +82,7 @@ public class TestExiting
 	{
 	    Task task = (Task) obj;
 	    task.requestAddObserver (new TaskTerminatedObserver ());
+	    task.requestAddObserver (new TaskExitingObserver ());
 	    Manager.eventLoop.add (new KillTimerEvent (task, 100));
 	}
     }
@@ -101,15 +101,15 @@ public class TestExiting
     }
 
     class TaskExitingObserver
-	implements Observer
+	extends TaskObserverBase
+	implements TaskObserver.Terminating
     {
-	public void update (Observable o, Object obj)
+	public boolean updateTerminating (Task task, boolean signal, int value)
 	{
 	    taskExitingCount++;
-	    assertEquals ("No termination before exiting", 0,
-			  taskTerminatedCount);
-	    TaskEvent.Exiting taskEvent = (TaskEvent.Exiting) obj;
-	    taskExitingEventSig = taskEvent.signal;
+	    assertEquals ("task terminated count", 0, taskTerminatedCount);
+	    taskExitingEventSig = value;
+	    return false;
 	}
     }
 

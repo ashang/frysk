@@ -1,5 +1,11 @@
 2005-10-23  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Delete .taskExiting.
+	* Task.java: Add .notifyTerminating.
+	* TestExiting.java: Use TaskObserver .Terminating.
+	* TaskState.java: Replace Proc .taskExiting, with Task
+	.notifyTerminating.
+	
 	* Proc.java: Delete .taskDestroyed.
 	* TaskState.java: Replace Proc .taskDestroyed, with Task
 	.notifyTerminated.

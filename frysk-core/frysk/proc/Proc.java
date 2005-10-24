@@ -368,7 +368,6 @@ public abstract class Proc
 
     // Other observable events, for the moment keep these in the proc
     // (should they be per-task?).
-    public TaskEventObservable taskExiting = new TaskEventObservable ();
     public TaskEventObservable taskExeced = new TaskEventObservable ();
 
     public abstract Auxv[] getAuxv ();

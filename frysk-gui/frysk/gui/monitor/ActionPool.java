@@ -330,17 +330,19 @@ public class ActionPool {
 		public void execute(ProcData data) {
 			TaskExitingObserver taskExitingObserver = new TaskExitingObserver();
 
-			data.getProc().taskExiting.addObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExiting.addObserver(eventLog.taskExitingObserver);
-			data.getProc().taskExiting.addObserver(taskExitingObserver);
+			throw new RuntimeException ("XXX: Need to convert this to Task .requestAddObserver");
+// 			data.getProc().taskExiting.addObserver(WindowManager.theManager.logWindow);
+// 			data.getProc().taskExiting.addObserver(eventLog.taskExitingObserver);
+// 			data.getProc().taskExiting.addObserver(taskExitingObserver);
 
-			data.add(taskExitingObserver);
+//			data.add(taskExitingObserver);
 		}
 
 		public void removeObservers(ProcData data) {
-			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
-			data.getProc().taskExiting.deleteObserver(eventLog.taskExitingObserver);
-			data.getProc().taskExiting.deleteObserver(eventLog);
+		    throw new RuntimeException ("XXX: use Task .requestDeleteObserver");
+// 			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
+// 			data.getProc().taskExiting.deleteObserver(eventLog.taskExitingObserver);
+// 			data.getProc().taskExiting.deleteObserver(eventLog);
 		}
 		
 	}

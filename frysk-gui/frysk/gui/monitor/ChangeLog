@@ -1,3 +1,8 @@
+2005-10-23  Andrew Cagney  <cagney@redhat.com>
+
+	* ActionPool.java: Replace use of Proc .taskExiting with runtime
+	exception throw.
+
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
 	* ActionPool.java: Do not set Task .traceFork.
