@@ -1,3 +1,10 @@
+2005-10-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom/DOMLine.java: added new addTag method
+	* dom/DOMTag.java: added TOKEN_ATTR
+	* dom/DOMTestDOMFrysk.java: fixed addPID error print out
+	* dom/DOMTestGUIBuilder.java: new to create DOM for GUI testing
+
 2005-10-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ColorConverter.java: Added javadoc comments.

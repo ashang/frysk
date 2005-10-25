@@ -214,6 +214,21 @@ public class DOMLine {
 	}
 
 	/**
+	 * adds a new tag to a source line
+	 * @param type - the type of tag(keyword, variable, function)
+	 * @param start - the starting character within the line
+	 * @param length - the length in characters of this tag
+	 */
+	public void addTag(String type, String token, int start) {
+		Element tagElement = new Element(DOMTag.TAG_NODE);
+		tagElement.setAttribute(DOMTag.TYPE_ATTR, type);
+		tagElement.setAttribute(DOMTag.START_ATTR, Integer.toString(start));
+		tagElement.setAttribute(DOMTag.END_ATTR, Integer.toString(token.length()));
+		tagElement.setAttribute(DOMTag.TOKEN_ATTR, token);
+		this.myElement.addContent(tagElement);
+	}
+
+	/**
 	 * Tries to find all the tags on this line of a given type
 	 * 
 	 * @param type

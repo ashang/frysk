@@ -60,8 +60,13 @@ public class DOMTag {
 	 */
 	public static final String TYPE_ATTR = "type";
 	/**
+	 * The actual token of this tag
+	 */
+	public static final String TOKEN_ATTR = "token";
+	/**
 	 * The name of the DOM Element
 	 */
+	
 	public static final String TAG_NODE = "tag";
 	private Element myElement;
 	

@@ -128,7 +128,7 @@ public class DOMTestDOMFrysk {
 		}
 		if (dom.addPID(12)) {
 			System.out
-					.println("passed...DOMFrysk.addPID trying to add second PID");
+					.println("failed...DOMFrysk.addPID trying to add second PID");
 		} else {
 			System.out
 					.println("passed...DOMFrysk.addPID trying to add second PID");
