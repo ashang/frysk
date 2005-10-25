@@ -1,5 +1,9 @@
 2005-10-25  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMTag.java: changed END_ATTR from "end" to "length"
+
+2005-10-25  Rick Moseley  <rmoseley@redhat.com>
+
 	* testfiles/test6.cpp: new for testing DOM/GUI
 
 2005-10-24  Rick Moseley  <rmoseley@redhat.com>

@@ -50,7 +50,7 @@ public class DOMTag {
 	/**
 	 * The end of the tag
 	 */
-	public static final String END_ATTR = "end";
+	public static final String END_ATTR = "length";
 	/**
 	 * The start of the tag
 	 */
