@@ -18,6 +18,7 @@
 %endif
 %endif
 
+%define lib lib
 
 %define installdir $RPM_BUILD_ROOT%{_datadir}/java
 %define libdir $RPM_BUILD_ROOT%{_prefix}/%{lib}
@@ -26,7 +27,7 @@
 Summary: C/C++ Parser from Eclipse CDT 3.0
 Name: frysk-%{name_base}
 Version: 3.0.0
-Release: 5
+Release: 7
 Group: Parsers
 License: EPL
 Source0: %{sourcefile}
@@ -42,10 +43,11 @@ Requires(post,postun): java-1.4.2-gcj-compat >= 1.4.2.0-40jpp_18rh
 C/C++ Parser from the Eclipse CDT 3.0
 
 %prep
-rm -fr $RPM_BUILD_DIR/%{name_base}
-mkdir $RPM_BUILD_DIR/%{name_base}
-cp $RPM_SOURCE_DIR/%{sourcefile} $RPM_BUILD_DIR/%{name_base}
-cd $RPM_BUILD_DIR/%{name_base} && find-and-aot-compile %{name_base}-native "-fPIC -fjni"
+cp $RPM_SOURCE_DIR/%{sourcefile} $RPM_BUILD_DIR/.
+
+%build
+gcj -fjni -fPIC -shared -o \
+	lib%{sourcefile}.so %{sourcefile}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -57,15 +59,11 @@ if ! test -d %{libdir}; then
 	mkdir -p %{libdir}
 fi
 
-cp $RPM_BUILD_DIR/%{name_base}/%{name_base}-native/lib%{sourcefile}.so \
-	%{libdir}/lib%{sourcefile}.so
+cp lib%{sourcefile}.so %{libdir}/lib%{sourcefile}.so
 ln %{libdir}/lib%{sourcefile}.so %{libdir}/lib%{name_base}.jar.so
 
 cp $RPM_SOURCE_DIR/%{sourcefile} %{installdir}
 ln %{installdir}/%{sourcefile} %{installdir}/%{name_base}.jar
-
-rm -fr $RPM_BUILD_DIR/%{name-base}
-
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -79,10 +77,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 24 2005 Adam Jocksch <ajocksch@redhat.com>
+- No longer use find-and-aot-compile to compile .jar to .so
+- Now copy file properly to install dir.
 * Fri Oct 21 2005 Igor Foox <ifoox@redhat.com> - 3.0.0-5
 - Added architecture independent libdir definition (lib/lib64).
 * Mon Sep 19 2005 Adam Jocksch <ajocksch@redhat.com> - 3.0.0-3
 - Jar file now compiles to native so.
 * Thu Sep 15 2005 Adam Jocksch <ajocksch@redhat.com> - 3.0.0-1
 - Initial build.
-
