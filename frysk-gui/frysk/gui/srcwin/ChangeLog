@@ -1,3 +1,7 @@
+2005-10-25  Rick Moseley  <rmoseley@redhat.com>
+
+	* testfiles/test6.cpp: new for testing DOM/GUI
+
 2005-10-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMLine.java: added new addTag method
