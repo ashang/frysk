@@ -1,3 +1,7 @@
+2005-10-25  Igor Foox  <ifoox@redhat.com>
+
+	Makefile.rules (clean-local-po): Fix clean to delete all .Po files.
+	
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (AM_CXXFLAGS): Fix -I argument, $(top_builddir),
