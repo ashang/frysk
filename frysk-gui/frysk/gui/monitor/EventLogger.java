@@ -41,7 +41,6 @@ package frysk.gui.monitor;
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -53,150 +52,174 @@ import frysk.gui.monitor.observers.AttachedStopObserver;
 import frysk.gui.monitor.observers.DetachedContinueObserver;
 import frysk.gui.monitor.observers.ObserverRunnable;
 import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskExitingObserver;
-
+import frysk.gui.monitor.observers.TaskTerminatingObserver;
+import frysk.proc.Action;
 import frysk.proc.Proc;
-import frysk.proc.TaskEvent;
-
+import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 
 /**
  * @author pmuldoon
  *
  */
-public class EventLogger implements Observer {
+public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
+		TaskObserver.Cloned, TaskObserver.Forked, TaskObserver.Terminating {
 
-        private static final String FRYSK_CONFIG = System.getProperty("user.home")
-        + "/" + ".frysk" + "/";
-        public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog";
-        private Logger eventLogFile = null;
+	private static final String FRYSK_CONFIG = System.getProperty("user.home")
+			+ "/" + ".frysk" + "/";
 
+	public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog";
 
-        class EventFileHandler extends FileHandler {
+	private Logger eventLogFile = null;
 
-        	public EventFileHandler(String arg0, boolean arg1) throws IOException, SecurityException {
-        		super(arg0, arg1);
-        		// TODO Auto-generated constructor stub
-        	}
-        	public synchronized void publish(LogRecord arg) {
-        		
-        		// As this is going to log exceptions, and as frysk might be kill -9'd
-        		// I've not found a way to let normal FileHandlers do an explicit flush
-        		// after each log event. So we found logfiles that were incomplete.
-        		// So will cause and explicit flush after each publish, until we figure out
-        		// otherwise.
-        		
-        		super.publish(arg);
-        		super.flush();
-        	}
+	class EventFileHandler extends FileHandler {
 
+		public EventFileHandler(String arg0, boolean arg1) throws IOException,
+				SecurityException {
+			super(arg0, arg1);
+		}
 
-        }
+		public synchronized void publish(LogRecord arg) {
 
-        /**{
-         * Local Observers
-         * */
-        public AttachedContinueObserver attachedContinueObserver;
-        public DetachedContinueObserver detachedContinueObserver;
-        public AttachedStopObserver     attachedStopObserver;
-        public AttachedResumeObserver   attachedResumeObserver;
-        public TaskExecObserver         taskExecObserver; 
-        public TaskExitingObserver      taskExitingObserver;
-        /** }*/
-        
-        public EventLogger()
-        {
-                this.attachedContinueObserver = new AttachedContinueObserver();
-                this.attachedContinueObserver.addRunnable(new AttachedContinueRunnable());
-                
-                this.detachedContinueObserver = new DetachedContinueObserver();
-                this.detachedContinueObserver.addRunnable(new DetachedContinueRunnable());
-                
-                this.attachedStopObserver = new AttachedStopObserver();
-                this.attachedStopObserver.addRunnable(new AttachedStopRunnable());
-                
-                this.attachedResumeObserver = new AttachedResumeObserver();
-                this.attachedResumeObserver.addRunnable(new AttachedResumeRunnable());
-             
-                this.taskExecObserver = new TaskExecObserver();
-                this.taskExecObserver.addRunnable(new TaskExecRunnable());
+			// As this is going to log exceptions, and as frysk might be kill -9'd
+			// I've not found a way to let normal FileHandlers do an explicit flush
+			// after each log event. So we found logfiles that were incomplete.
+			// So will cause and explicit flush after each publish, until we figure out
+			// otherwise.
 
-                this.taskExitingObserver = new TaskExitingObserver();
-                this.taskExitingObserver.addRunnable(new TaskExitingRunnable());
-                
-                eventLogFile = Logger.getLogger(EVENT_LOG_ID);
-                eventLogFile.addHandler(buildHandler());
-        }
-        
-        
-        private FileHandler buildHandler() {
-                FileHandler handler = null;
-                File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/");
+			super.publish(arg);
+			super.flush();
+		}
 
-                if (!log_dir.exists())
-                        log_dir.mkdirs();
+	}
 
-                try {
+	/**{
+	 * Local Observers
+	 * */
+	public AttachedContinueObserver attachedContinueObserver;
 
-                        handler = new EventFileHandler(log_dir.getAbsolutePath()
-                                        + "/" + "frysk_event_log.log", true);
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
-                
-                handler.setFormatter(new EventFormatter());
-                return handler;
-        }
-        
-        public void update(Observable observable, Object arg1) {
-                // this function should not be used anymore
-   
+	public DetachedContinueObserver detachedContinueObserver;
 
-        }
-        
-        
-        // Attach/Detach/Stop/Resume Observers
-        
-        class AttachedContinueRunnable implements ObserverRunnable{
-        	public void run(Observable o, Object obj) {
-        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Attached ");					
-        	}
-        }
-        
-        class DetachedContinueRunnable implements ObserverRunnable{
-        	public void run(Observable o, Object obj) {
-        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Detached ");					
-        	}
-        }
-        
-        class AttachedStopRunnable implements ObserverRunnable{
-        	public void run(Observable o, Object obj) {
-        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Stopped");		
-        	}
-        }
-        
+	public AttachedStopObserver attachedStopObserver;
 
-        class AttachedResumeRunnable implements ObserverRunnable{
-        	public void run(Observable o, Object obj) {
-        		eventLogFile.log(Level.INFO,"PID " + ((Proc)obj).getPid() +" Host XXX Resumed");
-        	}        	
-        }
-            
-        // Proc action observers
-            
-        class TaskExecRunnable implements ObserverRunnable {
-			public void run(Observable o, Object obj) {
-		    	System.out.println("Process Exec is " + obj);
-                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)obj).getTask().getTid() +" Host XXX Execed");				
-			}
-        }
-        
-        // Task observers    
-        class TaskExitingRunnable implements ObserverRunnable {
-			public void run(Observable o, Object obj) {
-                eventLogFile.log(Level.INFO,"PID " + ((TaskEvent)obj).getTask().getTid() +" Host XXX Exiting");
-			}
-        }
-        
+	public AttachedResumeObserver attachedResumeObserver;
+
+	public TaskExecObserver taskExecObserver;
+
+	public TaskTerminatingObserver taskExitingObserver;
+
+	/** }*/
+
+	public EventLogger() {
+		this.attachedContinueObserver = new AttachedContinueObserver();
+		this.attachedContinueObserver.addRunnable(new AttachedContinueRunnable());
+
+		this.detachedContinueObserver = new DetachedContinueObserver();
+		this.detachedContinueObserver.addRunnable(new DetachedContinueRunnable());
+
+		this.attachedStopObserver = new AttachedStopObserver();
+		this.attachedStopObserver.addRunnable(new AttachedStopRunnable());
+
+		this.attachedResumeObserver = new AttachedResumeObserver();
+		this.attachedResumeObserver.addRunnable(new AttachedResumeRunnable());
+
+		eventLogFile = Logger.getLogger(EVENT_LOG_ID);
+		eventLogFile.addHandler(buildHandler());
+	}
+
+	private FileHandler buildHandler() {
+		FileHandler handler = null;
+		File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/");
+
+		if (!log_dir.exists())
+			log_dir.mkdirs();
+
+		try {
+			handler = new EventFileHandler(log_dir.getAbsolutePath() + "/"
+					+ "frysk_event_log.log", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		handler.setFormatter(new EventFormatter());
+		return handler;
+	}
+
+	//XXX: soon to be removed
+	class AttachedContinueRunnable implements ObserverRunnable {
+		public void run(Observable o, Object obj) {
+			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
+					+ " Host XXX Attached ");
+		}
+	}
+
+	//XXX: soon to be removed
+	class DetachedContinueRunnable implements ObserverRunnable {
+		public void run(Observable o, Object obj) {
+			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
+					+ " Host XXX Detached ");
+		}
+	}
+
+	//XXX: soon to be removed
+	class AttachedStopRunnable implements ObserverRunnable {
+		public void run(Observable o, Object obj) {
+			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
+					+ " Host XXX Stopped");
+		}
+	}
+
+	//XXX: soon to be removed
+	class AttachedResumeRunnable implements ObserverRunnable {
+		public void run(Observable o, Object obj) {
+			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
+					+ " Host XXX Resumed");
+		}
+	}
+
+	public Action updateExeced(Task task) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid()
+				+ " Host XXX Execed");
+		return Action.CONTINUE;
+	}
+
+	public Action updateSysEnter(Task task, int syscall) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid()
+				+ " Host XXX entered syscall num: " + syscall);
+		return Action.CONTINUE;
+	}
+
+	public Action updateSysExit(Task task, int syscall) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid()
+				+ " Host XXX left syscall num: " + syscall);
+		return Action.CONTINUE;
+	}
+
+	public Action updateCloned(Task task, Task clone) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid()
+				+ " Host XXX cloned new task: " + clone);
+		return Action.CONTINUE;
+	}
+
+	public Action updateForked(Task task, Proc child) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid()
+				+ " Host XXX Forked a new proccess: " + child);
+		return Action.CONTINUE;
+	}
+
+	public Action updateTerminating(Task task, boolean signal, int value) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid()
+				+ " Host XXX is exiting with signal: " + value);
+		return Action.CONTINUE;
+	}
+	
+	public void added(Throwable e) {
+		e.printStackTrace();
+		// TODO Auto-generated method stub
+	}
+
+	public void deleted() {
+		// TODO Auto-generated method stub
+	}
+	
 }
-        
-

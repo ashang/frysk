@@ -9,7 +9,7 @@ import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.ObserverRunnable;
 import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskExitingObserver;
+import frysk.gui.monitor.observers.TaskTerminatingObserver;
 
 /**
  * Used to store a pointer to objects in the backend, and extra data that is
@@ -38,13 +38,12 @@ public class GuiData {
 		this.add((ObserverRoot)observer);
 		observer.addRunnable(new ObserverRunnable(){
 			public void run(Observable o, Object obj) {
-				System.out.println(observer.toString());
-				DialogManager.showWarnDialog("Received TaskExec Event !");				
+				DialogManager.showWarnDialog("Received TaskExec Event !");
 			}
 		});
 	}
 	
-	public void add(TaskExitingObserver observer) {
+	public void add(TaskTerminatingObserver observer) {
 		this.add((ObserverRoot)observer);
 		observer.addRunnable(new ObserverRunnable(){
 			public void run(Observable o, Object obj) {
@@ -63,7 +62,7 @@ public class GuiData {
 		ActionPool.theActionPool.addExecObserver.removeObservers(this);
 	}
 	
-	public void remove(TaskExitingObserver observer){
+	public void remove(TaskTerminatingObserver observer){
 		remove((ObserverRoot)observer);
 		ActionPool.theActionPool.addExitingObserver.removeObservers(this);
 	}

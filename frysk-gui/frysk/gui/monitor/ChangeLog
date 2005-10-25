@@ -1,3 +1,15 @@
+2005-10-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskTerminatingObserver.java: 
+	* LogWidget.java: 
+	* GuiData.java: 
+	* EventLogger.java: 
+	* observers/SyscallObserver.java: 
+	* observers/TaskCloneObserver.java: 
+	* observers/TaskExecObserver.java: 
+	* ActionPool.java: Changed all add/remove observer code to use
+	the new pattern.
+
 2005-10-25  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramAddWindow.java: New File.

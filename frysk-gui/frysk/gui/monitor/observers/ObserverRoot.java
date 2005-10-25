@@ -7,18 +7,23 @@ import java.util.Observer;
 
 import org.gnu.glib.CustomEvents;
 
+import frysk.proc.TaskObserver;
 /**
  * A more sofisticate implementer of Observer.
  * provides name and tooltip strings for gui display perposis.
  * Takes an Runnable object that can be used by instanciaters to 
  * customize the behaviour of the observer.
  * */
-public class ObserverRoot implements Observer{
+public class ObserverRoot implements TaskObserver, Observer{
 
 		protected String toolTip;
 		protected String name;
 
+		TaskObserver bouncee;
 		LinkedList runnables;
+			
+		Runnable onAdded;
+		Runnable onDeleted;
 		
 		public ObserverRoot(String name, String toolTip){
 			this.toolTip = toolTip;
@@ -57,8 +62,30 @@ public class ObserverRoot implements Observer{
 			});
 		}
 		
+		public void setBouncee(TaskObserver observer){
+			bouncee = observer;
+		}
+		
 		public void addRunnable(ObserverRunnable runnable){
 			this.runnables.add(runnable);
+		}
+			
+		public void added(Throwable e) {
+			this.bouncee.added(e);
+			if(this.onAdded != null) this.onAdded.run();
+		}
+
+		public void deleted() {
+			this.bouncee.deleted();
+			if(this.onDeleted != null) this.onDeleted.run();
+		}
+		
+		public void onAdded(Runnable r){
+			this.onAdded = r;
+		}
+		
+		public void onDeleted(Runnable r){
+			this.onDeleted = r;
 		}
 		
 	}

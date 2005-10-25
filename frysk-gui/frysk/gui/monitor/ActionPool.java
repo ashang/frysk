@@ -39,15 +39,13 @@
 package frysk.gui.monitor;
 
 import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
 
-import frysk.gui.monitor.observers.ProcCloneObserver;
-import frysk.gui.monitor.observers.ProcForkObserver;
 import frysk.gui.monitor.observers.SyscallObserver;
-// import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskExitingObserver;
-import frysk.proc.Manager;
+import frysk.gui.monitor.observers.TaskCloneObserver;
+import frysk.gui.monitor.observers.TaskExecObserver;
+import frysk.gui.monitor.observers.TaskForkedObserver;
+import frysk.gui.monitor.observers.TaskTerminatingObserver;
+import frysk.proc.TaskObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -303,23 +301,25 @@ public class ActionPool {
 			this.toolTip = "Listen for exec events on the selected process/thread";
 		}
 
-		public void execute(ProcData data) {
-		    throw new RuntimeException ("XXX: use TaskObserver .Execed");
-// 			TaskExecObserver taskExecObserver = new TaskExecObserver();
-
-// 			data.getProc().taskExeced.addObserver(WindowManager.theManager.logWindow);
-// 			data.getProc().taskExeced.addObserver(eventLog.taskExecObserver);
-// 			data.getProc().taskExeced.addObserver(taskExecObserver);
-			
-// 			data.add(taskExecObserver);
+		public void execute(final TaskData data) {
+ 			final TaskExecObserver taskExecObserver = new TaskExecObserver();
+ 			
+ 			taskExecObserver.onAdded(new Runnable(){
+ 				public void run() {
+	 				data.add(taskExecObserver);
+	 	 			data.getTask().requestAddObserver((TaskObserver.Execed)eventLog.taskExecObserver);
+				}
+ 			});
+ 			
+ 			taskExecObserver.onDeleted(new Runnable(){
+ 				public void run() {
+	 				data.remove(taskExecObserver);
+	 				data.getTask().requestDeleteObserver((TaskObserver.Execed)eventLog.taskExecObserver);
+				}
+ 			});
+ 			
+ 			data.getTask().requestAddObserver(taskExecObserver);
 		}
-
-		public void removeObservers(ProcData data) {
-		    throw new RuntimeException ("XXX: Use TaskObserver .Execed");
-// 			data.getProc().taskExeced.deleteObserver(WindowManager.theManager.logWindow);
-// 			data.getProc().taskExeced.deleteObserver(eventLog.taskExecObserver);
-		}
-
 	}
 
 	public class AddExitingObserver extends Action {
@@ -329,22 +329,22 @@ public class ActionPool {
 			this.toolTip = "Listen for task exit events on the selected process";
 		}
 
-		public void execute(ProcData data) {
-			TaskExitingObserver taskExitingObserver = new TaskExitingObserver();
-
-			throw new RuntimeException ("XXX: Need to convert this to Task .requestAddObserver");
-// 			data.getProc().taskExiting.addObserver(WindowManager.theManager.logWindow);
-// 			data.getProc().taskExiting.addObserver(eventLog.taskExitingObserver);
-// 			data.getProc().taskExiting.addObserver(taskExitingObserver);
-
-//			data.add(taskExitingObserver);
-		}
-
-		public void removeObservers(ProcData data) {
-		    throw new RuntimeException ("XXX: use Task .requestDeleteObserver");
-// 			data.getProc().taskExiting.deleteObserver(WindowManager.theManager.logWindow);
-// 			data.getProc().taskExiting.deleteObserver(eventLog.taskExitingObserver);
-// 			data.getProc().taskExiting.deleteObserver(eventLog);
+		public void execute(final TaskData data) {
+			final TaskTerminatingObserver taskTerminatingObserver = new TaskTerminatingObserver();
+			taskTerminatingObserver.onAdded(new Runnable(){
+				public void run() {
+					data.add(taskTerminatingObserver);
+					data.getTask().requestAddObserver((TaskObserver.Terminating)eventLog);
+				}
+			});
+			
+			taskTerminatingObserver.onDeleted(new Runnable(){
+				public void run() {
+					data.remove(taskTerminatingObserver);
+					data.getTask().requestDeleteObserver((TaskObserver.Terminating)eventLog);
+				}
+			});
+			data.getTask().requestAddObserver(taskTerminatingObserver);
 		}
 		
 	}
@@ -356,25 +356,26 @@ public class ActionPool {
 			this.toolTip = "Listen for system call events from the selected thread";
 		}
 		
-		public void execute(TaskData data) {
-			data.getTask().traceSyscall = true;
-			SyscallObserver observer = new SyscallObserver();
-			data.getTask().syscallEvent.addObserver(observer);
-			data.getTask().syscallEvent.addObserver(new Observer(){
-
-				public void update(Observable arg0, Object arg1) {
-					System.out.println("------------------------------------");
-					System.out.println("System call event received");					
-					System.out.println("------------------------------------");
-				}
-				
-			});
-			data.add(observer);
-		}
-
-		public void removeObservers(TaskData data) {
+		public void execute(final TaskData data) {
+			final SyscallObserver syscallObserver = new SyscallObserver();
 			
+			syscallObserver.onAdded(new Runnable() {
+				public void run() {
+					data.add(syscallObserver);
+					data.getTask().requestAddObserver((TaskObserver.Syscall)eventLog);
+				}
+			});
+			
+			syscallObserver.onDeleted(new Runnable() {
+				public void run() {
+					data.remove(syscallObserver);
+					data.getTask().requestAddObserver((TaskObserver.Syscall)eventLog);
+				}
+			});
+			
+			data.getTask().requestAddObserver(syscallObserver);
 		}
+
 		
 	}
 	
@@ -385,16 +386,25 @@ public class ActionPool {
 			this.toolTip = "Listen for process fork events on the selected process";
 		}
 
-		public void execute(TaskData data) {
-			ProcForkObserver observer = new ProcForkObserver(data.getTask().getProc());
-			Manager.host.observableProcAdded.addObserver(observer);
-			data.add(observer);
+		public void execute(final TaskData data) {
+			final TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
+			
+			taskForkedObserver.onAdded(new Runnable() {
+				public void run() {
+					data.getTask().requestAddObserver((TaskObserver.Forked)eventLog);
+					data.add(taskForkedObserver);
+				}
+			});
+			
+			taskForkedObserver.onDeleted(new Runnable() {
+				public void run() {
+					data.getTask().requestDeleteObserver((TaskObserver.Forked)eventLog);
+					data.remove(taskForkedObserver);
+				}
+			});
+			
+			data.getTask().requestAddObserver(taskForkedObserver);
 		}
-
-		public void removeObservers(TaskData data) {
-
-		}
-		
 	}
 
 
@@ -405,16 +415,24 @@ public class ActionPool {
 			this.toolTip = "Listens for clone events on the selected process";
 		}
 
-		public void execute(ProcData data) {
-			ProcCloneObserver observer = new ProcCloneObserver();
-			data.getProc().observableTaskAdded.addObserver(observer);
-			data.add(observer);
+		public void execute(final TaskData data) {
+			final TaskCloneObserver observer = new TaskCloneObserver();
+			observer.onAdded(new Runnable() {
+				public void run() {
+					data.add(observer);
+					data.getTask().requestAddObserver((TaskObserver.Cloned)eventLog);
+				}
+			});
+			
+			observer.onDeleted(new Runnable() {
+				public void run() {
+					data.remove(observer);
+					data.getTask().requestDeleteObserver((TaskObserver.Cloned)eventLog);
+				}
+			});
+			
+			data.getTask().requestAddObserver((TaskObserver.Cloned)observer);
 		}
-
-		public void removeObservers(ProcData data) {
-
-		}
-		
 	}
 
 
@@ -457,13 +475,13 @@ public class ActionPool {
 		this.threadActions.add (this.resume);
 		
 		this.addExecObserver = new AddExecObserver();
-		this.processObservers.add(this.addExecObserver);
+		this.threadObservers.add(this.addExecObserver);
 
 		this.addExitingObserver = new AddExitingObserver();
-		this.processObservers.add(this.addExitingObserver);
+		this.threadObservers.add(this.addExitingObserver);
 
 		this.addCloneObserver = new AddCloneObserver();
-		this.processObservers.add(this.addCloneObserver);
+		this.threadObservers.add(this.addCloneObserver);
 
 		this.addSyscallObserver = new AddSyscallObserver();
 		this.threadObservers.add(this.addSyscallObserver);

@@ -6,9 +6,14 @@
  */
 package frysk.gui.monitor.observers;
 
-public class ProcCloneObserver extends ObserverRoot {
+import frysk.proc.Proc;
 
-	public ProcCloneObserver() {
-		super("ProcCloneObserver", "Fires when a proc calls clone");
+public class TaskForkedObserver extends ObserverRoot {
+	
+	private Proc expectedParent;
+	
+	public TaskForkedObserver() {
+		super("ProcForkObserver", "Fires when a proc forks");
 	}
+	
 }

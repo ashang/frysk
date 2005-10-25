@@ -59,7 +59,7 @@ import frysk.proc.Proc;
  * @author sami wagiaalla
  * Generic log window, just prints out events it recieves
  * */
-public class LogWidget extends Widget implements Observer, Saveable{
+public class LogWidget extends Widget implements Observer, Saveable {
 	
 	public TextView logTextView;
     public AttachedContinueObserver attachedContinueObserver;
