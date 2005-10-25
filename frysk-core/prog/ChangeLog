@@ -1,3 +1,7 @@
+2005-10-24  Andrew Cagney  <cagney@redhat.com>
+
+	* terminated/exit.c: New file.
+
 2005-10-18  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* modify/modify.c: New test for memory modification.

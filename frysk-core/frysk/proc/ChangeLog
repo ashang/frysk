@@ -1,5 +1,9 @@
 2005-10-24  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskTerminateObserver.java: New.
+	* TestExiting.java: Delete.
+	* TestTerminated.java: Delete.
+
 	* Action.java: New.  * TaskObserver.java: Change doc so that
 	observers return Action.BLOCK to to block.
 	* Task.java: Update .notifyCloned, .notifyAttached, .notifyForked,
