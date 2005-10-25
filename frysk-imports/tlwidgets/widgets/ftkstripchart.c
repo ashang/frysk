@@ -171,7 +171,11 @@ ftk_stripchart_expose( GtkWidget * widget,
     
     gdk_draw_layout (stripchart_pixmap (stripchart),
 		     widget->style->white_gc,
+#if 0
 		     START_TS_X_OFFSET + 200,
+#else
+		     widget->allocation.width - 100,
+#endif
 		     START_TS_Y_OFFSET,
 		     stripchart_motion_readout(stripchart));
   }
@@ -413,7 +417,11 @@ motion_notify_event( GtkWidget * widget,
   gdk_draw_rectangle (stripchart_pixmap (stripchart),
 		      widget->style->black_gc,
 		      TRUE,
-		      START_TS_X_OFFSET + 200,
+#if 0
+		      widget->allocation.width - (RIGHT_MARGIN - width),
+#else
+		      widget->allocation.width - 100,
+#endif
 		      START_TS_Y_OFFSET,
 		      width, height);
   if (1.0 >= frac) {
@@ -421,24 +429,35 @@ motion_notify_event( GtkWidget * widget,
     pango_layout_set_text (stripchart_motion_readout(stripchart),
 			   bs, strlen (bs));
   }
-  else {
+  else 
     pango_layout_set_text (stripchart_motion_readout(stripchart), "", 0);
-  }
   gdk_draw_layout (stripchart_pixmap (stripchart),
 		   widget->style->white_gc,
-		   START_TS_X_OFFSET + 200,
+#if 0
+		   widget->allocation.width - (RIGHT_MARGIN - width),
+#else
+		   widget->allocation.width - 100,
+#endif
 		   START_TS_Y_OFFSET,
 		   stripchart_motion_readout(stripchart));
+  
   pango_layout_get_pixel_size (stripchart_motion_readout(stripchart),
 			       &width, &height);
   if (GDK_IS_PIXMAP (stripchart_pixmap (stripchart)))
       gdk_draw_drawable(widget->window,
 			widget->style->bg_gc[GTK_WIDGET_STATE (widget)],
 			stripchart_pixmap (stripchart),
-			START_TS_X_OFFSET + 200,
+#if 0
+			widget->allocation.width - (RIGHT_MARGIN - width),
 			START_TS_Y_OFFSET,
-			START_TS_X_OFFSET + 200,
+			widget->allocation.width - (RIGHT_MARGIN - width),
 			START_TS_Y_OFFSET,
+#else
+			widget->allocation.width - 100,
+			START_TS_Y_OFFSET,
+			widget->allocation.width - 100,
+			START_TS_Y_OFFSET,
+#endif
 			width,
 			height);
   return TRUE;
