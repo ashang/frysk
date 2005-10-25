@@ -69,9 +69,12 @@ public class TestTaskForkedObserver
 		count++;
 		return Action.CONTINUE;
 	    }
+	    void updateTask (Task task)
+	    {
+		task.requestAddForkedObserver (this);
+	    }
 	}
 	ForkObserver forkObserver = new ForkObserver ();
-	new AddTaskObserver (forkObserver);
 
 	// Run a program that forks wildly.
 	Manager.host.requestCreateAttachedContinuedProc
@@ -123,9 +126,12 @@ public class TestTaskForkedObserver
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
+	    void updateTask (Task task)
+	    {
+		task.requestAddForkedObserver (this);
+	    }
 	}
 	ForkStopper forkStopper = new ForkStopper ();
-	new AddTaskObserver (forkStopper);
 
 	// Run a program that forks wildly.
 	Manager.host.requestCreateAttachedContinuedProc

@@ -156,7 +156,7 @@ public class TestModify
 		    public void update (Observable o, Object obj)
 		    {
 			Task task = (Task) obj;
-			task.requestAddObserver (new TaskTerminatedObserver ());
+			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
 			task.stopEvent.addObserver (taskEventObserver);
 		    }
 		});
@@ -179,9 +179,15 @@ public class TestModify
     }
 
     class TaskTerminatedObserver
-	extends TaskObserverBase
 	implements TaskObserver.Terminated
     {
+	public void added (Throwable w)
+	{
+	    assertNull ("added's parameter", w);
+	}
+	public void deleted ()
+	{
+	}
 	public Action updateTerminated (Task task, boolean signal, int value)
 	{
 	    if (!signal) {

@@ -45,7 +45,7 @@ import frysk.gui.monitor.observers.TaskCloneObserver;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
 import frysk.gui.monitor.observers.TaskTerminatingObserver;
-import frysk.proc.TaskObserver;
+// XXX: import frysk.proc.TaskObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -307,18 +307,19 @@ public class ActionPool {
  			taskExecObserver.onAdded(new Runnable(){
  				public void run() {
 	 				data.add(taskExecObserver);
-	 	 			data.getTask().requestAddObserver((TaskObserver.Execed)eventLog.taskExecObserver);
+	 	 			data.getTask().requestAddExecedObserver(eventLog.taskExecObserver);
 				}
  			});
  			
  			taskExecObserver.onDeleted(new Runnable(){
  				public void run() {
 	 				data.remove(taskExecObserver);
-	 				data.getTask().requestDeleteObserver((TaskObserver.Execed)eventLog.taskExecObserver);
+	 				data.getTask().requestDeleteExecedObserver(eventLog.taskExecObserver);
 				}
  			});
  			
- 			data.getTask().requestAddObserver(taskExecObserver);
+ 			// XXX: data.getTask().requestAddObserver(taskExecObserver);
+			throw new RuntimeException ("XXX: Task.addObserver");
 		}
 	}
 
@@ -334,17 +335,18 @@ public class ActionPool {
 			taskTerminatingObserver.onAdded(new Runnable(){
 				public void run() {
 					data.add(taskTerminatingObserver);
-					data.getTask().requestAddObserver((TaskObserver.Terminating)eventLog);
+					data.getTask().requestAddTerminatingObserver(eventLog);
 				}
 			});
 			
 			taskTerminatingObserver.onDeleted(new Runnable(){
 				public void run() {
 					data.remove(taskTerminatingObserver);
-					data.getTask().requestDeleteObserver((TaskObserver.Terminating)eventLog);
+					data.getTask().requestDeleteTerminatingObserver(eventLog);
 				}
 			});
-			data.getTask().requestAddObserver(taskTerminatingObserver);
+			// XXX: data.getTask().requestAddObserver(taskTerminatingObserver);
+			throw new RuntimeException ("XXX: Task.addObserver");
 		}
 		
 	}
@@ -362,18 +364,21 @@ public class ActionPool {
 			syscallObserver.onAdded(new Runnable() {
 				public void run() {
 					data.add(syscallObserver);
-					data.getTask().requestAddObserver((TaskObserver.Syscall)eventLog);
+					// XXX: data.getTask().requestAddSyscallObserver(eventLog);
+					throw new RuntimeException ("XXX: Task.addObserver");
 				}
 			});
 			
 			syscallObserver.onDeleted(new Runnable() {
 				public void run() {
 					data.remove(syscallObserver);
-					data.getTask().requestAddObserver((TaskObserver.Syscall)eventLog);
+					// XXX: data.getTask().requestAddSyscallObserver(eventLog);
+					throw new RuntimeException ("XXX: Task.addObserver");
 				}
 			});
 			
-			data.getTask().requestAddObserver(syscallObserver);
+			// XXX: data.getTask().requestAddObserver(syscallObserver);
+			throw new RuntimeException ("XXX: Task.addObserver");
 		}
 
 		
@@ -391,19 +396,21 @@ public class ActionPool {
 			
 			taskForkedObserver.onAdded(new Runnable() {
 				public void run() {
-					data.getTask().requestAddObserver((TaskObserver.Forked)eventLog);
-					data.add(taskForkedObserver);
+				    data.getTask().requestAddForkedObserver(eventLog);
+				    data.add(taskForkedObserver);
 				}
 			});
 			
 			taskForkedObserver.onDeleted(new Runnable() {
 				public void run() {
-					data.getTask().requestDeleteObserver((TaskObserver.Forked)eventLog);
-					data.remove(taskForkedObserver);
+				    data.getTask().requestDeleteForkedObserver(eventLog);
+				    data.remove(taskForkedObserver);
 				}
 			});
 			
-			data.getTask().requestAddObserver(taskForkedObserver);
+		
+			// XXX: data.getTask().requestAddForkedObserver(taskForkedObserver);
+			throw new RuntimeException ("XXX: Task.addObserver");
 		}
 	}
 
@@ -420,18 +427,18 @@ public class ActionPool {
 			observer.onAdded(new Runnable() {
 				public void run() {
 					data.add(observer);
-					data.getTask().requestAddObserver((TaskObserver.Cloned)eventLog);
+					data.getTask().requestAddClonedObserver(eventLog);
 				}
 			});
 			
 			observer.onDeleted(new Runnable() {
 				public void run() {
 					data.remove(observer);
-					data.getTask().requestDeleteObserver((TaskObserver.Cloned)eventLog);
+					data.getTask().requestDeleteClonedObserver (eventLog);
 				}
 			});
 			
-			data.getTask().requestAddObserver((TaskObserver.Cloned)observer);
+			data.getTask().requestAddClonedObserver (observer);
 		}
 	}
 

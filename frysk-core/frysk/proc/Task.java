@@ -473,6 +473,45 @@ abstract public class Task
 
 
     /**
+     * Request that the observer be added to this task; once the add
+     * has been processed, acknowledge using the Cloned.ack method.
+     */
+    private void requestAddObserver (final TaskObservable observableArg,
+				     final TaskObserver observerArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		TaskObservable observable = observableArg;
+		TaskObserver observer = observerArg;
+		public void execute ()
+		{
+		    state = state.processRequestAddObserver (Task.this,
+							     observable,
+							     observer);
+		}
+	    });
+    }
+    /**
+     * Delete TaskObserver from this tasks set of observers; also
+     * delete it from the set of blockers.
+     */
+    private void requestDeleteObserver (final TaskObservable observableArg,
+					final TaskObserver observerArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		TaskObservable observable = observableArg;
+		TaskObserver observer = observerArg;
+		public void execute ()
+		{
+		    state = state.processRequestDeleteObserver (Task.this,
+								observable,
+								observer);
+		}
+	    });
+    }
+
+    /**
      * Set of interfaces currently blocking this task.
      */
     Set blockers = new HashSet ();
@@ -494,40 +533,22 @@ abstract public class Task
     }
 
     /**
-     * Set of interfaces currently observing this task.
+     * Set of Cloned observers.
      */
-    Set observers = new HashSet ();
-
+    private TaskObservable clonedObservers = new TaskObservable ();
     /**
-     * Request that the Cloned observer be added to this task; once
-     * the add has been processed, acknowledge using the Cloned.ack
-     * method.
+     * Add a TaskObserver.Cloned observer.
      */
-    public void requestAddObserver (final TaskObserver observerArg)
+    public void requestAddClonedObserver (TaskObserver.Cloned o)
     {
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		TaskObserver observer = observerArg;
-		public void execute ()
-		{
-		    state = state.processRequestAddObserver (Task.this, observer);
-		}
-	    });
+	requestAddObserver (clonedObservers, o);
     }
     /**
-     * Delete TaskObserver from this tasks set of observers; also
-     * delete it from the set of blockers.
+     * Delete a TaskObserver.Cloned observer.
      */
-    public void requestDeleteObserver (final TaskObserver observerArg)
+    public void requestDeleteClonedObserver (TaskObserver.Cloned o)
     {
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		TaskObserver observer = observerArg;
-		public void execute ()
-		{
-		    state = state.processRequestDeleteObserver (Task.this, observer);
-		}
-	    });
+	requestDeleteObserver (clonedObservers, o);
     }
     /**
      * Notify all cloned observers that this task cloned.  Return the
@@ -535,18 +556,33 @@ abstract public class Task
      */
     int notifyCloned (Task clone)
     {
-	for (Iterator i = observers.iterator ();
+	for (Iterator i = clonedObservers.iterator ();
 	     i.hasNext (); ) {
-	    Object o = i.next ();
-	    // XXX: This would work better if there were generics.
-	    if (o instanceof TaskObserver.Cloned) {
-		TaskObserver.Cloned observer
-		    = (TaskObserver.Cloned) o;
-		if (observer.updateCloned (this, clone) == Action.BLOCK)
-		    blockers.add (observer);
-	    }
+	    TaskObserver.Cloned observer
+		= (TaskObserver.Cloned) i.next ();
+	    if (observer.updateCloned (this, clone) == Action.BLOCK)
+		blockers.add (observer);
 	}
 	return blockers.size ();
+    }
+
+    /**
+     * Set of Attached observers.
+     */
+    private TaskObservable attachedObservers = new TaskObservable ();
+    /**
+     * Add a TaskObserver.Attached observer.
+     */
+    public void requestAddAttachedObserver (TaskObserver.Attached o)
+    {
+	requestAddObserver (attachedObservers, o);
+    }
+    /**
+     * Delete a TaskObserver.Attached observer.
+     */
+    public void requestDeleteAttachedObserver (TaskObserver.Attached o)
+    {
+	requestDeleteObserver (attachedObservers, o);
     }
     /**
      * Notify all Attached observers that this task attached.  Return
@@ -554,18 +590,33 @@ abstract public class Task
      */
     int notifyAttached ()
     {
-	for (Iterator i = observers.iterator ();
+	for (Iterator i = attachedObservers.iterator ();
 	     i.hasNext (); ) {
-	    Object o = i.next ();
-	    // XXX: This would work better if there were generics.
-	    if (o instanceof TaskObserver.Attached) {
-		TaskObserver.Attached observer
-		    = (TaskObserver.Attached) o;
-		if (observer.updateAttached (this) == Action.BLOCK)
-		    blockers.add (observer);
-	    }
+	    TaskObserver.Attached observer
+		= (TaskObserver.Attached) i.next ();
+	    if (observer.updateAttached (this) == Action.BLOCK)
+		blockers.add (observer);
 	}
 	return blockers.size ();
+    }
+
+    /**
+     * Set of Forked observers.
+     */
+    private TaskObservable forkedObservers = new TaskObservable ();
+    /**
+     * Add a TaskObserver.Forked observer.
+     */
+    public void requestAddForkedObserver (TaskObserver.Forked o)
+    {
+	requestAddObserver (forkedObservers, o);
+    }
+    /**
+     * Delete a TaskObserver.Forked observer.
+     */
+    public void requestDeleteForkedObserver (TaskObserver.Forked o)
+    {
+	requestDeleteObserver (forkedObservers, o);
     }
     /**
      * Notify all Forked observers that this task forked.  Return the
@@ -573,18 +624,33 @@ abstract public class Task
      */
     int notifyForked (Proc fork)
     {
-	for (Iterator i = observers.iterator ();
+	for (Iterator i = forkedObservers.iterator ();
 	     i.hasNext (); ) {
-	    Object o = i.next ();
-	    // XXX: This would work better if there were generics.
-	    if (o instanceof TaskObserver.Forked) {
-		TaskObserver.Forked observer
-		    = (TaskObserver.Forked) o;
-		if (observer.updateForked (this, fork) == Action.BLOCK)
-		    blockers.add (observer);
-	    }
+	    TaskObserver.Forked observer
+		= (TaskObserver.Forked) i.next ();
+	    if (observer.updateForked (this, fork) == Action.BLOCK)
+		blockers.add (observer);
 	}
 	return blockers.size ();
+    }
+
+    /**
+     * Set of Terminated observers.
+     */
+    private TaskObservable terminatedObservers = new TaskObservable ();
+    /**
+     * Add a TaskObserver.Terminated observer.
+     */
+    public void requestAddTerminatedObserver (TaskObserver.Terminated o)
+    {
+	requestAddObserver (terminatedObservers, o);
+    }
+    /**
+     * Delete a TaskObserver.Terminated observer.
+     */
+    public void requestDeleteTerminatedObserver (TaskObserver.Terminated o)
+    {
+	requestDeleteObserver (terminatedObservers, o);
     }
     /**
      * Notify all Terminated observers, of this Task's demise.  Return
@@ -592,18 +658,33 @@ abstract public class Task
      */
     int notifyTerminated (boolean signal, int value)
     {
-	for (Iterator i = observers.iterator ();
+	for (Iterator i = terminatedObservers.iterator ();
 	     i.hasNext (); ) {
-	    Object o = i.next ();
-	    // XXX: This would work better if there were generics.
-	    if (o instanceof TaskObserver.Terminated) {
-		TaskObserver.Terminated observer
-		    = (TaskObserver.Terminated) o;
-		if (observer.updateTerminated (this, signal, value) == Action.BLOCK)
-		    blockers.add (observer);
-	    }
+	    TaskObserver.Terminated observer
+		= (TaskObserver.Terminated) i.next ();
+	    if (observer.updateTerminated (this, signal, value) == Action.BLOCK)
+		blockers.add (observer);
 	}
 	return blockers.size ();
+    }
+
+    /**
+     * Set of Terminating observers.
+     */
+    private TaskObservable terminatingObservers = new TaskObservable ();
+    /**
+     * Add TaskObserver.Terminating to the TaskObserver pool.
+     */
+    public void requestAddTerminatingObserver (TaskObserver.Terminating o)
+    {
+	requestAddObserver (terminatingObservers, o);
+    }
+    /**
+     * Delete TaskObserver.Terminating.
+     */
+    public void requestDeleteTerminatingObserver (TaskObserver.Terminating o)
+    {
+	requestDeleteObserver (terminatingObservers, o);
     }
     /**
      * Notify all Terminating observers, of this Task's demise.
@@ -611,18 +692,33 @@ abstract public class Task
      */
     int notifyTerminating (boolean signal, int value)
     {
-	for (Iterator i = observers.iterator ();
+	for (Iterator i = terminatingObservers.iterator ();
 	     i.hasNext (); ) {
-	    Object o = i.next ();
-	    // XXX: This would work better if there were generics.
-	    if (o instanceof TaskObserver.Terminating) {
-		TaskObserver.Terminating observer
-		    = (TaskObserver.Terminating) o;
-		if (observer.updateTerminating (this, signal, value) == Action.BLOCK)
-		    blockers.add (observer);
-	    }
+	    TaskObserver.Terminating observer
+		= (TaskObserver.Terminating) i.next ();
+	    if (observer.updateTerminating (this, signal, value) == Action.BLOCK)
+		blockers.add (observer);
 	}
 	return blockers.size ();
+    }
+
+    /**
+     * Set of Execed observers.
+     */
+    private TaskObservable execedObservers = new TaskObservable ();
+    /**
+     * Add TaskObserver.Execed to the TaskObserver pool.
+     */
+    public void requestAddExecedObserver (TaskObserver.Execed o)
+    {
+	requestAddObserver (execedObservers, o);
+    }
+    /**
+     * Delete TaskObserver.Execed.
+     */
+    public void requestDeleteExecedObserver (TaskObserver.Execed o)
+    {
+	requestDeleteObserver (execedObservers, o);
     }
     /**
      * Notify all Execed observers, of this Task's demise.  Return the
@@ -630,16 +726,12 @@ abstract public class Task
      */
     int notifyExeced ()
     {
-	for (Iterator i = observers.iterator ();
+	for (Iterator i = execedObservers.iterator ();
 	     i.hasNext (); ) {
-	    Object o = i.next ();
-	    // XXX: This would work better if there were generics.
-	    if (o instanceof TaskObserver.Execed) {
-		TaskObserver.Execed observer
-		    = (TaskObserver.Execed) o;
-		if (observer.updateExeced (this) == Action.BLOCK)
-		    blockers.add (observer);
-	    }
+	    TaskObserver.Execed observer
+		= (TaskObserver.Execed) i.next ();
+	    if (observer.updateExeced (this) == Action.BLOCK)
+		blockers.add (observer);
 	}
 	return blockers.size ();
     }

@@ -75,7 +75,7 @@ public class TestProcGet
 							Object obj)
 				    {
 					Task task = (Task) obj;
-					task.requestAddObserver (new TaskObserver.Attached ()
+					task.requestAddAttachedObserver (new TaskObserver.Attached ()
 					    {
 						public void added (Throwable t)
 						{

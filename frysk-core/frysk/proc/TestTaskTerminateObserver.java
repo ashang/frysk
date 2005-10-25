@@ -53,10 +53,24 @@ public class TestTaskTerminateObserver
     /**
      * Save the Terminating, and Terminated values as they pass by.
      */
-    public class Terminate
+    class Terminate
 	extends TaskObserverBase
 	implements TaskObserver.Terminating, TaskObserver.Terminated
     {
+	boolean terminatingP;
+	boolean terminatedP;
+	Terminate (int terminating, int terminated)
+	{
+	    terminatingP = (terminating != INVALID);
+	    terminatedP = (terminated != INVALID);
+	}
+	void updateTask (Task task)
+	{
+	    if (terminatedP)
+		task.requestAddTerminatedObserver (this);
+	    if (terminatingP)
+		task.requestAddTerminatingObserver (this);
+	}
 	int terminating = INVALID;
 	int terminated = INVALID;
 	public Action updateTerminating (Task task, boolean signal,
@@ -87,11 +101,7 @@ public class TestTaskTerminateObserver
     {
 	// Set up an observer that watches for both Terminating and
 	// Terminated events.
-	Terminate terminate = new Terminate ();
-	if (terminating != INVALID)
-	    new AddTaskObserver ((TaskObserver.Terminating) terminate);
-	if (terminated != INVALID)
-	    new AddTaskObserver ((TaskObserver.Terminated) terminate);
+	final Terminate terminate = new Terminate (terminating, terminated);
 	
 	// Bail once it has exited.
 	new StopEventLoopWhenChildProcRemoved ();

@@ -1,3 +1,13 @@
+2005-10-25  Andrew Cagney  <cagney@redhat.com>
+
+	* ActionPool.java: Replace calls to Task .requestAddObserver, and
+	.requestDeleteObserver with either a call to
+	.requestAddExecedObserver, .requestDeleteExecedObserver,
+	.requestAddTerminatingObsever, .requestDeleteTerminatingObserver,
+	.requestAddForkedObserver, .requestDeleteForkedObserver,
+	.requestAddClonedObserver, .requestDeleteClonedObserver, or a
+	RuntimeException throw.
+	
 2005-10-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskTerminatingObserver.java: 

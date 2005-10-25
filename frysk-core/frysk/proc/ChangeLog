@@ -1,3 +1,25 @@
+2005-10-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskObservable.java: New file.
+	* TestTaskTerminateObserver.java, TestTaskForkedObserver.java,
+	TestTaskClonedObserver.java, TestProcGet.java, TestModify.java:
+	Update.
+	* TestLib.java: Make .TaskObserverBase abstract adding .updateTask
+	method; have it register itself as a task-added observer.  Delete
+	AddTaskObserver.
+	* TaskState.java: Update .processRequestAddObserver, and
+	.processRequestDeleteObserver to take a TaskObservable.
+	* Task.java: Add .clonedObservers, .requestAddClonedObserver,
+	requestDeleteClonedObserver, .attachedObservers,
+	.requestAddAttachedObserver, .requestDeleteAttachedObserver,
+	.forkedObservers, .requestAddForkedObserver,
+	.requestDeleteForkedObserver, .terminatedObservers,
+	.requestAddTerminatedObserver, .requestDeleteTerminatedObserver,
+	.terminatingObservers, .requestAddTerminatingObserver,
+	.requestDeleteTerminatingObserver, .execedObservers,
+	.requestAddExecedObserver, .requestDeleteExecedObserver.  Make
+	.requestAddObserver, and .requestDeleteObserver private.
+
 2005-10-24  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskTerminateObserver.java: New.

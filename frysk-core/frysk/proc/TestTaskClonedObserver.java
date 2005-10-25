@@ -69,9 +69,12 @@ public class TestTaskClonedObserver
 		count++;
 		return Action.CONTINUE;
 	    }
+	    void updateTask (Task task)
+	    {
+		task.requestAddClonedObserver (this);
+	    }
 	}
 	CloneCounter cloneCounter = new CloneCounter ();
-	new AddTaskObserver (cloneCounter);
 
 	Manager.host.requestCreateAttachedContinuedProc
 	    (null, "/dev/null", null, new String[] {
@@ -120,9 +123,12 @@ public class TestTaskClonedObserver
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
+	    void updateTask (Task task)
+	    {
+		task.requestAddClonedObserver (this);
+	    }
 	}
 	CloneStopper cloneStopper = new CloneStopper ();
-	new AddTaskObserver (cloneStopper);
 
 	// Compute the expected number of tasks (this includes the
 	// main task).

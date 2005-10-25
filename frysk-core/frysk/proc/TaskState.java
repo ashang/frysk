@@ -39,6 +39,10 @@
 
 package frysk.proc;
 
+/**
+ * The task state machine.
+ */
+
 class TaskState
     extends State
 {
@@ -150,11 +154,15 @@ class TaskState
     {
 	throw unhandled (task, "RequestUnblock");
     }
-    TaskState processRequestAddObserver (Task task, TaskObserver observer)
+    TaskState processRequestAddObserver (Task task,
+					 TaskObservable observers,
+					 TaskObserver observer)
     {
 	throw unhandled (task, "RequestAddObserver");
     }
-    TaskState processRequestDeleteObserver (Task task, TaskObserver observer)
+    TaskState processRequestDeleteObserver (Task task,
+					    TaskObservable observers,
+					    TaskObserver observer)
     {
 	throw unhandled (task, "RequestDeleteObserver");
     }
@@ -269,13 +277,13 @@ class TaskState
 		return destroyed;
 	    }
 	    TaskState processRequestAddObserver (Task task,
+						 TaskObservable observable,
 						 TaskObserver observer)
 	    {
-		task.observers.add (observer);
+		observable.add (observer);
 		observer.added (null); // Success
 		return startRunning;
 	    }
-
 	};
     /**
      * Task just starting out, wait for it to become ready, but put it

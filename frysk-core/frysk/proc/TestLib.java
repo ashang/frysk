@@ -507,19 +507,18 @@ public class TestLib
     }
 
     /**
-     * Adds the supplied TaskObserver to any of the child Proc's
-     * Task's.
+     * A TaskObserver base class.  This provides a standard framework
+     * for both adding and implementing TaskObserver's.
+     *
+     * It provides default .added and .deleted methods, logic to
+     * manage a set of tasks, and a notification mechanism so that the
+     * observer can be registered with all child tasks.
      */
-    class AddTaskObserver
+    abstract class TaskObserverBase
+	implements TaskObserver
     {
-	TaskObserver observer;
-	/**
-	 * Create a new object that will watch for children, adding
-	 * TaskObserver to each child's Task.
-	 */
-	AddTaskObserver (TaskObserver o)
+	TaskObserverBase ()
 	{
-	    observer = o;
 	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable obj, Object o)
@@ -532,22 +531,16 @@ public class TestLib
 				public void update (Observable obj, Object o)
 				{
 				    Task task = (Task) o;
-				    task.requestAddObserver (observer);
+				    updateTask (task);
 				}
 			    });
 		    }
 		});
 	}
-    }
-
-    /**
-     * A TaskObserver base class.  This provides a standard framework
-     * for implementing TaskObserver's - added and deleted methods,
-     * and logic to manage a set of tasks.
-     */
-    class TaskObserverBase
-	implements TaskObserver
-    {
+	/**
+	 * A new task appeared, update it.
+	 */
+	abstract void updateTask (Task task);
 	/**
 	 * Count of number of times that this observer was added to a
 	 * Task's observer set.
@@ -808,23 +801,9 @@ public class TestLib
 	    numberExecs++;
 	    return Action.CONTINUE;
 	}
-	ExecCounter ()
+	void updateTask (Task task)
 	{
-	    Manager.host.observableProcAdded.addObserver (new Observer ()
-		{
-		    public void update (Observable o, Object obj)
-		    {
-			Proc proc = (Proc) obj;
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable o, Object obj)
-				{
-				    Task task = (Task) obj;
-				    task.requestAddObserver (ExecCounter.this);
-				}
-			    });
-		    }
-		});
+	    task.requestAddExecedObserver (ExecCounter.this);
 	}
     }
 
