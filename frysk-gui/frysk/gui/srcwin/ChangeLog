@@ -1,6 +1,7 @@
 2005-10-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMTag.java: changed END_ATTR from "end" to "length"
+	* dom/DOMTestGUIBuilder.java: add "inline instance" to line node
 
 2005-10-25  Rick Moseley  <rmoseley@redhat.com>
 

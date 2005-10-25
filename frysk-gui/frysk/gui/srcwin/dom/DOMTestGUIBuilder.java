@@ -171,6 +171,7 @@ public class DOMTestGUIBuilder {
 	 *************************************************************************/
 	public static void testDOMImage() {
 		
+		// add the source lines
 		DOMImage testDOMImage = dom.getImage(images[0]);
 		for (int i=0; i < sources.length; i++) {
 			testDOMImage.addSource(sources[i], sources_paths[i]);
@@ -189,6 +190,7 @@ public class DOMTestGUIBuilder {
 				}
 			}
 		}
+		// add the inline functions
 		for (int j=0; j < func_name.length; j++) {
 			testDOMImage.addInlineFunction(func_name[j], func_text, 
 					func_start_offset[j], func_end_offset[j]);
@@ -273,7 +275,7 @@ public class DOMTestGUIBuilder {
 			// parse the line for tags
 			while (st.hasMoreTokens()) {
 				token = st.nextToken();
-				System.out.println("token = " + token);
+				// look for any keywords in the list
 				for (int j = 0; j < tags_keywords.length; j++) {
 					if (token.equals(tags_keywords[j])) {
 						line_index = test_prog[i].indexOf(token,line_index);
@@ -281,6 +283,7 @@ public class DOMTestGUIBuilder {
 						line_index = line_index + token.length();
 					}
 				}
+				// look for any variables in the list
 				for (int k = 0; k < tags_variables.length; k++) {
 					if (token.equals(tags_variables[k])) {
 						line_index = test_prog[i].indexOf(token,line_index);
@@ -288,21 +291,16 @@ public class DOMTestGUIBuilder {
 						line_index = line_index + token.length();
 					}
 				}
+				// look for inline instances
+				for (int l = 0; l < func_name.length; l++) {
+					if (token.equals(func_name[l]) && (i > func_end_line[l])) {
+						line_index = test_prog[i].indexOf(token,line_index);
+						testDOMLine.addInlineInst(token, line_index, 
+								token.length());
+					}
+				}
 			}
 		}
-		/*String tag_type = "inline";
-		DOMTag tag = new DOMTag(testDOMLine, tag_type,
-				main_prog[1].indexOf(test_inline),
-				main_prog[1].indexOf(test_inline) + test_inline.length());
-		
-		String new_tag_type = "keyword";
-		tag.setType(new_tag_type);
-		
-		int new_start = 25;
-		tag.setStart(new_start);
-		
-		int new_end = 35;
-		tag.setEnd(new_end); */
 	}
 	
 	/**
