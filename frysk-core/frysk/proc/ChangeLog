@@ -1,5 +1,7 @@
 2005-10-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskTerminateObserver.java: Enable all tests.
+	
 	* TaskObservable.java: New file.
 	* TestTaskTerminateObserver.java, TestTaskForkedObserver.java,
 	TestTaskClonedObserver.java, TestProcGet.java, TestModify.java:
