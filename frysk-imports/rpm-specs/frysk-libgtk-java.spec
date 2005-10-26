@@ -25,7 +25,7 @@
 
 %define	name_base 	libgtk-java
 %define	version		2.8.0
-%define	release		11
+%define	release		13
 
 
 Summary:	Java bindings for GTK+
@@ -135,6 +135,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Oct 18 2005  Igor Foox <ifoox@redhat.com> - 2.8.0-13
+- Updated with patch for TextBuffer by ajocksch.
+
 * Fri Oct 14 2005  Igor Foox <ifoox@redhat.com> - 2.8.0-11
 - Updated sources to get bugfixes from upsteam.
 - Removed Accelerators patch.

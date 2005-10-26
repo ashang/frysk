@@ -1,3 +1,9 @@
+2005-10-26  Igor Foox  <ifoox@redhat.com>
+
+	* frysk-gtk2.spec: Updated to GTK+ 2.8.6, added patch for theme bug (bz#
+	1367).
+	* frysk-libgtk-java.spec: Updated with patch for TextBuffer by ajocksch.
+
 2005-10-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cdtparser-3.0.0.spec: No longer compiles with find-and-aot-

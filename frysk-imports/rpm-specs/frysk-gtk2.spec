@@ -17,7 +17,7 @@
 %define cairo_version %{cairo_base_version}-1
 %define libpng_version 2:1.2.2-16
 
-%define base_version 2.8.4
+%define base_version 2.8.6
 %define bin_version 2.4.0
 
 %define name_base gtk2
@@ -25,7 +25,7 @@
 Summary: The GIMP ToolKit (GTK+), a library for creating GUIs for X.
 Name: frysk-%{name_base}
 Version: %{base_version}
-Release: 1
+Release: 2
 License: LGPL
 Group: System Environment/Libraries
 Source: gtk+-%{version}.tar.gz
@@ -33,10 +33,14 @@ Source1: update-scripts.tar.gz
 
 # Biarch changes
 Patch0: gtk+-2.4.1-lib64.patch
-# fixed in 2.8.1
-#Patch1: gtk+-2.8.0-back-pixmap.patch
+# Fixed in 2.8.7
+Patch1: gtk+-2.8.6-mimecache.patch
+# Backported from 2.10
+Patch2: gtk+-2.8.6-inputmethod.patch
 # Patch update scripts to correctly map to /opt
-Patch2: frysk-gtk2-update-scripts.patch
+Patch3: frysk-gtk2-update-scripts.patch
+# Try to make themes work
+Patch4: gtk+-2.8.6-theme-fix.patch
 
 BuildPrereq: atk-devel >= %{atk_version}
 BuildPrereq: frysk-pango-devel >= %{pango_version}
@@ -102,11 +106,15 @@ frysk Execution Analysis Tool, it is not intended for general use.
 (cd .. && tar xzf %{SOURCE1})
 pushd ..
 pwd
-%patch2 -p0 
+%patch3 -p0 
 popd
 
 %patch0 -p1 -b .lib64
-#%patch1 -p1 -b .back-pixmap
+%patch1 -p1 -b .mimecache
+%patch2 -p0 -b .inputmethod
+%patch4 -p0
+
+
 
 for i in config.guess config.sub ; do
 	test -f %{_datadir}/libtool/$i && cp %{_datadir}/libtool/$i .
@@ -277,6 +285,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc tmpdocs/examples
 
 %changelog
+* Mon Oct 24 2005 Igor Foox <ifoox@redhat.com> - 2.8.6-1
+- Imported GTK+-2.8.6
+- Added patch to fix theme problem
+
 * Tue Sep 27 2005 Igor Foox <ifoox@redhat.com> - 2.8.4-1
 - Imported GTK+-2.8.4
 
