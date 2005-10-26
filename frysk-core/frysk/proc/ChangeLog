@@ -1,5 +1,8 @@
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskEvent.java: Delete TaskEvent .Execed, .Exiting, .Exited, and
+	.Zombied.
+	
 	* Task.java: Delete .syscallEvent.  Add .notifySyscallXXX.
 	* TaskEvent.java: Delete .Syscall.
 	* TaskObserver.java: Add Syscall .updateSyscallXXX.
