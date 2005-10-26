@@ -1,3 +1,9 @@
+2005-10-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ActionPool.java (AddForkObserver): Replace RuntimeExceptions with
+	appropriet back function calls.
+	* observers/TaskForkedObserver.java: Now implements TaskObserver.Forked.
+
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/SyscallObserver.java: Update TaskObserver.Syscall

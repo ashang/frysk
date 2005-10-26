@@ -45,7 +45,6 @@ import frysk.gui.monitor.observers.TaskCloneObserver;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
 import frysk.gui.monitor.observers.TaskTerminatingObserver;
-// XXX: import frysk.proc.TaskObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -109,7 +108,7 @@ public class ActionPool {
                 }
                 
                 public Action() {
-                        this.toolTip = new String();
+                	this.toolTip = new String();
                 }
 
                 /**
@@ -318,8 +317,9 @@ public class ActionPool {
 				}
  			});
  			
- 			// XXX: data.getTask().requestAddObserver(taskExecObserver);
-			throw new RuntimeException ("XXX: Task.addObserver");
+ 			//XXX:Refactor.
+ 			data.getTask().requestAddExecedObserver(taskExecObserver);
+
 		}
 	}
 
@@ -345,8 +345,10 @@ public class ActionPool {
 					data.getTask().requestDeleteTerminatingObserver(eventLog);
 				}
 			});
-			// XXX: data.getTask().requestAddObserver(taskTerminatingObserver);
-			throw new RuntimeException ("XXX: Task.addObserver");
+			
+			//XXX: Refactor. 
+			data.getTask().requestAddTerminatingObserver(taskTerminatingObserver);
+			
 		}
 		
 	}
@@ -364,7 +366,7 @@ public class ActionPool {
 			syscallObserver.onAdded(new Runnable() {
 				public void run() {
 					data.add(syscallObserver);
-					// XXX: data.getTask().requestAddSyscallObserver(eventLog);
+					//		data.getTask().requestAddSyscallObserver(eventLog);
 					throw new RuntimeException ("XXX: Task.addObserver");
 				}
 			});
@@ -380,7 +382,6 @@ public class ActionPool {
 			// XXX: data.getTask().requestAddObserver(syscallObserver);
 			throw new RuntimeException ("XXX: Task.addObserver");
 		}
-
 		
 	}
 	
@@ -409,8 +410,8 @@ public class ActionPool {
 			});
 			
 		
-			// XXX: data.getTask().requestAddForkedObserver(taskForkedObserver);
-			throw new RuntimeException ("XXX: Task.addObserver");
+			//XXX: Refactor.
+			data.getTask().requestAddForkedObserver(taskForkedObserver);
 		}
 	}
 
