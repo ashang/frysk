@@ -1,3 +1,24 @@
+2005-10-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ConsoleWindow.java: Added Copyright/License Header.
+	* TearOffNotebook.java: Ditto.
+	* TaskStatusWidget.java: Ditto.
+	* StatusWidget.java: Ditto.
+	* ProgramViewPage.java: Ditto.
+	* ProgramDataModel.java: Ditto.
+	* ProgramAddWindow.java: Ditto.
+	* ProcStatusWidget.java: Ditto.
+	* PreferenceWidget.java: Ditto.
+	* PreferencesWindow.java: Ditto.
+	* NotifyingLabel.java: Ditto.
+	* MenuBar.java: Ditto.
+	* InfoWidget.java: Ditto.
+	* GuiObservable.java: Ditto.
+	* GuiData.java: Ditto.
+	* EventFormatter.java: Ditto.
+	* CustomeObserverWindow.java: Ditto.
+
+
 2005-10-25  Andrew Cagney  <cagney@redhat.com>
 
 	* ActionPool.java: Replace calls to Task .requestAddObserver, and
