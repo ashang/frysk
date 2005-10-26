@@ -1,5 +1,17 @@
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Delete .syscallEvent.  Add .notifySyscallXXX.
+	* TaskEvent.java: Delete .Syscall.
+	* TaskObserver.java: Add Syscall .updateSyscallXXX.
+	* TestI386Regs.java: Add .updateSyscallXXX, .updateSyscallEnter,
+	.updateSyscallExit, .added, and .deleted, to .TaskEventObserver.
+	* TestI386Modify.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+	* TaskState.java: Replace Task .syscallEvent with
+	.notifySyscallXXX.
+	
 	* Task.java: Add .notifySyscall, .requestAddSyscallObserver,
 	.requestDeleteSyscallObserver, and .syscallObservers.
 	* TaskObserver.java: Simplify .Syscall interface.

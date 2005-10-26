@@ -68,44 +68,63 @@ public class TestSyscallOpen
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer
+ 	implements Observer, TaskObserver.Syscall
     {
+	public void added (Throwable w)
+	{
+	    assertNull ("added parameter", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSyscallEnter (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallExit (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallXXX (Task task)
+	{
+	    syscallTaskEventCount++;
+	    inSyscall = !inSyscall;
+	    I386Linux.SyscallEventInfo syscallEventInfo
+		= new I386Linux.SyscallEventInfo ();
+	    int syscallNum = syscallEventInfo.number (task);
+	    if (inSyscall) {
+		// syscall.printCall (writer, task, syscallEventInfo);
+		// verify that open attempted for file a.file
+		if (syscallNum == 5) { 
+		    long addr = syscallEventInfo.arg (task, 1);
+		    StringBuffer x = new StringBuffer ();
+		    task.memory.get (addr, x);
+		    String name = x.toString ();
+		    if (name.indexOf (openName) >= 0) {
+			testFileOpened = true;
+			openingTestFile = true;
+		    }
+		}
+	    }
+	    else {
+		// syscall.printReturn (writer, task, syscallEventInfo);
+		// verify that open fails with ENOENT errno
+		if (syscallNum == 5 && openingTestFile) {
+		    openingTestFile = false;
+		    int rc = (int)syscallEventInfo.returnCode (task);
+		    if (rc == -2) // ENOENT
+			expectedRcFound = true;
+		}
+	    }
+	    return Action.CONTINUE;
+	}
 	public void update (Observable o, Object obj)
 	{
 	    TaskEvent e = (TaskEvent) obj;
             if (e instanceof TaskEvent.Trapped) {
 	        stoppedTaskEventCount++;
-	    }
-            else if (e instanceof TaskEvent.Syscall) {
-	        syscallTaskEventCount++;
-	        inSyscall = !inSyscall;
-		I386Linux.SyscallEventInfo syscallEventInfo
-		    = new I386Linux.SyscallEventInfo ();
-		int syscallNum = syscallEventInfo.number (e.task);
-		if (inSyscall) {
-		    // syscall.printCall (writer, e.task, syscallEventInfo);
-		    // verify that open attempted for file a.file
-		    if (syscallNum == 5) { 
-			long addr = syscallEventInfo.arg (e.task, 1);
-                	StringBuffer x = new StringBuffer ();
-                    	e.task.memory.get (addr, x);
-			String name = x.toString ();
-			if (name.indexOf (openName) >= 0) {
-			    testFileOpened = true;
-			    openingTestFile = true;
-			}
-                    }
-		}
-		else {
-		    // syscall.printReturn (writer, e.task, syscallEventInfo);
-		    // verify that open fails with ENOENT errno
-		    if (syscallNum == 5 && openingTestFile) {
-		    	openingTestFile = false;
-			int rc = (int)syscallEventInfo.returnCode (e.task);
-			if (rc == -2) // ENOENT
-			    expectedRcFound = true;
-		    }
-		}
 	    }
  	}
     }
@@ -127,7 +146,7 @@ public class TestSyscallOpen
                         {
                             task = (Task) obj;
  			    task.traceSyscall = true;
- 			    task.syscallEvent.addObserver (taskEventObserver);
+ 			    task.requestAddSyscallObserver (taskEventObserver);
  			    task.stopEvent.addObserver (taskEventObserver);
                         }
                     }

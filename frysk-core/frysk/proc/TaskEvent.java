@@ -234,27 +234,6 @@ public abstract class TaskEvent
     }
 
     /**
-     * The task is either entering or exiting a system call.
-     */
-    static class Syscall
-	extends TaskEvent
-    {
-	Syscall (Task task)
-	{
-	    super (task);
-	}
-	public void execute ()
-	{
-	    throw new RuntimeException ("should not happen");
-	}
-	public String toString ()
-	{
-	    return ("[Syscall" + super.toString ()
-		    + "]");
-	}
-    }
-
-    /**
      * The task was terminated (due to a signal)
      */
     static class Terminated

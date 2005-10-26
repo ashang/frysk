@@ -74,35 +74,55 @@ public class TestI386Regs
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer
+ 	implements Observer, TaskObserver.Syscall
     {
+	public void added (Throwable w)
+	{
+	    assertNull ("added's parameter", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSyscallEnter (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallExit (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallXXX (Task task)
+	{
+	    syscallState ^= 1;
+	    I386Linux.SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
+	    // The low-level assembler code performs an exit syscall
+	    // and sets up the registers with simple values.  We want
+	    // to verify that all the registers are as expected.
+	    if (syscallState == 1) {
+		// verify that exit syscall occurs
+		syscallNum = syscall.number (task);
+		if (syscallNum == 1) { 
+		    I386Linux.Isa isa = (I386Linux.Isa)task.getIsa ();
+		    orig_eax = isa.orig_eax.get (task);
+		    ebx = isa.ebx.get (task);
+		    ecx = isa.ecx.get (task);
+		    edx = isa.edx.get (task);
+		    ebp = isa.ebp.get (task);
+		    esi = isa.esi.get (task);
+		    edi = isa.edi.get (task);
+		    esp = isa.esp.get (task);
+		}
+	    }
+	    return Action.CONTINUE;
+	}
+
 	public void update (Observable o, Object obj)
 	{
 	    TaskEvent e = (TaskEvent) obj;
             if (e instanceof TaskEvent.Signaled) {
 	        stoppedTaskEventCount++;
-	    }
-            else if (e instanceof TaskEvent.Syscall) {
-	        syscallState ^= 1;
-		I386Linux.SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
-		// The low-level assembler code performs an exit syscall
-		// and sets up the registers with simple values.  We
-		// want to verify that all the registers are as expected.
-		if (syscallState == 1) {
-		    // verify that exit syscall occurs
-		    syscallNum = syscall.number (e.task);
-		    if (syscallNum == 1) { 
-			I386Linux.Isa isa = (I386Linux.Isa)e.task.getIsa ();
-			orig_eax = isa.orig_eax.get (e.task);
-			ebx = isa.ebx.get (e.task);
-			ecx = isa.ecx.get (e.task);
-			edx = isa.edx.get (e.task);
-			ebp = isa.ebp.get (e.task);
-			esi = isa.esi.get (e.task);
-			edi = isa.edi.get (e.task);
-			esp = isa.esp.get (e.task);
-                    }
-		}
 	    }
  	}
     }
@@ -118,17 +138,16 @@ public class TestI386Regs
 	    if (!isChildOfMine (proc))
 		return;
 	    registerChild (proc.getId ().hashCode ());
-            proc.observableTaskAdded.addObserver
-                (new Observer () {
-                        public void update (Observable o, Object obj)
-                        {
-                            task = (Task) obj;
- 			    task.traceSyscall = true;
- 			    task.syscallEvent.addObserver (taskEventObserver);
- 			    task.stopEvent.addObserver (taskEventObserver);
-                        }
-                    }
-                 );
+            proc.observableTaskAdded.addObserver (new Observer ()
+		{
+		    public void update (Observable o, Object obj)
+		    {
+			task = (Task) obj;
+			task.traceSyscall = true;
+			task.requestAddSyscallObserver (taskEventObserver);
+			task.stopEvent.addObserver (taskEventObserver);
+		    }
+		});
         }
     }
                                                                                          

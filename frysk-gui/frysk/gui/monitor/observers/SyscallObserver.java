@@ -25,4 +25,9 @@ public class SyscallObserver extends ObserverRoot implements TaskObserver.Syscal
 		// TODO Auto-generated method stub
 		return Action.CONTINUE;
 	}
+
+	public Action updateSyscallXXX(Task task) {
+		// TODO Auto-generated method stub
+		return Action.CONTINUE;
+	}
 }

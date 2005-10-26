@@ -457,7 +457,6 @@ abstract public class Task
 	    notifyObservers (event);
 	}
     }
-    public TaskEventObservable syscallEvent = new TaskEventObservable ();
     public TaskEventObservable stopEvent = new TaskEventObservable ();
     public TaskEventObservable stepEvent = new TaskEventObservable ();
     public TaskEventObservable requestedStopEvent = new TaskEventObservable ();
@@ -753,6 +752,22 @@ abstract public class Task
     public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
     {
 	requestDeleteObserver (syscallObservers, o);
+    }
+    /**
+     * Notify all Syscall observers of this Task's syscall operation.
+     * Entry or exit, who can say?  Return the number of blocking
+     * observers.
+     */
+    int notifySyscallXXX ()
+    {
+	for (Iterator i = syscallObservers.iterator ();
+	     i.hasNext (); ) {
+	    TaskObserver.Syscall observer
+		= (TaskObserver.Syscall) i.next ();
+	    if (observer.updateSyscallXXX (this) == Action.BLOCK)
+		blockers.add (observer);
+	}
+	return blockers.size ();
     }
     /**
      * Notify all Syscall observers of this Task's entry into a system

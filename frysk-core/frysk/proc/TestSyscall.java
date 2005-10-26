@@ -65,17 +65,36 @@ public class TestSyscall
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer
+ 	implements Observer, TaskObserver.Syscall
     {
+	public void added (Throwable w)
+	{
+	    assertNull ("added parameter", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSyscallEnter (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallExit (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallXXX (Task task)
+	{
+	    syscallTaskEventCount++;
+	    syscallState ^= 1;
+	    return Action.CONTINUE;
+	}
 	public void update (Observable o, Object obj)
 	{
 	    TaskEvent e = (TaskEvent) obj;
             if (e instanceof TaskEvent.Trapped) {
 	        stoppedTaskEventCount++;
-	    }
-            else if (e instanceof TaskEvent.Syscall) {
-	        syscallTaskEventCount++;
-	        syscallState ^= 1;
 	    }
  	}
     }
@@ -97,7 +116,7 @@ public class TestSyscall
                         {
                             task = (Task) obj;
  			    task.traceSyscall = true;
- 			    task.syscallEvent.addObserver (taskEventObserver);
+ 			    task.requestAddSyscallObserver (taskEventObserver);
  			    task.stopEvent.addObserver (taskEventObserver);
                         }
                     }

@@ -349,8 +349,7 @@ class TaskState
 	    }
 	    TaskState processPerformSyscalled (Task task)
 	    {
-		TaskEvent event = new TaskEvent.Syscall (task);
-		task.syscallEvent.notify (event);
+		task.notifySyscallXXX ();
 		task.sendContinue (0);
 		return running;
 	    }

@@ -83,8 +83,72 @@ public class TestI386Modify
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer
+ 	implements Observer, TaskObserver.Syscall
+
     {
+	public void added (Throwable w)
+	{
+	    assertNull ("added parameter", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSyscallEnter (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallExit (Task task)
+	{
+	    fail ("not implemented");
+	    return null;
+	}
+	public Action updateSyscallXXX (Task task)
+	{
+	    syscallState ^= 1;
+	    I386Linux.SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
+	    // The low-level assembler code performs an exit syscall
+	    // and sets up the registers with simple values.  We want
+	    // to verify that all the registers are as expected.
+	    if (syscallState == 1) {
+		// verify that exit syscall occurs
+		syscallNum = syscall.number (task);
+		if (syscallNum == 20) { 
+		    I386Linux.Isa isa = (I386Linux.Isa)task.getIsa ();
+		    ebx = isa.ebx.get (task);
+		    assertEquals ("EBX is 22", 22, ebx);
+		    ecx = isa.ecx.get (task);
+		    assertEquals ("ECX is 23", 23, ecx);
+		    // edx contains address of memory location we
+		    // are expected to write 8 to
+		    edx = isa.edx.get (task);
+		    int mem = task.memory.getInt (edx);
+		    assertEquals ("Old mem value is 3", 3, mem);
+		    task.memory.putInt (edx, 8);
+		    mem = task.memory.getInt (edx);
+		    assertEquals ("New mem value is 8", 8, mem);
+		    ebp = isa.ebp.get (task);
+		    assertEquals ("ebp is 21", 21, ebp);
+		    // esi contains the address we want to jump to
+		    // when we return from the syscall
+		    esi = isa.esi.get (task);
+		    isa.edi.put (task, esi);
+		    // set a number of the registers as expected
+		    isa.ebx.put (task, 2);
+		    isa.ecx.put (task, 3);
+		    isa.edx.put (task, 4);
+		    isa.ebp.put (task, 5);
+		    isa.esi.put (task, 6);
+		}
+		else if (syscallNum == 1) {
+		    I386Linux.Isa isa = (I386Linux.Isa)task.getIsa ();
+		    ebx = isa.ebx.get (task);
+		    assertEquals ("Exit code 2", 2, ebx);
+		    exitSyscall = true;
+		}
+	    }
+	    return Action.CONTINUE;
+	}
 	public void update (Observable o, Object obj)
 	{
 	    TaskEvent e = (TaskEvent) obj;
@@ -93,50 +157,6 @@ public class TestI386Modify
 		TaskEvent.Signaled ste = (TaskEvent.Signaled)e;
 		throw new RuntimeException ("Unexpected signaled event " +
 					    ste.signal);
-	    }
-            else if (e instanceof TaskEvent.Syscall) {
-	        syscallState ^= 1;
-		I386Linux.SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
-		// The low-level assembler code performs an exit syscall
-		// and sets up the registers with simple values.  We
-		// want to verify that all the registers are as expected.
-		if (syscallState == 1) {
-		    // verify that exit syscall occurs
-		    syscallNum = syscall.number (e.task);
-		    if (syscallNum == 20) { 
-			I386Linux.Isa isa = (I386Linux.Isa)e.task.getIsa ();
-			ebx = isa.ebx.get (e.task);
-			assertEquals ("EBX is 22", 22, ebx);
-			ecx = isa.ecx.get (e.task);
-			assertEquals ("ECX is 23", 23, ecx);
-			// edx contains address of memory location we
-			// are expected to write 8 to
-			edx = isa.edx.get (e.task);
-			int mem = e.task.memory.getInt (edx);
-			assertEquals ("Old mem value is 3", 3, mem);
-			e.task.memory.putInt (edx, 8);
-			mem = e.task.memory.getInt (edx);
-			assertEquals ("New mem value is 8", 8, mem);
-			ebp = isa.ebp.get (e.task);
-			assertEquals ("ebp is 21", 21, ebp);
-			// esi contains the address we want to jump to
-			// when we return from the syscall
-			esi = isa.esi.get (e.task);
-			isa.edi.put (e.task, esi);
-			// set a number of the registers as expected
-			isa.ebx.put (e.task, 2);
-			isa.ecx.put (e.task, 3);
-			isa.edx.put (e.task, 4);
-			isa.ebp.put (e.task, 5);
-			isa.esi.put (e.task, 6);
-                    }
-		    else if (syscallNum == 1) {
-			I386Linux.Isa isa = (I386Linux.Isa)e.task.getIsa ();
-			ebx = isa.ebx.get (e.task);
-			assertEquals ("Exit code 2", 2, ebx);
-			exitSyscall = true;
-		    }
-		}
 	    }
  	}
     }
@@ -157,7 +177,7 @@ public class TestI386Modify
                         {
                             Task task = (Task) obj;
  			    task.traceSyscall = true;
- 			    task.syscallEvent.addObserver (taskEventObserver);
+ 			    task.requestAddSyscallObserver (taskEventObserver);
  			    task.stopEvent.addObserver (taskEventObserver);
                         }
                     }
