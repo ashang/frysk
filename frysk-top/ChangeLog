@@ -1,3 +1,8 @@
+2005-10-26  Igor Foox <ifoox@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Added macro to add the EXCEPTION to the
+	distribution.
+
 2005-09-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (upload-javadoc): New target.

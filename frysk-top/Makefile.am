@@ -101,3 +101,5 @@ $(DOXYFILE): Doxyfile.in
 		< $< > $@.tmp
 	mv $@.tmp $@
 CLEANFILES += doxygen
+
+EXTRA_DIST = EXCEPTION
