@@ -183,15 +183,15 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return Action.CONTINUE;
 	}
 
-	public Action updateSysEnter(Task task, int syscall) {
+	public Action updateSyscallEnter(Task task) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX entered syscall num: " + syscall);
+				+ " Host XXX entered syscall");
 		return Action.CONTINUE;
 	}
 
-	public Action updateSysExit(Task task, int syscall) {
+	public Action updateSyscallExit(Task task) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX left syscall num: " + syscall);
+				+ " Host XXX left syscall");
 		return Action.CONTINUE;
 	}
 

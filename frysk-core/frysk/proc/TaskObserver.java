@@ -145,12 +145,12 @@ public interface TaskObserver
 	 * The Task is entering a system call.  Return Action.BLOCK to
 	 * block the task's further execution.
 	 */
-	Action updateSysEnter (Task task, int syscall);
+	Action updateSyscallEnter (Task task);
 	/**
 	 * The task is exiting a system call.  Return Action.BLOCK to
 	 * block the task's further execution.
 	 */
-	Action updateSysExit (Task task, int syscall);
+	Action updateSyscallExit (Task task);
     }
 
     /**

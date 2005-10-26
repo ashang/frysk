@@ -16,12 +16,12 @@ public class SyscallObserver extends ObserverRoot implements TaskObserver.Syscal
 		super("Syscall Observer", "Fires when a system call is made.");
 	}
 
-	public Action updateSysEnter(Task task, int syscall) {
+	public Action updateSyscallEnter(Task task) {
 		// TODO Auto-generated method stub
 		return Action.CONTINUE;
 	}
 
-	public Action updateSysExit(Task task, int syscall) {
+	public Action updateSyscallExit(Task task) {
 		// TODO Auto-generated method stub
 		return Action.CONTINUE;
 	}

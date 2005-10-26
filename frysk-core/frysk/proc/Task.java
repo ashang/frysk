@@ -735,4 +735,53 @@ abstract public class Task
 	}
 	return blockers.size ();
     }
+
+    /**
+     * Set of Syscall observers.
+     */
+    private TaskObservable syscallObservers = new TaskObservable ();
+    /**
+     * Add TaskObserver.Syscall to the TaskObserver pool.
+     */
+    public void requestAddSyscallObserver (TaskObserver.Syscall o)
+    {
+	requestAddObserver (syscallObservers, o);
+    }
+    /**
+     * Delete TaskObserver.Syscall.
+     */
+    public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
+    {
+	requestDeleteObserver (syscallObservers, o);
+    }
+    /**
+     * Notify all Syscall observers of this Task's entry into a system
+     * call.  Return the number of blocking observers.
+     */
+    int notifySyscallEnter ()
+    {
+	for (Iterator i = syscallObservers.iterator ();
+	     i.hasNext (); ) {
+	    TaskObserver.Syscall observer
+		= (TaskObserver.Syscall) i.next ();
+	    if (observer.updateSyscallEnter (this) == Action.BLOCK)
+		blockers.add (observer);
+	}
+	return blockers.size ();
+    }
+    /**
+     * Notify all Syscall observers of this Task's exit from a system
+     * call.  Return the number of blocking observers.
+     */
+    int notifySyscallExit ()
+    {
+	for (Iterator i = syscallObservers.iterator ();
+	     i.hasNext (); ) {
+	    TaskObserver.Syscall observer
+		= (TaskObserver.Syscall) i.next ();
+	    if (observer.updateSyscallExit (this) == Action.BLOCK)
+		blockers.add (observer);
+	}
+	return blockers.size ();
+    }
 }

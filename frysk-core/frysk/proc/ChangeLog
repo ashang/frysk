@@ -1,3 +1,9 @@
+2005-10-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java: Add .notifySyscall, .requestAddSyscallObserver,
+	.requestDeleteSyscallObserver, and .syscallObservers.
+	* TaskObserver.java: Simplify .Syscall interface.
+
 2005-10-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskTerminateObserver.java: Enable all tests.
