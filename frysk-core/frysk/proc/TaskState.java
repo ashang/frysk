@@ -205,6 +205,15 @@ class TaskState
 		task.sendAttach ();
 		return attaching;
 	    }
+	    TaskState processRequestAddObserver (Task task,
+						 TaskObservable observable,
+						 TaskObserver observer)
+	    {
+		observable.add (observer);
+		// XXX: This needs to force the task and process into
+		// the attaching state.
+		return unattached;
+	    }
 	};
 
     /**
@@ -281,7 +290,6 @@ class TaskState
 						 TaskObserver observer)
 	    {
 		observable.add (observer);
-		observer.added (null); // Success
 		return startRunning;
 	    }
 	};

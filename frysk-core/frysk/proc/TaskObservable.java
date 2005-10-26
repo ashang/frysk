@@ -59,6 +59,7 @@ class TaskObservable
     void add (TaskObserver observer)
     {
 	observers.add (observer);
+	observer.added (null); // Success
     }
     /**
      * Delete TaskObserver from this TaskObservable.

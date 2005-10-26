@@ -1,3 +1,18 @@
+2005-10-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskEvent.java: Delete .Terminated.
+	* TaskObservable.java: Call TaskObserver .add from here.
+	* TaskState.java: Allow processRequestAddObserver in .unattached
+	state.
+	* TestPaused.java: Make TaskDestroyedObserver an extension of
+	TaskObserverBase, implementing TaskObserver.Terminated.
+	* TestUnpaused.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestStopAndGo.java: Ditto.
+	* TestGoAndGo.java: Ditto.
+	* TestStep.java: Ditto.
+
 2005-10-26  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* TestModify.java: Fix comment.  Also fix modification code to
@@ -5,7 +20,7 @@
 	may vary from platform to platform.
 
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
-
+	
 	* TaskEvent.java: Delete TaskEvent .Execed, .Exiting, .Exited, and
 	.Zombied.
 	

@@ -76,7 +76,6 @@ public class TestStep
 	    // Shut things down when PID exits.
 	    new PidChild (pid).stopEventLoopOnDestroy ();
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
     }
  
@@ -120,15 +119,19 @@ public class TestStep
     }
 
     class TaskDestroyedObserver
-	implements Observer
+	extends TaskObserverBase
+	implements TaskObserver.Terminated
     {
-	int eventSig;
-	public void update (Observable o, Object obj)
+	void updateTask (Task task)
 	{
+	    task.requestAddTerminatedObserver (this);
+	}
+	public Action updateTerminated (Task task, boolean signal,
+					int value)
+	{
+	    assertTrue ("a signal", signal);
 	    taskDestroyedCount++;
-	    // If it wasn't a terminate event, the task will fail.
-	    TaskEvent.Terminated terminatedTaskEvent = (TaskEvent.Terminated) obj;
-	    eventSig = terminatedTaskEvent.signal;
+	    return Action.CONTINUE;
 	}
     }
 
@@ -224,6 +227,7 @@ public class TestStep
                 "./prog/step/infThreadLoop"
             });
 
+	new TaskDestroyedObserver ();
 	assertRunUntilStop ("run \"infThreadLoop\" until exit");
 
 	assertEquals ("Task created events = 3", 3,

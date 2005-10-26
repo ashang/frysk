@@ -136,30 +136,6 @@ public abstract class TaskEvent
     }
 
     /**
-     * The task was terminated (due to a signal)
-     */
-    static class Terminated
-	extends TaskEvent
-    {
-	protected int signal;
-	Terminated (Task task, int signal)
-	{
-	    super (task);
-	    this.signal = signal;
-	}
-	public void execute ()
-	{
-	    throw new RuntimeException ("should not happen");
-	}
-	public String toString ()
-	{
-	    return ("[Terminated" + super.toString ()
-		    + ",signal=" + signal
-		    + "]");
-	}
-    }
-
-    /**
      * The task encountered a trap event.
      *
      * This could be due to the attempted execution of a breakpoint, or

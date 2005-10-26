@@ -74,7 +74,6 @@ public class TestStop
 	    if (proc.id.hashCode () != pid)
 		return;
             proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
         }
     }
  
@@ -102,15 +101,19 @@ public class TestStop
     }
 
     class TaskDestroyedObserver
-	implements Observer
+	extends TaskObserverBase
+	implements TaskObserver.Terminated
     {
-	int eventSig;
-	public void update (Observable o, Object obj)
+	void updateTask (Task task)
 	{
+	    task.requestAddTerminatedObserver (this);
+	}
+	public Action updateTerminated (Task task, boolean signal,
+					int value)
+	{
+	    assertTrue ("a signal", signal);
 	    taskDestroyedCount++;
-	    // If it wasn't a terminate event, the task will fail.
-	    TaskEvent.Terminated terminatedTaskEvent = (TaskEvent.Terminated) obj;
-	    eventSig = terminatedTaskEvent.signal;
+	    return Action.CONTINUE;
 	}
     }
 
@@ -181,6 +184,7 @@ public class TestStop
 	int pid = XXX.infThreadLoop (2);
 	Child child = new PidChild (pid);
         Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
+	new TaskDestroyedObserver ();
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 
 	assertRunUntilStop ("XXX: run until?");
