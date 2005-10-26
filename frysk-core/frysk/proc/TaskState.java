@@ -431,6 +431,13 @@ class TaskState
 		    task.sendContinue (0);
 		return running;
 	    }
+	    TaskState processRequestAddObserver (Task task,
+						 TaskObservable observable,
+						 TaskObserver observer)
+	    {
+		observable.add (observer);
+		return running;
+	    }
 	};
 
     private static TaskState performingStop = new TaskState ("performingStop")

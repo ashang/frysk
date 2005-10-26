@@ -1,5 +1,9 @@
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java: New.
+	* TaskState.java: Handle .processRequestAddObserver in "running"
+	state.
+	
 	* TaskEvent.java: Delete .Terminated.
 	* TaskObservable.java: Call TaskObserver .add from here.
 	* TaskState.java: Allow processRequestAddObserver in .unattached
