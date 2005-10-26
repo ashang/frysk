@@ -50,7 +50,7 @@ public class DOMTag {
 	/**
 	 * The end of the tag
 	 */
-	public static final String END_ATTR = "length";
+	public static final String LENGTH_ATTR = "length";
 	/**
 	 * The start of the tag
 	 */
@@ -82,7 +82,7 @@ public class DOMTag {
 		Element tag = new Element(TAG_NODE);
 		tag.setAttribute(TYPE_ATTR, type);
 		tag.setAttribute(START_ATTR, ""+start);
-		tag.setAttribute(END_ATTR, ""+end);
+		tag.setAttribute(LENGTH_ATTR, ""+end);
 		parent.getElement().addContent(tag);
 		this.myElement = tag;
 	}
@@ -126,14 +126,14 @@ public class DOMTag {
 	/**
 	 * set the ending character offset for this tag
 	 */
-	public void setEnd(int end) {
-		this.myElement.setAttribute(END_ATTR, ""+end);
+	public void setLength(int end) {
+		this.myElement.setAttribute(LENGTH_ATTR, ""+end);
 	}
 	/**
 	 * @return The ending offset of the tag from the start of the file
 	 */
-	public int getEnd(){
-		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
+	public int getLength(){
+		return Integer.parseInt(this.myElement.getAttributeValue(LENGTH_ATTR));
 	}
 	
 	/**
@@ -142,7 +142,7 @@ public class DOMTag {
 	 * @return true if the tag covers the index, false otherwise
 	 */
 	public boolean isInRange(int test){
-		if(test < this.getEnd() && test > this.getStart())
+		if(test < this.getLength() && test > this.getStart())
 			return true;
 		
 		return false;

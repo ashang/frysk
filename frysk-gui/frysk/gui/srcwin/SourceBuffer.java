@@ -52,6 +52,7 @@ import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextTag;
 import org.gnu.pango.Weight;
+import org.jdom.Element;
 
 import frysk.gui.srcwin.PreferenceConstants.Classes;
 import frysk.gui.srcwin.PreferenceConstants.Comments;
@@ -63,6 +64,7 @@ import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
 import frysk.gui.srcwin.PreferenceConstants.Search;
 import frysk.gui.srcwin.cparser.CDTParser;
+import frysk.gui.srcwin.dom.DOMInlineInstance;
 import frysk.gui.srcwin.dom.DOMLine;
 import frysk.gui.srcwin.dom.DOMSource;
 import frysk.gui.srcwin.dom.DOMTag;
@@ -630,9 +632,9 @@ public class SourceBuffer extends TextBuffer {
 		
 		// First get the text, append it all together, and add it to ourselves
 		while(lines.hasNext()){
-			DOMLine line = (DOMLine) lines.next();
+			DOMLine line = new DOMLine((Element) lines.next());
 			
-			bufferText += line.getText()+"\n";
+			bufferText += line.getText();
 		}
 		
 		this.deleteText(this.getStartIter(), this.getEndIter());
@@ -657,26 +659,46 @@ public class SourceBuffer extends TextBuffer {
 		
 		// Iterate through all the lines
 		while(lines.hasNext()){
-			DOMLine line = (DOMLine) lines.next();
+			DOMLine line = new DOMLine((Element) lines.next());
 			
 			Iterator tags = line.getTags();
+			int lineOffset = line.getOffset();
 			
 			// Iterator though all the tags on the line
 			while(tags.hasNext()){
-				DOMTag tag = (DOMTag) tags.next();
+				DOMTag tag = new DOMTag((Element) tags.next());
 				
 				String type = tag.getType();
 				
 				if(type.equals("keyword")){
 					this.applyTag(KEYWORD_TAG, 
-							this.getIter(tag.getStart()), this.getIter(tag.getEnd()));
+							this.getIter(lineOffset + tag.getStart()), 
+							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
 				
 				else if(type.equals("local_var")){
 					this.applyTag(ID_TAG, 
-							this.getIter(tag.getStart()), this.getIter(tag.getEnd()));
+							this.getIter(lineOffset + tag.getStart()),
+							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
+				
+				else if(type.equals("class_decl")){
+					this.applyTag("CLASS", 
+							this.getIter(lineOffset + tag.getStart()),
+							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
+				}
+				
 			} // end tags.hasNext()
+			
+			Iterator inlines = line.getInlines();
+			
+			while(inlines.hasNext()){
+				DOMInlineInstance func = new DOMInlineInstance((Element) inlines.next());
+				
+				this.applyTag(FUNCTION_TAG,
+						this.getIter(lineOffset + func.getStart()),
+						this.getIter(lineOffset + func.getStart() + func.getEnd()));
+			}
 		}// end lines.hasNext()
 	}
 	

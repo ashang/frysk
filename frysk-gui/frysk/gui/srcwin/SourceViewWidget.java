@@ -91,6 +91,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	// preferences model nodes
 	protected Preferences topPrefs;
+	
 	protected Preferences lnfPrefs;
 	
 	// How far to start writing breakpoints, etc. from the left side of the margin
@@ -312,7 +313,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 	
 	public void load(StackLevel data){
-		this.setBuffer(new SourceBuffer(data.getData()));
+		this.buf = new SourceBuffer(data.getData());
+		this.setBuffer(this.buf);
 		this.expanded = false;
 		this.anchor = null;
 	}

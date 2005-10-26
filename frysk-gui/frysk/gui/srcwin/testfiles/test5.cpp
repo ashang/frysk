@@ -1,3 +1,5 @@
+#include "common.h"
+
 int foobar(){
-  return 4;
+  return bleh();
 }

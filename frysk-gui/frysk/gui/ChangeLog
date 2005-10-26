@@ -1,5 +1,10 @@
 2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
 	
+	* test/SourceWinRunner (main): Now builds dom using 
+	DOMTestGUIBuilder.buildDom.
+
+2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
+	
 	* test/SourceWinRunner (main): Commented out scope generation pending DOM 
 	integration.
 

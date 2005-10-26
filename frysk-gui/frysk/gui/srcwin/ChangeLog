@@ -1,5 +1,32 @@
 2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (load): Removed extraneous newlines.
+	(createTags): Fixed numerous errors with casting of DOM elements, as well
+	as creation of class tags.
+	* SourceViewWidget.java (load): Assigns newly created source buffer to
+	member buf, stops GTK error.
+	* SourceWindow.java: Added dom and stack member variables.
+	(SourceViewWindow): Rearranged calls so that view is created before
+	functions are parsed.
+	(populateStackBrowser): Moved creation of source window to after we've
+	found the bottom of the stack.
+	* dom/DOMTag.java (getEnd): Changed to getLength.
+	(setEnd): Changed to setLength.
+	(END_ATTR): Changed to LENGTH_ATTR.
+	* dom/DOMTestGUIBuilder.java (test_prog): Added missing newline.
+	(tags_classes): Added.
+	(main): Refactored out buildDOM method.
+	(buildDOM): Added.
+	* testfiles/test.cpp: Added '#include "common.h".
+	* testfiles/test2.cpp: Ditto.
+	* testfiles/test3.cpp: Ditto.
+	* testfiles/test4.cpp: Ditto.
+	* testfiles/test5.cpp: Ditto.
+	* testfiles/test6.cpp: Ditto, changed name of function to bleh from main.
+	
+
+2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
+
 	* InlineHandler.java (moveDown): Commented out pending reorganization
 	under the DOM.
 	(moveUp): Ditto.

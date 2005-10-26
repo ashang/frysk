@@ -228,7 +228,7 @@ public class DOMLine {
 		Element tagElement = new Element(DOMTag.TAG_NODE);
 		tagElement.setAttribute(DOMTag.TYPE_ATTR, type);
 		tagElement.setAttribute(DOMTag.START_ATTR, ""+start);
-		tagElement.setAttribute(DOMTag.END_ATTR, ""+token.length());
+		tagElement.setAttribute(DOMTag.LENGTH_ATTR, ""+token.length());
 		tagElement.setAttribute(DOMTag.TOKEN_ATTR, token);
 		this.myElement.addContent(tagElement);
 	}
@@ -308,7 +308,7 @@ public class DOMLine {
 		Element line_tag = new Element(DOMTag.TAG_NODE);
 		line_tag.setAttribute(DOMTag.TYPE_ATTR, tag.getType());
 		line_tag.setAttribute(DOMTag.START_ATTR, ""+tag.getStart());
-		line_tag.setAttribute(DOMTag.END_ATTR, ""+tag.getEnd());
+		line_tag.setAttribute(DOMTag.LENGTH_ATTR, ""+tag.getLength());
 		this.myElement.addContent(line_tag);
 	}
 

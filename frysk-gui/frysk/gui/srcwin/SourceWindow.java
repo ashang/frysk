@@ -99,6 +99,7 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Messages;
+import frysk.gui.srcwin.dom.DOMFrysk;
 
 //import frysk.Config;
 
@@ -191,13 +192,17 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action stackDown;
 	private Action stackBottom;
 	
+	private DOMFrysk dom;
+	private StackLevel stack;
+	
 	// Data Columns for the stack browser
 	private DataColumn[] dataColumns;
 	
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 	
-	public SourceWindow(String[] gladePaths, String imagePath) {
+	public SourceWindow(String[] gladePaths, String imagePath,
+			DOMFrysk dom, StackLevel stack) {
 		for(int i = 0; i < gladePaths.length; i++){
 			try{
 				this.glade = new LibGlade(gladePaths[i]+SourceWindow.GLADE_FILE, this);
@@ -218,6 +223,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			System.exit(1);
 		}
 
+		this.dom = dom;
+		this.stack = stack;
+		
 		IMAGES_DIR = imagePath;
 		
 		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
@@ -244,8 +252,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		 *  INSERT LOADING PREFS FROM FILE HERE *
 		 *--------------------------------------*/
 		
-		// create the actual sourceview widget
-		this.view = new SourceViewWidget(this.prefs, null);
+		this.populateStackBrowser(this.stack);
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
 		for(int i = 0; i < funcs.size(); i++)
@@ -253,8 +260,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
-		
-		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
+
 		this.glade.getWidget(SOURCE_WINDOW).showAll();
 		this.glade.getWidget(FIND_BOX).hideAll();
 		this.refresh();
@@ -317,11 +323,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 * @param top
 	 */
 	public void populateStackBrowser(StackLevel top){
-		((Container) this.view.getParent()).remove(this.view);
-		this.view = new SourceViewWidget(this.prefs, null);
-		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
-		this.view.showAll();
-		
 		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
 		
 		dataColumns = new DataColumn[] {new DataColumnString(), new DataColumnObject()};
@@ -329,6 +330,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		TreeIter iter  = null;
 		TreeIter last = null;
+		
+		StackLevel lastStack = null;
 		
 		while(top != null){
 			iter = listModel.appendRow();
@@ -340,10 +343,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			listModel.setValue(iter, (DataColumnObject) dataColumns[1], top);
 			
 			// Save the last node so we can select it
-			if(top.nextScope == null)
+			if(top.getNextScope() == null){
 				last = iter;
+				lastStack = top;
+			}
 			
-			top = top.nextScope;
+			top = top.getNextScope();
 		}
 		stackList.setModel(listModel);
 				
@@ -353,6 +358,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, dataColumns[0]);
 		column.setTitle("Function");
 		stackList.appendColumn(column);
+		
+		if(this.view != null)
+			((Container) this.view.getParent()).remove(this.view);
+		this.view = new SourceViewWidget(this.prefs, lastStack.getData());
+		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
+		this.view.showAll();
 		
 		stackList.getSelection().setMode(SelectionMode.SINGLE);
 		stackList.getSelection().select(last);

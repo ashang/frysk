@@ -1,3 +1,5 @@
+#include "common.h"
+
 int baz(int n){
   /*
    * Now

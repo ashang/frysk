@@ -41,6 +41,10 @@ package frysk.gui.test;
 import org.gnu.gtk.Gtk;
 
 import frysk.gui.srcwin.SourceWindow;
+import frysk.gui.srcwin.StackLevel;
+import frysk.gui.srcwin.dom.DOMFrysk;
+import frysk.gui.srcwin.dom.DOMSource;
+import frysk.gui.srcwin.dom.DOMTestGUIBuilder;
 
 
 /**
@@ -56,18 +60,19 @@ public class SourceWinRunner {
 	public static void main(String[] args) {
 		Gtk.init(args);
 		
-		SourceWindow s = new SourceWindow(new String[] {"frysk-gui/frysk/gui/glade/", "../frysk/frysk-gui/frysk/gui/glade/"}, "../frysk/frysk-gui/frysk/gui/images/");
+		DOMFrysk dom = DOMTestGUIBuilder.makeTestDOM();
+		DOMSource source = dom.getImage("test6").getSource("test6.cpp");
+		source.setFileName("test6.cpp");
+		source.setFilePath("../frysk/frysk-gui/frysk/gui/srcwin/testfiles");
+		StackLevel stack1 = new StackLevel(source, 11);
 		
-//		StackLevel loc = new StackLevel("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
-//		StackLevel loc2 = new StackLevel("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
-//		loc.addInlineScope(loc2);
-//		StackLevel loc3 = new StackLevel("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
-//		loc2.addInlineScope(loc3);
-//		StackLevel loc4 = new StackLevel("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
-//		loc3.addInlineScope(loc4);
-//		loc.addNextScope(new StackLevel("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
+		SourceWindow s = new SourceWindow(
+				new String[] {"frysk-gui/frysk/gui/glade/", 
+								"../frysk/frysk-gui/frysk/gui/glade/"},
+				"../frysk/frysk-gui/frysk/gui/images/",
+				dom,
+				stack1);
 		
-//		s.populateStackBrowser(loc);
 		s.getClass();
 		
 		Gtk.main();
@@ -76,7 +81,7 @@ public class SourceWinRunner {
 	public static void mainSourceWin(String[] args, String[] paths, String imageDir){
 		Gtk.init(args);
 		
-		SourceWindow s = new SourceWindow(paths, imageDir);
+//		SourceWindow s = new SourceWindow(paths, imageDir);
 		
 //		StackLevel loc = new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
 //		StackLevel loc2 = new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
@@ -89,7 +94,7 @@ public class SourceWinRunner {
 		
 //		s.populateStackBrowser(loc);
 		
-		s.getClass();
+//		s.getClass();
 		
 		Gtk.main();
 	}

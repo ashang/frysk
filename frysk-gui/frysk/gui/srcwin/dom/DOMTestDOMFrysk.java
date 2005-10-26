@@ -553,7 +553,7 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMTag.setStart");
 		}
 		
-		if (tag.getEnd() == 
+		if (tag.getLength() == 
 			main_prog[1].indexOf(test_inline) + test_inline.length()) {
 			System.out.println("passed...DOMTag.getEnd");
 		} else {
@@ -561,8 +561,8 @@ public class DOMTestDOMFrysk {
 		}
 		
 		int new_end = 35;
-		tag.setEnd(new_end);
-		if (tag.getEnd() == new_end) {
+		tag.setLength(new_end);
+		if (tag.getLength() == new_end) {
 			System.out.println("passed...DOMTag.setEnd");
 		} else {
 			System.out.println("failed...DOMTag.setEnd");

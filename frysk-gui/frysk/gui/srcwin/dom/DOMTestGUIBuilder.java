@@ -102,8 +102,8 @@ public class DOMTestGUIBuilder {
 		"  inline int min(int y, int z);\n",
 		"};\n",
 		"\n",
-		"// main program",
-		"int main()\n",
+		"// main program\n",
+		"int bleh()\n",
 		"{\n",
 		"bar a;\n",
 		"  int i = min(1,2);\n",
@@ -142,16 +142,29 @@ public class DOMTestGUIBuilder {
 												"i",
 												"j" };
 	
-	public static void main(String[] args) {
+	private static String[] tags_classes = { "bar" };
 	
+	public static void main(String[] args) {
+		buildDom();
+		System.out.println("\n\n");
+		printDOM();
+	}
+
+	/**
+	 * 
+	 */
+	private static void buildDom() {
 		testDOMFrysk();
 		testDOMImage();
 		testDOMFunction();
 		testDOMsource();
 		testDOMLine();
 		testDOMInlineInstance();
-		System.out.println("\n\n");
-		printDOM();
+	}
+	
+	public static DOMFrysk makeTestDOM(){
+		buildDom();
+		return dom;
 	}
 
 	public static void testDOMFrysk() {
@@ -269,7 +282,7 @@ public class DOMTestGUIBuilder {
 		for (int i = 0; i < test_prog.length; i++) {
 			if (test_prog[i].startsWith("//")) continue;
 			DOMLine testDOMLine = testDOMSource.getLine(i+1);
-			StringTokenizer st = new StringTokenizer(test_prog[i],";=(),: ");
+			StringTokenizer st = new StringTokenizer(test_prog[i],";=(),: \n");
 			String token;
 			int line_index = 0;
 			// parse the line for tags
@@ -288,6 +301,14 @@ public class DOMTestGUIBuilder {
 					if (token.equals(tags_variables[k])) {
 						line_index = test_prog[i].indexOf(token,line_index);
 						testDOMLine.addTag("local_var", token, line_index);
+						line_index = line_index + token.length();
+					}
+				}
+				// look for classes
+				for(int m = 0; m < tags_classes.length; m++) {
+					if (token.equals(tags_classes[m])){
+						line_index = test_prog[i].indexOf(token,line_index);
+						testDOMLine.addTag("class_decl", token, line_index);
 						line_index = line_index + token.length();
 					}
 				}
