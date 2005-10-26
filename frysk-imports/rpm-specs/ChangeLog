@@ -4,6 +4,8 @@
 	1367).
 	* frysk-libgtk-java.spec: Updated with patch for TextBuffer by ajocksch.
 
+	* frysk.spec: Added initial, incomplete version of spec file.
+
 2005-10-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cdtparser-3.0.0.spec: No longer compiles with find-and-aot-
