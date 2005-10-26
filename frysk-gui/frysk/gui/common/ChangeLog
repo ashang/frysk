@@ -1,3 +1,9 @@
+2005-10-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* dialogs/WarnDialog.java: Added Copyright/License Header.
+	* dialogs/DialogManager.java: Ditto:
+	* dialogs/Dialog.java: Ditto.
+
 2005-10-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Messages.java: Added comments to make it easier to build in/out of
