@@ -1,6 +1,12 @@
+2005-10-26  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.rules: Added EXCEPTION to the EXTRA_DIST target to distribute
+	this file in every of the main 4 frysk subdirectories (sys, gui, common,
+	imports).
+
 2005-10-25  Igor Foox  <ifoox@redhat.com>
 
-	Makefile.rules (clean-local-po): Fix clean to delete all .Po files.
+	* Makefile.rules (clean-local-po): Fix clean to delete all .Po files.
 	
 2005-10-22  Andrew Cagney  <cagney@redhat.com>
 

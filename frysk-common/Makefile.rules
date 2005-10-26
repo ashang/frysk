@@ -301,4 +301,5 @@ BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)
 # Add some needed files to the distribution
 EXTRA_DIST += 	common/Makefile.gen.sh \
 				common/mkjava.sh \
-				common/TestRunner.sh
+				common/TestRunner.sh \
+				EXCEPTION
