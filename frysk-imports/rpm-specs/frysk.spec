@@ -19,6 +19,18 @@
 %{!?c_pkg_prefix: %define c_pkg_prefix %{nil}}
 %{!?java_pkg_prefix: %define java_pkg_prefix %{nil}}
 
+# Architecture specific lib dir, lib64 on x86-64
+%define base_libdir_name lib
+
+%ifarch x86_64
+%define lib %{base_libdir_name}64
+%else
+%ifarch x86
+%define lib %{base_libdir_name}
+%endif
+%endif
+
+
 %define	version		0.0	
 %define	release		1
 
@@ -63,7 +75,7 @@ process in the system.
 # For now we add /opt/frysk/lib/pkgconfig to the path to indicate that
 # all the needed packages are installed there.
 if  [  'x%{java_pkg_prefix}' != 'x' ] || [ 'x%{c_pkg_prefix}' != 'x' ]; then
-	export PKG_CONFIG_PATH=/opt/frysk/lib/pkgconfig
+	export PKG_CONFIG_PATH=/opt/frysk/%{lib}/pkgconfig
 fi
 
 %configure
