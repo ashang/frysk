@@ -1,3 +1,8 @@
+2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* test/SourceWinRunner (main): Commented out scope generation pending DOM 
+	integration.
+
 2005-10-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	glade/procpop.glade: Fix typos.

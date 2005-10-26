@@ -37,8 +37,6 @@
 	(selectionChanged): Ditto.
 	* StaticParser.java (parse): Reordered arguments for no good reason.
 	* cparser/CDTParser.java: Changed references of addLiteral to addKeyword.
-	* SourceWinRunner (main): Commented out scope generation pending DOM 
-	integration.
 	(mainGui): Ditto.
 	* PCLocation.java: Refactored to StackLevel.java
 
