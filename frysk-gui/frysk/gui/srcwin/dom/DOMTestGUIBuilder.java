@@ -121,9 +121,9 @@ public class DOMTestGUIBuilder {
 	
 	private static int[] line_start_offset = new int[no_lines];
 	
-	private static Boolean[] is_inline = new Boolean[no_lines];
+	private static boolean[] is_inline = new boolean[no_lines];
 	
-	private static Boolean[] is_executable = new Boolean[no_lines];
+	private static boolean[] is_executable = new boolean[no_lines];
 	
 	/**************************************************************************
 	 * tags info
@@ -220,21 +220,21 @@ public class DOMTestGUIBuilder {
 			start_offset = start_offset + line_length[i];
 			// see if this is a comment line
 			if (test_prog[i].startsWith("//")) {
-				is_executable[i] = Boolean.valueOf(false);
+				is_executable[i] = false;
 			} else {
-				is_executable[i] = Boolean.valueOf(true);
+				is_executable[i] = true;
 			}
 			// see if there is an inline function in there
 			for (int j=0; j < func_name.length; j++) {
 				if (test_prog[i].lastIndexOf(func_name[j]) <= 0) {
-					is_inline[i] = Boolean.valueOf(false);
+					is_inline[i] = false;
 				} else {
 					// if the function name is in-between the definition, skip
 					if ((i < func_start_line[j]) &&
 						(i > func_end_line[j])) {
-							is_inline[i] = Boolean.valueOf(true);
+							is_inline[i] = true;
 					} else {
-						is_inline[i] = Boolean.valueOf(false);
+						is_inline[i] = false;
 					}
 				} 
 			}
@@ -242,7 +242,7 @@ public class DOMTestGUIBuilder {
 		// add the lines to the source
 		for (int ctr = 0; ctr < test_prog.length; ctr++) {
 			testDOMSource.addLine(ctr + 1, test_prog[ctr], is_executable[ctr],
-					is_inline[ctr], Boolean.FALSE, line_start_offset[ctr], pc);
+					is_inline[ctr], false, line_start_offset[ctr], pc);
 			pc = pc.add(no_bytes);
 		}
 	}
@@ -258,7 +258,7 @@ public class DOMTestGUIBuilder {
 		
 		// add the lines to the source node
 		for (int i = 0; i < test_prog.length; i++) {
-			if (is_inline[i].booleanValue()) {
+			if (is_inline[i]) {
 				DOMLine testDOMLine = testDOMSource.getLine(i);
 				testDOMLine.addInlineInst(func_name[0], func_start_line[0], 
 						func_end_line[0]);
@@ -297,6 +297,7 @@ public class DOMTestGUIBuilder {
 						line_index = test_prog[i].indexOf(token,line_index);
 						testDOMLine.addInlineInst(token, line_index, 
 								token.length());
+						testDOMLine.setHasInline(true);
 					}
 				}
 			}

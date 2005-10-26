@@ -106,6 +106,15 @@ public class DOMSource {
 	public void setFileName(String name) {
 		this.myElement.setAttribute(FILENAME_ATTR, name);
 	}
+	
+	/**
+	 * get the line count for this Source node
+	 */
+	public int getLineCount() {
+
+		return this.myElement.getChildren(DOMLine.LINE_NODE).size();
+	}
+	
 	/**
 	 * @return The name of the file
 	 */
@@ -141,8 +150,8 @@ public class DOMSource {
 	 * 				of the file 
 	 * @param pc
 	 */
-	public void addLine(int lineno, String text, Boolean is_executable, 
-			Boolean is_inline, Boolean has_break, int offset_index,
+	public void addLine(int lineno, String text, boolean is_executable, 
+			boolean has_inline, boolean has_break, int offset_index,
 			BigInteger pc) {
 		
 		Element sourceLineElement = new Element(LINENO_NODE);
@@ -151,9 +160,9 @@ public class DOMSource {
 		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
 		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset_index));
 		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(text.length()));
-		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, is_executable.toString());
-		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, is_inline.toString());
-		sourceLineElement.setAttribute(DOMLine.HAS_BREAK_ATTR, has_break.toString());
+		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, ""+is_executable);
+		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, ""+has_inline);
+		sourceLineElement.setAttribute(DOMLine.HAS_BREAK_ATTR, ""+has_break);
 		this.myElement.addContent(sourceLineElement);
 	}
 	/**

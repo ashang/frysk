@@ -123,30 +123,33 @@ public class DOMLine {
 	 * sets the offset of the line from the beginning of the file
 	 */
 	public void setOffset(int offset) {
-		this.myElement.setAttribute(OFFSET_ATTR, Integer.toString(offset));
+		this.myElement.setAttribute(OFFSET_ATTR, ""+offset);
 	}
-
+	
+	/**
+	 * sets the has_inline attribute of this line
+	 */
+	public void setHasInline(boolean has_inline) {
+		this.myElement.setAttribute(DOMLine.HAS_INLINE_ATTR, ""+has_inline);
+	}
+	
 	/**
 	 * @return Whether or not this line contains inlined code
 	 */
 	public boolean hasInlinedCode() {
 
-		// Boolean.getBoolean(this.myElement.getAttributeValue(HAS_INLINE_ATTR));
-		// //for some reason the original Boolean.getBoolean did not work
-		// as advertised, so went back to the old tried and true
-		if (this.myElement.getAttributeValue(HAS_INLINE_ATTR) == "true")
+		if (this.myElement.getAttributeValue(HAS_INLINE_ATTR).equals("true"))
 			return true;
 
 		return false;
 	}
 
 	/**
-	 * @return Whether or not this line is executable
+	 * @return whether or not this line is executable
 	 */
 	public boolean isExecutable() {
-		// for some reason the original Boolean.getBoolean did not work
-		// as advertised, so went back to the old tried and true
-		if (this.myElement.getAttributeValue(EXECUTABLE_ATTR) == "true")
+		
+		if (this.myElement.getAttributeValue(EXECUTABLE_ATTR).equals("true"))
 			return true;
 
 		return false;
@@ -156,8 +159,9 @@ public class DOMLine {
 	 * sets the executable attribute for this line
 	 */
 	public void setExecutable(boolean executable) {
-		this.myElement.setAttribute(EXECUTABLE_ATTR, Boolean
-				.toString(executable));
+		
+		this.myElement.setAttribute(EXECUTABLE_ATTR, 
+				""+executable);
 	}
 
 	/**
@@ -166,7 +170,8 @@ public class DOMLine {
 	 * @return true if there is a breakpoint set here, false if not
 	 */
 	public boolean hasBreakPoint() {
-		if (this.myElement.getAttributeValue(HAS_BREAK_ATTR) == "true")
+		
+		if (this.myElement.getAttributeValue(HAS_BREAK_ATTR).equals("true"))
 			return true;
 
 		return false;
@@ -176,7 +181,8 @@ public class DOMLine {
 	 * Set the hasBreak attribute
 	 */
 	public void setBreakPoint(boolean hasbreak) {
-		this.myElement.setAttribute(HAS_BREAK_ATTR, Boolean.toString(hasbreak));
+		
+		this.myElement.setAttribute(HAS_BREAK_ATTR, ""+hasbreak);
 	}
 
 	/**
@@ -202,8 +208,7 @@ public class DOMLine {
 	 */
 	public void setText(String text) {
 		this.myElement.setText(text);
-		this.myElement.setAttribute(LENGTH_ATTR, Integer
-				.toString(text.length()));
+		this.myElement.setAttribute(LENGTH_ATTR, ""+text.length());
 	}
 
 	/**
@@ -222,8 +227,8 @@ public class DOMLine {
 	public void addTag(String type, String token, int start) {
 		Element tagElement = new Element(DOMTag.TAG_NODE);
 		tagElement.setAttribute(DOMTag.TYPE_ATTR, type);
-		tagElement.setAttribute(DOMTag.START_ATTR, Integer.toString(start));
-		tagElement.setAttribute(DOMTag.END_ATTR, Integer.toString(token.length()));
+		tagElement.setAttribute(DOMTag.START_ATTR, ""+start);
+		tagElement.setAttribute(DOMTag.END_ATTR, ""+token.length());
 		tagElement.setAttribute(DOMTag.TOKEN_ATTR, token);
 		this.myElement.addContent(tagElement);
 	}

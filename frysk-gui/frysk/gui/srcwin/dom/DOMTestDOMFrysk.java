@@ -65,8 +65,7 @@ public class DOMTestDOMFrysk {
 
 	private static String[] inline_funcs = { "do_something", "b", "f" };
 
-	private static Boolean[] is_inline = { Boolean.valueOf(false),
-			Boolean.valueOf(true), Boolean.valueOf(false) };
+	private static boolean[] is_inline = { false, true, false };
 
 	private static String[] do_something = { "void do_something(){", "   b();",
 			"}" };
@@ -332,10 +331,9 @@ public class DOMTestDOMFrysk {
 		}
 	}
 
-	/**
+	/**************************************************************************
 	 * test the DOMSource class methods
-	 * 
-	 */
+	 *************************************************************************/
 	public static void testDOMsource() {
 
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
@@ -368,11 +366,10 @@ public class DOMTestDOMFrysk {
 		}
 
 		BigInteger no_bytes = BigInteger.valueOf(4);
-		Boolean is_executable = Boolean.valueOf(true);
 		BigInteger pc = BigInteger.valueOf(25842);
 		for (int ctr = 0; ctr < main_prog.length; ctr++) {
-			testDOMSource.addLine(ctr + 1, main_prog[ctr], is_executable,
-					is_inline[ctr], Boolean.FALSE, offset_index[ctr], pc);
+			testDOMSource.addLine(ctr + 1, main_prog[ctr], true,
+					is_inline[ctr], false, offset_index[ctr], pc);
 			pc = pc.add(no_bytes);
 		}
 
@@ -389,6 +386,12 @@ public class DOMTestDOMFrysk {
 			}
 		}
 		System.out.println("passed...DOMSource.addLine/getLines");
+		
+		if (testDOMSource.getLineCount() == main_prog.length) {
+			System.out.println("passed...DOMSource.getLineCount");
+		} else {
+			System.out.println("failed...DOMSource.getLineCount");
+		}
 
 		final DOMLine testDOMLine = testDOMSource.getLine(2);
 		if (testDOMLine.getElement().getText() == main_prog[1]) {
@@ -398,10 +401,9 @@ public class DOMTestDOMFrysk {
 		}
 	}
 
-	/**
+	/**************************************************************************
 	 * Test the DOMLine class
-	 *
-	 */
+	 *************************************************************************/
 	public static void testDOMLine() {
 		final int line_no = 2;
 		final DOMImage testDOMImage = dom.getImage("test_image_2");
@@ -448,7 +450,7 @@ public class DOMTestDOMFrysk {
 			System.out.println("failed...DOMLine.setOffset");
 		}
 		testDOMLine.setOffset(offset_index[1]);
-
+		
 		if (testDOMLine.isExecutable()) {
 			System.out.println("passed...DOMLine.isExecutable");
 		} else {
@@ -567,10 +569,9 @@ public class DOMTestDOMFrysk {
 		}
 	}
 	
-	/**
+	/**************************************************************************
 	 * Test the DOMInlineInstance class
-	 *
-	 */
+	 **************************************************************************/
 	
 	public static void testDOMInlineInstance() {
 		

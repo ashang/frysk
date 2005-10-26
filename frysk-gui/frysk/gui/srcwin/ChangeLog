@@ -1,5 +1,17 @@
 2005-10-25  Rick Moseley  <rmoseley@redhat.com>
 
+	* dom/DOMLine.java: change Boolean to boolean for line attributes
+						change Integer.toString to ""+
+	* dom/DOMSource.java: added getLineCount method (BZ# 1544)
+						  change Boolean to boolean for line attributes
+	* dom/DOMTestDOMFrysk.java: implement change for Boolean to boolean
+								added test for getLineCount
+								few comment changes
+	* dom/DOMTestGUIBuilder.java: change Boolean to boolean for line attributes
+								  fix error of "has_inline" not being set
+
+2005-10-25  Rick Moseley  <rmoseley@redhat.com>
+
 	* dom/DOMTag.java: changed END_ATTR from "end" to "length"
 	* dom/DOMTestGUIBuilder.java: add "inline instance" to line node
 
