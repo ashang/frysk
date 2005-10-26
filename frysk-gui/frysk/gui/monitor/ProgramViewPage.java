@@ -52,6 +52,7 @@ import org.gnu.gtk.FileChooserAction;
 import org.gnu.gtk.FileChooserDialog;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.TreeView;
+// import org.gnu.gtk.TreeView;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
@@ -64,8 +65,10 @@ import org.gnu.gtk.event.DialogListener;
  * */
 public class ProgramViewPage extends Widget {
 	
-	private TreeView programTreeView;
+	// private TreeView programTreeView;
 	private FileChooserDialog fileChooserDialog;
+
+	private TreeView programTreeView;
 	
 	private static final int RESPONCE_OK     = 0;
 	private static final int RESPONCE_CANCEL = 1;
@@ -103,7 +106,7 @@ public class ProgramViewPage extends Widget {
 	}
 
 	private void initProgramTreeView() {
-					
+		this.programTreeView.getClass();//XXX: dummy call to get rid of ecj warining
 	}
 	
 	

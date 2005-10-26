@@ -9,7 +9,14 @@
 	appropriet back function calls.
 	* observers/TaskForkedObserver.java: Now implements
 	TaskObserver.Forked.
-
+	Removed ecj 3.1.1 warnings( Modified patch by Jeff Johnston).
+	* MainWindow.java: Removed ecj 3.1.1 warnings (Modified patch by
+	Jeff Johnston).
+	* TearOffNotebook.java: Removed ecj 3.1.1 warnings (Modified patch
+	by Jeff Johnston).
+	* ProgramViewPage.java: Removed ecj 3.1.1 warnings (Modified patch
+	by Jeff Johnston).
+	
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/SyscallObserver.java: Update TaskObserver.Syscall

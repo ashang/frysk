@@ -137,9 +137,6 @@ public class TearOffNotebook extends Notebook {
 					System.out.println("newNotebook window: " + window.getRootWindow());
 					children.put(window.getRootWindow(), newNotebook);
 					
-					
-					org.gnu.gdk.Window gdkWindow = event.getDragContext().getSource();
-
 					window.resize(200, 300);
 					window.realize();
 					window.showAll();
@@ -173,7 +170,7 @@ public class TearOffNotebook extends Notebook {
 //				TearOffNotebook source = (TearOffNotebook) event.getSource();
 //
 //				final Widget widget = source.getPage(source.getCurrentPage());
-//				//final Label  label  = new Label(source.getTabLabelText(widget));
+//				//final Label  label  = new Label(source.getTabLabEclipse Java Compiler v_579_R31x, 3.1.1elText(widget));
 //				final Label  label  = new Label("*****");
 //				source.removePage(source.getCurrentPage());
 //				appendPage(widget, label);

@@ -13,8 +13,6 @@ import frysk.proc.TaskObserver;
 
 public class TaskForkedObserver extends ObserverRoot implements TaskObserver.Forked{
 	
-	private Proc expectedParent;
-	
 	public TaskForkedObserver() {
 		super("ProcForkObserver", "Fires when a proc forks");
 	}

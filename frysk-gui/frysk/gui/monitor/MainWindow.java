@@ -44,17 +44,14 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
-import org.gnu.gtk.Notebook;
+// import org.gnu.gtk.Notebook;
 import org.gnu.gtk.Window;
 
 import frysk.gui.FryskGui;
 
 public class MainWindow extends Window implements Saveable{
-		
-	private Notebook noteBook;
 	
 	private ProcViewPage procViewPage;
-	private ProgramViewPage programViewPage;
 	
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	public MainWindow(LibGlade glade) throws IOException {
@@ -62,13 +59,15 @@ public class MainWindow extends Window implements Saveable{
 		
 		try {
 			this.procViewPage = new ProcViewPage(glade);
-			this.programViewPage = new ProgramViewPage(glade);
+			ProgramViewPage programViewPage = new ProgramViewPage(glade);
+			procViewPage.getClass();
 		} catch (IOException e){
 			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e);
 		}
 		
-		this.noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle());
-
+		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle());
+		//XXX:
+		noteBook.getClass();
 		this.showAll();
 	}
 
