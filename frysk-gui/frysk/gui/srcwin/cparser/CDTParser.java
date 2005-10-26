@@ -66,7 +66,7 @@ public class CDTParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(String filename, SourceBuffer buffer) throws IOException {
+	public void parse(SourceBuffer buffer, String filename) throws IOException {
 		this.buffer = buffer;
 		
 		ParserCallBack callback = new ParserCallBack();
@@ -86,28 +86,28 @@ public class CDTParser implements StaticParser {
 	class ParserCallBack implements ISourceElementRequestor{
 
 		public void acceptVariable(IASTVariable arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addVariable(new Variable(arg0.getName(), arg0.getStartingLine(), arg0.getNameOffset(), false));
 		}
 
 		public void acceptFunctionDeclaration(IASTFunction arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				buffer.addLiteral(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
+				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
 				buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
 			}
 		}
 		
 		public void enterFunctionBody(IASTFunction arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				buffer.addLiteral(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
+				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
 				buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
 			}
 		}
@@ -119,12 +119,12 @@ public class CDTParser implements StaticParser {
 		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {}
 
 		public void enterClassSpecifier(IASTClassSpecifier arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addClass(arg0.getNameOffset(), arg0.getName().length());
 		}	
 
 		public void acceptField(IASTField arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addVariable(new Variable(arg0.getName(), arg0.getStartingLine(), arg0.getNameOffset(), true));
 		}
 
@@ -149,18 +149,18 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void acceptAbstractTypeSpecDeclaration(IASTAbstractTypeSpecifierDeclaration arg0) {
-			buffer.addLiteral(arg0.getNameOffset(), arg0.getName().length());
+			buffer.addKeyword(arg0.getNameOffset(), arg0.getName().length());
 		}
 
 		public void acceptMethodDeclaration(IASTMethod arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				int nameOffset = param.getNameOffset();
 				if(nameOffset != -1){
-					buffer.addLiteral(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
+					buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
 					buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
 				}
 				else{
@@ -174,12 +174,12 @@ public class CDTParser implements StaticParser {
 		}
 		
 		public void enterMethodBody(IASTMethod arg0) {
-			buffer.addLiteral(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
 			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				buffer.addLiteral(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
+				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
 				buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
 			}
 		}

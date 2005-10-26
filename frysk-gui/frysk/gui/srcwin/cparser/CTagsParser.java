@@ -64,7 +64,7 @@ public class CTagsParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(String filename, SourceBuffer buffer) throws IOException {
+	public void parse(SourceBuffer buffer, String filename) throws IOException {
 		String[] command = new String[7];
 		command[0] = "ctags";
 		command[1] = "--fields=+KSn";

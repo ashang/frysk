@@ -1,3 +1,47 @@
+2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineHandler.java (moveDown): Commented out pending reorganization
+	under the DOM.
+	(moveUp): Ditto.
+	(init): Ditto.
+	* InlineViewer.java (load): Commented out pending reorganization under
+	the DOM.
+	(moveDown): Ditto.
+	(setSubscopeAtCurrentLine): Ditto.
+	* SourceBuffer.java: Removed unncessesary member variables.
+	(SourceBuffer): Now takes a DOMSource.
+	(SourceBuffer): Removed constructors that took Handles and TextTagTables.
+	(init): No longer initializes Vector for lines or sets priority on the
+	function tag, as well as adding call to load.
+	(isLineExecutable): Reimplimented using the DOM.
+	(isLineBroken): Remvoed code, needs to be reimplimented using the DOM.
+	(toggleBreakpoint): Ditto.
+	(getVariable): Partially reimplimented using DOM, still returns null.
+	(addFunction): Commented out pending rewrite using DOM.
+	(addVariable): Ditto.
+	(addComment): Ditto.
+	(addClass): Ditto.
+	(addLiteral): Renamed to addKeyword, and Ditto.
+	(getLineCount): Reimplimented to use the DOM.
+	(hasInlineCode): Renamed from hasInlineLines, and Ditto.
+	(load): Changed to private, reimplimented to use DOM.
+	(createTags): Added.
+	(toggleExpanded): Removed.
+	(getNumInlinedLines): Removed.
+	(SourceLineReader): Removed.
+	* SourceViewWidget.java (SourceViewWidget): Now takes DOMSource.
+	(load): Refactored to use DOM.
+	(drawMargin): Remvoed commented out code, refactored parts to use DOM.
+	* SourceWindow.java (SourceWindow): Partially reimplimented to use DOM.
+	(populateStackBrowser): Ditto.
+	(selectionChanged): Ditto.
+	* StaticParser.java (parse): Reordered arguments for no good reason.
+	* cparser/CDTParser.java: Changed references of addLiteral to addKeyword.
+	* SourceWinRunner (main): Commented out scope generation pending DOM 
+	integration.
+	(mainGui): Ditto.
+	* PCLocation.java: Refactored to StackLevel.java
+
 2005-10-25  Rick Moseley  <rmoseley@redhat.com>
 
 	* dom/DOMLine.java: change Boolean to boolean for line attributes

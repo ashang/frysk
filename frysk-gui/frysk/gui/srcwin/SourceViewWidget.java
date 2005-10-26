@@ -38,7 +38,6 @@
 // exception.
 package frysk.gui.srcwin;
 
-import java.io.FileNotFoundException;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
@@ -47,7 +46,6 @@ import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
 import org.gnu.glib.Handle;
-import org.gnu.glib.JGException;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.StateType;
@@ -72,6 +70,7 @@ import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
 import frysk.gui.srcwin.PreferenceConstants.Text;
+import frysk.gui.srcwin.dom.DOMSource;
 
 /** 
  * This class is used to add some functionality to TextView that may be needed
@@ -100,16 +99,18 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	private TextChildAnchor anchor;
 	
 	protected boolean expanded = false;
+	// TODO: Get rid of this?
 	protected boolean hasInlineCode = false;
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.
 	 * 
 	 * @param parentPrefs The root node of the preference model to use
+	 * @param scope The source file that this widget will be displaying
 	 */
-	public SourceViewWidget(Preferences parentPrefs) {
+	public SourceViewWidget(Preferences parentPrefs, DOMSource scope) {
 		super(gtk_text_view_new());
-		this.buf = new SourceBuffer();
+		this.buf = new SourceBuffer(scope);
 		this.setBuffer(this.buf);
 		this.topPrefs = parentPrefs;
 		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
@@ -310,21 +311,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		this.scrollToIter(this.buf.getStartCurrentFind(), 0);
 	}
 	
-	public void load(PCLocation data){
-		try {
-			this.buf.loadFile(data.getFilename());
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JGException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.setCurrentLine(data.getLineNum());
+	public void load(StackLevel data){
+		this.setBuffer(new SourceBuffer(data.getData()));
 		this.expanded = false;
-		this.hasInlineCode = data.hasInlineScope();
-		
-		InlineHandler.init(data, this.topPrefs, this);
+		this.anchor = null;
 	}
 	
 	public void setSubscopeAtCurrentLine(SourceViewWidget child){
@@ -455,12 +445,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			int iconStart = lineHeight/2;
 			
 			if(totalInlinedLines == 1){
-				// draw background for the expanded lines
-//				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
-//				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
-//						this.marginWriteOffset+20, lineHeight);
-//				context.setRGBForeground(new Color(r,g,b));
-				
 				totalInlinedLines = 0;
 			
 				gapHeight = this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
@@ -486,12 +470,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
-			if(this.hasInlineCode && i == this.buf.getCurrentLine()){
-//				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
-//				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
-//						this.marginWriteOffset+20, lineHeight);
-//				context.setRGBForeground(new Color(r,g,b));
-				
+			if(i == this.buf.getCurrentLine() && this.buf.hasInlineCode(i)){
 				context.setRGBForeground(new Color(markR,markG,markB));
 				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
 				Layout lo = new Layout(this.getContext());

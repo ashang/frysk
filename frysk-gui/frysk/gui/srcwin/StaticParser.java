@@ -53,9 +53,8 @@ public interface StaticParser {
 	/**
 	 * Parses the given file for syntax and other static information and stores the
 	 * info in the specified buffer
-	 * 
-	 * @param filename The file to parse
 	 * @param buffer The source buffer to put the resulting data in
+	 * @param filename TODO
 	 */
-	void parse(String filename, SourceBuffer buffer) throws IOException;
+	void parse(SourceBuffer buffer, String filename) throws IOException;
 }

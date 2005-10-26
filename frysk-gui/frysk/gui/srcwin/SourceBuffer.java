@@ -39,23 +39,18 @@
 package frysk.gui.srcwin;
 
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
-import org.gnu.glib.Handle;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextTag;
-import org.gnu.gtk.TextTagTable;
 import org.gnu.pango.Weight;
 
 import frysk.gui.srcwin.PreferenceConstants.Classes;
@@ -68,6 +63,9 @@ import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
 import frysk.gui.srcwin.PreferenceConstants.Search;
 import frysk.gui.srcwin.cparser.CDTParser;
+import frysk.gui.srcwin.dom.DOMLine;
+import frysk.gui.srcwin.dom.DOMSource;
+import frysk.gui.srcwin.dom.DOMTag;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -92,9 +90,6 @@ public class SourceBuffer extends TextBuffer {
 	private static final String FOUND_TEXT = "foundText";
 	/* END CONSTANTS */
 	
-	protected Vector lines;
-	protected SourceLineReader lineParser;
-	
 	private Vector functions;
 	
 	private TextMark startCurrentLine;
@@ -113,42 +108,23 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag classTag;
 	
 	private TextTag inlinedTag;
-	
-	private VariableList varList;
 		
 	private StaticParser staticParser;
+	
+	// Since conceptually each sourcebuffer will only be viewing one file, we don't
+	// need any information higher than this
+	private DOMSource scope;
 	
 	/**
 	 * Creates a new SourceBuffer
 	 */
-	public SourceBuffer(){ 
+	public SourceBuffer(DOMSource data){ 
 		super();
-		this.init();
-	}
-	
-	/**
-	 * Creates a new SourceBuffer with the provided Handle to a native (TextBuffer)
-	 * resource
-	 * 
-	 * @param handle Native resource
-	 */
-	public SourceBuffer(Handle handle){
-		super(handle);
-		this.init();
-	}
-	
-	/**
-	 * Creates a new SourceBuffer with the provided TextTagTable
-	 * 
-	 * @param table
-	 */
-	public SourceBuffer(TextTagTable table){
-		super(gtk_text_buffer_new(table.getHandle()));
+		this.scope = data;
 		this.init();
 	}
 	
 	public void init(){
-		lines = new Vector();
 		functions = new Vector();
 		this.currentLine = this.createTag(CURRENT_LINE);
 		this.foundText = this.createTag(FOUND_TEXT);
@@ -158,9 +134,14 @@ public class SourceBuffer extends TextBuffer {
 		this.globalTag = this.createTag(MEMBER_TAG);
 		this.commentTag = this.createTag(COMMENT_TAG);
 		this.classTag = this.createTag("CLASS");	
-		this.functionTag.setPriority(this.getTextTagTable().getSize() - 1);
 		
 		this.inlinedTag = this.createTag(INLINE_TAG);
+		
+		try {
+			this.loadFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -170,8 +151,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether or not the line is executable
 	 */
 	public boolean isLineExecutable(int lineNo){
-		SourceCodeLine line = (SourceCodeLine)lines.get(lineNo);
-		return line.isExecutable();
+		return this.scope.getLine(lineNo).isExecutable();
 	}
 	
 	/** 
@@ -181,52 +161,8 @@ public class SourceBuffer extends TextBuffer {
 	 * @return
 	 */
 	public boolean isLineBroken(int lineNo){
-		SourceCodeLine line = (SourceCodeLine)lines.get(lineNo);
-		return line.isBreakpointSet();
-	}
-	
-	/**
-	 * Loads a file at the given location into the  buffer, clearing
-	 * any previously loaded files.
-	 * 
-	 * @param filename The file to load
-	 * @throws FileNotFoundException
-	 * @throws JGException
-	 */
-	public void loadFile(String filename)throws FileNotFoundException, JGException{
-		this.deleteText(this.getStartIter(), this.getEndIter());
-		lines = new Vector();
-		
-		lineParser = new SourceLineReader(filename);
-		
-		SourceCodeLine line = lineParser.getNextLine();
-		
-		while (line != null){
-			
-			// append new row
-			TextIter endOfText = this.getEndIter();
-			this.insertText(endOfText, line.getSource());
-			
-			endOfText = this.getEndIter();
-			this.insertText(("\n"));
-			
-			// add line to vector
-			lines.add(line);
-			
-			line = lineParser.getNextLine();
-		}
-		
-		this.varList = new VariableList(this.getLineCount());
-
-		
-		this.staticParser = new CDTParser();
-		try {
-			System.out.println("Parsing");
-			this.staticParser.parse(filename, this);
-			System.out.println("Done parsing");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		 TODO: re-implement this function in terms of the data the DOM provides
+		return false;
 	}
 	
 	/**
@@ -243,23 +179,8 @@ public class SourceBuffer extends TextBuffer {
 	 * does not correspond to a valid line number
 	 */
 	public boolean toggleBreakpoint (int lineNum){
-		boolean toggled = false;
-		SourceCodeLine line;
-		
-		try {
-			line = (SourceCodeLine) lines.get(lineNum);
-		}catch (ArrayIndexOutOfBoundsException e){
-			return false;
-		}
-		
-		if (line.isExecutable()){
-			toggled = true;
-			boolean wasBroken = line.isBreakpointSet();
-			line.setBreakpoint(!wasBroken);
-		}else{
-			// should we throw an exception here?
-		}
-		return toggled;
+//		 TODO: re-implement this function in terms of the data the DOM provides
+		return false;
 	}
 	
 
@@ -562,7 +483,14 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The variable at that location, or null
 	 */
 	public Variable getVariable(TextIter iter){
-		return this.varList.getVariable(iter.getLineNumber(), iter.getLineOffset());
+		DOMTag tag = this.scope.getLine(iter.getLineNumber()).getTag(iter.getLineOffset());
+		
+		// No var, do nothing
+		if(!tag.getType().equals("local_var"))
+			return null;
+		
+		// TODO: fix this so that we return something. What to do with the Variable class?
+		return null;
 	}
 	
 	/**
@@ -584,11 +512,12 @@ public class SourceBuffer extends TextBuffer {
 	 * @param declaration Whether this is a declaration
 	 */
 	public void addFunction(String name, int lineNum, int col, boolean declaration){
-		this.applyTag(FUNCTION_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+name.length()));
-		if(declaration){
-			this.createMark(name+"_FUNC", this.getIter(lineNum, col), true);
-			this.functions.add(name+"_FUNC");
-		}
+		// TODO: fix this to modify the DOM
+//		this.applyTag(FUNCTION_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+name.length()));
+//		if(declaration){
+//			this.createMark(name+"_FUNC", this.getIter(lineNum, col), true);
+//			this.functions.add(name+"_FUNC");
+//		}
 	}
 	
 	/**
@@ -603,11 +532,12 @@ public class SourceBuffer extends TextBuffer {
 	 * @param declaration Whether the function is a declaration
 	 */
 	public void addFunction(String name, int offset, boolean declaration){
-		this.applyTag(FUNCTION_TAG, this.getIter(offset), this.getIter(offset+name.length()));
-		if(declaration){
-			this.createMark(name+"_FUNC", this.getIter(offset), true);
-			this.functions.add(name+"_FUNC");
-		}
+//		 TODO: fix this to modify the DOM
+//		this.applyTag(FUNCTION_TAG, this.getIter(offset), this.getIter(offset+name.length()));
+//		if(declaration){
+//			this.createMark(name+"_FUNC", this.getIter(offset), true);
+//			this.functions.add(name+"_FUNC");
+//		}
 	}
 	
 	/**
@@ -615,11 +545,12 @@ public class SourceBuffer extends TextBuffer {
 	 * @param v The variable to be highlighted
 	 */
 	public void addVariable(Variable v){
-		if(!v.isMember())
-			this.applyTag(ID_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
-		else
-			this.applyTag(MEMBER_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
-		this.varList.addVariable(v);
+//		 TODO: fix this to modify the DOM
+//		if(!v.isMember())
+//			this.applyTag(ID_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
+//		else
+//			this.applyTag(MEMBER_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
+//		this.varList.addVariable(v);
 	}
 	
 	/**
@@ -629,8 +560,8 @@ public class SourceBuffer extends TextBuffer {
 	 * @param col The offset from the start of the line
 	 * @param length The length of the literal
 	 */
-	public void addLiteral(int lineNum, int col, int length){
-		this.applyTag(KEYWORD_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+length));
+	public void addKeyword(int lineNum, int col, int length){
+		//TODO: rewrite this to modify the DOM
 	}
 	
 	/**
@@ -639,8 +570,8 @@ public class SourceBuffer extends TextBuffer {
 	 * @param offset The offset from the start of the file
 	 * @param length The length of the literal
 	 */
-	public void addLiteral(int offset, int length){
-		this.applyTag(KEYWORD_TAG, this.getIter(offset), this.getIter(offset+length));
+	public void addKeyword(int offset, int length){
+		//TODO: rewrite this to modify the DOM
 	}
 	
 	/**
@@ -652,7 +583,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param colEnd the offset from the start of the line that the comment ends on
 	 */
 	public void addComment(int lineStart, int colStart, int lineEnd, int colEnd){
-		this.applyTag(COMMENT_TAG, this.getIter(lineStart, colStart), this.getIter(lineEnd, colEnd));
+//		this.applyTag(COMMENT_TAG, this.getIter(lineStart, colStart), this.getIter(lineEnd, colEnd));
 	}
 	
 	/**
@@ -662,75 +593,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the identifier
 	 */
 	public void addClass(int offset, int length){
-		this.applyTag("CLASS", this.getIter(offset), this.getIter(offset+length));		
-	}
-	
-	/**
-	 * Returns true if the given line contains inlined code
-	 * 
-	 * @param lineNum The line to check
-	 * @return True if the line has inlined code, false otherwise
-	 */
-	public boolean hasInlinedLines(int lineNum){
-		return ((SourceCodeLine) this.lines.elementAt(lineNum)).hasInlineLines();
-	}
-	
-	/**
-	 * Returns true if the given line contains inlined code and is expanded. If the
-	 * given line doesn't have inlined code false is returned by default
-	 * 
-	 * @param lineNum The line to check
-	 * @return True if the the line contains expanded inline code, false otherwise
-	 */
-	public boolean isExpanded(int lineNum){
-		return ((SourceCodeLine) this.lines.elementAt(lineNum)).isExpanded();
-	}
-	
-	/**
-	 * Toggles the expanded state of the provided line. If the line doesn have inlined
-	 * code this call has no effect 
-	 * 
-	 * @param lineNum The line to expand inlined code in
-	 */
-	
-	public void toggleExpanded(int lineNum){
-		SourceCodeLine line = (SourceCodeLine) this.lines.elementAt(lineNum);
-		if(!line.hasInlineLines())
-			return;
-		
-		line.setExpanded(!line.isExpanded());
-		
-		TextIter insertPoint = this.getLineIter(lineNum+1);
-		
-		if(line.isExpanded()){	
-			Iterator i = line.getInlineLines();
-			String toInsert = "";
-			while(i.hasNext())
-				toInsert += ((String) i.next())+"\n";
-			
-			this.insertText(insertPoint, toInsert);
-			
-			// insertPoint's been invalidated by the insertion, re-create it to add
-			// the highlighting
-			insertPoint = this.getLineIter(lineNum+1);
-			TextIter end = this.getIter(insertPoint.getOffset()+toInsert.length());
-			this.applyTag(INLINE_TAG, insertPoint, end);
-		}
-		else{
-			TextIter end = this.getLineIter(lineNum+line.getNumInlinedLines()+1);
-			this.removeTag(INLINE_TAG, insertPoint, end);
-			this.deleteText(insertPoint, end);
-		}
-	}
-	
-	/**
-	 * Returns the number of inlined lines for the gives source line.
-	 * 
-	 * @param lineNum The line to get info for
-	 * @return The number of lines of inlined code
-	 */
-	public int getNumInlinedLines(int lineNum){
-		return ((SourceCodeLine) this.lines.elementAt(lineNum)).getNumInlinedLines();
+//		this.applyTag("CLASS", this.getIter(offset), this.getIter(offset+length));		
 	}
 	
 	/**
@@ -741,15 +604,81 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The number of lines in the file
 	 */
 	public int getLineCount(boolean includeInlindes){
-		if(includeInlindes)
-			return this.getLineCount();
-		else
-			return this.lines.size();
+		return this.scope.getLineCount();
+	}
+	
+	public boolean hasInlineCode(int lineNumber){
+		return this.scope.getLine(lineNumber).hasInlinedCode();
 	}
 	
 	/*-------------------*
 	 * PRIVATE METHODS   *
 	 *-------------------*/
+	
+	/**
+	 * Loads a file at the given location into the  buffer, clearing
+	 * any previously loaded files.
+	 * 
+	 * @param filename The file to load
+	 * @throws FileNotFoundException
+	 * @throws JGException
+	 */
+	private void loadFile()throws FileNotFoundException, JGException{
+		Iterator lines = this.scope.getLines();
+		
+		String bufferText = "";
+		
+		// First get the text, append it all together, and add it to ourselves
+		while(lines.hasNext()){
+			DOMLine line = (DOMLine) lines.next();
+			
+			bufferText += line.getText()+"\n";
+		}
+		
+		this.deleteText(this.getStartIter(), this.getEndIter());
+		this.insertText(bufferText);
+		
+		// now pass the resulting text to the parser
+		this.staticParser = new CDTParser();
+		try {
+			this.staticParser.parse(this, this.scope.getFilePath() + "/" + this.scope.getFileName());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		this.createTags();
+	}
+	
+	/*
+	 * Reads through the DOM and creates all the tags necessary
+	 */
+	private void createTags(){
+		Iterator lines = this.scope.getLines();
+		
+		// Iterate through all the lines
+		while(lines.hasNext()){
+			DOMLine line = (DOMLine) lines.next();
+			
+			Iterator tags = line.getTags();
+			
+			// Iterator though all the tags on the line
+			while(tags.hasNext()){
+				DOMTag tag = (DOMTag) tags.next();
+				
+				String type = tag.getType();
+				
+				if(type.equals("keyword")){
+					this.applyTag(KEYWORD_TAG, 
+							this.getIter(tag.getStart()), this.getIter(tag.getEnd()));
+				}
+				
+				else if(type.equals("local_var")){
+					this.applyTag(ID_TAG, 
+							this.getIter(tag.getStart()), this.getIter(tag.getEnd()));
+				}
+			} // end tags.hasNext()
+		}// end lines.hasNext()
+	}
 	
 	/*
 	 * Checks whether or not the current search should be restarted by comparing the
@@ -769,61 +698,6 @@ public class SourceBuffer extends TextBuffer {
 			this.startCurrentFind = null;
 			this.endCurrentFind = null;
 		}
-	}
-	
-	/** 
-	 * A simple parser that reads in a file, and makes up SourceCodeLine
-	 * objects from it. These objects have a 'breakable' property which
-	 * indicates that a breakline can be set on that line, it is set to
-	 * true if the line is not empty. 
-	 *  
-	 * @author ifoox
-	 *
-	 */
-	protected class SourceLineReader {
-		private Vector sourceLines;
-		
-		private String fileName;
-		
-		private BufferedReader fileReader;
-		
-		public SourceLineReader(String filename) throws FileNotFoundException{
-			this.fileName = filename;
-			sourceLines = new Vector();
-			
-			fileReader = new BufferedReader(new FileReader(new File(fileName)));
-			
-		}
-		
-		/**
-		 * 
-		 * Returns a SourceCodeLine object representing
-		 * the next source code line.
-		 * @return
-		 */
-		public SourceCodeLine getNextLine(){
-			SourceCodeLine codeLine = null;
-			try {
-				String line = fileReader.readLine();
-				if (line != null){
-					codeLine = new SourceCodeLine(line, false);
-					sourceLines.add(codeLine);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			return codeLine;
-		}
-		
-		public int lineNumber(){
-			return sourceLines.size() - 1;
-		}
-		
-		public SourceCodeLine getLine(int lineNo){
-			return (SourceCodeLine) sourceLines.get(lineNo);
-		}
-		
 	}
 
 }

@@ -63,7 +63,7 @@ public class SimpleParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(String filename, SourceBuffer buffer) throws IOException {
+	public void parse(SourceBuffer buffer, String filename) throws IOException {
 		this.tokenMaker = new Tokenizer(filename);
 		
 		while(this.tokenMaker.hasMoreTokens()){
@@ -90,7 +90,7 @@ public class SimpleParser implements StaticParser {
 					t.text.equals("class") || t.text.equals("return") || t.text.equals("struct") ||
 					t.text.equals("public") || t.text.equals("private") ||
 					t.text.equals("protected") || t.text.equals("do")){
-				buffer.addLiteral(t.lineNum, t.colNum, t.text.length());
+				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
 			}
 			else if(t.text.equals("{")){
 				this.scopeDepth++;

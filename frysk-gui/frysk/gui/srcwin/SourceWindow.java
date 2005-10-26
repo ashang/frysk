@@ -245,7 +245,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		 *--------------------------------------*/
 		
 		// create the actual sourceview widget
-		this.view = new SourceViewWidget(this.prefs);
+		this.view = new SourceViewWidget(this.prefs, null);
 		
 		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
 		for(int i = 0; i < funcs.size(); i++)
@@ -316,9 +316,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	 * Populates the stack browser window
 	 * @param top
 	 */
-	public void populateStackBrowser(PCLocation top){
+	public void populateStackBrowser(StackLevel top){
 		((Container) this.view.getParent()).remove(this.view);
-		this.view = new SourceViewWidget(this.prefs);
+		this.view = new SourceViewWidget(this.prefs, null);
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.view.showAll();
 		
@@ -332,12 +332,11 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		while(top != null){
 			iter = listModel.appendRow();
-			System.out.println(top.getFunction());
 			
-			if(top.inlineScope == null)			
-				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction());
+			if(top.getData().getLine(top.getLineNum()).hasInlinedCode())
+				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getData().getFileName()+"  (i)");
 			else
-				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getFunction()+"  (i)");
+				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getData().getFileName());
 			listModel.setValue(iter, (DataColumnObject) dataColumns[1], top);
 			
 			// Save the last node so we can select it
@@ -954,11 +953,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
 		TreeModel model = view.getModel();
 		
-		PCLocation selected = (PCLocation) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
+		StackLevel selected = (StackLevel) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
 		
-		((Container) this.view.getParent()).remove(this.view);
-		this.view = new SourceViewWidget(this.prefs);
-		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.view.load(selected);
 		this.view.showAll();
 	}

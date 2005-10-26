@@ -40,7 +40,6 @@
 include common/Makefile.rules
 include Makefile.gen
 
-
 GEN_CLASSPATH += $(top_builddir)/../frysk-core/frysk-core.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys/frysk-sys.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/antlr.jar

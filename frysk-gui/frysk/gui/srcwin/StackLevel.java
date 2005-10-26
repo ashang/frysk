@@ -38,39 +38,29 @@
 // exception.
 package frysk.gui.srcwin;
 
+import frysk.gui.srcwin.dom.DOMSource;
+
 /**
  * @author ajocksch
  *
  */
-public class PCLocation {
-	private String filename;
-	private String function;
+public class StackLevel {
 	private int lineNum;
 	
 	private int depth;
 	
-	protected PCLocation nextScope;
-	protected PCLocation prevScope;
+	protected StackLevel nextScope;
+	protected StackLevel prevScope;
 	
-	protected PCLocation parentScope;	
-	protected PCLocation inlineScope;
+	protected DOMSource data;
 
-	public PCLocation(String filename, String function, int line){
-		this.filename = filename;
+	public StackLevel(DOMSource data, int line){
 		this.lineNum = line;
 		this.depth = 0;
-		this.function = function;
+		this.data = data;
 	}
 
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public PCLocation getNextScope() {
+	public StackLevel getNextScope() {
 		return nextScope;
 	}
 
@@ -82,11 +72,11 @@ public class PCLocation {
 		this.lineNum = lineNum;
 	}
 
-	public PCLocation getPrevScope() {
+	public StackLevel getPrevScope() {
 		return prevScope;
 	}
 
-	public void addNextScope(PCLocation next){
+	public void addNextScope(StackLevel next){
 		if(this.nextScope != null){
 			next.nextScope = this.nextScope;
 			this.nextScope.depth++;
@@ -98,35 +88,11 @@ public class PCLocation {
 		next.prevScope = this;
 	}
 	
-	public void addInlineScope(PCLocation child){
-		if(this.inlineScope != null){
-			child.inlineScope = this.inlineScope;
-			this.inlineScope.depth++;
-			this.inlineScope.parentScope = child;
-		}
-		
-		this.inlineScope = child;
-		child.depth = this.depth + 1;
-		child.parentScope = this;
-	}
-	
 	public int getDepth() {
 		return depth;
 	}
 
-	public String getFunction() {
-		return function;
-	}
-
-	public PCLocation getParentScope() {
-		return parentScope;
-	}
-
-	public PCLocation getInlineScope() {
-		return inlineScope;
-	}
-	
-	public boolean hasInlineScope(){
-		return this.inlineScope != null;
+	public DOMSource getData() {
+		return data;
 	}
 }

@@ -44,12 +44,8 @@ import org.gnu.gdk.Color;
 import org.gnu.gdk.Drawable;
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Window;
-import org.gnu.gtk.EventBox;
-import org.gnu.gtk.Justification;
-import org.gnu.gtk.Label;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextWindowType;
-import org.gnu.gtk.ToolTips;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
@@ -68,8 +64,6 @@ public class InlineViewer extends SourceViewWidget {
 	protected InlineViewer nextLevel;
 	protected InlineViewer prevLevel;
 	
-	private PCLocation scope;
-	
 	private boolean showEllipsis;
 	
 	public InlineViewer(Preferences parentPrefs){
@@ -80,7 +74,7 @@ public class InlineViewer extends SourceViewWidget {
 	 * @param parentPrefs
 	 */
 	public InlineViewer(Preferences parentPrefs, boolean showEllipsis) {
-		super(parentPrefs);
+		super(parentPrefs, null);
 		this.setBorderWidth(1);
 		this.showEllipsis = showEllipsis;
 	}
@@ -98,44 +92,46 @@ public class InlineViewer extends SourceViewWidget {
 			InlineHandler.moveUp(this);
 	}
 	
-	public void load(PCLocation current){
-	    if(current.getDepth() == 1)
-            this.showEllipsis = false;
-	    
-		try {
-			this.buf.loadFile(current.getFilename());
-		} catch (Exception e){
-			e.printStackTrace();
-		}
+	public void load(StackLevel current){
+//		 FIXME: This needs to be re-implemented within the scope of the data that the DOM provides
 		
-		this.setCurrentLine(current.getLineNum());
-		this.scope = current;
-		this.hasInlineCode = this.scope.hasInlineScope();
-		
-		if(showEllipsis){
-			Label l = null;
-			if(this.scope.getDepth() > 2)
-				l = new Label(this.scope.getDepth()-1+" inlined scopes hidden...");
-			else
-				l = new Label(this.scope.getDepth()-1+" inlined scope hidden...");
-			l.setJustification(Justification.LEFT);
-			EventBox b1 = new EventBox();
-			b1.add(l);
-			ToolTips t = new ToolTips();
-			t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-			l = new Label("...");
-			l.setJustification(Justification.LEFT);
-			EventBox b2 = new EventBox();
-			b2.add(l);
-			t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
-			
-			buf.insertText(buf.getStartIter(), "\n");
-			this.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
-			this.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
-			
-			b1.showAll();
-			b2.showAll();
-		}
+//	    if(current.getDepth() == 1)
+//            this.showEllipsis = false;
+//	    
+//		try {
+//			this.buf.loadFile(current.getFilename());
+//		} catch (Exception e){
+//			e.printStackTrace();
+//		}
+//		
+//		this.setCurrentLine(current.getLineNum());
+//		this.scope = current;
+//		this.hasInlineCode = this.scope.hasInlineScope();
+//		
+//		if(showEllipsis){
+//			Label l = null;
+//			if(this.scope.getDepth() > 2)
+//				l = new Label(this.scope.getDepth()-1+" inlined scopes hidden...");
+//			else
+//				l = new Label(this.scope.getDepth()-1+" inlined scope hidden...");
+//			l.setJustification(Justification.LEFT);
+//			EventBox b1 = new EventBox();
+//			b1.add(l);
+//			ToolTips t = new ToolTips();
+//			t.setTip(b1, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+//			l = new Label("...");
+//			l.setJustification(Justification.LEFT);
+//			EventBox b2 = new EventBox();
+//			b2.add(l);
+//			t.setTip(b2, "Levels of inline code have been hidden. Collapse lower scopes to view these hidden levels", "");
+//			
+//			buf.insertText(buf.getStartIter(), "\n");
+//			this.addChild(b1, buf.createChildAnchor(buf.getStartIter()));
+//			this.addChild(b2, buf.createChildAnchor(buf.getEndIter()));
+//			
+//			b1.showAll();
+//			b2.showAll();
+//		}
 	}
     
     public void moveDown(){
@@ -146,16 +142,17 @@ public class InlineViewer extends SourceViewWidget {
         
         this.remove(this.nextLevel);
         this.clearSubscopeAtCurrentLine();
-        this.load(this.scope.getInlineScope());
+//      FIXME: This needs to be re-implemented within the scope of the data that the DOM provides
+//        this.load(this.scope.getInlineScope());
     }
-
-	public PCLocation getScope() {
-		return scope;
-	}
-
-	public void setScope(PCLocation scope) {
-		this.scope = scope;
-	}
+//
+//	public StackLevel getScope() {
+//		return scope;
+//	}
+//
+//	public void setScope(StackLevel scope) {
+//		this.scope = scope;
+//	}
 
 	public void setSubscopeAtCurrentLine(InlineViewer viewer){
 		super.setSubscopeAtCurrentLine(viewer);
@@ -290,25 +287,26 @@ public class InlineViewer extends SourceViewWidget {
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
-			if(this.scope.hasInlineScope() && i == this.buf.getCurrentLine() - 1){
-//				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
-//				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
-//						this.marginWriteOffset+20, lineHeight);
+//			 FIXME: This needs to be re-implemented within the scope of the data that the DOM provides
+//			if(this.scope.hasInlineScope() && i == this.buf.getCurrentLine() - 1){
+////				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
+////				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
+////						this.marginWriteOffset+20, lineHeight);
+////				context.setRGBForeground(new Color(r,g,b));
+//				
+//				context.setRGBForeground(new Color(markR,markG,markB));
+//				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
+//				Layout lo = new Layout(this.getContext());
+//				lo.setAlignment(Alignment.RIGHT);
+//				lo.setText("i");
+//				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
 //				context.setRGBForeground(new Color(r,g,b));
-				
-				context.setRGBForeground(new Color(markR,markG,markB));
-				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
-				Layout lo = new Layout(this.getContext());
-				lo.setAlignment(Alignment.RIGHT);
-				lo.setText("i");
-				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
-				context.setRGBForeground(new Color(r,g,b));
-				
-				if(this.expanded)
-					totalInlinedLines = 1;
-				else
-					totalInlinedLines = 0;
-			}
+//				
+//				if(this.expanded)
+//					totalInlinedLines = 1;
+//				else
+//					totalInlinedLines = 0;
+//			}
 			
 			// Draw line numbers
 			if(showLines){
