@@ -6,6 +6,8 @@
 
 	* frysk-jdom.spec: Added new file.
 
+	* frysk.spec: Changed dependency on jdom to frysk-jdom.
+
 2005-10-26  Igor Foox  <ifoox@redhat.com>
 
 	* frysk-gtk2.spec: Updated to GTK+ 2.8.6, added patch for theme bug (bz#

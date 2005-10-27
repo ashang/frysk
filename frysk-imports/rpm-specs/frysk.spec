@@ -50,7 +50,8 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 Requires:	%{java_pkg_prefix}libgtk-java >= 2.8.0
 Requires:   %{java_pkg_prefix}libglade-java >= 2.12.0
 Requires: 	%{java_pkg_prefix}libvte-java >= 0.11.11
-BuildRequires:  antlr >= 2.7.4, junit >= 3.8.1, xfig >= 3.2.4, jdom >= 1.0
+BuildRequires:  antlr >= 2.7.4, junit >= 3.8.1, xfig >= 3.2.4, 
+BuildRequires:	%{java_pkg_prefix}jdom >= 1.0
 BuildRequires:  frysk-cdtparser >= 3.0.0
 BuildRequires:  %{java_pkg_prefix}libgtk-java-devel >= 2.8.0
 BuildRequires:	%{java_pkg_prefix}libglade-java >= 2.12.0
