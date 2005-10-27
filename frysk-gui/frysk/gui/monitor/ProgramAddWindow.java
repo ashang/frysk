@@ -61,6 +61,8 @@ import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeModelEvent;
@@ -72,7 +74,7 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
 
-public class ProgramAddWindow extends Window {
+public class ProgramAddWindow extends Window implements LifeCycleListener { 
 
 	private Entry programEntry;
 
@@ -92,7 +94,7 @@ public class ProgramAddWindow extends Window {
 
 	public ProgramAddWindow(LibGlade glade) {
 		super(((Window) glade.getWidget("programAddWindow")).getHandle());
-
+		this.addListener(this);
 		getGladeWidgets(glade);
 		createDataModel();
 		mountProcModel(this.psDataModel);
@@ -170,7 +172,7 @@ public class ProgramAddWindow extends Window {
 		this.programEntry = (Entry) glade.getWidget("programEntry");
 		this.programOpenFileDialog = (Button) glade
 				.getWidget("programOpenFileDialog");
-		this.programTreeView = (TreeView) glade.getWidget("programTreeView");
+		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView");
 		this.programCancel = (Button) glade.getWidget("programCancel");
 		this.programApply = (Button) glade.getWidget("programApply");
 	}
@@ -236,6 +238,22 @@ public class ProgramAddWindow extends Window {
 				return false;
 			}
 		});
+	}
+
+	public void lifeCycleEvent(LifeCycleEvent event) {
+	
+	}
+
+	public boolean lifeCycleQuery(LifeCycleEvent event) {
+		// TODO Auto-generated method stub
+		
+		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+                event.isOfType(LifeCycleEvent.Type.DELETE)) {
+					this.hideAll();
+					return true;
+		}
+
+		return false;
 	}
 
 }

@@ -1,3 +1,10 @@
+2005-10-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java (lifeCycleQuery): Add hideAll() on
+	delete event instead of destroy.
+	* ProgramViewPage.java (ProgramViewPage): Bring up Wizard
+	instead of FileBrowser.
+
 2005-10-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StatusWidget.java (StatusWidget): replaced scrolled window add
