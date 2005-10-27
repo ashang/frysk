@@ -273,14 +273,15 @@ public class DOMLine {
 	 * @return The tag (if any) at that position
 	 */
 	public DOMTag getTag(int index) {
-		int lineStart = this.getOffset();
-		if (index < lineStart)
-			index += lineStart;
+//		int lineStart = this.getOffset();
+//		if (index < lineStart)
+//			index += lineStart;
 
 		Iterator iter = this.myElement.getChildren().iterator();
-
+		
 		while (iter.hasNext()) {
 			DOMTag tag = new DOMTag((Element) iter.next());
+			
 			if (tag.isInRange(index))
 				return tag;
 		}

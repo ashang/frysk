@@ -153,7 +153,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether or not the line is executable
 	 */
 	public boolean isLineExecutable(int lineNo){
-		return this.scope.getLine(lineNo).isExecutable();
+		DOMLine line = this.scope.getLine(lineNo);
+		if(line == null)
+			return false;
+		return line.isExecutable();
 	}
 	
 	/** 
@@ -163,8 +166,11 @@ public class SourceBuffer extends TextBuffer {
 	 * @return
 	 */
 	public boolean isLineBroken(int lineNo){
-//		 TODO: re-implement this function in terms of the data the DOM provides
-		return false;
+		DOMLine line = this.scope.getLine(lineNo + 1);
+		if(line == null)
+			return false;
+		
+		return line.hasBreakPoint();
 	}
 	
 	/**
@@ -181,8 +187,13 @@ public class SourceBuffer extends TextBuffer {
 	 * does not correspond to a valid line number
 	 */
 	public boolean toggleBreakpoint (int lineNum){
-//		 TODO: re-implement this function in terms of the data the DOM provides
-		return false;
+		DOMLine line = this.scope.getLine(lineNum + 1);
+		if(line == null)
+			return false;
+		
+		boolean status = line.hasBreakPoint();
+		line.setBreakPoint(!status);
+		return !status;
 	}
 	
 
@@ -485,14 +496,17 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The variable at that location, or null
 	 */
 	public Variable getVariable(TextIter iter){
-		DOMTag tag = this.scope.getLine(iter.getLineNumber()).getTag(iter.getLineOffset());
+		DOMLine line = this.scope.getLine(iter.getLineNumber()+1);
+		DOMTag tag = line.getTag(iter.getLineOffset());
 		
-		// No var, do nothing
-		if(!tag.getType().equals("local_var"))
+		// No var (or no tag), do nothing
+		if(tag == null || !tag.getType().equals("local_var"))
 			return null;
 		
-		// TODO: fix this so that we return something. What to do with the Variable class?
-		return null;
+		Variable var = new Variable(
+				line.getText().substring(tag.getStart(), tag.getStart() + tag.getLength()), 
+				iter.getLineNumber(), tag.getStart(), false);
+		return var;
 	}
 	
 	/**

@@ -1,3 +1,20 @@
+2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (isLineExecutable): Implimented to use the DOM.
+	(isLineBroken): Ditto.
+	(toggleBreakpoint): Ditto.
+	(getVariable): Fixed off by one error when getting line, now returns a 
+	Variable object containing information.
+	* SourceViewWidget.java (drawMargin): Fixed off by one error for executable
+	marks.
+	* SourceWindow.java (populateStackBrowser): Changed title of side browser
+	to "Stack".
+	(SourceWindow): Removed reference to function combobox.
+	* dom/DOMLine.java (getTag): Removed check for line offset, since all 
+	offsets are w.r.t the start of the current line.
+	* dom/DOMTag.java (isInRange): Fixed, now treats length properly and
+	includes the endpoints.
+
 2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (load): Removed extraneous newlines.

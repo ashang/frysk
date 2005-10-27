@@ -258,7 +258,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		for(int i = 0; i < funcs.size(); i++)
 			((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).appendText(((String) funcs.get(i)).split("_")[0]);
 		
-		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FILE_SELECTOR)).setActive(0); //$NON-NLS-1$
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 
 		this.glade.getWidget(SOURCE_WINDOW).showAll();
@@ -356,7 +355,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		CellRenderer renderer = new CellRendererText();
 		column.packStart(renderer, true);
 		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, dataColumns[0]);
-		column.setTitle("Function");
+		column.setTitle("Stack");
 		stackList.appendColumn(column);
 		
 		if(this.view != null)

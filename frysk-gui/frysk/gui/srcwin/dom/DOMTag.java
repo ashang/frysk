@@ -142,7 +142,7 @@ public class DOMTag {
 	 * @return true if the tag covers the index, false otherwise
 	 */
 	public boolean isInRange(int test){
-		if(test < this.getLength() && test > this.getStart())
+		if(test >= this.getStart() && test - this.getStart() <= this.getLength())
 			return true;
 		
 		return false;

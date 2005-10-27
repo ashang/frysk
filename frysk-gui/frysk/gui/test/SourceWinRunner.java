@@ -75,26 +75,28 @@ public class SourceWinRunner {
 		
 		s.getClass();
 		
+//		try {
+//			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+//			outputter.output(dom.getDOMFrysk(), System.out);
+//		} catch (java.io.IOException e) {
+//			e.printStackTrace();
+//		}
+		
 		Gtk.main();
 	}
 	
 	public static void mainSourceWin(String[] args, String[] paths, String imageDir){
 		Gtk.init(args);
 		
-//		SourceWindow s = new SourceWindow(paths, imageDir);
+		DOMFrysk dom = DOMTestGUIBuilder.makeTestDOM();
+		DOMSource source = dom.getImage("test6").getSource("test6.cpp");
+		source.setFileName("test6.cpp");
+		source.setFilePath("../frysk/frysk-gui/frysk/gui/srcwin/testfiles");
+		StackLevel stack1 = new StackLevel(source, 11);
 		
-//		StackLevel loc = new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test.cpp","main()", 5);
-//		StackLevel loc2 = new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test2.cpp", "foo()", 12);
-//		loc.addNextScope(loc2);
-//		StackLevel loc3 = new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp", "bar()", 5);
-//		loc2.addNextScope(loc3);
-//		StackLevel loc4 = new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp", "baz(int)", 20);
-//		loc3.addInlineScope(loc4);
-//		loc3.addNextScope(new StackLevel("/home/ajocksch/frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp", "foobar()", 2));
+		SourceWindow s = new SourceWindow(paths, imageDir, dom, stack1);
 		
-//		s.populateStackBrowser(loc);
-		
-//		s.getClass();
+		s.getClass();
 		
 		Gtk.main();
 	}

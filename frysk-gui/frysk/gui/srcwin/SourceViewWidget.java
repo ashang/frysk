@@ -465,7 +465,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			
 			// If it is executable, draw a mark
-			if(showMarks && this.buf.isLineExecutable(i)){
+			if(showMarks && this.buf.isLineExecutable(i+1)){
 				context.setRGBForeground(new Color(markR,markG,markB));
 				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
 						this.marginWriteOffset+12, actualFirstStart+drawingHeight+iconStart);
