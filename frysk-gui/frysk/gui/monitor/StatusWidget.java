@@ -103,7 +103,7 @@ public class StatusWidget extends VBox{
 		//========================================
 		initLogTextView();
 		ScrolledWindow logScrolledWindow = new ScrolledWindow();
-		logScrolledWindow.add(logTextView);
+		logScrolledWindow.addWithViewport(logTextView);
 		logScrolledWindow.setShadowType(ShadowType.IN);
 		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
 		mainVbox.packStart(logScrolledWindow, true, true, 0);
@@ -121,7 +121,7 @@ public class StatusWidget extends VBox{
 		hbox.packStart(new Label(""), true, false, 0);
 		vbox.packStart(hbox, false, false, 0);
 		ScrolledWindow scrolledWindow = new ScrolledWindow();
-		scrolledWindow.add(initAttacheObserversTreeView());
+		scrolledWindow.addWithViewport(initAttacheObserversTreeView());
 		scrolledWindow.setShadowType(ShadowType.IN);
 		scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
 		vbox.packStart(scrolledWindow, true, true, 0);
