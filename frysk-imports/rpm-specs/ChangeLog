@@ -1,7 +1,8 @@
 2005-10-27  Igor Foox  <ifoox@redhat.com>
+
 	* cdtparser-3.0.0.spec: Removed attribute setting for every file.
 	Added tarball instead of a simple jar file. Added cdtparser.pc file, 
-	generated from .pc.in.
+	generated from .pc.in. Added classpath variable in .pc file.
 
 2005-10-26  Igor Foox  <ifoox@redhat.com>
 

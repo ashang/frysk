@@ -55,7 +55,9 @@ gcj -fjni -fPIC -shared -o \
 # Generate a .pc file from the pc.in
 sed -e "s:@prefix@:%{_prefix}:g" -e "s:@exec_prefix@:%{_bindir}:g" \
 	-e "s:@libdir@:%{_libdir}:g" -e "s:@includedir@:%{_includedir}:g" \
-	-e "s:@VERSION@:%{version}:g" %{name_base}.pc.in > %{name_base}.pc
+	-e "s:@VERSION@:%{version}:g" \
+	-e "s:@INSTALLED_CLASSPATH@:%{_datadir}/java/%{name_base}.jar:g" \
+	%{name_base}.pc.in > %{name_base}.pc
 
 %install
 rm -rf $RPM_BUILD_ROOT
