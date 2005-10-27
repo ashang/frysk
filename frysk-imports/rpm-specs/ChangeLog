@@ -1,3 +1,8 @@
+2005-10-27  Igor Foox  <ifoox@redhat.com>
+	* cdtparser-3.0.0.spec: Removed attribute setting for every file.
+	Added tarball instead of a simple jar file. Added cdtparser.pc file, 
+	generated from .pc.in.
+
 2005-10-26  Igor Foox  <ifoox@redhat.com>
 
 	* frysk-gtk2.spec: Updated to GTK+ 2.8.6, added patch for theme bug (bz#
@@ -5,7 +10,8 @@
 	* frysk-libgtk-java.spec: Updated with patch for TextBuffer by ajocksch.
 
 	* frysk.spec: Added initial, incomplete version of spec file. Added
-	detection of libdir name (lib/lib64) based on architecture.
+	detection of libdir name (lib/lib64) based on architecture. Added COPYING
+	and EXCEPTION files to docs.
 
 2005-10-25  Adam Jocksch  <ajocksch@redhat.com>
 

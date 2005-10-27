@@ -100,6 +100,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
+%doc COPYING EXCEPTION
 %{_bindir}/ftrace
 %{_bindir}/frysk
 %{_libdir}/*so*
