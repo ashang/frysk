@@ -7,6 +7,7 @@
 	* frysk-jdom.spec: Added new file.
 
 	* frysk.spec: Changed dependency on jdom to frysk-jdom.
+	Changed Group to Development/System.
 
 2005-10-26  Igor Foox  <ifoox@redhat.com>
 

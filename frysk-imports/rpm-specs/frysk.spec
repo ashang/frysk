@@ -41,7 +41,7 @@ Name:		frysk
 Version:	%{version}
 Release:	%{release}
 License:	LGPL
-Group:		Development/Debuggers
+Group:		Development/System
 URL:		http://sourceware.org/frysk
 Source:		%{name}-%{version}.tar.gz
 
