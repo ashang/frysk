@@ -1,3 +1,9 @@
+2005-10-27  Igor Foox  <ifoox@redhat.com>
+
+	* configure.ac: Changed cdtparser detection to use the new cdtparser.pc.
+	Removed some unneeded stuff from cdtparser detection section. Now works on
+	amd64.
+
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.am: Appended all glade/png/jpg/properties files to the 

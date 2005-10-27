@@ -69,15 +69,17 @@ VTE_JAVA_JAR=`$PKG_CONFIG --variable classpath vte-java`
 AC_MSG_RESULT($VTE_JAVA_JAR)
 AC_SUBST(VTE_JAVA_JAR)
 
-AC_MSG_CHECKING([for  libcdtparser])
-CDTPARSER_JAR=/opt/frysk/share/java/cdtparser.jar
-CDTPARSER_LIBS=/opt/frysk/lib/libcdtparser.jar.so
-test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
-AC_SUBST([CDTPARSER_JAR])
+
+AC_MSG_CHECKING([for  cdtparser])
+PKG_CHECK_MODULES(CDTPARSER, cdtparser >= 3.0.0)
+CDTPARSER_JAR=`$PKG_CONFIG --variable classpath cdtparser`
 AC_MSG_RESULT([$CDTPARSER_JAR])
-test -r ${CDTPARSER_LIBS} || AC_MSG_ERROR([no libcdtparser.jar.so file found]);
-AC_SUBST([CDTPARSER_LIBS])
+AC_SUBST([CDTPARSER_JAR])
 AC_MSG_RESULT([$CDTPARSER_LIBS])
+AC_SUBST([CDTPARSER_LIBS])
+
+#test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
+#test -r ${CDTPARSER_LIBS} || AC_MSG_ERROR([no libcdtparser.jar.so file found]);
 
 RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
