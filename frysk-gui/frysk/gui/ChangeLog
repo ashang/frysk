@@ -1,3 +1,9 @@
+2005-10-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+        glade/procpop.glade: Changed programAddWindow's
+	TreeView name to a avoid collisions with
+	procpop's program TreeView.
+
 2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: Removed file combobox (replaced by side pane).
