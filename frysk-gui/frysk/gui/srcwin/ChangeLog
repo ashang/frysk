@@ -1,5 +1,19 @@
 2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (isLineExecutable): Fixed off by one error.
+	* SourceViewWidget.java (drawMargin): Moved compensation for off by one
+	error into isLineExecutable, rather than dealing with it here.
+	* SourceWindow.java: Added stop action, removed 'running' flag, changed
+	run action to Action from ToggleAction.
+	(createActions): Initialize stop action.
+	(createMenus): Create stop action menu item.
+	(createToolBar): Create stop action toolitem.
+	(doRun): Now only toggles mode into 'running'.
+	(doStop): Added, toggles status out of 'running'.
+	
+
+2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
+
 	* SourceBuffer.java (isLineExecutable): Implimented to use the DOM.
 	(isLineBroken): Ditto.
 	(toggleBreakpoint): Ditto.

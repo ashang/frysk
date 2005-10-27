@@ -153,7 +153,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether or not the line is executable
 	 */
 	public boolean isLineExecutable(int lineNo){
-		DOMLine line = this.scope.getLine(lineNo);
+		DOMLine line = this.scope.getLine(lineNo + 1);
 		if(line == null)
 			return false;
 		return line.isExecutable();

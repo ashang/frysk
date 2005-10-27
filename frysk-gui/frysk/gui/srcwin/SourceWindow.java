@@ -76,7 +76,6 @@ import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextMark;
-import org.gnu.gtk.ToggleAction;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
@@ -170,8 +169,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	
 	private PreferenceWindow prefWin;
 	
-	private boolean running = false;
-	
 	// ACTIONS
 	private Action close;
 	
@@ -179,7 +176,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action find;
 	private Action prefsLaunch;
 	
-	private ToggleAction run;
+	private Action run;
+    private Action stop;
 	private Action step;
 	private Action next;
 	private Action cont;
@@ -455,7 +453,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		});
 		
 		// Run program action
-		this.run = new ToggleAction("run", "Run", Messages.getString("SourceWindow.26"), "frysk-run");
+		this.run = new Action("run", "Run", Messages.getString("SourceWindow.26"), "frysk-run");
 		this.run.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doRun();
@@ -466,6 +464,15 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		AccelMap.changeEntry("<sourceWin>/Program/Run", KeyValue.r, ModifierType.MOD1_MASK, true);
 		this.run.connectAccelerator();
 		
+        // Stop program action
+        this.stop = new Action("stop", "Stop", "Stop Program execution", "");
+        this.stop.addListener(new ActionListener() {        
+            public void actionEvent(ActionEvent arg0) {
+                SourceWindow.this.doStop();
+            }
+        });
+        this.stop.setSensitive(false);
+        
 		// Step action
 		this.step = new Action("step", "Step", Messages.getString("SourceWindow.28"), "frysk-step");
 		this.step.addListener(new ActionListener() {
@@ -630,6 +637,9 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		mi = (MenuItem) this.run.createMenuItem();
 		tmp.append(mi);
 		
+        mi = (MenuItem) this.stop.createMenuItem();
+        tmp.append(mi);
+    
 		mi = (MenuItem) this.step.createMenuItem();
 		tmp.append(mi);
 		
@@ -683,17 +693,18 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		ToolBar toolbar = (ToolBar) this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME);
 		
 		toolbar.insert((ToolItem) this.run.createToolItem(), 0);
-		toolbar.insert((ToolItem) this.step.createToolItem(), 1);
-		toolbar.insert((ToolItem) this.next.createToolItem(), 2);
-		toolbar.insert((ToolItem) this.cont.createToolItem(), 3);
-		toolbar.insert((ToolItem) this.finish.createToolItem(), 4);
-		toolbar.insert((ToolItem) new SeparatorToolItem(),5);
-		toolbar.insert((ToolItem) this.stepAsm.createToolItem(), 6);
-		toolbar.insert((ToolItem) this.nextAsm.createToolItem(), 7);
-		toolbar.insert((ToolItem) new SeparatorToolItem(), 8);
-		toolbar.insert((ToolItem) this.stackUp.createToolItem(), 9);
-		toolbar.insert((ToolItem) this.stackDown.createToolItem(), 10);
-		toolbar.insert((ToolItem) this.stackBottom.createToolItem(), 11);
+        toolbar.insert((ToolItem) this.stop.createToolItem(), 1);
+		toolbar.insert((ToolItem) this.step.createToolItem(), 2);
+		toolbar.insert((ToolItem) this.next.createToolItem(), 3);
+		toolbar.insert((ToolItem) this.cont.createToolItem(), 4);
+		toolbar.insert((ToolItem) this.finish.createToolItem(), 5);
+		toolbar.insert((ToolItem) new SeparatorToolItem(),6);
+		toolbar.insert((ToolItem) this.stepAsm.createToolItem(), 7);
+		toolbar.insert((ToolItem) this.nextAsm.createToolItem(), 8);
+		toolbar.insert((ToolItem) new SeparatorToolItem(), 9);
+		toolbar.insert((ToolItem) this.stackUp.createToolItem(), 10);
+		toolbar.insert((ToolItem) this.stackDown.createToolItem(), 11);
+		toolbar.insert((ToolItem) this.stackBottom.createToolItem(), 12);
 		
 		toolbar.showAll();
 		toolbar.setToolTips(true);
@@ -825,30 +836,53 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	/**
 	 * Tells the debugger to run the program
 	 */
-	private void doRun(){
-		this.running = !this.running;
+	private void doRun(){		
+		// Set status of toolbar buttons
+		this.glade.getWidget(SourceWindow.FUNC_SELECTOR).setSensitive(false);
+		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 		
-		// Toggle status of toolbar buttons
-		this.glade.getWidget(SourceWindow.FILE_SELECTOR).setSensitive(!running);
-		this.glade.getWidget(SourceWindow.FUNC_SELECTOR).setSensitive(!running);
-		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(!running);
+		// Set status of actions
+        this.run.setSensitive(false);
+        this.stop.setSensitive(true);
+		this.step.setSensitive(false);
+		this.next.setSensitive(false);
+		this.finish.setSensitive(false);
+		this.cont.setSensitive(false);
+		this.nextAsm.setSensitive(false);
+		this.stepAsm.setSensitive(false);
 		
-		// Toggle status of actions
-		this.step.setSensitive(!running);
-		this.next.setSensitive(!running);
-		this.finish.setSensitive(!running);
-		this.cont.setSensitive(!running);
-		this.nextAsm.setSensitive(!running);
-		this.stepAsm.setSensitive(!running);
+		this.stackBottom.setSensitive(false);
+		this.stackUp.setSensitive(false);
+		this.stackDown.setSensitive(false);
 		
-		this.stackBottom.setSensitive(!running);
-		this.stackUp.setSensitive(!running);
-		this.stackDown.setSensitive(!running);
-		
-		this.copy.setSensitive(!running);
-		this.find.setSensitive(!running);
-		this.prefsLaunch.setSensitive(!running);
+		this.copy.setSensitive(false);
+		this.find.setSensitive(false);
+		this.prefsLaunch.setSensitive(false);
 	}
+    
+    private void doStop(){
+        // Set status of toolbar buttons
+        this.glade.getWidget(SourceWindow.FUNC_SELECTOR).setSensitive(true);
+        this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
+        
+        // Set status of actions
+        this.run.setSensitive(true);
+        this.stop.setSensitive(false);
+        this.step.setSensitive(true);
+        this.next.setSensitive(true);
+        this.finish.setSensitive(true);
+        this.cont.setSensitive(true);
+        this.nextAsm.setSensitive(true);
+        this.stepAsm.setSensitive(true);
+        
+        this.stackBottom.setSensitive(true);
+        this.stackUp.setSensitive(true);
+        this.stackDown.setSensitive(true);
+        
+        this.copy.setSensitive(true);
+        this.find.setSensitive(true);
+        this.prefsLaunch.setSensitive(true);
+    }
 	
 	/**
 	 * Tells the debugger to step the program

@@ -1,3 +1,8 @@
+2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Changed minimum width of window so that
+	all comboboxes are always visible.
+
 2005-10-27  Phil Muldoon  <pmuldoon@redhat.com>
 
         glade/procpop.glade: Changed programAddWindow's
