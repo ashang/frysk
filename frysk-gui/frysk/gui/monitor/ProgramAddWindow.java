@@ -44,12 +44,198 @@
  */
 package frysk.gui.monitor;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.gnu.glade.LibGlade;
+import org.gnu.gtk.Button;
+import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.Entry;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeModel;
+import org.gnu.gtk.TreeModelFilter;
+import org.gnu.gtk.TreeModelFilterVisibleMethod;
+import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeSelection;
+import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.MouseEvent;
+import org.gnu.gtk.event.MouseListener;
+import org.gnu.gtk.event.TreeModelEvent;
+import org.gnu.gtk.event.TreeModelListener;
+import org.gnu.gtk.event.TreeSelectionEvent;
+import org.gnu.gtk.event.TreeSelectionListener;
+import org.gnu.gtk.event.TreeViewColumnEvent;
+import org.gnu.gtk.event.TreeViewColumnListener;
+
+import frysk.gui.FryskGui;
 
 public class ProgramAddWindow extends Window {
-	
-	public ProgramAddWindow(LibGlade glade){
-		super(((Window)glade.getWidget("programAddWindow")).getHandle());
+
+	private Entry programEntry;
+
+	private Button programOpenFileDialog;
+
+	private TreeView programTreeView;
+
+	private Button programCancel;
+
+	private Button programApply;
+
+	private ProcDataModel psDataModel;
+
+	private TreeModelFilter procFilter;
+
+	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+
+	public ProgramAddWindow(LibGlade glade) {
+		super(((Window) glade.getWidget("programAddWindow")).getHandle());
+
+		getGladeWidgets(glade);
+		createDataModel();
+		mountProcModel(this.psDataModel);
+		setTreeListeners();
+
 	}
+
+	public void mountProcModel(final ProcDataModel psDataModel) {
+
+		this.procFilter = new TreeModelFilter(psDataModel.getModel());
+		procFilter.setVisibleMethod(new TreeModelFilterVisibleMethod() {
+			public boolean filter(TreeModel model, TreeIter iter) {
+				if (model.getValue(iter, psDataModel.getThreadParentDC()) == -1) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+		});
+
+		this.programTreeView.setModel(procFilter);
+		this.programTreeView.setSearchDataColumn(psDataModel.getCommandDC());
+
+		TreeViewColumn pidCol = new TreeViewColumn();
+		TreeViewColumn commandCol = new TreeViewColumn();
+
+		CellRendererText cellRendererText3 = new CellRendererText();
+		pidCol.packStart(cellRendererText3, false);
+		pidCol.addAttributeMapping(cellRendererText3,
+				CellRendererText.Attribute.TEXT, psDataModel.getPidDC());
+		pidCol.addAttributeMapping(cellRendererText3,
+				CellRendererText.Attribute.FOREGROUND, psDataModel.getColorDC());
+		pidCol.addAttributeMapping(cellRendererText3,
+				CellRendererText.Attribute.WEIGHT, psDataModel.getWeightDC());
+
+		CellRendererText cellRendererText4 = new CellRendererText();
+		commandCol.packStart(cellRendererText4, false);
+		commandCol.addAttributeMapping(cellRendererText4,
+				CellRendererText.Attribute.TEXT, psDataModel.getCommandDC());
+		commandCol.addAttributeMapping(cellRendererText4,
+				CellRendererText.Attribute.FOREGROUND, psDataModel.getColorDC());
+		commandCol.addAttributeMapping(cellRendererText4,
+				CellRendererText.Attribute.WEIGHT, psDataModel.getWeightDC());
+
+		pidCol.setTitle("PID");
+		pidCol.addListener(new TreeViewColumnListener() {
+			public void columnClickedEvent(TreeViewColumnEvent arg0) {
+				programTreeView.setSearchDataColumn(psDataModel.getPidDC());
+			}
+		});
+		commandCol.setTitle("Command");
+		commandCol.addListener(new TreeViewColumnListener() {
+			public void columnClickedEvent(TreeViewColumnEvent arg0) {
+				programTreeView.setSearchDataColumn(psDataModel.getCommandDC());
+			}
+		});
+
+		pidCol.setVisible(true);
+		commandCol.setVisible(true);
+
+		this.programTreeView.appendColumn(pidCol);
+		this.programTreeView.appendColumn(commandCol);
+
+		psDataModel.getModel().addListener(new TreeModelListener() {
+			public void treeModelEvent(TreeModelEvent event) {
+				programTreeView.expandAll();
+			}
+		});
+
+		this.programTreeView.expandAll();
+	}
+
+	private void getGladeWidgets(LibGlade glade) {
+		this.programEntry = (Entry) glade.getWidget("programEntry");
+		this.programOpenFileDialog = (Button) glade
+				.getWidget("programOpenFileDialog");
+		this.programTreeView = (TreeView) glade.getWidget("programTreeView");
+		this.programCancel = (Button) glade.getWidget("programCancel");
+		this.programApply = (Button) glade.getWidget("programApply");
+	}
+
+	private ProcData getSelectedProc() {
+		TreeSelection ts = this.programTreeView.getSelection();
+		TreePath[] tp = ts.getSelectedRows();
+
+		if (tp.length == 0) {
+			return null;
+		}
+
+		TreeModel model = this.procFilter;
+		ProcData data = (ProcData) model.getValue(model.getIter(tp[0]),
+				this.psDataModel.getProcDataDC());
+		model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+
+		return data;
+	}
+
+	private void createDataModel() {
+		try {
+			this.psDataModel = new ProcDataModel();
+		} catch (IOException e) {
+			errorLog.log(Level.SEVERE,
+					"Error setting data model in program tree view ", e);
+		}
+		psDataModel.setFilterON(true);
+	}
+
+	private void setTreeListeners() {
+		this.programTreeView.getSelection().addListener(
+				new TreeSelectionListener() {
+					public void selectionChangedEvent(TreeSelectionEvent event) {
+						if (programTreeView.getSelection().getSelectedRows().length > 0) {
+							TreePath selected = programTreeView.getSelection()
+									.getSelectedRows()[0];
+							ProcData data = (ProcData) procFilter.getValue(
+									procFilter.getIter(selected), psDataModel
+											.getProcDataDC());
+							if (!data.hasWidget()) {
+								data.setWidget(new ProcStatusWidget(data));
+							}
+						}
+					}
+				});
+
+		this.programTreeView.setHeadersClickable(true);
+
+		this.programTreeView.addListener(new MouseListener() {
+
+			public boolean mouseEvent(MouseEvent event) {
+				if (event.getType() == MouseEvent.Type.BUTTON_PRESS
+						& event.getButtonPressed() == MouseEvent.BUTTON3) {
+
+					ProcData data = getSelectedProc();
+					if (data != null)
+						// WatchMenu.getMenu().popup(data);
+
+						System.out.println("click : " + data);
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+
 }

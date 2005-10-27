@@ -1,3 +1,11 @@
+2005-10-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java (mountProcModel): Added.
+	(getGladeWidgets): Added convienience function
+	(createDataModel): Ditto.
+	(setTreeListeners):  Ditto.
+	(getSelectedProc): Added (returns right click).
+
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/SyscallObserver.java: Add .updateSyscallXXX.
