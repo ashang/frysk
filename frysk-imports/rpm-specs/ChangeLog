@@ -4,6 +4,8 @@
 	Added tarball instead of a simple jar file. Added cdtparser.pc file, 
 	generated from .pc.in. Added classpath variable in .pc file.
 
+	* frysk-jdom.spec: Added new file.
+
 2005-10-26  Igor Foox  <ifoox@redhat.com>
 
 	* frysk-gtk2.spec: Updated to GTK+ 2.8.6, added patch for theme bug (bz#
