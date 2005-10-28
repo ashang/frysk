@@ -47,11 +47,15 @@ package frysk.gui.monitor;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.FileChooserAction;
+import org.gnu.gtk.FileChooserDialog;
+import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
@@ -61,6 +65,10 @@ import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.DialogEvent;
+import org.gnu.gtk.event.DialogListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
@@ -74,22 +82,19 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
 
-public class ProgramAddWindow extends Window implements LifeCycleListener { 
+public class ProgramAddWindow extends Window implements LifeCycleListener, Saveable { 
 
+	
+	private static final int RESPONSE_OK     = 0;
+	private static final int RESPONSE_CANCEL = 1;
+	
 	private Entry programEntry;
-
 	private Button programOpenFileDialog;
-
 	private TreeView programTreeView;
-
 	private Button programCancel;
-
 	private Button programApply;
-
 	private ProcDataModel psDataModel;
-
 	private TreeModelFilter procFilter;
-
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 
 	public ProgramAddWindow(LibGlade glade) {
@@ -99,8 +104,44 @@ public class ProgramAddWindow extends Window implements LifeCycleListener {
 		createDataModel();
 		mountProcModel(this.psDataModel);
 		setTreeListeners();
+		setFileButtonListener();
+		
 
 	}
+
+	private void setFileButtonListener() {
+		
+		final FileChooserDialog fileChooserDialog = new FileChooserDialog(
+				"Choose a program to observe", 
+				(Window)getToplevel(), 
+				FileChooserAction.ACTION_OPEN);
+
+		fileChooserDialog.addButton(GtkStockItem.OK, RESPONSE_OK);
+		fileChooserDialog.addButton(GtkStockItem.CANCEL, RESPONSE_CANCEL);
+		
+		programOpenFileDialog.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					fileChooserDialog.run();
+					programEntry.setText(fileChooserDialog.getFilename());
+					System.out.println("File name: " + fileChooserDialog.getFilenames());
+				}
+			}
+		});
+		
+		fileChooserDialog.addListener(new DialogListener(){
+			public boolean dialogEvent(DialogEvent event) {
+			System.out.println("event: " + event + " RESPONSE: " + event.getResponse());
+				if(event.getType() == DialogEvent.Type.RESPONSE){
+					fileChooserDialog.hide();
+				}
+				return false;
+			}
+		});
+		
+		
+	}
+
 
 	public void mountProcModel(final ProcDataModel psDataModel) {
 
@@ -254,6 +295,26 @@ public class ProgramAddWindow extends Window implements LifeCycleListener {
 		}
 
 		return false;
+	}
+
+	public void save(Preferences prefs) {
+		prefs.putInt("position.x", this.getPosition().getX());
+		prefs.putInt("position.y", this.getPosition().getY());
+		
+		prefs.putInt("size.height", this.getSize().getHeight());
+		prefs.putInt("size.width", this.getSize().getWidth());
+			
+	}
+
+	public void load(Preferences prefs) {
+		int x = prefs.getInt("position.x", this.getPosition().getX());
+		int y = prefs.getInt("position.y", this.getPosition().getY());
+		this.move(x,y);
+		
+		int width  = prefs.getInt("size.width", this.getSize().getWidth());
+		int height = prefs.getInt("size.height", this.getSize().getHeight());
+		this.resize(width, height);
+		
 	}
 
 }

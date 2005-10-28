@@ -1,7 +1,11 @@
 2005-10-27  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* WindowManager.java (save): Added entry for programAddWindow.
+	(load): Added entry for programAddWindow.
+	
 	* ProgramAddWindow.java (lifeCycleQuery): Add hideAll() on
 	delete event instead of destroy.
+	(setFileButtonListener): Added logic for browse file button.
 	* ProgramViewPage.java (ProgramViewPage): Bring up Wizard
 	instead of FileBrowser.
 
