@@ -1,3 +1,9 @@
+2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java (setApplyCancelButtonListener): Added.
+	(buildObserverListBox):  Ditto.
+	(doValidation): Ditto. (Do wizard validation checks).
+
 2005-10-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java (ObserverRoot): add a null check

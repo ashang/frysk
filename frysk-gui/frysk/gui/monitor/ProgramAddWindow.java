@@ -44,6 +44,7 @@
  */
 package frysk.gui.monitor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,10 +53,14 @@ import java.util.prefs.Preferences;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.FileChooserAction;
 import org.gnu.gtk.FileChooserDialog;
 import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.ListStore;
+import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
@@ -81,6 +86,7 @@ import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.dialogs.DialogManager;
 
 public class ProgramAddWindow extends Window implements LifeCycleListener, Saveable { 
 
@@ -91,6 +97,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private Entry programEntry;
 	private Button programOpenFileDialog;
 	private TreeView programTreeView;
+	private TreeView programObseverListBox;
 	private Button programCancel;
 	private Button programApply;
 	private ProcDataModel psDataModel;
@@ -104,9 +111,57 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		createDataModel();
 		mountProcModel(this.psDataModel);
 		setTreeListeners();
+		buildObserverListBox();
 		setFileButtonListener();
-		
+		setApplyCancelButtonListener();
+	}
 
+	private void setApplyCancelButtonListener() {
+		
+		programCancel.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					hideAll();
+				}
+			}
+		});
+		
+		programApply.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					String message = doValidation();
+					if (!message.equals(""))
+						DialogManager.showWarnDialog("Validation Errors", message);
+						
+				}
+			}
+		});
+		
+	}
+	
+	private String doValidation() {
+		
+		// File Checks
+		if (programEntry.getText().length() <= 0)
+			return "Must have a filename to add";
+		
+		File existenceCheck = new File(programEntry.getText());
+		
+		if (existenceCheck.exists() == false)
+			return "Filename specified does not exist on disk";
+		if (existenceCheck.canRead() == false)
+			return "Cannot read specified file";
+		if (existenceCheck.isDirectory())
+			return "Must be a filename, not a directory";
+		
+		if (programTreeView.getSelection().getSelectedRows().length < 1)
+			return "Please select at least one process that will spawn filename";
+		
+		if (programObseverListBox.getSelection().getSelectedRows().length < 1)
+			return "Please select at least one observer to apply";
+		
+			
+		return "";
 	}
 
 	private void setFileButtonListener() {
@@ -206,14 +261,56 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			}
 		});
 
+		this.programTreeView.getSelection().setMode((SelectionMode.MULTIPLE));
 		this.programTreeView.expandAll();
 	}
+	
+	private void buildObserverListBox() {
+
+		// No observer data model to query yet
+		// for list of observers. Fake it out.
+		
+		DataColumn[] dc = new DataColumn[1];
+		dc[0] = new DataColumnString();
+
+		ListStore ls = new ListStore(dc);
+
+		this.programObseverListBox.setModel(ls);
+		this.programObseverListBox.setAlternateRowColor(true);
+		this.programObseverListBox.getSelection().setMode((SelectionMode.MULTIPLE));
+		
+		TreeViewColumn observerCol = new TreeViewColumn();
+		 CellRendererText Obrender = new CellRendererText();
+		   observerCol.packStart(Obrender, true);
+		   observerCol.addAttributeMapping(Obrender,
+		 CellRendererText.Attribute.TEXT, (DataColumnString)dc[0]);
+		 
+		 observerCol.setTitle("Available Observers");
+		   
+		this.programObseverListBox.appendColumn(observerCol);
+		
+		// No data model to query. Fake items
+		
+		TreeIter it = null;
+		it = ls.appendRow();
+		ls.setValue(it, (DataColumnString)dc[0], "Fork" ); 
+		it = ls.appendRow();
+		ls.setValue(it, (DataColumnString)dc[0], "Exec" ); 
+		it = ls.appendRow();
+		ls.setValue(it, (DataColumnString)dc[0], "Clone" ); 
+		it = ls.appendRow();
+		ls.setValue(it, (DataColumnString)dc[0], "Syscall" );
+		it = ls.appendRow();
+		ls.setValue(it, (DataColumnString)dc[0], "FooBar" ); 
+	}
+	
 
 	private void getGladeWidgets(LibGlade glade) {
 		this.programEntry = (Entry) glade.getWidget("programEntry");
 		this.programOpenFileDialog = (Button) glade
 				.getWidget("programOpenFileDialog");
 		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView");
+		this.programObseverListBox = (TreeView) glade.getWidget("programApplyObserversListBox");
 		this.programCancel = (Button) glade.getWidget("programCancel");
 		this.programApply = (Button) glade.getWidget("programApply");
 	}
