@@ -52,10 +52,29 @@ import org.gnu.gtk.event.DialogListener;
 
 public class WarnDialog extends Dialog{
 
-	public WarnDialog(String message){
+	private String title = "";
+	private String message = "";
+
+	public WarnDialog(String title, String message) {
 		super();
+		this.title = title;
+		this.message = message;
+		doImplementation();
+	}
+	
+	public WarnDialog(String message) {
+		super();
+		this.title = "Warning";
+	    this.message = message;
+		doImplementation();
+	}
+
+	
+	private void doImplementation()
+	{
 		this.addButton(GtkStockItem.OK, 1);
-		this.getDialogLayout().add(new Label(message));
+		this.setTitle(this.title);
+		this.getDialogLayout().add(new Label(this.message));
 		this.addListener(new DialogListener(){
 			public boolean dialogEvent(DialogEvent arg0) {
 				hideAll();

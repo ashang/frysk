@@ -56,5 +56,12 @@ public class DialogManager {
 		myDialog.showAll();
 		myDialog.run();
 	}
+	
+	public static void showWarnDialog(String title, String message){
+		WarnDialog myDialog = new WarnDialog(title, message);
+		myDialog.showAll();
+		myDialog.run();
+	}
+
 
 }
