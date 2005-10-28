@@ -1,3 +1,22 @@
+2005-10-28  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java: Removed excess imports.
+	(drawMargin): Removed unused variables for inline background.
+	* SourceBuffer.java (addFunction): Re-implemented to use DOM.
+	(addVariable): Ditto.
+	(addKeyword): Ditto.
+	(addClass): Ditto.
+	(load): Now adds newline to buffer for lines with no text.
+	(createTags): Now accepts tags with type 'function'.
+	* cparser/CDTParser.java: Refactored calls to TextBuffer methods to use
+	revised syntax.
+	* cparser/CTagsParser.java: Ditto.
+	* cparser/SimpleParser.java: Ditto.
+	* dom/DOMTestGUIBuilder: Added data to more accurately reflect the state 
+	of test6.cpp.
+	(buildDOM): Added boolean flag to decide whether or not to populate tags.
+	* testfiles/test6.cpp: Updated to sync with data in DOMTestGUIBuilder.
+
 2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (isLineExecutable): Fixed off by one error.

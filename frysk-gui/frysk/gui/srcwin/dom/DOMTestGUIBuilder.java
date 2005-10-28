@@ -95,6 +95,7 @@ public class DOMTestGUIBuilder {
 	 *************************************************************************/
 	
 	private static String[] test_prog = { 
+		"#include \"common.h\"\n",
 		"// this is a test program for the DOM\n",
 		"class bar\n",
 		"{\n",
@@ -105,10 +106,10 @@ public class DOMTestGUIBuilder {
 		"// main program\n",
 		"int bleh()\n",
 		"{\n",
-		"bar a;\n",
-		"  int i = min(1,2);\n",
-		"  int j = min(3,4);\n",
-		"return 0;\n",
+		"  bar a;\n",
+		"  int i = a.min(1,2);\n",
+		"  int j = a.min(3,4);\n",
+		"  return 0;\n",
 		"}\n" };
 	
 	private static BigInteger no_bytes = BigInteger.valueOf(4);
@@ -145,25 +146,27 @@ public class DOMTestGUIBuilder {
 	private static String[] tags_classes = { "bar" };
 	
 	public static void main(String[] args) {
-		buildDom();
+		buildDom(true);
 		System.out.println("\n\n");
 		printDOM();
 	}
 
 	/**
+	 * @param makeTags TODO
 	 * 
 	 */
-	private static void buildDom() {
+	private static void buildDom(boolean makeTags) {
 		testDOMFrysk();
 		testDOMImage();
 		testDOMFunction();
 		testDOMsource();
-		testDOMLine();
+		if(makeTags)
+			testDOMLine();
 		testDOMInlineInstance();
 	}
 	
 	public static DOMFrysk makeTestDOM(){
-		buildDom();
+		buildDom(false);
 		return dom;
 	}
 

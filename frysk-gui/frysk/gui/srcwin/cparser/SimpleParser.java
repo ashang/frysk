@@ -49,7 +49,6 @@ import java.io.IOException;
 
 import frysk.gui.srcwin.SourceBuffer;
 import frysk.gui.srcwin.StaticParser;
-import frysk.gui.srcwin.Variable;
 
 /**
  * @author ajocksch
@@ -113,7 +112,7 @@ public class SimpleParser implements StaticParser {
 						buffer.addFunction(t.text, t.lineNum, t.colNum, false);
 				}
 				else if(Character.isLetter(t.text.charAt(0))){
-					buffer.addVariable(new Variable(t.text, t.lineNum, t.colNum, (scopeDepth == 0)));
+					buffer.addVariable(t.lineNum, t.colNum, t.text.length());
 				}
 			}
 		}

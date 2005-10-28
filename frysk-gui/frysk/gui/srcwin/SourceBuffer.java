@@ -528,12 +528,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param declaration Whether this is a declaration
 	 */
 	public void addFunction(String name, int lineNum, int col, boolean declaration){
-		// TODO: fix this to modify the DOM
-//		this.applyTag(FUNCTION_TAG, this.getIter(lineNum, col), this.getIter(lineNum, col+name.length()));
-//		if(declaration){
-//			this.createMark(name+"_FUNC", this.getIter(lineNum, col), true);
-//			this.functions.add(name+"_FUNC");
-//		}
+		this.addFunction(name, this.getLineIter(lineNum).getOffset() + col, declaration);
 	}
 	
 	/**
@@ -548,25 +543,26 @@ public class SourceBuffer extends TextBuffer {
 	 * @param declaration Whether the function is a declaration
 	 */
 	public void addFunction(String name, int offset, boolean declaration){
-//		 TODO: fix this to modify the DOM
-//		this.applyTag(FUNCTION_TAG, this.getIter(offset), this.getIter(offset+name.length()));
-//		if(declaration){
-//			this.createMark(name+"_FUNC", this.getIter(offset), true);
-//			this.functions.add(name+"_FUNC");
-//		}
+		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		line.addTag("function",
+				name,
+				this.getIter(offset).getLineOffset());
 	}
 	
 	/**
 	 * Adds a variable to be highlighted in the window
-	 * @param v The variable to be highlighted
+	 * @param offset The offset from the start of the file of the variable
+	 * @param length The length of the variable name
 	 */
-	public void addVariable(Variable v){
-//		 TODO: fix this to modify the DOM
-//		if(!v.isMember())
-//			this.applyTag(ID_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
-//		else
-//			this.applyTag(MEMBER_TAG, this.getIter(v.getCol()), this.getIter(v.getCol()+v.getName().length()));
-//		this.varList.addVariable(v);
+	public void addVariable(int offset, int length){
+		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		line.addTag("local_var",
+				this.getText(this.getIter(offset), this.getIter(offset+length), true),
+				this.getIter(offset).getLineOffset());
+	}
+	
+	public void addVariable(int lineNum, int lineOffset, int length){
+		this.addVariable(this.getLineIter(lineNum).getOffset() + lineOffset, length);
 	}
 	
 	/**
@@ -577,7 +573,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the literal
 	 */
 	public void addKeyword(int lineNum, int col, int length){
-		//TODO: rewrite this to modify the DOM
+		DOMLine line = this.scope.getLine(lineNum + 1);
+		line.addTag("keyword",
+				this.getText(this.getIter(lineNum, col), this.getIter(lineNum, col + length), false),
+				col);
 	}
 	
 	/**
@@ -587,7 +586,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the literal
 	 */
 	public void addKeyword(int offset, int length){
-		//TODO: rewrite this to modify the DOM
+		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		line.addTag("keyword",
+				this.getText(this.getIter(offset), this.getIter(offset+length), true),
+				this.getIter(offset).getLineOffset());		
 	}
 	
 	/**
@@ -609,7 +611,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the identifier
 	 */
 	public void addClass(int offset, int length){
-//		this.applyTag("CLASS", this.getIter(offset), this.getIter(offset+length));		
+		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		line.addTag("class_decl",
+				this.getText(this.getIter(offset), this.getIter(offset+length), true),
+				this.getIter(offset).getLineOffset());
 	}
 	
 	/**
@@ -648,7 +653,10 @@ public class SourceBuffer extends TextBuffer {
 		while(lines.hasNext()){
 			DOMLine line = new DOMLine((Element) lines.next());
 			
-			bufferText += line.getText();
+			if(line.getText().equals(""))
+				bufferText += "\n";
+			else
+				bufferText += line.getText();
 		}
 		
 		this.deleteText(this.getStartIter(), this.getEndIter());
@@ -698,6 +706,12 @@ public class SourceBuffer extends TextBuffer {
 				
 				else if(type.equals("class_decl")){
 					this.applyTag("CLASS", 
+							this.getIter(lineOffset + tag.getStart()),
+							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
+				}
+				
+				else if(type.equals("function")){
+					this.applyTag(FUNCTION_TAG, 
 							this.getIter(lineOffset + tag.getStart()),
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}

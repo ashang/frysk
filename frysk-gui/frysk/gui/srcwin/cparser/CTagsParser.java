@@ -52,7 +52,6 @@ import org.gnu.gtk.TextIter;
 
 import frysk.gui.srcwin.SourceBuffer;
 import frysk.gui.srcwin.StaticParser;
-import frysk.gui.srcwin.Variable;
 
 
 /**
@@ -119,9 +118,9 @@ public class CTagsParser implements StaticParser {
 						start += lineText.substring(start+1).indexOf(name)+1;
 				
 				if(!type.equals("variable"))
-					buffer.addVariable(new Variable(name, lineNum, start, false));
+					buffer.addVariable(lineNum, start, name.length());
 				else
-					buffer.addVariable(new Variable(name, lineNum, start, true));
+					buffer.addVariable(lineNum, start, name.length());
 			}
 			
 			else if(type.equals("function")){

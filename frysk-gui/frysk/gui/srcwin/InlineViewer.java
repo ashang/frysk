@@ -51,7 +51,6 @@ import org.gnu.pango.Layout;
 
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
-import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
 
@@ -209,9 +208,9 @@ public class InlineViewer extends SourceViewWidget {
 		context.setRGBForeground(new Color(r,g,b));
 		
 		// get inline color
-		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
-		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
-		int inlineB = this.lnfPrefs.getInt(Inline.B, 0);
+//		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
+//		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
+//		int inlineB = this.lnfPrefs.getInt(Inline.B, 0);
 		
 		// gets current line color
 		int lineR = this.lnfPrefs.getInt(CurrentLine.R, 30000);

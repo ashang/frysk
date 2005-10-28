@@ -53,7 +53,6 @@ import org.eclipse.cdt.core.parser.ast.IASTVariableReference;
 
 import frysk.gui.srcwin.SourceBuffer;
 import frysk.gui.srcwin.StaticParser;
-import frysk.gui.srcwin.Variable;
 
 /**
  * @author ajocksch
@@ -86,8 +85,8 @@ public class CDTParser implements StaticParser {
 	class ParserCallBack implements ISourceElementRequestor{
 
 		public void acceptVariable(IASTVariable arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addVariable(new Variable(arg0.getName(), arg0.getStartingLine(), arg0.getNameOffset(), false));
+				buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
+				buffer.addVariable(arg0.getNameOffset(), arg0.getName().length());
 		}
 
 		public void acceptFunctionDeclaration(IASTFunction arg0) {
@@ -97,7 +96,7 @@ public class CDTParser implements StaticParser {
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-				buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
+				buffer.addVariable(param.getNameOffset(), param.getName().length());
 			}
 		}
 		
@@ -108,7 +107,7 @@ public class CDTParser implements StaticParser {
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-				buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
+				buffer.addVariable(param.getNameOffset(), param.getName().length());
 			}
 		}
 		
@@ -125,7 +124,7 @@ public class CDTParser implements StaticParser {
 
 		public void acceptField(IASTField arg0) {
 			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addVariable(new Variable(arg0.getName(), arg0.getStartingLine(), arg0.getNameOffset(), true));
+			buffer.addVariable(arg0.getStartingOffset(), arg0.getName().length());
 		}
 
 		public void acceptClassReference(IASTClassReference arg0) {
@@ -135,7 +134,7 @@ public class CDTParser implements StaticParser {
 		public void acceptTypedefReference(IASTTypedefReference arg0) {}
 
 		public void acceptVariableReference(IASTVariableReference arg0) {
-			buffer.addVariable(new Variable(arg0.getName(), 0, arg0.getOffset(), false));
+			buffer.addVariable(arg0.getOffset(), arg0.getName().length());
 		}
 
 		public void acceptFunctionReference(IASTFunctionReference arg0) {
@@ -145,7 +144,7 @@ public class CDTParser implements StaticParser {
 		public void acceptFieldReference(IASTFieldReference arg0) {}
 
 		public void acceptParameterReference(IASTParameterReference arg0) {
-			buffer.addVariable(new Variable(arg0.getName(), 0, arg0.getOffset(), false));			
+			buffer.addVariable(arg0.getOffset(), arg0.getName().length());			
 		}
 		
 		public void acceptAbstractTypeSpecDeclaration(IASTAbstractTypeSpecifierDeclaration arg0) {
@@ -161,7 +160,7 @@ public class CDTParser implements StaticParser {
 				int nameOffset = param.getNameOffset();
 				if(nameOffset != -1){
 					buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-					buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
+					buffer.addVariable(param.getNameOffset(), param.getName().length());
 				}
 				else{
 					// Figure out how to do function declarations of type "foo(int)" here
@@ -180,7 +179,7 @@ public class CDTParser implements StaticParser {
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-				buffer.addVariable(new Variable(param.getName(), param.getStartingLine(), param.getNameOffset(), false));
+				buffer.addVariable(param.getNameOffset(), param.getName().length());
 			}
 		}
 		
