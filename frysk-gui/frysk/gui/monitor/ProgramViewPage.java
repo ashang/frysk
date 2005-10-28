@@ -94,7 +94,7 @@ public class ProgramViewPage extends Widget {
 	}
 
 	private void initProgramTreeView() {
-		this.programTreeView.getClass();//XXX: dummy call to get rid of ecj warining
+		this.programTreeView.getClass();//XXX: dummy call to get rid of ecj warning
 	}
 	
 	

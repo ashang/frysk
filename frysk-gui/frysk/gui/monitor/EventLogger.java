@@ -220,7 +220,6 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 	}
 	
 	public void added(Throwable e) {
-		e.printStackTrace();
 		// TODO Auto-generated method stub
 	}
 

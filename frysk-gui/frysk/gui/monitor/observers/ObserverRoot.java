@@ -71,12 +71,12 @@ public class ObserverRoot implements TaskObserver, Observer{
 		}
 			
 		public void added(Throwable e) {
-			this.bouncee.added(e);
+			if(this.bouncee != null) this.bouncee.added(e);
 			if(this.onAdded != null) this.onAdded.run();
 		}
 
 		public void deleted() {
-			this.bouncee.deleted();
+			if(this.bouncee != null) this.bouncee.deleted();
 			if(this.onDeleted != null) this.onDeleted.run();
 		}
 		

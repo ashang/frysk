@@ -1,3 +1,9 @@
+2005-10-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java (ObserverRoot): add a null check
+	before calling bouncee.
+	* EventLogger.java: fixed null pointer exception.
+
 2005-10-27  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* WindowManager.java (save): Added entry for programAddWindow.
