@@ -813,8 +813,6 @@
     #(EQUAL  v1=expr v2=expr)  { returnVar = v1.getType().equal(v1, v2);  }
 
   |
-    #(EQUAL  v1=expr v2=expr)  { returnVar = v1.getType().equal(v1, v2);  }
-  |
     i:DECIMALINT  {
       returnVar = IntegerType.newIntegerVariable(
 	  intType, Integer.parseInt(i.getText()));
