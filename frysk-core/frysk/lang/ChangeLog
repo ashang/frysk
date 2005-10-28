@@ -1,5 +1,9 @@
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
+	* InvalidOperatorException.java:  new
+
+2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
+
 	* IntegerType.java: added constructors and functions.
 	* ShortType.java: same...
 	* Type.java:  modified.
