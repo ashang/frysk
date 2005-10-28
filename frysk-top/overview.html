@@ -1,13 +1,14 @@
 <html>
 <body>
 
-An overview of FRYSK, an Execution Analysis Tool.
+An overview of the <em>frysk</em> Execution Analysis Technology.
 
 <h2>Overview</h2>
 
-At a high level, FRYSK's architecture can be viewed as a collection of
-clients that interact with FRYSK's core.  FRYSK's core providing
-clients with alternate models of the system.
+At a high level, <em>frysk</em>'s architecture can be viewed as a
+collection of clients that interact with <em>frysk</em>'s core.
+<em>frysk</em>'s core providing clients with alternate models of the
+system.
 
 <p>
 
@@ -15,14 +16,15 @@ clients with alternate models of the system.
 
 <p>
 
-FRYSK then uses the target system's kernel interfaces to maintain its
-internal models.
+<em>frysk</em> then uses the target system's kernel interfaces to
+maintain its internal models.
 
 <p>
 
-Each of the components that make up FRYSK are discussed below.
+Each of the components that make up <em>frysk</em> are discussed
+below.
 
-<h2>FRYSK's Core</h2>
+<h2><em>frysk</em>'s Core</h2>
 
 <h3>A Layered Architecture</h3>
 
@@ -33,18 +35,23 @@ processes and threads, running across multiple physical machines can
 be viewed, or modeled, as:
 
 <ul>
+
 <li>
 A shared-memory multi-processor executing machine instructions on a
 local machine.
+
 <li>
-A multi-threaded program written in <sc>C</sc> and using <sc>POSIX</sc>
-threads.
+A multi-threaded program written in <sc>C</sc> and using
+<sc>POSIX</sc> threads.
+
 <li>
 A distributed application, made up of a number of programs distributed
 across multiple machines.
+
 </ul>
 
 <br>
+
 Each level of abstraction (or model) being implemented using the
 layers below.
 
@@ -102,10 +109,10 @@ Architecture</a>.
 
 <h3>Kernel Interface</h3>
 
-At the lowest level, is FRYSK's interface to underlying operating
+At the lowest level, is <em>frysk</em>'s interface to underlying operating
 system (or kernel).  The interface is implemented using {@link
 frysk.sys}, kernel level events as they arrive, being managed using
-{@link frysk.event} (FRYSK's event loop).
+{@link frysk.event} (<em>frysk</em>'s event loop).
 
 <p>
 
@@ -156,7 +163,7 @@ the system being debugged.
 
 <h2>Command Line Interpreter</h2>
 
-Built into FRYSK is a command line interpreter based on the
+Built into <em>frysk</em> is a command line interpreter based on the
 specification published by the High Performance Debugger Forum.
 
 <p>
@@ -167,14 +174,14 @@ added at some stage in the future.
 
 <p>
 
-See {@link frysk.cli.hpd} for more information in FRYSK's existing
+See {@link frysk.cli.hpd} for more information in <em>frysk</em>'s existing
 interpreter.
 
 <h2>Clients</h2>
 
 <h3>GUI</h3>
 
-See {@link frysk.gui} for a more detailed description of FRYSK's
+See {@link frysk.gui} for a more detailed description of <em>frysk</em>'s
 graphical interface.
 
 <h3>Command Line Utilities</h3>
@@ -183,26 +190,26 @@ Frysk includes a number of command line utilities, at present they
 include: {@link frysk.bin.ftrace} to trace the system calls of running
 processes, {@link frysk.bin.fstack} to print the current stack of a
 running process.  These utilities are implemented by directly
-interacting with FRYSK's process model:
+interacting with <em>frysk</em>'s process model:
 
 <p><img src="frysk/model/doc-files/arch-strace-gcore.jpg" alt=" Debug Utilities"/>
 
 <p>
 
 In the future, a stand-alone command-line tool, that provides a
-wrapper around FRYSK's built in High Performance Debugger Interpreter,
-or more traditional debugger interface (such as <code>adb</code>) may
-be added.  For the moment, that interface is only available via the
-GUI.
+wrapper around <em>frysk</em>'s built in High Performance Debugger
+Interpreter, or more traditional debugger interface (such as
+<code>adb</code>) may be added.  For the moment, that interface is
+only available via the GUI.
 
 <h3>Eclipse</h3>
 
-There are many ways that Eclipse can exploit FRYSK.  For instance, by
-using <code>libgcj_db</code> library, along with knowledge of the
-internals of a Java Virtual Machine (<sc>JVM</sc>) running within a
-process, an abstract model of a Java Virtual Machine can then be
-constructed.  That model being exported to Eclipse using the Java
-Debug Wire Protocol (<sc>JDWP</sc>).
+There are many ways that Eclipse can exploit <em>frysk</em>.  For
+instance, by using <code>libgcj_db</code> library, along with
+knowledge of the internals of a Java Virtual Machine (<sc>JVM</sc>)
+running within a process, an abstract model of a Java Virtual Machine
+can then be constructed.  That model being exported to Eclipse using
+the Java Debug Wire Protocol (<sc>JDWP</sc>).
 
 <p><img src="frysk/model/doc-files/arch-jdwp.jpg" alt="A Java Debug Wire Protocol Application Model"/>
 

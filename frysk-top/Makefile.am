@@ -65,22 +65,26 @@ PACKAGE_LIST = $(API)/package-list
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
 javadoc: javadoc/$(PACKAGE_LIST) all
-	CLASSPATH=$(JAVADOC_CLASSPATH) \
-	$(JAVADOC) \
+	for scope in public private ; do \
+		mkdir -p javadoc/$$scope ; \
+		CLASSPATH=$(JAVADOC_CLASSPATH) \
+		$(JAVADOC) \
+		-$$scope \
 		-linkoffline \
 			http://java.sun.com/$(API) \
 			javadoc/$(PACKAGE_LIST) \
 		-sourcepath $(SOURCEPATH) \
 		-overview $(srcdir)/overview.html \
 		-source 1.4 \
-		-d javadoc \
+		-d javadoc/$$scope \
 		-use \
 		-linksource \
-		-doctitle '<em>FRYSK</em> - An Execution Analysis Tool' \
+		-doctitle '<em>frysk</em> - Execution Analysis Technology' \
 		-windowtitle 'FRYSK' \
-		-group "FRYSK Packages" 'frysk*' \
+		-group "<em>frysk</em> Packages" 'frysk*' \
 		-group "Imported Packages" 'jline*:jargs*:inua*' \
-		-subpackages 'frysk:inua:jline:jargs'
+		-subpackages 'frysk:inua:jline:jargs' ; \
+	done
 javadoc/$(PACKAGE_LIST):
 	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
 	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)

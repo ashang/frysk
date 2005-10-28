@@ -1,3 +1,9 @@
+2005-10-27  Andrew Cagney  <cagney@redhat.com>
+
+	* overview.html: Use <em>frysk</em>.
+	* Makefile.am (javadoc): Generate both public and private
+	documentation.
+
 2005-10-26  Igor Foox <ifoox@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Added macro to add the EXCEPTION to the
