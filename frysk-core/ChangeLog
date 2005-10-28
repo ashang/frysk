@@ -1,3 +1,7 @@
+2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
+
+	* Makefile.am:	added DejaGNU --tool option to the RUNTESTDEFAULTFLAGS
+
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.am: Appended all .fig/png files as well as frysk/expr/cpp.g and

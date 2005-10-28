@@ -1,3 +1,13 @@
+2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
+
+	* IntegerType.java: added constructors and functions.
+	* ShortType.java: same...
+	* Type.java:  modified.
+	* Variable.java:  modified...
+	* Location.java:  modified...
+	* OperationNotDefinedException.java:  modified...
+	* TypeTest.java:  modified
+
 2005-10-19  Tarun Khanna  <tkhanna@redhat.com>
 
 	* IntegerType.java: added constructors and functions.

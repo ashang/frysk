@@ -69,4 +69,4 @@ EXTRA_DIST +=  	$(srcdir)/frysk/model/doc-files/*.fig \
 				$(srcdir)/frysk/expr/cpp.g \
 				$(srcdir)/frysk/expr/*.sed
 
-RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite
+RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite --tool expr

@@ -44,11 +44,12 @@
  */
 
 package frysk.lang;
-  public class OperationNotDefinedException
+  public class OperationNotDefinedException extends Exception
   {
+    static final long serialVersionUID = 1;
     String sExceptionString;
 
-    OperationNotDefinedException(String str) { sExceptionString = str; }
+    public OperationNotDefinedException(String str) { sExceptionString = str; }
 
     public String toString() { return sExceptionString; }
   }

@@ -236,10 +236,9 @@ public class RunCppParser
     {
 	try {
 	  PrintWriter pw = new PrintWriter(System.out);
-	  pw.write("hello");
-	  System.out.println(pw.checkError());
 	  ConsoleReader consReader;
-	  try{
+
+	  try {
 	    consReader = new ConsoleReader();
 	  }
 	  catch (IOException ioe) {
@@ -247,48 +246,41 @@ public class RunCppParser
 	    throw (new IOException(ioe.getMessage() + 
 		  "I/O exception when creating new instance of Console Reader"));
 	  }
-	    /*LinkedList listCompletor = new LinkedList();
-	    listCompletor.add(new ParserCompletor());
-	    Completor [] arrCompletor = (Completor[])listCompletor.toArray(new Completor[listCompletor.size()]);
+	  consReader.addCompletor(new ParserCompletor());
+      
+	  String sInput;
+	  Variable result;
+	  Map symTab = new HashMap();
+	  try {
+	    while(!((sInput = consReader.readLine("$")).equalsIgnoreCase("exit")))
+	    {
+	      if(sInput.equals(""))
+		continue;
 
-	    ArgumentCompletor argCompletor = 
-		new ArgumentCompletor(arrCompletor, (new ParserArgumentDelimiter()));
+	      sInput += (char)3;
 
-	    argCompletor.setStrict(false);
-	    //consReader.addCompletor(argCompletor);*/
-	    consReader.addCompletor(new ParserCompletor());
-	
-	    String sInput;
-	    Variable result;
-	    Map symTab = new HashMap();
-	    try {
-	      sInput = consReader.readLine("$");
-	      while(!(sInput.equalsIgnoreCase("exit")))
-	      {
-		sInput += (char)3;
+	      CppLexer lexer = new CppLexer(new StringReader(sInput));
+	      CppParser parser = new CppParser(lexer);
+	      parser.start();
 
-		CppLexer lexer = new CppLexer(new StringReader(sInput));
-		CppParser parser = new CppParser(lexer);
-		parser.start();
+	      CommonAST t = (CommonAST)parser.getAST();
+	      CppTreeParser treeParser = new CppTreeParser(4, 2, symTab);
 
-		CommonAST t = (CommonAST)parser.getAST();
-		CppTreeParser treeParser = new CppTreeParser(4, 2, symTab);
+	      try {
 		result = treeParser.expr(t);
 		consReader.printString(String.valueOf(result.getInt()));
-		sInput = consReader.readLine("$");
+	      }	catch (ArithmeticException ae)  {
+		System.err.println("Arithematic Exception occured:  " + ae);
 	      }
 	    }
-	    catch (IOException ioe) {
-	      throw (new IOException(ioe.getMessage() + 
-		    "I/O exception in readLine"));
-
-	    }
-	}
-	catch(IOException ioe){
+	  } catch (IOException ioe) {
+	    throw (new IOException(ioe.getMessage() + 
+		  "I/O exception in readLine"));
+	  }
+	} catch(IOException ioe)  {
 	  System.err.println("IO Exception: " + ioe);
 	  ioe.printStackTrace(System.err);
-	}
-	catch (Exception e) {
+	} catch (Exception e) {
 	    System.err.println("exception: "+e);
 	    e.printStackTrace(System.err);   // so we can get stack trace
 	}

@@ -253,22 +253,22 @@
   ;
 
   exclusive_or_expression throws TabException 
-  :	
+  :
     and_expression (BITWISEXOR^ and_expression)*
   ;
 
   and_expression throws TabException 
-  :	
+  :
     equality_expression (AMPERSAND^  equality_expression)*
   ;
 
   equality_expression throws TabException 
-  :	
+  :
     relational_expression ((NOTEQUAL^ | EQUAL^) relational_expression)*
   ;
 
   relational_expression throws TabException 
-  :	
+  :
     shift_expression
     (options {warnWhenFollowAmbig = false;}:
       (	
@@ -285,7 +285,7 @@
   ;
 
   shift_expression throws TabException 
-  :	
+  :
     additive_expression ((SHIFTLEFT^ | SHIFTRIGHT^) additive_expression)*
   ;
 
@@ -623,7 +623,9 @@
     | 
       '?'
     | 
-      ('0'..'3') (options{warnWhenFollowAmbig=false;}: Digit (options {warnWhenFollowAmbig=false;}: Digit)? )?
+      ('0'..'3') 
+      (options	{warnWhenFollowAmbig=false;}
+       : Digit (options {warnWhenFollowAmbig=false;}  : Digit)? )?
     | 
       ('4'..'7') (options{warnWhenFollowAmbig=false;}: Digit)?
     | 
@@ -671,7 +673,7 @@
 
   protected
   Exponent
-  :	
+  :
     ('e' | 'E') ('+' | '-')? (Digit)+
   ;
 
@@ -699,7 +701,7 @@
   |	
     ("...")=> "..."            {_ttype = ELLIPSIS;}
 
-  |	
+  |
     '.'                     {_ttype = DOT;}
     ((Digit)+ (Exponent)?   {_ttype = FLOATONE;} //Zuo 3/12/01
 	    (
@@ -710,7 +712,8 @@
     )?
 
   |
-    '0' ('0'..'7')*            //{_ttype = IntOctalConst;}
+    ('0' ('0'..'7'))=>
+      '0' ('0'..'7')*            //{_ttype = IntOctalConst;}
       (
 	LongSuffix                //{_ttype = LongOctalConst;}
       |
@@ -718,14 +721,7 @@
       )*                         {_ttype = OCTALINT;}
 
   |	
-    '1'..'9' (Digit)*          //{_ttype = IntIntConst;}
-      (
-	LongSuffix                //{_ttype = LongIntConst;}
-      |
-	UnsignedSuffix            //{_ttype = UnsignedIntConst;}
-      )*                         {_ttype = DECIMALINT;}  
-
-  |	
+    ('0' ('x' | 'X'))=>
     '0' ('x' | 'X') ('a'..'f' | 'A'..'F' | Digit)+
 			     //{_ttype = IntHexConst;}
       (
@@ -733,11 +729,19 @@
       |
 	UnsignedSuffix            //{_ttype = UnsignedHexConst;}
       )*                         {_ttype = HEXADECIMALINT;}   
+  |	
+    ('0' | ('1'..'9' (Digit)*))          //{_ttype = IntIntConst;}
+      (
+	LongSuffix                //{_ttype = LongIntConst;}
+      |
+	UnsignedSuffix            //{_ttype = UnsignedIntConst;}
+      )*                         {_ttype = DECIMALINT;}  
+
   ;
 
-  /*---------------------------------------------------------------------------------------
+  /*----------------------------------------------------------------------------
   * The Tree Parser/Walker (evaluator)
-  *--------------------------------------------------------------------------------------*/
+  *---------------------------------------------------------------------------*/
 
   class CppTreeParser extends TreeParser;
 
@@ -758,12 +762,63 @@
   }
 
   
-  expr returns [Variable returnVar=null] 
+  expr returns [Variable returnVar=null] throws InvalidOperatorException, OperationNotDefinedException
   { Variable v1, v2;}
   :
-    #(PLUS  v1=expr v2=expr)  {returnVar = v1.getType().add(v1, v2);  }
+    #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
   |
-    i:DECIMALINT  {returnVar = IntegerType.newIntegerVariable(intType, Integer.parseInt(i.getText()));}
+    #(MINUS  v1=expr v2=expr)  {  returnVar = v1.getType().subtract(v1, v2);  }
+  |
+    #(STAR  v1=expr v2=expr)  {	returnVar = v1.getType().multiply(v1, v2);  }
+  |
+    #(DIVIDE  v1=expr v2=expr)  { returnVar = v1.getType().divide(v1, v2);  }
+  |
+    #(MOD  v1=expr v2=expr)  {	returnVar = v1.getType().mod(v1, v2);  }
+  |
+    #(SHIFTLEFT  v1=expr v2=expr)  {	
+      if((v1.getType().getTypeId() < BaseTypes.baseTypeChar && v1.getType().getTypeId() > BaseTypes.baseTypeLong) ||
+	  (v2.getType().getTypeId() < BaseTypes.baseTypeChar && v2.getType().getTypeId() > BaseTypes.baseTypeLong)) {
+
+	throw new OperationNotDefinedException("binary operator << not defined for types " + 
+	    v1.getType().getName() + " and " + v2.getType().getName());
+      }
+
+      returnVar = v1.getType().shiftLeft(v1, v2);  }
+  |
+    #(SHIFTRIGHT  v1=expr v2=expr)  {	
+      if((v1.getType().getTypeId() < BaseTypes.baseTypeChar && v1.getType().getTypeId() > BaseTypes.baseTypeLong) ||
+	  (v2.getType().getTypeId() < BaseTypes.baseTypeChar && v2.getType().getTypeId() > BaseTypes.baseTypeLong)) {
+
+	throw new OperationNotDefinedException("binary operator >> not defined for types " + 
+	    v1.getType().getName() + " and " + v2.getType().getName());
+      }
+
+      returnVar = v1.getType().shiftRight(v1, v2);  }
+  |
+    #(LESSTHAN  v1=expr v2=expr)  { returnVar = v1.getType().lessThan(v1, v2);  }
+
+  |
+    #(GREATERTHAN  v1=expr v2=expr)  { returnVar = v1.getType().greaterThan(v1, v2);  }
+
+  |
+    #(LESSTHANOREQUALTO  v1=expr v2=expr)  { returnVar = v1.getType().lessThanOrEqualTo(v1, v2);  }
+
+  |
+    #(GREATERTHANOREQUALTO  v1=expr v2=expr)  { returnVar = v1.getType().greaterThanOrEqualTo(v1, v2);  }
+
+  |
+    #(NOTEQUAL  v1=expr v2=expr)  { returnVar = v1.getType().notEqual(v1, v2);  }
+
+  |
+    #(EQUAL  v1=expr v2=expr)  { returnVar = v1.getType().equal(v1, v2);  }
+
+  |
+    #(EQUAL  v1=expr v2=expr)  { returnVar = v1.getType().equal(v1, v2);  }
+  |
+    i:DECIMALINT  {
+      returnVar = IntegerType.newIntegerVariable(
+	  intType, Integer.parseInt(i.getText()));
+    }
   |
     #(ASSIGNEQUAL v1=expr v2=expr)  {
       if(v1.getType().getTypeId() != v2.getType().getTypeId())

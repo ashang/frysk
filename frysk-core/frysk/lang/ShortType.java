@@ -33,7 +33,20 @@
       return returnVar;
     }
 
-    public Variable add(Variable var1, Variable var2) {
+    public Variable assign(Variable var1, Variable var2)  throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort)
+	  ?  (short)(newVariable(var1.getType(), var2).getShort())
+	  : (short)(var2.getShort()));
+      return var1;
+    }
+
+    public Variable add(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
       if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
 	return var2.getType().add(var1, var2);
       if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
@@ -42,11 +55,158 @@
 	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() + var2.getLocation().getShort()));
     }
 
-    public Variable assign(Variable var1, Variable var2)  {
-      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort)
-	  ?  (short)(newVariable(var1.getType(), var2).getShort())
-	  : (short)(var2.getShort()));
-      return var1;
+    public Variable subtract(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().subtract(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() - newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() - var2.getLocation().getShort()));
+    }
+
+    public Variable multiply(Variable var1, Variable var2) throws InvalidOperatorException{
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().multiply(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() * newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() * var2.getLocation().getShort()));
+    }
+
+    public Variable divide(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().divide(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() / newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() / var2.getLocation().getShort()));
+    }
+
+    public Variable mod(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().mod(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() % newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() % var2.getLocation().getShort()));
+    }
+
+    public Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException  {
+      long v2;
+
+      if(var2.getType().getTypeId() == BaseTypes.baseTypeChar)
+	  v2 = 0; //var2.getChar();
+      else if(var2.getType().getTypeId() == BaseTypes.baseTypeShort)
+	  v2 = var2.getShort();
+      else if(var2.getType().getTypeId() == BaseTypes.baseTypeInteger)
+	  v2 = var2.getInt();
+      else if(var2.getType().getTypeId() == BaseTypes.baseTypeLong)
+	  v2 = var2.getLong();
+      else
+	throw new InvalidOperatorException("binary operator << not defined for type short, " + var2.getType().getName());
+
+      return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(((short)(var1.getShort())) << v2));
+    }
+
+    public Variable shiftRight(Variable var1, Variable var2) throws InvalidOperatorException {
+      long v2;
+
+      if(var2.getType().getTypeId() == BaseTypes.baseTypeChar)
+	  v2 = 0; //var2.getChar();
+      else if(var2.getType().getTypeId() == BaseTypes.baseTypeShort)
+	  v2 = var2.getShort();
+      else if(var2.getType().getTypeId() == BaseTypes.baseTypeInteger)
+	  v2 = var2.getInt();
+      else if(var2.getType().getTypeId() == BaseTypes.baseTypeLong)
+	  v2 = var2.getLong();
+      else
+	throw new InvalidOperatorException("binary operator >> not defined for type short, " + var2.getType().getName());
+
+      return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(((short)(var1.getShort())) >> v2));
+    }
+
+    public Variable lessThan(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().lessThan(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() < newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() < var2.getLocation().getShort()) ? 1 : 0));
+    }
+
+    public Variable greaterThan(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().greaterThan(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() > newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() > var2.getLocation().getShort()) ? 1 : 0));
+    }
+
+    public Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().greaterThanOrEqualTo(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() >= newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() >= var2.getLocation().getShort()) ? 1 : 0));
+    }
+
+    public Variable lessThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().lessThanOrEqualTo(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() <= newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() <= var2.getLocation().getShort()) ? 1 : 0));
+    }
+
+    public Variable equal(Variable var1, Variable var2) throws InvalidOperatorException	{
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().equal(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() == newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() == var2.getLocation().getShort()) ? 1 : 0));
+    }
+
+    public Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().notEqual(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() != newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() != var2.getLocation().getShort()) ? 1 : 0));
     }
 
     /*ShortType(int size, ShortType var)  {
@@ -62,7 +222,7 @@
 	Class objTypeClass = type.getClass();
 	System.out.println(objTypeClass.getName());
 
-	Class objConsArgClass[] = {Integer.TYPE, Class.forName("frysk.lang.ShortType")};
+	Class objConsArgClass[] = {Integer.TYPE, Class.forName("frysk.lang.ShortType")}          If this Class object represents a local or anonymous class within a method, returns a Method object representing the immediately enclosing method of the underlying class.;
 	Object objConsArgs[] = {(new Integer(type.getSize())), this};
 
 	Constructor objCons = objTypeClass.getDeclaredConstructor(objConsArgClass);

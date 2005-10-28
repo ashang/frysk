@@ -64,9 +64,13 @@ class Location
   }
 
   public ByteBuffer getByteBuffer() { return _location;}
+  long getLong() { return _location.getLong(_index); }
   int getInt() { return _location.getInt(_index); }
-  int getShort() { return _location.getShort(_index); }
+  short getShort() { return _location.getShort(_index); }
+  //char getChar() { return _location.getChar(_index); }
 
+  void putLong(long value)  {_location.putLong(_index, value);}
   void putInt(int value)  {_location.putInt(_index, value);}
   void putShort(short value)  {_location.putShort(_index, value);}
+  //void putChar(char value)  {_location.putChar(_index, value);}
 }

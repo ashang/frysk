@@ -73,8 +73,21 @@ public abstract class Type
   public String toString() {return _name;}
 
 
-  public abstract Variable add(Variable var1, Variable var2); 
-  public abstract Variable assign(Variable var1, Variable var2); 
+  public abstract Variable add(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable subtract(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable multiply(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable divide(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable mod(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable shiftRight(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable lessThan(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable greaterThan(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable lessThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable assign(Variable var1, Variable var2) throws InvalidOperatorException; 
+
   public abstract Variable newShortVariable(ShortType type, Variable val);
   public abstract Variable newIntegerVariable(IntegerType type, Variable val);
   public abstract Variable newVariable(Type type, Variable val);

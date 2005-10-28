@@ -79,7 +79,11 @@ public class Variable
       return _text;
     }
 
-    public int getShort() {
+    /*public char getChar() {
+      return _location.getShort();
+    }*/
+
+    public short getShort() {
       return _location.getShort();
     }
 
@@ -87,12 +91,24 @@ public class Variable
       return _location.getInt();
     }
 
+    public long getLong() {
+      return _location.getInt();
+    }
+
+    /*public void putChar(char val) {
+      _location.putChar(val);
+    }*/
+
     public void putShort(short val) {
       _location.putShort(val);
     }
 
     public void putInt(int val) {
       _location.putInt(val);
+    }
+
+    public void putLong(long val) {
+      _location.putLong(val);
     }
 
     public String toString()  {
