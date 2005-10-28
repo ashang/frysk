@@ -1,7 +1,7 @@
 2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* dialogs/WarnDialog.java (WarnDialog): Added overloaded
-	(title,message) constructor.
+	(title,message) constructor. Added padding to message.
 	* dialogs/DialogManager.java (showWarnDialog): Added 
 	overloaded (title,message) constructor.
 

@@ -47,6 +47,7 @@ package frysk.gui.common.dialogs;
 
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.Label;
+import org.gnu.gtk.VBox;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
@@ -72,9 +73,13 @@ public class WarnDialog extends Dialog{
 	
 	private void doImplementation()
 	{
+		
 		this.addButton(GtkStockItem.OK, 1);
 		this.setTitle(this.title);
-		this.getDialogLayout().add(new Label(this.message));
+		VBox labelBox = new VBox(true,4);
+		Label warnLabel = new Label(this.message);
+		labelBox.packStart(warnLabel,true,true,10);
+		this.getDialogLayout().add(labelBox);
 		this.addListener(new DialogListener(){
 			public boolean dialogEvent(DialogEvent arg0) {
 				hideAll();
