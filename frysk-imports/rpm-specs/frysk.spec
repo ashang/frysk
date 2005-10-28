@@ -25,14 +25,14 @@
 %ifarch x86_64
 %define lib %{base_libdir_name}64
 %else
-%ifarch x86
+%ifarch i386
 %define lib %{base_libdir_name}
 %endif
 %endif
 
 
 %define	version		0.0	
-%define	release		1
+%define	release		2
 
 #-----------------------------------------------------------------
 
@@ -49,14 +49,21 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 Requires:	%{java_pkg_prefix}libgtk-java >= 2.8.0
 Requires:   %{java_pkg_prefix}libglade-java >= 2.12.0
-Requires: 	%{java_pkg_prefix}libvte-java >= 0.11.11
-BuildRequires:  antlr >= 2.7.4, junit >= 3.8.1, xfig >= 3.2.4, 
+Requires: 	%{java_pkg_prefix}libvte-java >= 0.11.11 
+# This needs to go, will probably resolved with migration to eclipse-cdt
+Requires:  frysk-cdtparser >= 3.0.0
+BuildRequires:	junit >= 3.8.1
+BuildRequires:  antlr >= 2.7.4 
+BuildRequires:	transfig >= 3.2.0 
 BuildRequires:	%{java_pkg_prefix}jdom >= 1.0
 BuildRequires:  frysk-cdtparser >= 3.0.0
 BuildRequires:  %{java_pkg_prefix}libgtk-java-devel >= 2.8.0
-BuildRequires:	%{java_pkg_prefix}libglade-java >= 2.12.0
+BuildRequires:	%{java_pkg_prefix}libglade-java-devel >= 2.12.0
+BuildRequires:  %{java_pkg_prefix}cairo-java-devel >= 1.0.0
+BuildRequires:  %{java_pkg_prefix}cairo-devel >= 1.0.0
+BuildRequires:  %{java_pkg_prefix}gtk2-devel >= 2.8.0
 BuildRequires:	%{java_pkg_prefix}libvte-java-devel >= 0.11.11
-BuildRequires:  java-devel >= 1.4.2, gcc-java >= 3.3.3, docbook-utils
+BuildRequires:  vte-devel >= 0.11.11
 BuildRequires: 	java-1.4.2-gcj-compat-devel
 
 %description
@@ -78,7 +85,7 @@ process in the system.
 if  [  'x%{java_pkg_prefix}' != 'x' ] || [ 'x%{c_pkg_prefix}' != 'x' ]; then
 	export PKG_CONFIG_PATH=/opt/frysk/%{lib}/pkgconfig
 fi
-
+echo $PKG_CONFIG_PATH
 %configure
 
 make 
@@ -109,5 +116,9 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/*
 
 %changelog
-* Wed Oct 26  2005 Igor Foox <ifoox@redhat.com>
+* Fri Oct 28  2005 Igor Foox <ifoox@redhat.com> 0.0-2
+- Validated all Requires and BuildRequires clauses, fixed some of them.
+- Fixed bug with libdir detection based on architecture.
+
+* Wed Oct 26  2005 Igor Foox <ifoox@redhat.com> 0.0-1
 - Birth.
