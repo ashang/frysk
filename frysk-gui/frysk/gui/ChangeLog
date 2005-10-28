@@ -1,3 +1,9 @@
+2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+        glade/procpop.glade: Removed Program pane
+	Entry. Removed Add button. Made scrollbars
+	automatic on Program pane scrolled window.
+
 2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: Changed minimum width of window so that

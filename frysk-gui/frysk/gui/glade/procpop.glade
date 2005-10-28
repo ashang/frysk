@@ -556,8 +556,8 @@
 				<widget class="GtkScrolledWindow" id="scrolledwindow12">
 				  <property name="visible">True</property>
 				  <property name="can_focus">True</property>
-				  <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-				  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
+				  <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+				  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 				  <property name="shadow_type">GTK_SHADOW_IN</property>
 				  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
@@ -613,17 +613,7 @@
 					  <property name="right_padding">0</property>
 
 					  <child>
-					    <widget class="GtkEntry" id="programEntry">
-					      <property name="visible">True</property>
-					      <property name="can_focus">True</property>
-					      <property name="editable">True</property>
-					      <property name="visibility">True</property>
-					      <property name="max_length">0</property>
-					      <property name="text" translatable="yes"></property>
-					      <property name="has_frame">True</property>
-					      <property name="invisible_char">*</property>
-					      <property name="activates_default">False</property>
-					    </widget>
+					    <placeholder/>
 					  </child>
 					</widget>
 					<packing>
@@ -640,19 +630,7 @@
 					  <property name="spacing">0</property>
 
 					  <child>
-					    <widget class="GtkButton" id="programAddButton">
-					      <property name="visible">True</property>
-					      <property name="can_focus">True</property>
-					      <property name="label" translatable="yes">Add</property>
-					      <property name="use_underline">True</property>
-					      <property name="relief">GTK_RELIEF_NORMAL</property>
-					      <property name="focus_on_click">True</property>
-					    </widget>
-					    <packing>
-					      <property name="padding">0</property>
-					      <property name="expand">False</property>
-					      <property name="fill">False</property>
-					    </packing>
+					    <placeholder/>
 					  </child>
 
 					  <child>
@@ -670,8 +648,8 @@
 					    <widget class="GtkButton" id="programBrowseButton">
 					      <property name="visible">True</property>
 					      <property name="can_focus">True</property>
-					      <property name="label" translatable="yes">Browse</property>
-					      <property name="use_underline">True</property>
+					      <property name="label">gtk-add</property>
+					      <property name="use_stock">True</property>
 					      <property name="relief">GTK_RELIEF_NORMAL</property>
 					      <property name="focus_on_click">True</property>
 					    </widget>
