@@ -43,6 +43,102 @@
       return var1;
     }
 
+    public Variable timesEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() * newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() * var2.getShort()));
+      return var1;
+    }
+
+    public Variable divideEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() / newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() / var2.getShort()));
+      return var1;
+    }
+
+    public Variable minusEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() - newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() - var2.getShort()));
+      return var1;
+    }
+
+    public Variable plusEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() + newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() + var2.getShort()));
+      return var1;
+    }
+
+    public Variable modEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() % newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() % var2.getShort()));
+      return var1;
+    }
+
+    public Variable shiftLeftEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((short)(var1.getShort() << longValue(var2)));
+      return var1;
+    }
+
+    public Variable shiftRightEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((short)(var1.getShort() >> longValue(var2)));
+      return var1;
+    }
+
+    public Variable bitWiseAndEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() & newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() & var2.getShort()));
+      return var1;
+    }
+
+    public Variable bitWiseOrEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() | newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() | var2.getShort()));
+      return var1;
+    }
+
+    public Variable bitWiseXorEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      var1.putShort((var2.getType().getTypeId() != BaseTypes.baseTypeShort) 
+	  ? (short)(var1.getShort() ^ newVariable(var1.getType(), var2).getShort()) 
+	  : (short)(var1.getShort() ^ var2.getShort()));
+      return var1;
+    }
+
     public Variable add(Variable var1, Variable var2) throws InvalidOperatorException {
       if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
 	throw (new InvalidOperatorException());
@@ -207,6 +303,73 @@
 	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() != newVariable(var1.getType(), var2).getLocation().getShort()) ? 1 : 0));
       else
 	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((var1.getLocation().getShort() != var2.getLocation().getShort()) ? 1 : 0));
+    }
+
+    public Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().bitWiseAnd(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() & newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() & var2.getLocation().getShort()));
+    }
+
+    public Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().bitWiseOr(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() | newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() | var2.getLocation().getShort()));
+    }
+
+    public Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().bitWiseXor(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() ^ newVariable(var1.getType(), var2).getLocation().getShort()));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)(var1.getLocation().getShort() ^ var2.getLocation().getShort()));
+    }
+
+    public Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().logicalAnd(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((getLogicalValue(var1) && getLogicalValue(newVariable(var1.getType(), var2)))?1:0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((getLogicalValue(var1) && getLogicalValue(var2))?1:0));
+    }
+
+    public Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeShort)
+	return var2.getType().logicalOr(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeShort)
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((getLogicalValue(var1) || getLogicalValue(newVariable(var1.getType(), var2)))?1:0));
+      else
+	return ShortType.newShortVariable((ShortType)(var1.getType()), (short)((getLogicalValue(var1) || getLogicalValue(var2))?1:0));
+    }
+
+    public boolean getLogicalValue(Variable var1) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeShort)
+	throw (new InvalidOperatorException());
+
+	return ((var1.getShort() == 0)?false:true);
     }
 
     /*ShortType(int size, ShortType var)  {

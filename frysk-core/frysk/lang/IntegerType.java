@@ -70,6 +70,102 @@
       return var1;
     }
 
+    public Variable timesEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() * newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() * var2.getInt());
+      return var1;
+    }
+
+    public Variable divideEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() / newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() / var2.getInt());
+      return var1;
+    }
+
+    public Variable minusEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() - newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() - var2.getInt());
+      return var1;
+    }
+
+    public Variable plusEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() + newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() + var2.getInt());
+      return var1;
+    }
+
+    public Variable modEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() % newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() % var2.getInt());
+      return var1;
+    }
+
+    public Variable shiftLeftEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt(var1.getInt() << longValue(var2));
+      return var1;
+    }
+
+    public Variable shiftRightEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt(var1.getInt() >> longValue(var2));
+      return var1;
+    }
+
+    public Variable bitWiseAndEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() & newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() & var2.getInt());
+      return var1;
+    }
+
+    public Variable bitWiseOrEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() | newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() | var2.getInt());
+      return var1;
+    }
+
+    public Variable bitWiseXorEqual(Variable var1, Variable var2) throws InvalidOperatorException {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      var1.putInt((var2.getType().getTypeId() != BaseTypes.baseTypeInteger) 
+	  ? (var1.getInt() ^ newVariable(var1.getType(), var2).getInt()) 
+	  : var1.getInt() ^ var2.getInt());
+      return var1;
+    }
+
     public Variable multiply(Variable var1, Variable var2) throws InvalidOperatorException{
       if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
 	throw (new InvalidOperatorException());
@@ -109,18 +205,8 @@
     public Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException  {
       long v2=0;
 
-      if(var2.getType().getTypeId() == BaseTypes.baseTypeChar)
-	  v2 = 0 ;//var2.getChar();
-      else if(var2.getType().getTypeId() == BaseTypes.baseTypeShort)
-	  v2 = var2.getShort();
-      else if(var2.getType().getTypeId() == BaseTypes.baseTypeInteger)
-	  v2 = var2.getInt();
-      else if(var2.getType().getTypeId() == BaseTypes.baseTypeLong)
-	  v2 = var2.getLong();
-      else
-	throw new InvalidOperatorException("binary operator << not defined for type int, " + var2.getType().getName());
-
-      int resultVar = var1.getInt() << v2;
+      
+      int resultVar = var1.getInt() << longValue(var2);
       return  IntegerType.newIntegerVariable((IntegerType)var1.getType(), resultVar);
     }
 
@@ -213,6 +299,74 @@
       else
 	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)((var1.getLocation().getInt() != var2.getLocation().getInt()) ? 1 : 0));
     }
+
+    public Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeInteger)
+	return var2.getType().bitWiseAnd(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeInteger)
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)(var1.getLocation().getInt() & newVariable(var1.getType(), var2).getLocation().getInt()));
+      else
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)(var1.getLocation().getInt() & var2.getLocation().getInt()));
+    }
+
+    public Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeInteger)
+	return var2.getType().bitWiseOr(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeInteger)
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)(var1.getLocation().getInt() | newVariable(var1.getType(), var2).getLocation().getInt()));
+      else
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)(var1.getLocation().getInt() | var2.getLocation().getInt()));
+    }
+
+    public Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeInteger)
+	return var2.getType().bitWiseXor(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeInteger)
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)(var1.getLocation().getInt() ^ newVariable(var1.getType(), var2).getLocation().getInt()));
+      else
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)(var1.getLocation().getInt() ^ var2.getLocation().getInt()));
+    }
+
+    public Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeInteger)
+	return var2.getType().logicalAnd(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeInteger)
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)((getLogicalValue(var1) && getLogicalValue(newVariable(var1.getType(), var2)))?1:0));
+      else
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)((getLogicalValue(var1) && getLogicalValue(var2))?1:0));
+    }
+
+    public Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+      if(var2.getType().getTypeId() > BaseTypes.baseTypeInteger)
+	return var2.getType().logicalOr(var1, var2);
+      if(var2.getType().getTypeId() < BaseTypes.baseTypeInteger)
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)((getLogicalValue(var1) || getLogicalValue(newVariable(var1.getType(), var2)))?1:0));
+      else
+	return IntegerType.newIntegerVariable((IntegerType)(var1.getType()), (int)((getLogicalValue(var1) || getLogicalValue(var2))?1:0));
+    }
+
+    public boolean getLogicalValue(Variable var1) throws InvalidOperatorException  {
+      if(var1.getType().getTypeId() != BaseTypes.baseTypeInteger)
+	throw (new InvalidOperatorException());
+
+	return ((var1.getInt() == 0)?false:true);
+    }
+
 
     /*Type add(Type type) {
       Type returnType = null;

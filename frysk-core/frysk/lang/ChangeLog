@@ -1,5 +1,11 @@
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
+	* Type.java:  modified, added more arithematic operations
+	* ShortType.java:  modified, added more arithematic operations
+	* IntegerType.java:  modified, added more arithematic operations
+
+2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
+
 	* InvalidOperatorException.java:  new
 
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>

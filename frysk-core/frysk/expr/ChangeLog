@@ -1,5 +1,10 @@
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
+	* cpp.g:  augmented the grammar. Now it handles all predefined binary
+	operations.
+
+2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
+
 	* RunCppParser.java:  modified, to add some exceptions and error
 	handling code.
 	* cpp.g:  augmented the grammar to handle more operations

@@ -72,6 +72,19 @@ public abstract class Type
 
   public String toString() {return _name;}
 
+  protected long longValue(Variable v)	throws InvalidOperatorException	{
+    if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
+	return  0 ;//v.getChar();
+    if(v.getType().getTypeId() == BaseTypes.baseTypeShort)
+	return v.getShort();
+    if(v.getType().getTypeId() == BaseTypes.baseTypeInteger)
+	return v.getInt();
+    if(v.getType().getTypeId() == BaseTypes.baseTypeLong)
+	return v.getLong();
+
+    throw new InvalidOperatorException("binary operation not defined for type " + _name + "," + v.getType().getName());
+  }
+
 
   public abstract Variable add(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable subtract(Variable var1, Variable var2) throws InvalidOperatorException; 
@@ -86,7 +99,24 @@ public abstract class Type
   public abstract Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable logicalAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable logicalOr(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable assign(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable timesEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable divideEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable modEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable plusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable minusEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable shiftLeftEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable shiftRightEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable bitWiseOrEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable bitWiseXorEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable bitWiseAndEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  
+  public abstract boolean getLogicalValue(Variable var1) throws InvalidOperatorException; 
 
   public abstract Variable newShortVariable(ShortType type, Variable val);
   public abstract Variable newIntegerVariable(IntegerType type, Variable val);
