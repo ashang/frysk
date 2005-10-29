@@ -34,21 +34,21 @@ target="results"> <input name="id" size="6"> </form>
 
 <h1> Queries </h1>
 
-<ul>
-
-<li>
-
 <a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&order=map_assigned_to.login_name,bugs.bug_id"
-target="results"> assigned </a>
+target="results">assigned</a>:
 
-<li>
+<br>
 
 <a
-href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P1&priority=P2&order=bugs.priority,bugs.bug_id"
-target="results"> current </a>
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&priority=P2&order=bugs.priority,bugs.bug_id"
+target="results">pending</a>:
 
-<li>
+<br>
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&order=bugs.priority,bugs.bug_id"
+target="results">open</a>: 
 
 <a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P1&order=bugs.priority,bugs.bug_id"
@@ -66,27 +66,51 @@ target="results">P2</a>
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P3&order=bugs.priority,bugs.bug_id"
 target="results">P3</a>
 
-<li>
+<br>
 
 <a
-href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&order=bugs.priority,bugs.bug_id"
-target="results"> open </a>
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&order=bugs.priority,bugs.bug_id"
+target="results">closed</a>:
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&priority=P1&order=bugs.priority,bugs.bug_id"
+target="results">P1</a>
 
 |
 
 <a
-href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&order=bugs.priority,bugs.bug_id"
-target="results"> closed </a>
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&priority=P2&order=bugs.priority,bugs.bug_id"
+target="results">P2</a>
 
-<li>
+|
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&priority=P3&order=bugs.priority,bugs.bug_id"
+target="results">P3</a>
+
+<br>
 
 <a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&order=bugs.bug_id"
-target="results"> all </a>
+target="results">all</a>:
 
-</ul>
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&priority=P1&order=bugs.bug_id"
+target="results">P1</a>
 
-<h1> Blockers </h1>
+|
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&priority=P2&order=bugs.bug_id"
+target="results">P2</a>
+
+|
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&priority=P3&order=bugs.bug_id"
+target="results">P3</a>
+
+<h1> Trackers </h1>
 
 <dl>
 
@@ -108,6 +132,12 @@ target="results">1599</a>: lang model<br>
 
 <a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1601"
 target="results">1601</a>: utilities<br>
+
+<a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1632"
+target="results">1632</a>: monitor<br>
+
+<a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1633"
+target="results">1633</a>: source view<br>
 
 <a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1496"
 target="results">1496</a>: kernel<br>
