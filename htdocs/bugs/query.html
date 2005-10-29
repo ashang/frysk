@@ -10,45 +10,110 @@
 
 <h1> <em>frysk</em> </h1>
 
-<h2>  Bugzilla </h2>
+<h1>  Bugzilla </h1>
 
 <ul>
 
 <li>
-<a href="http://sourceware.org/bugzilla/enter_bug.cgi?product=frysk" target="results">
-Enter Bug</a>
+
+<a href="http://sourceware.org/bugzilla/enter_bug.cgi?product=frysk"
+target="results"> New </a>
 
 <li>
-<a href="http://sourceware.org/bugzilla/query.cgi?product=frysk" target="results">
-Search</a>
+
+<a href="http://sourceware.org/bugzilla/query.cgi?product=frysk"
+target="results"> Search </a>
+
+<li>
+
+<form method="get"
+action="http://sourceware.org/bugzilla/show_bug.cgi"
+target="results"> <input name="id" size="6"> </form>
 
 </ul>
 
-<h2> Queries </h2>
+<h1> Queries </h1>
 
 <ul>
 
 <li>
-<a href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&order=map_assigned_to.login_name,bugs.bug_id" target="results">
-assigned</a>
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&order=map_assigned_to.login_name,bugs.bug_id"
+target="results"> assigned </a>
 
 <li>
-<a href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P1&priority=P2&order=bugs.priority,bugs.bug_id" target="results">
-current</a>
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P1&priority=P2&order=bugs.priority,bugs.bug_id"
+target="results"> current </a>
 
 <li>
-<a href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&order=bugs.bug_id" target="results">
-all open</a>
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P1&order=bugs.priority,bugs.bug_id"
+target="results">P1</a>
+
+|
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P2&order=bugs.priority,bugs.bug_id"
+target="results">P2</a>
+
+|
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P3&order=bugs.priority,bugs.bug_id"
+target="results">P3</a>
 
 <li>
-<a href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&order=bugs.bug_id" target="results">
-all closed</a>
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&order=bugs.priority,bugs.bug_id"
+target="results"> open </a>
+
+|
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&order=bugs.priority,bugs.bug_id"
+target="results"> closed </a>
 
 <li>
-<a href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&order=bugs.bug_id" target="results">
-all</a>
+
+<a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&order=bugs.bug_id"
+target="results"> all </a>
 
 </ul>
+
+<h1> Blockers </h1>
+
+<dl>
+
+<a
+href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1600"
+target="results">1600</a>: build system<br>
+
+<a
+href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1580"
+target="results">1580</a>: event loop<br>
+
+<a
+href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1582"
+target="results">1582</a>: proc model<br>
+
+<a
+href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1599"
+target="results">1599</a>: lang model<br>
+
+<a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1601"
+target="results">1601</a>: utilities<br>
+
+<a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1496"
+target="results">1496</a>: kernel<br>
+
+<a href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1602"
+target="results">1602</a>: upstream<br>
 
 </body>
 </html>
