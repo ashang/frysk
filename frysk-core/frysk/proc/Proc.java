@@ -366,7 +366,21 @@ public abstract class Proc
 	host.removeTasks (tasks);
     }
 
-    public abstract Auxv[] getAuxv ();
+    /**
+     * The Process Auxiliary Vector.
+     */
+    public Auxv[] getAuxv ()
+    {
+	if (auxv == null) {
+	    auxv = sendrecAuxv ();
+	}
+	return auxv;
+    }
+    private Auxv[] auxv;
+    /**
+     * Extract the auxv from the inferior.
+     */
+    abstract Auxv[] sendrecAuxv ();
 
     /**
      * The process has transitioned to the attached / continue state.

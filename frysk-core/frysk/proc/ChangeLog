@@ -1,5 +1,11 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcGet.java: Fix typo, auxv.val not auxv.type.
+	* Proc.java: Add .sendrecAuxv.  Implement .getAuxv locally.
+	* LinuxProc.java: Replace .getAuxv with .sendrecAuxv.  Use
+	frysk.sys.proc.AuxiliaryVectorBuilder to construct the auxv.
+	* Auxv.java: Simplify.
+
 	* TestLib.java: Fix tipo, TaskObserverBase, not TaskObserverBaseX.
 	* TestProcGet.java: Reimplement CaptureAuxv by extending TestLib
 	.AutoAddTaskObserverBase.

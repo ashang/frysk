@@ -43,10 +43,9 @@ import frysk.sys.Ptrace;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-import inua.eio.ArrayByteBuffer;
-import inua.eio.ByteBuffer;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.ScanDir;
+import frysk.sys.proc.AuxiliaryVectorBuilder;
 
 /**
  * Linux implementation of Proc.
@@ -157,34 +156,23 @@ public class LinuxProc
 	// XXX: Should be abstracted.
 	new I386Linux.Task (this, id, running);
     }
-    public Auxv[] getAuxv ()
+    Auxv[] sendrecAuxv ()
     {
-	if (auxv == null) {
-	    // XXX: Pull a random pid off the list, use that to
-	    // construct the AUXV path; shouldn't be needed, instead
-	    // use getPid() and a missing getIsa().
-	    ByteBuffer b;
-	    LinuxTask pid = (LinuxTask) taskPool.values().iterator().next ();
-	    String auxvName = "/proc/" + getPid () + "/auxv";
-	    // Due to Linux kernel tackyness, need to slurp in the
-	    // AUXV and then create an ByteBuffer from that.
-	    try {
-		java.io.FileInputStream auxvFile
-		    = new java.io.FileInputStream (auxvName);
-		byte[] buf = new byte[1024];
-		int len = auxvFile.read (buf);
-		b = new ArrayByteBuffer (buf, 0, len);
+	class BuildAuxv
+	    extends AuxiliaryVectorBuilder
+	{
+	    Auxv[] vec;
+	    public void buildDimensions (int wordSize, int length)
+	    {
+		vec = new Auxv[length];
 	    }
-	    catch (Exception e) {
-		throw new RuntimeException (e);
+	    public void buildAuxiliary (int index, int type, long val)
+	    {
+		vec[index] = new Auxv (type, val);
 	    }
-	    // Adjust the AuxV buffer parameters based on the
-	    // current ISA.
-	    b.order (pid.getIsa ().byteOrder);
-	    b.wordSize (pid.getIsa ().wordSize);
-	    // Finally parse the AuxV
-	    auxv = Auxv.parse (b);
 	}
-	return auxv;
+	BuildAuxv auxv = new BuildAuxv ();
+	auxv.constructAuxv (getPid ());
+	return auxv.vec;
     }
 }

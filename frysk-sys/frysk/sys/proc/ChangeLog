@@ -1,3 +1,10 @@
+2005-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/AuxiliaryVectorBuilder.cxx: 
+	* AuxiliaryVectorBuilder.java: New.
+	* cni/AuxiliaryVectorBuilder.cxx: New.
+	* cni/slurp.hxx, cni/slurp.c (slurp): Return an int, not a long.
+
 2005-10-09  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/ScanDir.cxx, ScanDir.java: New.

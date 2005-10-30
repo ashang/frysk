@@ -37,48 +37,87 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdint.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
 
 #include <gcj/cni.h>
 
-#include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/cni/slurp.hxx"
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/proc/AuxiliaryVectorBuilder.h"
 
-int
-slurp (int pid, const char* name, char buf[], long sizeof_buf)
+/**
+ * Extract the value.
+ *
+ * XXX: As an unsigned!?
+ */
+
+static int64_t
+get32 (char *b)
 {
-  // Get the file name.
-  char file[FILENAME_MAX];
-  if (::snprintf (file, sizeof file, "/proc/%d/%s", (int) pid, name)
-      >= FILENAME_MAX)
-    throwRuntimeException ("snprintf: buffer overflow");
-  
-  // Open the file file.
-  errno = 0;
-  int fd = ::open (file, O_RDONLY);
-  if (errno != 0)
-    return -1;
+  return (*(uint32_t*)b);
+}
+static int64_t
+get64 (char *b)
+{
+  return (*(uint64_t*)b);
+}
 
-  // Read in the entire file file, NUL terminate the string.
-  errno = 0;
-  int len = ::read (fd, buf, sizeof_buf - 1);
-  if (errno != 0) {
-    ::close (fd);
-    return -1;
+// Verify the auxiliary vector is both correctly sized, and contains
+// only reasonable entries.
+static bool
+verify (char* buf, int bufLen, int wordSize, int64_t (*get) (char*))
+{
+  if (bufLen % (wordSize * 2) != 0)
+    return false;
+  for (char* p = buf; p < buf + bufLen; p += wordSize * 2) {
+    int64_t type = get (p);
+    if (type > 1024 || type < 0)
+      return false;
+  }
+  return true;
+}
+
+jboolean
+frysk::sys::proc::AuxiliaryVectorBuilder::constructAuxv (jint pid)
+{
+  char buf[BUFSIZ];
+  int bufLen = slurp (pid, "auxv", buf, sizeof buf);
+  if (bufLen <= 0)
+    return false;
+  
+  // Figure out the word-size of the auxv.  It is assumed that that
+  // this process, and the auxv have at least a common byte order.
+  int64_t (*get) (char* buf) = NULL;
+  jint wordSize = 0;
+  if (verify (buf, bufLen, 4, get32)) {
+    if (verify (buf, bufLen, 8, get64)) {
+      throwRuntimeException ("conflicting word sizes for auxv");
+    }
+    else {
+      wordSize = 4;
+      get = get32;
+    }
+  }
+  else {
+    if (verify (buf, bufLen, 8, get64)) {
+      wordSize = 8;
+      get = get64;
+    }
+    else {
+      throwRuntimeException ("unknown word size for auxv");
+    }
+  }
+  int length = bufLen / wordSize / 2;
+  buildDimensions (wordSize, length);
+
+  // Unpack the corresponding entries.
+  for (int i = 0; i < length; i++) {
+    char* p = buf + wordSize * i * 2;
+    jint type = get (p + wordSize * 0);
+    jlong value = get (p + wordSize * 1);
+    buildAuxiliary (i, type, value);
   }
 
-  // Close the file, no longer needs to be open.
-  errno = 0;
-  ::close (fd);
-  if (errno != 0)
-    return -1;
-
-  // Null terminate the buffer.
-  buf[len] = '\0';
-  return len;
+  return true;
 }

@@ -96,7 +96,7 @@ public class TestProcGet
 		reader.skipWhitespace ();
 		assertEquals ("auxv[" + i + "].type",
 			      type, auxv[i].type);
-		assertEquals ("auxv[" + i + "].type",
+		assertEquals ("auxv[" + i + "].val",
 			      val, auxv[i].val);
 	    }
 	    assertTrue ("Read the entire AUXV file", reader.endOfFile ());

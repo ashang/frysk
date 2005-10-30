@@ -37,48 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <errno.h>
+package frysk.sys.proc;
 
-#include <gcj/cni.h>
-
-#include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/proc/cni/slurp.hxx"
-
-int
-slurp (int pid, const char* name, char buf[], long sizeof_buf)
+/**
+ * The build an auxiliary vector using the contents of the file
+ * <tt>/proc/PID/auxv</tt>.
+ *
+ * While this isn't a pure builder pattern, it is close enough.
+ */
+public abstract class AuxiliaryVectorBuilder
 {
-  // Get the file name.
-  char file[FILENAME_MAX];
-  if (::snprintf (file, sizeof file, "/proc/%d/%s", (int) pid, name)
-      >= FILENAME_MAX)
-    throwRuntimeException ("snprintf: buffer overflow");
-  
-  // Open the file file.
-  errno = 0;
-  int fd = ::open (file, O_RDONLY);
-  if (errno != 0)
-    return -1;
+    /**
+     * Scan the auxiliary vector found in <tt>/proc/PID/auxv</tt>
+     * building up an auxv.  Return true if the scan was successful.
+     */
+    public final native boolean constructAuxv (int pid);
 
-  // Read in the entire file file, NUL terminate the string.
-  errno = 0;
-  int len = ::read (fd, buf, sizeof_buf - 1);
-  if (errno != 0) {
-    ::close (fd);
-    return -1;
-  }
+    /**
+     * Create a AuxiliaryVectorBuilder.
+     */
+    protected AuxiliaryVectorBuilder ()
+    {
+    }
 
-  // Close the file, no longer needs to be open.
-  errno = 0;
-  ::close (fd);
-  if (errno != 0)
-    return -1;
+    /**
+     * Called with the wordSize and number of entries.
+     */
+    public abstract void buildDimensions (int wordSize, int length);
 
-  // Null terminate the buffer.
-  buf[len] = '\0';
-  return len;
+    /**
+     * Called for every auxiliary vector entry.
+     */
+    public abstract void buildAuxiliary (int index, int type, long value);
 }

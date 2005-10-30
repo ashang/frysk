@@ -37,4 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-extern long slurp (int pid, const char *name, char buf[], long sizeof_buf);
+/**
+ * Slurp <tt>/proc/PID/NAME</tt> into BUF (max size sizeof_buf).
+ * Return the actual number of byte read.
+ */
+extern int slurp (int pid, const char *name, char buf[], long sizeof_buf);

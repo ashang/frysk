@@ -36,26 +36,26 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.proc;
 
-import inua.eio.ByteBuffer;
 import inua.PrintWriter;
 
 public class Auxv
 {
     public int type;
     public long val;
-    private Auxv (ByteBuffer buffer)
+    public Auxv (int type, long val)
     {
-	type = (int) buffer.getWord ();
-	val = buffer.getUWord ();
+	this.type = type;
+	this.val = val;
     }
     public String toString ()
     {
-	return ("[Auxv"
+	return ("{Auxv"
 		+ "type=" + inua.elf.AT.toString (type)
 		+ "val=" + val
-		+ "]");
+		+ "}");
     }
     public PrintWriter print (PrintWriter w)
     {
@@ -65,17 +65,5 @@ public class Auxv
 	w.print (val);
 	w.println ();
 	return w;
-    }
-
-    static public Auxv[] parse (ByteBuffer b)
-    {
-	// Assume the entire byte buffer is the AUXV; each entry
-	// occupies two words.
-	int numEntries = (int) (b.capacity () / (b.wordSize () * 2));
-	Auxv[] entries = new Auxv[numEntries];
-	for (int i = 0; i < numEntries; i++) {
-	    entries[i] = new Auxv (b);
-	}
-	return entries;
     }
 }

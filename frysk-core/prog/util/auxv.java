@@ -38,49 +38,38 @@
 // exception.
 
 /**
- * Print the auxilary vector found in the specified file.
+ * Print the auxilary vector.
  */
 
 package prog.util;
 
-import inua.eio.ByteBuffer;
-import inua.eio.ArrayByteBuffer;
 import inua.PrintWriter;
 import frysk.proc.Auxv;
-import java.io.File;
-import java.io.FileInputStream;
+import frysk.sys.proc.AuxiliaryVectorBuilder;
 
 class auxv
 {
     public static void main (String[] args)
     {
-	PrintWriter out = new PrintWriter (System.out, true);
+	final PrintWriter out = new PrintWriter (System.out, true);
 
 	if (args.length != 1) {
-	    out.println ("Usage: accu/auxv <auxv>");
+	    out.println ("Usage: auxv <pid>");
 	    return;
 	}
 
-
-	ByteBuffer b;
-	try {
-	    byte[] buf = new byte[1024];
-	    FileInputStream auxvFile = new FileInputStream (new File (args[0]));
-	    int len = auxvFile.read (buf);
-	    b = new ArrayByteBuffer (buf, 0, len);
-	}
-	catch (java.io.FileNotFoundException e) {
-	    out.println ("File: " + args[0] + " not found");
-	    return;
-	}
-	catch (java.io.IOException e) {
-	    out.println ("Error reading file " + args[0]);
-	    return;
-	}
-
-	Auxv[] vec = Auxv.parse (b);
-	for (int i = 0; i < vec.length; i++) {
-	    vec[i].print (out);
-	}
+	AuxiliaryVectorBuilder builder = new AuxiliaryVectorBuilder ()
+	    {
+		public void buildDimensions (int wordSize, int length)
+		{
+		    // Toss.
+		}
+		public void buildAuxiliary (int index, int type,
+					    long val)
+		{
+		    new Auxv (type, val).print (out);
+		}
+	    };
+	builder.constructAuxv (Integer.parseInt (args[0]));
     }
 }

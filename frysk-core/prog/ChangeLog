@@ -1,3 +1,8 @@
+2005-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Re-implement using
+	frysk.sys.proc.AuxiliaryVectorBuilder.
+
 2005-10-24  Andrew Cagney  <cagney@redhat.com>
 
 	* terminated/exit.c: New file.
