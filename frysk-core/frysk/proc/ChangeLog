@@ -1,3 +1,9 @@
+2005-10-30  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserver.java: Add .testGetBlocked.
+	* TestLib.java: Add method .getTasks to TaskObserverBase.
+	* Task.java: Add .getBlockers.
+
 2005-10-26  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserver.java: New.

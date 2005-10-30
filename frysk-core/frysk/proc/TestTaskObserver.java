@@ -92,4 +92,53 @@ public class TestTaskObserver
 	assertEquals ("number of times terminated", 1,
 		      addToAttached.terminatedCount);
     }
+
+    /**
+     * Check that a blocker appears in the blocker list returned by
+     * getBlockers.
+     */
+    public void testGetBlockers ()
+    {
+	// Block any task that reports a TaskAttached event and then
+	// shut down the event loop.  Accumulate all blocked tasks in
+	// the TaskObserverBase's task set.
+	class BlockAttached
+	    extends TaskObserverBase
+	    implements TaskObserver.Attached
+	{
+	    void updateTask (Task task)
+	    {
+		task.requestAddAttachedObserver (this);
+	    }
+	    public Action updateAttached (Task task)
+	    {
+		addTask (task);
+		Manager.eventLoop.requestStop ();
+		return Action.BLOCK;
+	    }
+	}
+	BlockAttached blockAttached = new BlockAttached ();
+
+	// Run a program, any program so that blockedAttached has
+	// something to block.
+	Manager.host.requestCreateAttachedContinuedProc
+	    (new String[] {
+		"./prog/terminated/exit",
+		"0"
+	    });
+	assertRunUntilStop ("run \"exit\" to exit");
+
+	// That one task was blocked.
+	Task[] tasks = blockAttached.getTasks ();
+	assertEquals ("blocked task count", 1, tasks.length);
+	
+	// That the Task's blocker set only contains this task.
+	for (int i = 0; i < tasks.length; i++) {
+	    Task task = tasks[i];
+	    TaskObserver[] blockers = task.getBlockers ();
+	    assertEquals ("blockers length", 1, blockers.length);
+	    assertSame ("blocker and blockAttached", blockAttached,
+			blockers[0]);
+	}
+    }
 }

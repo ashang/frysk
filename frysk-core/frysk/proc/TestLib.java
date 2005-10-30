@@ -507,16 +507,22 @@ public class TestLib
     }
 
     /**
-     * A TaskObserver base class.  This provides a standard framework
-     * for both adding and implementing TaskObserver's.
+     * A TaskObserver base class.  This provides a framework for both
+     * automatically adding and implementing TaskObserver's.  In
+     * addition, a Task set for tracking tasks is available.
      *
-     * It provides default .added and .deleted methods, logic to
-     * manage a set of tasks, and a notification mechanism so that the
-     * observer can be registered with all child tasks.
+     * The client supplied .updateClass method is called as each new
+     * task is found.  It should register itself with the applicable
+     * observer.
      */
     abstract class TaskObserverBase
 	implements TaskObserver
     {
+	/**
+	 * Create a TaskObserver, registered with the TaskAdded
+	 * observable, that will call the child's .updateTask method
+	 * for each added descendant Task.
+	 */
 	TaskObserverBase ()
 	{
 	    Manager.host.observableProcAdded.addObserver (new Observer ()
@@ -538,7 +544,8 @@ public class TestLib
 		});
 	}
 	/**
-	 * A new task appeared, update it.
+	 * A new task appeared, update it.  The implementation should
+	 * register itself with the applicable Task observers.
 	 */
 	abstract void updateTask (Task task);
 	/**
@@ -565,11 +572,25 @@ public class TestLib
 	 */
 	private Set tasks = new HashSet ();
 	/**
+	 * Return the task set as an array.
+	 */
+	Task[] getTasks ()
+	{
+	    return (Task[]) tasks.toArray (new Task[0]);
+	}
+	/**
 	 * Add the Task to the Set of Task's.
 	 */
 	void addTask (Task task)
 	{
 	    tasks.add (task);
+	}
+	/**
+	 * Clear the Task Set.
+	 */
+	void clearTasks ()
+	{
+	    tasks.clear ();
 	}
 	/**
 	 * Return the number of Task's currently in the Task Set.
@@ -587,13 +608,6 @@ public class TestLib
 		Task task = (Task) i.next ();
 		task.requestUnblock (this);
 	    }
-	}
-	/**
-	 * Clear the Task Set.
-	 */
-	void clearTasks ()
-	{
-	    tasks.clear ();
 	}
     }
 

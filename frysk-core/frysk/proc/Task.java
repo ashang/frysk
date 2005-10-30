@@ -515,6 +515,14 @@ abstract public class Task
      */
     Set blockers = new HashSet ();
     /**
+     * Return the current set of blockers as an array.  Useful when
+     * debugging.
+     */
+    public TaskObserver[] getBlockers ()
+    {
+	return (TaskObserver[]) blockers.toArray (new TaskObserver[0]);
+    }
+    /**
      * Request that the observer be removed fro this tasks set of
      * blockers; once there are no blocking observers, this task
      * resumes.
