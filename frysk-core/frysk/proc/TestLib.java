@@ -507,9 +507,61 @@ public class TestLib
     }
 
     /**
+     * A Task set.
+     *
+     * In addition to methods for managing the set, there is a method
+     * for unblocking all members.
+     */
+    class TaskSet
+    {
+	/**
+	 * Set of tasks being managed.
+	 */
+	private Set tasks = new HashSet ();
+	/**
+	 * Return the task set as an array.
+	 */
+	Task[] toArray ()
+	{
+	    return (Task[]) tasks.toArray (new Task[0]);
+	}
+	/**
+	 * Add the Task to the Set of Task's.
+	 */
+	void add (Task task)
+	{
+	    tasks.add (task);
+	}
+	/**
+	 * Clear the Task Set.
+	 */
+	void clear ()
+	{
+	    tasks.clear ();
+	}
+	/**
+	 * Return the number of Task's currently in the Task Set.
+	 */
+	int size ()
+	{
+	    return tasks.size ();
+	}
+	/**
+	 * Unblock all members of the Task Set.
+	 */
+	void unblock (TaskObserver observer)
+	{
+	    for (Iterator i = tasks.iterator (); i.hasNext(); ) {
+		Task task = (Task) i.next ();
+		task.requestUnblock (observer);
+	    }
+	}
+
+    }
+
+    /**
      * A TaskObserver base class.  This provides a framework for both
-     * automatically adding and implementing TaskObserver's.  In
-     * addition, a Task set for tracking tasks is available.
+     * automatically adding and implementing TaskObserver's.
      *
      * The client supplied .updateClass method is called as each new
      * task is found.  It should register itself with the applicable
@@ -566,48 +618,6 @@ public class TestLib
 	public void deleted ()
 	{
 	    deletedCount++;
-	}
-	/**
-	 * Set of tasks being managed.
-	 */
-	private Set tasks = new HashSet ();
-	/**
-	 * Return the task set as an array.
-	 */
-	Task[] getTasks ()
-	{
-	    return (Task[]) tasks.toArray (new Task[0]);
-	}
-	/**
-	 * Add the Task to the Set of Task's.
-	 */
-	void addTask (Task task)
-	{
-	    tasks.add (task);
-	}
-	/**
-	 * Clear the Task Set.
-	 */
-	void clearTasks ()
-	{
-	    tasks.clear ();
-	}
-	/**
-	 * Return the number of Task's currently in the Task Set.
-	 */
-	int countTasks ()
-	{
-	    return tasks.size ();
-	}
-	/**
-	 * Unblock all members of the Task Set.
-	 */
-	void unblockTasks ()
-	{
-	    for (Iterator i = tasks.iterator (); i.hasNext(); ) {
-		Task task = (Task) i.next ();
-		task.requestUnblock (this);
-	    }
 	}
     }
 

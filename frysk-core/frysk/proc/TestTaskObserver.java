@@ -106,13 +106,14 @@ public class TestTaskObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Attached
 	{
+	    TaskSet attachedTasks = new TaskSet ();
 	    void updateTask (Task task)
 	    {
 		task.requestAddAttachedObserver (this);
 	    }
 	    public Action updateAttached (Task task)
 	    {
-		addTask (task);
+		attachedTasks.add (task);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -129,7 +130,7 @@ public class TestTaskObserver
 	assertRunUntilStop ("run \"exit\" to exit");
 
 	// That one task was blocked.
-	Task[] tasks = blockAttached.getTasks ();
+	Task[] tasks = blockAttached.attachedTasks.toArray ();
 	assertEquals ("blocked task count", 1, tasks.length);
 	
 	// That the Task's blocker set only contains this task.

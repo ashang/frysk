@@ -117,9 +117,10 @@ public class TestTaskClonedObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Cloned
 	{
+	    TaskSet clonedTasks = new TaskSet ();
 	    public Action updateCloned (Task task, Task clone)
 	    {
-		addTask (task);
+		clonedTasks.add (task);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -148,9 +149,9 @@ public class TestTaskClonedObserver
 	    loopCount++;
 	    assertRunUntilStop ("run \"clone\" until stop, number "
 				+ cloneCount + " of " + fib.callCount);
-	    cloneCount += cloneStopper.countTasks ();
-	    cloneStopper.unblockTasks ();
-	    cloneStopper.clearTasks ();
+	    cloneCount += cloneStopper.clonedTasks.size ();
+	    cloneStopper.clonedTasks.unblock (cloneStopper);
+	    cloneStopper.clonedTasks.clear ();
 	}
 
 	// The first task, included in fib.callCount isn't included in

@@ -1,5 +1,9 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Split out .TaskSet from .TaskObserverBase.
+	* TestTaskObserver.java, TestTaskForkedObserver.java,
+	TestTaskClonedObserver.java: Update, add explict TaskSet.
+	
 	* TestUnpaused.java, TestStep.java, TestModify.java,
 	TestI386Regs.java, TestI386Modify.java: Replace TaskEvent
 	.Signaled, with TaskObserver .Signaled.

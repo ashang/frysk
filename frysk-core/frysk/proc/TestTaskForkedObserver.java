@@ -119,10 +119,11 @@ public class TestTaskForkedObserver
 	    implements TaskObserver.Forked
 	{
 	    int count;
+	    TaskSet forkedTasks = new TaskSet ();
 	    public Action updateForked (Task task, Proc proc)
 	    {
 		count++;
-		addTask (task);
+		forkedTasks.add (task);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -150,9 +151,9 @@ public class TestTaskForkedObserver
 	    loopCount++;
 	    assertRunUntilStop ("run \"fork\" until stop, number "
 				+ forkCount + " of " + fib.callCount);
-	    forkCount += forkStopper.countTasks ();
-	    forkStopper.unblockTasks ();
-	    forkStopper.clearTasks ();
+	    forkCount += forkStopper.forkedTasks.size ();
+	    forkStopper.forkedTasks.unblock (forkStopper);
+	    forkStopper.forkedTasks.clear ();
 	}
 
 	assertEquals ("number of child processes created",
