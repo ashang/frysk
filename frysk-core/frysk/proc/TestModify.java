@@ -72,70 +72,74 @@ public class TestModify
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer
+ 	implements TaskObserver.Signaled
     {
-	public void update (Observable o, Object obj)
+	public void added (Throwable w)
 	{
-	    TaskEvent e = (TaskEvent) obj;
-            if (e instanceof TaskEvent.Signaled) {
-		TaskEvent.Signaled ste = (TaskEvent.Signaled)e;
-		if (ste.signal == Sig.SEGV) {
-		    ByteBuffer b;
-		    long memAddr;
-		    long addr;
-
-		    // At this point, the program has signalled us
-		    // to let us know that a file exists with the
-		    // int size and memory address to modify.
-	    	    try {
-			java.io.FileInputStream memAddrFile
+	    assertNull ("added arg", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSignaled (Task task, int sig)
+	{
+	    if (sig == Sig.SEGV) {
+		ByteBuffer b;
+		long memAddr;
+		long addr;
+		
+		// At this point, the program has signalled us to let
+		// us know that a file exists with the int size and
+		// memory address to modify.
+		try {
+		    java.io.FileInputStream memAddrFile
 		    	= new java.io.FileInputStream (memAddrFileName);
-			byte[] buf = new byte[16];
-			int len = memAddrFile.read (buf);
-			b = new ArrayByteBuffer (buf, 0, len);
-			b.order (e.task.getIsa ().byteOrder);
-			b.wordSize (e.task.getIsa ().wordSize);
-			memAddrFile.close ();
-			// Make sure file is deleted.
-			java.io.File f = new java.io.File (memAddrFileName);
-			f.delete ();
-	    	    }
-	    	    catch (Exception x) {
-			throw new RuntimeException (x);
-	    	    }
-		    memAddr = b.getUWord ();
-		    addr = memAddr;
-		    String chString = "abcdefghijklmnopqrstuvwxyz";
-		    // Modify byte values across a page boundary.
-		    for (int i = 0; i < 4097; ++i)
-			e.task.memory.putByte (addr + i, 
-					(byte) chString.charAt (i % 26));
-		    // Modify short values across a page boundary.
-		    addr = memAddr + 8000;
-		    for (int i = 0; i < 100; ++i)
-			e.task.memory.putShort (addr + i * 2, 
-					(short) (50 - i));
-		    // Modify an unaliged short value.
-		    addr = memAddr + 9999;
-		    e.task.memory.putShort (addr, (short) 0xdeaf);
-		    // Modify int values across a page boundary.
-		    addr = memAddr + 12096;
-		    for (int i = 0; i < 100; ++i)
-			e.task.memory.putInt (addr + i * 4, 
-					     (int) (50 - i));
-		    // Modify an unaliged int value.
-		    addr = memAddr + 14001;
-		    e.task.memory.putInt (addr, (int) 0xabcdef01);
-		    // Modify long values across a page boundary.
-		    addr = memAddr + 16192;
-		    for (int i = 0; i < 100; ++i)
-			e.task.memory.putLong (addr + i * 8, 
-					      (long) (50 - i));
-		    // Modify an unaliged int value.
-		    addr = memAddr + 17003;
-		    e.task.memory.putLong (addr, (long) 0xabcdef0123456789L);
+		    byte[] buf = new byte[16];
+		    int len = memAddrFile.read (buf);
+		    b = new ArrayByteBuffer (buf, 0, len);
+		    b.order (task.getIsa ().byteOrder);
+		    b.wordSize (task.getIsa ().wordSize);
+		    memAddrFile.close ();
+		    // Make sure file is deleted.
+		    java.io.File f = new java.io.File (memAddrFileName);
+		    f.delete ();
 		}
+		catch (Exception x) {
+		    throw new RuntimeException (x);
+		}
+		memAddr = b.getUWord ();
+		addr = memAddr;
+		String chString = "abcdefghijklmnopqrstuvwxyz";
+		// Modify byte values across a page boundary.
+		for (int i = 0; i < 4097; ++i)
+		    task.memory.putByte (addr + i, 
+					   (byte) chString.charAt (i % 26));
+		// Modify short values across a page boundary.
+		addr = memAddr + 8000;
+		for (int i = 0; i < 100; ++i)
+		    task.memory.putShort (addr + i * 2, 
+					    (short) (50 - i));
+		// Modify an unaliged short value.
+		addr = memAddr + 9999;
+		task.memory.putShort (addr, (short) 0xdeaf);
+		// Modify int values across a page boundary.
+		addr = memAddr + 12096;
+		for (int i = 0; i < 100; ++i)
+		    task.memory.putInt (addr + i * 4, 
+					(int) (50 - i));
+		// Modify an unaliged int value.
+		addr = memAddr + 14001;
+		task.memory.putInt (addr, (int) 0xabcdef01);
+		// Modify long values across a page boundary.
+		addr = memAddr + 16192;
+		for (int i = 0; i < 100; ++i)
+		    task.memory.putLong (addr + i * 8, 
+					   (long) (50 - i));
+		// Modify an unaliged int value.
+		addr = memAddr + 17003;
+		task.memory.putLong (addr, (long) 0xabcdef0123456789L);
 	    }
+	    return Action.CONTINUE;
  	}
     }
 
@@ -155,7 +159,7 @@ public class TestModify
 		    {
 			Task task = (Task) obj;
 			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
-			task.stopEvent.addObserver (taskEventObserver);
+			task.requestAddSignaledObserver (taskEventObserver);
 		    }
 		});
         }

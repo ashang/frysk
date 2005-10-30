@@ -85,35 +85,6 @@ public abstract class TaskEvent
     }
 
     /**
-     * The TASK is about to receive a SIGNAL.
-     */
-    static class Signaled
-	extends TaskEvent
-    {
-	protected int signal;
-	Signaled (Task task, int signal)
-	{
-	    super (task);
-	    this.signal = signal;
-	}
-	public int getSignal ()
-	{
-	    return signal;
-	}
-	public void execute ()
-	{
-	    throw new RuntimeException ("should not happen");
-	}
-	public String toString ()
-	{
-	    return ("[Signaled"
-		    + super.toString ()
-		    + ",signal=" + signal
-		    + "]");
-	}
-    }
-
-    /**
      * The task stopped using Sig.STOP.
      */
     static class Stopped

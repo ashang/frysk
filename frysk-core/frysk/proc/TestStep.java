@@ -80,18 +80,23 @@ public class TestStep
     }
  
     class StopEventObserver
- 	implements Observer
+ 	implements TaskObserver.Signaled
     {
 	boolean startedLoop;
-	public void update (Observable o, Object obj)
+	public void added (Throwable w)
 	{
-	    if (obj instanceof TaskEvent.Signaled) {
-		TaskEvent.Signaled e = (TaskEvent.Signaled) obj;
-		if (e.signal == Sig.SEGV) {
-		    startedLoop = true;	     
-		    Manager.eventLoop.add (new DetachTimerEvent (mainTask, 500));
-		}
+	    assertNull ("added arg", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSignaled (Task task, int sig)
+	{
+	    if (sig == Sig.SEGV) {
+		startedLoop = true;	     
+		Manager.eventLoop.add (new DetachTimerEvent (mainTask, 500));
 	    }
+	    return Action.CONTINUE;
 	}
     }
 
@@ -110,7 +115,7 @@ public class TestStep
 		mainTask = task;
 	    else if (thread1 == null) {
 		thread1 = task;
-		thread1.stopEvent.addObserver (stopEventObserver);
+		thread1.requestAddSignaledObserver (stopEventObserver);
 	    }
 	    else if (task.id.hashCode () != thread1.id.hashCode ())
 		thread2 = task;

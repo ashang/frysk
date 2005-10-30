@@ -807,4 +807,39 @@ abstract public class Task
 	}
 	return blockers.size ();
     }
+
+
+    /**
+     * Set of Signaled observers.
+     */
+    private TaskObservable signaledObservers = new TaskObservable ();
+    /**
+     * Add TaskObserver.Signaled to the TaskObserver pool.
+     */
+    public void requestAddSignaledObserver (TaskObserver.Signaled o)
+    {
+	requestAddObserver (signaledObservers, o);
+    }
+    /**
+     * Delete TaskObserver.Signaled.
+     */
+    public void requestDeleteSignaledObserver (TaskObserver.Signaled o)
+    {
+	requestDeleteObserver (signaledObservers, o);
+    }
+    /**
+     * Notify all Signaled observers of the signal.  Return the number
+     * of blocking observers.
+     */
+    int notifySignaled (int sig)
+    {
+	for (Iterator i = signaledObservers.iterator ();
+	     i.hasNext (); ) {
+	    TaskObserver.Signaled observer
+		= (TaskObserver.Signaled) i.next ();
+	    if (observer.updateSignaled (this, sig) == Action.BLOCK)
+		blockers.add (observer);
+	}
+	return blockers.size ();
+    }
 }

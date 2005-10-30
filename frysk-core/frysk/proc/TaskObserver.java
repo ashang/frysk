@@ -130,8 +130,17 @@ public interface TaskObserver
 	/**
 	 * The SIGNAL is pending delivery to the task.  Return
 	 * Action.BLOCK to block the task's further execution.
+	 *
+	 * XXX: This gets weird.  At present and in theory, a client
+	 * wanting to discard a signal would need to sequence the
+	 * following: tell the task to scrub discard the signal; tell
+	 * the task to remove this observer from the set of blockers;
+	 * return Action.BLOCK so that this task is added to the set
+	 * of blockers.  Perhaps it would be better to always add an
+	 * observer to the blocker pool and then require explict
+	 * removal.
 	 */
-	Action updateTerminated (Task task, int signal);
+	Action updateSignaled (Task task, int signal);
     }
 
     /**

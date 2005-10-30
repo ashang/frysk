@@ -74,7 +74,7 @@ public class TestI386Regs
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer, TaskObserver.Syscall
+ 	implements TaskObserver.Syscall, TaskObserver.Signaled
     {
 	public void added (Throwable w)
 	{
@@ -118,12 +118,10 @@ public class TestI386Regs
 	    return Action.CONTINUE;
 	}
 
-	public void update (Observable o, Object obj)
+	public Action updateSignaled (Task task, int sig)
 	{
-	    TaskEvent e = (TaskEvent) obj;
-            if (e instanceof TaskEvent.Signaled) {
-	        stoppedTaskEventCount++;
-	    }
+	    stoppedTaskEventCount++;
+	    return Action.CONTINUE;
  	}
     }
 
@@ -145,7 +143,7 @@ public class TestI386Regs
 			task = (Task) obj;
 			task.traceSyscall = true;
 			task.requestAddSyscallObserver (taskEventObserver);
-			task.stopEvent.addObserver (taskEventObserver);
+			task.requestAddSignaledObserver (taskEventObserver);
 		    }
 		});
         }

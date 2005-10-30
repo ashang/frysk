@@ -123,14 +123,21 @@ public class TestUnpaused
     }
 
     class StopEventObserver
-	implements Observer
+	implements TaskObserver.Signaled
     {
-	public void update (Observable o, Object obj)
+	public void added (Throwable w)
 	{
-	    TaskEvent.Signaled ste = (TaskEvent.Signaled)obj;
+	    assertNull ("added arg", w);
+	}
+	public void deleted ()
+	{
+	}
+	public Action updateSignaled (Task task, int sig)
+	{
 	    assertEquals ("task state", "running",
-			  ste.task.getStateString ());
-	    ste.task.requestStop ();  // Extraneous stop
+			  task.getStateString ());
+	    task.requestStop ();  // Extraneous stop
+	    return Action.CONTINUE;
 	}
     }
 
@@ -189,9 +196,9 @@ public class TestUnpaused
 			      thread1.getStateString ());
 		assertEquals ("task 2 state", "unpaused",
 			      thread2.getStateString ());
-		mainTask.stopEvent.addObserver (stopEventObserver);
-		thread1.stopEvent.addObserver (stopEventObserver);
-		thread2.stopEvent.addObserver (stopEventObserver);
+		mainTask.requestAddSignaledObserver (stopEventObserver);
+		thread1.requestAddSignaledObserver (stopEventObserver);
+		thread2.requestAddSignaledObserver (stopEventObserver);
 	 	Manager.eventLoop.add (new RunningCheckTimerEvent (mainTask, 500));
 	    }
         }

@@ -83,7 +83,7 @@ public class TestI386Modify
     // notifications.)
 
     class TaskEventObserver
- 	implements Observer, TaskObserver.Syscall
+ 	implements TaskObserver.Syscall, TaskObserver.Signaled
 
     {
 	public void added (Throwable w)
@@ -149,15 +149,10 @@ public class TestI386Modify
 	    }
 	    return Action.CONTINUE;
 	}
-	public void update (Observable o, Object obj)
+	public Action updateSignaled (Task task, int sig)
 	{
-	    TaskEvent e = (TaskEvent) obj;
-            if (e instanceof TaskEvent.Signaled) {
-		stoppedTaskEventCount++;
-		TaskEvent.Signaled ste = (TaskEvent.Signaled)e;
-		throw new RuntimeException ("Unexpected signaled event " +
-					    ste.signal);
-	    }
+	    fail ("unexpected signal " + sig);
+	    return Action.CONTINUE; // not reached
  	}
     }
 
@@ -178,7 +173,7 @@ public class TestI386Modify
                             Task task = (Task) obj;
  			    task.traceSyscall = true;
  			    task.requestAddSyscallObserver (taskEventObserver);
- 			    task.stopEvent.addObserver (taskEventObserver);
+			    task.requestAddSignaledObserver (taskEventObserver);
                         }
                     }
                  );

@@ -347,13 +347,13 @@ class TaskState
 	    }
 	    TaskState processPerformSignaled (Task task, int sig)
 	    {
-		// XXX: Fixme, notify here takes the TaskEvent, and
-		// internal task events should not be propogated back
-		// to the client.
-		TaskEvent event = new TaskEvent.Signaled (task, sig);
-		task.stopEvent.notify (event);
-		task.sendContinue (sig);
-		return running;
+		if (task.notifySignaled (sig) > 0) {
+		    return new BlockedSignal (sig);
+		}
+		else {
+		    task.sendContinue (sig);
+		    return running;
+		}
 	    }
 	    TaskState processPerformSyscalled (Task task)
 	    {
@@ -383,7 +383,7 @@ class TaskState
 		// Remove all tasks, retaining just this one.
 		task.proc.retain (task);
 		if (task.notifyExeced () > 0) {
-		    return blocked;
+		    return blockedContinue;
 		}
 		else {
 		    task.sendContinue (0);
@@ -416,7 +416,7 @@ class TaskState
 	    TaskState processPerformCloned (Task task, Task clone)
 	    {
 		if (task.notifyCloned (clone) > 0) {
-		    return blocked;
+		    return blockedContinue;
 		}
 		else {
 		    task.sendContinue (0);
@@ -426,7 +426,7 @@ class TaskState
 	    TaskState processPerformForked (Task task, Proc fork)
 	    {
 		if (task.notifyForked (fork) > 0)
-		    return blocked;
+		    return blockedContinue;
 		else
 		    task.sendContinue (0);
 		return running;
@@ -474,21 +474,44 @@ class TaskState
 	};
 
     /**
-     * The Task is blocked by a set of observers, remain in the state
-     * until all the observers have unblocked themselves.
+     * The Task is blocked by a set of observers, remain in this state
+     * until all the observers have unblocked themselves.  This state
+     * preserves any pending signal so that, once unblocked, the
+     * signal is delivered.
      */
-    private static TaskState blocked = new TaskState ("blocked")
+    private static class BlockedSignal
+	extends TaskState
+    {
+	int sig;
+	BlockedSignal (int sig)
 	{
-	    TaskState processRequestUnblock (Task task, TaskObserver observer)
+	    super ("BlockedSignal");
+	    this.sig = sig;
+	}
+	public String toString ()
+	{
+	    return "BlockedSignal=" + sig;
+	}
+	TaskState processRequestUnblock (Task task, TaskObserver observer)
+	{
+	    task.blockers.remove (observer);
+	    if (task.blockers.size () == 0) {
+		task.sendContinue (sig);
+		return running;
+	    }
+	    else {
+		return this; // Still blocked.
+	    }
+	}
+    }
+    /**
+     * The task is in the blocked state with no pending signal.
+     */
+    private static TaskState blockedContinue = new BlockedSignal (0)
+	{
+	    public String toString ()
 	    {
-		task.blockers.remove (observer);
-		if (task.blockers.size () == 0) {
-		    task.sendContinue (0);
-		    return running;
-		}
-		else {
-		    return blocked;
-		}
+		return "blockedContinue";
 	    }
 	};
 
@@ -561,6 +584,13 @@ class TaskState
 	    {
 		task.sendContinue (0);
 		return running;
+	    }
+	    TaskState processRequestAddObserver (Task task,
+						 TaskObservable observable,
+						 TaskObserver observer)
+	    {
+		observable.add (observer);
+		return unpaused;
 	    }
 	};
 
