@@ -1,5 +1,17 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Fix tipo, TaskObserverBase, not TaskObserverBaseX.
+	* TestProcGet.java: Reimplement CaptureAuxv by extending TestLib
+	.AutoAddTaskObserverBase.
+	* TestUnpaused.java: For TaskObserver's extend TaskObserverBase.
+	* TestSyscallOpen.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestStep.java: Ditto.
+	* TestModify.java: Ditto.
+	* TestI386Regs.java: Ditto.
+	* TestI386Modify.java: Ditto.
+
 	* TestLib.java: Split .TaskObserverBase, creating
 	.AutoAddTaskObserverBase sub-class.  Use AutoAddTaskObserverBase
 	throughout.

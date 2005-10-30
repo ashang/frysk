@@ -123,15 +123,9 @@ public class TestUnpaused
     }
 
     class StopEventObserver
+	extends TaskObserverBase
 	implements TaskObserver.Signaled
     {
-	public void added (Throwable w)
-	{
-	    assertNull ("added arg", w);
-	}
-	public void deleted ()
-	{
-	}
 	public Action updateSignaled (Task task, int sig)
 	{
 	    assertEquals ("task state", "running",

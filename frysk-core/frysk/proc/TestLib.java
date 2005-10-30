@@ -567,7 +567,7 @@ public class TestLib
      * task is found.  It should register itself with the applicable
      * observer.
      */
-    abstract class TaskObserverBaseX
+    abstract class TaskObserverBase
 	implements TaskObserver
     {
 	/**
@@ -597,7 +597,7 @@ public class TestLib
      * notified of each new Task as it arrives.
      */
     abstract class AutoAddTaskObserverBase
-	extends TaskObserverBaseX
+	extends TaskObserverBase
     {
 	/**
 	 * Create a TaskObserver, that in addition, registers itself

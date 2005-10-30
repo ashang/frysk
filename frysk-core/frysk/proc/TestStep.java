@@ -80,16 +80,10 @@ public class TestStep
     }
  
     class StopEventObserver
+	extends TaskObserverBase
  	implements TaskObserver.Signaled
     {
 	boolean startedLoop;
-	public void added (Throwable w)
-	{
-	    assertNull ("added arg", w);
-	}
-	public void deleted ()
-	{
-	}
 	public Action updateSignaled (Task task, int sig)
 	{
 	    if (sig == Sig.SEGV) {

@@ -39,9 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Observer;
-import java.util.Observable;
-
 /**
  * Test Proc's public get methods.
  */
@@ -57,49 +54,24 @@ public class TestProcGet
     public void testGetAuxv ()
     {
 	class CaptureAuxv
+	    extends AutoAddTaskObserverBase
+	    implements TaskObserver.Attached
 	{
 	    // Store the extracted auxv here.
 	    Auxv[] auxv;
-	    CaptureAuxv ()
+	    void updateTaskAdded (Task task)
 	    {
-		Manager.host.observableProcAdded.addObserver (new Observer ()
-		    {
-			public void update (Observable o, Object obj)
-			{
-			    Proc proc = (Proc) obj;
-			    if (!isChildOfMine (proc))
-				return;
-			    proc.observableTaskAdded.addObserver (new Observer ()
-				{
-				    public void update (Observable o,
-							Object obj)
-				    {
-					Task task = (Task) obj;
-					task.requestAddAttachedObserver (new TaskObserver.Attached ()
-					    {
-						public void added (Throwable t)
-						{
-						    assertNull ("added Throwable", t);
-						}
-						public void deleted ()
-						{
-						}
-						public Action updateAttached (Task task)
-						{
-						    auxv = task.proc.getAuxv ();
-						    return Action.CONTINUE;
-						}
-					    });
-				    }
-				});
-			}
-		    });
-
+		task.requestAddAttachedObserver (this);
+	    }
+	    public Action updateAttached (Task task)
+	    {
+		auxv = task.proc.getAuxv ();
+		return Action.CONTINUE;
 	    }
 	}
+	CaptureAuxv captureAuxv = new CaptureAuxv ();
 
 	TmpFile tmpFile = new TmpFile ();
-	CaptureAuxv captureAuxv = new CaptureAuxv ();
 	new StopEventLoopWhenChildProcRemoved ();
 	Manager.host.requestCreateAttachedContinuedProc
 	    (null, tmpFile.toString (), null, new String[] {

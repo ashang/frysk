@@ -65,15 +65,9 @@ public class TestSyscall2
     // notifications.)
 
     class TaskEventObserver
+	extends TaskObserverBase
  	implements TaskObserver.Syscall
     {
-	public void added (Throwable w)
-	{
-	    assertNull ("added parameter", w);
-	}
-	public void deleted ()
-	{
-	}
 	public Action updateSyscallEnter (Task task)
 	{
 	    fail ("not implemented");

@@ -74,15 +74,9 @@ public class TestI386Regs
     // notifications.)
 
     class TaskEventObserver
+	extends TaskObserverBase
  	implements TaskObserver.Syscall, TaskObserver.Signaled
     {
-	public void added (Throwable w)
-	{
-	    assertNull ("added's parameter", w);
-	}
-	public void deleted ()
-	{
-	}
 	public Action updateSyscallEnter (Task task)
 	{
 	    fail ("not implemented");

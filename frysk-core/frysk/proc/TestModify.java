@@ -72,15 +72,9 @@ public class TestModify
     // notifications.)
 
     class TaskEventObserver
+	extends TaskObserverBase
  	implements TaskObserver.Signaled
     {
-	public void added (Throwable w)
-	{
-	    assertNull ("added arg", w);
-	}
-	public void deleted ()
-	{
-	}
 	public Action updateSignaled (Task task, int sig)
 	{
 	    if (sig == Sig.SEGV) {
@@ -181,15 +175,9 @@ public class TestModify
     }
 
     class TaskTerminatedObserver
+	extends TaskObserverBase
 	implements TaskObserver.Terminated
     {
-	public void added (Throwable w)
-	{
-	    assertNull ("added's parameter", w);
-	}
-	public void deleted ()
-	{
-	}
 	public Action updateTerminated (Task task, boolean signal, int value)
 	{
 	    if (!signal) {
