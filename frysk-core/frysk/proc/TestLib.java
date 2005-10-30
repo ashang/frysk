@@ -567,39 +567,9 @@ public class TestLib
      * task is found.  It should register itself with the applicable
      * observer.
      */
-    abstract class TaskObserverBase
+    abstract class TaskObserverBaseX
 	implements TaskObserver
     {
-	/**
-	 * Create a TaskObserver, registered with the TaskAdded
-	 * observable, that will call the child's .updateTask method
-	 * for each added descendant Task.
-	 */
-	TaskObserverBase ()
-	{
-	    Manager.host.observableProcAdded.addObserver (new Observer ()
-		{
-		    public void update (Observable obj, Object o)
-		    {
-			Proc proc = (Proc) o;
-			if (!isDescendantOfMine (proc))
-			    return;
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable obj, Object o)
-				{
-				    Task task = (Task) o;
-				    updateTask (task);
-				}
-			    });
-		    }
-		});
-	}
-	/**
-	 * A new task appeared, update it.  The implementation should
-	 * register itself with the applicable Task observers.
-	 */
-	abstract void updateTask (Task task);
 	/**
 	 * Count of number of times that this observer was added to a
 	 * Task's observer set.
@@ -619,6 +589,45 @@ public class TestLib
 	{
 	    deletedCount++;
 	}
+    }
+
+    /**
+     * A TaskObserver base class that, in addition, tracks decendant
+     * processes and tasks as they are added.  The sub-class is
+     * notified of each new Task as it arrives.
+     */
+    abstract class AutoAddTaskObserverBase
+	extends TaskObserverBaseX
+    {
+	/**
+	 * Create a TaskObserver, that in addition, registers itself
+	 * with the TaskAdded observable so that added tasks can be
+	 * tracked.
+	 */
+	AutoAddTaskObserverBase ()
+	{
+	    Manager.host.observableProcAdded.addObserver (new Observer ()
+		{
+		    public void update (Observable obj, Object o)
+		    {
+			Proc proc = (Proc) o;
+			if (!isDescendantOfMine (proc))
+			    return;
+			proc.observableTaskAdded.addObserver (new Observer ()
+			    {
+				public void update (Observable obj, Object o)
+				{
+				    Task task = (Task) o;
+				    updateTaskAdded (task);
+				}
+			    });
+		    }
+		});
+	}
+	/**
+	 * A new task appeared, notify the sub-class of the update.
+	 */
+	abstract void updateTaskAdded (Task task);
     }
 
     /**
@@ -816,7 +825,7 @@ public class TestLib
      * Count the number of task exec calls.
      */
     protected class ExecCounter
-	extends TaskObserverBase
+	extends AutoAddTaskObserverBase
 	implements TaskObserver.Execed
     {
 	int numberExecs;
@@ -825,7 +834,7 @@ public class TestLib
 	    numberExecs++;
 	    return Action.CONTINUE;
 	}
-	void updateTask (Task task)
+	void updateTaskAdded (Task task)
 	{
 	    task.requestAddExecedObserver (ExecCounter.this);
 	}

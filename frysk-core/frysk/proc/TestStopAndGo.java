@@ -104,10 +104,10 @@ public class TestStopAndGo
     }
 
     class TaskDestroyedObserver
-	extends TaskObserverBase
+	extends AutoAddTaskObserverBase
 	implements TaskObserver.Terminated
     {
-	void updateTask (Task task)
+	void updateTaskAdded (Task task)
 	{
 	    task.requestAddTerminatedObserver (this);
 	}

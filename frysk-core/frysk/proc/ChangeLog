@@ -1,5 +1,14 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Split .TaskObserverBase, creating
+	.AutoAddTaskObserverBase sub-class.  Use AutoAddTaskObserverBase
+	throughout.
+	* TestUnpaused.java, TestTaskTerminateObserver.java,
+	TestTaskObserver.java, TestTaskForkedObserver.java,
+	TestTaskClonedObserver.java, TestStop.java, TestStopAndStop.java,
+	TestStopAndGo.java, TestStep.java, TestPaused.java,
+	TestGoAndGo.java: Ditto.
+	
 	* TestLib.java: Split out .TaskSet from .TaskObserverBase.
 	* TestTaskObserver.java, TestTaskForkedObserver.java,
 	TestTaskClonedObserver.java: Update, add explict TaskSet.

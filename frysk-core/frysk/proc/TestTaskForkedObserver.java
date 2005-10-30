@@ -60,7 +60,7 @@ public class TestTaskForkedObserver
 	// Watch for any Task fork events, accumulating them as they
 	// arrive.
 	class ForkObserver
-	    extends TaskObserverBase
+	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Forked
 	{
 	    int count;
@@ -69,7 +69,7 @@ public class TestTaskForkedObserver
 		count++;
 		return Action.CONTINUE;
 	    }
-	    void updateTask (Task task)
+	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddForkedObserver (this);
 	    }
@@ -115,7 +115,7 @@ public class TestTaskForkedObserver
 	// Watch for any Task fork events, accumulating them as they
 	// arrive.
 	class ForkStopper
-	    extends TaskObserverBase
+	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Forked
 	{
 	    int count;
@@ -127,7 +127,7 @@ public class TestTaskForkedObserver
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
-	    void updateTask (Task task)
+	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddForkedObserver (this);
 	    }

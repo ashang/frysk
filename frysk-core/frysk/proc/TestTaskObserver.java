@@ -54,10 +54,10 @@ public class TestTaskObserver
     {
 	new StopEventLoopWhenChildProcRemoved ();
 	class AddToAttached
-	    extends TaskObserverBase
+	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Attached, TaskObserver.Terminated
 	{
-	    void updateTask (Task task)
+	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddAttachedObserver (this);
 	    }
@@ -103,11 +103,11 @@ public class TestTaskObserver
 	// shut down the event loop.  Accumulate all blocked tasks in
 	// the TaskObserverBase's task set.
 	class BlockAttached
-	    extends TaskObserverBase
+	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Attached
 	{
 	    TaskSet attachedTasks = new TaskSet ();
-	    void updateTask (Task task)
+	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddAttachedObserver (this);
 	    }

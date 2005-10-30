@@ -60,7 +60,7 @@ public class TestTaskClonedObserver
     {
 	new StopEventLoopWhenChildProcRemoved ();
 	class CloneCounter
-	    extends TaskObserverBase
+	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Cloned
 	{
 	    int count;
@@ -69,7 +69,7 @@ public class TestTaskClonedObserver
 		count++;
 		return Action.CONTINUE;
 	    }
-	    void updateTask (Task task)
+	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddClonedObserver (this);
 	    }
@@ -114,7 +114,7 @@ public class TestTaskClonedObserver
 	// .blockedTasks.  The blocked Tasks can be unblocked using the
 	// .unblockTasks method.
 	class CloneStopper
-	    extends TaskObserverBase
+	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Cloned
 	{
 	    TaskSet clonedTasks = new TaskSet ();
@@ -124,7 +124,7 @@ public class TestTaskClonedObserver
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
-	    void updateTask (Task task)
+	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddClonedObserver (this);
 	    }

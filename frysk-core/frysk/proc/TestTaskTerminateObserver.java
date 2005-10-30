@@ -54,7 +54,7 @@ public class TestTaskTerminateObserver
      * Save the Terminating, and Terminated values as they pass by.
      */
     class Terminate
-	extends TaskObserverBase
+	extends AutoAddTaskObserverBase
 	implements TaskObserver.Terminating, TaskObserver.Terminated
     {
 	boolean terminatingP;
@@ -64,7 +64,7 @@ public class TestTaskTerminateObserver
 	    terminatingP = (terminating != INVALID);
 	    terminatedP = (terminated != INVALID);
 	}
-	void updateTask (Task task)
+	void updateTaskAdded (Task task)
 	{
 	    if (terminatedP)
 		task.requestAddTerminatedObserver (this);
