@@ -68,17 +68,22 @@ abstract public class Task
     }
 
     /**
-     * Returns the tasks' InstructionSetArchitecture.
-     *
-     * XXX: To simplify bootstrap, instead of making this opaque,
-     * provide a default.  It is assumed that derived tasks extend
-     * both the isa and the mechanism for getting the field.
+     * Returns this Task's Instruction Set Architecture.
      */
-    public Isa getIsa ()
+    public final Isa getIsa ()
     {
-	return bootstrapIsa;
+	if (isa == null)
+	    isa = sendrecIsa ();
+	return isa;
     }
-    private static Isa bootstrapIsa = new Isa ();
+    /**
+     * This Task's Instruction Set Architecture.
+     */
+    private Isa isa;
+    /**
+     * Fetch this Task's Instruction Set Architecture.
+     */
+    abstract protected Isa sendrecIsa ();
 
     /**
      * Return the task's entry point address.

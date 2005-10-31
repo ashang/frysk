@@ -210,9 +210,9 @@ public class LinuxHost
 		    // event, and the clone Task must be created
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
-		    Task clone = new LinuxIa32.Task (task.proc,
-						     new TaskId (clonePid),
-						     true);
+		    Task clone = new LinuxTask (task.proc,
+						new TaskId (clonePid),
+						true);
 		    task.performCloned (clone);
 		}
 		public void forkEvent (int pid, int childPid)

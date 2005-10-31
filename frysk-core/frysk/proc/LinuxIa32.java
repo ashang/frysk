@@ -39,10 +39,6 @@
 
 package frysk.proc;
 
-import inua.eio.ByteOrder;
-import inua.eio.ByteBuffer;
-import inua.eio.PtraceByteBuffer;
-
 class LinuxIa32
 {
     static class Isa
@@ -104,37 +100,6 @@ class LinuxIa32
         return isa;
     }
 
-    static class Task
-        extends LinuxTask
-    {
-	Isa isa = isaSingleton ();
-	/**
-	 * Create an attached, possibly running, task.
-	 */
-        Task (Proc process, TaskId tid, boolean running)
-        {
-            super (process, tid, running);
-	    // For writing at least, PTRACE must be used as /proc/mem
-	    // cannot be written to.
-	    memory = new PtraceByteBuffer (getTid (),
-					   PtraceByteBuffer.Area.DATA,
-	 			           0xffffffffl);
-	    memory.order (ByteOrder.LITTLE_ENDIAN);
-            registerBank = new ByteBuffer[] {
-                new PtraceByteBuffer (getTid (), PtraceByteBuffer.Area.USR)
-            };
-	    registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
-        }
-	public frysk.proc.Isa getIsa ()
-	{
-	    return isa;
-	}
-        public String toString ()
-        {
-            return "I386 Linux" + super.toString ();
-        }
-    }
-                                                                                
     public static class SyscallEventInfo
 	extends frysk.proc.SyscallEventInfo
     {

@@ -1,5 +1,12 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxIa32.java: Delete class .Task.
+	* LinuxTask.java: Implement .sendrecIsa.  Add method setupMaps,
+	use in constructors.
+	* Task.java: Add abstract method .sendrecIsa.  Make .getIsa final.
+	* LinuxProc.java, LinuxHost.java: Create LinuxTask, not
+	LinixIa32.Task.
+
 	* LinixIa32.java, LinuxPowerPc.java, LinuxX8664.java: Rename
 	I386Linux.java, PowerPcLinux.java, X8664Linux.java:
 	* LinuxHost.java: Update.

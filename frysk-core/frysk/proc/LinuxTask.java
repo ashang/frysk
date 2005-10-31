@@ -43,6 +43,9 @@ import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
+import inua.eio.PtraceByteBuffer;
+import inua.eio.ByteBuffer;
+import inua.eio.ByteOrder;
 
 /**
  * Linux implementation of Task.
@@ -51,6 +54,24 @@ import frysk.sys.Signal;
 public class LinuxTask
     extends Task
 {
+    // XXX: For moment wire in standard 32-bit little-endian memory
+    // map.  This will be replaced by a memory map created using
+    // information from /proc/PID/maps.
+    private void setupMapsXXX ()
+    {
+	// XXX: For writing at least, PTRACE must be used as /proc/mem
+	// cannot be written to.
+	memory = new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.DATA,
+				       0xffffffffl);
+	memory.order (ByteOrder.LITTLE_ENDIAN);
+	// XXX: For moment wire in a standard 32-bit little-endian
+	// register set.
+	registerBank = new ByteBuffer[] {
+	    new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.USR)
+	};
+	registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
+    }
+
     /**
      * Create a detached task.  For detached tasks, RUNNING makes no
      * sennse.
@@ -58,6 +79,7 @@ public class LinuxTask
     LinuxTask (Proc process, TaskId id)
     {
 	super (process, id);
+	setupMapsXXX ();
     }
 
     /**
@@ -66,6 +88,7 @@ public class LinuxTask
     LinuxTask (Proc process, TaskId id, boolean running)
     {
 	super (process, id, running);
+	setupMapsXXX ();
     }
 
     protected void sendContinue (int sig)
@@ -123,6 +146,10 @@ public class LinuxTask
     protected void sendDetach (int sig)
     {
 	Ptrace.detach (getTid (), sig);
+    }
+    protected Isa sendrecIsa ()
+    {
+	return LinuxIa32.isaSingleton ();
     }
     public String toString ()
     {
