@@ -52,13 +52,15 @@
  * XXX: As an unsigned!?
  */
 
+typedef int64_t (get_t) (const void *);
+
 static int64_t
-get32 (char *b)
+get32 (const void *b)
 {
   return (*(uint32_t*)b);
 }
 static int64_t
-get64 (char *b)
+get64 (const void *b)
 {
   return (*(uint64_t*)b);
 }
@@ -66,11 +68,13 @@ get64 (char *b)
 // Verify the auxiliary vector is both correctly sized, and contains
 // only reasonable entries.
 static bool
-verify (char* buf, int bufLen, int wordSize, int64_t (*get) (char*))
+verify (jbyteArray buf, int wordSize, get_t *get)
 {
-  if (bufLen % (wordSize * 2) != 0)
+  if (buf->length % (wordSize * 2) != 0)
     return false;
-  for (char* p = buf; p < buf + bufLen; p += wordSize * 2) {
+  for (jbyte *p = elements(buf);
+       p < elements(buf) + buf->length;
+       p += wordSize * 2) {
     int64_t type = get (p);
     if (type > 1024 || type < 0)
       return false;
@@ -81,17 +85,22 @@ verify (char* buf, int bufLen, int wordSize, int64_t (*get) (char*))
 jboolean
 frysk::sys::proc::AuxvBuilder::construct (jint pid)
 {
-  char buf[BUFSIZ];
-  int bufLen = slurp (pid, "auxv", buf, sizeof buf);
-  if (bufLen <= 0)
+  jbyteArray buf = slurp (pid, "auxv");
+  if (buf == NULL)
     return false;
-  
+
+  return construct (buf);
+}
+
+jboolean
+frysk::sys::proc::AuxvBuilder::construct (jbyteArray buf)
+{
   // Figure out the word-size of the auxv.  It is assumed that that
   // this process, and the auxv have at least a common byte order.
-  int64_t (*get) (char* buf) = NULL;
+  get_t *get = NULL;
   jint wordSize = 0;
-  if (verify (buf, bufLen, 4, get32)) {
-    if (verify (buf, bufLen, 8, get64)) {
+  if (verify (buf, 4, get32)) {
+    if (verify (buf, 8, get64)) {
       throwRuntimeException ("conflicting word sizes for auxv");
     }
     else {
@@ -100,7 +109,7 @@ frysk::sys::proc::AuxvBuilder::construct (jint pid)
     }
   }
   else {
-    if (verify (buf, bufLen, 8, get64)) {
+    if (verify (buf, 8, get64)) {
       wordSize = 8;
       get = get64;
     }
@@ -108,12 +117,12 @@ frysk::sys::proc::AuxvBuilder::construct (jint pid)
       throwRuntimeException ("unknown word size for auxv");
     }
   }
-  int length = bufLen / wordSize / 2;
-  buildDimensions (wordSize, length);
-
+  int numberEntries = buf->length / wordSize / 2;
+  buildBuffer (wordSize, numberEntries, buf);
+  
   // Unpack the corresponding entries.
-  for (int i = 0; i < length; i++) {
-    char* p = buf + wordSize * i * 2;
+  for (int i = 0; i < numberEntries; i++) {
+    jbyte *p = elements (buf) + wordSize * i * 2;
     jint type = get (p + wordSize * 0);
     jlong value = get (p + wordSize * 1);
     buildAuxiliary (i, type, value);

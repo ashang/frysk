@@ -1,3 +1,12 @@
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/slurp.hxx: Declare jbyteArray slurp(int,const char*)
+	* cni/slurp.cxx: Implement.
+	* cni/AuxvBuilder.cxx (construct): New, use jbyteArray slurp
+	function.
+	* AuxvBuilder.java: Add construct(byte[]), replace
+	.buildDimensions with .buildBuffer.
+	
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* AuxvBuilder.java: Rename AuxiliaryVectorBuilder.java.

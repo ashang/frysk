@@ -48,25 +48,32 @@ package frysk.sys.proc;
 public abstract class AuxvBuilder
 {
     /**
-     * Scan the auxiliary vector found in <tt>/proc/PID/auxv</tt>
-     * building up an auxv.  Return true if the scan was successful.
-     */
-    public final native boolean construct (int pid);
-
-    /**
-     * Create a AuxvBuilder.
+     * Create a AuxvBuilder; can only extend.
      */
     protected AuxvBuilder ()
     {
     }
 
     /**
-     * Called with the wordSize and number of entries.
+     * Scan the auxiliary vector found in <tt>/proc/PID/auxv</tt>
+     * building up an auxv.  Return true if the scan was successful.
      */
-    public abstract void buildDimensions (int wordSize, int length);
+    public final native boolean construct (int pid);
 
     /**
-     * Called for every auxiliary vector entry.
+     * Scan the auxiliary vector found in the AUXV byte array.
+     */
+    public final native boolean construct (byte[] auxv);
+
+    /**
+     * Called with the wordSize, the number of elements, and the raw
+     * buffer.
+     */
+    public abstract void buildBuffer (int wordSize, int numberElements,
+				      byte[] auxv);
+
+    /**
+     * Called with each auxiliary vector entry.
      */
     public abstract void buildAuxiliary (int index, int type, long value);
 }

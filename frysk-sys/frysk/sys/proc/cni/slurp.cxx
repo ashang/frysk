@@ -49,6 +49,7 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/cni/slurp.hxx"
 
+
 int
 slurp (int pid, const char* name, char buf[], long sizeof_buf)
 {
@@ -81,4 +82,17 @@ slurp (int pid, const char* name, char buf[], long sizeof_buf)
   // Null terminate the buffer.
   buf[len] = '\0';
   return len;
+}
+
+jbyteArray
+slurp (int pid, const char* name)
+{
+  // This implementation unfortunatly double buffers the data.
+  char buf[BUFSIZ];
+  int buf_len = slurp (pid, name, buf, sizeof buf);
+  if (buf_len < 0)
+    return NULL;
+  jbyteArray jbuf = JvNewByteArray (buf_len);
+  memcpy (elements (jbuf), buf, buf_len);
+  return jbuf;
 }

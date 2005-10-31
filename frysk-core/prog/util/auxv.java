@@ -60,7 +60,8 @@ class auxv
 
 	AuxvBuilder builder = new AuxvBuilder ()
 	    {
-		public void buildDimensions (int wordSize, int length)
+		public void buildBuffer (int wordSize, int length,
+					 byte[] auxv)
 		{
 		    // Toss.
 		}

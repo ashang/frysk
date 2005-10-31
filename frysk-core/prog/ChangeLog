@@ -1,3 +1,8 @@
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Update builder, replace buildDimensions with
+	buildBuffer.
+
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* util/auxv.java: Update to track frys.sys.proc change.

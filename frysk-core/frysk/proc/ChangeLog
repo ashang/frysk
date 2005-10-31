@@ -1,5 +1,8 @@
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java: Update BuildAuxv, replace buildDimensions with
+	buildBuffer.
+
 	* Isa.java: Add .getSyscallEventInfo.
 	* LinuxIa32.java: Implement getSyscallEventInfo.
 	* LinuxPowerPc.java: Delete unimplemented .SyscallEventInfo.
