@@ -1,5 +1,10 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxHost.java: Update to track frys.sys.proc changes,
+	AuxvBuilder and IdBuilder replacing ScanDir and
+	AuxiliaryVectorBuilder.
+	* LinuxProc.java: Ditto.
+	
 	* TestProcGet.java: Fix typo, auxv.val not auxv.type.
 	* Proc.java: Add .sendrecAuxv.  Implement .getAuxv locally.
 	* LinuxProc.java: Replace .getAuxv with .sendrecAuxv.  Use

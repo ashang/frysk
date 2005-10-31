@@ -1,5 +1,8 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* util/auxv.java: Update to track frys.sys.proc change.
+	AuxvBuilder replacing AuxiliaryVectorBuilder.
+	
 	* util/auxv.java: Re-implement using
 	frysk.sys.proc.AuxiliaryVectorBuilder.
 

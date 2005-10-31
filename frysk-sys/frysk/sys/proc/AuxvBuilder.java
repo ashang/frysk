@@ -45,18 +45,18 @@ package frysk.sys.proc;
  *
  * While this isn't a pure builder pattern, it is close enough.
  */
-public abstract class AuxiliaryVectorBuilder
+public abstract class AuxvBuilder
 {
     /**
      * Scan the auxiliary vector found in <tt>/proc/PID/auxv</tt>
      * building up an auxv.  Return true if the scan was successful.
      */
-    public final native boolean constructAuxv (int pid);
+    public final native boolean construct (int pid);
 
     /**
-     * Create a AuxiliaryVectorBuilder.
+     * Create a AuxvBuilder.
      */
-    protected AuxiliaryVectorBuilder ()
+    protected AuxvBuilder ()
     {
     }
 

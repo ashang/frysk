@@ -1,5 +1,10 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* AuxvBuilder.java: Rename AuxiliaryVectorBuilder.java.
+	* IdBuilder.java: Rename ScanDir.java.
+	* cni/AuxvBuilder.cxx: Rename cni/AuxiliaryVectorBuilder.cxx.
+	* cni/IdBuilder.cxx: Rename cni/ScanDir.cxx.
+
 	* cni/AuxiliaryVectorBuilder.cxx: 
 	* AuxiliaryVectorBuilder.java: New.
 	* cni/AuxiliaryVectorBuilder.cxx: New.

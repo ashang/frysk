@@ -50,7 +50,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
-import frysk.sys.proc.ScanDir;
+import frysk.sys.proc.IdBuilder;
 
 /**
  * A Linux Host.
@@ -150,15 +150,14 @@ public class LinuxHost
     void sendRefresh (boolean refreshAll)
     {
 	final ProcChanges procChanges = new ProcChanges ();
-	ScanDir scanDir = new ScanDir ()
+	IdBuilder pidBuilder = new IdBuilder ()
 	    {
-		ProcChanges changes = procChanges;
-		public void process (int pid)
+		public void buildId (int pid)
 		{
-		    changes.update (pid);
+		    procChanges.update (pid);
 		}
 	    };
-	scanDir.refresh ();
+	pidBuilder.construct ();
 	if (refreshAll) {
 	    // Changes individual process.
 	    for (Iterator i = procPool.values ().iterator(); i.hasNext (); ) {

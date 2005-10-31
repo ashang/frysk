@@ -44,8 +44,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import frysk.sys.proc.Stat;
-import frysk.sys.proc.ScanDir;
-import frysk.sys.proc.AuxiliaryVectorBuilder;
+import frysk.sys.proc.IdBuilder;
+import frysk.sys.proc.AuxvBuilder;
 
 /**
  * Linux implementation of Proc.
@@ -96,28 +96,28 @@ public class LinuxProc
 	// starting with all known tasks has any existing tasks
 	// removed, so that by the end it contains a set of
 	// removed tasks.
-	class TaskDir
-	    extends ScanDir
+	class TidBuilder
+	    extends IdBuilder
 	{
 	    Map added = new HashMap ();
 	    HashMap removed = (HashMap) ((HashMap)taskPool).clone ();
 	    TaskId searchId = new TaskId ();
-	    public void process (int pid)
+	    public void buildId (int tid)
 	    {
-		searchId.id = pid;
+		searchId.id = tid;
 		if (removed.containsKey (searchId)) {
 		    removed.remove (searchId);
 		}
 		else {
 		    // Add the process (it currently isn't attached).
 		    Task newTask = new LinuxTask (LinuxProc.this,
-						  new TaskId (pid));
+						  new TaskId (tid));
 		    added.put (newTask.id, newTask);
 		}
 	    }
 	}
-	TaskDir tasks = new TaskDir ();
-	tasks.refresh (id.id);
+	TidBuilder tasks = new TidBuilder ();
+	tasks.construct (id.id);
 	// Tell each task that no longer exists that it has been
 	// removed.
 	for (Iterator i = tasks.removed.values().iterator(); i.hasNext();) {
@@ -132,10 +132,10 @@ public class LinuxProc
     void sendAttach (final boolean runningArg)
     {
 	Ptrace.attach (id.id);
-	ScanDir tasks = new ScanDir ()
+	IdBuilder tasks = new IdBuilder ()
 	    {
 		boolean running = runningArg;
-		public void process (int tid)
+		public void buildId (int tid)
 		{
 		    if (tid != id.id)
 			Ptrace.attach (tid);
@@ -143,7 +143,7 @@ public class LinuxProc
 		    sendNewAttachedTask (newTid, running);
 		}
 	    };
-	tasks.refresh (id.id);
+	tasks.construct (id.id);
     }
     void sendNewAttachedChild (ProcId childId, boolean running)
     {
@@ -159,7 +159,7 @@ public class LinuxProc
     Auxv[] sendrecAuxv ()
     {
 	class BuildAuxv
-	    extends AuxiliaryVectorBuilder
+	    extends AuxvBuilder
 	{
 	    Auxv[] vec;
 	    public void buildDimensions (int wordSize, int length)
@@ -172,7 +172,7 @@ public class LinuxProc
 	    }
 	}
 	BuildAuxv auxv = new BuildAuxv ();
-	auxv.constructAuxv (getPid ());
+	auxv.construct (getPid ());
 	return auxv.vec;
     }
 }

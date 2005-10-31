@@ -37,87 +37,58 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <stdint.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <errno.h>
+#include <stdlib.h>
 
 #include <gcj/cni.h>
+#include <gnu/gcj/RawData.h>
 
-#include "frysk/sys/proc/cni/slurp.hxx"
 #include "frysk/sys/cni/Errno.hxx"
-#include "frysk/sys/proc/AuxiliaryVectorBuilder.h"
+#include "frysk/sys/proc/IdBuilder.h"
 
-/**
- * Extract the value.
- *
- * XXX: As an unsigned!?
- */
-
-static int64_t
-get32 (char *b)
+gnu::gcj::RawData*
+frysk::sys::proc::IdBuilder::open (jint pid)
 {
-  return (*(uint32_t*)b);
-}
-static int64_t
-get64 (char *b)
-{
-  return (*(uint64_t*)b);
-}
-
-// Verify the auxiliary vector is both correctly sized, and contains
-// only reasonable entries.
-static bool
-verify (char* buf, int bufLen, int wordSize, int64_t (*get) (char*))
-{
-  if (bufLen % (wordSize * 2) != 0)
-    return false;
-  for (char* p = buf; p < buf + bufLen; p += wordSize * 2) {
-    int64_t type = get (p);
-    if (type > 1024 || type < 0)
-      return false;
+  // Get the file name.
+  const char *file;
+  char tmp[FILENAME_MAX];
+  if (pid > 0) {
+    if (::snprintf (tmp, sizeof tmp, "/proc/%d/task", (int) pid)
+	>= FILENAME_MAX)
+      throwRuntimeException ("snprintf: buffer overflow");
+    file = tmp;
   }
-  return true;
+  else
+    file = "/proc";
+  return (gnu::gcj::RawData*)  opendir (file);
 }
 
-jboolean
-frysk::sys::proc::AuxiliaryVectorBuilder::constructAuxv (jint pid)
+void
+frysk::sys::proc::IdBuilder::scan (gnu::gcj::RawData* rawData)
 {
-  char buf[BUFSIZ];
-  int bufLen = slurp (pid, "auxv", buf, sizeof buf);
-  if (bufLen <= 0)
-    return false;
-  
-  // Figure out the word-size of the auxv.  It is assumed that that
-  // this process, and the auxv have at least a common byte order.
-  int64_t (*get) (char* buf) = NULL;
-  jint wordSize = 0;
-  if (verify (buf, bufLen, 4, get32)) {
-    if (verify (buf, bufLen, 8, get64)) {
-      throwRuntimeException ("conflicting word sizes for auxv");
-    }
-    else {
-      wordSize = 4;
-      get = get32;
-    }
-  }
-  else {
-    if (verify (buf, bufLen, 8, get64)) {
-      wordSize = 8;
-      get = get64;
-    }
-    else {
-      throwRuntimeException ("unknown word size for auxv");
-    }
-  }
-  int length = bufLen / wordSize / 2;
-  buildDimensions (wordSize, length);
+  DIR* proc = (DIR*) rawData;
 
-  // Unpack the corresponding entries.
-  for (int i = 0; i < length; i++) {
-    char* p = buf + wordSize * i * 2;
-    jint type = get (p + wordSize * 0);
-    jlong value = get (p + wordSize * 1);
-    buildAuxiliary (i, type, value);
-  }
+  while (true) {
 
-  return true;
+    // Get the dirent.
+    struct dirent *dirent = readdir (proc);
+    if (dirent == NULL)
+      break;
+
+    // Get the pid, skip if non-numeric.
+    char* end = NULL;
+    int id = strtol (dirent->d_name, &end, 10);
+    if (end == dirent->d_name)
+      continue;
+
+    buildId (id);
+  }
+}
+
+void
+frysk::sys::proc::IdBuilder::close (gnu::gcj::RawData* rawData)
+{
+  closedir ((DIR*) rawData);
 }

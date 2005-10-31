@@ -45,7 +45,7 @@ package prog.util;
 
 import inua.PrintWriter;
 import frysk.proc.Auxv;
-import frysk.sys.proc.AuxiliaryVectorBuilder;
+import frysk.sys.proc.AuxvBuilder;
 
 class auxv
 {
@@ -58,7 +58,7 @@ class auxv
 	    return;
 	}
 
-	AuxiliaryVectorBuilder builder = new AuxiliaryVectorBuilder ()
+	AuxvBuilder builder = new AuxvBuilder ()
 	    {
 		public void buildDimensions (int wordSize, int length)
 		{
@@ -70,6 +70,6 @@ class auxv
 		    new Auxv (type, val).print (out);
 		}
 	    };
-	builder.constructAuxv (Integer.parseInt (args[0]));
+	builder.construct (Integer.parseInt (args[0]));
     }
 }

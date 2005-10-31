@@ -37,51 +37,87 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys.proc;
+#include <stdint.h>
+#include <stdio.h>
 
-import gnu.gcj.RawData;
+#include <gcj/cni.h>
+
+#include "frysk/sys/proc/cni/slurp.hxx"
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/proc/AuxvBuilder.h"
 
 /**
- * Scan the <tt>/proc</tt>, or <tt>/proc/</tt>pid<tt>/task</tt>
- * directory for process IDs.
+ * Extract the value.
+ *
+ * XXX: As an unsigned!?
  */
-public abstract class ScanDir
+
+static int64_t
+get32 (char *b)
 {
-    /**
-     * Called for each process in the <tt>/proc</tt> directory.
-     */
-    abstract public void process (int pid);
-    /**
-     * Iterate over the <tt>/proc</tt>pid<tt>/task</tt> directory
-     * notifying ScanDir of each "interesting" entry.  Use "finally"
-     * to ensure that the directory is always closed.
-     */
-    public final boolean refresh (int pid)
-    {
-	RawData dir = open (pid);
-	if (dir == null)
-	    return false;
-	try {
-	    scan (dir);
-	}
-	finally {
-	    close (dir);
-	}
-	return true;
+  return (*(uint32_t*)b);
+}
+static int64_t
+get64 (char *b)
+{
+  return (*(uint64_t*)b);
+}
+
+// Verify the auxiliary vector is both correctly sized, and contains
+// only reasonable entries.
+static bool
+verify (char* buf, int bufLen, int wordSize, int64_t (*get) (char*))
+{
+  if (bufLen % (wordSize * 2) != 0)
+    return false;
+  for (char* p = buf; p < buf + bufLen; p += wordSize * 2) {
+    int64_t type = get (p);
+    if (type > 1024 || type < 0)
+      return false;
+  }
+  return true;
+}
+
+jboolean
+frysk::sys::proc::AuxvBuilder::construct (jint pid)
+{
+  char buf[BUFSIZ];
+  int bufLen = slurp (pid, "auxv", buf, sizeof buf);
+  if (bufLen <= 0)
+    return false;
+  
+  // Figure out the word-size of the auxv.  It is assumed that that
+  // this process, and the auxv have at least a common byte order.
+  int64_t (*get) (char* buf) = NULL;
+  jint wordSize = 0;
+  if (verify (buf, bufLen, 4, get32)) {
+    if (verify (buf, bufLen, 8, get64)) {
+      throwRuntimeException ("conflicting word sizes for auxv");
     }
-    /**
-     * Iterate over the <tt>/proc</tt> directory notifying ScanDir of
-     * each "interesting" entry.
-     */
-    public final boolean refresh ()
-    {
-	return refresh (0);
+    else {
+      wordSize = 4;
+      get = get32;
     }
-    /**
-     * Private native methods for manipulating the <tt>/proc</tt>
-     * directory.  Move to frysk.sys.Dir?
-     */
-    native RawData open (int pid);
-    native void scan (RawData dir);
-    native void close (RawData dir);
+  }
+  else {
+    if (verify (buf, bufLen, 8, get64)) {
+      wordSize = 8;
+      get = get64;
+    }
+    else {
+      throwRuntimeException ("unknown word size for auxv");
+    }
+  }
+  int length = bufLen / wordSize / 2;
+  buildDimensions (wordSize, length);
+
+  // Unpack the corresponding entries.
+  for (int i = 0; i < length; i++) {
+    char* p = buf + wordSize * i * 2;
+    jint type = get (p + wordSize * 0);
+    jlong value = get (p + wordSize * 1);
+    buildAuxiliary (i, type, value);
+  }
+
+  return true;
 }
