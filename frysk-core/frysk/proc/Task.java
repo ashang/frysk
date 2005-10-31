@@ -68,6 +68,14 @@ abstract public class Task
     }
 
     /**
+     * Return the task's (derived) name
+     */
+    public final String getName ()
+    {
+    return "Task " + getTid();
+    }
+    
+    /**
      * Returns this Task's Instruction Set Architecture.
      */
     public final Isa getIsa ()
