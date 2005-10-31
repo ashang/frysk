@@ -98,38 +98,42 @@ class LinuxIa32
         return isa;
     }
 
-    public static class SyscallEventInfo
-	extends frysk.proc.SyscallEventInfo
+    private SyscallEventInfo info;
+    SyscallEventInfo getSyscallEventInfo ()
     {
-	int number (Task task)
-	{
-	    return (int)isaSingleton ().orig_eax.get (task);
-	}
-	long returnCode (Task task)
-	{
-	    return isaSingleton ().eax.get (task);
-	}
-	long arg (Task task, int n)
-	{
-	    switch (n) {
-		case 0:
-		    return (long)number (task);
-		case 1:
-		    return isaSingleton ().ebx.get (task);
-		case 2:
-		    return isaSingleton ().ecx.get (task);
-		case 3:
-		    return isaSingleton ().edx.get (task);
-		case 4:
-		    return isaSingleton ().esi.get (task);
-		case 5:
-		    return isaSingleton ().edi.get (task);
-		case 6:
-		    return isaSingleton ().eax.get (task);
-		default:
-	    	    throw new RuntimeException ("unknown syscall arg");
-	    }
-	}
+	if (info == null)
+	    info = new SyscallEventInfo ()
+		{
+		    int number (Task task)
+		    {
+			return (int)orig_eax.get (task);
+		    }
+		    long returnCode (Task task)
+		    {
+			return eax.get (task);
+		    }
+		    long arg (Task task, int n)
+		    {
+			switch (n) {
+			case 0:
+			    return (long)number (task);
+			case 1:
+			    return ebx.get (task);
+			case 2:
+			    return ecx.get (task);
+			case 3:
+			    return edx.get (task);
+			case 4:
+			    return esi.get (task);
+			case 5:
+			    return edi.get (task);
+			case 6:
+			    return eax.get (task);
+			default:
+			    throw new RuntimeException ("unknown syscall arg");
+			}
+		    }
+		};
+	return info;
     }
 }
-

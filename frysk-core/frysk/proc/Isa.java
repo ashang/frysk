@@ -46,6 +46,9 @@ import inua.eio.ByteOrder;
 
 /**
  * Instruction Set Architecture.
+ *
+ * XXX: This ISA object needs to be re-organized; perhaphs an OsIsa
+ * object with nested members for the ISA, the OS, et.al.
  */
 
 class Isa
@@ -76,4 +79,15 @@ class Isa
     // howToDoWatchpoints;
     // howToComputePcAfterTrap;
     // howToStepOutOfRange;
+
+    /**
+     * Return the System Call Decoder.
+     *
+     * XXX: This ISA object should be re-named; it is really the
+     * OS+ISA object.
+     */
+    SyscallEventInfo getSyscallEventInfo ()
+    {
+	throw new RuntimeException ("not implemented");
+    }
 }

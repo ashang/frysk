@@ -1,5 +1,13 @@
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* Isa.java: Add .getSyscallEventInfo.
+	* LinuxIa32.java: Implement getSyscallEventInfo.
+	* LinuxPowerPc.java: Delete unimplemented .SyscallEventInfo.
+	* LinuxX8664.java: Ditto.
+	* TestSyscallOpen.java: Update.
+	* TestI386Regs.java: Update.
+	* TestI386Modify.java: Update.
+
 	* LinuxIa32.java: Fold inner Isa class into main class.
 	* LinuxX8664.java: Ditto.
 	* LinuxPowerPc.java: Ditto.

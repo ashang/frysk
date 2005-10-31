@@ -48,21 +48,4 @@ class LinuxX8664
 	    isa = new LinuxX8664 ();
 	return isa;
     }
-
-    static class SyscallEventInfo
-	extends frysk.proc.SyscallEventInfo
-    {
-	int number (Task task)
-	{
-	    throw new RuntimeException ("not implemented");
-	}
-	long returnCode (Task task)
-	{
-	    throw new RuntimeException ("not implemented");
-	}
-	long arg (Task task, int n)
-	{
-	    throw new RuntimeException ("not implemented");
-	}
-    }
 }

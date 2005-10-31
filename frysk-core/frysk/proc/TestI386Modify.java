@@ -101,7 +101,7 @@ public class TestI386Modify
 	{
 	    syscallState ^= 1;
 	    SyscallEventInfo syscall
-		= new LinuxIa32.SyscallEventInfo ();
+		= task.getIsa ().getSyscallEventInfo ();
 	    // The low-level assembler code performs an exit syscall
 	    // and sets up the registers with simple values.  We want
 	    // to verify that all the registers are as expected.
