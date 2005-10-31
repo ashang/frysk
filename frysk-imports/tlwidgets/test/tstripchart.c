@@ -5,7 +5,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <gtk/gtk.h>
-#include "ftkstripchart.h"
+#include <ftkstripchart.h>
 
 GtkWidget *stripchart1;
 

@@ -1,9 +1,12 @@
   LDFLAGS =
    CFLAGS = -g
 
-    INCS = `pkg-config --cflags gtk+-2.0` -I ../widgets
+    INCS = `pkg-config --cflags gtk+-2.0` \
+           `pkg-config --cflags ftk`
 
-     LIBS = `pkg-config --libs   gtk+-2.0` -L ../widgets -lftk -lm -lrt
+     LIBS = `pkg-config --libs   gtk+-2.0` \
+            `pkg-config --libs   ftk` \
+            -lm
 
       CC = gcc
 
