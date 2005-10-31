@@ -88,9 +88,28 @@ javadoc: javadoc/$(PACKAGE_LIST) all
 javadoc/$(PACKAGE_LIST):
 	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
 	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)
+
+# Since javadoc re-generates all the files, changing their
+# last-modified time (even when the contents don't change), rsync-a
+# must push a mod-time on every file.  Avoid that cost by ignoring the
+# mod-time and instead using --checksum; while pulling all the
+# checksums is expensive it isn't as expensive as pushing every file's
+# mod-time.
+
 .PHONY: upload-javadoc
 upload-javadoc:
-	rsync --delete -a -v javadoc sources.redhat.com:/sourceware/www/sourceware/htdocs/frysk
+	rsync \
+		--fuzzy \
+		--delete-during \
+		--ignore-times \
+		--perms \
+		--checksum \
+		--recursive \
+		--links \
+		--itemize-changes \
+		--stats \
+		javadoc \
+		sources.redhat.com:/sourceware/www/sourceware/htdocs/frysk
 CLEANFILES += javadoc
 
 # Generate DOXYGEN documentation.
