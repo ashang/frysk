@@ -1,3 +1,9 @@
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* version.in: New file.
+	* configure.ac (VERSION_IN): Define by including version.in.
+	(AC_INIT): Set version to VERSION_IN.
+
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (upload-javadoc): Tune the rsync options; use

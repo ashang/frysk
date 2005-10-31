@@ -38,7 +38,9 @@
 # exception.
 
 AC_PREREQ(2.59)
-AC_INIT(frysk, 0.0)
+define([VERSION_IN],m4_esyscmd([tr -d '\n' < version.in]))
+AC_INIT(frysk,defn([VERSION_IN]))
+AC_SUBST([CONFIGURE_DEPENDENCIES],['$(top_srcdir)/version.in'])
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core frysk-gui])
