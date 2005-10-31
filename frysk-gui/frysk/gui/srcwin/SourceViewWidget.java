@@ -46,6 +46,7 @@ import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
 import org.gnu.glib.Handle;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.StateType;
@@ -54,6 +55,7 @@ import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TextWindowType;
+import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
 import org.gnu.gtk.event.MenuItemEvent;
@@ -206,19 +208,33 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		int y = (int) event.getY();
 		
 		// Middle click over the main text area will trigger the variable-finding
-		if(event.getButtonPressed() == MouseEvent.BUTTON2 
-				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)){
+		if(event.getButtonPressed() == MouseEvent.BUTTON3 
+				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS) &&
+				event.getWindow().equals(this.getWindow(TextWindowType.TEXT))){
 			
 			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
 			
 			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
 			
-			Variable var = this.buf.getVariable(iter);
+			final Variable var = this.buf.getVariable(iter);
 			
-			if(var == null)
-				return false;
+			Menu m = new Menu();
+			MenuItem mi = new MenuItem("Display variable value", false);
+			m.append(mi);
+			if(var != null)
+				mi.addListener(new MenuItemListener() {
+					public void menuItemEvent(MenuItemEvent arg0) {
+						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
+						popup.add(new Label(var.getName()+ " = 0xfeedcalf"));
+						popup.showAll();
+					}
+				});
+			else
+				mi.setSensitive(false);
+
+			m.showAll();
+			m.popup();
 			
-			System.out.println(var.getName());
 			return true;
 		}
 		// right-click on the border means toggle a breakpoint
@@ -233,7 +249,19 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			if(event.getButtonPressed() == MouseEvent.BUTTON3 &&
 					this.buf.isLineExecutable(lineNum)){
 				Menu m = new Menu();
-				MenuItem mi = new MenuItem("Toggle Breakpoint", false);
+				MenuItem mi = new MenuItem("Breakpoint information", false);
+				mi.addListener(new MenuItemListener() {
+					public void menuItemEvent(MenuItemEvent arg0) {
+						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
+						popup.add(new Label("Line: " + (lineNum + 1)));
+						popup.showAll();
+					}
+				});
+				m.append(mi);
+				if(!this.buf.isLineBroken(lineNum)) // no breakpoint, no info to show
+					mi.setSensitive(false);
+				m.append(new MenuItem()); // Separator
+				mi = new MenuItem("Toggle Breakpoint", false);
 				m.append(mi);
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent event) {

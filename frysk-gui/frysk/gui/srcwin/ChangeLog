@@ -1,3 +1,9 @@
+2005-10-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceViewWidget (mouseEvent): Changed variable display to be triggered
+	by a menu, added breakpoint status to right click in margin. (bug 
+	#1685, bug #1686).
+
 2005-10-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java: Removed excess imports.
