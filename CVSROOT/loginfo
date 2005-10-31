@@ -27,4 +27,4 @@
 
 ^htdocs (cat >/dev/null; /usr/sourceware/bin/auto_checkout /www/sourceware/htdocs/frysk %{sv} >> $CVSROOT/CVSROOT/updatelog 2>&1 &)
 
-DEFAULT (/usr/sourceware/bin/log_accum -T frysk -G frysk -C frysk -m frysk-cvs@sources.redhat.com -s %{sVv})
+DEFAULT (/usr/sourceware/bin/log_accum -T frysk -G frysk -C frysk -m frysk-cvs@sourceware.org -s %{sVv})
