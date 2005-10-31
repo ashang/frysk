@@ -1,5 +1,7 @@
 2005-10-31  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* Host.java (getName): Added getName function.
+	
 	* Task.java (getName): Added getName function.
 
 2005-10-31  Andrew Cagney  <cagney@redhat.com>

@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
@@ -247,5 +248,17 @@ public abstract class Host
 	return ("{" + super.toString ()
 		+ ",state=" + state
 		+ "}");
+    }
+    
+    /**
+     * * Returns the name of the host 
+     */
+    public String getName()
+    {
+                 try {
+                         return java.net.InetAddress.getLocalHost().getHostName();
+                 } catch (UnknownHostException e) {
+                         return "Unknown Host";
+                 }
     }
 }
