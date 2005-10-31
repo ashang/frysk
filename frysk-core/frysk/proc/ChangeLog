@@ -1,5 +1,13 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* LinixIa32.java, LinuxPowerPc.java, LinuxX8664.java: Rename
+	I386Linux.java, PowerPcLinux.java, X8664Linux.java:
+	* LinuxHost.java: Update.
+	* LinuxProc.java: Update.
+	* TestI386Modify.java: Update.
+	* TestI386Regs.java: Update.
+	* TestSyscallOpen.java: Update.
+
 	* TestSyscallOpen.java: Simplify, use SyscallEventInfo, not
 	I386Linux .SyscallEventInfo.
 	* TestI386Regs.java, TestI386Modify.java: Ditto.

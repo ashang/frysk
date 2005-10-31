@@ -210,7 +210,7 @@ public class LinuxHost
 		    // event, and the clone Task must be created
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
-		    Task clone = new I386Linux.Task (task.proc,
+		    Task clone = new LinuxIa32.Task (task.proc,
 						     new TaskId (clonePid),
 						     true);
 		    task.performCloned (clone);

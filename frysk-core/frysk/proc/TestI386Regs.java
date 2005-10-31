@@ -90,7 +90,8 @@ public class TestI386Regs
 	public Action updateSyscallXXX (Task task)
 	{
 	    syscallState ^= 1;
-	    SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
+	    SyscallEventInfo syscall
+		= new LinuxIa32.SyscallEventInfo ();
 	    // The low-level assembler code performs an exit syscall
 	    // and sets up the registers with simple values.  We want
 	    // to verify that all the registers are as expected.
@@ -98,7 +99,7 @@ public class TestI386Regs
 		// verify that exit syscall occurs
 		syscallNum = syscall.number (task);
 		if (syscallNum == 1) { 
-		    I386Linux.Isa isa = (I386Linux.Isa)task.getIsa ();
+		    LinuxIa32.Isa isa = (LinuxIa32.Isa)task.getIsa ();
 		    orig_eax = isa.orig_eax.get (task);
 		    ebx = isa.ebx.get (task);
 		    ecx = isa.ecx.get (task);

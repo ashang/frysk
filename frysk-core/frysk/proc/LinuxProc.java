@@ -154,7 +154,7 @@ public class LinuxProc
     void sendNewAttachedTask (TaskId id, boolean running)
     {
 	// XXX: Should be abstracted.
-	new I386Linux.Task (this, id, running);
+	new LinuxIa32.Task (this, id, running);
     }
     Auxv[] sendrecAuxv ()
     {

@@ -43,7 +43,7 @@ import inua.eio.ByteOrder;
 import inua.eio.ByteBuffer;
 import inua.eio.PtraceByteBuffer;
 
-class I386Linux
+class LinuxIa32
 {
     static class Isa
 	extends frysk.proc.Isa

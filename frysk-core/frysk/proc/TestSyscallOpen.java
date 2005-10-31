@@ -86,7 +86,7 @@ public class TestSyscallOpen
 	    syscallTaskEventCount++;
 	    inSyscall = !inSyscall;
 	    SyscallEventInfo syscallEventInfo
-		= new I386Linux.SyscallEventInfo ();
+		= new LinuxIa32.SyscallEventInfo ();
 	    int syscallNum = syscallEventInfo.number (task);
 	    if (inSyscall) {
 		// syscall.printCall (writer, task, syscallEventInfo);
