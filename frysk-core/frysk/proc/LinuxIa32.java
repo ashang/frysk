@@ -40,78 +40,76 @@
 package frysk.proc;
 
 class LinuxIa32
+    extends Isa
 {
-    static class Isa
-	extends frysk.proc.Isa
+    static final int I387_OFFSET = 18*4;
+    static final int DBG_OFFSET = 63 * 4;
+
+    Register eax = new Register (this, 0, 6*4, 4, "eax");
+    Register ebx = new Register (this, 0, 0*4, 4, "ebx");
+    Register ecx = new Register (this, 0, 1*4, 4, "ecx");
+    Register edx = new Register (this, 0, 2*4, 4, "edx");
+    Register esi = new Register (this, 0, 3*4, 4, "esi");
+    Register edi = new Register (this, 0, 4*4, 4, "edi");
+    Register ebp = new Register (this, 0, 5*4, 4, "ebp");
+    Register cs  = new Register (this, 0, 13*4, 4, "cs");
+    Register ds  = new Register (this, 0, 7*4, 4, "ds");
+    Register es  = new Register (this, 0, 8*4, 4, "es");
+    Register fs  = new Register (this, 0, 9*4, 4, "fs");
+    Register gs  = new Register (this, 0, 10*4, 4, "gs");
+    Register ss  = new Register (this, 0, 16*4, 4, "ss");
+    Register orig_eax = new Register (this, 0, 11*4, 4, "orig_eax");
+    Register eip = new Register (this, 0, 12*4, 4, "eip");
+    Register efl = new Register (this, 0, 14*4, 4, "efl");
+    Register esp = new Register (this, 0, 15*4, 4, "esp");
+    
+    private Register[] fprs ()
     {
-	static final int I387_OFFSET = 18*4;
-	static final int DBG_OFFSET = 63 * 4;
-
-        Register eax = new Register (this, 0, 6*4, 4, "eax");
-        Register ebx = new Register (this, 0, 0*4, 4, "ebx");
-        Register ecx = new Register (this, 0, 1*4, 4, "ecx");
-        Register edx = new Register (this, 0, 2*4, 4, "edx");
-        Register esi = new Register (this, 0, 3*4, 4, "esi");
-        Register edi = new Register (this, 0, 4*4, 4, "edi");
-        Register ebp = new Register (this, 0, 5*4, 4, "ebp");
-        Register cs  = new Register (this, 0, 13*4, 4, "cs");
-        Register ds  = new Register (this, 0, 7*4, 4, "ds");
-        Register es  = new Register (this, 0, 8*4, 4, "es");
-        Register fs  = new Register (this, 0, 9*4, 4, "fs");
-        Register gs  = new Register (this, 0, 10*4, 4, "gs");
-        Register ss  = new Register (this, 0, 16*4, 4, "ss");
-        Register orig_eax = new Register (this, 0, 11*4, 4, "orig_eax");
-        Register eip = new Register (this, 0, 12*4, 4, "eip");
-        Register efl = new Register (this, 0, 14*4, 4, "efl");
-        Register esp = new Register (this, 0, 15*4, 4, "esp");
-
-        static private Register[] fprs (Isa isa)
-        {
-            Register[] fprs = new Register[10];
-            for (int i = 0; i < fprs.length; i++) {
-                fprs[i] = new Register (isa, 0, I387_OFFSET + 7*4 + i*8, 
-					8, "st" + i);
-            }
-            return fprs;
-        }
-	Register[] st = fprs (this);  // floating-point registers
-
-        static private Register[] dbg_regs (Isa isa)
-        {
-            Register[] dbg_regs = new Register[8];
-            for (int i = 0; i < dbg_regs.length; i++) {
-                dbg_regs[i] = new Register (isa, 0, DBG_OFFSET + i*4, 
-					    4, "d" + i);
-            }
-            return dbg_regs;
-        }
-	Register[] dbg = dbg_regs (this);  // debug registers
-
-	long pc (frysk.proc.Task task)
-	{
-	    return eip.get (task);
+	Register[] fprs = new Register[10];
+	for (int i = 0; i < fprs.length; i++) {
+	    fprs[i] = new Register (this, 0, I387_OFFSET + 7*4 + i*8, 
+				    8, "st" + i);
 	}
+	return fprs;
     }
-    private static Isa isa;
-    static Isa isaSingleton ()
+    Register[] st = fprs ();  // floating-point registers
+    
+    private Register[] dbg_regs ()
+    {
+	Register[] dbg_regs = new Register[8];
+	for (int i = 0; i < dbg_regs.length; i++) {
+	    dbg_regs[i] = new Register (this, 0, DBG_OFFSET + i*4, 
+					4, "d" + i);
+	}
+	return dbg_regs;
+    }
+    Register[] dbg = dbg_regs ();  // debug registers
+    
+    long pc (Task task)
+    {
+	return eip.get (task);
+    }
+
+    private static LinuxIa32 isa;
+    static LinuxIa32 isaSingleton ()
     {
         if (isa == null)
-            isa = new Isa ();
+            isa = new LinuxIa32 ();
         return isa;
     }
 
     public static class SyscallEventInfo
 	extends frysk.proc.SyscallEventInfo
     {
-	int number (frysk.proc.Task task)
+	int number (Task task)
 	{
 	    return (int)isaSingleton ().orig_eax.get (task);
 	}
-	long returnCode (frysk.proc.Task task)
+	long returnCode (Task task)
 	{
 	    return isaSingleton ().eax.get (task);
 	}
-	long arg (frysk.proc.Task task, int n)
+	long arg (Task task, int n)
 	{
 	    switch (n) {
 		case 0:

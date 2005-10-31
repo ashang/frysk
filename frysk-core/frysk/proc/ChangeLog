@@ -1,3 +1,10 @@
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxIa32.java: Fold inner Isa class into main class.
+	* LinuxX8664.java: Ditto.
+	* LinuxPowerPc.java: Ditto.
+	* TestI386Regs.java, TestI386Modify.java: Update.
+
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxIa32.java: Delete class .Task.

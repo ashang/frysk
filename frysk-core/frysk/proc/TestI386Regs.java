@@ -99,7 +99,7 @@ public class TestI386Regs
 		// verify that exit syscall occurs
 		syscallNum = syscall.number (task);
 		if (syscallNum == 1) { 
-		    LinuxIa32.Isa isa = (LinuxIa32.Isa)task.getIsa ();
+		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    orig_eax = isa.orig_eax.get (task);
 		    ebx = isa.ebx.get (task);
 		    ecx = isa.ecx.get (task);

@@ -109,7 +109,7 @@ public class TestI386Modify
 		// verify that exit syscall occurs
 		syscallNum = syscall.number (task);
 		if (syscallNum == 20) { 
-		    LinuxIa32.Isa isa = (LinuxIa32.Isa)task.getIsa ();
+		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    ebx = isa.ebx.get (task);
 		    assertEquals ("EBX is 22", 22, ebx);
 		    ecx = isa.ecx.get (task);
@@ -136,7 +136,7 @@ public class TestI386Modify
 		    isa.esi.put (task, 6);
 		}
 		else if (syscallNum == 1) {
-		    LinuxIa32.Isa isa = (LinuxIa32.Isa)task.getIsa ();
+		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    ebx = isa.ebx.get (task);
 		    assertEquals ("Exit code 2", 2, ebx);
 		    exitSyscall = true;

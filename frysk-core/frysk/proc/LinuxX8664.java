@@ -39,19 +39,15 @@
 package frysk.proc;
 
 class LinuxX8664
+    extends frysk.proc.Isa
 {
-    static class Isa
-	extends frysk.proc.Isa
-    {
-    }
     private static Isa isa;
     static Isa isaSingleton ()
     {
 	if (isa == null)
-	    isa = new Isa ();
+	    isa = new LinuxX8664 ();
 	return isa;
     }
-
 
     static class SyscallEventInfo
 	extends frysk.proc.SyscallEventInfo
