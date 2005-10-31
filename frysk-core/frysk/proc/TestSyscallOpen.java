@@ -85,7 +85,7 @@ public class TestSyscallOpen
 	{
 	    syscallTaskEventCount++;
 	    inSyscall = !inSyscall;
-	    I386Linux.SyscallEventInfo syscallEventInfo
+	    SyscallEventInfo syscallEventInfo
 		= new I386Linux.SyscallEventInfo ();
 	    int syscallNum = syscallEventInfo.number (task);
 	    if (inSyscall) {

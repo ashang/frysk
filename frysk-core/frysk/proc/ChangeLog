@@ -1,5 +1,9 @@
 2005-10-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSyscallOpen.java: Simplify, use SyscallEventInfo, not
+	I386Linux .SyscallEventInfo.
+	* TestI386Regs.java, TestI386Modify.java: Ditto.
+
 	* LinuxHost.java: Update to track frys.sys.proc changes,
 	AuxvBuilder and IdBuilder replacing ScanDir and
 	AuxiliaryVectorBuilder.

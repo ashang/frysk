@@ -90,7 +90,7 @@ public class TestI386Regs
 	public Action updateSyscallXXX (Task task)
 	{
 	    syscallState ^= 1;
-	    I386Linux.SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
+	    SyscallEventInfo syscall = new I386Linux.SyscallEventInfo ();
 	    // The low-level assembler code performs an exit syscall
 	    // and sets up the registers with simple values.  We want
 	    // to verify that all the registers are as expected.
