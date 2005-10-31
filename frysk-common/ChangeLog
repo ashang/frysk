@@ -1,3 +1,7 @@
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules: Fix typo, $(FIG2DEV) not $FIG2DEV.
+
 2005-10-31  Igor Foox  <ifoox@redhat.com>
 
 	* acinclude.m4: Added a check for fig2dev.
