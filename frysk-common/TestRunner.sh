@@ -16,24 +16,28 @@ public class TestRunner
 	super (resultPrinter);
     }
 
-
-    static class Results
+    public static class Results
 	extends ResultPrinter
     {
+	// Does this have a race condition?
+	boolean pass = false;
 	public void startTest (Test test)
 	{
 	    System.out.print ("Running ");
 	    System.out.print (test);
 	    System.out.print (" ...");
 	    System.out.flush ();
+	    pass = true;
 	}
 	public void endTest (Test test)
 	{
-	    System.out.println ();
+	    if (pass)
+		System.out.println ("PASS");
+	    else
+		System.out.println ();
 	}
 	private void printProblem (String what, Throwable t)
         {
-            System.out.print (" ");
 	    System.out.println (what);
 	    System.out.print ("  ");
 	    System.out.print (t);
@@ -42,11 +46,14 @@ public class TestRunner
 	public void addError (Test test, java.lang.Throwable t)
 	{
 	    printProblem ("ERROR", t);
+	    pass = false;
 	}
 	public void addFailure (Test test, AssertionFailedError t)
 	{
 	    printProblem ("FAIL", t);
+	    pass = false;
 	}
+	// Constructor.
 	Results (PrintStream stream)
 	{
 	    super (stream);

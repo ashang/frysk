@@ -1,5 +1,7 @@
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRunner.sh: Print PASS when a test does not FAIL or ERROR.
+
 	* Makefile.rules: Fix typo, $(FIG2DEV) not $FIG2DEV.
 
 2005-10-31  Igor Foox  <ifoox@redhat.com>
