@@ -1,3 +1,8 @@
+2005-10-31  Igor Foox  <ifoox@redhat.com>
+
+	* acinclude.m4: Added a check for fig2dev.
+	* Makefile.rules: Changed all references to fig2dev to $FIG2DEV.
+
 2005-10-26  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.rules: Added EXCEPTION to the EXTRA_DIST target to distribute

@@ -56,6 +56,11 @@ JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)'
 case ${JAVAC} in
 ecj ) JAVACFLAGS="-warn:+semicolon ${JAVACFLAGS}" ;;
 esac
+
+# Check for the availablity of fig2dev
+AC_PATH_PROG(FIG2DEV, fig2dev)
+test "x$FIG2DEV" = x && AC_MSG_ERROR([no fig2dev binary is found in \$(PATH)])
+
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
 
