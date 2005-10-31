@@ -68,6 +68,7 @@ import frysk.gui.srcwin.dom.DOMInlineInstance;
 import frysk.gui.srcwin.dom.DOMLine;
 import frysk.gui.srcwin.dom.DOMSource;
 import frysk.gui.srcwin.dom.DOMTag;
+import frysk.gui.srcwin.dom.DOMTagTypes;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -500,7 +501,7 @@ public class SourceBuffer extends TextBuffer {
 		DOMTag tag = line.getTag(iter.getLineOffset());
 		
 		// No var (or no tag), do nothing
-		if(tag == null || !tag.getType().equals("local_var"))
+		if(tag == null || !tag.getType().equals(DOMTagTypes.LOCAL_VAR))
 			return null;
 		
 		Variable var = new Variable(
@@ -544,7 +545,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addFunction(String name, int offset, boolean declaration){
 		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
-		line.addTag("function",
+		line.addTag(DOMTagTypes.FUNCTION,
 				name,
 				this.getIter(offset).getLineOffset());
 	}
@@ -556,7 +557,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addVariable(int offset, int length){
 		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
-		line.addTag("local_var",
+		line.addTag(DOMTagTypes.LOCAL_VAR,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());
 	}
@@ -574,7 +575,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addKeyword(int lineNum, int col, int length){
 		DOMLine line = this.scope.getLine(lineNum + 1);
-		line.addTag("keyword",
+		line.addTag(DOMTagTypes.KEYWORD,
 				this.getText(this.getIter(lineNum, col), this.getIter(lineNum, col + length), false),
 				col);
 	}
@@ -587,7 +588,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addKeyword(int offset, int length){
 		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
-		line.addTag("keyword",
+		line.addTag(DOMTagTypes.KEYWORD,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());		
 	}
@@ -612,7 +613,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addClass(int offset, int length){
 		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
-		line.addTag("class_decl",
+		line.addTag(DOMTagTypes.CLASS_DECL,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());
 	}
@@ -692,25 +693,25 @@ public class SourceBuffer extends TextBuffer {
 				
 				String type = tag.getType();
 				
-				if(type.equals("keyword")){
+				if(type.equals(DOMTagTypes.KEYWORD)){
 					this.applyTag(KEYWORD_TAG, 
 							this.getIter(lineOffset + tag.getStart()), 
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
 				
-				else if(type.equals("local_var")){
+				else if(type.equals(DOMTagTypes.LOCAL_VAR)){
 					this.applyTag(ID_TAG, 
 							this.getIter(lineOffset + tag.getStart()),
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
 				
-				else if(type.equals("class_decl")){
+				else if(type.equals(DOMTagTypes.CLASS_DECL)){
 					this.applyTag("CLASS", 
 							this.getIter(lineOffset + tag.getStart()),
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
 				
-				else if(type.equals("function")){
+				else if(type.equals(DOMTagTypes.FUNCTION)){
 					this.applyTag(FUNCTION_TAG, 
 							this.getIter(lineOffset + tag.getStart()),
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));

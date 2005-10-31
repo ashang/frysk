@@ -613,16 +613,12 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		mi = (MenuItem) this.copy.createMenuItem();
 		tmp.append(mi);
-
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.find.createMenuItem();
 		tmp.append(mi);
-		
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.prefsLaunch.createMenuItem();
 		tmp.append(mi);
 		
@@ -636,31 +632,22 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		mi = (MenuItem) this.run.createMenuItem();
 		tmp.append(mi);
-		
         mi = (MenuItem) this.stop.createMenuItem();
         tmp.append(mi);
-    
 		mi = (MenuItem) this.step.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.next.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.finish.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.cont.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.terminate.createMenuItem();
 		tmp.append(mi);
-		
 		mi = new MenuItem(); // Seperator
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.stepAsm.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.nextAsm.createMenuItem();
 		tmp.append(mi);
 		
@@ -673,10 +660,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		mi = (MenuItem) this.stackUp.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.stackDown.createMenuItem();
 		tmp.append(mi);
-		
 		mi = (MenuItem) this.stackBottom.createMenuItem();
 		tmp.append(mi);
 		

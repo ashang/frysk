@@ -4,6 +4,14 @@
 	by a menu, added breakpoint status to right click in margin. (bug 
 	#1685, bug #1686).
 
+	* SourceBuffer.java (createTags): Refactored to use new DOMTagTypes
+	class.
+	(addFunction): Ditto.
+	(addVariable): Ditto.
+	(addKeyword): Ditto.
+	(addClass): Ditto.
+	* dom/DOMTagTypes: Added.
+
 2005-10-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java: Removed excess imports.
