@@ -9,11 +9,29 @@
 
 GtkWidget *stripchart1;
 
+int sigs_sent = 0;
+#define MAX_SIGS_SENT 100
+
 static void
 catch_sigalrm (int sig)
 {
   GError * err = NULL;
   int et = lrint (drand48() * 15.0);
+
+  if (sigs_sent++ >= MAX_SIGS_SENT)  {
+    fprintf (stderr, "stopping\n");
+    struct itimerval value;
+    struct itimerval ovalue;
+
+    signal (SIGALRM, catch_sigalrm);
+
+    value.it_interval.tv_sec = 0;
+    value.it_interval.tv_usec = 0;
+    value.it_value.tv_sec = 0;
+    value.it_value.tv_usec = 0;
+    setitimer (ITIMER_REAL, &value, &ovalue);
+    return;
+  }
 
 #if 0
   fprintf (stderr, "catch_sigalrm %d\n", et);

@@ -240,7 +240,8 @@ ftk_stripchart_expose( GtkWidget * widget,
 			0, 0,				/* dst offsets */
 			draw_width,
 			draw_height);
-		      
+
+   gdk_display_flush (gtk_widget_get_display (widget));
 }
 
 #if 0
