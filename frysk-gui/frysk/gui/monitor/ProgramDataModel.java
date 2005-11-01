@@ -44,10 +44,95 @@
  */
 package frysk.gui.monitor;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnBoolean;
+import org.gnu.gtk.DataColumnInt;
+import org.gnu.gtk.DataColumnObject;
+import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.TreeModelFilter;
+import org.gnu.gtk.TreeStore;
+
+import frysk.gui.FryskGui;
+import frysk.gui.monitor.ProcDataModel.FilterType;
+
 /**
  * The data model that stores data about currently watched
  * programs.
  * */
 public class ProgramDataModel {
+	
+	private TreeStore treeStore;
+	private TreeModelFilter filteredStore;
+	
+	DataColumn[] columns;
+	
+	private DataColumnBoolean    enabledDC;
+	private DataColumnString programEventNameDC;
+	private DataColumnString colorDC;
+	private DataColumnBoolean visibleDC;
+	private DataColumnObject programEventDataDC;
+	private DataColumnInt weightDC;
+	
+	private HashMap iterHash;
+	
+	private int currentFilter;
+	
+	/** stores filter argument if it is of type int */ 
+	private int intFilterArgument;
+	/** stores filter argument if it is of type String */
+	private String stringFilterArgument;
 
+	private boolean filterON;
+			
+	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+
+	
+	public ProgramDataModel() throws IOException{
+
+		this.enabledDC     = new DataColumnBoolean();
+		this.programEventNameDC = new DataColumnString();
+		this.programEventDataDC= new DataColumnObject();
+		this.colorDC   = new DataColumnString();
+		this.visibleDC = new DataColumnBoolean();
+		this.weightDC = new DataColumnInt();
+		
+		columns = new DataColumn[6];
+		columns[0] = this.getEnabledDC(); 
+		columns[1] = this.getEventNameDC(); 
+		columns[2] = this.getColorDC(); 
+		columns[3] = this.visibleDC;
+		columns[4] = this.weightDC;
+		columns[5] = this.programEventDataDC;
+		
+		this.treeStore = new TreeStore(columns);	
+		this.filteredStore = new TreeModelFilter(this.treeStore);
+		this.filteredStore.setVisibleColumn(visibleDC);
+		
+		this.iterHash = new HashMap();
+		this.currentFilter = FilterType.NONE;		
+		this.filterON = true;
+		
+	}
+	
+	public DataColumnBoolean getEnabledDC() {
+		return this.enabledDC;
+	}
+
+	public DataColumnString getEventNameDC() {
+		return this.programEventNameDC;
+	}
+
+	public DataColumnString getColorDC() {
+		return this.colorDC;
+	}
+
+	
+	public DataColumnInt getWeightDC() {
+		return this.weightDC;
+	}
+	
 }
