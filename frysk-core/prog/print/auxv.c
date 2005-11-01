@@ -47,12 +47,26 @@ int
 main (int argc, char **argv, char **envp)
 {
   struct auxv *auxp;
-  /* Auxv array starts after the terminal entry in envp */
+  int i;
+
+  // Auxv array starts after the terminal entry in envp
   while (*envp != NULL)
     ++envp;
   ++envp; /* point pass terminating null entry */
+
+  // Dump the values to stdout.
   for (auxp = (struct auxv *)(envp); auxp->type != 0; auxp++) {
     printf ("%lu %lu\n", auxp->type, auxp->value);
   }
+
+  // Dump the hex contents to stderr.
+  for (auxp = (struct auxv *)(envp); auxp->type != 0; auxp++) {
+    signed char *p = (signed char *)auxp;
+    for (i = 0; i < sizeof (struct auxv); i++) {
+      fprintf (stderr, " %d", p[i]);
+    }
+    fprintf (stderr, "\n");
+  }
+
   return 0;
 }

@@ -1,5 +1,12 @@
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* TestAuxv.java: New.
+	* cni/AuxvBuilder.cxx (get): New.
+	(get32b, get32l, get64b, get64l): Replace get32, and get64.
+	(verify): Drop wordSize parameter, use get for wordSize.
+	(construct): Use a table to select the correct byte reader.
+	* AuxvBuilder.java: Add bigEndian to .buildBuffer.
+
 	* cni/slurp.hxx: Declare jbyteArray slurp(int,const char*)
 	* cni/slurp.cxx: Implement.
 	* cni/AuxvBuilder.cxx (construct): New, use jbyteArray slurp

@@ -60,8 +60,8 @@ class auxv
 
 	AuxvBuilder builder = new AuxvBuilder ()
 	    {
-		public void buildBuffer (int wordSize, int length,
-					 byte[] auxv)
+		public void buildBuffer (int wordSize, boolean bigEndian,
+					 int length, byte[] auxv)
 		{
 		    // Toss.
 		}

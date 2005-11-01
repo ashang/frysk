@@ -39,6 +39,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <gcj/cni.h>
 
@@ -47,36 +48,70 @@
 #include "frysk/sys/proc/AuxvBuilder.h"
 
 /**
- * Extract the value.
- *
- * XXX: As an unsigned!?
+ * Extract the value as an unsigned.
  */
 
 typedef int64_t (get_t) (const void *);
 
+// Read bytes beg:end as either big or little endian; if B is NULL
+// return the byte order (+ve == BE, -ve == le) and word size.
+
 static int64_t
-get32 (const void *b)
+get (const void *b, int beg, int end, int delta)
 {
-  return (*(uint32_t*)b);
+  if (b == NULL)
+    return beg - end;
+  else {
+    int64_t v = 0;
+    const unsigned char *p = (const unsigned char *)b;
+    for (int i = beg; i != end; i += delta) {
+      v |= ((uint64_t)p[i]) << (8 * abs (beg - i));
+    }
+    return v;
+  }
 }
+
 static int64_t
-get64 (const void *b)
+get32b (const void *b)
 {
-  return (*(uint64_t*)b);
+  return get (b, 3, -1, -1);
+}
+
+static int64_t
+get64b (const void *b)
+{
+  return get (b, 7, -1, -1);
+}
+
+static int64_t
+get32l (const void *b)
+{
+  return get (b, 0, 4, 1);
+}
+
+static int64_t
+get64l (const void *b)
+{
+  return get (b, 0, 8, 1);
 }
 
 // Verify the auxiliary vector is both correctly sized, and contains
 // only reasonable entries.
 static bool
-verify (jbyteArray buf, int wordSize, get_t *get)
+verify (jbyteArray buf, get_t *get)
 {
+  int wordSize = abs (get (NULL));
+  // Buffer holds an exact multiple of entry-size (2*word)?
   if (buf->length % (wordSize * 2) != 0)
     return false;
-  for (jbyte *p = elements(buf);
-       p < elements(buf) + buf->length;
-       p += wordSize * 2) {
+  for (int i = 0; i < buf->length; i += 2 * wordSize) {
+    jbyte *p = elements(buf) + i;
     int64_t type = get (p);
+    // Reasonable value?
     if (type > 1024 || type < 0)
+      return false;
+    // AT_NULL value only at end of buffer?
+    if (type == 0 && i + 2 * wordSize < buf->length)
       return false;
   }
   return true;
@@ -95,30 +130,49 @@ frysk::sys::proc::AuxvBuilder::construct (jint pid)
 jboolean
 frysk::sys::proc::AuxvBuilder::construct (jbyteArray buf)
 {
-  // Figure out the word-size of the auxv.  It is assumed that that
-  // this process, and the auxv have at least a common byte order.
-  get_t *get = NULL;
-  jint wordSize = 0;
-  if (verify (buf, 4, get32)) {
-    if (verify (buf, 8, get64)) {
-      throwRuntimeException ("conflicting word sizes for auxv");
-    }
-    else {
-      wordSize = 4;
-      get = get32;
-    }
-  }
-  else {
-    if (verify (buf, 8, get64)) {
-      wordSize = 8;
-      get = get64;
-    }
-    else {
-      throwRuntimeException ("unknown word size for auxv");
-    }
-  }
+  static get_t *cvt[2][2][2][2] =
+    {
+      {
+	{
+	  { NULL, get64b },
+	  { get32b, NULL },
+	},
+	{
+	  { get64l, NULL },
+	  { NULL, NULL },
+	},
+      },
+      {
+	  {
+	    { get32l, NULL },
+	    { NULL, NULL },
+	  },
+	  {
+	    { NULL, NULL },
+	    { NULL, NULL },
+	  },
+      }
+    };
+
+  // Figure out the word-size of the auxv.
+
+  get_t *get = cvt
+    [verify (buf, get32l)]
+    [verify (buf, get64l)]
+    [verify (buf, get32b)]
+    [verify (buf, get64b)];
+  if (get == NULL)
+    throwRuntimeException ("unknown word size for auxv",
+			   "1|32l|64l|32b|64b",
+			   10000
+			   + verify (buf, get32l) * 1000
+			   + verify (buf, get64l) * 100
+			   + verify (buf, get32b) * 10
+			   + verify (buf, get64b));
+  int wordSize = abs (get (NULL));
+  bool bigEndian = get (NULL) > 0;
   int numberEntries = buf->length / wordSize / 2;
-  buildBuffer (wordSize, numberEntries, buf);
+  buildBuffer (wordSize, bigEndian, numberEntries, buf);
   
   // Unpack the corresponding entries.
   for (int i = 0; i < numberEntries; i++) {

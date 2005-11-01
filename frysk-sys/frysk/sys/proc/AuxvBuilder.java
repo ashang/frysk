@@ -69,8 +69,8 @@ public abstract class AuxvBuilder
      * Called with the wordSize, the number of elements, and the raw
      * buffer.
      */
-    public abstract void buildBuffer (int wordSize, int numberElements,
-				      byte[] auxv);
+    public abstract void buildBuffer (int wordSize, boolean bigEndian,
+				      int numberElements, byte[] auxv);
 
     /**
      * Called with each auxiliary vector entry.

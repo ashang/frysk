@@ -1,5 +1,9 @@
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* util/auxv.java: Update builder, add bigEndian parameter to
+	buildBuffer.
+	* print/auxv.c: Print the AUXV as decimal bytes to stderr.
+
 	* util/auxv.java: Update builder, replace buildDimensions with
 	buildBuffer.
 

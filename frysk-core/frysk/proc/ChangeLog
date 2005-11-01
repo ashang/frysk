@@ -1,3 +1,10 @@
+2005-10-31  Andrew Cagney  <cagney@redhat.com>
+
+	* TestProcGet.java: For ./prog/print/auxv, set STDERR to
+	/dev/null.
+	* LinuxProc.java: Update BuildAuxv, add bigEndian parameter to
+	buildBuffer.
+
 2005-10-31  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Host.java (getName): Added getName function.
