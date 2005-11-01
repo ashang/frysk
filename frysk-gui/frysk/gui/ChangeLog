@@ -1,3 +1,9 @@
+2005-11-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Removed stray alignment to fix
+	scrollbar on observer listbox, and to fix bz 1563
+	like symptoms.
+
 2005-11-01  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source_prefs.glade: Changed layout of syntax highlighting
