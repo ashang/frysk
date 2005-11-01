@@ -1,3 +1,7 @@
+2005-11-01  Igor Foox  <ifoox@redhat.com>
+
+	* acinclude.m4: Fixed ordering of macro calls.
+
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.sh: Print PASS when a test does not FAIL or ERROR.
