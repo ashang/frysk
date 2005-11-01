@@ -1,5 +1,7 @@
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/MapsBuilder.cxx, MapsBuilder.java, TestMaps.java: New.
+
 	* TestAuxv.java: New.
 	* cni/AuxvBuilder.cxx (get): New.
 	(get32b, get32l, get64b, get64l): Replace get32, and get64.
