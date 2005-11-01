@@ -1,3 +1,8 @@
+2005-11-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source_prefs.glade: Changed layout of syntax highlighting
+	section, added tags for classes.
+
 2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
 
         glade/procpop.glade: Removed Program pane

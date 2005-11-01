@@ -1,3 +1,21 @@
+2005-11-01  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* InlineViewer.java (drawMargin): Changed to use prefixes for colors
+	stored in preference model.
+	* PreferenceConstants.java: Instead of storing three keys for r,g, and b
+	values now only one prefix is stored, onto which r g or b is appended;
+	also the default value is now stored as a org.gnu.gdk.Color.
+	* PreferenceWindow.java (buttonEvent): Refactored out saveColorButton,
+	saveWeightCheck, and saveStyleCheck methods.
+	(setupButtons): Refactored out setupColorButton, setupBoldCheckBox, and
+	setupItalicsCheckBox methods.
+	* SourceBuffer.java: Renamed itTag to variableTag.
+	(updatePreferences): Refactored out updateTagColor and updateTagStyle
+	methods.
+	* SourceViewWidget.java (refresh): Refactored to use prefixes in 
+	PreferenceConstants.java.
+	(drawMargin): Ditto.
+
 2005-10-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceViewWidget (mouseEvent): Changed variable display to be triggered

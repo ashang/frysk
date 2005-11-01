@@ -178,9 +178,9 @@ public class InlineViewer extends SourceViewWidget {
 		
 		// draw the background for the margin
 		GC context = new GC((Drawable) drawingArea);
-		int r = this.lnfPrefs.getInt(Margin.R, 54741);
-		int g = this.lnfPrefs.getInt(Margin.G, 56283);
-		int b = this.lnfPrefs.getInt(Margin.B, 65535);
+		int r = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getRed());
+		int g = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getGreen());
+		int b = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r, g, b));
 		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
 		
@@ -202,25 +202,20 @@ public class InlineViewer extends SourceViewWidget {
 		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
 
 		// Get Color to draw the text in
-		r = this.lnfPrefs.getInt(LineNumbers.R, 0);
-		g = this.lnfPrefs.getInt(LineNumbers.G, 0);
-		b = this.lnfPrefs.getInt(LineNumbers.B, 0);
+		r = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getRed());
+		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getGreen());
+		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r,g,b));
 		
-		// get inline color
-//		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
-//		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
-//		int inlineB = this.lnfPrefs.getInt(Inline.B, 0);
-		
 		// gets current line color
-		int lineR = this.lnfPrefs.getInt(CurrentLine.R, 30000);
-		int lineG = this.lnfPrefs.getInt(CurrentLine.G, 65535);
-		int lineB = this.lnfPrefs.getInt(CurrentLine.B, 30000);
+		int lineR = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getRed());
+		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getGreen());
+		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getBlue());
 		
 		// gets executable mark color
-		int markR = this.lnfPrefs.getInt(ExecMarks.R, 0);
-		int markG = this.lnfPrefs.getInt(ExecMarks.G, 0);
-		int markB = this.lnfPrefs.getInt(ExecMarks.B, 0);
+		int markR = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getRed());
+		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getGreen());
+		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getBlue());
 		
 		int currentHeight = 0;		
 		int actualIndex = 0;

@@ -51,14 +51,16 @@ import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
 import frysk.gui.common.Messages;
 import frysk.gui.srcwin.PreferenceConstants.Background;
+import frysk.gui.srcwin.PreferenceConstants.Classes;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
 import frysk.gui.srcwin.PreferenceConstants.Functions;
-import frysk.gui.srcwin.PreferenceConstants.ID;
+import frysk.gui.srcwin.PreferenceConstants.Variables;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
@@ -76,6 +78,16 @@ import frysk.gui.srcwin.PreferenceConstants.Text;
  */
 
 public class PreferenceWindow implements ButtonListener{
+
+	private static final String CLASS_ITALICS_BUTTON = "classItalicsButton";
+
+	private static final String KEYWORD_ITALICS_BUTTON = "keywordItalicsButton";
+
+	private static final String FUNCTION_ITALICS_BUTTON = "functionItalicsButton";
+
+	private static final String VARIABLE_ITALICS_BUTTON = "variableItalicsButton";
+
+	private static final String CLASS_BOLD_BUTTON = "classBoldButton";
 
 	/*	
 	 * GLADE CONSTANTS
@@ -115,13 +127,13 @@ public class PreferenceWindow implements ButtonListener{
 	public static final String SYNTAX_LABEL = "syntaxLabel"; //$NON-NLS-1$
 	
 	// Syntax highlighting related widgets
-	public static final String KEYWORD_COLOR_LABEL = "keywordColorLabel"; //$NON-NLS-1$
+	public static final String KEYWORD_LABEL = "keywordLabel"; //$NON-NLS-1$
 	public static final String KEYWORD_COLOR = "keywordColorButton"; //$NON-NLS-1$
 	public static final String KEYWORD_BOLD_BUTTON = "keywordBoldButton"; //$NON-NLS-1$
-	public static final String ID_COLOR_LABEL = "idColorLabel"; //$NON-NLS-1$
-	public static final String ID_COLOR = "idColorButton"; //$NON-NLS-1$
-	public static final String ID_BOLD_BUTTON = "idBoldButton"; //$NON-NLS-1$
-	public static final String FUNCTION_COLOR_LABEL = "functionColorLabel"; //$NON-NLS-1$
+	public static final String VARIABLE_LABEL = "variableLabel"; //$NON-NLS-1$
+	public static final String VARIABLE_COLOR = "variableColorButton"; //$NON-NLS-1$
+	public static final String VARIABLE_BOLD_BUTTON = "variableBoldButton"; //$NON-NLS-1$
+	public static final String FUNCTION_LABEL = "functionLabel"; //$NON-NLS-1$
 	public static final String FUNCTION_COLOR = "functionColorButton"; //$NON-NLS-1$
 	public static final String FUNCTION_BOLD_BUTTON = "functionBoldButton"; //$NON-NLS-1$
 	/*
@@ -174,50 +186,15 @@ public class PreferenceWindow implements ButtonListener{
 		// If the ok button was hit, save settings first
 		if(buttonName.equals(OK_BUTTON)){
 			// Save Colors
-			Color c = ((ColorButton) this.glade.getWidget(TEXT_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Text.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Text.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Text.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(BACKGROUND_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Background.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Background.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Background.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(SIDEBAR_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Margin.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Margin.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Margin.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(LINE_NUM_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(LineNumbers.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(LineNumbers.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(LineNumbers.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(MARK_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(ExecMarks.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(ExecMarks.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(ExecMarks.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(CURRENT_LINE_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(CurrentLine.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(CurrentLine.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(CurrentLine.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(PreferenceWindow.KEYWORD_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Keywords.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Keywords.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Keywords.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(PreferenceWindow.ID_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(ID.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(ID.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(ID.B, c.getBlue());
-			
-			c = ((ColorButton) this.glade.getWidget(PreferenceWindow.FUNCTION_COLOR)).getColor();
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Functions.R, c.getRed());
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Functions.G, c.getGreen());
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Functions.B, c.getBlue());
+			this.saveColorButton(Text.COLOR_PREFIX, PreferenceWindow.TEXT_COLOR);
+			this.saveColorButton(Background.COLOR_PREFIX, PreferenceWindow.BACKGROUND_COLOR);
+			this.saveColorButton(Margin.COLOR_PREFIX, PreferenceWindow.SIDEBAR_COLOR);
+			this.saveColorButton(LineNumbers.COLOR_PREFIX, PreferenceWindow.LINE_NUM_COLOR);
+			this.saveColorButton(ExecMarks.COLOR_PREFIX, PreferenceWindow.MARK_COLOR);
+			this.saveColorButton(CurrentLine.COLOR_PREFIX, PreferenceWindow.CURRENT_LINE_COLOR);
+			this.saveColorButton(Keywords.COLOR_PREFIX, PreferenceWindow.KEYWORD_COLOR);
+			this.saveColorButton(Variables.COLOR_PREFIX, PreferenceWindow.VARIABLE_COLOR);
+			this.saveColorButton(Functions.COLOR_PREFIX, PreferenceWindow.FUNCTION_COLOR);
 			
 			// Save settings
 			boolean flag = ((CheckButton) this.glade.getWidget(LINE_NUM_CHECK)).getState();
@@ -229,26 +206,25 @@ public class PreferenceWindow implements ButtonListener{
 			flag = ((CheckButton) this.glade.getWidget(TOOLBAR_CHECK)).getState();
 			this.myPrefs.node(PreferenceConstants.LNF_NODE).putBoolean(PreferenceConstants.SHOW_TOOLBAR, flag);
 			
-			Weight w = Weight.BOLD;
-			flag = ((CheckButton) this.glade.getWidget(PreferenceWindow.KEYWORD_BOLD_BUTTON)).getState();
-			if(!flag)
-				w = Weight.NORMAL;
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Keywords.WEIGHT, w.getValue());
+			// save weights
+			this.saveWeightCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.KEYWORD_BOLD_BUTTON, Keywords.WEIGHT);
+			this.saveWeightCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.VARIABLE_BOLD_BUTTON, Variables.WEIGHT);
+			this.saveWeightCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.FUNCTION_BOLD_BUTTON, Functions.WEIGHT);
+			this.saveWeightCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.CLASS_BOLD_BUTTON, Classes.WEIGHT);
 			
-			flag = ((CheckButton) this.glade.getWidget(PreferenceWindow.ID_BOLD_BUTTON)).getState();
-			if(flag)
-				w = Weight.BOLD;
-			else
-				w = Weight.NORMAL;
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(ID.WEIGHT, w.getValue());
-			
-			flag = ((CheckButton) this.glade.getWidget(PreferenceWindow.FUNCTION_BOLD_BUTTON)).getState();
-			if(flag)
-				w = Weight.BOLD;
-			else
-				w = Weight.NORMAL;
-			this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(Functions.WEIGHT, w.getValue());
-				
+			// save italics
+			this.saveStyleCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.KEYWORD_ITALICS_BUTTON, Keywords.ITALICS);
+			this.saveStyleCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.VARIABLE_ITALICS_BUTTON, Variables.ITALICS);
+			this.saveStyleCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.FUNCTION_ITALICS_BUTTON, Functions.ITALICS);
+			this.saveStyleCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+					PreferenceWindow.CLASS_ITALICS_BUTTON, Classes.ITALICS);
 		}
 		
 		// For either button, hide the window
@@ -283,55 +259,20 @@ public class PreferenceWindow implements ButtonListener{
 	
 	private void setupButtons(){
 		// Setup Colors
-		int r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.R, Text.R_DEFAULT);
-		int g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.G, Text.G_DEFAULT);
-		int b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Text.B, Text.B_DEFAULT);
-		ColorButton cb = (ColorButton) this.glade.getWidget(TEXT_COLOR);
-		cb.setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.R, Background.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.G, Background.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Background.B, Background.B_DEFAULT);
-		cb = (ColorButton) this.glade.getWidget(BACKGROUND_COLOR);
-		cb.setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.R, Margin.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.G, Margin.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Margin.B, Margin.B_DEFAULT);
-		cb = (ColorButton) this.glade.getWidget(SIDEBAR_COLOR);
-		cb.setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.R, LineNumbers.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.G, LineNumbers.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(LineNumbers.B, LineNumbers.B_DEFAULT);
-		cb = (ColorButton) this.glade.getWidget(LINE_NUM_COLOR);
-		cb.setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.R, ExecMarks.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.G, ExecMarks.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(ExecMarks.B, ExecMarks.B_DEFAULT);
-		cb = (ColorButton) this.glade.getWidget(MARK_COLOR);
-		cb.setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.R, CurrentLine.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.G, CurrentLine.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(CurrentLine.B, CurrentLine.B_DEFAULT);
-		((ColorButton) this.glade.getWidget(CURRENT_LINE_COLOR)).setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.R, Keywords.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.G, Keywords.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.B, Keywords.B_DEFAULT);
-		((ColorButton) this.glade.getWidget(PreferenceWindow.KEYWORD_COLOR)).setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.R, ID.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.G, ID.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.B, ID.B_DEFAULT);
-		((ColorButton) this.glade.getWidget(PreferenceWindow.ID_COLOR)).setColor(new Color(r,g,b));
-		
-		r = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.R, Functions.R_DEFAULT);
-		g = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.G, Functions.G_DEFAULT);
-		b = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.B, Functions.B_DEFAULT);
-		((ColorButton) this.glade.getWidget(PreferenceWindow.FUNCTION_COLOR)).setColor(new Color(r,g,b));
+		this.setupColorButton(Text.COLOR_PREFIX, PreferenceWindow.TEXT_COLOR, Text.DEFAULT);
+		this.setupColorButton(Background.COLOR_PREFIX, PreferenceWindow.BACKGROUND_COLOR,
+				Background.DEFAULT);
+		this.setupColorButton(Margin.COLOR_PREFIX, PreferenceWindow.SIDEBAR_COLOR, Margin.DEFAULT);
+		this.setupColorButton(LineNumbers.COLOR_PREFIX, PreferenceWindow.LINE_NUM_COLOR,
+				LineNumbers.DEFAULT);
+		this.setupColorButton(ExecMarks.COLOR_PREFIX, PreferenceWindow.MARK_COLOR, ExecMarks.DEFAULT);
+		this.setupColorButton(CurrentLine.COLOR_PREFIX, PreferenceWindow.CURRENT_LINE_COLOR,
+				CurrentLine.DEFAULT);
+		this.setupColorButton(Keywords.COLOR_PREFIX, PreferenceWindow.KEYWORD_COLOR,
+				Keywords.DEFAULT);
+		this.setupColorButton(Variables.COLOR_PREFIX, PreferenceWindow.VARIABLE_COLOR, Variables.DEFAULT);
+		this.setupColorButton(Functions.COLOR_PREFIX, PreferenceWindow.FUNCTION_COLOR,
+				Functions.DEFAULT);
 		
 		// Set the label text
 		((Label) this.glade.getWidget(TEXT_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.0")); //$NON-NLS-1$
@@ -340,9 +281,10 @@ public class PreferenceWindow implements ButtonListener{
 		((Label) this.glade.getWidget(LINE_NUM_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.3")); //$NON-NLS-1$
 		((Label) this.glade.getWidget(EXEC_MARK_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.4")); //$NON-NLS-1$
 		((Label) this.glade.getWidget(CURRENT_LINE_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.7")); //$NON-NLS-1$
-		((Label) this.glade.getWidget(KEYWORD_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.8")); //$NON-NLS-1$
-		((Label) this.glade.getWidget(ID_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.9")); //$NON-NLS-1$
-		((Label) this.glade.getWidget(FUNCTION_COLOR_LABEL)).setLabel(Messages.getString("PreferenceWindow.10")); //$NON-NLS-1$
+		((Label) this.glade.getWidget(KEYWORD_LABEL)).setLabel(Messages.getString("PreferenceWindow.8")); //$NON-NLS-1$
+		((Label) this.glade.getWidget(VARIABLE_LABEL)).setLabel(Messages.getString("PreferenceWindow.9")); //$NON-NLS-1$
+		((Label) this.glade.getWidget(FUNCTION_LABEL)).setLabel(Messages.getString("PreferenceWindow.10")); //$NON-NLS-1$
+		((Label) this.glade.getWidget("classLabel")).setLabel("Class Color:");
 		((Button) this.glade.getWidget(OK_BUTTON)).setLabel(Messages.getString("PreferenceWindow.11")); //$NON-NLS-1$
 		((Button) this.glade.getWidget(CANCEL_BUTTON)).setLabel(Messages.getString("PreferenceWindow.12")); //$NON-NLS-1$
 		
@@ -367,28 +309,73 @@ public class PreferenceWindow implements ButtonListener{
 		cb2.setLabel("Show Toolbar");
 		cb2.setState(flag);
 		
-		flag = false;
-		int weight = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Keywords.WEIGHT, Weight.BOLD.getValue());
-		if(Weight.intern(weight).equals(Weight.BOLD))
-			flag = true;
-		cb2 = (CheckButton) this.glade.getWidget(PreferenceWindow.KEYWORD_BOLD_BUTTON);
-		cb2.setLabel(Messages.getString("PreferenceWindow.16")); //$NON-NLS-1$
-		cb2.setState(flag);
+		this.setupBoldCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Variables.WEIGHT, PreferenceWindow.VARIABLE_BOLD_BUTTON);
+		this.setupBoldCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Functions.WEIGHT, PreferenceWindow.FUNCTION_BOLD_BUTTON);
+		this.setupBoldCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Keywords.WEIGHT, PreferenceWindow.KEYWORD_BOLD_BUTTON);
+		this.setupBoldCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Classes.WEIGHT, PreferenceWindow.CLASS_BOLD_BUTTON);
 		
-		flag = false;
-		weight = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(ID.WEIGHT, Weight.NORMAL.getValue());
+		this.setupItalicsCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Variables.ITALICS, PreferenceWindow.VARIABLE_ITALICS_BUTTON);
+		this.setupItalicsCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Functions.ITALICS, PreferenceWindow.FUNCTION_ITALICS_BUTTON);
+		this.setupItalicsCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Keywords.ITALICS, PreferenceWindow.KEYWORD_ITALICS_BUTTON);
+		this.setupItalicsCheckBox(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
+				Classes.ITALICS, PreferenceWindow.CLASS_ITALICS_BUTTON);
+	}
+	
+	private void setupBoldCheckBox(Preferences node, String weightKey, String buttonName){
+		CheckButton cb = (CheckButton) this.glade.getWidget(buttonName);
+		cb.setLabel(Messages.getString("PreferenceWindow.16"));
+		int weight = node.getInt(weightKey, Weight.NORMAL.getValue());
 		if(Weight.intern(weight).equals(Weight.BOLD))
-			flag = true;
-		cb2 = (CheckButton) this.glade.getWidget(PreferenceWindow.ID_BOLD_BUTTON);
-		cb2.setLabel(Messages.getString("PreferenceWindow.16")); //$NON-NLS-1$
-		cb2.setState(flag);
-		
-		flag = false;
-		weight = this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).getInt(Functions.WEIGHT, Weight.BOLD.getValue());
-		if(Weight.intern(weight).equals(Weight.BOLD))
-			flag = true;
-		cb2 = (CheckButton) this.glade.getWidget(PreferenceWindow.FUNCTION_BOLD_BUTTON);
-		cb2.setLabel(Messages.getString("PreferenceWindow.16")); //$NON-NLS-1$
-		cb2.setState(flag);
+			cb.setState(true);
+	}
+	
+	private void setupItalicsCheckBox(Preferences node, String italicsKey, String buttonName){
+		CheckButton cb = (CheckButton) this.glade.getWidget(buttonName);
+		cb.setLabel("Italics");
+		int style = node.getInt(italicsKey, Style.NORMAL.getValue());
+		if(Style.intern(style).equals(Style.ITALIC))
+			cb.setState(true);
+	}
+	
+	private void setupColorButton(String prefix, String buttonName, Color defaultColor){
+		int r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(prefix+"R", defaultColor.getRed());
+		int g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(prefix+"G", defaultColor.getGreen());
+		int b = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(prefix+"B", defaultColor.getBlue());
+		ColorButton cb = (ColorButton) this.glade.getWidget(buttonName);
+		cb.setColor(new Color(r,g,b));
+	}
+	
+	private void saveColorButton(String prefix, String buttonName){
+		Color c = ((ColorButton) this.glade.getWidget(buttonName)).getColor();
+		this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(prefix+"R", c.getRed());
+		this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(prefix+"G", c.getGreen());
+		this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(prefix+"B", c.getBlue());
+	}
+	
+	private void saveWeightCheck(Preferences node, String buttonName, String key){
+		boolean flag = ((CheckButton) this.glade.getWidget(buttonName)).getState();
+		Weight w = null;
+		if(flag)
+			w = Weight.BOLD;
+		else
+			w = Weight.NORMAL;
+		this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(key, w.getValue());
+	}
+	
+	private void saveStyleCheck(Preferences node, String buttonName, String key){
+		boolean flag = ((CheckButton) this.glade.getWidget(buttonName)).getState();
+		Style s = null;
+		if(flag)
+			s = Style.ITALIC;
+		else
+			s = Style.NORMAL;
+		this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(key, s.getValue());
 	}
 }

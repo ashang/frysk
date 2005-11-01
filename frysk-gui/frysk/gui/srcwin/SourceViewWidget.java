@@ -68,7 +68,6 @@ import org.gnu.pango.Layout;
 import frysk.gui.srcwin.PreferenceConstants.Background;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
-import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
 import frysk.gui.srcwin.PreferenceConstants.Text;
@@ -151,14 +150,14 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 */
 	public void refresh(){
 		// Look & Feel
-		int r = this.lnfPrefs.getInt(Text.R, Text.R_DEFAULT);
-		int g = this.lnfPrefs.getInt(Text.G, Text.G_DEFAULT);
-		int b = this.lnfPrefs.getInt(Text.B, Text.B_DEFAULT);
+		int r = this.lnfPrefs.getInt(Text.COLOR_PREFIX+"R", Text.DEFAULT.getRed());
+		int g = this.lnfPrefs.getInt(Text.COLOR_PREFIX+"G", Text.DEFAULT.getGreen());
+		int b = this.lnfPrefs.getInt(Text.COLOR_PREFIX+"B", Text.DEFAULT.getBlue());
 		this.setTextColor(StateType.NORMAL, new Color(r,g,b));
 		
-		r = this.lnfPrefs.getInt(Background.R, Background.R_DEFAULT);
-		g = this.lnfPrefs.getInt(Background.G, Background.G_DEFAULT);
-		b = this.lnfPrefs.getInt(Background.B, Background.B_DEFAULT);
+		r = this.lnfPrefs.getInt(Background.COLOR_PREFIX+"R", Background.DEFAULT.getRed());
+		g = this.lnfPrefs.getInt(Background.COLOR_PREFIX+"G", Background.DEFAULT.getGreen());
+		b = this.lnfPrefs.getInt(Background.COLOR_PREFIX+"B", Background.DEFAULT.getBlue());
 		this.setBaseColor(StateType.NORMAL, new Color(r,g,b));
 	
 		this.buf.updatePreferences(this.topPrefs);
@@ -407,9 +406,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		
 		// draw the background for the margin
 		GC context = new GC((Drawable) drawingArea);
-		int r = this.lnfPrefs.getInt(Margin.R, 54741);
-		int g = this.lnfPrefs.getInt(Margin.G, 56283);
-		int b = this.lnfPrefs.getInt(Margin.B, 65535);
+		int r = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getRed());
+		int g = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"G", Margin.DEFAULT.getGreen());
+		int b = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"B", Margin.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r, g, b));
 		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
 		
@@ -431,25 +430,20 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
 
 		// Get Color to draw the text in
-		r = this.lnfPrefs.getInt(LineNumbers.R, 0);
-		g = this.lnfPrefs.getInt(LineNumbers.G, 0);
-		b = this.lnfPrefs.getInt(LineNumbers.B, 0);
+		r = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getRed());
+		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getGreen());
+		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r,g,b));
 		
-		// get inline color
-		int inlineR = this.lnfPrefs.getInt(Inline.R, 65535);
-		int inlineG = this.lnfPrefs.getInt(Inline.G, 65535);
-		int inlineB = this.lnfPrefs.getInt(Inline.B, 0);
-		
 		// gets current line color
-		int lineR = this.lnfPrefs.getInt(CurrentLine.R, 30000);
-		int lineG = this.lnfPrefs.getInt(CurrentLine.G, 65535);
-		int lineB = this.lnfPrefs.getInt(CurrentLine.B, 30000);
+		int lineR = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getRed());
+		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getGreen());
+		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getBlue());
 		
 		// gets executable mark color
-		int markR = this.lnfPrefs.getInt(ExecMarks.R, 0);
-		int markG = this.lnfPrefs.getInt(ExecMarks.G, 0);
-		int markB = this.lnfPrefs.getInt(ExecMarks.B, 0);
+		int markR = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getRed());
+		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getGreen());
+		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getBlue());
 		
 		int currentHeight = 0;		
 		int actualIndex = 0;
@@ -502,7 +496,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			if(i == this.buf.getCurrentLine() && this.buf.hasInlineCode(i)){
 				context.setRGBForeground(new Color(markR,markG,markB));
-				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
 				Layout lo = new Layout(this.getContext());
 				lo.setAlignment(Alignment.RIGHT);
 				lo.setText("i");
