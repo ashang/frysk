@@ -78,20 +78,30 @@ public class InfoWidget extends Notebook {
 		this.showAll();
 	}
 	
+	/**
+	 * Set the selected proc to the one represented by the given
+	 * ProcData.
+	 * @param selected ProcData, null if no ProcData is selected
+	 * */
 	public void setSelectedProc(ProcData data){
 		Widget[] widgets = this.procStatusVbox.getChildren();
 		if(widgets.length > 0){
 			this.procStatusVbox.remove(widgets[0]);
 		}
-		this.procStatusVbox.add(data.getWidget());
+		if(data != null){ this.procStatusVbox.add(data.getWidget()); }
 	}
 	
+	/**
+	 * Set the selected task to the one represented by the given
+	 * TaskData.
+	 * @param selected TaskData, null if no ProcData is selected
+	 * */
 	public void setSelectedTask(TaskData data){
 		Widget[] widgets = this.taskStatusVbox.getChildren();
 		if(widgets.length > 0){
 			this.taskStatusVbox.remove(widgets[0]);
 		}
-		this.taskStatusVbox.add(data.getWidget());
+		if(data != null){ this.taskStatusVbox.add(data.getWidget()); }
 	}
 	
 }

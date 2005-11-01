@@ -16,18 +16,34 @@ public class SyscallObserver extends ObserverRoot implements TaskObserver.Syscal
 		super("Syscall Observer", "Fires when a system call is made.");
 	}
 
+	public SyscallObserver(SyscallObserver observer) {
+		super(observer.getName(), observer.getToolTip());
+	}
+
 	public Action updateSyscallEnter(Task task) {
 		// TODO Auto-generated method stub
+		System.out.println("SyscallObserver.updateSyscallEnter()");
 		return Action.CONTINUE;
 	}
 
 	public Action updateSyscallExit(Task task) {
 		// TODO Auto-generated method stub
+		System.out.println("SyscallObserver.updateSyscallExit()");
 		return Action.CONTINUE;
 	}
 
 	public Action updateSyscallXXX(Task task) {
 		// TODO Auto-generated method stub
+		System.out.println("SyscallObserver.updateSyscallXXX()");
 		return Action.CONTINUE;
 	}
+	
+	public void apply(Task task){
+		task.requestAddSyscallObserver(this);
+	}
+	
+	public ObserverRoot getCopy(){
+		return new SyscallObserver(this);
+	}
+	
 }

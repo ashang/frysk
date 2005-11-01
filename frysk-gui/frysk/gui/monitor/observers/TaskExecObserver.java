@@ -12,9 +12,21 @@ public class TaskExecObserver extends ObserverRoot implements TaskObserver.Exece
 		super("Exec Observer", "Fires everytime this task executes an exec call");
 	}
 
+	public TaskExecObserver(TaskExecObserver observer) {
+		super(observer.getName(), observer.getToolTip());
+	}
+
 	public Action updateExeced(Task task) {
-		// TODO Auto-generated method stub
+		System.out.println("TaskExecObserver.updateExeced()");
 		return Action.CONTINUE;
+	}
+	
+	public void apply(Task task){
+		task.requestAddExecedObserver(this);
+	}
+	
+	public ObserverRoot getCopy(){
+		return new TaskExecObserver(this);
 	}
 	
 }

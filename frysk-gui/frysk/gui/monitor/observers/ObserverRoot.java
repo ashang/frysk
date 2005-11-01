@@ -32,9 +32,9 @@ public class ObserverRoot implements TaskObserver, Observer{
 			this.runnables = new LinkedList();
 		}
 		
-		public ObserverRoot(ObserverRoot root) {
-			throw new RuntimeException("This should not happen");
-		}
+//		public ObserverRoot(ObserverRoot root) {
+//			throw new RuntimeException("This should not happen");
+//		}
 
 		public String getToolTip() {
 			return toolTip;
@@ -98,11 +98,12 @@ public class ObserverRoot implements TaskObserver, Observer{
 		 * apply this observer to the given task.
 		 * */
 		public ObserverRoot getCopy(){
-			return new ObserverRoot(this);
+			throw new RuntimeException("This function should have been overwritten by a child");
 		}
 		
 		/**
 		 * apply this observer to the given task.
+		 * XXX: this should be moved to appropriet child
 		 * */
 		public void apply(Task task){
 			throw new RuntimeException("Not implemented");

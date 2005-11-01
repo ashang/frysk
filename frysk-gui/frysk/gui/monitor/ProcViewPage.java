@@ -151,6 +151,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 					if(threadTreeView.getModel().getFirstIter() != null){
 						threadTreeView.getSelection().select(threadTreeView.getModel().getFirstIter());
 					}
+				}else{
+					infoWidget.setSelectedProc(null);
 				}
 			}
 		});
@@ -158,7 +160,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		this.threadTreeView.getSelection().addListener(new TreeSelectionListener(){
 			public void selectionChangedEvent(TreeSelectionEvent event) {
-				if(procTreeView.getSelection().getSelectedRows().length > 0){
+				if(procTreeView.getSelection().getSelectedRows().length > 0 &&
+						threadTreeView.getSelection().getSelectedRows().length > 0	){
 					TreePath selected = threadTreeView.getSelection().getSelectedRows()[0];
 					TaskData data = (TaskData) threadFilter.getValue(threadFilter.getIter(selected), psDataModel.getProcDataDC());
 					if(!data.hasWidget()){
@@ -166,6 +169,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 					}
 					
 					infoWidget.setSelectedTask(data);
+				}else{
+					infoWidget.setSelectedTask(null);
 				}
 			}
 		});

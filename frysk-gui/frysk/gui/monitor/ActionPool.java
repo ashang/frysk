@@ -40,9 +40,7 @@ package frysk.gui.monitor;
 
 import java.util.LinkedList;
 
-import frysk.gui.monitor.observers.SyscallObserver;
 import frysk.gui.monitor.observers.TaskCloneObserver;
-import frysk.gui.monitor.observers.TaskForkedObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -288,132 +286,8 @@ public class ActionPool {
 		public void execute(TaskData data) {
 			System.out.println("Proc State : " + data.getTask());
 		}
-
 	}
-	
-	public class AddExecObserver extends Action {
-
-		public AddExecObserver() {
-			this.name = "Exec Observer";
-			this.toolTip = "Listen for exec events on the selected process/thread";
-		}
-
-		public void execute(final TaskData data) {
-// 			final TaskExecObserver taskExecObserver = new TaskExecObserver();
-// 			
-// 			taskExecObserver.onAdded(new Runnable(){
-// 				public void run() {
-//	 				data.add(taskExecObserver);
-//	 	 			data.getTask().requestAddExecedObserver(eventLog.taskExecObserver);
-//				}
-// 			});
-// 			
-// 			taskExecObserver.onDeleted(new Runnable(){
-// 				public void run() {
-//	 				data.remove(taskExecObserver);
-//	 				data.getTask().requestDeleteExecedObserver(eventLog.taskExecObserver);
-//				}
-// 			});
-// 			
-// 			//XXX:Refactor.
-// 			data.getTask().requestAddExecedObserver(taskExecObserver);
-
-		}
-	}
-
-	public class AddExitingObserver extends Action {
-
-		public AddExitingObserver() {
-			this.name = "Exiting Observer";
-			this.toolTip = "Listen for task exit events on the selected process";
-		}
-
-		public void execute(final TaskData data) {
-//			final TaskTerminatingObserver taskTerminatingObserver = new TaskTerminatingObserver();
-//			taskTerminatingObserver.onAdded(new Runnable(){
-//				public void run() {
-//					data.add(taskTerminatingObserver);
-//					data.getTask().requestAddTerminatingObserver(eventLog);
-//				}
-//			});
-//			
-//			taskTerminatingObserver.onDeleted(new Runnable(){
-//				public void run() {
-//					data.remove(taskTerminatingObserver);
-//					data.getTask().requestDeleteTerminatingObserver(eventLog);
-//				}
-//			});
-//			
-//			//XXX: Refactor. 
-//			data.getTask().requestAddTerminatingObserver(taskTerminatingObserver);
-//			
-		}
 		
-	}
-
-	public class AddSyscallObserver extends Action {
-		
-		public AddSyscallObserver(){
-			this.name = "Syscall Observer";
-			this.toolTip = "Listen for system call events from the selected thread";
-		}
-		
-		public void execute(final TaskData data) {
-			final SyscallObserver syscallObserver = new SyscallObserver();
-			
-			syscallObserver.onAdded(new Runnable() {
-				public void run() {
-					data.add(syscallObserver);
-					//		data.getTask().requestAddSyscallObserver(eventLog);
-					throw new RuntimeException ("XXX: Task.addObserver");
-				}
-			});
-			
-			syscallObserver.onDeleted(new Runnable() {
-				public void run() {
-					data.remove(syscallObserver);
-					// XXX: data.getTask().requestAddSyscallObserver(eventLog);
-					throw new RuntimeException ("XXX: Task.addObserver");
-				}
-			});
-			
-			// XXX: data.getTask().requestAddObserver(syscallObserver);
-			throw new RuntimeException ("XXX: Task.addObserver");
-		}
-		
-	}
-	
-	public class AddForkObserver extends Action {
-
-		public AddForkObserver() {
-			this.name = "Fork Observer";
-			this.toolTip = "Listen for process fork events on the selected process";
-		}
-
-		public void execute(final TaskData data) {
-			final TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
-			
-			taskForkedObserver.onAdded(new Runnable() {
-				public void run() {
-				    data.getTask().requestAddForkedObserver(eventLog);
-				    data.add(taskForkedObserver);
-				}
-			});
-			
-			taskForkedObserver.onDeleted(new Runnable() {
-				public void run() {
-				    data.getTask().requestDeleteForkedObserver(eventLog);
-				    data.remove(taskForkedObserver);
-				}
-			});
-			
-		
-			//XXX: Refactor.
-			data.getTask().requestAddForkedObserver(taskForkedObserver);
-		}
-	}
-
-
 	public class AddCloneObserver extends Action {
 
 		public AddCloneObserver() {
@@ -452,17 +326,15 @@ public class ActionPool {
 	public Resume resume;
 	public PrintState printState;
 	
-	public AddExecObserver addExecObserver;
-	public AddExitingObserver addExitingObserver;
-	public AddForkObserver addForkObserver;
-	
 	public AddCloneObserver addCloneObserver;
-	public AddSyscallObserver addSyscallObserver;
 	/**}*/
 
 	/**
 	 * Initializes all the public actions and adds them to the apporpriet list.
-	 * When adding a new action instantiate it publicly and initialized here,
+	 * When adding a new action instantiate it publicly and initialized her		this.addExitingObserver = new AddExitingObserver();
+		this.threadObservers.add(this.addExitingObserver);
+
+e,
 	 * and add it to its list.
 	 */
 	private void initActions() {
@@ -480,20 +352,8 @@ public class ActionPool {
 		this.processActions.add(this.resume);
 		this.threadActions.add (this.resume);
 		
-		this.addExecObserver = new AddExecObserver();
-		this.threadObservers.add(this.addExecObserver);
-
-		this.addExitingObserver = new AddExitingObserver();
-		this.threadObservers.add(this.addExitingObserver);
-
 		this.addCloneObserver = new AddCloneObserver();
 		this.threadObservers.add(this.addCloneObserver);
-
-		this.addSyscallObserver = new AddSyscallObserver();
-		this.threadObservers.add(this.addSyscallObserver);
-
-		this.addForkObserver = new AddForkObserver();
-		this.threadObservers.add(this.addForkObserver);
 
 		this.printState = new PrintState();
 		this.processActions.add(this.printState);

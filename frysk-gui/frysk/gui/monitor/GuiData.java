@@ -40,15 +40,10 @@
 package frysk.gui.monitor;
 
 import java.util.LinkedList;
-import java.util.Observable;
 
 import org.gnu.gtk.Widget;
 
-import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.gui.monitor.observers.ObserverRunnable;
-import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskTerminatingObserver;
 
 /**
  * Used to store a pointer to objects in the backend, and extra data that is
@@ -73,37 +68,9 @@ public class GuiData {
 		this.observerAdded.notifyObservers(observer);
 	}
 	
-	public void add(final TaskExecObserver observer){
-		this.add((ObserverRoot)observer);
-		observer.addRunnable(new ObserverRunnable(){
-			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Received TaskExec Event !");
-			}
-		});
-	}
-	
-	public void add(TaskTerminatingObserver observer) {
-		this.add((ObserverRoot)observer);
-		observer.addRunnable(new ObserverRunnable(){
-			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Received TaskExiting Event !");				
-			}
-		});
-	}
-	
 	public void remove(ObserverRoot observer){
 		//XXX: Not implemented.
 		throw new RuntimeException("Not implemented");
-	}
-	
-	public void remove(TaskExecObserver observer){
-		remove((ObserverRoot)observer);
-		ActionPool.theActionPool.addExecObserver.removeObservers(this);
-	}
-	
-	public void remove(TaskTerminatingObserver observer){
-		remove((ObserverRoot)observer);
-		ActionPool.theActionPool.addExitingObserver.removeObservers(this);
 	}
 	
 	public LinkedList getObservers(){

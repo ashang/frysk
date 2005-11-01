@@ -13,12 +13,24 @@ import frysk.proc.TaskObserver;
 public class TaskTerminatingObserver extends ObserverRoot implements TaskObserver.Terminating {
 
 	public TaskTerminatingObserver() {
-		super("Exiting Observer", "Fires fires when this process is exiting");
+		super("Task Terminating Observer", "Fires fires when this process is exiting");
+	}
+	
+	public TaskTerminatingObserver(TaskTerminatingObserver observer) {
+		super(observer.getName(), observer.getToolTip());
 	}
 
 	public Action updateTerminating(Task task, boolean signal, int value) {
-		// TODO Auto-generated method stub
+		System.out.println("TaskTerminatingObserver.updateTerminating()");
 		return Action.CONTINUE;
 	}
 	
+	public void apply(Task task){
+		task.requestAddTerminatingObserver(this);
+	}
+	
+	public ObserverRoot getCopy(){
+		return new TaskTerminatingObserver(this);
+	}
+
 }

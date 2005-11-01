@@ -1,5 +1,12 @@
+	 
 2005-11-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ActionPool.java: migrated all old AddXObserver code to observers/X.
+	* observers/SyscallObserver.java: Now andles its own back end aplication.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskTerminatingObserver.java: Ditto. 
+	* observers/TaskCloneObserver.java : Ditto.
 	* observers/ObserverManager.java: The one and only...ObserverManager.
 	* observers/TaskForkedObserver.java (getCopy): Now uses new application
 	pattern.
@@ -13,8 +20,9 @@
 	effecting gui components) to here.
 	* GuiData.java: Commented out observer removal code (to be 
 	moved to fit new pattern).
+	Removed old Observer addition code.
 	* ActionPool.java: Started migration of observer addition code
-	to observers/* (ForkObserver done).
+	to observers/X (ForkObserver done).
 
 2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
 

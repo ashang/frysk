@@ -16,8 +16,23 @@ public class TaskCloneObserver extends ObserverRoot implements TaskObserver.Clon
 		super("ProcCloneObserver", "Fires when a proc calls clone");
 	}
 
+	public TaskCloneObserver(TaskCloneObserver observer) {
+		super(observer.getName(), observer.getToolTip());
+	}
+
+	
 	public Action updateCloned(Task task, Task clone) {
 		// TODO Auto-generated method stub
+		System.out.println("TaskCloneObserver.updateCloned()");
 		return Action.CONTINUE;
 	}
+	
+	public void apply(Task task){
+		task.requestAddClonedObserver(this);
+	}
+	
+	public ObserverRoot getCopy(){
+		return new TaskCloneObserver(this);
+	}
+	
 }
