@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+// type filter text
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -37,93 +37,68 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor;
+package frysk.gui.monitor.observers;
 
 import java.util.LinkedList;
 import java.util.Observable;
 
-import org.gnu.gtk.Widget;
-
-import frysk.gui.common.dialogs.DialogManager;
-import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.gui.monitor.observers.ObserverRunnable;
-import frysk.gui.monitor.observers.TaskExecObserver;
-import frysk.gui.monitor.observers.TaskTerminatingObserver;
-
 /**
- * Used to store a pointer to objects in the backend, and extra data that is
- * GUI specific.
- */
-public class GuiData {
+ * Only once instance.
+ * The perpose of the ObserverManager is to make transparent
+ * to the client wether it is using a custom or built in observer.
+ * Keeps a list of available observers (custom/built in)
+ * Manages observer creation through using protypes.
+ * For known static observers the ObserverManager is responsible
+ * for instanciating and adding their prototypes. 
+ * */
+public class ObserverManager extends Observable {
+
+	public static ObserverManager theManager = new ObserverManager();
 	
-	Widget widget;
-	LinkedList observers;
+	/**
+	 * a list containing a prototype of every available
+	 * observer;
+	 * */
+	private LinkedList taskObservers;
 	
-	public GuiObservable observerAdded;
-	public GuiObservable observerRemoved;
-	
-	public GuiData(){
-		this.observerAdded = new GuiObservable();
-		this.observerRemoved = new GuiObservable();
-		this.observers = new LinkedList();
+	public ObserverManager(){
+		this.taskObservers = new LinkedList();
+		this.initTaskObservers();
 	}
 	
-	public void add(ObserverRoot observer){
-		this.observers.add(observer);
-		this.observerAdded.notifyObservers(observer);
+	/**
+	 * Instanciates each one of the static task observers
+	 * and tadds it to the list.
+	 * */
+	private void initTaskObservers() {
+		this.addTaskObserverPrototype(new TaskExecObserver());
+		this.addTaskObserverPrototype(new TaskTerminatingObserver());
+		this.addTaskObserverPrototype(new TaskForkedObserver());
+		this.addTaskObserverPrototype(new TaskCloneObserver());
+		this.addTaskObserverPrototype(new SyscallObserver());
 	}
-	
-	public void add(final TaskExecObserver observer){
-		this.add((ObserverRoot)observer);
-		observer.addRunnable(new ObserverRunnable(){
-			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Received TaskExec Event !");
-			}
-		});
-	}
-	
-	public void add(TaskTerminatingObserver observer) {
-		this.add((ObserverRoot)observer);
-		observer.addRunnable(new ObserverRunnable(){
-			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Received TaskExiting Event !");				
-			}
-		});
-	}
-	
-	public void remove(ObserverRoot observer){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-	}
-	
-	public void remove(TaskExecObserver observer){
-		remove((ObserverRoot)observer);
-		ActionPool.theActionPool.addExecObserver.removeObservers(this);
-	}
-	
-	public void remove(TaskTerminatingObserver observer){
-		remove((ObserverRoot)observer);
-		ActionPool.theActionPool.addExitingObserver.removeObservers(this);
+
+	/**
+	 * Returns a copy of the prototype given.
+	 * A list of available prototypes can be 
+	 * @param prototype a prototype of the observer to be
+	 * instanciated.
+	 * */
+	public ObserverRoot getObserver(ObserverRoot prototype){
+		return prototype.getCopy();
 	}
 	
 	public LinkedList getObservers(){
-		return this.observers;
+		return this.taskObservers;
 	}
-	
-	public void setWidget(Widget widget){
-		if(this.widget != null){
-			throw new RuntimeException("Trying to set widget when widget is already set.");
-		}
-		this.widget = widget;
+
+	/**
+	 * add an observer to the list of available observers.
+	 * */
+	public void addTaskObserverPrototype(ObserverRoot observer){
+		this.taskObservers.add(observer);
+		this.hasChanged();
+		this.notifyObservers();
 	}
-	
-	public Widget getWidget(){
-		return this.widget;
-	}
-	
-	public boolean hasWidget(){
-		return (this.widget != null);
-	}
-	
 	
 }

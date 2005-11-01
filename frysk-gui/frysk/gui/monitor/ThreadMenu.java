@@ -56,6 +56,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
 import frysk.gui.monitor.ActionPool.Action;
+import frysk.gui.monitor.observers.ObserverManager;
 
 public class ThreadMenu extends Menu {
 	private static ThreadMenu menu = new ThreadMenu();
@@ -84,7 +85,7 @@ public class ThreadMenu extends Menu {
 			this.add(item);
 		}
 		
-		final ObserversMenu menu = new ObserversMenu(ActionPool.theActionPool.threadObservers);
+		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getObservers());
 		MenuItem item = new MenuItem("Add observer ", false);
 		item.setSubmenu(menu);
 

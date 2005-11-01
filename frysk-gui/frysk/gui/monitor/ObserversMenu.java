@@ -47,7 +47,8 @@ import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
-import frysk.gui.monitor.ActionPool.Action;
+import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.ObserverRoot;
 
 
 /**
@@ -71,17 +72,16 @@ public class ObserversMenu extends Menu{
 		ListIterator iter = actions.listIterator();
 		
 		while(iter.hasNext()){
-			final Action action = (Action) iter.next();
-		//	System.out.println(action.getName());
-			
-			MenuItem item = new MenuItem(action.getName(), false);
+			final ObserverRoot observer = (ObserverRoot) iter.next();
+	
+			MenuItem item = new MenuItem(observer.getName(), false);
 			ToolTips tip = new ToolTips();
-			tip.setTip(item, action.getToolTip(), "");
+			tip.setTip(item, observer.getToolTip(), "");
 			
 			item.addListener(new MenuItemListener() {
 				public void menuItemEvent(MenuItemEvent arg0) {
-					if(currentTask != null){ action.execute(currentTask); }
-					if(currentProc != null){ action.execute(currentProc); }
+					ObserverRoot myObserver = ObserverManager.theManager.getObserver(observer);
+					currentTask.add(myObserver);
 				}
 			});
 			this.add(item);

@@ -38,12 +38,7 @@
 // exception.
 package frysk.gui.monitor;
 
-import java.util.Observable;
-
-import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.gui.monitor.observers.ObserverRunnable;
-import frysk.gui.monitor.observers.SyscallObserver;
 import frysk.proc.Task;
 
 /**
@@ -67,13 +62,31 @@ public class TaskData extends GuiData{
 		return task;
 	}
 
-	public void add(SyscallObserver observer) {
-		add((ObserverRoot)observer);
-		observer.addRunnable(new ObserverRunnable(){
-			public void run(Observable o, Object obj) {
-				DialogManager.showWarnDialog("Recieved Syscall Event !");
+	public void add(final ObserverRoot observer){
+		observer.onAdded(new Runnable() {
+			public void run() {
+				observers.add(observer);
+				observerAdded.notifyObservers(observer);
 			}
 		});
+		
+		observer.onDeleted(new Runnable() {
+			public void run() {
+				observers.remove(observer);
+				observerRemoved.notifyObservers(observer);
+			}
+		});
+		
+		observer.apply(this.task);
 	}
+	
+//	public void add(SyscallObserver observer) {
+//		add((ObserverRoot)observer);
+//		observer.addRunnable(new ObserverRunnable(){
+//			public void run(Observable o, Object obj) {
+//				DialogManager.showWarnDialog("Recieved Syscall Event !");
+//			}
+//		});
+//	}
 
 }

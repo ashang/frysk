@@ -1,3 +1,21 @@
+2005-11-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: The one and only...ObserverManager.
+	* observers/TaskForkedObserver.java (getCopy): Now uses new application
+	pattern.
+	* observers/ObserverRoot.java (getCopy, applyObserver): new 
+	functions.
+	* ThreadMenu.java (ThreadMenu): Rretrieves observers from 
+	ObserverManager instead of ActionPool.
+	* ObserversMenu.java (ObserversMenu): Refactored to use new 
+	observer addition pattern.
+	* TaskData.java (setTask): Refactored observer addition( that 
+	effecting gui components) to here.
+	* GuiData.java: Commented out observer removal code (to be 
+	moved to fit new pattern).
+	* ActionPool.java: Started migration of observer addition code
+	to observers/* (ForkObserver done).
+
 2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramAddWindow.java (setApplyCancelButtonListener): Added.

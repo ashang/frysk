@@ -7,6 +7,7 @@ import java.util.Observer;
 
 import org.gnu.glib.CustomEvents;
 
+import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 /**
  * A more sofisticate implementer of Observer.
@@ -31,6 +32,10 @@ public class ObserverRoot implements TaskObserver, Observer{
 			this.runnables = new LinkedList();
 		}
 		
+		public ObserverRoot(ObserverRoot root) {
+			throw new RuntimeException("This should not happen");
+		}
+
 		public String getToolTip() {
 			return toolTip;
 		}
@@ -86,6 +91,21 @@ public class ObserverRoot implements TaskObserver, Observer{
 		
 		public void onDeleted(Runnable r){
 			this.onDeleted = r;
+		}
+		
+		
+		/**
+		 * apply this observer to the given task.
+		 * */
+		public ObserverRoot getCopy(){
+			return new ObserverRoot(this);
+		}
+		
+		/**
+		 * apply this observer to the given task.
+		 * */
+		public void apply(Task task){
+			throw new RuntimeException("Not implemented");
 		}
 		
 	}

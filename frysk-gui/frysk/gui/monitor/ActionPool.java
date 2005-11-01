@@ -42,9 +42,7 @@ import java.util.LinkedList;
 
 import frysk.gui.monitor.observers.SyscallObserver;
 import frysk.gui.monitor.observers.TaskCloneObserver;
-import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
-import frysk.gui.monitor.observers.TaskTerminatingObserver;
 
 /**
  * @author Sami Wagiaalla
@@ -301,24 +299,24 @@ public class ActionPool {
 		}
 
 		public void execute(final TaskData data) {
- 			final TaskExecObserver taskExecObserver = new TaskExecObserver();
- 			
- 			taskExecObserver.onAdded(new Runnable(){
- 				public void run() {
-	 				data.add(taskExecObserver);
-	 	 			data.getTask().requestAddExecedObserver(eventLog.taskExecObserver);
-				}
- 			});
- 			
- 			taskExecObserver.onDeleted(new Runnable(){
- 				public void run() {
-	 				data.remove(taskExecObserver);
-	 				data.getTask().requestDeleteExecedObserver(eventLog.taskExecObserver);
-				}
- 			});
- 			
- 			//XXX:Refactor.
- 			data.getTask().requestAddExecedObserver(taskExecObserver);
+// 			final TaskExecObserver taskExecObserver = new TaskExecObserver();
+// 			
+// 			taskExecObserver.onAdded(new Runnable(){
+// 				public void run() {
+//	 				data.add(taskExecObserver);
+//	 	 			data.getTask().requestAddExecedObserver(eventLog.taskExecObserver);
+//				}
+// 			});
+// 			
+// 			taskExecObserver.onDeleted(new Runnable(){
+// 				public void run() {
+//	 				data.remove(taskExecObserver);
+//	 				data.getTask().requestDeleteExecedObserver(eventLog.taskExecObserver);
+//				}
+// 			});
+// 			
+// 			//XXX:Refactor.
+// 			data.getTask().requestAddExecedObserver(taskExecObserver);
 
 		}
 	}
@@ -331,24 +329,24 @@ public class ActionPool {
 		}
 
 		public void execute(final TaskData data) {
-			final TaskTerminatingObserver taskTerminatingObserver = new TaskTerminatingObserver();
-			taskTerminatingObserver.onAdded(new Runnable(){
-				public void run() {
-					data.add(taskTerminatingObserver);
-					data.getTask().requestAddTerminatingObserver(eventLog);
-				}
-			});
-			
-			taskTerminatingObserver.onDeleted(new Runnable(){
-				public void run() {
-					data.remove(taskTerminatingObserver);
-					data.getTask().requestDeleteTerminatingObserver(eventLog);
-				}
-			});
-			
-			//XXX: Refactor. 
-			data.getTask().requestAddTerminatingObserver(taskTerminatingObserver);
-			
+//			final TaskTerminatingObserver taskTerminatingObserver = new TaskTerminatingObserver();
+//			taskTerminatingObserver.onAdded(new Runnable(){
+//				public void run() {
+//					data.add(taskTerminatingObserver);
+//					data.getTask().requestAddTerminatingObserver(eventLog);
+//				}
+//			});
+//			
+//			taskTerminatingObserver.onDeleted(new Runnable(){
+//				public void run() {
+//					data.remove(taskTerminatingObserver);
+//					data.getTask().requestDeleteTerminatingObserver(eventLog);
+//				}
+//			});
+//			
+//			//XXX: Refactor. 
+//			data.getTask().requestAddTerminatingObserver(taskTerminatingObserver);
+//			
 		}
 		
 	}
