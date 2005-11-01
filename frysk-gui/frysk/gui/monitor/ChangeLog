@@ -11,8 +11,12 @@
 	(setObserverList): Set applied observer list.
 	(getExecutable): Get observed executable.
 	(setExecutable): Set the observer executable.
+	(isEnabled): Get whether event monitor enabled for this
+	program.
+	(setEnabled): Set the enabled state.
 	
 	* ProgramDataModel.java (ProgramDataModel): Added initial manifest.
+	Added add method.
 
 	 
 2005-11-01  Sami Wagiaalla  <swagiaal@redhat.com>

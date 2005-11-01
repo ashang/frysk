@@ -43,6 +43,7 @@ import java.util.ArrayList;
 
 public class ProgramData {
 	
+	private boolean enabled;
 	private String executable;
 	private ArrayList processList;
 	private ArrayList observerList;
@@ -52,8 +53,9 @@ public class ProgramData {
 	 * @param processList. ArrayList names of the watched process names
 	 * @param observerList. ArrayList names of observers to apply.
 	 */
-	ProgramData(String executable, ArrayList processList, ArrayList observerList)
+	ProgramData(boolean enabled, String executable, ArrayList processList, ArrayList observerList)
 	{
+		this.enabled = enabled;
 		this.executable = executable;
 		this.processList = processList;
 		this.observerList = observerList;
@@ -81,6 +83,14 @@ public class ProgramData {
 
 	public void setExecutable(String executable) {
 		this.executable = executable;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

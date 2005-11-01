@@ -53,9 +53,9 @@ import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnInt;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.ListStore;
+import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModelFilter;
-import org.gnu.gtk.TreeStore;
-
 import frysk.gui.FryskGui;
 import frysk.gui.monitor.ProcDataModel.FilterType;
 
@@ -65,7 +65,7 @@ import frysk.gui.monitor.ProcDataModel.FilterType;
  * */
 public class ProgramDataModel {
 	
-	private TreeStore treeStore;
+	private ListStore listStore;
 	private TreeModelFilter filteredStore;
 	
 	DataColumn[] columns;
@@ -108,8 +108,8 @@ public class ProgramDataModel {
 		columns[4] = this.weightDC;
 		columns[5] = this.programEventDataDC;
 		
-		this.treeStore = new TreeStore(columns);	
-		this.filteredStore = new TreeModelFilter(this.treeStore);
+		this.listStore = new ListStore(columns);	
+		this.filteredStore = new TreeModelFilter(this.listStore);
 		this.filteredStore.setVisibleColumn(visibleDC);
 		
 		this.iterHash = new HashMap();
@@ -134,5 +134,15 @@ public class ProgramDataModel {
 	public DataColumnInt getWeightDC() {
 		return this.weightDC;
 	}
+	
+	
+	public void add(ProgramData data)
+	{
+		TreeIter it = null;
+		it = listStore.appendRow();
+		listStore.setValue(it, (DataColumnBoolean)enabledDC, data.isEnabled());
+		listStore.setValue(it, (DataColumnString)programEventNameDC,data.getExecutable());
+	}
+		
 	
 }
