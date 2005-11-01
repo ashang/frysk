@@ -46,6 +46,7 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -87,6 +88,8 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
 import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.ObserverRoot;
 
 public class ProgramAddWindow extends Window implements LifeCycleListener, Saveable { 
 
@@ -291,17 +294,15 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		// No data model to query. Fake items
 		
+		Iterator observerIterator = ObserverManager.theManager.getObservers().iterator();
+		
 		TreeIter it = null;
-		it = ls.appendRow();
-		ls.setValue(it, (DataColumnString)dc[0], "Fork" ); 
-		it = ls.appendRow();
-		ls.setValue(it, (DataColumnString)dc[0], "Exec" ); 
-		it = ls.appendRow();
-		ls.setValue(it, (DataColumnString)dc[0], "Clone" ); 
-		it = ls.appendRow();
-		ls.setValue(it, (DataColumnString)dc[0], "Syscall" );
-		it = ls.appendRow();
-		ls.setValue(it, (DataColumnString)dc[0], "FooBar" ); 
+		
+		while (observerIterator.hasNext())
+		{
+			it = ls.appendRow();
+			ls.setValue(it, (DataColumnString)dc[0], ((ObserverRoot)observerIterator.next()).getName());
+		}
 	}
 	
 

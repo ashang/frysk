@@ -1,5 +1,8 @@
 2005-11-01  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ProgramAddWindow.java (buildObserverListBox): Populate
+	observers from newly added ObserverManager.
+	
 	* ProgramData.java (ProgramData): Added. And added initial basic
 	build-out.
 	(getProcessList): Return watched process list.
