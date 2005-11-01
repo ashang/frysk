@@ -41,6 +41,7 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
+import frysk.sys.SyscallNum;
 import inua.PrintWriter;
 
 /**
@@ -51,142 +52,147 @@ import inua.PrintWriter;
 public class TestSyscallOpen
     extends TestLib
 {
-    volatile int stoppedTaskEventCount;
-    volatile int syscallTaskEventCount;
-    volatile boolean inSyscall = false;
-    volatile boolean exited;
-    volatile int exitedTaskEventStatus;
-    boolean openingTestFile;
-    boolean testFileOpened;
-    boolean expectedRcFound;
-    String openName = "a.file";
-    PrintWriter writer = new PrintWriter (System.out);
-
-    // Need to add task observers to the process the moment it is
-    // created, otherwize the creation of the very first task is
-    // missed (giving a mismatch of task created and deleted
-    // notifications.)
-
-    class TaskEventObserver
-	extends TaskObserverBase
- 	implements Observer, TaskObserver.Syscall
-    {
-	public Action updateSyscallEnter (Task task)
+    // Timers, observers, counters, etc.. needed for the test.
+    class TestSyscallOpenInternals {
+	volatile int stoppedTaskEventCount;
+	volatile int syscallTaskEventCount;
+	volatile boolean inSyscall = false;
+	volatile boolean exited;
+	volatile int exitedTaskEventStatus;
+	boolean openingTestFile;
+	boolean testFileOpened;
+	boolean expectedRcFound;
+	String openName = "a.file";
+	PrintWriter writer = new PrintWriter (System.out);
+	
+	// Need to add task observers to the process the moment it is
+	// created, otherwize the creation of the very first task is
+	// missed (giving a mismatch of task created and deleted
+	// notifications.)
+	
+	class TaskEventObserver
+	    extends TaskObserverBase
+	    implements Observer, TaskObserver.Syscall
 	{
-	    fail ("not implemented");
-	    return null;
-	}
-	public Action updateSyscallExit (Task task)
-	{
-	    fail ("not implemented");
-	    return null;
-	}
-	public Action updateSyscallXXX (Task task)
-	{
-	    syscallTaskEventCount++;
-	    inSyscall = !inSyscall;
-	    SyscallEventInfo syscallEventInfo
-		= task.getIsa ().getSyscallEventInfo ();
-	    int syscallNum = syscallEventInfo.number (task);
-	    if (inSyscall) {
-		// syscall.printCall (writer, task, syscallEventInfo);
-		// verify that open attempted for file a.file
-		if (syscallNum == 5) { 
-		    long addr = syscallEventInfo.arg (task, 1);
-		    StringBuffer x = new StringBuffer ();
-		    task.memory.get (addr, x);
-		    String name = x.toString ();
-		    if (name.indexOf (openName) >= 0) {
-			testFileOpened = true;
-			openingTestFile = true;
+	    public Action updateSyscallEnter (Task task)
+	    {
+		fail ("not implemented");
+		return null;
+	    }
+	    public Action updateSyscallExit (Task task)
+	    {
+		fail ("not implemented");
+		return null;
+	    }
+	    public Action updateSyscallXXX (Task task)
+	    {
+		syscallTaskEventCount++;
+		inSyscall = !inSyscall;
+		SyscallEventInfo syscallEventInfo
+		    = task.getIsa ().getSyscallEventInfo ();
+		int syscallNum = syscallEventInfo.number (task);
+		if (inSyscall) {
+		    // syscall.printCall (writer, task, syscallEventInfo);
+		    // verify that open attempted for file a.file
+		    if (syscallNum == SyscallNum.SYSopen) { 
+			long addr = syscallEventInfo.arg (task, 1);
+			StringBuffer x = new StringBuffer ();
+			task.memory.get (addr, x);
+			String name = x.toString ();
+			if (name.indexOf (openName) >= 0) {
+			    testFileOpened = true;
+			    openingTestFile = true;
+			}
 		    }
 		}
+		else {
+		    // syscall.printReturn (writer, task, syscallEventInfo);
+		    // verify that open fails with ENOENT errno
+		    if (syscallNum == SyscallNum.SYSopen && openingTestFile) {
+			openingTestFile = false;
+			int rc = (int)syscallEventInfo.returnCode (task);
+			if (rc == -2) // ENOENT
+			    expectedRcFound = true;
+		    }
+		}
+		return Action.CONTINUE;
 	    }
-	    else {
-		// syscall.printReturn (writer, task, syscallEventInfo);
-		// verify that open fails with ENOENT errno
-		if (syscallNum == 5 && openingTestFile) {
-		    openingTestFile = false;
-		    int rc = (int)syscallEventInfo.returnCode (task);
-		    if (rc == -2) // ENOENT
-			expectedRcFound = true;
+	    public void update (Observable o, Object obj)
+	    {
+		TaskEvent e = (TaskEvent) obj;
+		if (e instanceof TaskEvent.Trapped) {
+		    stoppedTaskEventCount++;
 		}
 	    }
-	    return Action.CONTINUE;
 	}
-	public void update (Observable o, Object obj)
+	
+	TaskEventObserver taskEventObserver = new TaskEventObserver ();
+	class ProcCreatedObserver
+	    implements Observer
 	{
-	    TaskEvent e = (TaskEvent) obj;
-            if (e instanceof TaskEvent.Trapped) {
-	        stoppedTaskEventCount++;
+	    Task task;
+	    public void update (Observable o, Object obj)
+	    {
+		Proc proc = (Proc) obj;
+		if (!isChildOfMine (proc))
+		    return;
+		registerChild (proc.getId ().hashCode ());
+		proc.observableTaskAdded.addObserver
+		    (new Observer () {
+			    public void update (Observable o, Object obj)
+			    {
+				task = (Task) obj;
+				task.traceSyscall = true;
+				task.requestAddSyscallObserver (taskEventObserver);
+				task.stopEvent.addObserver (taskEventObserver);
+			    }
+			}
+		     );
 	    }
- 	}
-    }
-
-    TaskEventObserver taskEventObserver = new TaskEventObserver ();
-    class ProcCreatedObserver
-        implements Observer
-    {
- 	Task task;
-        public void update (Observable o, Object obj)
-        {
-            Proc proc = (Proc) obj;
-	    if (!isChildOfMine (proc))
-		return;
-	    registerChild (proc.getId ().hashCode ());
-            proc.observableTaskAdded.addObserver
-                (new Observer () {
-                        public void update (Observable o, Object obj)
-                        {
-                            task = (Task) obj;
- 			    task.traceSyscall = true;
- 			    task.requestAddSyscallObserver (taskEventObserver);
- 			    task.stopEvent.addObserver (taskEventObserver);
-                        }
-                    }
-                 );
-        }
-    }
+	}
                                                                                          
-    ProcCreatedObserver pco = new ProcCreatedObserver ();
-
-    class ProcDestroyedObserver
-	implements Observer
-    {
-	public void update (Observable o, Object obj)
+	class ProcDestroyedObserver
+	    implements Observer
 	{
-	    Proc process = (Proc) obj;
-	    if (isChildOfMine (process)) {
- 	        inSyscall = !inSyscall;  // we won't return from exit syscall
- 	        exited = true;
-		Manager.eventLoop.requestStop ();
+	    public void update (Observable o, Object obj)
+	    {
+		Proc process = (Proc) obj;
+		if (isChildOfMine (process)) {
+		    inSyscall = !inSyscall;  // we won't return from exit syscall
+		    exited = true;
+		    Manager.eventLoop.requestStop ();
+		}
 	    }
 	}
-    }
 
+	TestSyscallOpenInternals ()
+	{
+	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
+	    Manager.host.observableProcRemoved.addObserver
+		(new ProcDestroyedObserver ());
+	}
+    }
 
     public void testSyscallOpen ()
     {
-        Manager.host.observableProcAdded.addObserver (pco);
+	TestSyscallOpenInternals t = new TestSyscallOpenInternals ();
+
  	// Create program making syscalls
 	Manager.host.requestCreateAttachedContinuedProc
 	    (new String[] {
  		"./prog/syscall/syscalls"
  	    });
 
-        Manager.host.observableProcRemoved.addObserver
-	    (new ProcDestroyedObserver ());
-
  	assertRunUntilStop ("run \"syscalls\" until exit");
 	
 	assertEquals ("One signal task event received", 1,
-		      stoppedTaskEventCount);
+		      t.stoppedTaskEventCount);
 	assertTrue ("At least 8 syscall events received",
-		    syscallTaskEventCount >= 8); 
-	assertFalse ("Syscall state is initial state", inSyscall);
-	assertTrue ("Attempt to open a.file", testFileOpened);
-	assertTrue ("Open of a.file failed", expectedRcFound);
-	assertTrue ("Process exited", exited);
+		    t.syscallTaskEventCount >= 8); 
+	assertFalse ("Syscall state is initial state", t.inSyscall);
+	assertTrue ("Attempt to open a.file", t.testFileOpened);
+	assertTrue ("Open of a.file failed", t.expectedRcFound);
+	assertTrue ("Process exited", t.exited);
 	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
     }
 }

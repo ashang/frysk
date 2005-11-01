@@ -51,174 +51,187 @@ import java.util.Iterator;
 public class TestStep
     extends TestLib
 {
-    Task mainTask;
-    Task thread1;
-    Task thread2;
-    long numberOfTimerEvents;
-    int taskCreatedCount;
-    int taskDestroyedCount;
-    int taskStopCount;
-    int stepEventMatchCount;
-
-    // As soon as the process is created, attach a task created
-    // observer.
-
-    class ProcCreatedObserver
-        implements Observer
+    // Routine to access PidChild which is only visible to direct inheritor of TestLib.
+    void stopEventLoopOnDestroy (int pid)
     {
-	Task task;
-        public void update (Observable o, Object obj)
-        {
-            Proc proc = (Proc) obj;
-	    if (!isChildOfMine (proc))
-		return;
-	    int pid = proc.id.hashCode ();
-	    // Shut things down when PID exits.
-	    new PidChild (pid).stopEventLoopOnDestroy ();
-            proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-        }
+	new PidChild (pid).stopEventLoopOnDestroy ();
     }
- 
-    class StopEventObserver
-	extends TaskObserverBase
- 	implements TaskObserver.Signaled
-    {
-	boolean startedLoop;
-	public Action updateSignaled (Task task, int sig)
+
+    // Timers, observers, counters, etc.. needed for the test.
+    class TestStepInternals {
+	Task mainTask;
+	Task thread1;
+	Task thread2;
+	long numberOfTimerEvents;
+	int taskCreatedCount;
+	int taskDestroyedCount;
+	int taskStopCount;
+	int stepEventMatchCount;
+	
+	// As soon as the process is created, attach a task created
+	// observer.
+	
+	class ProcCreatedObserver
+	    implements Observer
 	{
-	    if (sig == Sig.SEGV) {
-		startedLoop = true;	     
-		Manager.eventLoop.add (new DetachTimerEvent (mainTask, 500));
+	    Task task;
+	    public void update (Observable o, Object obj)
+	    {
+		Proc proc = (Proc) obj;
+		if (!isChildOfMine (proc))
+		    return;
+		int pid = proc.id.hashCode ();
+		// Shut things down when PID exits.
+		stopEventLoopOnDestroy (pid);
+		proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    }
-	    return Action.CONTINUE;
 	}
-    }
 
-    StopEventObserver stopEventObserver = new StopEventObserver ();
 
-    class TaskCreatedObserver
-	implements Observer
-    {
-	public void update (Observable o, Object obj)
+	class StopEventObserver
+	    extends TaskObserverBase
+	    implements TaskObserver.Signaled
 	{
-	    Task task = (Task) obj;
-	    assertEquals ("No terminated event before task creation", 0,
-			  taskDestroyedCount);
-	    taskCreatedCount++;
-	    if (task.id.hashCode () == task.proc.id.hashCode ())
-		mainTask = task;
-	    else if (thread1 == null) {
-		thread1 = task;
-		thread1.requestAddSignaledObserver (stopEventObserver);
+	    boolean startedLoop;
+	    public Action updateSignaled (Task task, int sig)
+	    {
+		if (sig == Sig.SEGV) {
+		    startedLoop = true;	     
+		    Manager.eventLoop.add (new DetachTimerEvent (mainTask, 500));
+		}
+		return Action.CONTINUE;
 	    }
-	    else if (task.id.hashCode () != thread1.id.hashCode ())
-		thread2 = task;
-	    task.requestedStopEvent.addObserver (taskEventObserver);
 	}
-    }
-
-    class TaskDestroyedObserver
-	extends AutoAddTaskObserverBase
-	implements TaskObserver.Terminated
-    {
-	void updateTaskAdded (Task task)
+	
+	StopEventObserver stopEventObserver = new StopEventObserver ();
+	
+	class TaskCreatedObserver
+	    implements Observer
 	{
-	    task.requestAddTerminatedObserver (this);
+	    public void update (Observable o, Object obj)
+	    {
+		Task task = (Task) obj;
+		assertEquals ("No terminated event before task creation", 0,
+			      taskDestroyedCount);
+		taskCreatedCount++;
+		if (task.id.hashCode () == task.proc.id.hashCode ())
+		    mainTask = task;
+		else if (thread1 == null) {
+		    thread1 = task;
+		    thread1.requestAddSignaledObserver (stopEventObserver);
+		}
+		else if (task.id.hashCode () != thread1.id.hashCode ())
+		    thread2 = task;
+		task.requestedStopEvent.addObserver (taskEventObserver);
+	    }
 	}
-	public Action updateTerminated (Task task, boolean signal,
-					int value)
+	
+	class TaskDestroyedObserver
+	    extends AutoAddTaskObserverBase
+	    implements TaskObserver.Terminated
 	{
-	    assertTrue ("a signal", signal);
-	    taskDestroyedCount++;
-	    return Action.CONTINUE;
+	    void updateTaskAdded (Task task)
+	    {
+		task.requestAddTerminatedObserver (this);
+	    }
+	    public Action updateTerminated (Task task, boolean signal,
+					    int value)
+	    {
+		assertTrue ("a signal", signal);
+		taskDestroyedCount++;
+		return Action.CONTINUE;
+	    }
 	}
-    }
-
-    class StepEventObserver
- 	implements Observer
-    {
-	int stepCount;
-	long firstPc;
-	public void update (Observable o, Object obj)
+	
+	class StepEventObserver
+	    implements Observer
 	{
-	    TaskEvent e = (TaskEvent) obj;
-	    Task t = e.task;
-	    long pc = t.getIsa().pc (t);
-	    if (stepCount == 0) {
-		firstPc = pc;
+	    int stepCount;
+	    long firstPc;
+	    public void update (Observable o, Object obj)
+	    {
+		TaskEvent e = (TaskEvent) obj;
+		Task t = e.task;
+		long pc = t.getIsa().pc (t);
+		if (stepCount == 0) {
+		    firstPc = pc;
+		}
+		if (pc == firstPc)
+		    ++stepEventMatchCount;
+		if (++stepCount >= 40) {
+		    Manager.eventLoop.requestStop ();
+		}
+		else
+		    t.requestStepInstruction ();
 	    }
-	    if (pc == firstPc)
-		++stepEventMatchCount;
-	    if (++stepCount >= 40) {
-		Manager.eventLoop.requestStop ();
-	    }
-	    else
-		t.requestStepInstruction ();
- 	}
-    }
-
-    class AllStoppedTimerEvent
-        extends frysk.event.TimerEvent
-    {
-        Task task;
-	long milliseconds;
-        AllStoppedTimerEvent (Task task, long milliseconds)
-        {
-            super (milliseconds);
-            this.task = task;
-	    this.milliseconds = milliseconds;
-        }
-        public void execute ()
-        {
-	    thread1.stepEvent.addObserver (new StepEventObserver ());
-	    long pc = thread1.getIsa().pc (thread1);
-	    if (pc >= 0x900000) {
-	    	mainTask.requestContinue ();
-	    	thread2.requestContinue ();
-	    	thread1.requestStepInstruction ();
-	    }
-        }
-    }
-
-    class TaskEventObserver
- 	implements Observer
-    {
-	public void update (Observable o, Object obj)
+	}
+	
+	class AllStoppedTimerEvent
+	    extends frysk.event.TimerEvent
 	{
-	    if (++taskStopCount == 3) {
-	        Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
+	    Task task;
+	    long milliseconds;
+	    AllStoppedTimerEvent (Task task, long milliseconds)
+	    {
+		super (milliseconds);
+		this.task = task;
+		this.milliseconds = milliseconds;
 	    }
- 	}
-    }
-
-    TaskEventObserver taskEventObserver = new TaskEventObserver ();
-
-    class DetachTimerEvent
-        extends frysk.event.TimerEvent
-    {
-        Task task;
-	long milliseconds;
-        DetachTimerEvent (Task task, long milliseconds)
-        {
-            super (milliseconds);
-            this.task = task;
-	    this.milliseconds = milliseconds;
-        }
-        public void execute ()
-        {
-            if (task != null) {
-		Iterator i = task.proc.taskPool.values().iterator ();
-		while (i.hasNext ()) {
-		    Task t = (Task)i.next ();
-		    t.requestStop ();
+	    public void execute ()
+	    {
+		thread1.stepEvent.addObserver (new StepEventObserver ());
+		mainTask.requestContinue ();
+		thread2.requestContinue ();
+		thread1.requestStepInstruction ();
+	    }
+	}
+	
+	class TaskEventObserver
+	    implements Observer
+	{
+	    public void update (Observable o, Object obj)
+	    {
+		if (++taskStopCount == 3) {
+		    Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
 		}
 	    }
-        }
+	}
+	
+	TaskEventObserver taskEventObserver = new TaskEventObserver ();
+	
+	class DetachTimerEvent
+	    extends frysk.event.TimerEvent
+	{
+	    Task task;
+	    long milliseconds;
+	    DetachTimerEvent (Task task, long milliseconds)
+	    {
+		super (milliseconds);
+		this.task = task;
+		this.milliseconds = milliseconds;
+	    }
+	    public void execute ()
+	    {
+		if (task != null) {
+		    Iterator i = task.proc.taskPool.values().iterator ();
+		    while (i.hasNext ()) {
+			Task t = (Task)i.next ();
+			t.requestStop ();
+		    }
+		}
+	    }
+	}
+
+	TestStepInternals ()
+	{
+	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());	    
+	    new TaskDestroyedObserver ();
+	}
     }
 
     public void testStep ()
     {
-        Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
+	TestStepInternals t = new TestStepInternals ();
 
 	// Create threaded infinite loop
 	Manager.host.requestCreateAttachedContinuedProc
@@ -226,16 +239,15 @@ public class TestStep
                 "./prog/step/infThreadLoop"
             });
 
-	new TaskDestroyedObserver ();
 	assertRunUntilStop ("run \"infThreadLoop\" until exit");
 
 	assertEquals ("Task created events = 3", 3,
-		      taskCreatedCount);
+		      t.taskCreatedCount);
 	assertTrue ("At least 3 stop events received",
-		    taskStopCount >= 3);
+		    t.taskStopCount >= 3);
 	assertTrue ("At least 5 loops occurred",
-		    stepEventMatchCount >= 5);
+		    t.stepEventMatchCount >= 5);
 	assertEquals ("No task destroyed events", 0,
-		      taskDestroyedCount);
+		      t.taskDestroyedCount);
     }
 }

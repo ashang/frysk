@@ -1,3 +1,22 @@
+2005-11-01  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestGoAndGo.java: Wrap internal counters, timers, etc.. in
+	a class so initialization occurs each time test is run.
+	* TestModify.java: Ditto.
+	* TestPaused.java: Ditto.
+	* TestStep.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestStopAndGo.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestUnpaused.java: Ditto.
+	* TestSyscallOpen.java: Ditto.  Also use SyscallNum to reference
+	open syscall number.
+	* TestI386Modify.java: Ditto, plus add check for isa and abort
+	test if not ia32.
+	* TestI386Regs.java: Ditto.
+
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* TestProcGet.java: For ./prog/print/auxv, set STDERR to

@@ -58,150 +58,156 @@ import inua.eio.ByteBuffer;
 public class TestModify
    extends TestLib
 {
-    volatile int stoppedTaskEventCount;
-    volatile boolean exited;
-    volatile int exitedTaskEventStatus;
-    boolean openingTestFile;
-    boolean testFileOpened;
-    boolean expectedRcFound;
-    String memAddrFileName = "memAddr.file";
-
-    // Need to add task observers to the process the moment it is
-    // created, otherwize the creation of the very first task is
-    // missed (giving a mismatch of task created and deleted
-    // notifications.)
-
-    class TaskEventObserver
-	extends TaskObserverBase
- 	implements TaskObserver.Signaled
-    {
-	public Action updateSignaled (Task task, int sig)
+    // Timers, observers, counters, etc.. needed for the test.
+    class TestModifyInternals {
+	volatile int stoppedTaskEventCount;
+	volatile boolean exited;
+	volatile int exitedTaskEventStatus;
+	boolean openingTestFile;
+	boolean testFileOpened;
+	boolean expectedRcFound;
+	String memAddrFileName = "memAddr.file";
+	
+	// Need to add task observers to the process the moment it is
+	// created, otherwize the creation of the very first task is
+	// missed (giving a mismatch of task created and deleted
+	// notifications.)
+	
+	class TaskEventObserver
+	    extends TaskObserverBase
+	    implements TaskObserver.Signaled
 	{
-	    if (sig == Sig.SEGV) {
-		ByteBuffer b;
-		long memAddr;
-		long addr;
-		
-		// At this point, the program has signalled us to let
-		// us know that a file exists with the int size and
-		// memory address to modify.
-		try {
-		    java.io.FileInputStream memAddrFile
-		    	= new java.io.FileInputStream (memAddrFileName);
-		    byte[] buf = new byte[16];
-		    int len = memAddrFile.read (buf);
-		    b = new ArrayByteBuffer (buf, 0, len);
-		    b.order (task.getIsa ().byteOrder);
-		    b.wordSize (task.getIsa ().wordSize);
-		    memAddrFile.close ();
-		    // Make sure file is deleted.
-		    java.io.File f = new java.io.File (memAddrFileName);
-		    f.delete ();
-		}
-		catch (Exception x) {
-		    throw new RuntimeException (x);
-		}
-		memAddr = b.getUWord ();
-		addr = memAddr;
-		String chString = "abcdefghijklmnopqrstuvwxyz";
-		// Modify byte values across a page boundary.
-		for (int i = 0; i < 4097; ++i)
-		    task.memory.putByte (addr + i, 
-					   (byte) chString.charAt (i % 26));
-		// Modify short values across a page boundary.
-		addr = memAddr + 8000;
-		for (int i = 0; i < 100; ++i)
-		    task.memory.putShort (addr + i * 2, 
-					    (short) (50 - i));
-		// Modify an unaliged short value.
-		addr = memAddr + 9999;
-		task.memory.putShort (addr, (short) 0xdeaf);
-		// Modify int values across a page boundary.
-		addr = memAddr + 12096;
-		for (int i = 0; i < 100; ++i)
-		    task.memory.putInt (addr + i * 4, 
-					(int) (50 - i));
-		// Modify an unaliged int value.
-		addr = memAddr + 14001;
-		task.memory.putInt (addr, (int) 0xabcdef01);
-		// Modify long values across a page boundary.
-		addr = memAddr + 16192;
-		for (int i = 0; i < 100; ++i)
-		    task.memory.putLong (addr + i * 8, 
-					   (long) (50 - i));
-		// Modify an unaliged int value.
-		addr = memAddr + 17003;
-		task.memory.putLong (addr, (long) 0xabcdef0123456789L);
-	    }
-	    return Action.CONTINUE;
- 	}
-    }
-
-    TaskEventObserver taskEventObserver = new TaskEventObserver ();
-    class ProcDiscoveredObserver
-        implements Observer
-    {
-        public void update (Observable o, Object obj)
-        {
-            Proc proc = (Proc) obj;
-	    if (!isChildOfMine (proc))
-		return;
-	    registerChild (proc.getId ().hashCode ());
-            proc.observableTaskAdded.addObserver (new Observer ()
-		{
-		    public void update (Observable o, Object obj)
-		    {
-			Task task = (Task) obj;
-			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
-			task.requestAddSignaledObserver (taskEventObserver);
+	    public Action updateSignaled (Task task, int sig)
+	    {
+		if (sig == Sig.SEGV) {
+		    ByteBuffer b;
+		    long memAddr;
+		    long addr;
+		    
+		    // At this point, the program has signalled us to let
+		    // us know that a file exists with the int size and
+		    // memory address to modify.
+		    try {
+			java.io.FileInputStream memAddrFile
+			    = new java.io.FileInputStream (memAddrFileName);
+			byte[] buf = new byte[16];
+			int len = memAddrFile.read (buf);
+			b = new ArrayByteBuffer (buf, 0, len);
+			b.order (task.getIsa ().byteOrder);
+			b.wordSize (task.getIsa ().wordSize);
+			memAddrFile.close ();
+			// Make sure file is deleted.
+			java.io.File f = new java.io.File (memAddrFileName);
+			f.delete ();
 		    }
-		});
-        }
-    }
-
-    ProcDiscoveredObserver pdo = new ProcDiscoveredObserver ();
-
-    class ProcRemovedObserver
-	implements Observer
-    {
-	volatile int count;
-	public void update (Observable o, Object obj)
-	{
-	    Proc process = (Proc) obj;
-	    if (isChildOfMine (process)) {
-		Manager.eventLoop.requestStop ();
+		    catch (Exception x) {
+			throw new RuntimeException (x);
+		    }
+		    memAddr = b.getUWord ();
+		    addr = memAddr;
+		    String chString = "abcdefghijklmnopqrstuvwxyz";
+		    // Modify byte values across a page boundary.
+		    for (int i = 0; i < 4097; ++i)
+			task.memory.putByte (addr + i, 
+					     (byte) chString.charAt (i % 26));
+		    // Modify short values across a page boundary.
+		    addr = memAddr + 8000;
+		    for (int i = 0; i < 100; ++i)
+			task.memory.putShort (addr + i * 2, 
+					      (short) (50 - i));
+		    // Modify an unaliged short value.
+		    addr = memAddr + 9999;
+		    task.memory.putShort (addr, (short) 0xdeaf);
+		    // Modify int values across a page boundary.
+		    addr = memAddr + 12096;
+		    for (int i = 0; i < 100; ++i)
+			task.memory.putInt (addr + i * 4, 
+					    (int) (50 - i));
+		    // Modify an unaliged int value.
+		    addr = memAddr + 14001;
+		    task.memory.putInt (addr, (int) 0xabcdef01);
+		    // Modify long values across a page boundary.
+		    addr = memAddr + 16192;
+		    for (int i = 0; i < 100; ++i)
+			task.memory.putLong (addr + i * 8, 
+					     (long) (50 - i));
+		    // Modify an unaliged int value.
+		    addr = memAddr + 17003;
+		    task.memory.putLong (addr, (long) 0xabcdef0123456789L);
+		}
+		return Action.CONTINUE;
 	    }
 	}
-    }
-
-    class TaskTerminatedObserver
-	extends TaskObserverBase
-	implements TaskObserver.Terminated
-    {
-	public Action updateTerminated (Task task, boolean signal, int value)
+	
+	TaskEventObserver taskEventObserver = new TaskEventObserver ();
+	class ProcDiscoveredObserver
+	    implements Observer
 	{
-	    if (!signal) {
-	    	exitedTaskEventStatus = value;
-	    	exited = true;
+	    public void update (Observable o, Object obj)
+	    {
+		Proc proc = (Proc) obj;
+		if (!isChildOfMine (proc))
+		    return;
+		registerChild (proc.getId ().hashCode ());
+		proc.observableTaskAdded.addObserver (new Observer ()
+		    {
+			public void update (Observable o, Object obj)
+			{
+			    Task task = (Task) obj;
+			    task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
+			    task.requestAddSignaledObserver (taskEventObserver);
+			}
+		    });
 	    }
-	    return Action.CONTINUE;
+	}
+	
+	class ProcRemovedObserver
+	    implements Observer
+	{
+	    volatile int count;
+	    public void update (Observable o, Object obj)
+	    {
+		Proc process = (Proc) obj;
+		if (isChildOfMine (process)) {
+		    Manager.eventLoop.requestStop ();
+		}
+	    }
+	}
+	
+	class TaskTerminatedObserver
+	    extends TaskObserverBase
+	    implements TaskObserver.Terminated
+	{
+	    public Action updateTerminated (Task task, boolean signal, int value)
+	    {
+		if (!signal) {
+		    exitedTaskEventStatus = value;
+		    exited = true;
+		}
+		return Action.CONTINUE;
+	    }
+	}
+
+	TestModifyInternals ()
+	{
+	    Manager.host.observableProcAdded.addObserver (new ProcDiscoveredObserver ());
+	    Manager.host.observableProcRemoved.addObserver
+		(new ProcRemovedObserver ());
 	}
     }
-
+	
     public void testModify ()
     {
-	Manager.host.observableProcAdded.addObserver (pdo);
+	TestModifyInternals t = new TestModifyInternals ();
 	// Create program making syscalls
 	Manager.host.requestCreateAttachedContinuedProc ( new String[]
 	    {
 		"./prog/modify/modify"
 	    });
 
-	Manager.host.observableProcRemoved.addObserver
-	    (new ProcRemovedObserver ());
 	assertRunUntilStop ("run \"modify\" to exit");
 
-	assertTrue ("Proc successful exit confirmed", exited);
+	assertTrue ("Proc successful exit confirmed", t.exited);
 	assertEquals ("Manager has no tasks left", 0, 
  		      Manager.host.taskPool.size ());
    }

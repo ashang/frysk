@@ -49,144 +49,160 @@ import java.util.Observable;
 public class TestI386Regs
     extends TestLib
 {
-    volatile int stoppedTaskEventCount;
-    volatile int syscallTaskEventCount;
-    volatile int syscallState;
-    volatile boolean exited;
-    volatile int exitedTaskEventStatus;
-    boolean openingTestFile;
-    boolean testFileOpened;
-    boolean expectedRcFound;
-    String openName = "a.file";
-    int syscallNum;
-    long orig_eax;
-    long ebx;
-    long ecx;
-    long edx;
-    long ebp;
-    long esp;
-    long esi;
-    long edi;
-
-    // Need to add task observers to the process the moment it is
-    // created, otherwize the creation of the very first task is
-    // missed (giving a mismatch of task created and deleted
-    // notifications.)
-
-    class TaskEventObserver
-	extends TaskObserverBase
- 	implements TaskObserver.Syscall, TaskObserver.Signaled
-    {
-	public Action updateSyscallEnter (Task task)
+    // Timers, observers, counters, etc.. needed for the test.
+    class TestI386RegsInternals {
+	volatile int stoppedTaskEventCount;
+	volatile int syscallTaskEventCount;
+	volatile int syscallState;
+	volatile boolean exited;
+	volatile int exitedTaskEventStatus;
+	boolean openingTestFile;
+	boolean testFileOpened;
+	boolean expectedRcFound;
+	boolean ia32Isa;
+	String openName = "a.file";
+	int syscallNum;
+	long orig_eax;
+	long ebx;
+	long ecx;
+	long edx;
+	long ebp;
+	long esp;
+	long esi;
+	long edi;
+	
+	// Need to add task observers to the process the moment it is
+	// created, otherwize the creation of the very first task is
+	// missed (giving a mismatch of task created and deleted
+	// notifications.)
+	
+	class TaskEventObserver
+	    extends TaskObserverBase
+	    implements TaskObserver.Syscall, TaskObserver.Signaled
 	{
-	    fail ("not implemented");
-	    return null;
+	    public Action updateSyscallEnter (Task task)
+	    {
+		fail ("not implemented");
+		return null;
+	    }
+	    public Action updateSyscallExit (Task task)
+	    {
+		fail ("not implemented");
+		return null;
+	    }
+	    public Action updateSyscallXXX (Task task)
+	    {
+		syscallState ^= 1;
+		SyscallEventInfo syscall
+		    = task.getIsa (). getSyscallEventInfo ();
+		// The low-level assembler code performs an exit syscall
+		// and sets up the registers with simple values.  We want
+		// to verify that all the registers are as expected.
+		if (syscallState == 1) {
+		    // verify that exit syscall occurs
+		    syscallNum = syscall.number (task);
+		    if (syscallNum == 1) { 
+			LinuxIa32 isa = (LinuxIa32)task.getIsa ();
+			orig_eax = isa.orig_eax.get (task);
+			ebx = isa.ebx.get (task);
+			ecx = isa.ecx.get (task);
+			edx = isa.edx.get (task);
+			ebp = isa.ebp.get (task);
+			esi = isa.esi.get (task);
+			edi = isa.edi.get (task);
+			esp = isa.esp.get (task);
+		    }
+		}
+		return Action.CONTINUE;
+	    }
+	    
+	    public Action updateSignaled (Task task, int sig)
+	    {
+		stoppedTaskEventCount++;
+		return Action.CONTINUE;
+	    }
 	}
-	public Action updateSyscallExit (Task task)
+	
+	TaskEventObserver taskEventObserver = new TaskEventObserver ();
+	class ProcCreatedObserver
+	    implements Observer
 	{
-	    fail ("not implemented");
-	    return null;
+	    Task task;
+	    public void update (Observable o, Object obj)
+	    {
+		Proc proc = (Proc) obj;
+		if (!isChildOfMine (proc))
+		    return;
+		registerChild (proc.getId ().hashCode ());
+		proc.observableTaskAdded.addObserver (new Observer () 
+		    {
+			public void update (Observable o, Object obj)
+			{
+			    task = (Task) obj;
+			    if (task.getIsa () instanceof LinuxIa32) {
+				ia32Isa = true;
+				task.traceSyscall = true;
+				task.requestAddSyscallObserver (taskEventObserver);
+				task.requestAddSignaledObserver (taskEventObserver);
+			    }
+			    else {
+				// If not ia32, stop immediately
+				ia32Isa = false;
+				Manager.eventLoop.requestStop ();
+			    }
+			}
+		    });
+	    }
 	}
-	public Action updateSyscallXXX (Task task)
+	
+	class ProcDestroyedObserver
+	    implements Observer
 	{
-	    syscallState ^= 1;
-	    SyscallEventInfo syscall
-		= task.getIsa (). getSyscallEventInfo ();
-	    // The low-level assembler code performs an exit syscall
-	    // and sets up the registers with simple values.  We want
-	    // to verify that all the registers are as expected.
-	    if (syscallState == 1) {
-		// verify that exit syscall occurs
-		syscallNum = syscall.number (task);
-		if (syscallNum == 1) { 
-		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
-		    orig_eax = isa.orig_eax.get (task);
-		    ebx = isa.ebx.get (task);
-		    ecx = isa.ecx.get (task);
-		    edx = isa.edx.get (task);
-		    ebp = isa.ebp.get (task);
-		    esi = isa.esi.get (task);
-		    edi = isa.edi.get (task);
-		    esp = isa.esp.get (task);
+	    volatile int count;
+	    public void update (Observable o, Object obj)
+	    {
+		count++;
+		Proc process = (Proc) obj;
+		if (isChildOfMine (process)) {
+		    syscallState ^= 1;  // we won't return from exit syscall
+		    exited = true;
+		    Manager.eventLoop.requestStop ();
 		}
 	    }
-	    return Action.CONTINUE;
 	}
 
-	public Action updateSignaled (Task task, int sig)
+	TestI386RegsInternals ()
 	{
-	    stoppedTaskEventCount++;
-	    return Action.CONTINUE;
- 	}
-    }
-
-    TaskEventObserver taskEventObserver = new TaskEventObserver ();
-    class ProcCreatedObserver
-        implements Observer
-    {
- 	Task task;
-        public void update (Observable o, Object obj)
-        {
-            Proc proc = (Proc) obj;
-	    if (!isChildOfMine (proc))
-		return;
-	    registerChild (proc.getId ().hashCode ());
-            proc.observableTaskAdded.addObserver (new Observer ()
-		{
-		    public void update (Observable o, Object obj)
-		    {
-			task = (Task) obj;
-			task.traceSyscall = true;
-			task.requestAddSyscallObserver (taskEventObserver);
-			task.requestAddSignaledObserver (taskEventObserver);
-		    }
-		});
-        }
-    }
-                                                                                         
-    ProcCreatedObserver pco = new ProcCreatedObserver ();
-
-    class ProcDestroyedObserver
-	implements Observer
-    {
-	volatile int count;
-	public void update (Observable o, Object obj)
-	{
-	    count++;
-	    Proc process = (Proc) obj;
-	    if (isChildOfMine (process)) {
- 	        syscallState ^= 1;  // we won't return from exit syscall
- 	        exited = true;
-		Manager.eventLoop.requestStop ();
-	    }
+	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
+	    Manager.host.observableProcRemoved.addObserver
+		(new ProcDestroyedObserver ());
 	}
-    }
+   }
 
 
     public void testI386Regs ()
     {
-        Manager.host.observableProcAdded.addObserver (pco);
+	TestI386RegsInternals t = new TestI386RegsInternals ();
  	// Create program making an exit syscall");
 	Manager.host.requestCreateAttachedContinuedProc
 	    (new String[] {
 		"./prog/x86isa/x86regs"
 	    });
 
-        Manager.host.observableProcRemoved.addObserver
-	    (new ProcDestroyedObserver ());
-
  	assertRunUntilStop ("run \"x86regs\" until exit");
 
-	assertEquals ("orig_eax = 1", 1, orig_eax);
-	assertEquals ("ebx = 2", 2, ebx);
-	assertEquals ("ecx = 3", 3, ecx);
-	assertEquals ("edx = 4", 4, edx);
-	assertEquals ("ebp = 5", 5, ebp);
-	assertEquals ("esi = 6", 6, esi);
-	assertEquals ("edi = 7", 7, edi);
-	assertEquals ("esp = 8", 8, esp);
+	if (t.ia32Isa) {
+	    assertEquals ("orig_eax = 1", 1, t.orig_eax);
+	    assertEquals ("ebx = 2", 2, t.ebx);
+	    assertEquals ("ecx = 3", 3, t.ecx);
+	    assertEquals ("edx = 4", 4, t.edx);
+	    assertEquals ("ebp = 5", 5, t.ebp);
+	    assertEquals ("esi = 6", 6, t.esi);
+	    assertEquals ("edi = 7", 7, t.edi);
+	    assertEquals ("esp = 8", 8, t.esp);
 
-        assertTrue ("Exited", exited);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
+            assertTrue ("Exited", t.exited);
+	    assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
+	}
     }
 }

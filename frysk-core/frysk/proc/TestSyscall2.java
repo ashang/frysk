@@ -53,76 +53,84 @@ import java.util.Observable;
 public class TestSyscall2
     extends TestLib
 {
-    volatile int stoppedTaskEventCount;
-    volatile int syscallTaskEventCount;
-    volatile int syscallState;
-    volatile boolean exited;
-    volatile int exitedTaskEventStatus;
-
-    // Need to add task observers to the process the moment it is
-    // created, otherwize the creation of the very first task is
-    // missed (giving a mismatch of task created and deleted
-    // notifications.)
-
-    class TaskEventObserver
-	extends TaskObserverBase
- 	implements TaskObserver.Syscall
-    {
-	public Action updateSyscallEnter (Task task)
+    // Timers, observers, counters, etc.. needed for the test.
+    class TestSyscall2Internals {
+	volatile int stoppedTaskEventCount;
+	volatile int syscallTaskEventCount;
+	volatile int syscallState;
+	volatile boolean exited;
+	volatile int exitedTaskEventStatus;
+	
+	// Need to add task observers to the process the moment it is
+	// created, otherwize the creation of the very first task is
+	// missed (giving a mismatch of task created and deleted
+	// notifications.)
+	
+	class TaskEventObserver
+	    extends TaskObserverBase
+	    implements TaskObserver.Syscall
 	{
-	    fail ("not implemented");
-	    return null;
-	}
-	public Action updateSyscallExit (Task task)
-	{
-	    fail ("not implemented");
-	    return null;
-	}
-	public Action updateSyscallXXX (Task task)
-	{
-	    syscallTaskEventCount++;
-	    syscallState ^= 1;
-	    return Action.CONTINUE;
-	}
-    }
-
-    TaskEventObserver taskEventObserver = new TaskEventObserver ();
-    class ProcCreatedObserver
-        implements Observer
-    {
- 	Task task;
-        public void update (Observable o, Object obj)
-        {
-            Proc proc = (Proc) obj;
-	    if (!isChildOfMine (proc))
-		return;
-	    registerChild (proc.getId ().hashCode ());
-            proc.observableTaskAdded.addObserver
-                (new Observer () {
-                        public void update (Observable o, Object obj)
-                        {
-                            task = (Task) obj;
- 			    task.traceSyscall = true;
- 			    task.requestAddSyscallObserver (taskEventObserver);
-                        }
-                    }
-                 );
-        }
-    }
-                                                                                         
-    ProcCreatedObserver pco = new ProcCreatedObserver ();
-
-    class ProcDestroyedObserver
-	implements Observer
-    {
-	public void update (Observable o, Object obj)
-	{
-	    Proc process = (Proc) obj;
-	    if (isChildOfMine (process)) {
- 	        syscallState ^= 1;  // we won't return from exit syscall
- 	        exited = true;
-		Manager.eventLoop.requestStop ();
+	    public Action updateSyscallEnter (Task task)
+	    {
+		fail ("not implemented");
+		return null;
 	    }
+	    public Action updateSyscallExit (Task task)
+	    {
+		fail ("not implemented");
+		return null;
+	    }
+	    public Action updateSyscallXXX (Task task)
+	    {
+		syscallTaskEventCount++;
+		syscallState ^= 1;
+		return Action.CONTINUE;
+	    }
+	}
+	
+	TaskEventObserver taskEventObserver = new TaskEventObserver ();
+	class ProcCreatedObserver
+	    implements Observer
+	{
+	    Task task;
+	    public void update (Observable o, Object obj)
+	    {
+		Proc proc = (Proc) obj;
+		if (!isChildOfMine (proc))
+		    return;
+		registerChild (proc.getId ().hashCode ());
+		proc.observableTaskAdded.addObserver
+		    (new Observer () {
+			    public void update (Observable o, Object obj)
+			    {
+				task = (Task) obj;
+				task.traceSyscall = true;
+				task.requestAddSyscallObserver (taskEventObserver);
+			    }
+			}
+		     );
+	    }
+	}
+	
+	class ProcDestroyedObserver
+	    implements Observer
+	{
+	    public void update (Observable o, Object obj)
+	    {
+		Proc process = (Proc) obj;
+		if (isChildOfMine (process)) {
+		    syscallState ^= 1;  // we won't return from exit syscall
+		    exited = true;
+		    Manager.eventLoop.requestStop ();
+		}
+	    }
+	}
+
+	TestSyscall2Internals ()
+	{
+	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
+	    Manager.host.observableProcRemoved.addObserver
+		(new ProcDestroyedObserver ());
 	}
     }
 
@@ -130,22 +138,20 @@ public class TestSyscall2
     public void testSyscall2 ()
     {
 	String arg = "10000";
-        Manager.host.observableProcAdded.addObserver (pco);
+        TestSyscall2Internals t = new TestSyscall2Internals ();
+
 	Manager.host.requestCreateAttachedContinuedProc
 	    ( new String[] {
  		"./prog/syscall/syscallloop",
 		arg
  	    });
 
-        Manager.host.observableProcRemoved.addObserver
-	    (new ProcDestroyedObserver ());
-
  	assertRunUntilStop ("run \"syscallloop\" until exit");
 
 	assertTrue ("Enough syscall task events",
-		    syscallTaskEventCount >= Integer.parseInt (arg));
-	assertEquals ("Even number of syscall events", 0, syscallState);
-	assertTrue ("Exited", exited);
+		    t.syscallTaskEventCount >= Integer.parseInt (arg));
+	assertEquals ("Even number of syscall events", 0, t.syscallState);
+	assertTrue ("Exited", t.exited);
 	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
     }
 }
