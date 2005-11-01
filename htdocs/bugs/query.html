@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
+
 <head>
 <title>Frysk Bugzilla</title>
 <link rel="stylesheet" type="text/css"
@@ -8,7 +9,7 @@
 
 <body>
 
-<h1> <em>frysk</em> </h1>
+<h1> <a href="../"><em>frysk</em></a> </h1>
 
 <h1>  Bugzilla </h1>
 
@@ -32,83 +33,107 @@ target="results"> <input name="id" size="6"> </form>
 
 </ul>
 
-<h1> Queries </h1>
+<h1> Status </h1>
 
-<a
-href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&order=map_assigned_to.login_name,bugs.bug_id"
-target="results">assigned</a>:
+<table cellpadding="0">
 
-<br>
+<tr>
 
-<a
+<td><a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&order=bugs.priority,bugs.bug_id"
+target="results">pending</a></td>
+
+<td><a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&priority=P1&order=bugs.priority,bugs.bug_id"
+target="results">1</a></td>
+
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&priority=P2&order=bugs.priority,bugs.bug_id"
-target="results">pending</a>:
+target="results">2</a></td>
 
-<br>
+<td><a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&priority=P3&order=bugs.priority,bugs.bug_id"
+target="results">3</a></td>
 
-<a
+</tr>
+<tr>
+
+<td> <a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&order=map_assigned_to.login_name,bugs.bug_id"
+target="results">assigned</a></td>
+
+<td> <a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&priority=P1&order=map_assigned_to.login_name,bugs.bug_id"
+target="results">1</a</td>
+
+<td> <a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&priority=P2&order=map_assigned_to.login_name,bugs.bug_id"
+target="results">2</a</td>
+
+<td> <a
+href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=ASSIGNED&bug_status=REOPENED&priority=P3&order=map_assigned_to.login_name,bugs.bug_id"
+target="results">3</a</td>
+
+</tr>
+<tr>
+
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&order=bugs.priority,bugs.bug_id"
-target="results">open</a>: 
+target="results">open</a></td>
 
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P1&order=bugs.priority,bugs.bug_id"
-target="results">P1</a>
+target="results">1</a></td>
 
-|
-
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P2&order=bugs.priority,bugs.bug_id"
-target="results">P2</a>
+target="results">2</a></td>
 
-|
-
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&bug_status=ASSIGNED&bug_status=SUSPENDED&bug_status=WAITING&bug_status=REOPENED&priority=P3&order=bugs.priority,bugs.bug_id"
-target="results">P3</a>
+target="results">3</a></td>
 
-<br>
+</tr>
+<tr>
 
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&order=bugs.priority,bugs.bug_id"
-target="results">closed</a>:
+target="results">closed</a></td>
 
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&priority=P1&order=bugs.priority,bugs.bug_id"
-target="results">P1</a>
+target="results">1</a></td>
 
-|
-
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&priority=P2&order=bugs.priority,bugs.bug_id"
-target="results">P2</a>
+target="results">2</a></td>
 
-|
-
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&bug_status=RESOLVED&priority=P3&order=bugs.priority,bugs.bug_id"
-target="results">P3</a>
+target="results">3</a></td>
 
-<br>
+</tr>
+<tr>
 
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&order=bugs.bug_id"
-target="results">all</a>:
+target="results">all</a></td>
 
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&priority=P1&order=bugs.bug_id"
-target="results">P1</a>
+target="results">1</a></td>
 
-|
-
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&priority=P2&order=bugs.bug_id"
-target="results">P2</a>
+target="results">2</a></td>
 
-|
-
-<a
+<td><a
 href="http://sourceware.org/bugzilla/buglist.cgi?product=frysk&priority=P3&order=bugs.bug_id"
-target="results">P3</a>
+target="results">3</a></td>
+
+</tr>
+
+</table>
 
 <h1> Trackers </h1>
 
