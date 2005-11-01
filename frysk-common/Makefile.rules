@@ -57,6 +57,10 @@ GEN_BUILT_CLASSES =
 GEN_CLASSDIR = classes
 EXTRA_DIST = 
 
+# Get some common macro definitions
+
+ACLOCAL_AMFLAGS = -I common/m4
+
 # Make up some javacflags
 
 SOURCEPATH = $(subst $(space),:,$(strip $(GEN_SOURCEPATH)))

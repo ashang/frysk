@@ -2,6 +2,12 @@
 
 	* acinclude.m4: Fixed ordering of macro calls.
 
+	* Makefile.rules: Added ACLOCAL_AMFLAGS = -I common/m4 to include local
+	macros. 
+	* m4: New directory.
+	* m4/ac_get_lib_line.m4: New file.
+	* m4/ac_find_file.m4: New file.
+
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.sh: Print PASS when a test does not FAIL or ERROR.
