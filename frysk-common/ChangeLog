@@ -1,3 +1,8 @@
+2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.gen.sh: Added rule to copy over test .cpp files after a 
+	make install.
+
 2005-11-02  Igor Foox  <ifoox@redhat.com>
 
 	 * m4/ac_get_lib_line.m4, m4/ac_find_file.m4: Add copyright statement.

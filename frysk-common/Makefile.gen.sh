@@ -345,6 +345,16 @@ do
 done
 
 # Form a list of all the .fig files, they need to be compiled into
+# .jpg
+print_header "... sample_DATA"
+echo "sampledir = \$(pkgdatadir)/samples"
+echo "sample_DATA ="
+find ${dirs} -type f -name 'test*.cpp' | while read file
+do
+  echo sample_DATA += ${file}
+done
+
+# Form a list of all the .fig files, they need to be compiled into
 # .jpg.
 
 print_header "... GEN_FIG = .fig"
