@@ -358,7 +358,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		if(this.view != null)
 			((Container) this.view.getParent()).remove(this.view);
-		this.view = new SourceViewWidget(this.prefs, lastStack.getData());
+		this.view = new SourceViewWidget(this.prefs, lastStack);
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.view.showAll();
 		

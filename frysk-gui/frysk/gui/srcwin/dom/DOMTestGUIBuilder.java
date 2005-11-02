@@ -86,9 +86,15 @@ public class DOMTestGUIBuilder {
 	 * Sources info
 	 *************************************************************************/
 	
-	private static String[] sources = { "test6.cpp" };
+	private static String[] sources = { "test6.cpp",
+										"test5.cpp",
+										"test4.cpp",
+										"test3.cpp"};
 	
-	private static String[] sources_paths = { "/home/source" };
+	private static String[] sources_paths = { "/home/source",
+		"/home/source",
+		"/home/source",
+		"/home/source"};
 	
 	/**************************************************************************
 	 * Line info

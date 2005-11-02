@@ -45,7 +45,6 @@ import org.gnu.gdk.Drawable;
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
-import org.gnu.glib.Handle;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -71,7 +70,6 @@ import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
 import frysk.gui.srcwin.PreferenceConstants.Text;
-import frysk.gui.srcwin.dom.DOMSource;
 
 /** 
  * This class is used to add some functionality to TextView that may be needed
@@ -110,38 +108,13 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * @param parentPrefs The root node of the preference model to use
 	 * @param scope The source file that this widget will be displaying
 	 */
-	public SourceViewWidget(Preferences parentPrefs, DOMSource scope) {
+	public SourceViewWidget(Preferences parentPrefs, StackLevel scope) {
 		super(gtk_text_view_new());
 		this.buf = new SourceBuffer(scope);
 		this.setBuffer(this.buf);
 		this.topPrefs = parentPrefs;
 		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
 		this.initialize();
-	}
-	
-	/**
-	 * Creates a new SourceViewWidget widget displaying the buffer buffer. One buffer
-	 * can be shared among many widgets. 
-	 * 
-	 * @param buffer Buffer to use
-	 * @param parentPrefs The root node of the preference model to use
-	 */
-	public SourceViewWidget(SourceBuffer buffer, Preferences parentPrefs) {
-		super(gtk_text_view_new_with_buffer(buffer.getHandle()));
-		this.buf = buffer;
-		this.topPrefs = parentPrefs;
-		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
-		this.initialize();
-	}
-
-	/**
-	 * Construct a SourceViewWidget from a handle to a native resource.
-	 * 
-	 * @param handle Handle to a native resource
-	 * @param parentPrefs The root node of the preference model to use
-	 */
-	public SourceViewWidget(Handle handle, Preferences parentPrefs) {
-		super(handle);
 	}
 	
 	/**
@@ -340,8 +313,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 	
 	public void load(StackLevel data){
-		this.buf = new SourceBuffer(data.getData());
-		this.setBuffer(this.buf);
+		this.buf.setScope(data);
 		this.expanded = false;
 		this.anchor = null;
 	}

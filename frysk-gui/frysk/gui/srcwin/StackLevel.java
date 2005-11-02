@@ -53,6 +53,8 @@ public class StackLevel {
 	protected StackLevel prevScope;
 	
 	protected DOMSource data;
+	
+	protected boolean parsed;
 
 	public StackLevel(DOMSource data, int line){
 		this.lineNum = line;
@@ -94,5 +96,13 @@ public class StackLevel {
 
 	public DOMSource getData() {
 		return data;
+	}
+
+	public boolean isParsed() {
+		return parsed;
+	}
+
+	public void setParsed(boolean parsed) {
+		this.parsed = parsed;
 	}
 }

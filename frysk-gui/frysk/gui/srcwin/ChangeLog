@@ -1,3 +1,20 @@
+2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java: Now stores StackLevel, not just encapsulated
+	DOMSource.
+	(setScope): Added.
+	(loadFile): Now checks to see if the source has already been parsed,
+	and if so does not parse it again.
+	* SourceViewWidget.java (SourceViewWidget): Now takes StackLevel, excess
+	constructors removed.
+	(load): Instead of a new SourceBuffer being created setScope is now called
+	on the existing one.
+	* SourceWindow.java (SourceWindow): Refactored to reflect change to 
+	SourceViewWidget constructor.
+	* StackLevel.java: Added 'parsed' member variable.
+	(isParsed): Added.
+	(setParsed): Added.
+
 2005-11-01  Adam Jocksch  <ajocksch@redhat.com>
 	
 	* InlineViewer.java (drawMargin): Changed to use prefixes for colors

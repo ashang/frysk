@@ -60,14 +60,13 @@ import frysk.gui.srcwin.PreferenceConstants.Comments;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.Functions;
 import frysk.gui.srcwin.PreferenceConstants.GlobalVariables;
-import frysk.gui.srcwin.PreferenceConstants.Variables;
 import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
 import frysk.gui.srcwin.PreferenceConstants.Search;
+import frysk.gui.srcwin.PreferenceConstants.Variables;
 import frysk.gui.srcwin.cparser.CDTParser;
 import frysk.gui.srcwin.dom.DOMInlineInstance;
 import frysk.gui.srcwin.dom.DOMLine;
-import frysk.gui.srcwin.dom.DOMSource;
 import frysk.gui.srcwin.dom.DOMTag;
 import frysk.gui.srcwin.dom.DOMTagTypes;
 
@@ -119,12 +118,12 @@ public class SourceBuffer extends TextBuffer {
 	
 	// Since conceptually each sourcebuffer will only be viewing one file, we don't
 	// need any information higher than this
-	private DOMSource scope;
+	private StackLevel scope;
 	
 	/**
 	 * Creates a new SourceBuffer
 	 */
-	public SourceBuffer(DOMSource data){ 
+	public SourceBuffer(StackLevel data){ 
 		super();
 		this.scope = data;
 		this.init();
@@ -157,7 +156,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether or not the line is executable
 	 */
 	public boolean isLineExecutable(int lineNo){
-		DOMLine line = this.scope.getLine(lineNo + 1);
+		DOMLine line = this.scope.getData().getLine(lineNo + 1);
 		if(line == null)
 			return false;
 		return line.isExecutable();
@@ -170,7 +169,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return
 	 */
 	public boolean isLineBroken(int lineNo){
-		DOMLine line = this.scope.getLine(lineNo + 1);
+		DOMLine line = this.scope.getData().getLine(lineNo + 1);
 		if(line == null)
 			return false;
 		
@@ -191,7 +190,7 @@ public class SourceBuffer extends TextBuffer {
 	 * does not correspond to a valid line number
 	 */
 	public boolean toggleBreakpoint (int lineNum){
-		DOMLine line = this.scope.getLine(lineNum + 1);
+		DOMLine line = this.scope.getData().getLine(lineNum + 1);
 		if(line == null)
 			return false;
 		
@@ -483,7 +482,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The variable at that location, or null
 	 */
 	public Variable getVariable(TextIter iter){
-		DOMLine line = this.scope.getLine(iter.getLineNumber()+1);
+		DOMLine line = this.scope.getData().getLine(iter.getLineNumber()+1);
 		DOMTag tag = line.getTag(iter.getLineOffset());
 		
 		// No var (or no tag), do nothing
@@ -530,7 +529,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param declaration Whether the function is a declaration
 	 */
 	public void addFunction(String name, int offset, boolean declaration){
-		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		DOMLine line = this.scope.getData().getLine(this.getIter(offset).getLineNumber() + 1);
 		line.addTag(DOMTagTypes.FUNCTION,
 				name,
 				this.getIter(offset).getLineOffset());
@@ -542,7 +541,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the variable name
 	 */
 	public void addVariable(int offset, int length){
-		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		DOMLine line = this.scope.getData().getLine(this.getIter(offset).getLineNumber() + 1);
 		line.addTag(DOMTagTypes.LOCAL_VAR,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());
@@ -560,7 +559,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the literal
 	 */
 	public void addKeyword(int lineNum, int col, int length){
-		DOMLine line = this.scope.getLine(lineNum + 1);
+		DOMLine line = this.scope.getData().getLine(lineNum + 1);
 		line.addTag(DOMTagTypes.KEYWORD,
 				this.getText(this.getIter(lineNum, col), this.getIter(lineNum, col + length), false),
 				col);
@@ -573,7 +572,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the literal
 	 */
 	public void addKeyword(int offset, int length){
-		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		DOMLine line = this.scope.getData().getLine(this.getIter(offset).getLineNumber() + 1);
 		line.addTag(DOMTagTypes.KEYWORD,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());		
@@ -598,7 +597,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param length The length of the identifier
 	 */
 	public void addClass(int offset, int length){
-		DOMLine line = this.scope.getLine(this.getIter(offset).getLineNumber() + 1);
+		DOMLine line = this.scope.getData().getLine(this.getIter(offset).getLineNumber() + 1);
 		line.addTag(DOMTagTypes.CLASS_DECL,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());
@@ -612,11 +611,20 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The number of lines in the file
 	 */
 	public int getLineCount(boolean includeInlindes){
-		return this.scope.getLineCount();
+		return this.scope.getData().getLineCount();
 	}
 	
 	public boolean hasInlineCode(int lineNumber){
-		return this.scope.getLine(lineNumber).hasInlinedCode();
+		return this.scope.getData().getLine(lineNumber).hasInlinedCode();
+	}
+	
+	public void setScope(StackLevel scope){
+		this.scope = scope;
+		try {
+			this.loadFile();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	/*-------------------*
@@ -631,8 +639,8 @@ public class SourceBuffer extends TextBuffer {
 	 * @throws FileNotFoundException
 	 * @throws JGException
 	 */
-	private void loadFile()throws FileNotFoundException, JGException{
-		Iterator lines = this.scope.getLines();
+	private void loadFile() throws FileNotFoundException, JGException{
+		Iterator lines = this.scope.getData().getLines();
 		
 		String bufferText = "";
 		
@@ -649,12 +657,16 @@ public class SourceBuffer extends TextBuffer {
 		this.deleteText(this.getStartIter(), this.getEndIter());
 		this.insertText(bufferText);
 		
-		// now pass the resulting text to the parser
-		this.staticParser = new CDTParser();
-		try {
-			this.staticParser.parse(this, this.scope.getFilePath() + "/" + this.scope.getFileName());
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(!this.scope.isParsed()){
+			// now pass the resulting text to the parser
+			if(this.staticParser == null)
+				this.staticParser = new CDTParser();
+			try {
+				this.staticParser.parse(this, this.scope.getData().getFilePath() + "/" + this.scope.getData().getFileName());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			this.scope.setParsed(true);
 		}
 		
 		this.createTags();
@@ -664,7 +676,7 @@ public class SourceBuffer extends TextBuffer {
 	 * Reads through the DOM and creates all the tags necessary
 	 */
 	private void createTags(){
-		Iterator lines = this.scope.getLines();
+		Iterator lines = this.scope.getData().getLines();
 		
 		// Iterate through all the lines
 		while(lines.hasNext()){
