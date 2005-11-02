@@ -1,5 +1,10 @@
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
+	* test/SourceWinRunner.java (mainSourceWin): Now looks for the test .cpp
+	files in the post install directory.
+
+2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
+
 	* test/SourceWinRunner.java (main): Changed so that the generated dom 
 	has multiple stack frames.
 	(mainSourceWin): Ditto.

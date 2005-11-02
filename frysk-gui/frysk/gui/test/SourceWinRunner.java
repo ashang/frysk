@@ -45,6 +45,8 @@ import java.math.BigInteger;
 
 import org.gnu.gtk.Gtk;
 
+import frysk.Config;
+
 import frysk.gui.srcwin.SourceWindow;
 import frysk.gui.srcwin.StackLevel;
 import frysk.gui.srcwin.dom.DOMFrysk;
@@ -148,7 +150,7 @@ public class SourceWinRunner {
 			DOMFrysk dom = DOMTestGUIBuilder.makeTestDOM();
 			DOMSource source = dom.getImage("test6").getSource("test3.cpp");
 			source.setFileName("test3.cpp");
-			source.setFilePath("../frysk/frysk-gui/frysk/gui/srcwin/testfiles");
+			source.setFilePath(Config.PKGDATADIR+"/samples");
 			BufferedReader reader = new BufferedReader(new FileReader(new File("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test3.cpp")));
 			int line = 1;
 			int offset = 0;
@@ -162,7 +164,7 @@ public class SourceWinRunner {
 			
 			source = dom.getImage("test6").getSource("test4.cpp");
 			source.setFileName("test4.cpp");
-			source.setFilePath("../frysk/frysk-gui/frysk/gui/srcwin/testfiles");
+			source.setFilePath(Config.PKGDATADIR+"/samples");
 			reader = new BufferedReader(new FileReader(new File("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test4.cpp")));
 			line = 1;
 			offset = 0;
@@ -176,7 +178,7 @@ public class SourceWinRunner {
 			
 			source = dom.getImage("test6").getSource("test5.cpp");
 			source.setFileName("test5.cpp");
-			source.setFilePath("../frysk/frysk-gui/frysk/gui/srcwin/testfiles");
+			source.setFilePath(Config.PKGDATADIR+"/samples");
 			reader = new BufferedReader(new FileReader(new File("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test5.cpp")));
 			line = 1;
 			offset = 0;
@@ -190,7 +192,7 @@ public class SourceWinRunner {
 			
 			source = dom.getImage("test6").getSource("test6.cpp");
 			source.setFileName("test6.cpp");
-			source.setFilePath("../frysk/frysk-gui/frysk/gui/srcwin/testfiles");
+			source.setFilePath(Config.PKGDATADIR+"/samples");
 	//		reader = new BufferedReader(new FileReader(new File("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test6.cpp")));
 	//		line = 1;
 	//		offset = 0;
