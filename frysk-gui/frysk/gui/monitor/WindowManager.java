@@ -73,20 +73,18 @@ public class WindowManager implements Saveable{
 	
 	public void initWindows(LibGlade glade) throws IOException{
 		this.mainWindow = new MainWindow(glade);
-		this.mainWindow.showAll();
+		
 		
 		this.logWindow = new LogWidget(glade);
-		this.logWindow.showAll();
 		
 		this.prefsWindow = new PreferencesWindow(glade);
 
 		this.customeObserverWindow = new CustomeObserverWindow(glade);
-		this.customeObserverWindow.hideAll();
 		
 		this.programAddWindow = new ProgramAddWindow(glade);
-		this.programAddWindow.hideAll();
 
 		this.menuBar = new MenuBar(glade);
+		
 	}
 
 	public void save(Preferences prefs) {
