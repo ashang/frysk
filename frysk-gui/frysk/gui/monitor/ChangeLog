@@ -2,6 +2,8 @@
 
 	* ProgramAddWindow.java (getGladeWidgets): Modify widgets
 	to match glade remake.
+	(setFileButtonListener): Removed.
+	(doValidation): Refactored validation for new widgets
 	
 	* WindowManager.java (initWindows): Remove all showAll()
 	(let the glade property define default load paint behaviour)

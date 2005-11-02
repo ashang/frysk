@@ -57,10 +57,7 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.FileChooserAction;
 import org.gnu.gtk.FileChooserButton;
-import org.gnu.gtk.FileChooserDialog;
-import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.TreeIter;
@@ -74,8 +71,6 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.DialogEvent;
-import org.gnu.gtk.event.DialogListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
@@ -147,9 +142,31 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		// File Checks
 		if (programEntry.getText().length() <= 0)
-			return "Must have a filename to add";
+			return "You must give this montior a name";
 		
-		File existenceCheck = new File(programEntry.getText());
+
+		// This is wierd. If I do getFilename()
+		// and the FileChooserButton has not been
+		// actually clicked by the user, I get a 
+		// NullPointerException from the FileChooserButton.
+		// I would expect an empty string back in that case.
+		// JG bug? Anway .. hack to get around it for right now
+		
+		try {
+			programOpenFileDialog.getFilename();
+		} catch (Exception e )
+		{
+			// If doing the getFilename() spawns and NPE
+			// the user has never clicked the FileChooserButton
+			
+			return "You must choose an executable to watch";
+		}
+		
+		if (programOpenFileDialog.getFilename().length() < 1)
+			return "You must choose an executable to watch";
+		
+		
+		File existenceCheck = new File(programOpenFileDialog.getFilename());
 		
 		if (existenceCheck.exists() == false)
 			return "Filename specified does not exist on disk";
@@ -167,40 +184,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			
 		return "";
 	}
-
-	private void setFileButtonListener() {
-		
-		final FileChooserDialog fileChooserDialog = new FileChooserDialog(
-				"Choose a program to observe", 
-				(Window)getToplevel(), 
-				FileChooserAction.ACTION_OPEN);
-
-		fileChooserDialog.addButton(GtkStockItem.OK, RESPONSE_OK);
-		fileChooserDialog.addButton(GtkStockItem.CANCEL, RESPONSE_CANCEL);
-		
-//		programOpenFileDialog.addListener(new ButtonListener(){
-//			public void buttonEvent(ButtonEvent event) {
-//				if(event.getType() == ButtonEvent.Type.CLICK){
-//					fileChooserDialog.run();
-//					programEntry.setText(fileChooserDialog.getFilename());
-//					System.out.println("File name: " + fileChooserDialog.getFilenames());
-//				}
-//			}
-//		});
-		
-		fileChooserDialog.addListener(new DialogListener(){
-			public boolean dialogEvent(DialogEvent event) {
-			System.out.println("event: " + event + " RESPONSE: " + event.getResponse());
-				if(event.getType() == DialogEvent.Type.RESPONSE){
-					fileChooserDialog.hide();
-				}
-				return false;
-			}
-		});
-		
-		
-	}
-
 
 	public void mountProcModel(final ProcDataModel psDataModel) {
 
@@ -311,6 +294,8 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		this.programEntry = (Entry) glade.getWidget("programName");
 		this.programOpenFileDialog = (FileChooserButton) glade
 				.getWidget("programFileChooser");
+		this.programOpenFileDialog.setFilename("");
+		System.out.println(this.programOpenFileDialog);
 		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView");
 		this.programObseverListBox = (TreeView) glade.getWidget("programApplyObserversListBox");
 		this.programCancel = (Button) glade.getWidget("programCancel");
