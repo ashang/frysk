@@ -58,6 +58,7 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.FileChooserAction;
+import org.gnu.gtk.FileChooserButton;
 import org.gnu.gtk.FileChooserDialog;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.ListStore;
@@ -98,7 +99,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private static final int RESPONSE_CANCEL = 1;
 	
 	private Entry programEntry;
-	private Button programOpenFileDialog;
+	private FileChooserButton programOpenFileDialog;
 	private TreeView programTreeView;
 	private TreeView programObseverListBox;
 	private Button programCancel;
@@ -115,7 +116,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		mountProcModel(this.psDataModel);
 		setTreeListeners();
 		buildObserverListBox();
-		setFileButtonListener();
+		//setFileButtonListener();
 		setApplyCancelButtonListener();
 	}
 
@@ -177,15 +178,15 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		fileChooserDialog.addButton(GtkStockItem.OK, RESPONSE_OK);
 		fileChooserDialog.addButton(GtkStockItem.CANCEL, RESPONSE_CANCEL);
 		
-		programOpenFileDialog.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.getType() == ButtonEvent.Type.CLICK){
-					fileChooserDialog.run();
-					programEntry.setText(fileChooserDialog.getFilename());
-					System.out.println("File name: " + fileChooserDialog.getFilenames());
-				}
-			}
-		});
+//		programOpenFileDialog.addListener(new ButtonListener(){
+//			public void buttonEvent(ButtonEvent event) {
+//				if(event.getType() == ButtonEvent.Type.CLICK){
+//					fileChooserDialog.run();
+//					programEntry.setText(fileChooserDialog.getFilename());
+//					System.out.println("File name: " + fileChooserDialog.getFilenames());
+//				}
+//			}
+//		});
 		
 		fileChooserDialog.addListener(new DialogListener(){
 			public boolean dialogEvent(DialogEvent event) {
@@ -307,9 +308,9 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	
 
 	private void getGladeWidgets(LibGlade glade) {
-		this.programEntry = (Entry) glade.getWidget("programEntry");
-		this.programOpenFileDialog = (Button) glade
-				.getWidget("programOpenFileDialog");
+		this.programEntry = (Entry) glade.getWidget("programName");
+		this.programOpenFileDialog = (FileChooserButton) glade
+				.getWidget("programFileChooser");
 		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView");
 		this.programObseverListBox = (TreeView) glade.getWidget("programApplyObserversListBox");
 		this.programCancel = (Button) glade.getWidget("programCancel");
