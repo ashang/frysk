@@ -1,7 +1,8 @@
 2005-11-02  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* FryskGui.java (mainGui): set MainWindow.showAll()
 	* glade/procpop.glade: Set default visible property
-	on CustomObserver, Preferences, and ProgramAdd
+	on Procpop, CustomObserver, Preferences, and ProgramAdd
 	windows to false (to stop painting on load).
 
 2005-11-01  Phil Muldoon  <pmuldoon@redhat.com>
