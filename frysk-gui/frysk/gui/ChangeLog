@@ -11,6 +11,9 @@
 	on Procpop, CustomObserver, Preferences, and ProgramAdd
 	windows to false (to stop painting on load).
 
+	* glade/procpop.glade: ProgramAdd. Reworked. Changed
+	FileChooser. Added Name component and label guides.
+
 2005-11-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Removed stray alignment to fix
