@@ -1,3 +1,7 @@
+2005-11-02  Igor Foox  <ifoox@redhat.com>
+
+	 * m4/ac_get_lib_line.m4, m4/ac_find_file.m4: Add copyright statement.
+
 2005-11-01  Igor Foox  <ifoox@redhat.com>
 
 	* acinclude.m4: Fixed ordering of macro calls.
