@@ -940,7 +940,6 @@
 <widget class="GtkWindow" id="preferencesWindow">
   <property name="width_request">648</property>
   <property name="height_request">454</property>
-  <property name="visible">True</property>
   <property name="title" translatable="yes">Preferences</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
@@ -1181,7 +1180,6 @@
 <widget class="GtkWindow" id="customeObserverWindow">
   <property name="width_request">640</property>
   <property name="height_request">480</property>
-  <property name="visible">True</property>
   <property name="title" translatable="yes">Create Custom Observer</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
@@ -1844,7 +1842,6 @@
 </widget>
 
 <widget class="GtkWindow" id="programAddWindow">
-  <property name="visible">True</property>
   <property name="title" translatable="yes">Add Program</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
@@ -1857,7 +1854,7 @@
   <property name="skip_taskbar_hint">False</property>
   <property name="skip_pager_hint">False</property>
   <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <property name="gravity">GDK_GRAVITY_CENTER</property>
   <property name="focus_on_map">True</property>
 
   <child>
