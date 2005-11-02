@@ -1,3 +1,10 @@
+2005-11-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramViewPage.java (ProgramViewPage): Moved Cell Renderers
+	to mountProgramDataModel.
+	(mountProgramDataModel): Added.
+	* ProgramDataModel.java (getModel): Added.
+	
 2005-11-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramAddWindow.java (buildObserverListBox): Populate
@@ -17,8 +24,8 @@
 	
 	* ProgramDataModel.java (ProgramDataModel): Added initial manifest.
 	Added add method.
+ 
 
-	 
 2005-11-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ActionPool.java: migrated all old AddXObserver code to observers/X.

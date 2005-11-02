@@ -48,10 +48,19 @@ import java.io.IOException;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.CellRendererToggle;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeModel;
+import org.gnu.gtk.TreeModelFilter;
+import org.gnu.gtk.TreeModelFilterVisibleMethod;
 import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.TreeViewColumnEvent;
+import org.gnu.gtk.event.TreeViewColumnListener;
 
 /**
  * A widget representing the program view page.
@@ -60,6 +69,9 @@ public class ProgramViewPage extends Widget {
 	
 	// private TreeView programTreeView;
 	public ProgramAddWindow fileChooserDialog;
+	private ProgramDataModel programDataModel;
+	
+	private TreeModelFilter programFilter;
 
 	private TreeView programTreeView;
 	
@@ -67,9 +79,15 @@ public class ProgramViewPage extends Widget {
 	public ProgramViewPage(final LibGlade glade) throws IOException {
 		super((glade.getWidget("programVBox")).getHandle());
 		
+		
+		
 		this.programTreeView = (TreeView) glade.getWidget("programTreeView");
 		Button browseButton = (Button) glade.getWidget("programBrowseButton");
-			
+		
+		this.programDataModel = new ProgramDataModel();
+		mountProgramDataModel(programDataModel);
+		
+				
 		browseButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				
@@ -78,6 +96,9 @@ public class ProgramViewPage extends Widget {
 				}
 			}
 		});
+		
+
+		
 		
 //		this.fileChooserDialog.addListener(new DialogListener(){
 //			public boolean dialogEvent(DialogEvent event) {
@@ -93,6 +114,64 @@ public class ProgramViewPage extends Widget {
 		
 	}
 
+	
+	public void mountProgramDataModel(final ProgramDataModel programsDataModel){
+		
+//		this.procTreeView.setModel(psDataModel.getModel());
+		
+		this.programFilter = new TreeModelFilter(programDataModel.getModel());
+		
+		programFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
+
+			public boolean filter(TreeModel model, TreeIter iter) {
+
+				return true; 
+				
+//				if(model.getValue(iter, psDataModel.getThreadParentDC()) == -1){
+//					return true;
+//				}else{
+//					return false;
+//				}
+			}
+			
+		});
+		
+		this.programTreeView.setModel(programFilter);
+		this.programTreeView.setSearchDataColumn(programDataModel.getEventNameDC());
+		
+		TreeViewColumn enabledCol = new TreeViewColumn();
+		TreeViewColumn nameCol = new TreeViewColumn();
+
+		
+		 CellRendererToggle renderToggle = new CellRendererToggle();
+		 enabledCol.packStart(renderToggle, true);
+		 enabledCol.addAttributeMapping( renderToggle,
+		 CellRendererToggle.Attribute.ACTIVE, programDataModel.getEnabledDC() );	
+		enabledCol.setTitle("Enabled?");
+		enabledCol.setVisible(true);
+	
+		
+		CellRendererText nameRender = new CellRendererText(); 
+		nameCol.packStart(nameRender, true);
+		nameCol.addAttributeMapping(nameRender,
+		 CellRendererText.Attribute.TEXT, programDataModel.getEventNameDC());
+		nameCol.addAttributeMapping(nameRender,
+				 CellRendererText.Attribute.FOREGROUND, programDataModel.getColorDC());	
+		nameCol.addAttributeMapping(nameRender,
+				 CellRendererText.Attribute.WEIGHT, programDataModel.getWeightDC());	
+		nameCol.setTitle("Observered Executable");
+		
+		nameCol.addListener(new TreeViewColumnListener(){
+			public void columnClickedEvent(TreeViewColumnEvent arg0) {
+				programTreeView.setSearchDataColumn(programDataModel.getEventNameDC());
+			}
+		});
+		nameCol.setVisible(true);
+		
+		programTreeView.appendColumn(enabledCol);
+		programTreeView.appendColumn(nameCol);
+	}
+	
 	private void initProgramTreeView() {
 		this.programTreeView.getClass();//XXX: dummy call to get rid of ecj warning
 	}
