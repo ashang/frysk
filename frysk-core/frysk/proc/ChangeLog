@@ -1,5 +1,12 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* HostState.java: Replace processPerformCreateAttachedProc with
+	processRequestCreateAttachedProc.  Drop sendCreateAttachedProc's
+	running parameter.
+	* Host.java: Fold processCreateAttachedProc into
+	requestCreateAttachedProc.
+	* LinuxHost.java: Update.
+
 	* Host.java (requestCreateAttachedStoppedProc): Delete.
 	* TaskState.java: When notifyAttached has blockers and a trap,
 	transition a startRunning task to blockedContinue.

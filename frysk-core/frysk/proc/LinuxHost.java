@@ -178,11 +178,11 @@ public class LinuxHost
 	}
     }
 
-    void sendCreateAttachedProc (boolean running, String in, String out,
-				 String err, String[] args)
+    void sendCreateAttachedProc (String in, String out, String err,
+				 String[] args)
     {
 	int pid = Ptrace.child (in, out, err, args);
-	new LinuxProc (getSelf (), new ProcId (pid), running);
+	new LinuxProc (getSelf (), new ProcId (pid), true);
     }
 
     // When there's a SIGCHLD, poll the kernel's waitpid() queue

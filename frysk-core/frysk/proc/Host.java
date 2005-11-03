@@ -112,9 +112,11 @@ public abstract class Host
 
     // Refresh the list of processes.
     abstract void sendRefresh (boolean refreshAll);
-    abstract void sendCreateAttachedProc (boolean running, String stdin,
-					  String stdout, String stderr,
-					  String[] args);
+    /**
+     * Tell the host to create a running child process.
+     */
+    abstract void sendCreateAttachedProc (String stdin, String stdout,
+					  String stderr, String[] args);
 
     /**
      * The current state of this host.
@@ -155,46 +157,33 @@ public abstract class Host
     }
 
     /**
-     * (Internal) Tell this host to create an attached, possibly
-     * running, process.
+     * Request that a new attached and running process (with stdin,
+     * stdout, and stderr are shared with this process) be created.
      */
-    private void performCreateAttachedProc (final boolean runningArg,
-					    final String stdinArg,
-					    final String stdoutArg,
-					    final String stderrArg,
-					    final String[] argsArg)
+    public final void requestCreateAttachedProc (String[] args)
     {
-	Manager.eventLoop.add (new HostEvent ("PerformCreateAttachedProc")
+	requestCreateAttachedProc (null, null, null, args);
+    }
+    /**
+     * Request that a new attached and running process be created.
+     */
+    public final void requestCreateAttachedProc (final String stdinArg,
+						 final String stdoutArg,
+						 final String stderrArg,
+						 final String[] argsArg)
+    {
+	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
 	    {
-		boolean running = runningArg;
 		String stdin = stdinArg;
 		String stdout = stdoutArg;
 		String stderr = stderrArg;
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    state = state.processPerformCreateAttachedProc
-			(Host.this, running, stdin, stdout, stderr, args);
+		    state = state.processRequestCreateAttachedProc
+			(Host.this, stdin, stdout, stderr, args);
 		}
 	    });
-    }
-    /**
-     * Request that a new attached and running process (with stdin,
-     * stdout, and stderr are shared with this process) be created.
-     */
-    public final void requestCreateAttachedProc (String[] args)
-    {
-	performCreateAttachedProc (true, null, null, null, args);
-    }
-    /**
-     * Request that a new attached and running process created.
-     */
-    public final void requestCreateAttachedProc (String stdin,
-						 String stdout,
-						 String stderr,
-						 String[] args)
-    {
-	performCreateAttachedProc (true, stdin, stdout, stderr, args);
     }
 
     /**
