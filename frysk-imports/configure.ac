@@ -44,7 +44,12 @@ AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile])
 
 sinclude(common/acinclude.m4)
 
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
+lib=lib
+if [[ "x`uname -p`" = "xx86_64" ]]; then
+    lib=${lib}64
+fi
+	
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/${lib}/pkgconfig
 
 AC_MSG_CHECKING([for junit.jar])
 JUNIT_JAR=/usr/share/java/junit.jar
