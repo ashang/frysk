@@ -90,12 +90,12 @@ fi
 
 AC_MSG_CHECKING([for  cdtparser.jar])
 AC_FIND_FILE( [cdtparser.jar], 
- 	[ /opt/frysk/share/java/,\
+ 	[ /opt/frysk/share/java/ , \
 /usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.0/],
 	 CDTPARSER_JAR)
 
 if [[ "x$CDTPARSER_JAR" = "xNO" ]]; then
-	AC_MSG_ERROR( Could not locate libcdtparser.jar.so)
+	AC_MSG_ERROR( Could not locate cdtparser.jar)
 else
 	# Append file name to path because AC_FIND_FILE only returns path
 	CDTPARSER_JAR="${CDTPARSER_JAR}cdtparser.jar"
