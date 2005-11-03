@@ -18,6 +18,10 @@
 	
 	* SourceWindow.java (createToolBar): Workaround to display tooltips
 	implemented.
+	
+	* SourceViewWidget.java (mouseEvent): Added menu items for adding traces
+	to variable and customizing actions to be taken on a breakpoint. These
+	currently do nothing but serve as a reminder to implement them later.
 
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 

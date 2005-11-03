@@ -191,8 +191,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			final Variable var = this.buf.getVariable(iter);
 			
 			Menu m = new Menu();
-			MenuItem mi = new MenuItem("Display variable value", false);
+			MenuItem mi = new MenuItem("Display variable value...", false);
+			MenuItem mi2 = new MenuItem("Add Trace", false);
 			m.append(mi);
+			m.append(mi2);
 			if(var != null)
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent arg0) {
@@ -201,8 +203,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 						popup.showAll();
 					}
 				});
-			else
+			else{
 				mi.setSensitive(false);
+				mi2.setSensitive(false);
+			}
 
 			m.showAll();
 			m.popup();
@@ -221,7 +225,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			if(event.getButtonPressed() == MouseEvent.BUTTON3 &&
 					this.buf.isLineExecutable(lineNum)){
 				Menu m = new Menu();
-				MenuItem mi = new MenuItem("Breakpoint information", false);
+				MenuItem mi = new MenuItem("Breakpoint information...", false);
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent arg0) {
 						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
@@ -230,8 +234,12 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 					}
 				});
 				m.append(mi);
-				if(!this.buf.isLineBroken(lineNum)) // no breakpoint, no info to show
+				MenuItem mi2 = new MenuItem("Customize breakpoint actions...", false);
+				m.append(mi2);
+				if(!this.buf.isLineBroken(lineNum)){ // no breakpoint, no info to show
 					mi.setSensitive(false);
+					mi2.setSensitive(false);
+				}
 				m.append(new MenuItem()); // Separator
 				mi = new MenuItem("Toggle Breakpoint", false);
 				m.append(mi);
