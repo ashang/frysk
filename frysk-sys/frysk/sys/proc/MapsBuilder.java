@@ -61,19 +61,30 @@ public abstract class MapsBuilder
     public final native boolean construct (int pid);
 
     /**
-     * Scan the auxiliary vector found in the MAPS byte array.
+     * Scan the maps MAPS byte array building corresponding map.  It
+     * is assumed that the byte array contains ASCII characters, and
+     * includes a terminating NUL.  {@link #buildMap} is called with
+     * each mapping.
      */
     public final native boolean construct (byte[] maps);
 
     /**
+     * Called with the raw byte buffer slurped by {@link
+     * #construct(int)}.
+     */
+    abstract public void buildBuffer (byte[] maps);
+
+    /**
      * Build an address map covering [addressLow,addressHigh) with
      * permissions {permR, permW, permX, permP }, device devMajor
-     * devMinor, inode, and optionally a pathname.
+     * devMinor, inode, and the pathname's offset/length within the
+     * buf.
      */
     abstract public void buildMap (long addressLow, long addressHigh,
-				   boolean permR, boolean permW, boolean permX,
-				   boolean permP,
+				   boolean permRead, boolean permWrite,
+				   boolean permExecute, boolean permPrivate,
+				   long offset,
 				   int devMajor, int devMinor,
 				   int inode,
-				   String pathname);
+				   int pathnameOffset, int pathnameLength);
 }

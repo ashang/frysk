@@ -1,5 +1,11 @@
 2005-11-02  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/MapsBuilder.cxx (construct): Implement.
+	* TestMaps.java: Add .stringsToBytes, .Map, .check, .testIA32,
+	.testIA64, .testAMD64, .testPPC32, and .testPPC64.
+	* MapsBuilder.java: Add .buildBuffer.  Fix parameters to
+	.buildMap.
+
 	* cni/slurp.hxx (scanJint, scanJlong): Declare.
 	* cni/slurp.cxx (scanJint, scanJlong): New.
 	* cni/Stat.cxx (scanJint, scanJlong): Delete.

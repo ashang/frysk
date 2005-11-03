@@ -37,6 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#include <stdint.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
 #include <gcj/cni.h>
 
 #include "frysk/sys/proc/cni/slurp.hxx"
@@ -49,12 +54,59 @@ frysk::sys::proc::MapsBuilder::construct (jint pid)
   jbyteArray buf = slurp (pid, "maps");
   if (buf == NULL)
     return false;
-
+  buildBuffer (buf);
   return construct (buf);
 }
 
 jboolean
 frysk::sys::proc::MapsBuilder::construct (jbyteArray buf)
 {
+  const char *start = (const char *) elements (buf);
+  const char *end = start + buf->length;
+  const char *p = start;
+  while (p < end) {
+    if (isspace (*p))
+      p++;
+    else if (*p == '\0')
+      return true;
+    else {
+      // <address>-<address>
+      jlong addressLow = scanJlong (&p, 16);
+      if (*p++ != '-')
+	throwRuntimeException ("missing dash");
+      jlong addressHigh = scanJlong (&p, 16);
+      // <RWXSP>
+      if (*p++ != ' ')
+	throwRuntimeException ("missing space");
+      jboolean permRead = *p++ == 'r';
+      jboolean permWrite = *p++ == 'w';
+      jboolean permExecute = *p++ == 'x';
+      jboolean permPrivate = *p++ == 'p';
+      // <offset>
+      jlong offset = scanJlong (&p, 16);
+      // <major>:<minor>
+      jint devMajor = scanJint (&p, 16);
+      if (*p++ != ':')
+	throwRuntimeException ("missing colon");
+      jint devMinor = scanJint (&p, 16);
+      // <inode>
+      jint inode = scanJint (&p, 10);
+      // <filename-string>?
+      while (isblank (*p))
+	p++;
+      jint pathnameOffset = p - start;
+      while (*p != '\0' && !isspace (*p)) {
+	p++;
+      }
+      int pathnameLength = p - start - pathnameOffset;
+      buildMap (addressLow, addressHigh,
+		permRead, permWrite, permExecute, permPrivate,
+		offset,
+		devMajor, devMinor,
+		inode,
+		pathnameOffset, pathnameLength);
+    }
+  }
+  throwRuntimeException ("missing NUL");
   return false;
 }
