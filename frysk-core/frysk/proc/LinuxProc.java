@@ -140,11 +140,6 @@ public class LinuxProc
 	    remove (task);
 	}
     }
-    void sendNewAttachedChild (ProcId childId)
-    {
-	// A forked child starts out attached.
-	new LinuxProc (this, childId, true);
-    }
 
     void sendNewAttachedTask (TaskId id)
     {

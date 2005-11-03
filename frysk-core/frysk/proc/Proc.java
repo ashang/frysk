@@ -115,11 +115,6 @@ public abstract class Proc
      * Create a new, definitely attached, definitely running, task.
      */
     abstract void sendNewAttachedTask (TaskId id);
-    /**
-     * Create a new, definitlely attached, definitely running, child
-     * process.
-     */
-    abstract void sendNewAttachedChild (ProcId childId);
 
     abstract void sendRefresh ();
 

@@ -1,5 +1,8 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (sendNewAttachedChild(ProcId)): Delete.
+	* LinuxProc.java (sendNewAttachedChild(ProcId)): Delete.
+
 	* Task.java (Task(Task,TaskId)): Delete.
 	* LinuxTask.java (Task(Task,TaskId)): Delete.
 	* LinuxHost.java: Use Task(Proc,TaskId,boolean).
