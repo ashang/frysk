@@ -182,17 +182,17 @@ public abstract class Host
      * Request that a new attached and running process (with stdin,
      * stdout, and stderr are shared with this process) be created.
      */
-    public final void requestCreateAttachedContinuedProc (String[] args)
+    public final void requestCreateAttachedProc (String[] args)
     {
 	performCreateAttachedProc (true, null, null, null, args);
     }
     /**
      * Request that a new attached and running process created.
      */
-    public final void requestCreateAttachedContinuedProc (String stdin,
-							  String stdout,
-							  String stderr,
-							  String[] args)
+    public final void requestCreateAttachedProc (String stdin,
+						 String stdout,
+						 String stderr,
+						 String[] args)
     {
 	performCreateAttachedProc (true, stdin, stdout, stderr, args);
     }

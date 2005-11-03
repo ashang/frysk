@@ -419,8 +419,8 @@ public class TestLib
 	    Manager.host.observableProcAdded.addObserver (pidObserver);
 	    // Start the child process, run the event loop until the
 	    // pid is known.
-	    Manager.host.requestCreateAttachedContinuedProc (stdin, stdout,
-							     stderr, argv);
+	    Manager.host.requestCreateAttachedProc (stdin, stdout,
+						    stderr, argv);
 	    assertRunUntilStop ("starting attached child");
 	    // Return that captured PID.
 	    return pidObserver.pid;

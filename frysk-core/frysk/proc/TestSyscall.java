@@ -147,7 +147,7 @@ public class TestSyscall
     {
 	TestSyscallInternals t = new TestSyscallInternals ();
  	// Create program making syscalls
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (new String[] {
  		"./prog/syscall/syscalls"
  	    });

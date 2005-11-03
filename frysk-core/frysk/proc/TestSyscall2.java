@@ -140,7 +140,7 @@ public class TestSyscall2
 	String arg = "10000";
         TestSyscall2Internals t = new TestSyscall2Internals ();
 
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    ( new String[] {
  		"./prog/syscall/syscallloop",
 		arg

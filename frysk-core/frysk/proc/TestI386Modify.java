@@ -213,7 +213,7 @@ public class TestI386Modify
     {
 	TestI386ModifyInternals t = new TestI386ModifyInternals ();
 	// Create program making syscalls
-	Manager.host.requestCreateAttachedContinuedProc ( new String[]
+	Manager.host.requestCreateAttachedProc ( new String[]
 	    {
 		"./prog/x86isa/x86modify"
 	    });

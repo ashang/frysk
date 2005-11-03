@@ -184,7 +184,7 @@ public class TestI386Regs
     {
 	TestI386RegsInternals t = new TestI386RegsInternals ();
  	// Create program making an exit syscall");
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (new String[] {
 		"./prog/x86isa/x86regs"
 	    });

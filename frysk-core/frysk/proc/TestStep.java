@@ -234,7 +234,7 @@ public class TestStep
 	TestStepInternals t = new TestStepInternals ();
 
 	// Create threaded infinite loop
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (new String[] {
                 "./prog/step/infThreadLoop"
             });

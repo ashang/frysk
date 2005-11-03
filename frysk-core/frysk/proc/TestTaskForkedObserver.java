@@ -77,7 +77,7 @@ public class TestTaskForkedObserver
 	ForkObserver forkObserver = new ForkObserver ();
 
 	// Run a program that forks wildly.
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
 		"./prog/fib/fork",
 		Integer.toString (n)
@@ -135,7 +135,7 @@ public class TestTaskForkedObserver
 	ForkStopper forkStopper = new ForkStopper ();
 
 	// Run a program that forks wildly.
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
 		"./prog/fib/fork",
 		Integer.toString (n)

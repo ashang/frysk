@@ -73,7 +73,7 @@ public class TestProcGet
 
 	TmpFile tmpFile = new TmpFile ();
 	new StopEventLoopWhenChildProcRemoved ();
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, tmpFile.toString (), "/dev/null", new String[] {
 		"./prog/print/auxv"
 	    });

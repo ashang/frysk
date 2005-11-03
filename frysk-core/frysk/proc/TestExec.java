@@ -61,7 +61,7 @@ public class TestExec
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, "/dev/null", null,
 	     new String[] {
 		"./prog/syscall/exec",
@@ -90,7 +90,7 @@ public class TestExec
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, "/dev/null", null,
 	     new String[] {
 		"./prog/syscall/threadexec",

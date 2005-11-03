@@ -76,7 +76,7 @@ public class TestTaskClonedObserver
 	}
 	CloneCounter cloneCounter = new CloneCounter ();
 
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
 		"./prog/fib/clone",
 		Integer.toString (fibCount)
@@ -135,7 +135,7 @@ public class TestTaskClonedObserver
 	// main task).
  	Fibonacci fib = new Fibonacci (fibCount);
 
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
 		"./prog/fib/clone",
 		Integer.toString (fibCount)

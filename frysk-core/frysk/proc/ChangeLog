@@ -1,5 +1,14 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (requestCreateAttachedProc): Rename
+	requestCreateAttachedContinuedProc.
+	* TestExec.java, TestI386Modify.java, TestI386Regs.java,
+	TestLib.java, TestModify.java, TestProcGet.java, TestRun.java,
+	TestStep.java, TestSyscall.java, TestSyscall2.java,
+	TestSyscallOpen.java, TestTaskClonedObserver.java,
+	TestTaskForkedObserver.java, TestTaskObserver.java,
+	TestTaskTerminateObserver.java: Update.
+
 	* Proc.java (Proc(Task,ProcId): New constructor.
 	* LinuxProc.java (Proc(Task,ProcId): Ditto.
 	* Task.java (Task(Task,TaskId)): New constructor.

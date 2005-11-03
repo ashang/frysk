@@ -80,7 +80,7 @@ public class TestTaskObserver
 	}
 	AddToAttached addToAttached = new AddToAttached ();
 
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (new String[] {
 		"./prog/terminated/exit",
 		"0"
@@ -122,7 +122,7 @@ public class TestTaskObserver
 
 	// Run a program, any program so that blockedAttached has
 	// something to block.
-	Manager.host.requestCreateAttachedContinuedProc
+	Manager.host.requestCreateAttachedProc
 	    (new String[] {
 		"./prog/terminated/exit",
 		"0"
