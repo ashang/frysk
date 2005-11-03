@@ -8,6 +8,9 @@
 	* SourceWindow.java (SourceWindow): Now prints out more informative error
 	message if glade file not found.
 
+	* SourceWindowFactory.java: Now sets default value for glade and image
+	paths to look in installed directory, then source directory.
+
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java: Now stores StackLevel, not just encapsulated
