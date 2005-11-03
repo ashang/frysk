@@ -1,7 +1,7 @@
 2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* test/SourceWinRunner.java (main): Now uses paths out of Config.java.
-	(mainSourceWin): Now uses SourceWindowFactory to create a new instance.
+	(mainSourceWin): Uses same process as main.
 
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 

@@ -217,7 +217,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		// If we don't have a glade file by this point, bail
 		if(glade == null){
-			System.err.println("Could not file source window glade file! Exiting.");
+			System.err.println("Could not file source window glade file in path "+gladePath +"! Exiting.");
 			System.exit(1);
 		}
 

@@ -4,6 +4,9 @@
 	(createActions): Now looks for images in multiple directories.
 	(createSearchBar): Ditto.
 	* SourceWindowFactory.java: Added.
+	
+	* SourceWindow.java (SourceWindow): Now prints out more informative error
+	message if glade file not found.
 
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
