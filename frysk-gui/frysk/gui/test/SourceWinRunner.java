@@ -44,6 +44,8 @@ import java.io.FileReader;
 import java.math.BigInteger;
 
 import org.gnu.gtk.Gtk;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import frysk.Config;
 
@@ -197,14 +199,6 @@ public class SourceWinRunner {
 			source = dom.getImage("test6").getSource("test6.cpp");
 			source.setFileName("test6.cpp");
 			source.setFilePath(Config.ABS_SRCDIR+"/../frysk-gui/frysk/gui/srcwin/testfiles");
-	//		reader = new BufferedReader(new FileReader(new File("../frysk/frysk-gui/frysk/gui/srcwin/testfiles/test6.cpp")));
-	//		line = 1;
-	//		offset = 0;
-	//		while(reader.ready()){
-	//			String text = reader.readLine()+"\n";
-	//			source.addLine(line++, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
-	//			offset += text.length();
-	//		}
 			StackLevel stack4 = new StackLevel(source, 10);
 			stack3.addNextScope(stack4);
 		}
@@ -220,6 +214,12 @@ public class SourceWinRunner {
 		
 		s.getClass();
 		
+		try {
+			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+			outputter.output(dom.getDOMFrysk(), System.out);
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		}
 		
 		Gtk.main();
 	}

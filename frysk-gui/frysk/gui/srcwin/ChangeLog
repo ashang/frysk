@@ -10,6 +10,9 @@
 
 	* SourceWindowFactory.java: Now sets default value for glade and image
 	paths to look in installed directory, then source directory.
+	
+	* SourceWindowFactory.java: Fixed default values of glade and image paths,
+	typo in earlier version.
 
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
