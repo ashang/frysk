@@ -1,3 +1,7 @@
+2005-11-02  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxProc.java: Update, add .buildDimensions to BuildAuxv.
+
 2005-11-01  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* TestGoAndGo.java: Wrap internal counters, timers, etc.. in

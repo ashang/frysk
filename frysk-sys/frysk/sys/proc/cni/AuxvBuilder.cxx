@@ -123,7 +123,7 @@ frysk::sys::proc::AuxvBuilder::construct (jint pid)
   jbyteArray buf = slurp (pid, "auxv");
   if (buf == NULL)
     return false;
-
+  buildBuffer (buf);
   return construct (buf);
 }
 
@@ -172,7 +172,7 @@ frysk::sys::proc::AuxvBuilder::construct (jbyteArray buf)
   int wordSize = abs (get (NULL));
   bool bigEndian = get (NULL) > 0;
   int numberEntries = buf->length / wordSize / 2;
-  buildBuffer (wordSize, bigEndian, numberEntries, buf);
+  buildDimensions (wordSize, bigEndian, numberEntries);
   
   // Unpack the corresponding entries.
   for (int i = 0; i < numberEntries; i++) {

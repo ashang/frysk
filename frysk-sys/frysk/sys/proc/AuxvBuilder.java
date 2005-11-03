@@ -56,21 +56,27 @@ public abstract class AuxvBuilder
 
     /**
      * Scan the auxiliary vector found in <tt>/proc/PID/auxv</tt>
-     * building up an auxv.  Return true if the scan was successful.
+     * building up an auxv.
      */
     public final native boolean construct (int pid);
 
     /**
-     * Scan the auxiliary vector found in the AUXV byte array.
+     * Scan the auxiliary vector found in the AUXV byte array.  Calls
+     * {@link #buildDimensions}, and {@link #buildAuxiliary}.
      */
     public final native boolean construct (byte[] auxv);
 
     /**
-     * Called with the wordSize, the number of elements, and the raw
-     * buffer.
+     * Called with the raw byte buffer slurped by {@link
+     * #construct(int)}.
      */
-    public abstract void buildBuffer (int wordSize, boolean bigEndian,
-				      int numberElements, byte[] auxv);
+    public abstract void buildBuffer (byte[] auxv);
+
+    /**
+     * Called with the wordSize, byte order, and number of elements.
+     */
+    public abstract void buildDimensions (int wordSize, boolean bigEndian,
+					  int numberElements);
 
     /**
      * Called with each auxiliary vector entry.

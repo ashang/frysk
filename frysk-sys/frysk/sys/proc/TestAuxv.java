@@ -81,8 +81,11 @@ public class TestAuxv
 		this.vec = vec;
 		this.bigEndian = bigEndian;
 	    }
-	    public void buildBuffer (int wordSize, boolean bigEndian,
-				     int length, byte[] auxv)
+	    public void buildBuffer (byte[] auxv)
+	    {
+	    }
+	    public void buildDimensions (int wordSize, boolean bigEndian,
+					 int length)
 	    {
 		assertEquals ("word size", this.wordSize, wordSize);
 		assertEquals ("big endian", this.bigEndian, bigEndian);

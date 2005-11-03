@@ -1,3 +1,7 @@
+2005-11-02  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Add .buildDimensions to AuxvBuilder.
+
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* util/auxv.java: Update builder, add bigEndian parameter to

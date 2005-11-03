@@ -162,8 +162,11 @@ public class LinuxProc
 	    extends AuxvBuilder
 	{
 	    Auxv[] vec;
-	    public void buildBuffer (int wordSize, boolean bigEndian,
-				     int length, byte[] auxv)
+	    public void buildBuffer (byte[] auxv)
+	    {
+	    }
+	    public void buildDimensions (int wordSize, boolean bigEndian,
+					 int length)
 	    {
 		vec = new Auxv[length];
 	    }
