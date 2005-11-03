@@ -127,7 +127,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	public static final String FUNC_SELECTOR = "funcSelector";
 
 	// Directory where images are stored
-	public static String IMAGES_DIR = null; //$NON-NLS-1$
+	public static String[] IMAGES_DIR = null; //$NON-NLS-1$
 	
 	// Image files - search bar
 	public static final String FIND_NEXT_PNG = "findNext.png"; //$NON-NLS-1$
@@ -199,7 +199,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 	
-	public SourceWindow(String[] gladePaths, String imagePath,
+	public SourceWindow(String[] gladePaths, String[] imagePaths,
 			DOMFrysk dom, StackLevel stack) {
 		for(int i = 0; i < gladePaths.length; i++){
 			try{
@@ -224,7 +224,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		this.dom = dom;
 		this.stack = stack;
 		
-		IMAGES_DIR = imagePath;
+		IMAGES_DIR = imagePaths;
 		
 		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 		
@@ -377,33 +377,41 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// Before we make actions, register the icons
 		IconFactory fac = new IconFactory();
 		
-		IconSet set = null;
-		try {
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.RUN_PNG));
-			fac.addIconSet("frysk-run", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STEP_PNG));
-			fac.addIconSet("frysk-step", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.NEXT_PNG));
-			fac.addIconSet("frysk-next", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FINISH_PNG));
-			fac.addIconSet("frysk-finish", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.CONTINUE_PNG));
-			fac.addIconSet("frysk-continue", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.NEXT_ASM_PNG));
-			fac.addIconSet("frysk-next-asm", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STEP_ASM_PNG));
-			fac.addIconSet("frysk-step-asm", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_BOTTOM_PNG));
-			fac.addIconSet("frysk-stack-bottom", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_DOWN_PNG));
-			fac.addIconSet("frysk-stack-down", set);
-			set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.STACK_UP_PNG));
-			fac.addIconSet("frysk-stack-up", set);
-		} catch (Exception e){
-			System.err.println("Error loading images! Exiting");
-			System.exit(1);
+		for(int i = 0; i < IMAGES_DIR.length; i++){
+			IconSet set = null;
+			try {
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.RUN_PNG));
+				fac.addIconSet("frysk-run", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STEP_PNG));
+				fac.addIconSet("frysk-step", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.NEXT_PNG));
+				fac.addIconSet("frysk-next", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FINISH_PNG));
+				fac.addIconSet("frysk-finish", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.CONTINUE_PNG));
+				fac.addIconSet("frysk-continue", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.NEXT_ASM_PNG));
+				fac.addIconSet("frysk-next-asm", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STEP_ASM_PNG));
+				fac.addIconSet("frysk-step-asm", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STACK_BOTTOM_PNG));
+				fac.addIconSet("frysk-stack-bottom", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STACK_DOWN_PNG));
+				fac.addIconSet("frysk-stack-down", set);
+				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STACK_UP_PNG));
+				fac.addIconSet("frysk-stack-up", set);
+			} catch (Exception e){
+				if(i == IMAGES_DIR.length - 1){
+					System.err.println("Error loading images on path " + IMAGES_DIR[i]+"! Exiting");
+					System.exit(1);
+				}
+				
+				continue;
+			}
+			fac.addDefault();
+			
+			break;
 		}
-		fac.addDefault();
 		
 		// Close action
 		this.close = new Action("close", "Close", "Close Window", GtkStockItem.CLOSE.getString());
@@ -709,14 +717,22 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		((Button) this.glade.getWidget(SourceWindow.CASE_FIND)).setLabel(Messages.getString("SourceWindow.17")); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setLabel(Messages.getString("SourceWindow.18")); //$NON-NLS-1$
 		
-		// Add icons
-		try {
-			((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.HIGHLIGHT_PNG)));
-			((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FIND_NEXT_PNG)));
-			((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FIND_PREV_PNG)));
-			((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR+SourceWindow.FIND_GO_PNG)));
-		} catch (Exception e){
-			e.printStackTrace();
+		for(int i = 0; i < IMAGES_DIR.length; i++){
+			// Add icons
+			try {
+				((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.HIGHLIGHT_PNG)));
+				((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FIND_NEXT_PNG)));
+				((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FIND_PREV_PNG)));
+				((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FIND_GO_PNG)));
+			} catch (Exception e){
+				if(i == IMAGES_DIR.length -1){
+					System.err.println("Could not find image files on " + IMAGES_DIR[i]);
+					System.exit(1);
+				}
+					
+				continue;
+			}
+			break;
 		}
 		
 		// add Tooltips

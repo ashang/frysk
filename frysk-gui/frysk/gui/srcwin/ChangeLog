@@ -1,3 +1,10 @@
+2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Now takes array of image paths.
+	(createActions): Now looks for images in multiple directories.
+	(createSearchBar): Ditto.
+	* SourceWindowFactory.java: Added.
+
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java: Now stores StackLevel, not just encapsulated
