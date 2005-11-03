@@ -14,6 +14,8 @@
 	* SourceWindowFactory.java: Fixed default values of glade and image paths,
 	typo in earlier version.
 
+	* dom/DOMInlineFunc.java: Extraneous, removed.
+
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java: Now stores StackLevel, not just encapsulated
