@@ -1,5 +1,11 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Host.java (requestCreateAttachedStoppedProc): Delete.
+	* TaskState.java: When notifyAttached has blockers and a trap,
+	transition a startRunning task to blockedContinue.
+	* TestRun.java: Re-implement testCreateAttachedStoppedProc to use
+	TaskObserver.Attached.
+
 	* Host.java (requestCreateAttachedProc): Rename
 	requestCreateAttachedContinuedProc.
 	* TestExec.java, TestI386Modify.java, TestI386Regs.java,

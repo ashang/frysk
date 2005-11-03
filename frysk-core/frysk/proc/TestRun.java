@@ -39,10 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Observer;
-import java.util.Observable;
-
-
 /**
  * Check that a program can be run to completion.
  *
@@ -90,52 +86,64 @@ public class TestRun
     /**
      * Check that a stopped (at entry point) sub-process can be
      * created.
+     *
+     * This gets a little messy, need to get TaskObserver.Attached
+     * installed on the just added task.
      */
 
     public void testCreateAttachedStoppedProc ()
     {
 	TmpFile tmpFile = new TmpFile ();
-	assertNotNull ("Temporary file created", tmpFile);
+	assertNotNull ("temporary file", tmpFile);
 
-	// Add an observer that counts the number of proc create
-	// events.
-	ProcCounter procCounter = new ProcCounter ();
-
-	// Create a program that removes the above tempoary file, when
+	// Create a program that removes the above temporary file, when
 	// it exits the event loop will be shutdown.
-	String[] command = new String[] {"rm", "-f", tmpFile.toString () };
-	Manager.host.requestCreateAttachedStoppedProc (command);
-
-	// Set up an observer that, when the process arrives attached
-	// stopped, it stops the event loop.
-	Manager.host.observableProcAdded.addObserver (new Observer ()
+	Manager.host.requestCreateAttachedProc (new String[]
 	    {
-		public void update (Observable o, Object obj)
-		{
-		    Proc proc = (Proc) obj;
-		    if (!isChildOfMine (proc))
-			return;
-		    proc.observableAttachedStop.addObserver (new Observer ()
-			{
-			    public void update (Observable o, Object obj)
-			    {			    
-				Manager.eventLoop.requestStop ();
-			    }
-			});
-		}
+		"rm",
+		"-f",
+		tmpFile.toString ()
 	    });
 
+	// Once a proc destroyed has been seen stop the event loop.
+	new StopEventLoopWhenChildProcRemoved ();
 
-	// Run the event loop, cap it at 5 seconds.
+	// Observe TaskObserver.Attached events; when any occure
+	// indicate that the curresponding task should block, and then
+	// request that the event-loop stop.
+	class TaskAttachedObserver
+	    extends AutoAddTaskObserverBase
+	    implements TaskObserver.Attached
+	{
+	    TaskSet attachedTasks = new TaskSet ();
+	    void updateTaskAdded (Task task)
+	    {
+		task.requestAddAttachedObserver (this);
+	    }
+	    public Action updateAttached (Task task)
+	    {
+		attachedTasks.add (task);
+		Manager.eventLoop.requestStop ();
+		return Action.BLOCK;
+	    }
+	}
+	TaskAttachedObserver taskAttachedObserver
+	    = new TaskAttachedObserver ();
+
+	// Run the event loop.  TaskAttachedObserver will halt the
+	// process at the entry point.
+	assertRunUntilStop ("run \"rm\" to entry");
+
+	// A single task should be blocked at its entry point.
+	assertEquals ("attached task count", 1,
+		      taskAttachedObserver.attachedTasks.size ());
+	assertTrue ("tmp file exists", tmpFile.stillExists ());
+
+	// Unblock the attached task and resume the event loop.  This
+	// will allow the "rm" command to run to completion.
+	taskAttachedObserver.attachedTasks.unblock (taskAttachedObserver);
 	assertRunUntilStop ("run \"rm\" to exit");
 
-	assertEquals ("processes created", 1,
-		      procCounter.getAdjustedNumberAdded ());
-	assertEquals ("processes destroyed", 0,
-		      procCounter.getAdjustedNumberRemoved ());
-	assertTrue ("tmp file exists", tmpFile.stillExists ());
-	assertEquals ("manager tasks", 1, Manager.host.taskPool.size ());
-	assertEquals ("manager processes", 1,
-		      procCounter.getAdjustedHostProcPoolSize ());
+	assertFalse ("tmp file exists", tmpFile.stillExists ());
     }
 }

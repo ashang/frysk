@@ -261,12 +261,17 @@ class TaskState
 		task.sendSetOptions ();
 		// XXX: Fixme, notify here takes the TaskEvent, and
 		// internal task events should not be propogated back
-		// to the client.
+		// to the client.  XXX: Look at frysk.proc.TestSyscall
+		// and frysk.proc.TestSyscallOpen for what this is
+		// doing.
 		TaskEvent event = new TaskEvent.Trapped (task);
 		task.stopEvent.notify (event);
-		task.notifyAttached ();
-		task.sendContinue (0);
-		return running;
+		if (task.notifyAttached () > 0)
+		    return blockedContinue;
+		else {
+		    task.sendContinue (0);
+		    return running;
+		}
 	    }
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)
