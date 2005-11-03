@@ -59,10 +59,13 @@ class frysk
     		for(int i = 1; i < args.length; i++)
     			newArgs[i-1] = args[i];
     		
+			System.out.println("About to launch source window.");
     		SourceWinRunner.mainSourceWin(newArgs, 
     				new String[] {Config.GLADEDIR + "/"}, 
     				Config.IMAGEDIR+"/");
 
-    	}
+    	} else {
+			System.err.println("Invalid arugment:" + args[0]);
+		}
     }
 }
