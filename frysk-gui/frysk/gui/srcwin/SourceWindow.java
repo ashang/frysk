@@ -685,19 +685,43 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private void createToolBar(){
 		ToolBar toolbar = (ToolBar) this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME);
 		
-		toolbar.insert((ToolItem) this.run.createToolItem(), 0);
-        toolbar.insert((ToolItem) this.stop.createToolItem(), 1);
-		toolbar.insert((ToolItem) this.step.createToolItem(), 2);
-		toolbar.insert((ToolItem) this.next.createToolItem(), 3);
-		toolbar.insert((ToolItem) this.cont.createToolItem(), 4);
-		toolbar.insert((ToolItem) this.finish.createToolItem(), 5);
+		ToolItem item;
+		
+		item = (ToolItem) this.run.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.26") , "");
+		toolbar.insert(item, 0);
+		item = (ToolItem) this.stop.createToolItem();
+		item.setToolTip(this.tips, "Stops execution", "");
+        toolbar.insert(item, 1);
+        item = (ToolItem) this.step.createToolItem();
+        item.setToolTip(this.tips, Messages.getString("SourceWindow.28"), "");
+		toolbar.insert(item, 2);
+		item = (ToolItem) this.next.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.30"), "");
+		toolbar.insert(item, 3);
+		item = (ToolItem) this.cont.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.34"), "");
+		toolbar.insert(item, 4);
+		item = (ToolItem) this.finish.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.32"), "");
+		toolbar.insert(item, 5);
 		toolbar.insert((ToolItem) new SeparatorToolItem(),6);
-		toolbar.insert((ToolItem) this.stepAsm.createToolItem(), 7);
-		toolbar.insert((ToolItem) this.nextAsm.createToolItem(), 8);
+		item = (ToolItem) this.stepAsm.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.38"), "");
+		toolbar.insert(item, 7);
+		item = (ToolItem) this.nextAsm.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.36"), "");
+		toolbar.insert(item, 8);
 		toolbar.insert((ToolItem) new SeparatorToolItem(), 9);
-		toolbar.insert((ToolItem) this.stackUp.createToolItem(), 10);
-		toolbar.insert((ToolItem) this.stackDown.createToolItem(), 11);
-		toolbar.insert((ToolItem) this.stackBottom.createToolItem(), 12);
+		item = (ToolItem) this.stackUp.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.42"), "");
+		toolbar.insert(item, 10);
+		item = (ToolItem) this.stackDown.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.40"), "");
+		toolbar.insert(item, 11);
+		item = (ToolItem) this.stackBottom.createToolItem();
+		item.setToolTip(this.tips, Messages.getString("SourceWindow.44"), "");
+		toolbar.insert(item, 12);
 		
 		toolbar.showAll();
 		toolbar.setToolTips(true);

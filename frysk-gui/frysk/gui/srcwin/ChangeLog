@@ -15,6 +15,9 @@
 	typo in earlier version.
 
 	* dom/DOMInlineFunc.java: Extraneous, removed.
+	
+	* SourceWindow.java (createToolBar): Workaround to display tooltips
+	implemented.
 
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 
