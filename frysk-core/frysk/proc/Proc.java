@@ -113,7 +113,6 @@ public abstract class Proc
      */
     abstract void sendNewAttachedChild (ProcId childId, boolean running);
 
-    abstract void sendAttach (boolean running);
     abstract void sendRefresh ();
 
     /**

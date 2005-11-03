@@ -1,5 +1,8 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (sendAttach(boolean)): Delete.
+	* LinuxProc.java (sendAttach(boolean)): Ditto.
+
 	* Proc.java: Reduce constructors to just one.
 	* Task.java: Reduce constructors to just one.
 	* LinuxTask.java: Update.

@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import frysk.sys.Ptrace;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
@@ -128,22 +127,6 @@ public class LinuxProc
 	    task.performRemoval ();
 	    remove (task);
 	}
-    }
-    void sendAttach (final boolean runningArg)
-    {
-	Ptrace.attach (id.id);
-	IdBuilder tasks = new IdBuilder ()
-	    {
-		boolean running = runningArg;
-		public void buildId (int tid)
-		{
-		    if (tid != id.id)
-			Ptrace.attach (tid);
-		    TaskId newTid = new TaskId (tid);
-		    sendNewAttachedTask (newTid, running);
-		}
-	    };
-	tasks.construct (id.id);
     }
     void sendNewAttachedChild (ProcId childId, boolean running)
     {
