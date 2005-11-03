@@ -1,3 +1,10 @@
+2005-11-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramData.java (getName): Added.
+	(setName): Ditto.
+	(save): Added (JDOM XML)
+	(load): Added (JDOM XML)
+
 2005-11-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramAddWindow.java (getGladeWidgets): Modify widgets

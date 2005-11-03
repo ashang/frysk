@@ -39,22 +39,43 @@
 
 package frysk.gui.monitor;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+
+import frysk.gui.FryskGui;
+
 
 public class ProgramData {
 	
 	private boolean enabled;
+	private String name;
 	private String executable;
 	private ArrayList processList;
 	private ArrayList observerList;
 	
+	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	
 	/**
+	 * @param name. Name of this monitor.
+	 * @param enabled. Is this monitor enabled?
 	 * @param executable. String Name of the program Executable
 	 * @param processList. ArrayList names of the watched process names
 	 * @param observerList. ArrayList names of observers to apply.
 	 */
-	ProgramData(boolean enabled, String executable, ArrayList processList, ArrayList observerList)
+	public ProgramData(String name, boolean enabled, String executable, ArrayList processList, ArrayList observerList)
 	{
+		this.name = name;
 		this.enabled = enabled;
 		this.executable = executable;
 		this.processList = processList;
@@ -93,4 +114,92 @@ public class ProgramData {
 		this.enabled = enabled;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void save(String filename)
+	{   
+
+		Element root = new Element("ProgramEvent");
+		Document doc =  new Document(root);
+
+		root.setAttribute("name", this.name);
+		root.setAttribute("enabled", ""+this.enabled);
+		root.setAttribute("executable",this.executable);
+		
+		Element processList = new Element("processes");
+		
+		Iterator i = this.processList.iterator();
+		while (i.hasNext())
+			processList.addContent(new Element("process").setText(((String)i.next())));
+		
+		Element observerList = new Element("observers");
+		
+		i = this.observerList.iterator();
+		
+		while (i.hasNext())
+			observerList.addContent(new Element("observer").setText(((String)i.next())));
+			
+		
+		root.addContent(processList);
+		root.addContent(observerList);
+		
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+
+		try {
+			output.output(doc,new FileWriter(filename));
+		} catch (IOException e) {
+			errorLog.log(Level.SEVERE,"Errors writing execution event monitor " + filename,e);
+		}
+	}
+	
+	public void save() {
+		save(this.name);
+	}
+	
+	public void load(String filename) {
+		
+	    SAXBuilder builder = new SAXBuilder(true);
+	    Document doc = null;
+	    
+	    try {
+			doc = builder.build(filename);
+		} catch (JDOMException e) {
+			errorLog.log(Level.SEVERE,"JDOM Exception while building " + filename,e);
+		} catch (IOException e) {
+			errorLog.log(Level.SEVERE,"IO Exception while building " + filename,e);
+		}
+		
+		Element root = doc.getRootElement();
+		
+		this.name = root.getAttribute("name").getValue();
+		
+		if (root.getAttribute("enabled").getValue().equals("true"))
+			this.enabled = true;
+		else
+			this.enabled = false;
+		
+		this.executable = root.getAttribute("executable").getValue();
+		
+		Element observers = root.getChild("observers");
+		ArrayList XMLobserverList  = (ArrayList) observers.getChildren("observer");		
+		Iterator i = XMLobserverList.iterator();
+		
+		observerList.clear();
+		while (i.hasNext())
+			observerList.add(((Element)i).getText());
+		
+		Element processes = root.getChild("processes");
+		ArrayList XMLprocessList  = (ArrayList) processes.getChildren("process");		
+		i = XMLprocessList.iterator();
+		
+		processList.clear();
+		while (i.hasNext())
+			processList.add(((Element)i).getText());
+	}
 }
