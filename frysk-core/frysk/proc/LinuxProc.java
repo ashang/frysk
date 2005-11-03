@@ -121,7 +121,8 @@ public class LinuxProc
 		else {
 		    // Add the process (it currently isn't attached).
 		    Task newTask = new LinuxTask (LinuxProc.this,
-						  new TaskId (tid));
+						  new TaskId (tid),
+						  false);
 		    added.put (newTask.id, newTask);
 		}
 	    }

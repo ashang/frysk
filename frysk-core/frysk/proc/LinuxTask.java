@@ -73,34 +73,12 @@ public class LinuxTask
     }
 
     /**
-     * Create a detached task.  For detached tasks, RUNNING makes no
-     * sennse.
+     * Create a new possibly attached, definitly running Task, that
+     * belongs to Proc.
      */
-    LinuxTask (Proc process, TaskId id)
+    LinuxTask (Proc process, TaskId id, boolean attached)
     {
-	super (process, id, false);
-	setupMapsXXX ();
-    }
-
-    /**
-     * Create an attached, possibly running, task.
-     *
-     * XXX: Should not be needed - an attatched Task will always be
-     * initially running.
-     */
-    LinuxTask (Proc process, TaskId id, boolean running)
-    {
-	super (process, id, true);
-	setupMapsXXX ();
-    }
-
-    /**
-     * Create a new defintely attached, definitely running, clone of
-     * Task.
-     */
-    LinuxTask (Task task, TaskId cloneId)
-    {
-	super (task, cloneId);
+	super (process, id, attached);
 	setupMapsXXX ();
     }
 

@@ -1,5 +1,10 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (Task(Task,TaskId)): Delete.
+	* LinuxTask.java (Task(Task,TaskId)): Delete.
+	* LinuxHost.java: Use Task(Proc,TaskId,boolean).
+	* LinuxProc.java: Ditto.
+
 	* Task.java: Drop running parameter from constructor.
 	* TaskState.java: Delete running parameter from .initial.  Delete
 	startStopped state.

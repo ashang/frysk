@@ -211,7 +211,9 @@ public class LinuxHost
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
 		    // Create an attached, and running, clone of TASK.
-		    Task clone = new LinuxTask (task, new TaskId (clonePid));
+		    Task clone = new LinuxTask (task.proc,
+						new TaskId (clonePid),
+						true);
 		    task.performCloned (clone);
 		}
 		public void forkEvent (int pid, int childPid)
