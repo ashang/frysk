@@ -76,5 +76,6 @@ LDFLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
 EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \
 				$(srcdir)/frysk/gui/images/*.png \
 				$(srcdir)/frysk/gui/images/*.jpg \
-			 	$(srcdir)/frysk/gui/common/messages.properties
+			 	$(srcdir)/frysk/gui/common/messages.properties \
+				$(srcdir)/frysk/gui/srcwin/testfiles/*.cpp
 

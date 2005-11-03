@@ -43,7 +43,12 @@ AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
 sinclude(common/acinclude.m4)
 
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
+lib=lib
+if [[ "x`uname -p`" = "xx86_64" ]]; then
+	lib=${lib}64
+fi
+
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/${lib}/pkgconfig
 
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)
@@ -76,8 +81,8 @@ AC_SUBST(VTE_JAVA_JAR)
 # compiled and work correctly we can remove these.
 AC_MSG_CHECKING([for  cdtparser.jar.so])
 AC_GET_LIB_LINE( [libcdtparser.jar.so], [  /opt/frysk/lib , /opt/frysk/lib64,\
-/usr/lib/eclipse/plugins/org.eclipse.cdt.core_3.0.0 ,\
-/usr/lib64/eclipse/plugins/org.eclipse.cdt.core_3.0.0] ,
+ /usr/lib/eclipse/plugins/org.eclipse.cdt.core_3.0.0 ,\
+ /usr/lib64/eclipse/plugins/org.eclipse.cdt.core_3.0.0] ,
 				  [CDTPARSER_LIBS])
 
 if [[ "x$CDTPARSER_LIBS" = "xNO" ]]; then
