@@ -43,6 +43,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include <gcj/cni.h>
 
@@ -95,4 +96,41 @@ slurp (int pid, const char* name)
   jbyteArray jbuf = JvNewByteArray (buf_len);
   memcpy (elements (jbuf), buf, buf_len);
   return jbuf;
+}
+
+// Scan a jint, throw an error if there's a problem.
+
+jint
+scanJint (const char **p, int base)
+{
+  char *pp;
+  jint tmp = ::strtoul (*p, &pp, base);
+  if (*p == pp)
+    throwRuntimeException ("strtoul");
+  *p = pp;
+  return tmp;
+}
+
+jint
+scanJint (const char **p)
+{
+  return scanJint (p, 0);
+}
+
+// Scan a jlong, throw an error if there's a problem.
+jlong
+scanJlong (const char **p, int base)
+{
+  char *pp;
+  jlong tmp = ::strtoull (*p, &pp, base);
+  if (*p == pp)
+    throwRuntimeException ("strtoul");
+  *p = pp;
+  return tmp;
+}
+
+jlong
+scanJlong (const char **p)
+{
+  return scanJlong (p, 0);
 }

@@ -47,3 +47,15 @@ extern int slurp (int pid, const char *name, char buf[], long sizeof_buf);
  * Slurp <tt>/proc/PID/name</tt> returning a jbyteArray or NULL.
  */
 extern jbyteArray slurp (int pid, const char* name);
+
+/**
+ * Scan a jint, throw an error if there's a problem.
+ */
+jint scanJint (const char **p);
+jint scanJint (const char **p, int base);
+
+/**
+ * Scan a jlong, throw an error if there's a problem.
+ */
+jlong scanJlong (const char **p);
+jlong scanJlong (const char **p, int base);

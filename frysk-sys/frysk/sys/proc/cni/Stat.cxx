@@ -51,28 +51,6 @@
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/proc/Stat.h"
 
-// Scan a jint, throw an error if there's a problem.
-static jint
-scanJint (char** p)
-{
-  char *pp;
-  jint tmp = ::strtoul (*p, &pp, 0);
-  if (*p == pp)
-    throwRuntimeException ("strtoul");
-  return tmp;
-}
-
-// Scan a jlong, throw an error if there's a problem.
-static jlong
-scanJlong (char** p)
-{
-  char *pp;
-  jlong tmp = ::strtoull (*p, &pp, 0);
-  if (*p == pp)
-    throwRuntimeException ("strtoul");
-  return tmp;
-}
-
 jboolean
 frysk::sys::proc::Stat::refresh (jint procPid)
 {
@@ -81,7 +59,7 @@ frysk::sys::proc::Stat::refresh (jint procPid)
   if (bufLen < 0)
     return false;
   
-  char* p = buf;
+  const char* p = buf;
 
   pid = scanJint (&p);
 

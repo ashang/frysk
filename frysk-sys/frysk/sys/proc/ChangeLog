@@ -1,5 +1,10 @@
 2005-11-02  Andrew Cagney  <cagney@redhat.com>
 
+	* cni/slurp.hxx (scanJint, scanJlong): Declare.
+	* cni/slurp.cxx (scanJint, scanJlong): New.
+	* cni/Stat.cxx (scanJint, scanJlong): Delete.
+	(refresh): Make p const.
+
 	* cni/AuxvBuilder.cxx (construct): Call.
 	* AuxvBuilder.java: Add .buildDimensions.
 	* TestAuxv.java: Add .buildDimensions to Builder.
