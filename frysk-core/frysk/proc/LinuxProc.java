@@ -79,7 +79,7 @@ public class LinuxProc
      */
     LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
-	super (host, parent, pid);
+	super (host, parent, pid, false, true);
 	this.stat = stat;
     }
     /**
@@ -87,7 +87,7 @@ public class LinuxProc
      */
     LinuxProc (Proc parent, ProcId procId, boolean running)
     {
-	super (parent, procId, running);
+	super (parent.host, parent, procId, true, running);
     }
     void sendRefresh ()
     {

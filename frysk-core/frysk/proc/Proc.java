@@ -84,9 +84,10 @@ public abstract class Proc
 
     /**
      * Create a new, possibly attached, possibly running, process.
+     * Since PARENT could be NULL, explicitly include the HOST.
      */
-    private Proc (Host host, Proc parent, ProcId id, boolean attached,
-		  boolean running)
+    protected Proc (Host host, Proc parent, ProcId id,
+		    boolean attached, boolean running)
     {
 	this.host = host;
 	this.id = id;
@@ -97,27 +98,12 @@ public abstract class Proc
 	    parent.add (this);
 	// Keep our manager informed.
 	host.add (this);
+	if (attached)
+	    // XXX: Only do this when attached; when detached require
+	    // a further system-poll to get the info.
+	    sendNewAttachedTask (new TaskId (id.id), running);
     }
-    /**
-     * Create a new detached process.  RUNNING makes no sense here.
-     * Since PARENT could be NULL here, also explicitly pass in the
-     * host.
-     */
-    Proc (Host host, Proc parent, ProcId id)
-    {
-	this (host, parent, id, false, true);
-    }
-    /**
-     * Create a new attached, possibly running, process.
-     */
-    Proc (Proc parent, ProcId id, boolean running)
-    {
-	this (parent.host, parent, id, true, running);
-	// XXX: Only do this when attached; when detached require a
-	// further system-poll to get the info.
-	sendNewAttachedTask (new TaskId (id.id), running);
-    }
-    
+   
     /**
      * Create a new, attached, possibly running, task.
      */
