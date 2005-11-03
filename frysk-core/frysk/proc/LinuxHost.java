@@ -210,9 +210,8 @@ public class LinuxHost
 		    // event, and the clone Task must be created
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
-		    Task clone = new LinuxTask (task.proc,
-						new TaskId (clonePid),
-						true);
+		    // Create an attached, and running, clone of TASK.
+		    Task clone = new LinuxTask (task, new TaskId (clonePid));
 		    task.performCloned (clone);
 		}
 		public void forkEvent (int pid, int childPid)
@@ -224,9 +223,8 @@ public class LinuxHost
 		    // stop event, the fork Proc must be created
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
-		    Proc child = new LinuxProc (task.proc,
-						new ProcId (childPid),
-						true);
+		    // Create an attached and running fork of TASK.
+		    Proc child = new LinuxProc (task, new ProcId (childPid));
 		    task.performForked (child);
 		}
 		public void exitEvent (int pid, boolean signal, int value,

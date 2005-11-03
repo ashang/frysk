@@ -103,6 +103,14 @@ public abstract class Proc
 	    // a further system-poll to get the info.
 	    sendNewAttachedTask (new TaskId (id.id), running);
     }
+    /**
+     * Create a new, definitely attached, definitely running, fork of
+     * Task.
+     */
+    protected Proc (Task task, ProcId forkId)
+    {
+	this (task.proc.host, task.proc, forkId, true, true);
+    }
    
     /**
      * Create a new, attached, possibly running, task.

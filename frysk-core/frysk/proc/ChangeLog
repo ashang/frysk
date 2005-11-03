@@ -1,5 +1,11 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (Proc(Task,ProcId): New constructor.
+	* LinuxProc.java (Proc(Task,ProcId): Ditto.
+	* Task.java (Task(Task,TaskId)): New constructor.
+	* LinuxTask.java (Task(Task,TaskId)): Ditto.
+	* LinuxHost.java: Use new LinuxProc and LinuxTask constructors.
+
 	* Proc.java (sendAttach(boolean)): Delete.
 	* LinuxProc.java (sendAttach(boolean)): Ditto.
 

@@ -138,6 +138,15 @@ abstract public class Task
 	    throw new RuntimeException ("bad !attached !running state");
     }
 
+    /**
+     * Create a new, definitely attached, definitely running, clone of
+     * Task.
+     */
+    protected Task (Task task, TaskId cloneId)
+    {
+	this (task.proc, cloneId, true, true);
+    }
+
     // Send operation to corresponding underlying [kernel] task.
     protected abstract void sendContinue (int sig);
     protected abstract void sendStepInstruction (int sig);
