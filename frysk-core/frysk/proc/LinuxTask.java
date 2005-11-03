@@ -78,7 +78,7 @@ public class LinuxTask
      */
     LinuxTask (Proc process, TaskId id)
     {
-	super (process, id, false, true);
+	super (process, id, false);
 	setupMapsXXX ();
     }
 
@@ -90,7 +90,7 @@ public class LinuxTask
      */
     LinuxTask (Proc process, TaskId id, boolean running)
     {
-	super (process, id, true, running);
+	super (process, id, true);
 	setupMapsXXX ();
     }
 

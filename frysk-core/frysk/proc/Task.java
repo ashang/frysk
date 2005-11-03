@@ -125,17 +125,15 @@ abstract public class Task
     public boolean traceSyscall;  	// Trace syscall entry and exit
 
     /**
-     * Create a new, possibly attached, possibly running, Task.
+     * Create a new, possibly attached, definitely running, Task.
      */
-    protected Task (Proc proc, TaskId id, boolean attached, boolean running)
+    protected Task (Proc proc, TaskId id, boolean attached)
     {
 	this.proc = proc;
 	this.id = id;
-	state = TaskState.initial (this, attached, running);
+	state = TaskState.initial (this, attached);
 	proc.add (this);
 	proc.host.add (this);
-	if (!attached && !running)
-	    throw new RuntimeException ("bad !attached !running state");
     }
 
     /**
@@ -144,7 +142,7 @@ abstract public class Task
      */
     protected Task (Task task, TaskId cloneId)
     {
-	this (task.proc, cloneId, true, true);
+	this (task.proc, cloneId, true);
     }
 
     // Send operation to corresponding underlying [kernel] task.

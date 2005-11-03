@@ -49,17 +49,12 @@ class TaskState
     /**
      * Return the tasks initial state.
      */
-    static TaskState initial (Task task, boolean attached, boolean running)
+    static TaskState initial (Task task, boolean attached)
     {
-	if (attached) {
-	    if (running)
-		return startRunning;
-	    else
-		return startStopped;
-	}
-	else {
+	if (attached)
+	    return startRunning;
+	else
 	    return unattached;
-	}
     }
 
     protected TaskState (String state)
@@ -296,20 +291,6 @@ class TaskState
 	    {
 		observable.add (observer);
 		return startRunning;
-	    }
-	};
-    /**
-     * Task just starting out, wait for it to become ready, but put it
-     * into the stopped start.
-     */
-    private static TaskState startStopped = new TaskState ("startStopped")
-	{
-	    TaskState processPerformTrapped (Task task)
-	    {
-		task.sendSetOptions ();
-		task.proc.performTaskAttachCompleted (task);
-		task.notifyAttached ();
-		return stopped;
 	    }
 	};
 

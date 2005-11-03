@@ -1,5 +1,10 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Drop running parameter from constructor.
+	* TaskState.java: Delete running parameter from .initial.  Delete
+	startStopped state.
+	* LinuxTask.java: Update.
+
 	* Proc.java: Delete running parameter from constructor and
 	.sendNewAttachedTask, and .sendNewAttachedProc.
 	* LinuxProc.java: Update.
