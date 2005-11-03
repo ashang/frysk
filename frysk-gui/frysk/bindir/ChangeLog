@@ -1,3 +1,8 @@
+2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* frysk.java (main): Added '--help' option to display all current
+	options.
+
 2005-11-03  IgorFoox  <ifoox@redhat.com>
 
 	* frysk.java (main): Added a default case to argument checking that informs

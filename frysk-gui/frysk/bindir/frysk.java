@@ -64,8 +64,15 @@ class frysk
     				new String[] {Config.GLADEDIR + "/"}, 
     				Config.IMAGEDIR+"/");
 
+    	} else if(args[0].equals("--help")){
+    		System.out.println("Useage: 'frysk [option]");
+    		System.out.println();
+    		System.out.println("options:");
+    		System.out.println("\t--sourcewin\tLaunches the source window (testing purposes only)");
+    		System.out.println("\t--help\t\tDisplays this message");
     	} else {
 			System.err.println("Invalid arugment:" + args[0]);
+			System.err.println("See 'frysk --help' for valid options");
 		}
     }
 }
