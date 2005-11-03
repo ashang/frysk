@@ -71,6 +71,7 @@ public abstract class Type
   public String getName() { return _name;}
 
   public String toString() {return _name;}
+  public abstract String toString(Variable v);  
 
   protected long longValue(Variable v)	throws InvalidOperatorException	{
     if(v.getType().getTypeId() == BaseTypes.baseTypeChar)
@@ -97,8 +98,8 @@ public abstract class Type
   public abstract Variable greaterThan(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable lessThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable greaterThanOrEqualTo(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException; 
-  public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException; 
+  public abstract Variable equal(Variable var1, Variable var2) throws InvalidOperatorException;
+  public abstract Variable notEqual(Variable var1, Variable var2) throws InvalidOperatorException;
   public abstract Variable bitWiseAnd(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable bitWiseXor(Variable var1, Variable var2) throws InvalidOperatorException; 
   public abstract Variable bitWiseOr(Variable var1, Variable var2) throws InvalidOperatorException; 

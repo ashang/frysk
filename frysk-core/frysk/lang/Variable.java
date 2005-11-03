@@ -112,6 +112,6 @@ public class Variable
     }
 
     public String toString()  {
-      return _text;
+      return _type.toString(this);
     }
 }

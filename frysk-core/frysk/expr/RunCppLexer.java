@@ -91,10 +91,13 @@ class RunCppLexer
 
 	try {
 	    Token tok;
-	    TestTokens testTokens = new TestTokens(new CppLexer(new FileInputStream(args[0])));
+	    TestTokens testTokens = 
+	      new TestTokens (
+		  new CppLexer(new FileInputStream(args[0])));
 	    System.out.println("\n\t");
 	    while((tok = testTokens.nextToken()).getType() != EOF) {
-		System.out.print(TestTokens.sTokens[tok.getType()] + " ");
+		System.out.print(
+		    TestTokens.sTokens[tok.getType()] + " ");
 		if (tok.getType() == TAB)
 		    System.out.print("(" + tok.getText() + ")");
 	    }

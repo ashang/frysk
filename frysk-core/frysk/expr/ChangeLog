@@ -1,3 +1,9 @@
+2005-11-03  Tarun Khanna  <tkhanna@redhat.com>
+
+	* RunCppLexer.java: modified..
+	* cpp.g:  modified..
+	* RunCppTreeParser.java:  new file..
+
 2005-11-01  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* CppLexer.sed: Modify offsets where needed so resultant code

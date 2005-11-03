@@ -3,6 +3,11 @@
 
   public class ShortType extends Type
   {
+
+    public String toString  (Variable v)  {
+      return String.valueOf(v.getShort());
+    }
+
     public ShortType(int size, int endian)  {
       super(size, endian, BaseTypes.baseTypeShort, "short");
     }

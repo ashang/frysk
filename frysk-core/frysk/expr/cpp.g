@@ -290,7 +290,7 @@
   ;
 
   additive_expression throws TabException 
-  :	
+  :
     multiplicative_expression
       (options	{warnWhenFollowAmbig = false;}:
 	(PLUS^ | MINUS^) multiplicative_expression
@@ -396,8 +396,7 @@
      *	to press TAB whenever auto-completion is required
      */
   primary_expression throws TabException 
-  :	
-
+  :
     (id_expression | (TAB {bTabPressed = true;}))
   |
     constant
@@ -407,8 +406,8 @@
     LPAREN! expression RPAREN!
   ;
 
-  constant  
-  :	
+  constant
+  :
     OCTALINT
   |
     DECIMALINT

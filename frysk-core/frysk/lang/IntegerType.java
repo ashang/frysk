@@ -4,8 +4,14 @@
   //import inua.eio.*;
   //import java.lang.reflect.Constructor;
 
+
   public class IntegerType extends Type
   {
+
+    public String toString  (Variable v)  {
+      return String.valueOf(v.getInt());
+    }
+
     public IntegerType(int size, int endian)  {
       super(size, endian, BaseTypes.baseTypeInteger, "int");
     }

@@ -1,3 +1,10 @@
+2005-11-03  Tarun Khanna  <tkhanna@redhat.com>
+
+	* Type.java:  modified
+	* ShortType.java:  modified
+	* IntegerType.java:  modified
+	* Variable.java:  modified
+
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
 	* Type.java:  modified, added more arithematic operations
