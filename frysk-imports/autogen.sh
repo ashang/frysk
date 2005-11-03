@@ -50,7 +50,7 @@
 # Generate everything (always run with --add-missing).
 
 echo "Running aclocal ..."
-aclocal
+aclocal -I common/m4
 
 echo "Running autoconf ..."
 autoconf

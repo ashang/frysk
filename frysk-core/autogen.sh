@@ -43,7 +43,7 @@
 sh -eu ./common/Makefile.gen.sh frysk prog
 
 echo "Running aclocal ..."
-aclocal
+aclocal -I common/m4
 
 echo "Running autoconf ..."
 autoconf

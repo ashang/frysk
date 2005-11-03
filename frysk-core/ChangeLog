@@ -1,3 +1,7 @@
+2005-11-03  Igor Foox  <ifoox@redhat.com>
+
+    * autogen.sh: Added -I common/m4 to aclocal invokation.
+
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
 	* Makefile.am:	added DejaGNU --tool option to the RUNTESTDEFAULTFLAGS
