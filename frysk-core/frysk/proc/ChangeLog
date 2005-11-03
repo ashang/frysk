@@ -1,5 +1,11 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Delete running parameter from constructor and
+	.sendNewAttachedTask, and .sendNewAttachedProc.
+	* LinuxProc.java: Update.
+	* ProcState.java: Drop running parameter from .initial; delete
+	startStopped state.
+
 	* HostState.java: Replace processPerformCreateAttachedProc with
 	processRequestCreateAttachedProc.  Drop sendCreateAttachedProc's
 	running parameter.

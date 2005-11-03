@@ -78,7 +78,7 @@ public class LinuxProc
      */
     LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
-	super (host, parent, pid, false, true);
+	super (host, parent, pid, false);
 	this.stat = stat;
     }
     /**
@@ -89,7 +89,7 @@ public class LinuxProc
      */
     LinuxProc (Proc parent, ProcId procId, boolean running)
     {
-	super (parent.host, parent, procId, true, running);
+	super (parent.host, parent, procId, true);
     }
     /**
      * Create a new, definitely attached, definitely running fork of
@@ -139,16 +139,16 @@ public class LinuxProc
 	    remove (task);
 	}
     }
-    void sendNewAttachedChild (ProcId childId, boolean running)
+    void sendNewAttachedChild (ProcId childId)
     {
 	// A forked child starts out attached.
-	new LinuxProc (this, childId, running);
+	new LinuxProc (this, childId, true);
     }
 
-    void sendNewAttachedTask (TaskId id, boolean running)
+    void sendNewAttachedTask (TaskId id)
     {
 	// XXX: Should be abstracted.
-	new LinuxTask (this, id, running);
+	new LinuxTask (this, id, true);
     }
     Auxv[] sendrecAuxv ()
     {

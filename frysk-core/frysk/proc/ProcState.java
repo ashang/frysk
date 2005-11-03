@@ -54,17 +54,12 @@ abstract class ProcState
     /**
      * Return the Proc's initial state.
      */
-    static ProcState initial (Proc proc, boolean attached, boolean running)
+    static ProcState initial (Proc proc, boolean attached)
     {
-	if (attached) {
-	    if (running)
-		return startRunning;
-	    else
-		return startStopped;
-	}
-	else {
+	if (attached)
+	    return startRunning;
+	else
 	    return unattached;
-	}
     }
 
     protected ProcState (String state)
@@ -307,15 +302,6 @@ abstract class ProcState
 		    t.performStop ();
 		}
 		return new StoppingAllTasks (runningTasks);
-	    }
-	};
-
-    private static ProcState startStopped = new ProcState ("startStopped")
-	{
-	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
-	    {
-		proc.observableAttachedStop.notify (proc);
-		return stopped;
 	    }
 	};
 

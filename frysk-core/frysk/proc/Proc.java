@@ -83,16 +83,15 @@ public abstract class Proc
     abstract public String getCommand ();
 
     /**
-     * Create a new, possibly attached, possibly running, process.
-     * Since PARENT could be NULL, explicitly include the HOST.
+     * Create a new, possibly attached, definitely running, Proc'ess.
+     * Since PARENT could be NULL, explicitly specify the HOST.
      */
-    protected Proc (Host host, Proc parent, ProcId id,
-		    boolean attached, boolean running)
+    protected Proc (Host host, Proc parent, ProcId id, boolean attached)
     {
 	this.host = host;
 	this.id = id;
 	this.parent = parent;
-	state = ProcState.initial (this, attached, running);
+	state = ProcState.initial (this, attached);
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add (this);
@@ -101,7 +100,7 @@ public abstract class Proc
 	if (attached)
 	    // XXX: Only do this when attached; when detached require
 	    // a further system-poll to get the info.
-	    sendNewAttachedTask (new TaskId (id.id), running);
+	    sendNewAttachedTask (new TaskId (id.id));
     }
     /**
      * Create a new, definitely attached, definitely running, fork of
@@ -109,17 +108,18 @@ public abstract class Proc
      */
     protected Proc (Task task, ProcId forkId)
     {
-	this (task.proc.host, task.proc, forkId, true, true);
+	this (task.proc.host, task.proc, forkId, true);
     }
    
     /**
-     * Create a new, attached, possibly running, task.
+     * Create a new, definitely attached, definitely running, task.
      */
-    abstract void sendNewAttachedTask (TaskId id, boolean running);
+    abstract void sendNewAttachedTask (TaskId id);
     /**
-     * Create a new, attached, possibly running, child process.
+     * Create a new, definitlely attached, definitely running, child
+     * process.
      */
-    abstract void sendNewAttachedChild (ProcId childId, boolean running);
+    abstract void sendNewAttachedChild (ProcId childId);
 
     abstract void sendRefresh ();
 
