@@ -70,16 +70,40 @@ AC_MSG_RESULT($VTE_JAVA_JAR)
 AC_SUBST(VTE_JAVA_JAR)
 
 
-AC_MSG_CHECKING([for  cdtparser])
-PKG_CHECK_MODULES(CDTPARSER, cdtparser >= 3.0.0)
-CDTPARSER_JAR=`$PKG_CONFIG --variable classpath cdtparser`
-AC_MSG_RESULT([$CDTPARSER_JAR])
-AC_SUBST([CDTPARSER_JAR])
-AC_MSG_RESULT([$CDTPARSER_LIBS])
-AC_SUBST([CDTPARSER_LIBS])
+# Check for the cdtparser jar and so in the places where we expect it to be.
+# We currently look in /opt/frysk/lib[64] first because that's what we
+# want to use by default, later when the FC eclipse-cdt can be natively
+# compiled and work correctly we can remove these.
+AC_MSG_CHECKING([for  cdtparser.jar.so])
+AC_GET_LIB_LINE( [libcdtparser.jar.so], [  /opt/frysk/lib , /opt/frysk/lib64,\
+/usr/lib/eclipse/plugins/org.eclipse.cdt.core_3.0.0 ,\
+/usr/lib64/eclipse/plugins/org.eclipse.cdt.core_3.0.0] ,
+				  [CDTPARSER_LIBS])
 
-#test -r ${CDTPARSER_JAR} || AC_MSG_ERROR([no cdtparser.jar file found]);
-#test -r ${CDTPARSER_LIBS} || AC_MSG_ERROR([no libcdtparser.jar.so file found]);
+if [[ "x$CDTPARSER_LIBS" = "xNO" ]]; then
+		AC_MSG_ERROR( Could not locate libcdtparser.jar.so)
+else	
+	AC_MSG_RESULT([$CDTPARSER_LIBS])
+	AC_SUBST([CDTPARSER_LIBS])
+fi
+
+
+AC_MSG_CHECKING([for  cdtparser.jar])
+AC_FIND_FILE( [cdtparser.jar], 
+ 	[ /opt/frysk/share/java/,\
+/usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.0/],
+	 CDTPARSER_JAR)
+
+if [[ "x$CDTPARSER_JAR" = "xNO" ]]; then
+	AC_MSG_ERROR( Could not locate libcdtparser.jar.so)
+else
+	# Append file name to path because AC_FIND_FILE only returns path
+	CDTPARSER_JAR="${CDTPARSER_JAR}cdtparser.jar"
+	AC_MSG_RESULT([$CDTPARSER_JAR])
+	AC_SUBST([CDTPARSER_JAR])
+fi
+								
+	 
 
 RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)

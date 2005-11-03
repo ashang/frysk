@@ -1,3 +1,10 @@
+2005-11-03  Igor Foox  <ifoox@redhat.com>
+
+	* autogen.sh: Added -I common/m4 to aclocal invokation.
+	* configure.ac: Changed the check for cdtparser.jar and libcdtparser.jar.so
+	it now checks in some specific directories and uses the first files that it
+	can find.
+	
 2005-10-27  Igor Foox  <ifoox@redhat.com>
 
 	* configure.ac: Changed cdtparser detection to use the new cdtparser.pc.
