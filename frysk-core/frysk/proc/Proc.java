@@ -86,7 +86,7 @@ public abstract class Proc
      * Create a new, possibly attached, definitely running, Proc'ess.
      * Since PARENT could be NULL, explicitly specify the HOST.
      */
-    protected Proc (Host host, Proc parent, ProcId id, boolean attached)
+    private Proc (Host host, Proc parent, ProcId id, boolean attached)
     {
 	this.host = host;
 	this.id = id;
@@ -103,8 +103,15 @@ public abstract class Proc
 	    sendNewAttachedTask (new TaskId (id.id));
     }
     /**
-     * Create a new, definitely attached, definitely running, fork of
-     * Task.
+     * Create a new, unattached, running, Proc.  Since PARENT could be
+     * NULL, explicitly specify the HOST.
+     */
+    protected Proc (Host host, Proc parent, ProcId id)
+    {
+	this (host, parent, id, false);
+    }
+    /**
+     * Create a new, attached, running, process forked by Task.
      */
     protected Proc (Task task, ProcId forkId)
     {

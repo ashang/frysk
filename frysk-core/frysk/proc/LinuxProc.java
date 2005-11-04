@@ -78,18 +78,8 @@ public class LinuxProc
      */
     LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
-	super (host, parent, pid, false);
+	super (host, parent, pid);
 	this.stat = stat;
-    }
-    /**
-     * Create a new, attached, and possibly running, process.
-     *
-     * XXX: Should not be needed - an attached Proc should always be
-     * initially running.
-     */
-    LinuxProc (Proc parent, ProcId procId, boolean running)
-    {
-	super (parent.host, parent, procId, true);
     }
     /**
      * Create a new, definitely attached, definitely running fork of

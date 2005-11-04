@@ -1,5 +1,8 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Refactor constructors.
+	* LinuxProc.java: Update.  Delete LinuxProc(Proc,ProcId,boolean).
+
 	* LinuxHost.java (sendCreateAttachedProc): Find and pass this task
 	to LinuxProc.
 	* TestI386Regs.java: Delete check of the manager's taskPool size.
