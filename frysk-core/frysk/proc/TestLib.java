@@ -682,30 +682,42 @@ public class TestLib
 
      
     /**
-     * Observer that counts the number of tasks added and removed.
+     * Observer that counts the number of tasks <em>frysk</em> reports
+     * as added and removed to the system..
      *
      * This automatically wires itself in using the Proc's procAdded
      * observer.
      */
     protected class TaskCounter
     {
-	LinkedList added = new LinkedList ();
-	LinkedList removed = new LinkedList ();
-	int numberAdded ()
+	/**
+	 * List of tasks added.
+	 */
+	List added = new LinkedList ();
+	/**
+	 * List of tasks removed.
+	 */
+	List removed = new LinkedList ();
+	/**
+	 * Only count descendants of this process?
+	 */
+	private boolean descendantsOnly;
+	/**
+	 * Create a task counter that monitors task added and removed
+	 * events.  If descendantsOnly, limit the count to tasks
+	 * belonging to descendant processes.
+	 */
+	protected TaskCounter (boolean descendantsOnly)
 	{
-	    return added.size ();
-	}
-	int numberRemoved ()
-	{
-	    return removed.size ();
-	}
-	protected TaskCounter ()
-	{
+	    this.descendantsOnly = descendantsOnly;
 	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
+			if (TaskCounter.this.descendantsOnly
+			    && !isDescendantOfMine (proc))
+			    return;
 			proc.observableTaskAdded.addObserver (new Observer ()
 			    {
 				public void update (Observable o, Object obj)
@@ -725,6 +737,14 @@ public class TestLib
 		    }
 		});
 	}
+	/**
+	 * Create a task counter that counts all task add and removed
+	 * events.
+	 */
+	TaskCounter ()
+	{
+	    this (false);
+	}
     }
 
     /**
@@ -734,58 +754,29 @@ public class TestLib
      * Automaticaly registers itself.
      */
     protected class ProcCounter
-	implements Cloneable
     {
 	// Base count.
 	LinkedList added = new LinkedList ();
-	private int baseAdded;
-	/**
-	 * Get the number of procs added (adjusted for the number
-	 * added by getSelf).
-	 */
-	int getAdjustedNumberAdded ()
-	{
-	    return added.size () - baseAdded;
-	}
 	LinkedList removed = new LinkedList ();
-	private int baseRemoved;
+	private boolean descendantsOnly;
 	/**
-	 * Return the number of Procs removed (adjusted for the number
-	 * of procs created by getSelf).
+	 * Create a new ProcCounter counting processes added and
+	 * removed.  If descendantsOnly, only count children of this
+	 * process.
 	 */
-	int getAdjustedNumberRemoved ()
+	ProcCounter (boolean descendantsOnly)
 	{
-	    return removed.size () - baseRemoved;
-	}
-	/**
-	 * Return the size of the Host's ProcPool (adjusted for the
-	 * number of procs created by getSelf).
-	 */
-	int getAdjustedHostProcPoolSize ()
-	{
-	    return Manager.host.procPool.size () - (baseAdded - baseRemoved);
-	}
-	/**
-	 * Create a new ProcCounter.
-	 */
-	ProcCounter ()
-	{
+	    this.descendantsOnly = descendantsOnly;
 	    // Set up observers to count proc add and delete events.
 	    Manager.host.observableProcAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
+			if (ProcCounter.this.descendantsOnly
+			    && !isDescendantOfMine (proc))
+			    return;
 			added.add (proc);
-			// Need to tell system that you want to track
-			// clone events.
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable o, Object obj)
-				{
-				    Task task = (Task) obj;
-				}
-			    });
 		    }
 		});
 	    Manager.host.observableProcRemoved.addObserver (new Observer ()
@@ -793,31 +784,19 @@ public class TestLib
 		    public void update (Observable o, Object obj)
 		    {
 			Proc proc = (Proc) obj;
+			if (ProcCounter.this.descendantsOnly
+			    && !isDescendantOfMine (proc))
+			    return;
 			removed.add (proc);
 		    }
 		});
-	    // How force a getSelf () which creates a number of
-	    // add/deletes, and then save that.
-	    Manager.host.getSelf ();
-	    baseAdded = getAdjustedNumberAdded ();
-	    baseRemoved = getAdjustedNumberRemoved ();
 	}
 	/**
-	 * Return a copy of the ProcCounter.  The copy will not be
-	 * updated as further processes are created and deleted.
+	 * Count all proc's added and removed.
 	 */
-	ProcCounter save ()
+	ProcCounter ()
 	{
-	    ProcCounter copy = null;
-	    try {
-		copy = (ProcCounter) clone ();
-		copy.added = (LinkedList) (added.clone ());
-		copy.removed = (LinkedList) (removed.clone ());
-	    }
-	    catch (CloneNotSupportedException e) {
-		fail ("CloneNotSupportedException");
-	    }
-	    return copy;
+	    this (false);
 	}
     }
 

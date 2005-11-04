@@ -83,7 +83,7 @@ public class TestExec
      */
     public void testTaskExec ()
     {
-	TaskCounter taskCounter = new TaskCounter ();
+	TaskCounter taskCounter = new TaskCounter (true);
 	ExecCounter execCounter = new ExecCounter ();
 	new StopEventLoopWhenChildProcRemoved ();
 
@@ -101,10 +101,10 @@ public class TestExec
 
 	assertEquals ("One task is expected to exec", 1,
 		      execCounter.numberExecs);
-	assertEquals ("Two tasks were created",
-		      2, taskCounter.numberAdded ());
-	assertEquals ("Only one task destroyed, the other disappearing"
-		      + " in a puff of exec", 1, taskCounter.numberRemoved ());
+	assertEquals ("number of tasks created",
+		      2, taskCounter.added.size ());
+	assertEquals ("number of tasks destroyed (one task disappears"
+		      + " in a puff of exec)", 1, taskCounter.removed.size ());
 	assertTrue ("Tmp file was removed", !tmpFile.stillExists ());
 
     }

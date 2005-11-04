@@ -59,7 +59,7 @@ public class TestRun
 
 	// Add an observer that counts the number of proc create
 	// events.
-	ProcCounter procCounter = new ProcCounter ();
+	ProcCounter procCounter = new ProcCounter (true);
 
 	// Once a proc destroyed has been seen stop the event loop.
 	new StopEventLoopWhenChildProcRemoved ();
@@ -72,15 +72,11 @@ public class TestRun
 	// Run the event loop, cap it at 5 seconds.
 	assertRunUntilStop ("run \"rm\" to exit");
 
-	assertEquals ("One process created",
-		      1, procCounter.getAdjustedNumberAdded ());
-	assertEquals ("One process destroyed",
-		      1, procCounter.getAdjustedNumberRemoved ());
+	assertEquals ("processes added",
+		      1, procCounter.added.size ());
+	assertEquals ("processes removed",
+		      1, procCounter.removed.size ());
 	assertFalse ("the file exists", tmpFile.stillExists ());
-	assertEquals ("Number of manager tasks",
-		      0, Manager.host.taskPool.size ());
-	assertEquals ("Number of manager processes",
-		      0, procCounter.getAdjustedHostProcPoolSize ());
     }
 
     /**

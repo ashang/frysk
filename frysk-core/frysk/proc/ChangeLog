@@ -1,5 +1,10 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (TaskCounter, ProcCounter): Simplify, add variant
+	that only counts descendants.
+	* TestExec.java: Update.  Only count child tasks.
+	* TestRefresh.java: Update.
+
 	* Proc.java (sendNewAttachedChild(ProcId)): Delete.
 	* LinuxProc.java (sendNewAttachedChild(ProcId)): Delete.
 

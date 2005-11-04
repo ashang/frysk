@@ -54,7 +54,7 @@ public class TestTaskForkedObserver
      */
     public void testTaskForkedObserver ()
     {
-	ProcCounter procCounter = new ProcCounter ();
+	ProcCounter procCounter = new ProcCounter (true);
 	new StopEventLoopWhenChildProcRemoved ();
 
 	// Watch for any Task fork events, accumulating them as they
@@ -88,9 +88,9 @@ public class TestTaskForkedObserver
 	Fibonacci fib = new Fibonacci (n);
 
 	assertEquals ("number of child processes created",
-		      fib.callCount, procCounter.getAdjustedNumberAdded ());
+		      fib.callCount, procCounter.added.size ());
 	assertEquals ("number of child processes destroyed",
-		      fib.callCount, procCounter.getAdjustedNumberRemoved ());
+		      fib.callCount, procCounter.removed.size ());
 	assertEquals ("number of times fork observer added",
 		      fib.callCount, forkObserver.addedCount);
 	assertEquals ("number of forks (one less than number of processes)",
@@ -110,7 +110,7 @@ public class TestTaskForkedObserver
 	StopEventLoopWhenChildProcRemoved childRemoved
 	    = new StopEventLoopWhenChildProcRemoved ();
 
-	ProcCounter procCounter = new ProcCounter ();
+	ProcCounter procCounter = new ProcCounter (true);
 
 	// Watch for any Task fork events, accumulating them as they
 	// arrive.
@@ -157,9 +157,9 @@ public class TestTaskForkedObserver
 	}
 
 	assertEquals ("number of child processes created",
-		      fib.callCount, procCounter.getAdjustedNumberAdded ());
+		      fib.callCount, procCounter.added.size ());
 	assertEquals ("number of child processes destroyed",
-		      fib.callCount, procCounter.getAdjustedNumberRemoved ());
+		      fib.callCount, procCounter.removed.size ());
 	assertEquals ("number of times fork observer added",
 		      fib.callCount, forkStopper.addedCount);
 	assertEquals ("number of forks (one less than number of processes)",

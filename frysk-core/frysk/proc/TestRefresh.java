@@ -158,9 +158,12 @@ public class TestRefresh
      */
     public void testProcRefresh ()
     {
+	int nrTasks = 4;
+	int nrKills = 2;
+
 	// Create a suspended sub-process that contains three cloned
 	// tasks, and wait for it to start.
-	DaemonChild child = new DaemonChild (3);
+	DaemonChild child = new DaemonChild (nrTasks - 1);
 
 	// Create a task counter, to count the number discovered and
 	// removed tasks.
@@ -182,12 +185,12 @@ public class TestRefresh
 	// unattached state.
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
-	assertEquals ("Proc has correct number of tasks",
-		      3 + 1, tracker.proc.taskPool.size ());
- 	assertEquals ("After refresh, all tasks are discovered",
- 		      4, taskCount.numberAdded ());
-	assertEquals ("After refresh, no tasks have been removed",
-		      0, taskCount.numberRemoved ());
+	assertEquals ("proc's task count",
+		      nrTasks, tracker.proc.taskPool.size ());
+ 	assertEquals ("tasks addeded by refresh",
+ 		      nrTasks, taskCount.added.size ());
+	assertEquals ("tasks removed by refresh",
+		      0, taskCount.removed.size ());
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
@@ -198,22 +201,22 @@ public class TestRefresh
 	// Tell the child to drop two tasks.  Check that the refresh
 	// looses two tasks, and that the lost tasks have been
 	// transitioned to the dead state.
-	child.delTask ();
-	child.delTask ();
+	for (int i = 0; i < nrKills; i++)
+	    child.delTask ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
-	assertEquals ("Proc has been reduced by two tasks",
-		      2, tracker.proc.taskPool.size ());
- 	assertEquals ("After kill, no further tasks discovered",
- 		      4, taskCount.numberAdded ());
+	assertEquals ("proc's task count after kills",
+		      nrKills, tracker.proc.taskPool.size ());
+ 	assertEquals ("tasks added count after kills (no change)",
+ 		      nrTasks, taskCount.added.size ());
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
 	    assertEquals ("Task " + task + " state", "unattached",
 			  task.getStateString ());
  	}
-	assertEquals ("After kill, one task was removed",
-		      2, taskCount.numberRemoved ());
+	assertEquals ("tasks removed by refresh after kills",
+		      nrKills, taskCount.removed.size ());
 	for (Iterator i = taskCount.removed.iterator (); i.hasNext (); ) {
 	    Task task = (Task) i.next ();
 	    assertEquals ("removed task state", "destroyed",
@@ -225,12 +228,13 @@ public class TestRefresh
 	child.addTask ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
-	assertEquals ("Proc gained one task",
-		      3, tracker.proc.taskPool.size ());
- 	assertEquals ("One task discovered",
-		      5, taskCount.numberAdded ());
-	assertEquals ("No additional tasks removed",
-		      2, taskCount.numberRemoved ());
+	assertEquals ("proc's task count after add",
+		      nrTasks - nrKills + 1,
+		      tracker.proc.taskPool.size ());
+ 	assertEquals ("task's added count (increases by 1)",
+		      nrTasks + 1, taskCount.added.size ());
+	assertEquals ("task's deleted (no change)",
+		      nrKills, taskCount.removed.size ());
     }
 
     /**
