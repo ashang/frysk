@@ -39,6 +39,9 @@
 
 package frysk.proc;
 
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Test Proc's public get methods.
  */
@@ -106,6 +109,10 @@ public class TestProcGet
 	}
     }
 
+    /**
+     * Check that .getCommand returns the command in an expected
+     * format.
+     */
     public void testGetCommand ()
     {
 	Child child = new DaemonChild ();
@@ -113,5 +120,51 @@ public class TestProcGet
 
 	assertEquals ("Child's name", "detach",
 		      childProc.getCommand ());
+    }
+
+    /**
+     * Check that .getTasks, for a two task process returns two tasks.
+     */
+    public void testGetTasks ()
+    {
+	Child child = new DaemonChild (1);
+	Proc proc = child.findProcUsingRefresh (true); // and tasks
+	List tasks = proc.getTasks ();
+
+	assertEquals ("number of tasks", 2, tasks.size ());
+
+	// Find the main task.
+	Task mainTask = null;
+	for (Iterator i = tasks.iterator  (); i.hasNext (); ) {
+	    Task task = (Task) i.next ();
+	    if (proc.getPid () == task.getTid ()) {
+		// Only found once.
+		assertNull ("main task", mainTask);
+		mainTask = task;
+	    }
+	}
+	assertNotNull ("main task", mainTask);
+    }
+
+    /**
+     * Check that .getChildren, for this process with two children
+     * returns both of them.
+     */
+    public void testGetChildren ()
+    {
+	// Create two children.  The refreshes have the side effect of
+	// updating this processes proc list.
+	Proc[] child = new Proc[] {
+	    new DetachedChild ().findProcUsingRefresh (),
+	    new DetachedChild ().findProcUsingRefresh ()
+	};
+	Proc self = Manager.host.getSelf ();
+
+	assertEquals ("number of children", 2, self.getChildren ().size ());
+	assertNotSame ("children", child[0], child[1]);
+	for (int i = 0; i < child.length; i++) {
+	    assertTrue ("this contains child " + i,
+			self.getChildren ().contains (child[i]));
+	}
     }
 }

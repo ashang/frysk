@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.LinkedList;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -287,15 +288,32 @@ public abstract class Proc
 	return state.isStopped ();
     }
 
-    protected Set children = new HashSet ();
+    /**
+     * Table of this processes child processes.
+     */
+    private Set childPool = new HashSet ();
+    /**
+     * Add Proc as a new child
+     */
     void add (Proc child)
     {
-	children.add (child);
+	childPool.add (child);
     }
+    /**
+     * Remove Proc from this processes children.
+     */
     void remove (Proc child)
     {
-	children.remove (child);
+	childPool.remove (child);
     }
+    /**
+     * Get the children as an array.
+     */
+    public LinkedList getChildren ()
+    {
+	return new LinkedList (childPool);
+    }
+
 
     /**
      * XXX: Temporary until .observable's are converted to
@@ -329,10 +347,11 @@ public abstract class Proc
      * Should more formally define the observable and the event.
      */
     public TaskObservable observableTaskRemoved = new TaskObservable ();
+
     /**
-     * Poll of tasks belonging to this Proc.
+     * Pool of tasks belonging to this Proc.
      */
-    protected Map taskPool = new HashMap ();
+    Map taskPool = new HashMap ();
     /**
      * Add the Task to this Proc.
      */
@@ -359,6 +378,13 @@ public abstract class Proc
 	tasks.remove (task);
 	taskPool.values().removeAll (tasks);
 	host.removeTasks (tasks);
+    }
+    /**
+     * Return this Proc's Task's as a list.
+     */
+    public LinkedList getTasks ()
+    {
+	return new LinkedList (taskPool.values ());
     }
 
     /**
