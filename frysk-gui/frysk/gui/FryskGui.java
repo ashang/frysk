@@ -83,7 +83,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	private static final String GLADE_FILE = "procpop.glade";
 	private static final String GLADE_DEV_PATH = "frysk/gui/glade/";
 	private static final String GLADE_PKG_PATH = "glade/";
-	private static final String FRYSK_CONFIG = System.getProperty("user.home")
+	static public final String FRYSK_CONFIG = System.getProperty("user.home")
 			+ "/" + ".frysk" + "/";
 	
 	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
