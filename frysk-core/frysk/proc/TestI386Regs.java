@@ -202,7 +202,6 @@ public class TestI386Regs
 	    assertEquals ("esp = 8", 8, t.esp);
 
             assertTrue ("Exited", t.exited);
-	    assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
 	}
     }
 }

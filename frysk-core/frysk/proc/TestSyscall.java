@@ -161,6 +161,5 @@ public class TestSyscall
 	assertTrue ("Number of syscall events is even",
 		    t.syscallState == 0);
 	assertTrue ("Process exited", t.exited);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
     }
 }

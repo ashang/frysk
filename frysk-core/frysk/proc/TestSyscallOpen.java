@@ -193,6 +193,5 @@ public class TestSyscallOpen
 	assertTrue ("Attempt to open a.file", t.testFileOpened);
 	assertTrue ("Open of a.file failed", t.expectedRcFound);
 	assertTrue ("Process exited", t.exited);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
     }
 }

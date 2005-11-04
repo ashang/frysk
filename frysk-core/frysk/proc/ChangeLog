@@ -1,5 +1,14 @@
 2005-11-03  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxHost.java (sendCreateAttachedProc): Find and pass this task
+	to LinuxProc.
+	* TestI386Regs.java: Delete check of the manager's taskPool size.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+	* TestI386Modify.java: Ditto.
+	* TestModify.java: Ditto.
+
 	* LinuxHost.java: Replace .getSelf with .sendrecSelf.
 	* Host.java: Make .getSelf a method, add .sendrecSelf.
 

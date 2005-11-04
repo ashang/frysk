@@ -152,6 +152,5 @@ public class TestSyscall2
 		    t.syscallTaskEventCount >= Integer.parseInt (arg));
 	assertEquals ("Even number of syscall events", 0, t.syscallState);
 	assertTrue ("Exited", t.exited);
-	assertEquals ("No tasks left", 0, Manager.host.taskPool.size ());
     }
 }

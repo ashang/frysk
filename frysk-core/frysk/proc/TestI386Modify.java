@@ -223,8 +223,6 @@ public class TestI386Modify
 	if (t.ia32Isa) {
 	    assertTrue ("Proc destruction confirmed", t.exited);
 	    assertTrue ("Exit syscall found", t.exitSyscall);
-	    assertEquals ("Manager has no tasks left", 0, 
- 		          Manager.host.taskPool.size ());
 	}
    }
 }

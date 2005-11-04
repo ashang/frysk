@@ -208,7 +208,5 @@ public class TestModify
 	assertRunUntilStop ("run \"modify\" to exit");
 
 	assertTrue ("Proc successful exit confirmed", t.exited);
-	assertEquals ("Manager has no tasks left", 0, 
- 		      Manager.host.taskPool.size ());
    }
 }

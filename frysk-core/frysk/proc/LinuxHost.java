@@ -45,6 +45,7 @@ import frysk.sys.Ptrace;
 import frysk.sys.Wait;
 import frysk.sys.Sig;
 import frysk.sys.Pid;
+import frysk.sys.Tid;
 import frysk.sys.proc.Stat;
 import java.util.Iterator;
 import java.util.HashMap;
@@ -178,11 +179,23 @@ public class LinuxHost
 	}
     }
 
+    /**
+     * Create an attached process that is a child of this process (and
+     * this task).
+     */
     void sendCreateAttachedProc (String in, String out, String err,
 				 String[] args)
     {
 	int pid = Ptrace.child (in, out, err, args);
-	new LinuxProc (getSelf (), new ProcId (pid), true);
+	// See if the Host knows about this task.
+	TaskId myTaskId = new TaskId (Tid.get ());
+	Task myTask = get (myTaskId);
+	if (myTask == null) {
+	    // If not, find this process and add this task to it.
+	    Proc myProc = getSelf ();
+	    myTask = new LinuxTask (myProc, myTaskId, false);
+	}
+	new LinuxProc (myTask, new ProcId (pid));
     }
 
     // When there's a SIGCHLD, poll the kernel's waitpid() queue
