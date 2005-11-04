@@ -46,6 +46,7 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,8 +91,8 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class ProgramAddWindow extends Window implements LifeCycleListener, Saveable { 
 
 	
-	private static final int RESPONSE_OK     = 0;
-	private static final int RESPONSE_CANCEL = 1;
+	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
+	"event_watchers_store" + "/";
 	
 	private Entry programEntry;
 	private FileChooserButton programOpenFileDialog;
@@ -101,11 +102,16 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private Button programApply;
 	private ProcDataModel psDataModel;
 	private TreeModelFilter procFilter;
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	private boolean cancelLastClicked = true;
+	private boolean applyLastClicked = false;
+	DataColumn[] observerDC;
+	
+		private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 
 	public ProgramAddWindow(LibGlade glade) {
 		super(((Window) glade.getWidget("programAddWindow")).getHandle());
 		this.addListener(this);
+		buildStore();
 		getGladeWidgets(glade);
 		createDataModel();
 		mountProcModel(this.psDataModel);
@@ -118,8 +124,12 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private void setApplyCancelButtonListener() {
 		
 		programCancel.addListener(new ButtonListener(){
+			
+
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
+					cancelLastClicked = true;
+					applyLastClicked = false;
 					hideAll();
 				}
 			}
@@ -131,11 +141,50 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 					String message = doValidation();
 					if (!message.equals(""))
 						DialogManager.showWarnDialog("Validation Errors", message);
+					else
+					{
+						saveDialog();
+						cancelLastClicked = false;
+						applyLastClicked = true;
+						hideAll();
+					}
 						
 				}
 			}
 		});
 		
+	}
+	
+	private void saveDialog()
+	{ 
+		ArrayList observers = new ArrayList();
+		ArrayList processes = new ArrayList();
+		
+		TreePath[] pObservers = programObseverListBox.getSelection().getSelectedRows();
+		ListStore model = (ListStore) programObseverListBox.getModel();
+		
+		for (int i=0; i<pObservers.length;i++)
+		{
+			TreeIter item = model.getIter( pObservers[i].toString());
+			observers.add(model.getValue(item,(DataColumnString)observerDC[0]));	   
+		}
+		
+		TreePath[] pProcesses = programTreeView.getSelection().getSelectedRows();
+		TreeModel pModel = this.procFilter;
+//		TreeStore pModel = (TreeStore) psDataModel.getModel();
+		
+		for (int i=0; i<pProcesses.length;i++)
+		{
+			ProcData data = (ProcData) pModel.getValue(pModel.getIter(pProcesses[i]),
+					this.psDataModel.getProcDataDC());
+			processes.add(data.getProc().getCommand());
+		}
+		
+		ProgramData pData =	new ProgramData(this.programEntry.getText(),true,
+				this.programOpenFileDialog.getFilename(),
+				processes,observers);
+		
+		pData.save(EVENT_STORE_LOC+this.programEntry.getText()+".xml");
 	}
 	
 	private String doValidation() {
@@ -257,10 +306,10 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		// No observer data model to query yet
 		// for list of observers. Fake it out.
 		
-		DataColumn[] dc = new DataColumn[1];
-		dc[0] = new DataColumnString();
+		observerDC = new DataColumn[1];
+		observerDC[0] = new DataColumnString();
 
-		ListStore ls = new ListStore(dc);
+		ListStore ls = new ListStore(observerDC);
 
 		this.programObseverListBox.setModel(ls);
 		this.programObseverListBox.setAlternateRowColor(true);
@@ -270,7 +319,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		 CellRendererText Obrender = new CellRendererText();
 		   observerCol.packStart(Obrender, true);
 		   observerCol.addAttributeMapping(Obrender,
-		 CellRendererText.Attribute.TEXT, (DataColumnString)dc[0]);
+		 CellRendererText.Attribute.TEXT, (DataColumnString)observerDC[0]);
 		 
 		 observerCol.setTitle("Available Observers");
 		   
@@ -285,7 +334,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		while (observerIterator.hasNext())
 		{
 			it = ls.appendRow();
-			ls.setValue(it, (DataColumnString)dc[0], ((ObserverRoot)observerIterator.next()).getName());
+			ls.setValue(it, (DataColumnString)observerDC[0], ((ObserverRoot)observerIterator.next()).getName());
 		}
 	}
 	
@@ -400,5 +449,21 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		this.resize(width, height);
 		
 	}
+	
+	public boolean applyLastClicked()
+	{
+		return this.applyLastClicked;
+	}
+	
+	public boolean cancelLastClicked()
+	{
+		return this.cancelLastClicked;
+	}
 
+	private void buildStore()
+	{
+		File store = new File(EVENT_STORE_LOC);
+		if (store.exists() == false)
+			store.mkdirs();
+	}
 }

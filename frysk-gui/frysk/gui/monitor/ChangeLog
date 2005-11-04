@@ -1,3 +1,11 @@
+2005-11-04  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java (buildStore): Added.
+	(saveDialog): Added. Save data to xml.
+	(applyLastClicked): Added (and set state globally)
+	(cancelLastClicked): Ditto.
+
+
 2005-11-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* actions/ActionManager.java: New file. Added points for retrieving
@@ -23,7 +31,7 @@
 	* ProcViewPage.java: Renamed WatchMenu to ProcMenu.
 	* ActionPool.java: Removed all the inner actions classes
 	and moved them to actions/X.
-	
+
 2005-11-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramData.java (getName): Added.
