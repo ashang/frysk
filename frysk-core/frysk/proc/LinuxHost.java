@@ -278,13 +278,12 @@ public class LinuxHost
 	}
     }
 
-    public Proc getSelf ()
+    /**
+     * Return a pointer to this <em>frysk</em> instance.
+     */
+    protected Proc sendrecSelf ()
     {
-	if (self == null) {
-	    ProcChanges procChanges = new ProcChanges ();
-	    self = procChanges.update (Pid.get ());
-	}
-	return self;
+	ProcChanges procChanges = new ProcChanges ();
+	return procChanges.update (Pid.get ());
     }
-    private Proc self;
 }
