@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import inua.eio.ByteOrder;
+
 class LinuxIa32
     extends Isa
 {
@@ -88,6 +90,12 @@ class LinuxIa32
     long pc (Task task)
     {
 	return eip.get (task);
+    }
+
+    LinuxIa32 ()
+    {
+	wordSize = 4;
+	byteOrder = ByteOrder.LITTLE_ENDIAN;
     }
 
     private static LinuxIa32 isa;

@@ -1,3 +1,10 @@
+2005-11-04  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* LinuxIa32.java: Add constructor that sets
+	wordSize and byteOrder.
+	* LinuxX8664.java: Ditto plus add in register
+	and SyscallEventInfo data.
+
 2005-11-04  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Add .getTasks, and .getChildren.  Replace .children
