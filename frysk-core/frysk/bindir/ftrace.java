@@ -44,7 +44,6 @@ import java.util.Observer;
 
 import frysk.proc.Manager;
 import frysk.proc.Proc;
-import frysk.proc.Task;
 
 /**
  * Runs the program, along with any sub-programs.
@@ -59,7 +58,6 @@ class ftrace
 	public void update (Observable o, Object obj)
 	{
 	    count++;
-	    Task task = (Task) obj;
 	}
     }
 
