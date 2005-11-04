@@ -55,7 +55,8 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
-import frysk.gui.monitor.ActionPool.Action;
+import frysk.gui.monitor.actions.TaskAction;
+import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.observers.ObserverManager;
 
 public class ThreadMenu extends Menu {
@@ -67,11 +68,11 @@ public class ThreadMenu extends Menu {
 	ThreadMenu(){
 		super();
 		
-		LinkedList list = ActionPool.theActionPool.threadActions;
+		LinkedList list = ActionManager.theManager.getTaskActions();
 		ListIterator iter = list.listIterator();
 		
 		while(iter.hasNext()){
-			final Action action = (Action) iter.next();
+			final TaskAction action = (TaskAction) iter.next();
 			
 			MenuItem item = new MenuItem(action.getName(), false);
 			ToolTips tip = new ToolTips();
@@ -79,7 +80,7 @@ public class ThreadMenu extends Menu {
 			
 			item.addListener(new MenuItemListener() {
 				public void menuItemEvent(MenuItemEvent event) {
-					action.execute(current);
+					action.execute(current.getTask());
 				}
 			});
 			this.add(item);

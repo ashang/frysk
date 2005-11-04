@@ -186,7 +186,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 						& event.getButtonPressed() == MouseEvent.BUTTON3){
 					
 					ProcData data = getSelectedProc();
-					if(data != null) WatchMenu.getMenu().popup(data);
+					if(data != null) ProcMenu.getMenu().popup(data);
 					
                     System.out.println("click : " + data);
                     return true;

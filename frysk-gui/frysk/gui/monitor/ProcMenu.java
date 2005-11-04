@@ -55,29 +55,30 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
-import frysk.gui.monitor.ActionPool.Action;
+import frysk.gui.monitor.actions.ActionManager;
+import frysk.gui.monitor.actions.ProcAction;
 
 
 /**
  * This is the root menu that appears upon a right click
- * on the watch window. Only one of this object is created
+ * on the process view. Only one of this object is created
  * and can be be accessed through accessor method for extention
  * or addition to WatchWindows.
  * */
-public class WatchMenu extends Menu{
-	private static WatchMenu menu = new WatchMenu();
+public class ProcMenu extends Menu{
+	private static ProcMenu menu = new ProcMenu();
 	
 	/** the ProcData of the currently selected process */
 	private ProcData current;
 	
-	WatchMenu(){
+	ProcMenu(){
 		super();
 		
-		LinkedList list = ActionPool.theActionPool.processActions;
+		LinkedList list = ActionManager.theManager.getProcActions();
 		ListIterator iter = list.listIterator();
 		
 		while(iter.hasNext()){
-			final Action action = (Action) iter.next();
+			final ProcAction action = (ProcAction) iter.next();
 			//System.out.println(action.getName());
 			
 			MenuItem item = new MenuItem(action.getName(), false);
@@ -86,7 +87,7 @@ public class WatchMenu extends Menu{
 			
 			item.addListener(new MenuItemListener() {
 				public void menuItemEvent(MenuItemEvent arg0) {
-					action.execute(current);
+					action.execute(current.getProc());
 				}
 			});
 			this.add(item);
@@ -117,7 +118,7 @@ public class WatchMenu extends Menu{
 	 * and add it to any watch window or add more
 	 * items to it.
 	 * */
-	public static WatchMenu getMenu(){
+	public static ProcMenu getMenu(){
 		return menu;
 	}
 	

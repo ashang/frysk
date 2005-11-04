@@ -40,8 +40,6 @@ package frysk.gui.monitor;
 
 import java.util.LinkedList;
 
-import frysk.gui.monitor.observers.TaskCloneObserver;
-
 /**
  * @author Sami Wagiaalla
  * Singleton; only one action pool. Flyweight;
@@ -87,277 +85,35 @@ public class ActionPool {
                 this.initActions();
         }
 
-        public abstract class Action {
-                protected String toolTip;
+        		
 
-                protected String name;
-                
-                class UnimplementedFunctionException extends RuntimeException{
-                	/**
-					 * Comment for <code>serialVersionUID</code>
-					 */
-					private static final long serialVersionUID = 1L;
-
-					UnimplementedFunctionException(Class theClass){
-                    	throw new RuntimeException( theClass.toString() + " has not implemented this function.");
-                	}
-                }
-                
-                public Action() {
-                	this.toolTip = new String();
-                }
-
-                /**
-                 * Delegates the call to the appropriet function.
-                 * Either @ProcData or 
-                 * */
-                public void execute(GuiData data){
-                	if(data instanceof ProcData){
-                		this.execute((ProcData)data);
-                	}
-                	
-                	if(data instanceof TaskData){
-                		this.execute((TaskData)data);
-                	}
-                }
-                
-                public void removeObservers(GuiData data){
-                	if(data instanceof ProcData){
-                		this.removeObservers((ProcData)data);
-                	}
-                	
-                	if(data instanceof TaskData){
-                		this.removeObservers((TaskData)data);
-                	}
-                }
-
-                public void execute(ProcData data){
-                	throw new UnimplementedFunctionException( this.getClass() );
-                }
-
-                public void execute(TaskData data){
-                	throw new UnimplementedFunctionException( this.getClass() );
-                }
-
-                public void removeObservers(ProcData data){
-                	throw new UnimplementedFunctionException( this.getClass() );
-                }
-
-                public void removeObservers(TaskData data){
-                	throw new UnimplementedFunctionException( this.getClass() );
-                }
-                
-                public void execute(ProcData[] data) {
-                        for (int i = 0; i < data.length; i++) {
-                                this.execute(data[i]);
-                        }
-                }
-
-                public void execute(TaskData[] data) {
-                        for (int i = 0; i < data.length; i++) {
-                                this.execute(data[i]);
-                        }
-                }
-
-                public String getToolTip() {
-                        return toolTip;
-                }
-
-                public String getName() {
-                        return name;
-                }
-
-                public void setToolTip(String toolTip) {
-                        this.toolTip = toolTip;
-                }
-
-                public void setName(String name) {
-                        this.name = name;
-                }
-        }
-
-        public class Attach extends Action {
-
-                public Attach() {
-                        this.name = "Attach";
-                        this.toolTip = "Attach to a running process";
-                }
-
-                public void execute(ProcData data) {
-                        
-                	data.getProc().observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
-                	data.getProc().observableAttachedContinue.addObserver(eventLog.attachedContinueObserver);
-                       
-                	data.getProc().requestAttachedContinue();
-                }
-
-				public void removeObservers(ProcData data) {
-                    data.getProc().observableAttachedContinue.deleteObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
-                    data.getProc().observableAttachedContinue.deleteObserver(eventLog.attachedContinueObserver);
-				}
-
-        }
-
-        public class Detach extends Action {
-
-			public Detach() {
-				this.name = "Detach";
-				this.toolTip = "Detach from an attached process";
-			}
-	
-			public void execute(final ProcData data) {
-                System.out.println("sending data.getProc().requestDetachedContinue();");
-                
-                data.getProc().observableDetachedContinue.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
-                data.getProc().observableDetachedContinue.addObserver(eventLog.detachedContinueObserver);
-                
-  				data.getProc().requestDetachedContinue();
-			}
-	
-			/**
-			 * This Action does not apply to Tasks.
-			 */
-			public void execute(TaskData data) {
-	
-			}
-
-			public void removeObservers(ProcData data) {
-				data.getProc().observableDetachedContinue.deleteObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
-				data.getProc().observableDetachedContinue.deleteObserver(eventLog.detachedContinueObserver);
-			}
-
-			public void removeObservers(TaskData data) {
-				
-			}
-	}
-
-	public class Stop extends Action {
-		
-		public Stop() {
-			this.name = "Stop";
-			this.toolTip = "Stop current process";
-		}
-
-		public void execute(final ProcData data) {
-            data.getProc().observableAttachedStop.addObserver(eventLog.attachedStopObserver);
-			data.getProc().observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
-			
-			data.getProc().requestAttachedStop();
-		}
-
-		public void removeObservers(ProcData data) {
-			data.getProc().observableAttachedStop.deleteObserver(eventLog.attachedStopObserver);
-			data.getProc().observableAttachedStop.deleteObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
-		}
-	}
-
-	public class Resume extends Action {
-		
-		public Resume() {
-			this.name = "Resume";
-			this.toolTip = "Resume execution of the current process";
-		}
-
-		public void execute(final ProcData data) {
-            data.getProc().observableAttachedContinue.addObserver(eventLog.attachedResumeObserver);
-            data.getProc().observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
-            
-			data.getProc().requestAttachedContinue();
-		}
-
-		public void removeObservers(ProcData data) {
-			data.getProc().observableAttachedContinue.deleteObserver(eventLog.attachedResumeObserver);
-            data.getProc().observableAttachedContinue.deleteObserver(WindowManager.theManager.logWindow.attachedResumeObserver);            
-		}
-
-	}
-
-	public class PrintState extends Action {
-		
-		public PrintState() {
-			this.name = "Print State";
-			this.toolTip = "Print the state of the selected process or thread";
-		}
-
-		public void execute(final ProcData data) {
-			System.out.println("Proc State : " + data.getProc());
-		}
-
-		public void execute(TaskData data) {
-			System.out.println("Proc State : " + data.getTask());
-		}
-	}
-		
-	public class AddCloneObserver extends Action {
-
-		public AddCloneObserver() {
-			this.name = "Clone Observer";
-			this.toolTip = "Listens for clone events on the selected process";
-		}
-
-		public void execute(final TaskData data) {
-			final TaskCloneObserver observer = new TaskCloneObserver();
-			observer.onAdded(new Runnable() {
-				public void run() {
-					data.add(observer);
-					data.getTask().requestAddClonedObserver(eventLog);
-				}
-			});
-			
-			observer.onDeleted(new Runnable() {
-				public void run() {
-					data.remove(observer);
-					data.getTask().requestDeleteClonedObserver (eventLog);
-				}
-			});
-			
-			data.getTask().requestAddClonedObserver (observer);
-		}
-	}
-
-
-	/**
-	 * Actions: A publicly available instance of each action.
-	 * {
-	 */
-	public Attach attach;
-	public Detach detach;
-	public Stop   stop;
-	public Resume resume;
-	public PrintState printState;
-	
-	public AddCloneObserver addCloneObserver;
-	/**}*/
 
 	/**
 	 * Initializes all the public actions and adds them to the apporpriet list.
-	 * When adding a new action instantiate it publicly and initialized her		this.addExitingObserver = new AddExitingObserver();
-		this.threadObservers.add(this.addExitingObserver);
-
-e,
+	 * When adding a new action instantiate it publicly and initialized here
 	 * and add it to its list.
 	 */
 	private void initActions() {
-		this.attach = new Attach();
-		this.processActions.add(this.attach);
-
-		this.detach = new Detach();
-		this.processActions.add(this.detach);
-
-		this.stop = new Stop();
-		this.processActions.add(this.stop);
-		this.threadActions.add (this.stop);
-		
-		this.resume = new Resume();
-		this.processActions.add(this.resume);
-		this.threadActions.add (this.resume);
-		
-		this.addCloneObserver = new AddCloneObserver();
-		this.threadObservers.add(this.addCloneObserver);
-
-		this.printState = new PrintState();
-		this.processActions.add(this.printState);
-		this.threadActions.add (this.printState);
+//		this.attach = new Attach();
+//		this.processActions.add(this.attach);
+//
+//		this.detach = new Detach();
+//		this.processActions.add(this.detach);
+//
+//		this.stop = new Stop();
+//		this.processActions.add(this.stop);
+//		this.threadActions.add (this.stop);
+//		
+//		this.resume = new Resume();
+//		this.processActions.add(this.resume);
+//		this.threadActions.add (this.resume);
+//		
+//		this.addCloneObserver = new AddCloneObserver();
+//		this.threadObservers.add(this.addCloneObserver);
+//
+//		this.printState = new PrintState();
+//		this.processActions.add(this.printState);
+//		this.threadActions.add (this.printState);
 	}
 
 }

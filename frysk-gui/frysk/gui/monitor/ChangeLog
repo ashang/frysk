@@ -1,3 +1,29 @@
+2005-11-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* actions/ActionManager.java: New file. Added points for retrieving
+	and adding action prototypes. 
+	* actions/ProcAction.java: Abstract class for actions which apply
+	to a Proc.
+	* actions/TaskAction.java: Abstract class for actions which apply
+	to a Task.
+	* actions/Attach.java: Moved ActionPool.Action to here.
+	removed old execution and remove observer functions.
+	* actions/Stop.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/Detach.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/Action.java: Moved ActionPool.Action to here.
+	Moved execution methods to appropriet child classes.
+	Added generic runnable to allow creating anonymous inner
+	instances of action.
+	* ThreadMenu.java: Retrieves Actions from action Manager and
+	uses new execution pattern.
+	* ProcMenu.java: New file. Renamed WatchMenu to ProcMenu.
+	* ProcViewPage.java: Renamed WatchMenu to ProcMenu.
+	* ActionPool.java: Removed all the inner actions classes
+	and moved them to actions/X.
+	
 2005-11-03  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramData.java (getName): Added.
