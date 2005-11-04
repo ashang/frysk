@@ -146,19 +146,26 @@ gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 		> gcjtreeiter/gij.sh
 	chmod a+x gcjtreeiter/gij.sh
 
-#cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
-#EXTRA_DIST += $(cdtparserversion_FILES)
-#cdtparserversion/a.out: $(cdtparserversion_FILES)
-#	mkdir -p cdtparserversion
-#	gcj -g \
-#		-I$(CDTPARSER_JAR) \
-#		-Wl,-rpath,/opt/frysk/lib \
-#		-Djava.library.path=/opt/frysk/lib \
-#		--main=cdtparserversion.CDTParserTest \
-#		$(srcdir)/cdtparserversion/CDTParser.java \
-#		-o cdtparserversion/a.out
-#TESTS += cdttest.sh
-#cdtparserversion/cdttest.sh: cdtparserversion/a.out:
-#	mkdir -p cdtparserversion
-#	echo "cdtparserversion/a.out cdtparserversion/main.cpp > RESULT" > cdttest.sh
-#	echo "
+cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
+cdtparserversion_FILES += cdtparserversion/main.cpp
+EXTRA_DIST += $(cdtparserversion_FILES)
+#TESTS += cdtparserversion/a.out
+cdtparserversion/a.out: $(cdtparserversion_FILES)
+	mkdir -p cdtparserversion
+	gcj -g \
+		-I$(CDTPARSER_JAR) \
+		$(CDTPARSER_LIBS) \
+		--main=cdtparserversion.CDTParserTest \
+		$(srcdir)/cdtparserversion/CDTParserTest.java \
+		-o cdtparserversion/a.out
+TESTS += cdtparserversion/cdttest.sh
+cdtparserversion/cdttest.sh: cdtparserversion/a.out
+	mkdir -p cdtparserversion
+	echo "#!/bin/sh" > cdtparserversion/cdttest.sh
+	echo "cdtparserversion/a.out cdtparserversion/main.cpp > cdtparserversion/RESULT" \
+	>> cdtparserversion/cdttest.sh
+	echo "if [ ! \`cat cdtparserversion/RESULT\` == \"4,5\" ]; then" \
+	>> cdtparserversion/cdttest.sh
+	echo "FAIL" >> cdtparserversion/cdttest.sh
+	echo "fi" >> cdtparserversion/cdttest.sh
+	chmod a+x cdtparserversion/cdttest.sh
