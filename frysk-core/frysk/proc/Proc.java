@@ -44,7 +44,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Observable;
+import java.util.Observable; // XXX: Temporary.
 import java.util.LinkedList;
 
 /**
@@ -314,20 +314,20 @@ public abstract class Proc
 	return new LinkedList (childPool);
     }
 
-
     /**
      * XXX: Temporary until .observable's are converted to
      * .requestAddObserver.
      */
-    public class TaskObservable
+    public class ObservableXXX
 	extends Observable
     {
-	protected void notify (Task task)
+	void notify (Object o)
 	{
 	    setChanged ();
-	    notifyObservers (task);
+	    notifyObservers (o);
 	}
     }
+
     /**
      * Notify of the addition of a task attached to this process.
      *
@@ -339,14 +339,14 @@ public abstract class Proc
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public TaskObservable observableTaskAdded = new TaskObservable ();
+    public ObservableXXX observableTaskAdded = new ObservableXXX ();
     /**
      * Notify of the removal of a task attached to this process.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public TaskObservable observableTaskRemoved = new TaskObservable ();
+    public ObservableXXX observableTaskRemoved = new ObservableXXX ();
 
     /**
      * Pool of tasks belonging to this Proc.
@@ -409,7 +409,7 @@ public abstract class Proc
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ProcObservable observableAttachedContinue = new ProcObservable ();
+    public ObservableXXX observableAttachedContinue = new ObservableXXX ();
 
     /**
      * The process has transitioned to the attached / stop state.
@@ -417,7 +417,7 @@ public abstract class Proc
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ProcObservable observableAttachedStop = new ProcObservable ();
+    public ObservableXXX observableAttachedStop = new ObservableXXX ();
 
     /**
      * The process has transitioned to the detached / continue state.
@@ -425,7 +425,7 @@ public abstract class Proc
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ProcObservable observableDetachedContinue = new ProcObservable ();
+    public ObservableXXX observableDetachedContinue = new ObservableXXX ();
 
     public String toString ()
     {

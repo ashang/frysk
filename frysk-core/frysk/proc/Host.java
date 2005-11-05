@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Observable; // XXX: Temporary.
 
 /**
  * A host machine.
@@ -187,13 +188,27 @@ public abstract class Host
     }
 
     /**
+     * XXX: Temporary until .observable's are converted to
+     * .requestAddObserver.
+     */
+    public class ObservableXXX
+	extends Observable
+    {
+	void notify (Object o)
+	{
+	    setChanged ();
+	    notifyObservers (o);
+	}
+    }
+
+    /**
      * A process has been added.  Possible reasons include a process
      * referesh, and a fork.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ProcObservable observableProcAdded = new ProcObservable ();
+    public ObservableXXX observableProcAdded = new ObservableXXX ();
 
     /*
      * An existing process has been removed.  Possible reasons include
@@ -203,7 +218,7 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ProcObservable observableProcRemoved = new ProcObservable ();
+    public ObservableXXX observableProcRemoved = new ObservableXXX ();
 
     /**
      * Return the process corresponding to this running frysk instance

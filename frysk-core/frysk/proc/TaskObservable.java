@@ -39,41 +39,11 @@
 
 package frysk.proc;
 
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-
 /**
  * Observable element of Task.
  */
 
 class TaskObservable
+    extends Observable
 {
-    /**
-     * Set of TaskObserver's for this TaskObservable.
-     */
-    private Set observers = new HashSet ();
-    /**
-     * Add TaskObserver to this TaskObservable.
-     */
-    void add (TaskObserver observer)
-    {
-	observers.add (observer);
-	observer.added (null); // Success
-    }
-    /**
-     * Delete TaskObserver from this TaskObservable.
-     */
-    void delete (TaskObserver observer)
-    {
-	observers.remove (observer);
-    }
-    /**
-     * Return an iterator for all this TaskObservable's
-     * TaskObserver's.
-     */
-    Iterator iterator ()
-    {
-	return observers.iterator ();
-    }
 }

@@ -39,18 +39,40 @@
 
 package frysk.proc;
 
-import java.util.Observable;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
- * A Proc Observable.
+ * Observable element of the proc model.
  */
 
-public class ProcObservable
-    extends Observable
+class Observable
 {
-    protected void notify (Proc proc)
+    /**
+     * Set of Observer's for this Observable.
+     */
+    private Set observers = new HashSet ();
+    /**
+     * Add Observer to this Observable.
+     */
+    void add (Observer observer)
     {
-	setChanged ();
-	notifyObservers (proc);
+	observers.add (observer);
+	observer.added (null); // Success
+    }
+    /**
+     * Delete Observer from this Observable.
+     */
+    void delete (Observer observer)
+    {
+	observers.remove (observer);
+    }
+    /**
+     * Return an iterator for all this Observable's Observers.
+     */
+    Iterator iterator ()
+    {
+	return observers.iterator ();
     }
 }

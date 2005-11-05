@@ -1,3 +1,12 @@
+2005-11-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Replace TaskObservable, and ProcObservable with
+	ObservableXXX.
+	* Host.java: Replace ProcObservable with ObservableXXX.
+	* ProcObservable.java: Delete.
+	* TaskObservable.java: Refactor, creating Observable.
+	* Observable.java: New.
+
 2005-11-04  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* LinuxIa32.java: Add constructor that sets
