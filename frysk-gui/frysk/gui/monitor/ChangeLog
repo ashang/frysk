@@ -1,5 +1,10 @@
 2005-11-04  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ProgramViewPage.java (loadExistingMonitors): Added.
+	* ProgramData.java (load): Rewrite to use w3c dom load.
+	JDOM parser crashes. Convert to JDOM using DOMBuilder().
+	* ProgramDataModel.java (ProgramDataModel): made singleton.
+	
 	* ProgramAddWindow.java (buildStore): Added.
 	(saveDialog): Added. Save data to xml.
 	(applyLastClicked): Added (and set state globally)

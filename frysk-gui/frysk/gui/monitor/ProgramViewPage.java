@@ -44,6 +44,7 @@
  */
 package frysk.gui.monitor;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.gnu.glade.LibGlade;
@@ -62,10 +63,15 @@ import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
+import frysk.gui.FryskGui;
+
 /**
  * A widget representing the program view page.
  * */
 public class ProgramViewPage extends Widget {
+
+	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
+	"event_watchers_store" + "/";
 	
 	// private TreeView programTreeView;
 	public ProgramAddWindow fileChooserDialog;
@@ -84,7 +90,7 @@ public class ProgramViewPage extends Widget {
 		this.programTreeView = (TreeView) glade.getWidget("programTreeView");
 		Button browseButton = (Button) glade.getWidget("programBrowseButton");
 		
-		this.programDataModel = new ProgramDataModel();
+		this.programDataModel = ProgramDataModel.theManager;
 		mountProgramDataModel(programDataModel);
 		
 				
@@ -97,24 +103,31 @@ public class ProgramViewPage extends Widget {
 			}
 		});
 		
-
-		
-		
-//		this.fileChooserDialog.addListener(new DialogListener(){
-//			public boolean dialogEvent(DialogEvent event) {
-//			System.out.println("event: " + event + " RESPONCE: " + event.getResponse());
-//				if(event.getType() == DialogEvent.Type.RESPONSE){
-//					fileChooserDialog.hide();
-//				}
-//				return false;
-//			}
-//		});
-				
+		loadExistingMonitors();
+	
 		this.initProgramTreeView();
 		
 	}
 
 	
+	private void loadExistingMonitors() {
+		
+		File monitors = new File(EVENT_STORE_LOC);
+		
+		File[] fMonitors = monitors.listFiles();
+		
+		ProgramData temp = new ProgramData();
+		for (int i=0; i<fMonitors.length; i++)
+		{
+			temp.load(fMonitors[i].getAbsolutePath());
+			programDataModel.add(temp);
+		}
+		
+	
+		
+	}
+
+
 	public void mountProgramDataModel(final ProgramDataModel programsDataModel){
 		
 //		this.procTreeView.setModel(psDataModel.getModel());

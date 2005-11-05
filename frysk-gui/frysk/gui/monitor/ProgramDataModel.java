@@ -44,7 +44,6 @@
  */
 package frysk.gui.monitor;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -68,6 +67,9 @@ import frysk.gui.monitor.ProcDataModel.FilterType;
  * */
 public class ProgramDataModel {
 	
+
+	public static ProgramDataModel theManager = new ProgramDataModel();
+
 	private ListStore listStore;
 	private TreeModelFilter filteredStore;
 	
@@ -94,8 +96,9 @@ public class ProgramDataModel {
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 
 	
-	public ProgramDataModel() throws IOException{
+	public ProgramDataModel() {
 
+		
 		this.enabledDC     = new DataColumnBoolean();
 		this.programEventNameDC = new DataColumnString();
 		this.programEventDataDC= new DataColumnObject();

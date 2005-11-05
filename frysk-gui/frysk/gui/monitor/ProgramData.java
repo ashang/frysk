@@ -39,19 +39,25 @@
 
 package frysk.gui.monitor;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom.input.DOMBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.xml.sax.SAXException;
 
 import frysk.gui.FryskGui;
 
@@ -80,6 +86,15 @@ public class ProgramData {
 		this.executable = executable;
 		this.processList = processList;
 		this.observerList = observerList;
+	}
+	
+	public ProgramData()
+	{
+		this.name = "";
+		this.enabled = false;
+		this.executable = "";
+		this.processList = new ArrayList();
+		this.observerList = new ArrayList();
 	}
 
 	public ArrayList getProcessList() {
@@ -162,44 +177,54 @@ public class ProgramData {
 		save(this.name);
 	}
 	
-	public void load(String filename) {
+	public void load(String filename) {		
+		// For some reason SaxBuilder() from JDOM
+		// causes linkage errors. Build DOM this way.
+        DocumentBuilderFactory factory =
+            DocumentBuilderFactory.newInstance();
+        org.w3c.dom.Document doc = null; 
+        try {
+           DocumentBuilder builder = factory.newDocumentBuilder();
+           doc = (org.w3c.dom.Document) builder.parse(new File(filename));
+ 
+        } catch (SAXException sxe) {
+			errorLog.log(Level.SEVERE,"Errors parsing (SAX Exception) " + filename,sxe);
+        } catch (ParserConfigurationException pce) {
+        	errorLog.log(Level.SEVERE,"Errors parsing (Parser Configuration Exception) " + filename,pce);
+        } catch (IOException ioe) {
+        	errorLog.log(Level.SEVERE,"Errors parsing (IO Exception) " + filename,ioe);
+        }
 		
-	    SAXBuilder builder = new SAXBuilder(true);
-	    Document doc = null;
-	    
-	    try {
-			doc = builder.build(filename);
-		} catch (JDOMException e) {
-			errorLog.log(Level.SEVERE,"JDOM Exception while building " + filename,e);
-		} catch (IOException e) {
-			errorLog.log(Level.SEVERE,"IO Exception while building " + filename,e);
-		}
-		
-		Element root = doc.getRootElement();
-		
+        DOMBuilder doo = new DOMBuilder();
+		Document document =	doo.build(doc);
+        		
+		Element root = document.getRootElement();
+				
 		this.name = root.getAttribute("name").getValue();
-		
+
 		if (root.getAttribute("enabled").getValue().equals("true"))
 			this.enabled = true;
 		else
 			this.enabled = false;
-		
+
 		this.executable = root.getAttribute("executable").getValue();
-		
+
 		Element observers = root.getChild("observers");
-		ArrayList XMLobserverList  = (ArrayList) observers.getChildren("observer");		
+		List XMLobserverList = (List) observers
+				.getChildren("observer");
 		Iterator i = XMLobserverList.iterator();
-		
+
 		observerList.clear();
 		while (i.hasNext())
-			observerList.add(((Element)i).getText());
-		
+			observerList.add(((Element) i.next()).getText());
+
 		Element processes = root.getChild("processes");
-		ArrayList XMLprocessList  = (ArrayList) processes.getChildren("process");		
+		List XMLprocessList = (List) processes.getChildren("process");
 		i = XMLprocessList.iterator();
-		
+
 		processList.clear();
 		while (i.hasNext())
-			processList.add(((Element)i).getText());
+			processList.add(((Element) i.next()).getText());
+	
 	}
 }
