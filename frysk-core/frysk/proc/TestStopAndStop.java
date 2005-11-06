@@ -158,8 +158,8 @@ public class TestStopAndStop
 	{
 	    public void update (Observable o, Object obj)
 	    {
-		TaskEvent e = (TaskEvent) obj;
-		e.task.requestStop ();  // Extraneous stop
+		Task task = (Task) obj;
+		task.requestStop ();  // Extraneous stop
 		if (++taskStopCount == 3) {
 		    Manager.eventLoop.add (new AllStoppedTimerEvent (mainTask, 0));
 		}

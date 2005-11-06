@@ -1,5 +1,10 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Make parameter to .TaskEventObservable.notify an
+	Object.
+	* TestStopAndStop.java (TaskEventObserver): Cast obj to a Task.
+	* TaskState.java: Pass Task to .requestedStopEvent.
+
 	* Proc.java: Delete .requestAttachedStop.
 	* TestProcStates.java: Delete .requestAttachedStop.
 	* ProcState.java: Delete .processRequestAttachedStop, and

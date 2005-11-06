@@ -300,22 +300,19 @@ class TaskState
 	    }
 	    TaskState processPerformStopped (Task task)
 	    {
-		// XXX: Fixme, notify here takes the TaskEvent, and
-		// internal task events should not be propogated back
-		// to the client.
-		TaskEvent event = new TaskEvent.Stopped (task);
-		task.requestedStopEvent.notify (event);
+		// XXX: Not a standard observer.
+		task.requestedStopEvent.notify (task);
 		return stopped;
 	    }
 	    TaskState processPerformTrapped (Task task)
 	    {
-		// XXX: Fixme, notify here takes the TaskEvent, and
-		// internal task events should not be propogated back
-		// to the client.
-		TaskEvent event = new TaskEvent.Trapped (task);
-		task.requestedStopEvent.notify (event);
+		// XXX: Not a standard observer.
+		task.requestedStopEvent.notify (task);
 		// For any other stop, we distinguish that we are
-		// stopped, but not as we expected.
+		// stopped, but not as we expected.  XXX: Fixme,
+		// notify here takes the TaskEvent, and internal task
+		// events should not be propogated back to the client.
+		TaskEvent event = new TaskEvent.Trapped (task);
 		task.stopEvent.notify (event);
 		return paused;
 	    }

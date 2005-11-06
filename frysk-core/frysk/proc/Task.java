@@ -447,10 +447,10 @@ abstract public class Task
     public class TaskEventObservable
 	extends Observable
     {
-	protected void notify (TaskEvent event)
+	protected void notify (Object o)
 	{
 	    setChanged ();
-	    notifyObservers (event);
+	    notifyObservers (o);
 	}
     }
     public TaskEventObservable stopEvent = new TaskEventObservable ();
