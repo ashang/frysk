@@ -1,5 +1,9 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskEvent.java: Delete .Trapped.
+	* TestSyscall.java, TestSyscallOpen.java: Delete
+	stoppedTaskEventCount.  Do not monitor Task.stopEvent.
+
 	* TaskEvent.java: Delete .Stopped.
 	* TaskState.java: Update.
 

@@ -55,7 +55,6 @@ public class TestSyscall
 {
     // Timers, observers, counters, etc.. needed for the test.
     class TestSyscallInternals {
-	volatile int stoppedTaskEventCount;
 	volatile int syscallTaskEventCount;
 	volatile int syscallState;
 	volatile boolean exited;
@@ -68,7 +67,7 @@ public class TestSyscall
 	
 	class TaskEventObserver
 	    extends TaskObserverBase
-	    implements Observer, TaskObserver.Syscall
+	    implements TaskObserver.Syscall
 	{
 	    public Action updateSyscallEnter (Task task)
 	    {
@@ -85,13 +84,6 @@ public class TestSyscall
 		syscallTaskEventCount++;
 		syscallState ^= 1;
 		return Action.CONTINUE;
-	    }
-	    public void update (Observable o, Object obj)
-	    {
-		TaskEvent e = (TaskEvent) obj;
-		if (e instanceof TaskEvent.Trapped) {
-		    stoppedTaskEventCount++;
-		}
 	    }
 	}
 	
@@ -113,7 +105,6 @@ public class TestSyscall
 				task = (Task) obj;
 				task.traceSyscall = true;
 				task.requestAddSyscallObserver (taskEventObserver);
-				task.stopEvent.addObserver (taskEventObserver);
 			    }
 			}
 		     );
@@ -154,8 +145,6 @@ public class TestSyscall
 
  	assertRunUntilStop ("run \"syscalls\" until exit");
 
-	assertEquals ("Single signalled task event", 1,
-		      t.stoppedTaskEventCount);
 	assertTrue ("At least 8 syscall events received",
 		    t.syscallTaskEventCount >= 8);
 	assertTrue ("Number of syscall events is even",

@@ -83,29 +83,4 @@ public abstract class TaskEvent
 		+ ",task" + task
 		+ "]");
     }
-
-    /**
-     * The task encountered a trap event.
-     *
-     * This could be due to the attempted execution of a breakpoint, or
-     * single stepping an instruction.
-     */
-    static class Trapped
-	extends TaskEvent
-    {
-	Trapped (Task task)
-	{
-	    super (task);
-	}
-	public void execute ()
-	{
-	    throw new RuntimeException ("should not happen");
-	}
-	public String toString ()
-	{
-	    return ("[Trapped"
-		    + super.toString ()
-		    + "]");
-	}
-    }
 }

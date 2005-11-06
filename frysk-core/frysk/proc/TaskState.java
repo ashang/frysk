@@ -255,13 +255,8 @@ class TaskState
 	    TaskState processPerformTrapped (Task task)
 	    {
 		task.sendSetOptions ();
-		// XXX: Fixme, notify here takes the TaskEvent, and
-		// internal task events should not be propogated back
-		// to the client.  XXX: Look at frysk.proc.TestSyscall
-		// and frysk.proc.TestSyscallOpen for what this is
-		// doing.
-		TaskEvent event = new TaskEvent.Trapped (task);
-		task.stopEvent.notify (event);
+		// XXX: Not a standard observer.
+		task.stopEvent.notify (null);
 		if (task.notifyAttached () > 0)
 		    return blockedContinue;
 		else {
@@ -305,12 +300,8 @@ class TaskState
 	    {
 		// XXX: Not a standard observer.
 		task.requestedStopEvent.notify (task);
-		// For any other stop, we distinguish that we are
-		// stopped, but not as we expected.  XXX: Fixme,
-		// notify here takes the TaskEvent, and internal task
-		// events should not be propogated back to the client.
-		TaskEvent event = new TaskEvent.Trapped (task);
-		task.stopEvent.notify (event);
+		// XXX: Not a standard observer.
+		task.stopEvent.notify (null);
 		return paused;
 	    }
 	};
