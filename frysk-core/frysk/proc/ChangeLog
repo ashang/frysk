@@ -1,5 +1,11 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Add state "attached".
+	* ProcState.java: When unattached, and RequestAddObserver
+	transition to attached state.  Delay enabling Observations until
+	after the attach has completed.
+	* TestTaskAttachedObserver.java: New.
+
 	* TaskState.java: Delete .processRequestAddObserver, and
 	.processRequestDeleteObserver.
 	* Task.java: Re-implement .requestAddObserver and

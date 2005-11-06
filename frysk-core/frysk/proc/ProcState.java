@@ -158,6 +158,19 @@ abstract class ProcState
 		    return destroyed;
 		}
 	    }
+	    ProcState processPerformAddObservation (Proc proc,
+						    Observation observation)
+	    {
+		proc.observations.add (observation);
+		// XXX: Instead of doing a full refresh, should
+		// instead just pull out (with a local refresh) the
+		// main task.
+		proc.sendRefresh ();
+		// Grab the main task and attach to that.
+		Task task = Manager.host.get (new TaskId (proc.getPid ()));
+		task.performAttach ();
+		return new AttachingToMainTask (false);
+	    }
 	};
 
     /**
@@ -179,6 +192,11 @@ abstract class ProcState
 	    // task has stopped, all other tasks should be frozen.
 	    proc.sendRefresh ();
 	    if (proc.taskPool.size () == 1) {
+		for (Iterator i = proc.observations.iterator ();
+		     i.hasNext ();) {
+		    Observation observation = (Observation) i.next ();
+		    observation.add ();
+		}
 		if (stop) {
 		    proc.observableAttachedStop.notify (proc);
 		    return stopped;
@@ -212,7 +230,6 @@ abstract class ProcState
 						Observation observation)
 	{
 	    proc.observations.add (observation);
-	    observation.add ();
 	    return this;
 	}
     }

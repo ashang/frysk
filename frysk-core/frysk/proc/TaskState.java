@@ -198,8 +198,7 @@ class TaskState
 	    TaskState processPerformStopped (Task task)
 	    {
 		task.proc.performTaskAttachCompleted (task);
-		task.sendSetOptions ();
-		return stopped;
+		return attached;
 	    }
     	    TaskState processPerformZombied (Task task)
     	    {
@@ -210,6 +209,32 @@ class TaskState
 		task.proc.remove (task);
 		return destroyed;
     	    }
+	};
+
+    /**
+     * The task is attached, and waiting to be continued.  This first
+     * continue is special, it is also the moment that any observers
+     * get notified that the task has transitioned into the attached
+     * state.
+     */
+    private static TaskState attached = new TaskState ("attached")
+	{
+	    TaskState processRequestContinue (Task task)
+	    {
+		task.sendSetOptions ();
+		if (task.notifyAttached () > 0)
+		    return blockedContinue;
+		else {
+		    task.sendContinue (0);
+		    return running;
+		}
+	    }
+	    TaskState processPerformDetach (Task task)
+	    {
+		task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
 	};
 
     /**
