@@ -85,28 +85,6 @@ public abstract class TaskEvent
     }
 
     /**
-     * The task stopped using Sig.STOP.
-     */
-    static class Stopped
-	extends TaskEvent
-    {
-	Stopped (Task task)
-	{
-	    super (task);
-	}
-	public void execute ()
-	{
-	    throw new RuntimeException ("should not happen");
-	}
-	public String toString ()
-	{
-	    return ("[Stopped"
-		    + super.toString ()
-		    + "]");
-	}
-    }
-
-    /**
      * The task encountered a trap event.
      *
      * This could be due to the attempted execution of a breakpoint, or

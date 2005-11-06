@@ -1,5 +1,8 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskEvent.java: Delete .Stopped.
+	* TaskState.java: Update.
+
 	* TestStep.java: In StepEventObserver, cast obj to a Task.
 	* TaskState.java: Pass the Task, not TaskEvent, to
 	Task.stepEvent.notify.

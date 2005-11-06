@@ -246,11 +246,8 @@ class TaskState
 	    TaskState processPerformStopped (Task task)
 	    {
 		task.sendSetOptions ();
-		// XXX: Fixme, notify here takes the TaskEvent, and
-		// internal task events should not be propogated back
-		// to the client.
-		TaskEvent event = new TaskEvent.Stopped (task);
-		task.stopEvent.notify (event);
+		// XXX: Not a standard observer.
+		task.stopEvent.notify (null);
 		task.sendContinue (0);
 		task.notifyAttached ();
 		return running;
