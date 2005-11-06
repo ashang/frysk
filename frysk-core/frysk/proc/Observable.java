@@ -67,6 +67,7 @@ class Observable
     void delete (Observer observer)
     {
 	observers.remove (observer);
+	observer.deleted (); // Success.
     }
     /**
      * Return an iterator for all this Observable's Observers.

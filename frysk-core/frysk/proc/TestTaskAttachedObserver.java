@@ -39,6 +39,11 @@
 
 package frysk.proc;
 
+import frysk.sys.Sig;
+import frysk.sys.Signal;
+import frysk.event.TimerEvent;
+import frysk.sys.Errno;
+
 /**
  * Test the TaskObserver.Attached observer.
  */
@@ -48,25 +53,67 @@ public class TestTaskAttachedObserver
 {
     /**
      * Test that adding an Attached observer to a detached processes's
-     * main task causes an attach.
+     * main task causes an attach; and removing it causes the
+     * corresponding detach.
      */
-    public void testAddObserverToOneMainDetachedTask ()
+    public void testAttachDetachMainTask ()
     {
 	// Create a detached child.
 	Child child = new DaemonChild ();
-	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
 	Task task = (Task) proc.getTasks ().getFirst ();
 	class AttachedObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Attached
 	{
+	    boolean attached;
 	    public Action updateAttached (Task task)
 	    {
 		Manager.eventLoop.requestStop ();
+		attached = true;
 		return Action.CONTINUE;
 	    }
+	    boolean detached;
+	    public void deleted ()
+	    {
+		detached = true;
+		Manager.eventLoop.requestStop ();
+	    }
 	}
-	task.requestAddAttachedObserver (new AttachedObserver ());
+	AttachedObserver attachedObserver = new AttachedObserver ();
+	task.requestAddAttachedObserver (attachedObserver);
+
+	// Run the event loop, waiting for the attached event.
 	assertRunUntilStop ("attaching to task");
+	assertTrue ("attached", attachedObserver.attached);
+
+	// Detach, run the event loop waiting for an indication that
+	// it is detached.
+	task.requestDeleteAttachedObserver (attachedObserver);
+	assertRunUntilStop ("detaching from task");
+	assertTrue ("detached", attachedObserver.detached);
+
+	// Finally prove that the process really is detached - send it
+	// a kill and then probe (using kill) the process until that
+	// fails.
+	Signal.kill (proc.getPid (), Sig.TERM);
+	Manager.eventLoop.add (new TimerEvent (0, 50)
+	    {
+		int pid = proc.getPid ();
+		public void execute ()
+		{
+		    try {
+			Signal.kill (pid, 0);
+		    }
+		    catch (Errno.Esrch e) {
+			Manager.eventLoop.requestStop ();
+		    }
+		}
+	    });
+	assertRunUntilStop ("process gone");
+
+	// Check that while the process has gone, <em>frysk</em>
+	// hasn't noticed.
+	assertEquals ("process task count", 1, proc.getTasks ().size ());
     }
 }

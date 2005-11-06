@@ -344,6 +344,25 @@ abstract class ProcState
 		observation.add ();
 		return running;
 	    }
+	    ProcState processPerformDeleteObservation (Proc proc,
+						       Observation observation)
+	    {
+		observation.delete ();
+		proc.observations.remove (observation);
+		if (proc.observations.size () == 0) {
+		    // No reason for being attached.
+		    Map attachedTasks
+			= (Map) (((HashMap)proc.taskPool).clone ());
+		    for (Iterator i = proc.taskPool.values ().iterator ();
+			 i.hasNext (); ) {
+			Task t = (Task) i.next ();
+			t.performDetach ();
+		    }
+		    return new DetachingAllTasks (attachedTasks);
+		}
+		else
+		    return running;
+	    }
 	};
 
     private static ProcState startRunning = new ProcState ("startRunning")

@@ -1,5 +1,13 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Replace
+	.testAddObserverToOneMainDetachedTask with
+	testAttachDetachMainTask.
+	* Observation.java: Add .delete.
+	* ProcState.java: In "running" state, handle
+	.processPerformDeleteObservation.
+	* Observable.java: Notify when an observer is deleted.
+
 	* TaskState.java: Add state "attached".
 	* ProcState.java: When unattached, and RequestAddObserver
 	transition to attached state.  Delay enabling Observations until

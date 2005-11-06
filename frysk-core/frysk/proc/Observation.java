@@ -84,4 +84,11 @@ class Observation
     {
 	observable.add (observer);
     }
+    /**
+     * Delete the Observer from the Observable.
+     */
+    void delete ()
+    {
+	observable.delete (observer);
+    }
 }
