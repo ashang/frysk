@@ -149,18 +149,6 @@ class TaskState
     {
 	throw unhandled (task, "RequestUnblock");
     }
-    TaskState processRequestAddObserver (Task task,
-					 TaskObservable observers,
-					 TaskObserver observer)
-    {
-	throw unhandled (task, "RequestAddObserver");
-    }
-    TaskState processRequestDeleteObserver (Task task,
-					    TaskObservable observers,
-					    TaskObserver observer)
-    {
-	throw unhandled (task, "RequestDeleteObserver");
-    }
 
     /**
      * An attached task was destroyed, notify observers and, when the
@@ -199,15 +187,6 @@ class TaskState
 	    {
 		task.sendAttach ();
 		return attaching;
-	    }
-	    TaskState processRequestAddObserver (Task task,
-						 TaskObservable observable,
-						 TaskObserver observer)
-	    {
-		observable.add (observer);
-		// XXX: This needs to force the task and process into
-		// the attaching state.
-		return unattached;
 	    }
 	};
 
@@ -284,13 +263,6 @@ class TaskState
 		task.proc.remove (task);
 		processAttachedTerminated (task, signal, value);
 		return destroyed;
-	    }
-	    TaskState processRequestAddObserver (Task task,
-						 TaskObservable observable,
-						 TaskObserver observer)
-	    {
-		observable.add (observer);
-		return startRunning;
 	    }
 	};
 
@@ -415,13 +387,6 @@ class TaskState
 		    return blockedContinue;
 		else
 		    task.sendContinue (0);
-		return running;
-	    }
-	    TaskState processRequestAddObserver (Task task,
-						 TaskObservable observable,
-						 TaskObserver observer)
-	    {
-		observable.add (observer);
 		return running;
 	    }
 	};
@@ -570,13 +535,6 @@ class TaskState
 	    {
 		task.sendContinue (0);
 		return running;
-	    }
-	    TaskState processRequestAddObserver (Task task,
-						 TaskObservable observable,
-						 TaskObserver observer)
-	    {
-		observable.add (observer);
-		return unpaused;
 	    }
 	};
 

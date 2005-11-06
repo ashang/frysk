@@ -106,6 +106,16 @@ abstract class ProcState
     {
 	throw unhandled (proc, "PerformTaskContinueCompleted");
     }
+    ProcState processPerformAddObservation (Proc proc,
+					    Observation observation)
+    {
+	throw unhandled (proc, "PerformAddObservation");
+    }
+    ProcState processPerformDeleteObservation (Proc proc,
+					       Observation observation)
+    {
+	throw unhandled (proc, "PerformDeleteObservation");
+    }
 
     /**
      * The process is running free (or at least was the last time its
@@ -197,6 +207,13 @@ abstract class ProcState
 		}
 		return new AttachingToOtherTasks (unattachedTasks, stop);
 	    }
+	}
+	ProcState processPerformAddObservation (Proc proc,
+						Observation observation)
+	{
+	    proc.observations.add (observation);
+	    observation.add ();
+	    return this;
 	}
     }
 
@@ -303,6 +320,13 @@ abstract class ProcState
 		}
 		return new StoppingAllTasks (runningTasks);
 	    }
+	    ProcState processPerformAddObservation (Proc proc,
+						    Observation observation)
+	    {
+		proc.observations.add (observation);
+		observation.add ();
+		return running;
+	    }
 	};
 
     private static ProcState startRunning = new ProcState ("startRunning")
@@ -333,6 +357,13 @@ abstract class ProcState
 		    t.performStop ();
 		}
 		return new StoppingAllTasks (runningTasks);
+	    }
+	    ProcState processPerformAddObservation (Proc proc,
+						    Observation observation)
+	    {
+		proc.observations.add (observation);
+		observation.add ();
+		return startRunning;
 	    }
 	};
 

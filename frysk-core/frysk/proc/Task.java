@@ -471,39 +471,19 @@ abstract public class Task
      * Request that the observer be added to this task; once the add
      * has been processed, acknowledge using the Cloned.ack method.
      */
-    private void requestAddObserver (final TaskObservable observableArg,
-				     final TaskObserver observerArg)
+    private void requestAddObserver (TaskObservable observable,
+				     TaskObserver observer)
     {
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		TaskObservable observable = observableArg;
-		TaskObserver observer = observerArg;
-		public void execute ()
-		{
-		    state = state.processRequestAddObserver (Task.this,
-							     observable,
-							     observer);
-		}
-	    });
+	proc.performAddObservation (new Observation (observable, observer));
     }
     /**
      * Delete TaskObserver from this tasks set of observers; also
      * delete it from the set of blockers.
      */
-    private void requestDeleteObserver (final TaskObservable observableArg,
-					final TaskObserver observerArg)
+    private void requestDeleteObserver (final TaskObservable observable,
+					final TaskObserver observer)
     {
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		TaskObservable observable = observableArg;
-		TaskObserver observer = observerArg;
-		public void execute ()
-		{
-		    state = state.processRequestDeleteObserver (Task.this,
-								observable,
-								observer);
-		}
-	    });
+	proc.performDeleteObservation (new Observation (observable, observer));
     }
 
     /**

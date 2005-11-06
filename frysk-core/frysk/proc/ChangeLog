@@ -1,3 +1,15 @@
+2005-11-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: Delete .processRequestAddObserver, and
+	.processRequestDeleteObserver.
+	* Task.java: Re-implement .requestAddObserver and
+	.requestDeleteObserver to pass the request, as an Observation, to
+	the Task's Proc.
+	* ProcState.java: Add .processPerformAddObservation.
+	* Proc.java: Add .observations, .performAddObservation, and
+	.performDeleteObservation.
+	* Observation.java: New.
+	
 2005-11-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Replace TaskObservable, and ProcObservable with

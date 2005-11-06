@@ -283,6 +283,44 @@ public abstract class Proc
 	    });
     }
 
+    /**
+     * The set of observations that currently apply to this task.
+     */
+    Set observations = new HashSet ();
+
+    /**
+     * (Internal) Tell the process to add the specified Observation,
+     * attaching to the process if necessary.
+     */
+    void performAddObservation (final Observation observationArg)
+    {
+	Manager.eventLoop.add (new ProcEvent ()
+	    {
+		Observation observation = observationArg;
+		public void execute ()
+		{
+		    state = state.processPerformAddObservation
+			(Proc.this, observation);
+		}
+	    });
+    }
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary.
+     */
+    void performDeleteObservation (final Observation observationArg)
+    {
+	Manager.eventLoop.add (new ProcEvent ()
+	    {
+		Observation observation = observationArg;
+		public void execute ()
+		{
+		    state = state.processPerformDeleteObservation
+			(Proc.this, observation);
+		}
+	    });
+    }
+
     boolean isStopped ()
     {
 	return state.isStopped ();
