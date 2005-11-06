@@ -74,10 +74,6 @@ abstract class ProcState
     {
 	throw unhandled (proc, "RequestRemoval");
     }
-    ProcState processRequestAttachedStop (Proc proc)
-    {
-	throw unhandled (proc, "RequestAttachedStop");
-    }
     ProcState processRequestAttachedContinue (Proc proc)
     {
 	throw unhandled (proc, "RequestAttachedContinue");
@@ -137,10 +133,6 @@ abstract class ProcState
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
 		return processRequestAttach (proc, false);
-	    }
-	    ProcState processRequestAttachedStop (Proc proc)
-	    {
-		return processRequestAttach (proc, true);
 	    }
 	    ProcState processRequestRefresh (Proc proc)
 	    {
@@ -326,17 +318,6 @@ abstract class ProcState
 		}
 		return new DetachingAllTasks (attachedTasks);
 	    }
-	    ProcState processRequestAttachedStop (Proc proc)
-	    {
-		Map runningTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performStop ();
-		}
-		return new StoppingAllTasks (runningTasks);
-	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
@@ -383,17 +364,6 @@ abstract class ProcState
 		}
 		return new DetachingAllTasks (attachedTasks);
 	    }
-	    ProcState processRequestAttachedStop (Proc proc)
-	    {
-		Map runningTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performStop ();
-		}
-		return new StoppingAllTasks (runningTasks);
-	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
@@ -403,42 +373,11 @@ abstract class ProcState
 	    }
 	};
 
-    /**
-     * All the tasks have been sent a stop request, waiting for each,
-     * in turn, to acknowledge.
-     */
-    private static class StoppingAllTasks
-	extends ProcState
-    {
-	private Map runningTasks;
-	StoppingAllTasks (Map runningTasks)
-	{
-	    super ("StoppingAllTasks");
-	    this.runningTasks = runningTasks;
-	}
-	ProcState processPerformTaskStopCompleted (Proc proc, Task task)
-	{
-	    // Wait until all the tasks have processed the stop
-	    // request.
-	    runningTasks.remove (task.id);
-	    if (runningTasks.size () > 0)
-		return this;
-	    // All stopped.
-	    proc.observableAttachedStop.notify (proc);
-	    return stopped;
-	}
-    }
-
     private static ProcState stopped = new ProcState ("stopped")
 	{
 	    boolean isStopped ()
 	    {
 		return true;
-	    }
-	    ProcState processRequestAttachedStop (Proc proc)
-	    {
-		proc.observableAttachedStop.notify (proc);
-		return stopped;
 	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {

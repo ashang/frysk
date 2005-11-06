@@ -1,5 +1,10 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Delete .requestAttachedStop.
+	* TestProcStates.java: Delete .requestAttachedStop.
+	* ProcState.java: Delete .processRequestAttachedStop, and
+	.StoppingAllTasks.
+
 	* TestTaskAttachedObserver.java: Replace
 	.testAddObserverToOneMainDetachedTask with
 	testAttachDetachMainTask.

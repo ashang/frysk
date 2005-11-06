@@ -155,22 +155,6 @@ public abstract class Proc
 	    });
     }
     /**
-     * Request that the process be both attached and stopped.
-     *
-     * An un-attached process will be attached.  A running process
-     * will be stopped.
-     */
-    public void requestAttachedStop ()
-    {
-	Manager.eventLoop.add (new ProcEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processRequestAttachedStop (Proc.this);
-		}
-	    });
-    }
-    /**
      * Request that the process be both detached and left running.
      *
      * An attached process is detached.  If the attached process was

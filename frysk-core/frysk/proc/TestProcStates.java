@@ -61,19 +61,6 @@ public class TestProcStates
     }
 
     /**
-     * Transition a process to attached / stop.
-     */
-    private void requestAttachedStop (Proc proc)
-    {
-	// Request that the child be attached; wait for it to ack.
-	proc.observableAttachedStop.addObserver
-	    (new StopEventLoopObserver ());
-	proc.requestAttachedStop ();
-	assertRunUntilStop ("attached stop");
-	// XXX: Prove that it is attached and stopped?
-    }
-
-    /**
      * Transition a process to detached / continue.
      */
     private void requestDetachedContinue (Proc proc)
@@ -137,75 +124,6 @@ public class TestProcStates
     }
 
     /**
-     * Transition a single-tasked process from attached/continue to
-     * attached/stop and back again.
-     */
-    public void testSingleTaskAttachedContinueAndAttachedStopped ()
-    {
-	Child child = new AttachedChild ();
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-	requestAttachedContinue (proc);
-    }
-
-    /**
-     * Transition a multi-tasked process from attached/continue to
-     * attached/stop and back again.
-     */
-    public void testMultiTaskAttachedContinueAndAttachedStopped ()
-    {
-	Child child = new AttachedChild (2);
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-	requestAttachedContinue (proc);
-    }
-
-    /**
-     * Transition a single-tasked process from the detached/continued
-     * to attached/stopped state.
-     */
-    public void testSingleTaskDetachedContinueToAttachedStop ()
-    {
-	Child child = new DaemonChild ();
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-    }
-
-    /**
-     * Transition a multi-tasked process from the detached/continued
-     * to attached stopped state.
-     */
-    public void testMultiTaskDetachedContinueToAttachedStop ()
-    {
-	Child child = new DaemonChild (2);
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-    }
-
-    /**
-     * Transition a single-tasked process from the detached/continued
-     * to attached/stopped state.
-     */
-    public void testSingleTaskAttachedStopToDetachedContinue ()
-    {
-	Child child = new DaemonChild ();
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-	requestDetachedContinue (proc);
-    }
-
-    /**
-     * Transition a multi-tasked process from the detached/continued
-     * to attached stopped state.
-     */
-    public void testMultiTaskAttachedStopToDetachedContinue ()
-    {
-	Child child = new DaemonChild (2);
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-	requestDetachedContinue (proc);
-    }
-    /**
      * Transition a multi-tasked process from continued to continued.
      */
     public void testMultiTaskAttachedContinueToAttachedContinue ()
@@ -214,15 +132,5 @@ public class TestProcStates
 	Proc proc = child.findProcUsingRefresh ();
 	requestAttachedContinue (proc);
 	requestAttachedContinue (proc);
-    }
-    /**
-     * Transition a multi-tasked process from stopped to stopped.
-     */
-    public void testMultiTaskAttachedStopToAttachedStop ()
-    {
-	Child child = new AttachedChild (2);
-	Proc proc = child.findProcUsingRefresh ();
-	requestAttachedStop (proc);
-	requestAttachedStop (proc);
     }
 }
