@@ -436,12 +436,9 @@ class TaskState
 	{
 	    TaskState processPerformTrapped (Task task)
 	    {
-		// XXX: Fixme, notify here takes the TaskEvent, and
-		// internal task events should not be propogated back
-		// to the client.
-		TaskEvent event = new TaskEvent.Trapped (task);
-		// We are waiting for a SIGTRAP to indicate step done.
-		task.stepEvent.notify (event);
+		// XXX: Not a standard observer.  Notify SIGTRAP
+		// indicating that the step is done.
+		task.stepEvent.notify (task);
 		return stopped;
 	    }
 	};

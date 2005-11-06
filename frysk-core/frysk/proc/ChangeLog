@@ -1,5 +1,9 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStep.java: In StepEventObserver, cast obj to a Task.
+	* TaskState.java: Pass the Task, not TaskEvent, to
+	Task.stepEvent.notify.
+	
 	* Task.java: Make parameter to .TaskEventObservable.notify an
 	Object.
 	* TestStopAndStop.java (TaskEventObserver): Cast obj to a Task.

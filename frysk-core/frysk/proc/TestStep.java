@@ -150,8 +150,7 @@ public class TestStep
 	    long firstPc;
 	    public void update (Observable o, Object obj)
 	    {
-		TaskEvent e = (TaskEvent) obj;
-		Task t = e.task;
+		Task t = (Task) obj;
 		long pc = t.getIsa().pc (t);
 		if (stepCount == 0) {
 		    firstPc = pc;
