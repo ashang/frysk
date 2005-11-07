@@ -45,39 +45,88 @@ import frysk.gui.srcwin.dom.DOMSource;
  *
  */
 public class StackLevel {
-	private int lineNum;
+	// Constant signifying the end of the line (length independantly)
+	public static int EOL = -1;
 	
+	// Line number and column offsets for the current line
+	private int lineNum;
+	private int endLine;
+	private int colStart;
+	private int colEnd;
+	
+	// Depth in the stack
 	private int depth;
 	
+	// Next and previous scopes in the stack
 	protected StackLevel nextScope;
 	protected StackLevel prevScope;
 	
-	protected DOMSource data;
+	// Actual data for this stack
+	private DOMSource data;
 	
-	protected boolean parsed;
+	// Whether or not data has been parsed and has static information added.
+	private boolean parsed = false;
 
-	public StackLevel(DOMSource data, int line){
+	/**
+	 * Creates a new StackLevel with the given current line. This constructor
+	 * allows the 'current line' to be a statement within a line. Eg:
+	 * <pre>i = 1; j = i+1;</pre>, the current line can be set to 'i = 1;' 
+	 * @param data The DOMSource representing the current file
+	 * @param line The line the PC is currently on (in the source code)
+	 * @param endLine The line that the current instruction ends on
+	 * @param colStart The column of the current instruction
+	 * @param colEnd The column of the end of the current instruction
+	 */
+	public StackLevel(DOMSource data, int line, int endLine, int colStart, int colEnd){
 		this.lineNum = line;
+		this.endLine = endLine;
 		this.depth = 0;
 		this.data = data;
 	}
 
+	/**
+	 * Creates a new stack level. This constructor assumes that the instruction at
+	 * the current PC takes up an entire line of code
+	 * @param data
+	 * @param line
+	 */
+	public StackLevel(DOMSource data, int line){
+		this(data, line, line, 0, StackLevel.EOL);
+	}
+	
+	/**
+	 * @return The next scope in the stack
+	 */
 	public StackLevel getNextScope() {
 		return nextScope;
 	}
 
-	public int getLineNum() {
+	/**
+	 * @return The line that the current instruction starts on
+	 */
+	public int getStartingLineNum() {
 		return lineNum;
 	}
 
+	/**
+	 * @param lineNum The line that the current instruction starts on
+	 */
 	public void setLineNum(int lineNum) {
 		this.lineNum = lineNum;
 	}
 
+	/**
+	 * @return The previous scope in the stack
+	 */
 	public StackLevel getPrevScope() {
 		return prevScope;
 	}
 
+	/**
+	 * Attaches another StackLevel as the next scope in the list. Any previously
+	 * attached scope is removed.
+	 * @param next The scope to follow this one in the stack frame
+	 */
 	public void addNextScope(StackLevel next){
 		if(this.nextScope != null){
 			next.nextScope = this.nextScope;
@@ -90,19 +139,78 @@ public class StackLevel {
 		next.prevScope = this;
 	}
 	
+	/**
+	 * @return The depth of this scope in the stack
+	 */
 	public int getDepth() {
 		return depth;
 	}
 
+	/**
+	 * @return The DOM object representing this stack
+	 */
 	public DOMSource getData() {
 		return data;
 	}
 
+	/**
+	 *  @return true iff this scope has been previously parsed for static data
+	 */
 	public boolean isParsed() {
 		return parsed;
 	}
 
+	/**
+	 * @param parsed Whether or not this scope has been previously parsed for 
+	 * static data.
+	 */
 	public void setParsed(boolean parsed) {
 		this.parsed = parsed;
+	}
+
+	/**
+	 * @return The column offset (wrt the start of the line) of the end of the
+	 * current instruction.
+	 */
+	public int getColEnd() {
+		return colEnd;
+	}
+
+	/**
+	 * @param colEnd The column offset (wrt the start of the line) of the end of the
+	 * current instruction.
+	 */
+	public void setColEnd(int colEnd) {
+		this.colEnd = colEnd;
+	}
+
+	/**
+	 * @return The column offset (wrt the start of the line) of the start of
+	 * the current instruction
+	 */
+	public int getColStart() {
+		return colStart;
+	}
+
+	/**
+	 * @param colStart The column offset (wrt the start of the line) of the start 
+	 * of the current instruction
+	 */
+	public void setColStart(int colStart) {
+		this.colStart = colStart;
+	}
+
+	/**
+	 * @return The line number that the current instruction ends on
+	 */
+	public int getEndLine() {
+		return endLine;
+	}
+
+	/**
+	 * @param endLine The line number that the current instruction ends on
+	 */
+	public void setEndLine(int endLine) {
+		this.endLine = endLine;
 	}
 }

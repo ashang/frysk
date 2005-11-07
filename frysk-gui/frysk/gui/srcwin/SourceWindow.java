@@ -334,7 +334,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		while(top != null){
 			iter = listModel.appendRow();
 			
-			if(top.getData().getLine(top.getLineNum()).hasInlinedCode())
+			if(top.getData().getLine(top.getStartingLineNum()).hasInlinedCode())
 				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getData().getFileName()+"  (i)");
 			else
 				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getData().getFileName());
@@ -1026,7 +1026,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		StackLevel selected = (StackLevel) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
 		
 		this.view.load(selected);
-		this.view.setCurrentLine(selected.getLineNum());
+		this.view.setCurrentLine(selected.getStartingLineNum());
 		this.view.showAll();
 	}
 }
