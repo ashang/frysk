@@ -1,3 +1,8 @@
+2005-11-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramViewPage.java (loadExistingMonitors): Fixed NPE. 
+	BZ 1816 (.listFiles returns null on no files, not 0).
+
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
 	* actions/Stop.java: Comment out call to Proc.requestAttachedStop.

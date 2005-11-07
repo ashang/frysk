@@ -116,6 +116,9 @@ public class ProgramViewPage extends Widget {
 		
 		File[] fMonitors = monitors.listFiles();
 		
+		if (fMonitors == null)
+			return;
+		
 		ProgramData temp = new ProgramData();
 		for (int i=0; i<fMonitors.length; i++)
 		{
