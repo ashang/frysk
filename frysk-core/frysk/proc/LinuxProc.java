@@ -71,7 +71,6 @@ public class LinuxProc
 	return getStat ().comm;
     }
 
-    private Auxv[] auxv;
     /**
      * Create a new detached process.  RUNNING makes no sense here.
      * Since PARENT could be NULL, also explicitly pass in the host.

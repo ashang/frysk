@@ -1,5 +1,7 @@
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java: Delete unused .auxv.
+
 	* TestTaskAttachedObserver.java: Add .attachDetach and
 	.testAttachDetachOtherTask.
 
