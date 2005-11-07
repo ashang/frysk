@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Iterator;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.event.TimerEvent;
@@ -54,43 +53,36 @@ import java.util.Observable;
 public class TestTaskAttachedObserver
     extends TestLib
 {
-    /**
-     * Attach, and then detach a task.
+    /*
+     * Create an observer that records when it is attached or
+     * detached.
      */
-    private void attachDetach (final Task task)
+    class AttachedObserver
+	extends TaskObserverBase
+	implements TaskObserver.Attached
     {
-	// Remember the number of tasks.
-	int numberTasks = task.proc.getTasks ().size ();
-
-	// Create an observer that records when it is attached or
-	// detached.
-	class AttachedObserver
-	    extends TaskObserverBase
-	    implements TaskObserver.Attached
+	int attachedCount;
+	public Action updateAttached (Task task)
 	{
-	    static final int UNDEFINED = 0;
-	    static final int ATTACHED = 1;
-	    static final int DETACHED = 2;
-	    int state = UNDEFINED;
-	    public Action updateAttached (Task task)
-	    {
-		state = ATTACHED;
-		return Action.CONTINUE;
-	    }
-	    public void deleted ()
-	    {
-		state = DETACHED;
-	    }
+	    attachedCount++;
+	    return Action.CONTINUE;
 	}
-	AttachedObserver attachedObserver = new AttachedObserver ();
+    }
 
+    /**
+     * Attach to the list of tasks.
+     */
+    private AttachedObserver attach (final Task[] tasks)
+    {
 	// Add the AttachedObserver to the task causing <em>frysk</em>
 	// to attach to the Task's Proc..  Run the event loop until
 	// the process reports back that the attach occured.
-	task.requestAddAttachedObserver (attachedObserver);
-	task.proc.observableAttached.addObserver (new Observer ()
+	AttachedObserver attachedObserver = new AttachedObserver ();
+	for (int i = 0; i < tasks.length; i++)
+	    tasks[i].requestAddAttachedObserver (attachedObserver);
+	tasks[0].proc.observableAttached.addObserver (new Observer ()
 	    {
-		Proc proc = task.proc;
+		Proc proc = tasks[0].proc;
 		public void update (Observable obj, Object arg)
 		{
 		    proc.observableAttached.deleteObserver (this);
@@ -98,17 +90,27 @@ public class TestTaskAttachedObserver
 		}
 	    });
 	assertRunUntilStop ("attaching to task");
-	assertEquals ("attached state", AttachedObserver.ATTACHED,
-		      attachedObserver.state);
+	assertEquals ("attached count", tasks.length,
+		      attachedObserver.attachedCount);
+	assertEquals ("deleted count", 0,
+		      attachedObserver.deletedCount);
+	return attachedObserver;
+    }
 
+    /**
+     * Detach from the list of tasks.
+     */
+    private void detach (final Task[] tasks, AttachedObserver attachedObserver)
+    {
 	// Delete the AttachedObserver from the task causing
 	// <em>frysk</em> to detach from the Task's Proc.  Run the
 	// event loop until the Proc reports back that it has
 	// detached.
-	task.requestDeleteAttachedObserver (attachedObserver);
-	task.proc.observableDetached.addObserver (new Observer ()
+	for (int i = 0; i < tasks.length; i++)
+	    tasks[i].requestDeleteAttachedObserver (attachedObserver);
+	tasks[0].proc.observableDetached.addObserver (new Observer ()
 	    {
-		Proc proc = task.proc;
+		Proc proc = tasks[0].proc;
 		public void update (Observable obj, Object arg)
 		{
 		    proc.observableAttached.deleteObserver (this);
@@ -116,16 +118,18 @@ public class TestTaskAttachedObserver
 		}
 	    });
 	assertRunUntilStop ("detaching from task");
-	assertEquals ("detached", AttachedObserver.DETACHED,
-		      attachedObserver.state);
+	assertEquals ("attached count (no change)", tasks.length,
+		      attachedObserver.attachedCount);
+	assertEquals ("deleted count", tasks.length,
+		      attachedObserver.deletedCount);
 
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	Signal.kill (task.proc.getPid (), Sig.KILL);
+	Signal.kill (tasks[0].proc.getPid (), Sig.KILL);
 	Manager.eventLoop.add (new TimerEvent (0, 50)
 	    {
-		int pid = task.proc.getPid ();
+		int pid = tasks[0].proc.getPid ();
 		public void execute ()
 		{
 		    try {
@@ -140,8 +144,17 @@ public class TestTaskAttachedObserver
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
-	assertEquals ("process task count", numberTasks,
-		      task.proc.getTasks ().size ());
+	assertTrue ("process still has tasks",
+		    tasks[0].proc.getTasks ().size () > 0);
+    }
+
+    /** 
+     * Attach and then Detach the list of tasks.
+     */
+    private void attachDetach (Task[] tasks)
+    {
+	AttachedObserver attachedObserver = attach (tasks);
+	detach (tasks, attachedObserver);
     }
 
     /**
@@ -155,7 +168,7 @@ public class TestTaskAttachedObserver
 	Child child = new DaemonChild ();
 	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
 	Task task = (Task) proc.getTasks ().getFirst ();
-	attachDetach (task);
+	attachDetach (new Task[] { task });
     }
 
     /**
@@ -167,13 +180,28 @@ public class TestTaskAttachedObserver
 	// Create a detached child.
 	Child child = new DaemonChild (2);
 	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
 	Task task = null;
-	for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
-	    task = (Task)i.next ();
-	    if (task.getTid () != proc.getPid ())
+	for (int i = 0; i < tasks.length; i++) {
+	    if (tasks[i].getTid () != proc.getPid ()) {
+		task = tasks[i];
 		break;
+	    }
 	}
 	assertNotNull ("found the non-main task", task);
-	attachDetach (task);
+	attachDetach (new Task[] { task });
+    }
+
+    /**
+     * Check that a program with many many tasks can be attached, and detached.
+     */
+    public void testAttachDetachManyTasks ()
+    {
+	int count = 100;
+	Child child = new DaemonChild (count);
+	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
+	assertTrue ("number of tasks", count == tasks.length - 1);
+	attachDetach (tasks);
     }
 }

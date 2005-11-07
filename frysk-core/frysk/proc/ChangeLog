@@ -1,5 +1,9 @@
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Refactor .attachDetach, adding
+	separate .attach and .detach methods that all take a Task[].  Add
+	testAttachDetachManyTasks.
+
 	* TestLib.java: For DaemonChild, add a constructor that starts its
 	argument as the program.
 
