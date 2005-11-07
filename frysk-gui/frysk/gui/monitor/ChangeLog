@@ -1,3 +1,8 @@
+2005-11-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* actions/ActionManager.java: removed Attach/Detach actions from
+	menu. See bz 1446
+
 2005-11-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* MainWindow.java (MainWindow): Fixed ecj 3.1 warning.

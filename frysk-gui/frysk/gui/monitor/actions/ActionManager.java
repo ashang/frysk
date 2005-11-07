@@ -65,8 +65,8 @@ public class ActionManager extends Observable {
 	 * and tadds it to the list.
 	 * */
 	private void initActionList() {
-		this.addProcActionPrototype(new Attach());
-		this.addProcActionPrototype(new Detach());
+//		this.addProcActionPrototype(new Attach());
+//		this.addProcActionPrototype(new Detach());
 		this.addProcActionPrototype(new Stop());
 		this.addProcActionPrototype(new Resume());
 		this.addProcActionPrototype(new PrintProc());
