@@ -135,6 +135,22 @@ public class ProgramDataModel {
 		return this.weightDC;
 	}
 	
+	public void toggle(String row) 
+	{
+		TreeIter it = null;
+		it = listStore.getIter(row);
+		
+		ProgramData selected = (ProgramData) listStore.getValue(it,programEventDataDC);
+		
+		if (selected.isEnabled())
+			selected.setEnabled(false);
+		else
+			selected.setEnabled(true);
+					
+		listStore.setValue(it, (DataColumnBoolean) enabledDC, selected.isEnabled());
+		selected.save();
+		
+	}
 	
 	public void add(ProgramData data)
 	{

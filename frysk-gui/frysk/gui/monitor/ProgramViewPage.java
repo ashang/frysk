@@ -60,6 +60,8 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.CellRendererToggleEvent;
+import org.gnu.gtk.event.CellRendererToggleListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
@@ -160,11 +162,21 @@ public class ProgramViewPage extends Widget {
 
 		
 		 CellRendererToggle renderToggle = new CellRendererToggle();
+		 renderToggle.addListener(new CellRendererToggleListener(){
+
+			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
+			
+				ProgramDataModel.theManager.toggle(arg0.getPath());
+				
+				
+			}});
+		 renderToggle.setUserEditable(true);
 		 enabledCol.packStart(renderToggle, true);
 		 enabledCol.addAttributeMapping( renderToggle,
 		 CellRendererToggle.Attribute.ACTIVE, programDataModel.getEnabledDC() );	
 		enabledCol.setTitle("Enabled?");
 		enabledCol.setVisible(true);
+		
 	
 		
 		CellRendererText nameRender = new CellRendererText(); 

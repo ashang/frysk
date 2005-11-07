@@ -1,17 +1,23 @@
-2005-11-07  Sami Wagiaalla  <swagiaal@redhat.com>
+2005-11-07  Sami Wagiaalla  <swagiaal@redhat.com>	
 
 	* actions/ActionManager.java: removed Attach/Detach actions from
 	menu. See bz 1446
 
 2005-11-07  Phil Muldoon  <pmuldoon@redhat.com>
 
+	*  ProgramData.java (buildStore): Added
+	
 	* ProgramAddWindow.java (saveDialog): Dynamically add
-	program event observer to listbox.
+	program event observers to listbox.
+	(saveDialog): Moved default save location to ProgramData.
+	(buildStore): Removed
 	
 	* MainWindow.java (MainWindow): Fixed ecj 3.1 warning.
 	* ActionPool.java (ActionPool): Ditto.
 	* ObserversMenu.java (ObserversMenu): Ditto.
 	* ProgramDataModel.java (ProgramDataModel): Ditto.
+	(toggle): Added.
+	* ProgramViewPage: Added Toggle cell listener.
 
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 

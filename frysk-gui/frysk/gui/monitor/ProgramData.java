@@ -72,6 +72,9 @@ public class ProgramData {
 	
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	
+	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
+	"event_watchers_store" + "/";
+	
 	/**
 	 * @param name. Name of this monitor.
 	 * @param enabled. Is this monitor enabled?
@@ -174,7 +177,8 @@ public class ProgramData {
 	}
 	
 	public void save() {
-		save(this.name);
+		buildStore();
+		save(EVENT_STORE_LOC + this.name + ".xml");
 	}
 	
 	public void load(String filename) {		
@@ -226,5 +230,12 @@ public class ProgramData {
 		while (i.hasNext())
 			processList.add(((Element) i.next()).getText());
 	
+	}
+	
+	private void buildStore()
+	{
+		File store = new File(EVENT_STORE_LOC);
+		if (store.exists() == false)
+			store.mkdirs();
 	}
 }

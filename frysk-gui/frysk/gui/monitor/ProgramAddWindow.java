@@ -91,8 +91,6 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class ProgramAddWindow extends Window implements LifeCycleListener, Saveable { 
 
 	
-	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
-	"event_watchers_store" + "/";
 	
 	private Entry programEntry;
 	private FileChooserButton programOpenFileDialog;
@@ -111,7 +109,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	public ProgramAddWindow(LibGlade glade) {
 		super(((Window) glade.getWidget("programAddWindow")).getHandle());
 		this.addListener(this);
-		buildStore();
 		getGladeWidgets(glade);
 		createDataModel();
 		mountProcModel(this.psDataModel);
@@ -184,7 +181,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 				this.programOpenFileDialog.getFilename(),
 				processes,observers);
 		
-		pData.save(EVENT_STORE_LOC+this.programEntry.getText()+".xml");
+		pData.save();
 		
 		ProgramDataModel.theManager.add(pData);
 	}
@@ -462,10 +459,5 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		return this.cancelLastClicked;
 	}
 
-	private void buildStore()
-	{
-		File store = new File(EVENT_STORE_LOC);
-		if (store.exists() == false)
-			store.mkdirs();
-	}
+
 }
