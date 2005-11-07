@@ -33,6 +33,10 @@
 	in SourceBuffer.
 	* StackLevel.java (StackLevel): Now inializes column variables.
 
+	* testfiles/common.h: Added.
+	* testfiles: Changed files so that they could all be compiled into
+	an executable.
+
 2005-11-04  Rick Moseley  <rmoseley@redhat.com>
 	* dom/DOMTestDOMFrysk.java: added test for DOMImage.getFunction()
 					(to be added to JUnit also)

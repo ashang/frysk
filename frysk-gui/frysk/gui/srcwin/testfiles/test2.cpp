@@ -1,5 +1,4 @@
 #include "common.h"
-#include <iostream>
 
 using namespace std;
 
@@ -10,5 +9,5 @@ void foo(){
   /*
    * Get whatever bar() says and print it out
    */
-  cout << bar() << endl;
+  bar();
 }
