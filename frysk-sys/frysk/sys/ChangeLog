@@ -1,3 +1,9 @@
+2005-11-07  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Wait.java (syscallEvent): Add new syscall event type parameter.
+	* cni/Wait.cxx (processStatus): For a syscall event, indicate
+	the event type is unknown.
+
 2005-11-01  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* SyscallNum.shjava: New file.

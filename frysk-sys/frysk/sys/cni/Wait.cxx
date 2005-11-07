@@ -141,7 +141,9 @@ processStatus (int pid, int status,
     case 0:
       int signum = WSTOPSIG (status);
       if (signum >= 0x80)
-	observer->syscallEvent (pid);
+	// It's a syscall.  Pass -1 as a parameter to indicate we don't
+	// know whether it is an entry or exit event.
+	observer->syscallEvent (pid, -1);
       else
 	observer->stopped (pid, signum);
       break;
