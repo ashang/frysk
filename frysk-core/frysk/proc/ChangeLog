@@ -1,5 +1,10 @@
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Add
+	.ttestAttachDetachExitingTask.
+	* TaskState.java: For "detaching", handle
+	.processPerformTerminating.
+	
 	* TestTaskAttachedObserver.java: Refactor .attachDetach, adding
 	separate .attach and .detach methods that all take a Task[].  Add
 	testAttachDetachManyTasks.

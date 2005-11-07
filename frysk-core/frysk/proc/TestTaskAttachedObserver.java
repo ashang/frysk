@@ -126,14 +126,13 @@ public class TestTaskAttachedObserver
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	Signal.kill (tasks[0].proc.getPid (), Sig.KILL);
 	Manager.eventLoop.add (new TimerEvent (0, 50)
 	    {
 		int pid = tasks[0].proc.getPid ();
 		public void execute ()
 		{
 		    try {
-			Signal.kill (pid, 0);
+			Signal.kill (pid, Sig.KILL);
 		    }
 		    catch (Errno.Esrch e) {
 			Manager.eventLoop.requestStop ();
@@ -166,7 +165,7 @@ public class TestTaskAttachedObserver
     {
 	// Create a detached child.
 	Child child = new DaemonChild ();
-	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
 	Task task = (Task) proc.getTasks ().getFirst ();
 	attachDetach (new Task[] { task });
     }
@@ -179,7 +178,7 @@ public class TestTaskAttachedObserver
     {
 	// Create a detached child.
 	Child child = new DaemonChild (2);
-	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
 	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
 	Task task = null;
 	for (int i = 0; i < tasks.length; i++) {
@@ -199,9 +198,35 @@ public class TestTaskAttachedObserver
     {
 	int count = 100;
 	Child child = new DaemonChild (count);
-	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
 	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
 	assertTrue ("number of tasks", count == tasks.length - 1);
 	attachDetach (tasks);
+    }
+
+    /**
+     * Check that detaching from a task that has already started to
+     * exit works.
+     */
+    public void testDetachExitingTask ()
+    {
+	// Create a detached child.
+	Child child = new DaemonChild ();
+	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Task task = (Task) proc.getTasks ().getFirst ();
+ 	Task[] tasks = new Task[] { task };
+
+	// Attach to it.
+	AttachedObserver attachedObserver = attach (tasks);
+
+	// Now blow away the task.  Since the event queue is stopped
+	// this signal will be delivered to the inferior first but
+	// won't be processed until after .detach has started
+	// detaching the task.  This results in the task in the
+	// detaching state getting the terminating event instead of
+	// the more typical stopped.
+	Signal.kill (proc.getPid (), Sig.KILL);
+
+	detach (tasks, attachedObserver);
     }
 }

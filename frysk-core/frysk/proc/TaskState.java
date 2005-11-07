@@ -412,6 +412,16 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
+	    TaskState processPerformTerminating (Task task, boolean signal,
+						 int value)
+	    {
+		if (signal)
+		    task.sendDetach (value);
+		else
+		    task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
 	};
 
     private static TaskState stepping = new TaskState ("stepping")
