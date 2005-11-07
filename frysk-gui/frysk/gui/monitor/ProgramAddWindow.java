@@ -185,6 +185,8 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 				processes,observers);
 		
 		pData.save(EVENT_STORE_LOC+this.programEntry.getText()+".xml");
+		
+		ProgramDataModel.theManager.add(pData);
 	}
 	
 	private String doValidation() {

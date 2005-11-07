@@ -5,6 +5,9 @@
 
 2005-11-07  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ProgramAddWindow.java (saveDialog): Dynamically add
+	program event observer to listbox.
+	
 	* MainWindow.java (MainWindow): Fixed ecj 3.1 warning.
 	* ActionPool.java (ActionPool): Ditto.
 	* ObserversMenu.java (ObserversMenu): Ditto.
