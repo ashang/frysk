@@ -79,10 +79,14 @@ cat <<EOF
     {
 	TestRunner runner = new TestRunner (new Results (System.out));
         TestSuite testSuite = new TestSuite ();
+        int repeats = 1;
         if (args.length > 0) {
 	    // Construct the testsuite from the list of names.
             for (int i = 0; i < args.length; i++) {
-                testSuite.addTest (runner.getTest (args[i]));
+                if (args[i].charAt (0) == '-')
+		    repeats = -Integer.parseInt (args[i]);
+                else
+                    testSuite.addTest (runner.getTest (args[i]));
             }
         }
         else {
@@ -90,13 +94,12 @@ cat <<EOF
                 testSuite.addTest (new TestSuite (testClasses[i]));
             }
         }
-EOF
-
-cat <<EOF
         try {
-	    TestResult testResult = runner.doRun (testSuite);
-	    if (!testResult.wasSuccessful()) 
-		System.exit (FAILURE_EXIT);
+	    for (int i = 0; i < repeats; i++) {
+	        TestResult testResult = runner.doRun (testSuite);
+	        if (!testResult.wasSuccessful()) 
+		    System.exit (FAILURE_EXIT);
+            }
 	    System.exit(SUCCESS_EXIT);
 	} catch(Exception e) {
 	    System.err.println(e.getMessage());
