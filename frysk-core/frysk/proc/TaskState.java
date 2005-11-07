@@ -246,8 +246,6 @@ class TaskState
 	    TaskState processPerformStopped (Task task)
 	    {
 		task.sendSetOptions ();
-		// XXX: Not a standard observer.
-		task.stopEvent.notify (null);
 		task.sendContinue (0);
 		task.notifyAttached ();
 		return running;
@@ -255,8 +253,6 @@ class TaskState
 	    TaskState processPerformTrapped (Task task)
 	    {
 		task.sendSetOptions ();
-		// XXX: Not a standard observer.
-		task.stopEvent.notify (null);
 		if (task.notifyAttached () > 0)
 		    return blockedContinue;
 		else {
@@ -300,8 +296,6 @@ class TaskState
 	    {
 		// XXX: Not a standard observer.
 		task.requestedStopEvent.notify (task);
-		// XXX: Not a standard observer.
-		task.stopEvent.notify (null);
 		return paused;
 	    }
 	};

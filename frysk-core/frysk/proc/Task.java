@@ -453,7 +453,6 @@ abstract public class Task
 	    notifyObservers (o);
 	}
     }
-    public TaskEventObservable stopEvent = new TaskEventObservable ();
     public TaskEventObservable stepEvent = new TaskEventObservable ();
     public TaskEventObservable requestedStopEvent = new TaskEventObservable ();
 
