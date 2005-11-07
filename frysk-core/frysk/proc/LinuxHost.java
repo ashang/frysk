@@ -258,10 +258,10 @@ public class LinuxHost
 		    Task task = get (new TaskId (pid));
 		    task.performZombied ();
 		}
-		public void syscallEvent (int pid)
+		public void syscallEvent (int pid, int syscallType)
 		{
 		    Task task = get (new TaskId (pid));
-		    task.performSyscalled ();
+		    task.performSyscalled (syscallType);
 		}
 		public void stopped (int pid, int sig)
 		{

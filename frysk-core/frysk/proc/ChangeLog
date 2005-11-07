@@ -1,3 +1,16 @@
+2005-11-07  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* SyscallEventInfo.java (ENTRY, EXIT, UNKNOWN): New constants.
+	* Task.java (performSyscalled): Add additional syscallType
+	parameter.
+	* TaskState.java (processPerformSyscalled): Ditto.
+	* TestLib.java: Change Wait.Observer classes to add
+	additional parameter to syscallEvent member functions.
+	* LinuxHost.java: Add additional parameter to Wait.Observer
+	syscallEvent member function.
+	* TestSyscall2.java: Lower repetition count to 5000 so
+	test doesn't fail due to time limitation.
+
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskAttachedObserver.java: Add

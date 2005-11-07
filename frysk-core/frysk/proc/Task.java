@@ -387,13 +387,15 @@ abstract public class Task
     /**
      * (internal) The task is performing a system call.
      */
-    void performSyscalled ()
+    void performSyscalled (final int syscallTypeArg)
     {
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
+		int syscallType = syscallTypeArg;
 		public void execute ()
 		{
-		    state = state.processPerformSyscalled (Task.this);
+		    state = state.processPerformSyscalled (Task.this, 
+							   syscallType);
 		}
 	    });
     }

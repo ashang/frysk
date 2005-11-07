@@ -137,7 +137,7 @@ public class TestSyscall2
 
     public void testSyscall2 ()
     {
-	String arg = "10000";
+	String arg = "5000";
         TestSyscall2Internals t = new TestSyscall2Internals ();
 
 	Manager.host.requestCreateAttachedProc

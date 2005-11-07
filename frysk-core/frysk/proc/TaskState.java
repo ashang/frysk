@@ -85,7 +85,7 @@ class TaskState
     {
 	throw unhandled (task, "PerformTrapped");
     }
-    TaskState processPerformSyscalled (Task task)
+    TaskState processPerformSyscalled (Task task, int syscallType)
     {
 	throw unhandled (task, "PerformSyscalled");
     }
@@ -317,9 +317,14 @@ class TaskState
 		    return running;
 		}
 	    }
-	    TaskState processPerformSyscalled (Task task)
+	    TaskState processPerformSyscalled (Task task, int syscallType)
 	    {
-		task.notifySyscallXXX ();
+		if (syscallType == SyscallEventInfo.ENTER)
+		    task.notifySyscallEnter ();
+		else if (syscallType == SyscallEventInfo.EXIT)
+		    task.notifySyscallExit ();
+		else // We don't know what type of event it is.
+		    task.notifySyscallXXX ();
 		task.sendContinue (0);
 		return running;
 	    }

@@ -40,6 +40,10 @@ package frysk.proc;
 
 abstract class SyscallEventInfo
 {
+    public final static int ENTER = 0;
+    public final static int EXIT = 1;
+    public final static int UNKNOWN = -1;
+
     abstract int number (Task task);
     abstract long arg (Task task, int n);
     abstract long returnCode (Task task);
