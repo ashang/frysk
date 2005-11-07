@@ -39,10 +39,13 @@
 
 package frysk.proc;
 
+import java.util.Iterator;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.event.TimerEvent;
 import frysk.sys.Errno;
+import java.util.Observer;
+import java.util.Observable;
 
 /**
  * Test the TaskObserver.Attached observer.
@@ -52,54 +55,77 @@ public class TestTaskAttachedObserver
     extends TestLib
 {
     /**
-     * Test that adding an Attached observer to a detached processes's
-     * main task causes an attach; and removing it causes the
-     * corresponding detach.
+     * Attach, and then detach a task.
      */
-    public void testAttachDetachMainTask ()
+    private void attachDetach (final Task task)
     {
-	// Create a detached child.
-	Child child = new DaemonChild ();
-	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
-	Task task = (Task) proc.getTasks ().getFirst ();
+	// Remember the number of tasks.
+	int numberTasks = task.proc.getTasks ().size ();
+
+	// Create an observer that records when it is attached or
+	// detached.
 	class AttachedObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Attached
 	{
-	    boolean attached;
+	    static final int UNDEFINED = 0;
+	    static final int ATTACHED = 1;
+	    static final int DETACHED = 2;
+	    int state = UNDEFINED;
 	    public Action updateAttached (Task task)
 	    {
-		Manager.eventLoop.requestStop ();
-		attached = true;
+		state = ATTACHED;
 		return Action.CONTINUE;
 	    }
-	    boolean detached;
 	    public void deleted ()
 	    {
-		detached = true;
-		Manager.eventLoop.requestStop ();
+		state = DETACHED;
 	    }
 	}
 	AttachedObserver attachedObserver = new AttachedObserver ();
+
+	// Add the AttachedObserver to the task causing <em>frysk</em>
+	// to attach to the Task's Proc..  Run the event loop until
+	// the process reports back that the attach occured.
 	task.requestAddAttachedObserver (attachedObserver);
-
-	// Run the event loop, waiting for the attached event.
+	task.proc.observableAttached.addObserver (new Observer ()
+	    {
+		Proc proc = task.proc;
+		public void update (Observable obj, Object arg)
+		{
+		    proc.observableAttached.deleteObserver (this);
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
 	assertRunUntilStop ("attaching to task");
-	assertTrue ("attached", attachedObserver.attached);
+	assertEquals ("attached state", AttachedObserver.ATTACHED,
+		      attachedObserver.state);
 
-	// Detach, run the event loop waiting for an indication that
-	// it is detached.
+	// Delete the AttachedObserver from the task causing
+	// <em>frysk</em> to detach from the Task's Proc.  Run the
+	// event loop until the Proc reports back that it has
+	// detached.
 	task.requestDeleteAttachedObserver (attachedObserver);
+	task.proc.observableDetached.addObserver (new Observer ()
+	    {
+		Proc proc = task.proc;
+		public void update (Observable obj, Object arg)
+		{
+		    proc.observableAttached.deleteObserver (this);
+		    Manager.eventLoop.requestStop ();
+		}
+	    });
 	assertRunUntilStop ("detaching from task");
-	assertTrue ("detached", attachedObserver.detached);
+	assertEquals ("detached", AttachedObserver.DETACHED,
+		      attachedObserver.state);
 
-	// Finally prove that the process really is detached - send it
-	// a kill and then probe (using kill) the process until that
-	// fails.
-	Signal.kill (proc.getPid (), Sig.TERM);
+	// Finally, prove that the process really is detached - send
+	// it a kill and then probe (using kill) the process until
+	// that fails.
+	Signal.kill (task.proc.getPid (), Sig.KILL);
 	Manager.eventLoop.add (new TimerEvent (0, 50)
 	    {
-		int pid = proc.getPid ();
+		int pid = task.proc.getPid ();
 		public void execute ()
 		{
 		    try {
@@ -114,6 +140,40 @@ public class TestTaskAttachedObserver
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
-	assertEquals ("process task count", 1, proc.getTasks ().size ());
+	assertEquals ("process task count", numberTasks,
+		      task.proc.getTasks ().size ());
+    }
+
+    /**
+     * Test that adding an Attached observer to a detached processes's
+     * main task causes an attach; and removing it causes the
+     * corresponding detach.
+     */
+    public void testAttachDetachMainTask ()
+    {
+	// Create a detached child.
+	Child child = new DaemonChild ();
+	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Task task = (Task) proc.getTasks ().getFirst ();
+	attachDetach (task);
+    }
+
+    /**
+     * Check that it is possible to force the attach, and then detach
+     * of the non-main task.
+     */
+    public void testAttachDetachOtherTask ()
+    {
+	// Create a detached child.
+	Child child = new DaemonChild (2);
+	final Proc proc = child.findProcUsingRefresh (true); // Tasks also.
+	Task task = null;
+	for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
+	    task = (Task)i.next ();
+	    if (task.getTid () != proc.getPid ())
+		break;
+	}
+	assertNotNull ("found the non-main task", task);
+	attachDetach (task);
     }
 }

@@ -1,5 +1,8 @@
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Add .attachDetach and
+	.testAttachDetachOtherTask.
+
 	* Proc.java: Rename .observableAttachedContinue, and
 	.observableDetachedContinue to .observableAttached, and
 	.observableDetached.
