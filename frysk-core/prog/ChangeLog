@@ -1,3 +1,7 @@
+2005-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* fib/exec.c: New file.
+
 2005-11-02  Andrew Cagney  <cagney@redhat.com>
 
 	* util/auxv.java: Add .buildDimensions to AuxvBuilder.
