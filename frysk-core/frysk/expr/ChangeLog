@@ -1,5 +1,10 @@
 2005-11-07  Tarun Khanna  <tkhanna@redhat.com>
 
+	* RunCppParser.java: modified.
+	* RunCppTreeParser.java: modified.
+
+2005-11-07  Tarun Khanna  <tkhanna@redhat.com>
+
 	* CppTreeParser.sed: patched to fix ecj errors..
 
 2005-11-03  Tarun Khanna  <tkhanna@redhat.com>

@@ -235,7 +235,7 @@ public class RunCppParser
 	throws Exception
     {
 	try {
-	  PrintWriter pw = new PrintWriter(System.out);
+	  //PrintWriter pw = new PrintWriter(System.out);
 	  ConsoleReader consReader;
 
 	  try {

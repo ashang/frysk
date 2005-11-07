@@ -209,9 +209,6 @@
     }
     
     public Variable shiftLeft(Variable var1, Variable var2) throws InvalidOperatorException  {
-      long v2=0;
-
-      
       int resultVar = var1.getInt() << longValue(var2);
       return  IntegerType.newIntegerVariable((IntegerType)var1.getType(), resultVar);
     }

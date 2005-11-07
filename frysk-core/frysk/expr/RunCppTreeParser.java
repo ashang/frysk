@@ -20,7 +20,7 @@
     }
 
     public static void main(String []argv)  {
-      String []sTestResult = { "PASS", "FAIL"};
+      //String []sTestResult = { "PASS", "FAIL"};
       int a,b,c;
       a=5;
       b=3;
