@@ -60,4 +60,8 @@ public class Config
 	public static final String PKGDATADIR = "@pkgdatadir@";
 	public static final String PKGLIBDIR = "@pkglibdir@";
 	public static final String PKGINCLUDEDIR = "@pkgincludedir@";
+
+        public static final String FRYSK_CONFIG = System.getProperty("user.home")
+        + "/" + ".frysk" + "/";
+        public static final String FRYSK_LOG_ID = "frysk.core.eventlog";
 }

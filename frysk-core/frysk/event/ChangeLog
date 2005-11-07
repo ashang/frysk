@@ -1,3 +1,9 @@
+2005-11-04  Stan Cox  <scox@redhat.com>
+
+	* EventLoop.java (EventLoop): Add logger.
+	(wakeupIfBlocked,add,remove,checkForTimerEvents,processSignal)
+	(runEventLoop,requestStop,runPending) Add logging.
+
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java: Extend Thread.  Set .tid in .runEventLoop.  Wrap
