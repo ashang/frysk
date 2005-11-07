@@ -51,7 +51,8 @@ public class Stop extends ProcAction {
 
 	public void execute(Proc proc) {
 		proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
-		proc.requestAttachedStop();
+		// proc.requestAttachedStop();
+		throw new RuntimeException ("XXX: mechanism for stopping a process/task.");
 	}
 }
 
