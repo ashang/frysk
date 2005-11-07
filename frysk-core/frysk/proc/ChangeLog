@@ -1,5 +1,7 @@
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcState.java: Use Proc.getTasks, use Collection.
+
 	* Task.java: Delete .stopEvent.
 	* TaskState.java: Update.
 

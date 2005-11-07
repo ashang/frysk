@@ -40,8 +40,7 @@
 package frysk.proc;
 
 import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.Collection;
 
 /**
  * A UNIX Process State
@@ -128,7 +127,11 @@ abstract class ProcState
 		// Grab the main task and attach to that.
 		Task task = Manager.host.get (new TaskId (proc.getPid ()));
 		task.performAttach ();
-		return new AttachingToMainTask (stop);
+		Collection unattachedTasks = proc.getTasks ();
+		if (unattachedTasks.size () > 1)
+		    return new AttachingToMainTask (unattachedTasks, stop);
+		else
+		    return new AttachingToOtherTasks (unattachedTasks, stop);
 	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
@@ -141,14 +144,11 @@ abstract class ProcState
 	    }
 	    ProcState processPerformRemoval (Proc proc)
 	    {
-		if (proc.taskPool.size () > 0) {
-		    throw new RuntimeException ("XXX: What about a dieing proc's tasks, have a dieing state and force a proc refresh?");
-		}
-		else {
-		    if (proc.parent != null)
-			proc.parent.remove (proc);
-		    return destroyed;
-		}
+		// XXX: What about a dieing proc's tasks, have a
+		// dieing state and force a proc refresh?
+		if (proc.parent != null)
+		    proc.parent.remove (proc);
+		return destroyed;
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
@@ -161,7 +161,11 @@ abstract class ProcState
 		// Grab the main task and attach to that.
 		Task task = Manager.host.get (new TaskId (proc.getPid ()));
 		task.performAttach ();
-		return new AttachingToMainTask (false);
+		Collection unattachedTasks = proc.getTasks ();
+		if (unattachedTasks.size () > 1)
+		    return new AttachingToMainTask (unattachedTasks, false);
+		else
+		    return new AttachingToOtherTasks (unattachedTasks, false);
 	    }
 	};
 
@@ -173,50 +177,26 @@ abstract class ProcState
 	extends ProcState
     {
 	private boolean stop;
-	AttachingToMainTask (boolean stop)
+	private Collection unattachedTasks;
+	AttachingToMainTask (Collection unattachedTasks, boolean stop)
 	{
 	    super ("AttachingWaitingForMainTask");
 	    this.stop = stop;
+	    this.unattachedTasks = unattachedTasks;
 	}
 	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	{
 	    // Get an up-to-date list of all tasks.  Now that the main
 	    // task has stopped, all other tasks should be frozen.
 	    proc.sendRefresh ();
-	    if (proc.taskPool.size () == 1) {
-		for (Iterator i = proc.observations.iterator ();
-		     i.hasNext ();) {
-		    Observation observation = (Observation) i.next ();
-		    observation.add ();
-		}
-		if (stop) {
-		    proc.observableAttachedStop.notify (proc);
-		    return stopped;
-		}
-		else {
-		    task.requestContinue ();
-		    proc.observableAttachedContinue.notify (proc);
-		    return running;
-		}
+	    unattachedTasks.remove (task); // main.
+	    // Ask the other tasks to attach.
+	    for (Iterator i = unattachedTasks.iterator ();
+		 i.hasNext (); ) {
+		Task t = (Task) i.next ();
+		t.performAttach ();
 	    }
-	    else {
-		// Track the number of un-attached tasks using a local
-		// map.  As each task reports that its been attached
-		// the map is srunk.  Remove the main task as that has
-		// already been attached.
-		Map unattachedTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		unattachedTasks.remove (new TaskId (proc.getPid ()));
-		// Ask the other tasks to attach.
-		for (Iterator i = proc.taskPool.values ().iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    if (t.getTid () == proc.getPid ())
-			continue;
-		    t.performAttach ();
-		}
-		return new AttachingToOtherTasks (unattachedTasks, stop);
-	    }
+	    return new AttachingToOtherTasks (unattachedTasks, stop);
 	}
 	ProcState processPerformAddObservation (Proc proc,
 						Observation observation)
@@ -234,9 +214,9 @@ abstract class ProcState
     class AttachingToOtherTasks
 	extends ProcState
     {
-	private Map unattachedTasks;
+	private Collection unattachedTasks;
 	private boolean stop;
-	AttachingToOtherTasks (Map unattachedTasks, boolean stop)
+	AttachingToOtherTasks (Collection unattachedTasks, boolean stop)
 	{
 	    super ("AttachingWaitingForOtherTasks");
 	    this.unattachedTasks = unattachedTasks;
@@ -246,10 +226,15 @@ abstract class ProcState
 	{
 	    // As each task reports that it has been attached, remove
 	    // it from the pool, wait until there are none left.
-	    unattachedTasks.remove (task.id);
+	    unattachedTasks.remove (task);
 	    if (unattachedTasks.size () > 0)
 		return this;
 	    // All attached ...
+	    for (Iterator i = proc.observations.iterator ();
+		 i.hasNext ();) {
+		Observation observation = (Observation) i.next ();
+		observation.add ();
+	    }
 	    if (stop) {
 		proc.observableAttachedStop.notify (proc);
 		return stopped;
@@ -273,8 +258,8 @@ abstract class ProcState
     private static class DetachingAllTasks
 	extends ProcState
     {
-	private Map attachedTasks;
-	DetachingAllTasks (Map attachedTasks)
+	private Collection attachedTasks;
+	DetachingAllTasks (Collection attachedTasks)
 	{
 	    super ("DetachingAllTasks");
 	    this.attachedTasks = attachedTasks;
@@ -284,7 +269,7 @@ abstract class ProcState
 	    // As each task reports that it has detached, remove it
 	    // from the list.  Once there are none left the detach is
 	    // done.
-	    attachedTasks.remove (task.id);
+	    attachedTasks.remove (task);
 	    if (attachedTasks.size () > 0)
 		return this;
 	    // All done, notify.
@@ -309,9 +294,8 @@ abstract class ProcState
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
-		Map attachedTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
+		Collection attachedTasks = proc.getTasks ();
+		for (Iterator i = attachedTasks.iterator ();
 		     i.hasNext (); ) {
 		    Task t = (Task) i.next ();
 		    t.performDetach ();
@@ -332,9 +316,8 @@ abstract class ProcState
 		proc.observations.remove (observation);
 		if (proc.observations.size () == 0) {
 		    // No reason for being attached.
-		    Map attachedTasks
-			= (Map) (((HashMap)proc.taskPool).clone ());
-		    for (Iterator i = proc.taskPool.values ().iterator ();
+		    Collection attachedTasks = proc.getTasks ();
+		    for (Iterator i = attachedTasks.iterator ();
 			 i.hasNext (); ) {
 			Task t = (Task) i.next ();
 			t.performDetach ();
@@ -355,9 +338,8 @@ abstract class ProcState
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
-		Map attachedTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
+		Collection attachedTasks = proc.getTasks ();
+		for (Iterator i = attachedTasks.iterator ();
 		     i.hasNext (); ) {
 		    Task t = (Task) i.next ();
 		    t.performDetach ();
@@ -381,9 +363,8 @@ abstract class ProcState
 	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
-		Map stoppedTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
+		Collection stoppedTasks = proc.getTasks ();
+		for (Iterator i = stoppedTasks.iterator ();
 		     i.hasNext (); ) {
 		    Task t = (Task) i.next ();
 		    t.performContinue ();
@@ -392,9 +373,8 @@ abstract class ProcState
 	    }
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
-		Map attachedTasks
-		    = (Map) (((HashMap)proc.taskPool).clone ());
-		for (Iterator i = proc.taskPool.values ().iterator ();
+		Collection attachedTasks = proc.getTasks ();
+		for (Iterator i = attachedTasks.iterator ();
 		     i.hasNext (); ) {
 		    Task t = (Task) i.next ();
 		    t.performDetach ();
@@ -410,8 +390,8 @@ abstract class ProcState
     private static class ContinuingAllTasks
 	extends ProcState
     {
-	private Map stoppedTasks;
-	ContinuingAllTasks (Map stoppedTasks)
+	private Collection stoppedTasks;
+	ContinuingAllTasks (Collection stoppedTasks)
 	{
 	    super ("ContinupingAllTasks");
 	    this.stoppedTasks = stoppedTasks;
@@ -420,7 +400,7 @@ abstract class ProcState
 	{
 	    // Wait until all the tasks have processed the continue
 	    // request.
-	    stoppedTasks.remove (task.id);
+	    stoppedTasks.remove (task);
 	    if (stoppedTasks.size () > 0)
 		return this;
 	    // All continuped.
