@@ -138,14 +138,23 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		// Sidebar
 		if(this.lnfPrefs.getBoolean(LineNumbers.SHOW, true)){
 			Layout lo = new Layout(this.getContext());
-			lo.setText(""+this.buf.getLineCount()+1);
+			lo.setText(""+(this.buf.getLineCount()+1));
 			this.marginWriteOffset = lo.getPixelWidth();
-			this.setBorderWindowSize(TextWindowType.LEFT, this.marginWriteOffset+20);
 		}
 		else{
 			this.setBorderWindowSize(TextWindowType.LEFT, 20);
+			Layout lo = new Layout(this.getContext());
+			lo.setText(" i ");
 			this.marginWriteOffset = 0;
 		}
+		
+		if(this.lnfPrefs.getBoolean(ExecMarks.SHOW, true)){
+			this.setBorderWindowSize(TextWindowType.LEFT, this.marginWriteOffset+40);
+		}
+		else{
+			this.setBorderWindowSize(TextWindowType.LEFT, this.marginWriteOffset+20);
+		}
+			
 	}
 
 	/**
@@ -411,19 +420,19 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 
 		// Get Color to draw the text in
 		r = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getRed());
-		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getGreen());
-		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getBlue());
+		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"G", LineNumbers.DEFAULT.getGreen());
+		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"B", LineNumbers.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r,g,b));
 		
 		// gets current line color
 		int lineR = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getRed());
-		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getGreen());
-		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getBlue());
+		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"G", CurrentLine.DEFAULT.getGreen());
+		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"B", CurrentLine.DEFAULT.getBlue());
 		
 		// gets executable mark color
 		int markR = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getRed());
-		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getGreen());
-		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getBlue());
+		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"G", ExecMarks.DEFAULT.getGreen());
+		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"B", ExecMarks.DEFAULT.getBlue());
 		
 		int currentHeight = 0;		
 		int actualIndex = 0;
@@ -460,8 +469,12 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			// For the current line, draw background using the currentLine color
 			if(i == this.buf.getCurrentLine()){
 				context.setRGBForeground(new Color(lineR, lineG, lineB));
-				drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
-					this.marginWriteOffset+20, lineHeight);
+				if(showMarks)
+					drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
+							this.marginWriteOffset+40, lineHeight);
+				else
+					drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
+							this.marginWriteOffset+20, lineHeight);
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
@@ -475,11 +488,15 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			}
 			
 			if(i == this.buf.getCurrentLine() && this.buf.hasInlineCode(i)){
+				System.out.println("Found inline code on current line");
 				context.setRGBForeground(new Color(markR,markG,markB));
 				Layout lo = new Layout(this.getContext());
 				lo.setAlignment(Alignment.RIGHT);
 				lo.setText("i");
-				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
+				if(showMarks)
+					drawingArea.drawLayout(context, this.marginWriteOffset+25, actualFirstStart+drawingHeight, lo);
+				else
+					drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
 				context.setRGBForeground(new Color(r,g,b));
 				
 				if(this.expanded)

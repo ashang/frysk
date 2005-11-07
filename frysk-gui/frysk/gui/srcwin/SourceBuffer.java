@@ -615,7 +615,8 @@ public class SourceBuffer extends TextBuffer {
 	}
 	
 	public boolean hasInlineCode(int lineNumber){
-		return this.scope.getData().getLine(lineNumber).hasInlinedCode();
+		System.out.println("Checking for inline code");
+		return this.scope.getData().getLine(lineNumber+1).hasInlinedCode();
 	}
 	
 	public void setScope(StackLevel scope){

@@ -1,12 +1,11 @@
+2005-11-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* test/SourceWinRunner.java (mainSourceWin): Now adds inline instances.
+
 2005-11-04  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java: Changed visiblity of FRYSK_CONFIG
 	to public.
-
-2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
-
-	* test/SourceWinRunner.java (main): Now uses paths out of Config.java.
-	(mainSourceWin): Uses same process as main.
 
 2005-11-02  Adam Jocksch  <ajocksch@redhat.com>
 

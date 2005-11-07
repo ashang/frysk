@@ -52,6 +52,7 @@ import frysk.Config;
 import frysk.gui.srcwin.SourceWindow;
 import frysk.gui.srcwin.StackLevel;
 import frysk.gui.srcwin.dom.DOMFrysk;
+import frysk.gui.srcwin.dom.DOMLine;
 import frysk.gui.srcwin.dom.DOMSource;
 import frysk.gui.srcwin.dom.DOMTestGUIBuilder;
 
@@ -199,7 +200,11 @@ public class SourceWinRunner {
 			source = dom.getImage("test6").getSource("test6.cpp");
 			source.setFileName("test6.cpp");
 			source.setFilePath(Config.ABS_SRCDIR+"/../frysk-gui/frysk/gui/srcwin/testfiles");
-			StackLevel stack4 = new StackLevel(source, 10);
+			DOMLine theLine = source.getLine(13);
+			theLine.addInlineInst("min", 12, 3);
+			theLine = source.getLine(14);
+			theLine.addInlineInst("min", 12, 3);
+			StackLevel stack4 = new StackLevel(source, 14);
 			stack3.addNextScope(stack4);
 		}
 		catch (Exception e){

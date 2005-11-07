@@ -333,6 +333,8 @@ public class DOMLine {
 		inlineLineInstElement.setAttribute(LENGTH_ATTR, Integer
 				.toString(end_inline));
 		this.myElement.addContent(inlineLineInstElement);
+		
+		this.myElement.setAttribute(DOMLine.HAS_INLINE_ATTR, "true");
 	}
 
 	/**

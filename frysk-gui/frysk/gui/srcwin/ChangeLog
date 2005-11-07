@@ -1,3 +1,15 @@
+2005-11-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (hasInlineCode): Added debugging output.
+	* SourceViewWidget.java (refresh): Made margin wider to include inline
+	instance markers
+	(drawMargin): Fixed bug where margin was only appearing in shades
+	of grey, also made changes to reflect above change to refresh.
+	* SourceWindow.java (SourceWindow): Now sets current line, also added
+	hack to get around eclipse ecj 3.1 compiler warnings.
+	* dom/DOMLine.java (addInlineInstance): Now sets HAS_INLINE_INST
+	attribute to "true".
+
 2005-11-04  Rick Moseley  <rmoseley@redhat.com>
 	* dom/DOMTestDOMFrysk.java: added test for DOMImage.getFunction()
 					(to be added to JUnit also)

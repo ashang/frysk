@@ -1,3 +1,8 @@
+2005-11-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* configure.ac: Now checks for cdt parser files (taken from frysk-gui
+	configure.ac).
+
 2005-11-03  Igor Foox  <ifoox@redhat.com>
 
 	* autogen.sh: Added -I common/m4 to aclocal invokation.

@@ -1,3 +1,8 @@
+2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* test/SourceWinRunner.java (main): Now uses paths out of Config.java.
+	(mainSourceWin): Uses same process as main.
+
 2005-11-03  Igor Foox  <ifoox@redhat.com>
 
     * autogen.sh: Added -I common/m4 to aclocal invokation.
