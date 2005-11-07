@@ -147,6 +147,11 @@ public class SourceBuffer extends TextBuffer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		this.setCurrentLine(this.scope.getStartingLineNum(),
+				this.scope.getColStart(),
+				this.scope.getEndLine(),
+				this.scope.getColEnd());
 	}
 	
 	/**
@@ -209,33 +214,36 @@ public class SourceBuffer extends TextBuffer {
 		
 		return this.getIter(this.startCurrentLine).getLineNumber();
 	}
-
 	
 	/**
-	 * Sets the current PC line to be the given line number
-	 * @param currentLine The new PC line
+	 * Sets the current 'line' to the given range
+	 * @param startLine The line the current instruction starts on
+	 * @param startCol The offset (wrt. the start of the line) that the
+	 * 		instruction starts on
+	 * @param endLine The line the current instruction ends on
+	 * @param endCol The offset (wrt. the start of the line) that the
+	 * 		instruction ends on
 	 */
-	public void setCurrentLine(int currentLine) {
+	private void setCurrentLine(int startLine, int startCol, int endLine, int endCol){
+		System.out.println(startLine +","+ startCol +","+ endLine +","+ endCol);
 		
-//		// If not an executable line, no tag should be set
-//		if(!((SourceCodeLine) this.lines.get(currentLine)).isExecutable()){
-//			// Clear the tag if one already existed
-//			if(this.startCurrentLine != null && this.endCurrentLine != null){
-//				this.removeTag(this.currentLine, this.startCurrentLine, this.endCurrentLine);
-//				this.startCurrentLine = null;
-//				this.endCurrentLine = null;
-//			}
-//			
-//			return;
-//		}
+		this.startCurrentLine = this.createMark("currentLineStart", 
+				this.getIter(this.getLineIter(startLine-1).getOffset() + startCol),
+				true);
+		if(endCol != StackLevel.EOL){
+			this.endCurrentLine = this.createMark("currentLineEnd", 
+				this.getIter(this.getLineIter(endLine-1).getOffset() + endCol),
+				true);
+		}
+		else{
+			TextIter lineStart = this.getLineIter(endLine - 1);
+			this.endCurrentLine = this.createMark("currentLineEnd", 
+					this.getIter(lineStart.getOffset() + lineStart.getCharsInLine()),
+					true);
+		}
 		
-		// Line is executable
-		System.out.println(this.getIter(currentLine-1, 0));
-		this.startCurrentLine = this.createMark("currentLineStart", this.getIter(currentLine-1, 0), true);
-		int lineLength = this.getText(this.getIter(this.startCurrentLine), this.getEndIter(), true).indexOf("\n");
-		this.endCurrentLine = this.createMark("currentLineEnd", this.getIter(currentLine-1, lineLength), true);
-		
-		this.applyTag(this.currentLine, this.getIter(this.startCurrentLine), this.getIter(this.endCurrentLine));
+		this.applyTag(this.currentLine, 
+				this.getIter(this.startCurrentLine), this.getIter(this.endCurrentLine));
 	}
 	
 	/**
@@ -615,7 +623,6 @@ public class SourceBuffer extends TextBuffer {
 	}
 	
 	public boolean hasInlineCode(int lineNumber){
-		System.out.println("Checking for inline code");
 		return this.scope.getData().getLine(lineNumber+1).hasInlinedCode();
 	}
 	
@@ -626,6 +633,11 @@ public class SourceBuffer extends TextBuffer {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		
+		this.setCurrentLine(this.scope.getStartingLineNum(),
+				this.scope.getColStart(),
+				this.scope.getEndLine(),
+				this.scope.getColEnd());
 	}
 	
 	/*-------------------*

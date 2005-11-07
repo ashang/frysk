@@ -80,6 +80,9 @@ public class StackLevel {
 	public StackLevel(DOMSource data, int line, int endLine, int colStart, int colEnd){
 		this.lineNum = line;
 		this.endLine = endLine;
+		this.colStart = colStart;
+		this.colEnd = colEnd;
+		
 		this.depth = 0;
 		this.data = data;
 	}

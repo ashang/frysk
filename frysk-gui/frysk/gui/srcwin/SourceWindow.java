@@ -1026,7 +1026,6 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		StackLevel selected = (StackLevel) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
 		
 		this.view.load(selected);
-		this.view.setCurrentLine(selected.getStartingLineNum());
 		this.view.showAll();
 	}
 }

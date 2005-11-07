@@ -271,14 +271,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 	
 	/**
-	 * Sets the current line for the buffer
-	 * @param lineNum the current PC line
-	 */
-	public void setCurrentLine(int lineNum){
-		this.buf.setCurrentLine(lineNum);
-	}
-	
-	/**
 	 * Scrolls the TextView so that the given line is visible in the widget
 	 * @param lineNum The line to scroll to
 	 */

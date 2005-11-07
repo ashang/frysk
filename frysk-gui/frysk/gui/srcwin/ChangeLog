@@ -22,6 +22,16 @@
 	(getLine): Refactored to getStartingLine.
 	* SourceWindow.java: Refactored to reflect change of getLine to 
 	getStartingLine in StackLevel.
+	
+	* SourceBuffer.java (hasInlineCode): Removed debug output.
+	(init): Now automatically calls getCurrentLine.
+	(setScope): Ditto.
+	(setCurrentLine): Made private, now takes starting/ending
+	lines/columns.
+	* SourceViewWidget (setCurrentLine): Removed.
+	* SourceWindow (selectionChangedEvent): Removed call to setCurrentLine
+	in SourceBuffer.
+	* StackLevel.java (StackLevel): Now inializes column variables.
 
 2005-11-04  Rick Moseley  <rmoseley@redhat.com>
 	* dom/DOMTestDOMFrysk.java: added test for DOMImage.getFunction()
