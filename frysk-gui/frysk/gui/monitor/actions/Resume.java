@@ -50,9 +50,8 @@ public class Resume extends ProcAction {
 	}
 
 	public void execute(Proc proc) {
-		proc.observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);       
+		proc.observableAttached.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);       
 		proc.requestAttachedContinue();		
 	}
 
 }
-

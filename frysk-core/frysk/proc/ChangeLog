@@ -1,3 +1,11 @@
+2005-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Rename .observableAttachedContinue, and
+	.observableDetachedContinue to .observableAttached, and
+	.observableDetached.
+	* ProcState.java: Update.
+	* TestProcStates.java: Update.
+
 2005-11-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Delete .observableAttachedStop.

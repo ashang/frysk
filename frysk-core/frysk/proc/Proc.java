@@ -424,20 +424,20 @@ public abstract class Proc
     abstract Auxv[] sendrecAuxv ();
 
     /**
-     * The process has transitioned to the attached / continue state.
+     * The process has transitioned to the attached state.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableAttachedContinue = new ObservableXXX ();
+    public ObservableXXX observableAttached = new ObservableXXX ();
 
     /**
-     * The process has transitioned to the detached / continue state.
+     * The process has transitioned to the detached.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableDetachedContinue = new ObservableXXX ();
+    public ObservableXXX observableDetached = new ObservableXXX ();
 
     public String toString ()
     {

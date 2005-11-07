@@ -51,7 +51,7 @@ public class Attach extends ProcAction {
 
 	public void execute(Proc proc) {
 		//XXX refactor add someone else as an observer
-    	proc.observableAttachedContinue.addObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
+    	proc.observableAttached.addObserver(WindowManager.theManager.logWindow.attachedContinueObserver);
     	proc.requestAttachedContinue();
 	}
 

@@ -53,8 +53,7 @@ public class TestProcStates
     private void requestAttachedContinue (Proc proc)
     {
 	// Request that the child be attached; wait for it to ack.
-	proc.observableAttachedContinue.addObserver
-	    (new StopEventLoopObserver ());
+	proc.observableAttached.addObserver (new StopEventLoopObserver ());
 	proc.requestAttachedContinue ();
 	assertRunUntilStop ("attached continue");
 	// XXX: Prove that it is attached and continued?
@@ -66,8 +65,7 @@ public class TestProcStates
     private void requestDetachedContinue (Proc proc)
     {
 	// Request that the child be detached; wait for it to ack.
-	proc.observableDetachedContinue.addObserver
-	    (new StopEventLoopObserver ());
+	proc.observableDetached.addObserver (new StopEventLoopObserver ());
 	proc.requestDetachedContinue ();
 	assertRunUntilStop ("detached continue");
 	// XXX: Prove that it is detached and continued?

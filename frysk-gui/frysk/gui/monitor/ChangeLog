@@ -1,3 +1,10 @@
+2005-11-07  Andrew Cagney  <cagney@redhat.com>
+
+	* actions/Attach.java, actions/Resume.java, actions/Detach.java:
+	Replace Proc.observableAttachedContinue and
+	.observableDetachedContinue with .observableAttached and
+	.observableDetached.
+
 2005-11-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramViewPage.java (loadExistingMonitors): Fixed NPE. 

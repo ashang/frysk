@@ -244,7 +244,7 @@ abstract class ProcState
 		Task t = (Task) i.next ();
 		t.requestContinue ();
 	    }
-	    proc.observableAttachedContinue.notify (proc);
+	    proc.observableAttached.notify (proc);
 	    return running;
 	}
     }
@@ -271,7 +271,7 @@ abstract class ProcState
 	    if (attachedTasks.size () > 0)
 		return this;
 	    // All done, notify.
-	    proc.observableDetachedContinue.notify (proc);
+	    proc.observableDetached.notify (proc);
 	    return unattached;
 	}
     }
@@ -287,7 +287,7 @@ abstract class ProcState
 	{
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
-		proc.observableAttachedContinue.notify (proc);
+		proc.observableAttached.notify (proc);
 		return running;
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
@@ -331,7 +331,7 @@ abstract class ProcState
 	{
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
-		proc.observableAttachedContinue.notify (proc);
+		proc.observableAttached.notify (proc);
 		return running;
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
@@ -401,8 +401,8 @@ abstract class ProcState
 	    stoppedTasks.remove (task);
 	    if (stoppedTasks.size () > 0)
 		return this;
-	    // All continuped.
-	    proc.observableAttachedContinue.notify (proc);
+	    // All continuped.  XXX: Not a standard observer.
+	    proc.observableAttached.notify (proc);
 	    return running;
 	}
     }

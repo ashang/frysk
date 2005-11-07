@@ -51,7 +51,7 @@ public class Detach extends ProcAction {
 	}
 
 	public void execute(Proc proc) {
-        proc.observableDetachedContinue.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
+        proc.observableDetached.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
         proc.requestDetachedContinue();        
 	}
 	
