@@ -235,10 +235,8 @@ abstract class ProcState
 		Observation observation = (Observation) i.next ();
 		observation.add ();
 	    }
-	    if (stop) {
-		proc.observableAttachedStop.notify (proc);
+	    if (stop)
 		return stopped;
-	    }
 	    // .., let them go, and mark this as
 	    // attached/running.
 	    for (Iterator i = proc.taskPool.values().iterator ();

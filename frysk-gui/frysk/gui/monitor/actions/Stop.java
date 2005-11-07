@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.WindowManager;
+// import frysk.gui.monitor.WindowManager;
 import frysk.proc.Proc;
 
 public class Stop extends ProcAction {
@@ -49,10 +49,10 @@ public class Stop extends ProcAction {
 		this.toolTip = "Stop current process";
 	}
 
-	public void execute(Proc proc) {
-		proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
-		// proc.requestAttachedStop();
-		throw new RuntimeException ("XXX: mechanism for stopping a process/task.");
-	}
+    public void execute(Proc proc) {
+	    // proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
+	// proc.requestAttachedStop();
+	throw new RuntimeException ("XXX: mechanism for stopping a process/task.");
+    }
 }
 

@@ -354,9 +354,7 @@ public abstract class Proc
      * Notify of the addition of a task attached to this process.
      *
      * This event indicates the presence of the task, not that it is
-     * attached or detached.  When ever a task is attached a {@link
-     * Task.observableAttachedContinue} or {@link
-     * Task.observableAttachedStopped} event also occures.
+     * attached or detached.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
@@ -432,14 +430,6 @@ public abstract class Proc
      * Should more formally define the observable and the event.
      */
     public ObservableXXX observableAttachedContinue = new ObservableXXX ();
-
-    /**
-     * The process has transitioned to the attached / stop state.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableAttachedStop = new ObservableXXX ();
 
     /**
      * The process has transitioned to the detached / continue state.
