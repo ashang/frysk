@@ -97,6 +97,7 @@ public class ObserversMenu extends Menu{
 	public void popup(ProcData selected){
 		this.popup();
 		this.currentProc = selected;
+		this.currentProc.getClass();
 	}
 	
 	public void popup(TaskData selected){

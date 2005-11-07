@@ -74,7 +74,7 @@ public class ActionPool {
        
         /** } */
 
-        private EventLogger eventLog =  new EventLogger();
+       // private EventLogger eventLog =  new EventLogger();
 
         public ActionPool() {
                 this.processActions   = new LinkedList();

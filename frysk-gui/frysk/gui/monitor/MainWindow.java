@@ -61,6 +61,7 @@ public class MainWindow extends Window implements Saveable{
 			this.procViewPage = new ProcViewPage(glade);
 			ProgramViewPage programViewPage = new ProgramViewPage(glade);
 			procViewPage.getClass();
+			programViewPage.getClass();
 		} catch (IOException e){
 			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e);
 		}

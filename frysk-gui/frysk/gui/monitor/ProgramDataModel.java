@@ -44,9 +44,6 @@
  */
 package frysk.gui.monitor;
 
-import java.util.HashMap;
-import java.util.logging.Logger;
-
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnInt;
@@ -57,9 +54,6 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.pango.Weight;
-
-import frysk.gui.FryskGui;
-import frysk.gui.monitor.ProcDataModel.FilterType;
 
 /**
  * The data model that stores data about currently watched
@@ -82,18 +76,18 @@ public class ProgramDataModel {
 	private DataColumnObject programEventDataDC;
 	private DataColumnInt weightDC;
 	
-	private HashMap iterHash;
+	//private HashMap iterHash;
 	
-	private int currentFilter;
+	//private int currentFilter;
 	
 	/** stores filter argument if it is of type int */ 
-	private int intFilterArgument;
+	//private int intFilterArgument;
 	/** stores filter argument if it is of type String */
-	private String stringFilterArgument;
+	//private String stringFilterArgument;
 
-	private boolean filterON;
+	//private boolean filterON;
 			
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	//private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 
 	
 	public ProgramDataModel() {
@@ -118,9 +112,9 @@ public class ProgramDataModel {
 		this.filteredStore = new TreeModelFilter(this.listStore);
 		this.filteredStore.setVisibleColumn(visibleDC);
 		
-		this.iterHash = new HashMap();
-		this.currentFilter = FilterType.NONE;		
-		this.filterON = true;
+		//this.iterHash = new HashMap();
+		//this.currentFilter = FilterType.NONE;		
+		//this.filterON = true;
 		
 	}
 	

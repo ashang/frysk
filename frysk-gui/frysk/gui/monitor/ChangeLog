@@ -1,3 +1,10 @@
+2005-11-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* MainWindow.java (MainWindow): Fixed ecj 3.1 warning.
+	* ActionPool.java (ActionPool): Ditto.
+	* ObserversMenu.java (ObserversMenu): Ditto.
+	* ProgramDataModel.java (ProgramDataModel): Ditto.
+
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* actions/Attach.java, actions/Resume.java, actions/Detach.java:
