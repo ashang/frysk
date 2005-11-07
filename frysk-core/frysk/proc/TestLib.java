@@ -280,21 +280,28 @@ public class TestLib
 	    return Fork.daemon (stdin, stdout, stderr, argv);
 	}
 	/**
+	 * Create a daemon child running ARGV.
+	 */
+	DaemonChild (String[] argv)
+	{
+	    super (argv);
+	}
+	/**
 	 * Create a daemon process (one that's parent has exited
 	 * causing it to have process one as the parent).  Also create
 	 * CLONES tasks and possibly use POLLING.
 	 */
 	DaemonChild (int clones, boolean polling)
 	{
-	    super (new String[] {
-		       "./prog/kill/detach",
-		       Integer.toString (Pid.get ()),
-		       Integer.toString (ackSignal),
-		       "20",
-		       Integer.toString (clones),
-		       "0",
-		       polling ? "1" : "0"
-		   });
+	    this (new String[] {
+		      "./prog/kill/detach",
+		      Integer.toString (Pid.get ()),
+		      Integer.toString (ackSignal),
+		      "20",
+		      Integer.toString (clones),
+		      "0",
+		      polling ? "1" : "0"
+		  });
 	}
 	/**
 	 * Create a daemon child process that includes CLONES

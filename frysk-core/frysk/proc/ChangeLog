@@ -1,5 +1,8 @@
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: For DaemonChild, add a constructor that starts its
+	argument as the program.
+
 	* LinuxProc.java: Delete unused .auxv.
 
 	* TestTaskAttachedObserver.java: Add .attachDetach and
