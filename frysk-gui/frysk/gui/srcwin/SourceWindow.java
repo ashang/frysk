@@ -203,14 +203,14 @@ public class SourceWindow implements ButtonListener, EntryListener,
 			DOMFrysk dom, StackLevel stack) {
 		for(int i = 0; i < gladePaths.length; i++){
 			try{
-				this.glade = new LibGlade(gladePaths[i]+SourceWindow.GLADE_FILE, this);
+				this.glade = new LibGlade(gladePaths[i]+"/"+SourceWindow.GLADE_FILE, this);
 				this.gladePath = gladePaths[i];
 			}
 			catch (Exception e){
 				// If we don't find the glade file, continue looking
-				this.glade = null;
 				continue;
 			}
+			
 			// If we've found it, break
 			break;
 		}
@@ -218,6 +218,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		// If we don't have a glade file by this point, bail
 		if(glade == null){
 			System.err.println("Could not file source window glade file in path "+gladePath +"! Exiting.");
+			// TODO: don't kill the whole app when the source window dies!
 			System.exit(1);
 		}
 

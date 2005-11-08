@@ -1,5 +1,8 @@
 2005-11-08  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java: Now correctly adds "/" inbetween glade dir and
+	file name.
+
 	* SourceViewWidget.java: Removed excess import.
 	
 	* testfiles/test3.cpp: Added a #define.
