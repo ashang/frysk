@@ -1,3 +1,83 @@
+2005-11-08
+
+Beta release.  Doing 'sudo make install' from this directory will build the
+stripchart widget, the Java wrapper for the widget, and install the lot in
+the appropriate places in /opt/frysk.
+
+If you (cd test/wrapper && make) you can see the widget working under a Java
+wrapper.  That's a bit of a limited test because I don't know how to do the 
+equivalent of setitimer() in Java--you people who know Java are welcome to 
+add that for a better show.
+
+If you (cd test/widget && make && ./tstripchart) you can see the widget 
+running natively and making better use of the capabilities than the wrapper
+test does.
+
+.../test/wrapper/StripchartTest.java is an example of how to use the 
+stripchart widdget under it's Java wrapper:
+
+
+area = new Stripchart();		// create a stripchart
+
+area.resize (500, 150);			// sets the size (height, width)
+					/// default: 300, 60
+
+area.setEventTitle(1, "Knife");		// sets the labels for event types
+					// at the moment, it's hard-coded
+					// to three types which default
+					// to fork, exec, and terminate
+					// (i'll make that open-ended in
+					// the next version.)
+					// the parms for setEventTitle 
+					// are the event type enum (1 =
+					// fork, 2 = exec, 3 = term, but 
+					// i don't think Java supports
+					// enums so you just have to use
+					// the numbers) and a label.
+					// default: "Fork", "Exec",
+					// and "Term"
+					
+area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
+					// sets the color of the event
+					// first arg is the event enum as
+					// above, then red, green, and blue
+					// values in the range of 0 - 65535
+
+area.setUpdate (1111);			// the historam bin width in 
+					// milliseconds.  this is also the
+					// update interval, but i guess i 
+					// separate these two if anyone wants
+					// me to.  no default: if you don't
+					// set this, it's like leaving the
+					// widget turned off.
+
+area.setRange (60000);			// the screen width in milliseconds
+					// no default, but i should do
+					// something about that: if you don't 
+					// set it, the widget will probably 
+					// blow up.
+
+area.appendEvent (2);			// this is how you get events recorded
+area.appendEvent (1);			// the arg is the event enum and all
+					// the events that happen in any
+					// particular interval are dumped into
+					// a timestamped bucket.  if anyone
+					// wants it, i could provide a version
+					// where the user provides a timestamp
+					// and i'll stuff the event into the 
+					// right bucket.
+					// in theory, appendEvents() are 
+					// separated in realtime, but thats
+					// what i don't know how to do in
+					// java.  see catch_sigalrm() in
+					// test/widget/tstripchart.c for an
+					// example of something that pops
+					// out a random event every once in
+					// a while.
+
+
+
+
 2005-Oct-21
 
 This is a test.  This is /only/ a test.
