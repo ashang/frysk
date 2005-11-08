@@ -898,7 +898,7 @@ public class TestLib
  	public void syscallEvent (int pid, int syscallType) { }
  	public void stopped (int pid, int signal) { }
  	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { }
-	public void disappeared (int pid) { }
+	public void disappeared (int pid, Throwable w) { }
     }
 
     class FailWaitObserver
@@ -916,7 +916,7 @@ public class TestLib
  	public void syscallEvent (int pid, int syscallType) { fail (message); }
  	public void stopped (int pid, int signal) { fail (message); }
  	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { fail (message); }
-	public void disappeared (int pid) { fail (message); }
+	public void disappeared (int pid, Throwable w) { fail (message); }
     }
 
     /**
@@ -1086,7 +1086,7 @@ public class TestLib
 						int value, boolean coreDumped)
 			{
 			}
-			public void disappeared (int pid)
+			public void disappeared (int pid, Throwable w)
 			{
 			    detach (pid);
 			}

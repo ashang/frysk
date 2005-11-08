@@ -91,7 +91,7 @@ public class LinuxTask
 		Ptrace.cont (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    performZombied ();
+	    performDisappeared (e);
 	}
     }
     protected void sendStepInstruction (int sig)
@@ -100,7 +100,7 @@ public class LinuxTask
 	    Ptrace.singleStep (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    performZombied ();
+	    performDisappeared (e);
 	}
     }
     protected void sendStop ()
@@ -122,7 +122,7 @@ public class LinuxTask
 	    Ptrace.setOptions (getTid (), options);
 	}
 	catch (Errno.Esrch e) {
-	    performZombied ();
+	    performDisappeared (e);
 	}
     }
     protected void sendAttach ()
@@ -131,7 +131,7 @@ public class LinuxTask
 	    Ptrace.attach (getTid ());
 	}
 	catch (Errno.Esrch e) {
-	    performZombied ();
+	    performDisappeared (e);
 	}
     }
     protected void sendDetach (int sig)

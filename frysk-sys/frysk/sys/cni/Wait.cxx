@@ -96,7 +96,7 @@ processStatus (int pid, int status,
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
 	// to a KILL -9).  Notify observer.
-	observer->disappeared (pid);
+	observer->disappeared (pid, err);
       }
       break;
     case PTRACE_EVENT_FORK:
@@ -109,7 +109,7 @@ processStatus (int pid, int status,
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
 	// to a KILL -9).  Notify observer.
-	observer->disappeared (pid);
+	observer->disappeared (pid, err);
       }
       break;
     case PTRACE_EVENT_EXIT:
@@ -132,7 +132,7 @@ processStatus (int pid, int status,
 	// The PID disappeared after the WAIT message was created but
 	// before the getEventMsg could be extracted (most likely due
 	// to a KILL -9).  Notify observer.
-	observer->disappeared (pid);
+	observer->disappeared (pid, err);
       }
       break;
     case PTRACE_EVENT_EXEC:

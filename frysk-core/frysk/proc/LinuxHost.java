@@ -253,10 +253,10 @@ public class LinuxHost
 		    Task task = get (new TaskId (pid));
 		    task.performExeced ();
 		}
-		public void disappeared (int pid)
+		public void disappeared (int pid, Throwable w)
 		{
 		    Task task = get (new TaskId (pid));
-		    task.performZombied ();
+		    task.performDisappeared (w);
 		}
 		public void syscallEvent (int pid, int syscallType)
 		{

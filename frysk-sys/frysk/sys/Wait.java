@@ -102,7 +102,7 @@ public final class Wait
 	 * Received an event for PID but then that, by the time its
 	 * status was checked, the process had vanished.
 	 */
-	void disappeared (int pid);
+	void disappeared (int pid, Throwable w);
     }
     /**
      * Wait for any process or task event.  If there is no outstanding

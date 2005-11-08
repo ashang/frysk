@@ -371,15 +371,17 @@ abstract public class Task
     }
 
     /**
-     * (internal) The task as turned into a zombie (it was killed).
+     * (internal) The task has disappeared (due to an exit or some
+     * other error operation).
      */
-    void performZombied ()
+    void performDisappeared (final Throwable arg)
     {
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
+		Throwable w = arg;
 		public void execute ()
 		{
-		    state = state.processPerformZombied (Task.this);
+		    state = state.processPerformDisappeared (Task.this, w);
 		}
 	    });
     }

@@ -1,3 +1,8 @@
+2005-11-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Add Throwable argument to .disappeared.
+	* cni/Wait.cxx (processStatus): Update.
+
 2005-11-07  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* Wait.java (syscallEvent): Add new syscall event type parameter.

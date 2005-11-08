@@ -101,7 +101,7 @@ class TaskState
     {
 	throw unhandled (task, "PerformExeced");
     }
-    TaskState processPerformZombied (Task task)
+    TaskState processPerformDisappeared (Task task, Throwable w)
     {
 	throw unhandled (task, "PerformZombied");
     }
@@ -200,7 +200,7 @@ class TaskState
 		task.proc.performTaskAttachCompleted (task);
 		return attached;
 	    }
-    	    TaskState processPerformZombied (Task task)
+    	    TaskState processPerformDisappeared (Task task, Throwable w)
     	    {
 		// Outch, the task disappeared before the attach
 		// reached it, just abandon this one (but ack the
@@ -357,7 +357,7 @@ class TaskState
 		    return running;
 		}
 	    }
-    	    TaskState processPerformZombied (Task task)
+    	    TaskState processPerformDisappeared (Task task, Throwable w)
     	    {
 		return zombied;
     	    }
@@ -573,7 +573,7 @@ class TaskState
 // 		    task.sendContinue (0);
 		return zombied;
 	    }
-    	    TaskState processPerformZombied (Task task)
+    	    TaskState processPerformDisappeared (Task task, Throwable w)
     	    {
 		return zombied;
     	    }

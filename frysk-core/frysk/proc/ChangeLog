@@ -1,5 +1,12 @@
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Replace .performZombied with .performDisappeared.
+	Update instances of Wait.Observer interface to match changes to
+	disappeared method.
+	* TestLib.java: Ditto.
+	* LinuxTask.java: Ditto.
+	* LinuxHost.java: Ditto..
+
 	* TestAttachCloningThreads.java: Delete.
 
 2005-11-07  Jeff Johnston  <jjohnstn@redhat.com>
