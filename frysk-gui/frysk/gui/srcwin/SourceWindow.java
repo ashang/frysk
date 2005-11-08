@@ -61,7 +61,6 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.Gtk;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.IconSet;
@@ -99,10 +98,12 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Messages;
 import frysk.gui.srcwin.dom.DOMFrysk;
+import frysk.gui.srcwin.dom.DOMLine;
+import frysk.proc.Task;
 
 //import frysk.Config;
 
-public class SourceWindow implements ButtonListener, EntryListener, 
+public class SourceWindow extends Window implements ButtonListener, EntryListener, 
 									ComboBoxListener, TreeSelectionListener{
 	/*
 	 * GLADE CONSTANTS
@@ -191,6 +192,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	private Action stackBottom;
 	
 	private DOMFrysk dom;
+	private Task myTask;
 	private StackLevel stack;
 	
 	// Data Columns for the stack browser
@@ -199,29 +201,11 @@ public class SourceWindow implements ButtonListener, EntryListener,
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 	
-	public SourceWindow(String[] gladePaths, String[] imagePaths,
+	public SourceWindow(LibGlade glade, String[] imagePaths,
 			DOMFrysk dom, StackLevel stack) {
-		for(int i = 0; i < gladePaths.length; i++){
-			try{
-				this.glade = new LibGlade(gladePaths[i]+"/"+SourceWindow.GLADE_FILE, this);
-				this.gladePath = gladePaths[i];
-			}
-			catch (Exception e){
-				// If we don't find the glade file, continue looking
-				continue;
-			}
-			
-			// If we've found it, break
-			break;
-		}
-		
-		// If we don't have a glade file by this point, bail
-		if(glade == null){
-			System.err.println("Could not file source window glade file in path "+gladePath +"! Exiting.");
-			// TODO: don't kill the whole app when the source window dies!
-			System.exit(1);
-		}
+		super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
+		this.glade = glade;
 		this.dom = dom;
 		this.dom.toString();
 		this.stack = stack;
@@ -335,7 +319,8 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		while(top != null){
 			iter = listModel.appendRow();
 			
-			if(top.getData().getLine(top.getStartingLineNum()).hasInlinedCode())
+			DOMLine line = top.getData().getLine(top.getStartingLineNum());
+			if(line != null && top.getData().getLine(top.getStartingLineNum()).hasInlinedCode())
 				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getData().getFileName()+"  (i)");
 			else
 				listModel.setValue(iter, (DataColumnString) dataColumns[0], top.getData().getFileName());
@@ -421,7 +406,7 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		this.close.setAccelPath("<sourceWin>/File/Close");
 		this.close.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
-				Gtk.mainQuit();
+				SourceWindow.this.glade.getWidget(SOURCE_WINDOW).destroy();
 			}
 		});
 		AccelMap.changeEntry("<sourceWin>/File/Close", KeyValue.x, ModifierType.CONTROL_MASK, true);
@@ -1028,5 +1013,13 @@ public class SourceWindow implements ButtonListener, EntryListener,
 		
 		this.view.load(selected);
 		this.view.showAll();
+	}
+
+	public Task getMyTask() {
+		return myTask;
+	}
+
+	public void setMyTask(Task myTask) {
+		this.myTask = myTask;
 	}
 }

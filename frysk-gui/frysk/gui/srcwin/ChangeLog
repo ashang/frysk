@@ -1,5 +1,15 @@
 2005-11-08  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java: Now inherits from Window.
+	(getMyTask): Added.
+	(setMyTask): Ditto.
+	(SourceWindow): Now takes glade object instead of array of paths.
+	(populateStackBrowser): Checks to make sure line isn't null before
+	checking for inline code.
+	* SourceWindowFactory.java (createSourceWindow): No longer recreates
+	window if it already exists, as well as creating the LibGlade object
+	needed by the SourceWindow.
+
 	* SourceWindow.java: Now correctly adds "/" inbetween glade dir and
 	file name.
 

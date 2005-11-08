@@ -1,3 +1,8 @@
+2005-11-08  Adam Jocksch  <ajockshc@redhat.com>
+
+	* test/SourceWinRunner.java: Commented out all functionality, this 
+	class will be removed soon.
+
 2005-11-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* test/SourceWinRunner.java (mainSourceWin): Now adds inline instances.

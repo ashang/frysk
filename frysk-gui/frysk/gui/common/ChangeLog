@@ -1,3 +1,7 @@
+2005-11-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Monitor.java: Now looks for bundle in build and install situations.
+
 2005-10-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* dialogs/WarnDialog.java (WarnDialog): Added overloaded
