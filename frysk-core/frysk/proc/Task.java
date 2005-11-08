@@ -471,13 +471,16 @@ abstract public class Task
 
 
     /**
-     * Request that the observer be added to this task; once the add
-     * has been processed, acknowledge using the Cloned.ack method.
+     * Request that the observer be added to this task.  Pass the
+     * request up to the Proc which may need to first perform an
+     * attach.  Once attached, the Proc will pass the request back
+     * down to .performAddObservation.
      */
     private void requestAddObserver (TaskObservable observable,
 				     TaskObserver observer)
     {
-	proc.performAddObservation (new Observation (observable, observer));
+	proc.performAddObservation (new TaskObservation (this, observable,
+							 observer));
     }
     /**
      * Delete TaskObserver from this tasks set of observers; also
@@ -486,7 +489,23 @@ abstract public class Task
     private void requestDeleteObserver (final TaskObservable observable,
 					final TaskObserver observer)
     {
-	proc.performDeleteObservation (new Observation (observable, observer));
+	proc.performDeleteObservation (new TaskObservation (this, observable,
+							    observer));
+    }
+    /**
+     * (Internal) Add the specified observation to the observer.
+     */
+    void performAddObservation (final Observation observationArg)
+    {
+	Manager.eventLoop.add (new TaskEvent ()
+	    {
+		Observation observation = observationArg;
+		public void execute ()
+		{
+		    state = state.processPerformAddObservation (Task.this,
+								observation);
+		}
+	    });
     }
 
     /**

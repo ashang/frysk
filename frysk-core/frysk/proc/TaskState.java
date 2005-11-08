@@ -149,6 +149,11 @@ class TaskState
     {
 	throw unhandled (task, "RequestUnblock");
     }
+    TaskState processPerformAddObservation (Task task,
+					    Observation observation)
+    {
+	throw unhandled (task, "PerformAddObservation");
+    }
 
     /**
      * An attached task was destroyed, notify observers and, when the
@@ -235,6 +240,12 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
+	    TaskState processPerformAddObservation (Task task,
+						    Observation observation)
+	    {
+		observation.add ();
+		return attached;
+	    }
 	};
 
     /**
@@ -276,6 +287,12 @@ class TaskState
 		task.proc.remove (task);
 		processAttachedTerminated (task, signal, value);
 		return destroyed;
+	    }
+	    TaskState processPerformAddObservation (Task task,
+						    Observation observation)
+	    {
+		observation.add ();
+		return startRunning;
 	    }
 	};
 
@@ -396,6 +413,12 @@ class TaskState
 		    return blockedContinue;
 		else
 		    task.sendContinue (0);
+		return running;
+	    }
+	    TaskState processPerformAddObservation (Task task,
+						    Observation observation)
+	    {
+		observation.add ();
 		return running;
 	    }
 	};
@@ -551,6 +574,12 @@ class TaskState
 	    {
 		task.sendContinue (0);
 		return running;
+	    }
+	    TaskState processPerformAddObservation (Task task,
+						    Observation observation)
+	    {
+		observation.add ();
+		return unpaused;
 	    }
 	};
 

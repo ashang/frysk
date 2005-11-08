@@ -233,7 +233,7 @@ abstract class ProcState
 	    for (Iterator i = proc.observations.iterator ();
 		 i.hasNext ();) {
 		Observation observation = (Observation) i.next ();
-		observation.add ();
+		observation.requestAdd ();
 	    }
 	    if (stop)
 		return stopped;
@@ -304,7 +304,7 @@ abstract class ProcState
 						    Observation observation)
 	    {
 		proc.observations.add (observation);
-		observation.add ();
+		observation.requestAdd ();
 		return running;
 	    }
 	    ProcState processPerformDeleteObservation (Proc proc,
@@ -348,7 +348,7 @@ abstract class ProcState
 						    Observation observation)
 	    {
 		proc.observations.add (observation);
-		observation.add ();
+		observation.requestAdd ();
 		return startRunning;
 	    }
 	};

@@ -1,5 +1,11 @@
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObservation.java: New.
+	* TaskState.java: Add .processPerformAddObservation.
+	* Task.java: Add .performAddObservation.
+	* ProcState.java: Use Observation.requestAdd
+	* Observation.java: Add abstract method .requestAdd.
+
 	* Task.java: Replace .performZombied with .performDisappeared.
 	Update instances of Wait.Observer interface to match changes to
 	disappeared method.
