@@ -1,3 +1,7 @@
+2005-11-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* testfiles/test3.cpp: Added a #define.
+
 2005-11-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (hasInlineCode): Added debugging output.
