@@ -1,5 +1,10 @@
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add Child.findTaskUsingRefresh, and .getPid.  Add
+	.isChildOf, and isDescendantOf.  Delete .sigKill.
+	* TestTaskAttachedObserver.java: Update.
+	* TestRefresh.java: Update.
+
 	* TaskObservation.java: New.
 	* TaskState.java: Add .processPerformAddObservation.
 	* Task.java: Add .performAddObservation.

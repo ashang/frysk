@@ -61,13 +61,15 @@ public class TestRefresh
 	ChildTracker (Child child)
 	{
 	    this.child = child;
-	    added = new PidCounter (child.pid, Manager.host.observableProcAdded);
-	    removed = new PidCounter (child.pid, Manager.host.observableProcRemoved);
+	    added = new PidCounter (child.getPid (),
+				    Manager.host.observableProcAdded);
+	    removed = new PidCounter (child.getPid (),
+				      Manager.host.observableProcRemoved);
 	}
 	Proc proc;
 	void verifyAdd (String reason, int tasks)
 	{
-	    proc = Manager.host.getProc (new ProcId (child.pid));
+	    proc = Manager.host.getProc (new ProcId (child.getPid ()));
 	    assertNotNull (reason + ", child in process pool;",
 			   proc);
 	    assertEquals (reason + ", child's task count",
@@ -82,7 +84,7 @@ public class TestRefresh
 	void verifyRemove (String reason)
 	{
 	    assertNull (reason + ", child removed from process pool",
-			Manager.host.getProc (new ProcId (child.pid)));
+			Manager.host.getProc (new ProcId (child.getPid ())));
 	    assertEquals (reason + ", child discovered once",
 			  1, added.count);
 	    assertEquals (reason + ", child removed once",

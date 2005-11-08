@@ -85,11 +85,9 @@ public class TestLib
     }
 
     /**
-     * Is the Proc an immediate child of this Proc?  Do not use
-     * host.getSelf() as that, in certain situtations, can lead to
-     * infinite recursion.
+     * Is the Proc an immediate child of PID?
      */
-    boolean isChildOfMine (Proc proc)
+    public boolean isChildOf (int pid, Proc proc)
     {
 	// Process 1 has no parent so can't be a child of mine.
 	if (proc.getPid () == 1)
@@ -97,8 +95,37 @@ public class TestLib
 	// If the parent's pid matches this processes pid, assume that
 	// is sufficient.  Would need a very very long running system
 	// for that to not be the case.
-	if (proc.parent.getPid () == Pid.get ())
+	if (proc.parent.getPid () == pid)
 	    return true;
+	return false;
+    }
+    /**
+     * Is the Proc an immediate child of this Proc?  Do not use
+     * host.getSelf() as that, in certain situtations, can lead to
+     * infinite recursion.
+     */
+    public boolean isChildOfMine (Proc proc)
+    {
+	return isChildOf (Pid.get (), proc);
+    }
+
+    /**
+     * Is Proc a descendant of PID?
+     */
+    public boolean isDescendantOf (int pid, Proc proc)
+    {
+	// Climb the process tree looking for this process.
+	while (proc.getPid () > 1) {
+	    // The parent's pid match this process, assume that is
+	    // sufficient.  Would need a very very long running system
+	    // for that to not be the case.
+	    if (proc.parent.getPid () == pid)
+		return true;
+	    proc = proc.parent;
+	}
+	// Process 1 has no parent so can't be a child of mine.  Do
+	// this first as no parent implies .parent==null and that
+	// would match a later check.
 	return false;
     }
 
@@ -107,21 +134,9 @@ public class TestLib
      * host.getSelf() as that, in certain situtations, can lead to
      * infinite recursion.
      */
-    boolean isDescendantOfMine (Proc proc)
+    public boolean isDescendantOfMine (Proc proc)
     {
-	// Climb the process tree looking for this process.
-	while (proc.getPid () > 1) {
-	    // The parent's pid match this process, assume that is
-	    // sufficient.  Would need a very very long running system
-	    // for that to not be the case.
-	    if (proc.parent.getPid () == Pid.get ())
-		return true;
-	    proc = proc.parent;
-	}
-	// Process 1 has no parent so can't be a child of mine.  Do
-	// this first as no parent implies .parent==null and that
-	// would match a later check.
-	return false;
+	return isDescendantOf (Pid.get (), proc);
     }
 
     /**
@@ -138,7 +153,21 @@ public class TestLib
 	// this process the signal is masked and Linux appears to
 	// propogate the mask all the way down to the exec'ed child.
 	protected final static int ackSignal = Sig.HUP;
-	int pid;
+	private int pid;
+	/**
+	 * Return the ProcessID of the child.
+	 */
+	public int getPid ()
+	{
+	    return pid;
+	}
+	/**
+	 * Send the child the sig.
+	 */
+	public void signal (int sig)
+	{
+	    Signal.tkill (pid, sig);
+	}
 	/**
 	 * Set up a handler that stops the event loop once the child
 	 * is up and running (the child signals this using ackSignal).
@@ -193,7 +222,7 @@ public class TestLib
 	boolean kill ()
 	{
 	    try {
-		Signal.tkill (pid, Sig.KILL);
+		signal (Sig.KILL);
 		return true;
 	    }
 	    catch (Errno.Esrch e) {
@@ -226,6 +255,26 @@ public class TestLib
 	    return findProcUsingRefresh (false);
 	}
 	private Proc proc;
+	/**
+	 * Find the child's Proc's main or non-main Task, polling
+	 * /proc if necessary.
+	 */
+	public Task findTaskUsingRefresh (boolean mainTask)
+	{
+	    Proc proc = findProcUsingRefresh (true);
+	    for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
+		Task task = (Task) i.next ();
+		if (task.getTid () == proc.getPid ()) {
+		    if (mainTask)
+			return task;
+		}
+		else {
+		    if (!mainTask)
+			return task;
+		}
+	    }
+	    return null;
+	}
 	/**
 	 * Request that the event-loop be stopped should this process
 	 * ever be destroyed.
@@ -329,7 +378,7 @@ public class TestLib
 	{
 	    setupAckHandler ();
 	    // Sig.USR2 indicates add a thread.
-	    Signal.tkill (pid, Sig.USR1);
+	    signal (Sig.USR1);
 	    waitForAck ();
 	}
 	/**
@@ -341,7 +390,7 @@ public class TestLib
 	{
 	    setupAckHandler ();
 	    // Sig.USR2 indicates drop a thread.
-	    Signal.tkill (pid, Sig.USR2);
+	    signal (Sig.USR2);
 	    waitForAck ();
 	}
     }
@@ -379,7 +428,8 @@ public class TestLib
 	    kill ();
 	    try {
 		while (true) {
-		    Wait.waitAll (pid, new FailWaitObserver ("killing child")
+		    Wait.waitAll (getPid (),
+				  new FailWaitObserver ("killing child")
 			{
 			    public void terminated (int pid, boolean signal,
 						    int value,
@@ -484,7 +534,7 @@ public class TestLib
 	void addChild ()
 	{
 	    setupAckHandler ();
-	    Signal.tkill (pid, Sig.USR1);
+	    signal (Sig.USR1);
 	    waitForAck ();
 	    hasChild = true;
 	}
@@ -496,7 +546,7 @@ public class TestLib
 	{
 	    assertTrue ("Zombie has a child", hasChild);
 	    setupAckHandler ();
-	    Signal.tkill (pid, Sig.USR2);
+	    signal (Sig.USR2);
 	    waitForAck ();
 	    hasChild = false;
 	}
@@ -508,7 +558,7 @@ public class TestLib
 	{
 	    assertTrue ("Zombie has a child", hasChild);
 	    setupAckHandler ();
-	    Signal.tkill (pid, Sig.KILL);
+	    signal (Sig.KILL);
 	    waitForAck ();
 	}
     }
@@ -599,7 +649,7 @@ public class TestLib
     }
 
     /**
-     * A TaskObserver base class that, in addition, tracks decendant
+     * A TaskObserver base class that, in addition, tracks descendant
      * processes and tasks as they are added.  The sub-class is
      * notified of each new Task as it arrives.
      */
@@ -917,14 +967,6 @@ public class TestLib
  	public void stopped (int pid, int signal) { fail (message); }
  	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { fail (message); }
 	public void disappeared (int pid, Throwable w) { fail (message); }
-    }
-
-    /**
-     * Send a host SIGKILL to the specified task;
-     */
-    void sigKill (Task task)
-    {
-	Signal.tkill (task.id.id, Sig.KILL);
     }
 
     /**

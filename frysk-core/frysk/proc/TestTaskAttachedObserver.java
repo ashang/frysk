@@ -165,8 +165,8 @@ public class TestTaskAttachedObserver
     {
 	// Create a detached child.
 	Child child = new DaemonChild ();
-	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
-	Task task = (Task) proc.getTasks ().getFirst ();
+	Task task = child.findTaskUsingRefresh (true); // main
+	assertNotNull ("main task", task);
 	attachDetach (new Task[] { task });
     }
 
@@ -178,16 +178,8 @@ public class TestTaskAttachedObserver
     {
 	// Create a detached child.
 	Child child = new DaemonChild (2);
-	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
-	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
-	Task task = null;
-	for (int i = 0; i < tasks.length; i++) {
-	    if (tasks[i].getTid () != proc.getPid ()) {
-		task = tasks[i];
-		break;
-	    }
-	}
-	assertNotNull ("found the non-main task", task);
+	Task task = child.findTaskUsingRefresh (false); // non-main
+	assertNotNull ("non-main task", task);
 	attachDetach (new Task[] { task });
     }
 
@@ -212,8 +204,8 @@ public class TestTaskAttachedObserver
     {
 	// Create a detached child.
 	Child child = new DaemonChild ();
-	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
-	Task task = (Task) proc.getTasks ().getFirst ();
+	Task task = child.findTaskUsingRefresh (true);
+	assertNotNull ("main task", task);
  	Task[] tasks = new Task[] { task };
 
 	// Attach to it.
@@ -225,7 +217,7 @@ public class TestTaskAttachedObserver
 	// detaching the task.  This results in the task in the
 	// detaching state getting the terminating event instead of
 	// the more typical stopped.
-	Signal.kill (proc.getPid (), Sig.KILL);
+	Signal.kill (child.getPid (), Sig.KILL);
 
 	detach (tasks, attachedObserver);
     }
