@@ -39,75 +39,18 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.LinkedList;
-import java.util.Observable;
+import frysk.gui.srcwin.SourceWindowFactory;
+import frysk.proc.Task;
 
-/**
- * Only once instance.
- * Keeps a list of available actions.
- * Provides an interface for instanciating those actions.
- * */
-public class ActionManager extends Observable {
+public class ShowSourceWin extends TaskAction {
 	
-	public static ActionManager theManager = new ActionManager();
-	
-	private LinkedList procActions;
-	private LinkedList taskActions;
-	
-	public ActionManager(){
-		this.procActions = new LinkedList();
-		this.taskActions = new LinkedList();
-		this.initActionList();
-	}
-	
-	/**
-	 * Instanciates each one of the static task observers
-	 * and tadds it to the list.
-	 * */
-	private void initActionList() {
-//		this.addProcActionPrototype(new Attach());
-//		this.addProcActionPrototype(new Detach());
-		this.addProcActionPrototype(new Stop());
-		this.addProcActionPrototype(new Resume());
-		this.addProcActionPrototype(new PrintProc());
-		
-		this.addTaskActionPrototype(new ShowSourceWin());
-		this.addTaskActionPrototype(new PrintTask());
+	public ShowSourceWin() {
+		this.name = "Source";
+		this.toolTip = "Show a source window.";
 	}
 
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instanciated.
-	 * */
-	public Action getObserver(Action prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-		//return prototype.getCopy();
-	}
-	
-	public LinkedList getProcActions(){
-		return this.procActions;
-	}
-
-	public LinkedList getTaskActions(){
-		return this.taskActions;
-	}
-
-	/**
-	 * add an observer to the list of available observers.
-	 * */
-	public void addProcActionPrototype(Action observer){
-		this.procActions.add(observer);
-		this.hasChanged();
-		this.notifyObservers();
-	}
-	
-	public void addTaskActionPrototype(TaskAction observer){
-		this.taskActions.add(observer);
-		this.hasChanged();
-		this.notifyObservers();
+	public void execute(Task task) {
+		SourceWindowFactory.createSourceWindow(task);
 	}
 	
 }

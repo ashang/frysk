@@ -1,3 +1,10 @@
+2005-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* actions/ShowSourceWin.java: new file. An action that shows the
+	a source window.
+	* actions/ActionManager.java: Added a prototype of ShowSourceWin
+	action.
+
 2005-11-07  Sami Wagiaalla  <swagiaal@redhat.com>	
 
 	* actions/ActionManager.java: removed Attach/Detach actions from
