@@ -1,5 +1,7 @@
 2005-11-08  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceViewWidget.java: Removed excess import.
+	
 	* testfiles/test3.cpp: Added a #define.
 
 2005-11-07  Adam Jocksch  <ajocksch@redhat.com>
