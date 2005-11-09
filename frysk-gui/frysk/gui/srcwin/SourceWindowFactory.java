@@ -170,9 +170,10 @@ public class SourceWindowFactory {
 				stack3.addNextScope(stack4);
 				
 				LibGlade glade = null;
-				
+                
                 // Look for the right path to load the glade file from
-				for(int i = 0; i < gladePaths.length; i++){
+                int i = 0;
+				for(; i < gladePaths.length; i++){
 					try{
 						glade = new LibGlade(gladePaths[i]+"/"+SourceWindow.GLADE_FILE, null);
 					}
@@ -193,6 +194,7 @@ public class SourceWindowFactory {
 				
 				s = new SourceWindow(
 						 glade,
+                         gladePaths[i],
 						imagePaths,
 						dom, stack1);
 				s.setMyTask(task);

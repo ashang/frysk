@@ -1,5 +1,17 @@
 2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
 
+	* PreferenceWindow.java (PreferenceWindow): Fixed bug in finding glade file.
+	* dom/DOMTagTypes.java: Added FUNCTION_BODY as a tag type.
+	* SourceBuffer.java (createTags): Now looks for FUNCTION_BODY tag, puts
+	mark in buffer so we can jump to it.
+	(setScope): Clears function vector when new scope is loaded.
+	(addFunction): Adds FUNCTION_BODY tags into DOM.
+	* SourceWindow.java (SourceWindow): Now takes glade path in constructor
+	in order to pass it to the Preference Window.
+	(populateFunctionBox): Extracted out of constructor.
+	* SourceWindowFactory.java (createSourceWindow): Now passes glade path
+	to the SourceWindow constructor.
+
 	* SourceWindowFactory.java (createSourceWindow): Now marks proper lines
 	as executable.
 

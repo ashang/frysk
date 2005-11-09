@@ -201,11 +201,12 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 	
-	public SourceWindow(LibGlade glade, String[] imagePaths,
+	public SourceWindow(LibGlade glade, String gladePath, String[] imagePaths,
 			DOMFrysk dom, StackLevel stack) {
 		super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
-
+        
 		this.glade = glade;
+        this.gladePath = gladePath;
 		this.dom = dom;
 		this.dom.toString();
 		this.stack = stack;
@@ -238,10 +239,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		
 		this.populateStackBrowser(this.stack);
 		
-		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
-		for(int i = 0; i < funcs.size(); i++)
-			((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR)).appendText(((String) funcs.get(i)).split("_")[0]);
-		
+        this.populateFunctionBox();
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 
 		this.glade.getWidget(SOURCE_WINDOW).showAll();
@@ -1013,6 +1011,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		
 		this.view.load(selected);
 		this.view.showAll();
+        this.populateFunctionBox();
 	}
 
 	public Task getMyTask() {
@@ -1022,4 +1021,19 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	public void setMyTask(Task myTask) {
 		this.myTask = myTask;
 	}
+    
+    private void populateFunctionBox(){
+        ComboBoxEntry box = (ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR);
+        DataColumnString col = new DataColumnString();
+        ListStore newModel = new ListStore(new DataColumn[] {col});
+        Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
+        TreeIter iter = newModel.appendRow();
+        for(int i = 0; i < funcs.size(); i++){
+            newModel.setValue(iter, col, ((String) funcs.get(i)).split("_")[0]);
+            if (i != funcs.size() -1)
+                iter = newModel.appendRow();
+        }
+        
+        box.setModel(newModel);
+    }
 }

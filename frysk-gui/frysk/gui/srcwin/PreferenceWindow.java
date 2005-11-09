@@ -151,7 +151,7 @@ public class PreferenceWindow implements ButtonListener{
 	 */
 	public PreferenceWindow(Preferences myPrefs, String gladePath){
 		try {
-			this.glade = new LibGlade(gladePath+GLADE_FILE, this);
+			this.glade = new LibGlade(gladePath+"/"+GLADE_FILE, this);
 		} catch (Exception e){
 			e.printStackTrace();
 		}

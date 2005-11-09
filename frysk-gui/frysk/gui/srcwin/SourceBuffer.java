@@ -538,9 +538,14 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addFunction(String name, int offset, boolean declaration){
 		DOMLine line = this.scope.getData().getLine(this.getIter(offset).getLineNumber() + 1);
-		line.addTag(DOMTagTypes.FUNCTION,
+        if(!declaration)
+            line.addTag(DOMTagTypes.FUNCTION,
 				name,
 				this.getIter(offset).getLineOffset());
+        else
+            line.addTag(DOMTagTypes.FUNCTION_BODY, name,
+                    this.getIter(offset).getLineOffset());
+            
 	}
 	
 	/**
@@ -627,6 +632,7 @@ public class SourceBuffer extends TextBuffer {
 	}
 	
 	public void setScope(StackLevel scope){
+        this.functions = new Vector();
 		this.scope = scope;
 		try {
 			this.loadFile();
@@ -727,6 +733,15 @@ public class SourceBuffer extends TextBuffer {
 							this.getIter(lineOffset + tag.getStart()),
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
+                
+                else if(type.equals(DOMTagTypes.FUNCTION_BODY)){
+                    TextIter start = this.getIter(lineOffset + tag.getStart());
+                    TextIter end = this.getIter(lineOffset + tag.getStart() + tag.getLength());
+                    String text = this.getText(start, end, false);
+                    this.applyTag(FUNCTION_TAG, start, end);
+                    this.createMark(text+"_FUNC", start, true);
+                    this.functions.add(text+"_FUNC");
+                }
 				
 			} // end tags.hasNext()
 			
