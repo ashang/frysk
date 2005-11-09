@@ -10,6 +10,7 @@
 	* observers/TaskObserverRoot.java: New File.
 	* observers/TaskTerminatingObserver.java: Ditto.
 	* observers/TaskForkedObserver.java: Ditto.
+	Removed unused function.
 	* observers/TaskExecObserver.java: Ditto.
 	* observers/TaskCloneObserver.java: Ditto.
 	* observers/ObserverRoot.java: Removed bouncee. Added action list and
@@ -29,6 +30,7 @@
 	* StatusWidget.java: Changed to using Actions instead of Runnable.
 	* ObserversMenu.java: Changed cast to RootObserver to 
 	TaskRootObserver; sister class for ProcRootObserver soon to come.
+	Removed unused observer declaration.
 	* TaskData.java: ditto.
 	* GuiData.java: Removed add observer function.
 

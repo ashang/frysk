@@ -47,7 +47,6 @@ import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
-import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
 
@@ -79,7 +78,6 @@ public class ObserversMenu extends Menu{
 			
 			item.addListener(new MenuItemListener() {
 				public void menuItemEvent(MenuItemEvent arg0) {
-					TaskObserverRoot myObserver = ObserverManager.theManager.getTaskObserver(observer);
 					currentTask.add(observer);
 				}
 			});
