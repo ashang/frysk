@@ -46,15 +46,18 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.CellRendererToggle;
+import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Widget;
@@ -62,6 +65,8 @@ import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
+import org.gnu.gtk.event.TreeSelectionEvent;
+import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.event.TreeViewEvent;
@@ -84,6 +89,9 @@ public class ProgramViewPage extends Widget {
 	private TreeModelFilter programFilter;
 
 	private TreeView programTreeView;
+	
+	private ToolTips treeTip = new ToolTips();
+	
 	
 
 	public ProgramViewPage(final LibGlade glade) throws IOException {
@@ -160,6 +168,7 @@ public class ProgramViewPage extends Widget {
 		
 		this.programTreeView.setModel(programFilter);
 		this.programTreeView.setSearchDataColumn(programDataModel.getEventNameDC());
+		this.programTreeView.setHoverSelection(true);
 		this.programTreeView.addListener(new TreeViewListener(){
 
 			public void treeViewEvent(TreeViewEvent event) {
@@ -172,6 +181,44 @@ public class ProgramViewPage extends Widget {
 			       }
 				
 			}});
+	
+		this.programTreeView.getSelection().addListener(new TreeSelectionListener() {
+
+			public void selectionChangedEvent(TreeSelectionEvent event) {
+				TreePath[] selection = programTreeView.getSelection().getSelectedRows();
+				if (selection.length > 0)
+				{
+				   TreeIter item = programTreeView.getModel().getIter( selection[0].toString() );
+				   ProgramData tipData = (ProgramData) programTreeView.getModel().getValue( item, programDataModel.getObjectDataDC());
+				  
+				   String name = "* Name: " + tipData.getName() + "\n" + "* Executable: " + tipData.getExecutable() +
+				   "\n* Enabled: " + tipData.isEnabled() +"\n" + "* Watched Processes: ";
+				   Iterator i = tipData.getProcessList().iterator();
+				   while (i.hasNext())
+				   {
+					   name = name + ((String)i.next());
+					   if (i.hasNext())
+						   name = name +", ";
+					   
+				   }
+				   
+				   name = name +"\n* Observers: ";
+				   i = tipData.getObserverList().iterator();
+				   while (i.hasNext())
+				   {
+					   name = name + ((String)i.next());
+					   if (i.hasNext())
+						   name = name +", ";
+					   
+				   }
+				   
+				   treeTip.setTip(programTreeView, name, null);
+				}
+				   
+				}
+
+				
+			});
 		
 		TreeViewColumn enabledCol = new TreeViewColumn();
 		TreeViewColumn nameCol = new TreeViewColumn();

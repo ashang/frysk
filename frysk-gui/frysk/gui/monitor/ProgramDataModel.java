@@ -131,6 +131,9 @@ public class ProgramDataModel {
 		return this.colorDC;
 	}
 
+	public DataColumnObject getObjectDataDC() {
+		return this.programEventDataDC;
+	}
 	
 	public DataColumnInt getWeightDC() {
 		return this.weightDC;
