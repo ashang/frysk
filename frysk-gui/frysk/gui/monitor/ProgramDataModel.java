@@ -53,6 +53,7 @@ import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
+import org.gnu.gtk.TreePath;
 import org.gnu.pango.Weight;
 
 /**
@@ -152,6 +153,13 @@ public class ProgramDataModel {
 		
 	}
 	
+	public ProgramData interrogate(TreePath path)
+	{
+		TreeIter it = listStore.getIter(path.toString());
+		ProgramData value = (ProgramData) listStore.getValue(it,programEventDataDC);
+		return value;
+	}
+	
 	public void add(ProgramData data)
 	{
 		TreeIter it = null;
@@ -164,8 +172,8 @@ public class ProgramDataModel {
 	}
 	
 	public TreeModel getModel() {
-				return this.listStore;
-			}
+		return this.listStore;
+	}
 	
 		
 	

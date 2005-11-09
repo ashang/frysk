@@ -190,7 +190,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		// File Checks
 		if (programEntry.getText().length() <= 0)
-			return "You must give this montior a name";
+			return "You must give this monitor a name";
 		
 
 		// This is wierd. If I do getFilename()
@@ -457,6 +457,20 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	public boolean cancelLastClicked()
 	{
 		return this.cancelLastClicked;
+	}
+
+	/**
+	 * @param data
+	 */
+	public void populate(ProgramData data) {
+		
+		this.programEntry.setText(data.getName());
+		this.programOpenFileDialog.setFilename(data.getExecutable());
+
+	//	private FileChooserButton programOpenFileDialog;
+		//private TreeView programTreeView;
+	//	private TreeView programObseverListBox;
+		
 	}
 
 

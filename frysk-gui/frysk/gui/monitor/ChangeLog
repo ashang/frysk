@@ -1,3 +1,10 @@
+2005-11-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java (populate): Added.
+	* ProgramViewPage.java (loadExistingMonitors): Make sure
+	new object is added on each load.
+	* ProgramDataModel.java (interrogate): Added.
+	
 2005-11-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* actions/ShowSourceWin.java: new file. An action that shows the
@@ -24,6 +31,7 @@
 	* ObserversMenu.java (ObserversMenu): Ditto.
 	* ProgramDataModel.java (ProgramDataModel): Ditto.
 	(toggle): Added.
+
 	* ProgramViewPage: Added Toggle cell listener.
 
 2005-11-07  Andrew Cagney  <cagney@redhat.com>

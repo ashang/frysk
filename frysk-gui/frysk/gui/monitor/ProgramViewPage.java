@@ -64,6 +64,8 @@ import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
+import org.gnu.gtk.event.TreeViewEvent;
+import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.FryskGui;
 
@@ -121,11 +123,13 @@ public class ProgramViewPage extends Widget {
 		if (fMonitors == null)
 			return;
 		
-		ProgramData temp = new ProgramData();
+		
 		for (int i=0; i<fMonitors.length; i++)
 		{
+			ProgramData temp = new ProgramData();
 			temp.load(fMonitors[i].getAbsolutePath());
 			programDataModel.add(temp);
+			temp = null;
 		}
 		
 	
@@ -156,6 +160,18 @@ public class ProgramViewPage extends Widget {
 		
 		this.programTreeView.setModel(programFilter);
 		this.programTreeView.setSearchDataColumn(programDataModel.getEventNameDC());
+		this.programTreeView.addListener(new TreeViewListener(){
+
+			public void treeViewEvent(TreeViewEvent event) {
+				 if ( event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED ))
+			       {
+					 event.getTreePath();
+					 WindowManager.theManager.programAddWindow.populate(
+							 ProgramDataModel.theManager.interrogate(event.getTreePath()));
+					 WindowManager.theManager.programAddWindow.showAll();
+			       }
+				
+			}});
 		
 		TreeViewColumn enabledCol = new TreeViewColumn();
 		TreeViewColumn nameCol = new TreeViewColumn();
