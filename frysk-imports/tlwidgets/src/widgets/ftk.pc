@@ -1,0 +1,15 @@
+prefix=/opt/frysk
+exec_prefix=/opt/frysk
+libdir=/opt/frysk/lib
+includedir=/opt/frysk/include
+target=x11
+
+ftk_binary_version=0.0.0
+ftk_host=i686-redhat-linux-gnu
+
+Name: FTK
+Description: Custom GTK+ widgets for Frysk
+Version: 0.0.0
+Requires: gtk+-${target}-2.0 gdk-${target}-2.0 atk cairo
+Libs: -L${libdir} -lftk
+Cflags: -I${includedir}/ftk
