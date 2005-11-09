@@ -1,5 +1,14 @@
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: In destroyed state, abandon attempt to add an
+	observation.
+	* ProcState.java: In unattached state, recover from a missing
+	task.
+	* Observation.java: Add .fail.
+	* TestTaskAttachedObserver.java: Add .FailedObserver,
+	.testAttachDieingOtherTask, .testAttachDieingMainTask, and
+	.testAttachDeadMainTask.
+	
 	* TestTaskAttachedObserver.java: Add .assertTaskGone, use.  For
 	testAttachDetachManyTasks, only create 20 tasks.  Rename
 	testDetachExitingTask to testDetachExitingMainTask.

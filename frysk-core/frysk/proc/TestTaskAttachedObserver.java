@@ -69,6 +69,21 @@ public class TestTaskAttachedObserver
 	}
     }
 
+
+    /**
+     * An observer that is ok with a failed add attempt.
+     */
+    class FailedObserver
+	extends AttachedObserver
+    {
+	public void added (Throwable w)
+	{
+	    super.added (null); // lie
+	    assertNotNull ("FailedObserver.added arg", w);
+	    Manager.eventLoop.requestStop ();
+	}
+    }
+
     /**
      * Send .theSig to .thePid, and then keep probeing .thePid until
      * it no longer exists.
@@ -231,5 +246,90 @@ public class TestTaskAttachedObserver
 	Signal.kill (child.getPid (), Sig.KILL);
 
 	detach (tasks, attachedObserver);
+    }
+
+    /**
+     * Check that attaching to a dead main task fails.
+     */
+    public void testAttachDeadMainTask ()
+    {
+	Child child = new DaemonChild ();
+	Task task = child.findTaskUsingRefresh (true);
+	
+	// Blow away the task; make certain that the Proc's task list
+	// is refreshed so that the task is no longer present.
+	assertTaskGone (task.getTid (), Sig.KILL);
+	task.proc.sendRefresh ();
+	assertEquals ("task count", 0, task.proc.getTasks ().size ());
+
+	// Try to add the observer to the now defunct task.  Should
+	// successfully fail.
+	FailedObserver failedObserver = new FailedObserver ();
+	task.requestAddAttachedObserver (failedObserver);
+	assertRunUntilStop ("fail to add observer");
+	assertEquals ("added count", 1, failedObserver.addedCount);
+    }
+
+    /**
+     * Check that attaching to a dead non-main task fails.
+     */
+    public void testAttachDeadOtherTask ()
+    {
+	DaemonChild child = new DaemonChild (1);
+	Task task = child.findTaskUsingRefresh (false);
+	
+	// Blow away the task; make certain that the Proc's task list
+	// is refreshed so that the task is no longer present.
+	child.delTask (); // must be the other task.
+	assertTaskGone (task.getTid (), 0);
+	task.proc.sendRefresh ();
+	assertEquals ("task count (down from two)", 1,
+		      task.proc.getTasks ().size ());
+
+	// Try to add the observer to the now defunct task.  Should
+	// successfully fail.
+	FailedObserver failedObserver = new FailedObserver ();
+	task.requestAddAttachedObserver (failedObserver);
+	assertRunUntilStop ("fail to add observer");
+	assertEquals ("added count", 1, failedObserver.addedCount);
+    }
+
+    /**
+     * Check that attaching to a dieing task fails.
+     */
+    public void testAttachDieingMainTask ()
+    {
+	Child child = new DaemonChild ();
+	Task task = child.findTaskUsingRefresh (true);
+	
+	// Blow away the task.
+	assertTaskGone (task.getTid (), Sig.KILL);
+
+	// Try to add the observer to the now defunct task.  Should
+	// successfully fail.
+	FailedObserver failedObserver = new FailedObserver ();
+	task.requestAddAttachedObserver (failedObserver);
+	assertRunUntilStop ("fail to add observer");
+	assertEquals ("added count", 1, failedObserver.addedCount);
+    }
+
+    /**
+     * Check that attaching to a dieing non-main task fails.
+     */
+    public void testAttachDieingOtherTask ()
+    {
+	DaemonChild child = new DaemonChild (1);
+	Task task = child.findTaskUsingRefresh (false);
+	
+	// Blow away the task.
+	child.delTask ();
+	assertTaskGone (task.getTid (), 0);
+
+	// Try to add the observer to the now defunct task.  Should
+	// successfully fail.
+	FailedObserver failedObserver = new FailedObserver ();
+	task.requestAddAttachedObserver (failedObserver);
+	assertRunUntilStop ("fail to add observer");
+	assertEquals ("added count", 1, failedObserver.addedCount);
     }
 }

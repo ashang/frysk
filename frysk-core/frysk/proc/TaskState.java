@@ -626,5 +626,12 @@ class TaskState
 		task.proc.performTaskAttachCompleted (task);
 		return destroyed;
 	    }
+	    TaskState processPerformAddObservation (Task task,
+						    Observation observation)
+	    {
+		observation.fail (new RuntimeException ("unattached"));
+		task.proc.performDeleteObservation (observation);
+		return destroyed;
+	    }
 	};
 }

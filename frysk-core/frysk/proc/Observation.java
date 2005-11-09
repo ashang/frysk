@@ -91,6 +91,13 @@ abstract class Observation
 	observable.delete (observer);
     }
     /**
+     * Tell the observer that the add is failing with w.
+     */
+    void fail (Throwable w)
+    {
+	observer.added (w);
+    }
+    /**
      * Request that the Observer be added to the Observable.
      */
     public abstract void requestAdd ();

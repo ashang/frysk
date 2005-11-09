@@ -154,12 +154,17 @@ abstract class ProcState
 						    Observation observation)
 	    {
 		proc.observations.add (observation);
-		// XXX: Instead of doing a full refresh, should
-		// instead just pull out (with a local refresh) the
-		// main task.
-		proc.sendRefresh ();
-		// Grab the main task and attach to that.
+		// Grab the main task; only bother with the refresh if
+		// the Proc has no clue as to its task list.
+		if (proc.taskPool.size () == 0)
+		    proc.sendRefresh ();
 		Task task = Manager.host.get (new TaskId (proc.getPid ()));
+		if (task == null) {
+		    // The main task exited and a refresh managed to
+		    // update Proc removing it.
+		    observation.fail (new RuntimeException ("main task exited"));
+		    return unattached;
+		}
 		task.performAttach ();
 		Collection unattachedTasks = proc.getTasks ();
 		if (unattachedTasks.size () > 1)
