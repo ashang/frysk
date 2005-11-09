@@ -10,7 +10,7 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
-public class TaskTerminatingObserver extends ObserverRoot implements TaskObserver.Terminating {
+public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObserver.Terminating {
 
 	public TaskTerminatingObserver() {
 		super("Task Terminating Observer", "Fires fires when this process is exiting");
@@ -29,7 +29,7 @@ public class TaskTerminatingObserver extends ObserverRoot implements TaskObserve
 		task.requestAddTerminatingObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public TaskObserverRoot getCopy(){
 		return new TaskTerminatingObserver(this);
 	}
 

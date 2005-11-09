@@ -51,4 +51,8 @@ public abstract class ProcAction extends Action {
 		}
 	}
 	
+	public void execute(){
+		throw new RuntimeException("This function should not be called. use execute(Proc) instead");
+	}
+	
 }

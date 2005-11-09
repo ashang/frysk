@@ -61,8 +61,8 @@ public class ActionManager extends Observable {
 	}
 	
 	/**
-	 * Instanciates each one of the static task observers
-	 * and tadds it to the list.
+	 * Instantiates each one of the static task observers
+	 * and adds it to the list.
 	 * */
 	private void initActionList() {
 //		this.addProcActionPrototype(new Attach());
@@ -79,7 +79,7 @@ public class ActionManager extends Observable {
 	 * Returns a copy of the prototype given.
 	 * A list of available prototypes can be 
 	 * @param prototype a prototype of the observer to be
-	 * instanciated.
+	 * instantiated.
 	 * */
 	public Action getObserver(Action prototype){
 		//XXX: Not implemented.

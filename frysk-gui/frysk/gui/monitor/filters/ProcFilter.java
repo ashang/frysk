@@ -37,40 +37,15 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
+import frysk.proc.Proc;
 
-public abstract class Action {
-	protected String toolTip;
-	protected String name;
-	protected Runnable runnable;
+public abstract class ProcFilter extends Filter {
 	
-	public Action() {
-		this.toolTip = new String();
-		this.name = new String();
-	}
-
-	public Action(String name, String toolTip) {
-		this.toolTip = toolTip;
-		this.name = name;
-	}
-
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public boolean filter(){
+		throw new RuntimeException("This function should not be called. use filter(Proc) instead");
 	}
 	
-	public abstract void execute();
-	
+	public abstract boolean filter(Proc proc);
 }

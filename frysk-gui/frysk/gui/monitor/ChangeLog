@@ -1,3 +1,31 @@
+2005-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/SyscallObserver.java: Changed RootObserver to TaskRootObserver.
+	* observers/TaskObserverRoot.java: New File.
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskCloneObserver.java: Ditto.
+	* observers/ObserverRoot.java: Removed bouncee. Added action list and
+	functions
+	* observers/ObserverManager.java: Added a sample custom observer. Changed
+	RootObserver to TaskRootObserver.
+	* filters/ProcFilter.java: New file.
+	* filters/NameProcFilter.java: New file. Sample filter.
+	* filters/FilterPoint.java: New file.
+	* filters/FilterManager.java: New file.
+	* filters/Filter.java: New file.
+	* actions/ProcAction.java: Removed unnecessary execute() function.
+	* actions/TaskAction.java: Ditto.
+	* actions/ActionManager.java: Spelling fixes :).
+	* actions/Action.java: Added new constructor. Replace execute() with
+	an abstract function.
+	* StatusWidget.java: Changed to using Actions instead of Runnable.
+	* ObserversMenu.java: Changed cast to RootObserver to 
+	TaskRootObserver; sister class for ProcRootObserver soon to come.
+	* TaskData.java: ditto.
+	* GuiData.java: Removed add observer function.
+
 2005-11-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramAddWindow.java (populate): Added.

@@ -42,14 +42,17 @@ package frysk.gui.monitor.observers;
 import java.util.LinkedList;
 import java.util.Observable;
 
+import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.monitor.actions.Action;
+
 /**
  * Only once instance.
- * The perpose of the ObserverManager is to make transparent
+ * The purpose of the ObserverManager is to make transparent
  * to the client wether it is using a custom or built in observer.
  * Keeps a list of available observers (custom/built in)
- * Manages observer creation through using protypes.
+ * Manages observer creation through using prototypes.
  * For known static observers the ObserverManager is responsible
- * for instanciating and adding their prototypes. 
+ * for instantiating and adding their prototypes. 
  * */
 public class ObserverManager extends Observable {
 
@@ -67,8 +70,8 @@ public class ObserverManager extends Observable {
 	}
 	
 	/**
-	 * Instanciates each one of the static task observers
-	 * and tadds it to the list.
+	 * Instantiates each one of the static task observers
+	 * and adds it to the list.
 	 * */
 	private void initTaskObservers() {
 		this.addTaskObserverPrototype(new TaskExecObserver());
@@ -76,15 +79,30 @@ public class ObserverManager extends Observable {
 		this.addTaskObserverPrototype(new TaskForkedObserver());
 		this.addTaskObserverPrototype(new TaskCloneObserver());
 		this.addTaskObserverPrototype(new SyscallObserver());
+		
+		
+		TaskForkedObserver customObserver = new TaskForkedObserver();
+
+		customObserver.setName("A Nice 'ls' Watcher");
+//		observer.addProcFilter(new NameProcFilter("ls"));
+		customObserver.addAction(new Action("Dialog shower", ""){
+			public void execute() {
+				System.out.println("ObserverManager.initTaskObservers()");
+				WarnDialog dialog = new WarnDialog("ls just happened :) ");
+				dialog.run();
+			}
+		});
+		
+		this.addTaskObserverPrototype(customObserver);
 	}
 
 	/**
 	 * Returns a copy of the prototype given.
 	 * A list of available prototypes can be 
 	 * @param prototype a prototype of the observer to be
-	 * instanciated.
+	 * instantiate.
 	 * */
-	public ObserverRoot getObserver(ObserverRoot prototype){
+	public TaskObserverRoot getTaskObserver(TaskObserverRoot prototype){
 		return prototype.getCopy();
 	}
 	

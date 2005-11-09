@@ -51,4 +51,7 @@ public abstract class TaskAction extends Action {
 		}
 	}
 	
+	public void execute(){
+		throw new RuntimeException("This function should not be called. use execute(Task) instead");
+	}
 }

@@ -37,40 +37,57 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
+import java.util.LinkedList;
+import java.util.Observable;
 
-public abstract class Action {
-	protected String toolTip;
-	protected String name;
-	protected Runnable runnable;
+/**
+ * Only once instance.
+ * Keeps a list of available filters.
+ * Provides an interface for instantiating those actions.
+ * */
+public class FilterManager extends Observable {
 	
-	public Action() {
-		this.toolTip = new String();
-		this.name = new String();
-	}
-
-	public Action(String name, String toolTip) {
-		this.toolTip = toolTip;
-		this.name = name;
-	}
-
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	public static FilterManager theManager = new FilterManager();
+	
+	private LinkedList filters;
+	
+	public FilterManager(){
+		this.filters = new LinkedList();
+		this.initFilterList();
 	}
 	
-	public abstract void execute();
+
+	private void initFilterList() {
+	}
+
+	/**
+	 * Returns a copy of the prototype given.
+	 * A list of available prototypes can be 
+	 * @param prototype a prototype of the observer to be
+	 * instantiated.
+	 * */
+	public Filter getFilter(Filter prototype){
+		//XXX: Not implemented.
+		throw new RuntimeException("Not implemented");
+		//return prototype.getCopy();
+	}
+	
+
+	/**
+	 * add an observer to the list of available observers.
+	 * */
+	public void addProcFilterPrototype(Filter observer){
+		this.filters.add(observer);
+		this.hasChanged();
+		this.notifyObservers();
+	}
+	
+	public void addTaskFilterPrototype(Filter filter){
+		this.filters.add(filter);
+		this.hasChanged();
+		this.notifyObservers();
+	}
 	
 }

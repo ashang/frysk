@@ -10,7 +10,7 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
-public class SyscallObserver extends ObserverRoot implements TaskObserver.Syscall {
+public class SyscallObserver extends TaskObserverRoot implements TaskObserver.Syscall {
 
 	public SyscallObserver() {
 		super("Syscall Observer", "Fires when a system call is made.");
@@ -42,7 +42,7 @@ public class SyscallObserver extends ObserverRoot implements TaskObserver.Syscal
 		task.requestAddSyscallObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public TaskObserverRoot getCopy(){
 		return new SyscallObserver(this);
 	}
 	

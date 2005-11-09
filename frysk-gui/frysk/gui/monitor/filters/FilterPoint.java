@@ -37,40 +37,19 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
+import java.util.LinkedList;
 
-public abstract class Action {
-	protected String toolTip;
-	protected String name;
-	protected Runnable runnable;
-	
-	public Action() {
-		this.toolTip = new String();
-		this.name = new String();
-	}
-
-	public Action(String name, String toolTip) {
-		this.toolTip = toolTip;
-		this.name = name;
-	}
-
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public abstract void execute();
-	
+/**
+ * FilterPoints provide a flexible interface between Observers
+ * and the clients that would like to add filters to those observers.
+ * Thus allowing reuse of a filter with different observer.
+ * Observers add FilterPoints to themselves to allowed
+ * their clients to filter the events.
+ * Clients of observers add desired Filters to the correct
+ * filter points.
+ * */
+public class FilterPoint {
+	LinkedList filters;
 }

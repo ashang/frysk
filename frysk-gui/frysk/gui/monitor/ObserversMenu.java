@@ -48,13 +48,13 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.gui.monitor.observers.ObserverManager;
-import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 
 
 /**
  * This is the root menu that appears upon a right click
  * on the watch window. Only one of this object is created
- * and can be be accessed through accessor method for extention
+ * and can be be accessed through accessor method for extension
  * or addition to WatchWindows.
  * */
 public class ObserversMenu extends Menu{
@@ -68,11 +68,10 @@ public class ObserversMenu extends Menu{
 	public ObserversMenu(LinkedList actions){
 		super();
 		
-		//LinkedList list = ActionPool.theActionPool.processObservers;
 		ListIterator iter = actions.listIterator();
 		
 		while(iter.hasNext()){
-			final ObserverRoot observer = (ObserverRoot) iter.next();
+			final TaskObserverRoot observer = (TaskObserverRoot) iter.next();
 	
 			MenuItem item = new MenuItem(observer.getName(), false);
 			ToolTips tip = new ToolTips();
@@ -80,8 +79,8 @@ public class ObserversMenu extends Menu{
 			
 			item.addListener(new MenuItemListener() {
 				public void menuItemEvent(MenuItemEvent arg0) {
-					ObserverRoot myObserver = ObserverManager.theManager.getObserver(observer);
-					currentTask.add(myObserver);
+					TaskObserverRoot myObserver = ObserverManager.theManager.getTaskObserver(observer);
+					currentTask.add(observer);
 				}
 			});
 			this.add(item);
@@ -91,7 +90,7 @@ public class ObserversMenu extends Menu{
 	}
 	
 	/**
-	 * Show the popup menu. selected operation is to be 
+	 * Show the pop-up menu. selected operation is to be 
 	 * applied to process with id pid
 	 * */
 	public void popup(ProcData selected){

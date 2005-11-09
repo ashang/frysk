@@ -10,7 +10,7 @@ import frysk.proc.Action;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
-public class TaskCloneObserver extends ObserverRoot implements TaskObserver.Cloned {
+public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.Cloned {
 
 	public TaskCloneObserver(){
 		super("ProcCloneObserver", "Fires when a proc calls clone");
@@ -31,7 +31,7 @@ public class TaskCloneObserver extends ObserverRoot implements TaskObserver.Clon
 		task.requestAddClonedObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public TaskObserverRoot getCopy(){
 		return new TaskCloneObserver(this);
 	}
 	

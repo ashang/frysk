@@ -7,7 +7,7 @@ import frysk.proc.TaskObserver;
 /**
  * Added to observe Exec events.
  * */
-public class TaskExecObserver extends ObserverRoot implements TaskObserver.Execed {
+public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.Execed {
 	public TaskExecObserver(){
 		super("Exec Observer", "Fires everytime this task executes an exec call");
 	}
@@ -25,7 +25,7 @@ public class TaskExecObserver extends ObserverRoot implements TaskObserver.Exece
 		task.requestAddExecedObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public TaskObserverRoot getCopy(){
 		return new TaskExecObserver(this);
 	}
 	

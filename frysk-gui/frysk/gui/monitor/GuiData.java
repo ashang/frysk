@@ -46,7 +46,7 @@ import org.gnu.gtk.Widget;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
- * Used to store a pointer to objects in the backend, and extra data that is
+ * Used to store a pointer to objects in the back-end, and extra data that is
  * GUI specific.
  */
 public class GuiData {
@@ -63,10 +63,10 @@ public class GuiData {
 		this.observers = new LinkedList();
 	}
 	
-	public void add(ObserverRoot observer){
-		this.observers.add(observer);
-		this.observerAdded.notifyObservers(observer);
-	}
+//	public void add(ObserverRoot observer){
+//		this.observers.add(observer);
+//		this.observerAdded.notifyObservers(observer);
+//	}
 	
 	public void remove(ObserverRoot observer){
 		//XXX: Not implemented.

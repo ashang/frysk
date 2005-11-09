@@ -12,4 +12,5 @@ public class AttachedStopObserver extends ObserverRoot{
 		super("AttachedStopObserver", "Fires when a proc arrives at the AttachedStop state");
 	}
 
+
 }

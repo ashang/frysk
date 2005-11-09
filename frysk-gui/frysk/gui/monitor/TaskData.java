@@ -38,12 +38,12 @@
 // exception.
 package frysk.gui.monitor;
 
-import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
 /**
  * Used to store a pointer to the Task object, and and any data that is relates
- * to the process but is gui specific. Used to pass data to ActionPool Actions.
+ * to the process but is GUI specific. Used to pass data to ActionPool Actions.
  * Actions also manipulate data stored in here to keep it up to date.
  */
 public class TaskData extends GuiData{
@@ -62,7 +62,7 @@ public class TaskData extends GuiData{
 		return task;
 	}
 
-	public void add(final ObserverRoot observer){
+	public void add(final TaskObserverRoot observer){
 		observer.onAdded(new Runnable() {
 			public void run() {
 				observers.add(observer);
@@ -76,17 +76,8 @@ public class TaskData extends GuiData{
 				observerRemoved.notifyObservers(observer);
 			}
 		});
-		
+		System.out.println("TaskData.add()");
 		observer.apply(this.task);
 	}
 	
-//	public void add(SyscallObserver observer) {
-//		add((ObserverRoot)observer);
-//		observer.addRunnable(new ObserverRunnable(){
-//			public void run(Observable o, Object obj) {
-//				DialogManager.showWarnDialog("Recieved Syscall Event !");
-//			}
-//		});
-//	}
-
 }
