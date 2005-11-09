@@ -1,52 +1,55 @@
 2005-11-07  Tarun Khanna  <tkhanna@redhat.com>
 
-	* IntegerType.java: modified.
+	* IntegerType.java: Commented out some code to remove warnings.
 
 2005-11-03  Tarun Khanna  <tkhanna@redhat.com>
 
-	* Type.java:  modified
-	* ShortType.java:  modified
-	* IntegerType.java:  modified
-	* Variable.java:  modified
+	* Type.java:  Added the last set of arithematic operations.
+	* ShortType.java:  Added the last set of arithematic operations.
+	* IntegerType.java:  Added the last set of arithematic operations.
+	* Variable.java:  Added the last set of arithematic operations.
 
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
-	* Type.java:  modified, added more arithematic operations
-	* ShortType.java:  modified, added more arithematic operations
-	* IntegerType.java:  modified, added more arithematic operations
+	* Type.java:  Added more arithematic operations
+	* ShortType.java:  Added more arithematic operations
+	* IntegerType.java:  Added more arithematic operations
 
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
-	* InvalidOperatorException.java:  new
+	* InvalidOperatorException.java:  New file to catch exceptions when an
+	operator function is called with wrong types of arguments.
 
 2005-10-28  Tarun Khanna  <tkhanna@redhat.com>
 
-	* IntegerType.java: added constructors and functions.
-	* ShortType.java: same...
-	* Type.java:  modified.
-	* Variable.java:  modified...
-	* Location.java:  modified...
-	* OperationNotDefinedException.java:  modified...
-	* TypeTest.java:  modified
+	* IntegerType.java: Added constructors and functions.
+	* ShortType.java: Same...
+	* Type.java:  Added abstract arithematic functions.
+	* Variable.java:  Added constructors and functions...
+	* Location.java:  Added constructors and functions...
+	* OperationNotDefinedException.java:  Fixed a compile time bug...
+	* TypeTest.java:  Added a test case for the Type System.
 
 2005-10-19  Tarun Khanna  <tkhanna@redhat.com>
 
-	* IntegerType.java: added constructors and functions.
-	* ShortType.java: same...
-	* Type.java:  modified.
-	* Variable.java:  modified...
+	* IntegerType.java: Added constructors and functions.
+	* ShortType.java: Same...
+	* Type.java:  Added abstract functions.
+	* Variable.java:  Added constructors and functions...
 
 2005-10-18  Tarun Khanna  <tkhanna@redhat.com>
 
 	* Type.java: Modified file to define an abstract Type system.
 	* Location.java:  Modified file for storing variable location
 	* Variable.java:  Modified file to represent Variables.
-	* IntegerType.java: New.
-	* ShortType.java: New.
-	* BaseTypes.java: New.
-	* Endian.java:	New.
-	* TypeTest.java:  New.
-	* OperationNotDefinedException.java:  New.
+	* IntegerType.java: New file to represent the primitive Integer Type.
+	* ShortType.java: New file to represent the primitive Integer Type.
+	* BaseTypes.java: New class file to list the 7 basic types.
+	* Endian.java:	New class file to represent the Endianness of a Type.
+	* TypeTest.java:  New file to test the Type System.
+	* OperationNotDefinedException.java:  New file to define exceptions to
+	be thrown when an operator is called for a type for which it is not
+	defined.
 
 2005-09-09  Andrew Cagney  <cagney@redhat.com>
 
