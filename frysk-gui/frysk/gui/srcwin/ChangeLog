@@ -1,5 +1,8 @@
 2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java: dummyPath now defaults to the source
+	directory, since the user may not be running from a 'make install'
+
 	* SourceWindowFactory.java (createSourceWindow): Now correctly removes
 	window/task pair from hashmap when the window is closed.
 

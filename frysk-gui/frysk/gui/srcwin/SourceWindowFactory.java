@@ -51,7 +51,7 @@ public class SourceWindowFactory {
 	
 	static{
 		map = new HashMap();
-		dummyPath = Config.PKGDATADIR + "/samples";
+		dummyPath = Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/srcwin/testfiles";
 		gladePaths = new String[] {Config.GLADEDIR, 
 				Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/glade"};
 		imagePaths = new String[] {Config.PKGDATADIR+"/images",
