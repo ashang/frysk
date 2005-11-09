@@ -157,8 +157,6 @@ public class TestTaskAttachedObserver
 		}
 	    });
 	assertRunUntilStop ("detaching from task");
-	assertEquals ("attached count (no change)", tasks.length,
-		      attachedObserver.attachedCount);
 	assertEquals ("deleted count", tasks.length,
 		      attachedObserver.deletedCount);
 
@@ -364,5 +362,78 @@ public class TestTaskAttachedObserver
 	Terminate terminate = new Terminate ();
 	task.requestAddTerminatingObserver (terminate);
 	assertRunUntilStop ("terminated");
+    }
+
+    /**
+     * Check that back-to-back add/add, delete/delete observers.
+     */
+    public void testBackToBackAttachAttachMainTask ()
+    {
+	Child child = new DaemonChild ();
+	Task task = child.findTaskUsingRefresh (true);
+	assertNotNull ("main task", task);
+
+	// .attach does an add, add a few more.
+	AttachedObserver extra = new AttachedObserver ();
+	task.requestAddAttachedObserver (extra);
+	AttachedObserver attached = attach (new Task[] { task });
+	assertEquals ("extra attached count", 1, extra.attachedCount);
+	
+	// .detach does a few deletes, delete a few more.
+	task.requestDeleteAttachedObserver (extra);
+	detach (new Task[] { task }, attached);
+    }
+
+    /**
+     * Check back-to-back add/delete observers.
+     */
+    public void testBackToBackAttachDetachMainTask ()
+    {
+	Child child = new DaemonChild ();
+	Task task = child.findTaskUsingRefresh (true);
+	assertNotNull ("main task", task);
+
+	// pull an observer out from under the tasks feet.
+	AttachedObserver extra = new AttachedObserver ()
+	    {
+		public void added (Throwable w)
+		{
+		    super.added (null);
+		    assertNotNull ("added arg", w);
+		}
+	    };
+	task.requestAddAttachedObserver (extra);
+	task.requestDeleteAttachedObserver (extra);
+	AttachedObserver attached = attach (new Task[] { task });
+	
+	// .detach does a few deletes, delete a few more.
+	detach (new Task[] { task }, attached);
+    }
+
+    /**
+     * Check that that an instantly canceled attach doesn't.
+     */
+    public void testDeletedAttach ()
+    {
+	Child child = new DaemonChild ();
+	Task task = child.findTaskUsingRefresh (true);
+	assertNotNull ("main task", task);
+
+	// .attach does an add, add a few more.
+	AttachedObserver extra = new AttachedObserver ()
+	    {
+		public void added (Throwable w)
+		{
+		    super.added (null);
+		    assertNotNull ("added arg", w);
+		    deletedCount++; // a lie
+		}
+		public void deleted ()
+		{
+		    fail ("deleted");
+		}
+	    };
+	task.requestAddAttachedObserver (extra);
+	detach (new Task[] { task }, extra);
     }
 }

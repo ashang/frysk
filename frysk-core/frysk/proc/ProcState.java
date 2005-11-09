@@ -240,6 +240,16 @@ abstract class ProcState
 		proc.observations.add (observation);
 		return this;
 	    }
+	    ProcState processPerformDeleteObservation (Proc proc,
+						       Observation observation)
+	    {
+		proc.observations.remove (observation);
+		observation.fail (new RuntimeException ("canceled"));
+		if (proc.observations.size () == 0)
+		    return Detaching.state (proc);
+		else
+		    return this;
+	    }
 	}
 
 	/**
@@ -281,13 +291,7 @@ abstract class ProcState
 		observation.fail (new RuntimeException ("canceled"));
 		if (proc.observations.size () > 0)
 		    return this;
-		Collection attachedTasks = proc.getTasks ();
-		for (Iterator i = attachedTasks.iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performDetach ();
-		}
-		return new DetachingAllTasks (attachedTasks);
+		return Detaching.state (proc);
 	    }
 	}
     }
@@ -296,32 +300,48 @@ abstract class ProcState
      * In the process of detaching; waiting for all tasks to report
      * back that they have successfully detached.
      */
-    private static class DetachingAllTasks
-	extends ProcState
+    private static class Detaching
     {
-	private Collection attachedTasks;
-	DetachingAllTasks (Collection attachedTasks)
+	/**
+	 * Start the detaching process.
+	 */
+	static private ProcState state (Proc proc)
 	{
-	    super ("DetachingAllTasks");
-	    this.attachedTasks = attachedTasks;
+	    Collection attachedTasks = proc.getTasks ();
+	    for (Iterator i = attachedTasks.iterator ();
+		 i.hasNext (); ) {
+		Task t = (Task) i.next ();
+		t.performDetach ();
+	    }
+	    return new Detaching.AllTasks (attachedTasks);
 	}
-	ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
+	private static class AllTasks
+	    extends ProcState
 	{
-	    // As each task reports that it has detached, remove it
-	    // from the list.  Once there are none left the detach is
-	    // done.
-	    attachedTasks.remove (task);
-	    if (attachedTasks.size () > 0)
-		return this;
-	    // All done, notify.
-	    proc.observableDetached.notify (proc);
-	    return unattached;
-	}
-	ProcState processPerformAddObservation (Proc proc,
-						Observation observation)
-	{
-	    // Ulgh, detaching and a new observer arrived.
-	    return Attaching.state (proc, observation, false);
+	    private Collection attachedTasks;
+	    AllTasks (Collection attachedTasks)
+	    {
+		super ("DetachingAllTasks");
+		this.attachedTasks = attachedTasks;
+	    }
+	    ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
+	    {
+		// As each task reports that it has detached, remove
+		// it from the list.  Once there are none left the
+		// detach is done.
+		attachedTasks.remove (task);
+		if (attachedTasks.size () > 0)
+		    return this;
+		// All done, notify.
+		proc.observableDetached.notify (proc);
+		return unattached;
+	    }
+	    ProcState processPerformAddObservation (Proc proc,
+						    Observation observation)
+	    {
+		// Ulgh, detaching and a new observer arrived.
+		return Attaching.state (proc, observation, false);
+	    }
 	}
     }
 
@@ -341,13 +361,7 @@ abstract class ProcState
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
-		Collection attachedTasks = proc.getTasks ();
-		for (Iterator i = attachedTasks.iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performDetach ();
-		}
-		return new DetachingAllTasks (attachedTasks);
+		return Detaching.state (proc);
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
@@ -361,16 +375,8 @@ abstract class ProcState
 	    {
 		observation.delete ();
 		proc.observations.remove (observation);
-		if (proc.observations.size () == 0) {
-		    // No reason for being attached.
-		    Collection attachedTasks = proc.getTasks ();
-		    for (Iterator i = attachedTasks.iterator ();
-			 i.hasNext (); ) {
-			Task t = (Task) i.next ();
-			t.performDetach ();
-		    }
-		    return new DetachingAllTasks (attachedTasks);
-		}
+		if (proc.observations.size () == 0)
+		    return Detaching.state (proc);
 		else
 		    return running;
 	    }
@@ -385,13 +391,7 @@ abstract class ProcState
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
-		Collection attachedTasks = proc.getTasks ();
-		for (Iterator i = attachedTasks.iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performDetach ();
-		}
-		return new DetachingAllTasks (attachedTasks);
+		return Detaching.state (proc);
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
@@ -420,13 +420,7 @@ abstract class ProcState
 	    }
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
-		Collection attachedTasks = proc.getTasks ();
-		for (Iterator i = attachedTasks.iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performDetach ();
-		}
-		return new DetachingAllTasks (attachedTasks);
+		return Detaching.state (proc);
 	    }
 	};
 

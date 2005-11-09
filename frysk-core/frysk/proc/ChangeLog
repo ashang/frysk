@@ -1,5 +1,14 @@
 2005-11-09  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcState.java: Refactor .DetachingAllTasks into Detaching that
+	contains .state and .AllTasks.  When attaching handle the deletion
+	of an observer.
+	* TaskState.java: Add transitions between attaching and detaching
+	states.
+	* TestTaskAttachedObserver.java: Add .testDeletedAttach,
+	.testBackToBackAttachAttachMainTask, and
+	.testBackToBackAttachDetachMainTask.
+
 	* ProcState.java: Refactor .AttachingToMainTask, and
 	.AttachingToOtherTasks into .Attaching class containing .state,
 	.allAttached, .ToMainTask and .ToOtherTasks.

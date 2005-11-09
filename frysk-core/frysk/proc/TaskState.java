@@ -214,6 +214,10 @@ class TaskState
 		task.proc.remove (task);
 		return destroyed;
     	    }
+	    TaskState processPerformDetach (Task task)
+	    {
+		return detaching;
+	    }
 	};
 
     /**
@@ -434,6 +438,10 @@ class TaskState
 
     private static TaskState detaching = new TaskState ("detaching")
 	{
+	    TaskState processPerformAttach (Task task)
+	    {
+		return attaching;
+	    }
 	    TaskState processPerformStopped (Task task)
 	    {
 		task.sendDetach (0);
