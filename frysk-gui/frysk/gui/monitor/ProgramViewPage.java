@@ -181,13 +181,14 @@ public class ProgramViewPage extends Widget {
 			       }
 				
 			}});
-	
+		
 		this.programTreeView.getSelection().addListener(new TreeSelectionListener() {
 
 			public void selectionChangedEvent(TreeSelectionEvent event) {
 				TreePath[] selection = programTreeView.getSelection().getSelectedRows();
 				if (selection.length > 0)
 				{
+				   treeTip.enable();
 				   TreeIter item = programTreeView.getModel().getIter( selection[0].toString() );
 				   ProgramData tipData = (ProgramData) programTreeView.getModel().getValue( item, programDataModel.getObjectDataDC());
 				  
@@ -213,7 +214,8 @@ public class ProgramViewPage extends Widget {
 				   }
 				   
 				   treeTip.setTip(programTreeView, name, null);
-				}
+				} else
+					treeTip.disable();
 				   
 				}
 

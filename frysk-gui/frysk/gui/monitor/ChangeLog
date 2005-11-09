@@ -1,7 +1,7 @@
 2005-11-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramViewPage.java (selectionChangedEvent): Added
-	tooltip to show object data.
+	tooltip to show object data. Set enabled state on selection.
 	* ProgramDataModel.java (getObjectDataDC): Added.
 
 2005-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
