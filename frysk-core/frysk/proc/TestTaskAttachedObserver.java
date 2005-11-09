@@ -332,4 +332,37 @@ public class TestTaskAttachedObserver
 	assertRunUntilStop ("fail to add observer");
 	assertEquals ("added count", 1, failedObserver.addedCount);
     }
+
+    /**
+     * Check that an attach to an attached observer works.
+     */
+    public void testAttachToAttached ()
+    {
+	final Child child = new DaemonChild ();
+	Task task = child.findTaskUsingRefresh (true);
+	assertNotNull ("main task", task);
+	attach (new Task[] { task });
+	class Terminate
+	    extends TaskObserverBase
+	    implements TaskObserver.Terminating
+	{
+	    Child c = child;
+	    public void added (Throwable w)
+	    {
+		assertNull ("added arg", w);
+		c.signal (Sig.TERM);
+	    }
+	    public Action updateTerminating (Task task, boolean signal,
+					     int val)
+	    {
+		assertTrue ("signal", signal);
+		assertEquals ("val", Sig.TERM, val);
+		Manager.eventLoop.requestStop ();
+		return Action.CONTINUE;
+	    }
+	}
+	Terminate terminate = new Terminate ();
+	task.requestAddTerminatingObserver (terminate);
+	assertRunUntilStop ("terminated");
+    }
 }

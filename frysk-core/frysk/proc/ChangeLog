@@ -1,5 +1,7 @@
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Add testAttachToAttached.
+	
 	* TaskState.java: In destroyed state, abandon attempt to add an
 	observation.
 	* ProcState.java: In unattached state, recover from a missing
