@@ -12,10 +12,12 @@ import java.util.HashMap;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.jdom.Document;
+import org.jdom.Element;
 
 import frysk.gui.srcwin.dom.DOMFrysk;
+import frysk.gui.srcwin.dom.DOMImage;
 import frysk.gui.srcwin.dom.DOMSource;
-import frysk.gui.srcwin.dom.DOMTestGUIBuilder;
 import frysk.proc.Task;
 import frysk.Config;
 
@@ -72,10 +74,13 @@ public class SourceWindowFactory {
 			System.out.println("Creating new window");
 			
 			if(!dummyPath.equals("")){
-				DOMFrysk dom = DOMTestGUIBuilder.makeTestDOM();
-				DOMSource source = dom.getImage("test6").getSource("test3.cpp");
-				source.setFileName("test3.cpp");
-				source.setFilePath(dummyPath);
+				DOMFrysk dom = new DOMFrysk(new Document(new Element("DOM_test")));
+                dom.addImage("test", dummyPath, dummyPath);
+                DOMImage image = dom.getImage("test");
+                for(int i = 3; i <= 6; i++)
+                    image.addSource("test"+i+".cpp", dummyPath);
+                
+				DOMSource source = image.getSource("test3.cpp");
 				BufferedReader reader = null;
 				int line = 1;
 				int offset = 0;
@@ -91,11 +96,9 @@ public class SourceWindowFactory {
 				catch(Exception e){
 					
 				}
-				StackLevel stack1 = new StackLevel(source, 2);
+				StackLevel stack1 = new StackLevel(source, 5);
 				
-				source = dom.getImage("test6").getSource("test4.cpp");
-				source.setFileName("test4.cpp");
-				source.setFilePath(dummyPath);
+				source = image.getSource("test4.cpp");
 				try{
 					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test4.cpp")));
 					line = 1;
@@ -109,12 +112,10 @@ public class SourceWindowFactory {
 				catch (Exception e){
 					
 				}
-				StackLevel stack2 = new StackLevel(source, 2);
+				StackLevel stack2 = new StackLevel(source, 3);
 				stack1.addNextScope(stack2);
 				
-				source = dom.getImage("test6").getSource("test5.cpp");
-				source.setFileName("test5.cpp");
-				source.setFilePath(dummyPath);
+				source = image.getSource("test5.cpp");
 				try{
 					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test5.cpp")));
 					line = 1;
@@ -128,17 +129,29 @@ public class SourceWindowFactory {
 				catch (Exception e){
 					
 				}
-				StackLevel stack3 = new StackLevel(source, 2);
+				StackLevel stack3 = new StackLevel(source, 3);
 				stack2.addNextScope(stack3);
 				
-				source = dom.getImage("test6").getSource("test6.cpp");
-				source.setFileName("test6.cpp");
-				source.setFilePath(dummyPath);
-				StackLevel stack4 = new StackLevel(source, 10);
+				source = image.getSource("test6.cpp");
+                try{
+                    reader = new BufferedReader(new FileReader(new File(dummyPath + "/test6.cpp")));
+                    line = 1;
+                    offset = 0;
+                    while(reader.ready()){
+                        String text = reader.readLine()+"\n";
+                        source.addLine(line++, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
+                        offset += text.length();
+                    }
+                }
+                catch (Exception e){
+                    
+                }
+				StackLevel stack4 = new StackLevel(source, 12);
 				stack3.addNextScope(stack4);
 				
 				LibGlade glade = null;
 				
+                // Look for the right path to load the glade file from
 				for(int i = 0; i < gladePaths.length; i++){
 					try{
 						glade = new LibGlade(gladePaths[i]+"/"+SourceWindow.GLADE_FILE, null);
@@ -169,7 +182,7 @@ public class SourceWindowFactory {
 			else{
 				
 			}
-			// Store the reference to the 
+			// Store the reference to the source window
 			map.put(task, s);
 		}
 	}

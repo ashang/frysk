@@ -62,10 +62,10 @@ public class Messages {
 				Messages.RESOURCE_BUNDLE = new PropertyResourceBundle(new FileInputStream(new File(BUNDLE_PATHS[i] + BUNDLE_NAME)));
 			}
 			catch (Exception e){
-				System.out.println("Failed for path "+BUNDLE_PATHS[i] + BUNDLE_NAME);
+				System.out.println("Failed for path "+BUNDLE_PATHS[i] + BUNDLE_NAME + ", moving to next");
 				continue;
 			}
-			
+			System.out.println("Found message bundle");
 			break;
 		}
 	}

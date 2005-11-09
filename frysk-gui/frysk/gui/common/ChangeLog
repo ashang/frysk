@@ -1,4 +1,7 @@
-2005-11-08  Adam Jocksch  <ajocksch@redhat.com>
+2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Monitor.java: Now prints out more useful message for incorrect
+	bundle paths.
 
 	* Monitor.java: Now looks for bundle in build and install situations.
 

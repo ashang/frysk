@@ -45,30 +45,17 @@ package frysk.bindir;
 
 import frysk.Config;
 import frysk.gui.FryskGui;
-import frysk.gui.test.SourceWinRunner;
 
 class frysk
 {
     public static void main (String[] args)
     {
-    	if(args.length == 0)
+    	if(args.length == 0){
     		FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
-    	else if(args[0].equals("--sourcewin")){
-    		String[] newArgs = new String[args.length - 1];
-    		
-    		for(int i = 1; i < args.length; i++)
-    			newArgs[i-1] = args[i];
-    		
-			System.out.println("About to launch source window.");
-    		SourceWinRunner.mainSourceWin(newArgs, 
-    				new String[] {Config.GLADEDIR + "/"}, 
-    				Config.IMAGEDIR+"/");
-
     	} else if(args[0].equals("--help")){
     		System.out.println("Useage: 'frysk [option]");
     		System.out.println();
     		System.out.println("options:");
-    		System.out.println("\t--sourcewin\tLaunches the source window (testing purposes only)");
     		System.out.println("\t--help\t\tDisplays this message");
     	} else {
 			System.err.println("Invalid arugment:" + args[0]);

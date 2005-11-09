@@ -1,5 +1,8 @@
 2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (createSourceWindow): Now reads in all
+	.cpp files, rather than relying on data in DOMTestGUIBuilder.
+
 	* SourceWindowFactory.java: dummyPath now defaults to the source
 	directory, since the user may not be running from a 'make install'
 
