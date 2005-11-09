@@ -8,9 +8,10 @@ EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
             $(tlwidgetssrc)/widgets/*.h \
             $(tlwidgetssrc)/widgets/ftk.pc
 
-CLEANFILES = libftkjava.so ftk.jar \
+CLEANFILES = libftk.so libftkjava.so ftk.jar \
              $(tlwidgetssrc)/java/com/redhat/ftk/*.o \
-             $(tlwidgetssrc)/java/com/redhat/ftk/*.class
+             $(tlwidgetssrc)/java/com/redhat/ftk/*.class \
+             $(tlwidgetssrc)/widgets/*.o
 
 $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	gcj -C \
