@@ -1,3 +1,9 @@
+2005-11-09  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java: Refactor .AttachingToMainTask, and
+	.AttachingToOtherTasks into .Attaching class containing .state,
+	.allAttached, .ToMainTask and .ToOtherTasks.
+
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskAttachedObserver.java: Add testAttachToAttached.

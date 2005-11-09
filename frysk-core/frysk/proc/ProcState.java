@@ -120,18 +120,7 @@ abstract class ProcState
 	{
 	    private ProcState processRequestAttach (Proc proc, boolean stop)
 	    {
-		// XXX: Instead of doing a full refresh, should
-		// instead just pull out (with a local refresh) the
-		// main task.
-		proc.sendRefresh ();
-		// Grab the main task and attach to that.
-		Task task = Manager.host.get (new TaskId (proc.getPid ()));
-		task.performAttach ();
-		Collection unattachedTasks = proc.getTasks ();
-		if (unattachedTasks.size () > 1)
-		    return new AttachingToMainTask (unattachedTasks, stop);
-		else
-		    return new AttachingToOtherTasks (unattachedTasks, stop);
+		return Attaching.state (proc, null, stop);
 	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
@@ -153,88 +142,45 @@ abstract class ProcState
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
-		proc.observations.add (observation);
-		// Grab the main task; only bother with the refresh if
-		// the Proc has no clue as to its task list.
-		if (proc.taskPool.size () == 0)
-		    proc.sendRefresh ();
-		Task task = Manager.host.get (new TaskId (proc.getPid ()));
-		if (task == null) {
-		    // The main task exited and a refresh managed to
-		    // update Proc removing it.
-		    observation.fail (new RuntimeException ("main task exited"));
-		    return unattached;
-		}
-		task.performAttach ();
-		Collection unattachedTasks = proc.getTasks ();
-		if (unattachedTasks.size () > 1)
-		    return new AttachingToMainTask (unattachedTasks, false);
-		else
-		    return new AttachingToOtherTasks (unattachedTasks, false);
+		return Attaching.state (proc, observation, false);
 	    }
 	};
 
     /**
-     * In the process of attaching, the main task has been sent an
-     * attach request, waiting for it to finish.
+     * A process is being attached, this is broken down into
+     * sub-states.
      */
-    private static class AttachingToMainTask
-	extends ProcState
+    private static class Attaching
     {
-	private boolean stop;
-	private Collection unattachedTasks;
-	AttachingToMainTask (Collection unattachedTasks, boolean stop)
+	/**
+	 * The initial attaching state.
+	 */
+	static ProcState state (Proc proc, Observation observation,
+				boolean stop)
 	{
-	    super ("AttachingWaitingForMainTask");
-	    this.stop = stop;
-	    this.unattachedTasks = unattachedTasks;
-	}
-	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
-	{
-	    // Get an up-to-date list of all tasks.  Now that the main
-	    // task has stopped, all other tasks should be frozen.
-	    proc.sendRefresh ();
-	    unattachedTasks.remove (task); // main.
-	    // Ask the other tasks to attach.
-	    for (Iterator i = unattachedTasks.iterator ();
-		 i.hasNext (); ) {
-		Task t = (Task) i.next ();
-		t.performAttach ();
+	    if (observation != null)
+		proc.observations.add (observation);
+	    // Grab the main task; only bother with the refresh if the
+	    // Proc has no clue as to its task list.
+	    if (proc.taskPool.size () == 0)
+		proc.sendRefresh ();
+	    // Assumes that the main Task's ID == the Proc's ID.
+	    Task task = Manager.host.get (new TaskId (proc.getPid ()));
+	    if (task == null) {
+		// The main task exited and a refresh managed to
+		// update Proc removing it.
+		observation.fail (new RuntimeException ("main task exited"));
+		return unattached;
 	    }
-	    return new AttachingToOtherTasks (unattachedTasks, stop);
+	    task.performAttach ();
+	    return new Attaching.ToMainTask (false);
 	}
-	ProcState processPerformAddObservation (Proc proc,
-						Observation observation)
+	/**
+	 * All tasks attached, set them running and notify any
+	 * interested parties.
+	 */
+	private static ProcState allAttached (Proc proc, boolean stop)
 	{
-	    proc.observations.add (observation);
-	    return this;
-	}
-    }
-
-    /**
-     * In the process of attaching, the main task is attached, now
-     * waiting for the remaining tasks to indicate they, too, have
-     * attached (or at least processed the attach request).
-     */
-    class AttachingToOtherTasks
-	extends ProcState
-    {
-	private Collection unattachedTasks;
-	private boolean stop;
-	AttachingToOtherTasks (Collection unattachedTasks, boolean stop)
-	{
-	    super ("AttachingWaitingForOtherTasks");
-	    this.unattachedTasks = unattachedTasks;
-	    this.stop = stop;
-	}
-	ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
-	{
-	    // As each task reports that it has been attached, remove
-	    // it from the pool, wait until there are none left.
-	    unattachedTasks.remove (task);
-	    if (unattachedTasks.size () > 0)
-		return this;
-	    // All attached ...
 	    for (Iterator i = proc.observations.iterator ();
 		 i.hasNext ();) {
 		Observation observation = (Observation) i.next ();
@@ -244,13 +190,105 @@ abstract class ProcState
 		return stopped;
 	    // .., let them go, and mark this as
 	    // attached/running.
-	    for (Iterator i = proc.taskPool.values().iterator ();
+	    for (Iterator i = proc.getTasks ().iterator ();
 		 i.hasNext (); ) {
 		Task t = (Task) i.next ();
 		t.requestContinue ();
 	    }
 	    proc.observableAttached.notify (proc);
 	    return running;
+	}
+	/**
+	 * In the process of attaching, the main task has been sent an
+	 * attach request, waiting for it to finish.
+	 */
+	private static class ToMainTask
+	    extends ProcState
+	{
+	    private boolean stop;
+	    ToMainTask (boolean stop)
+	    {
+		super ("Attaching.ToMainTask");
+		this.stop = stop;
+	    }
+	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
+	    {
+		// With the main task attached, it is possible to get
+		// an up-to-date list of tasks.  Remove from it the
+		// tasks already being attached.  Ask them to also
+		// attach.
+		proc.sendRefresh ();
+		Collection attachingTasks = proc.getTasks ();
+		attachingTasks.remove (task);
+		// Attach to those remaining attaching tasks.
+		for (Iterator i = attachingTasks.iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performAttach ();
+		}
+		// What next?  Nothing else wait for all the attaching
+		// tasks.
+		if (attachingTasks.size () == 0)
+		    return allAttached (proc, stop);
+		else
+		    return new ToOtherTasks (attachingTasks, stop);
+		
+	    }
+	    ProcState processPerformAddObservation (Proc proc,
+						    Observation observation)
+	    {
+		proc.observations.add (observation);
+		return this;
+	    }
+	}
+
+	/**
+	 * In the process of attaching, the main task is attached, now
+	 * waiting for the remaining tasks to indicate they, too, have
+	 * attached (or at least processed the attach request).
+	 */
+	static private class ToOtherTasks
+	    extends ProcState
+	{
+	    private Collection attachingTasks;
+	    private boolean stop;
+	    ToOtherTasks (Collection attachingTasks, boolean stop)
+	    {
+		super ("Attaching.ToOtherTasks");
+		this.attachingTasks = attachingTasks;
+		this.stop = stop;
+	    }
+	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
+	    {
+		// As each task reports that it has been attached,
+		// remove it from the pool, wait until there are none
+		// left.
+		attachingTasks.remove (task);
+		if (attachingTasks.size () > 0)
+		    return this;
+		return allAttached (proc, stop);
+	    }
+	    ProcState processPerformAddObservation (Proc proc,
+						    Observation observation)
+	    {
+		proc.observations.add (observation);
+		return this;
+	    }
+	    ProcState processPerformDeleteObservation (Proc proc,
+						       Observation observation)
+	    {
+		proc.observations.remove (observation);
+		observation.fail (new RuntimeException ("canceled"));
+		if (proc.observations.size () > 0)
+		    return this;
+		Collection attachedTasks = proc.getTasks ();
+		for (Iterator i = attachedTasks.iterator ();
+		     i.hasNext (); ) {
+		    Task t = (Task) i.next ();
+		    t.performDetach ();
+		}
+		return new DetachingAllTasks (attachedTasks);
+	    }
 	}
     }
 
@@ -278,6 +316,12 @@ abstract class ProcState
 	    // All done, notify.
 	    proc.observableDetached.notify (proc);
 	    return unattached;
+	}
+	ProcState processPerformAddObservation (Proc proc,
+						Observation observation)
+	{
+	    // Ulgh, detaching and a new observer arrived.
+	    return Attaching.state (proc, observation, false);
 	}
     }
 
