@@ -1,5 +1,9 @@
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Add .assertTaskGone, use.  For
+	testAttachDetachManyTasks, only create 20 tasks.  Rename
+	testDetachExitingTask to testDetachExitingMainTask.
+
 	* TestLib.java: Add Child.findTaskUsingRefresh, and .getPid.  Add
 	.isChildOf, and isDescendantOf.  Delete .sigKill.
 	* TestTaskAttachedObserver.java: Update.

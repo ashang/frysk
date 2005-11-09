@@ -70,6 +70,30 @@ public class TestTaskAttachedObserver
     }
 
     /**
+     * Send .theSig to .thePid, and then keep probeing .thePid until
+     * it no longer exists.
+     */
+    private void assertTaskGone (final int thePid, final int theSig)
+    {
+	Manager.eventLoop.add (new TimerEvent (0, 50)
+	    {
+		int pid = thePid;
+		int sig = theSig;
+		public void execute ()
+		{
+		    try {
+			Signal.tkill (pid, sig);
+			sig = 0;
+		    }
+		    catch (Errno.Esrch e) {
+			Manager.eventLoop.requestStop ();
+		    }
+		}
+	    });
+	assertRunUntilStop ("task gone");
+    }
+
+    /**
      * Attach to the list of tasks.
      */
     private AttachedObserver attach (final Task[] tasks)
@@ -126,20 +150,7 @@ public class TestTaskAttachedObserver
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	Manager.eventLoop.add (new TimerEvent (0, 50)
-	    {
-		int pid = tasks[0].proc.getPid ();
-		public void execute ()
-		{
-		    try {
-			Signal.kill (pid, Sig.KILL);
-		    }
-		    catch (Errno.Esrch e) {
-			Manager.eventLoop.requestStop ();
-		    }
-		}
-	    });
-	assertRunUntilStop ("process gone");
+	assertTaskGone (tasks[0].proc.getPid (), Sig.KILL);
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
@@ -188,7 +199,7 @@ public class TestTaskAttachedObserver
      */
     public void testAttachDetachManyTasks ()
     {
-	int count = 100;
+	int count = 20;
 	Child child = new DaemonChild (count);
 	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
 	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
@@ -200,7 +211,7 @@ public class TestTaskAttachedObserver
      * Check that detaching from a task that has already started to
      * exit works.
      */
-    public void testDetachExitingTask ()
+    public void testDetachExitingMainTask ()
     {
 	// Create a detached child.
 	Child child = new DaemonChild ();
