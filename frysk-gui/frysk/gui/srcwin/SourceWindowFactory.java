@@ -65,7 +65,7 @@ public class SourceWindowFactory {
 			// Do something here to revive the existing window
 			System.out.println("Window was already open, refreshing");
 			s = (SourceWindow) map.get(task);
-			s.refresh();
+			s.grabFocus();
 		}
 		else{
 			// Do real stuff here
@@ -162,9 +162,8 @@ public class SourceWindowFactory {
 						 glade,
 						imagePaths,
 						dom, stack1);
-				
+				s.setMyTask(task);
 				s.addListener(new SourceWinListener());
-				
 				
 			}
 			else{
@@ -181,10 +180,15 @@ public class SourceWindowFactory {
 
 		public boolean lifeCycleQuery(LifeCycleEvent arg0) {
 			
+            /*
+             * If the window is closing we want to remove it and it's
+             * task from the map, so that we know to create a new 
+             * instance next time
+             */
 			if(arg0.isOfType(LifeCycleEvent.Type.DELETE)){
-				System.out.println(arg0.getSource().getClass());
 				if(map.containsValue(arg0.getSource())){
-					
+					SourceWindow s = (SourceWindow) arg0.getSource();
+                    map.remove(s.getMyTask());
 				}
 			}
 			
