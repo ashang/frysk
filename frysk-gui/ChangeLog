@@ -1,3 +1,9 @@
+2005-11-09  Igor Foox  <ifoox@redhat.com>
+
+	* configure.ac:
+	* Makefile.ac: Changed to use libcdtparser.so from frysk-imports instead of
+	the frysk-cdtparser package.
+
 2005-11-04  Adam Jocksch  <ajocksch@redhat.com>
 
 	* configure.ac: Now checks for cdt parser files (taken from frysk-gui
