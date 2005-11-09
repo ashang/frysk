@@ -233,7 +233,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 			e1.printStackTrace();
 		}
 		/*--------------------------------------*
-		 *  INSERT LOADING PREFS FROM FILE HERE *
+		 *  TODO INSERT LOADING PREFS FROM FILE HERE *
 		 *--------------------------------------*/
 		
 		this.populateStackBrowser(this.stack);
