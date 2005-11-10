@@ -1,12 +1,17 @@
+2005-11-10  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CONFIG_FILES): Remove tlwidgets/Makefile.
+	* Makefile.am (SUBDIRS): Remove tlwidgets.
+
 2005-11-09    <moller@mollerware.com>
 
-	* Makefile.am: added tlwidgets to SUBDIRS
-	* configure.ac: added tlwidgets/Makefile to AC_CONFIG_FILES
+	* Makefile.am: Added tlwidgets to SUBDIRS.
+	* configure.ac: Added tlwidgets/Makefile to AC_CONFIG_FILES.
 
 2005-11-09  Igor Foox  <ifoox@redhat.com>
 
-	* autogen.sh:
-	* configure.ac: Changed to use cdtparser.jar from eclipse-cdt package.
+	* autogen.sh, configure.ac: Changed to use cdtparser.jar from
+	eclipse-cdt package.
 
 2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
 
