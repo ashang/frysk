@@ -37,22 +37,16 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
-import frysk.gui.monitor.WindowManager;
-import frysk.proc.Proc;
+import frysk.proc.Task;
 
-
-public class Detach extends ProcAction {
-
-	public Detach() {
-		super("Detach", "Detach from an attached process");
+public abstract class TaskFilter extends Filter {
+	
+	TaskFilter(String name, String toolTip) {
+		super(name, toolTip);
 	}
 
-	public void execute(Proc proc) {
-        proc.observableDetached.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
-        proc.requestDetachedContinue();        
-	}
+	public abstract boolean filter(Task task);
 	
 }
-

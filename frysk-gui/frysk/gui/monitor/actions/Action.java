@@ -41,8 +41,9 @@ package frysk.gui.monitor.actions;
 
 
 public abstract class Action {
-	protected String toolTip;
-	protected String name;
+	private String toolTip;
+	private String name;
+	
 	protected Runnable runnable;
 	
 	public Action() {

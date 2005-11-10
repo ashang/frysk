@@ -37,22 +37,35 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
-import frysk.gui.monitor.WindowManager;
-import frysk.proc.Proc;
+import java.util.Iterator;
+import java.util.LinkedList;
 
+import frysk.proc.Task;
 
-public class Detach extends ProcAction {
-
-	public Detach() {
-		super("Detach", "Detach from an attached process");
-	}
-
-	public void execute(Proc proc) {
-        proc.observableDetached.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
-        proc.requestDetachedContinue();        
+public class TaskFilterPoint extends FilterPoint {
+	
+	public TaskFilterPoint() {
+		super();
 	}
 	
-}
+	public void addFilter(TaskFilter filter){
+		this.filters.add(filter);
+	}
+	
+	public boolean filter(Task task){
+		Iterator iter = this.filters.iterator();
+		while(iter.hasNext()){
+			TaskFilter filter = (TaskFilter) iter.next();
+			if(!filter.filter(task)){
+				return false;
+			}
+		}
+		return true;
+	}
 
+	public LinkedList getApplicableFilters() {
+		return FilterManager.theManager.getTaskFilters();
+	}
+}

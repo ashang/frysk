@@ -1,3 +1,28 @@
+2005-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/TaskFilterPoint.java: New file.
+	* filters/TaskFilter.java: New file.
+	* filters/ProcFilterPoint.java: New file.
+	* filters/ProcFilter.java: Uses new name/tooltip constructor. Removed
+	old function filter() function.
+	* filters/NameProcFilter.java: Uses new name/tooltip constructor.
+	* filters/FilterPoint.java: Added constructor, and getApplicableFilters
+	function.
+	* filters/FilterManager.java: Added get(Proc/Task)Filters functions.
+	* filters/Filter.java: Added name/toolTip and code to set/get.
+	* actions/Detach.java: Now uses super constructor instead fo direct access.
+	* actions/Stop.java: Ditto.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/ProcAction.java: Ditto.
+	* actions/TaskAction.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/Attach.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* actions/Action.java: Change name/toolTip strings to private.
+	* observers/ObserverRoot.java: Ditto.
+	
 2005-11-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramViewPage.java (selectionChangedEvent): Added
@@ -5,7 +30,7 @@
 	* ProgramDataModel.java (getObjectDataDC): Added.
 
 2005-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
-
+	
 	* observers/SyscallObserver.java: Changed RootObserver to TaskRootObserver.
 	* observers/TaskObserverRoot.java: New File.
 	* observers/TaskTerminatingObserver.java: Ditto.

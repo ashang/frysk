@@ -46,6 +46,7 @@ public class NameProcFilter extends ProcFilter {
 	private String procName;
 
 	public NameProcFilter(String procName){
+		super("Name Filter", "Filters for the proc with the name " + procName);
 		this.procName = procName;
 	}
 	

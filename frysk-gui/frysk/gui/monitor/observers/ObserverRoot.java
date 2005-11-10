@@ -19,8 +19,8 @@ import frysk.proc.TaskObserver;
  * */
 public abstract class ObserverRoot implements TaskObserver, Observer{
 
-		protected String toolTip;
-		protected String name;
+		private String name;
+		private String toolTip;
 
 		private LinkedList actions;
 		private LinkedList runnables;
@@ -127,8 +127,6 @@ public abstract class ObserverRoot implements TaskObserver, Observer{
 			Iterator iter = this.actions.iterator();
 			while(iter.hasNext()){
 				Action action = (Action)iter.next();
-				System.out.println(" Action: " + action.getName());
-				System.out.println(" Action: " + action.getToolTip());
 				action.execute();
 			}
 		}

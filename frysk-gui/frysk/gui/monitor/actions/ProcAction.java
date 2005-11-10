@@ -43,6 +43,11 @@ import frysk.proc.Proc;
 
 public abstract class ProcAction extends Action {
 	
+	
+	public ProcAction(String name, String toolTip) {
+		super(name, toolTip);
+	}
+
 	public abstract void execute(Proc proc);
 
 	public void execute(Proc[] procs){

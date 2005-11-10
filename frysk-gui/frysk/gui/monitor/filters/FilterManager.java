@@ -51,14 +51,14 @@ public class FilterManager extends Observable {
 	
 	public static FilterManager theManager = new FilterManager();
 	
-	private LinkedList filters;
+	private LinkedList procFilters;
+	private LinkedList taskFilters;
 	
 	public FilterManager(){
-		this.filters = new LinkedList();
+		this.procFilters = new LinkedList();
 		this.initFilterList();
 	}
 	
-
 	private void initFilterList() {
 	}
 
@@ -78,16 +78,24 @@ public class FilterManager extends Observable {
 	/**
 	 * add an observer to the list of available observers.
 	 * */
-	public void addProcFilterPrototype(Filter observer){
-		this.filters.add(observer);
+	public void addProcFilterPrototype(ProcFilter filter){
+		this.procFilters.add(filter);
 		this.hasChanged();
 		this.notifyObservers();
 	}
 	
-	public void addTaskFilterPrototype(Filter filter){
-		this.filters.add(filter);
+	public void addTaskFilterPrototype(TaskFilter filter){
+		this.taskFilters.add(filter);
 		this.hasChanged();
 		this.notifyObservers();
+	}
+
+	public LinkedList getProcFilters() {
+		return this.procFilters;
+	}
+
+	public LinkedList getTaskFilters() {
+		return this.taskFilters;
 	}
 	
 }

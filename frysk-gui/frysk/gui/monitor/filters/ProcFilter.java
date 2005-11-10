@@ -43,9 +43,10 @@ import frysk.proc.Proc;
 
 public abstract class ProcFilter extends Filter {
 	
-	public boolean filter(){
-		throw new RuntimeException("This function should not be called. use filter(Proc) instead");
+	ProcFilter(String name, String toolTip) {
+		super(name, toolTip);
 	}
-	
+
 	public abstract boolean filter(Proc proc);
+	
 }

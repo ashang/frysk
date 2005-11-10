@@ -45,8 +45,7 @@ import frysk.proc.Proc;
 public class Resume extends ProcAction {
 	
 	public Resume() {
-		this.name = "Resume";
-		this.toolTip = "Resume execution of the current process";
+		super("Resume", "Resume execution of the current process");
 	}
 
 	public void execute(Proc proc) {

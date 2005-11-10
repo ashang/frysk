@@ -45,8 +45,7 @@ import frysk.proc.Proc;
 public class Attach extends ProcAction {
 
     public Attach() {
-            this.name = "Attach";
-            this.toolTip = "Attach to a running process";
+    	super("Attach", "Attach to a running process");
     }
 
 	public void execute(Proc proc) {

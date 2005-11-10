@@ -23,7 +23,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 
 	public TaskForkedObserver(TaskForkedObserver observer) {
-		super(observer.name, observer.toolTip);
+		super(observer);
 	}
 
 	public Action updateForked(Task task, Proc child) {

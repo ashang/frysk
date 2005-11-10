@@ -45,8 +45,7 @@ import frysk.proc.Proc;
 public class Stop extends ProcAction {
 	
 	public Stop() {
-		this.name = "Stop";
-		this.toolTip = "Stop current process";
+		super("Stop", "Stop current process");
 	}
 
     public void execute(Proc proc) {

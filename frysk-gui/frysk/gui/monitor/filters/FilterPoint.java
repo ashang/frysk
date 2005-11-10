@@ -50,6 +50,15 @@ import java.util.LinkedList;
  * Clients of observers add desired Filters to the correct
  * filter points.
  * */
-public class FilterPoint {
-	LinkedList filters;
+public abstract class FilterPoint {
+	protected LinkedList filters;
+	
+	public FilterPoint() {
+		this.filters = new LinkedList();
+	}
+	
+	/**
+	 * Retrieves a list of applicable filters from the FilterManager.
+	 * */
+	public abstract LinkedList getApplicableFilters();
 }

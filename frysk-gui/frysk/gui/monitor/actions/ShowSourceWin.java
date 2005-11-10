@@ -45,8 +45,7 @@ import frysk.proc.Task;
 public class ShowSourceWin extends TaskAction {
 	
 	public ShowSourceWin() {
-		this.name = "Source";
-		this.toolTip = "Show a source window.";
+		super("Source", "Show a source window.");
 	}
 
 	public void execute(Task task) {

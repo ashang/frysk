@@ -44,8 +44,7 @@ import frysk.proc.Proc;
 public class PrintProc extends ProcAction {
 	
 	public PrintProc() {
-		this.name = "Print State";
-		this.toolTip = "Print the state of the selected process or thread";
+		super("Print State", "Print the state of the selected process or thread");
 	}
 
 	public void execute(Proc proc) {
