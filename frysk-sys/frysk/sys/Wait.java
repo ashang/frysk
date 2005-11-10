@@ -72,18 +72,11 @@ public final class Wait
 	 */
  	void execEvent (int pid);
 	/**
-	 * The task PID got a syscall event; the task is either
-	 * entering or exiting a system call.
-	 * An integer identifier is passed:
-	 *   0 = entry
-	 *   1 = exit
-	 *  -1 = don't know
-	 *
-	 * XXX: It isn't currently possible to determine which of enter
-	 * or exit is occuring.  This information must be supplied by
-	 * the low-level event.
+	 * XXX: It isn't currently possible to determine from the
+	 * syscall event whether it is entry or exit.  We must
+	 * do state transitioning in the upper-level and figure it out.
 	 */
- 	void syscallEvent (int pid, int syscallType);
+ 	void syscallEvent (int pid);
 	/**
 	 * The task PID stopped; if SIGNAL is non-zero, then SIGNAL is
 	 * pending.

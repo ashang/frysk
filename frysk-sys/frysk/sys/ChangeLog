@@ -1,3 +1,8 @@
+2005-11-10  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* Wait.java (syscallEvent): Revert change on 2005-11-07.
+	* cni/Wait.cxx (processStatus): Ditto.
+
 2005-11-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Wait.java: Add Throwable argument to .disappeared.
