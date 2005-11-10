@@ -75,46 +75,46 @@ public class TestSyscallOpen
 	{
 	    public Action updateSyscallEnter (Task task)
 	    {
-		fail ("not implemented");
-		return null;
-	    }
-	    public Action updateSyscallExit (Task task)
-	    {
-		fail ("not implemented");
-		return null;
-	    }
-	    public Action updateSyscallXXX (Task task)
-	    {
 		syscallTaskEventCount++;
-		inSyscall = !inSyscall;
+		inSyscall = true;
 		SyscallEventInfo syscallEventInfo
 		    = task.getIsa ().getSyscallEventInfo ();
 		int syscallNum = syscallEventInfo.number (task);
-		if (inSyscall) {
-		    // syscall.printCall (writer, task, syscallEventInfo);
-		    // verify that open attempted for file a.file
-		    if (syscallNum == SyscallNum.SYSopen) { 
-			long addr = syscallEventInfo.arg (task, 1);
-			StringBuffer x = new StringBuffer ();
-			task.memory.get (addr, x);
-			String name = x.toString ();
-			if (name.indexOf (openName) >= 0) {
-			    testFileOpened = true;
-			    openingTestFile = true;
-			}
-		    }
-		}
-		else {
-		    // syscall.printReturn (writer, task, syscallEventInfo);
-		    // verify that open fails with ENOENT errno
-		    if (syscallNum == SyscallNum.SYSopen && openingTestFile) {
-			openingTestFile = false;
-			int rc = (int)syscallEventInfo.returnCode (task);
-			if (rc == -2) // ENOENT
-			    expectedRcFound = true;
+		// syscall.printCall (writer, task, syscallEventInfo);
+		// verify that open attempted for file a.file
+		if (syscallNum == SyscallNum.SYSopen) { 
+		    long addr = syscallEventInfo.arg (task, 1);
+		    StringBuffer x = new StringBuffer ();
+		    task.memory.get (addr, x);
+		    String name = x.toString ();
+		    if (name.indexOf (openName) >= 0) {
+		        testFileOpened = true;
+		        openingTestFile = true;
 		    }
 		}
 		return Action.CONTINUE;
+	    }
+	    public Action updateSyscallExit (Task task)
+	    {
+		syscallTaskEventCount++;
+		inSyscall = false;
+		SyscallEventInfo syscallEventInfo
+		    = task.getIsa ().getSyscallEventInfo ();
+		int syscallNum = syscallEventInfo.number (task);
+		// syscall.printReturn (writer, task, syscallEventInfo);
+		// verify that open fails with ENOENT errno
+		if (syscallNum == SyscallNum.SYSopen && openingTestFile) {
+		    openingTestFile = false;
+		    int rc = (int)syscallEventInfo.returnCode (task);
+		    if (rc == -2) // ENOENT
+		    expectedRcFound = true;
+		}
+		return Action.CONTINUE;
+	    }
+	    public Action updateSyscallXXX (Task task)
+	    {
+		fail ("unexpected updateSyscallXXX");
+		return null;
 	    }
 	}
 	

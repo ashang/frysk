@@ -92,59 +92,51 @@ public class TestI386Modify
 	{
 	    public Action updateSyscallEnter (Task task)
 	    {
-		fail ("not implemented");
-		return null;
-	    }
-	    public Action updateSyscallExit (Task task)
-	    {
-		fail ("not implemented");
-		return null;
-	    }
-	    public Action updateSyscallXXX (Task task)
-	    {
-		syscallState ^= 1;
+		syscallState = 1;
 		SyscallEventInfo syscall
 		    = task.getIsa ().getSyscallEventInfo ();
 		// The low-level assembler code performs an exit syscall
 		// and sets up the registers with simple values.  We want
 		// to verify that all the registers are as expected.
-		if (syscallState == 1) {
-		    // verify that exit syscall occurs
-		    syscallNum = syscall.number (task);
-		    if (syscallNum == 20) { 
-			LinuxIa32 isa = (LinuxIa32)task.getIsa ();
-			ebx = isa.ebx.get (task);
-			assertEquals ("EBX is 22", 22, ebx);
-			ecx = isa.ecx.get (task);
-			assertEquals ("ECX is 23", 23, ecx);
-			// edx contains address of memory location we
-			// are expected to write 8 to
-			edx = isa.edx.get (task);
-			int mem = task.memory.getInt (edx);
-			assertEquals ("Old mem value is 3", 3, mem);
-			task.memory.putInt (edx, 8);
-			mem = task.memory.getInt (edx);
-			assertEquals ("New mem value is 8", 8, mem);
-			ebp = isa.ebp.get (task);
-			assertEquals ("ebp is 21", 21, ebp);
-			// esi contains the address we want to jump to
-			// when we return from the syscall
-			esi = isa.esi.get (task);
-			isa.edi.put (task, esi);
-			// set a number of the registers as expected
-			isa.ebx.put (task, 2);
-			isa.ecx.put (task, 3);
-			isa.edx.put (task, 4);
-			isa.ebp.put (task, 5);
-			isa.esi.put (task, 6);
-		    }
-		    else if (syscallNum == 1) {
-			LinuxIa32 isa = (LinuxIa32)task.getIsa ();
-			ebx = isa.ebx.get (task);
-			assertEquals ("Exit code 2", 2, ebx);
-			exitSyscall = true;
-		    }
+		syscallNum = syscall.number (task);
+		if (syscallNum == 20) { 
+		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
+		    ebx = isa.ebx.get (task);
+		    assertEquals ("EBX is 22", 22, ebx);
+		    ecx = isa.ecx.get (task);
+		    assertEquals ("ECX is 23", 23, ecx);
+		    // edx contains address of memory location we
+		    // are expected to write 8 to
+		    edx = isa.edx.get (task);
+		    int mem = task.memory.getInt (edx);
+		    assertEquals ("Old mem value is 3", 3, mem);
+		    task.memory.putInt (edx, 8);
+		    mem = task.memory.getInt (edx);
+		    assertEquals ("New mem value is 8", 8, mem);
+		    ebp = isa.ebp.get (task);
+		    assertEquals ("ebp is 21", 21, ebp);
+		    // esi contains the address we want to jump to
+		    // when we return from the syscall
+		    esi = isa.esi.get (task);
+		    isa.edi.put (task, esi);
+		    // set a number of the registers as expected
+		    isa.ebx.put (task, 2);
+		    isa.ecx.put (task, 3);
+		    isa.edx.put (task, 4);
+		    isa.ebp.put (task, 5);
+		    isa.esi.put (task, 6);
 		}
+		else if (syscallNum == 1) {
+		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
+		    ebx = isa.ebx.get (task);
+		    assertEquals ("Exit code 2", 2, ebx);
+		    exitSyscall = true;
+		}
+		return Action.CONTINUE;
+	    }
+	    public Action updateSyscallExit (Task task)
+	    {
+		syscallState = 0;
 		return Action.CONTINUE;
 	    }
 	    public Action updateSignaled (Task task, int sig)

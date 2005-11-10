@@ -160,10 +160,6 @@ public interface TaskObserver
 	 * block the task's further execution.
 	 */
 	Action updateSyscallExit (Task task);
-	/**
-	 * XXX: The task is involved in a syscall.  Enter or exit, who can say?
-	 */
-	Action updateSyscallXXX (Task task);
     }
 
     /**

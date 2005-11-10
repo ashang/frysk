@@ -72,18 +72,14 @@ public class TestSyscall2
 	{
 	    public Action updateSyscallEnter (Task task)
 	    {
-		fail ("not implemented");
-		return null;
+		syscallTaskEventCount++;
+		syscallState = 1;
+		return Action.CONTINUE;
 	    }
 	    public Action updateSyscallExit (Task task)
 	    {
-		fail ("not implemented");
-		return null;
-	    }
-	    public Action updateSyscallXXX (Task task)
-	    {
 		syscallTaskEventCount++;
-		syscallState ^= 1;
+		syscallState = 0;
 		return Action.CONTINUE;
 	    }
 	}

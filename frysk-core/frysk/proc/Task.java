@@ -389,15 +389,13 @@ abstract public class Task
     /**
      * (internal) The task is performing a system call.
      */
-    void performSyscalled (final int syscallTypeArg)
+    void performSyscalled ()
     {
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
-		int syscallType = syscallTypeArg;
 		public void execute ()
 		{
-		    state = state.processPerformSyscalled (Task.this, 
-							   syscallType);
+		    state = state.processPerformSyscalled (Task.this);
 		}
 	    });
     }
@@ -758,22 +756,6 @@ abstract public class Task
     public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
     {
 	requestDeleteObserver (syscallObservers, o);
-    }
-    /**
-     * Notify all Syscall observers of this Task's syscall operation.
-     * Entry or exit, who can say?  Return the number of blocking
-     * observers.
-     */
-    int notifySyscallXXX ()
-    {
-	for (Iterator i = syscallObservers.iterator ();
-	     i.hasNext (); ) {
-	    TaskObserver.Syscall observer
-		= (TaskObserver.Syscall) i.next ();
-	    if (observer.updateSyscallXXX (this) == Action.BLOCK)
-		blockers.add (observer);
-	}
-	return blockers.size ();
     }
     /**
      * Notify all Syscall observers of this Task's entry into a system

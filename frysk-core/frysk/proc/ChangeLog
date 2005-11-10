@@ -1,3 +1,24 @@
+2005-11-10  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* LinuxHost.java: Revert previous change to Wait.Observer.syscallEvent
+	function to remove syscall event type parameter.
+	* TestLib.java: Ditto.
+	* Task.java (performSyscalled): Revert previous change and remove
+	syscallType parameter.
+	(notifySyscallXXX): Removed.
+	* TaskObserver.java (updateSyscallXXX): Removed.
+	(stopping.processPerformSyscalled): New member function.
+	(detaching.processPerformSyscalled): Ditto.
+	(running.processPerformSyscalled): Change to notify for syscall
+	entry and then return runningInSyscall state.
+	(runningInSyscall, detachingInSyscall, stoppingInSyscall): New states.
+	* TestI386Modify.java: Modify to use updateSyscallEnter () and
+	updateSyscallExit () rather than updateSyscallXXX ().
+	* TestI386Regs.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+
 2005-11-09  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcState.java: Refactor .DetachingAllTasks into Detaching that

@@ -85,7 +85,7 @@ class TaskState
     {
 	throw unhandled (task, "PerformTrapped");
     }
-    TaskState processPerformSyscalled (Task task, int syscallType)
+    TaskState processPerformSyscalled (Task task)
     {
 	throw unhandled (task, "PerformSyscalled");
     }
@@ -307,6 +307,12 @@ class TaskState
 	    {
 		return stopping;
 	    }
+	    TaskState processPerformSyscalled (Task task)
+	    {
+		task.notifySyscallEnter ();
+		task.sendContinue (0);
+		return stoppingInSyscall;
+	    }
 	    TaskState processPerformStopped (Task task)
 	    {
 		// XXX: Not a standard observer.
@@ -318,6 +324,21 @@ class TaskState
 		// XXX: Not a standard observer.
 		task.requestedStopEvent.notify (task);
 		return paused;
+	    }
+	};
+
+    // A manually stopped task currently in a syscall.
+    private static TaskState stoppingInSyscall = new TaskState ("stoppingInSyscall")
+	{
+	    TaskState processRequestStop (Task task)
+	    {
+		return stoppingInSyscall;
+	    }
+	    TaskState processPerformSyscalled (Task task)
+	    {
+		task.notifySyscallExit ();
+		task.sendContinue (0);
+		return stopping;
 	    }
 	};
 
@@ -338,16 +359,11 @@ class TaskState
 		    return running;
 		}
 	    }
-	    TaskState processPerformSyscalled (Task task, int syscallType)
+	    TaskState processPerformSyscalled (Task task)
 	    {
-		if (syscallType == SyscallEventInfo.ENTER)
-		    task.notifySyscallEnter ();
-		else if (syscallType == SyscallEventInfo.EXIT)
-		    task.notifySyscallExit ();
-		else // We don't know what type of event it is.
-		    task.notifySyscallXXX ();
+		task.notifySyscallEnter ();
 		task.sendContinue (0);
-		return running;
+		return runningInSyscall;
 	    }
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)
@@ -427,6 +443,58 @@ class TaskState
 	    }
 	};
 
+    // Task is running inside a syscall.
+    private static TaskState runningInSyscall = new TaskState ("runningInSyscall")
+	{
+	    // XXX: We needn't look for signal events because the
+	    // syscall will exit before we get the signal, however, we still.
+	    // need to look for terminating and terminated events
+	    // because an exit syscall will produce these events and
+	    // never produce a syscall-exit event.
+
+	    boolean isRunning ()
+	    {
+		return true;
+	    }
+	    TaskState processPerformSyscalled (Task task)
+	    {
+		task.notifySyscallExit ();
+		task.sendContinue (0);
+		return running;
+	    }
+	    TaskState processPerformTerminating (Task task, boolean signal,
+						 int value)
+	    {
+		task.notifyTerminating (signal, value);
+		if (signal)
+		    task.sendContinue (value);
+		else
+		    task.sendContinue (0);
+		return runningInSyscall;
+	    }
+	    TaskState processPerformTerminated (Task task, boolean signal,
+						int value)
+	    {
+		task.proc.remove (task);
+		processAttachedTerminated (task, signal, value);
+		return destroyed;
+	    }
+	    TaskState processRequestStop (Task task)
+	    {
+		task.sendStop ();
+		return stoppingInSyscall;
+	    }
+	    TaskState processRequestContinue (Task task)
+	    {
+		return runningInSyscall;
+	    }
+	    TaskState processPerformDetach (Task task)
+	    {
+		task.sendStop ();
+		return detachingInSyscall;
+	    }
+	};
+
     private static TaskState performingStop = new TaskState ("performingStop")
 	{
 	    TaskState processPerformStopped (Task task)
@@ -447,6 +515,38 @@ class TaskState
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
+	    }
+	    TaskState processPerformSyscalled (Task task)
+	    {
+		task.notifySyscallEnter ();
+		task.sendContinue (0);
+		return detachingInSyscall;
+	    }
+	    TaskState processPerformTerminating (Task task, boolean signal,
+						 int value)
+	    {
+		if (signal)
+		    task.sendDetach (value);
+		else
+		    task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
+	};
+
+    private static TaskState detachingInSyscall = new TaskState ("detachingInSyscall")
+	{
+	    TaskState processPerformStopped (Task task)
+	    {
+		task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
+	    TaskState processPerformSyscalled (Task task)
+	    {
+		task.notifySyscallExit ();
+		task.sendContinue (0);
+		return detaching;
 	    }
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)

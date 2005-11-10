@@ -945,7 +945,7 @@ public class TestLib
  	public void forkEvent (int pid, int child) { }
  	public void exitEvent (int pid, boolean signal, int value, boolean coreDumped) { }
  	public void execEvent (int pid) { }
- 	public void syscallEvent (int pid, int syscallType) { }
+ 	public void syscallEvent (int pid) { }
  	public void stopped (int pid, int signal) { }
  	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { }
 	public void disappeared (int pid, Throwable w) { }
@@ -963,7 +963,7 @@ public class TestLib
  	public void forkEvent (int pid, int child) { fail (message); }
  	public void exitEvent (int pid, boolean signal, int value, boolean coreDumped) { fail (message); }
  	public void execEvent (int pid) { fail (message); }
- 	public void syscallEvent (int pid, int syscallType) { fail (message); }
+ 	public void syscallEvent (int pid) { fail (message); }
  	public void stopped (int pid, int signal) { fail (message); }
  	public void terminated (int pid, boolean signal, int value, boolean coreDumped) { fail (message); }
 	public void disappeared (int pid, Throwable w) { fail (message); }
@@ -1116,7 +1116,7 @@ public class TestLib
 			{
 			    detach (pid);
 			}
-			public void syscallEvent (int pid, int syscallType)
+			public void syscallEvent (int pid)
 			{
 			    detach (pid);
 			}

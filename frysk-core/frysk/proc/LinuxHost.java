@@ -258,10 +258,10 @@ public class LinuxHost
 		    Task task = get (new TaskId (pid));
 		    task.performDisappeared (w);
 		}
-		public void syscallEvent (int pid, int syscallType)
+		public void syscallEvent (int pid)
 		{
 		    Task task = get (new TaskId (pid));
-		    task.performSyscalled (syscallType);
+		    task.performSyscalled ();
 		}
 		public void stopped (int pid, int sig)
 		{
