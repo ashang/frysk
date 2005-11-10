@@ -66,7 +66,6 @@ import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
 import org.gnu.gtk.TreePath;
-import org.gnu.gtk.TreeSelection;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
@@ -74,8 +73,6 @@ import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-import org.gnu.gtk.event.MouseEvent;
-import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeModelEvent;
 import org.gnu.gtk.event.TreeModelListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -90,8 +87,6 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 public class ProgramAddWindow extends Window implements LifeCycleListener, Saveable { 
 
-	
-	
 	private Entry programEntry;
 	private FileChooserButton programOpenFileDialog;
 	private TreeView programTreeView;
@@ -104,25 +99,32 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private boolean applyLastClicked = false;
 	DataColumn[] observerDC;
 	
-		private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	
+	// Static error logger.
+	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 
 	public ProgramAddWindow(LibGlade glade) {
+		// Get Window
 		super(((Window) glade.getWidget("programAddWindow")).getHandle());
+		// Apply Listener
 		this.addListener(this);
+		// Get widgets from glade file.
 		getGladeWidgets(glade);
+		// Build Data Model
 		createDataModel();
+		//Mount Process Data Model.
 		mountProcModel(this.psDataModel);
+		// Build Listeners.
 		setTreeListeners();
+		// Build Applied Observer Listbox.
 		buildObserverListBox();
-		//setFileButtonListener();
+		// Setup Button Listeners.
 		setApplyCancelButtonListener();
 	}
 
 	private void setApplyCancelButtonListener() {
 		
 		programCancel.addListener(new ButtonListener(){
-			
-
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
 					cancelLastClicked = true;
@@ -168,7 +170,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		TreePath[] pProcesses = programTreeView.getSelection().getSelectedRows();
 		TreeModel pModel = this.procFilter;
-//		TreeStore pModel = (TreeStore) psDataModel.getModel();
 		
 		for (int i=0; i<pProcesses.length;i++)
 		{
@@ -182,12 +183,10 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 				processes,observers);
 		
 		pData.save();
-		
 		ProgramDataModel.theManager.add(pData);
 	}
 	
 	private String doValidation() {
-		
 		// File Checks
 		if (programEntry.getText().length() <= 0)
 			return "You must give this monitor a name";
@@ -210,26 +209,32 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			return "You must choose an executable to watch";
 		}
 		
+		// Check an executable has been given.
 		if (programOpenFileDialog.getFilename().length() < 1)
 			return "You must choose an executable to watch";
 		
-		
 		File existenceCheck = new File(programOpenFileDialog.getFilename());
 		
+		// Checks to see if executable actually exists.
 		if (existenceCheck.exists() == false)
 			return "Filename specified does not exist on disk";
+		
+		// Checks to see if the executable is readable
 		if (existenceCheck.canRead() == false)
 			return "Cannot read specified file";
+		
+		// Checks to see if the executable is a file, not a directory.
 		if (existenceCheck.isDirectory())
 			return "Must be a filename, not a directory";
 		
+		// Checks to see if at least one process is selected.
 		if (programTreeView.getSelection().getSelectedRows().length < 1)
 			return "Please select at least one process that will spawn filename";
 		
+		// Checks to see if at least one  observer is selected.
 		if (programObseverListBox.getSelection().getSelectedRows().length < 1)
 			return "Please select at least one observer to apply";
-		
-			
+
 		return "";
 	}
 
@@ -301,9 +306,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	}
 	
 	private void buildObserverListBox() {
-
-		// No observer data model to query yet
-		// for list of observers. Fake it out.
 		
 		observerDC = new DataColumn[1];
 		observerDC[0] = new DataColumnString();
@@ -320,12 +322,11 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		   observerCol.addAttributeMapping(Obrender,
 		 CellRendererText.Attribute.TEXT, (DataColumnString)observerDC[0]);
 		 
-		 observerCol.setTitle("Available Observers");
+		observerCol.setTitle("Available Observers");
 		   
 		this.programObseverListBox.appendColumn(observerCol);
 		
-		// No data model to query. Fake items
-		
+		// Interrogate ObserverManager for a list of available observers
 		Iterator observerIterator = ObserverManager.theManager.getObservers().iterator();
 		
 		TreeIter it = null;
@@ -333,7 +334,8 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		while (observerIterator.hasNext())
 		{
 			it = ls.appendRow();
-			ls.setValue(it, (DataColumnString)observerDC[0], ((ObserverRoot)observerIterator.next()).getName());
+			ls.setValue(it, (DataColumnString)observerDC[0], 
+					((ObserverRoot)observerIterator.next()).getName());
 		}
 	}
 	
@@ -350,21 +352,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		this.programApply = (Button) glade.getWidget("programApply");
 	}
 
-	private ProcData getSelectedProc() {
-		TreeSelection ts = this.programTreeView.getSelection();
-		TreePath[] tp = ts.getSelectedRows();
-
-		if (tp.length == 0) {
-			return null;
-		}
-
-		TreeModel model = this.procFilter;
-		ProcData data = (ProcData) model.getValue(model.getIter(tp[0]),
-				this.psDataModel.getProcDataDC());
-		model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
-
-		return data;
-	}
 
 	private void createDataModel() {
 		try {
@@ -377,6 +364,9 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	}
 
 	private void setTreeListeners() {
+
+		this.programTreeView.setHeadersClickable(true);
+		
 		this.programTreeView.getSelection().addListener(
 				new TreeSelectionListener() {
 					public void selectionChangedEvent(TreeSelectionEvent event) {
@@ -392,25 +382,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 						}
 					}
 				});
-
-		this.programTreeView.setHeadersClickable(true);
-
-		this.programTreeView.addListener(new MouseListener() {
-
-			public boolean mouseEvent(MouseEvent event) {
-				if (event.getType() == MouseEvent.Type.BUTTON_PRESS
-						& event.getButtonPressed() == MouseEvent.BUTTON3) {
-
-					ProcData data = getSelectedProc();
-					if (data != null)
-						// WatchMenu.getMenu().popup(data);
-
-						System.out.println("click : " + data);
-					return true;
-				}
-				return false;
-			}
-		});
 	}
 
 	public void lifeCycleEvent(LifeCycleEvent event) {
@@ -418,8 +389,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	}
 
 	public boolean lifeCycleQuery(LifeCycleEvent event) {
-		// TODO Auto-generated method stub
-		
 		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
 					this.hideAll();
@@ -446,7 +415,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		int width  = prefs.getInt("size.width", this.getSize().getWidth());
 		int height = prefs.getInt("size.height", this.getSize().getHeight());
 		this.resize(width, height);
-		
 	}
 	
 	public boolean applyLastClicked()
@@ -466,12 +434,5 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		this.programEntry.setText(data.getName());
 		this.programOpenFileDialog.setFilename(data.getExecutable());
-
-	//	private FileChooserButton programOpenFileDialog;
-		//private TreeView programTreeView;
-	//	private TreeView programObseverListBox;
-		
 	}
-
-
 }

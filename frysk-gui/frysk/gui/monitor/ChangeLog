@@ -1,3 +1,9 @@
+2005-11-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramAddWindow.java: Clean up and add comments. Remove
+	unused listeners. Removed getSelectedProc.
+	* ProgramDataModel.java: Clean up and add javadoc.
+
 2005-11-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* actions/ForkedAction.java: New file.
@@ -23,7 +29,7 @@
 	* ProgramViewPage.java (selectionChangedEvent): Extruded
 	tooltip from listener and placed formulation in Data
 	Model.
-	* ProgramDataModel.java (getTip): Added.
+	* ProgramDataModel.java: (getTip): Added.
 	
 
 2005-11-09  Sami Wagiaalla  <swagiaal@redhat.com>

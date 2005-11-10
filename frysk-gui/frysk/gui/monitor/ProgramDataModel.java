@@ -59,6 +59,7 @@ import org.gnu.gtk.TreePath;
 import org.gnu.pango.Weight;
 
 /**
+ * 
  * The data model that stores data about currently watched
  * programs.
  * */
@@ -70,7 +71,7 @@ public class ProgramDataModel {
 	private ListStore listStore;
 	private TreeModelFilter filteredStore;
 	
-	DataColumn[] columns;
+	private DataColumn[] columns;
 	
 	private DataColumnBoolean enabledDC;
 	private DataColumnString programEventNameDC;
@@ -79,22 +80,8 @@ public class ProgramDataModel {
 	private DataColumnObject programEventDataDC;
 	private DataColumnInt weightDC;
 	
-	//private HashMap iterHash;
-	
-	//private int currentFilter;
-	
-	/** stores filter argument if it is of type int */ 
-	//private int intFilterArgument;
-	/** stores filter argument if it is of type String */
-	//private String stringFilterArgument;
 
-	//private boolean filterON;
-			
-	//private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
-
-	
 	public ProgramDataModel() {
-
 		
 		this.enabledDC     = new DataColumnBoolean();
 		this.programEventNameDC = new DataColumnString();
@@ -114,33 +101,60 @@ public class ProgramDataModel {
 		this.listStore = new ListStore(columns);	
 		this.filteredStore = new TreeModelFilter(this.listStore);
 		this.filteredStore.setVisibleColumn(visibleDC);
-		
-		//this.iterHash = new HashMap();
-		//this.currentFilter = FilterType.NONE;		
-		//this.filterON = true;
-		
+			
 	}
 	
+	/**
+	 * Returns the boolean data column type for this model.
+	 * 
+	 * @return - Boolean. 
+	 */
 	public DataColumnBoolean getEnabledDC() {
 		return this.enabledDC;
 	}
 
+	/**
+	 * Returns the string data column type for this model.
+	 * 
+	 * @return - String. 
+	 */
 	public DataColumnString getEventNameDC() {
 		return this.programEventNameDC;
 	}
 
+	/**
+	 * Returns the string data column type for this model.
+	 * 
+	 * @return - String. 
+	 */
 	public DataColumnString getColorDC() {
 		return this.colorDC;
 	}
 
+	/**
+	 * Returns the object data column type for this model.
+	 * 
+	 * @return - DataColumnObject. 
+	 */
 	public DataColumnObject getObjectDataDC() {
 		return this.programEventDataDC;
 	}
 	
+	/**
+	 * Returns the weight data column type for this model.
+	 * 
+	 * @return - DataColumnInt. 
+	 */
 	public DataColumnInt getWeightDC() {
 		return this.weightDC;
 	}
 	
+	/**
+	 * Toggles the enabled flag from it's current state to it's opposite state at
+	 * the given row. Saves the model to disk.
+	 * 
+	 * @param row - String. Source row number  in tree.
+	 */
 	public void toggle(String row) 
 	{
 		TreeIter it = null;
@@ -155,9 +169,15 @@ public class ProgramDataModel {
 					
 		listStore.setValue(it, (DataColumnBoolean) enabledDC, selected.isEnabled());
 		selected.save();
-		
 	}
 	
+	/**
+	 * Returns a preformatted tip of the given TreePath element in the
+	 * tree that can be used in ToolTips.
+	 * 
+	 * @param path - TreePath. Source element in the tree
+	 * @return - String.  Pre-formatted tip.
+	 */
 	public String getTip(TreePath path)
 	{
 		String tip = "";
@@ -192,6 +212,13 @@ public class ProgramDataModel {
 		
 	}
 	
+	/**
+	 * Returns the underlying ProgramData class instance
+	 * that forms the DataColumnObject element of the tree
+	 * 
+	 * @param  - TreePath. Source element in the tree
+	 * @return - ProgramData. 
+	 */
 	public ProgramData interrogate(TreePath path)
 	{
 		TreeIter it = listStore.getIter(path.toString());
@@ -199,6 +226,13 @@ public class ProgramDataModel {
 		return value;
 	}
 	
+	/**
+	 * Adds the parameter ProgramData object to thre tree. Construct the other column
+	 * elements from the passed ProgramData parameter.
+	 * 
+	 * @param data - ProgramData. Adds the passed ProgramData object to the tree.
+	 * 
+	 */
 	public void add(ProgramData data)
 	{
 		TreeIter it = null;
@@ -210,10 +244,12 @@ public class ProgramDataModel {
 
 	}
 	
+	/**
+	 * Returns the model used in ProgramDataModel.
+	 *
+	 * @return TreeModel
+	 */
 	public TreeModel getModel() {
 		return this.listStore;
 	}
-	
-		
-	
 }
