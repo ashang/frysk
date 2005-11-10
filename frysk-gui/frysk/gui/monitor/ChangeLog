@@ -1,3 +1,11 @@
+2005-11-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramViewPage.java (selectionChangedEvent): Extruded
+	tooltip from listener and placed formulation in Data
+	Model.
+	* ProgramDataModel.java (getTip): Added.
+	
+
 2005-11-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/TaskFilterPoint.java: New file.

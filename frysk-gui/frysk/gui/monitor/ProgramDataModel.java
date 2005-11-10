@@ -44,6 +44,8 @@
  */
 package frysk.gui.monitor;
 
+import java.util.Iterator;
+
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnInt;
@@ -153,6 +155,40 @@ public class ProgramDataModel {
 					
 		listStore.setValue(it, (DataColumnBoolean) enabledDC, selected.isEnabled());
 		selected.save();
+		
+	}
+	
+	public String getTip(TreePath path)
+	{
+		String tip = "";
+		TreeIter item = listStore.getIter(path.toString());
+		ProgramData tipStore = (ProgramData) listStore.getValue(item,this.programEventDataDC);
+		
+		
+		tip = "* Name: " + tipStore.getName();
+		tip+="\n" + "* Executable: " + tipStore.getExecutable();
+		tip+="\n" + "* Enabled: " + tipStore.isEnabled(); 
+		tip+="\n" + "* Watched Processes: ";
+			 
+		Iterator i = tipStore.getProcessList().iterator();
+		while (i.hasNext())
+		{
+			tip+= ((String)i.next());
+				   if (i.hasNext())
+					   tip+=", ";
+		}
+			   
+	    tip+="\n* Observers: ";
+
+	    i = tipStore.getObserverList().iterator();
+		while (i.hasNext())
+			   {
+				   tip+=((String)i.next());
+				   if (i.hasNext())
+					   tip+=", ";
+				   
+			   }
+		return tip;
 		
 	}
 	

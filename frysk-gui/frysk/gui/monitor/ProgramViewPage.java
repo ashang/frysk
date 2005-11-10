@@ -46,8 +46,6 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
@@ -145,122 +143,96 @@ public class ProgramViewPage extends Widget {
 	}
 
 
-	public void mountProgramDataModel(final ProgramDataModel programsDataModel){
-		
-//		this.procTreeView.setModel(psDataModel.getModel());
-		
+	public void mountProgramDataModel(final ProgramDataModel programsDataModel) {
+
+		// this.procTreeView.setModel(psDataModel.getModel());
+
 		this.programFilter = new TreeModelFilter(programDataModel.getModel());
-		
-		programFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
+
+		programFilter.setVisibleMethod(new TreeModelFilterVisibleMethod() {
 
 			public boolean filter(TreeModel model, TreeIter iter) {
 
-				return true; 
-				
-//				if(model.getValue(iter, psDataModel.getThreadParentDC()) == -1){
-//					return true;
-//				}else{
-//					return false;
-//				}
+				return true;
+
 			}
-			
+
 		});
-		
+
 		this.programTreeView.setModel(programFilter);
-		this.programTreeView.setSearchDataColumn(programDataModel.getEventNameDC());
+		this.programTreeView.setSearchDataColumn(programDataModel
+				.getEventNameDC());
 		this.programTreeView.setHoverSelection(true);
-		this.programTreeView.addListener(new TreeViewListener(){
+		this.programTreeView.addListener(new TreeViewListener() {
 
 			public void treeViewEvent(TreeViewEvent event) {
-				 if ( event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED ))
-			       {
-					 event.getTreePath();
-					 WindowManager.theManager.programAddWindow.populate(
-							 ProgramDataModel.theManager.interrogate(event.getTreePath()));
-					 WindowManager.theManager.programAddWindow.showAll();
-			       }
-				
-			}});
-		
-		this.programTreeView.getSelection().addListener(new TreeSelectionListener() {
-
-			public void selectionChangedEvent(TreeSelectionEvent event) {
-				TreePath[] selection = programTreeView.getSelection().getSelectedRows();
-				if (selection.length > 0)
-				{
-				   treeTip.enable();
-				   TreeIter item = programTreeView.getModel().getIter( selection[0].toString() );
-				   ProgramData tipData = (ProgramData) programTreeView.getModel().getValue( item, programDataModel.getObjectDataDC());
-				  
-				   String name = "* Name: " + tipData.getName() + "\n" + "* Executable: " + tipData.getExecutable() +
-				   "\n* Enabled: " + tipData.isEnabled() +"\n" + "* Watched Processes: ";
-				   Iterator i = tipData.getProcessList().iterator();
-				   while (i.hasNext())
-				   {
-					   name = name + ((String)i.next());
-					   if (i.hasNext())
-						   name = name +", ";
-					   
-				   }
-				   
-				   name = name +"\n* Observers: ";
-				   i = tipData.getObserverList().iterator();
-				   while (i.hasNext())
-				   {
-					   name = name + ((String)i.next());
-					   if (i.hasNext())
-						   name = name +", ";
-					   
-				   }
-				   
-				   treeTip.setTip(programTreeView, name, null);
-				} else
-					treeTip.disable();
-				   
+				if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
+					event.getTreePath();
+					WindowManager.theManager.programAddWindow
+							.populate(ProgramDataModel.theManager
+									.interrogate(event.getTreePath()));
+					WindowManager.theManager.programAddWindow.showAll();
 				}
 
-				
-			});
-		
+			}
+		});
+
+		this.programTreeView.getSelection().addListener(
+				new TreeSelectionListener() {
+
+					public void selectionChangedEvent(TreeSelectionEvent event) {
+						TreePath[] selection = programTreeView.getSelection()
+								.getSelectedRows();
+						if (selection.length > 0) {
+							treeTip.enable();
+							treeTip.setTip(programTreeView, programDataModel
+									.getTip(selection[0]), null);
+						} else
+							treeTip.disable();
+					}
+				});
+
 		TreeViewColumn enabledCol = new TreeViewColumn();
 		TreeViewColumn nameCol = new TreeViewColumn();
 
-		
-		 CellRendererToggle renderToggle = new CellRendererToggle();
-		 renderToggle.addListener(new CellRendererToggleListener(){
+		CellRendererToggle renderToggle = new CellRendererToggle();
+		renderToggle.addListener(new CellRendererToggleListener() {
 
 			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
-			
+
 				ProgramDataModel.theManager.toggle(arg0.getPath());
-				
-				
-			}});
-		 renderToggle.setUserEditable(true);
-		 enabledCol.packStart(renderToggle, true);
-		 enabledCol.addAttributeMapping( renderToggle,
-		 CellRendererToggle.Attribute.ACTIVE, programDataModel.getEnabledDC() );	
+
+			}
+		});
+		renderToggle.setUserEditable(true);
+		enabledCol.packStart(renderToggle, true);
+		enabledCol.addAttributeMapping(renderToggle,
+				CellRendererToggle.Attribute.ACTIVE, programDataModel
+						.getEnabledDC());
 		enabledCol.setTitle("Enabled?");
 		enabledCol.setVisible(true);
-		
-	
-		
-		CellRendererText nameRender = new CellRendererText(); 
+
+		CellRendererText nameRender = new CellRendererText();
 		nameCol.packStart(nameRender, true);
 		nameCol.addAttributeMapping(nameRender,
-		 CellRendererText.Attribute.TEXT, programDataModel.getEventNameDC());
+				CellRendererText.Attribute.TEXT, programDataModel
+						.getEventNameDC());
 		nameCol.addAttributeMapping(nameRender,
-				 CellRendererText.Attribute.FOREGROUND, programDataModel.getColorDC());	
+				CellRendererText.Attribute.FOREGROUND, programDataModel
+						.getColorDC());
 		nameCol.addAttributeMapping(nameRender,
-				 CellRendererText.Attribute.WEIGHT, programDataModel.getWeightDC());	
+				CellRendererText.Attribute.WEIGHT, programDataModel
+						.getWeightDC());
 		nameCol.setTitle("Observered Executable");
-		
-		nameCol.addListener(new TreeViewColumnListener(){
+
+		nameCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
-				programTreeView.setSearchDataColumn(programDataModel.getEventNameDC());
+				programTreeView.setSearchDataColumn(programDataModel
+						.getEventNameDC());
 			}
 		});
 		nameCol.setVisible(true);
-		
+
 		programTreeView.appendColumn(enabledCol);
 		programTreeView.appendColumn(nameCol);
 	}
