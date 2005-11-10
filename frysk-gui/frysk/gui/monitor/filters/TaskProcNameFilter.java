@@ -39,29 +39,19 @@
 
 package frysk.gui.monitor.filters;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import frysk.proc.Task;
 
-public class TaskFilterPoint extends FilterPoint {
+public class TaskProcNameFilter extends TaskFilter {
 	
-	public TaskFilterPoint(String name, String toolTip) {
-		super(name, toolTip);
+	private ProcNameFilter procNamefilter;
+	
+	public TaskProcNameFilter(String procName){
+		super("Name Filter", "Checks the process name of the parent of the given task");
+		this.procNamefilter = new ProcNameFilter(procName);
 	}
 	
-	public boolean filter(Task task){
-		Iterator iter = this.filters.iterator();
-		while(iter.hasNext()){
-			TaskFilter filter = (TaskFilter) iter.next();
-			if(!filter.filter(task)){
-				return false;
-			}
-		}
-		return true;
+	public boolean filter(Task task) {
+		return this.procNamefilter.filter(task.getProc());
 	}
-
-	public LinkedList getApplicableFilters() {
-		return FilterManager.theManager.getTaskFilters();
-	}
+		
 }

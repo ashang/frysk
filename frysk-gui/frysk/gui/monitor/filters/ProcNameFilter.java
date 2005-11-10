@@ -41,11 +41,11 @@ package frysk.gui.monitor.filters;
 
 import frysk.proc.Proc;
 
-public class NameProcFilter extends ProcFilter {
+public class ProcNameFilter extends ProcFilter {
 	
 	private String procName;
 
-	public NameProcFilter(String procName){
+	public ProcNameFilter(String procName){
 		super("Name Filter", "Filters for the proc with the name " + procName);
 		this.procName = procName;
 	}

@@ -16,10 +16,10 @@ import frysk.proc.TaskObserver;
 public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver.Forked{
 
 	LinkedList forkedActions;
-	LinkedList forkedFilters;
 	
 	public TaskForkedObserver() {
 		super("Fork Observer", "Fires when a proc forks");
+		
 	}
 
 	public TaskForkedObserver(TaskForkedObserver observer) {
@@ -55,7 +55,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 	
 	public void addForkedFilter(TaskObserver.Forked forked){
-		this.forkedFilters.add(forked);
+	//	this.forkedFilters.add(forked);
 		
 	}
 	

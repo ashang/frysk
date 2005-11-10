@@ -39,39 +39,20 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.monitor.GuiObject;
 
-public abstract class Action {
-	private String toolTip;
-	private String name;
-	
+
+public abstract class Action extends GuiObject{
 	protected Runnable runnable;
 	
 	public Action() {
-		this.toolTip = new String();
-		this.name = new String();
+		super();
 	}
 
 	public Action(String name, String toolTip) {
-		this.toolTip = toolTip;
-		this.name = name;
+		super(name, toolTip);
 	}
 
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	public abstract void execute();
 	
 }

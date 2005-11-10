@@ -39,30 +39,12 @@
 
 package frysk.gui.monitor.filters;
 
-public abstract class Filter {
-	
-	private String name;
-	private String toolTip;
+import frysk.gui.monitor.GuiObject;
+
+public abstract class Filter extends GuiObject {
 	
 	Filter(String name, String toolTip){
-		this.name = name;
-		this.toolTip = toolTip;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-	}
-
-	public String getToolTip() {
-		return toolTip;
+		super(name, toolTip);
 	}
 	
 }

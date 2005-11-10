@@ -41,6 +41,8 @@ package frysk.gui.monitor.filters;
 
 import java.util.LinkedList;
 
+import frysk.gui.monitor.GuiObject;
+
 /**
  * FilterPoints provide a flexible interface between Observers
  * and the clients that would like to add filters to those observers.
@@ -50,10 +52,11 @@ import java.util.LinkedList;
  * Clients of observers add desired Filters to the correct
  * filter points.
  * */
-public abstract class FilterPoint {
+public abstract class FilterPoint extends GuiObject {
 	protected LinkedList filters;
 	
-	public FilterPoint() {
+	public FilterPoint(String name, String toolTip){
+		super(name, toolTip);
 		this.filters = new LinkedList();
 	}
 	
@@ -61,4 +64,8 @@ public abstract class FilterPoint {
 	 * Retrieves a list of applicable filters from the FilterManager.
 	 * */
 	public abstract LinkedList getApplicableFilters();
+	
+	public void addFilter(Filter filter){
+		this.filters.add(filter);
+	}
 }

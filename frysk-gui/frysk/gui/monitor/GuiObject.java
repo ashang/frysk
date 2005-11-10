@@ -37,31 +37,44 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 
-import frysk.proc.Task;
-
-public class TaskFilterPoint extends FilterPoint {
+/**
+ * A GuiObject is one that has a name and a tooltip.
+ * */
+public abstract class GuiObject {
 	
-	public TaskFilterPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
+	private String name;
+	private String toolTip;
 	
-	public boolean filter(Task task){
-		Iterator iter = this.filters.iterator();
-		while(iter.hasNext()){
-			TaskFilter filter = (TaskFilter) iter.next();
-			if(!filter.filter(task)){
-				return false;
-			}
-		}
-		return true;
+	public GuiObject(String name, String toolTip){
+		this.name = name;
+		this.toolTip = toolTip;
 	}
 
-	public LinkedList getApplicableFilters() {
-		return FilterManager.theManager.getTaskFilters();
+	public GuiObject(GuiObject object) {
+		this(object.name, object.toolTip);
+	}
+
+	public GuiObject() {
+		this.name = new String("NoName");
+		this.name = new String("NoToolTip");
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setToolTip(String toolTip) {
+		this.toolTip = toolTip;
+	}
+
+	public String getToolTip() {
+		return toolTip;
 	}
 }

@@ -8,7 +8,9 @@ import java.util.Observer;
 
 import org.gnu.glib.CustomEvents;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.actions.Action;
+import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
 
 /**
@@ -17,10 +19,7 @@ import frysk.proc.TaskObserver;
  * Takes Action objects that can be used by clients to customize
  * behaviour. 
  * */
-public abstract class ObserverRoot implements TaskObserver, Observer{
-
-		private String name;
-		private String toolTip;
+public abstract class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 
 		private LinkedList actions;
 		private LinkedList runnables;
@@ -30,18 +29,16 @@ public abstract class ObserverRoot implements TaskObserver, Observer{
 		
 		private String info;
 		
+		private LinkedList filterPoints;
+		
 		public ObserverRoot(String name, String toolTip){
-			this.toolTip     = toolTip;
-			this.name        = name;
+			super(name, toolTip);
 			this.actions     = new LinkedList();
 			this.info        = new String();
 		}
 		
 		public ObserverRoot(ObserverRoot observer) {
-			
-			toolTip     = new String(observer.toolTip);
-			name        = new String(observer.name);
-			
+			super(observer);
 			actions     = new LinkedList(observer.actions);
 //			runnables   = new LinkedList(observer.runnables);
 			
@@ -96,22 +93,6 @@ public abstract class ObserverRoot implements TaskObserver, Observer{
 			this.onDeleted = r;
 		}
 
-		public String getToolTip() {
-			return toolTip;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setToolTip(String toolTip) {
-			this.toolTip = toolTip;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
 		/**
 		 * This string is set by the observer during its update call.
 		 * It can be useful for clients interested in printing general
@@ -129,6 +110,14 @@ public abstract class ObserverRoot implements TaskObserver, Observer{
 				Action action = (Action)iter.next();
 				action.execute();
 			}
+		}
+		
+		public LinkedList getFilterPoints(){
+			return this.filterPoints;
+		}
+		
+		protected void addFilterPoint(FilterPoint filterPoint){
+			this.filterPoints.add(filterPoint);
 		}
 		
 	}

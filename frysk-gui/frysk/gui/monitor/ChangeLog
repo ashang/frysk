@@ -1,3 +1,17 @@
+2005-11-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskForkedObserver.java: Removed local filter handling code.
+	* filters/ProcNameFilter.java: Renamed NameProcFilter to this.
+	* filters/TaskProcNameFilter.java: New file.
+	* filters/FilterPoint.java: Made it extend GuiObject.
+	* filters/TaskFilterPoint.java : Made it extend GuiObject. Removed addFilter
+	function.
+	* filters/ProcFilterPoint.java (ProcFilterPoint): Ditto.
+	* actions/Action.java: refactored tooltiop/Name code to GuiObject.
+	* observers/ObserverRoot.java: Ditto.
+	* filters/Filter.java: Ditto.
+	* GuiObject.java: New file.
+
 2005-11-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramViewPage.java (selectionChangedEvent): Extruded

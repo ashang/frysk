@@ -46,12 +46,8 @@ import frysk.proc.Proc;
 
 public class ProcFilterPoint extends FilterPoint {
 	
-	public ProcFilterPoint() {
-		super();
-	}
-	
-	public void addFilter(ProcFilter filter){
-		this.filters.add(filter);
+	public ProcFilterPoint(String name, String toolTip) {
+		super(name, toolTip);
 	}
 	
 	public boolean filter(Proc proc){
