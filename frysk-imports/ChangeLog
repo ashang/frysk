@@ -1,5 +1,6 @@
 2005-11-09    <moller@mollerware.com>
 
+	* Makefile.am: added tlwidgets to SUBDIRS
 	* configure.ac: added tlwidgets/Makefile to AC_CONFIG_FILES
 
 2005-11-09  Igor Foox  <ifoox@redhat.com>

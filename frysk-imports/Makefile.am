@@ -46,6 +46,7 @@ include Makefile.gen
 SUBDIRS = \
 	jline \
 	jargs \
+	tlwidgets \
 	tests
 
 solib_DATA += EggTrayIcon/libEggTrayIcon.so
