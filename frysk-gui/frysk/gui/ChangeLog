@@ -1,3 +1,7 @@
+2005-11-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+        * glade/procpop.java: Cleaned up programAddWindow
+
 2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* test/SourceWinRunner.java: Removed.
