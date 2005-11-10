@@ -6,8 +6,12 @@
  */
 package frysk.gui.monitor.observers;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
+import frysk.gui.monitor.actions.ForkedAction;
+import frysk.gui.monitor.filters.ProcFilterPoint;
+import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -17,9 +21,17 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 
 	LinkedList forkedActions;
 	
+	TaskFilterPoint taskFilterPoint;
+	ProcFilterPoint procFilterPoint;
+	
 	public TaskForkedObserver() {
 		super("Fork Observer", "Fires when a proc forks");
 		
+		this.taskFilterPoint = new TaskFilterPoint("Forking Thread", "Thread that performed the fork");
+		this.procFilterPoint = new ProcFilterPoint("Forked Process","Newly forked created process");
+		
+		this.addFilterPoint(this.taskFilterPoint);
+		this.addFilterPoint(this.procFilterPoint);
 	}
 
 	public TaskForkedObserver(TaskForkedObserver observer) {
@@ -39,6 +51,10 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 	
 	private void bottomHalf(Task task, Proc child){
+		if(this.runFilters(task, child)){
+			this.runActions();
+			this.runForkedActions(task, child);
+		}
 		task.requestUnblock(this);
 	}
 	
@@ -50,17 +66,22 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		return new TaskForkedObserver(this);
 	}
 	
-	public void addForkedAction(TaskObserver.Forked forked){
-		this.forkedActions.add(forked);
+	public void addForkedAction(ForkedAction action){
+		this.forkedActions.add(action);
 	}
 	
-	public void addForkedFilter(TaskObserver.Forked forked){
-	//	this.forkedFilters.add(forked);
-		
+	public void runForkedActions(Task task, Proc child){
+		Iterator iter = this.forkedActions.iterator();
+		while (iter.hasNext()) {
+			ForkedAction action = (ForkedAction) iter.next();
+			action.execute(task, child);
+		}
 	}
 	
-//	private void runForkedAction(){
-//		
-//	}
-		
+	private boolean runFilters(Task task, Proc child){
+		if(!this.procFilterPoint.filter(child)) return false;
+		if(!this.taskFilterPoint.filter(task )) return false;
+		return true;
+	}
+	
 }

@@ -35,6 +35,7 @@ public abstract class ObserverRoot extends GuiObject implements TaskObserver, Ob
 			super(name, toolTip);
 			this.actions     = new LinkedList();
 			this.info        = new String();
+			this.filterPoints = new LinkedList();
 		}
 		
 		public ObserverRoot(ObserverRoot observer) {

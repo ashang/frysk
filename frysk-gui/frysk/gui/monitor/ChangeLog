@@ -1,6 +1,11 @@
 2005-11-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* actions/ForkedAction.java: New file.
+	* observers/TaskExecObserver.java: Added infrastructor to handle
+	customization.
+	* observers/ObserverManager.java : Rewrote the sample custom observer. 
 	* observers/TaskForkedObserver.java: Removed local filter handling code.
+	 Added infrastructor to handle customization.
 	* filters/ProcNameFilter.java: Renamed NameProcFilter to this.
 	* filters/TaskProcNameFilter.java: New file.
 	* filters/FilterPoint.java: Made it extend GuiObject.
@@ -9,6 +14,7 @@
 	* filters/ProcFilterPoint.java (ProcFilterPoint): Ditto.
 	* actions/Action.java: refactored tooltiop/Name code to GuiObject.
 	* observers/ObserverRoot.java: Ditto.
+	(ObserverRoot): Initialized filterPoint list.
 	* filters/Filter.java: Ditto.
 	* GuiObject.java: New file.
 
