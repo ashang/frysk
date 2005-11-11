@@ -1,3 +1,7 @@
+2005-11-11  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestSyscallOpen.java: Remove updateSyscallXXX reference.
+
 2005-11-11  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxX8664.java, LinuxPowerPc.java: Delete.  Re-instate once Isa

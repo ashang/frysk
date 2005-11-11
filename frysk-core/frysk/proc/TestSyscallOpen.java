@@ -111,11 +111,6 @@ public class TestSyscallOpen
 		}
 		return Action.CONTINUE;
 	    }
-	    public Action updateSyscallXXX (Task task)
-	    {
-		fail ("unexpected updateSyscallXXX");
-		return null;
-	    }
 	}
 	
 	TaskEventObserver taskEventObserver = new TaskEventObserver ();
