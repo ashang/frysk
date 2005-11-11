@@ -1,5 +1,7 @@
 2005-11-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestSyscall2.java: Disable for moment.
+
 	* TestTaskAttachedObserver.java: Add .attachDetachTask,
 	.detachExitingTask, .attachDeadTask, .attachDieingTask,
 	.attachToAttachedTask, .backToBackAttachAttachTask,
