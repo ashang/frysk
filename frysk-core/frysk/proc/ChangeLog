@@ -1,3 +1,8 @@
+2005-11-11  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxX8664.java, LinuxPowerPc.java: Delete.  Re-instate once Isa
+	code stable.
+
 2005-11-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Delete Child.stopEventLoopOnDestroy.
