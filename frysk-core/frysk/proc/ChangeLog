@@ -1,5 +1,9 @@
 2005-11-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Delete Child.stopEventLoopOnDestroy.
+	* TestStep.java: Replace stopEventLoopOnDestroy with
+	StopEventLoopWhenChildProcRemoved.
+
 	* ProcState.java: Delete "stop" variable.  Delete delete states
 	.stopped, and .ContinuingAllTasks.
 

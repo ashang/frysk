@@ -51,12 +51,6 @@ import java.util.Iterator;
 public class TestStep
     extends TestLib
 {
-    // Routine to access PidChild which is only visible to direct inheritor of TestLib.
-    void stopEventLoopOnDestroy (int pid)
-    {
-	new PidChild (pid).stopEventLoopOnDestroy ();
-    }
-
     // Timers, observers, counters, etc.. needed for the test.
     class TestStepInternals {
 	Task mainTask;
@@ -80,13 +74,9 @@ public class TestStep
 		Proc proc = (Proc) obj;
 		if (!isChildOfMine (proc))
 		    return;
-		int pid = proc.id.hashCode ();
-		// Shut things down when PID exits.
-		stopEventLoopOnDestroy (pid);
 		proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    }
 	}
-
 
 	class StopEventObserver
 	    extends TaskObserverBase
@@ -230,6 +220,7 @@ public class TestStep
 
     public void testStep ()
     {
+	new StopEventLoopWhenChildProcRemoved ();
 	TestStepInternals t = new TestStepInternals ();
 
 	// Create threaded infinite loop

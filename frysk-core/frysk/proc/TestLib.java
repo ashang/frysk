@@ -275,25 +275,6 @@ public class TestLib
 	    }
 	    return null;
 	}
-	/**
-	 * Request that the event-loop be stopped should this process
-	 * ever be destroyed.
-	 *
-	 * This does not use {@link Host#requestRefresh}, instead
-	 * watching for the remove (destroy) event to go by.
-	 */
-	public void stopEventLoopOnDestroy ()
-	{
- 	    Manager.host.observableProcRemoved.addObserver (new Observer ()
- 		{
- 		    public void update (Observable o, Object obj)
- 		    {
- 			Proc proc = (Proc) obj;
-			if (proc.getPid () == pid)
- 			    Manager.eventLoop.requestStop ();
- 		    }
- 		});
-	}
     }
 
     /**
