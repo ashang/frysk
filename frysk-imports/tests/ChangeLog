@@ -1,3 +1,8 @@
+2005-11-11  Andrew Cagney  <cagney@redhat.com>
+
+	* logger/Npe.java: New file.
+	* Makefile.am: Add logger/Npe.java.
+
 2005-11-09  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.am: Uncommented cdtparser tests, since they need to be fixed

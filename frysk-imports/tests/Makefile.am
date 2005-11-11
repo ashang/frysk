@@ -51,6 +51,14 @@ clean-local:
 	rm -f */a.out
 	rm -f a.out
 
+# This failed in 4.0 betas
+logger_FILES = logger/Npe.java
+TESTS += logger/a.out
+EXTRA_DIST += $(logger_FILES)
+logger/a.out: $(logger_FILES)
+	mkdir -p logger
+	gcj -o logger/a.out --main=Npe $(srcdir)/logger/Npe.java
+
 # This fails on gcj 4, but passes on gcj 4.1.
 anoncall_FILES = anoncall/Anon.java
 XFAIL_TESTS += anoncall/a.out
