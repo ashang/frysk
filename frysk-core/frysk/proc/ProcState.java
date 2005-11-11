@@ -119,13 +119,9 @@ abstract class ProcState
      */
     private static ProcState unattached = new ProcState ("unattached")
 	{
-	    private ProcState processRequestAttach (Proc proc, boolean stop)
-	    {
-		return Attaching.state (proc, null, stop);
-	    }
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
-		return processRequestAttach (proc, false);
+		return Attaching.state (proc, null);
 	    }
 	    ProcState processRequestRefresh (Proc proc)
 	    {
@@ -143,7 +139,7 @@ abstract class ProcState
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
-		return Attaching.state (proc, observation, false);
+		return Attaching.state (proc, observation);
 	    }
 	};
 
@@ -156,8 +152,7 @@ abstract class ProcState
 	/**
 	 * The initial attaching state.
 	 */
-	static ProcState state (Proc proc, Observation observation,
-				boolean stop)
+	static ProcState state (Proc proc, Observation observation)
 	{
 	    if (observation != null)
 		proc.observations.add (observation);
@@ -174,21 +169,19 @@ abstract class ProcState
 		return unattached;
 	    }
 	    mainTask.performAttach ();
-	    return new Attaching.ToMainTask (mainTask, false);
+	    return new Attaching.ToMainTask (mainTask);
 	}
 	/**
 	 * All tasks attached, set them running and notify any
 	 * interested parties.
 	 */
-	private static ProcState allAttached (Proc proc, boolean stop)
+	private static ProcState allAttached (Proc proc)
 	{
 	    for (Iterator i = proc.observations.iterator ();
 		 i.hasNext ();) {
 		Observation observation = (Observation) i.next ();
 		observation.requestAdd ();
 	    }
-	    if (stop)
-		return stopped;
 	    // .., let them go, and mark this as
 	    // attached/running.
 	    for (Iterator i = proc.getTasks ().iterator ();
@@ -206,12 +199,10 @@ abstract class ProcState
 	private static class ToMainTask
 	    extends ProcState
 	{
-	    private boolean stop;
 	    private Task mainTask;
-	    ToMainTask (Task mainTask, boolean stop)
+	    ToMainTask (Task mainTask)
 	    {
 		super ("Attaching.ToMainTask");
-		this.stop = stop;
 		this.mainTask = mainTask;
 	    }
 	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
@@ -232,9 +223,9 @@ abstract class ProcState
 		// What next?  Nothing else wait for all the attaching
 		// tasks.
 		if (attachingTasks.size () == 0)
-		    return allAttached (proc, stop);
+		    return allAttached (proc);
 		else
-		    return new ToOtherTasks (attachingTasks, stop);
+		    return new ToOtherTasks (attachingTasks);
 		
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
@@ -267,12 +258,10 @@ abstract class ProcState
 	    extends ProcState
 	{
 	    private Collection attachingTasks;
-	    private boolean stop;
-	    ToOtherTasks (Collection attachingTasks, boolean stop)
+	    ToOtherTasks (Collection attachingTasks)
 	    {
 		super ("Attaching.ToOtherTasks");
 		this.attachingTasks = attachingTasks;
-		this.stop = stop;
 	    }
 	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	    {
@@ -282,7 +271,7 @@ abstract class ProcState
 		attachingTasks.remove (task);
 		if (attachingTasks.size () > 0)
 		    return this;
-		return allAttached (proc, stop);
+		return allAttached (proc);
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
@@ -353,7 +342,7 @@ abstract class ProcState
 						    Observation observation)
 	    {
 		// Ulgh, detaching and a new observer arrived.
-		return Attaching.state (proc, observation, false);
+		return Attaching.state (proc, observation);
 	    }
 	}
     }
@@ -414,52 +403,4 @@ abstract class ProcState
 		return startRunning;
 	    }
 	};
-
-    private static ProcState stopped = new ProcState ("stopped")
-	{
-	    boolean isStopped ()
-	    {
-		return true;
-	    }
-	    ProcState processRequestAttachedContinue (Proc proc)
-	    {
-		Collection stoppedTasks = proc.getTasks ();
-		for (Iterator i = stoppedTasks.iterator ();
-		     i.hasNext (); ) {
-		    Task t = (Task) i.next ();
-		    t.performContinue ();
-		}
-		return new ContinuingAllTasks (stoppedTasks);
-	    }
-	    ProcState processRequestDetachedContinue (Proc proc)
-	    {
-		return Detaching.state (proc);
-	    }
-	};
-
-    /**
-     * All tasks have been sent a continue request, wait for each in
-     * turn to report back that the request has been processed.
-     */
-    private static class ContinuingAllTasks
-	extends ProcState
-    {
-	private Collection stoppedTasks;
-	ContinuingAllTasks (Collection stoppedTasks)
-	{
-	    super ("ContinupingAllTasks");
-	    this.stoppedTasks = stoppedTasks;
-	}
-	ProcState processPerformTaskContinueCompleted (Proc proc, Task task)
-	{
-	    // Wait until all the tasks have processed the continue
-	    // request.
-	    stoppedTasks.remove (task);
-	    if (stoppedTasks.size () > 0)
-		return this;
-	    // All continuped.  XXX: Not a standard observer.
-	    proc.observableAttached.notify (proc);
-	    return running;
-	}
-    }
 }

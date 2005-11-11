@@ -1,5 +1,8 @@
 2005-11-10  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcState.java: Delete "stop" variable.  Delete delete states
+	.stopped, and .ContinuingAllTasks.
+
 	* TestTaskAttachedObserver.java: Add .testDeletedAttachOtherTask,
 	and .testBackToBackAttachDetachOtherTask.
 	* ProcState.java (Detaching.state(Proc,Collection): Add.  When
