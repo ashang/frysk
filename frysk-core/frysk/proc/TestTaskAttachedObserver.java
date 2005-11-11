@@ -180,60 +180,48 @@ public class TestTaskAttachedObserver
 	detach (tasks, attachedObserver);
     }
 
+
     /**
-     * Test that adding an Attached observer to a detached processes's
-     * main task causes an attach; and removing it causes the
-     * corresponding detach.
+     * Test that adding an observer to a detached processes causes an
+     * attach; and removing it causes the corresponding detach.
      */
+    public void attachDetachTask (int count, boolean main)
+    {
+	// Create a detached child.
+	Child child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
+	assertNotNull ("task", task);
+	attachDetach (new Task[] { task });
+     }
+    /** {@link #attachDetachTask} */
     public void testAttachDetachMainTask ()
     {
-	// Create a detached child.
-	Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true); // main
-	assertNotNull ("main task", task);
-	attachDetach (new Task[] { task });
+	attachDetachTask (0, true);
     }
-
-    /**
-     * Check that it is possible to force the attach, and then detach
-     * of the non-main task.
-     */
+    /** {@link #attachDetachTask} */
     public void testAttachDetachOtherTask ()
     {
-	// Create a detached child.
-	Child child = new DaemonChild (2);
-	Task task = child.findTaskUsingRefresh (false); // non-main
-	assertNotNull ("non-main task", task);
-	attachDetach (new Task[] { task });
+	attachDetachTask (1, false);
     }
-
-    /**
-     * Check that a program with many many tasks can be attached, and detached.
-     */
+    /** {@link #attachDetachTask} */
     public void testAttachDetachManyTasks ()
     {
-	int count = 20;
-	Child child = new DaemonChild (count);
-	Proc proc = child.findProcUsingRefresh (true); // Tasks also.
-	Task[] tasks = (Task[])proc.getTasks ().toArray (new Task[0]);
-	assertTrue ("number of tasks", count == tasks.length - 1);
-	attachDetach (tasks);
+	attachDetachTask (20, true);
     }
 
     /**
      * Check that detaching from a task that has already started to
      * exit works.
      */
-    public void testDetachExitingMainTask ()
+    public void detachExitingTask (int count, boolean main)
     {
 	// Create a detached child.
-	Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true);
-	assertNotNull ("main task", task);
- 	Task[] tasks = new Task[] { task };
+	Child child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
+	assertNotNull ("task", task);
 
 	// Attach to it.
-	AttachedObserver attachedObserver = attach (tasks);
+	AttachedObserver attachedObserver = attach (new Task[] { task });
 
 	// Now blow away the task.  Since the event queue is stopped
 	// this signal will be delivered to the inferior first but
@@ -241,18 +229,29 @@ public class TestTaskAttachedObserver
 	// detaching the task.  This results in the task in the
 	// detaching state getting the terminating event instead of
 	// the more typical stopped.
-	Signal.kill (child.getPid (), Sig.KILL);
+	Signal.kill (task.getTid (), Sig.KILL);
 
-	detach (tasks, attachedObserver);
+	detach (new Task[] { task }, attachedObserver);
+    }
+    /** {@link #detachExitingTask} */
+    public void testDetachExitingMainTask ()
+    {
+	detachExitingTask (0, true);
+    }
+    /** {@link #detachExitingTask} */
+    public void testDetachExitingOtherTask ()
+    {
+	detachExitingTask (1, false);
     }
 
     /**
      * Check that attaching to a dead main task fails.
      */
-    public void testAttachDeadMainTask ()
+    public void attachDeadTask (int count, boolean main)
     {
-	Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true);
+	Child child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
+	assertNotNull ("task", task);
 	
 	// Blow away the task; make certain that the Proc's task list
 	// is refreshed so that the task is no longer present.
@@ -267,41 +266,32 @@ public class TestTaskAttachedObserver
 	assertRunUntilStop ("fail to add observer");
 	assertEquals ("added count", 1, failedObserver.addedCount);
     }
-
-    /**
-     * Check that attaching to a dead non-main task fails.
-     */
+    /** {@link #attachDeadTask} */
+    public void testAttachDeadMainTask ()
+    {
+	attachDeadTask (0, true);
+    }
+    /** {@link #attachDeadTask} */
     public void testAttachDeadOtherTask ()
     {
-	DaemonChild child = new DaemonChild (1);
-	Task task = child.findTaskUsingRefresh (false);
-	
-	// Blow away the task; make certain that the Proc's task list
-	// is refreshed so that the task is no longer present.
-	child.delTask (); // must be the other task.
-	assertTaskGone (task.getTid (), 0);
-	task.proc.sendRefresh ();
-	assertEquals ("task count (down from two)", 1,
-		      task.proc.getTasks ().size ());
-
-	// Try to add the observer to the now defunct task.  Should
-	// successfully fail.
-	FailedObserver failedObserver = new FailedObserver ();
-	task.requestAddAttachedObserver (failedObserver);
-	assertRunUntilStop ("fail to add observer");
-	assertEquals ("added count", 1, failedObserver.addedCount);
+	attachDeadTask (1, false);
     }
 
     /**
      * Check that attaching to a dieing task fails.
      */
-    public void testAttachDieingMainTask ()
+    public void attachDieingTask (int count, boolean main)
     {
-	Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true);
+	DaemonChild child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
 	
 	// Blow away the task.
-	assertTaskGone (task.getTid (), Sig.KILL);
+	if (main)
+	    assertTaskGone (task.getTid (), Sig.KILL);
+	else {
+	    child.delTask ();
+	    assertTaskGone (task.getTid (), 0);
+	}	    
 
 	// Try to add the observer to the now defunct task.  Should
 	// successfully fail.
@@ -310,35 +300,25 @@ public class TestTaskAttachedObserver
 	assertRunUntilStop ("fail to add observer");
 	assertEquals ("added count", 1, failedObserver.addedCount);
     }
-
-    /**
-     * Check that attaching to a dieing non-main task fails.
-     */
+    /** {@link #attachDieingTask} */
+    public void testAttachDieingMainTask ()
+    {
+	attachDieingTask (0, true);
+    }
+    /** {@link #attachDieingTask} */
     public void testAttachDieingOtherTask ()
     {
-	DaemonChild child = new DaemonChild (1);
-	Task task = child.findTaskUsingRefresh (false);
-	
-	// Blow away the task.
-	child.delTask ();
-	assertTaskGone (task.getTid (), 0);
-
-	// Try to add the observer to the now defunct task.  Should
-	// successfully fail.
-	FailedObserver failedObserver = new FailedObserver ();
-	task.requestAddAttachedObserver (failedObserver);
-	assertRunUntilStop ("fail to add observer");
-	assertEquals ("added count", 1, failedObserver.addedCount);
+	attachDieingTask (1, false);
     }
 
     /**
      * Check that an attach to an attached observer works.
      */
-    public void testAttachToAttached ()
+    public void attachToAttachedTask (int count, boolean main)
     {
-	final Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true);
-	assertNotNull ("main task", task);
+	final Child child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
+	assertNotNull ("task", task);
 	attach (new Task[] { task });
 	class Terminate
 	    extends TaskObserverBase
@@ -363,11 +343,21 @@ public class TestTaskAttachedObserver
 	task.requestAddTerminatingObserver (terminate);
 	assertRunUntilStop ("terminated");
     }
+    /** {@link #attachToAttachedTask} */
+    public void testAttachToAttachedMainTask ()
+    {
+	attachToAttachedTask (0, true);
+    }
+    /** {@link #attachToAttachedTask} */
+    public void testAttachToAttachedOtherTask ()
+    {
+	attachToAttachedTask (1, false);
+    }
 
     /**
      * Check that back-to-back add/add, delete/delete observers.
      */
-    public void testBackToBackAttachAttachMainTask ()
+    public void backToBackAttachAttachTask (int count, boolean main)
     {
 	Child child = new DaemonChild ();
 	Task task = child.findTaskUsingRefresh (true);
@@ -383,14 +373,24 @@ public class TestTaskAttachedObserver
 	task.requestDeleteAttachedObserver (extra);
 	detach (new Task[] { task }, attached);
     }
+    /** {@link #backToBackAttachAttachTask} */
+    public void testBackToBackAttachAttachMainTask ()
+    {
+	backToBackAttachAttachTask (0, true);	
+    }
+    /** {@link #backToBackAttachAttachTask} */
+    public void testBackToBackAttachAttachOtherTask ()
+    {
+	backToBackAttachAttachTask (1, false);
+    }
 
     /**
      * Check back-to-back add/delete observers.
      */
-    public void testBackToBackAttachDetachMainTask ()
+    public void backToBackAttachDetachTask (int count, boolean main)
     {
-	Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true);
+	Child child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
 
 	// pull an observer out from under the tasks feet.
@@ -409,14 +409,19 @@ public class TestTaskAttachedObserver
 	// .detach does a few deletes, delete a few more.
 	detach (new Task[] { task }, attached);
     }
+    /** {@link #backToBackAttachDetachTask} */
+    public void testBackToBackAttachDetachMainTask ()
+    {
+	backToBackAttachDetachTask (0, true);
+    }
 
     /**
      * Check that that an instantly canceled attach doesn't.
      */
-    public void testDeletedAttach ()
+    public void deletedAttachTask (int count, boolean main)
     {
-	Child child = new DaemonChild ();
-	Task task = child.findTaskUsingRefresh (true);
+	Child child = new DaemonChild (count);
+	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
 
 	// .attach does an add, add a few more.
@@ -435,5 +440,10 @@ public class TestTaskAttachedObserver
 	    };
 	task.requestAddAttachedObserver (extra);
 	detach (new Task[] { task }, extra);
+    }
+    /** {@link #deletedAttachTask} */
+    public void testDeletedAttachMainTask ()
+    {
+	deletedAttachTask (0, true);
     }
 }

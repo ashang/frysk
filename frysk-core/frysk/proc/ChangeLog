@@ -1,3 +1,11 @@
+2005-11-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskAttachedObserver.java: Add .attachDetachTask,
+	.detachExitingTask, .attachDeadTask, .attachDieingTask,
+	.attachToAttachedTask, .backToBackAttachAttachTask,
+	.backToBackAttachDetachTask, .deletedAttachTask.  Refactor
+	existing tests to use.
+
 2005-11-10  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* LinuxHost.java: Revert previous change to Wait.Observer.syscallEvent
