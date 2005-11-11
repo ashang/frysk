@@ -227,6 +227,20 @@ public class ProgramDataModel {
 	}
 	
 	/**
+	 * Deletes the underlying ProgramData class instance
+	 * from the liststore
+	 * 
+	 * @param  - TreePath. Source element in the tree
+	 *  
+	 */
+	public void delete(TreePath path) {
+		TreeIter it = listStore.getIter(path.toString());
+		ProgramData value = (ProgramData) listStore.getValue(it,programEventDataDC);
+		value.delete();
+		listStore.removeRow(it);
+		return;
+	}
+	/**
 	 * Adds the parameter ProgramData object to thre tree. Construct the other column
 	 * elements from the passed ProgramData parameter.
 	 * 

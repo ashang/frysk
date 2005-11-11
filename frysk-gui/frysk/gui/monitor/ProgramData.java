@@ -238,4 +238,11 @@ public class ProgramData {
 		if (store.exists() == false)
 			store.mkdirs();
 	}
+
+	public void delete() {
+		File delete = new File(EVENT_STORE_LOC + this.name + ".xml");
+		if (delete.isFile() && delete.canWrite())
+			delete.delete();
+	
+	}
 }

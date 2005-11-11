@@ -71,6 +71,7 @@ import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.dialogs.DialogManager;
 
 /**
  * A widget representing the program view page.
@@ -99,6 +100,8 @@ public class ProgramViewPage extends Widget {
 		
 		this.programTreeView = (TreeView) glade.getWidget("programTreeView");
 		Button browseButton = (Button) glade.getWidget("programBrowseButton");
+		Button deleteButton = (Button) glade.getWidget("programDeleteButton");
+		
 		
 		this.programDataModel = ProgramDataModel.theManager;
 		mountProgramDataModel(programDataModel);
@@ -111,6 +114,16 @@ public class ProgramViewPage extends Widget {
 					WindowManager.theManager.programAddWindow.showAll();
 				}
 			}
+		});
+		
+		deleteButton.addListener(new ButtonListener() {
+
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					deleteSelectedMonitor();
+				}
+			}
+			
 		});
 		
 		loadExistingMonitors();
@@ -162,7 +175,7 @@ public class ProgramViewPage extends Widget {
 		this.programTreeView.setModel(programFilter);
 		this.programTreeView.setSearchDataColumn(programDataModel
 				.getEventNameDC());
-		this.programTreeView.setHoverSelection(true);
+		//this.programTreeView.setHoverSelection(true);
 		this.programTreeView.addListener(new TreeViewListener() {
 
 			public void treeViewEvent(TreeViewEvent event) {
@@ -241,5 +254,16 @@ public class ProgramViewPage extends Widget {
 		this.programTreeView.getClass();//XXX: dummy call to get rid of ecj warning
 	}
 	
+	private void deleteSelectedMonitor() {
+		
+		TreePath[] deleteSelection = this.programTreeView.getSelection().getSelectedRows();
+		
+		DialogManager.showWarnDialog("Delete Confirm", "Are you sure you wanted to delete selected monitors?");
+		for (int i=0; i<deleteSelection.length; i++)
+		{
+			ProgramDataModel.theManager.delete(deleteSelection[i]);
+		}
+		
+	} 
 	
 }
