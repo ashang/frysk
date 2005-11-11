@@ -414,6 +414,11 @@ public class TestTaskAttachedObserver
     {
 	backToBackAttachDetachTask (0, true);
     }
+    /** {@link #backToBackAttachDetachTask} */
+    public void testBackToBackAttachDetachOtherTask ()
+    {
+	backToBackAttachDetachTask (1, false);
+    }
 
     /**
      * Check that that an instantly canceled attach doesn't.
@@ -445,5 +450,10 @@ public class TestTaskAttachedObserver
     public void testDeletedAttachMainTask ()
     {
 	deletedAttachTask (0, true);
+    }
+    /** {@link #deletedAttachTask} */
+    public void testDeletedAttachOtherTask ()
+    {
+	deletedAttachTask (1, false);
     }
 }

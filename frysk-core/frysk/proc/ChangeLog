@@ -1,5 +1,10 @@
 2005-11-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskAttachedObserver.java: Add .testDeletedAttachOtherTask,
+	and .testBackToBackAttachDetachOtherTask.
+	* ProcState.java (Detaching.state(Proc,Collection): Add.  When
+	part way through an attach, only detach attached tasks.
+
 	* TestSyscall2.java: Disable for moment.
 
 	* TestTaskAttachedObserver.java: Add .attachDetachTask,

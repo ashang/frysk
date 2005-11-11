@@ -41,6 +41,7 @@ package frysk.proc;
 
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A UNIX Process State
@@ -165,15 +166,15 @@ abstract class ProcState
 	    if (proc.taskPool.size () == 0)
 		proc.sendRefresh ();
 	    // Assumes that the main Task's ID == the Proc's ID.
-	    Task task = Manager.host.get (new TaskId (proc.getPid ()));
-	    if (task == null) {
+	    Task mainTask = Manager.host.get (new TaskId (proc.getPid ()));
+	    if (mainTask == null) {
 		// The main task exited and a refresh managed to
 		// update Proc removing it.
 		observation.fail (new RuntimeException ("main task exited"));
 		return unattached;
 	    }
-	    task.performAttach ();
-	    return new Attaching.ToMainTask (false);
+	    mainTask.performAttach ();
+	    return new Attaching.ToMainTask (mainTask, false);
 	}
 	/**
 	 * All tasks attached, set them running and notify any
@@ -206,10 +207,12 @@ abstract class ProcState
 	    extends ProcState
 	{
 	    private boolean stop;
-	    ToMainTask (boolean stop)
+	    private Task mainTask;
+	    ToMainTask (Task mainTask, boolean stop)
 	    {
 		super ("Attaching.ToMainTask");
 		this.stop = stop;
+		this.mainTask = mainTask;
 	    }
 	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	    {
@@ -245,8 +248,11 @@ abstract class ProcState
 	    {
 		proc.observations.remove (observation);
 		observation.fail (new RuntimeException ("canceled"));
-		if (proc.observations.size () == 0)
-		    return Detaching.state (proc);
+		if (proc.observations.size () == 0) {
+		    Collection attachedTasks = new HashSet ();
+		    attachedTasks.add (mainTask);
+		    return Detaching.state (proc, attachedTasks);
+		}
 		else
 		    return this;
 	    }
@@ -303,17 +309,24 @@ abstract class ProcState
     private static class Detaching
     {
 	/**
-	 * Start the detaching process.
+	 * Start detaching from the process, only need to detach the
+	 * subset of tasks.
 	 */
-	static private ProcState state (Proc proc)
+	static private ProcState state (Proc proc, Collection attachedTasks)
 	{
-	    Collection attachedTasks = proc.getTasks ();
 	    for (Iterator i = attachedTasks.iterator ();
 		 i.hasNext (); ) {
 		Task t = (Task) i.next ();
 		t.performDetach ();
 	    }
 	    return new Detaching.AllTasks (attachedTasks);
+	}
+	/**
+	 * Start detaching the process.
+	 */
+	static private ProcState state (Proc proc)
+	{
+	    return state (proc, proc.getTasks ());
 	}
 	private static class AllTasks
 	    extends ProcState
