@@ -1,3 +1,7 @@
+2005-11-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java.h): Replace .classes.h rule.
+
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.sh: Add a -<repeat> option.
