@@ -7,7 +7,7 @@ StripchartTest.class: StripchartTest.java
 	CLASSPATH=$(CLASSPATH) gcj -C $<
 
 run: StripchartTest.class
-	gij StripchartTest
+	LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib gij StripchartTest
 
 clean:
 	rm -f *.class

@@ -12,6 +12,7 @@ package com.redhat.ftk;
 
 import org.gnu.glib.GObject;
 import org.gnu.glib.Type;
+import org.gnu.glib.Struct;
 import org.gnu.glib.Handle;
 import org.gnu.gtk.Widget;
 

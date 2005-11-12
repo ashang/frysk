@@ -138,11 +138,11 @@ gboolean    ftk_stripchart_set_event_rgb (FtkStripchart * stripchart,
 
 gboolean    ftk_stripchart_set_event_title_e (FtkStripchart * stripchart,
 					      FtkStripchartTypeEnum type,
-					      char * title,
+					      const char * title,
 					      GError ** err);
 gboolean    ftk_stripchart_set_event_title (FtkStripchart * stripchart,
 					    FtkStripchartTypeEnum type,
-					    char * title);
+					    const char * title);
 
 gboolean    ftk_stripchart_set_update_e  (FtkStripchart * stripchart,
 					  gint milliseconds,

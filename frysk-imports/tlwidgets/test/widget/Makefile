@@ -10,7 +10,7 @@
 
       CC = gcc
 
-all::tstripchart
+all::run
 
 %.o:%.c
 	$(CC) $(CFLAGS) -std=gnu99 $(INCS) -c $<
@@ -24,6 +24,9 @@ tstripchart: tstripchart.o
 	$(CC) $(LDFLAGS) -o $@ $(LIBS) $^
 
 tstripchart.o: tstripchart.c
+
+run: tstripchart
+	LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib ./tstripchart
 
 clean:
 	rm -f *.o ttimeline tstripchart

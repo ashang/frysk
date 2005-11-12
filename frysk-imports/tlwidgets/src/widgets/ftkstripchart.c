@@ -678,7 +678,7 @@ ftk_stripchart_set_event_rgb (FtkStripchart * stripchart,
 gboolean
 ftk_stripchart_set_event_title_e (FtkStripchart * stripchart,
 				FtkStripchartTypeEnum type,
-				char * title,
+				const char * title,
 				GError ** err)
 {
   GdkColor color;
@@ -709,7 +709,7 @@ ftk_stripchart_set_event_title_e (FtkStripchart * stripchart,
 gboolean
 ftk_stripchart_set_event_title (FtkStripchart * stripchart,
 				FtkStripchartTypeEnum type,
-				char * title)
+				const char * title)
 {
   return ftk_stripchart_set_event_title_e (stripchart,
 					   type,

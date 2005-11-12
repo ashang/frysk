@@ -1,32 +1,59 @@
 INSTALL       = install
 INSTALLOPTS   =
 INSTALLDIR    = /opt/frysk
+INCINSTALLDIR = $(INSTALLDIR)/include
 LIBINSTALLDIR = $(INSTALLDIR)/lib
 JARINSTALLDIR = $(INSTALLDIR)/share/java
 
 
-   all::libftkjava.so src/java/com/redhat/ftk/Stripchart.class ftk.jar
+   all::libftkjni.so libftkjava.so ftk.jar
 
 
 src/java/com/redhat/ftk/Stripchart.class: src/java/com/redhat/ftk/Stripchart.java
 	gcj -C \
-            -classpath /opt/frysk/share/java/glib0.2-0.2.jar:/opt/frysk/share/java/gtk2.8.jar:src/java:./src/java \
+            -classpath $(JARINSTALLDIR)/glib0.2-0.2.jar:$(JARINSTALLDIR)/gtk2.8.jar:src/java:./src/java \
             -d src/java $<
 
 ftk.jar: src/java/com/redhat/ftk/Stripchart.class
 	jar cf ftk.jar -C src/java com/redhat/ftk/Stripchart.class
 	
 src/java/com/redhat/ftk/Stripchart.o: src/java/com/redhat/ftk/Stripchart.java
-	gcj -fjni -I./src/java -Isrc/java -I/opt/frysk/share/java/gtk2.8.jar \
-            --classpath=/opt/frysk/share/java/glib0.2-0.2.jar:./src/java \
+	gcj -fjni -I./src/java -I$(JARINSTALLDIR)//gtk2.8.jar \
+            --classpath=$(JARINSTALLDIR)/glib0.2-0.2.jar:./src/java \
             -g -O2 -c $< -o $@
 
 libftkjava.so: src/java/com/redhat/ftk/Stripchart.o
 	gcj -shared $^ \
-            -Wl,--rpath -Wl,/opt/frysk/lib -L/opt/frysk/lib /opt/frysk/lib/libglibjava.so  \
+            -Wl,--rpath -Wl,$(LIBINSTALLDIR) \
+	    -L$(LIBINSTALLDIR) $(LIBINSTALLDIR)/libglibjava.so  \
             -Wl,-soname -Wl,libftkjava.so -o $@
 
-install-so: libftkjava.so
+libftkjni.so: src/jni/com_redhat_ftk_Stripchart.o
+	gcc -shared $^ \
+	-Wl,--rpath \
+	-Wl,$(LIBINSTALLDIR) -Wl,--rpath -Wl,$(LIBINSTALLDIR) -L$(LIBINSTALLDIR) \
+	-lgthread-2.0 -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm \
+	-lpangocairo-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0 \
+	-lcairo $(LIBINSTALLDIR)/libglibjni.so  -pthread -Wl,-soname -Wl,libftkjni.so \
+	-o $@
+
+src/jni/com_redhat_ftk_Stripchart.o: src/jni/com_redhat_ftk_Stripchart.c
+	    gcc -c $< -I./src/widgets \
+	    -I$(INCINSTALLDIR)/gtk-2.0 \
+	    -I$(INCINSTALLDIR)/glib-java \
+	    -I$(INCINSTALLDIR)/cairo \
+	    -I$(INCINSTALLDIR)/glib-2.0 \
+	    -I$(INCINSTALLDIR)/pango-1.0 \
+	    -I$(INCINSTALLDIR)/libgtk-java \
+	    -I$(LIBINSTALLDIR)/glib-2.0/include \
+	    -I$(LIBINSTALLDIR)/gtk-2.0/include \
+	    `pkg-config --cflags atk` \
+	    -fPIC -DPIC -o $@
+
+install-java-so: libftkjava.so
+	$(INSTALL) $(INSTALLOPTS) $^ $(LIBINSTALLDIR)
+
+install-jni-so: libftkjava.so
 	$(INSTALL) $(INSTALLOPTS) $^ $(LIBINSTALLDIR)
 
 install-jar: ftk.jar
@@ -35,11 +62,13 @@ install-jar: ftk.jar
 install-lib:
 	$(MAKE) -C src/widgets install
 
-install: install-lib install-so install-jar
+install: install-lib install-jni-so install-java-so install-jar
 
 clean:
 	$(MAKE) -C src/widgets veryclean
 	rm -f \
+	src/java/com/redhat/ftk/Stripchart.class \
+	src/jni/com_redhat_ftk_Stripchart.o  libftkjni.so \
 	src/java/com/redhat/ftk/Stripchart.o libftkjava.so \
 	src/java/com/redhat/ftk/Stripchart.class ftk.jar
 
