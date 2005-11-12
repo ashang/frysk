@@ -1,12 +1,25 @@
   LDFLAGS =
    CFLAGS = -g
 
+#  for installed 
+#    INCS = `pkg-config --cflags gtk+-2.0` \
+#           `pkg-config --cflags ftk`
+#
+#    LIBS = `pkg-config --libs   gtk+-2.0` \
+#            `pkg-config --libs   ftk` \
+#            -lm
+#
+#    LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib
+
+#  for local
     INCS = `pkg-config --cflags gtk+-2.0` \
-           `pkg-config --cflags ftk`
+           -I../../src/widgets
 
      LIBS = `pkg-config --libs   gtk+-2.0` \
-            `pkg-config --libs   ftk` \
+            -L../../ -lftk \
             -lm
+
+   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib:../..
 
       CC = gcc
 
@@ -26,7 +39,7 @@ tstripchart: tstripchart.o
 tstripchart.o: tstripchart.c
 
 run: tstripchart
-	LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib ./tstripchart
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./tstripchart
 
 clean:
 	rm -f *.o ttimeline tstripchart
