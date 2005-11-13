@@ -25,6 +25,7 @@ public class Stripchart extends Widget
 
     static {
 	System.loadLibrary ("ftk");
+	System.loadLibrary ("ftkjni");
     }
 
     public Stripchart() {
@@ -72,16 +73,27 @@ public class Stripchart extends Widget
     /**
      * Set an event color
      */
+    /********** removed pro-tem *************
     public void setEventRGB(int type, int red, int green, int blue) {
 	ftk_stripchart_set_event_rgb (getHandle(), type,
 				      red, green, blue);
     }
+    **************************************/
 
     /**
      * Set an event title
      */
+    /********** removed pro-tem *************
     public void setEventTitle(int type, String title) {
 	ftk_stripchart_set_event_title (getHandle(), type, title);
+    }
+    **************************************/
+
+    /**
+     * Create new event
+     */
+    public void createEvent(String title, int red, int green, int blue) {
+	ftk_stripchart_new_event (getHandle(), title, red, green, blue);
     }
 
     /**
@@ -110,6 +122,7 @@ public class Stripchart extends Widget
 	ftk_stripchart_get_type ();
     native static final protected Handle
 	ftk_stripchart_new ();
+    /********** removed pro-tem *************
     native static final protected void
 	ftk_stripchart_set_event_rgb (Handle sc,
 				      int type,
@@ -118,6 +131,10 @@ public class Stripchart extends Widget
 	ftk_stripchart_set_event_title(Handle sc,
 				       int type,
 				       String title);
+    **************************************/
+    native static final protected void
+	ftk_stripchart_new_event (Handle sc, String title,
+				  int red, int green, int blue);
     native static final protected void
 	ftk_stripchart_resize (Handle sc, int width, int height);
     native static final protected void

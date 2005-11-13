@@ -53,7 +53,7 @@ src/jni/com_redhat_ftk_Stripchart.o: src/jni/com_redhat_ftk_Stripchart.c
 install-java-so: libftkjava.so
 	$(INSTALL) $(INSTALLOPTS) $^ $(LIBINSTALLDIR)
 
-install-jni-so: libftkjava.so
+install-jni-so: libftkjni.so
 	$(INSTALL) $(INSTALLOPTS) $^ $(LIBINSTALLDIR)
 
 install-jar: ftk.jar

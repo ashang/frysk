@@ -62,6 +62,7 @@ Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1resize (JNIEnv *env,
  * Class:     com.redhat.ftk.Stripchart
  * Method:    ftk_stripchart_set_event_rgb
  */
+/**************** removed pro-tem **************
 JNIEXPORT void JNICALL
 Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1event_1rgb (JNIEnv *env, 
 							      jclass cls,
@@ -79,12 +80,14 @@ Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1event_1rgb (JNIEnv *env,
   int blue  = (int) bj;
   ftk_stripchart_set_event_rgb (stripchart, type, red, green, blue);
 }
+***********************/
 
 
 /*
  * Class:     com.redhat.ftk.Stripchart
  * Method:    ftk_stripchart_set_event_title
  */
+/**************** removed pro-tem **************
 JNIEXPORT void JNICALL
 Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1event_1title (JNIEnv *env, 
 								jclass cls,
@@ -98,6 +101,31 @@ Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1event_1title (JNIEnv *env,
   const gchar * title =
      (const gchar *)(*env)->GetStringUTFChars(env, ti, NULL);
   ftk_stripchart_set_event_title (stripchart, type, title);
+  (*env)->ReleaseStringUTFChars(env, ti, title);
+}
+***********************/
+
+/*
+ * Class:     com.redhat.ftk.Stripchart
+ * Method:    ftk_stripchart_new_event
+ */
+JNIEXPORT int JNICALL
+Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1new_1event (JNIEnv *env, 
+                                                            jclass cls,
+							    jobject sc,
+							    jstring ti,
+							    jint rj,
+							    jint gj,
+							    jint bj)
+{
+  FtkStripchart * stripchart =
+    (FtkStripchart *)getPointerFromHandle(env, sc);
+  const gchar * title =
+     (const gchar *)(*env)->GetStringUTFChars(env, ti, NULL);
+  int red   = (int) rj;
+  int green = (int) gj;
+  int blue  = (int) bj;
+  return ftk_stripchart_new_event (stripchart, title, red, green, blue);
   (*env)->ReleaseStringUTFChars(env, ti, title);
 }
 
@@ -145,7 +173,7 @@ Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1append_1event (JNIEnv *env,
 {
   FtkStripchart * stripchart =
     (FtkStripchart *)getPointerFromHandle(env, sc);
-  FtkStripchartTypeEnum type = (FtkStripchartTypeEnum) ty;
+  int type = (int) ty;
   ftk_stripchart_append_event (stripchart, type);
 }
 

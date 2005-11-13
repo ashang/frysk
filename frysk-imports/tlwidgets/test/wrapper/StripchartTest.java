@@ -1,7 +1,7 @@
 //package stripchartTest;
 
 import org.gnu.gdk.EventMask;
-import org.gnu.gtk.Stripchart;
+import com.redhat.ftk.Stripchart;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.WindowType;
@@ -34,11 +34,13 @@ public class StripchartTest {
 	    });
 	area = new Stripchart();
 	area.resize (500, 150);
-	area.setEventTitle(1, "Knife");
-	area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
+	//area.setEventTitle(1, "Knife");
+	//area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
+	area.createEvent("knife", 65535, 65535, 0); /* red + green = yellow */
+	area.createEvent("fork",  65535, 0, 65535); /* red + green = yellow */
 	area.setUpdate (1111);
 	area.setRange (60000);
-	area.appendEvent (2);
+	area.appendEvent (0);
 	area.appendEvent (1);
 
 	window.add(area);

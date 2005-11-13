@@ -10,6 +10,9 @@
 
 GtkWidget *stripchart1;
 
+int max_event_nr;
+
+int events_added = 0;
 int sigs_sent = 0;
 #define MAX_SIGS_SENT 100
 
@@ -20,25 +23,37 @@ catch_sigalrm (int sig)
   int et = lrint (drand48() * 15.0);
 
   if (sigs_sent++ >= MAX_SIGS_SENT)  {
-    fprintf (stderr, "stopping\n");
-    struct itimerval value;
-    struct itimerval ovalue;
+    if (events_added) {
+      fprintf (stderr, "stopping\n");
+      struct itimerval value;
+      struct itimerval ovalue;
 
-    signal (SIGALRM, catch_sigalrm);
+      signal (SIGALRM, catch_sigalrm);
 
-    value.it_interval.tv_sec = 0;
-    value.it_interval.tv_usec = 0;
-    value.it_value.tv_sec = 0;
-    value.it_value.tv_usec = 0;
-    setitimer (ITIMER_REAL, &value, &ovalue);
-    return;
+      value.it_interval.tv_sec = 0;
+      value.it_interval.tv_usec = 0;
+      value.it_value.tv_sec = 0;
+      value.it_value.tv_usec = 0;
+      setitimer (ITIMER_REAL, &value, &ovalue);
+      return;
+    }
+    else {
+      sigs_sent = -200;
+      events_added = 1;
+      ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
+				"cup", 65535, 65535,0);
+      ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
+				"bowl", 0, 65535,65535);
+      ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
+				"plate", 65535, 0,65535);
+      max_event_nr = 5;
+    }
   }
 
 #if 0
   fprintf (stderr, "catch_sigalrm %d\n", et);
 #endif
-  if ((et >= FTK_STRIPCHART_TYPE_FORK) &&
-      (et <= FTK_STRIPCHART_TYPE_TERMINATE)) {
+  if (et <= max_event_nr) {
     ftk_stripchart_append_event_e (FTK_STRIPCHART (stripchart1), et, &err);
     if (NULL != err) {
       fprintf (stderr, "Unable to append event: %s\n", err->message);
@@ -82,12 +97,21 @@ int main( int   argc,
   stripchart1 = ftk_stripchart_new ();
   ftk_stripchart_resize (FTK_STRIPCHART (stripchart1), 500, 100);
 
+#if 0
   /* defaults are provided if you don't want to set this stuff */
   ftk_stripchart_set_event_rgb (FTK_STRIPCHART (stripchart1),
 				FTK_STRIPCHART_TYPE_TERMINATE,
 				65535, 65535, 0); /* red + green = yellow */
   ftk_stripchart_set_event_title (FTK_STRIPCHART (stripchart1),
 				  FTK_STRIPCHART_TYPE_FORK, "Spoon");
+#endif
+  ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
+			    "knife", 65535, 0,0);
+  ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
+			    "fork", 0, 65535,0);
+  ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
+			    "spoon", 0, 0,65535);
+  max_event_nr = 2;
 
   /* _e suffixed versions of the fcns tell you if something screwed up */
   err = NULL;

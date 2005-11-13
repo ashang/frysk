@@ -33,14 +33,6 @@ typedef enum {
   FTK_ERROR_INVALID_DRAWING_AREA
 } ftk_error_e;
 
-typedef enum {
-  FTK_STRIPCHART_TYPE_TOTAL,
-  FTK_STRIPCHART_TYPE_FORK,
-  FTK_STRIPCHART_TYPE_EXEC,
-  FTK_STRIPCHART_TYPE_TERMINATE,
-  FTK_STRIPCHART_TYPE_LAST
-} FtkStripchartTypeEnum;
-
 typedef struct {
   GdkColor color;
   GdkGC * gc;
@@ -50,13 +42,17 @@ typedef struct {
 typedef struct {
   struct timeval tv;
   gboolean modified;
-  int count_vec[FTK_STRIPCHART_TYPE_LAST];
+  int total;
+  int * count_vec;
+  int count_rho;
 } event_s;
 
 typedef struct _FtkStripchart {
   GtkDrawingArea drawingarea;
   GdkPixmap * pixmap;
   event_spec_s * event_specs;
+  int event_spec_next;
+  int event_spec_max;
   event_s ** events;
   int event_next;
   int event_max;
@@ -81,6 +77,8 @@ typedef struct _FtkStripchart {
 #define stripchart_event_spec_green(s, i) (s)->event_specs[i].color.green
 #define stripchart_event_spec_blue(s, i)  (s)->event_specs[i].color.blue
 #define stripchart_event_spec_title(s, i) (s)->event_specs[i].title
+#define stripchart_event_spec_next(s)	  (s)->event_spec_next
+#define stripchart_event_spec_max(s)	  (s)->event_spec_max
 #define stripchart_events(s)              (s)->events
 #define stripchart_event(s,i)             (s)->events[i]
 #define stripchart_event_tv(s,i)          (s)->events[i]->tv
@@ -89,15 +87,19 @@ typedef struct _FtkStripchart {
 #define stripchart_event_modified(s,i)    (s)->events[i]->modified
 #define stripchart_event_count_vec(s,i)   (s)->events[i]->count_vec
 #define stripchart_event_count(s,i,j)     (s)->events[i]->count_vec[j]
+#define stripchart_event_count_rho(s,i)   (s)->events[i]->count_rho
+#define stripchart_event_total(s,i)       (s)->events[i]->total
 #define stripchart_event_next(s)          (s)->event_next
 #define stripchart_event_max(s)           (s)->event_max
 #define stripchart_current(s)             (s)->current_event
 #define stripchart_current_tv(s)          (s)->current_event->tv
 #define stripchart_current_tv_sec(s)      (s)->current_event->tv.tv_sec
 #define stripchart_current_tv_usec(s)     (s)->current_event->tv.tv_usec
-#define stripchart_current_tv_modified(s) (s)->current_event->modified
+#define stripchart_current_modified(s)    (s)->current_event->modified
 #define stripchart_current_count_vec(s)   (s)->current_event->count_vec
 #define stripchart_current_count(s,j)     (s)->current_event->count_vec[j]
+#define stripchart_current_count_rho(s)   (s)->current_event->count_rho
+#define stripchart_current_total(s)       (s)->current_event->total
 #define stripchart_timer_id(s)            (s)->timer_id
 #define stripchart_timer_set(s)           (s)->timer_set
 #define stripchart_range(s)               (s)->range
@@ -128,6 +130,7 @@ gboolean    ftk_stripchart_resize_e      (FtkStripchart * stripchart,
 gboolean    ftk_stripchart_resize        (FtkStripchart * stripchart,
 					  gint width, gint height);
 
+#ifdef OLD_API
 gboolean    ftk_stripchart_set_event_rgb_e (FtkStripchart * stripchart,
 					    FtkStripchartTypeEnum type,
 					    gint red, gint green, gint blue,
@@ -143,6 +146,15 @@ gboolean    ftk_stripchart_set_event_title_e (FtkStripchart * stripchart,
 gboolean    ftk_stripchart_set_event_title (FtkStripchart * stripchart,
 					    FtkStripchartTypeEnum type,
 					    const char * title);
+#endif /* OLD_API */
+
+gint        ftk_stripchart_new_event_e (FtkStripchart * stripchart,
+					const char * title,
+					gint red, gint green, gint blue,
+					GError ** err);
+gint        ftk_stripchart_new_event    (FtkStripchart * stripchart,
+					 const char * title,
+					 gint red, gint green, gint blue);
 
 gboolean    ftk_stripchart_set_update_e  (FtkStripchart * stripchart,
 					  gint milliseconds,
@@ -157,10 +169,10 @@ gboolean    ftk_stripchart_set_range     (FtkStripchart * stripchart,
 					  gint milliseconds);
 
 gboolean    ftk_stripchart_append_event_e (FtkStripchart * stripchart,
-					  FtkStripchartTypeEnum type,
+					   gint type,
 					   GError ** err);
 gboolean    ftk_stripchart_append_event  (FtkStripchart * stripchart,
-					  FtkStripchartTypeEnum type);
+					   gint type);
 
 G_END_DECLS
 

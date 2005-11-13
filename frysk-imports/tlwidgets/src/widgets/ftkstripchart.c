@@ -69,19 +69,16 @@ ftk_stripchart_configure( GtkWidget * widget,
 						  -1);
   {
     int i;
-    for (i = 0; i < FTK_STRIPCHART_TYPE_LAST; i++) {
-      if (stripchart_event_spec_gc (stripchart, i))
-	g_object_unref(stripchart_event_spec_gc (stripchart, i));
-      stripchart_event_spec_gc (stripchart, i) =
-	gdk_gc_new(stripchart_pixmap (stripchart));
+    for (i = 0; i <stripchart_event_spec_next(stripchart) ; i++) {
+      if (!stripchart_event_spec_gc (stripchart, i)) 
+	stripchart_event_spec_gc (stripchart, i) =
+	  gdk_gc_new(stripchart_pixmap (stripchart));
       gdk_gc_set_rgb_fg_color(stripchart_event_spec_gc (stripchart, i),
 			      &stripchart_event_spec_color (stripchart, i));
     }
   }
 }
 
-/* stripchart_event_spec_gc (stripchart, FTK_STRIPCHART_TYPE_TERMINATE), */
-  
 static void
 ftk_stripchart_expose( GtkWidget * widget,
 		       GdkEventExpose * event,
@@ -127,17 +124,15 @@ ftk_stripchart_expose( GtkWidget * widget,
   max_count = 0;
   for (i = stripchart_event_next (stripchart) - 1;  i >= 0;  i--) {
     if (timercmp (&stripchart_event_tv(stripchart, i), &beginning, <)) break;
-    if (max_count <
-	stripchart_event_count(stripchart, i, FTK_STRIPCHART_TYPE_TOTAL))
-      max_count =
-	stripchart_event_count(stripchart, i, FTK_STRIPCHART_TYPE_TOTAL);
+    if (max_count < stripchart_event_total(stripchart, i))
+      max_count = stripchart_event_total(stripchart, i);
   }
 
 
   /* print legend in associated colors */
   
   title_offset = TITLE_BASE_X_OFFSET;
-  for (i = FTK_STRIPCHART_TYPE_FORK; i < FTK_STRIPCHART_TYPE_LAST; i++) {
+  for (i = 0; i < stripchart_event_spec_next(stripchart); i++) {
     int width;
     gdk_draw_layout (stripchart_pixmap (stripchart),
 		     stripchart_event_spec_gc(stripchart, i),
@@ -202,7 +197,7 @@ ftk_stripchart_expose( GtkWidget * widget,
   for (i = stripchart_event_next (stripchart) - 1;  i >= 0;  i--) {
     if (timercmp (&stripchart_event_tv(stripchart, i), &beginning, <)) break;
 
-    if (0 < stripchart_event_count(stripchart, i, FTK_STRIPCHART_TYPE_TOTAL)) {
+    if (0 < stripchart_event_total(stripchart, i)) {
       int j;
       double d_this, offset;
       gint dx, dy;
@@ -213,7 +208,7 @@ ftk_stripchart_expose( GtkWidget * widget,
       dx = lrint (offset * (double)(draw_width - RIGHT_MARGIN));
       
       base_y = draw_height - BOTTOM_MARGIN;
-      for (j = FTK_STRIPCHART_TYPE_FORK; j < FTK_STRIPCHART_TYPE_LAST; j++) {
+      for (j = 0; j < stripchart_event_count_rho(stripchart,i); j++) {
 	if (0 < stripchart_event_count(stripchart, i, j)) {
 	  dy = lrint (((double)((draw_height - (BOTTOM_MARGIN + TOP_MARGIN)) *
 				stripchart_event_count(stripchart, i, j)))
@@ -262,7 +257,10 @@ init_current_bin (FtkStripchart * stripchart)
 
   gettimeofday (&(current_event->tv), NULL);
   current_event->modified = FALSE;
-  bzero (&(current_event->count_vec), FTK_STRIPCHART_TYPE_LAST * sizeof(int));
+  current_event->total = 0;
+  current_event->count_rho = stripchart_event_spec_next(stripchart);
+  current_event->count_vec = malloc (current_event->count_rho * sizeof(int));
+  bzero (current_event->count_vec, current_event->count_rho * sizeof(int));
   stripchart_current(stripchart) = current_event;
 }
 
@@ -273,7 +271,7 @@ timer_catcher (sigval_t sigval)
   FtkStripchart * stripchart = GINT_TO_POINTER(sigval.sival_int);
   //  ftk_stripchart_expose(GTK_WIDGET (stripchart), NULL, NULL);
   
-  if (TRUE == stripchart_current_tv_modified(stripchart)) {
+  if (TRUE == stripchart_current_modified(stripchart)) {
 
 #define STRIPCHART_EVENTS_MAX_INCR 4096
     
@@ -373,30 +371,6 @@ timer_init(FtkStripchart * stripchart, gint ms, GError ** err)
 
   return rc;
 }
-
-typedef struct {
-  GdkColor color;
-  char * title;
-} event_info_s;
-
-static event_info_s event_info[FTK_STRIPCHART_TYPE_LAST] = {
-  {				/* FTK_STRIPCHART_TYPE_TOTAL*/
-    { 0, 65535, 65535, 65535 },	
-    "Total"
-  },
-  {				/* FTK_STRIPCHART_TYPE_FORK */
-    { 0, 65535,     0,     0 },	
-    "Fork"
-  },
-  {				/* FTK_STRIPCHART_TYPE_EXEC */
-    { 0, 0,     65535,     0 },
-    "Exec"
-  },
-  {				/* FTK_STRIPCHART_TYPE_TERM */
-    { 0, 0,         0, 65535 },
-    "Term"
-  }
-};
 
 static gint
 motion_notify_event( GtkWidget * widget,
@@ -507,16 +481,11 @@ ftk_stripchart_init (FtkStripchart * stripchart)
 
   {
     int i;
-    stripchart_event_specs (stripchart) =
-      malloc (FTK_STRIPCHART_TYPE_LAST * sizeof(event_spec_s));
-    
-    for (i = 0; i < FTK_STRIPCHART_TYPE_LAST; i++) {
-      memcpy (&stripchart_event_spec_color (stripchart, i),
-	      &event_info[i].color, sizeof(GdkColor));
-      stripchart_event_spec_gc (stripchart, i) = NULL;
-      stripchart_event_spec_title(stripchart, i) =
-	gtk_widget_create_pango_layout (GTK_WIDGET (stripchart),
-					event_info[i].title);
+    for (i = 0; i < stripchart_event_next(stripchart); i++) {
+      stripchart_event_spec_gc (stripchart, i) =
+	gdk_gc_new(stripchart_pixmap (stripchart));
+      gdk_gc_set_rgb_fg_color(stripchart_event_spec_gc (stripchart, i),
+			      &stripchart_event_spec_color (stripchart, i));
     }
   }
   
@@ -527,6 +496,10 @@ ftk_stripchart_init (FtkStripchart * stripchart)
     gtk_widget_create_pango_layout (GTK_WIDGET (stripchart), "");
 
   stripchart_timer_set(stripchart) = FALSE;
+
+  stripchart_event_spec_next(stripchart)  = 0;
+  stripchart_event_spec_max(stripchart)   = 0;
+  stripchart_event_specs(stripchart) = NULL;
 
 #define STRIPCHART_EVENTS_INITIAL_INCR 64
   stripchart_event_max (stripchart)  = STRIPCHART_EVENTS_INITIAL_INCR;
@@ -619,6 +592,7 @@ ftk_stripchart_resize (FtkStripchart * stripchart,
   return ftk_stripchart_resize_e (stripchart,width, height, NULL);
 }
 
+#ifdef OLD_API
 /*
  *
  *	setting event rgb
@@ -716,6 +690,61 @@ ftk_stripchart_set_event_title (FtkStripchart * stripchart,
 					   title,
 					   NULL);
 }
+#else		/* OLD_API */
+gint
+ftk_stripchart_new_event_e (FtkStripchart * stripchart,
+					const char * title,
+					gint red, gint green, gint blue,
+					GError ** err)
+ {
+   int active_idx;
+   /* fixme -- initialise these */
+#define EVENT_INCR 8
+   if (stripchart_event_spec_next(stripchart) >=
+       stripchart_event_spec_max(stripchart)) {
+     stripchart_event_spec_max(stripchart) += EVENT_INCR;
+     stripchart_event_specs(stripchart) =
+       realloc (stripchart_event_specs(stripchart),
+		stripchart_event_spec_max(stripchart)
+		* sizeof(event_spec_s));
+   }
+   if (stripchart_current (stripchart)) {
+     int old_val = stripchart_current_count_rho(stripchart);
+     stripchart_current_count_rho(stripchart) =
+       stripchart_event_spec_max(stripchart);
+     stripchart_current_count_vec(stripchart) =
+       realloc (stripchart_current_count_vec(stripchart),
+		stripchart_current_count_rho(stripchart) * sizeof(int));
+     bzero (&stripchart_current_count(stripchart, old_val),
+	    (stripchart_current_count_rho(stripchart) - old_val)
+	    * sizeof(int));
+   }
+   active_idx = stripchart_event_spec_next(stripchart)++;
+   stripchart_event_spec_pixel(stripchart, active_idx) = 0;
+   stripchart_event_spec_red(stripchart, active_idx)   = red;
+   stripchart_event_spec_green(stripchart, active_idx) = green;
+   stripchart_event_spec_blue(stripchart, active_idx)  = blue;
+
+   if (stripchart_pixmap (stripchart)) {
+     stripchart_event_spec_gc (stripchart, active_idx) =
+       gdk_gc_new(stripchart_pixmap (stripchart));
+     gdk_gc_set_rgb_fg_color(stripchart_event_spec_gc (stripchart, active_idx),
+			     &stripchart_event_spec_color (stripchart, active_idx));
+   }
+   
+   stripchart_event_spec_title(stripchart, active_idx) =
+     gtk_widget_create_pango_layout (GTK_WIDGET (stripchart), title);
+ }
+ 
+gint
+ftk_stripchart_new_event    (FtkStripchart * stripchart,
+			     const char * title,
+					 gint red, gint green, gint blue)
+{
+  return ftk_stripchart_new_event_e (stripchart, title,
+				     red, green, blue, NULL);
+}
+#endif		/* OLD_API */ 
 
 /*
  *
@@ -793,7 +822,7 @@ ftk_stripchart_set_range (FtkStripchart * stripchart, gint milliseconds)
 
 gboolean
 ftk_stripchart_append_event_e (FtkStripchart * stripchart,
-			       FtkStripchartTypeEnum type,
+			       gint type,
 			       GError ** err)
 {
   if (!FTK_IS_STRIPCHART (stripchart)) {
@@ -803,8 +832,7 @@ ftk_stripchart_append_event_e (FtkStripchart * stripchart,
 		 "Invalid FtkStripchart widget.");
     return FALSE;
   }
-  if ((type <= FTK_STRIPCHART_TYPE_TOTAL) ||
-      (type >= FTK_STRIPCHART_TYPE_LAST)) {
+  if (type >= stripchart_current_count_rho(stripchart)) {
     g_set_error (err,
 		 ftk_quark,			/* error domain */
 		 FTK_ERROR_INVALID_TYPE,	/* error code */
@@ -812,6 +840,7 @@ ftk_stripchart_append_event_e (FtkStripchart * stripchart,
 		 type);
     return FALSE;
   }
+  
   if (FALSE == stripchart_timer_set(stripchart)) {
     g_set_error (err,
 		 ftk_quark,			/* error domain */
@@ -820,16 +849,16 @@ ftk_stripchart_append_event_e (FtkStripchart * stripchart,
     return FALSE;
   }
 
-  stripchart_current_count(stripchart, FTK_STRIPCHART_TYPE_TOTAL)++;
+  stripchart_current_total(stripchart)++;
   stripchart_current_count(stripchart, type)++;
-  stripchart_current_tv_modified(stripchart) = TRUE;
+  stripchart_current_modified(stripchart) = TRUE;
 
   return TRUE;
 }
 
 gboolean
 ftk_stripchart_append_event (FtkStripchart * stripchart,
-			     FtkStripchartTypeEnum type)
+			     gint type)
 {
   return ftk_stripchart_append_event_e (stripchart,type, NULL);
 }
