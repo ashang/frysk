@@ -222,7 +222,7 @@ clean-class-files:
 GCJH = $(GCJ)h
 .java.h:
 	classes=`jv-scan --list-class '$<'` ; \
-	tmpdir=`echo $classes | ( read a b ; echo $$a )`.tmp ; \
+	tmpdir=`echo $$classes | ( read a b ; echo $$a )`.tmp ; \
 	rm -rf $$tmpdir ; \
 	mkdir -p $$tmpdir ; \
 	$(GCJCOMPILE) -C -d $$tmpdir '$<' ; \

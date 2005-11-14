@@ -1,5 +1,7 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.java.h): Change $ to $$ in shell command.
+
 	* Makefile.gen.sh: Append -Djava.library.path=..., and
 	-Wl,-rpath,... to each program's LDFLAGS.  Add all .so's to
 	solib_DATA so that they are installed.
