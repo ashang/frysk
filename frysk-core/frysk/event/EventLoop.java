@@ -49,12 +49,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.HashMap;
-import java.io.IOException;
-import java.util.logging.Formatter;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.LogRecord;
 import java.lang.Long;
 import java.lang.Integer;
 import frysk.Config;
@@ -66,25 +62,13 @@ import frysk.Config;
 public class EventLoop
     extends Thread
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    private static Logger logger;
     /**
      * Create an event loop, re-initialize any static data.
      */
     public EventLoop ()
     {
-	try {
-	    FileHandler handler = new FileHandler(Config.FRYSK_CONFIG + "logs" + "/frysk_core_event.log", 1024 * 128, 1);
- 	    handler.setFormatter(new Formatter() {
- 		    public String format(LogRecord record) {
-			return formatMessage(record);
- 		    }
-		});
-	    logger.addHandler(handler);
-	}
-	catch (IOException e) {
-	    e.printStackTrace ();
-	}
-	logger.setUseParentHandlers(false);
+	logger = Config.EventLogger.get ("logs/", "frysk_core_event.log");
 	logger.log (Level.FINE, "initializing\n", ""); 
 	// Make certain that the global signal set is empty.
 	Poll.SignalSet.empty ();

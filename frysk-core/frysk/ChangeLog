@@ -1,3 +1,7 @@
+2005-11-14  Stan Cox  <scox@scox.rdu.redhat.com>
+
+	* Config.javain (EventLogger): New.
+
 2005-11-04  Stan Cox  <scox@redhat.com>
 
 	* Config.javain (FRYSK_CONFIG, FRYSK_LOG_ID): New.
@@ -18,4 +22,4 @@
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain: Moved from frysk/bin/.
-
+	
