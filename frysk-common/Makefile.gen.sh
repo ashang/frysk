@@ -239,8 +239,7 @@ lib${dir}.so: lib${dir}.a
 # Since java compilers don't abort on a warning, fake the behavior by
 # checking for any output.
 
-${_dir}_jar_SOURCES =
-noinst_PROGRAMS += ${dir}.jar
+java_DATA += ${dir}.jar
 ${dir}.jar: \$(GEN_CLASSDIR)/files
 	\$(JAVAC) -d \$(GEN_CLASSDIR) \$(JAVACFLAGS) \
 		@\$(GEN_CLASSDIR)/files \

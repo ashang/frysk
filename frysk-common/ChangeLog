@@ -1,5 +1,9 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (javadir, java_DATA): Define.
+	* Makefile.gen.sh: Add ${dir}.jar to java_DATA, delete
+	${_dir}_jar_SOURCES.
+
 	* Makefile.rules (LIBJUNIT): Delete.
 	(GEN_CLASSPATH): Do not add junit.jar.
 

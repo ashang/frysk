@@ -252,6 +252,12 @@ SUFFIXES += .so
 solibdir = $(libdir)
 solib_DATA =
 
+# The shared java directory (typically /usr/share/java/; contains
+# things like .jar files.
+
+javadir = $(datadir)/java
+java_DATA =
+
 # Assembler rule.
 
 .S.o:
