@@ -76,7 +76,7 @@ AC_SUBST(VTE_JAVA_JAR)
 
 
 
-RPATH=${libdir}:`cd ../frysk-imports/EggTrayIcon && pwd`:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
+RPATH=${libdir}:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
 
 AC_CONFIG_FILES([Makefile])

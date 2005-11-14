@@ -106,6 +106,20 @@ echo_PROGRAMS ()
     esac
 }
 
+echo_LDFLAGS ()
+{
+    case "$1" in
+	*_bindir_* | *_sbindir_* )
+                echo "$1_LDFLAGS = --main=$2"
+                echo "$1_LDFLAGS += -Djava.library.path=@RPATH@"
+                echo "$1_LDFLAGS += -Wl,-rpath,@RPATH@"
+		;;
+	* )
+                echo "$1_LDFLAGS = --main=$2 \$(GEN_GCJ_RPATH_FLAGS)"
+		;;
+    esac
+}
+
 has_main ()
 {
     case "$1" in
@@ -137,11 +151,11 @@ noinst_LIBRARIES += lib$1.a
 lib$1_a_LIBADD = $1.o
 $1.o: $1.jar
 lib$1_a_SOURCES = 
-lib$1_so_SOURCES =
 $1_db_SOURCES =
 CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
 lib$1.so: lib$1.a
-noinst_PROGRAMS += lib$1.so $1.db
+noinst_PROGRAMS += $1.db
+solib_DATA += lib$1.so
 $1.db: lib$1.so $1.jar
 EOF
 }
@@ -200,10 +214,9 @@ _dir=`echo ${dir} | sed -e 's,[-/],_,g'`
 print_header "... creating rule for ${dir}.db et.al."
 
 cat <<EOF
-noinst_PROGRAMS += lib${dir}.so
+solib_DATA += lib${dir}.so
 GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
-lib${_dir}_so_SOURCES =
 noinst_LIBRARIES += lib${dir}.a
 lib${dir}.so: lib${dir}.a
 
@@ -289,7 +302,7 @@ for suffix in .java ; do
 	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK)"
 	    echo_PROGRAMS ${name}
-	    echo "${name_}_LDFLAGS = --main=${class}"
+	    echo_LDFLAGS ${name_} ${class}
 	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
 	fi
     done

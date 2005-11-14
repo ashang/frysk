@@ -1,3 +1,12 @@
+2005-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: Append -Djava.library.path=..., and
+	-Wl,-rpath,... to each program's LDFLAGS.  Add all .so's to
+	solib_DATA so that they are installed.
+	* Makefile.rules (GEN_GCJ_RPATH, GEN_GCJ_RPATH_FLAGS): Define.
+	(BUILD_GCJ_RPATH): Define.
+	(TestRunner_LDFLAGS): Add $(GEN_GCJ_RPATH_FLAGS).
+
 2005-11-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (GEN_BUILT_CLASSES): Delete.

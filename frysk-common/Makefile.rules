@@ -46,7 +46,7 @@ noinst_PROGRAMS =
 bin_PROGRAMS =
 noinst_LIBRARIES =
 LDADD = 
-GEN_GCJ_LDADD = 
+
 check_SCRIPTS =
 TESTS =
 GEN_CLASSPATH =
@@ -55,6 +55,21 @@ empty=
 space=$(empty) $(empty)
 GEN_CLASSDIR = classes
 EXTRA_DIST = 
+
+# The list of libraries for the GCJ programs is different to that of
+# the standalone .c programs.  Accumulate the GCJ list in
+# GEN_GCJ_LDADD, and then use that to construct the corresponding
+# build-tree RPATH list (colon separated list of directories that are
+# searched at runtime).
+
+GEN_GCJ_LDADD = 
+GEN_GCJ_RPATH = $(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_LDADD)))
+BUILD_GCJ_RPATH = $(subst $(space),:,$(strip $(sort \
+		$(patsubst .%,@abs_top_builddir@/.% %, \
+			$(GEN_GCJ_RPATH)))))
+GEN_GCJ_RPATH_FLAGS = \
+	-Djava.library.path=$(BUILD_GCJ_RPATH) \
+	-Wl,-rpath,$(BUILD_GCJ_RPATH)
 
 # Get some common macro definitions
 
@@ -273,7 +288,7 @@ SUFFIXES += .db
 
 TestRunner_SOURCES = TestRunner.java
 TestRunner_LINK = ${GCJLINK}
-TestRunner_LDFLAGS = --main=TestRunner
+TestRunner_LDFLAGS = --main=TestRunner $(GEN_GCJ_RPATH_FLAGS)
 TestRunner_LDADD = $(LIBJUNIT) $(GEN_GCJ_LDADD)
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner

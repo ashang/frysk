@@ -62,6 +62,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libantlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libjdom.a
 GEN_GCJ_LDADD += ../frysk-imports/libcdtparser.a 
+GEN_GCJ_LDADD += -L../frysk-imports/EggTrayIcon
 GEN_GCJ_LDADD += $(GLADE_JAVA_LIBS)
 GEN_GCJ_LDADD += $(GTK_JAVA_LIBS)
 GEN_GCJ_LDADD += -lgtkjni -lglibjni 
@@ -71,11 +72,9 @@ GEN_GCJ_LDADD += $(CAIRO_JAVA_LIBS)
 GEN_GCJ_LDADD += $(GLIB_JAVA_LIBS)
 GEN_GCJ_LDADD += $(VTE_JAVA_LIBS)
 
-LDFLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
-
 EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \
-				$(srcdir)/frysk/gui/images/*.png \
-				$(srcdir)/frysk/gui/images/*.jpg \
-			 	$(srcdir)/frysk/gui/common/messages.properties \
-				$(srcdir)/frysk/gui/srcwin/testfiles/*.cpp
+		$(srcdir)/frysk/gui/images/*.png \
+		$(srcdir)/frysk/gui/images/*.jpg \
+	 	$(srcdir)/frysk/gui/common/messages.properties \
+		$(srcdir)/frysk/gui/srcwin/testfiles/*.cpp
 

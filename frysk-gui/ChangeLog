@@ -1,8 +1,13 @@
+2005-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (LDFLAGS): Delete.
+	(GEN_GCJ_LDADD): Add -L../frysk-imports/EggTrayIcon.
+	* configure.ac: Remove ../frysk-imports/EggTrayIcon from RPATH.
+
 2005-11-09  Igor Foox  <ifoox@redhat.com>
 
-	* configure.ac:
-	* Makefile.ac: Changed to use libcdtparser.so from frysk-imports instead of
-	the frysk-cdtparser package.
+	* configure.ac, Makefile.ac: Changed to use libcdtparser.so from
+	frysk-imports instead of the frysk-cdtparser package.
 
 2005-11-04  Adam Jocksch  <ajocksch@redhat.com>
 
