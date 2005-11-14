@@ -187,33 +187,68 @@ echo GEN_SOURCES =
  
 
 # Generate rule to build this directory's .jar, .a, and .so file.
+# Need to do this here as automake gets grumpy when things like
+# $(GEN__DIR)_jar_SOURCES appear in Makefile.am
+
+# Generate a file containing the .java files that need compiling,
+# otherwize the list of files is so long that SH gets an argument
+# length error.
+
 pwd=`pwd`
 dir=`basename $pwd`
 _dir=`echo ${dir} | sed -e 's,[-/],_,g'`
 print_header "... creating rule for ${dir}.db et.al."
+
 cat <<EOF
-${dir}.jar: \$(GEN_BUILT_CLASSES)
-	cat \$^ /dev/null \
-		| sed -e '/^#/d' -e 's,\.,/,g' -e 's,\$\$,.class,' \
-		| ( cd \$(GEN_CLASSDIR) && fastjar -@ -cf \$@ )
-	mv \$(GEN_CLASSDIR)/\$@ \$@
-noinst_PROGRAMS += ${dir}.jar
+noinst_PROGRAMS += lib${dir}.so
 GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
 lib${_dir}_so_SOURCES =
-${_dir}_db_SOURCES = 
-${_dir}_jar_SOURCES =
 noinst_LIBRARIES += lib${dir}.a
 lib${dir}.so: lib${dir}.a
-noinst_PROGRAMS += lib${dir}.so
+
+# Create a list of .java files that need to be compiled.  It turns out
+# that it is faster to just feed all the files en-mass to the compiler
+# (then compile each individually).  Put the list into a file to avoid
+# having too-long an argument list.
+
+\$(GEN_CLASSDIR)/files: lib${dir}.a
+	rm -rf \$(GEN_CLASSDIR)
+	mkdir -p \$(GEN_CLASSDIR)
+	for d in \$(top_builddir) \$(top_srcdir) ; do \
+		for g in ${dirs} ; do \
+			find \$\$d/\$\$g -name '*.java' -print ; \
+		done ; \
+	done > \$@.tmp
+	mv \$@.tmp \$@
+
+# Using that list, convert to .classes and from there to a .jar.
+# Since java compilers don't abort on a warning, fake the behavior by
+# checking for any output.
+
+${_dir}_jar_SOURCES =
+noinst_PROGRAMS += ${dir}.jar
+${dir}.jar: \$(GEN_CLASSDIR)/files
+	\$(JAVAC) -d \$(GEN_CLASSDIR) \$(JAVACFLAGS) \
+		@\$(GEN_CLASSDIR)/files \
+		2>&1 | tee \$*.log
+	if test -s \$*.log ; \
+	then rm \$*.log ; false ; \
+	fi
+	cd \$(GEN_CLASSDIR) ; \
+		find * -name '*.class' -print \
+		| fastjar -@ -cf \$@
+	mv \$(GEN_CLASSDIR)/\$@ \$@
+
+# Finally, merge the .so and .jar files into the java .db file.
+
+noinst_PROGRAMS += ${dir}.db
+${_dir}_db_SOURCES = 
 ${dir}.db: lib${dir}.so ${dir}.jar
 	gcj-dbtool -n \$@.tmp
 	gcj-dbtool -a \$@.tmp ${dir}.jar lib${dir}.so
 	mv \$@.tmp \$@
-noinst_PROGRAMS += ${dir}.db
-\$(GEN_BUILT_CLASSES): \$(GEN_JARS)
 EOF
-
 
 
 
@@ -229,7 +264,6 @@ for suffix in .mkjava .shjava .javain ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	echo "GEN_SOURCES += ${file}"
-	echo "GEN_BUILT_CLASSES += ${d}/${b}.classes"
 	echo "${d}/${b}.classes: ${d}/${b}.o"
 	echo "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
 	echo "BUILT_SOURCES += ${d}/${b}.java"
@@ -250,7 +284,6 @@ for suffix in .java ; do
 	class=`echo ${name} | tr '[/]' '[.]'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
-	echo "GEN_BUILT_CLASSES += ${d}/${b}.classes"
 	echo "GEN_SOURCES += ${file}"
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES ="

@@ -41,7 +41,7 @@
 
 SUFFIXES =
 BUILT_SOURCES = $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)
-CLEANFILES = $(BUILT_SOURCES) $(GEN_BUILT_CLASSES)
+CLEANFILES = $(BUILT_SOURCES)
 noinst_PROGRAMS =
 bin_PROGRAMS =
 noinst_LIBRARIES =
@@ -53,7 +53,6 @@ GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
 empty=
 space=$(empty) $(empty)
-GEN_BUILT_CLASSES =
 GEN_CLASSDIR = classes
 EXTRA_DIST = 
 
@@ -279,7 +278,6 @@ TestRunner_LDADD = $(LIBJUNIT) $(GEN_GCJ_LDADD)
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 GEN_CLASSPATH += ../frysk-imports/junit.jar
-GEN_BUILT_CLASSES += TestRunner.classes
 CLEANFILES += TestRunner.java
 LIBJUNIT ?= ../frysk-imports/libjunit.a
 

@@ -1,3 +1,9 @@
+2005-11-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (GEN_BUILT_CLASSES): Delete.
+	* Makefile.gen.sh: Rewrite .java -> .class .jar rule to comile
+	everything at once.
+
 2005-11-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java.h): Replace .classes.h rule.
