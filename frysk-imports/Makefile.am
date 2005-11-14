@@ -37,9 +37,6 @@
 # version and license this file solely under the GPL without
 # exception.
 
-# Force use of libjunit.a in this directory.
-LIBJUNIT = libfrysk-junit.a
-
 include common/Makefile.rules
 include Makefile.gen
 
