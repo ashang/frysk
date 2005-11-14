@@ -43,4 +43,6 @@ include Makefile.gen
 AM_CXXFLAGS += -I$(srcdir)/../frysk-imports/include
 
 GEN_CLASSPATH += ../frysk-imports/${GEN_CLASSDIR}
+GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a

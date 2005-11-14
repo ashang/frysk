@@ -1,5 +1,8 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (LIBJUNIT): Delete.
+	(GEN_CLASSPATH): Do not add junit.jar.
+
 	* Makefile.gen.sh: Add frysk- prefix to any .a or .so libraries.
 	* Makefile.rules (GEN_CLASSPATH, LIBJUNIT): Update.
 

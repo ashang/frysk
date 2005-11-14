@@ -1,5 +1,7 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (GEN_GCJ_LDADD, GEN_CLASSPATH): Add junit.
+
 	* Makefile.am (GEN_GCJ_LDADD): Add frysk- prefix to libraries.
 	
 	* Makefile.am (LDFLAGS): Delete.
