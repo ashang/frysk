@@ -632,6 +632,9 @@ public class SourceBuffer extends TextBuffer {
 	}
 	
 	public void setScope(StackLevel scope){
+		for(int i = 0; i < functions.size(); i++)
+			this.deleteMark(((String) functions.get(i)));
+		
         this.functions = new Vector();
 		this.scope = scope;
 		try {

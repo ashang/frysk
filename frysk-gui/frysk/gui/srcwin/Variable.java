@@ -50,9 +50,6 @@ package frysk.gui.srcwin;
 
 public class Variable extends CodeItem {
 	private boolean isMember = false;
-	
-	private Variable prev = null;
-	private Variable next = null;
 
 	/**
 	 * Create a new, empty variable
@@ -72,37 +69,6 @@ public class Variable extends CodeItem {
 		super(name, lineNum, startCol);
 		this.isMember = member;
 	}
-
-	/**
-	 * @return The next VariableLocation on the line
-	 */
-	public Variable getNext() {
-		return next;
-	}
-
-	/**
-	 * Sets the next variable on the line
-	 * @param next
-	 */
-	public void setNext(Variable next) {
-		this.next = next;
-	}
-
-	/**
-	 * @return The previous variable on the line
-	 */
-	public Variable getPrev() {
-		return prev;
-	}
-
-	/**
-	 * Sets the previous variable on the line
-	 * @param prev
-	 */
-	public void setPrev(Variable prev) {
-		this.prev = prev;
-	}
-
 	
 	public String toString(){
 		return this.name+":("+this.line+"-"+this.col+")";

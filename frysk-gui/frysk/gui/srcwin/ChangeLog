@@ -1,3 +1,25 @@
+2005-11-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (InlineViewer): Added SourceWindow parameter to
+	reflect refactorings in SourceViewWidget.
+	* SourceBuffer.java (setScope): Clears all previous textmarks from
+	the buffer before loading new info.
+	* SourceViewWidget.java (SourceViewWidget): Added SourceWindow parameter.
+	(mouseEvent): Added menu option for adding a trace on a variable.
+	(drawMargin): Now uses Widget.getLayout instead of creating one from scratch
+	* SourceWindow.java (SourceWindow): Sets the text for the variable trace
+	window as well as the title for the current source.
+	(populateStackBrowser): Removed title from column.
+	(addVariableTrace): Added, but currently does nothing.
+	(load): Updates the text of the label over the source when a new file is
+	loaded.
+	* SourceWindowFactory.java (createSourceWindow): Removed debugging output.
+	* Variable.java (getNext): Removed.
+	(setNext): Removed.
+	(getPrev): Removed.
+	(setPrev): Removed.
+	* VariableList.java: Removed.
+
 2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PreferenceWindow.java (PreferenceWindow): Fixed bug in finding glade file.

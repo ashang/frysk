@@ -65,15 +65,16 @@ public class InlineViewer extends SourceViewWidget {
 	
 	private boolean showEllipsis;
 	
-	public InlineViewer(Preferences parentPrefs){
-		this(parentPrefs, false);
+	public InlineViewer(Preferences parentPrefs, SourceWindow top){
+		this(parentPrefs, false, top);
 	}
 	
 	/**
 	 * @param parentPrefs
 	 */
-	public InlineViewer(Preferences parentPrefs, boolean showEllipsis) {
-		super(parentPrefs, null);
+	public InlineViewer(Preferences parentPrefs, boolean showEllipsis,
+			SourceWindow top) {
+		super(parentPrefs, null, top);
 		this.setBorderWidth(1);
 		this.showEllipsis = showEllipsis;
 	}

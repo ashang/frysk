@@ -97,10 +97,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	protected int marginWriteOffset;
 	
 	private TextChildAnchor anchor;
+	private SourceWindow parent;
 	
 	protected boolean expanded = false;
-	// TODO: Get rid of this?
-	protected boolean hasInlineCode = false;
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.
@@ -108,8 +107,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * @param parentPrefs The root node of the preference model to use
 	 * @param scope The source file that this widget will be displaying
 	 */
-	public SourceViewWidget(Preferences parentPrefs, StackLevel scope) {
+	public SourceViewWidget(Preferences parentPrefs, StackLevel scope, SourceWindow parent) {
 		super(gtk_text_view_new());
+		this.parent = parent;
 		this.buf = new SourceBuffer(scope);
 		this.setBuffer(this.buf);
 		this.topPrefs = parentPrefs;
@@ -204,7 +204,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			MenuItem mi2 = new MenuItem("Add Trace", false);
 			m.append(mi);
 			m.append(mi2);
-			if(var != null)
+			if(var != null){
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent arg0) {
 						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
@@ -212,6 +212,14 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 						popup.showAll();
 					}
 				});
+				mi2.addListener(new MenuItemListener() {
+				
+					public void menuItemEvent(MenuItemEvent arg0) {
+						SourceViewWidget.this.parent.addVariableTrace(var);
+					}
+				
+				});
+			}
 			else{
 				mi.setSensitive(false);
 				mi2.setSensitive(false);
@@ -482,9 +490,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			if(i == this.buf.getCurrentLine() && this.buf.hasInlineCode(i)){
 				System.out.println("Found inline code on current line");
 				context.setRGBForeground(new Color(markR,markG,markB));
-				Layout lo = new Layout(this.getContext());
+				Layout lo = this.createLayout("i");
+//				Layout lo = new Layout(this.getContext());
 				lo.setAlignment(Alignment.RIGHT);
-				lo.setText("i");
+//				lo.setText("i");
 				if(showMarks)
 					drawingArea.drawLayout(context, this.marginWriteOffset+25, actualFirstStart+drawingHeight, lo);
 				else
@@ -499,10 +508,11 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			// Draw line numbers
 			if(showLines){
-				Layout lo = new Layout(this.getContext());
+				Layout lo = this.createLayout(""+(i+1));
+//				Layout lo = new Layout(this.getContext());
 				lo.setAlignment(Alignment.RIGHT);
 				lo.setWidth(this.marginWriteOffset);
-				lo.setText(""+(i+1));
+//				lo.setText(""+(i+1));
 				
 				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+drawingHeight, lo);
 			}

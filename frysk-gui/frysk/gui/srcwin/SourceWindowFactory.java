@@ -110,7 +110,6 @@ public class SourceWindowFactory {
                     execLines = new int[] {0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0};
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
-                        System.out.print(text);
 						source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
                         if(execLines[line-1] == 1)
                             source.getLine(line++).setExecutable(true);

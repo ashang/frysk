@@ -239,6 +239,12 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		
 		this.populateStackBrowser(this.stack);
 		
+		((Label) this.glade.getWidget("stackFrame")).setText("<b>Current Stack</b>");
+		((Label) this.glade.getWidget("stackFrame")).setUseMarkup(true);
+		
+		((Label) this.glade.getWidget("traceFrame")).setText("<b>Variable Traces</b>");
+		((Label) this.glade.getWidget("traceFrame")).setUseMarkup(true);
+		
         this.populateFunctionBox();
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).setActive(0); //$NON-NLS-1$
 
@@ -338,18 +344,21 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		CellRenderer renderer = new CellRendererText();
 		column.packStart(renderer, true);
 		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, dataColumns[0]);
-		column.setTitle("Stack");
 		stackList.appendColumn(column);
 		
 		if(this.view != null)
 			((Container) this.view.getParent()).remove(this.view);
-		this.view = new SourceViewWidget(this.prefs, lastStack);
+		this.view = new SourceViewWidget(this.prefs, lastStack, this);
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add(this.view);
 		this.view.showAll();
 		
 		stackList.getSelection().setMode(SelectionMode.SINGLE);
 		stackList.getSelection().select(last);
 		stackList.showAll();
+	}
+	
+	public void addVariableTrace(Variable var){
+		System.out.println("Adding trace to variable " + var);
 	}
 	
 	/***********************************
@@ -1009,6 +1018,8 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		
 		StackLevel selected = (StackLevel) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
 		
+		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"+selected.getData().getFileName()+"</b>");
+		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 		this.view.load(selected);
 		this.view.showAll();
         this.populateFunctionBox();
