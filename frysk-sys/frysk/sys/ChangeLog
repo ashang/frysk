@@ -1,3 +1,8 @@
+2005-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Wait.cxx (processStatus): Wrap case local variable in local
+	block.  Gag G++ 4.1 error.
+
 2005-11-10  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* Wait.java (syscallEvent): Revert change on 2005-11-07.

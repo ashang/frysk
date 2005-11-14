@@ -139,11 +139,13 @@ processStatus (int pid, int status,
       observer->execEvent (pid);
       break;
     case 0:
-      int signum = WSTOPSIG (status);
-      if (signum >= 0x80)
-	observer->syscallEvent (pid);
-      else
-	observer->stopped (pid, signum);
+      {
+	int signum = WSTOPSIG (status);
+	if (signum >= 0x80)
+	  observer->syscallEvent (pid);
+	else
+	  observer->stopped (pid, signum);
+      }
       break;
     default:
       throwRuntimeException ("Unknown waitpid stopped event", "process", pid);
