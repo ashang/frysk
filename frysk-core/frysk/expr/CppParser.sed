@@ -20,14 +20,14 @@ s:\(import java.util.\*;\):/* \1 */:
 981 s:\(AST post_expr2_AST = null;\):/* \1 */:
 1029 s:\(post_expr2_AST = .AST.returnAST;\):/* \1 */:
 
-1090 s:\(AST tmp38_AST = null;\):/* \1 */:
-1091 s:\(tmp38_AST =\):/* \1 */:
+1090 s:\(AST tmp[0-9][0-9]*_AST = null;\):/* \1 */:
+1091 s:\(tmp[0-9][0-9]*_AST =\):/* \1 */:
 
-1095 s:\(AST tmp39_AST = null;\):/* \1 */:
-1096 s:\(tmp39_AST =\):/* \1 */:
+1095 s:\(AST tmp[0-9][0-9]*_AST = null;\):/* \1 */:
+1096 s:\(tmp[0-9][0-9]*_AST =\):/* \1 */:
 
-1105 s:\(AST tmp40_AST = null;\):/* \1 */:
-1106 s:\(tmp40_AST =\):/* \1 */:
+1105 s:\(AST tmp[0-9][0-9]*_AST = null;\):/* \1 */:
+1106 s:\(tmp[0-9][0-9]*_AST =\):/* \1 */:
 
-1138 s:\(AST tmp41_AST = null;\):/* \1 */:
-1139 s:\(tmp41_AST =\):/* \1 */:
+1138 s:\(AST tmp[0-9][0-9]*_AST = null;\):/* \1 */:
+1139 s:\(tmp[0-9][0-9]*_AST =\):/* \1 */:

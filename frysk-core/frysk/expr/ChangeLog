@@ -1,3 +1,10 @@
+2005-11-14  Tarun Khanna  <tkhanna@redhat.com>
+
+	* CppParser.sed: made the commenting out of unused variables more
+	generic.
+	* CppTreeParser.sed: made the commenting out of unused variables more
+	generic.
+
 2005-11-07  Tarun Khanna  <tkhanna@redhat.com>
 
 	* RunCppParser.java: commented out code to remove warnings.
