@@ -52,9 +52,9 @@ GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
-GEN_GCJ_LDADD += ../frysk-imports/libjline.a
-GEN_GCJ_LDADD += ../frysk-imports/libantlr.a
-GEN_GCJ_LDADD += ../frysk-imports/libjunit.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a
 
 # XXX: This needs to be make less-architecture independant.
 
@@ -64,9 +64,9 @@ prog_x86isa_x86modify_SOURCES = prog/x86isa/x86modify.S
 noinst_PROGRAMS += prog/x86isa/x86modify
 
 EXTRA_DIST +=  	$(srcdir)/frysk/model/doc-files/*.fig \
-				$(srcdir)/frysk/proc/doc-files/*.fig \
-				$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png \
-				$(srcdir)/frysk/expr/cpp.g \
-				$(srcdir)/frysk/expr/*.sed
+		$(srcdir)/frysk/proc/doc-files/*.fig \
+		$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png \
+		$(srcdir)/frysk/expr/cpp.g \
+		$(srcdir)/frysk/expr/*.sed
 
 RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite --tool expr

@@ -38,7 +38,7 @@
 # exception.
 
 # Force use of libjunit.a in this directory.
-LIBJUNIT = libjunit.a
+LIBJUNIT = libfrysk-junit.a
 
 include common/Makefile.rules
 include Makefile.gen
@@ -66,7 +66,7 @@ EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
 EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(GLIB_JAVA_CFLAGS)
 
 GEN_CLASSPATH += jargs.jar
-GEN_GCJ_LDADD += libjargs.a
+GEN_GCJ_LDADD += libfrysk-jargs.a
 
 # we need to get this into the distribution
 noinstdir = $(srcdir)

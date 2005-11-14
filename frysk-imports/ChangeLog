@@ -1,3 +1,7 @@
+2005-11-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Add frysk- prefix to all libraries.
+
 2005-11-10  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AC_CONFIG_FILES): Remove tlwidgets/Makefile.

@@ -147,16 +147,16 @@ $1.jar: \$($2_JAR)
 	cp \$($2_JAR) .
 BUILT_SOURCES += $1.jar
 GEN_JARS += $1.jar
-noinst_LIBRARIES += lib$1.a
-lib$1_a_LIBADD = $1.o
+noinst_LIBRARIES += libfrysk-$1.a
+libfrysk_$1_a_LIBADD = $1.o
 $1.o: $1.jar
-lib$1_a_SOURCES = 
-$1_db_SOURCES =
+libfrysk_$1_a_SOURCES = 
+frysk_$1_db_SOURCES =
 CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
-lib$1.so: lib$1.a
-noinst_PROGRAMS += $1.db
-solib_DATA += lib$1.so
-$1.db: lib$1.so $1.jar
+libfrysk-$1.so: libfrysk-$1.a
+noinst_PROGRAMS += frysk-$1.db
+solib_DATA += libfrysk-$1.so
+frysk-$1.db: libfrysk-$1.so $1.jar
 EOF
 }
 

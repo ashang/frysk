@@ -1,5 +1,7 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (GEN_GCJ_LDADD): Add frysk- prefix to libraries.
+	
 	* Makefile.am (LDFLAGS): Delete.
 	(GEN_GCJ_LDADD): Add -L../frysk-imports/EggTrayIcon.
 	* configure.ac: Remove ../frysk-imports/EggTrayIcon from RPATH.

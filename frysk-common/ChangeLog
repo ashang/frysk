@@ -1,5 +1,8 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Add frysk- prefix to any .a or .so libraries.
+	* Makefile.rules (GEN_CLASSPATH, LIBJUNIT): Update.
+
 	* Makefile.rules (.java.h): Change $ to $$ in shell command.
 
 	* Makefile.gen.sh: Append -Djava.library.path=..., and
