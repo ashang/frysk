@@ -47,9 +47,9 @@ Usage: $0 <source-dir>... <.jar-file>... <_JAR-macro>...
 Search source directory for .java, .mkjava, .shjava, .javain, .c and
 .cxx files.  For each, generate a corresponding automake entry.  If
 the file contains a main program, also generate automake to build the
-corresponding program.  Any program located under either bindir/, or
-sbindir/ sub-directory, will be installed in the corresponding bin/ or
-sbin/ destination directory.
+corresponding program.  Any program located under a bindir/, sbindir/,
+or libexecdir/ sub-directory, will be installed in the corresponding
+bin/, sbin/, or libexec/ destination directory.
 
 <.jar-file> or <_JAR-macro>:
 
@@ -102,6 +102,7 @@ echo_PROGRAMS ()
     case "$1" in
 	*/bindir/* ) echo "bin_PROGRAMS += $1" ;;
 	*/sbindir/* ) echo "sbin_PROGRAMS += $1" ;;
+	*/libexecdir/* ) echo "libexec_PROGRAMS += $1" ;;
         * ) echo "noinst_PROGRAMS += $1" ;;
     esac
 }
@@ -109,7 +110,7 @@ echo_PROGRAMS ()
 echo_LDFLAGS ()
 {
     case "$1" in
-	*_bindir_* | *_sbindir_* )
+	*_bindir_* | *_sbindir_* | *_libexec_* )
                 echo "$1_LDFLAGS = --main=$2"
                 echo "$1_LDFLAGS += -Djava.library.path=@RPATH@"
                 echo "$1_LDFLAGS += -Wl,-rpath,@RPATH@"

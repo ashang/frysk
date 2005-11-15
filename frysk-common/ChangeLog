@@ -1,5 +1,10 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Handle libexecdir/.
+	* Makefile.rules (GEN_GCJ_RPATHS): Define.  Fix expansion
+	resulting in % in GEN_GCJ_RPATH.
+	(libexec_PROGRAMS, sbin_PROGRAMS): Define.
+
 	* Makefile.gen.sh: Add TestRunner.sh to classes/files.
 	
 	* Makefile.rules (javadir, java_DATA): Define.

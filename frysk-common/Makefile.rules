@@ -44,6 +44,8 @@ BUILT_SOURCES = $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)
 CLEANFILES = $(BUILT_SOURCES)
 noinst_PROGRAMS =
 bin_PROGRAMS =
+sbin_PROGRAMS =
+libexec_PROGRAMS =
 noinst_LIBRARIES =
 LDADD = 
 
@@ -63,10 +65,15 @@ EXTRA_DIST =
 # searched at runtime).
 
 GEN_GCJ_LDADD = 
-GEN_GCJ_RPATH = $(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_LDADD)))
-BUILD_GCJ_RPATH = $(subst $(space),:,$(strip $(sort \
-		$(patsubst .%,@abs_top_builddir@/.% %, \
-			$(GEN_GCJ_RPATH)))))
+GEN_GCJ_RPATH = \
+	$(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_LDADD)))
+GEN_GCJ_RPATHS = \
+	$(patsubst %/.,%, \
+		$(patsubst %,@abs_top_builddir@/%, \
+			$(filter .%,$(GEN_GCJ_RPATH))) \
+		$(GEN_GCJ_RPATH) \
+	)
+BUILD_GCJ_RPATH = $(subst $(space),:,$(sort $(GEN_GCJ_RPATHS)))
 GEN_GCJ_RPATH_FLAGS = \
 	-Djava.library.path=$(BUILD_GCJ_RPATH) \
 	-Wl,-rpath,$(BUILD_GCJ_RPATH)
