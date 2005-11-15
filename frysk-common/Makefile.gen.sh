@@ -233,6 +233,7 @@ lib${dir}.so: lib${dir}.a
 			find \$\$d/\$\$g -name '*.java' -print ; \
 		done ; \
 	done > \$@.tmp
+	echo TestRunner.java >> \$@.tmp
 	mv \$@.tmp \$@
 
 # Using that list, convert to .classes and from there to a .jar.

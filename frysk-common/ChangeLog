@@ -1,5 +1,7 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Add TestRunner.sh to classes/files.
+	
 	* Makefile.rules (javadir, java_DATA): Define.
 	* Makefile.gen.sh: Add ${dir}.jar to java_DATA, delete
 	${_dir}_jar_SOURCES.

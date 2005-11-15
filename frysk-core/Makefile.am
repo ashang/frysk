@@ -45,8 +45,10 @@ AUTOMAKE_OPTIONS = dejagnu
 
 include frysk/expr/Makefile.inc
 
-GEN_CLASSPATH += ../frysk-sys/$(GEN_CLASSDIR)
-GEN_CLASSPATH += ../frysk-imports/$(GEN_CLASSDIR)
+GEN_SOURCEPATH += $(top_builddir)/../frysk-sys/
+GEN_SOURCEPATH += $(top_srcdir)/../frysk-sys/
+GEN_SOURCEPATH += $(top_builddir)/../frysk-imports/
+GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/
 GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar

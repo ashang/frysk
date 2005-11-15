@@ -1,5 +1,8 @@
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (GEN_CLASSPATH): Delete GEN_CLASSDIR references.
+	(GEN_SOURCEPATH): Add path to frysk-imports.
+	
 	* Makefile.am (GEN_GCJ_LDADD, GEN_CLASSPATH): Add junit.
 
 2005-11-03  Igor Foox  <ifoox@redhat.com>
