@@ -81,6 +81,3 @@ EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \
 		$(srcdir)/frysk/gui/images/*.jpg \
 	 	$(srcdir)/frysk/gui/common/messages.properties \
 		$(srcdir)/frysk/gui/srcwin/testfiles/*.cpp
-
-
-fryski_LDADD += -lpangox-1.0 # To be sure.
