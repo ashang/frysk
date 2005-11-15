@@ -43,7 +43,7 @@ package frysk.gui.monitor;
 /**
  * A GuiObject is one that has a name and a tooltip.
  * */
-public abstract class GuiObject {
+public class GuiObject {
 	
 	private String name;
 	private String toolTip;

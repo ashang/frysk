@@ -68,7 +68,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 /**
  * The preference window. This also provides a place
- * to extend the perference window.
+ * to extend the preferences window.
  * */
 public class PreferencesWindow extends Window {
 	
@@ -133,11 +133,20 @@ public class PreferencesWindow extends Window {
 			}
 		});
 		
+		button = (Button) glade.getWidget("prefsCancelButton");
+		button.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					WindowManager.theManager.prefsWindow.hideAll();
+				}
+			}
+		});
+		
 		this.hideAll();
 	}
 	
 	/**
-	 * Adds a new catagory page in the preference window
+	 * Adds a new category page in the preference window
 	 * @param name the name of the page to create.
 	 */
 	public void addPage(String path, PreferenceWidget page){

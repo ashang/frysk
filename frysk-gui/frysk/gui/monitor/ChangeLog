@@ -1,3 +1,11 @@
+2005-11-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* PreferencesWindow.java: Added handle for cancel button.
+	* MenuBar.java: Added handel for custom observer item.
+	* GuiObject.java: No longer abstract.
+	* DynamicWidget.java: New file.
+	* CustomeObserverWindow.java: Added handles for managing components.
+
 2005-11-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramData.java (delete): Added.

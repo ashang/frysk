@@ -32,6 +32,8 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		
 		this.addFilterPoint(this.taskFilterPoint);
 		this.addFilterPoint(this.procFilterPoint);
+		
+		this.forkedActions = new LinkedList();
 	}
 
 	public TaskForkedObserver(TaskForkedObserver observer) {
@@ -39,7 +41,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 
 	public Action updateForked(Task task, Proc child) {
-		System.out.println("TaskForkedObserver.updateForked()");
+		System.out.println("TaskForkedObserver.updateForked() " + child.getPid());
 		final Task myTask = task;
 		final Proc myChild = child;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){

@@ -45,12 +45,132 @@
  */
 package frysk.gui.monitor;
 
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
 import org.gnu.glade.LibGlade;
+import org.gnu.gtk.Button;
+import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnObject;
+import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.ListStore;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
+
+import frysk.gui.monitor.actions.Action;
+import frysk.gui.monitor.actions.ActionManager;
+import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.ObserverRoot;
 
 public class CustomeObserverWindow extends Window {
 	
+	private TreeView observerTreeView;
+	private TreeView sourceActionsTreeView;
+
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle());
+		
+//		
+		
+		Button button = (Button) glade.getWidget("customObserverOkButton");
+		button.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					WindowManager.theManager.customeObserverWindow.hideAll();
+				}
+			}
+		});
+		
+		button = (Button) glade.getWidget("customObserverCancelButton");
+		button.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.getType() == ButtonEvent.Type.CLICK){
+					WindowManager.theManager.customeObserverWindow.hideAll();
+				}
+			}
+		});
+		
+		this.observerTreeView = (TreeView)glade.getWidget("simplexListView");
+		this.initObserverTreeView();
+		
+		this.sourceActionsTreeView = (TreeView)glade.getWidget("sourceActionsTreeView");
+		this.initSourceActionsTreeView();
+	}
+
+	private void initSourceActionsTreeView() {
+		final DataColumnString nameDC = new DataColumnString();
+		final DataColumnObject observersDC = new DataColumnObject();
+		DataColumn[] columns = new DataColumn[2];
+		columns[0] = nameDC;
+		columns[1] = observersDC;
+		final ListStore listStore = new ListStore(columns);
+		sourceActionsTreeView.setHeadersVisible(false);
+		
+		Iterator iter = ActionManager.theManager.getProcActions().iterator();
+		while(iter.hasNext()){
+			Action action = (Action) iter.next();
+			TreeIter treeIter = listStore.appendRow();
+			listStore.setValue(treeIter, nameDC, action.getName());
+			listStore.setValue(treeIter, observersDC, action);
+		}
+		
+		// handle add events
+		ObserverManager.theManager.addObserver(new Observer(){
+			public void update(Observable observable, Object obj) {
+				Action actoin = (Action) obj;
+				TreeIter iter = listStore.appendRow();
+				listStore.setValue(iter, nameDC, actoin.getName());
+				listStore.setValue(iter, observersDC, actoin);
+			}
+		});
+		
+		sourceActionsTreeView.setModel(listStore);
+		CellRendererText cellRendererText = new CellRendererText();
+		TreeViewColumn observersCol = new TreeViewColumn();
+		observersCol.packStart(cellRendererText, false);
+		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		sourceActionsTreeView.appendColumn(observersCol);
+	}
+
+	private void initObserverTreeView() {
+		final DataColumnString nameDC = new DataColumnString();
+		final DataColumnObject observersDC = new DataColumnObject();
+		DataColumn[] columns = new DataColumn[2];
+		columns[0] = nameDC;
+		columns[1] = observersDC;
+		final ListStore listStore = new ListStore(columns);
+		observerTreeView.setHeadersVisible(false);
+		
+		Iterator iter = ObserverManager.theManager.getObservers().iterator();
+		while(iter.hasNext()){
+			ObserverRoot observer = (ObserverRoot) iter.next();
+			TreeIter treeIter = listStore.appendRow();
+			listStore.setValue(treeIter, nameDC, observer.getName());
+			listStore.setValue(treeIter, observersDC, observer);
+		}
+		
+		// handle add events
+		ObserverManager.theManager.addObserver(new Observer(){
+			public void update(Observable observable, Object obj) {
+				ObserverRoot observer = (ObserverRoot) obj;
+				TreeIter iter = listStore.appendRow();
+				listStore.setValue(iter, nameDC, observer.getName());
+				listStore.setValue(iter, observersDC, observer);
+			}
+		});
+		
+		observerTreeView.setModel(listStore);
+		CellRendererText cellRendererText = new CellRendererText();
+		TreeViewColumn observersCol = new TreeViewColumn();
+		observersCol.packStart(cellRendererText, false);
+		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		observerTreeView.appendColumn(observersCol);
+		
 	}
 }

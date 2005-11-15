@@ -39,9 +39,9 @@
 
 package frysk.gui.monitor.observers;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Observable;
+import java.util.Observer;
 
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.actions.Action;
@@ -87,26 +87,36 @@ public class ObserverManager extends Observable {
 		
 
 		
-		TaskForkedObserver customObserver = new TaskForkedObserver();
+		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
 
 		final TaskExecObserver   lsObserver = new TaskExecObserver();
 		lsObserver.taskFilterPoint.addFilter(new TaskProcNameFilter("ls"));
-		lsObserver.addAction(new Action("Dialog shower", ""){
+		customObserver.addAction(new Action("Dialog shower", ""){
 			public void execute() {
-				System.out.println("ObserverManager.initTaskObservers()");
+				System.out.println("Exec Observer ");
 				WarnDialog dialog = new WarnDialog("ls is about to happen");
+				dialog.showAll();
 				dialog.run();
 			}
 		});
 		
-		customObserver.addAction(new ForkedAction(){
+		customObserver.addForkedAction(new ForkedAction(){
 			public void execute(Task task, Proc child) {
-				Iterator iter = child.getTasks().iterator();
-				while(iter.hasNext()){
-					Task myTask = (Task) iter.next();
-					myTask.requestAddExecedObserver(lsObserver);
-				}
+//				System.out.println(".execute() " + child.getPid());
+//				Iterator iter = child.getTasks().iterator();
+//				while(iter.hasNext()){
+//					Task myTask = (Task) iter.next();
+//					myTask.requestAddForkedObserver(customObserver);
+//					myTask.requestAddExecedObserver(lsObserver);
+//				}
+				
+				child.observableTaskAdded.addObserver(new Observer(){
+					public void update(Observable arg0, Object task) {
+						Task myTask = (Task) task;
+						myTask.requestAddForkedObserver(customObserver);					
+					}
+				});
 			}
 		});
 		
