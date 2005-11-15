@@ -64,6 +64,8 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a 
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a 
 GEN_GCJ_LDADD += -L../frysk-imports/EggTrayIcon
 GEN_GCJ_LDADD += $(GLADE_JAVA_LIBS)
 GEN_GCJ_LDADD += $(GTK_JAVA_LIBS)
@@ -80,3 +82,5 @@ EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \
 	 	$(srcdir)/frysk/gui/common/messages.properties \
 		$(srcdir)/frysk/gui/srcwin/testfiles/*.cpp
 
+
+fryski_LDADD += -lpangox-1.0 # To be sure.

@@ -57,6 +57,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-antlr.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a
 
 # XXX: This needs to be make less-architecture independant.
 

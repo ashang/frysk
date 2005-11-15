@@ -1,3 +1,8 @@
+2005-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Add libfrysk-jargs.a and
+	libfrysk-jline.a.
+
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD, GEN_CLASSPATH): Add junit.
