@@ -1,5 +1,8 @@
 2005-11-15  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (setMyTask): Now sets the title to contain the
+	proc command, the task #, and the status.
+
 	* PreferenceConstants.java: Removed extraneous comment.
 	* PreferenceWindow.java: Added comments to uncommented methods.
 	* SourceBuffer.java: Commented uncommented methods.

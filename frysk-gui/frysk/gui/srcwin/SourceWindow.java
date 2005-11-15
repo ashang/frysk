@@ -399,7 +399,8 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	 */
 	public void setMyTask(Task myTask) {
 		this.myTask = myTask;
-		this.setTitle(this.getTitle() + " - " + this.myTask.getName());
+		this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand() + 
+				" " + this.myTask.getName() + " - " + this.myTask.getStateString());
 	}
 	
 	/***********************************
