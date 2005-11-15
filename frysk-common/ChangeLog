@@ -1,5 +1,10 @@
 2005-11-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (fryski): New program.
+	(gij.sh): Re-implement.
+	(GEN_GCJ_SO_FLAGS, GEN_GCJ_SO_DIRS): New, list of -L/-l flags.
+	(GEN_GCJ_RPATHS, GEN_GCJ_RPATH_FLAGS): Use.
+
 	* Makefile.gen.sh ($(GEN_CLASSDIR)/files): Filter out duplicate
 	directories.
 	

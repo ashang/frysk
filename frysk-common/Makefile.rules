@@ -60,23 +60,43 @@ EXTRA_DIST =
 
 # The list of libraries for the GCJ programs is different to that of
 # the standalone .c programs.  Accumulate the GCJ list in
-# GEN_GCJ_LDADD, and then use that to construct the corresponding
-# build-tree RPATH list (colon separated list of directories that are
-# searched at runtime).
+# GEN_GCJ_LDADD.
 
 GEN_GCJ_LDADD = 
-GEN_GCJ_RPATH = \
-	$(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_LDADD)))
+
+# Take the LDADD list and transform it into a dynamic shared library
+# list.  This can then, in turn be converted into an in-build-tree
+# RPATH to wire into in-build-tree program that need to access those
+# shared libraries.
+
+# Convert LDADD's .a into -L<dir> -llib
+GEN_GCJ_SO_FLAGS = \
+	$(foreach lib, $(GEN_GCJ_LDADD), \
+		$(if $(filter -L%,$(lib)), $(lib)) \
+		$(if $(filter -l%,$(lib)), $(lib)) \
+		$(if $(filter %.a,$(lib)), \
+			$(patsubst %,-L%,$(dir $(lib))) \
+			$(patsubst lib%.a,-l%,$(notdir $(lib))) \
+			) \
+		)
+# Just the directories.
+GEN_GCJ_SO_DIRS = \
+	$(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_SO_FLAGS)))
+# Add absolute versions of each directory.
 GEN_GCJ_RPATHS = \
 	$(patsubst %/.,%, \
-		$(patsubst %,@abs_top_builddir@/%, \
-			$(filter .%,$(GEN_GCJ_RPATH))) \
-		$(GEN_GCJ_RPATH) \
-	)
-BUILD_GCJ_RPATH = $(subst $(space),:,$(sort $(GEN_GCJ_RPATHS)))
+		$(foreach lib, $(GEN_GCJ_SO_DIRS), \
+			$(if $(filter /%,$(lib)), $(lib)) \
+			$(if $(filter .%,$(lib)), \
+				$(patsubst %,@abs_top_builddir@/%, $(lib)) \
+				$(lib) \
+				) \
+			) \
+		)
+GEN_GCJ_RPATH = $(subst $(space),:,$(sort $(GEN_GCJ_RPATHS)))
 GEN_GCJ_RPATH_FLAGS = \
-	-Djava.library.path=$(BUILD_GCJ_RPATH) \
-	-Wl,-rpath,$(BUILD_GCJ_RPATH)
+	-Djava.library.path=$(GEN_GCJ_RPATH) \
+	-Wl,-rpath,$(GEN_GCJ_RPATH)
 
 # Get some common macro definitions
 
@@ -312,16 +332,45 @@ TestRunner.java: common/TestRunner.sh Makefile
 	mv  TestRunner.tmp  TestRunner.java
 
 
-# Build a wrapper script for GIJ so that running the interpreter is
-# easier.
+# Build a version of frysk that behaves like the Java interpreter
+# (while it is set up to be run anywhere it is not installed -- there
+# is one of these per-directory).
+
+# XXX: There is a horrible race condition here, fryski depends on all
+# the .so being created but the below only (via GEN_GCJ_LDADD)
+# explicitly mentions .a files.  Make will build fryski after the .a
+# but before the .so.  Work around this by prepending a list of the
+# local .so files to LDADD.
+
+fryski_SOURCES =
+fryski_LINK = $(GCJLINK)
+noinst_PROGRAMS += fryski
+fryski_LDFLAGS = \
+	-lgij \
+	-Wl,-rpath,$(GEN_GCJ_RPATH) \
+	$(GEN_GCJ_SO_FLAGS)
+fryski_LDADD = \
+	$(patsubst lib%.a, lib%.so, $(filter lib%.a,$(GEN_GCJ_LDADD))) \
+	$(GEN_GCJ_LDADD)
+
+# Wrap fryski in an interpreter script.
+
+# XXX: Do not use LD_PRELOAD here.  If frysk creates a child process
+# then that child will see and execute the LD_PRELOAD.
+
+# XXX: Do not use -Dgnu.gcj.precompiled.db.path=$(DBPATH) here.  For
+# reasons not yet explained it is ignored.
+
 noinst_PROGRAMS += gij.sh
-gij_sh_SOURCES = 
+gij_sh_SOURCES =
 gij.sh: Makefile
-	rm -f gij.tmp
-	echo '#!/bin/sh' >> gij.tmp
-	echo 'gij --cp $(GEN_CLASSDIR):$(CLASSPATH) -Dgnu.gcj.precompiled.db.path=$(DBPATH) "$$@"' >> gij.tmp
-	mv gij.tmp gij.sh
-	chmod a+x gij.sh
+	rm -f $@.tmp
+	echo '#!/bin/sh' >> $@.tmp
+	echo 'export LD_LIBRARY_PATH=$(GEN_GCJ_RPATH)' >> $@.tmp
+	echo 'export CLASSPATH="$(GEN_CLASSDIR):$(CLASSPATH)"' >> $@.tmp
+	echo 'exec ./fryski "$$@"' >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
 
 # When it comes to clean, automake forgets to scrub the .Po files
 # (which contain built dependencies).  After a file rename or similar,
