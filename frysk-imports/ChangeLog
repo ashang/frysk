@@ -1,3 +1,7 @@
+2005-11-15  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (solib_PROGRAMS): Rename solib_DATA.
+
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (LIBJUNIT): Delete.

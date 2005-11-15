@@ -257,7 +257,7 @@ SUFFIXES += .so
 # should use LIBTOOL.
 
 solibdir = $(libdir)
-solib_DATA =
+solib_PROGRAMS =
 
 # The shared java directory (typically /usr/share/java/; contains
 # things like .jar files.

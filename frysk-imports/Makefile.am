@@ -45,8 +45,7 @@ SUBDIRS = \
 	jargs \
 	tests
 
-solib_DATA += EggTrayIcon/libEggTrayIcon.so
-noinst_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
+solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
 EggTrayIcon_libEggTrayIcon_so_LDADD =
 EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_JAVA_LIBS)

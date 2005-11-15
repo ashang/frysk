@@ -156,7 +156,7 @@ frysk_$1_db_SOURCES =
 CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
 libfrysk-$1.so: libfrysk-$1.a
 noinst_PROGRAMS += frysk-$1.db
-solib_DATA += libfrysk-$1.so
+solib_PROGRAMS += libfrysk-$1.so
 frysk-$1.db: libfrysk-$1.so $1.jar
 EOF
 }
@@ -215,7 +215,7 @@ _dir=`echo ${dir} | sed -e 's,[-/],_,g'`
 print_header "... creating rule for ${dir}.db et.al."
 
 cat <<EOF
-solib_DATA += lib${dir}.so
+solib_PROGRAMS += lib${dir}.so
 GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
 noinst_LIBRARIES += lib${dir}.a
