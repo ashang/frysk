@@ -1,5 +1,28 @@
 2005-11-15  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceViewWidget.java (toggleChild): Removed references to InlineHandler.
+	* SourceWindowFactory.java (createSourceWindow): Adds inline isntance
+	reference to appropriate lines in dummy DOM, changed the way that
+	functions are added to the image.
+	(printDOM): Added.
+	* dom/DOMFrysk.java: Made IMAGE_ATTR protected.
+	* dom/DOMFunction.java (createDOMFunction): takes source name, start and
+	end line numbers instead of an array of Strings.
+	(getStartLine): Renamed to getStartingLine and now uses attributes.
+	(getEndLine): Renamed to getEndingLine and now uses attributes.
+	(getLines): Now fetches the lines from the DOMSource.
+	(getLinesIter): Removed.
+	* dom/DOMImage.java (addInlineFunction): Renamed to addFunction, uses
+	createDOMFunction.
+	* dom/DOMLine.java (addInlineInst): Changed last parameter name to
+	'length'.
+	* dom/DOMTestDOMFrysk.java (testDOMImage): Commented out sections dealing
+	with refactored DOMFunction, since this will be changed to JUnit soon
+	anyways.
+	(testDOMFunction): Ditto.
+	* dom/DOMTestGuiBuilder.java: Commented section that adds function info
+	temporarily until it can be refactored to match DOMFunction.
+
 	* SourceWindow.java (setMyTask): Now sets the title to contain the
 	proc command, the task #, and the status.
 

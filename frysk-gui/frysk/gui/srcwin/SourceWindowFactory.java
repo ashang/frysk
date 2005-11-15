@@ -6,6 +6,7 @@ package frysk.gui.srcwin;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 
@@ -14,6 +15,8 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import frysk.gui.srcwin.dom.DOMFrysk;
 import frysk.gui.srcwin.dom.DOMImage;
@@ -186,16 +189,32 @@ public class SourceWindowFactory {
                         String text = reader.readLine()+"\n";
                         source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
                         if(execLines[line-1] == 1)
-                            source.getLine(line++).setExecutable(true);
+                            source.getLine(line).setExecutable(true);
                         else
-                            source.getLine(line++).setExecutable(false);
+                            source.getLine(line).setExecutable(false);
+                        
+                        if(line++ == 15){
+                        	String lineText = source.getLine(15).getText();
+                        	source.getLine(15).addInlineInst("min", lineText.indexOf("min"), 3);
+                        }
+                        
                         offset += text.length();
                     }
                 }
                 catch (Exception e){
                     
                 }
-				StackLevel stack4 = new StackLevel(source, 12);
+                
+                String[] funcLines = new String[6];
+                for(int i = 0; i < funcLines.length; i++)
+                	funcLines[i] = source.getLine(i + 4).getText();
+                    
+                image.addFunction("min", source.getFileName(),
+                		4, 4 + funcLines.length,
+                		source.getLine(4).getOffset(), 
+                		source.getLine(9).getOffset()+source.getLine(9).getLength());
+                
+				StackLevel stack4 = new StackLevel(source, 15);
 				stack3.addNextScope(stack4);
 				
 				LibGlade glade = null;
@@ -221,6 +240,8 @@ public class SourceWindowFactory {
 					return;
 				}
 				
+				printDOM(dom);
+				
 				s = new SourceWindow(
 						 glade,
                          gladePaths[i],
@@ -235,6 +256,18 @@ public class SourceWindowFactory {
 			}
 			// Store the reference to the source window
 			map.put(task, s);
+		}
+	}
+	
+	/**
+	 * Print out the DOM in XML format
+	 */
+	public static void printDOM(DOMFrysk dom) {
+		try {
+			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+			outputter.output(dom.getDOMFrysk(), System.out);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 		

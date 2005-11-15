@@ -40,6 +40,7 @@ package frysk.gui.srcwin.dom;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -59,20 +60,20 @@ public class DOMTestDOMFrysk {
 
 	private static int[] offset_index = { 1, 12, 28 };
 	
-	private static int[] inline_start = { 12, 33, 66 };
-	
-	private static int[] inline_end = { 20, 45, 78 };
-
-	private static String[] inline_funcs = { "do_something", "b", "f" };
-
+//	private static int[] inline_start = { 12, 33, 66 };
+//	
+//	private static int[] inline_end = { 20, 45, 78 };
+//
+//	private static String[] inline_funcs = { "do_something", "b", "f" };
+//
 	private static boolean[] is_inline = { false, true, false };
-
-	private static String[] do_something = { "void do_something(){", "   b();",
-			"}" };
-
-	private static String[] b = { "void b() {", "f();", "}" };
-
-	private static String[] f = { "void f(){", "syscall_here();", "}" };
+//
+//	private static String[] do_something = { "void do_something(){", "   b();",
+//			"}" };
+//
+//	private static String[] b = { "void b() {", "f();", "}" };
+//
+//	private static String[] f = { "void f(){", "syscall_here();", "}" };
 
 	public static void main(String[] args) {
 
@@ -186,51 +187,51 @@ public class DOMTestDOMFrysk {
 		} else {
 			System.out.println("failed...DOMImage.setCCPath");
 		}
-		testDOMImage.addInlineFunction(inline_funcs[0], do_something,
-				inline_start[0], inline_end[0]);
-		if (testDOMImage.getFunction(inline_funcs[0]) != null) {
-			System.out.println("passed...DOMImage.addInlineFunction..."
-					+ inline_funcs[0]);
-		} else {
-			System.out.println("failed...DOMImage.addInlineFunction..."
-					+ inline_funcs[0]);
-		}
-		testDOMImage.addInlineFunction(inline_funcs[1], b, inline_start[0],
-				inline_end[1]);
-		if (testDOMImage.getFunction(inline_funcs[1]) != null) {
-			System.out.println("passed...DOMImage.addInlineFunction..."
-					+ inline_funcs[1]);
-		} else {
-			System.out.println("failed...DOMImage.addInlineFunction..."
-					+ inline_funcs[1]);
-		}
-		testDOMImage.addInlineFunction("f", f, inline_start[2],
-				inline_end[2]);
-
-		Iterator iter = testDOMImage.getInlinedFunctions();
+//		testDOMImage.addFunction(inline_funcs[0], do_something,
+//				inline_start[0], inline_end[0]);
+//		if (testDOMImage.getFunction(inline_funcs[0]) != null) {
+//			System.out.println("passed...DOMImage.addInlineFunction..."
+//					+ inline_funcs[0]);
+//		} else {
+//			System.out.println("failed...DOMImage.addInlineFunction..."
+//					+ inline_funcs[0]);
+//		}
+//		testDOMImage.addFunction(inline_funcs[1], b, inline_start[0],
+//				inline_end[1]);
+//		if (testDOMImage.getFunction(inline_funcs[1]) != null) {
+//			System.out.println("passed...DOMImage.addInlineFunction..."
+//					+ inline_funcs[1]);
+//		} else {
+//			System.out.println("failed...DOMImage.addInlineFunction..."
+//					+ inline_funcs[1]);
+//		}
+//		testDOMImage.addFunction("f", f, inline_start[2],
+//				inline_end[2]);
+//
+//		Iterator iter = testDOMImage.getInlinedFunctions();
 		int ctr = 0;
-		while (iter.hasNext()) {
-			Element test_inlined = (Element) iter.next();
-			ctr++;
-			String inlinename = test_inlined.getAttributeValue(
-					DOMFunction.INLINENAME_ATTR).toString();
-			if (ctr == 1 && (inlinename == inline_funcs[ctr - 1])) {
-				System.out.println("passed...DOMImage.getInlinedFunctions..."
-						+ inlinename);
-				continue;
-			}
-			if (ctr == 2 && (inlinename == inline_funcs[ctr - 1])) {
-				System.out.println("passed...DOMImage.getInlinedFunctions..."
-						+ inlinename);
-				continue;
-			}
-			if (ctr == 3 && (inlinename == inline_funcs[ctr - 1])) {
-				System.out.println("passed...DOMImage.getInlinedFunctions..."
-						+ inlinename);
-				continue;
-			}
-			System.out.println("failed...DOMImage.getInlinedFunctions");
-		}
+//		while (iter.hasNext()) {
+//			Element test_inlined = (Element) iter.next();
+//			ctr++;
+//			String inlinename = test_inlined.getAttributeValue(
+//					DOMFunction.INLINENAME_ATTR).toString();
+//			if (ctr == 1 && (inlinename == inline_funcs[ctr - 1])) {
+//				System.out.println("passed...DOMImage.getInlinedFunctions..."
+//						+ inlinename);
+//				continue;
+//			}
+//			if (ctr == 2 && (inlinename == inline_funcs[ctr - 1])) {
+//				System.out.println("passed...DOMImage.getInlinedFunctions..."
+//						+ inlinename);
+//				continue;
+//			}
+//			if (ctr == 3 && (inlinename == inline_funcs[ctr - 1])) {
+//				System.out.println("passed...DOMImage.getInlinedFunctions..."
+//						+ inlinename);
+//				continue;
+//			}
+//			System.out.println("failed...DOMImage.getInlinedFunctions");
+//		}
 		if (testDOMImage.getSource("test_source1") != null) {
 			System.out.println("passed...DOMImage.getSource");
 		} else {
@@ -262,73 +263,73 @@ public class DOMTestDOMFrysk {
 	 **************************************************************************/
 	public static void testDOMFunction() {
 		
-		final String func_name = "do_something";
-		final DOMImage testDOMImage = dom.getImage("test_image_2");
-		final DOMFunction testDOMFunction = testDOMImage.getFunction(func_name);
-		
-		if (testDOMFunction.getName() == func_name) {
-			System.out.println("\npassed...DOMFunction.getName");
-		} else {
-			System.out.println("\nfailed...DOMFunction.getName");
-		}
-		
-		if (testDOMFunction.getLineCount() == do_something.length) {
-			System.out.println("passed...DOMFunction.getLineCount");
-		} else {
-			System.out.println("passed...DOMFunction.getLineCount");
-		}
-		
-		String[] lines = testDOMFunction.getLines();
-		for (int i=0; i < do_something.length; i++) {
-			if (lines[i] != do_something[i]) {
-				System.out.println("lines[i] = " + lines[i]);
-				System.out.println("failed...DOMFunction.getLines");
-				break;	
-			}
-		}
-		System.out.println("passed...DOMFunction.getLines");
-		
-		Iterator getline_iter = testDOMFunction.getLinesIter();
-		int line_ctr = 0;
-		boolean failed = false;
-		while (getline_iter.hasNext()) {
-			Element get_line = (Element) getline_iter.next();
-			if (get_line.getText() != do_something[line_ctr]) {
-				failed = true;
-			}
-			line_ctr++;
-		}
-		if (failed) {
-			System.out.println("failed...DOMFunction.getLineIter");
-		} else {
-			System.out.println("passed...DOMFunction.getLineIter");
-		}
-		
-		if (testDOMFunction.getStart() == inline_start[0]) {
-			System.out.println("passed...DOMFunction.getStart");
-		} else {
-			System.out.println("failed...DOMFunction.getStart");
-		}
-		
-		if (testDOMFunction.getEnd() == inline_end[0]) {
-			System.out.println("passed...DOMFunction.getEnd");
-		} else {
-			System.out.println("failed...DOMFunction.getEnd");
-		}
-		
-		int start_line = testDOMFunction.getStartLine();
-		if (start_line == 1) {
-			System.out.println("passed...DOMFunction.getStartLine");
-		} else {
-			System.out.println("failed...DOMFunction.getStartLine");
-		}
-		
-		int end_line = testDOMFunction.getEndLine();
-		if (end_line == 3) {
-			System.out.println("passed...DOMFunction.getEndLine");
-		} else {
-			System.out.println("failed...DOMFunction.getEndLine");
-		}
+//		final String func_name = "do_something";
+//		final DOMImage testDOMImage = dom.getImage("test_image_2");
+//		final DOMFunction testDOMFunction = testDOMImage.getFunction(func_name);
+//		
+//		if (testDOMFunction.getName() == func_name) {
+//			System.out.println("\npassed...DOMFunction.getName");
+//		} else {
+//			System.out.println("\nfailed...DOMFunction.getName");
+//		}
+//		
+//		if (testDOMFunction.getLineCount() == do_something.length) {
+//			System.out.println("passed...DOMFunction.getLineCount");
+//		} else {
+//			System.out.println("passed...DOMFunction.getLineCount");
+//		}
+//		
+//		String[] lines = testDOMFunction.getLines();
+//		for (int i=0; i < do_something.length; i++) {
+//			if (lines[i] != do_something[i]) {
+//				System.out.println("lines[i] = " + lines[i]);
+//				System.out.println("failed...DOMFunction.getLines");
+//				break;	
+//			}
+//		}
+//		System.out.println("passed...DOMFunction.getLines");
+//		
+//		Iterator getline_iter = testDOMFunction.getLinesIter();
+//		int line_ctr = 0;
+//		boolean failed = false;
+//		while (getline_iter.hasNext()) {
+//			Element get_line = (Element) getline_iter.next();
+//			if (get_line.getText() != do_something[line_ctr]) {
+//				failed = true;
+//			}
+//			line_ctr++;
+//		}
+//		if (failed) {
+//			System.out.println("failed...DOMFunction.getLineIter");
+//		} else {
+//			System.out.println("passed...DOMFunction.getLineIter");
+//		}
+//		
+//		if (testDOMFunction.getStart() == inline_start[0]) {
+//			System.out.println("passed...DOMFunction.getStart");
+//		} else {
+//			System.out.println("failed...DOMFunction.getStart");
+//		}
+//		
+//		if (testDOMFunction.getEnd() == inline_end[0]) {
+//			System.out.println("passed...DOMFunction.getEnd");
+//		} else {
+//			System.out.println("failed...DOMFunction.getEnd");
+//		}
+//		
+//		int start_line = testDOMFunction.getStartingLine();
+//		if (start_line == 1) {
+//			System.out.println("passed...DOMFunction.getStartLine");
+//		} else {
+//			System.out.println("failed...DOMFunction.getStartLine");
+//		}
+//		
+//		int end_line = testDOMFunction.getEndingLine();
+//		if (end_line == 3) {
+//			System.out.println("passed...DOMFunction.getEndLine");
+//		} else {
+//			System.out.println("failed...DOMFunction.getEndLine");
+//		}
 	}
 
 	/**************************************************************************

@@ -39,10 +39,6 @@
 
 package frysk.gui.srcwin.dom;
 
-import java.util.Iterator;
-import java.util.List;
-//import java.util.Vector;
-
 import org.jdom.Element;
 
 /**
@@ -54,25 +50,32 @@ public class DOMFunction {
 	public static final String START_ATTR = "start";
 	public static final String INLINE_NODE = "inline";
 	public static final String INLINENAME_ATTR = "inlinename";
+	public static final String SOURCE_NAME_ATTR = "source";
+	public static final String LINE_START_ATTR = "line_start";
+	public static final String LINE_END_ATTR = "line_end";
 	
-	public static DOMFunction createDOMFunction(String name, int start, int end){
+	public static DOMFunction createDOMFunction(String name, String source,
+			int lineStart, int lineEnd, int start, int end){
 		Element func = new Element(INLINE_NODE);
 		func.setAttribute(INLINENAME_ATTR, name);
+		func.setAttribute(SOURCE_NAME_ATTR, source);
 		func.setAttribute(START_ATTR, ""+start);
 		func.setAttribute(END_ATTR, ""+end);
+		func.setAttribute(LINE_START_ATTR, ""+lineStart);
+		func.setAttribute(LINE_END_ATTR, ""+lineEnd);
 		
 		return new DOMFunction(func);
 	}
 	
 	public static DOMFunction createDOMFunction(DOMImage parent, 
-			String name, int start, int end){
-		Element func = new Element(INLINE_NODE);
-		func.setAttribute(INLINENAME_ATTR, name);
-		func.setAttribute(START_ATTR, ""+start);
-		func.setAttribute(END_ATTR, ""+end);
-		parent.getElement().addContent(0, func); // We want functions, then lines		
+			String name, String source, 
+			int lineStart, int lineEnd, int start, int end){
+		DOMFunction func = DOMFunction.createDOMFunction(name, source, lineStart,
+				lineEnd, start, end); 
+		parent.getElement().addContent(0, 
+				func.getElement()); // We want functions, then lines		
 		
-		return new DOMFunction(func);
+		return func;
 	}
 	
 	private Element myElement;
@@ -109,47 +112,34 @@ public class DOMFunction {
 		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
 	}
 	
-	/**
-	 * @return The number of the first line of inlined code
-	 */
-	public int getStartLine(){
-		DOMLine firstChild = new DOMLine((Element) this.myElement.getChildren().get(0));
-		return firstChild.getLineNum();
+	public String getSource(){
+		return this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
 	}
 	
-	/**
-	 * @return The number of the last line of inlined code
-	 */
-	public int getEndLine(){
-		List children = this.myElement.getChildren();
-		DOMLine lastChild = new DOMLine((Element) children.get(children.size()-1));
+	public int getStartingLine(){
+		return Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
+	}
+	
+	public int getEndingLine(){
+		return Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
+	}
+	
+	public String[] getLines() throws Exception{
+		int start = Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
+		int end = Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
 		
-		return lastChild.getLineNum();
-	}
-	
-	/**
-	 * @return An iterator over the lines of code contained within the inlined block
-	 */
-	public Iterator getLinesIter(){
-		return this.myElement.getChildren().iterator();
-	}
-	
-	/**
-	 * get the lines associated with the function
-	 * @return A String array containing the lines
-	 */
-	public String[] getLines() {
-		Iterator iter = this.myElement.
-			getChildren(DOMSource.LINENO_NODE).iterator();
-		int ctr = 0;
-		int size = 30;
-		String[] lines = new String[size];
+		String[] lines = new String[start - end + 1];
 		
-		while(iter.hasNext()) {
-			Element line = (Element) iter.next();
-			lines[ctr] = line.getText();
-			ctr++;
-		}
+		// Parent of this should be a DOMSource, parent of that a DOMImage
+		Element elem = this.getElement().getParentElement().getParentElement();
+		if(!elem.getName().equals(DOMFrysk.IMAGE_ATTR))
+			throw new Exception("Illegal DOM Format. DOMFunction.getParentElement().getParentElement() was not a DOMImage!");
+		
+		DOMSource source = new DOMImage(elem).getSource(elem.getAttributeValue(DOMSource.SOURCE_NODE));
+		
+		for(int i = start; i<= end; i++)
+			lines[i-start] = source.getLine(i).getText();
+		
 		return lines;
 	}
 	
@@ -161,3 +151,4 @@ public class DOMFunction {
 		return this.myElement;
 	}
 }
+

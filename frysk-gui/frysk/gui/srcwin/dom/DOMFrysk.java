@@ -69,7 +69,7 @@ public class DOMFrysk {
 
 	private static final Element pcName = new Element(PC_ATTR);
 
-	private static final String IMAGE_ATTR = "image";
+	protected static final String IMAGE_ATTR = "image";
 	
 	private Document data;
 

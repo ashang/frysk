@@ -40,6 +40,7 @@ package frysk.gui.srcwin.dom;
 
 import java.math.BigInteger;
 import java.util.StringTokenizer;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -67,9 +68,9 @@ public class DOMTestGUIBuilder {
 	 * Functions info
 	 *************************************************************************/
 	
-	private static String[] func_text = { "public:",
-		"inline int min(int y, int z);",
-		"};" };
+//	private static String[] func_text = { "public:",
+//		"inline int min(int y, int z);",
+//		"};" };
 	
 	private static String[] func_name = { "min" };
 	
@@ -213,10 +214,10 @@ public class DOMTestGUIBuilder {
 			}
 		}
 		// add the inline functions
-		for (int j=0; j < func_name.length; j++) {
-			testDOMImage.addInlineFunction(func_name[j], func_text, 
-					func_start_offset[j], func_end_offset[j]);
-		}
+//		for (int j=0; j < func_name.length; j++) {
+//			testDOMImage.addFunction(func_name[j], func_text, 
+//					func_start_offset[j], func_end_offset[j]);
+//		}
 	}
 	
 	/**************************************************************************

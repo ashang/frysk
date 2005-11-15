@@ -230,7 +230,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			return true;
 		}
-		// right-click on the border means toggle a breakpoint
+		// clicked on the border
 		else if(event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
 				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)){
 			Point p = this.windowToBufferCoords(TextWindowType.TEXT, 0, y);
@@ -269,6 +269,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				m.showAll();
 			}
 			
+			// Left click in the margin for a line with inline code - toggle the display of it
 			if(event.getButtonPressed() == MouseEvent.BUTTON1 &&
 					lineNum == this.buf.getCurrentLine()){
 				this.toggleChild();
@@ -379,10 +380,15 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 
 	public void toggleChild() {
-		if(!expanded)
-			InlineHandler.moveDown();
-		else
-			InlineHandler.moveUp(this);
+		if(!expanded){
+			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent);
+			this.setSubscopeAtCurrentLine(nested);
+		}
+		else{
+			this.clearSubscopeAtCurrentLine();
+		}
+			
+		expanded = !expanded;
 	}
 	
 	/*

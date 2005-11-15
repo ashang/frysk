@@ -92,22 +92,11 @@ public class DOMImage {
 	 * @param end_offset is the ending character offset from the beginning
 	 * 					of the file of the last character of the function
 	 */
-	public void addInlineFunction(String inline_name, String[] lines,
+	public void addFunction(String inline_name, String source, 
+			int startLine, int endLine,
 			int start_offset, int end_offset) {
-		
-		Element inlineNameElement = new Element(INLINE_NODE);
-		inlineNameElement.setAttribute(DOMFunction.INLINENAME_ATTR, inline_name);
-		inlineNameElement.setAttribute(DOMFunction.START_ATTR, 
-				Integer.toString(start_offset));
-		inlineNameElement.setAttribute(DOMFunction.END_ATTR, 
-				Integer.toString(end_offset));
-		this.myElement.addContent(inlineNameElement);
-		for (int i=0; i<lines.length; i++) {
-			Element lineNumber = new Element(DOMSource.LINENO_NODE);
-			lineNumber.setAttribute(DOMLine.NUMBER_ATTR, String.valueOf(i+1));
-			lineNumber.setText(lines[i]);
-			inlineNameElement.addContent(lineNumber);
-		}
+		DOMFunction.createDOMFunction(this, inline_name, source, startLine, endLine,
+				start_offset, end_offset);
 	}
 	
 	/**

@@ -323,7 +323,7 @@ public class DOMLine {
 	 * @param end_line
 	 *            is the ending character of this instance
 	 */
-	public void addInlineInst(String instance, int start_inline, int end_inline) {
+	public void addInlineInst(String instance, int start_inline, int length) {
 		Element inlineLineInstElement = new Element(
 				DOMInlineInstance.LINEINST_NODE);
 		inlineLineInstElement.setAttribute(DOMInlineInstance.LINEINST_ATTR,
@@ -331,7 +331,7 @@ public class DOMLine {
 		inlineLineInstElement.setAttribute(OFFSET_ATTR, Integer
 				.toString(start_inline));
 		inlineLineInstElement.setAttribute(LENGTH_ATTR, Integer
-				.toString(end_inline));
+				.toString(length));
 		this.myElement.addContent(inlineLineInstElement);
 		
 		this.myElement.setAttribute(DOMLine.HAS_INLINE_ATTR, "true");
