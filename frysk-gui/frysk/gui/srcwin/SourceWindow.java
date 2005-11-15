@@ -357,8 +357,49 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		stackList.showAll();
 	}
 	
+	/**
+	 * Adds the selected variable to the variable trace window
+	 * @param var The variable to trace
+	 */
 	public void addVariableTrace(Variable var){
 		System.out.println("Adding trace to variable " + var);
+	}
+	
+	/**
+	 * This is triggered whenever the a different level of the stack is selected
+	 * in the stack navigation window
+	 */
+	public void selectionChangedEvent(TreeSelectionEvent arg0) {
+		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
+		TreeModel model = view.getModel();
+		
+		StackLevel selected = (StackLevel) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
+		
+		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"+selected.getData().getFileName()+"</b>");
+		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+		this.view.load(selected);
+		this.view.showAll();
+        this.populateFunctionBox();
+	}
+
+	/**
+	 * @return The Task being shown by this SourceWindow
+	 */
+	public Task getMyTask() {
+		return myTask;
+	}
+
+	/**
+	 * Sets the task that is being displayed by the SourceWindow 
+	 * @param myTask The new task
+	 * 
+	 * TODO: This doesn't actually update the display, all it will do
+	 * (if called more than once) is screw up the removal of this SourceWindow
+	 * from SourceWindowFactory's HashMap. Maybe integrate into constructor?
+	 */
+	public void setMyTask(Task myTask) {
+		this.myTask = myTask;
+		this.setTitle(this.getTitle() + " - " + this.myTask.getName());
 	}
 	
 	/***********************************
@@ -1010,27 +1051,6 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 			iter = stackList.getModel().getIter(""+max++);
 		
 		stackList.getSelection().select(stackList.getModel().getIter(""+(max-2)));
-	}
-
-	public void selectionChangedEvent(TreeSelectionEvent arg0) {
-		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
-		TreeModel model = view.getModel();
-		
-		StackLevel selected = (StackLevel) model.getValue(model.getIter(view.getSelection().getSelectedRows()[0]), (DataColumnObject) dataColumns[1]);
-		
-		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"+selected.getData().getFileName()+"</b>");
-		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
-		this.view.load(selected);
-		this.view.showAll();
-        this.populateFunctionBox();
-	}
-
-	public Task getMyTask() {
-		return myTask;
-	}
-
-	public void setMyTask(Task myTask) {
-		this.myTask = myTask;
 	}
     
     private void populateFunctionBox(){

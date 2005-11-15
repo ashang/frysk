@@ -198,8 +198,6 @@ public class PreferenceConstants {
 		public static final Color DEFAULT = new Color(0, 32200, 65535);
 	}
 	
-	// Node names in the preference hierarchy
-	
 	/**
 	 * Whether or not to show the toolbar
 	 */

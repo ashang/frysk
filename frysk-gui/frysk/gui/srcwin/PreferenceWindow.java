@@ -235,6 +235,13 @@ public class PreferenceWindow implements ButtonListener{
 		this.glade.getWidget(PREF_WIN).addListener(l);
 	}
 	
+	/*------------------------------------
+	 *  PRIVATE METHODS
+	 *------------------------------------*/
+	
+	/*
+	 * Adds all the appropriate listeners to the widgets in the preferences window
+	 */
 	private void addListeners(){
 		// Hide me, dont' kill me
 		this.glade.getWidget(PREF_WIN).addListener(new LifeCycleListener() {
@@ -257,6 +264,10 @@ public class PreferenceWindow implements ButtonListener{
 		((Button) this.glade.getWidget(OK_BUTTON)).addListener(this);
 	}
 	
+	/*
+	 * Sets the colors of all the ColorChooserButtons as well as the labels and states
+	 * of all other appropriate widgets.
+	 */
 	private void setupButtons(){
 		// Setup Colors
 		this.setupColorButton(Text.COLOR_PREFIX, PreferenceWindow.TEXT_COLOR, Text.DEFAULT);
@@ -328,6 +339,11 @@ public class PreferenceWindow implements ButtonListener{
 				Classes.ITALICS, PreferenceWindow.CLASS_ITALICS_BUTTON);
 	}
 	
+	/*
+	 * Helper method to get whether or not something is bold in the preference model
+	 * and set the provided CheckButton accordingly. buttonName MUST correspond to
+	 * a CheckButton
+	 */
 	private void setupBoldCheckBox(Preferences node, String weightKey, String buttonName){
 		CheckButton cb = (CheckButton) this.glade.getWidget(buttonName);
 		cb.setLabel(Messages.getString("PreferenceWindow.16"));
@@ -336,6 +352,9 @@ public class PreferenceWindow implements ButtonListener{
 			cb.setState(true);
 	}
 	
+	/*
+	 * Same as setupBoldCheckBox, except for Italics
+	 */
 	private void setupItalicsCheckBox(Preferences node, String italicsKey, String buttonName){
 		CheckButton cb = (CheckButton) this.glade.getWidget(buttonName);
 		cb.setLabel("Italics");
@@ -344,6 +363,10 @@ public class PreferenceWindow implements ButtonListener{
 			cb.setState(true);
 	}
 	
+	/*
+	 * Takes the color for a given item from the preference model and sets
+	 * the color of the ColorButton accordingly
+	 */
 	private void setupColorButton(String prefix, String buttonName, Color defaultColor){
 		int r = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(prefix+"R", defaultColor.getRed());
 		int g = this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(prefix+"G", defaultColor.getGreen());
@@ -352,6 +375,10 @@ public class PreferenceWindow implements ButtonListener{
 		cb.setColor(new Color(r,g,b));
 	}
 	
+	/*
+	 * Does the inverse of setupColorButton: gets the color from the button and
+	 * puts it in the preference model
+	 */
 	private void saveColorButton(String prefix, String buttonName){
 		Color c = ((ColorButton) this.glade.getWidget(buttonName)).getColor();
 		this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(prefix+"R", c.getRed());
@@ -359,6 +386,10 @@ public class PreferenceWindow implements ButtonListener{
 		this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(prefix+"B", c.getBlue());
 	}
 	
+	/*
+	 * Does the inverse of setupBoldCheckBox: Takes the status of the button and
+	 * puts it in the preference model
+	 */
 	private void saveWeightCheck(Preferences node, String buttonName, String key){
 		boolean flag = ((CheckButton) this.glade.getWidget(buttonName)).getState();
 		Weight w = null;
@@ -369,6 +400,9 @@ public class PreferenceWindow implements ButtonListener{
 		this.myPrefs.node(PreferenceConstants.SYNTAX_NODE).putInt(key, w.getValue());
 	}
 	
+	/*
+	 * Same as saveWeightCheck, except for Italics
+	 */
 	private void saveStyleCheck(Preferences node, String buttonName, String key){
 		boolean flag = ((CheckButton) this.glade.getWidget(buttonName)).getState();
 		Style s = null;

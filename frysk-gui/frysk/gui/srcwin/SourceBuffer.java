@@ -129,31 +129,6 @@ public class SourceBuffer extends TextBuffer {
 		this.init();
 	}
 	
-	public void init(){
-		functions = new Vector();
-		this.currentLine = this.createTag(CURRENT_LINE);
-		this.foundText = this.createTag(FOUND_TEXT);
-		this.functionTag = this.createTag(FUNCTION_TAG);
-		this.variableTag = this.createTag(ID_TAG);
-		this.keywordTag = this.createTag(KEYWORD_TAG);
-		this.globalTag = this.createTag(MEMBER_TAG);
-		this.commentTag = this.createTag(COMMENT_TAG);
-		this.classTag = this.createTag(CLASS_TAG);	
-		
-		this.inlinedTag = this.createTag(INLINE_TAG);
-		
-		try {
-			this.loadFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		this.setCurrentLine(this.scope.getStartingLineNum(),
-				this.scope.getColStart(),
-				this.scope.getEndLine(),
-				this.scope.getColEnd());
-	}
-	
 	/**
 	 * Returns true if the given line is executable.
 	 * 
@@ -598,6 +573,8 @@ public class SourceBuffer extends TextBuffer {
 	 * @param colStart The offset from the the start of the line that the comment starts on
 	 * @param lineEnd The line the comment ends on
 	 * @param colEnd the offset from the start of the line that the comment ends on
+	 * 
+	 * TODO: right now nothing calls this, the CDTParser can't find comments
 	 */
 	public void addComment(int lineStart, int colStart, int lineEnd, int colEnd){
 //		this.applyTag(COMMENT_TAG, this.getIter(lineStart, colStart), this.getIter(lineEnd, colEnd));
@@ -652,6 +629,36 @@ public class SourceBuffer extends TextBuffer {
 	/*-------------------*
 	 * PRIVATE METHODS   *
 	 *-------------------*/
+	
+	
+	/*
+	 * Initializes the tags, loads the file from the current scope, and 
+	 * sets the current line.
+	 */
+	private void init(){
+		functions = new Vector();
+		this.currentLine = this.createTag(CURRENT_LINE);
+		this.foundText = this.createTag(FOUND_TEXT);
+		this.functionTag = this.createTag(FUNCTION_TAG);
+		this.variableTag = this.createTag(ID_TAG);
+		this.keywordTag = this.createTag(KEYWORD_TAG);
+		this.globalTag = this.createTag(MEMBER_TAG);
+		this.commentTag = this.createTag(COMMENT_TAG);
+		this.classTag = this.createTag(CLASS_TAG);	
+		
+		this.inlinedTag = this.createTag(INLINE_TAG);
+		
+		try {
+			this.loadFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		this.setCurrentLine(this.scope.getStartingLineNum(),
+				this.scope.getColStart(),
+				this.scope.getEndLine(),
+				this.scope.getColEnd());
+	}
 	
 	/**
 	 * Loads a file at the given location into the  buffer, clearing
@@ -780,6 +787,10 @@ public class SourceBuffer extends TextBuffer {
 		}
 	}
 	
+	/*
+	 * Generic method to take the given color from the preference model and update the
+	 * properties of the provided tag to match
+	 */
 	private void updateTagColor(Preferences node, String prefix, Color defaultColor, TextTag tag, boolean foreground){
 		int r = node.getInt(prefix+"R", defaultColor.getRed());
 		int g = node.getInt(prefix+"G", defaultColor.getGreen());
@@ -790,6 +801,10 @@ public class SourceBuffer extends TextBuffer {
 			tag.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
 	}
 	
+	/*
+	 * Gets the style from the preference model and uses it to update the provided
+	 * TextTag
+	 */
 	private void updateTagStyle(Preferences node, String key, Style defaultStyle, TextTag tag){
 		int style = node.getInt(key, defaultStyle.getValue());
 		tag.setStyle(Style.intern(style));

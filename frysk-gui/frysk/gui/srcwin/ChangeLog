@@ -1,3 +1,17 @@
+2005-11-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* PreferenceConstants.java: Removed extraneous comment.
+	* PreferenceWindow.java: Added comments to uncommented methods.
+	* SourceBuffer.java: Commented uncommented methods.
+	(init): Made private.
+	(createComment): Added TODO, since nothing calls this right now.
+	* SourceCodeLine.java: Removed.
+	* SourceWindow.java: Commented Uncommented methods and reoganized layout.
+	(setMyTask): Now puts name of task in window title, added TODO in regards
+	to safeness of method.
+	* SourceWindowFactory.java: Commented methods.
+	(SourceWinListener): Made class private.
+
 2005-11-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (InlineViewer): Added SourceWindow parameter to

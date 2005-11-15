@@ -35,24 +35,46 @@ public class SourceWindowFactory {
 
 	private static HashMap map;
 	
+	/**
+	 * Sets the path to use to look for the test files to load. If the
+	 * path is not set it will look for the information from the task,
+	 * otherwise it will load the test files
+	 * @param path The directory where the test files are located
+	 */
 	public static void setDummyPath(String path){
 		dummyPath = path;
 	}
 	
+	/**
+	 * Clears the test file path, so that all future SourceWindows will be
+	 * launched using realy information from the Task
+	 */
 	public static void clearDummyPath(){
 		dummyPath = "";
 	}
 	
+	/**
+	 * Sets the paths to look in to find the .glade files needed for the gui
+	 * @param paths The possible locations of the gui glade files.
+	 */
 	public static void setGladePaths(String[] paths){
 		gladePaths = paths;
 	}
 	
+	/**
+	 * Sets the paths to look in to find the image files needed for the gui
+	 * @param path The possible locations of the image files.
+	 */
 	public static void setImagePaths(String[] path){
 		imagePaths = path;
 	}
 	
 	static{
 		map = new HashMap();
+		/*
+		 * TODO: Make it so that the dummyPath is left empty by default once we can read
+		 * the required info from Tasks
+		 */ 
 		dummyPath = Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/srcwin/testfiles";
 		gladePaths = new String[] {Config.GLADEDIR, 
 				Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/glade"};
@@ -60,6 +82,14 @@ public class SourceWindowFactory {
 				Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/images"};
 	}
 	
+	/**
+	 * Creates a new source window using the given task. The SourceWindows correspond
+	 * to tasks in a 1-1 relationship, so if you try to launch a SourceWindow for a Task
+	 * and an existing window has already been created, that one will be brought to the
+	 * forefront rather than creating a new window.
+	 * 
+	 * @param task The Task to open a SourceWindow for.
+	 */
 	public static void createSourceWindow(Task task){
 		SourceWindow s = null;
 
@@ -208,7 +238,12 @@ public class SourceWindowFactory {
 		}
 	}
 		
-	static class SourceWinListener implements LifeCycleListener{
+	/*
+	 * The responsability of this class that whever a SourceWindow is closed the
+	 * corresponding task is removed from the HashMap. This tells createSourceWindow
+	 * to create a new window the next time that task is passed to it.
+	 */
+	private static class SourceWinListener implements LifeCycleListener{
 
 		public void lifeCycleEvent(LifeCycleEvent arg0) {}
 
