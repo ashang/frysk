@@ -72,7 +72,7 @@ frysk -a \
 # Modules for building FRYSK outside of eclipse.  In addition to the
 # three base directories an additional "top" directory is checked out.
 
-frysk-build-top -d frysk frysk-top
+frysk-build-top -d frysk frysk-top &frysk-common
 frysk-build-sys -d frysk/frysk-sys frysk-sys &frysk-common
 frysk-build-core -d frysk/frysk-core frysk-core &frysk-common
 frysk-build-gui -d frysk/frysk-gui frysk-gui &frysk-common
