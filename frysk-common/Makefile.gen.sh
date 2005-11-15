@@ -224,15 +224,22 @@ lib${dir}.so: lib${dir}.a
 # Create a list of .java files that need to be compiled.  It turns out
 # that it is faster to just feed all the files en-mass to the compiler
 # (then compile each individually).  Put the list into a file to avoid
-# having too-long an argument list.
+# having too-long an argument list.  Remember to filter out duplicate
+# directories.
 
 \$(GEN_CLASSDIR)/files: lib${dir}.a
 	rm -rf \$(GEN_CLASSDIR)
 	mkdir -p \$(GEN_CLASSDIR)
+	dirs= ; \
 	for d in \$(top_builddir) \$(top_srcdir) ; do \
-		for g in ${dirs} ; do \
-			find \$\$d/\$\$g -name '*.java' -print ; \
-		done ; \
+	    p=\`cd \$\$d && pwd\` ; \
+	    case " \$\$dirs " in \
+	        *\$\$p* ) continue ;; \
+	    esac ; \
+	    dirs="\$\$dirs \$\$p" ; \
+	    for g in ${dirs} ; do \
+		find \$\$d/\$\$g -name '*.java' -print ; \
+	    done ; \
 	done > \$@.tmp
 	echo TestRunner.java >> \$@.tmp
 	mv \$@.tmp \$@
