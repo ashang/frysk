@@ -32,12 +32,6 @@ public class SyscallObserver extends TaskObserverRoot implements TaskObserver.Sy
 		return Action.CONTINUE;
 	}
 
-	public Action updateSyscallXXX(Task task) {
-		// TODO Auto-generated method stub
-		System.out.println("SyscallObserver.updateSyscallXXX()");
-		return Action.CONTINUE;
-	}
-	
 	public void apply(Task task){
 		task.requestAddSyscallObserver(this);
 	}

@@ -195,12 +195,6 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return Action.CONTINUE;
 	}
 
-	public Action updateSyscallXXX(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX syscall enter or exit");
-		return Action.CONTINUE;
-	}
-
 	public Action updateCloned(Task task, Task clone) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid()
 				+ " Host XXX cloned new task: " + clone);

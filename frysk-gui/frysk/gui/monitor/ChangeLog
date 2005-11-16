@@ -1,3 +1,9 @@
+2005-11-16  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* observers/SyscallObserver.java: Remove .updateSyscallXXX
+	which is no longer used.
+	* EventLogger.java: Ditto.
+
 2005-11-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TrayIcon.java (TrayIcon): Accedintally pasted URL removed :).
