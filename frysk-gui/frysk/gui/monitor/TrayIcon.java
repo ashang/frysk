@@ -137,7 +137,7 @@ public class TrayIcon implements Saveable{
 		tray = new EggTrayIcon(name);
 		this.clearPopups();
 		this.setContents(panelItem);
-		windowButton = 0;http://web.elastic.org/~fche/pix-baseball/2005/dsc_6069-r.html
+		windowButton = 0;
 		menuButton = 0;
 		tray.showAll();
 		this.setListener();

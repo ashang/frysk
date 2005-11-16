@@ -1,3 +1,7 @@
+2005-11-16  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TrayIcon.java (TrayIcon): Accedintally pasted URL removed :).
+
 2005-11-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* PreferencesWindow.java: Added handle for cancel button.
