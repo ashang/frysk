@@ -71,7 +71,8 @@ AC_MSG_RESULT([$ANTLR_JAR])
 
 AC_MSG_CHECKING([for  cdtparser.jar])
 AC_FIND_FILE( [cdtparser.jar],
-     [ /usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.0/],
+     [ /usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.0/ , \
+/usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.1/ ],
      CDTPARSER_JAR)
 
 if [[ "x$CDTPARSER_JAR" = "xNO" ]]; then
