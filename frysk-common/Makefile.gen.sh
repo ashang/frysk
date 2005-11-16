@@ -152,8 +152,9 @@ noinst_LIBRARIES += libfrysk-$1.a
 libfrysk_$1_a_LIBADD = $1.o
 $1.o: $1.jar
 libfrysk_$1_a_SOURCES = 
+libfrysk_$1_so_SOURCES =
 frysk_$1_db_SOURCES =
-CLEANFILES += $1.jar $1.o lib$1.a lib$1.so
+CLEANFILES += $1.jar $1.o libfrysk-$1.a libfrysk-$1.so
 libfrysk-$1.so: libfrysk-$1.a
 noinst_PROGRAMS += frysk-$1.db
 solib_PROGRAMS += libfrysk-$1.so
@@ -218,6 +219,7 @@ cat <<EOF
 solib_PROGRAMS += lib${dir}.so
 GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
+lib${_dir}_so_SOURCES = 
 noinst_LIBRARIES += lib${dir}.a
 lib${dir}.so: lib${dir}.a
 

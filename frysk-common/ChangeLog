@@ -1,3 +1,9 @@
+2005-11-16  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.gen.sh: Added an empty lib${_dir}_so_SOURCES to supress the build
+	from looking for lib${dir}.c. Added an empty libfrysk_$1_so_SOURCES to
+	supress the build from looking a .c file for every .so.
+
 2005-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (fryski): New program.
