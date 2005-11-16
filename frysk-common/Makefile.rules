@@ -84,7 +84,7 @@ GEN_GCJ_SO_DIRS = \
 	$(patsubst -L%,%,$(filter -L%, $(GEN_GCJ_SO_FLAGS)))
 # Add absolute versions of each directory.
 GEN_GCJ_RPATHS = \
-	$(patsubst %/.,%, \
+	$(patsubst %/./,%, $(patsubst %/.,%, \
 		$(foreach lib, $(GEN_GCJ_SO_DIRS), \
 			$(if $(filter /%,$(lib)), $(lib)) \
 			$(if $(filter .%,$(lib)), \
@@ -92,7 +92,7 @@ GEN_GCJ_RPATHS = \
 				$(lib) \
 				) \
 			) \
-		)
+		))
 GEN_GCJ_RPATH = $(subst $(space),:,$(sort $(GEN_GCJ_RPATHS)))
 GEN_GCJ_RPATH_FLAGS = \
 	-Djava.library.path=$(GEN_GCJ_RPATH) \
@@ -366,8 +366,8 @@ gij_sh_SOURCES =
 gij.sh: Makefile
 	rm -f $@.tmp
 	echo '#!/bin/sh' >> $@.tmp
-	echo 'export LD_LIBRARY_PATH=$(GEN_GCJ_RPATH)' >> $@.tmp
-	echo 'export CLASSPATH="$(GEN_CLASSDIR):$(CLASSPATH)"' >> $@.tmp
+	echo 'export LD_LIBRARY_PATH="$(GEN_GCJ_RPATH)"' >> $@.tmp
+	echo 'export CLASSPATH="$(GEN_CLASSDIR):$(CLASSPATH):$${CLASSPATH}"' >> $@.tmp
 	echo 'exec ./fryski "$$@"' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@

@@ -1,3 +1,9 @@
+2005-11-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (gij.sh): Append any existing CLASSPATH value to
+	the frysk CLASSPATH.
+	(GEN_GCJ_RPATHS): Strip out trailing <</./>>.
+
 2005-11-16  Igor Foox  <ifoox@redhat.com>
 
 	* Makefile.gen.sh: Added an empty lib${_dir}_so_SOURCES to supress the build
