@@ -55,13 +55,22 @@ import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.Entry;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.FocusEvent;
+import org.gnu.gtk.event.FocusListener;
+import org.gnu.gtk.event.KeyEvent;
+import org.gnu.gtk.event.KeyListener;
+import org.gnu.gtk.event.TreeSelectionEvent;
+import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionManager;
@@ -71,12 +80,19 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class CustomeObserverWindow extends Window {
 	
 	private TreeView observerTreeView;
+	private TreeView baseObserverTreeView;
+	
 	private TreeView sourceActionsTreeView;
 
+	private Entry customObserverNameEntry;
+	
+	private Label nameSummaryLabel;
+	private Label baseObserverSummaryLabel;
+	private Label filtersSummaryLabel;
+	private Label actionsSummaryLabel;
+	
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle());
-		
-//		
 		
 		Button button = (Button) glade.getWidget("customObserverOkButton");
 		button.addListener(new ButtonListener(){
@@ -96,13 +112,57 @@ public class CustomeObserverWindow extends Window {
 			}
 		});
 		
-		this.observerTreeView = (TreeView)glade.getWidget("simplexListView");
-		this.initObserverTreeView();
+		this.customObserverNameEntry = (Entry) glade.getWidget("customObserverNameEntry");
+		this.customObserverNameEntry.addListener(new KeyListener() {
 		
+			public boolean keyEvent(KeyEvent event) {
+				if(customObserverNameEntry.getText().equals("")){
+					updateNameSummary("");
+				}else{
+					updateNameSummary("( " + customObserverNameEntry.getText() + " )");
+				}
+				return false;
+			}
+		
+		});
+		
+		this.customObserverNameEntry.addListener(new FocusListener() {
+		
+			public boolean focusEvent(FocusEvent event) {
+				if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
+					updateNameSummary(customObserverNameEntry.getText());
+				}
+				return false;
+			}
+		
+		});
+
+		
+		this.baseObserverTreeView = (TreeView)glade.getWidget("baseObserversTreeView");
+		this.initObserverTreeView();
+
+
+		this.observerTreeView = (TreeView)glade.getWidget("simplexListView");
+		this.observerTreeView.getClass();
+//		this.initObserverTreeView();
+
 		this.sourceActionsTreeView = (TreeView)glade.getWidget("sourceActionsTreeView");
 		this.initSourceActionsTreeView();
+		
+		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel");
+		this.updateNameSummary("");
+		
+		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel");
+		this.updateBaseObserverSummary("");
+	
+		this.filtersSummaryLabel      = (Label) glade.getWidget("filtersSummaryLabel");
+		this.updateFiltersSummary("");
+		
+		this.actionsSummaryLabel      = (Label) glade.getWidget("actionsSummaryLabel");
+		this.updateActionsSummary("");
+		
 	}
-
+	
 	private void initSourceActionsTreeView() {
 		final DataColumnString nameDC = new DataColumnString();
 		final DataColumnObject observersDC = new DataColumnObject();
@@ -145,7 +205,7 @@ public class CustomeObserverWindow extends Window {
 		columns[0] = nameDC;
 		columns[1] = observersDC;
 		final ListStore listStore = new ListStore(columns);
-		observerTreeView.setHeadersVisible(false);
+		baseObserverTreeView.setHeadersVisible(false);
 		
 		Iterator iter = ObserverManager.theManager.getObservers().iterator();
 		while(iter.hasNext()){
@@ -165,12 +225,44 @@ public class CustomeObserverWindow extends Window {
 			}
 		});
 		
-		observerTreeView.setModel(listStore);
+		baseObserverTreeView.setModel(listStore);
 		CellRendererText cellRendererText = new CellRendererText();
 		TreeViewColumn observersCol = new TreeViewColumn();
 		observersCol.packStart(cellRendererText, false);
 		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		observerTreeView.appendColumn(observersCol);
+		baseObserverTreeView.appendColumn(observersCol);
 		
+		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
+			public void selectionChangedEvent(TreeSelectionEvent event) {
+				String name = "(";
+				TreePath[] selected = baseObserverTreeView.getSelection().getSelectedRows();
+				for (int i = 0; i < selected.length; i++) {
+					if(i > 0 ){
+						name += ", ";
+					}
+					name += listStore.getValue(listStore.getIter(selected[i]), nameDC);
+				}
+				name += ")";
+				updateBaseObserverSummary(name);
+			}
+		});
 	}
+	
+	private void updateNameSummary(String summary){
+		this.nameSummaryLabel.setText(summary);
+	}
+	
+	private void updateBaseObserverSummary(String summary){
+		this.baseObserverSummaryLabel.setText(summary);
+	}
+	
+
+	private void updateFiltersSummary(String summary){
+		this.filtersSummaryLabel.setText(summary);
+	}
+	
+	private void updateActionsSummary(String summary){
+		this.actionsSummaryLabel.setText(summary);		
+	}
+	
 }

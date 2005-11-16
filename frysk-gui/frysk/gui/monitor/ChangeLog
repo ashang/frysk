@@ -5,6 +5,7 @@
 	* GuiObject.java: No longer abstract.
 	* DynamicWidget.java: New file.
 	* CustomeObserverWindow.java: Added handles for managing components.
+	Added handlers for varios parts of the window.
 
 2005-11-11  Phil Muldoon  <pmuldoon@redhat.com>
 
