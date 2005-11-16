@@ -1,0 +1,68 @@
+2005-11-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* New import of parser code from Eclipse CDT 3.0.0
+	
+
+2005-11-16  Rick Moseley  <rmoseley@redhat.com>
+
+	
+	* cdtparser/org/eclipse/cdt/core/dom/ast/ASTTypeUtil.java: Hack around GCJ
+			bug # 172853 Inner interface's are not know inside
+			packages
+	* cdtparser/org/eclipse/cdt/core/dom/ast/ASTTypeUtil.java: Ditto.
+        * cdtparser/org/eclipse/cdt/core/dom/ast/c/ICBasicType.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/dom/parser/c/CASTEnumerationSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/dom/parser/c/CASTTranslationUnit.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/dom/parser/cpp/CPPASTCompositeTypeSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/dom/parser/cpp/CPPASTEnumerationSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/dom/parser/cpp/CPPASTTranslationUnit.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/GCCParserExtension.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/Parser.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/ASTCompletionNode.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/ASTDesignator.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTBinaryExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTClassSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTConditionalExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTEmptyExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTInitializerClause.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTLiteralExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTMethod.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTNewExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTNode.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTSimpleTypeSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTSymbol.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTTemplateParameter.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTTypeIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTUnaryExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTUnaryIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/complete/ASTUnaryTypeIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTBinaryExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTClassSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTConditionalExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTDesignatedExpressionInitializerClause.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTDesignatedInitializerListInitializerClause.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTEmptyExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTExpressionInitializerClause.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTInitializerClause.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTInitializerListInitializerClause.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTLiteralExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTNewExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTNode.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTScopedTypeSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTSimpleTypeSpecifier.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTTemplateParameter.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTTypeIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTUnaryExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTUnaryIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/ast/quick/ASTUnaryTypeIdExpression.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/pst/ExtensibleSymbolExtension.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/pst/ForewardDeclaredSymbolExtension.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/pst/StandardSymbolExtension.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/pst/TemplateSymbol.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/pst/UndefinedTemplateSymbol.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/scanner2/DependencyTree.java: Ditto.
+        * cdtparser/org/eclipse/cdt/internal/core/parser/scanner2/LocationMap.java: Ditto.
