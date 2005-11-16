@@ -123,10 +123,14 @@ public class SourceBuffer extends TextBuffer {
 	/**
 	 * Creates a new SourceBuffer
 	 */
-	public SourceBuffer(StackLevel data){ 
+	public SourceBuffer(){ 
 		super();
-		this.scope = data;
 		this.init();
+	}
+	
+	public SourceBuffer(StackLevel scope){
+		this();
+		this.setScope(scope);
 	}
 	
 	/**
@@ -608,6 +612,14 @@ public class SourceBuffer extends TextBuffer {
 		return this.scope.getData().getLine(lineNumber+1).hasInlinedCode();
 	}
 	
+	public DOMInlineInstance getInlineInstance(int lineNumber){
+		Iterator iter = this.scope.getData().getLine(lineNumber+1).getInlines();
+		if(!iter.hasNext())
+			return null;
+		
+		return new DOMInlineInstance((Element) iter.next()); 
+	}
+	
 	public void setScope(StackLevel scope){
 		for(int i = 0; i < functions.size(); i++)
 			this.deleteMark(((String) functions.get(i)));
@@ -648,16 +660,16 @@ public class SourceBuffer extends TextBuffer {
 		
 		this.inlinedTag = this.createTag(INLINE_TAG);
 		
-		try {
-			this.loadFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		this.setCurrentLine(this.scope.getStartingLineNum(),
-				this.scope.getColStart(),
-				this.scope.getEndLine(),
-				this.scope.getColEnd());
+//		try {
+//			this.loadFile();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		
+//		this.setCurrentLine(this.scope.getStartingLineNum(),
+//				this.scope.getColStart(),
+//				this.scope.getEndLine(),
+//				this.scope.getColEnd());
 	}
 	
 	/**
@@ -668,20 +680,11 @@ public class SourceBuffer extends TextBuffer {
 	 * @throws FileNotFoundException
 	 * @throws JGException
 	 */
-	private void loadFile() throws FileNotFoundException, JGException{
+	protected void loadFile() throws FileNotFoundException, JGException{
+		System.out.println("SourceBuffer.loadFile()");
 		Iterator lines = this.scope.getData().getLines();
 		
-		String bufferText = "";
-		
-		// First get the text, append it all together, and add it to ourselves
-		while(lines.hasNext()){
-			DOMLine line = new DOMLine((Element) lines.next());
-			
-			if(line.getText().equals(""))
-				bufferText += "\n";
-			else
-				bufferText += line.getText();
-		}
+		String bufferText = loadLines(lines);
 		
 		this.deleteText(this.getStartIter(), this.getEndIter());
 		this.insertText(bufferText);
@@ -700,11 +703,30 @@ public class SourceBuffer extends TextBuffer {
 		
 		this.createTags();
 	}
+
+	/**
+	 * @param lines Iterator of the lines to store in this SourceBuffer
+	 * @return What should be the contents of the buffer
+	 */
+	protected String loadLines(Iterator lines) {
+		String bufferText = "";
+		
+		// First get the text, append it all together, and add it to ourselves
+		while(lines.hasNext()){
+			DOMLine line = new DOMLine((Element) lines.next());
+			
+			if(line.getText().equals(""))
+				bufferText += "\n";
+			else
+				bufferText += line.getText();
+		}
+		return bufferText;
+	}
 	
 	/*
 	 * Reads through the DOM and creates all the tags necessary
 	 */
-	private void createTags(){
+	protected void createTags(){
 		Iterator lines = this.scope.getData().getLines();
 		
 		// Iterate through all the lines
@@ -808,6 +830,10 @@ public class SourceBuffer extends TextBuffer {
 	private void updateTagStyle(Preferences node, String key, Style defaultStyle, TextTag tag){
 		int style = node.getInt(key, defaultStyle.getValue());
 		tag.setStyle(Style.intern(style));
+	}
+
+	public StackLevel getScope() {
+		return scope;
 	}
 
 }

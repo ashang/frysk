@@ -53,6 +53,7 @@ import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
+import frysk.gui.srcwin.dom.DOMInlineInstance;
 
 /**
  * @author ajocksch
@@ -60,21 +61,22 @@ import frysk.gui.srcwin.PreferenceConstants.Margin;
  */
 public class InlineViewer extends SourceViewWidget {
 
-	protected InlineViewer nextLevel;
-	protected InlineViewer prevLevel;
+//	protected InlineViewer nextLevel;
+//	protected InlineViewer prevLevel;
 	
 	private boolean showEllipsis;
 	
-	public InlineViewer(Preferences parentPrefs, SourceWindow top){
-		this(parentPrefs, false, top);
+	public InlineViewer(Preferences parentPrefs, SourceWindow top,
+			StackLevel scope, DOMInlineInstance instance){
+		this(parentPrefs, false, scope, top, instance);
 	}
 	
 	/**
 	 * @param parentPrefs
 	 */
 	public InlineViewer(Preferences parentPrefs, boolean showEllipsis,
-			SourceWindow top) {
-		super(parentPrefs, null, top);
+			StackLevel scope, SourceWindow top, DOMInlineInstance instance) {
+		super(parentPrefs, new InlineBuffer(scope, instance), top);
 		this.setBorderWidth(1);
 		this.showEllipsis = showEllipsis;
 	}
@@ -86,10 +88,10 @@ public class InlineViewer extends SourceViewWidget {
 		 *  b) We're only viewing inline code at the current PC address
 		 */
 		
-		if(this.nextLevel == null)
-			InlineHandler.moveDown();
-		else
-			InlineHandler.moveUp(this);
+//		if(this.nextLevel == null)
+//			InlineHandler.moveDown();
+//		else
+//			InlineHandler.moveUp(this);
 	}
 	
 	public void load(StackLevel current){
@@ -135,13 +137,13 @@ public class InlineViewer extends SourceViewWidget {
 	}
     
     public void moveDown(){
-        if(this.prevLevel == null)
-            this.showEllipsis = true;
-        else
-            this.showEllipsis = false;
-        
-        this.remove(this.nextLevel);
-        this.clearSubscopeAtCurrentLine();
+//        if(this.prevLevel == null)
+//            this.showEllipsis = true;
+//        else
+//            this.showEllipsis = false;
+//        
+//        this.remove(this.nextLevel);
+//        this.clearSubscopeAtCurrentLine();
 //      FIXME: This needs to be re-implemented within the scope of the data that the DOM provides
 //        this.load(this.scope.getInlineScope());
     }
@@ -155,13 +157,13 @@ public class InlineViewer extends SourceViewWidget {
 //	}
 
 	public void setSubscopeAtCurrentLine(InlineViewer viewer){
-		super.setSubscopeAtCurrentLine(viewer);
-		
-        viewer.showEllipsis = false;
-		this.expanded = true;
-		
-		viewer.prevLevel = this;
-		this.nextLevel = viewer;
+//		super.setSubscopeAtCurrentLine(viewer);
+//		
+//        viewer.showEllipsis = false;
+//		this.expanded = true;
+//		
+//		viewer.prevLevel = this;
+//		this.nextLevel = viewer;
 	}
 	
 //    public void clearSubscopeAtCurrentLine(){
@@ -180,8 +182,8 @@ public class InlineViewer extends SourceViewWidget {
 		// draw the background for the margin
 		GC context = new GC((Drawable) drawingArea);
 		int r = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getRed());
-		int g = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getGreen());
-		int b = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getBlue());
+		int g = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"G", Margin.DEFAULT.getGreen());
+		int b = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"B", Margin.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r, g, b));
 		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
 		
@@ -204,19 +206,19 @@ public class InlineViewer extends SourceViewWidget {
 
 		// Get Color to draw the text in
 		r = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getRed());
-		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getGreen());
-		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getBlue());
+		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"G", LineNumbers.DEFAULT.getGreen());
+		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"B", LineNumbers.DEFAULT.getBlue());
 		context.setRGBForeground(new Color(r,g,b));
 		
 		// gets current line color
 		int lineR = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getRed());
-		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getGreen());
-		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getBlue());
+		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"G", CurrentLine.DEFAULT.getGreen());
+		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"B", CurrentLine.DEFAULT.getBlue());
 		
 		// gets executable mark color
 		int markR = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getRed());
-		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getGreen());
-		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getBlue());
+		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"G", ExecMarks.DEFAULT.getGreen());
+		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"B", ExecMarks.DEFAULT.getBlue());
 		
 		int currentHeight = 0;		
 		int actualIndex = 0;
@@ -251,11 +253,6 @@ public class InlineViewer extends SourceViewWidget {
 			}
 			
 			if(totalInlinedLines == 1){
-				// draw background for the expanded lines
-//				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
-//				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
-//						this.marginWriteOffset+20, lineHeight);
-//				context.setRGBForeground(new Color(r,g,b));
 				
 				totalInlinedLines = 0;
 			
@@ -282,26 +279,19 @@ public class InlineViewer extends SourceViewWidget {
 				context.setRGBForeground(new Color(r,g,b));
 			}
 			
-//			 FIXME: This needs to be re-implemented within the scope of the data that the DOM provides
-//			if(this.scope.hasInlineScope() && i == this.buf.getCurrentLine() - 1){
-////				context.setRGBForeground(new Color(inlineR, inlineG, inlineB));
-////				drawingArea.drawRectangle(context, true, 0, actualFirstStart+currentHeight, 
-////						this.marginWriteOffset+20, lineHeight);
-////				context.setRGBForeground(new Color(r,g,b));
-//				
-//				context.setRGBForeground(new Color(markR,markG,markB));
-//				context.setRGBBackground(new Color(inlineR, inlineG, inlineB));
-//				Layout lo = new Layout(this.getContext());
-//				lo.setAlignment(Alignment.RIGHT);
-//				lo.setText("i");
-//				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
-//				context.setRGBForeground(new Color(r,g,b));
+			if(i == this.buf.getCurrentLine() - 1 && this.buf.hasInlineCode(i)){
+				
+				context.setRGBForeground(new Color(markR,markG,markB));
+				Layout lo = this.createLayout("i");
+				lo.setAlignment(Alignment.RIGHT);
+				drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
+				context.setRGBForeground(new Color(r,g,b));
 //				
 //				if(this.expanded)
 //					totalInlinedLines = 1;
 //				else
 //					totalInlinedLines = 0;
-//			}
+			}
 			
 			// Draw line numbers
 			if(showLines){

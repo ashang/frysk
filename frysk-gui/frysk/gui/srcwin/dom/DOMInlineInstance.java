@@ -50,7 +50,6 @@ import org.jdom.Element;
  * @author ajocksch
  */
 public class DOMInlineInstance {
-	private DOMFunction declaration;
 	private int start;
 	private int end;
 	
@@ -60,11 +59,10 @@ public class DOMInlineInstance {
 	
 	private Element myElement;
 	
-	public DOMInlineInstance(DOMFunction declaration, int start, int end){
-		this.declaration = declaration;
-		this.start = start;
-		this.end = end;
-	}
+//	public DOMInlineInstance(int start, int end){
+//		this.start = start;
+//		this.end = end;
+//	}
 	
 	/**
 	 * Creates a new DOMLine using the given data as it's element. data must be a node with
@@ -113,6 +111,15 @@ public class DOMInlineInstance {
 	 * @return The original declaration of this inlined code
 	 */
 	public DOMFunction getDeclaration(){
-		return this.declaration;
+		String funcName = this.myElement.getAttributeValue(LINEINST_ATTR);
+		
+		Element parent = this.myElement.getParentElement();
+		while(parent != null && !parent.getName().equals(DOMFrysk.IMAGE_ATTR))
+			parent = parent.getParentElement();
+		
+		if(parent != null)
+			return new DOMImage(parent).getFunction(funcName);
+		
+		return null;
 	}
 }

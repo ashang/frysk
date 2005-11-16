@@ -124,21 +124,25 @@ public class DOMFunction {
 		return Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
 	}
 	
-	public String[] getLines() throws Exception{
-		int start = Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
-		int end = Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
+	public String[] getLines(){
+		int start = Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
+		int end = Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
 		
-		String[] lines = new String[start - end + 1];
+		String[] lines = new String[end - start ];
 		
-		// Parent of this should be a DOMSource, parent of that a DOMImage
-		Element elem = this.getElement().getParentElement().getParentElement();
-		if(!elem.getName().equals(DOMFrysk.IMAGE_ATTR))
-			throw new Exception("Illegal DOM Format. DOMFunction.getParentElement().getParentElement() was not a DOMImage!");
+		// Parent of this should be a  DOMImage
+		Element elem = this.getElement().getParentElement();
+
+		DOMSource source = new DOMImage(elem).getSource(this.myElement.getAttributeValue(SOURCE_NAME_ATTR));
 		
-		DOMSource source = new DOMImage(elem).getSource(elem.getAttributeValue(DOMSource.SOURCE_NODE));
-		
-		for(int i = start; i<= end; i++)
-			lines[i-start] = source.getLine(i).getText();
+		for(int i = start; i< end; i++){
+			String text = source.getLine(i).getText();
+			System.out.print("Line "+ i +": "+text);
+			if(text.equals(""))
+				lines[i-start] = "\n";
+			else
+				lines[i-start] = text;
+		}
 		
 		return lines;
 	}

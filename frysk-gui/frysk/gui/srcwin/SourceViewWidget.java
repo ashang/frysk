@@ -100,6 +100,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	private SourceWindow parent;
 	
 	protected boolean expanded = false;
+
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.
@@ -108,9 +109,13 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * @param scope The source file that this widget will be displaying
 	 */
 	public SourceViewWidget(Preferences parentPrefs, StackLevel scope, SourceWindow parent) {
+		this(parentPrefs, new SourceBuffer(scope), parent);
+	}
+	
+	public SourceViewWidget(Preferences parentPrefs, SourceBuffer buffer, SourceWindow parent){
 		super(gtk_text_view_new());
 		this.parent = parent;
-		this.buf = new SourceBuffer(scope);
+		this.buf = buffer;
 		this.setBuffer(this.buf);
 		this.topPrefs = parentPrefs;
 		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
@@ -381,7 +386,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 
 	public void toggleChild() {
 		if(!expanded){
-			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent);
+			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent, 
+					this.buf.getScope(), this.buf.getInlineInstance(this.buf.getCurrentLine()));
 			this.setSubscopeAtCurrentLine(nested);
 		}
 		else{
@@ -486,7 +492,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			
 			// If it is executable, draw a mark
-			if(showMarks && this.buf.isLineExecutable(i)){
+			if(showMarks && this.buf.isLineExecutable(i) && 
+					(!this.buf.hasInlineCode(i) && this.expanded)){
 				context.setRGBForeground(new Color(markR,markG,markB));
 				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
 						this.marginWriteOffset+12, actualFirstStart+drawingHeight+iconStart);

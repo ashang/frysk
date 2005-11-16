@@ -1,3 +1,32 @@
+2005-11-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java: Added.
+	* InlineViewer.java (InlineViewer): Now takes StackLevel and
+	DOMInlineInstance.
+	(toggleChild): Commented out for now.
+	(moveDown): Ditto.
+	(setSubScopeAtCurrentLine): Ditto.
+	(drawMargin): Corrected bug where r,g, and b for a color were all being
+	populated by the r component.
+	* SourceBuffer.java (SourceBuffer): Created constructor that just 
+	initializes, but doesn't load data.
+	(getInlineInstance): Added.
+	(init): Removed section that loads data.
+	(loadFile): Changed to protected, extracted out loadLines function.
+	(loadLines): Refactored out of loadFile.
+	(createTags): Changed to protected.
+	* SourceViewWidget.java (SourceViewWidget): Added constructor that takes
+	an already existing SourceBuffer.
+	(toggleChild): Refactored to use new InlineViewer constructor.
+	(drawMargin): Executable marks not drawn on lines where the is expanded
+	inline code.
+	* dom/DOMFunction.java (getLines): No longer throws exception, now
+	actually works as expected.
+	* dom/DOMInlineInstance.java (DOMInlineInstance): Removed constructor
+	that doesn't take an Element since it wasn't being used.
+	(getDeclaration): Now actually browses the tree to find the proper
+	DOMFunction object.
+
 2005-11-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceViewWidget.java (toggleChild): Removed references to InlineHandler.
