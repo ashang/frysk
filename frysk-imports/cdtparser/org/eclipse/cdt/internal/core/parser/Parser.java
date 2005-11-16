@@ -6249,7 +6249,7 @@ public class Parser implements IParserData, IParser
 	 * 
 	 * @see org.eclipse.cdt.core.parser.IParser#parse(int, int)
 	 */
-	public ISelectionParseResult parse(int startingOffset, int endingOffset)
+	public IParser.ISelectionParseResult parse(int startingOffset, int endingOffset)
 			throws ParseError {
 		if( mode != ParserMode.SELECTION_PARSE )
 			throw new ParseError(ParseError.ParseErrorKind.METHOD_NOT_IMPLEMENTED);
@@ -6625,7 +6625,7 @@ public class Parser implements IParserData, IParser
 	/**
 	 * 
 	 */
-	protected ISelectionParseResult reconcileTokenDuple() throws ParseError {
+	protected IParser.ISelectionParseResult reconcileTokenDuple() throws ParseError {
 		if( firstTokenOfDuple == null || lastTokenOfDuple == null )
 			throw new ParseError( ParseError.ParseErrorKind.OFFSET_RANGE_NOT_NAME );
 		
@@ -6644,7 +6644,7 @@ public class Parser implements IParserData, IParser
 	 * @param duple
 	 * @return
 	 */
-	protected ISelectionParseResult provideSelectionNode(ITokenDuple duple) {
+	protected IParser.ISelectionParseResult provideSelectionNode(ITokenDuple duple) {
 		
 		ITokenDuple finalDuple = null;
 		// reconcile the name to look up first
@@ -6798,7 +6798,7 @@ public class Parser implements IParserData, IParser
 	}
 
 	
-	public static class SelectionParseResult implements ISelectionParseResult 
+	public static class SelectionParseResult implements IParser.ISelectionParseResult 
 	{
 
 		public SelectionParseResult( IASTOffsetableNamedElement node, String fileName )

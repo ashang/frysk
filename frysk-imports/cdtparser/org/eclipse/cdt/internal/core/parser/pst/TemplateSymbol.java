@@ -427,7 +427,7 @@ public class TemplateSymbol	extends ParameterizedSymbol	implements ITemplateSymb
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.internal.core.parser.pst.ITemplateSymbol#registerDeferredInstatiation(org.eclipse.cdt.internal.core.parser.pst.ParameterizedSymbol, org.eclipse.cdt.internal.core.parser.pst.ISymbol, org.eclipse.cdt.internal.core.parser.pst.ITemplateSymbol.DeferredKind)
 	 */
-	public void registerDeferredInstatiation( Object obj0, Object obj1, DeferredKind kind, ObjectMap argMap ) {
+	public void registerDeferredInstatiation( Object obj0, Object obj1, ITemplateSymbol.DeferredKind kind, ObjectMap argMap ) {
 		if( _deferredInstantiations == Collections.EMPTY_LIST )
 			_deferredInstantiations = new ArrayList(8);
 		
@@ -453,15 +453,15 @@ public class TemplateSymbol	extends ParameterizedSymbol	implements ITemplateSymb
 			for( int i = numProcessed; i < numDeferred; i++ ){
 				Object [] objs = (Object [])_deferredInstantiations.get(i);
 				
-				DeferredKind kind = (DeferredKind) objs[2];
+				ITemplateSymbol.DeferredKind kind = (ITemplateSymbol.DeferredKind) objs[2];
 				
-				if( kind == DeferredKind.PARENT ){
+				if( kind == ITemplateSymbol.DeferredKind.PARENT ){
 					DerivableContainerSymbol d = (DerivableContainerSymbol) objs[0];
 					d.instantiateDeferredParent( (ISymbol) objs[ 1 ], this, (ObjectMap) objs[3] );
-				} else if( kind == DeferredKind.RETURN_TYPE ){
+				} else if( kind == ITemplateSymbol.DeferredKind.RETURN_TYPE ){
 					ParameterizedSymbol p = (ParameterizedSymbol) objs[0];
 					p.instantiateDeferredReturnType( (ISymbol) objs[1], this, (ObjectMap) objs[3] );
-				} else if( kind == DeferredKind.TYPE_SYMBOL ){
+				} else if( kind == ITemplateSymbol.DeferredKind.TYPE_SYMBOL ){
 					TemplateEngine.instantiateDeferredTypeInfo( (ITypeInfo) objs[0], this, (ObjectMap) objs[3] );
 				}
 				numProcessed++;
@@ -482,15 +482,15 @@ public class TemplateSymbol	extends ParameterizedSymbol	implements ITemplateSymb
 		for( int i = 0; i < size; i++ ){
 			Object [] objs = (Object []) _deferredInstantiations.get(i);
 			
-			DeferredKind kind = (DeferredKind) objs[2];
+			ITemplateSymbol.DeferredKind kind = (ITemplateSymbol.DeferredKind) objs[2];
 			
-			if( kind == DeferredKind.PARENT ){
+			if( kind == ITemplateSymbol.DeferredKind.PARENT ){
 				DerivableContainerSymbol d = (DerivableContainerSymbol) objs[0];
 				d.discardDeferredParent( (IDeferredTemplateInstance) objs[1], this, (ObjectMap) objs[3] );
-			} else if( kind == DeferredKind.RETURN_TYPE ){
+			} else if( kind == ITemplateSymbol.DeferredKind.RETURN_TYPE ){
 				ParameterizedSymbol p = (ParameterizedSymbol) objs[0];
 				p.discardDeferredReturnType( (ISymbol) objs[1], this, (ObjectMap) objs[3] );
-			} else if( kind == DeferredKind.TYPE_SYMBOL ){
+			} else if( kind == ITemplateSymbol.DeferredKind.TYPE_SYMBOL ){
 				TemplateEngine.discardDeferredTypeInfo( (ITypeInfo) objs[0], this, (ObjectMap) objs[3] );
 			}
 		}

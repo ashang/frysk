@@ -241,7 +241,7 @@ public class GCCParserExtension implements IParserExtension {
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.extension.IParserExtension#handleDeclSpecifierSequence(org.eclipse.cdt.internal.core.parser.IParserData, org.eclipse.cdt.core.model.Flags, org.eclipse.cdt.internal.core.parser.DeclarationWrapper)
 	 */
-	public IDeclSpecifierExtensionResult parseDeclSpecifierSequence(IParserData data, Parser.Flags flags, DeclarationWrapper sdw, CompletionKind kind, KeywordSetKey key) {
+	public IParserExtension.IDeclSpecifierExtensionResult parseDeclSpecifierSequence(IParserData data, Parser.Flags flags, DeclarationWrapper sdw, CompletionKind kind, KeywordSetKey key) {
 		IToken startingPoint = null;
 		try
 		{
@@ -280,7 +280,7 @@ public class GCCParserExtension implements IParserExtension {
 		return null;
 	}	
 
-	public class GCCDeclSpecifierExtensionResult implements IDeclSpecifierExtensionResult 
+	public class GCCDeclSpecifierExtensionResult implements IParserExtension.IDeclSpecifierExtensionResult 
 	{
 		private final IToken first;
 		private final IToken last;

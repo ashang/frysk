@@ -32,14 +32,14 @@ public class ASTInitializerClause implements IASTInitializerClause {
 	 * @param assignmentExpression
 	 * @param initializerClauses
 	 */
-	public ASTInitializerClause(Kind kind ) {
+	public ASTInitializerClause(IASTInitializerClause.Kind kind ) {
 		this.kind = kind; 
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTInitializerClause#getKind()
 	 */
-	public Kind getKind() {
+	public IASTInitializerClause.Kind getKind() {
 		return kind;
 	}
 

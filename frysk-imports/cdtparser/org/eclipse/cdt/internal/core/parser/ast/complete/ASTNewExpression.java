@@ -26,7 +26,7 @@ import org.eclipse.cdt.core.parser.ast.IASTTypeId;
 public class ASTNewExpression extends ASTExpression {
 	
 	private final IASTTypeId typeId;
-	private final IASTNewExpressionDescriptor newDescriptor;
+	private final IASTExpression.IASTNewExpressionDescriptor newDescriptor;
 
 	/**
 	 * @param kind
@@ -34,7 +34,7 @@ public class ASTNewExpression extends ASTExpression {
 	 * @param newDescriptor
 	 * @param typeId
 	 */
-	public ASTNewExpression(Kind kind, List references, IASTNewExpressionDescriptor newDescriptor, IASTTypeId typeId) {
+	public ASTNewExpression(IASTExpression.Kind kind, List references, IASTExpression.IASTNewExpressionDescriptor newDescriptor, IASTTypeId typeId) {
 		super( kind, references );
 		this.newDescriptor = newDescriptor;
 		this.typeId = typeId;
@@ -49,7 +49,7 @@ public class ASTNewExpression extends ASTExpression {
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTExpression#getNewExpressionDescriptor()
 	 */
-	public IASTNewExpressionDescriptor getNewExpressionDescriptor() {
+	public IASTExpression.IASTNewExpressionDescriptor getNewExpressionDescriptor() {
 		return newDescriptor;
 	}
 	

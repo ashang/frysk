@@ -30,7 +30,7 @@ public class ASTUnaryExpression extends ASTExpression {
 	 * @param kind
 	 * @param references
 	 */
-	public ASTUnaryExpression(Kind kind, List references, IASTExpression lhs ) {
+	public ASTUnaryExpression(IASTExpression.Kind kind, List references, IASTExpression lhs ) {
 		super(kind, references);
 		this.lhs = lhs;
 	}

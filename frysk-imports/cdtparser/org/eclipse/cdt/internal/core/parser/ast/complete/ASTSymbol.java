@@ -41,7 +41,7 @@ public abstract class ASTSymbol extends ASTSymbolOwner implements ISymbolOwner, 
     	return null;
     }
 
-    public IContainerSymbol getLookupQualificationSymbol() throws LookupError {
+    public IContainerSymbol getLookupQualificationSymbol() throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError {
     	ISymbol sym = getSymbol();
     	IContainerSymbol result = null;
     	TypeInfoProvider provider = sym.getSymbolTable().getTypeInfoProvider();
@@ -50,7 +50,7 @@ public abstract class ASTSymbol extends ASTSymbolOwner implements ISymbolOwner, 
 		try{
 			info = sym.getTypeInfo().getFinalType( provider );
 		} catch( ParserSymbolTableError e ){
-			throw new LookupError();
+			throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 		}
 		
 		if( info.isType( ITypeInfo.t_type ) && info.getTypeSymbol() != null && info.getTypeSymbol() instanceof IContainerSymbol )

@@ -30,7 +30,7 @@ public class ASTClassSpecifier extends ASTScopedTypeSpecifier implements IASTQCl
         IASTScope scope,
         char[] name,
         ASTClassKind kind,
-        ClassNameType type,
+        org.eclipse.cdt.core.parser.ast.IASTClassSpecifier.ClassNameType type,
         int startingOffset, 
         int startingLine, 
         int nameOffset, 
@@ -52,7 +52,7 @@ public class ASTClassSpecifier extends ASTScopedTypeSpecifier implements IASTQCl
     private List baseClauses = new ArrayList();
     private List friends = new ArrayList();
     private ASTAccessVisibility access;
-    private final ClassNameType classNameType;
+    private final org.eclipse.cdt.core.parser.ast.IASTClassSpecifier.ClassNameType classNameType;
     private final ASTClassKind classKind;
     private final char [] fn;
 	/* (non-Javadoc)
@@ -65,7 +65,7 @@ public class ASTClassSpecifier extends ASTScopedTypeSpecifier implements IASTQCl
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTClassSpecifier#getClassNameType()
      */
-    public ClassNameType getClassNameType()
+    public org.eclipse.cdt.core.parser.ast.IASTClassSpecifier.ClassNameType getClassNameType()
     {
         return classNameType;
     }

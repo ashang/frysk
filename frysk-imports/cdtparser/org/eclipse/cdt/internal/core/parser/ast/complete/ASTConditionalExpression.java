@@ -32,7 +32,7 @@ public class ASTConditionalExpression extends ASTBinaryExpression {
 	 * @param lhs
 	 * @param rhs
 	 */
-	public ASTConditionalExpression(Kind kind, List references,
+	public ASTConditionalExpression(IASTExpression.Kind kind, List references,
 			IASTExpression lhs, IASTExpression rhs, IASTExpression thirdExpression) {
 		super(kind, references, lhs, rhs);
 		this.thirdExpression = thirdExpression;

@@ -27,7 +27,7 @@ public class ASTSimpleTypeSpecifier extends ASTNode implements IASTSimpleTypeSpe
 	private final boolean imaginary;
     private final boolean complex;
     private final boolean isTypename;
-    private final Type kind;
+    private final IASTSimpleTypeSpecifier.Type kind;
 	private final String typeName;  
 	private final boolean isLong, isShort, isSigned, isUnsigned; 
 	
@@ -35,20 +35,20 @@ public class ASTSimpleTypeSpecifier extends ASTNode implements IASTSimpleTypeSpe
 	static 
 	{
 		nameMap  = new Hashtable();
-		nameMap.put( Type.BOOL, "bool"); //$NON-NLS-1$
-		nameMap.put( Type.CHAR, "char"); //$NON-NLS-1$
-		nameMap.put( Type.DOUBLE, "double"); //$NON-NLS-1$
-		nameMap.put( Type.FLOAT, "float"); //$NON-NLS-1$
-		nameMap.put( Type.INT, "int"); //$NON-NLS-1$
-		nameMap.put( Type.VOID, "void" ); //$NON-NLS-1$
-		nameMap.put( Type.WCHAR_T, "wchar_t" ); //$NON-NLS-1$
-		nameMap.put( Type._BOOL, "_Bool"); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.BOOL, "bool"); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.CHAR, "char"); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.DOUBLE, "double"); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.FLOAT, "float"); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.INT, "int"); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.VOID, "void" ); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type.WCHAR_T, "wchar_t" ); //$NON-NLS-1$
+		nameMap.put( IASTSimpleTypeSpecifier.Type._BOOL, "_Bool"); //$NON-NLS-1$
 	}
     /**
      * @param kind
      * @param typeName
      */
-    public ASTSimpleTypeSpecifier(Type kind, ITokenDuple typeName, boolean isShort, boolean isLong, boolean isSigned, boolean isUnsigned, boolean isTypename, boolean isComplex, boolean isImaginary )
+    public ASTSimpleTypeSpecifier(IASTSimpleTypeSpecifier.Type kind, ITokenDuple typeName, boolean isShort, boolean isLong, boolean isSigned, boolean isUnsigned, boolean isTypename, boolean isComplex, boolean isImaginary )
     {
         this.kind = kind;
         this.isLong = isLong;
@@ -65,7 +65,7 @@ public class ASTSimpleTypeSpecifier extends ASTNode implements IASTSimpleTypeSpe
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTSimpleTypeSpecifier#getType()
      */
-    public Type getType()
+    public IASTSimpleTypeSpecifier.Type getType()
     {
         return kind;
     }

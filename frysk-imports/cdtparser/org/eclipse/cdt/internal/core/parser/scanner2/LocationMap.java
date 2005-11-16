@@ -589,7 +589,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
         public final char[] name;
         public final int nameOffset;
         private IASTName expansionName;
-        public final IMacroDefinition macroDefn;
+        public final IScannerPreprocessorLog.IMacroDefinition macroDefn;
         
         public IASTName getName()
         {
@@ -609,7 +609,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
          * @param endOffset
          */
         public _Undef(_CompositeContext parent, int startOffset, int endOffset,
-                char[] name, int nameOffset, IMacroDefinition macro ) {
+                char[] name, int nameOffset, IScannerPreprocessorLog.IMacroDefinition macro ) {
             super(parent, startOffset, endOffset);
             this.name = name;
             this.nameOffset = nameOffset;
@@ -1153,26 +1153,26 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
             super(null, 0, 0 );
         }
 
-        IMacroDefinition [] builtins = new IMacroDefinition[2];
+        IScannerPreprocessorLog.IMacroDefinition [] builtins = new IScannerPreprocessorLog.IMacroDefinition[2];
         private int builtinsPos=-1;
         
-        public void addBuiltinMacro(IMacroDefinition def) {
+        public void addBuiltinMacro(IScannerPreprocessorLog.IMacroDefinition def) {
         	if (def != null) {
         		builtinsPos++;
-        		builtins = (IMacroDefinition[]) ArrayUtil.append( IMacroDefinition.class, builtins, def );	
+        		builtins = (IScannerPreprocessorLog.IMacroDefinition[]) ArrayUtil.append( IScannerPreprocessorLog.IMacroDefinition.class, builtins, def );	
         	}
         }
         
-        public IMacroDefinition [] getBuiltinMacroDefinitions()
+        public IScannerPreprocessorLog.IMacroDefinition [] getBuiltinMacroDefinitions()
         {
-            builtins = (IMacroDefinition[]) ArrayUtil.removeNullsAfter( IMacroDefinition.class, builtins, builtinsPos );
+            builtins = (IScannerPreprocessorLog.IMacroDefinition[]) ArrayUtil.removeNullsAfter( IScannerPreprocessorLog.IMacroDefinition.class, builtins, builtinsPos );
             return builtins;
         }
 
     }
 
     protected static class _MacroDefinition extends _Context implements
-            IMacroDefinition {
+    IScannerPreprocessorLog.IMacroDefinition {
 
         /**
          * @param parent
@@ -1273,11 +1273,11 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
     }
 
     protected class _MacroExpansion extends _CompositeContext {
-        public final IMacroDefinition definition;
+        public final IScannerPreprocessorLog.IMacroDefinition definition;
         private IASTName expansionName;
 
         public _MacroExpansion(_CompositeContext parent, int startOffset,
-                int endOffset, IMacroDefinition definition) {
+                int endOffset, IScannerPreprocessorLog.IMacroDefinition definition) {
             super(parent, startOffset, endOffset);
             this.definition = definition;
         }
@@ -1298,7 +1298,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
     protected class _ObjectMacroExpansion extends _MacroExpansion {
 
         public _ObjectMacroExpansion(_CompositeContext parent, int startOffset,
-                int endOffset, IMacroDefinition definition) {
+                int endOffset, IScannerPreprocessorLog.IMacroDefinition definition) {
             super(parent, startOffset, endOffset, definition);
         }
 
@@ -1309,7 +1309,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
 
 
         public _FunctionMacroExpansion(_CompositeContext parent,
-                int startOffset, int endOffset, IMacroDefinition definition,
+                int startOffset, int endOffset, IScannerPreprocessorLog.IMacroDefinition definition,
                 char[][] args) {
             super(parent, startOffset, endOffset, definition);
             this.args = args;
@@ -1353,7 +1353,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
 
     public IMacroBinding resolveBindingForMacro(char[] name, int offset ) {
         _Context search = findContextForOffset( offset );
-        IMacroDefinition macroDefinition = null;
+        IScannerPreprocessorLog.IMacroDefinition macroDefinition = null;
         if (search instanceof _MacroDefinition) {
             _MacroDefinition macroDef = (_MacroDefinition) search;
             if( CharArrayUtils.equals( name, macroDef.name) && offset == macroDef.nameOffset )
@@ -1891,7 +1891,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      * @see org.eclipse.cdt.internal.core.parser.scanner2.IScannerPreprocessorLog#enterObjectStyleMacroExpansion(char[],
      *      char[], int)
      */
-    public void startObjectStyleMacroExpansion(IMacroDefinition macro,
+    public void startObjectStyleMacroExpansion(IScannerPreprocessorLog.IMacroDefinition macro,
             int startOffset, int endOffset) {
         _ObjectMacroExpansion context = new _ObjectMacroExpansion(
                 currentContext, startOffset, endOffset, macro);
@@ -1905,7 +1905,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      * @see org.eclipse.cdt.internal.core.parser.scanner2.IScannerPreprocessorLog#exitObjectStyleMacroExpansion(char[],
      *      int)
      */
-    public void endObjectStyleMacroExpansion(IMacroDefinition macro, int offset) {
+    public void endObjectStyleMacroExpansion(IScannerPreprocessorLog.IMacroDefinition macro, int offset) {
         if( currentContext instanceof _MacroExpansion && ((_MacroExpansion)currentContext).definition == macro )
         {
             ((_ObjectMacroExpansion) currentContext).context_ends = offset; 
@@ -1932,7 +1932,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      * @see org.eclipse.cdt.internal.core.parser.scanner2.IScannerPreprocessorLog#enterFunctionStyleExpansion(char[],
      *      char[][], char[], int)
      */
-    public void startFunctionStyleExpansion(IMacroDefinition macro,
+    public void startFunctionStyleExpansion(IScannerPreprocessorLog.IMacroDefinition macro,
             char[][] parameters, int startOffset, int endOffset) {
         _FunctionMacroExpansion context = new _FunctionMacroExpansion(
                 currentContext, startOffset, endOffset, macro, parameters);
@@ -1946,7 +1946,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      * @see org.eclipse.cdt.internal.core.parser.scanner2.IScannerPreprocessorLog#exitFunctionStyleExpansion(char[],
      *      int)
      */
-    public void endFunctionStyleExpansion(IMacroDefinition macro, int offset) {
+    public void endFunctionStyleExpansion(IScannerPreprocessorLog.IMacroDefinition macro, int offset) {
         if( currentContext instanceof _MacroExpansion && ((_MacroExpansion)currentContext).definition == macro )
         {
             ((_FunctionMacroExpansion) currentContext).context_ends = offset; 
@@ -1973,7 +1973,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      * @see org.eclipse.cdt.internal.core.parser.scanner2.IScannerPreprocessorLog#defineObjectStyleMacro(org.eclipse.cdt.internal.core.parser.scanner2.ObjectStyleMacro,
      *      int, int, int, int)
      */
-    public IMacroDefinition defineObjectStyleMacro(ObjectStyleMacro m,
+    public IScannerPreprocessorLog.IMacroDefinition defineObjectStyleMacro(ObjectStyleMacro m,
             int startOffset, int nameOffset, int nameEndOffset, int endOffset) {
         _ObjectMacroDefinition objectMacroDefinition = new _ObjectMacroDefinition(
                 currentContext, startOffset, endOffset, m.name, nameOffset,
@@ -1988,7 +1988,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      * @see org.eclipse.cdt.internal.core.parser.scanner2.IScannerPreprocessorLog#defineFunctionStyleMacro(org.eclipse.cdt.internal.core.parser.scanner2.FunctionStyleMacro,
      *      int, int, int, int)
      */
-    public IMacroDefinition defineFunctionStyleMacro(FunctionStyleMacro m,
+    public IScannerPreprocessorLog.IMacroDefinition defineFunctionStyleMacro(FunctionStyleMacro m,
             int startOffset, int nameOffset, int nameEndOffset, int endOffset) {
         final _FunctionMacroDefinition functionMacroDefinition = new _FunctionMacroDefinition(
                 currentContext, startOffset, endOffset, m.name, nameOffset,
@@ -2069,7 +2069,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
      *      int)
      */
     public void encounterPoundUndef(int startOffset, int endOffset,
-            char[] symbol, int nameOffset, IMacroDefinition macroDefinition) {
+            char[] symbol, int nameOffset, IScannerPreprocessorLog.IMacroDefinition macroDefinition) {
         currentContext.addSubContext(new _Undef(currentContext, startOffset,
                 endOffset, symbol, nameOffset, macroDefinition));
     }
@@ -2466,7 +2466,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
     public IASTName[] getReferences(IMacroBinding binding) {
         if( binding instanceof MacroBinding )
         {
-            IMacroDefinition d = ((MacroBinding)binding).getDefinition();
+        	IScannerPreprocessorLog.IMacroDefinition d = ((MacroBinding)binding).getDefinition();
             _Context [] r = findReferences( tu, d );
             return createNameArray( r );
         }
@@ -2492,7 +2492,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
         return result;
     }
 
-    protected _Context [] findReferences(_CompositeContext c, IMacroDefinition d) {
+    protected _Context [] findReferences(_CompositeContext c, IScannerPreprocessorLog.IMacroDefinition d) {
         _Context [] results = new _Context[2];
         _Context [] subs = c.getSubContexts();
         for( int i = 0; i < subs.length; ++i )
@@ -2521,7 +2521,7 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
     public IASTName[] getDeclarations(IMacroBinding binding) {
         if( binding instanceof MacroBinding )
         {
-            IMacroDefinition d = ((MacroBinding)binding).getDefinition();
+        	IScannerPreprocessorLog.IMacroDefinition d = ((MacroBinding)binding).getDefinition();
             if( d instanceof _MacroDefinition )
                 return createNameArray( ((_MacroDefinition)d) );
         }
@@ -2574,26 +2574,26 @@ public class LocationMap implements ILocationResolver, IScannerPreprocessorLog {
         return node;
     }
 
-    public IMacroDefinition registerBuiltinObjectStyleMacro(ObjectStyleMacro macro) {
-        IMacroDefinition result = new _ObjectMacroDefinition( tu, -1, -1, macro.name, -1, macro.expansion );
+    public IScannerPreprocessorLog.IMacroDefinition registerBuiltinObjectStyleMacro(ObjectStyleMacro macro) {
+    	IScannerPreprocessorLog.IMacroDefinition result = new _ObjectMacroDefinition( tu, -1, -1, macro.name, -1, macro.expansion );
         tu.addBuiltinMacro( result );
         return result;
     }
 
-    public IMacroDefinition registerBuiltinFunctionStyleMacro(FunctionStyleMacro macro) {
-        IMacroDefinition result = new _FunctionMacroDefinition( tu, -1, -1, macro.name, -1, macro.expansion, removeNullArguments( macro.arglist ) );
+    public IScannerPreprocessorLog.IMacroDefinition registerBuiltinFunctionStyleMacro(FunctionStyleMacro macro) {
+    	IScannerPreprocessorLog.IMacroDefinition result = new _FunctionMacroDefinition( tu, -1, -1, macro.name, -1, macro.expansion, removeNullArguments( macro.arglist ) );
         tu.addBuiltinMacro( result );
         return result;
     }
 
-    public IMacroDefinition registerBuiltinDynamicFunctionStyleMacro(DynamicFunctionStyleMacro macro) {
-        IMacroDefinition result = new _MacroDefinition( tu, -1, -1, macro.name, -1, macro.expansion );
+    public IScannerPreprocessorLog.IMacroDefinition registerBuiltinDynamicFunctionStyleMacro(DynamicFunctionStyleMacro macro) {
+    	IScannerPreprocessorLog.IMacroDefinition result = new _MacroDefinition( tu, -1, -1, macro.name, -1, macro.expansion );
         tu.addBuiltinMacro( result );
         return result;
     }
 
-    public IMacroDefinition registerBuiltinDynamicStyleMacro(DynamicStyleMacro macro) {
-        IMacroDefinition result = new _MacroDefinition( tu, -1, -1, macro.name, -1, macro.execute() );
+    public IScannerPreprocessorLog.IMacroDefinition registerBuiltinDynamicStyleMacro(DynamicStyleMacro macro) {
+    	IScannerPreprocessorLog.IMacroDefinition result = new _MacroDefinition( tu, -1, -1, macro.name, -1, macro.execute() );
         tu.addBuiltinMacro( result );
         return result;
     }

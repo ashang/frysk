@@ -37,7 +37,7 @@ public class ASTDesignatedExpressionInitializerClause
 	 * @param assignmentExpression
 	 * @param designators
 	 */
-	public ASTDesignatedExpressionInitializerClause(Kind kind, IASTExpression assignmentExpression, List designators) {
+	public ASTDesignatedExpressionInitializerClause(IASTInitializerClause.Kind kind, IASTExpression assignmentExpression, List designators) {
 		super(kind, assignmentExpression);
 		this.designators = designators;
 	}

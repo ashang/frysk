@@ -32,7 +32,7 @@ public class ASTUnaryIdExpression extends ASTIdExpression {
 	 * @param references
 	 * @param idExpression
 	 */
-	public ASTUnaryIdExpression(Kind kind, List references,	IASTExpression lhs, ITokenDuple idExpression) {
+	public ASTUnaryIdExpression(IASTExpression.Kind kind, List references,	IASTExpression lhs, ITokenDuple idExpression) {
 		super(kind, references, idExpression);
 		this.lhs = lhs;
 	}

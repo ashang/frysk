@@ -14,6 +14,7 @@ package org.eclipse.cdt.internal.core.parser.ast.complete;
 import java.util.List;
 
 import org.eclipse.cdt.core.parser.ast.ASTUtil;
+import org.eclipse.cdt.core.parser.ast.IASTExpression;
 
 /**
  * @author jcamelon
@@ -24,7 +25,7 @@ public class ASTEmptyExpression extends ASTExpression {
 	 * @param kind
 	 * @param references
 	 */
-	public ASTEmptyExpression(Kind kind, List references) {
+	public ASTEmptyExpression(IASTExpression.Kind kind, List references) {
 		super( kind, references );
 	}
 

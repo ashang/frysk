@@ -230,7 +230,7 @@ public class ASTMethod extends ASTFunction implements IASTMethod
 	 * @return
 	 * @throws LookupError
 	 */
-	protected List performPrefixLookup(char[] prefix, IContainerSymbol thisContainer, IContainerSymbol qualification, TypeFilter filter, List paramList) throws LookupError {
+	protected List performPrefixLookup(char[] prefix, IContainerSymbol thisContainer, IContainerSymbol qualification, TypeFilter filter, List paramList) throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError {
 		if( filter.isLookingInThis() ){
 			try{
 				ISymbol thisPointer = thisContainer.lookup( ParserSymbolTable.THIS );
@@ -239,9 +239,9 @@ public class ASTMethod extends ASTFunction implements IASTMethod
 					return ((IContainerSymbol) thisClass).prefixLookup( filter, prefix, true, paramList );
 				}	
 			} catch (ParserSymbolTableException e) {
-				throw new LookupError();
+				throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 			} catch (ParserSymbolTableError e ){
-				throw new LookupError();
+				throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 			}
 		} else {
 			return super.performPrefixLookup( prefix, thisContainer, qualification, filter, paramList );

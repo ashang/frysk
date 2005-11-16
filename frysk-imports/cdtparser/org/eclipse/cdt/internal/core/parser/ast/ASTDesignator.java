@@ -25,7 +25,7 @@ public class ASTDesignator implements IASTDesignator
      * @param constantExpression
      * @param string
      */
-    public ASTDesignator(DesignatorKind kind, IASTExpression constantExpression, char[] fieldName, int fieldOffset )
+    public ASTDesignator(IASTDesignator.DesignatorKind kind, IASTExpression constantExpression, char[] fieldName, int fieldOffset )
     {
         this.fieldName = fieldName;
         this.constantExpression = constantExpression;
@@ -36,11 +36,11 @@ public class ASTDesignator implements IASTDesignator
     private int fieldOffset;
     private final char[] fieldName;
     private final IASTExpression constantExpression;
-    private final DesignatorKind kind;
+    private final IASTDesignator.DesignatorKind kind;
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTDesignator#getKind()
      */
-    public DesignatorKind getKind()
+    public IASTDesignator.DesignatorKind getKind()
     {
         return kind;
     }

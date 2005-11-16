@@ -19,7 +19,7 @@ import org.eclipse.cdt.core.parser.util.ArrayUtil;
 /**
  * @author jcamelon
  */
-public class CPPASTEnumerationSpecifier extends CPPASTBaseDeclSpecifier
+public class CPPASTEnumerationSpecifier extends org.eclipse.cdt.internal.core.dom.parser.cpp.CPPASTBaseDeclSpecifier
 		implements IASTEnumerationSpecifier, ICPPASTDeclSpecifier {
 
 	private IASTName name;
@@ -29,10 +29,10 @@ public class CPPASTEnumerationSpecifier extends CPPASTBaseDeclSpecifier
 	 * 
 	 * @see org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier#addEnumerator(org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator)
 	 */
-	public void addEnumerator(IASTEnumerator enumerator) {
+	public void addEnumerator(IASTEnumerationSpecifier.IASTEnumerator enumerator) {
 		if (enumerator != null) {
 			enumeratorsPos++;
-			enumerators = (IASTEnumerator[]) ArrayUtil.append( IASTEnumerator.class, enumerators, enumerator );
+			enumerators = (IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.append( IASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumerator );
 		}
 	}
 
@@ -41,15 +41,15 @@ public class CPPASTEnumerationSpecifier extends CPPASTBaseDeclSpecifier
 	 * 
 	 * @see org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier#getEnumerators()
 	 */
-	public IASTEnumerator[] getEnumerators() {
+	public IASTEnumerationSpecifier.IASTEnumerator[] getEnumerators() {
 		if (enumerators == null)
-			return IASTEnumerator.EMPTY_ENUMERATOR_ARRAY;
-		enumerators = (IASTEnumerator[]) ArrayUtil.removeNullsAfter( IASTEnumerator.class, enumerators, enumeratorsPos );
+			return IASTEnumerationSpecifier.IASTEnumerator.EMPTY_ENUMERATOR_ARRAY;
+		enumerators = (IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.removeNullsAfter( IASTEnumerator.class, enumerators, enumeratorsPos );
 		return enumerators;
 	}
 
 
-	private IASTEnumerator[] enumerators = null;
+	private IASTEnumerationSpecifier.IASTEnumerator[] enumerators = null;
 	private int enumeratorsPos=-1;
 
 	/*
@@ -93,7 +93,7 @@ public class CPPASTEnumerationSpecifier extends CPPASTBaseDeclSpecifier
 		if (name != null)
 			if (!name.accept(action))
 				return false;
-		IASTEnumerator[] enums = getEnumerators();
+		IASTEnumerationSpecifier.IASTEnumerator[] enums = getEnumerators();
 		for (int i = 0; i < enums.length; i++)
 			if (!enums[i].accept(action))
 				return false;

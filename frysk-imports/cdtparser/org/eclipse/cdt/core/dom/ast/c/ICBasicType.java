@@ -15,13 +15,14 @@ package org.eclipse.cdt.core.dom.ast.c;
 
 import org.eclipse.cdt.core.dom.ast.DOMException;
 import org.eclipse.cdt.core.dom.ast.IBasicType;
+import org.eclipse.cdt.core.dom.ast.IASTSimpleDeclSpecifier;
 
 /**
  * @author aniefer
  */
 public interface ICBasicType extends IBasicType {
 	// Extra types in C
-	public static final int t_Bool = ICASTSimpleDeclSpecifier.t_Bool;
+	public static final int t_Bool = IASTSimpleDeclSpecifier.t_last+1;
 
 	/**
 	 * Is complex number? e.g. _Complex t;

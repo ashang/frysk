@@ -30,21 +30,21 @@ import org.eclipse.cdt.core.parser.ast.IASTTypeId;
  */
 public class ASTExpression implements IASTExpression {
 
-	private final Kind kind;
+	private final IASTExpression.Kind kind;
 	private static final String EMPTY_STRING = "";  //$NON-NLS-1$
 
 	/**
 	 * @param kind
 	 * @param id
 	 */
-	public ASTExpression(Kind kind ) {
+	public ASTExpression(IASTExpression.Kind kind ) {
 		this.kind = kind; 
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTExpression#getExpressionKind()
 	 */
-	public Kind getExpressionKind() {
+	public IASTExpression.Kind getExpressionKind() {
 		return kind;
 	}
 
@@ -79,7 +79,7 @@ public class ASTExpression implements IASTExpression {
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTExpression#getNewExpressionDescriptor()
 	 */
-	public IASTNewExpressionDescriptor getNewExpressionDescriptor() {
+	public IASTExpression.IASTNewExpressionDescriptor getNewExpressionDescriptor() {
 		return null;
 	}
 
@@ -224,7 +224,7 @@ public class ASTExpression implements IASTExpression {
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTNode#lookup(java.lang.String, org.eclipse.cdt.core.parser.ast.IASTNode.LookupKind[], org.eclipse.cdt.core.parser.ast.IASTNode)
 	 */
-	public ILookupResult lookup(String prefix, LookupKind[] k, IASTNode context, IASTExpression functionParameters) throws LookupError, ASTNotImplementedException {
+	public IASTNode.ILookupResult lookup(String prefix, IASTNode.LookupKind[] k, IASTNode context, IASTExpression functionParameters) throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError, ASTNotImplementedException {
 		// Not provided in this mode
 		throw new ASTNotImplementedException();
 	}

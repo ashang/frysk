@@ -29,7 +29,7 @@ public class ASTTypeIdExpression extends ASTExpression {
 	 * @param references
 	 * @param typeId
 	 */
-	public ASTTypeIdExpression(Kind kind, List references, IASTTypeId typeId) {
+	public ASTTypeIdExpression(org.eclipse.cdt.core.parser.ast.IASTExpression.Kind kind, List references, IASTTypeId typeId) {
 		super( kind, references );
 		this.typeId = typeId;
 	}

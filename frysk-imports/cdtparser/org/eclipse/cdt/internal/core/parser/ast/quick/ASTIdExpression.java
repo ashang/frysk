@@ -27,7 +27,7 @@ public class ASTIdExpression extends ASTExpression implements IASTExpression {
 	 * @param kind
 	 * @param idExpression
 	 */
-	public ASTIdExpression(Kind kind, char[] idExpression) {
+	public ASTIdExpression(IASTExpression.Kind kind, char[] idExpression) {
 		super(kind);
 		this.idExpression = idExpression;
 	}

@@ -18,31 +18,31 @@ import org.eclipse.cdt.core.parser.util.ArrayUtil;
 /**
  * @author jcamelon
  */
-public class CASTEnumerationSpecifier extends CASTBaseDeclSpecifier implements
-        ICASTEnumerationSpecifier {
+public class CASTEnumerationSpecifier extends org.eclipse.cdt.internal.core.dom.parser.c.CASTBaseDeclSpecifier implements
+	ICASTEnumerationSpecifier {
 
     private IASTName name;
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier#addEnumerator(org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator)
      */
-    public void addEnumerator(IASTEnumerator enumerator) {
+    public void addEnumerator(org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator enumerator) {
     	if (enumerator != null) {
     		enumeratorsPos++;
-    		enumerators = (IASTEnumerator[]) ArrayUtil.append( IASTEnumerator.class, enumerators, enumerator );
+    		enumerators = (org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.append( org.eclipse.cdt.core.dom.ast.c.ICASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumerator );
     	}
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier#getEnumerators()
      */
-    public IASTEnumerator[] getEnumerators() {        
-        if( enumerators == null ) return IASTEnumerator.EMPTY_ENUMERATOR_ARRAY;
-        enumerators = (IASTEnumerator[]) ArrayUtil.removeNullsAfter( IASTEnumerator.class, enumerators, enumeratorsPos );
+    public org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[] getEnumerators() {        
+        if( enumerators == null ) return org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator.EMPTY_ENUMERATOR_ARRAY;
+        enumerators = (org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.removeNullsAfter( org.eclipse.cdt.core.dom.ast.c.ICASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumeratorsPos );
         return enumerators;
     }
 
-    private IASTEnumerator [] enumerators = null;
+    private org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator [] enumerators = null;
     private int enumeratorsPos=-1;
 
     /* (non-Javadoc)
@@ -75,7 +75,7 @@ public class CASTEnumerationSpecifier extends CASTBaseDeclSpecifier implements
 	        }
 		}
         if( name != null ) if( !name.accept( action ) ) return false;
-        IASTEnumerator[] etors = getEnumerators();
+        org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[] etors = getEnumerators();
         for ( int i = 0; i < etors.length; i++ ) {
             if( !etors[i].accept( action ) ) return false;
         }

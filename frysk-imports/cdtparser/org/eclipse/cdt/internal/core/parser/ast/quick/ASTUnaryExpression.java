@@ -26,7 +26,7 @@ public class ASTUnaryExpression extends ASTExpression implements IASTExpression 
 	 * @param kind
 	 * @param lhs
 	 */
-	public ASTUnaryExpression(Kind kind, IASTExpression lhs) {
+	public ASTUnaryExpression(IASTExpression.Kind kind, IASTExpression lhs) {
 		super(kind);
 		this.lhs = lhs;
 	}

@@ -40,7 +40,7 @@ public class ASTDesignatedInitializerListInitializerClause
 	 * @param initializerClauses
 	 * @param designators
 	 */
-	public ASTDesignatedInitializerListInitializerClause(Kind kind, List initializerClauses, List designators) {
+	public ASTDesignatedInitializerListInitializerClause(IASTInitializerClause.Kind kind, List initializerClauses, List designators) {
 		super( kind, initializerClauses );
 		this.designators = designators;
 	}

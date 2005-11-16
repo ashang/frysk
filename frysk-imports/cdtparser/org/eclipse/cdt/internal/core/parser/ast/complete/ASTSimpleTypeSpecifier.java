@@ -45,7 +45,7 @@ public class ASTSimpleTypeSpecifier extends ASTNode implements IASTSimpleTypeSpe
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTSimpleTypeSpecifier#getType()
      */
-    public Type getType()
+    public org.eclipse.cdt.core.parser.ast.IASTSimpleTypeSpecifier.Type getType()
     {
         if( symbol.getType() == ITypeInfo.t_int )
         	return IASTSimpleTypeSpecifier.Type.INT;

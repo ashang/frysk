@@ -26,18 +26,18 @@ public class DependencyTree implements IASTTranslationUnit.IDependencyTree, IDep
         return tu_path;
     }
 
-    private IASTInclusionNode [] incs = new IASTInclusionNode[2];
+    private IASTTranslationUnit.IDependencyTree.IASTInclusionNode [] incs = new IASTTranslationUnit.IDependencyTree.IASTInclusionNode[2];
     private int incsPos=-1;
     
-    public IASTInclusionNode[] getInclusions() {
-        incs = (IASTInclusionNode[]) ArrayUtil.removeNullsAfter( IASTInclusionNode.class, incs, incsPos );
+    public IASTTranslationUnit.IDependencyTree.IASTInclusionNode[] getInclusions() {
+        incs = (IASTTranslationUnit.IDependencyTree.IASTInclusionNode[]) ArrayUtil.removeNullsAfter( IASTTranslationUnit.IDependencyTree.IASTInclusionNode.class, incs, incsPos );
         return incs;
     }
 
-    public void addInclusionNode(IASTInclusionNode node) {
+    public void addInclusionNode(IASTTranslationUnit.IDependencyTree.IASTInclusionNode node) {
     	if (node != null) {
     		incsPos++;
-    		incs = (IASTInclusionNode[]) ArrayUtil.append( IASTInclusionNode.class, incs, node );
+    		incs = (IASTTranslationUnit.IDependencyTree.IASTInclusionNode[]) ArrayUtil.append( IASTTranslationUnit.IDependencyTree.IASTInclusionNode.class, incs, node );
     	}
     }
 

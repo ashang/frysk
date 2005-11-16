@@ -27,7 +27,7 @@ public class ASTLiteralExpression extends ASTExpression {
 	 * @param kind
 	 * @param references
 	 */
-	public ASTLiteralExpression(Kind kind, List references, char[] literal) {
+	public ASTLiteralExpression(org.eclipse.cdt.core.parser.ast.IASTExpression.Kind kind, List references, char[] literal) {
 		super(kind, references);
 		this.literal = literal;
 	}

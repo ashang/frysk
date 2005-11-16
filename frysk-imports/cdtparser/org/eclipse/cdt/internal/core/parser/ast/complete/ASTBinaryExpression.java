@@ -31,7 +31,7 @@ public class ASTBinaryExpression extends ASTUnaryExpression {
 	 * @param references
 	 * @param lhs
 	 */
-	public ASTBinaryExpression(Kind kind, List references, IASTExpression lhs, IASTExpression rhs) {
+	public ASTBinaryExpression(IASTExpression.Kind kind, List references, IASTExpression lhs, IASTExpression rhs) {
 		super(kind, references, lhs);
 		this.rhs = rhs;
 	}

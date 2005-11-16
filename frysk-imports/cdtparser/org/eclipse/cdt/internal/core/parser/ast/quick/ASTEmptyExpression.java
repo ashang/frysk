@@ -23,7 +23,7 @@ public class ASTEmptyExpression extends ASTExpression implements IASTExpression 
 	/**
 	 * @param kind
 	 */
-	public ASTEmptyExpression(Kind kind) {
+	public ASTEmptyExpression(IASTExpression.Kind kind) {
 		super(kind);
 		// TODO Auto-generated constructor stub
 	}

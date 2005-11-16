@@ -29,7 +29,7 @@ public class ASTInitializerListInitializerClause extends ASTInitializerClause
 	 * @param kind
 	 * @param initializerClauses
 	 */
-	public ASTInitializerListInitializerClause(Kind kind, List initializerClauses) {
+	public ASTInitializerListInitializerClause(IASTInitializerClause.Kind kind, List initializerClauses) {
 		super( kind );
 		this.initializerClauses = initializerClauses;
 	}

@@ -36,7 +36,9 @@ public class ASTNode implements IASTNode {
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTNode#lookup(java.lang.String, org.eclipse.cdt.core.parser.ast.IASTNode.LookupKind, org.eclipse.cdt.core.parser.ast.IASTNode)
 	 */
-	public ILookupResult lookup(String prefix, LookupKind[] kind, IASTNode context, IASTExpression functionParameters) throws LookupError, ASTNotImplementedException {
+	public org.eclipse.cdt.core.parser.ast.IASTNode.ILookupResult lookup(String prefix, IASTNode.LookupKind[] kind, 
+			IASTNode context, IASTExpression functionParameters) 
+			throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError, ASTNotImplementedException {
 
 		if( ! ( this instanceof ISymbolOwner ) ){
 			return null;
@@ -44,7 +46,7 @@ public class ASTNode implements IASTNode {
 		
 		IExtensibleSymbol symbol = ((ISymbolOwner)this).getSymbol();
 		if( symbol == null || !(symbol instanceof IContainerSymbol) ){
-			throw new LookupError();
+			throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 		}
 		IContainerSymbol thisContainer = (IContainerSymbol) symbol; 
 		IContainerSymbol qualification = ( context != null ) ? ((ASTNode)context).getLookupQualificationSymbol() : null;
@@ -65,17 +67,17 @@ public class ASTNode implements IASTNode {
 		if( kind != null ){
 			for( int i = 0; i < kind.length; i++ ){
 				filter.addAcceptedType( kind[i] );
-				if( kind[i] == LookupKind.THIS ){
+				if( kind[i] == org.eclipse.cdt.core.parser.ast.IASTNode.LookupKind.THIS ){
 					filter.setLookingInThis( true );
 					if( kind.length == 1 ){
-						filter.addAcceptedType( LookupKind.ALL );
+						filter.addAcceptedType( org.eclipse.cdt.core.parser.ast.IASTNode.LookupKind.ALL );
 					}
 				} else {
 					filter.addAcceptedType( kind[i] );
 				}
 			}	
 		} else {
-			filter.addAcceptedType( LookupKind.ALL );
+			filter.addAcceptedType( org.eclipse.cdt.core.parser.ast.IASTNode.LookupKind.ALL );
 		}
 		
 		List lookupResults = performPrefixLookup(prefix.toCharArray(), thisContainer, qualification, filter, parameters);
@@ -116,7 +118,7 @@ public class ASTNode implements IASTNode {
 	 * @return
 	 * @throws LookupError
 	 */
-	protected List performPrefixLookup(char[] prefix, IContainerSymbol thisContainer, IContainerSymbol qualification, TypeFilter filter, List paramList) throws LookupError {
+	protected List performPrefixLookup(char[] prefix, IContainerSymbol thisContainer, IContainerSymbol qualification, TypeFilter filter, List paramList) throws IASTNode.LookupError {
 		List results = null;
 		try {
 			if( qualification != null ){
@@ -125,9 +127,9 @@ public class ASTNode implements IASTNode {
 				results = thisContainer.prefixLookup( filter, prefix, false, paramList );
 			}
 		} catch (ParserSymbolTableException e) {
-			throw new LookupError();
+			throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 		} catch (ParserSymbolTableError e ){
-			throw new LookupError();
+			throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 		}
 		return results;
 	}
@@ -138,8 +140,8 @@ public class ASTNode implements IASTNode {
 	 * @return
 	 * @throws LookupError
 	 */
-	public IContainerSymbol getLookupQualificationSymbol() throws LookupError {
-		throw new LookupError();
+	public IContainerSymbol getLookupQualificationSymbol() throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError {
+		throw new org.eclipse.cdt.core.parser.ast.IASTNode.LookupError();
 	}
 	
 	public boolean shouldFilterLookupResult( ISymbol symbol ){
@@ -159,7 +161,7 @@ public class ASTNode implements IASTNode {
 		return params;
 	}
 	
-	private class Result implements ILookupResult{
+	private class Result implements IASTNode.ILookupResult{
 		private String prefix;
 		private Iterator iterator;
 		private int resultsNumber;

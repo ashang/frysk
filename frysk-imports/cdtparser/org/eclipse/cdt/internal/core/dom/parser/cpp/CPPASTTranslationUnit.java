@@ -534,7 +534,7 @@ public class CPPASTTranslationUnit extends CPPASTNode implements
         return resolver.getMacroExpansions();
     }
 
-    public IDependencyTree getDependencyTree() {
+    public IASTTranslationUnit.IDependencyTree getDependencyTree() {
         if( resolver == null )
             return null;
         return resolver.getDependencyTree();

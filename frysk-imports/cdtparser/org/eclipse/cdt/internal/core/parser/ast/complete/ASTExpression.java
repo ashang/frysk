@@ -31,14 +31,14 @@ import org.eclipse.cdt.internal.core.parser.pst.TypeInfoProvider;
  */
 public abstract class ASTExpression extends ASTNode implements IASTExpression
 {
-    private final Kind kind;
+    private final IASTExpression.Kind kind;
     private List references;
     private ExpressionResult resultType;
     
     /**
      * 
      */
-    public ASTExpression( Kind kind, List references )
+    public ASTExpression( IASTExpression.Kind kind, List references )
     {
     	this.kind = kind; 
     	this.references = references;
@@ -47,7 +47,7 @@ public abstract class ASTExpression extends ASTNode implements IASTExpression
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTExpression#getExpressionKind()
      */
-    public Kind getExpressionKind()
+    public IASTExpression.Kind getExpressionKind()
     {
         return kind;
     }
@@ -175,7 +175,8 @@ public abstract class ASTExpression extends ASTNode implements IASTExpression
 	}
 	
 	
-	public IContainerSymbol getLookupQualificationSymbol() throws LookupError {
+	public IContainerSymbol getLookupQualificationSymbol() 
+	  throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError {
 		ExpressionResult result = getResultType();
 		ITypeInfo type = (result != null ) ? result.getResult() : null;
 		IContainerSymbol containerSymbol = null;
@@ -282,7 +283,7 @@ public abstract class ASTExpression extends ASTNode implements IASTExpression
 		return null;
 	}
 
-	public IASTNewExpressionDescriptor getNewExpressionDescriptor() {
+	public IASTExpression.IASTNewExpressionDescriptor getNewExpressionDescriptor() {
 		return null;
 	}
 

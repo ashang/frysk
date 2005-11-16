@@ -84,8 +84,7 @@ public class ASTClassSpecifier extends ASTScope implements IASTClassSpecifier
 	}
 
 	
-	
-	private final ClassNameType classNameType; 
+	private final IASTClassSpecifier.ClassNameType classNameType; 
 	private final ASTClassKind  classKind;
 	private ASTAccessVisibility currentVisibility;
 	private final ASTQualifiedNamedElement qualifiedName;
@@ -94,7 +93,7 @@ public class ASTClassSpecifier extends ASTScope implements IASTClassSpecifier
     /**
      * @param symbol
      */
-    public ASTClassSpecifier(ISymbol symbol, ASTClassKind kind, ClassNameType type, ASTAccessVisibility access, int startingOffset, int startingLine, int nameOffset, int nameEndOffset, int nameLine, List references, char [] filename )
+    public ASTClassSpecifier(ISymbol symbol, ASTClassKind kind, IASTClassSpecifier.ClassNameType type, ASTAccessVisibility access, int startingOffset, int startingLine, int nameOffset, int nameEndOffset, int nameLine, List references, char [] filename )
     {
         super(symbol);
         classKind = kind;
@@ -110,7 +109,7 @@ public class ASTClassSpecifier extends ASTScope implements IASTClassSpecifier
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTClassSpecifier#getClassNameType()
      */
-    public ClassNameType getClassNameType()
+    public IASTClassSpecifier.ClassNameType getClassNameType()
     {
         return classNameType;
     }

@@ -751,6 +751,6 @@ public class UndefinedTemplateSymbol extends BasicSymbol implements ITemplateSym
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.internal.core.parser.pst.ITemplateSymbol#registerDeferredInstatiation(java.lang.Object, java.lang.Object, org.eclipse.cdt.internal.core.parser.pst.ITemplateSymbol.DeferredKind, org.eclipse.cdt.core.parser.util.ObjectMap)
 	 */
-	public void registerDeferredInstatiation(Object obj0, Object obj1, DeferredKind kind, ObjectMap argMap) {
+	public void registerDeferredInstatiation(Object obj0, Object obj1, ITemplateSymbol.DeferredKind kind, ObjectMap argMap) {
 	}
 }

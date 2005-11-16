@@ -29,7 +29,7 @@ public class ASTTemplateParameter implements IASTTemplateParameter, IASTOffsetab
 {
     private final List templateParms;
     private final IASTParameterDeclaration parameter;
-    private final ParamKind kind;
+    private final IASTTemplateParameter.ParamKind kind;
     private final char[] identifier;
     private final char[] defaultValue;
     private final char [] fn;
@@ -47,7 +47,7 @@ public class ASTTemplateParameter implements IASTTemplateParameter, IASTOffsetab
      * @param parameter
      * @param filename
      */
-    public ASTTemplateParameter(ParamKind kind, char[] identifier, char[] defaultValue, IASTParameterDeclaration parameter, List templateParms, int startingOffset, int startingLine, int nameOffset, int nameEndOffset, int nameLine, int endingOffset, int endingLine, char[] filename )
+    public ASTTemplateParameter(IASTTemplateParameter.ParamKind kind, char[] identifier, char[] defaultValue, IASTParameterDeclaration parameter, List templateParms, int startingOffset, int startingLine, int nameOffset, int nameEndOffset, int nameLine, int endingOffset, int endingLine, char[] filename )
     {
         this.kind = kind; 
         this.identifier = identifier; 
@@ -64,7 +64,7 @@ public class ASTTemplateParameter implements IASTTemplateParameter, IASTOffsetab
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.parser.ast.IASTTemplateParameter#getTemplateParameterKind()
      */
-    public ParamKind getTemplateParameterKind()
+    public IASTTemplateParameter.ParamKind getTemplateParameterKind()
     {
         return kind;
     }
@@ -115,7 +115,7 @@ public class ASTTemplateParameter implements IASTTemplateParameter, IASTOffsetab
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTNode#lookup(java.lang.String, org.eclipse.cdt.core.parser.ast.IASTNode.LookupKind[], org.eclipse.cdt.core.parser.ast.IASTNode)
 	 */
-	public ILookupResult lookup(String prefix, LookupKind[] lookupKind, IASTNode context, IASTExpression functionParameters) throws LookupError, ASTNotImplementedException {
+	public IASTNode.ILookupResult lookup(String prefix, IASTNode.LookupKind[] lookupKind, IASTNode context, IASTExpression functionParameters) throws org.eclipse.cdt.core.parser.ast.IASTNode.LookupError, ASTNotImplementedException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -38,7 +38,7 @@ public class ASTUnaryTypeIdExpression extends ASTUnaryExpression {
 	 * @param references
 	 * @param lhs
 	 */
-	public ASTUnaryTypeIdExpression(Kind kind, List references, IASTExpression lhs, IASTTypeId typeId) {
+	public ASTUnaryTypeIdExpression(IASTExpression.Kind kind, List references, IASTExpression lhs, IASTTypeId typeId) {
 		super(kind, references, lhs);
 		this.typeId = typeId;
 	}

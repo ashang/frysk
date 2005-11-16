@@ -26,7 +26,7 @@ public class ASTExpressionInitializerClause extends ASTInitializerClause
 	 * @param kind
 	 * @param assignmentExpression
 	 */
-	public ASTExpressionInitializerClause(Kind kind, IASTExpression assignmentExpression) {
+	public ASTExpressionInitializerClause(IASTInitializerClause.Kind kind, IASTExpression assignmentExpression) {
 		super( kind );
 		this.expression = assignmentExpression;
 	}

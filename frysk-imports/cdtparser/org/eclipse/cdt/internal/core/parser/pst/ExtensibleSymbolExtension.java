@@ -48,7 +48,7 @@ public class ExtensibleSymbolExtension implements ISymbolASTExtension {
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.internal.core.parser.pst.ISymbolASTExtension#addDefinition(org.eclipse.cdt.internal.core.parser.ast.complete.ASTSymbol)
 	 */
-	public void addDefinition(ASTSymbol definition) throws ExtensionException {
+	public void addDefinition(ASTSymbol definition) throws ISymbolASTExtension.ExtensionException {
 		// TODO Auto-generated method stub
 	}
 	

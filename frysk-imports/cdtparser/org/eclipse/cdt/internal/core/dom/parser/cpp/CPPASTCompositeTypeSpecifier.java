@@ -39,19 +39,19 @@ public class CPPASTCompositeTypeSpecifier extends CPPASTBaseDeclSpecifier
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier#getBaseSpecifiers()
      */
-    public ICPPASTBaseSpecifier[] getBaseSpecifiers() {
-        if( baseSpecs == null ) return ICPPASTBaseSpecifier.EMPTY_BASESPECIFIER_ARRAY;
-        baseSpecs = (ICPPASTBaseSpecifier[]) ArrayUtil.removeNullsAfter( ICPPASTBaseSpecifier.class, baseSpecs, baseSpecsPos );
+    public ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier[] getBaseSpecifiers() {
+        if( baseSpecs == null ) return ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier.EMPTY_BASESPECIFIER_ARRAY;
+        baseSpecs = (ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier[]) ArrayUtil.removeNullsAfter( ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier.class, baseSpecs, baseSpecsPos );
         return baseSpecs;
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier#addBaseSpecifier(org.eclipse.cdt.core.dom.ast.cpp.ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier)
      */
-    public void addBaseSpecifier(ICPPASTBaseSpecifier baseSpec) {
+    public void addBaseSpecifier(ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier baseSpec) {
     	if (baseSpec != null) {
     		baseSpecsPos++;
-    		baseSpecs = (ICPPASTBaseSpecifier[]) ArrayUtil.append( ICPPASTBaseSpecifier.class, baseSpecs, baseSpec );
+    		baseSpecs = (ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier[]) ArrayUtil.append( ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier.class, baseSpecs, baseSpec );
     	}
     }
 
@@ -127,7 +127,7 @@ public class CPPASTCompositeTypeSpecifier extends CPPASTBaseDeclSpecifier
 	        }
 		}
         if( n != null ) if( !n.accept( action ) ) return false;
-        ICPPASTBaseSpecifier[] bases = getBaseSpecifiers();
+        ICPPASTCompositeTypeSpecifier.ICPPASTBaseSpecifier[] bases = getBaseSpecifiers();
         for( int i = 0; i < bases.length; i++ )   
             if( !bases[i].accept( action ) ) return false;
            

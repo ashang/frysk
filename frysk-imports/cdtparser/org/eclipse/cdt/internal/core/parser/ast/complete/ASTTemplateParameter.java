@@ -70,15 +70,15 @@ public class ASTTemplateParameter extends ASTSymbol implements IASTTemplateParam
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTTemplateParameter#getTemplateParameterKind()
 	 */
-	public ParamKind getTemplateParameterKind() {
+	public IASTTemplateParameter.ParamKind getTemplateParameterKind() {
 		ITypeInfo.eType type = symbol.getTypeInfo().getTemplateParameterType();
 		if( type == ITypeInfo.t_typeName )
 			//TODO: difference between class & typename?
-			return ParamKind.TYPENAME;
+			return IASTTemplateParameter.ParamKind.TYPENAME;
 		else if( type == ITypeInfo.t_template )
-			return ParamKind.TEMPLATE_LIST;
+			return IASTTemplateParameter.ParamKind.TEMPLATE_LIST;
 		else 
-			return ParamKind.PARAMETER;
+			return IASTTemplateParameter.ParamKind.PARAMETER;
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTTemplateParameter#getIdentifier()

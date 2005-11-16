@@ -29,7 +29,7 @@ public class ASTTypeIdExpression extends ASTExpression
 	 * @param kind
 	 * @param typeId
 	 */
-	public ASTTypeIdExpression(Kind kind, IASTTypeId typeId) {
+	public ASTTypeIdExpression(IASTExpression.Kind kind, IASTTypeId typeId) {
 		super( kind );
 		this.typeId = typeId;
 	}

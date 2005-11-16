@@ -92,7 +92,7 @@ public class ASTTypeUtil {
 		return result;
 	}
 	
-	private static String getTypeString(IType type) {
+	private static String getTypeString(org.eclipse.cdt.core.dom.ast.IType type) {
 		StringBuffer result = new StringBuffer();
 		boolean needSpace = false;
 		

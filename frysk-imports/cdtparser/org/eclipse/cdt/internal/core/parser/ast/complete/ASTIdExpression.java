@@ -28,7 +28,7 @@ public class ASTIdExpression extends ASTExpression {
 	 * @param kind
 	 * @param references
 	 */
-	public ASTIdExpression(Kind kind, List references, ITokenDuple idExpression) {
+	public ASTIdExpression(org.eclipse.cdt.core.parser.ast.IASTExpression.Kind kind, List references, ITokenDuple idExpression) {
 		super(kind, references);
 		this.idExpression = idExpression;
 		idExpressionValue = idExpression.toCharArray();

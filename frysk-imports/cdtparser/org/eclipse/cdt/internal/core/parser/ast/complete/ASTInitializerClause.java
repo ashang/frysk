@@ -43,7 +43,7 @@ public class ASTInitializerClause implements IASTInitializerClause
      * @param initializerClauses
      * @param designators
      */
-    public ASTInitializerClause(Kind kind, IASTExpression assignmentExpression, List initializerClauses, List designators)
+    public ASTInitializerClause(IASTInitializerClause.Kind kind, IASTExpression assignmentExpression, List initializerClauses, List designators)
     {
 		this.kind = kind; 
 		this.assignmentExpression = assignmentExpression;
@@ -53,7 +53,7 @@ public class ASTInitializerClause implements IASTInitializerClause
 	/* (non-Javadoc)
 	 * @see org.eclipse.cdt.core.parser.ast.IASTInitializerClause#getKind()
 	 */
-	public Kind getKind() {
+	public IASTInitializerClause.Kind getKind() {
 		return kind;
 	}
 
@@ -145,7 +145,7 @@ public class ASTInitializerClause implements IASTInitializerClause
 	public IASTExpression findExpressionForDuple(ITokenDuple finalDuple) throws ASTNotImplementedException {
 		if( kind == IASTInitializerClause.Kind.EMPTY ) return null;
 		if( kind == IASTInitializerClause.Kind.ASSIGNMENT_EXPRESSION || 
-			kind == Kind.DESIGNATED_ASSIGNMENT_EXPRESSION )
+			kind == IASTInitializerClause.Kind.DESIGNATED_ASSIGNMENT_EXPRESSION )
 			return ((ASTExpression)assignmentExpression).findNewDescriptor( finalDuple );
 		Iterator i = getInitializers();
 		while( i.hasNext() )
