@@ -485,7 +485,6 @@ abstract public class Task
     {
 	return ("{" + super.toString ()
 		+ ",id=" + id
-		+ ",proc=" + proc
 		+ ",state=" + state
 		+ "}");
     }
