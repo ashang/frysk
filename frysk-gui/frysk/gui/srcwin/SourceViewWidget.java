@@ -461,6 +461,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		boolean skipNextLine = false;
 		
 		int drawingHeight = 0;
+        int lineHeight = 0;
 		int gapHeight = 0;
 		
 		// If the refresh is starting after the current line, we have to add that offset in to
@@ -470,13 +471,18 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		
 		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(); i++){
 			
-			if(i > this.buf.getCurrentLine())
+			if(i > this.buf.getCurrentLine()){
 				drawingHeight = currentHeight + gapHeight;
-			else
+                if(expanded)
+                    lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i+1)).getHeight();
+                else
+                    lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
+            }
+			else{
 				drawingHeight = currentHeight;
+                lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
+            }
 			
-			// get the current line height, etc.
-			int lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
 			int iconStart = lineHeight/2;
 			
 			if(skipNextLine){
@@ -524,9 +530,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			}
 			
 			// Draw line numbers
-			if(showLines){
+			if(showLines)
 				drawLineNumber(drawingArea, context, actualFirstStart + drawingHeight, i);
-			}
 			
 			// draw breakpoints
 			if(this.buf.isLineBroken(i)){

@@ -1,5 +1,10 @@
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceViewWidget.java (drawMargin): Now calculates the height of the
+	current line taking whether or not there's inline code into
+	consideration, not doing this was leading to errors in the margin after
+	a block of expanded inline code.
+
 	* InlineBuffer.java (getLastLine): Added.
 	(getFirstLine): Added.
 	* InlineViewer.java (drawLineNumber): Added.
