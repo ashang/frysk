@@ -83,16 +83,16 @@ import frysk.gui.srcwin.dom.DOMTagTypes;
  */
 public class SourceBuffer extends TextBuffer {
 	
-	private static final String CLASS_TAG = "CLASS";
+	protected static final String CLASS_TAG = "CLASS";
 	/* CONSTANTS */
-	private static final String INLINE_TAG = "INLINE";
-	private static final String COMMENT_TAG = "COMMENT";
-	private static final String MEMBER_TAG = "MEMBER";
-	private static final String FUNCTION_TAG = "FUNCTION";
-	private static final String ID_TAG = "ID";
-	private static final String KEYWORD_TAG = "TYPE";
-	private static final String CURRENT_LINE = "currentLine";
-	private static final String FOUND_TEXT = "foundText";
+	protected static final String INLINE_TAG = "INLINE";
+	protected static final String COMMENT_TAG = "COMMENT";
+	protected static final String MEMBER_TAG = "MEMBER";
+	protected static final String FUNCTION_TAG = "FUNCTION";
+	protected static final String ID_TAG = "ID";
+	protected static final String KEYWORD_TAG = "TYPE";
+	protected static final String CURRENT_LINE = "currentLine";
+	protected static final String FOUND_TEXT = "foundText";
 	/* END CONSTANTS */
 	
 	private Vector functions;
@@ -118,7 +118,7 @@ public class SourceBuffer extends TextBuffer {
 	
 	// Since conceptually each sourcebuffer will only be viewing one file, we don't
 	// need any information higher than this
-	private StackLevel scope;
+	protected StackLevel scope;
 	
 	/**
 	 * Creates a new SourceBuffer
@@ -692,6 +692,7 @@ public class SourceBuffer extends TextBuffer {
 		this.insertText(bufferText);
 		
 		if(!this.scope.isParsed()){
+            
 			// now pass the resulting text to the parser
 			if(this.staticParser == null)
 				this.staticParser = new CDTParser();

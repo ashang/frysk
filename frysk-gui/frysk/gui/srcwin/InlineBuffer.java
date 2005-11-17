@@ -2,8 +2,13 @@ package frysk.gui.srcwin;
 
 import java.util.Iterator;
 
+import org.jdom.Element;
+
 import frysk.gui.srcwin.dom.DOMFunction;
 import frysk.gui.srcwin.dom.DOMInlineInstance;
+import frysk.gui.srcwin.dom.DOMLine;
+import frysk.gui.srcwin.dom.DOMTag;
+import frysk.gui.srcwin.dom.DOMTagTypes;
 
 public class InlineBuffer extends SourceBuffer {
 
@@ -51,5 +56,64 @@ public class InlineBuffer extends SourceBuffer {
     
     public int getFirstLine(){
         return this.declaration.getStartingLine();
+    }
+    
+    protected void createTags(){
+        Iterator lines = this.scope.getData().getLines();
+        
+        // Iterate through all the lines
+        while(lines.hasNext()){
+            DOMLine line = new DOMLine((Element) lines.next());
+            
+            if(line.getLineNum() < this.getFirstLine())
+                continue;
+            
+            if(line.getLineNum() > this.getLastLine())
+                break;
+            
+            Iterator tags = line.getTags();
+            
+            // Iterator though all the tags on the line
+            while(tags.hasNext()){
+                DOMTag tag = new DOMTag((Element) tags.next());
+                
+                String type = tag.getType();
+                
+                if(type.equals(DOMTagTypes.KEYWORD)){
+                    this.applyTag(KEYWORD_TAG, 
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
+                }
+                
+                else if(type.equals(DOMTagTypes.LOCAL_VAR)){
+                    this.applyTag(ID_TAG, 
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
+                }
+                
+                else if(type.equals(DOMTagTypes.CLASS_DECL)){
+                    this.applyTag(SourceBuffer.CLASS_TAG, 
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
+                }
+                
+                else if(type.equals(DOMTagTypes.FUNCTION)){
+                    this.applyTag(FUNCTION_TAG, 
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
+                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
+                }
+                
+            } // end tags.hasNext()
+            
+            Iterator inlines = line.getInlines();
+            
+            while(inlines.hasNext()){
+                DOMInlineInstance func = new DOMInlineInstance((Element) inlines.next());
+                
+                this.applyTag(FUNCTION_TAG,
+                        this.getIter(line.getLineNum() - this.getFirstLine(), func.getStart()),
+                        this.getIter(line.getLineNum() - this.getFirstLine(), func.getStart() + func.getEnd()));
+            }
+        }// end lines.hasNext()
     }
 }

@@ -1,5 +1,8 @@
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (createTags): Added.
+	* SourceBuffer.java: Made most member variable protected.
+
 	* SourceBuffer.java (isLineExecutable): Removed debugging output.
 	(setCurrentLine): Ditto.
 	(loadFile): Ditto.
