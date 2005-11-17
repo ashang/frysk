@@ -40,6 +40,11 @@ package frysk.gui.srcwin;
 
 import java.util.prefs.Preferences;
 
+import org.gnu.gdk.GC;
+import org.gnu.gdk.Window;
+import org.gnu.pango.Alignment;
+import org.gnu.pango.Layout;
+
 import frysk.gui.srcwin.dom.DOMInlineInstance;
 
 /**
@@ -52,7 +57,7 @@ public class InlineViewer extends SourceViewWidget {
 //	protected InlineViewer prevLevel;
 	
 	private boolean showEllipsis;
-	
+    
 	public InlineViewer(Preferences parentPrefs, SourceWindow top,
 			StackLevel scope, DOMInlineInstance instance){
 		this(parentPrefs, false, scope, top, instance);
@@ -68,4 +73,12 @@ public class InlineViewer extends SourceViewWidget {
 		this.showEllipsis = showEllipsis;
 		this.showEllipsis = !!this.showEllipsis;
 	}
+    
+    protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
+        Layout lo = this.createLayout(""+(number+1 + ((InlineBuffer) this.buf).getFirstLine()));
+        lo.setAlignment(Alignment.RIGHT);
+        lo.setWidth(this.marginWriteOffset);
+        
+        drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
+    }
 }

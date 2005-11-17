@@ -1,3 +1,14 @@
+2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (getLastLine): Added.
+	(getFirstLine): Added.
+	* InlineViewer.java (drawLineNumber): Added.
+	* SourceBuffer.java (getLastLine): Added.
+	* SourceViewWidget.java (refresh): Now pulls the width of the drawing
+	area from getLastLine rather than getLineCount, since in the case of
+	inline code these two will not be the same.
+	(drawMargin): Extracted out protected drawLineNumber method.
+
 2005-11-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (InlineBuffer): Removed debugging output.

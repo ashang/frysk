@@ -143,7 +143,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		// Sidebar
 		if(this.lnfPrefs.getBoolean(LineNumbers.SHOW, true)){
 			Layout lo = new Layout(this.getContext());
-			lo.setText(""+(this.buf.getLineCount()+1));
+			lo.setText(""+(this.buf.getLastLine()+1));
 			this.marginWriteOffset = lo.getPixelWidth();
 		}
 		else{
@@ -525,11 +525,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			// Draw line numbers
 			if(showLines){
-				Layout lo = this.createLayout(""+(i+1));
-				lo.setAlignment(Alignment.RIGHT);
-				lo.setWidth(this.marginWriteOffset);
-				
-				drawingArea.drawLayout(context, this.marginWriteOffset, actualFirstStart+drawingHeight, lo);
+				drawLineNumber(drawingArea, context, actualFirstStart + drawingHeight, i);
 			}
 			
 			// draw breakpoints
@@ -547,5 +543,13 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		
 		System.out.println("\n\n");
 	}
+
+    protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
+        Layout lo = this.createLayout(""+(number+1));
+        lo.setAlignment(Alignment.RIGHT);
+        lo.setWidth(this.marginWriteOffset);
+        
+        drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
+    }
 	
 }

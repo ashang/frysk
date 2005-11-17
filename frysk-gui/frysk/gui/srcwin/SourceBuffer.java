@@ -608,6 +608,10 @@ public class SourceBuffer extends TextBuffer {
 	public int getLineCount(){
 		return this.scope.getData().getLineCount();
 	}
+    
+    public int getLastLine(){
+        return this.getLineCount();
+    }
 	
 	public boolean hasInlineCode(int lineNumber){
 		return this.scope.getData().getLine(lineNumber+1).hasInlinedCode();

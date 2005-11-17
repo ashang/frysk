@@ -45,4 +45,11 @@ public class InlineBuffer extends SourceBuffer {
 		return this.declaration.getEndingLine() - this.declaration.getStartingLine();
 	}
 
+    public int getLastLine(){
+        return this.declaration.getEndingLine();
+    }
+    
+    public int getFirstLine(){
+        return this.declaration.getStartingLine();
+    }
 }
