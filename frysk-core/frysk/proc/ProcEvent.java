@@ -40,10 +40,14 @@
 package frysk.proc;
 
 import frysk.event.Event;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 abstract class ProcEvent
     implements Event
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     protected Proc proc;
     protected TaskId taskId; // Random task within Proc.
     ProcEvent ()
@@ -51,10 +55,12 @@ abstract class ProcEvent
     }
     ProcEvent (Proc proc)
     {
+	logger.log (Level.FINE, "", this); 
 	this.proc = proc;
     }
     public Proc getProc ()
     {
+	logger.log (Level.FINE, "", this);	
 	return proc;
     }
     /**
@@ -71,6 +77,7 @@ abstract class ProcEvent
      */
     protected Proc getProcFromTaskId ()
     {
+	logger.log (Level.FINE, "", this); 
 	Task task = Manager.host.get (taskId);
 	if (task == null)
 	    return null;

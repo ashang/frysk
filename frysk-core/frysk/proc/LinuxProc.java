@@ -45,6 +45,9 @@ import java.util.HashMap;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.IdBuilder;
 import frysk.sys.proc.AuxvBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 /**
  * Linux implementation of Proc.
@@ -53,6 +56,7 @@ import frysk.sys.proc.AuxvBuilder;
 public class LinuxProc
     extends Proc
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * If it hasn't already been read, read the stat structure.
      */
@@ -78,6 +82,7 @@ public class LinuxProc
     LinuxProc (Host host, Proc parent, ProcId pid, Stat stat)
     {
 	super (host, parent, pid);
+	logger.log (Level.FINE, "create detached process {0}\n", pid); 
 	this.stat = stat;
     }
     /**
@@ -87,6 +92,7 @@ public class LinuxProc
     LinuxProc (Task task, ProcId forkId)
     {
 	super (task, forkId);
+	logger.log (Level.FINE, "create attached fork {0}\n", forkId); 
     }
     void sendRefresh ()
     {
@@ -132,6 +138,7 @@ public class LinuxProc
 
     void sendNewAttachedTask (TaskId id)
     {
+	logger.log (Level.FINE, "send new attached task\n", id); 
 	// XXX: Should be abstracted.
 	new LinuxTask (this, id, true);
     }

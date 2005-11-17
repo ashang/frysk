@@ -45,9 +45,13 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 abstract public class Task
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     protected TaskId id;
     protected Proc proc;
 
@@ -129,6 +133,7 @@ abstract public class Task
      */
     protected Task (Proc proc, TaskId id, boolean attached)
     {
+	logger.log (Level.FINE, "create attached task {0}\n", id); 
 	this.proc = proc;
 	this.id = id;
 	state = TaskState.initial (this, attached);
@@ -163,6 +168,7 @@ abstract public class Task
      */
     void requestStop ()
     {
+	logger.log (Level.FINE, "request task stop {0}\n", Task.this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
@@ -177,6 +183,7 @@ abstract public class Task
      */
     void requestContinue ()
     {
+	logger.log (Level.FINE, "request task continue {0}\n", Task.this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
@@ -191,6 +198,7 @@ abstract public class Task
      */
     void requestStepInstruction ()
     {
+	logger.log (Level.FINE, "request step insn {0}\n", Task.this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
@@ -214,6 +222,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task remove {0}\n", Task.this); 
 		    state = state.processPerformRemoval (Task.this);
 		}
 	    });
@@ -229,6 +238,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task attach {0}\n", Task.this); 
 		    state = state.processPerformAttach (Task.this);
 		}
 	    });
@@ -245,6 +255,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task detach {0}\n", Task.this); 
 		    state = state.processPerformDetach (Task.this);
 		}
 	    });
@@ -260,6 +271,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task stop {0}\n", Task.this); 
 		    state = state.processPerformStop (Task.this);
 		}
 	    });
@@ -275,6 +287,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task continue {0}\n", Task.this); 
 		    state = state.processPerformContinue (Task.this);
 		}
 	    });
@@ -290,6 +303,7 @@ abstract public class Task
 		Task clone = cloneArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task clone {0}\n", Task.this); 
 		    state = state.processPerformCloned (Task.this, clone);
 		}
 	    });
@@ -306,6 +320,7 @@ abstract public class Task
 		Proc fork = forkArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task fork {0}\n", Task.this); 
 		    state = state.processPerformForked (Task.this, fork);
 		}
 	    });
@@ -320,6 +335,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task stop {0}\n", Task.this); 
 		    state = state.processPerformStopped (Task.this);
 		}
 	    });
@@ -333,6 +349,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task trap {0}\n", Task.this); 
 		    state = state.processPerformTrapped (Task.this);
 		}
 	    });
@@ -347,6 +364,7 @@ abstract public class Task
 		int sig = sigArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task signalled {0}\n", Task.this); 
 		    state = state.processPerformSignaled (Task.this, sig);
 		}
 	    });
@@ -364,6 +382,7 @@ abstract public class Task
 		int value = valueArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task terminate {0}\n", Task.this); 
 		    state = state.processPerformTerminating (Task.this, signal,
 							     value);
 		}
@@ -381,6 +400,7 @@ abstract public class Task
 		Throwable w = arg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task zombied {0}\n", Task.this); 
 		    state = state.processPerformDisappeared (Task.this, w);
 		}
 	    });
@@ -395,6 +415,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task syscall {0}\n", Task.this); 
 		    state = state.processPerformSyscalled (Task.this);
 		}
 	    });
@@ -412,6 +433,7 @@ abstract public class Task
 		int value = valueArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task terminated {0}\n", Task.this); 
 		    state = state.processPerformTerminated (Task.this, signal,
 							    value);
 		}
@@ -428,6 +450,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task execed {0}\n", Task.this); 
 		    state = state.processPerformExeced (Task.this);
 		}
 	    });
@@ -487,6 +510,7 @@ abstract public class Task
     private void requestDeleteObserver (final TaskObservable observable,
 					final TaskObserver observer)
     {
+	logger.log (Level.FINE, "delete observer {0}\n", observer);	
 	proc.performDeleteObservation (new TaskObservation (this, observable,
 							    observer));
     }
@@ -500,6 +524,7 @@ abstract public class Task
 		Observation observation = observationArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "add observer {0}\n", observation);	
 		    state = state.processPerformAddObservation (Task.this,
 								observation);
 		}
@@ -530,6 +555,7 @@ abstract public class Task
 		TaskObserver observer = observerArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "unblock observer {0}\n", observer);	
 		    state = state.processRequestUnblock (Task.this, observer);
 		}
 	    });
@@ -544,6 +570,7 @@ abstract public class Task
      */
     public void requestAddClonedObserver (TaskObserver.Cloned o)
     {
+	logger.log (Level.FINE, "clone observer {0}\n", o);	
 	requestAddObserver (clonedObservers, o);
     }
     /**
@@ -653,6 +680,7 @@ abstract public class Task
      */
     public void requestDeleteTerminatedObserver (TaskObserver.Terminated o)
     {
+	logger.log (Level.FINE, "delete observer {0}\n", o);	
 	requestDeleteObserver (terminatedObservers, o);
     }
     /**
@@ -813,6 +841,7 @@ abstract public class Task
      */
     int notifySignaled (int sig)
     {
+	logger.log (Level.FINE, "notify signaled observer {0}\n", new Integer(sig));
 	for (Iterator i = signaledObservers.iterator ();
 	     i.hasNext (); ) {
 	    TaskObserver.Signaled observer

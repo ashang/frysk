@@ -44,8 +44,11 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Observable; // XXX: Temporary.
 import java.util.LinkedList;
+import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -53,6 +56,7 @@ import java.util.LinkedList;
 
 public abstract class Proc
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     protected ProcId id;
     public ProcId getId ()
     {
@@ -89,6 +93,7 @@ public abstract class Proc
      */
     private Proc (Host host, Proc parent, ProcId id, boolean attached)
     {
+	logger.log (Level.FINE, "create proc {0}\n", id); 
 	this.host = host;
 	this.id = id;
 	this.parent = parent;
@@ -110,6 +115,7 @@ public abstract class Proc
     protected Proc (Host host, Proc parent, ProcId id)
     {
 	this (host, parent, id, false);
+	logger.log (Level.FINE, "create proc {0}\n", id); 
     }
     /**
      * Create a new, attached, running, process forked by Task.
@@ -117,8 +123,9 @@ public abstract class Proc
     protected Proc (Task task, ProcId forkId)
     {
 	this (task.proc.host, task.proc, forkId, true);
+	logger.log (Level.FINE, "create forked proc {0}\n", forkId); 
     }
-   
+
     /**
      * Create a new, definitely attached, definitely running, task.
      */
@@ -150,6 +157,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "request proc attach/run execute\n", ""); 
 		    state = state.processRequestAttachedContinue (Proc.this);
 		}
 	    });
@@ -166,6 +174,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "request process detach\n", ""); 
 		    state = state.processRequestDetachedContinue (Proc.this);
 		}
 	    });
@@ -180,6 +189,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "request process task refresh\n", ""); 
 		    state = state.processRequestRefresh (Proc.this);
 		}
 	    });
@@ -194,6 +204,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "request proc removal\n", ""); 
 		    state = state.processPerformRemoval (Proc.this);
 		}
 	    });
@@ -210,6 +221,7 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task attached execute {0}\n", theTask); 
 		    state = state.processPerformTaskAttachCompleted (Proc.this,
 								     task);
 		}
@@ -227,6 +239,7 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task detached {0}\n", theTask); 
 		    state = state.processPerformTaskDetachCompleted (Proc.this,
 								     task);
 		}
@@ -244,6 +257,7 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task stopped {0}\n", theTask); 
 		    state = state.processPerformTaskStopCompleted (Proc.this,
 								   task);
 		}
@@ -261,6 +275,7 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "task continued {0}\n", theTask); 
 		    state = state.processPerformTaskContinueCompleted
 			(Proc.this, task);
 		}
@@ -283,6 +298,7 @@ public abstract class Proc
 		Observation observation = observationArg;
 		public void execute ()
 		{
+		    logger.log (Level.FINE, "add observer {0} \n", observationArg); 
 		    state = state.processPerformAddObservation
 			(Proc.this, observation);
 		}
@@ -319,6 +335,7 @@ public abstract class Proc
      */
     void add (Proc child)
     {
+	logger.log (Level.FINE, "add proc as new child {0}\n", child); 
 	childPool.add (child);
     }
     /**
@@ -326,6 +343,7 @@ public abstract class Proc
      */
     void remove (Proc child)
     {
+	logger.log (Level.FINE, "remove proc as child {0}\n", child); 
 	childPool.remove (child);
     }
     /**
@@ -345,6 +363,7 @@ public abstract class Proc
     {
 	void notify (Object o)
 	{
+	    logger.log (Level.FINE, "notify observers {0}\n", o); 
 	    setChanged ();
 	    notifyObservers (o);
 	}
@@ -385,6 +404,7 @@ public abstract class Proc
      */
     void remove (Task task)
     {
+	logger.log (Level.FINE, "remove task from proc {0}\n", task); 
 	observableTaskRemoved.notify (task);
 	taskPool.remove (task.id);
 	host.remove (task);
@@ -394,6 +414,7 @@ public abstract class Proc
      */
     void retain (Task task)
     {
+	logger.log (Level.FINE, "remove all but task from proc {0}\n", task); 
 	Collection tasks = taskPool.values();
 	tasks.remove (task);
 	taskPool.values().removeAll (tasks);
@@ -444,6 +465,7 @@ public abstract class Proc
 	return ("{" + super.toString ()
 		+ ",id=" + id
 		+ ",state=" + state
+		+ ",command=" + getCommand ()
 		+ "}");
     }
 }

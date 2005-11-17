@@ -52,6 +52,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.LinkedList;
 import frysk.sys.proc.IdBuilder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 /**
  * A Linux Host.
@@ -60,6 +63,7 @@ import frysk.sys.proc.IdBuilder;
 public class LinuxHost
     extends Host
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     EventLoop eventLoop;
     /**
      * Construct an instance of the LinuxHost that uses the specified
@@ -67,6 +71,7 @@ public class LinuxHost
      */
     LinuxHost (EventLoop eventLoop)
     {
+	logger.log (Level.FINE, "initialize\n", eventLoop);	
 	this.eventLoop = eventLoop;
 	eventLoop.add (new PollWaitOnSigChld ());
     }
@@ -121,6 +126,7 @@ public class LinuxHost
 		}
 		// .. and then add this process.
 		proc = new LinuxProc (LinuxHost.this, parent, procId, stat);
+		logger.log (Level.FINE, "update proc {0}\n", proc); 
 		added.add (proc);
 	    }
 	    else if (removed.get (procId) != null) {
@@ -186,6 +192,7 @@ public class LinuxHost
     void sendCreateAttachedProc (String in, String out, String err,
 				 String[] args)
     {
+	logger.log (Level.FINE, "create child of this process\n", "");	
 	int pid = Ptrace.child (in, out, err, args);
 	// See if the Host knows about this task.
 	TaskId myTaskId = new TaskId (Tid.get ());
@@ -212,11 +219,13 @@ public class LinuxHost
 	PollWaitOnSigChld ()
 	{
 	    super (Sig.CHLD);
+	    logger.log (Level.FINE, "poll waitpid queue\n", ""); 
 	}
 	Wait.Observer waitObserver = new Wait.Observer ()
 	    {
 		public void cloneEvent (int pid, int clonePid)
 		{
+		    logger.log (Level.FINE, "clone event {0}\n", new Integer (pid)); 
 		    // Find the task, create its new peer, and then
 		    // tell the task what happened.  Note that hot on
 		    // the heels of this event is a clone.stopped
@@ -231,6 +240,7 @@ public class LinuxHost
 		}
 		public void forkEvent (int pid, int childPid)
 		{
+		    logger.log (Level.FINE, "fork event {0}\n", new Integer (pid)); 
 		    // Find the task, create the new process under it
 		    // (well ok the task's process) and then notify
 		    // the task of what happened.  Note that hot on
@@ -245,26 +255,31 @@ public class LinuxHost
 		public void exitEvent (int pid, boolean signal, int value,
 				       boolean coreDumped)
 		{
+		    logger.log (Level.FINE, "exit event {0}\n", new Integer (pid)); 
 		    Task task = get (new TaskId (pid));
 		    task.performTerminating (signal, value);
 		}
 		public void execEvent (int pid)
 		{
+		    logger.log (Level.FINE, "exec event {0}\n", new Integer (pid)); 
 		    Task task = get (new TaskId (pid));
 		    task.performExeced ();
 		}
 		public void disappeared (int pid, Throwable w)
 		{
+		    logger.log (Level.FINE, "disappeared {0}\n", new Integer (pid)); 
 		    Task task = get (new TaskId (pid));
 		    task.performDisappeared (w);
 		}
 		public void syscallEvent (int pid)
 		{
+		    logger.log (Level.FINE, "syscall {0}\n", new Integer (pid)); 
 		    Task task = get (new TaskId (pid));
 		    task.performSyscalled ();
 		}
 		public void stopped (int pid, int sig)
 		{
+		    logger.log (Level.FINE, "stopped {0}\n", new Integer (pid)); 
 		    Task task = get (new TaskId (pid));
 		    switch (sig) {
 		    case Sig.STOP:
@@ -281,12 +296,14 @@ public class LinuxHost
 		public void terminated (int pid, boolean signal, int value,
 					boolean coreDumped)
 		{
+		    logger.log (Level.FINE, "terminated {0}\n", new Integer (pid)); 
 		    Task task = get (new TaskId (pid));
 		    task.performTerminated (signal, value);
 		}
 	    };
 	public final void execute ()
 	{
+	    logger.log (Level.FINE, "execute\n", ""); 
 	    Wait.waitAllNoHang (waitObserver);
 	}
     }

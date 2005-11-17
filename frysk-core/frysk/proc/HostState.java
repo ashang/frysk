@@ -43,9 +43,14 @@ package frysk.proc;
  * Possible host states.
  */
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
+
 class HostState
     extends State
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * Return the hosts initial state.
      */
@@ -59,12 +64,14 @@ class HostState
     }
     HostState processRequestRefresh (Host host, boolean refreshAll)
     {
+	logger.log (Level.FINE, "", this); 
 	throw unhandled (host, "RequestRefresh");
     }
     HostState processRequestCreateAttachedProc (Host host,
 						String stdin, String stdout,
 						String stderr, String[] args)
     {
+	logger.log (Level.FINE, "", this); 
 	throw unhandled (host, "PerformCreateAttachedProc");
     }
 
@@ -72,6 +79,7 @@ class HostState
 	{
 	    HostState processRequestRefresh (Host host, boolean refreshAll)
 	    {
+		logger.log (Level.FINE, "", this); 
 		host.sendRefresh (refreshAll);
 		return running;
 	    }
@@ -81,6 +89,7 @@ class HostState
 							String stderr,
 							String[] args)
 	    {
+		logger.log (Level.FINE, "", this); 
 		host.sendCreateAttachedProc (stdin, stdout, stderr, args);
 		return HostState.running;
 	    }

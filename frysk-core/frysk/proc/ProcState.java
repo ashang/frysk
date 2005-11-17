@@ -42,6 +42,9 @@ package frysk.proc;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 /**
  * A UNIX Process State
@@ -51,11 +54,13 @@ import java.util.HashSet;
 abstract class ProcState
     extends State
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * Return the Proc's initial state.
      */
     static ProcState initial (Proc proc, boolean attached)
     {
+	logger.log (Level.FINE, "initial {0}\n", proc); 
 	if (attached)
 	    return startRunning;
 	else
@@ -68,38 +73,47 @@ abstract class ProcState
     }
     boolean isStopped ()
     {
+	logger.log (Level.FINE, "is stopped\n", ""); 
 	return false;
     }
     ProcState processPerformRemoval (Proc proc)
     {
+	logger.log (Level.FINE, "remove {0}\n", proc); 
 	throw unhandled (proc, "RequestRemoval");
     }
     ProcState processRequestAttachedContinue (Proc proc)
     {
+	logger.log (Level.FINE, "continue {0}\n", proc); 
 	throw unhandled (proc, "RequestAttachedContinue");
     }
     ProcState processRequestDetachedContinue (Proc proc)
     {
+	logger.log (Level.FINE, "detach {0}\n", proc); 
 	throw unhandled (proc, "RequestDetachedContinue");
     }
     ProcState processRequestRefresh (Proc proc)
     {
+	logger.log (Level.FINE, "request refresh {0}\n", proc); 
 	throw unhandled (proc, "RequestRefresh");
     }
     ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
     {
+	logger.log (Level.FINE, "attached task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskAttachCompleted");
     }
     ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
     {
+	logger.log (Level.FINE, "detached task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskDetachCompleted");
     }
     ProcState processPerformTaskStopCompleted (Proc proc, Task task)
     {
+	logger.log (Level.FINE, "stop task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskStopCompleted");
     }
     ProcState processPerformTaskContinueCompleted (Proc proc, Task task)
     {
+	logger.log (Level.FINE, "continue task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskContinueCompleted");
     }
     ProcState processPerformAddObservation (Proc proc,
@@ -121,10 +135,12 @@ abstract class ProcState
 	{
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
+		logger.log (Level.FINE, "request continue {0}\n", proc); 
 		return Attaching.state (proc, null);
 	    }
 	    ProcState processRequestRefresh (Proc proc)
 	    {
+		logger.log (Level.FINE, "request refresh {0}\n", proc); 
 		proc.sendRefresh ();
 		return unattached;
 	    }
@@ -139,6 +155,7 @@ abstract class ProcState
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
+		logger.log (Level.FINE, "request add observer {0}\n", proc); 
 		return Attaching.state (proc, observation);
 	    }
 	};
@@ -154,6 +171,7 @@ abstract class ProcState
 	 */
 	static ProcState state (Proc proc, Observation observation)
 	{
+	    logger.log (Level.FINE, "attach completed {0}\n", observation); 
 	    if (observation != null)
 		proc.observations.add (observation);
 	    // Grab the main task; only bother with the refresh if the
@@ -358,11 +376,13 @@ abstract class ProcState
 	{
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
+		logger.log (Level.FINE, "request attach {0}\n", proc); 
 		proc.observableAttached.notify (proc);
 		return running;
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
+		logger.log (Level.FINE, "request detach {0}\n", proc); 
 		return Detaching.state (proc);
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
@@ -375,6 +395,7 @@ abstract class ProcState
 	    ProcState processPerformDeleteObservation (Proc proc,
 						       Observation observation)
 	    {
+		logger.log (Level.FINE, "delete observer {0}\n", observation); 
 		observation.delete ();
 		proc.observations.remove (observation);
 		if (proc.observations.size () == 0)
@@ -388,16 +409,19 @@ abstract class ProcState
 	{
 	    ProcState processRequestAttachedContinue (Proc proc)
 	    {
+		logger.log (Level.FINE, "request attach {0}\n", proc); 
 		proc.observableAttached.notify (proc);
 		return running;
 	    } 
 	    ProcState processRequestDetachedContinue (Proc proc)
 	    {
+		logger.log (Level.FINE, "request detach {0}\n", proc); 
 		return Detaching.state (proc);
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
+		logger.log (Level.FINE, "add observer {0}\n", observation); 
 		proc.observations.add (observation);
 		observation.requestAdd ();
 		return startRunning;

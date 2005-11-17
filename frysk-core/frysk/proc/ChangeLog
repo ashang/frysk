@@ -1,3 +1,31 @@
+2005-11-16  Stam Cox  <scox@redhat.com>
+
+	* Host.java (Host): Add logger.
+	(add,remove,removeTasks,get,getProc,requestRefresh,execute)
+	(requestRefresh,requestCreateAttachedProc): Add logging.
+	* HostState.java (HostState): Add logger.
+	(process*): Add logging.
+	* LinuxHost.java (LinuxHost): Add logger.
+	(sendCreateAttachedProc,PollWaitOnSigChld,waitObserver,forkEvent)
+	(exitEvent,execEvent,disappeared,syscallEvent,stopped,terminated):
+	Add logging.
+	* LinuxProc.java (LinuxProc): Add logger.
+	(LinuxProc,sendNewAttachedTask): Add logging.
+	* LinuxTask.java (LinuxTask): Add logger.
+	(send*): Add logging.
+	* Proc.java (Proc): Add logger.
+	(execute,add,remove,notify,retain): Add logging.
+	* ProcEvent.java (ProcEvent): Add logger.
+	(getProc,getProcFromTaskId): Add logging.
+	* ProcState.java (ProcState): Add logger.
+	(ProcState,isStopped,process*,state): Add logging.
+	* Task.java (Task): Add logger.
+	(requestStop,request*,execute): Add logging.
+	* TaskEvent.java (TaskEvent): Add logger.
+	(getTask): Add logging.
+	* TaskState.java (TaskState): Add logger.
+	(process*): Add logging.
+
 2005-11-11  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* TestSyscallOpen.java: Remove updateSyscallXXX reference.

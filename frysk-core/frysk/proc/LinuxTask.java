@@ -46,6 +46,9 @@ import frysk.sys.Signal;
 import inua.eio.PtraceByteBuffer;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 /**
  * Linux implementation of Task.
@@ -54,6 +57,7 @@ import inua.eio.ByteOrder;
 public class LinuxTask
     extends Task
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     // XXX: For moment wire in standard 32-bit little-endian memory
     // map.  This will be replaced by a memory map created using
     // information from /proc/PID/maps.
@@ -73,17 +77,19 @@ public class LinuxTask
     }
 
     /**
-     * Create a new possibly attached, definitly running Task, that
+     * Create a new possibly attached, definitely running Task, that
      * belongs to Proc.
      */
     LinuxTask (Proc process, TaskId id, boolean attached)
     {
 	super (process, id, attached);
+	logger.log (Level.FINE, "construct task {0}\n", id); 
 	setupMapsXXX ();
     }
 
     protected void sendContinue (int sig)
     {
+	logger.log (Level.FINE, "send continue {0}\n", new Integer(sig)); 
 	try {
 	    if (traceSyscall)
 		Ptrace.sysCall (getTid (), sig);
@@ -96,6 +102,7 @@ public class LinuxTask
     }
     protected void sendStepInstruction (int sig)
     {
+	logger.log (Level.FINE, "send step insn {0}\n", new Integer(sig)); 
 	try {
 	    Ptrace.singleStep (getTid (), sig);
 	}
@@ -105,10 +112,12 @@ public class LinuxTask
     }
     protected void sendStop ()
     {
+	logger.log (Level.FINE, "send stop {0}\n", ""); 
 	Signal.tkill (id.hashCode (), Sig.STOP);
     }
     protected void sendSetOptions ()
     {
+	logger.log (Level.FINE, "send set options\n", ""); 
 	try {
 	    // XXX: Should be selecting the trace flags based on the
 	    // contents of .observers.
@@ -127,6 +136,7 @@ public class LinuxTask
     }
     protected void sendAttach ()
     {
+	logger.log (Level.FINE, "send attach {0}\n", new Integer (getTid ())); 
 	try {
 	    Ptrace.attach (getTid ());
 	}
@@ -136,6 +146,7 @@ public class LinuxTask
     }
     protected void sendDetach (int sig)
     {
+	logger.log (Level.FINE, "send detach {0}\n", new Integer (getTid ())); 
 	Ptrace.detach (getTid (), sig);
     }
     protected Isa sendrecIsa ()
