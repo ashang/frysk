@@ -1,5 +1,12 @@
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (isLineExecutable): Added.
+	(isLineBroken): Added.
+	(toggleBreakpoint): Added.
+	* InlineViewer.java (drawMargin): Fixed off-by-one for line numbers.
+	* SourceBuffer.java (toggleBreakpoint): Now checks to make sure line
+	is executable.
+
 	* InlineBuffer.java (createTags): Added.
 	* SourceBuffer.java: Made most member variable protected.
 

@@ -75,7 +75,7 @@ public class InlineViewer extends SourceViewWidget {
 	}
     
     protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
-        Layout lo = this.createLayout(""+(number+1 + ((InlineBuffer) this.buf).getFirstLine()));
+        Layout lo = this.createLayout(""+(number + ((InlineBuffer) this.buf).getFirstLine()));
         lo.setAlignment(Alignment.RIGHT);
         lo.setWidth(this.marginWriteOffset);
         

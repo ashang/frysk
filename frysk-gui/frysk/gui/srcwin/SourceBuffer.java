@@ -174,6 +174,9 @@ public class SourceBuffer extends TextBuffer {
 	 * does not correspond to a valid line number
 	 */
 	public boolean toggleBreakpoint (int lineNum){
+        if(!this.isLineExecutable(lineNum))
+            return false;
+        
 		DOMLine line = this.scope.getData().getLine(lineNum + 1);
 		if(line == null)
 			return false;
