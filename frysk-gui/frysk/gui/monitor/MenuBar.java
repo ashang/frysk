@@ -62,6 +62,7 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 		item.addListener(new MenuItemListener(){
 			public void menuItemEvent(MenuItemEvent arg0) {
 				WindowManager.theManager.prefsWindow.showAll();
+				WindowManager.theManager.prefsWindow.present();
 			}
 		});
 		
@@ -69,6 +70,7 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 		item.addListener(new MenuItemListener(){
 			public void menuItemEvent(MenuItemEvent arg0) {
 				WindowManager.theManager.customeObserverWindow.showAll();
+				WindowManager.theManager.customeObserverWindow.present();
 			}
 		});
 		

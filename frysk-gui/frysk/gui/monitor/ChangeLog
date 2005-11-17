@@ -1,3 +1,14 @@
+2005-11-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java: Added getBaseName to tell wich observer
+	a custom observer was based on.
+	* MenuBar.java: Added present() call after showAll() see gj javadoc.
+	* GuiObject.java: Now extends GuiObservable.
+	* DetailedObserverTreeView.java: A view that provides adetailed
+	representation of observers currently available with observer manager.
+	* CustomeObserverWindow.java: Added handlers for summary labels. Add
+	handeling for selected observer.
+
 2005-11-16  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* observers/SyscallObserver.java: Remove .updateSyscallXXX

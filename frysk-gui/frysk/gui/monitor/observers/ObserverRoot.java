@@ -31,18 +31,21 @@ public abstract class ObserverRoot extends GuiObject implements TaskObserver, Ob
 		
 		private LinkedList filterPoints;
 		
+		private final String baseName;
+		
 		public ObserverRoot(String name, String toolTip){
 			super(name, toolTip);
 			this.actions     = new LinkedList();
 			this.info        = new String();
-			this.filterPoints = new LinkedList();
+			this.filterPoints = new LinkedList();			
+			this.baseName = name;
 		}
 		
 		public ObserverRoot(ObserverRoot observer) {
 			super(observer);
 			actions     = new LinkedList(observer.actions);
 //			runnables   = new LinkedList(observer.runnables);
-			
+			this.baseName = observer.baseName;
 		}
 
 		public void update(Observable o, Object obj) {
@@ -120,9 +123,9 @@ public abstract class ObserverRoot extends GuiObject implements TaskObserver, Ob
 		protected void addFilterPoint(FilterPoint filterPoint){
 			this.filterPoints.add(filterPoint);
 		}
+
+		public String getBaseName() {
+			return baseName;
+		}
 		
 	}
-	
-	
-	
-

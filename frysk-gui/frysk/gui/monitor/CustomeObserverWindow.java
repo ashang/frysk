@@ -77,9 +77,9 @@ import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public class CustomeObserverWindow extends Window {
+public class CustomeObserverWindow extends Window implements Observer {
 	
-	private TreeView observerTreeView;
+	private DetailedObserverTreeView observerTreeView;
 	private TreeView baseObserverTreeView;
 	
 	private TreeView sourceActionsTreeView;
@@ -90,6 +90,8 @@ public class CustomeObserverWindow extends Window {
 	private Label baseObserverSummaryLabel;
 	private Label filtersSummaryLabel;
 	private Label actionsSummaryLabel;
+	
+	ObserverRoot selectedObserver;
 	
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle());
@@ -117,9 +119,9 @@ public class CustomeObserverWindow extends Window {
 		
 			public boolean keyEvent(KeyEvent event) {
 				if(customObserverNameEntry.getText().equals("")){
-					updateNameSummary("");
+					setObserverName("");
 				}else{
-					updateNameSummary("( " + customObserverNameEntry.getText() + " )");
+					setObserverName(customObserverNameEntry.getText());
 				}
 				return false;
 			}
@@ -130,7 +132,7 @@ public class CustomeObserverWindow extends Window {
 		
 			public boolean focusEvent(FocusEvent event) {
 				if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
-					updateNameSummary(customObserverNameEntry.getText());
+					setObserverName(customObserverNameEntry.getText());
 				}
 				return false;
 			}
@@ -142,18 +144,20 @@ public class CustomeObserverWindow extends Window {
 		this.initObserverTreeView();
 
 
-		this.observerTreeView = (TreeView)glade.getWidget("simplexListView");
-		this.observerTreeView.getClass();
-//		this.initObserverTreeView();
-
+		this.observerTreeView = new DetailedObserverTreeView(((TreeView)glade.getWidget("simplexListView")).getHandle());
+		this.observerTreeView.getSelection().addListener(new TreeSelectionListener() {
+			public void selectionChangedEvent(TreeSelectionEvent arg0) {
+				setSelectedObserver(observerTreeView.getSelectedObserver());
+			}
+		});
+		
+		
 		this.sourceActionsTreeView = (TreeView)glade.getWidget("sourceActionsTreeView");
 		this.initSourceActionsTreeView();
 		
 		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel");
-		this.updateNameSummary("");
 		
 		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel");
-		this.updateBaseObserverSummary("");
 	
 		this.filtersSummaryLabel      = (Label) glade.getWidget("filtersSummaryLabel");
 		this.updateFiltersSummary("");
@@ -234,7 +238,7 @@ public class CustomeObserverWindow extends Window {
 		
 		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent event) {
-				String name = "(";
+				String name = "";
 				TreePath[] selected = baseObserverTreeView.getSelection().getSelectedRows();
 				for (int i = 0; i < selected.length; i++) {
 					if(i > 0 ){
@@ -242,18 +246,22 @@ public class CustomeObserverWindow extends Window {
 					}
 					name += listStore.getValue(listStore.getIter(selected[i]), nameDC);
 				}
-				name += ")";
 				updateBaseObserverSummary(name);
 			}
 		});
 	}
 	
-	private void updateNameSummary(String summary){
-		this.nameSummaryLabel.setText(summary);
+	private void setObserverName(String name){
+		this.selectedObserver.setName(name);
 	}
 	
+	private void updateNameSummary(String summary){
+		this.nameSummaryLabel.setText("("+summary+")");
+		this.customObserverNameEntry.setText(summary);
+	}
+
 	private void updateBaseObserverSummary(String summary){
-		this.baseObserverSummaryLabel.setText(summary);
+		this.baseObserverSummaryLabel.setText("("+summary+")");
 	}
 	
 
@@ -263,6 +271,23 @@ public class CustomeObserverWindow extends Window {
 	
 	private void updateActionsSummary(String summary){
 		this.actionsSummaryLabel.setText(summary);		
+	}
+	
+	public void setSelectedObserver(ObserverRoot selectedObserver){
+		if(this.selectedObserver != null){
+			this.selectedObserver.deleteObserver(this);
+		}
+		
+		this.selectedObserver = selectedObserver;
+		
+		this.selectedObserver.addObserver(this);
+		
+		this.updateBaseObserverSummary(this.selectedObserver.getBaseName());
+		this.update(null, null);
+	}
+
+	public void update(Observable observable, Object obj) {
+		this.updateNameSummary(this.selectedObserver.getName());
 	}
 	
 }
