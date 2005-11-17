@@ -1,3 +1,8 @@
+2005-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskAttachedObserver.java: Delete.  Fold into ...
+	* TestTaskObserver.java: Merge in TestTaskAttachedObserver.
+
 2005-11-16  Stam Cox  <scox@redhat.com>
 
 	* Host.java (Host): Add logger.

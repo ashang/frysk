@@ -165,4 +165,21 @@ public class TestTaskForkedObserver
 	assertEquals ("number of forks (one less than number of processes)",
 		      fib.callCount - 1, forkStopper.count);
     }
+
+    /**
+     * Check that observers, sent to the forkee while the forker's
+     * observer is running, get correctly installed.
+     */
+    public void testForkAddToForkeeInNotify ()
+    {
+    }
+
+    /**
+     * Check that observers, sent to the forkee after the forker's
+     * observer has returned leaving the forker blocked, get correctly
+     * installed.
+     */
+    public void testForkAddToForkeeAfterNotify ()
+    {
+    }
 }
