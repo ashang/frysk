@@ -141,6 +141,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public boolean isLineExecutable(int lineNo){
 		DOMLine line = this.scope.getData().getLine(lineNo + 1);
+		System.out.println(line.getText());
 		if(line == null)
 			return false;
 		return line.isExecutable();
@@ -604,7 +605,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param includeInlindes Whether to include inlined code in the line count
 	 * @return The number of lines in the file
 	 */
-	public int getLineCount(boolean includeInlindes){
+	public int getLineCount(){
 		return this.scope.getData().getLineCount();
 	}
 	

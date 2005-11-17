@@ -1,5 +1,25 @@
 2005-11-16  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (InlineBuffer): Removed debugging output.
+	(getLineCount): Added.
+	* InlineViewer.java (toggleChild): Removed.
+	(load): Removed.
+	(moveDown): Remvoed.
+	(getScope): Removed.
+	(setScope): Remvoed.
+	(setSubScopeAtCurrentLine): Removed.
+	(clearSubScopeAtCurrentLine): Removed.
+	(drawMargin): Removed.
+	* SourceBuffer.java (getLineCount): Removed boolean parameter since it
+	was unused.
+	* SourceViewWidget.java (mouseEvent): Now checks to see if there is
+	inline code being displayed, and if there is compensates for it.
+	(toggleChild): Moved the setting of expanded to before the 
+	InlineInstance is added.
+	(drawMargin): Fixed bug with the line numbers being off, combined two
+	if blocks dealing with the current line.
+	* InlineHandler.java: Removed.	
+
 	* InlineBuffer.java: Added.
 	* InlineViewer.java (InlineViewer): Now takes StackLevel and
 	DOMInlineInstance.

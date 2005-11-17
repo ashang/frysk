@@ -14,8 +14,6 @@ public class InlineBuffer extends SourceBuffer {
 		super();
 		this.instance = instance;
 		this.declaration = this.instance.getDeclaration();
-		System.out.println("instance = " + instance);
-		System.out.println("declaration = " + declaration);
 		this.setScope(scope);
 	}
 	
@@ -30,8 +28,6 @@ public class InlineBuffer extends SourceBuffer {
 		for(int i = 0; i < funcLines.length; i++)
 			result += funcLines[i];
 		
-		System.out.println("Result: " + result);
-		
 		return result;
 	}
 	
@@ -43,6 +39,10 @@ public class InlineBuffer extends SourceBuffer {
 		// MAKE SURE WE DON'T LOOK IN THE DOMSOURCE FOR INLINE CODE!!
 		this.instance.getInlineInstance();
 		return false;
+	}
+	
+	public int getLineCount(){
+		return this.declaration.getEndingLine() - this.declaration.getStartingLine();
 	}
 
 }
