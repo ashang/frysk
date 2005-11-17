@@ -1,5 +1,10 @@
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (createSourceWindow): Moved inline code to
+	first level of scope, added DOMFunctions for all the functions.
+	* dom/DOMTestDOMFrysk/java (testDOMLine): Commented out area of test
+	that temporarily no longer works to do DOM fiddling to make inlines work.
+
 	* InlineBuffer.java (isLineExecutable): Now only returns false, since
 	we are disabling the case of settting a breakpoint in disbled code
 	since we're not sur what to do with it.

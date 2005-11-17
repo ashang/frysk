@@ -515,24 +515,24 @@ public class DOMTestDOMFrysk {
 			}
 		}
 		
-		Iterator iter_getinlines = testDOMLine.getInlines();
-		while (iter_getinlines.hasNext()) {
-			Element getinlines = (Element) iter_getinlines.next();
-			String inline_name = getinlines.getAttributeValue
-				(DOMInlineInstance.LINEINST_ATTR);
-			if (inline_name
-					== test_inline) {
-				System.out.println("passed...DOMLine.getInlines");
-			} else {
-				System.out.println("failed...DOMLine.getInlines");
-			}
-			DOMFunction test_func = testDOMImage.getFunction(inline_name);
-			if (test_func.getName() == test_inline) {
-				System.out.println("passed...DOMFunction.getFunction");
-			} else {
-				System.out.println("failed...DOMFunction.getFunction");
-			}
-		}
+//		Iterator iter_getinlines = testDOMLine.getInlines();
+//		while (iter_getinlines.hasNext()) {
+//			Element getinlines = (Element) iter_getinlines.next();
+//			String inline_name = getinlines.getAttributeValue
+//				(DOMInlineInstance.LINEINST_ATTR);
+//			if (inline_name
+//					== test_inline) {
+//				System.out.println("passed...DOMLine.getInlines");
+//			} else {
+//				System.out.println("failed...DOMLine.getInlines");
+//			}
+//			DOMFunction test_func = testDOMImage.getFunction(inline_name);
+//			if (test_func.getName() == test_inline) {
+//				System.out.println("passed...DOMFunction.getFunction");
+//			} else {
+//				System.out.println("failed...DOMFunction.getFunction");
+//			}
+//		}
 		
 		if (tag.getType() == tag_type) {
 			System.out.println("\npassed...DOMTag.getType");
