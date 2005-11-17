@@ -141,7 +141,6 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public boolean isLineExecutable(int lineNo){
 		DOMLine line = this.scope.getData().getLine(lineNo + 1);
-		System.out.println(line.getText());
 		if(line == null)
 			return false;
 		return line.isExecutable();
@@ -205,7 +204,6 @@ public class SourceBuffer extends TextBuffer {
 	 * 		instruction ends on
 	 */
 	private void setCurrentLine(int startLine, int startCol, int endLine, int endCol){
-		System.out.println(startLine +","+ startCol +","+ endLine +","+ endCol);
 		
 		this.startCurrentLine = this.createMark("currentLineStart", 
 				this.getIter(this.getLineIter(startLine-1).getOffset() + startCol),
@@ -686,7 +684,6 @@ public class SourceBuffer extends TextBuffer {
 	 * @throws JGException
 	 */
 	protected void loadFile() throws FileNotFoundException, JGException{
-		System.out.println("SourceBuffer.loadFile()");
 		Iterator lines = this.scope.getData().getLines();
 		
 		String bufferText = loadLines(lines);

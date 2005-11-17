@@ -1,5 +1,9 @@
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (isLineExecutable): Removed debugging output.
+	(setCurrentLine): Ditto.
+	(loadFile): Ditto.
+
 	* SourceViewWidget.java (drawMargin): Now calculates the height of the
 	current line taking whether or not there's inline code into
 	consideration, not doing this was leading to errors in the margin after

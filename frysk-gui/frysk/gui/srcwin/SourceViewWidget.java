@@ -545,8 +545,6 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			// update height for next line
 			currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
 		}
-		
-		System.out.println("\n\n");
 	}
 
     protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
