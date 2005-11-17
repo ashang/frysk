@@ -1,3 +1,8 @@
+2005-11-17  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* TestSyscall2.java: Re-enable and drop loop count down to
+	much lower number to ensure test runs in allotted time.
+
 2005-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskAttachedObserver.java: Delete.  Fold into ...

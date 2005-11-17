@@ -133,20 +133,20 @@ public class TestSyscall2
 
     public void testSyscall2 ()
     {
-// 	String arg = "5000";
-//         TestSyscall2Internals t = new TestSyscall2Internals ();
+ 	String arg = "1000";
+        TestSyscall2Internals t = new TestSyscall2Internals ();
 
-// 	Manager.host.requestCreateAttachedProc
-// 	    ( new String[] {
-//  		"./prog/syscall/syscallloop",
-// 		arg
-//  	    });
+ 	Manager.host.requestCreateAttachedProc
+ 	    ( new String[] {
+  		"./prog/syscall/syscallloop",
+ 		arg
+  	    });
 
-//  	assertRunUntilStop ("run \"syscallloop\" until exit");
+ 	assertRunUntilStop ("run \"syscallloop\" until exit");
 
-// 	assertTrue ("Enough syscall task events",
-// 		    t.syscallTaskEventCount >= Integer.parseInt (arg));
-// 	assertEquals ("Even number of syscall events", 0, t.syscallState);
-// 	assertTrue ("Exited", t.exited);
+ 	assertTrue ("Enough syscall task events",
+ 		    t.syscallTaskEventCount >= Integer.parseInt (arg));
+ 	assertEquals ("Even number of syscall events", 0, t.syscallState);
+ 	assertTrue ("Exited", t.exited);
     }
 }
