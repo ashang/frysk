@@ -115,7 +115,7 @@ public class TestProcGet
      */
     public void testGetCommand ()
     {
-	Child child = new DaemonChild ();
+	Child child = new CloneDaemon ();
 	Proc childProc = child.findProcUsingRefresh ();
 
 	assertEquals ("Child's name", "detach",
@@ -127,7 +127,7 @@ public class TestProcGet
      */
     public void testGetTasks ()
     {
-	Child child = new DaemonChild (1);
+	Child child = new CloneDaemon (1);
 	Proc proc = child.findProcUsingRefresh (true); // and tasks
 	List tasks = proc.getTasks ();
 

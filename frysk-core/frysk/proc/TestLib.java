@@ -295,13 +295,17 @@ public class TestLib
     }
 
     /**
-     * Create a daemon child process.
+     * Create a daemon process.
      *
-     * Since a daemon process has process 1 as its parent, it won't
-     * lead to any wait events (or at least events that this process
-     * can see).
+     * Since a daemon process has process 1, and not this process, as
+     * its parent, it's exit et.al. won't lead to this process seeing
+     * any of its wait events (unless of course it is attached).
+     *
+     * In addition to running, these daemon processes respond to, and
+     * acknowledge requests using signals.  In response either adding,
+     * or removing, clones/forks.
      */
-    protected class DaemonChild
+    protected class Daemon
 	extends Child
     {
 	protected int startChild (String stdin, String stdout, String stderr,
@@ -312,67 +316,67 @@ public class TestLib
 	/**
 	 * Create a daemon child running ARGV.
 	 */
-	DaemonChild (String[] argv)
+	Daemon (String[] argv)
 	{
 	    super (argv);
 	}
+	/**
+	 * Ask the daemon process to spawn another clone/fork.  Run
+	 * the eventLoop until the daemon acknowledges that it has
+	 * completed the operation.
+	 */
+	void addOffspring ()
+	{
+	    setupAckHandler ();
+	    // Sig.USR2 indicates add a clone/fork.
+	    signal (Sig.USR1);
+	    waitForAck ();
+	}
+	/**
+	 * Ask the daemon process to Delete a clone/fork.  Run the
+	 * eventLoop until the child acknowledges it has completed the
+	 * operation.
+	 */
+	void delOffspring ()
+	{
+	    setupAckHandler ();
+	    // Sig.USR2 indicates drop a clone/fork.
+	    signal (Sig.USR2);
+	    waitForAck ();
+	}
+    }
+
+    /**
+     * A Daemon process that will, on demand, add/remove extra clones (tasks).
+     */
+    class CloneDaemon
+	extends Daemon
+    {
 	/**
 	 * Create a daemon process (one that's parent has exited
 	 * causing it to have process one as the parent).  Also create
 	 * CLONES tasks and possibly use POLLING.
 	 */
-	DaemonChild (int clones, boolean polling)
+	CloneDaemon (int count, boolean polling)
 	{
-	    this (new String[] {
-		      "./prog/kill/detach",
-		      Integer.toString (Pid.get ()),
-		      Integer.toString (ackSignal),
-		      "20",
-		      Integer.toString (clones),
-		      "0",
-		      polling ? "1" : "0"
-		  });
+	    super (new String[]
+		{
+		    "./prog/kill/detach",
+		    Integer.toString (Pid.get ()),
+		    Integer.toString (ackSignal),
+		    "20",
+		    Integer.toString (count),
+		    "0",
+		    polling ? "1" : "0"
+		});
 	}
-	/**
-	 * Create a daemon child process that includes CLONES
-	 * threads.  Block until both the process and all threads have
-	 * been started.
-	 */
-	DaemonChild (int clones)
+	CloneDaemon (int count)
 	{
-	    this (clones, false);
+	    this (count, false);
 	}
-	/**
-	 * Create a daemon child process.  Block until the process
-	 * has started.
-	 */
-	DaemonChild ()
+	CloneDaemon ()
 	{
-	    this (0);
-	}
-	/**
-	 * Ask the daemon process to add another task.  Run the
-	 * eventLoop until the daemon acknowledges that it has
-	 * completed the operation.
-	 */
-	void addTask ()
-	{
-	    setupAckHandler ();
-	    // Sig.USR2 indicates add a thread.
-	    signal (Sig.USR1);
-	    waitForAck ();
-	}
-	/**
-	 * Ask the daemon process to Delete a task.  Run the eventLoop
-	 * until the child acknowledges it has completed the
-	 * operation.
-	 */
-	void delTask ()
-	{
-	    setupAckHandler ();
-	    // Sig.USR2 indicates drop a thread.
-	    signal (Sig.USR2);
-	    waitForAck ();
+	    this (0, false);
 	}
     }
 
@@ -384,7 +388,7 @@ public class TestLib
      * useful when a controlled process exit is required (see reap).
      */
     protected class DetachedChild
-	extends DaemonChild
+	extends CloneDaemon
     {
 	protected int startChild (String stdin, String stdout, String stderr,
 				  String[] argv)
@@ -433,7 +437,7 @@ public class TestLib
      * Create an attached child process.
      */
     protected class AttachedChild
-	extends DaemonChild
+	extends CloneDaemon
     {
 	protected int startChild (String stdin, String stdout, String stderr,
 				  String[] argv)
@@ -465,15 +469,15 @@ public class TestLib
 	}
 	AttachedChild ()
 	{
-	    super ();
+	    super (0, false);
 	}
-	AttachedChild (int clones)
+	AttachedChild (int count)
 	{
-	    super (clones);
+	    super (count, false);
 	}
-	AttachedChild (int clones, boolean polling)
+	AttachedChild (int count, boolean polling)
 	{
-	    super (clones, polling);
+	    super (count, polling);
 	}
     }
 
@@ -481,28 +485,27 @@ public class TestLib
      * Create a daemon process that, on demand, creates a child
      * process that can, when requested, be turned into a zombie.
      */
-    protected class ZombieChild
-	extends Child
+    protected class ZombieDaemon
+	extends Daemon
     {
 	/**
-	 * Create a child process as per request from super-object.
+	 * Create a daemon process (one that's parent has exited
+	 * causing it to have process one as the parent).  Also create
+	 * CLONES tasks and possibly use POLLING.
 	 */
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv)
+	ZombieDaemon (int count, boolean polling)
 	{
-	    return Fork.daemon (stdin, stdout, stderr, argv);
+	    super (new String[]
+		{
+		    "./prog/kill/zombie",
+		    Integer.toString (Pid.get ()),
+		    Integer.toString (ackSignal),
+		    "20"
+		});
 	}
-	/**
-	 * Create a zombied child process.
-	 */
-	ZombieChild ()
+	ZombieDaemon ()
 	{
-	    super (new String[] {
-		       "./prog/kill/zombie",
-		       Integer.toString (Pid.get ()),
-		       Integer.toString (ackSignal),
-		       "20"
-		   });
+	    this (0, false);
 	}
 	/**
 	 * Sanity check, no sense in trying to do a kill when there is
@@ -514,9 +517,7 @@ public class TestLib
 	 */
 	void addChild ()
 	{
-	    setupAckHandler ();
-	    signal (Sig.USR1);
-	    waitForAck ();
+	    super.addOffspring ();
 	    hasChild = true;
 	}
 	/**
@@ -526,9 +527,7 @@ public class TestLib
 	void fryChild ()
 	{
 	    assertTrue ("Zombie has a child", hasChild);
-	    setupAckHandler ();
-	    signal (Sig.USR2);
-	    waitForAck ();
+	    super.delOffspring ();
 	    hasChild = false;
 	}
 	/**

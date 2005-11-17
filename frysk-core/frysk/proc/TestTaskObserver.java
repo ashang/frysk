@@ -285,7 +285,7 @@ public class TestTaskObserver
     public void attachDetachTask (int count, boolean main)
     {
 	// Create a detached child.
-	Child child = new DaemonChild (count);
+	Child child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 	attachDetach (new Task[] { task });
@@ -313,7 +313,7 @@ public class TestTaskObserver
     public void detachExitingTask (int count, boolean main)
     {
 	// Create a detached child.
-	Child child = new DaemonChild (count);
+	Child child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 
@@ -346,7 +346,7 @@ public class TestTaskObserver
      */
     public void attachDeadTask (int count, boolean main)
     {
-	Child child = new DaemonChild (count);
+	Child child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 	
@@ -379,14 +379,14 @@ public class TestTaskObserver
      */
     public void attachDieingTask (int count, boolean main)
     {
-	DaemonChild child = new DaemonChild (count);
+	CloneDaemon child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	
 	// Blow away the task.
 	if (main)
 	    assertTaskGone (task.getTid (), Sig.KILL);
 	else {
-	    child.delTask ();
+	    child.delOffspring ();
 	    assertTaskGone (task.getTid (), 0);
 	}	    
 
@@ -413,7 +413,7 @@ public class TestTaskObserver
      */
     public void attachToAttachedTask (int count, boolean main)
     {
-	final Child child = new DaemonChild (count);
+	final Child child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("task", task);
 	attach (new Task[] { task });
@@ -456,7 +456,7 @@ public class TestTaskObserver
      */
     public void backToBackAttachAttachTask (int count, boolean main)
     {
-	Child child = new DaemonChild ();
+	Child child = new CloneDaemon ();
 	Task task = child.findTaskUsingRefresh (true);
 	assertNotNull ("main task", task);
 
@@ -486,7 +486,7 @@ public class TestTaskObserver
      */
     public void backToBackAttachDetachTask (int count, boolean main)
     {
-	Child child = new DaemonChild (count);
+	Child child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
 
@@ -522,7 +522,7 @@ public class TestTaskObserver
      */
     public void deletedAttachTask (int count, boolean main)
     {
-	Child child = new DaemonChild (count);
+	Child child = new CloneDaemon (count);
 	Task task = child.findTaskUsingRefresh (main);
 	assertNotNull ("main task", task);
 

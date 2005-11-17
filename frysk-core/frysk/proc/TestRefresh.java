@@ -101,7 +101,7 @@ public class TestRefresh
     {
 	// Create a daemon process, set things up to watch and verify
 	// the child.
-	ChildTracker tracker = new ChildTracker (new DaemonChild ());
+	ChildTracker tracker = new ChildTracker (new CloneDaemon ());
 
 	// Do several refreshes, check that the child is only added
 	// once, and never removed.
@@ -165,7 +165,7 @@ public class TestRefresh
 
 	// Create a suspended sub-process that contains three cloned
 	// tasks, and wait for it to start.
-	DaemonChild child = new DaemonChild (nrTasks - 1);
+	CloneDaemon child = new CloneDaemon (nrTasks - 1);
 
 	// Create a task counter, to count the number discovered and
 	// removed tasks.
@@ -204,7 +204,7 @@ public class TestRefresh
 	// looses two tasks, and that the lost tasks have been
 	// transitioned to the dead state.
 	for (int i = 0; i < nrKills; i++)
-	    child.delTask ();
+	    child.delOffspring ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertEquals ("proc's task count after kills",
@@ -227,7 +227,7 @@ public class TestRefresh
 
 	// Finally, tell the child to add a task back.  Check that the
 	// counts are again updated.
-	child.addTask ();
+	child.addOffspring ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertEquals ("proc's task count after add",
@@ -251,7 +251,7 @@ public class TestRefresh
 	
 	// Create a suspended sub-process with two threads (in
 	// addition to main).
-	Child child = new DaemonChild (2);
+	Child child = new CloneDaemon (2);
 
 	// Track what this gets up to.
 	ChildTracker tracker = new ChildTracker (child);
@@ -292,7 +292,7 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	ZombieChild zombie = new ZombieChild ();
+	ZombieDaemon zombie = new ZombieDaemon ();
 	zombie.addChild ();
 	
 	// Do a refresh, find the zombie maker, check it has one child
@@ -332,7 +332,7 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	ZombieChild zombie = new ZombieChild ();
+	ZombieDaemon zombie = new ZombieDaemon ();
 	zombie.addChild ();
 	
 	// Do a refresh (that includes updating the task list), find
