@@ -59,24 +59,33 @@ public class InlineBuffer extends SourceBuffer {
     }
     
     public boolean isLineExecutable(int lineNum){
-        return super.isLineExecutable(lineNum + this.declaration.getStartingLine() - 1);
+    	// For right now, don't let the user even try
+    	// to set breakpoints. This is a little bit of a hack, but works
+    	return false;
+//        return super.isLineExecutable(lineNum + this.declaration.getStartingLine() - 1);
     }
     
     public boolean isLineBroken(int lineNum){
-        return super.isLineBroken(lineNum + this.declaration.getStartingLine() - 1);
+    	// For right now we don't have 'theoretical' breakpoints
+    	// that exist in inline instances.
+    	return false;
+//        return super.isLineBroken(lineNum + this.declaration.getStartingLine() - 1);
     }
     
     public boolean toggleBreakpoint(int lineNum){
-        if(!this.isLineExecutable(lineNum))
-            return false;
-        
-        DOMLine line = this.scope.getData().getLine(lineNum + this.declaration.getStartingLine());
-        if(line == null)
-            return false;
-        
-        boolean status = line.hasBreakPoint();
-        line.setBreakPoint(!status);
-        return !status;
+    	// For right now we've disabled setting breakpoints in specific inline
+    	// instances
+    	return false;
+//        if(!this.isLineExecutable(lineNum))
+//            return false;
+//        
+//        DOMLine line = this.scope.getData().getLine(lineNum + this.declaration.getStartingLine());
+//        if(line == null)
+//            return false;
+//        
+//        boolean status = line.hasBreakPoint();
+//        line.setBreakPoint(!status);
+//        return !status;
     }
     
     protected void createTags(){

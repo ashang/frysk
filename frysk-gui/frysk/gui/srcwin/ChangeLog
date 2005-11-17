@@ -1,5 +1,11 @@
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (isLineExecutable): Now only returns false, since
+	we are disabling the case of settting a breakpoint in disbled code
+	since we're not sur what to do with it.
+	(isLineBroken): Ditto.
+	(toggleBreakpoint): Ditto.
+
 	* InlineBuffer.java (isLineExecutable): Added.
 	(isLineBroken): Added.
 	(toggleBreakpoint): Added.
