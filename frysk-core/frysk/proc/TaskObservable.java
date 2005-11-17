@@ -46,4 +46,8 @@ package frysk.proc;
 class TaskObservable
     extends Observable
 {
+    TaskObservable (Task t)
+    {
+	super (t);
+    }
 }

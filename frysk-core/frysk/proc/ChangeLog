@@ -1,5 +1,13 @@
 2005-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* Observer.java: Replace .added, and .deleted with .addedTo,
+	.deletedFrom, and .addedFailed.
+	* Observable.java (fail): Add.
+	* TaskObservable.java (TaskObservable(Task)): Add consructor.
+	* Task.java: Update.
+	* TestLib.java: Update.
+	* TestTaskObserver.java: Update.
+
 	* TestLib.java: Refactor DaemonChild into Daemon, CloneDaemon, and
 	ZombieDaemon.  Delete ZombieChild.
 	* frysk/proc/TestProcGet.java: Update.

@@ -95,7 +95,7 @@ abstract class Observation
      */
     void fail (Throwable w)
     {
-	observer.added (w);
+	observable.fail (observer, w);
     }
     /**
      * Request that the Observer be added to the Observable.

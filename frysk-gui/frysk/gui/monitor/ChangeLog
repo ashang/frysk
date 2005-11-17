@@ -1,3 +1,9 @@
+2005-11-17  Andrew Cagney  <cagney@redhat.com>
+
+	* observers/ObserverRoot.java: Replace .added, and .deleted with
+	.addedTo, .deletedFrom, and .addFailed.
+	* EventLogger.java: Ditto.
+
 2005-11-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Added getBaseName to tell wich observer

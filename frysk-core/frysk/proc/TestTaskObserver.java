@@ -173,10 +173,13 @@ public class TestTaskObserver
     class FailedObserver
 	extends AttachedObserver
     {
-	public void added (Throwable w)
+	public void addedTo (Object o)
 	{
-	    super.added (null); // lie
-	    assertNotNull ("FailedObserver.added arg", w);
+	    fail ("addedTo");
+	}
+	public void addFailed (Object o, Throwable w)
+	{
+	    super.addedTo (null); // lie
 	    Manager.eventLoop.requestStop ();
 	}
     }
@@ -422,9 +425,8 @@ public class TestTaskObserver
 	    implements TaskObserver.Terminating
 	{
 	    Child c = child;
-	    public void added (Throwable w)
+	    public void addedTo (Object o)
 	    {
-		assertNull ("added arg", w);
 		c.signal (Sig.TERM);
 	    }
 	    public Action updateTerminating (Task task, boolean signal,
@@ -493,10 +495,13 @@ public class TestTaskObserver
 	// pull an observer out from under the tasks feet.
 	AttachedObserver extra = new AttachedObserver ()
 	    {
-		public void added (Throwable w)
+		public void addedTo (Object o)
 		{
-		    super.added (null);
-		    assertNotNull ("added arg", w);
+		    fail ("addedTo");
+		}
+		public void addFailed (Object o, Throwable w)
+		{
+		    super.addedTo (null); // A lie.
 		}
 	    };
 	task.requestAddAttachedObserver (extra);
@@ -529,15 +534,18 @@ public class TestTaskObserver
 	// .attach does an add, add a few more.
 	AttachedObserver extra = new AttachedObserver ()
 	    {
-		public void added (Throwable w)
+		public void addedTo (Object o)
 		{
-		    super.added (null);
-		    assertNotNull ("added arg", w);
-		    deletedCount++; // a lie
+		    fail ("addedTo");
 		}
-		public void deleted ()
+		public void addFailed (Object o, Throwable w)
 		{
-		    fail ("deleted");
+		    super.addedTo (o); // A lie.
+		    deletedCount++; // A bigger lie.
+		}
+		public void deletedFrom (Object o)
+		{
+		    fail ("deletedFrom");
 		}
 	    };
 	task.requestAddAttachedObserver (extra);

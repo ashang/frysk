@@ -81,11 +81,15 @@ public abstract class ObserverRoot extends GuiObject implements TaskObserver, Ob
 			this.runnables.add(action);
 		}
 			
-		public void added(Throwable e) {
+		public void addedTo (Object o) {
 			if(this.onAdded != null) this.onAdded.run();
 		}
 
-		public void deleted() {
+                public void addFailed (Object o, Throwable w) {
+                    	throw new RuntimeException (w);
+                }
+
+		public void deletedFrom (Object o) {
 			if(this.onDeleted != null) this.onDeleted.run();
 		}
 		

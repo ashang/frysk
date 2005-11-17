@@ -213,11 +213,15 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return Action.CONTINUE;
 	}
 	
-	public void added(Throwable e) {
+	public void addedTo(Object o) {
 		// TODO Auto-generated method stub
 	}
 
-	public void deleted() {
+        public void addFailed(Object o, Throwable w) {
+	        throw new RuntimeException (w);
+        }
+
+	public void deletedFrom(Object o) {
 		// TODO Auto-generated method stub
 	}
 	

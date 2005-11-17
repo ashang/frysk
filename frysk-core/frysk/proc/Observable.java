@@ -49,6 +49,14 @@ import java.util.Iterator;
 
 class Observable
 {
+    private Object observable;
+    /**
+     * Create an observable bound to Object.
+     */
+    Observable (Object observable)
+    {
+	this.observable = observable;
+    }
     /**
      * Set of Observer's for this Observable.
      */
@@ -59,7 +67,7 @@ class Observable
     void add (Observer observer)
     {
 	observers.add (observer);
-	observer.added (null); // Success
+	observer.addedTo (observable); // Success
     }
     /**
      * Delete Observer from this Observable.
@@ -67,7 +75,14 @@ class Observable
     void delete (Observer observer)
     {
 	observers.remove (observer);
-	observer.deleted (); // Success.
+	observer.deletedFrom (observable); // Success.
+    }
+    /**
+     * Fail to add the observer.
+     */
+    void fail (Observer observer, Throwable w)
+    {
+	observer.addFailed (observable, w);
     }
     /**
      * Return an iterator for all this Observable's Observers.

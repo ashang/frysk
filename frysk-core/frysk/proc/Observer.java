@@ -46,17 +46,20 @@ package frysk.proc;
 public interface Observer
 {
     /**
-     * Acknowledge the request to add this Observer to the set of
-     * observers was processed.  Throwable is non-NULL if the request
-     * failed.  Failure could be due to the observable object is no
-     * longer valid (e.g., exited), or permission to add the observer
-     * was denied.
+     * Acknowledge the request to add this Observer from Object's set
+     * of observers was successful.
      */
-    void added (Throwable e);
+    void addedTo (Object observable);
 
     /**
-     * Acknowledge the request to delete this Observer from the set of
-     * observers was processed.
+     * Notify that the attempt to add to the specified observer failed.
      */
-    void deleted ();
+    void addFailed (Object observable, Throwable w);
+
+    /**
+     * Acknowledge the request to delete this Observer from Object's
+     * set of observers was successful (or that the Observer was
+     * spontaneously deleted, e.g., due to a task exit).
+     */
+    void deletedFrom (Object observable);
 }

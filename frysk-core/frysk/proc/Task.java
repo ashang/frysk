@@ -564,7 +564,7 @@ abstract public class Task
     /**
      * Set of Cloned observers.
      */
-    private TaskObservable clonedObservers = new TaskObservable ();
+    private TaskObservable clonedObservers = new TaskObservable (this);
     /**
      * Add a TaskObserver.Cloned observer.
      */
@@ -599,7 +599,7 @@ abstract public class Task
     /**
      * Set of Attached observers.
      */
-    private TaskObservable attachedObservers = new TaskObservable ();
+    private TaskObservable attachedObservers = new TaskObservable (this);
     /**
      * Add a TaskObserver.Attached observer.
      */
@@ -633,7 +633,7 @@ abstract public class Task
     /**
      * Set of Forked observers.
      */
-    private TaskObservable forkedObservers = new TaskObservable ();
+    private TaskObservable forkedObservers = new TaskObservable (this);
     /**
      * Add a TaskObserver.Forked observer.
      */
@@ -667,7 +667,7 @@ abstract public class Task
     /**
      * Set of Terminated observers.
      */
-    private TaskObservable terminatedObservers = new TaskObservable ();
+    private TaskObservable terminatedObservers = new TaskObservable (this);
     /**
      * Add a TaskObserver.Terminated observer.
      */
@@ -702,7 +702,7 @@ abstract public class Task
     /**
      * Set of Terminating observers.
      */
-    private TaskObservable terminatingObservers = new TaskObservable ();
+    private TaskObservable terminatingObservers = new TaskObservable (this);
     /**
      * Add TaskObserver.Terminating to the TaskObserver pool.
      */
@@ -736,7 +736,7 @@ abstract public class Task
     /**
      * Set of Execed observers.
      */
-    private TaskObservable execedObservers = new TaskObservable ();
+    private TaskObservable execedObservers = new TaskObservable (this);
     /**
      * Add TaskObserver.Execed to the TaskObserver pool.
      */
@@ -770,7 +770,7 @@ abstract public class Task
     /**
      * Set of Syscall observers.
      */
-    private TaskObservable syscallObservers = new TaskObservable ();
+    private TaskObservable syscallObservers = new TaskObservable (this);
     /**
      * Add TaskObserver.Syscall to the TaskObserver pool.
      */
@@ -820,7 +820,7 @@ abstract public class Task
     /**
      * Set of Signaled observers.
      */
-    private TaskObservable signaledObservers = new TaskObservable ();
+    private TaskObservable signaledObservers = new TaskObservable (this);
     /**
      * Add TaskObserver.Signaled to the TaskObserver pool.
      */

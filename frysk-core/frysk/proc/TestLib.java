@@ -612,9 +612,8 @@ public class TestLib
 	 * Task's observer set.
 	 */
 	int addedCount;
-	public void added (Throwable e)
+	public void addedTo (Object o)
 	{
-	    assertNull ("Observer successfully added", e);
 	    addedCount++;
 	}
 	/**
@@ -622,9 +621,16 @@ public class TestLib
 	 * Task's observer set.
 	 */
 	int deletedCount;
-	public void deleted ()
+	public void deletedFrom (Object o)
 	{
 	    deletedCount++;
+	}
+	/**
+	 * The add operation failed, should never happen.
+	 */
+	public void addFailed (Object o, Throwable w)
+	{
+	    fail ("add to " + o + " failed");
 	}
     }
 
