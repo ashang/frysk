@@ -101,7 +101,7 @@ public class EventLoop
      */
     private synchronized void wakeupIfBlocked ()
     {
-	logger.log (Level.FINE, "wake up {0}\n", this); 
+	logger.log (Level.FINEST, "wake up {0}\n", this); 
 	if (isGoingToBlock) {
 	    // Assert: tid > 0
 	    frysk.sys.Signal.tkill (tid, Sig.IO);
@@ -164,7 +164,7 @@ public class EventLoop
     private synchronized void checkForTimerEvents ()
     {
 	long time = java.lang.System.currentTimeMillis ();
-	logger.log (Level.FINE, "move to event queue {0}\n", this); 
+	logger.log (Level.FINEST, "move to event queue {0}\n", this); 
 	while (!timerEvents.isEmpty ()) {
 	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
 	    if (timer.getTimeMillis () > time)
@@ -248,7 +248,7 @@ public class EventLoop
      */
     public synchronized void add (Event e)
     {
-	logger.log (Level.FINE, "add event {0}\n", e); 
+	logger.log (Level.FINEST, "add event {0}\n", e); 
 	pendingEvents.add (e);
 	wakeupIfBlocked ();
     }
@@ -272,7 +272,7 @@ public class EventLoop
 	    return null;
 	}
 	else {
-	    logger.log (Level.FINE, "remove first pending event {0}\n", pendingEvents.get(0)); 
+	    logger.log (Level.FINEST, "remove first pending event {0}\n", pendingEvents.get(0)); 
 	    return (Event) pendingEvents.remove (0);
 	}
     }

@@ -1,3 +1,10 @@
+2005-11-16  Stan Cox  <scox@scox.rdu.redhat.com>
+
+	* Signal.java (Signal): Add logger.
+	(getSignal,Signal): Add logging.
+	* TimerEvent.java (TimerEvent): Add logger.
+	(TimerEvent,reSchedule) Add logging.
+
 2005-11-14  Stan Cox  <scox@scox.rdu.redhat.com>
 
 	* EventLoop.java (EventLoop): Move logger setup to Config.EventLogger.

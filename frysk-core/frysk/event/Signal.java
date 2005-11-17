@@ -39,18 +39,24 @@
 
 package frysk.event;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
+
 /**
  * A Signal wrapper object, useful for doing SignalEvent lookups..
  */
 
 public class Signal
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     private int signal;
     /**
      * Return the signal value.
      */
     public int getSignal ()
     {
+	logger.log (Level.FINE, "get signal {0}\n", this); 
 	return signal;
     }
     /**
@@ -58,6 +64,7 @@ public class Signal
      */
     public int hashCode ()
     {
+	logger.log (Level.FINE, "hash {0}\n", this); 
 	return signal;
     }
     /**
@@ -74,6 +81,12 @@ public class Signal
      */
     public Signal (int signal)
     {
+	logger.log (Level.FINE, "create signal event handler {0}\n", this); 
 	this.signal = signal;
+    }
+    public String toString ()
+    {
+        return ("{" + ",signal=" + signal
+                + "}");
     }
 }

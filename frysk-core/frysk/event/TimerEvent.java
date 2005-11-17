@@ -40,6 +40,10 @@
 
 package frysk.event;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
+
 /**
  * A timer event.
  *
@@ -50,6 +54,7 @@ package frysk.event;
 public abstract class TimerEvent
     implements Event, Comparable
 {
+    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     private long timeMillis;
     private long periodMillis = 0;
 
@@ -59,6 +64,7 @@ public abstract class TimerEvent
      */
     public TimerEvent (long offsetMillis)
     {
+	logger.log (Level.FINE, "create a timer {0}\n", this); 
 	this.timeMillis = offsetMillis + System.currentTimeMillis ();
     }
 
@@ -112,6 +118,7 @@ public abstract class TimerEvent
      */
     boolean reSchedule (long currentTimeMillis)
     {
+	logger.log (Level.FINEST, "update expired timer {0}\n", this);
 	if (periodMillis > 0) {
 	    count = (currentTimeMillis - timeMillis) / periodMillis + 1;
 	    timeMillis = timeMillis + periodMillis * count;
@@ -120,5 +127,10 @@ public abstract class TimerEvent
 	else {
 	    return false;
 	}
+    }
+    public String toString ()
+    {
+        return ("{" + super.toString ()
+                + "}");
     }
 }
