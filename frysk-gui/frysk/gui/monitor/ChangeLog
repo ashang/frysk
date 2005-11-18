@@ -1,3 +1,16 @@
+2005-11-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/FilterPoint.java (getFilters): new function. Added notifyObservers
+	call.
+	* filters/FilterManager.java: initialized taskList :) .
+	* GuiObject.java: Added notifyObservers call.
+	* DetailedObserverTreeView.java: Cleaned out some old redundent code by 
+	using ListView. Added code to update when observer change.
+	* ListView.java : New File. Convienience class to eleminate code
+	redundency.
+	* CustomeObserverWindow.java: Cleaned out some old redundent code by using
+	ListView, and added more handling.
+
 2005-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/ObserverRoot.java: Replace .added, and .deleted with

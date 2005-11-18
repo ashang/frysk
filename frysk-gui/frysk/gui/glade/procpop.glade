@@ -1753,7 +1753,7 @@
 				      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 				      <child>
-					<widget class="GtkTreeView" id="treeview2">
+					<widget class="GtkTreeView" id="sourceFiltersTreeView">
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="headers_visible">True</property>
@@ -1842,7 +1842,7 @@
 				      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 				      <child>
-					<widget class="GtkTreeView" id="treeview3">
+					<widget class="GtkTreeView" id="addedFiltersTreeView">
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="headers_visible">True</property>
@@ -2154,7 +2154,7 @@
 				      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 				      <child>
-					<widget class="GtkTreeView" id="treeview12">
+					<widget class="GtkTreeView" id="addedActionsTreeView">
 					  <property name="visible">True</property>
 					  <property name="can_focus">True</property>
 					  <property name="headers_visible">True</property>

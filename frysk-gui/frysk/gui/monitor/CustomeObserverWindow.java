@@ -49,19 +49,12 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.gnu.gdk.KeyValue;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.DataColumn;
-import org.gnu.gtk.DataColumnObject;
-import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Label;
-import org.gnu.gtk.ListStore;
-import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
-import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -74,18 +67,25 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionManager;
+import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterManager;
+import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class CustomeObserverWindow extends Window implements Observer {
 	
 	private DetailedObserverTreeView observerTreeView;
-	private TreeView baseObserverTreeView;
 	
-	private TreeView sourceActionsTreeView;
-
 	private Entry customObserverNameEntry;
-	
+
+	private ListView baseObserverTreeView;
+	private ListView sourceActionsTreeView;
+	private ListView sourceFiltersTreeView;
+		
+//	private ListView addedActionsTreeView;
+//	private ListView addedFiltersTreeView;
+//		
 	private Label nameSummaryLabel;
 	private Label baseObserverSummaryLabel;
 	private Label filtersSummaryLabel;
@@ -96,6 +96,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle());
 		
+		//=========================================
 		Button button = (Button) glade.getWidget("customObserverOkButton");
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
@@ -104,7 +105,9 @@ public class CustomeObserverWindow extends Window implements Observer {
 				}
 			}
 		});
+		//=========================================
 		
+		//=========================================
 		button = (Button) glade.getWidget("customObserverCancelButton");
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
@@ -113,14 +116,15 @@ public class CustomeObserverWindow extends Window implements Observer {
 				}
 			}
 		});
+		//=========================================
 		
+		//=========================================
 		this.customObserverNameEntry = (Entry) glade.getWidget("customObserverNameEntry");
 		this.customObserverNameEntry.addListener(new KeyListener() {
 		
 			public boolean keyEvent(KeyEvent event) {
-				if(customObserverNameEntry.getText().equals("")){
-					setObserverName("");
-				}else{
+				System.out.println(".keyEvent()" + event.getKeyval());
+				if(event.getKeyval() == KeyValue.Enter3270){
 					setObserverName(customObserverNameEntry.getText());
 				}
 				return false;
@@ -129,32 +133,74 @@ public class CustomeObserverWindow extends Window implements Observer {
 		});
 		
 		this.customObserverNameEntry.addListener(new FocusListener() {
-		
 			public boolean focusEvent(FocusEvent event) {
 				if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
 					setObserverName(customObserverNameEntry.getText());
 				}
 				return false;
 			}
-		
 		});
-
+		//=========================================
 		
-		this.baseObserverTreeView = (TreeView)glade.getWidget("baseObserversTreeView");
-		this.initObserverTreeView();
-
-
+		//=========================================
+		this.baseObserverTreeView = new ListView(((TreeView)glade.getWidget("baseObserversTreeView")).getHandle());
+		ObserverManager.theManager.addObserver(new Observer(){
+			public void update(Observable observable, Object obj) {
+				populateObserverTreeView();
+			}
+		});
+	
+		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
+			public void selectionChangedEvent(TreeSelectionEvent event) {
+				String name = "";
+				GuiObject[] selected = baseObserverTreeView.getSelectedObjects();
+				for (int i = 0; i < selected.length; i++) {
+					if(i > 0 ){
+						name += ", ";
+					}
+					name += selected[i].getName();
+				}
+				updateBaseObserverSummary(name);
+			}
+		});
+		this.populateObserverTreeView();
+		//=========================================
+		
+		//=========================================
 		this.observerTreeView = new DetailedObserverTreeView(((TreeView)glade.getWidget("simplexListView")).getHandle());
 		this.observerTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
 				setSelectedObserver(observerTreeView.getSelectedObserver());
 			}
 		});
+		//=========================================
 		
+		//=========================================
+		this.sourceActionsTreeView = new ListView(((TreeView)glade.getWidget("sourceActionsTreeView")).getHandle());
+		this.populateSourceActionsTreeView();
 		
-		this.sourceActionsTreeView = (TreeView)glade.getWidget("sourceActionsTreeView");
-		this.initSourceActionsTreeView();
+		ActionManager.theManager.addObserver(new Observer(){
+			public void update(Observable observable, Object obj) {
+				populateSourceActionsTreeView();
+			}
+		});
+		//=========================================
 		
+		//=========================================
+		this.sourceFiltersTreeView = new ListView(((TreeView)glade.getWidget("sourceFiltersTreeView")).getHandle());
+	
+		FilterManager.theManager.addObserver(new Observer() {
+			public void update(Observable arg0, Object arg1) {
+				populateSourceFiltersTreeView();
+			}
+		});
+		//=========================================
+
+		//=========================================
+		this.sourceFiltersTreeView = new ListView(((TreeView)glade.getWidget("sourceFiltersTreeView")).getHandle());
+		
+		//=========================================
+
 		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel");
 		
 		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel");
@@ -164,91 +210,36 @@ public class CustomeObserverWindow extends Window implements Observer {
 		
 		this.actionsSummaryLabel      = (Label) glade.getWidget("actionsSummaryLabel");
 		this.updateActionsSummary("");
-		
+	
+		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 	}
 	
-	private void initSourceActionsTreeView() {
-		final DataColumnString nameDC = new DataColumnString();
-		final DataColumnObject observersDC = new DataColumnObject();
-		DataColumn[] columns = new DataColumn[2];
-		columns[0] = nameDC;
-		columns[1] = observersDC;
-		final ListStore listStore = new ListStore(columns);
-		sourceActionsTreeView.setHeadersVisible(false);
+	private void populateSourceFiltersTreeView() {
+		if(this.selectedObserver == null) return;
 		
-		Iterator iter = ActionManager.theManager.getProcActions().iterator();
+		Iterator iter = this.selectedObserver.getFilterPoints().iterator();
 		while(iter.hasNext()){
-			Action action = (Action) iter.next();
-			TreeIter treeIter = listStore.appendRow();
-			listStore.setValue(treeIter, nameDC, action.getName());
-			listStore.setValue(treeIter, observersDC, action);
-		}
-		
-		// handle add events
-		ObserverManager.theManager.addObserver(new Observer(){
-			public void update(Observable observable, Object obj) {
-				Action actoin = (Action) obj;
-				TreeIter iter = listStore.appendRow();
-				listStore.setValue(iter, nameDC, actoin.getName());
-				listStore.setValue(iter, observersDC, actoin);
+			FilterPoint filterPoint = (FilterPoint) iter.next();
+			Iterator iter2 = filterPoint.getApplicableFilters().iterator();
+			while(iter2.hasNext()){
+				sourceFiltersTreeView.add((Filter)iter2.next());
 			}
-		});
-		
-		sourceActionsTreeView.setModel(listStore);
-		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn observersCol = new TreeViewColumn();
-		observersCol.packStart(cellRendererText, false);
-		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		sourceActionsTreeView.appendColumn(observersCol);
+		}
 	}
 
-	private void initObserverTreeView() {
-		final DataColumnString nameDC = new DataColumnString();
-		final DataColumnObject observersDC = new DataColumnObject();
-		DataColumn[] columns = new DataColumn[2];
-		columns[0] = nameDC;
-		columns[1] = observersDC;
-		final ListStore listStore = new ListStore(columns);
-		baseObserverTreeView.setHeadersVisible(false);
-		
+	private void populateSourceActionsTreeView() {
+		Iterator iter = ActionManager.theManager.getProcActions().iterator();
+
+		while(iter.hasNext()){
+			this.sourceActionsTreeView.add((Action) iter.next());
+		}
+	}
+
+	private void populateObserverTreeView() {
 		Iterator iter = ObserverManager.theManager.getObservers().iterator();
 		while(iter.hasNext()){
-			ObserverRoot observer = (ObserverRoot) iter.next();
-			TreeIter treeIter = listStore.appendRow();
-			listStore.setValue(treeIter, nameDC, observer.getName());
-			listStore.setValue(treeIter, observersDC, observer);
+			this.baseObserverTreeView.add((ObserverRoot) iter.next());
 		}
-		
-		// handle add events
-		ObserverManager.theManager.addObserver(new Observer(){
-			public void update(Observable observable, Object obj) {
-				ObserverRoot observer = (ObserverRoot) obj;
-				TreeIter iter = listStore.appendRow();
-				listStore.setValue(iter, nameDC, observer.getName());
-				listStore.setValue(iter, observersDC, observer);
-			}
-		});
-		
-		baseObserverTreeView.setModel(listStore);
-		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn observersCol = new TreeViewColumn();
-		observersCol.packStart(cellRendererText, false);
-		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		baseObserverTreeView.appendColumn(observersCol);
-		
-		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
-			public void selectionChangedEvent(TreeSelectionEvent event) {
-				String name = "";
-				TreePath[] selected = baseObserverTreeView.getSelection().getSelectedRows();
-				for (int i = 0; i < selected.length; i++) {
-					if(i > 0 ){
-						name += ", ";
-					}
-					name += listStore.getValue(listStore.getIter(selected[i]), nameDC);
-				}
-				updateBaseObserverSummary(name);
-			}
-		});
 	}
 	
 	private void setObserverName(String name){
@@ -264,7 +255,6 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.baseObserverSummaryLabel.setText("("+summary+")");
 	}
 	
-
 	private void updateFiltersSummary(String summary){
 		this.filtersSummaryLabel.setText(summary);
 	}
@@ -274,6 +264,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	}
 	
 	public void setSelectedObserver(ObserverRoot selectedObserver){
+		if(selectedObserver == null) return;
 		if(this.selectedObserver != null){
 			this.selectedObserver.deleteObserver(this);
 		}
@@ -288,6 +279,10 @@ public class CustomeObserverWindow extends Window implements Observer {
 
 	public void update(Observable observable, Object obj) {
 		this.updateNameSummary(this.selectedObserver.getName());
+		
+		this.sourceFiltersTreeView.clear();
+		this.populateSourceFiltersTreeView();
+		
 	}
 	
 }

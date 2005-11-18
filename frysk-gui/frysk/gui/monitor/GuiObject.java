@@ -64,6 +64,8 @@ public class GuiObject extends GuiObservable{
 
 	public void setName(String name) {
 		this.name = name;
+		
+		this.notifyObservers();
 	}
 
 	public String getName() {
@@ -72,6 +74,8 @@ public class GuiObject extends GuiObservable{
 
 	public void setToolTip(String toolTip) {
 		this.toolTip = toolTip;
+		
+		this.notifyObservers();
 	}
 
 	public String getToolTip() {

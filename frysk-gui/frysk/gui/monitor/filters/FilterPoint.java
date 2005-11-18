@@ -67,5 +67,10 @@ public abstract class FilterPoint extends GuiObject {
 	
 	public void addFilter(Filter filter){
 		this.filters.add(filter);
+		this.notifyObservers();
+	}
+	
+	public LinkedList getFilters(){
+		return this.filters;
 	}
 }

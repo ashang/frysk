@@ -55,11 +55,13 @@ public class FilterManager extends Observable {
 	private LinkedList taskFilters;
 	
 	public FilterManager(){
+		this.taskFilters = new LinkedList();
 		this.procFilters = new LinkedList();
 		this.initFilterList();
 	}
 	
 	private void initFilterList() {
+		//XXX: init some filters some time soon please
 	}
 
 	/**

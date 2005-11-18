@@ -44,14 +44,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.gnu.glib.Handle;
-import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.DataColumn;
-import org.gnu.gtk.DataColumnObject;
-import org.gnu.gtk.DataColumnString;
-import org.gnu.gtk.ListStore;
-import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreeView;
-import org.gnu.gtk.TreeViewColumn;
 
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -61,12 +53,8 @@ import frysk.gui.monitor.observers.ObserverRoot;
  *  in the system.
  *  TODO: add more details to this widget.
  * */
-public class DetailedObserverTreeView extends TreeView {
+public class DetailedObserverTreeView extends ListView {
 
-	ListStore listStore;
-	DataColumnString nameDC;
-	DataColumnObject observersDC;
-	
 	public DetailedObserverTreeView() {
 		super();
 		this.initTreeView();
@@ -77,53 +65,27 @@ public class DetailedObserverTreeView extends TreeView {
 		this.initTreeView();
 	}
 
-	private void initTreeView() {
-		
-		this.nameDC = new DataColumnString();
-		this.observersDC = new DataColumnObject();
-		
-		DataColumn[] columns = new DataColumn[2];
-		columns[0] = nameDC;
-		columns[1] = observersDC;
-		listStore = new ListStore(columns);
-		
-		this.setHeadersVisible(false);
-		
-		this.setModel(listStore);
-		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn observersCol = new TreeViewColumn();
-		observersCol.packStart(cellRendererText, false);
-		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		this.appendColumn(observersCol);
-		
+	private void initTreeView() {	
 		this.populateList();
+		ObserverManager.theManager.addObserver(new Observer(){
+			public void update(Observable arg0, Object arg1) {
+				populateList();
+			}
+		});
 	}
 	
 	private void populateList(){
 		Iterator iter = ObserverManager.theManager.getObservers().iterator();
 		while(iter.hasNext()){
-			ObserverRoot observer = (ObserverRoot) iter.next();
-			TreeIter treeIter = listStore.appendRow();
-			listStore.setValue(treeIter, nameDC, observer.getName());
-			listStore.setValue(treeIter, observersDC, observer);
+			this.add((ObserverRoot) iter.next());
 		}
-		
-		// handle add events
-		ObserverManager.theManager.addObserver(new Observer(){
-			public void update(Observable observable, Object obj) {
-				ObserverRoot observer = (ObserverRoot) obj;
-				TreeIter iter = listStore.appendRow();
-				listStore.setValue(iter, nameDC, observer.getName());
-				listStore.setValue(iter, observersDC, observer);
-			}
-		});
 	}
 	
 	public ObserverRoot getSelectedObserver(){
 		ObserverRoot selected = null;
 		
 		if(this.getSelection().getSelectedRows().length > 0){
-			selected = (ObserverRoot) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), observersDC);
+			selected = (ObserverRoot) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), objectDC);
 		}
 		
 		return selected;
