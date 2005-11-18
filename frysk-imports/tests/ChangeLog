@@ -1,3 +1,7 @@
+2005-11-18  Andrew Cagney  <cagney@redhat.com>
+
+	* nestcall/Nest.java: Update.  Original was not valid java.
+
 2005-11-17  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (nestcall/a.out): Add.
