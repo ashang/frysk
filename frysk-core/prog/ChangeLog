@@ -1,3 +1,7 @@
+2005-11-18  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* syscall/syscallint.c: New file.
+
 2005-11-07  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/threads.c: New file.
