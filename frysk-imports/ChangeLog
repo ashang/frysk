@@ -1,3 +1,8 @@
+2005-11-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* configure.ac: add cdtparser directory for compilation
+	* autogen.sh: Ditto
+
 2005-11-16  Igor Foox  <ifoox@redhat.com>
 
 	* configure.ac: Added 3.0.1 eclipse search path for cdtparser.jar.

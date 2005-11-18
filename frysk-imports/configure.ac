@@ -40,7 +40,7 @@
 AC_PREREQ(2.59)
 AC_INIT(frysk, 0.0)
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile])
+AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile cdtparser/Makefile])
 
 sinclude(common/acinclude.m4)
 
@@ -68,23 +68,6 @@ ANTLR_JAR=/usr/share/java/antlr.jar
 test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
 AC_SUBST([ANTLR_JAR])
 AC_MSG_RESULT([$ANTLR_JAR])
-
-AC_MSG_CHECKING([for  cdtparser.jar])
-AC_FIND_FILE( [cdtparser.jar],
-     [ /usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.0/ , \
-/usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.1/ ],
-     CDTPARSER_JAR)
-
-if [[ "x$CDTPARSER_JAR" = "xNO" ]]; then
-    AC_MSG_ERROR( Could not locate cdtparser.jar)
-else
-    # Append file name to path because AC_FIND_FILE only
-    # returns path
-    CDTPARSER_JAR="${CDTPARSER_JAR}cdtparser.jar"
-    AC_MSG_RESULT([$CDTPARSER_JAR])
-    AC_SUBST([CDTPARSER_JAR])
-fi
-
 
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)
