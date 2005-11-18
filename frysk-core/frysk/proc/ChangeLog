@@ -1,5 +1,8 @@
 2005-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Make functions static to work around gcc bug, see
+	frysk-imports/tests/nestedcall/Nest.java.
+
 	* Task.java: Do not print the proc.
 	
 	* Observer.java: Replace .added, and .deleted with .addedTo,

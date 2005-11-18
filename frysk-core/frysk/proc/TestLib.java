@@ -68,8 +68,10 @@ public class TestLib
      * Run the event loop for a short period of time until it is
      * explicitly stopped (using EventLoop . requestStop).  During
      * this period poll for external events.
+     *
+     * XXX: Static to avoid gcc bugs.
      */
-    void assertRunUntilStop (String reason)
+    static void assertRunUntilStop (String reason)
     {
 	assertTrue ("Event loop run was explictly stopped (" + reason + ")",
 		    Manager.eventLoop.runPolling (5000));
@@ -78,16 +80,20 @@ public class TestLib
     /**
      * Process all the pending events; no polling of external events
      * is performed.
+     *
+     * XXX: Static to avoid gcc bugs.
      */
-    void runPending ()
+    static void runPending ()
     {
 	Manager.eventLoop.runPending ();
     }
 
     /**
      * Is the Proc an immediate child of PID?
+     *
+     * XXX: Static to avoid gcc bugs.
      */
-    public boolean isChildOf (int pid, Proc proc)
+    static public boolean isChildOf (int pid, Proc proc)
     {
 	// Process 1 has no parent so can't be a child of mine.
 	if (proc.getPid () == 1)
@@ -103,16 +109,20 @@ public class TestLib
      * Is the Proc an immediate child of this Proc?  Do not use
      * host.getSelf() as that, in certain situtations, can lead to
      * infinite recursion.
+     *
+     * XXX: Static to avoid gcc bugs.
      */
-    public boolean isChildOfMine (Proc proc)
+    static public boolean isChildOfMine (Proc proc)
     {
 	return isChildOf (Pid.get (), proc);
     }
 
     /**
      * Is Proc a descendant of PID?
+     *
+     * XXX: Static to avoid gcc bugs.
      */
-    public boolean isDescendantOf (int pid, Proc proc)
+    static public boolean isDescendantOf (int pid, Proc proc)
     {
 	// Climb the process tree looking for this process.
 	while (proc.getPid () > 1) {
@@ -133,8 +143,10 @@ public class TestLib
      * Is the process a descendant of this process?  Do not use
      * host.getSelf() as that, in certain situtations, can lead to
      * infinite recursion.
+     *
+     * XXX: Static to avoid gcc bugs.
      */
-    public boolean isDescendantOfMine (Proc proc)
+    static public boolean isDescendantOfMine (Proc proc)
     {
 	return isDescendantOf (Pid.get (), proc);
     }
@@ -549,7 +561,7 @@ public class TestLib
      * In addition to methods for managing the set, there is a method
      * for unblocking all members.
      */
-    class TaskSet
+    static class TaskSet
     {
 	/**
 	 * Set of tasks being managed.
@@ -867,7 +879,7 @@ public class TestLib
      * computed value, and the number of resursive calls required to
      * compute that value.
      */
-    protected class Fibonacci
+    static protected class Fibonacci
     {
 	int callCount;
 	int value;
