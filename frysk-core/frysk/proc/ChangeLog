@@ -1,5 +1,8 @@
 2005-11-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Replace .Child .setupAckHandler and .waitForAck,
+	with .AckHandler class.  Update all calls.
+
 	* TestLib.java: Make functions static to work around gcc bug, see
 	frysk-imports/tests/nestedcall/Nest.java.
 

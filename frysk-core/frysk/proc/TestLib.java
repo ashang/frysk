@@ -152,6 +152,38 @@ public class TestLib
     }
 
     /**
+     * Set up a handler that stops the event loop when the child sends
+     * this process an ack (indicating that it has completed a
+     * requested operation).
+     */
+    protected class AckHandler
+	extends SignalEvent
+    {
+	// NOTE: Use a different signal to thread add/del.  Within
+	// this process the signal is masked and Linux appears to
+	// propogate the mask all the way down to the exec'ed child.
+	protected final static int signal = Sig.HUP;
+	private boolean acked;
+	AckHandler ()
+	{
+	    super (signal);
+	    Manager.eventLoop.add (this);
+	}
+	public void execute ()
+	{
+	    Manager.eventLoop.requestStop ();
+	    Manager.eventLoop.remove (this);
+	    acked = true;
+	}
+	void await ()
+	{
+	    while (!acked) {
+		assertRunUntilStop ("waiting for ack");
+	    }
+	}
+    }
+
+    /**
      * Manage a child process.
      *
      * Create a child process and then block until the child has
@@ -161,10 +193,6 @@ public class TestLib
      */
     protected abstract class Child
     {
-	// NOTE: Use a different signal to thread add/del.  Within
-	// this process the signal is masked and Linux appears to
-	// propogate the mask all the way down to the exec'ed child.
-	protected final static int ackSignal = Sig.HUP;
 	private int pid;
 	/**
 	 * Return the ProcessID of the child.
@@ -181,29 +209,6 @@ public class TestLib
 	    Signal.tkill (pid, sig);
 	}
 	/**
-	 * Set up a handler that stops the event loop once the child
-	 * is up and running (the child signals this using ackSignal).
-	 */
-	protected void setupAckHandler ()
-	{
-	    Manager.eventLoop.add (new SignalEvent (ackSignal)
-		{
-		    public void execute ()
-		    {
-			Manager.eventLoop.requestStop ();
-			Manager.eventLoop.remove (this);
-		    }
-		});
-	}
-	/**
-	 * Wait for the child to acknowledge the operation (using a
-	 * signal)
-	 */
-	protected void waitForAck ()
-	{
-	    assertRunUntilStop ("waiting for ack");
-	}
-	/**
 	 * Start CHILD as a running process.
 	 */
 	abstract protected int startChild (String stdin, String stdout,
@@ -214,10 +219,10 @@ public class TestLib
 	 */
 	protected Child (String[] argv)
 	{
-	    setupAckHandler ();
+	    AckHandler ack = new AckHandler ();
 	    pid = startChild (null, "/dev/null", null, argv);
 	    registerChild (pid);
-	    waitForAck ();
+	    ack.await ();
 	}
 	/**
 	 * Fudge up a Child object using PID.
@@ -339,10 +344,10 @@ public class TestLib
 	 */
 	void addOffspring ()
 	{
-	    setupAckHandler ();
+	    AckHandler ack = new AckHandler ();
 	    // Sig.USR2 indicates add a clone/fork.
 	    signal (Sig.USR1);
-	    waitForAck ();
+	    ack.await ();
 	}
 	/**
 	 * Ask the daemon process to Delete a clone/fork.  Run the
@@ -351,10 +356,10 @@ public class TestLib
 	 */
 	void delOffspring ()
 	{
-	    setupAckHandler ();
+	    AckHandler ack = new AckHandler ();
 	    // Sig.USR2 indicates drop a clone/fork.
 	    signal (Sig.USR2);
-	    waitForAck ();
+	    ack.await ();
 	}
     }
 
@@ -375,7 +380,7 @@ public class TestLib
 		{
 		    "./prog/kill/detach",
 		    Integer.toString (Pid.get ()),
-		    Integer.toString (ackSignal),
+		    Integer.toString (AckHandler.signal),
 		    "20",
 		    Integer.toString (count),
 		    "0",
@@ -511,7 +516,7 @@ public class TestLib
 		{
 		    "./prog/kill/zombie",
 		    Integer.toString (Pid.get ()),
-		    Integer.toString (ackSignal),
+		    Integer.toString (AckHandler.signal),
 		    "20"
 		});
 	}
@@ -548,10 +553,10 @@ public class TestLib
 	 */
 	void fryParent ()
 	{
+	    AckHandler ack = new AckHandler ();
 	    assertTrue ("Zombie has a child", hasChild);
-	    setupAckHandler ();
 	    signal (Sig.KILL);
-	    waitForAck ();
+	    ack.await ();
 	}
     }
 
