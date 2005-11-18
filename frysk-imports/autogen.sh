@@ -42,7 +42,7 @@
     inua \
     JUNIT_JAR \
     ANTLR_JAR \
-    cdtparser/cdtparser.jar \
+    CDTPARSER_JAR \
     JDOM_JAR \
     jline/jline.jar \
     jargs/jargs.jar
