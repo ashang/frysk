@@ -66,6 +66,13 @@ EXTRA_DIST += $(anoncall_FILES)
 anoncall/a.out: $(anoncall_FILES)
 	mkdir -p anoncall
 	gcj -o anoncall/a.out --main=Anon $(srcdir)/anoncall/Anon.java
+# This fails on gcj 4, but passes on gcj 4.1.
+nestcall_FILES = nestcall/Nest.java
+XFAIL_TESTS += nestcall/a.out
+EXTRA_DIST += $(nestcall_FILES)
+nestcall/a.out: $(nestcall_FILES)
+	mkdir -p nestcall
+	gcj -o nestcall/a.out --main=Nest $(srcdir)/nestcall/Nest.java
 
 TESTS += cniinner/a.out
 cniinner_FILES = \
