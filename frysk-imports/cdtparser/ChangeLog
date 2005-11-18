@@ -1,11 +1,9 @@
+2005-11-18  Rick Moseley  <rmoseley@redhat.com>
+	* configure.ac: remove for cdtparser complie integration
+	* autogen.sh: Ditto
+
 2005-11-16  Rick Moseley  <rmoseley@redhat.com>
 
-	* New import of parser code from Eclipse CDT 3.0.0
-	
-
-2005-11-16  Rick Moseley  <rmoseley@redhat.com>
-
-	
 	* cdtparser/org/eclipse/cdt/core/dom/ast/ASTTypeUtil.java: Hack around GCJ
 			bug # 172853 Inner interface's are not know inside
 			packages
@@ -66,3 +64,8 @@
         * cdtparser/org/eclipse/cdt/internal/core/parser/pst/UndefinedTemplateSymbol.java: Ditto.
         * cdtparser/org/eclipse/cdt/internal/core/parser/scanner2/DependencyTree.java: Ditto.
         * cdtparser/org/eclipse/cdt/internal/core/parser/scanner2/LocationMap.java: Ditto.
+	
+	2005-11-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* New import of parser code from Eclipse CDT 3.0.0
+	
