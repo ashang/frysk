@@ -4,18 +4,41 @@ public class Nest
     void callee () {
 	System.out.println ("callee");
     }
-
-    class Middle
+    class Outer
     {
-	void middle ()
+	class Inner
 	{
-	    callee ();
+	    void inner ()
+	    {
+		callee ();
+	    }
 	}
+	void outer ()
+	{
+	    Inner i = new Inner ();
+	    i.inner ();
+	}
+    }
+    class ExtendOuter
+	extends Outer
+    {
+	void extendOuter ()
+	{
+	    Inner i = new Inner ();
+	    i.inner ();
+	}
+    }
+    void nest ()
+    {
+	Outer o = new Outer ();
+	o.outer ();
+	ExtendOuter e = new ExtendOuter ();
+	e.extendOuter ();
     }
 
     public static void main (String[] argv)
     {
-	Middle m = new Middle ();
-	m.middle ();
+	Nest n = new Nest ();
+	n.nest ();
     }
 }
