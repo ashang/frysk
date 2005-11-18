@@ -1,6 +1,7 @@
 2005-11-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Renamed Custom Event Observer TreeViews.
+	Removed all filter widgets (using FilterWidget instead).
 
 2005-11-17  Sami Wagiaalla  <swagiaal@redhat.com>
 

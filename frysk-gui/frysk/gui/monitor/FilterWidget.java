@@ -37,68 +37,61 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Observable;
 
-/**
- * Only once instance.
- * Keeps a list of available filters.
- * Provides an interface for instantiating those actions.
- * */
-public class FilterManager extends Observable {
-	
-	public static FilterManager theManager = new FilterManager();
-	
-	private LinkedList procFilters;
-	private LinkedList taskFilters;
-	
-	public FilterManager(){
-		this.taskFilters = new LinkedList();
-		this.procFilters = new LinkedList();
-		this.initFilterList();
-	}
-	
-	private void initFilterList() {
-		this.addProcFilterPrototype(new ProcNameFilter(null));
-		this.addTaskFilterPrototype(new TaskProcNameFilter(null));
-	}
-	
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instantiated.
-	 * */
-	public Filter getFilter(Filter prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-		//return prototype.getCopy();
-	}
-	
+import org.gnu.glib.Handle;
+import org.gnu.gtk.VBox;
+import org.gnu.gtk.Widget;
 
-	/**
-	 * add an observer to the list of available observers.
-	 * */
-	public void addProcFilterPrototype(ProcFilter filter){
-		this.procFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
-	}
+import frysk.gui.monitor.observers.ObserverRoot;
+
+public class FilterWidget extends VBox{
+
+	private ObserverRoot observer;
+	private LinkedList widgets;
 	
-	public void addTaskFilterPrototype(TaskFilter filter){
-		this.taskFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
+	public FilterWidget() {
+		super(true, 3);
+		this.init();
 	}
 
-	public LinkedList getProcFilters() {
-		return this.procFilters;
-	}
-
-	public LinkedList getTaskFilters() {
-		return this.taskFilters;
+	public FilterWidget(Handle handle) {
+		super(handle);
+		this.init();
 	}
 	
+	private void init(){
+		this.widgets = new LinkedList();
+		this.showAll();	
+	}
+	
+	public void setObserver(ObserverRoot newObserver){
+		this.clear();
+		this.observer = newObserver;
+		this.addFilterLine(new FilterLine(this.observer));
+	}
+
+	private void addFilterLine(FilterLine filterLine){
+//		HBox hbox = new HBox(false, 0);
+//		hbox.packStart(filterLine, true, false, 0);
+//		hbox.packStart(new Button("Add"), false, false, 0);
+//		
+//		this.packStart(hbox, true, false, 0);
+	
+		this.packStart(filterLine, false, false, 0);
+		this.widgets.add(filterLine);
+//		this.widgets.add(hbox);
+	}
+	
+	private void clear() {
+		Iterator iter = this.widgets.iterator();
+		while (iter.hasNext()) {
+			this.remove((Widget)iter.next());
+		}
+		this.widgets.clear();
+	}
+
 }

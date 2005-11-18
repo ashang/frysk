@@ -1,5 +1,14 @@
 2005-11-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/TaskForkedObserver.java (TaskForkedObserver): Renamed a FilterPoint.
+	* filters/FilterManager.java (initFilterList): added some filter prototypes.
+	* SimpleComboBox.java: New file.
+	* FilterLine.java: New file.
+	* FilterWidget.java: New file.
+	* CustomeObserverWindow.java: Replaced filter handling code with FilterWidget.
+
+2005-11-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* filters/FilterPoint.java (getFilters): new function. Added notifyObservers
 	call.
 	* filters/FilterManager.java: initialized taskList :) .

@@ -55,6 +55,7 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.TreeView;
+import org.gnu.gtk.VBox;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -67,9 +68,6 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionManager;
-import frysk.gui.monitor.filters.Filter;
-import frysk.gui.monitor.filters.FilterManager;
-import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
@@ -81,11 +79,13 @@ public class CustomeObserverWindow extends Window implements Observer {
 
 	private ListView baseObserverTreeView;
 	private ListView sourceActionsTreeView;
-	private ListView sourceFiltersTreeView;
+//	private ListView sourceFiltersTreeView;
 		
 //	private ListView addedActionsTreeView;
 //	private ListView addedFiltersTreeView;
-//		
+
+	private FilterWidget filterWidget;
+	
 	private Label nameSummaryLabel;
 	private Label baseObserverSummaryLabel;
 	private Label filtersSummaryLabel;
@@ -149,6 +149,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 				populateObserverTreeView();
 			}
 		});
+
 	
 		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent event) {
@@ -187,18 +188,17 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		this.sourceFiltersTreeView = new ListView(((TreeView)glade.getWidget("sourceFiltersTreeView")).getHandle());
-	
-		FilterManager.theManager.addObserver(new Observer() {
-			public void update(Observable arg0, Object arg1) {
-				populateSourceFiltersTreeView();
-			}
-		});
+//		this.sourceFiltersTreeView = new ListView(((TreeView)glade.getWidget("sourceFiltersTreeView")).getHandle());
+//	
+//		FilterManager.theManager.addObserver(new Observer() {
+//			public void update(Observable arg0, Object arg1) {
+//				populateSourceFiltersTreeView();
+//			}
+//		});
 		//=========================================
 
 		//=========================================
-		this.sourceFiltersTreeView = new ListView(((TreeView)glade.getWidget("sourceFiltersTreeView")).getHandle());
-		
+		this.filterWidget = new FilterWidget(((VBox)glade.getWidget("filtersWidget")).getHandle());
 		//=========================================
 
 		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel");
@@ -214,18 +214,18 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 	}
 	
-	private void populateSourceFiltersTreeView() {
-		if(this.selectedObserver == null) return;
-		
-		Iterator iter = this.selectedObserver.getFilterPoints().iterator();
-		while(iter.hasNext()){
-			FilterPoint filterPoint = (FilterPoint) iter.next();
-			Iterator iter2 = filterPoint.getApplicableFilters().iterator();
-			while(iter2.hasNext()){
-				sourceFiltersTreeView.add((Filter)iter2.next());
-			}
-		}
-	}
+//	private void populateSourceFiltersTreeView() {
+//		if(this.selectedObserver == null) return;
+//		
+//		Iterator iter = this.selectedObserver.getFilterPoints().iterator();
+//		while(iter.hasNext()){
+//			FilterPoint filterPoint = (FilterPoint) iter.next();
+//			Iterator iter2 = filterPoint.getApplicableFilters().iterator();
+//			while(iter2.hasNext()){
+//				sourceFiltersTreeView.add((Filter)iter2.next());
+//			}
+//		}
+//	}
 
 	private void populateSourceActionsTreeView() {
 		Iterator iter = ActionManager.theManager.getProcActions().iterator();
@@ -274,14 +274,18 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.selectedObserver.addObserver(this);
 		
 		this.updateBaseObserverSummary(this.selectedObserver.getBaseName());
+		
+		this.filterWidget.setObserver(selectedObserver);
+
 		this.update(null, null);
 	}
 
 	public void update(Observable observable, Object obj) {
 		this.updateNameSummary(this.selectedObserver.getName());
 		
-		this.sourceFiltersTreeView.clear();
-		this.populateSourceFiltersTreeView();
+//		this.sourceFiltersTreeView.clear();
+//		this.populateSourceFiltersTreeView();
+		
 		
 	}
 	

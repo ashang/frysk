@@ -37,68 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
-import java.util.LinkedList;
-import java.util.Observable;
+import java.util.Iterator;
 
-/**
- * Only once instance.
- * Keeps a list of available filters.
- * Provides an interface for instantiating those actions.
- * */
-public class FilterManager extends Observable {
-	
-	public static FilterManager theManager = new FilterManager();
-	
-	private LinkedList procFilters;
-	private LinkedList taskFilters;
-	
-	public FilterManager(){
-		this.taskFilters = new LinkedList();
-		this.procFilters = new LinkedList();
-		this.initFilterList();
-	}
-	
-	private void initFilterList() {
-		this.addProcFilterPrototype(new ProcNameFilter(null));
-		this.addTaskFilterPrototype(new TaskProcNameFilter(null));
-	}
-	
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instantiated.
-	 * */
-	public Filter getFilter(Filter prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-		//return prototype.getCopy();
-	}
-	
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.event.ComboBoxEvent;
+import org.gnu.gtk.event.ComboBoxListener;
 
-	/**
-	 * add an observer to the list of available observers.
-	 * */
-	public void addProcFilterPrototype(ProcFilter filter){
-		this.procFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
-	}
-	
-	public void addTaskFilterPrototype(TaskFilter filter){
-		this.taskFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
+import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterPoint;
+import frysk.gui.monitor.observers.ObserverRoot;
+
+public class FilterLine extends HBox{
+
+	public FilterLine(ObserverRoot observer) {
+		super(false, 3);
+		
+		final SimpleComboBox comboBox = new SimpleComboBox();
+		Iterator iter = observer.getFilterPoints().iterator();
+		while(iter.hasNext()){
+			comboBox.add((FilterPoint)iter.next());
+		}
+		
+		final SimpleComboBox filtersComboBox = new SimpleComboBox();
+		
+		comboBox.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent event) {
+				filtersComboBox.clear();
+				Iterator iter = ((FilterPoint)comboBox.getSelectedObject()).getApplicableFilters().iterator();
+				while(iter.hasNext()){
+					filtersComboBox.add((Filter)iter.next());
+				}
+			}
+		});
+		
+		this.packStart(comboBox, false, false, 0);
+		this.packStart(filtersComboBox, false, false, 0);
+		
+		
+		this.showAll();
 	}
 
-	public LinkedList getProcFilters() {
-		return this.procFilters;
-	}
-
-	public LinkedList getTaskFilters() {
-		return this.taskFilters;
-	}
-	
 }

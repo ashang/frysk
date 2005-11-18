@@ -37,68 +37,87 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Observable;
+import java.util.Observer;
+
+import org.gnu.glib.Handle;
+import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.ComboBox;
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnObject;
+import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.ListStore;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeViewColumn;
 
 /**
- * Only once instance.
- * Keeps a list of available filters.
- * Provides an interface for instantiating those actions.
+ * A simple combo box that abstracts away all the complexity
+ * of Combo box and provides simple methods for adding, removing
+ * and retrieving selected objects.
+ * Extends ComboBox so it can be initialized with a ComboBox
  * */
-public class FilterManager extends Observable {
+public class SimpleComboBox extends ComboBox implements Observer{
 	
-	public static FilterManager theManager = new FilterManager();
+	protected HashMap map;
+	protected ListStore listStore;
 	
-	private LinkedList procFilters;
-	private LinkedList taskFilters;
+	protected DataColumnString nameDC;
+	protected DataColumnObject objectDC;
 	
-	public FilterManager(){
-		this.taskFilters = new LinkedList();
-		this.procFilters = new LinkedList();
-		this.initFilterList();
+	SimpleComboBox(Handle handle){
+		super(handle);
+		this.init();
 	}
 	
-	private void initFilterList() {
-		this.addProcFilterPrototype(new ProcNameFilter(null));
-		this.addTaskFilterPrototype(new TaskProcNameFilter(null));
+	SimpleComboBox(){
+		super();
+		this.init();
 	}
 	
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instantiated.
-	 * */
-	public Filter getFilter(Filter prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-		//return prototype.getCopy();
+	void init(){
+		this.map = new HashMap();
+		
+		this.nameDC = new DataColumnString();
+		this.objectDC = new DataColumnObject();
+		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
+		this.setModel(listStore);
+		
+		CellRendererText cellRendererText = new CellRendererText();
+		TreeViewColumn nameCol = new TreeViewColumn();
+		nameCol.packStart(cellRendererText, false);
+		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		
 	}
 	
+	public GuiObject getSelectedObject(){
+		return (GuiObject) this.listStore.getValue(this.getActiveIter(), objectDC);
+	}
+	
+	public void add(GuiObject object){
+		TreeIter treeIter = listStore.appendRow();
+		listStore.setValue(treeIter, nameDC, object.getName());
+		listStore.setValue(treeIter, objectDC, object);
+		
+		this.map.put(object, treeIter);
+		object.addObserver(this);	
+	}
+	
+	public void remove(GuiObject object){
+		TreeIter treeIter = (TreeIter) this.map.get(object);
+		listStore.removeRow(treeIter);
+		this.map.remove(object);
+	}
+	
+	public void clear(){
+		this.listStore.clear();
+	}
+	
+	public void update(Observable guiObject, Object object) {
+		TreeIter treeIter = (TreeIter) this.map.get(guiObject);
+		listStore.setValue(treeIter, nameDC, ((GuiObject)guiObject).getName());
+	}
 
-	/**
-	 * add an observer to the list of available observers.
-	 * */
-	public void addProcFilterPrototype(ProcFilter filter){
-		this.procFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
-	}
-	
-	public void addTaskFilterPrototype(TaskFilter filter){
-		this.taskFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
-	}
-
-	public LinkedList getProcFilters() {
-		return this.procFilters;
-	}
-
-	public LinkedList getTaskFilters() {
-		return this.taskFilters;
-	}
-	
 }
