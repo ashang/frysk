@@ -401,59 +401,6 @@ public class TestLib
     }
 
     /**
-     * Create a detached child process.
-     *
-     * Since the created process is a direct child of this process,
-     * this process will see a wait event when this exits.  It is most
-     * useful when a controlled process exit is required (see reap).
-     */
-    protected class DetachedChild
-	extends Daemon
-    {
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv)
-	{
-	    return Fork.exec (stdin, stdout, stderr, argv);
-	}
-	/**
-	 * Create a child process with no threads.
-	 */
-	DetachedChild ()
-	{
-	    super ();
-	}
-	/**
-	 * Reap the child.
-	 *
-	 * Kill the child, wait for and consume the child's exit
-	 * event.
-	 */
-	void reap ()
-	{
-	    kill ();
-	    try {
-		while (true) {
-		    Wait.waitAll (getPid (),
-				  new FailWaitObserver ("killing child")
-			{
-			    public void terminated (int pid, boolean signal,
-						    int value,
-						    boolean coreDumped)
-			    {
-				// Termination with signal is ok.
-				assertTrue ("terminated with signal",
-					    signal);
-			    }
-			});
-		}
-	    }
-	    catch (Errno.Echild e) {
-		// No more waitpid events.
-	    }
-	}
-    }
-
-    /**
      * Create an attached child process.
      */
     protected class AttachedChild
@@ -626,6 +573,35 @@ public class TestLib
 				  String[] argv)
 	{
 	    return Fork.exec (stdin, stdout, stderr, argv);
+	}
+	/**
+	 * Reap the child.
+	 *
+	 * Kill the child, wait for and consume the child's exit
+	 * event.
+	 */
+	void reap ()
+	{
+	    kill ();
+	    try {
+		while (true) {
+		    Wait.waitAll (getPid (),
+				  new FailWaitObserver ("killing child")
+			{
+			    public void terminated (int pid, boolean signal,
+						    int value,
+						    boolean coreDumped)
+			    {
+				// Termination with signal is ok.
+				assertTrue ("terminated with signal",
+					    signal);
+			    }
+			});
+		}
+	    }
+	    catch (Errno.Echild e) {
+		// No more waitpid events.
+	    }
 	}
     }
 

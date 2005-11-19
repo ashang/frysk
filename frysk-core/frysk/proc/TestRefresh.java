@@ -129,7 +129,7 @@ public class TestRefresh
 		    Manager.host.procPool.size () > 0);
 
 	// Create a suspended sub-process, and wait for it to start.
-	DetachedChild child = new DetachedChild ();
+	DetachedAckProcess child = new DetachedAckProcess ();
 
 	// Set up a tracker to watch for this specific child being
 	// added and removed.
@@ -268,7 +268,7 @@ public class TestRefresh
     public void testParentChild ()
     {
 	// Create a sub process, refresh things so that it is known.
-	ChildTracker tracker = new ChildTracker (new DetachedChild ());
+	ChildTracker tracker = new ChildTracker (new DetachedAckProcess ());
 	Manager.host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("Find child", 0);

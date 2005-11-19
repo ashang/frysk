@@ -154,8 +154,8 @@ public class TestProcGet
 	// Create two children.  The refreshes have the side effect of
 	// updating this processes proc list.
 	Proc[] child = new Proc[] {
-	    new DetachedChild ().findProcUsingRefresh (),
-	    new DetachedChild ().findProcUsingRefresh ()
+	    new DetachedAckProcess ().findProcUsingRefresh (),
+	    new DetachedAckProcess ().findProcUsingRefresh ()
 	};
 	Proc self = Manager.host.getSelf ();
 

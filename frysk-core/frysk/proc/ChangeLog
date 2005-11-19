@@ -1,5 +1,10 @@
 2005-11-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Delete .DetachedChild.  Add .reap to
+	DetachedAckProcess.
+	* TestRefresh.java: Use DetachedAckProcess.
+	* TestProcGet.java: Ditto.
+
 	* TestLib.java: Merge .CloneDaemon into .Daemon.
 	* TestProgGet.java, TestProcStates.java, TestTaskObserver.java:
 	Use AckDaemonProcess.
