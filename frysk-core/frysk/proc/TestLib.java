@@ -157,27 +157,37 @@ public class TestLib
      * requested operation).
      */
     protected class AckHandler
-	extends SignalEvent
     {
+	AckHandler (int sig)
+	{
+	    this (new int[] { sig });
+	}
 	// NOTE: Use a different signal to thread add/del.  Within
 	// this process the signal is masked and Linux appears to
 	// propogate the mask all the way down to the exec'ed child.
 	protected final static int signal = Sig.HUP;
-	private boolean acked;
 	AckHandler ()
 	{
-	    super (signal);
-	    Manager.eventLoop.add (this);
+	    this (signal);
 	}
-	public void execute ()
+	private int acksRemaining;
+	AckHandler (int[] sigs)
 	{
-	    Manager.eventLoop.requestStop ();
-	    Manager.eventLoop.remove (this);
-	    acked = true;
+	    acksRemaining = sigs.length;
+	    for (int i = 0; i < sigs.length; i++) {
+		Manager.eventLoop.add (new SignalEvent (sigs[i]) {
+			public void execute ()
+			{
+			    Manager.eventLoop.requestStop ();
+			    Manager.eventLoop.remove (this);
+			    acksRemaining--;
+			}
+		    });
+	    }
 	}
 	void await ()
 	{
-	    while (!acked) {
+	    while (acksRemaining > 0) {
 		assertRunUntilStop ("waiting for ack");
 	    }
 	}
@@ -215,14 +225,22 @@ public class TestLib
 					   String stderr, String[] argv);
 	/**
 	 * Create a child process (using startChild), return once the
+	 * process is running.  Wait for acknowledge SIG.
+	 */
+	protected Child (int sig, String[] argv)
+	{
+	    AckHandler ack = new AckHandler (sig);
+	    pid = startChild (null, "/dev/null", null, argv);
+	    registerChild (pid);
+	    ack.await ();
+	}
+	/**
+	 * Create a child process (using startChild), return once the
 	 * process is running.
 	 */
 	protected Child (String[] argv)
 	{
-	    AckHandler ack = new AckHandler ();
-	    pid = startChild (null, "/dev/null", null, argv);
-	    registerChild (pid);
-	    ack.await ();
+	    this (AckHandler.signal, argv);
 	}
 	/**
 	 * Fudge up a Child object using PID.
@@ -499,53 +517,65 @@ public class TestLib
     }
 
     /**
-     * Create a daemon process that, on demand, creates a child
-     * process that can, when requested, be turned into a zombie.
+     * Create an ack-process that can be manipulated using various
+     * signals (see below).
      */
-    protected class ZombieDaemon
-	extends Daemon
+    protected abstract class AckProcess
+	extends Child
     {
-	/**
-	 * Create a daemon process (one that's parent has exited
-	 * causing it to have process one as the parent).  Also create
-	 * CLONES tasks and possibly use POLLING.
-	 */
-	ZombieDaemon (int count, boolean polling)
+	AckProcess ()
 	{
-	    super (new String[]
+	    super (Sig.USR1, new String[]
 		{
-		    "./prog/kill/zombie",
+		    "./prog/kill/child",
+		    "20",
+		    // Use getpid as this testsuite always runs the
+		    // event loop from the main thread (which has
+		    // tid==pid).
 		    Integer.toString (Pid.get ()),
-		    Integer.toString (AckHandler.signal),
-		    "20"
 		});
 	}
-	ZombieDaemon ()
+	/** . */
+	private void spawn (int sig)
 	{
-	    this (0, false);
+	    AckHandler ack = new AckHandler (new int[]
+		{
+		    Sig.USR1, // child
+		    Sig.USR2, // parent
+		});
+	    signal (sig);
+	    ack.await ();
 	}
-	/**
-	 * Sanity check, no sense in trying to do a kill when there is
-	 * no child.
-	 */
-	private boolean hasChild = false;
-	/**
-	 * Tell the zombie maker to create one child.
-	 */
-	void addChild ()
+	/** Add a Task.  */
+	public void addClone ()
 	{
-	    super.addOffspring ();
-	    hasChild = true;
+	    spawn (Sig.USR1);
 	}
-	/**
-	 * Tell the zombie maker to kill it's child turning it into a
-	 * zombie.
-	 */
-	void fryChild ()
+	/** Delete a Task.  */
+	public void delClone ()
 	{
-	    assertTrue ("Zombie has a child", hasChild);
-	    super.delOffspring ();
-	    hasChild = false;
+	    AckHandler ack = new AckHandler (Sig.USR2);
+	    signal (Sig.USR2);
+	    ack.await ();
+	}
+	/** Add a child Proc.  */
+	public void addFork ()
+	{
+	    spawn (Sig.HUP);
+	}
+	/** Delete a child Proc.  */
+	public void delFork ()
+	{
+	    AckHandler ack = new AckHandler (Sig.USR2);
+	    signal (Sig.INT);
+	    ack.await ();
+	}
+	/** Terminate a fork Proc (creates zombie).  */
+	public void zombieFork ()
+	{
+	    AckHandler ack = new AckHandler (Sig.USR2);
+	    signal (Sig.TERM);
+	    ack.await ();
 	}
 	/**
 	 * Kill the parent, expect an ack from the child (there had
@@ -553,10 +583,89 @@ public class TestLib
 	 */
 	void fryParent ()
 	{
-	    AckHandler ack = new AckHandler ();
-	    assertTrue ("Zombie has a child", hasChild);
+	    AckHandler ack = new AckHandler (Sig.USR2);
 	    signal (Sig.KILL);
 	    ack.await ();
+	}
+    }
+
+    /**
+     * Create an ack daemon.  An ack daemon has process 1, and not
+     * this process, as its parent.
+     *
+     * Since this a daemon, this process won't have to contend with
+     * its exit status - it will go to process 1.
+     */
+    protected class AckDaemonProcess
+	extends AckProcess
+    {
+	/**
+	 * Create the process as a daemon.
+	 */
+	protected int startChild (String stdin, String stdout, String stderr,
+				  String[] argv)
+	{
+	    return Fork.daemon (stdin, stdout, stderr, argv);
+	}
+    }
+
+
+    /**
+     * Create a detached child ack process.
+     *
+     * Since the created process is a direct child of this process,
+     * this process will see a wait event when this exits.  It is most
+     * useful when a controlled process exit is required (see reap).
+     */
+    protected class DetachedAckProcess
+	extends AckProcess
+    {
+	/**
+	 * Create a detached process that is a child of this one.
+	 */
+	protected int startChild (String stdin, String stdout, String stderr,
+				  String[] argv)
+	{
+	    return Fork.exec (stdin, stdout, stderr, argv);
+	}
+    }
+
+    /**
+     * Create an attached child ack process.
+     */
+    protected class AttachedAckProcess
+	extends AckProcess
+    {
+	/**
+	 * Create the process as an attached child.
+	 */
+	protected int startChild (String stdin, String stdout, String stderr,
+				  String[] argv)
+	{
+	    // Capture the child process id as it flys past.
+	    class PidObserver
+		implements Observer
+	    {
+		int pid;
+		public void update (Observable o, Object obj)
+		{
+		    Proc proc = (Proc) obj;
+		    if (!isChildOfMine (proc))
+			return;
+		    pid = proc.getPid ();
+		    Manager.eventLoop.requestStop ();
+		    Manager.host.observableProcAdded.deleteObserver (this);
+		}
+	    }
+	    PidObserver pidObserver = new PidObserver ();
+	    Manager.host.observableProcAdded.addObserver (pidObserver);
+	    // Start the child process, run the event loop until the
+	    // pid is known.
+	    Manager.host.requestCreateAttachedProc (stdin, stdout,
+						    stderr, argv);
+	    assertRunUntilStop ("starting attached child");
+	    // Return that captured PID.
+	    return pidObserver.pid;
 	}
     }
 

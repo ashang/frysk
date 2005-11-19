@@ -292,8 +292,8 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	ZombieDaemon zombie = new ZombieDaemon ();
-	zombie.addChild ();
+	AckProcess zombie = new AckDaemonProcess ();
+	zombie.addFork ();
 	
 	// Do a refresh, find the zombie maker, check it has one child
 	// process, save it.
@@ -332,8 +332,8 @@ public class TestRefresh
     {
 	// Create the zombie maker, and then get it to create one
 	// child.
-	ZombieDaemon zombie = new ZombieDaemon ();
-	zombie.addChild ();
+	AckProcess zombie = new AckDaemonProcess ();
+	zombie.addFork ();
 	
 	// Do a refresh (that includes updating the task list), find
 	// the zombie maker, check that it's child has one task and no
@@ -349,7 +349,7 @@ public class TestRefresh
 
 	// Turn the zombie-child into a true zombie, check things are
 	// updated.
-	zombie.fryChild ();
+	zombie.zombieFork ();
 	Manager.host.requestRefresh (true);
 	Manager.eventLoop.runPending ();
  	assertEquals ("Zombie maker has one child",

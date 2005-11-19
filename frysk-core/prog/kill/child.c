@@ -69,12 +69,14 @@ Where:\n\
 Operation:\n\
 \tEach task, once started, sends <pid> a SIGUSR1 notification, and then\n\
 \twaits <sleep> seconds for signal commands.  Valid signal commands are:\n\
-\t\tSIGUSR1: Perform a clone\n\
-\t\tSIGUSR2: Perform a fork\n\
-\t\tSIGHUP: Perform a blocking waitpid(-1)\n\
-\t\tSIGTERM: Cancel a task\n\
-\t\tSIGINT: Interrupt task, exiting cleanly\n\
-\t\tSIGPIPE: Make the process think it's parent exited.\n\
+\t\tSIGUSR1: Add a clone\n\
+\t\tSIGUSR2: Delete a fork\n\
+\t\tSIGHUP: Add a fork\n\
+\t\tSIGINT: Delete a fork\n\
+\t\tSIGTERM: Terminate a fork, do not reap\n\
+\t\tSIGALRM: Exit.\n\
+\t\tSIGPIPE: (internal) Parent exited event.\n\
+\t\tSIGCHLD: (internal) Child exited event.\n\
 \tFor any operation, the parent also acks by sending a SIGUSR2\n\
 ");
 }
@@ -87,6 +89,7 @@ notify_manager (int sig)
     // Use tkill, instead of kill so that an exact task is signalled.
     // Normal kill can send the signal to "any task" and "any [other]
     // task" may not be ready.
+    printf ("%d:child.tkill %d %d\n", gettid (), manager_pid, sig);
     if (tkill (manager_pid, sig) < 0) {
       perror ("tkill");
       exit (errno);
@@ -95,14 +98,16 @@ notify_manager (int sig)
 }
 
 
-#define MAX_TIDS 100
+#define MAX_PIDS 100
 struct tiddle {
   pid_t pid;
   int sig;
   int nr_threads;
-  pthread_t threads[MAX_TIDS];
+  pthread_t threads[MAX_PIDS];
+  int nr_forks;
+  pid_t forks[MAX_PIDS];
 };
-struct tiddle tids[MAX_TIDS];
+struct tiddle tids[MAX_PIDS];
 pthread_mutex_t tids_mutex;
 
 struct tiddle *find_tiddle ()
@@ -110,7 +115,7 @@ struct tiddle *find_tiddle ()
   pthread_mutex_lock (&tids_mutex);
   int i;
   pid_t pid = gettid ();
-  for (i = 0; i < MAX_TIDS; i++) {
+  for (i = 0; i < MAX_PIDS; i++) {
     if (tids[i].pid == pid) {
       pthread_mutex_unlock (&tids_mutex);
       return &tids[i];
@@ -125,7 +130,7 @@ struct tiddle *new_tiddle ()
   pthread_mutex_lock (&tids_mutex);
   int i;
   pid_t pid = gettid ();
-  for (i = 0; i < MAX_TIDS; i++) {
+  for (i = 0; i < MAX_PIDS; i++) {
     if (tids[i].pid == 0) {
       tids[i].pid = pid;
       pthread_mutex_unlock (&tids_mutex);
@@ -147,7 +152,10 @@ handler (int sig)
 void *
 server (void *np)
 {
-  struct tiddle *tiddle;
+  struct tiddle *tiddle = NULL;
+  // Action for a SIGCHLD: >0 -> waitpid and ack; <0 -> ack; ==0 ->
+  // discard.
+  int sigchld_pid = 0;
  start:
   if (getpid () == gettid ()) {
     // If parent exits, get a SIGPIPE.
@@ -168,7 +176,7 @@ server (void *np)
     int sig = tiddle->sig;
     tiddle->sig = 0;
     switch (sig) {
-    case SIGUSR1: // clone
+    case SIGUSR1: // add clone
       {
 	// Create the new task.
 	pthread_attr_t pthread_attr;
@@ -176,44 +184,14 @@ server (void *np)
 	// pthread_attr_setstacksize (&pthread_attr, PTHREAD_STACK_MIN);
 	pthread_create (&tiddle->threads[tiddle->nr_threads],
 			&pthread_attr, server, (void *) NULL);
-	tiddle->nr_threads = (tiddle->nr_threads + 1) % MAX_TIDS;
+	tiddle->nr_threads = (tiddle->nr_threads + 1) % MAX_PIDS;
 	notify_manager (SIGUSR2);
       }
       break;
-    case SIGUSR2: // fork
-      {
-	pid_t c = fork ();
-	switch (c) {
-	case -1:
-	  perror ("fork");
-	  exit (1);
-	case 0: // child
-	  goto start;
-	  break;
-	default: // parent
-	  notify_manager (SIGUSR2);
-	  break;
-	}
-      }
-      break;
-    case SIGHUP: // reap children
-      {
-	int flags = 0;
-	while (1) {
-	  int status;
-	  pid_t pid = waitpid (-1, &status, flags);
-	  if (pid <= 0)
-	    break;
-	  printf ("-%d\n", pid);
-	  flags = WNOHANG;
-	}
-	notify_manager (SIGUSR2);
-      }
-      break;
-    case SIGTERM: // Terminate an arbitrary task.
+    case SIGUSR2: // delete clone
       {
 	int i;
-	for (i = 0; i < MAX_TIDS; i++) {
+	for (i = 0; i < MAX_PIDS; i++) {
 	  if (tiddle->threads[i] != 0) {
 	    void **arg;
 	    pthread_t thread = tiddle->threads[i];
@@ -226,18 +204,73 @@ server (void *np)
 	notify_manager (SIGUSR2);
       }
       break;
+    case SIGHUP: // add fork
+      {
+	pid_t pid = fork ();
+	switch (pid) {
+	case -1:
+	  perror ("fork");
+	  exit (1);
+	case 0: // child
+	  goto start;
+	  break;
+	default: // parent
+	  tiddle->forks[tiddle->nr_forks] = pid;
+	  tiddle->nr_forks = (tiddle->nr_forks + 1) % MAX_PIDS;
+	  notify_manager (SIGUSR2);
+	  break;
+	}
+      }
+      break;
+    case SIGINT: // delete fork (see also SIGCHLD)
+      {
+	int i;
+	for (i = 0; i < MAX_PIDS; i++) {
+	  if (tiddle->forks[i] != 0) {
+	    sigchld_pid = tiddle->forks[i];
+	    tiddle->forks[i] = 0;
+	    tkill (sigchld_pid, SIGKILL);
+	  }
+	}
+      }
+      break;
+    case SIGTERM: // zombie fork (two parts), see also SIGCHLD)
+      {
+	int i;
+	for (i = 0; i < MAX_PIDS; i++) {
+	  if (tiddle->forks[i] != 0) {
+	    int pid = tiddle->forks[i];
+	    tiddle->forks[i] = 0;
+	    sigchld_pid = -1;
+	    tkill (pid, SIGKILL);
+	    printf ("-%d\n", pid);
+	  }
+	}
+      }
+      break;
+    case SIGCHLD:
+      {
+	if (sigchld_pid > 0) {
+	  int status;
+	  int pid = waitpid (sigchld_pid, &status, 0);
+	  printf ("-%d\n", pid);
+	  sigchld_pid = 0;
+	  notify_manager (SIGUSR2);
+	}
+	else if (sigchld_pid < 0)
+	  notify_manager (SIGUSR2);
+      }
+      break;
     case SIGPIPE: // parent exit
       // Only notify the manager when the parent [correctly] switched
       // to process one.
       if (getppid () == 1)
 	notify_manager (SIGUSR2);
       break;
-    case SIGINT: // exit this
+    case SIGALRM: // exit all
       {
 	printf ("-%d\n", (int) tiddle->pid);
-	return;
       }
-    case SIGALRM: // exit all
       exit (0);
     default:
       abort ();
@@ -273,7 +306,7 @@ main (int argc, char *argv[], char *envp[])
   struct sigaction action;
   memset (&action, 0, sizeof (action));
   sigemptyset (&action.sa_mask);
-  int signals[] = { SIGUSR1, SIGUSR2, SIGTERM, SIGINT, SIGHUP, SIGPIPE, SIGALRM };
+  int signals[] = { SIGUSR1, SIGUSR2, SIGTERM, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaddset (&action.sa_mask, signals[i]);
