@@ -1,5 +1,8 @@
 2005-11-19  Andrew Cagney  <cagney@redhat.com>
 
+	* kill/child.c: Do not report that the main process's parent
+	exited.  Use SIGURG, instead of SIGTERM.
+	
 	* kill/child.c: Have SIGUSR1/SIGUSR2 add/delete a clone;
 	SIGHUP/SIGINT add/delete a fork; SIGTERM create a zombie; and
 	mention SIGALRM, SIGCHLD, and SIGPIPE.

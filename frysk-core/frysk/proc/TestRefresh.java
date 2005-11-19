@@ -101,7 +101,7 @@ public class TestRefresh
     {
 	// Create a daemon process, set things up to watch and verify
 	// the child.
-	ChildTracker tracker = new ChildTracker (new CloneDaemon ());
+	ChildTracker tracker = new ChildTracker (new AckDaemonProcess ());
 
 	// Do several refreshes, check that the child is only added
 	// once, and never removed.
@@ -165,7 +165,7 @@ public class TestRefresh
 
 	// Create a suspended sub-process that contains three cloned
 	// tasks, and wait for it to start.
-	CloneDaemon child = new CloneDaemon (nrTasks - 1);
+	AckProcess child = new AckDaemonProcess (nrTasks - 1);
 
 	// Create a task counter, to count the number discovered and
 	// removed tasks.
@@ -204,7 +204,7 @@ public class TestRefresh
 	// looses two tasks, and that the lost tasks have been
 	// transitioned to the dead state.
 	for (int i = 0; i < nrKills; i++)
-	    child.delOffspring ();
+	    child.delClone ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertEquals ("proc's task count after kills",
@@ -227,7 +227,7 @@ public class TestRefresh
 
 	// Finally, tell the child to add a task back.  Check that the
 	// counts are again updated.
-	child.addOffspring ();
+	child.addClone ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertEquals ("proc's task count after add",
@@ -251,7 +251,7 @@ public class TestRefresh
 	
 	// Create a suspended sub-process with two threads (in
 	// addition to main).
-	Child child = new CloneDaemon (2);
+	Child child = new AckDaemonProcess (2);
 
 	// Track what this gets up to.
 	ChildTracker tracker = new ChildTracker (child);

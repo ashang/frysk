@@ -37,8 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/* A little program that, using SIGUSR1, SIGUSR2, SIGTERM, and SIGINT,
-   SIGHUP, can be used to grow a process / task tree.  */
+/* A little program that, in response to various signals, will grow
+   and/or shrink a process / task tree.  */
 
 #include <signal.h>
 #include <stdio.h>
@@ -73,7 +73,7 @@ Operation:\n\
 \t\tSIGUSR2: Delete a fork\n\
 \t\tSIGHUP: Add a fork\n\
 \t\tSIGINT: Delete a fork\n\
-\t\tSIGTERM: Terminate a fork, do not reap\n\
+\t\tSIGURG: Terminate a fork, do not reap\n\
 \t\tSIGALRM: Exit.\n\
 \t\tSIGPIPE: (internal) Parent exited event.\n\
 \t\tSIGCHLD: (internal) Child exited event.\n\
@@ -81,16 +81,16 @@ Operation:\n\
 ");
 }
 
-pid_t manager_pid;
+pid_t manager_tid;
 static void
 notify_manager (int sig)
 {
-  if (manager_pid > 0) {
+  if (manager_tid > 0) {
     // Use tkill, instead of kill so that an exact task is signalled.
     // Normal kill can send the signal to "any task" and "any [other]
     // task" may not be ready.
-    printf ("%d:child.tkill %d %d\n", gettid (), manager_pid, sig);
-    if (tkill (manager_pid, sig) < 0) {
+    printf ("%d:child.tkill %d %d\n", gettid (), manager_tid, sig);
+    if (tkill (manager_tid, sig) < 0) {
       perror ("tkill");
       exit (errno);
     }
@@ -101,6 +101,7 @@ notify_manager (int sig)
 #define MAX_PIDS 100
 struct tiddle {
   pid_t pid;
+  pid_t tid;
   int sig;
   int nr_threads;
   pthread_t threads[MAX_PIDS];
@@ -114,14 +115,14 @@ struct tiddle *find_tiddle ()
 {
   pthread_mutex_lock (&tids_mutex);
   int i;
-  pid_t pid = gettid ();
+  pid_t tid = gettid ();
   for (i = 0; i < MAX_PIDS; i++) {
-    if (tids[i].pid == pid) {
+    if (tids[i].tid == tid) {
       pthread_mutex_unlock (&tids_mutex);
       return &tids[i];
     }
   }
-  printf ("tid %d not found\n", (int) pid);
+  printf ("tid %d not found\n", (int) tid);
   abort ();
 }
 
@@ -129,25 +130,29 @@ struct tiddle *new_tiddle ()
 {
   pthread_mutex_lock (&tids_mutex);
   int i;
-  pid_t pid = gettid ();
+  pid_t pid = getpid ();
+  pid_t tid = gettid ();
   for (i = 0; i < MAX_PIDS; i++) {
-    if (tids[i].pid == 0) {
+    if (tids[i].tid == 0) {
+      tids[i].tid = tid;
       tids[i].pid = pid;
       pthread_mutex_unlock (&tids_mutex);
       return &tids[i];
     }
   }
-  printf ("no space for %d\n", (int) pid);
+  printf ("no space for %d\n", (int) tid);
   abort ();
 }
 
 static void
 handler (int sig)
 {
-  printf ("%d!%d\n", gettid (), sig);
+  printf ("%d!%d (%s)\n", gettid (), sig, strsignal (sig));
   struct tiddle *tiddle = find_tiddle ();
   tiddle->sig = sig;
 }
+
+int main_pid;
 
 void *
 server (void *np)
@@ -157,15 +162,18 @@ server (void *np)
   // discard.
   int sigchld_pid = 0;
  start:
-  if (getpid () == gettid ()) {
-    // If parent exits, get a SIGPIPE.
-    prctl (PR_SET_PDEATHSIG, SIGPIPE);
+  // Find this tasks entry.
+  tiddle = new_tiddle ();
+  // If a child processes' main thread finds that it's parent exits,
+  // get a SIGPIPE.
+  if (main_pid != tiddle->pid) {
+    if (tiddle->pid == tiddle->tid) {
+      prctl (PR_SET_PDEATHSIG, SIGPIPE);
+    }
   }
   // Signal that this task is ready.
   notify_manager (SIGUSR1);
-  // Find this tasks entry.
-  tiddle = new_tiddle ();
-  printf ("+%d\n", (int) tiddle->pid);
+  printf ("+%d\n", (int) tiddle->tid);
   // handle any signals.
   while (1) {
     // Block waiting on a signal.
@@ -229,12 +237,12 @@ server (void *np)
 	  if (tiddle->forks[i] != 0) {
 	    sigchld_pid = tiddle->forks[i];
 	    tiddle->forks[i] = 0;
-	    tkill (sigchld_pid, SIGKILL);
+	    kill (sigchld_pid, SIGKILL);
 	  }
 	}
       }
       break;
-    case SIGTERM: // zombie fork (two parts), see also SIGCHLD)
+    case SIGURG: // zombie fork (two parts), see also SIGCHLD)
       {
 	int i;
 	for (i = 0; i < MAX_PIDS; i++) {
@@ -291,7 +299,8 @@ main (int argc, char *argv[], char *envp[])
 
   int sec = atol (argv[1]);
   if (argc > 2)
-    manager_pid = atol (argv[2]);
+    manager_tid = atol (argv[2]);
+  main_pid = getpid ();
 
   // Disable buffering; tell the world the pid.
   setbuf (stdout, NULL);
@@ -306,7 +315,7 @@ main (int argc, char *argv[], char *envp[])
   struct sigaction action;
   memset (&action, 0, sizeof (action));
   sigemptyset (&action.sa_mask);
-  int signals[] = { SIGUSR1, SIGUSR2, SIGTERM, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD };
+  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaddset (&action.sa_mask, signals[i]);

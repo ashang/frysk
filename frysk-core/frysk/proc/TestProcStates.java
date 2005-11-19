@@ -77,7 +77,7 @@ public class TestProcStates
      */
     public void testSingleTaskDetachedContinueToAttachedContinue ()
     {
-	Child child = new CloneDaemon ();
+	Child child = new AckDaemonProcess ();
 	Proc proc = child.findProcUsingRefresh ();
 	requestAttachedContinue (proc);
     }
@@ -92,7 +92,7 @@ public class TestProcStates
      */
     public void testMultiTaskDetachedContinueToAttachedContinue ()
     {
-	Child child = new CloneDaemon (2);
+	Child child = new AckDaemonProcess (2);
 	Proc proc = child.findProcUsingRefresh ();
 	requestAttachedContinue (proc);
     }

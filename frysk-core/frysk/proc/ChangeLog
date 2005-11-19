@@ -1,5 +1,9 @@
 2005-11-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Merge .CloneDaemon into .Daemon.
+	* TestProgGet.java, TestProcStates.java, TestTaskObserver.java:
+	Use AckDaemonProcess.
+	
 	* TestLib.java: Replace ZombieDaemon with AckProcess, and
 	AckDaemonProcess.  Add AckAttachedProcess, and AckDetachedProcess.
 	* TestRefresh.java: Update.

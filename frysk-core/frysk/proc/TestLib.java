@@ -349,13 +349,6 @@ public class TestLib
 	    return Fork.daemon (stdin, stdout, stderr, argv);
 	}
 	/**
-	 * Create a daemon child running ARGV.
-	 */
-	Daemon (String[] argv)
-	{
-	    super (argv);
-	}
-	/**
 	 * Ask the daemon process to spawn another clone/fork.  Run
 	 * the eventLoop until the daemon acknowledges that it has
 	 * completed the operation.
@@ -379,20 +372,12 @@ public class TestLib
 	    signal (Sig.USR2);
 	    ack.await ();
 	}
-    }
-
-    /**
-     * A Daemon process that will, on demand, add/remove extra clones (tasks).
-     */
-    class CloneDaemon
-	extends Daemon
-    {
 	/**
 	 * Create a daemon process (one that's parent has exited
 	 * causing it to have process one as the parent).  Also create
 	 * CLONES tasks and possibly use POLLING.
 	 */
-	CloneDaemon (int count, boolean polling)
+	Daemon (int count, boolean polling)
 	{
 	    super (new String[]
 		{
@@ -405,11 +390,11 @@ public class TestLib
 		    polling ? "1" : "0"
 		});
 	}
-	CloneDaemon (int count)
+	Daemon (int count)
 	{
 	    this (count, false);
 	}
-	CloneDaemon ()
+	Daemon ()
 	{
 	    this (0, false);
 	}
@@ -423,7 +408,7 @@ public class TestLib
      * useful when a controlled process exit is required (see reap).
      */
     protected class DetachedChild
-	extends CloneDaemon
+	extends Daemon
     {
 	protected int startChild (String stdin, String stdout, String stderr,
 				  String[] argv)
@@ -472,7 +457,7 @@ public class TestLib
      * Create an attached child process.
      */
     protected class AttachedChild
-	extends CloneDaemon
+	extends Daemon
     {
 	protected int startChild (String stdin, String stdout, String stderr,
 				  String[] argv)
@@ -535,6 +520,12 @@ public class TestLib
 		    Integer.toString (Pid.get ()),
 		});
 	}
+	AckProcess (int count)
+	{
+	    this ();
+	    for (int i = 0; i < count; i++)
+		addClone ();
+	}
 	/** . */
 	private void spawn (int sig)
 	{
@@ -574,7 +565,7 @@ public class TestLib
 	public void zombieFork ()
 	{
 	    AckHandler ack = new AckHandler (Sig.USR2);
-	    signal (Sig.TERM);
+	    signal (Sig.URG);
 	    ack.await ();
 	}
 	/**
@@ -606,6 +597,14 @@ public class TestLib
 				  String[] argv)
 	{
 	    return Fork.daemon (stdin, stdout, stderr, argv);
+	}
+	AckDaemonProcess ()
+	{
+	    super ();
+	}
+	AckDaemonProcess (int count)
+	{
+	    super (count);
 	}
     }
 
