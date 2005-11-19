@@ -1,5 +1,7 @@
 2005-11-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Delete .Daemon.
+	
 	* TestLib.java: Delete .AttachedChild.  Add multi-thread
 	constructor to .AttachedAckProcess.
 	* TestProcStates.java: Use .AttachedAckProcess.
