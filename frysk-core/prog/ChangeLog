@@ -1,3 +1,7 @@
+2005-11-18  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/child.c: New file.
+
 2005-11-18  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* syscall/syscallint.c: New file.
