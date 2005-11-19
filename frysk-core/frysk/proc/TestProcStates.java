@@ -104,7 +104,7 @@ public class TestProcStates
      */
     public void testSingleTaskAttachedContinueToDetachedContinue ()
     {
-	Child child = new AttachedChild ();
+	Child child = new AttachedAckProcess ();
 	Proc proc = child.findProcUsingRefresh ();
 	requestDetachedContinue (proc);
     }
@@ -116,7 +116,7 @@ public class TestProcStates
      */
     public void testMultiTaskAttachedContinueToDetachedContinue ()
     {
-	Child child = new AttachedChild (2);
+	Child child = new AttachedAckProcess (2);
 	Proc proc = child.findProcUsingRefresh ();
 	requestDetachedContinue (proc);
     }
@@ -126,7 +126,7 @@ public class TestProcStates
      */
     public void testMultiTaskAttachedContinueToAttachedContinue ()
     {
-	Child child = new AttachedChild (2);
+	Child child = new AttachedAckProcess (2);
 	Proc proc = child.findProcUsingRefresh ();
 	requestAttachedContinue (proc);
 	requestAttachedContinue (proc);

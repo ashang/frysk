@@ -1,5 +1,9 @@
 2005-11-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Delete .AttachedChild.  Add multi-thread
+	constructor to .AttachedAckProcess.
+	* TestProcStates.java: Use .AttachedAckProcess.
+	
 	* TestLib.java: Delete .DetachedChild.  Add .reap to
 	DetachedAckProcess.
 	* TestRefresh.java: Use DetachedAckProcess.

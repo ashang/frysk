@@ -401,54 +401,6 @@ public class TestLib
     }
 
     /**
-     * Create an attached child process.
-     */
-    protected class AttachedChild
-	extends Daemon
-    {
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv)
-	{
-	    // Capture the child process id as it flys past.
-	    class PidObserver
-		implements Observer
-	    {
-		int pid;
-		public void update (Observable o, Object obj)
-		{
-		    Proc proc = (Proc) obj;
-		    if (!isChildOfMine (proc))
-			return;
-		    pid = proc.getPid ();
-		    Manager.eventLoop.requestStop ();
-		    Manager.host.observableProcAdded.deleteObserver (this);
-		}
-	    }
-	    PidObserver pidObserver = new PidObserver ();
-	    Manager.host.observableProcAdded.addObserver (pidObserver);
-	    // Start the child process, run the event loop until the
-	    // pid is known.
-	    Manager.host.requestCreateAttachedProc (stdin, stdout,
-						    stderr, argv);
-	    assertRunUntilStop ("starting attached child");
-	    // Return that captured PID.
-	    return pidObserver.pid;
-	}
-	AttachedChild ()
-	{
-	    super (0, false);
-	}
-	AttachedChild (int count)
-	{
-	    super (count, false);
-	}
-	AttachedChild (int count, boolean polling)
-	{
-	    super (count, polling);
-	}
-    }
-
-    /**
      * Create an ack-process that can be manipulated using various
      * signals (see below).
      */
@@ -611,6 +563,14 @@ public class TestLib
     protected class AttachedAckProcess
 	extends AckProcess
     {
+	AttachedAckProcess ()
+	{
+	    super ();
+	}
+	AttachedAckProcess (int count)
+	{
+	    super (count);
+	}
 	/**
 	 * Create the process as an attached child.
 	 */
