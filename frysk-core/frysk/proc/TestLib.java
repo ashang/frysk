@@ -406,6 +406,15 @@ public class TestLib
 	    signal (Sig.KILL);
 	    ack.await ();
 	}
+	/**
+	 * Perform an exec.
+	 */
+	void exec ()
+	{
+	    AckHandler ack = new AckHandler (Sig.USR1);
+	    signal (Sig.PWR);
+	    ack.await ();
+	}
     }
 
     /**

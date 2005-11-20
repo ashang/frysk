@@ -1,3 +1,7 @@
+2005-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/child.c: Add support for SIGPWR, causes an exec.
+
 2005-11-19  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/child.c: Do not report that the main process's parent

@@ -1,5 +1,7 @@
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add exec method.
+
 	* TaskState.java: Replace state .startRunning with class .Starting
 	containing sub-states .waitingForStop and .waitingForUnblock.
 	* Task.java: In notifyForked, add blocking observer to fork's

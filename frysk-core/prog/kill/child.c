@@ -75,6 +75,7 @@ Operation:\n\
 \t\tSIGINT: Delete a fork\n\
 \t\tSIGURG: Terminate a fork, do not reap\n\
 \t\tSIGALRM: Exit.\n\
+\t\tSIGPWR: Re-exec this program\n\
 \t\tSIGPIPE: (internal) Parent exited event.\n\
 \t\tSIGCHLD: (internal) Child exited event.\n\
 \tFor any operation, the parent also acks by sending a SIGUSR2\n\
@@ -153,6 +154,8 @@ handler (int sig)
 }
 
 int main_pid;
+char **main_argv;
+char **main_envp;
 
 void *
 server (void *np)
@@ -280,6 +283,14 @@ server (void *np)
 	printf ("-%d\n", (int) tiddle->pid);
       }
       exit (0);
+    case SIGPWR:
+      {
+	execve (main_argv[0], main_argv, main_envp);
+	// Any execve return is an error.
+	perror ("execve");
+	exit (errno);
+      }
+      break;
     default:
       abort ();
     }
@@ -301,6 +312,8 @@ main (int argc, char *argv[], char *envp[])
   if (argc > 2)
     manager_tid = atol (argv[2]);
   main_pid = getpid ();
+  main_argv = argv;
+  main_envp = envp;
 
   // Disable buffering; tell the world the pid.
   setbuf (stdout, NULL);
@@ -315,7 +328,7 @@ main (int argc, char *argv[], char *envp[])
   struct sigaction action;
   memset (&action, 0, sizeof (action));
   sigemptyset (&action.sa_mask);
-  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD };
+  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaddset (&action.sa_mask, signals[i]);
