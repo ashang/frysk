@@ -1,5 +1,7 @@
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Fix typo's, zombied -> disappeared.
+
 	* Task.java: Refactor single constructor into separate unattached,
 	attached clone, and attached main constructors.
 	* Proc.java: Re-organize constructor code.  Delete

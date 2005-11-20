@@ -115,8 +115,8 @@ class TaskState
     }
     TaskState processPerformDisappeared (Task task, Throwable w)
     {
-	logger.log (Level.FINE, "zombie task {0}\n", task); 
-	throw unhandled (task, "PerformZombied");
+	logger.log (Level.FINE, "disappeared task {0}\n", task); 
+	throw unhandled (task, "PerformDisappeared");
     }
     TaskState processRequestStop (Task task)
     {
@@ -437,8 +437,8 @@ class TaskState
 	    }
     	    TaskState processPerformDisappeared (Task task, Throwable w)
     	    {
-		logger.log (Level.FINE, "zombie {0}\n", this); 
-		return zombied;
+		logger.log (Level.FINE, "disappeared {0}\n", this); 
+		return disappeared;
     	    }
 	    TaskState processRequestStop (Task task)
 	    {
@@ -752,7 +752,7 @@ class TaskState
 	    }
 	};
 
-    private static TaskState zombied = new TaskState ("zombied")
+    private static TaskState disappeared = new TaskState ("disappeared")
 	{
 	    TaskState processPerformTerminated (Task task, boolean signal,
 						int value)
@@ -771,12 +771,12 @@ class TaskState
 // 		    task.sendContinue (value);
 // 		else
 // 		    task.sendContinue (0);
-		return zombied;
+		return disappeared;
 	    }
     	    TaskState processPerformDisappeared (Task task, Throwable w)
     	    {
-		logger.log (Level.FINE, "zombie {0}\n", this); 
-		return zombied;
+		logger.log (Level.FINE, "disappeared {0}\n", this); 
+		return disappeared;
     	    }
 	};
 
