@@ -118,9 +118,11 @@ public class TestTaskClonedObserver
 	    implements TaskObserver.Cloned
 	{
 	    TaskSet clonedTasks = new TaskSet ();
+	    TaskSet cloneTasks = new TaskSet ();
 	    public Action updateCloned (Task task, Task clone)
 	    {
 		clonedTasks.add (task);
+		cloneTasks.add (clone);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -152,6 +154,8 @@ public class TestTaskClonedObserver
 	    cloneCount += cloneStopper.clonedTasks.size ();
 	    cloneStopper.clonedTasks.unblock (cloneStopper);
 	    cloneStopper.clonedTasks.clear ();
+	    cloneStopper.cloneTasks.unblock (cloneStopper);
+	    cloneStopper.cloneTasks.clear ();
 	}
 
 	// The first task, included in fib.callCount isn't included in

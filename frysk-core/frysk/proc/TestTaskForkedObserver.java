@@ -120,10 +120,12 @@ public class TestTaskForkedObserver
 	{
 	    int count;
 	    TaskSet forkedTasks = new TaskSet ();
+	    TaskSet forkTasks = new TaskSet ();
 	    public Action updateForked (Task task, Task fork)
 	    {
 		count++;
 		forkedTasks.add (task);
+		forkTasks.add (fork);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -154,6 +156,8 @@ public class TestTaskForkedObserver
 	    forkCount += forkStopper.forkedTasks.size ();
 	    forkStopper.forkedTasks.unblock (forkStopper);
 	    forkStopper.forkedTasks.clear ();
+	    forkStopper.forkTasks.unblock (forkStopper);
+	    forkStopper.forkTasks.clear ();
 	}
 
 	assertEquals ("number of child processes created",

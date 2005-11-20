@@ -57,7 +57,7 @@ class TaskState
     static TaskState initial (Task task, boolean attached)
     {
 	if (attached)
-	    return startRunning;
+	    return Starting.state ();
 	else
 	    return unattached;
     }
@@ -282,56 +282,75 @@ class TaskState
 	};
 
     /**
-     * Task just starting out, wait for it to become ready, and then
-     * let it run.
+     * Task just starting out, wait for it to both become ready (a
+     * stop event) and to be informed that it can run, before
+     * continuing.
      */
-    private static TaskState startRunning = new TaskState ("startRunning")
+    private static class Starting
+    {
+	static TaskState state ()
 	{
-	    TaskState processPerformStopped (Task task)
+	    return waitingForStop;
+	}
+	private static TaskState notifyAttached (Task task)
+	{
+               task.sendSetOptions ();
+               if (task.notifyAttached () > 0)
+                   return blockedContinue;
+	       task.sendContinue (0);
+	       return running;
+	}
+	static TaskState waitingForStop = new TaskState ("Starting.waitingForStop")
 	    {
-		logger.log (Level.FINE, "stop {0}\n", task); 
-		task.sendSetOptions ();
-		task.sendContinue (0);
-		task.notifyAttached ();
-		return running;
-	    }
-	    TaskState processPerformTrapped (Task task)
-	    {
-		logger.log (Level.FINE, "trap {0}\n", task); 
-		task.sendSetOptions ();
-		if (task.notifyAttached () > 0)
-		    return blockedContinue;
-		else {
-		    task.sendContinue (0);
-		    return running;
+		TaskState processPerformStopped (Task task)
+		{
+		    logger.log (Level.FINE, "{0} performStopped\n", task); 
+		    if (task.blockers.size () > 0)
+			return waitingForUnblock;
+		    return notifyAttached (task);
 		}
-	    }
-	    TaskState processPerformTerminating (Task task, boolean signal,
-						 int value)
+		TaskState processPerformTrapped (Task task)
+		{
+		    logger.log (Level.FINE, "{0} performTrapped\n", task);
+		    if (task.blockers.size () > 0)
+			return waitingForUnblock;
+		    return notifyAttached (task);
+		}
+		TaskState processPerformAddObservation (Task task,
+							Observation observation)
+		{
+		    logger.log (Level.FINE, "{0} performAddObservation\n", task); 
+		    observation.add ();
+		    return waitingForStop;
+		}
+		TaskState processRequestUnblock (Task task,
+						 TaskObserver observer)
+		{
+		    logger.log (Level.FINE, "{0} requestUnblock\n", task); 
+		    task.blockers.remove (observer);
+		    return waitingForStop;
+		}
+	    };
+	static TaskState waitingForUnblock = new TaskState ("Starting.waitingForUnblock")
 	    {
-		logger.log (Level.FINE, "terminate {0}\n", task); 
-		task.notifyTerminating (signal, value);
-		if (signal)
-		    task.sendContinue (value);
-		else
-		    task.sendContinue (0);
-		return running;
-	    }
-	    TaskState processPerformTerminated (Task task, boolean signal,
-						int value)
-	    {
-		logger.log (Level.FINE, "terminate {0}\n", task); 
-		task.proc.remove (task);
-		processAttachedTerminated (task, signal, value);
-		return destroyed;
-	    }
-	    TaskState processPerformAddObservation (Task task,
-						    Observation observation)
-	    {
-		observation.add ();
-		return startRunning;
-	    }
-	};
+		TaskState processPerformAddObservation (Task task,
+							Observation observation)
+		{
+		    logger.log (Level.FINE, "{0} performAddObservation\n", task); 
+		    observation.add ();
+		    return waitingForUnblock;
+		}
+		TaskState processRequestUnblock (Task task,
+						 TaskObserver observer)
+		{
+		    logger.log (Level.FINE, "{0} requestUnblock\n", task); 
+		    task.blockers.remove (observer);
+		    if (task.blockers.size () > 0)
+			return waitingForUnblock;
+		    return notifyAttached (task);
+		}
+	    };
+    }
 
     // A manually stopped task.
     private static TaskState stopping = new TaskState ("stopping")
@@ -466,21 +485,17 @@ class TaskState
 	    TaskState processPerformCloned (Task task, Task clone)
 	    {
 		logger.log (Level.FINE, "clone {0}\n", this); 
-		if (task.notifyCloned (clone) > 0) {
+		if (task.notifyCloned (clone) > 0)
 		    return blockedContinue;
-		}
-		else {
-		    task.sendContinue (0);
-		    return running;
-		}
+		task.sendContinue (0);
+		return running;
 	    }
 	    TaskState processPerformForked (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "fork {0}\n", this); 
 		if (task.notifyForked (fork) > 0)
 		    return blockedContinue;
-		else
-		    task.sendContinue (0);
+		task.sendContinue (0);
 		return running;
 	    }
 	    TaskState processPerformAddObservation (Task task,
@@ -640,18 +655,16 @@ class TaskState
 	}
 	public String toString ()
 	{
-	    return "BlockedSignal=" + sig;
+	    return "BlockedSignal,sig=" + sig;
 	}
 	TaskState processRequestUnblock (Task task, TaskObserver observer)
 	{
+	    logger.log (Level.FINE, "{0} requestUnblock\n", this); 
 	    task.blockers.remove (observer);
-	    if (task.blockers.size () == 0) {
-		task.sendContinue (sig);
-		return running;
-	    }
-	    else {
+	    if (task.blockers.size () > 0)
 		return this; // Still blocked.
-	    }
+	    task.sendContinue (sig);
+	    return running;
 	}
     }
     /**

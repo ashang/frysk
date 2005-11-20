@@ -614,8 +614,10 @@ abstract public class Task
 	     i.hasNext (); ) {
 	    TaskObserver.Cloned observer
 		= (TaskObserver.Cloned) i.next ();
-	    if (observer.updateCloned (this, clone) == Action.BLOCK)
+	    if (observer.updateCloned (this, clone) == Action.BLOCK) {
 		blockers.add (observer);
+		clone.blockers.add (observer);
+	    }
 	}
 	return blockers.size ();
     }
@@ -682,8 +684,10 @@ abstract public class Task
 	     i.hasNext (); ) {
 	    TaskObserver.Forked observer
 		= (TaskObserver.Forked) i.next ();
-	    if (observer.updateForked (this, fork) == Action.BLOCK)
+	    if (observer.updateForked (this, fork) == Action.BLOCK) {
 		blockers.add (observer);
+		fork.blockers.add (observer);
+	    }
 	}
 	return blockers.size ();
     }

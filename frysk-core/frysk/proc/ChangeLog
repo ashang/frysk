@@ -1,5 +1,12 @@
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Replace state .startRunning with class .Starting
+	containing sub-states .waitingForStop and .waitingForUnblock.
+	* Task.java: In notifyForked, add blocking observer to fork's
+	list.  Similar for notifyCloned.
+	* TestTaskForkedObserver.java: Update, also unblock the fork.
+	* TestTaskClonedObserver.java: Update, also unblock the clone.
+
 	* TaskState.java: Fix typo's, zombied -> disappeared.
 
 	* Task.java: Refactor single constructor into separate unattached,
