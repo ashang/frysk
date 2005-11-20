@@ -163,7 +163,7 @@ class TaskState
 	logger.log (Level.FINE, "clone task {0}\n", task); 
 	throw unhandled (task, "PerformCloned");
     }
-    TaskState processPerformForked (Task task, Proc fork)
+    TaskState processPerformForked (Task task, Task fork)
     {
 	logger.log (Level.FINE, "fork task {0}\n", task); 
 	throw unhandled (task, "PerformForked");
@@ -474,7 +474,7 @@ class TaskState
 		    return running;
 		}
 	    }
-	    TaskState processPerformForked (Task task, Proc fork)
+	    TaskState processPerformForked (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "fork {0}\n", this); 
 		if (task.notifyForked (fork) > 0)

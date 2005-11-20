@@ -249,8 +249,10 @@ public class LinuxHost
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
 		    // Create an attached and running fork of TASK.
-		    Proc child = new LinuxProc (task, new ProcId (childPid));
-		    task.performForked (child);
+		    ProcId forkId = new ProcId (childPid);
+		    Proc forkProc = new LinuxProc (task, forkId);
+		    Task forkTask = (Task)forkProc.getTasks().getFirst ();
+		    task.performForked (forkTask);
 		}
 		public void exitEvent (int pid, boolean signal, int value,
 				       boolean coreDumped)

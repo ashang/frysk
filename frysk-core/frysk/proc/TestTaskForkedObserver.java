@@ -64,7 +64,7 @@ public class TestTaskForkedObserver
 	    implements TaskObserver.Forked
 	{
 	    int count;
-	    public Action updateForked (Task task, Proc proc)
+	    public Action updateForked (Task task, Task fork)
 	    {
 		count++;
 		return Action.CONTINUE;
@@ -120,7 +120,7 @@ public class TestTaskForkedObserver
 	{
 	    int count;
 	    TaskSet forkedTasks = new TaskSet ();
-	    public Action updateForked (Task task, Proc proc)
+	    public Action updateForked (Task task, Task fork)
 	    {
 		count++;
 		forkedTasks.add (task);

@@ -40,10 +40,11 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		super(observer);
 	}
 
-	public Action updateForked(Task task, Proc child) {
-		System.out.println("TaskForkedObserver.updateForked() " + child.getPid());
+	public Action updateForked(Task task, Task child) {
+		System.out.println("TaskForkedObserver.updateForked() "
+				   + child.getTid());
 		final Task myTask = task;
-		final Proc myChild = child;
+		final Proc myChild = child.getProc ();
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {
 				bottomHalf(myTask, myChild);

@@ -310,14 +310,14 @@ abstract public class Task
     }
 
     /**
-     * (internal) This task forked creating an entirely new child
-     * process.
+     * (internal) This Task forked creating an entirely new child
+     * process containing one (the fork) task.
      */
-    void performForked (final Proc forkArg)
+    void performForked (final Task forkArg)
     {
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
-		Proc fork = forkArg;
+		Task fork = forkArg;
 		public void execute ()
 		{
 		    logger.log (Level.FINE, "task fork {0}\n", Task.this); 
@@ -651,7 +651,7 @@ abstract public class Task
      * Notify all Forked observers that this task forked.  Return the
      * number of blocking observers.
      */
-    int notifyForked (Proc fork)
+    int notifyForked (Task fork)
     {
 	for (Iterator i = forkedObservers.iterator ();
 	     i.hasNext (); ) {

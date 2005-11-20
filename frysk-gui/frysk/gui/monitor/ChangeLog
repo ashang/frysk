@@ -1,3 +1,10 @@
+2005-11-20  Andrew Cagney  <cagney@redhat.com>
+
+	* observers/TaskForkedObserver.java: Update,
+	frysk.proc.TaskObserver .Forked .updateForked passes in the
+	processes Task.
+	* EventLogger.java: Ditto.
+
 2005-11-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskForkedObserver.java (TaskForkedObserver): Renamed a FilterPoint.

@@ -201,9 +201,10 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return Action.CONTINUE;
 	}
 
-	public Action updateForked(Task task, Proc child) {
+	public Action updateForked(Task task, Task child) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX Forked a new proccess: " + child);
+				+ " Host XXX Forked a new proccess: "
+				 + child.getProc ());
 		return Action.CONTINUE;
 	}
 

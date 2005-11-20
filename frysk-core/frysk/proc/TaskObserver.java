@@ -61,16 +61,17 @@ public interface TaskObserver
 
     /**
      * Interface used to notify of Task forked (creating a new child
-     * process) events.
+     * process that contains one Task) events.
      */
     public interface Forked
 	extends TaskObserver
     {
 	/**
-	 * Called when the Task has forked, creating a child Proc.
-	 * Return Action.BLOCK if the observer wants the task to block.
+	 * Called when the Task has forked, creating a child Proc
+	 * containing a single Task.  Return Action.BLOCK if the
+	 * observer wants the task to block.
 	 */
-	Action updateForked (Task task, Proc child);
+	Action updateForked (Task task, Task fork);
     }
 
     /**
