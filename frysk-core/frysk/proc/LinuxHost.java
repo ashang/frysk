@@ -200,9 +200,11 @@ public class LinuxHost
 	if (myTask == null) {
 	    // If not, find this process and add this task to it.
 	    Proc myProc = getSelf ();
-	    myTask = new LinuxTask (myProc, myTaskId, false);
+	    myTask = new LinuxTask (myProc, myTaskId);
 	}
-	new LinuxProc (myTask, new ProcId (pid));
+	Proc proc = new LinuxProc (myTask, new ProcId (pid));
+	// XXX: Notify host observers that a child was forked.
+	new LinuxTask (proc);
     }
 
     // When there's a SIGCHLD, poll the kernel's waitpid() queue
@@ -233,9 +235,7 @@ public class LinuxHost
 		    // before that event arrives.
 		    Task task = get (new TaskId (pid));
 		    // Create an attached, and running, clone of TASK.
-		    Task clone = new LinuxTask (task.proc,
-						new TaskId (clonePid),
-						true);
+		    Task clone = new LinuxTask (task, new TaskId (clonePid));
 		    task.performCloned (clone);
 		}
 		public void forkEvent (int pid, int childPid)
@@ -251,7 +251,8 @@ public class LinuxHost
 		    // Create an attached and running fork of TASK.
 		    ProcId forkId = new ProcId (childPid);
 		    Proc forkProc = new LinuxProc (task, forkId);
-		    Task forkTask = (Task)forkProc.getTasks().getFirst ();
+		    // The main task.
+		    Task forkTask = new LinuxTask (forkProc);
 		    task.performForked (forkTask);
 		}
 		public void exitEvent (int pid, boolean signal, int value,

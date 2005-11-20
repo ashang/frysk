@@ -77,13 +77,27 @@ public class LinuxTask
     }
 
     /**
-     * Create a new possibly attached, definitely running Task, that
-     * belongs to Proc.
+     * Create a new unattached Task.
      */
-    LinuxTask (Proc process, TaskId id, boolean attached)
+    LinuxTask (Proc proc, TaskId id)
     {
-	super (process, id, attached);
-	logger.log (Level.FINE, "construct task {0}\n", id); 
+	super (proc, id);
+	setupMapsXXX ();
+    }
+    /**
+     * Create a new attached clone of Task.
+     */
+    LinuxTask (Task task, TaskId clone)
+    {
+	super (task, clone);
+	setupMapsXXX ();
+    }
+    /**
+     * Create a new attached main Task of Proc.
+     */
+    LinuxTask (Proc proc)
+    {
+	super (proc);
 	setupMapsXXX ();
     }
 

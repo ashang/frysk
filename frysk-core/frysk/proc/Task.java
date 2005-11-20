@@ -129,16 +129,41 @@ abstract public class Task
     public boolean traceSyscall;  	// Trace syscall entry and exit
 
     /**
-     * Create a new, possibly attached, definitely running, Task.
+     * Create a new Task skeleton.
      */
-    protected Task (Proc proc, TaskId id, boolean attached)
+    private Task (TaskId id, Proc proc)
     {
-	logger.log (Level.FINE, "create attached task {0}\n", id); 
 	this.proc = proc;
 	this.id = id;
-	state = TaskState.initial (this, attached);
 	proc.add (this);
 	proc.host.add (this);
+    }
+    /**
+     * Create a new unattached Task.
+     */
+    protected Task (Proc proc, TaskId id)
+    {
+	this (id, proc);
+	state = TaskState.initial (this, false);
+	logger.log (Level.FINE, "create unattached task {0}\n", this); 
+    }
+    /**
+     * Create a new attached clone of Task.
+     */
+    protected Task (Task task, TaskId cloneId)
+    {
+	this (cloneId, task.proc);
+	state = TaskState.initial (this, true);
+	logger.log (Level.FINE, "create attached clone task {0}\n", this); 
+    }
+    /**
+     * Create a new attached main Task of Proc.
+     */
+    protected Task (Proc proc)
+    {
+	this (new TaskId (proc.getPid ()), proc);
+	state = TaskState.initial (this, true);
+	logger.log (Level.FINE, "create attached main task {0}\n", id); 
     }
 
     // Send operation to corresponding underlying [kernel] task.

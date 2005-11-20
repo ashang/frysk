@@ -1,5 +1,14 @@
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java: Refactor single constructor into separate unattached,
+	attached clone, and attached main constructors.
+	* Proc.java: Re-organize constructor code.  Delete
+	sendNewAttachedTask.
+	* LinuxTask.java: Ditto.
+	* LinuxProc.java: Update.
+	* LinuxHost.java: Update.  Explicitly create an attached processes
+	first task.
+
 	* LinuxHost.java: Pass the forked process's only task to Task
 	.performeForked.
 	* TaskObserver.java: Change .Forked.updateForked fork parameter to

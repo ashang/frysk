@@ -88,25 +88,19 @@ public abstract class Proc
     abstract public String getCommand ();
 
     /**
-     * Create a new, possibly attached, definitely running, Proc'ess.
-     * Since PARENT could be NULL, explicitly specify the HOST.
+     * Create a new Proc skeleton.  Since PARENT could be NULL,
+     * explicitly specify the HOST.
      */
-    private Proc (Host host, Proc parent, ProcId id, boolean attached)
+    private Proc (ProcId id, Proc parent, Host host)
     {
-	logger.log (Level.FINE, "create proc {0}\n", id); 
 	this.host = host;
 	this.id = id;
 	this.parent = parent;
-	state = ProcState.initial (this, attached);
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add (this);
-	// Keep our manager informed.
+	// Keep host informed.
 	host.add (this);
-	if (attached)
-	    // XXX: Only do this when attached; when detached require
-	    // a further system-poll to get the info.
-	    sendNewAttachedTask (new TaskId (id.id));
     }
     /**
      * Create a new, unattached, running, Proc.  Since PARENT could be
@@ -114,22 +108,19 @@ public abstract class Proc
      */
     protected Proc (Host host, Proc parent, ProcId id)
     {
-	this (host, parent, id, false);
-	logger.log (Level.FINE, "create proc {0}\n", id); 
+	this (id, parent, host);
+	state = ProcState.initial (this, false);
+	logger.log (Level.FINE, "create detached proc {0}\n", this); 
     }
     /**
      * Create a new, attached, running, process forked by Task.
      */
     protected Proc (Task task, ProcId forkId)
     {
-	this (task.proc.host, task.proc, forkId, true);
-	logger.log (Level.FINE, "create forked proc {0}\n", forkId); 
+	this (forkId, task.proc, task.proc.host);
+	state = ProcState.initial (this, true);
+	logger.log (Level.FINE, "create attached forked proc {0}\n", this); 
     }
-
-    /**
-     * Create a new, definitely attached, definitely running, task.
-     */
-    abstract void sendNewAttachedTask (TaskId id);
 
     abstract void sendRefresh ();
 

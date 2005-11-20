@@ -116,8 +116,7 @@ public class LinuxProc
 		else {
 		    // Add the process (it currently isn't attached).
 		    Task newTask = new LinuxTask (LinuxProc.this,
-						  new TaskId (tid),
-						  false);
+						  new TaskId (tid));
 		    added.put (newTask.id, newTask);
 		}
 	    }
@@ -136,12 +135,6 @@ public class LinuxProc
 	}
     }
 
-    void sendNewAttachedTask (TaskId id)
-    {
-	logger.log (Level.FINE, "send new attached task\n", id); 
-	// XXX: Should be abstracted.
-	new LinuxTask (this, id, true);
-    }
     Auxv[] sendrecAuxv ()
     {
 	class BuildAuxv
