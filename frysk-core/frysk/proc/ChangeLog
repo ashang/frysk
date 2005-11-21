@@ -1,3 +1,9 @@
+2005-11-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: In .detaching state, handle PerformForked,
+	PerformCloned, PerformExeced, PerformSignaled.
+	* TestTaskObserverDetach.java: New file.
+
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserver.java: Add class .CloneObserver.  Add tests

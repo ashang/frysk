@@ -597,6 +597,36 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
+	    TaskState processPerformForked (Task task, Task fork)
+	    {
+		logger.log (Level.FINE, "{0} PerformForked\n", this);
+		fork.sendDetach (0);
+		task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
+	    TaskState processPerformCloned (Task task, Task clone)
+	    {
+		logger.log (Level.FINE, "{0} PerformCloned\n", this);
+		clone.sendDetach (0);
+		task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
+	    TaskState processPerformExeced (Task task)
+	    {
+		logger.log (Level.FINE, "{0} PerformExeced\n", this);
+		task.sendDetach (0);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
+	    TaskState processPerformSignaled (Task task, int signal)
+	    {
+		logger.log (Level.FINE, "{0} PerformSignaled\n", this);
+		task.sendDetach (signal);
+		task.proc.performTaskDetachCompleted (task);
+		return unattached;
+	    }
 	};
 
     private static TaskState detachingInSyscall = new TaskState ("detachingInSyscall")
