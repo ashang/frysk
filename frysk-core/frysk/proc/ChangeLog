@@ -1,5 +1,10 @@
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskClonedObserver.java: Delete testBlockingTaskCloneObserver.
+	* TestTaskForkedObserver.java: Delete testBlockingTaskForkObserver
+	* TestTaskObserverBlocked.java: Add .testBlockingFibonacciFork,
+	and testBlockingFibonacciClone.
+	
 	* TestTaskObserverBlocked.java: New.
 	* TestTaskObserver.java: Move .testGetBlockers, .SpawnObserver,
 	.CloneObserver, .ForkObserver, .testBlockedForkUnblockChildFirst,
