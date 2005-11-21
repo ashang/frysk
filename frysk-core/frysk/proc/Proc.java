@@ -207,12 +207,12 @@ public abstract class Proc
      */
     void performTaskAttachCompleted (final Task theTask)
     {
+	logger.log (Level.FINE, "{0} performTaskAttachCompleted\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "task attached execute {0}\n", theTask); 
 		    state = state.processPerformTaskAttachCompleted (Proc.this,
 								     task);
 		}
@@ -225,14 +225,34 @@ public abstract class Proc
      */
     void performTaskDetachCompleted (final Task theTask)
     {
+	logger.log (Level.FINE, "{0} performTaskDetachCompleted\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "task detached {0}\n", theTask); 
 		    state = state.processPerformTaskDetachCompleted (Proc.this,
 								     task);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process that the corresponding task has
+     * completed its detach.
+     */
+    void performTaskDetachCompleted (final Task theTask, final Task theClone)
+    {
+	logger.log (Level.FINE, "{0} performTaskDetachCompleted/clone\n",
+		    this); 
+	Manager.eventLoop.add (new ProcEvent ()
+	    {
+		Task task = theTask;
+		Task clone = theClone;
+		public void execute ()
+		{
+		    state = state.processPerformTaskDetachCompleted
+			(Proc.this, task, clone);
 		}
 	    });
     }

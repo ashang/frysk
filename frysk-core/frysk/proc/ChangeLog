@@ -1,5 +1,13 @@
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (performTaskAttachCompleted(Task,Task)): Add
+	* ProcState.java: Handle performTaskAttachCompleted.
+	* TaskState.java: In .detaching, when a clone, notify owning
+	process of the clone Task.  Replace .initial with .mainState,
+	.unattachedState, and .clonedState.  Replace .Stating states with
+	.Start states.  Simplify.
+	* Task.java: Update.
+	
 	* TaskState.java: Delete transition from detaching to
 	detachingInSyscall.
 

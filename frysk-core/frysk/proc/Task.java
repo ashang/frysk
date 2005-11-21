@@ -144,8 +144,8 @@ abstract public class Task
     protected Task (Proc proc, TaskId id)
     {
 	this (id, proc);
-	state = TaskState.initial (this, false);
-	logger.log (Level.FINE, "create unattached task {0}\n", this); 
+	state = TaskState.unattachedState ();
+	logger.log (Level.FINE, "{0} create unattached\n", this); 
     }
     /**
      * Create a new attached clone of Task.
@@ -153,8 +153,8 @@ abstract public class Task
     protected Task (Task task, TaskId cloneId)
     {
 	this (cloneId, task.proc);
-	state = TaskState.initial (this, true);
-	logger.log (Level.FINE, "create attached clone task {0}\n", this); 
+	state = TaskState.clonedState (task);
+	logger.log (Level.FINE, "{0} create attached clone\n", this); 
     }
     /**
      * Create a new attached main Task of Proc.
@@ -162,8 +162,8 @@ abstract public class Task
     protected Task (Proc proc)
     {
 	this (new TaskId (proc.getPid ()), proc);
-	state = TaskState.initial (this, true);
-	logger.log (Level.FINE, "create attached main task {0}\n", id); 
+	state = TaskState.mainState ();
+	logger.log (Level.FINE, "{0} create attached main\n", this); 
     }
 
     // Send operation to corresponding underlying [kernel] task.

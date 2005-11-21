@@ -98,13 +98,22 @@ abstract class ProcState
     }
     ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
     {
-	logger.log (Level.FINE, "attached task {0}\n", task); 
+	logger.log (Level.FINE, "{0} processPerformTaskAttachCompleted\n",
+		    proc); 
 	throw unhandled (proc, "PerformTaskAttachCompleted");
     }
     ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
     {
 	logger.log (Level.FINE, "detached task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskDetachCompleted");
+    }
+    ProcState processPerformTaskDetachCompleted (Proc proc, Task task,
+						 Task clone)
+    {
+	logger.log (Level.FINE,
+		    "{0} processPerformTaskDetachCompleted/clone\n",
+		    proc); 
+	throw unhandled (proc, "PerformTaskDetachCompleted/clone");
     }
     ProcState processPerformTaskStopCompleted (Proc proc, Task task)
     {
@@ -346,15 +355,23 @@ abstract class ProcState
 	    }
 	    ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
 	    {
-		// As each task reports that it has detached, remove
-		// it from the list.  Once there are none left the
-		// detach is done.
+		// As each task reports that it has detached, add it
+		// to the detached list.
 		attachedTasks.remove (task);
 		if (attachedTasks.size () > 0)
+		    // Still more tasks to detach.
 		    return this;
 		// All done, notify.
 		proc.observableDetached.notify (proc);
 		return unattached;
+	    }
+	    ProcState processPerformTaskDetachCompleted (Proc proc, Task task,
+							 Task clone)
+	    {
+		attachedTasks.remove (task);
+		// Doh, a clone, need to also wait for that to detach.
+		attachedTasks.add (clone);
+		return this;
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)

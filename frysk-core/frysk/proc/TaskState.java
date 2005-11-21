@@ -52,16 +52,32 @@ class TaskState
 {
     private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
-     * Return the tasks initial state.
+     * Return the initial state of a detached task.
      */
-    static TaskState initial (Task task, boolean attached)
+    static TaskState unattachedState ()
     {
-	if (attached)
-	    return Starting.state ();
-	else
-	    return unattached;
+	return unattached;
     }
-
+    /**
+     * Return the initial state of the Main task.
+     */
+    static TaskState mainState ()
+    {
+	return Start.waitForStop;
+    }
+    /**
+     * Return the initial state of a cloned task.
+     */
+    static TaskState clonedState (Task parent)
+    {
+	if (parent.state == detaching)
+	    return detaching;
+	else if (parent.state == running)
+	    return Start.waitForStop;
+	else
+	    throw new RuntimeException ("clone's parent in unexpected state "
+					+ parent);
+    }
     protected TaskState (String state)
     {
 	super (state);
@@ -160,7 +176,7 @@ class TaskState
     }
     TaskState processPerformCloned (Task task, Task clone)
     {
-	logger.log (Level.FINE, "clone task {0}\n", task); 
+	logger.log (Level.FINE, "{0} PerformCloned\n", task); 
 	throw unhandled (task, "PerformCloned");
     }
     TaskState processPerformForked (Task task, Task fork)
@@ -282,72 +298,66 @@ class TaskState
 	};
 
     /**
-     * Task just starting out, wait for it to both become ready (a
-     * stop event) and to be informed that it can run, before
-     * continuing.
+     * Task just starting out, wait for it to both become ready, and
+     * to be unblocked, before continuing.
      */
-    private static class Starting
+    static class Start
+	extends TaskState
     {
-	static TaskState state ()
+	Start (String name)
 	{
-	    return waitingForStop;
+	    super ("Start." + name);
 	}
-	private static TaskState notifyAttached (Task task)
+	private static TaskState attemptAttach (Task task)
 	{
-               task.sendSetOptions ();
-               if (task.notifyAttached () > 0)
-                   return blockedContinue;
-	       task.sendContinue (0);
-	       return running;
+	    task.sendSetOptions ();
+	    if (task.blockers.size () > 0) {
+		return Start.blocked;
+	    }
+	    if (task.notifyAttached () > 0) {
+		return blockedContinue;
+	    }
+	    task.sendContinue (0);
+	    return running;
 	}
-	static TaskState waitingForStop = new TaskState ("Starting.waitingForStop")
+	TaskState processPerformAddObservation (Task task,
+						Observation observation)
+	{
+	    logger.log (Level.FINE, "{0} PerformAddObservation\n",
+			task); 
+	    observation.add ();
+	    return this;
+	}
+	
+	private static TaskState waitForStop = new Start ("waitForStop")
 	    {
-		TaskState processPerformStopped (Task task)
+		TaskState processRequestUnblock (Task task,
+						 TaskObserver observer)
 		{
-		    logger.log (Level.FINE, "{0} performStopped\n", task); 
-		    if (task.blockers.size () > 0)
-			return waitingForUnblock;
-		    return notifyAttached (task);
+		    logger.log (Level.FINE, "{0} RequestUnblock\n", task); 
+		    task.blockers.remove (observer);
+		    return Start.waitForStop;
 		}
 		TaskState processPerformTrapped (Task task)
 		{
-		    logger.log (Level.FINE, "{0} performTrapped\n", task);
-		    if (task.blockers.size () > 0)
-			return waitingForUnblock;
-		    return notifyAttached (task);
+		    logger.log (Level.FINE, "{0} PerformTrapped\n", task);
+		    return attemptAttach (task);
 		}
-		TaskState processPerformAddObservation (Task task,
-							Observation observation)
+		TaskState processPerformStopped (Task task)
 		{
-		    logger.log (Level.FINE, "{0} performAddObservation\n", task); 
-		    observation.add ();
-		    return waitingForStop;
-		}
-		TaskState processRequestUnblock (Task task,
-						 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} requestUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    return waitingForStop;
+		    logger.log (Level.FINE, "{0} PerformStopped\n", task);
+		    return attemptAttach (task);
 		}
 	    };
-	static TaskState waitingForUnblock = new TaskState ("Starting.waitingForUnblock")
+	
+	private static TaskState blocked = new Start ("blocked")
 	    {
-		TaskState processPerformAddObservation (Task task,
-							Observation observation)
-		{
-		    logger.log (Level.FINE, "{0} performAddObservation\n", task); 
-		    observation.add ();
-		    return waitingForUnblock;
-		}
 		TaskState processRequestUnblock (Task task,
 						 TaskObserver observer)
 		{
-		    logger.log (Level.FINE, "{0} requestUnblock\n", task); 
+		    logger.log (Level.FINE, "{0} RequestUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    if (task.blockers.size () > 0)
-			return waitingForUnblock;
-		    return notifyAttached (task);
+		    return attemptAttach (task);
 		}
 	    };
     }
@@ -484,7 +494,7 @@ class TaskState
 	    }
 	    TaskState processPerformCloned (Task task, Task clone)
 	    {
-		logger.log (Level.FINE, "clone {0}\n", this); 
+		logger.log (Level.FINE, "{0} PerformedClone\n", task); 
 		if (task.notifyCloned (clone) > 0)
 		    return blockedContinue;
 		task.sendContinue (0);
@@ -601,10 +611,10 @@ class TaskState
 	    }
 	    TaskState processPerformCloned (Task task, Task clone)
 	    {
-		logger.log (Level.FINE, "{0} PerformCloned\n", this);
-		clone.sendDetach (0);
+		logger.log (Level.FINE, "{0} PerformCloned\n", task);
 		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
+		// Let the proc sort out the clone.
+		task.proc.performTaskDetachCompleted (task, clone);
 		return unattached;
 	    }
 	    TaskState processPerformExeced (Task task)
