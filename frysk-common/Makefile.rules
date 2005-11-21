@@ -188,47 +188,6 @@ SUFFIXES += .javain
 	mv -f $*.tmp $@
 
 
-# Since a single .java file can result in multiple .class files (due
-# to inner classes) trying to track all those would get complicated.
-# Instead generate a .classes file containing the list of .class files
-# that will be created and use that for all dependencies.
-
-# jv-scan occasionally gets it wrong generating extra classes, work
-# around this by checking that each class really exists.
-
-# Need to store the .class files in a separate directory as otherwize
-# GCJ will include those instead of the original .java files.
-
-SUFFIXES += .classes
-.java.classes:
-	mkdir -p $(GEN_CLASSDIR)
-	rm -f $(GEN_CLASSDIR)/$*.class $(GEN_CLASSDIR)/$*\$$*.class $*.log
-	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) $< 2>&1 | tee $*.log
-	if test -s $*.log ; \
-	then rm $*.log ; false ; \
-	fi
-	echo '# $<' > $*.classes.tmp
-	( cd $(GEN_CLASSDIR) > /dev/null && ls $*.class $*\$$*.class 2>/dev/null ) \
-		| sed -e 's,.class$$,,' \
-		| sort -f \
-		> $*.classes.tmp
-	mv -f $*.classes.tmp $*.classes
-#	jv-scan --list-class '$<' | tr '[ ]' '[\n]' | \
-#		while read class ; do \
-#			file=`echo $${class} | tr '[.]' '[/]'`.class ; \
-#			if test -r $${file} ; then \
-#				echo $${class} ; \
-#			else \
-#				echo "# $${class} -- jv-scan BUG?" ; \
-#			fi \
-#		done >> $*.classes.tmp
-
-# clean up the mess
-clean-local: clean-class-files
-.PHONY: clean-class-files
-clean-class-files:
-	rm -rf $(GEN_CLASSDIR)
-
 # Generate a .h file (using CNI) from the corresponding .java file.
 
 # A single .java file can result in multiple .class files (due to

@@ -248,7 +248,7 @@ lib${dir}.so: lib${dir}.a
 	echo TestRunner.java >> \$@.tmp
 	mv \$@.tmp \$@
 
-# Using that list, convert to .classes and from there to a .jar.
+# Using that list, convert to .class files and from there to a .jar.
 # Since java compilers don't abort on a warning, fake the behavior by
 # checking for any output.
 
@@ -289,7 +289,6 @@ for suffix in .mkjava .shjava .javain ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	echo "GEN_SOURCES += ${file}"
-	echo "${d}/${b}.classes: ${d}/${b}.o"
 	echo "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
 	echo "BUILT_SOURCES += ${d}/${b}.java"
     done
@@ -309,6 +308,7 @@ for suffix in .java ; do
 	class=`echo ${name} | tr '[/]' '[.]'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
+	test -r "${d}/${b}.javain" && continue
 	echo "GEN_SOURCES += ${file}"
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES ="

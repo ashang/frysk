@@ -1,5 +1,9 @@
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.java.classes): Delete rule.
+	* Makefile.gen.sh: Do not generate .classes.o dependency.  Do not
+	add a .java file to GEN_SOURCES when there is a .javain.
+
 	* Makefile.gen.sh ($(GEN_CLASSDIR)/files): Only add files starting
 	with a letter.
 
