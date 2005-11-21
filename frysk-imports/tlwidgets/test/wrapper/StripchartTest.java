@@ -1,7 +1,7 @@
 //package stripchartTest;
 
-import org.gnu.gdk.EventMask;
 import com.redhat.ftk.Stripchart;
+import org.gnu.gdk.EventMask;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.WindowType;
