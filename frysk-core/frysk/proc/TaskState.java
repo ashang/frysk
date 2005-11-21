@@ -245,7 +245,13 @@ class TaskState
 	{
 	    TaskState processPerformStopped (Task task)
 	    {
-		logger.log (Level.FINE, "stop {0}\n", task); 
+		logger.log (Level.FINE, "{0} PerformStopped\n", task); 
+		task.proc.performTaskAttachCompleted (task);
+		return attached;
+	    }
+	    TaskState processPerformTrapped (Task task)
+	    {
+		logger.log (Level.FINE, "{0} PerformTrapped\n", task); 
 		task.proc.performTaskAttachCompleted (task);
 		return attached;
 	    }
