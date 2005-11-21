@@ -241,8 +241,8 @@ lib${dir}.so: lib${dir}.a
 	    dirs="\$\$dirs \$\$p" ; \
 	    for g in ${dirs} ; do \
 		find \$\$d/\$\$g \
-		    -name '*#*' -prune -o \
-                    -name '*.java' -print ; \
+	            -name '*#*' -prune -o \
+                    -name '[A-Za-z]*.java' -print ; \
 	    done ; \
 	done > \$@.tmp
 	echo TestRunner.java >> \$@.tmp
