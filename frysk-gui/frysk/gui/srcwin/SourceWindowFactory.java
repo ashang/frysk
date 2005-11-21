@@ -222,20 +222,21 @@ public class SourceWindowFactory {
                         String text = reader.readLine()+"\n";
                         source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
                         if(execLines[line-1] == 1)
-                            source.getLine(line).setExecutable(true);
+                            source.getLine(line++).setExecutable(true);
                         else
-                            source.getLine(line).setExecutable(false);
+                            source.getLine(line++).setExecutable(false);
                         
                         offset += text.length();
                     }
                 }
                 catch (Exception e){
-                    
+                	
                 }
                 
                 funcLines = new String[6];
-                for(int i = 0; i < funcLines.length; i++)
+                for(int i = 0; i < funcLines.length; i++){
                 	funcLines[i] = source.getLine(i + 4).getText();
+                }
                     
                 image.addFunction("min", source.getFileName(),
                 		4, 4 + funcLines.length,

@@ -1,3 +1,13 @@
+2005-11-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (mouseEvent): Added, currently does not allow
+	breakpoint or trace related functionality due to ambiguities
+	regarding inlined code.
+	* SourceViewWidget.java (mouseEvent): Now checks to make sure there is
+	inline code before creating an InlineViewer.
+	* SourceWindowFactory.java (createSourceWindow): Fixed 
+	NullPointerException as a result of not incrementing a variable.
+
 2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (createSourceWindow): Moved inline code to

@@ -41,7 +41,17 @@ package frysk.gui.srcwin;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.GC;
+import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
+import org.gnu.gtk.Label;
+import org.gnu.gtk.Menu;
+import org.gnu.gtk.MenuItem;
+import org.gnu.gtk.TextIter;
+import org.gnu.gtk.TextWindowType;
+import org.gnu.gtk.WindowType;
+import org.gnu.gtk.event.MenuItemEvent;
+import org.gnu.gtk.event.MenuItemListener;
+import org.gnu.gtk.event.MouseEvent;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
@@ -74,6 +84,69 @@ public class InlineViewer extends SourceViewWidget {
 		this.showEllipsis = !!this.showEllipsis;
 	}
     
+	public boolean mouseEvent(MouseEvent event){
+		int x = (int) event.getX();
+		int y = (int) event.getY();
+		
+		// Right click over the main text area will trigger the variable-finding
+		if(event.getButtonPressed() == MouseEvent.BUTTON3 
+				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS) &&
+				event.getWindow().equals(this.getWindow(TextWindowType.TEXT))){
+			
+			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
+			
+			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
+			
+			final Variable var = this.buf.getVariable(iter);
+			
+			Menu m = new Menu();
+			MenuItem mi = new MenuItem("Display variable value...", false);
+			m.append(mi);
+			if(var != null){
+				mi.addListener(new MenuItemListener() {
+					public void menuItemEvent(MenuItemEvent arg0) {
+						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
+						popup.add(new Label(var.getName()+ " = 0xfeedcalf"));
+						popup.showAll();
+					}
+				});
+			}
+			else{
+				mi.setSensitive(false);
+			}
+
+			m.showAll();
+			m.popup();
+			
+			return true;
+		}
+		// clicked on the border
+		else if(event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
+				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)){
+			Point p = this.windowToBufferCoords(TextWindowType.TEXT, 0, y);
+			
+			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
+			
+			int theLine = iter.getLineNumber();
+//			boolean overNested = false;
+			if(theLine > this.buf.getCurrentLine() && expanded){
+				theLine--;
+//				overNested = true;
+			}
+			
+			final int lineNum = theLine;
+			
+			// Left click in the margin for a line with inline code - toggle the display of it
+			if(event.getButtonPressed() == MouseEvent.BUTTON1 &&
+					lineNum == this.buf.getCurrentLine() &&
+					this.buf.hasInlineCode(lineNum)){
+				this.toggleChild();
+			}
+		}
+		
+		return false;
+	}
+	
     protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
         Layout lo = this.createLayout(""+(number + ((InlineBuffer) this.buf).getFirstLine()));
         lo.setAlignment(Alignment.RIGHT);

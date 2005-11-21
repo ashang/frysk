@@ -285,7 +285,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			// Left click in the margin for a line with inline code - toggle the display of it
 			if(event.getButtonPressed() == MouseEvent.BUTTON1 &&
-					lineNum == this.buf.getCurrentLine()){
+					lineNum == this.buf.getCurrentLine() &&
+					this.buf.hasInlineCode(lineNum)){
 				this.toggleChild();
 			}
 		}
