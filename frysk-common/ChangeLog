@@ -1,3 +1,7 @@
+2005-11-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh ($(GEN_CLASSDIR)/files): Ignore '*#*' files.
+
 2005-11-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (gij.sh): Append any existing CLASSPATH value to

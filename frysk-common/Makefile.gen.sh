@@ -240,7 +240,9 @@ lib${dir}.so: lib${dir}.a
 	    esac ; \
 	    dirs="\$\$dirs \$\$p" ; \
 	    for g in ${dirs} ; do \
-		find \$\$d/\$\$g -name '*.java' -print ; \
+		find \$\$d/\$\$g \
+		    -name '*#*' -prune -o \
+                    -name '*.java' -print ; \
 	    done ; \
 	done > \$@.tmp
 	echo TestRunner.java >> \$@.tmp
