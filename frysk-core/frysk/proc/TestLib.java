@@ -336,9 +336,17 @@ public class TestLib
     protected abstract class AckProcess
 	extends Child
     {
+	static final int childAck = Sig.USR1;
+	static final int parentAck = Sig.USR2;
+	static final int addCloneSig = Sig.USR1;
+	static final int delCloneSig = Sig.USR2;
+	static final int addForkSig = Sig.HUP;
+	static final int delForkSig = Sig.INT;
+	static final int zombieForkSig = Sig.URG;
+	static final int execSig = Sig.PWR;
 	AckProcess ()
 	{
-	    super (Sig.USR1, new String[]
+	    super (childAck, new String[]
 		{
 		    "./prog/kill/child",
 		    "20",
@@ -359,8 +367,7 @@ public class TestLib
 	{
 	    AckHandler ack = new AckHandler (new int[]
 		{
-		    Sig.USR1, // child
-		    Sig.USR2, // parent
+		    childAck, parentAck
 		});
 	    signal (sig);
 	    ack.await ();
@@ -368,32 +375,32 @@ public class TestLib
 	/** Add a Task.  */
 	public void addClone ()
 	{
-	    spawn (Sig.USR1);
+	    spawn (addCloneSig);
 	}
 	/** Delete a Task.  */
 	public void delClone ()
 	{
-	    AckHandler ack = new AckHandler (Sig.USR2);
-	    signal (Sig.USR2);
+	    AckHandler ack = new AckHandler (parentAck);
+	    signal (delCloneSig);
 	    ack.await ();
 	}
 	/** Add a child Proc.  */
 	public void addFork ()
 	{
-	    spawn (Sig.HUP);
+	    spawn (addForkSig);
 	}
 	/** Delete a child Proc.  */
 	public void delFork ()
 	{
-	    AckHandler ack = new AckHandler (Sig.USR2);
-	    signal (Sig.INT);
+	    AckHandler ack = new AckHandler (parentAck);
+	    signal (delForkSig);
 	    ack.await ();
 	}
 	/** Terminate a fork Proc (creates zombie).  */
 	public void zombieFork ()
 	{
-	    AckHandler ack = new AckHandler (Sig.USR2);
-	    signal (Sig.URG);
+	    AckHandler ack = new AckHandler (parentAck);
+	    signal (zombieForkSig);
 	    ack.await ();
 	}
 	/**
@@ -402,7 +409,7 @@ public class TestLib
 	 */
 	void fryParent ()
 	{
-	    AckHandler ack = new AckHandler (Sig.USR2);
+	    AckHandler ack = new AckHandler (childAck);
 	    signal (Sig.KILL);
 	    ack.await ();
 	}
@@ -411,8 +418,8 @@ public class TestLib
 	 */
 	void exec ()
 	{
-	    AckHandler ack = new AckHandler (Sig.USR1);
-	    signal (Sig.PWR);
+	    AckHandler ack = new AckHandler (childAck);
+	    signal (execSig);
 	    ack.await ();
 	}
     }

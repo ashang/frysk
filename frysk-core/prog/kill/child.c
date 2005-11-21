@@ -73,15 +73,17 @@ Operation:\n\
 \t\tSIGUSR2: Delete a fork\n\
 \t\tSIGHUP: Add a fork\n\
 \t\tSIGINT: Delete a fork\n\
-\t\tSIGURG: Terminate a fork, do not reap\n\
+\t\tSIGURG: Terminate a fork; results in a child zombie\n\
 \t\tSIGALRM: Exit.\n\
 \t\tSIGPWR: Re-exec this program\n\
-\t\tSIGPIPE: (internal) Parent exited event.\n\
+\t\tSIGPIPE: (internal) Parent exited event (child notifies with SIGUSR1).\n\
 \t\tSIGCHLD: (internal) Child exited event.\n\
 \tFor any operation, the parent also acks by sending a SIGUSR2\n\
 ");
 }
 
+const int CHILD_SIG = SIGUSR1;
+const int PARENT_SIG = SIGUSR2;
 pid_t manager_tid;
 static void
 notify_manager (int sig)
@@ -174,8 +176,8 @@ server (void *np)
       prctl (PR_SET_PDEATHSIG, SIGPIPE);
     }
   }
-  // Signal that this task is ready.
-  notify_manager (SIGUSR1);
+  // Signal that this new "child" task is ready.
+  notify_manager (CHILD_SIG);
   printf ("+%d\n", (int) tiddle->tid);
   // handle any signals.
   while (1) {
@@ -196,7 +198,7 @@ server (void *np)
 	pthread_create (&tiddle->threads[tiddle->nr_threads],
 			&pthread_attr, server, (void *) NULL);
 	tiddle->nr_threads = (tiddle->nr_threads + 1) % MAX_PIDS;
-	notify_manager (SIGUSR2);
+	notify_manager (PARENT_SIG);
       }
       break;
     case SIGUSR2: // delete clone
@@ -212,7 +214,7 @@ server (void *np)
 	    break;
 	  }
 	}
-	notify_manager (SIGUSR2);
+	notify_manager (PARENT_SIG);
       }
       break;
     case SIGHUP: // add fork
@@ -228,7 +230,7 @@ server (void *np)
 	default: // parent
 	  tiddle->forks[tiddle->nr_forks] = pid;
 	  tiddle->nr_forks = (tiddle->nr_forks + 1) % MAX_PIDS;
-	  notify_manager (SIGUSR2);
+	  notify_manager (PARENT_SIG);
 	  break;
 	}
       }
@@ -245,7 +247,7 @@ server (void *np)
 	}
       }
       break;
-    case SIGURG: // zombie fork (two parts), see also SIGCHLD)
+    case SIGURG: // zombie fork (see also SIGCHLD)
       {
 	int i;
 	for (i = 0; i < MAX_PIDS; i++) {
@@ -266,17 +268,18 @@ server (void *np)
 	  int pid = waitpid (sigchld_pid, &status, 0);
 	  printf ("-%d\n", pid);
 	  sigchld_pid = 0;
-	  notify_manager (SIGUSR2);
+	  notify_manager (PARENT_SIG);
 	}
 	else if (sigchld_pid < 0)
-	  notify_manager (SIGUSR2);
+	  // don't bother waiting.
+	  notify_manager (PARENT_SIG);
       }
       break;
     case SIGPIPE: // parent exit
-      // Only notify the manager when the parent [correctly] switched
-      // to process one.
+      // Child notifies the manager that the parent [correctly]
+      // switched to process one.
       if (getppid () == 1)
-	notify_manager (SIGUSR2);
+	notify_manager (CHILD_SIG);
       break;
     case SIGALRM: // exit all
       {

@@ -1,5 +1,9 @@
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add constants childAck, parentAck, addCloneSig,
+	delCloneSig, addForkSig, delForkSig, zombieForkSig, execSig to
+	AckProcess.  Use.
+	
 	* TestLib.java: Add exec method.
 
 	* TaskState.java: Replace state .startRunning with class .Starting
