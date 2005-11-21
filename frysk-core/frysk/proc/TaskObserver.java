@@ -54,7 +54,8 @@ public interface TaskObserver
     {
 	/**
 	 * Called when this TASK has cloned, creating CLONE.  Return
-	 * Action.BLOCK if this observer wants this task to block.
+	 * Action.BLOCK if this observer wants both this task and it's
+	 * clone to be blocked (each must be separatly unblocked).
 	 */
 	Action updateCloned (Task task, Task clone);
     }
@@ -69,7 +70,8 @@ public interface TaskObserver
 	/**
 	 * Called when the Task has forked, creating a child Proc
 	 * containing a single Task.  Return Action.BLOCK if the
-	 * observer wants the task to block.
+	 * observer wants this task and it's fork to be blocked (each
+	 * must be separatly unblocked).
 	 */
 	Action updateForked (Task task, Task fork);
     }

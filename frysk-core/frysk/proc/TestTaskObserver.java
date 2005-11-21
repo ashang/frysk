@@ -561,4 +561,195 @@ public class TestTaskObserver
     {
 	deletedAttachTask (1, false);
     }
+
+
+    /**
+     * Attach to the main task, watch for clone events.  Add the
+     * observer to the clone.
+     */
+    abstract class SpawnObserver
+	extends TaskObserverBase
+	implements TaskObserver.Attached
+    {
+	/**
+	 * Possible states of the spawn observer.
+	 */
+	private class State
+	{
+	    String name;
+	    State (String name)
+	    {
+		this.name = name;
+	    }
+	    public String toString ()
+	    {
+		return name;
+	    }
+	}
+	private State UNATTACHED = new State ("UNATTACHED");
+	private State OBSERVER_ADDED_TO_PARENT = new State ("OBSERVER_ADDED_TO_PARENT");
+	private State PARENT_SPAWNED = new State ("PARENT_SPAWNED");
+	private State OBSERVER_ADDED_TO_CHILD = new State ("OBSERVER_ADDED_TO_CHILD");
+	private State CHILD_ATTACHED = new State ("CHILD_ATTACHED");
+	/**
+	 * State of the Spawned observer, tracks the sequencing that
+	 * occures.
+	 */
+	public State state = UNATTACHED;
+
+	/**
+	 * This observer has been added to Object.
+	 */
+	public void addedTo (final Object o)
+	{
+	    if (state == UNATTACHED)
+		state = OBSERVER_ADDED_TO_PARENT;
+	    else if (state == PARENT_SPAWNED)
+		state = OBSERVER_ADDED_TO_CHILD;
+	    else
+		fail ("in wrong state " + state);
+	    super.addedTo (o);
+	    Manager.eventLoop.requestStop ();
+	}
+	private Task parent;
+	private Task child;
+	protected Action spawned (Task task, Task spawn)
+	{
+	    assertSame ("state", OBSERVER_ADDED_TO_PARENT, state);
+	    state = PARENT_SPAWNED;
+	    Manager.eventLoop.requestStop ();
+	    parent = task;
+	    child = spawn;
+	    return Action.BLOCK;
+	}
+	/**
+	 * Officially attached to Task.
+	 */
+	public Action updateAttached (Task task)
+	{
+	    assertSame ("state", OBSERVER_ADDED_TO_CHILD, state);
+	    state = CHILD_ATTACHED;
+	    Manager.eventLoop.requestStop ();
+	    return Action.BLOCK;
+	}
+	/**
+	 * Create a new daemon process, attach to it's spawn observer
+	 * (forked or clone), and then wait for it to perform the
+	 * spawn.  The spawn observer will leave both the parent and
+	 * child blocked.
+	 */
+	public void assertRunToSpawn ()
+	{
+	    AckProcess proc = new AckDaemonProcess ();
+	    Task main = proc.findTaskUsingRefresh (true);
+	    requestAddSpawnObserver (main);
+	    
+	    assertRunUntilStop ("adding clone observer");
+	    assertSame ("observer state", OBSERVER_ADDED_TO_PARENT, state);
+	    
+	    requestSpawn (proc);
+	    assertRunUntilStop ("run to spawn");
+	    assertSame ("observer state", PARENT_SPAWNED, state);
+	}
+
+	/**
+	 * Unblock the child, then confirm that it is running (running
+	 * child will signal this process).
+	 */
+	public void assertChildUnblocked ()
+	{
+	    child.requestAddAttachedObserver (this);
+	    assertRunUntilStop ("add observer to child");
+	    assertSame ("observer state", OBSERVER_ADDED_TO_CHILD, state);
+	    
+	    child.requestUnblock (this);
+	    assertRunUntilStop ("allow child to attach");
+	    assertSame ("observer state", CHILD_ATTACHED, state);
+	    
+	    AckHandler childAck = new AckHandler (AckProcess.childAck);
+	    child.requestUnblock (this);
+	    childAck.await ();
+	}
+	/**
+	 * Unblock the parent, then confirm that it is running
+	 * (running parent will signal this process).
+	 */
+	public void assertParentUnblocked ()
+	{
+	    AckHandler parentAck = new AckHandler (AckProcess.parentAck);
+	    parent.requestUnblock (this);
+	    parentAck.await ();
+	}
+	abstract void requestSpawn (AckProcess proc);
+	abstract void requestAddSpawnObserver (Task task);
+    }
+    /**
+     * Implementation of SpawnObserver that monitors a clone.
+     */
+    class CloneObserver
+	extends SpawnObserver
+	implements TaskObserver.Cloned
+    {
+	void requestSpawn (AckProcess child)
+	{
+	    child.signal (AckProcess.addCloneSig);
+	}
+	void requestAddSpawnObserver (Task task)
+	{
+	    task.requestAddClonedObserver (this);
+	}
+	/**
+	 * The parent Task cloned.
+	 */
+	public Action updateCloned (Task task, Task clone)
+	{
+	    return spawned (task, clone);
+	}
+    }
+    /**
+     * Check that a clone observer can block both the parent and
+     * child, and that the child can be allowed to run before the
+     * parent.
+     */
+    public void testBlockedCloneUnblockChildFirst ()
+    {
+	CloneObserver clone = new CloneObserver ();
+	clone.assertRunToSpawn ();
+	clone.assertChildUnblocked ();
+	clone.assertParentUnblocked ();
+    }
+    /*
+     * Check that a clone observer can block both the parent and
+     * child, and that the parent can be allowed to run before the
+     * child.
+     */
+    public void testBlockedCloneUnblockParentFirst ()
+    {
+	CloneObserver clone = new CloneObserver ();
+	clone.assertRunToSpawn ();
+	clone.assertParentUnblocked ();
+	clone.assertChildUnblocked ();
+    }
+//     /** {@link #blocked} */
+//     public void testBlockedFork ()
+//     {
+// 	blocked (new SpawnObserver ()
+// 	    {
+// 		void requestSpawn (AckProcess child)
+// 		{
+// 		    child.requestFork ();
+// 		}
+// 		void requestAddSpawnObserver (Task task)
+// 		{
+// 		    task.requestAddForkedObserver (this);
+// 		}
+// 	/**
+// 	 * The parent Task forked.
+// 	 */
+// 	public Action updateForked (Task task, Task fork)
+// 	{
+// 	    return spawned (task, fork);
+// 	}
+// 	    });
+//     }
 }
