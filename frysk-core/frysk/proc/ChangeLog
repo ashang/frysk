@@ -1,5 +1,12 @@
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverBlocked.java: New.
+	* TestTaskObserver.java: Move .testGetBlockers, .SpawnObserver,
+	.CloneObserver, .ForkObserver, .testBlockedForkUnblockChildFirst,
+	.testBlockedForkUnblockParentFirst,
+	testBlockedCloneUnblockChildFirst,
+	testBlockedCloneUnblockParentFirst to TestTaskObserverBlocked.
+
 	* TaskState.java: In .detaching state, handle PerformForked,
 	PerformCloned, PerformExeced, PerformSignaled.
 	* TestTaskObserverDetach.java: New file.
