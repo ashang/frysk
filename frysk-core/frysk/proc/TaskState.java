@@ -581,12 +581,6 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformSyscalled (Task task)
-	    {
-		task.notifySyscallEnter ();
-		task.sendContinue (0);
-		return detachingInSyscall;
-	    }
 	    TaskState processPerformTerminating (Task task, boolean signal,
 						 int value)
 	    {

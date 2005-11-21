@@ -1,5 +1,8 @@
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Delete transition from detaching to
+	detachingInSyscall.
+
 	* TestTaskClonedObserver.java: Delete testBlockingTaskCloneObserver.
 	* TestTaskForkedObserver.java: Delete testBlockingTaskForkObserver
 	* TestTaskObserverBlocked.java: Add .testBlockingFibonacciFork,
