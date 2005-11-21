@@ -37,22 +37,20 @@
 # version and license this file solely under the GPL without
 # exception.
 
-CLEANFILES =
-
 # The target we want to build.
 noinst_DATA = cdtparser.jar
 
 # Make a jar file.
 cdtparser.jar:	stamp
-		find * -name '*.class' -print | fastjar -@ -cf $@
+		find $(srcdir) -name '*.class' -print | fastjar -@ -cf $@
 
 stamp: $(sources)
 	$(GCJ) -C -g -O2 $(sources)
 
-sources = $(shell find . -name '*.java')
-clean = $(shell find . -name '*.class' -exec rm {} \;)
+sources = $(shell find $(srcdir) -name '*.java')
+clean = $(shell find $(srcdir) -name '*.class' -exec rm {} \;)
 
-CLEANFILES += $(clean)
+CLEANFILES = $(clean) cdtparser.jar Makefile.in Makefile
 
 clean-local:
 	-rm cdtparser.jar

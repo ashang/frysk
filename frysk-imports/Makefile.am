@@ -44,7 +44,8 @@ SUBDIRS = \
 	jline \
 	jargs \
 	tests \
-	tlwidgets
+	tlwidgets \
+	cdtparser
 
 solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a

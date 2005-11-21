@@ -1,3 +1,7 @@
+2005-11-21  Rick Moseley  <rmoseley@redhat.com>
+	* Makefile.am:  added more generic searching for .class files
+			added some info for the "make clean" command
+
 2005-11-18  Rick Moseley  <rmoseley@redhat.com>
 	* configure.ac: remove for cdtparser complie integration
 	* autogen.sh: Ditto

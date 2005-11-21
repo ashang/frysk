@@ -1,3 +1,8 @@
+2005-11-21  Rick Moseley  <rmoseley@redhat.com>
+	* Makefile.am: added cdtparser compiler compilation
+	* configure.ac: ditto
+	* autogen.sh: ditto
+
 2005-11-21    <moller@mollerware.com>
 
 	* Makefile.am: Added tlwidgets to SUBDIRS.
