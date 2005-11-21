@@ -94,7 +94,6 @@ public class Config
 			e.printStackTrace ();
 		    }
 		logger = Logger.getLogger (Config.FRYSK_LOG_ID);
-	logger.setLevel (java.util.logging.Level.FINE);
 		try {
 		    FileHandler handler = new FileHandler
 			(Config.FRYSK_CONFIG + log_subdir + log_entry,
