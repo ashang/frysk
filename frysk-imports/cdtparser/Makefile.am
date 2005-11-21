@@ -45,9 +45,8 @@ cdtparser.jar:	stamp
 		find $(srcdir) -name '*.class' -print | fastjar -@ -cf $@
 
 stamp: $(sources)
-	$(GCJ) -C -g -O2 $(sources)
+	$(GCJ) -C -O2 @file.list
 
-sources = $(shell find $(srcdir) -name '*.java')
 clean = $(shell find $(srcdir) -name '*.class' -exec rm {} \;)
 
 CLEANFILES = $(clean) cdtparser.jar Makefile.in Makefile
