@@ -1,5 +1,9 @@
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java: Add class .CloneObserver.  Add tests
+	.testBlockedForkUnblockChildFirst, and
+	.testBlockedForkUnblockParentFirst.
+	
 	* TestTaskObserver.java: Add classes .SpawnObserver, and
 	.CloneObserver.  Add tests .testBlockedCloneUnblockChildFirst, and
 	.testBlockedCloneUnblockParentFirst.

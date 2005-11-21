@@ -730,26 +730,51 @@ public class TestTaskObserver
 	clone.assertParentUnblocked ();
 	clone.assertChildUnblocked ();
     }
-//     /** {@link #blocked} */
-//     public void testBlockedFork ()
-//     {
-// 	blocked (new SpawnObserver ()
-// 	    {
-// 		void requestSpawn (AckProcess child)
-// 		{
-// 		    child.requestFork ();
-// 		}
-// 		void requestAddSpawnObserver (Task task)
-// 		{
-// 		    task.requestAddForkedObserver (this);
-// 		}
-// 	/**
-// 	 * The parent Task forked.
-// 	 */
-// 	public Action updateForked (Task task, Task fork)
-// 	{
-// 	    return spawned (task, fork);
-// 	}
-// 	    });
-//     }
+    /**
+     * Implementation of SpawnObserver that monitors a fork.
+     */
+    class ForkObserver
+	extends SpawnObserver
+	implements TaskObserver.Forked
+    {
+	void requestSpawn (AckProcess child)
+	{
+	    child.signal (AckProcess.addForkSig);
+	}
+	void requestAddSpawnObserver (Task task)
+	{
+	    task.requestAddForkedObserver (this);
+	}
+	/**
+	 * The parent Task forked.
+	 */
+	public Action updateForked (Task task, Task fork)
+	{
+	    return spawned (task, fork);
+	}
+    }
+    /**
+     * Check that a fork observer can block both the parent and
+     * child, and that the child can be allowed to run before the
+     * parent.
+     */
+    public void testBlockedForkUnblockChildFirst ()
+    {
+	ForkObserver fork = new ForkObserver ();
+	fork.assertRunToSpawn ();
+	fork.assertChildUnblocked ();
+	fork.assertParentUnblocked ();
+    }
+    /*
+     * Check that a fork observer can block both the parent and
+     * child, and that the parent can be allowed to run before the
+     * child.
+     */
+    public void testBlockedForkUnblockParentFirst ()
+    {
+	ForkObserver fork = new ForkObserver ();
+	fork.assertRunToSpawn ();
+	fork.assertParentUnblocked ();
+	fork.assertChildUnblocked ();
+    }
 }
