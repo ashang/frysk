@@ -63,6 +63,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
+import org.jdom.Element;
 
 import frysk.gui.srcwin.PreferenceConstants.Background;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
@@ -70,6 +71,9 @@ import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
 import frysk.gui.srcwin.PreferenceConstants.Text;
+import frysk.gui.srcwin.dom.DOMImage;
+import frysk.gui.srcwin.dom.DOMInlineInstance;
+import frysk.gui.srcwin.dom.DOMSource;
 
 /** 
  * This class is used to add some functionality to TextView that may be needed
@@ -397,8 +401,16 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	public void toggleChild() {
 		if(!expanded){
 			expanded = true;
+			
+			DOMInlineInstance instance = this.buf.getInlineInstance(this.buf.getCurrentLine());
+			
+			Element node = instance.getInlineInstance();
+			while(!node.getName().equals("image"))
+				node = node.getParentElement();
+			
+			DOMSource scope = new DOMImage(node).getSource(instance.getDeclaration().getSource());
 			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent, 
-					this.buf.getScope(), this.buf.getInlineInstance(this.buf.getCurrentLine()));
+					scope, instance);
 			this.setSubscopeAtCurrentLine(nested);
 		}
 		else{

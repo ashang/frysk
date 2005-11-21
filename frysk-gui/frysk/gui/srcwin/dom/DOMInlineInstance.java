@@ -57,6 +57,8 @@ public class DOMInlineInstance {
 	
 	public static final String LINEINST_ATTR = "instance";
 	
+	public static final String PCLINE_ATTR = "PC_line";
+	
 	private Element myElement;
 	
 //	public DOMInlineInstance(int start, int end){
@@ -121,5 +123,9 @@ public class DOMInlineInstance {
 			return new DOMImage(parent).getFunction(funcName);
 		
 		return null;
+	}
+	
+	public int getPCLine(){
+		return Integer.parseInt(this.myElement.getAttributeValue(PCLINE_ATTR));
 	}
 }

@@ -489,7 +489,7 @@ public class DOMTestDOMFrysk {
 		int start_inline = main_prog[1].indexOf(test_inline) + main_prog[0].length();
 		int end_inline = main_prog[1].indexOf(test_inline) + test_inline.length() +
 				main_prog[0].length();
-		testDOMLine.addInlineInst(test_inline, start_inline, end_inline);
+		testDOMLine.addInlineInst(test_inline, start_inline, end_inline, 0);
 		if (testDOMLine.getInlineElement(test_inline).
 				getAttributeValue(DOMInlineInstance.LINEINST_ATTR)
 				== test_inline) {

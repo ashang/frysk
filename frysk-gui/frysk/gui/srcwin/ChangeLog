@@ -1,5 +1,20 @@
 2005-11-21  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (InlineBuffer): Now takes a DOMSource instead of a
+	StackLevel.
+	(getVariable): Added.
+	* InlineViewer.java (InlineViewer): Now takes a DOMSource instead of a 
+	StackLevel.
+	* SourceViewWidget.java (toggleChild): Refactored to reflect above
+	change to InlineViewer constructor.
+	* SourceWindowFactory.java (createSourceWindow): Fixed current line
+	for example code.
+	* dom/DOMInlineInstance.java (getPCLine): Added.
+	* dom/DOMLine.java (addInlineInst): Now takes PC line number within the
+	inlined code.
+	* dom/DOMTestDOMFrysk: Added parameter to calls to addInlineInst.
+	* dom/DOMTestGUIBuilder: Ditto.
+
 	* InlineViewer.java (mouseEvent): Added, currently does not allow
 	breakpoint or trace related functionality due to ambiguities
 	regarding inlined code.

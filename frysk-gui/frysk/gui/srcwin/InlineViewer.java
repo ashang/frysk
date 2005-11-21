@@ -56,6 +56,7 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
 import frysk.gui.srcwin.dom.DOMInlineInstance;
+import frysk.gui.srcwin.dom.DOMSource;
 
 /**
  * @author ajocksch
@@ -69,7 +70,7 @@ public class InlineViewer extends SourceViewWidget {
 	private boolean showEllipsis;
     
 	public InlineViewer(Preferences parentPrefs, SourceWindow top,
-			StackLevel scope, DOMInlineInstance instance){
+			DOMSource scope, DOMInlineInstance instance){
 		this(parentPrefs, false, scope, top, instance);
 	}
 	
@@ -77,7 +78,8 @@ public class InlineViewer extends SourceViewWidget {
 	 * @param parentPrefs
 	 */
 	public InlineViewer(Preferences parentPrefs, boolean showEllipsis,
-			StackLevel scope, SourceWindow top, DOMInlineInstance instance) {
+			DOMSource scope, SourceWindow top, DOMInlineInstance instance) {
+		
 		super(parentPrefs, new InlineBuffer(scope, instance), top);
 		this.setBorderWidth(1);
 		this.showEllipsis = showEllipsis;

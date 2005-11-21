@@ -2,11 +2,13 @@ package frysk.gui.srcwin;
 
 import java.util.Iterator;
 
+import org.gnu.gtk.TextIter;
 import org.jdom.Element;
 
 import frysk.gui.srcwin.dom.DOMFunction;
 import frysk.gui.srcwin.dom.DOMInlineInstance;
 import frysk.gui.srcwin.dom.DOMLine;
+import frysk.gui.srcwin.dom.DOMSource;
 import frysk.gui.srcwin.dom.DOMTag;
 import frysk.gui.srcwin.dom.DOMTagTypes;
 
@@ -15,11 +17,12 @@ public class InlineBuffer extends SourceBuffer {
 	private DOMFunction declaration;
 	private DOMInlineInstance instance; 
 	
-	public InlineBuffer(StackLevel scope, DOMInlineInstance instance) {
+	public InlineBuffer(DOMSource scope, DOMInlineInstance instance) {
 		super();
 		this.instance = instance;
 		this.declaration = this.instance.getDeclaration();
-		this.setScope(scope);
+		StackLevel myScope = new StackLevel(scope, instance.getPCLine());
+		this.setScope(myScope);
 	}
 	
 	
@@ -62,30 +65,38 @@ public class InlineBuffer extends SourceBuffer {
     	// For right now, don't let the user even try
     	// to set breakpoints. This is a little bit of a hack, but works
     	return false;
-//        return super.isLineExecutable(lineNum + this.declaration.getStartingLine() - 1);
     }
     
     public boolean isLineBroken(int lineNum){
     	// For right now we don't have 'theoretical' breakpoints
     	// that exist in inline instances.
     	return false;
-//        return super.isLineBroken(lineNum + this.declaration.getStartingLine() - 1);
     }
     
     public boolean toggleBreakpoint(int lineNum){
     	// For right now we've disabled setting breakpoints in specific inline
     	// instances
     	return false;
-//        if(!this.isLineExecutable(lineNum))
-//            return false;
-//        
-//        DOMLine line = this.scope.getData().getLine(lineNum + this.declaration.getStartingLine());
-//        if(line == null)
-//            return false;
-//        
-//        boolean status = line.hasBreakPoint();
-//        line.setBreakPoint(!status);
-//        return !status;
+    }
+    
+    /**
+     * We need to do a little fancier Voodoo than the superclass
+     * to actually calculate variable values, since we're only
+     * displaying the inline function 
+     */
+    public Variable getVariable(TextIter iter){
+    	DOMLine line = this.scope.getData().getLine(
+    			iter.getLineNumber()+this.declaration.getStartingLine());
+		DOMTag tag = line.getTag(iter.getLineOffset());
+		
+		// No var (or no tag), do nothing
+		if(tag == null || !tag.getType().equals(DOMTagTypes.LOCAL_VAR))
+			return null;
+		
+		Variable var = new Variable(
+				line.getText().substring(tag.getStart(), tag.getStart() + tag.getLength()), 
+				iter.getLineNumber(), tag.getStart(), false);
+		return var;
     }
     
     protected void createTags(){

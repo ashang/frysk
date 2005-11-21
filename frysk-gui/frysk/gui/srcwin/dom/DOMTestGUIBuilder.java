@@ -284,7 +284,7 @@ public class DOMTestGUIBuilder {
 			if (is_inline[i]) {
 				DOMLine testDOMLine = testDOMSource.getLine(i);
 				testDOMLine.addInlineInst(func_name[0], func_start_line[0], 
-						func_end_line[0]);
+						func_end_line[0], 1);
 			}
 		}
 		
@@ -327,7 +327,7 @@ public class DOMTestGUIBuilder {
 					if (token.equals(func_name[l]) && (i > func_end_line[l])) {
 						line_index = test_prog[i].indexOf(token,line_index);
 						testDOMLine.addInlineInst(token, line_index, 
-								token.length());
+								token.length(), 1);
 						testDOMLine.setHasInline(true);
 					}
 				}

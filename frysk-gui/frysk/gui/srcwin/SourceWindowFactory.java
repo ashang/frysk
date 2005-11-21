@@ -128,9 +128,9 @@ public class SourceWindowFactory {
                         else
                             source.getLine(line).setExecutable(false);
 						
-						if(line++ == 5){
-							String lineText = source.getLine(5).getText();
-                        	source.getLine(5).addInlineInst("baz", lineText.indexOf("baz"), 3);
+						if(line++ == 9){
+							String lineText = source.getLine(9).getText();
+                        	source.getLine(9).addInlineInst("baz", lineText.indexOf("baz"), 3, 22);
 						}
 						
 						offset += text.length();
@@ -139,7 +139,7 @@ public class SourceWindowFactory {
 				catch(Exception e){
 					
 				}
-				StackLevel stack1 = new StackLevel(source, 5);
+				StackLevel stack1 = new StackLevel(source, 9);
 				
 				String[] funcLines = new String[6];
                 for(int i = 0; i < funcLines.length; i++)
@@ -230,7 +230,7 @@ public class SourceWindowFactory {
                     }
                 }
                 catch (Exception e){
-                	
+                	// TODO: What to do if the load don't work?
                 }
                 
                 funcLines = new String[6];
