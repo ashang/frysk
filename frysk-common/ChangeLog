@@ -1,5 +1,7 @@
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.javain.java): Set VERSION.
+
 	* version.ac: New file.  Move version.in logic to here.
 
 	* version.in: New file, moved from top-level.

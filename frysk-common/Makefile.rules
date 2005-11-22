@@ -184,6 +184,7 @@ SUFFIXES += .javain
 		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
+		-e 's,[@]VERSION[@],$(VERSION),g' \
 		> $*.tmp
 	mv -f $*.tmp $@
 

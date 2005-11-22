@@ -1,3 +1,7 @@
+2005-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain: Add .VERSION, set to @VERSION@.
+
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Directory frysk/ moved to under frysk-imports/.
