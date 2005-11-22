@@ -240,6 +240,22 @@ public class ProgramDataModel {
 		listStore.removeRow(it);
 		return;
 	}
+	
+	public TreeIter find(String name) {
+		
+		for (int i=0; true; i++)
+		{
+			TreeIter item = listStore.getIter(new Integer(i).toString());
+			if (item == null)
+				break;
+			ProgramData namefind = (ProgramData) listStore.getValue(item,((DataColumnObject) programEventDataDC));
+			if (namefind.getName().equals(name))
+				return item;
+		}
+		
+		return null;
+		
+	}
 	/**
 	 * Adds the parameter ProgramData object to thre tree. Construct the other column
 	 * elements from the passed ProgramData parameter.
@@ -249,6 +265,12 @@ public class ProgramDataModel {
 	 */
 	public void add(ProgramData data)
 	{
+		TreeIter find = find(data.getName());
+		
+		if (find != null){
+			listStore.removeRow(find);
+		}
+		
 		TreeIter it = null;
 		it = listStore.appendRow();
 		listStore.setValue(it, (DataColumnBoolean) enabledDC, data.isEnabled());

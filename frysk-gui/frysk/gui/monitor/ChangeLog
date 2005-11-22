@@ -1,3 +1,10 @@
+2005-11-22  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramDataModel.java (find): Added.
+	(add): Replace on similar items.
+	* ProgramAddWindow.java (populate): Added observer Populate
+	(findObserver): Added.
+
 2005-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/Filter.java: Added abstract getWidget method.

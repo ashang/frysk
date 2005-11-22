@@ -427,6 +427,21 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		return this.cancelLastClicked;
 	}
 
+	private TreeIter findObserver(String name){
+		
+		ListStore model = (ListStore) this.programObseverListBox.getModel();
+		for (int i=0; true; i++)
+		{
+			TreeIter item = model.getIter(new Integer(i).toString());
+			if (item == null)
+				break;
+			String obText = model.getValue(item,((DataColumnString) observerDC[0]));
+			if (obText.equals(name))
+				return item;
+		}
+		
+		return null;
+	}
 	/**
 	 * @param data
 	 */
@@ -434,5 +449,20 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		this.programEntry.setText(data.getName());
 		this.programOpenFileDialog.setFilename(data.getExecutable());
+		
+		ArrayList observer = data.getObserverList();
+		Iterator obIter = observer.iterator();
+		this.programObseverListBox.getSelection().unselectAll();
+		
+		while (obIter.hasNext()) {
+			String obElement = ((String)obIter.next());
+			
+			TreeIter foundRow = findObserver(obElement);
+			if (foundRow != null)
+				this.programObseverListBox.getSelection().select(foundRow);
+					
+			}
+			
+			
 	}
 }
