@@ -344,8 +344,8 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		this.programEntry = (Entry) glade.getWidget("programName");
 		this.programOpenFileDialog = (FileChooserButton) glade
 				.getWidget("programFileChooser");
-		this.programOpenFileDialog.setFilename("");
-		System.out.println(this.programOpenFileDialog);
+//		this.programOpenFileDialog.setFilename("");
+//		System.out.println(this.programOpenFileDialog);
 		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView");
 		this.programObseverListBox = (TreeView) glade.getWidget("programApplyObserversListBox");
 		this.programCancel = (Button) glade.getWidget("programCancel");

@@ -4,6 +4,7 @@
 	(add): Replace on similar items.
 	* ProgramAddWindow.java (populate): Added observer Populate
 	(findObserver): Added.
+	(getGladeWidgets): Fixed java-gnome FileChooser message.
 
 2005-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
 
