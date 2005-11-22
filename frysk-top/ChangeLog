@@ -1,3 +1,9 @@
+2005-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* version.in: Delete, moved to common/
+	* configure.ac (FRYSK_VERSION_IN, FRYSK_VERSION): Define, get the
+	version from common/version.in.
+
 2005-10-31  Andrew Cagney  <cagney@redhat.com>
 
 	* version.in: New file.
