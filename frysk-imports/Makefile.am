@@ -41,7 +41,6 @@ include common/Makefile.rules
 include Makefile.gen
 
 SUBDIRS = \
-	frysk \
 	jline \
 	jargs \
 	tests \

@@ -1,5 +1,8 @@
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Delete.
+	* Makefile.am: Delete.
+
 	* Config.javain: Add .VERSION, set to @VERSION@.
 
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
