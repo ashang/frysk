@@ -2,12 +2,11 @@
 
 if [ "$1"x = "-logx" ] ; then
     LOGGING=FINEST
-    if [ -n "$2" -a \( "$2" = "INFO" -o "$2" = "CONFIG" -o "$2" = "FINE" -o "$2" = "FINER" -o "$2" = "FINEST" \) ] ; then
-	LOGGING=$2
+    shift
+    if [ -n "$1" -a \( "$1" = "INFO" -o "$1" = "CONFIG" -o "$1" = "FINE" -o "$1" = "FINER" -o "$1" = "FINEST" \) ] ; then
+	LOGGING=$1
+	shift
     fi
-elif [ -n "$1" ] ; then
-	echo 'Usage $0 [-log [INFO|CONFIG|FINE|FINER|FINEST]]'
-    exit
 fi
 
 if [ -n "$LOGGING" ] ; then
