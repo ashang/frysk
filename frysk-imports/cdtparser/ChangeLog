@@ -1,17 +1,24 @@
+2005-11-22  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: added comment on why we need file.list
+
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (cdtparser.jar): Dump files into classdir.
 	(classdir): Run $(GCJ) in source directory.
 
 2005-11-21  Rick Moseley  <rmoseley@redhat.com>
+
 	* Makefile.am: get file list for "gcj" command from a file
 	* file.list: list of files to compile so everyone has the same order
 
 2005-11-21  Rick Moseley  <rmoseley@redhat.com>
+
 	* Makefile.am:  added more generic searching for .class files
 			added some info for the "make clean" command
 
 2005-11-18  Rick Moseley  <rmoseley@redhat.com>
+
 	* configure.ac: remove for cdtparser complie integration
 	* autogen.sh: Ditto
 
@@ -78,7 +85,7 @@
         * cdtparser/org/eclipse/cdt/internal/core/parser/scanner2/DependencyTree.java: Ditto.
         * cdtparser/org/eclipse/cdt/internal/core/parser/scanner2/LocationMap.java: Ditto.
 	
-	2005-11-16  Rick Moseley  <rmoseley@redhat.com>
+2005-11-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* New import of parser code from Eclipse CDT 3.0.0
 	

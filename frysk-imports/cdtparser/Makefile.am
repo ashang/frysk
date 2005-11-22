@@ -45,6 +45,12 @@ cdtparser.jar: classdir
 	cd classdir ; \
 	find * -name '*.class' -print | fastjar -@ -cf $@.tmp
 	mv classdir/$@.tmp $@
+	
+# The file.list is required for gcj to properly build the cdt parser.
+# Apparently, the order in which they are built has a direct bearing
+# on whether or not it successfully compiles for some unknown reason.
+# This is due to bugs in the gcj compiler.  Hopefully we can remove
+# this limitation in the future.
 
 classdir:
 	rm -rf classdir
