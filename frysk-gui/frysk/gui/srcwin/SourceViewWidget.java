@@ -248,6 +248,12 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			int theLine = iter.getLineNumber();
 			boolean overNested = false;
+			
+			// We want to ignore mouse clicks in the margin next to 
+			// expanded inline code
+			if(theLine == this.buf.getCurrentLine() + 1 && expanded)
+				return false;
+			
 			if(theLine > this.buf.getCurrentLine() && expanded){
 				theLine--;
 				overNested = true;

@@ -1,3 +1,10 @@
+2005-11-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceViewWidget.java (mouseEvent): Now ignores clicks next to an area
+	of inlined code, rather than causing the inlined code to be collapsed.
+	* dom/DOMLine.java (getTag): Now only gets tags of type "tag", no longer
+	erroneously includes inline instances tags.
+
 2005-11-21  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (InlineBuffer): Now takes a DOMSource instead of a

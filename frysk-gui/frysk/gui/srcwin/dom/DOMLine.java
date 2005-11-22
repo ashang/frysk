@@ -277,10 +277,11 @@ public class DOMLine {
 //		if (index < lineStart)
 //			index += lineStart;
 
-		Iterator iter = this.myElement.getChildren().iterator();
+		Iterator iter = this.myElement.getChildren(DOMTag.TAG_NODE).iterator();
 		
 		while (iter.hasNext()) {
-			DOMTag tag = new DOMTag((Element) iter.next());
+			Element elem = (Element) iter.next();
+			DOMTag tag = new DOMTag(elem);
 			
 			if (tag.isInRange(index))
 				return tag;
