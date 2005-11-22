@@ -48,4 +48,5 @@ public class DOMTagTypes {
 	public static final String LOCAL_VAR = "local_var";
 	public static final String KEYWORD = "keyword";
     public static final String FUNCTION_BODY = "function_body";
+    public static final String UNAVAILABLE_VAR = "unavail_var";
 }

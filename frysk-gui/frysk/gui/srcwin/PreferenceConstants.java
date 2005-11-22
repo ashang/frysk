@@ -142,6 +142,15 @@ public class PreferenceConstants {
 		public static final Color DEFAULT = new Color(0,30000,0);
 	}
 	
+	public static class UnavailableVariables{
+		public static final String WEIGHT = "dead_variable_weight";
+		public static final String ITALICS = "dead_variable_italics";
+		public static final String STRIKETHROUGH = "dead_variable_strikethrough";
+		public static final boolean STRIKETHROUGH_DEFAULT = true;
+		public static final String COLOR_PREFIX = "dead_var_";
+		public static final Color DEFAULT = new Color(30000, 30000, 30000);
+	}
+	
 	/**
 	 * Preference names relating to keywords
 	 * @author ajocksch

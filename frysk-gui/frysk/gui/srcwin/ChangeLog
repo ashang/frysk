@@ -1,5 +1,12 @@
 2005-11-22  Adam Jocksch  <ajocksch@redhat.com>
 
+	* PreferenceConstants.java: Added constants for unavailable variables.
+	* SourceBuffer.java (addVaraible): Hacked some things in to simulate
+	unavailable variables.
+	(createTags): Creates unavailable variable tags.
+	(init): Creates unavailable variable tag.
+	* DOMTagTypes.java: Added constant for unavailable variables.
+
 	* SourceViewWidget.java (mouseEvent): Now ignores clicks next to an area
 	of inlined code, rather than causing the inlined code to be collapsed.
 	* dom/DOMLine.java (getTag): Now only gets tags of type "tag", no longer
