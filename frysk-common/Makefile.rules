@@ -365,3 +365,12 @@ EXTRA_DIST += 	common/Makefile.gen.sh \
 				common/mkjava.sh \
 				common/TestRunner.sh \
 				EXCEPTION
+
+distclean-local: distclean-cvsignored
+.PHONY: distclean-cvsignored
+distclean-cvsignored:
+	cd $(srcdir) ; \
+	find . -type f -name .cvsignore -print \
+	| while read f ; do \
+		( cd `dirname $$f` && rm -rf `cat .cvsignore` ) ; \
+	done

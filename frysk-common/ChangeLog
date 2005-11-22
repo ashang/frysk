@@ -1,5 +1,8 @@
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (distclean-cvsignored): New target; delete
+	anything listed in .cvsignore.
+	
 	* Makefile.rules (.javain.java): Set VERSION.
 
 	* version.ac: New file.  Move version.in logic to here.
