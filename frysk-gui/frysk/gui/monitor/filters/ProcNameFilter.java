@@ -39,6 +39,10 @@
 
 package frysk.gui.monitor.filters;
 
+import org.gnu.gtk.Widget;
+
+import frysk.gui.monitor.DynamicWidget;
+import frysk.gui.monitor.GuiObject;
 import frysk.proc.Proc;
 
 public class ProcNameFilter extends ProcFilter {
@@ -55,6 +59,12 @@ public class ProcNameFilter extends ProcFilter {
 			return true;
 		}
 		return false;
+	}
+
+	public Widget getWidget() {
+		DynamicWidget widget = new DynamicWidget();
+		widget.addString(new GuiObject("Name", "name of the process"));
+		return widget;
 	}
 		
 	

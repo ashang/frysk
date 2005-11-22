@@ -39,6 +39,8 @@
 
 package frysk.gui.monitor.filters;
 
+import org.gnu.gtk.Widget;
+
 import frysk.gui.monitor.GuiObject;
 
 public abstract class Filter extends GuiObject {
@@ -47,4 +49,5 @@ public abstract class Filter extends GuiObject {
 		super(name, toolTip);
 	}
 	
+	public abstract Widget getWidget();
 }

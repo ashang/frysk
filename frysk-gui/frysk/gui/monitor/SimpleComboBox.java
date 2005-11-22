@@ -93,7 +93,11 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	}
 	
 	public GuiObject getSelectedObject(){
-		return (GuiObject) this.listStore.getValue(this.getActiveIter(), objectDC);
+		if(this.getActive() == -1){
+			return null;
+		}else{
+			return (GuiObject) this.listStore.getValue(this.getActiveIter(), objectDC);
+		}
 	}
 	
 	public void add(GuiObject object){

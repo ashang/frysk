@@ -1,3 +1,14 @@
+2005-11-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/Filter.java: Added abstract getWidget method.
+	* filters/ProcNameFilter.java: Implemented getWidget method.
+	* filters/TaskProcNameFilter.java: ditto.
+	* SimpleComboBox.java: Handles no object is selected case. 
+	* FilterLine.java: Now properly handles selected observer, filterPoint, and 
+	Filter.
+	* DynamicWidget.java: Is now a child of Table instead of Frame.
+	* CustomeObserverWindow.java: Removed unused commented out code.
+
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/TaskForkedObserver.java: Update,

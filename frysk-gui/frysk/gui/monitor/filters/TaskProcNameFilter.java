@@ -39,6 +39,10 @@
 
 package frysk.gui.monitor.filters;
 
+import org.gnu.gtk.Widget;
+
+import frysk.gui.monitor.DynamicWidget;
+import frysk.gui.monitor.GuiObject;
 import frysk.proc.Task;
 
 public class TaskProcNameFilter extends TaskFilter {
@@ -53,5 +57,12 @@ public class TaskProcNameFilter extends TaskFilter {
 	public boolean filter(Task task) {
 		return this.procNamefilter.filter(task.getProc());
 	}
-		
+	
+	
+	public Widget getWidget() {
+		DynamicWidget widget = new DynamicWidget();
+		widget.addString(new GuiObject("Name", "name of the process"));
+		return widget;
+	}
+	
 }

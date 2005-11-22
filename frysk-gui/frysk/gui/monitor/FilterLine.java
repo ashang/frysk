@@ -42,6 +42,8 @@ package frysk.gui.monitor;
 import java.util.Iterator;
 
 import org.gnu.gtk.HBox;
+import org.gnu.gtk.VBox;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 
@@ -51,29 +53,56 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 public class FilterLine extends HBox{
 
+	private VBox filterWidgetVBox;
+	
 	public FilterLine(ObserverRoot observer) {
 		super(false, 3);
 		
+		//========================================
+		// add an item for each filter point
 		final SimpleComboBox comboBox = new SimpleComboBox();
 		Iterator iter = observer.getFilterPoints().iterator();
 		while(iter.hasNext()){
 			comboBox.add((FilterPoint)iter.next());
 		}
+		this.packStart(comboBox, false, false, 0);
+		//========================================
 		
+		//========================================
+		// populate a drop-down menu for selected filterPoint
 		final SimpleComboBox filtersComboBox = new SimpleComboBox();
 		
 		comboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
 				filtersComboBox.clear();
+				filtersComboBox.setActive(-1);
 				Iterator iter = ((FilterPoint)comboBox.getSelectedObject()).getApplicableFilters().iterator();
 				while(iter.hasNext()){
 					filtersComboBox.add((Filter)iter.next());
 				}
 			}
 		});
-		
-		this.packStart(comboBox, false, false, 0);
 		this.packStart(filtersComboBox, false, false, 0);
+		//========================================
+
+		//========================================
+		//get the selected filter's widget
+		filterWidgetVBox = new VBox(false, 0);
+		filtersComboBox.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent event) {
+				System.out.println(".comboBoxEvent()" + filtersComboBox.getSelectedObject());
+				Widget[] widgets = filterWidgetVBox.getChildren();
+				for (int i = 0; i < widgets.length; i++) {
+					filterWidgetVBox.remove(widgets[i]);
+				}
+				
+				Filter filter = (Filter)filtersComboBox.getSelectedObject();
+				if(filter != null){ filterWidgetVBox.add(filter.getWidget()); }
+				filterWidgetVBox.showAll();
+			}
+		});
+		this.packStart(filterWidgetVBox, false, false, 0);
+		//========================================
 		
 		
 		this.showAll();

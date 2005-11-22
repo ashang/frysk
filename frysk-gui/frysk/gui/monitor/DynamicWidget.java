@@ -41,7 +41,6 @@ package frysk.gui.monitor;
 
 import org.gnu.gtk.AttachOptions;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.Frame;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.ToolTips;
@@ -52,39 +51,23 @@ import org.gnu.gtk.ToolTips;
  * only have to specify the type of entries they require.
  * more to come: more types, validation, etc as needed.
  * */
-public class DynamicWidget extends Frame {
+public class DynamicWidget extends Table {
 
-	Table tabel;
+//	Table tabel;
 	int row;
 	
-	public DynamicWidget(String name){
-		super(name);
-		this.initWidget();
-	}
-	
 	public DynamicWidget(){
-		super();
-		this.initWidget();
-	}
-	
-	private void initWidget(){
-		this.tabel = new Table(0,0,false);
-		this.add(tabel);
+		super(0,0,false);
 		this.row = 0;
 	}
 	
-	public void addString(GuiObject key, final String string){
+	public void addString(GuiObject key){
 		this.addLabel(key);
 		this.addTextEntry(key);
-//		entry.addListener(new EntryListener() {
-//			public void entryEvent(EntryEvent arg0) {
-//				runnable.run();
-//			}
-//		});
 		this.row++;
 	}
 	
-	public void addInteger(GuiObject key, Integer integer){
+	public void addInteger(GuiObject key){
 		this.addLabel(key);
 		this.addTextEntry(key);
 		this.row++;
@@ -94,14 +77,14 @@ public class DynamicWidget extends Frame {
 		Label label = new Label(key.getName());
 		ToolTips tip = new ToolTips();
 		tip.setTip(label, key.getToolTip(), "");
-		this.tabel.attach(label,0,1, this.row,this.row+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 3, 3);
+		this.attach(label,0,1, this.row,this.row+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 3, 3);
 	}
 	
 	private Entry addTextEntry(GuiObject key){
 		Entry entry = new Entry();
 		ToolTips tip = new ToolTips();
 		tip.setTip(entry, key.getToolTip(), "");
-		this.tabel.attach(entry,1,2, this.row,this.row+1, AttachOptions.FILL, AttachOptions.SHRINK, 3, 3);
+		this.attach(entry,1,2, this.row,this.row+1, AttachOptions.FILL, AttachOptions.SHRINK, 3, 3);
 		return entry;
 		
 	}

@@ -79,10 +79,6 @@ public class CustomeObserverWindow extends Window implements Observer {
 
 	private ListView baseObserverTreeView;
 	private ListView sourceActionsTreeView;
-//	private ListView sourceFiltersTreeView;
-		
-//	private ListView addedActionsTreeView;
-//	private ListView addedFiltersTreeView;
 
 	private FilterWidget filterWidget;
 	
@@ -187,16 +183,6 @@ public class CustomeObserverWindow extends Window implements Observer {
 		});
 		//=========================================
 		
-		//=========================================
-//		this.sourceFiltersTreeView = new ListView(((TreeView)glade.getWidget("sourceFiltersTreeView")).getHandle());
-//	
-//		FilterManager.theManager.addObserver(new Observer() {
-//			public void update(Observable arg0, Object arg1) {
-//				populateSourceFiltersTreeView();
-//			}
-//		});
-		//=========================================
-
 		//=========================================
 		this.filterWidget = new FilterWidget(((VBox)glade.getWidget("filtersWidget")).getHandle());
 		//=========================================
