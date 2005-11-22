@@ -1,5 +1,8 @@
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Move version.in logic to common/version.ac,
+	include.
+	
 	* version.in: Delete, moved to common/
 	* configure.ac (FRYSK_VERSION_IN, FRYSK_VERSION): Define, get the
 	version from common/version.in.

@@ -1,5 +1,7 @@
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
+	* version.ac: New file.  Move version.in logic to here.
+
 	* version.in: New file, moved from top-level.
 
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
