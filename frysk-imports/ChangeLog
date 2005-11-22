@@ -1,3 +1,8 @@
+2005-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Include common/version.ac.  Update AC_INIT to
+	frysk-imports FRYSK_VERSION.
+
 2005-11-21  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (SUBDIRS): Add frysk.

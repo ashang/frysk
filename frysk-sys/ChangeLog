@@ -1,3 +1,8 @@
+2005-11-22  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Include common/version.ac.  Update AC_INIT to
+	frysk-sys FRYSK_VERSION.
+
 2005-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Add libfrysk-jargs.a.

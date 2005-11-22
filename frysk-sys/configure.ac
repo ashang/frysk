@@ -38,7 +38,10 @@
 # exception.
 
 AC_PREREQ(2.59)
-AC_INIT(frysk, 0.0)
+
+sinclude(common/version.ac)
+AC_INIT(frysk-sys, [FRYSK_VERSION])
+
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
 sinclude(common/acinclude.m4)
