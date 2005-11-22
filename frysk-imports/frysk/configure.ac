@@ -37,38 +37,10 @@
 # version and license this file solely under the GPL without
 # exception.
 
-include common/Makefile.rules
-include Makefile.gen
+AC_PREREQ(2.59)
+AC_INIT(frysk, 3.0.0)
+AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
+AM_PROG_GCJ
 
-SUBDIRS = \
-	frysk \
-	jline \
-	jargs \
-	tests \
-	tlwidgets \
-	cdtparser
-
-solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
-EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
-EggTrayIcon_libEggTrayIcon_so_LDADD =
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_JAVA_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(GLIB_JAVA_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += -lgtkjni -lglibjni
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(CAIRO_JAVA_LIBS)
-
-noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
-EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
-                                       EggTrayIcon/libEggTrayIcon.c \
-									   EggTrayIcon/eggtrayicon.h
-
-EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(GLIB_JAVA_CFLAGS)
-
-GEN_CLASSPATH += jargs.jar
-GEN_CLASSPATH += junit.jar
-GEN_GCJ_LDADD += libfrysk-jargs.a
-GEN_GCJ_LDADD += libfrysk-junit.a
-
-# we need to get this into the distribution
-noinstdir = $(srcdir)
-noinst_HEADERS = include/linux.ptrace.h
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

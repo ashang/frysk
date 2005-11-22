@@ -1,3 +1,7 @@
+2005-11-21  Stan Cox  <scox@redhat.com>
+
+	* frysk/Config.javain: Moved to frysk-imports/frysk.
+
 2005-11-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Add libfrysk-jargs.a.

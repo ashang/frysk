@@ -40,7 +40,7 @@
 AC_PREREQ(2.59)
 AC_INIT(frysk, 0.0)
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile])
+AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile frysk/Makefile])
 
 sinclude(common/acinclude.m4)
 

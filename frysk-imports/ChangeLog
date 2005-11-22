@@ -1,3 +1,12 @@
+2005-11-21  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (SUBDIRS): Add frysk.
+	* autogen.sh: Likewise.
+	* configure.ac (AC_CONFIG_FILES): Likewise.
+	* frysk/Config.javain: Moved from frysk-core/frysk.
+	* frysk/Makefile.am: New file.
+	* frysk/configure.ac: New file.
+
 2005-11-21  Rick Moseley  <rmoseley@redhat.com>
 	* Makefile.am: added cdtparser compiler compilation
 	* configure.ac: ditto

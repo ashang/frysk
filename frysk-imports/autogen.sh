@@ -39,6 +39,7 @@
 # exception.
 
 ./common/Makefile.gen.sh \
+    frysk \
     inua \
     JUNIT_JAR \
     ANTLR_JAR \
