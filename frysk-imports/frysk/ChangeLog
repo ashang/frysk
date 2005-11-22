@@ -1,3 +1,7 @@
+2005-11-21  Andrew Cagney  <cagney@redhat.com>
+
+	* Directory frysk/ moved to under frysk-imports/.
+
 2005-11-14  Stan Cox  <scox@scox.rdu.redhat.com>
 
 	* Config.javain (EventLogger): New.
