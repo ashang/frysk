@@ -1,5 +1,9 @@
 2005-11-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java: Add.
+	.testAttachDetachRapidlyCloningMainTask.
+	* TestLib.java (AckDaemonProcess(int,String[])): Add.
+
 	* TaskState.java: Handle PerformTrapped.
 	
 	* Proc.java (performTaskAttachCompleted(Task,Task)): Add

@@ -45,6 +45,7 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Errno;
 import frysk.event.TimerEvent;
+import frysk.sys.Pid;
 
 /**
  * Generic observer tests - that the framework functions ok.
@@ -510,5 +511,24 @@ public class TestTaskObserver
     public void testDeletedAttachOtherTask ()
     {
 	deletedAttachTask (1, false);
+    }
+
+    /**
+     * Check that attaching to a rapidly cloning task works.
+     */
+    public void testAttachDetachRapidlyCloningMainTask ()
+    {
+	Child child = new AckDaemonProcess (AckHandler.signal, new String[]
+	    {
+		"./prog/kill/threads",
+		Integer.toString (Pid.get ()),
+		Integer.toString (AckHandler.signal),
+		"5", // Seconds
+		"100" // Tasks
+	    });
+	Task task = child.findTaskUsingRefresh (true);
+	Task[] tasks = (Task[]) task.proc.getTasks ().toArray (new Task[0]);
+	AttachedObserver attachedObserver = attach (tasks);
+	detach (tasks, attachedObserver);
     }
 }

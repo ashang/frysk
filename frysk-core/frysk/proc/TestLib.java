@@ -344,9 +344,13 @@ public class TestLib
 	static final int delForkSig = Sig.INT;
 	static final int zombieForkSig = Sig.URG;
 	static final int execSig = Sig.PWR;
+	AckProcess (int ack, String[] argv)
+	{
+	    super (ack, argv);
+	}
 	AckProcess ()
 	{
-	    super (childAck, new String[]
+	    this (childAck, new String[]
 		{
 		    "./prog/kill/child",
 		    "20",
@@ -441,6 +445,10 @@ public class TestLib
 				  String[] argv)
 	{
 	    return Fork.daemon (stdin, stdout, stderr, argv);
+	}
+	AckDaemonProcess (int ack, String[] argv)
+	{
+	    super (ack, argv);
 	}
 	AckDaemonProcess ()
 	{
