@@ -41,19 +41,16 @@
 noinst_DATA = cdtparser.jar
 
 # Make a jar file.
-cdtparser.jar:	stamp
-		find $(srcdir) -name '*.class' -print | fastjar -@ -cf $@
+cdtparser.jar: classdir
+	cd classdir ; \
+	find * -name '*.class' -print | fastjar -@ -cf $@.tmp
+	mv classdir/$@.tmp $@
 
-stamp: $(sources)
-	$(GCJ) -C -O2 @file.list
+classdir:
+	rm -rf classdir
+	mkdir -p classdir
+	classdir=`cd classdir && pwd` ; \
+	cd $(srcdir) ; \
+	$(GCJ) -C -I -O -g -d $$classdir @file.list
 
-clean = $(shell find $(srcdir) -name '*.class' -exec rm {} \;)
-
-CLEANFILES = $(clean) cdtparser.jar Makefile.in Makefile
-
-clean-local:
-	-rm cdtparser.jar
-
-
-
-	
+CLEANFILES = classdir cdtparser.jar Makefile.in Makefile
