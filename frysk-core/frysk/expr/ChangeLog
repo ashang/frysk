@@ -116,3 +116,10 @@
 	expressions.
 	* TabException.java: New file that contains the class definition
 	for Tab Exception.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

@@ -69,3 +69,10 @@
 	* Thread.java: New.
 	* Type.java: New.
 	* Variable.java: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

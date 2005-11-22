@@ -55,3 +55,10 @@
 2005-10-08  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Stat.cxx, package.html, Stat.java: New files.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

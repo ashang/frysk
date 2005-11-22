@@ -252,3 +252,10 @@
 
 	* .cvsignore, Makefile.am, README, autogen.sh, configure.ac: New.
 	* jline/: Import.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

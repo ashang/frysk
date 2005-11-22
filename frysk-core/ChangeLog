@@ -170,3 +170,10 @@
 	* Makefile.am: New file.
 	* autogen.sh: New file.
 	* .cvsignore: New file.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

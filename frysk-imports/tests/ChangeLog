@@ -121,3 +121,10 @@
 	* cniinner/.cvsignore, cniinner/Child.java,
 	cniinner/Makefile.am, cniinner/Parent.java,
 	cniinner/native.cxx: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

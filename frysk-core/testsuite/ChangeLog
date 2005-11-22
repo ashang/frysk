@@ -9,4 +9,10 @@
 	expression parser.
 	* expr/CppParser.exp: New expect test script for testing the
 	expression parser.
-
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

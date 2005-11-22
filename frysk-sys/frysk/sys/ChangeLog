@@ -190,3 +190,10 @@
 	* cni/Ptrace.cxx, cni/Poll.cxx, cni/Itimer.cxx, cni/Errno.cxx,
 	cni/Errno.hxx, Ptrace.java, Poll.java, Itimer.java, Errno.java:
 	New file.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

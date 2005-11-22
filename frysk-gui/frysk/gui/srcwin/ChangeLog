@@ -1326,3 +1326,10 @@
 	* SourceBuffer.java - Added displaying of line numbers next to lines
 	
 	* SourceViewWidget.java - Removed double-click/right-click add breakpoints to fix JVM crashes on quit
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

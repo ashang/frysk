@@ -148,3 +148,10 @@
 	* ChangeLog: new file.
 	* configure.ac,Makefile.am (CLEANFILES): @JAVA_LIBRARY_PATH@ and 
 	@RPATH@	to remove need	for setting LD_LIBRARY_PATH before running.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

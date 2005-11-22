@@ -33,4 +33,10 @@
 	* hpd/SetNotationParser.java: New.
 	* hpd/SetParserTest.java: New.
 	* hpd/TaskSet.java: New.
-
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

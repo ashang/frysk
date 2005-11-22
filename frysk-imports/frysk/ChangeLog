@@ -33,4 +33,10 @@
 2005-09-22  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain: Moved from frysk/bin/.
-	
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

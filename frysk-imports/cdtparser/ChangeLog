@@ -88,4 +88,10 @@
 2005-11-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* New import of parser code from Eclipse CDT 3.0.0
-	
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

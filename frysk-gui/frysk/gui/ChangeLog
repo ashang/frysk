@@ -342,3 +342,10 @@
 2005-07-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Procpop.java: Implemented and incorperated preferances model.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
