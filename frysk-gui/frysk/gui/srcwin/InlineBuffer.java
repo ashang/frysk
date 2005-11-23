@@ -40,12 +40,9 @@ public class InlineBuffer extends SourceBuffer {
 	}
 	
 	public boolean hasInlineCode(int lineNumber){
-		// TODO: right now DOMInlineInstances don't have references to other DOMInlineInstances
-		//    -fix this.
-		
 		
 		// MAKE SURE WE DON'T LOOK IN THE DOMSOURCE FOR INLINE CODE!!
-		return (this.instance.hasInlineInstance() && lineNumber == this.instance.getPCLine());
+		return (this.instance.hasInlineInstance() && lineNumber == this.getCurrentLine());
 	}
 	
 	public int getLineCount(){
@@ -96,6 +93,14 @@ public class InlineBuffer extends SourceBuffer {
 				line.getText().substring(tag.getStart(), tag.getStart() + tag.getLength()), 
 				iter.getLineNumber(), tag.getStart(), false);
 		return var;
+    }
+    
+    /**
+     * We need to do some offset calculation for the current line, since
+     * we're only displaying the body of the function
+     */
+    public int getCurrentLine(){
+    	return super.getCurrentLine() - this.declaration.getStartingLine() + 1;
     }
     
     protected void createTags(){

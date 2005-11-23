@@ -1,6 +1,9 @@
 2005-11-23  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (hasInlineCode): Now uses getCurrentLine.
+	(getCurrentLine): Added.
 	
-	* InlineBuffer (hasInlineCode): Now implemented.
+	* InlineBuffer.java (hasInlineCode): Now implemented.
 	* PreferenceConstants.java: Added constants for variables that are out of
 	scope, renamed unavailable variabels to optimized variables.
 	* SourceBuffer.java: Changed unavailable variable tag to optimized

@@ -513,8 +513,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				continue;
 			}
 			
-			// For the current line, draw background using the currentLine color
+			// For the current line, do some special stuff
 			if(i == this.buf.getCurrentLine()){
+					
 				context.setRGBForeground(new Color(lineR, lineG, lineB));
 				if(showMarks)
 					drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
