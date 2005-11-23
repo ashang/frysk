@@ -410,11 +410,11 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			DOMInlineInstance instance = this.buf.getInlineInstance(this.buf.getCurrentLine());
 			
-			Element node = instance.getInlineInstance();
-			while(!node.getName().equals("image"))
+			Element node = instance.getElement();
+			while(!node.getName().equals(DOMImage.IMAGE_NODE))
 				node = node.getParentElement();
 			
-			DOMSource scope = new DOMImage(node).getSource(instance.getDeclaration().getSource());
+			DOMSource scope = new DOMImage(node).getSource(instance.getDeclaration().getSourceName());
 			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent, 
 					scope, instance);
 			this.setSubscopeAtCurrentLine(nested);

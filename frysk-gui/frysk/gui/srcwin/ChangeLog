@@ -1,3 +1,39 @@
+2005-11-23  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* InlineBuffer (hasInlineCode): Now implemented.
+	* PreferenceConstants.java: Added constants for variables that are out of
+	scope, renamed unavailable variabels to optimized variables.
+	* SourceBuffer.java: Changed unavailable variable tag to optimized
+	variable tag, added tag for out of scope variables, removed inline
+	code tag.
+	(init): Removed initialization of inline scope tag, added creation
+	of out of scope tag.
+	(updatePreferences): Ditto, except for updating rather than
+	initializing.
+	(addVariable): Hardcoded some out of scope variable information.
+	(createTags): Now looks for out of scope variable tags in DOM.
+	* SourceViewWidget.java (toggleChild): Now uses constant for image
+	node name.
+	* SourceWindowFactory.java (createSourceWindow): Now adds info
+	for inline code 2 levels deep.
+	* dom/DOMFrysk.java: Moved IMAGE_ATTR constant to DOMImage.
+	* dom/DOMFunction.java: Added FUNCTION_NODE constant and moved
+	INLINE_NODE constant to DOMInlineInstance.
+	* dom/DOMImage.java: Removed INLINE_NODE constant, was redundant.
+	(getFunction): Now uses FUNCTION_NODE from DOMFunction.
+	* dom/DOMInlineInstance.java: Created INLINE_NODE constant.
+	(addInlineInstance): Added.
+	(hasInlineInstance): Added.
+	(getInlineInstance): Added.
+	* dom/DOMLine.java (setHasInline): Removed.
+	(hasInlinedCode): No longer relies on the member variable.
+	(addInlineCode): No longer sets member variable.
+	* dom/DOMSource.java: Removed LINENO_NODE = "line";
+	(addLine): No longer takes 'has_inline' variable.
+	* dom/DOMTagTypes: Added constant for out of scope variables.
+	* dom/DOMTestDOMFrysk: Commented out unused variable due to DOMLine
+	no longer needing a 'has_inline' variable for addLine.
+	
 2005-11-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PreferenceConstants.java: Added constants for unavailable variables.

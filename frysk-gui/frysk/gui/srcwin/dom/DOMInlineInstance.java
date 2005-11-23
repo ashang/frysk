@@ -60,6 +60,10 @@ public class DOMInlineInstance {
 	public static final String PCLINE_ATTR = "PC_line";
 	
 	private Element myElement;
+	/**
+	 * name of the inline element
+	 */	
+	public static final String INLINE_NODE = "inline";
 	
 //	public DOMInlineInstance(int start, int end){
 //		this.start = start;
@@ -75,7 +79,7 @@ public class DOMInlineInstance {
 		this.myElement = data;
 	}
 	
-	public Element getInlineInstance() {
+	public Element getElement() {
 		return this.myElement;
 	}
 	
@@ -116,16 +120,45 @@ public class DOMInlineInstance {
 		String funcName = this.myElement.getAttributeValue(LINEINST_ATTR);
 		
 		Element parent = this.myElement.getParentElement();
-		while(parent != null && !parent.getName().equals(DOMFrysk.IMAGE_ATTR))
+		while(parent != null && !parent.getName().equals(DOMImage.IMAGE_NODE)){
 			parent = parent.getParentElement();
+		}
 		
-		if(parent != null)
-			return new DOMImage(parent).getFunction(funcName);
+		if(parent != null){
+			DOMImage image = new DOMImage(parent);
+			return image.getFunction(funcName);
+		}
 		
 		return null;
 	}
 	
 	public int getPCLine(){
 		return Integer.parseInt(this.myElement.getAttributeValue(PCLINE_ATTR));
+	}
+	
+	public void addInlineInst(String instance, int start_inline, int length, int PCLine) {
+		Element inlineLineInstElement = new Element(
+				DOMInlineInstance.LINEINST_NODE);
+		inlineLineInstElement.setAttribute(LINEINST_ATTR,
+				instance);
+		inlineLineInstElement.setAttribute(DOMLine.OFFSET_ATTR, Integer
+				.toString(start_inline));
+		inlineLineInstElement.setAttribute(DOMLine.LENGTH_ATTR, Integer
+				.toString(length));
+		inlineLineInstElement.setAttribute(PCLINE_ATTR,
+				String.valueOf(PCLine));
+		this.myElement.addContent(inlineLineInstElement);
+	}
+	
+	public boolean hasInlineInstance(){
+		return !this.myElement.getChildren(INLINE_NODE).isEmpty();
+	}
+	
+	public DOMInlineInstance getInlineInstance(){
+		Element child = this.myElement.getChild(INLINE_NODE);
+		if(child != null)
+			return new DOMInlineInstance(child);
+		
+		return null;
 	}
 }

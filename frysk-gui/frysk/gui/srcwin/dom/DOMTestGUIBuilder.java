@@ -265,7 +265,7 @@ public class DOMTestGUIBuilder {
 		// add the lines to the source
 		for (int ctr = 0; ctr < test_prog.length; ctr++) {
 			testDOMSource.addLine(ctr + 1, test_prog[ctr], is_executable[ctr],
-					is_inline[ctr], false, line_start_offset[ctr], pc);
+					false, line_start_offset[ctr], pc);
 			pc = pc.add(no_bytes);
 		}
 	}
@@ -328,7 +328,6 @@ public class DOMTestGUIBuilder {
 						line_index = test_prog[i].indexOf(token,line_index);
 						testDOMLine.addInlineInst(token, line_index, 
 								token.length(), 1);
-						testDOMLine.setHasInline(true);
 					}
 				}
 			}

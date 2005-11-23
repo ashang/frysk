@@ -54,12 +54,8 @@ public class DOMImage {
 	 * CCPATH for the image
 	 */
 	public static final String CCPATH_ATTR = "CCPATH";
-	/**
-	 * name of the inline element
-	 */
-		
-	public static final String INLINE_NODE = "inline";
 	private Element myElement;
+	public static final String IMAGE_NODE = "image";
 	
 	/**
 	 * Creates a new DOMImage from the given Element. Data must be of name "image".
@@ -165,10 +161,10 @@ public class DOMImage {
 	 * 	element exists
 	 */
 	public DOMFunction getFunction(String name) {
-		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();
+		Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
 		while (iter.hasNext()) {
 			Element node = (Element) iter.next();
-			if (node.getAttributeValue(DOMFunction.INLINENAME_ATTR) == name)
+			if (node.getAttributeValue(DOMFunction.FUNCTION_NAME_ATTR) == name)
 				return new DOMFunction (node);
 		}
 		return null;
@@ -180,7 +176,7 @@ public class DOMImage {
 	 */
 
 	public Iterator getInlinedFunctions(){
-		Iterator iter = this.myElement.getChildren(INLINE_NODE).iterator();
+		Iterator iter = this.myElement.getChildren(DOMInlineInstance.INLINE_NODE).iterator();
 		Vector v = new Vector();
 		
 		while(iter.hasNext())

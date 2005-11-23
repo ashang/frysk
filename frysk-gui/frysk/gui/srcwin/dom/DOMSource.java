@@ -63,7 +63,6 @@ public class DOMSource {
 	 * Name of this node in the DOM tree
 	 */
 	public static final String SOURCE_NODE = "source";
-	public static final String LINENO_NODE = "line";
 	// program counter attribute
 	public static final String PC_ATTR = "pc";
 	// text of the source line
@@ -144,24 +143,22 @@ public class DOMSource {
 	 * @param lineno - line number to add
 	 * @param text - text of the line to add
 	 * @param is_executable - is this line executable
-	 * @param is_inline - does this line contain an inline function
 	 * @param has_break - does this line have a breakpoint
 	 * @param offset_index - character offset of this line from the start
 	 * 				of the file 
 	 * @param pc
+	 * @param is_inline - does this line contain an inline function
 	 */
 	public void addLine(int lineno, String text, boolean is_executable, 
-			boolean has_inline, boolean has_break, int offset_index,
-			BigInteger pc) {
+			boolean has_break, int offset_index, BigInteger pc) {
 		
-		Element sourceLineElement = new Element(LINENO_NODE);
+		Element sourceLineElement = new Element(DOMLine.LINE_NODE);
 		sourceLineElement.setText(text);
 		sourceLineElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineno));
 		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
 		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset_index));
 		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(text.length()));
 		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, ""+is_executable);
-		sourceLineElement.setAttribute(DOMLine.HAS_INLINE_ATTR, ""+has_inline);
 		sourceLineElement.setAttribute(DOMLine.HAS_BREAK_ATTR, ""+has_break);
 		this.myElement.addContent(sourceLineElement);
 	}
@@ -248,7 +245,7 @@ public class DOMSource {
 	 *         source file
 	 */
 	public Iterator getInlinedFunctions(){
-		Iterator iter = this.myElement.getChildren(DOMFunction.INLINE_NODE).iterator();
+		Iterator iter = this.myElement.getChildren(DOMFunction.FUNCTION_NODE).iterator();
 		Vector v = new Vector();
 		
 		while(iter.hasNext())

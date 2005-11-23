@@ -20,6 +20,7 @@ import org.jdom.output.XMLOutputter;
 
 import frysk.gui.srcwin.dom.DOMFrysk;
 import frysk.gui.srcwin.dom.DOMImage;
+import frysk.gui.srcwin.dom.DOMInlineInstance;
 import frysk.gui.srcwin.dom.DOMSource;
 import frysk.proc.Task;
 import frysk.Config;
@@ -122,7 +123,7 @@ public class SourceWindowFactory {
 					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test3.cpp")));
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
-						source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
+						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
 						if(execLines[line-1] == 1)
                             source.getLine(line).setExecutable(true);
                         else
@@ -131,6 +132,8 @@ public class SourceWindowFactory {
 						if(line++ == 9){
 							String lineText = source.getLine(9).getText();
                         	source.getLine(9).addInlineInst("baz", lineText.indexOf("baz"), 3, 22);
+                        	DOMInlineInstance instance = source.getLine(9).getInlineInst("baz");
+                        	instance.addInlineInst("foobar",10,6,4);
 						}
 						
 						offset += text.length();
@@ -158,7 +161,7 @@ public class SourceWindowFactory {
                     execLines = new int[] {0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0};
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
-						source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
+						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
                         if(execLines[line-1] == 1)
                             source.getLine(line++).setExecutable(true);
                         else
@@ -189,7 +192,7 @@ public class SourceWindowFactory {
                     execLines = new int[] {0,0,1,1,0};
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
-						source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
+						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
                         if(execLines[line-1] == 1)
                             source.getLine(line++).setExecutable(true);
                         else
@@ -220,7 +223,7 @@ public class SourceWindowFactory {
                     execLines = new int[] {0,0,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0};
                     while(reader.ready()){
                         String text = reader.readLine()+"\n";
-                        source.addLine(line, text, !text.startsWith("//"), false, false, offset, BigInteger.valueOf(255));
+                        source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
                         if(execLines[line-1] == 1)
                             source.getLine(line++).setExecutable(true);
                         else

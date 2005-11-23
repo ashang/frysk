@@ -46,18 +46,20 @@ import org.jdom.Element;
  *
  */
 public class DOMFunction {
+	
+	public static final String FUNCTION_NODE = "function";
+	
 	public static final String END_ATTR = "end";
 	public static final String START_ATTR = "start";
-	public static final String INLINE_NODE = "inline";
-	public static final String INLINENAME_ATTR = "inlinename";
+	public static final String FUNCTION_NAME_ATTR = "function_name";
 	public static final String SOURCE_NAME_ATTR = "source";
 	public static final String LINE_START_ATTR = "line_start";
 	public static final String LINE_END_ATTR = "line_end";
 	
 	public static DOMFunction createDOMFunction(String name, String source,
 			int lineStart, int lineEnd, int start, int end){
-		Element func = new Element(INLINE_NODE);
-		func.setAttribute(INLINENAME_ATTR, name);
+		Element func = new Element(FUNCTION_NODE);
+		func.setAttribute(FUNCTION_NAME_ATTR, name);
 		func.setAttribute(SOURCE_NAME_ATTR, source);
 		func.setAttribute(START_ATTR, ""+start);
 		func.setAttribute(END_ATTR, ""+end);
@@ -88,7 +90,7 @@ public class DOMFunction {
 	 * @return The name of the inlined code
 	 */
 	public String getName(){
-		return this.myElement.getAttributeValue(INLINENAME_ATTR);
+		return this.myElement.getAttributeValue(FUNCTION_NAME_ATTR);
 	}
 	
 	/**
@@ -112,7 +114,7 @@ public class DOMFunction {
 		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
 	}
 	
-	public String getSource(){
+	public String getSourceName(){
 		return this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
 	}
 	

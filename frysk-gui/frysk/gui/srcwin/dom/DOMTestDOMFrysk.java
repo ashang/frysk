@@ -66,7 +66,7 @@ public class DOMTestDOMFrysk {
 //
 //	private static String[] inline_funcs = { "do_something", "b", "f" };
 //
-	private static boolean[] is_inline = { false, true, false };
+//	private static boolean[] is_inline = { false, true, false };
 //
 //	private static String[] do_something = { "void do_something(){", "   b();",
 //			"}" };
@@ -370,7 +370,7 @@ public class DOMTestDOMFrysk {
 		BigInteger pc = BigInteger.valueOf(25842);
 		for (int ctr = 0; ctr < main_prog.length; ctr++) {
 			testDOMSource.addLine(ctr + 1, main_prog[ctr], true,
-					is_inline[ctr], false, offset_index[ctr], pc);
+					false, offset_index[ctr], pc);
 			pc = pc.add(no_bytes);
 		}
 

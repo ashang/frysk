@@ -60,10 +60,10 @@ import frysk.gui.srcwin.PreferenceConstants.Comments;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.Functions;
 import frysk.gui.srcwin.PreferenceConstants.GlobalVariables;
-import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
+import frysk.gui.srcwin.PreferenceConstants.OptimizedVariables;
+import frysk.gui.srcwin.PreferenceConstants.OutOfScopeVariables;
 import frysk.gui.srcwin.PreferenceConstants.Search;
-import frysk.gui.srcwin.PreferenceConstants.UnavailableVariables;
 import frysk.gui.srcwin.PreferenceConstants.Variables;
 import frysk.gui.srcwin.cparser.CDTParser;
 import frysk.gui.srcwin.dom.DOMInlineInstance;
@@ -91,7 +91,8 @@ public class SourceBuffer extends TextBuffer {
 	protected static final String MEMBER_TAG = "MEMBER";
 	protected static final String FUNCTION_TAG = "FUNCTION";
 	protected static final String ID_TAG = "ID";
-	protected static final String DEAD_VAR_TAG = "DEAD_VAR";
+	protected static final String OPTIMIZED_VAR_TAG = "OPTIMIZED_VAR";
+	protected static final String OUT_OF_SCOPE_VAR_TAG = "OOS_VAR";
 	protected static final String KEYWORD_TAG = "TYPE";
 	protected static final String CURRENT_LINE = "currentLine";
 	protected static final String FOUND_TEXT = "foundText";
@@ -113,9 +114,8 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag keywordTag;
 	private TextTag commentTag;
 	private TextTag classTag;
-	private TextTag deadVarTag;
-	
-	private TextTag inlinedTag;
+	private TextTag optimizedVarTag;
+	private TextTag oosVarTag;
 		
 	private StaticParser staticParser;
 	
@@ -262,14 +262,22 @@ public class SourceBuffer extends TextBuffer {
 		this.variableTag.setWeight(Weight.intern(weight));
 		this.updateTagStyle(currentNode, Variables.ITALICS, Style.NORMAL, this.variableTag);
 
-		// unavailable variable syntax highlighting
-		this.updateTagColor(currentNode, UnavailableVariables.COLOR_PREFIX,
-				UnavailableVariables.DEFAULT, this.deadVarTag, true);
-		this.updateTagStyle(currentNode, UnavailableVariables.ITALICS, Style.NORMAL,
-				this.deadVarTag);
-		boolean strikethrough = currentNode.getBoolean(UnavailableVariables.STRIKETHROUGH, 
-				UnavailableVariables.STRIKETHROUGH_DEFAULT);
-		this.deadVarTag.setStrikethrough(strikethrough);
+		// optimized out variable syntax highlighting
+		this.updateTagColor(currentNode, OptimizedVariables.COLOR_PREFIX,
+				OptimizedVariables.DEFAULT, this.optimizedVarTag, true);
+		this.updateTagStyle(currentNode, OptimizedVariables.ITALICS, Style.NORMAL,
+				this.optimizedVarTag);
+		boolean strikethrough = currentNode.getBoolean(OptimizedVariables.STRIKETHROUGH, 
+				OptimizedVariables.STRIKETHROUGH_DEFAULT);
+		this.optimizedVarTag.setStrikethrough(strikethrough);
+		
+		// out of scope variable syntax highlighting
+		this.updateTagColor(currentNode, OutOfScopeVariables.COLOR_PREFIX,
+				OutOfScopeVariables.DEFAUT, this.oosVarTag, true);
+		this.updateTagStyle(currentNode, OutOfScopeVariables.ITALICS, Style.NORMAL,
+				this.oosVarTag);
+		weight = currentNode.getInt(OutOfScopeVariables.WEIGHT, Weight.NORMAL.getValue());
+		this.oosVarTag.setWeight(Weight.intern(weight));
 		
 		// Global variable syntax highlighting
 		this.updateTagColor(currentNode, GlobalVariables.COLOR_PREFIX, GlobalVariables.DEFAULT,
@@ -295,9 +303,6 @@ public class SourceBuffer extends TextBuffer {
 		weight = currentNode.getInt(Classes.WEIGHT, Weight.NORMAL.getValue());
 		this.classTag.setWeight(Weight.intern(weight));
 		this.updateTagStyle(currentNode, Classes.ITALICS, Style.NORMAL, this.classTag);
-		
-		// Inlined tag background
-		this.updateTagColor(currentNode, Inline.COLOR_PREFIX, Inline.DEFAULT, this.inlinedTag, false);
 	}
 	
 	/**
@@ -552,8 +557,12 @@ public class SourceBuffer extends TextBuffer {
 			line.addTag(DOMTagTypes.LOCAL_VAR,
 				this.getText(this.getIter(offset), this.getIter(offset+length), true),
 				this.getIter(offset).getLineOffset());
+		else if(line.getLineNum() < 15)
+			line.addTag(DOMTagTypes.OUT_OF_SCOPE_VAR,
+					this.getText(this.getIter(offset), this.getIter(offset+length), true),
+					this.getIter(offset).getLineOffset());
 		else
-			line.addTag(DOMTagTypes.UNAVAILABLE_VAR	,
+			line.addTag(DOMTagTypes.OPTIMIZED_VAR	,
 					this.getText(this.getIter(offset), this.getIter(offset+length), true),
 					this.getIter(offset).getLineOffset());
 	}
@@ -680,9 +689,8 @@ public class SourceBuffer extends TextBuffer {
 		this.globalTag = this.createTag(MEMBER_TAG);
 		this.commentTag = this.createTag(COMMENT_TAG);
 		this.classTag = this.createTag(CLASS_TAG);
-		this.deadVarTag = this.createTag(DEAD_VAR_TAG);
-		
-		this.inlinedTag = this.createTag(INLINE_TAG);
+		this.optimizedVarTag = this.createTag(OPTIMIZED_VAR_TAG);
+		this.oosVarTag = this.createTag(OUT_OF_SCOPE_VAR_TAG);
 	}
 	
 	/**
@@ -767,8 +775,14 @@ public class SourceBuffer extends TextBuffer {
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}
 				
-				else if(type.equals(DOMTagTypes.UNAVAILABLE_VAR)){
-					this.applyTag(DEAD_VAR_TAG, 
+				else if(type.equals(DOMTagTypes.OPTIMIZED_VAR)){
+					this.applyTag(OPTIMIZED_VAR_TAG, 
+							this.getIter(lineOffset + tag.getStart()),
+							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
+				}
+				
+				else if(type.equals(DOMTagTypes.OUT_OF_SCOPE_VAR)){
+					this.applyTag(OUT_OF_SCOPE_VAR_TAG, 
 							this.getIter(lineOffset + tag.getStart()),
 							this.getIter(lineOffset + tag.getStart() + tag.getLength()));
 				}

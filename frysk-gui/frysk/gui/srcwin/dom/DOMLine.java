@@ -59,11 +59,6 @@ public class DOMLine {
 	/**
 	 * Whether this line has inlined code or not
 	 */
-	public static final String HAS_INLINE_ATTR = "has_inline";
-
-	/**
-	 * Whether this line has inlined code or not
-	 */
 	public static final String HAS_BREAK_ATTR = "has_break";
 
 	/**
@@ -127,21 +122,10 @@ public class DOMLine {
 	}
 	
 	/**
-	 * sets the has_inline attribute of this line
-	 */
-	public void setHasInline(boolean has_inline) {
-		this.myElement.setAttribute(DOMLine.HAS_INLINE_ATTR, ""+has_inline);
-	}
-	
-	/**
 	 * @return Whether or not this line contains inlined code
 	 */
 	public boolean hasInlinedCode() {
-
-		if (this.myElement.getAttributeValue(HAS_INLINE_ATTR).equals("true"))
-			return true;
-
-		return false;
+		return !this.myElement.getChildren(DOMInlineInstance.INLINE_NODE).isEmpty();
 	}
 
 	/**
@@ -336,8 +320,6 @@ public class DOMLine {
 		inlineLineInstElement.setAttribute(DOMInlineInstance.PCLINE_ATTR,
 				String.valueOf(PCLine));
 		this.myElement.addContent(inlineLineInstElement);
-		
-		this.myElement.setAttribute(DOMLine.HAS_INLINE_ATTR, "true");
 	}
 
 	/**

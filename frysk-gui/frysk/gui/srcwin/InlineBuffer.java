@@ -45,8 +45,7 @@ public class InlineBuffer extends SourceBuffer {
 		
 		
 		// MAKE SURE WE DON'T LOOK IN THE DOMSOURCE FOR INLINE CODE!!
-		this.instance.getInlineInstance();
-		return false;
+		return (this.instance.hasInlineInstance() && lineNumber == this.instance.getPCLine());
 	}
 	
 	public int getLineCount(){

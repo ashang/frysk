@@ -131,7 +131,7 @@ public class PreferenceConstants {
 	}
 	
 	/**
-	 * Preference names relating to identifiers
+	 * Preference names relating to variables that are currently in scope
 	 * @author ajocksch
 	 *
 	 */
@@ -142,13 +142,28 @@ public class PreferenceConstants {
 		public static final Color DEFAULT = new Color(0,30000,0);
 	}
 	
-	public static class UnavailableVariables{
-		public static final String WEIGHT = "dead_variable_weight";
-		public static final String ITALICS = "dead_variable_italics";
-		public static final String STRIKETHROUGH = "dead_variable_strikethrough";
+	/**
+	 * Preference names relating to variables that have been marked as
+	 * optimized out by the compiler
+	 */
+	public static class OptimizedVariables{
+		public static final String WEIGHT = "optimized_variable_weight";
+		public static final String ITALICS = "optimized_variable_italics";
+		public static final String STRIKETHROUGH = "optimized_variable_strikethrough";
 		public static final boolean STRIKETHROUGH_DEFAULT = true;
-		public static final String COLOR_PREFIX = "dead_var_";
+		public static final String COLOR_PREFIX = "optimized_var_";
 		public static final Color DEFAULT = new Color(30000, 30000, 30000);
+	}
+	
+	/**
+	 * Preference names relating to variables that are not currently in
+	 * scope
+	 */
+	public static class OutOfScopeVariables{
+		public static final String WEIGHT = "oos_variable_weight";
+		public static final String ITALICS = "oos_variable_italics";
+		public static final String COLOR_PREFIX = "oos_var_";
+		public static final Color DEFAUT = new Color(30000, 30000, 30000);
 	}
 	
 	/**

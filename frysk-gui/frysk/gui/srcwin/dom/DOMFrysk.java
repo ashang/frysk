@@ -69,8 +69,6 @@ public class DOMFrysk {
 
 	private static final Element pcName = new Element(PC_ATTR);
 
-	protected static final String IMAGE_ATTR = "image";
-	
 	private Document data;
 
 	/**
@@ -101,7 +99,7 @@ public class DOMFrysk {
 	
 		if (checkImageDup(image_name))
 			return false;
-		Element imageNameElement = new Element(IMAGE_ATTR);
+		Element imageNameElement = new Element(DOMImage.IMAGE_NODE);
 		imageNameElement.setAttribute(DOMSource.FILENAME_ATTR, image_name);
 		imageNameElement.setAttribute(CCPATH_ATTR, CCPATH);
 		this.data.getRootElement().addContent(imageNameElement);
@@ -134,7 +132,7 @@ public class DOMFrysk {
 		Iterator i = this.data.getRootElement().getChildren().iterator();
 		while (i.hasNext()) {
 			Element elem = (Element) i.next(); 
-			if (elem.getQualifiedName().equals(IMAGE_ATTR)) {
+			if (elem.getQualifiedName().equals(DOMImage.IMAGE_NODE)) {
 				if (elem.getAttributeValue(DOMSource.FILENAME_ATTR)
 						.equals(image))
 					return true;
@@ -174,7 +172,7 @@ public class DOMFrysk {
 
 		while (i.hasNext()) {
 			Element elem = (Element) i.next();
-			if (elem.getQualifiedName().equals(IMAGE_ATTR)) {
+			if (elem.getQualifiedName().equals(DOMImage.IMAGE_NODE)) {
 				if (elem.getAttributeValue(DOMSource.FILENAME_ATTR)
 						.equals(name))
 					return new DOMImage(elem);
