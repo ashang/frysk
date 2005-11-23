@@ -429,4 +429,38 @@ public class TestTaskObserverBlocked
 	    }
 	}
     }
+
+    /**
+     * Check that excessive un-blocks do not panic the state machine.
+     */
+    public void testUnblockRunning ()
+    {
+	Child child = new AckDaemonProcess ();
+	Task task = child.findTaskUsingRefresh (true);
+
+	class UnblockRunning
+	    extends TaskObserverBase
+	    implements TaskObserver.Attached
+	{
+	    public Action updateAttached (Task task)
+	    {
+		Manager.eventLoop.requestStop ();
+		return Action.BLOCK;
+	    }
+	    public void deletedFrom (Object o)
+	    {
+		Manager.eventLoop.requestStop ();
+	    }
+	}
+	UnblockRunning unblockRunning = new UnblockRunning ();
+
+	task.requestAddAttachedObserver (unblockRunning);
+	assertRunUntilStop ("attach then block");
+
+	// Queue up three actions, the middle unblock is stray.
+	task.requestUnblock (unblockRunning);
+	task.requestUnblock (unblockRunning);
+	task.requestDeleteAttachedObserver (unblockRunning);
+	assertRunUntilStop ("unblock then detach");
+    }
 }

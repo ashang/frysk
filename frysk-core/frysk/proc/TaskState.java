@@ -520,6 +520,13 @@ class TaskState
 		observation.add ();
 		return running;
 	    }
+	    TaskState processRequestUnblock (Task task,
+						    TaskObserver observer)
+	    {
+		// XXX: What to do about a stray unblock?
+		// observer.fail (new RuntimeException (task, "not blocked");
+		return running;
+	    }
 	};
 
     // Task is running inside a syscall.
