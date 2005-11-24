@@ -66,7 +66,7 @@ public class TaskProcNameFilter extends TaskFilter {
 	
 	public Widget getWidget() {
 		DynamicWidget widget = new DynamicWidget();
-		widget.addString(new GuiObject("Name", "name of the process"));
+		widget.addString(new GuiObject("Name", "name of the process"), this.procNamefilter.getProcName() );
 		return widget;
 	}
 	

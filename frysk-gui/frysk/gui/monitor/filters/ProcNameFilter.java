@@ -68,9 +68,11 @@ public class ProcNameFilter extends ProcFilter {
 
 	public Widget getWidget() {
 		DynamicWidget widget = new DynamicWidget();
-		widget.addString(new GuiObject("Name", "name of the process"));
+		widget.addString(new GuiObject("Name", "name of the process"), this.procName);
 		return widget;
 	}
 		
-	
+	public String getProcName(){
+		return this.procName;
+	}
 }

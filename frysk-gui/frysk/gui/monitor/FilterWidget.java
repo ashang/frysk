@@ -140,6 +140,7 @@ public class FilterWidget extends VBox{
 	}
 	
 	private void deleteFilterLine(FilterLine filterLine){
+		filterLine.removeFromObserver();
 		Widget widget = (Widget) this.widgets.get(filterLine);
 		this.remove(widget);
 	}

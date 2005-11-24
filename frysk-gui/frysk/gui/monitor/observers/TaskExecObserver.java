@@ -21,7 +21,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	public TaskExecObserver(TaskExecObserver other){
 		super(other);
 		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
-		this.addFilterPoint(taskFilterPoint);
+		// this.addFilterPoint(taskFilterPoint); not needed done by parent constructor
 	}
 
 	public Action updateExeced(Task task) {

@@ -59,6 +59,8 @@ import org.gnu.gtk.VBox;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.EntryEvent;
+import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.FocusEvent;
 import org.gnu.gtk.event.FocusListener;
 import org.gnu.gtk.event.KeyEvent;
@@ -117,12 +119,19 @@ public class CustomeObserverWindow extends Window implements Observer {
 		
 		//=========================================
 		this.customObserverNameEntry = (Entry) glade.getWidget("customObserverNameEntry");
+		this.customObserverNameEntry.addListener(new EntryListener() {
+			public void entryEvent(EntryEvent event) {
+				if(event.isOfType(EntryEvent.Type.CHANGED)){
+					setObserverName(customObserverNameEntry.getText());
+				}
+			}
+		});
+		
 		this.customObserverNameEntry.addListener(new KeyListener() {
 		
 			public boolean keyEvent(KeyEvent event) {
-				System.out.println(".keyEvent()" + event.getKeyval());
-				if(event.getKeyval() == KeyValue.Enter3270){
-					setObserverName(customObserverNameEntry.getText());
+				if(event.getKeyval() == KeyValue.Enter3270 || event.getKeyval() == 65293 || event.getKeyval() == 65421){
+					
 				}
 				return false;
 			}

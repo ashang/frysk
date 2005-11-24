@@ -39,11 +39,15 @@
 
 package frysk.gui.monitor;
 
+import java.util.Vector;
+
 import org.gnu.gtk.AttachOptions;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.ToolTips;
+import org.gnu.gtk.event.EntryEvent;
+import org.gnu.gtk.event.EntryListener;
 
 /**
  * Allows clients to easily create an argument entry
@@ -55,15 +59,35 @@ public class DynamicWidget extends Table {
 
 //	Table tabel;
 	int row;
+	Vector mutables;
 	
 	public DynamicWidget(){
 		super(0,0,false);
 		this.row = 0;
+		this.mutables = new Vector();
 	}
 	
-	public void addString(GuiObject key){
+	/**
+	 * Adds an Entry to allow the client to edit the given string
+	 * @param mutable string to be displayed int the Entry
+	 * and to be changed when and entry is made.
+	 * */
+	public void addString(GuiObject key, String mutable){
 		this.addLabel(key);
-		this.addTextEntry(key);
+		final int index = this.mutables.size();
+		this.mutables.add(mutable);
+		final Entry entry = this.addTextEntry(key);
+		entry.setText(mutable);
+		
+		entry.addListener(new EntryListener() {
+			public void entryEvent(EntryEvent event) {
+				if(event.isOfType(EntryEvent.Type.CHANGED)){
+					System.out.println("DynamicWidget.addString()");
+					String myString = (String) mutables.get(index);
+					myString.replaceAll(myString, entry.getText()); 
+				}
+			}
+		});
 		this.row++;
 	}
 	

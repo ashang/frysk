@@ -1,5 +1,18 @@
 2005-11-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/TaskExecObserver.java: FilterPoints were being added twice. Fixed.
+	* observers/TaskForkedObserver.java: Ditto.
+	* filters/ProcNameFilter.java: now passes a string to widget.addString().
+	* filters/TaskProcNameFilter.java: Ditto.
+	* FilterWidget.java: added call to removedFromObserver upon delete.
+	* FilterLine.java: added setFilterWidget(Widget widget). Removed some commented
+	out code.
+	* DynamicWidget.java: Added code to manipulate a reference when an entry is
+	made.
+	* CustomeObserverWindow.java: Replaced KeyListener with EntryListiner.
+	
+2005-11-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* observers/ObserverManager.java: Added removeTaskObserverPrototype, removed
 	some uneeded notification code.
 	* ObservableLinkedList.java: Added public boolean remove(Object o).

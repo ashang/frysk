@@ -102,21 +102,13 @@ public class FilterLine extends HBox{
 		filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
 		filterComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				System.out.println(".comboBoxEvent()" + filterComboBox.getSelectedObject());
-				Widget[] widgets = filterWidgetVBox.getChildren();
-				for (int i = 0; i < widgets.length; i++) {
-					filterWidgetVBox.remove(widgets[i]);
-				}
-				
 				Filter filter = (Filter)filterComboBox.getSelectedObject();
 				selectedFilter = filter;
-				if(filter != null){
-					filterWidgetVBox.packStart(filter.getWidget(), true, true, 0);
+				if(filter!=null){
+					setFilterWidget(filter.getWidget());
 				}else{
-					filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+					setFilterWidget(null);
 				}
-				
-				filterWidgetVBox.showAll();System.out.println("[3]");
 			}
 		});
 		this.packStart(filterWidgetVBox, true, true, 0);
@@ -126,6 +118,21 @@ public class FilterLine extends HBox{
 		this.showAll();
 	}
 	
+	protected void setFilterWidget(Widget widget) {
+		Widget[] widgets = filterWidgetVBox.getChildren();
+		for (int i = 0; i < widgets.length; i++) {
+			filterWidgetVBox.remove(widgets[i]);
+		}
+
+		if(widget != null){
+			filterWidgetVBox.packStart(widget, true, true, 0);
+		}else{
+			filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+		}
+
+		filterWidgetVBox.showAll();
+	}
+
 	/**
 	 * Change the selections in the filter line to represent
 	 * the given FilterPoint and filter.
@@ -143,17 +150,9 @@ public class FilterLine extends HBox{
 		this.selectedFilterPoint = filterPoint;
 		this.selectedFilter = filter;
 		
-//		ComboBoxListener listener = new ComboBoxListener() {
-//			public void comboBoxEvent(ComboBoxEvent arg0) {
-//			}
-//		};
-//		this.filterComboBox.addListener(listener);
-		
-		System.out.println("[0]");
-		filterPointComboBox.setSelectedObject(filterPoint);System.out.println("[1]");
-		filterComboBox.setSelectedText(filter.getName());System.out.println("[2]");
-		
-//   	this.filterComboBox.removeListener(listener);
+		filterPointComboBox.setSelectedObject(filterPoint);
+		filterComboBox.setSelectedText(filter.getName());
+		this.setFilterWidget(filter.getWidget());
 		
 	}
 	
