@@ -1,5 +1,12 @@
 2005-11-23  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (getInlineInstance): Added.
+	(getCurrentLine): Removed.
+	(setCurrentLine): Added.
+	* SourceBuffer.java (setCurrentLine): Changed to protected,
+	left gravity of end of current line mark set to false.
+	* SourceViewWidget.java: Changed the TextChildAnchor to protected.	
+
 	* InlineBuffer.java (hasInlineCode): Now uses getCurrentLine.
 	(getCurrentLine): Added.
 	

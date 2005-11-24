@@ -209,7 +209,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @param endCol The offset (wrt. the start of the line) that the
 	 * 		instruction ends on
 	 */
-	private void setCurrentLine(int startLine, int startCol, int endLine, int endCol){
+	protected void setCurrentLine(int startLine, int startCol, int endLine, int endCol){
 		
 		this.startCurrentLine = this.createMark("currentLineStart", 
 				this.getIter(this.getLineIter(startLine-1).getOffset() + startCol),
@@ -217,7 +217,7 @@ public class SourceBuffer extends TextBuffer {
 		if(endCol != StackLevel.EOL){
 			this.endCurrentLine = this.createMark("currentLineEnd", 
 				this.getIter(this.getLineIter(endLine-1).getOffset() + endCol),
-				true);
+				false);
 		}
 		else{
 			TextIter lineStart = this.getLineIter(endLine - 1);

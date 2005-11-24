@@ -75,6 +75,13 @@ public class InlineBuffer extends SourceBuffer {
     	return false;
     }
     
+	public DOMInlineInstance getInlineInstance(int lineNumber){
+		if(lineNumber == this.getCurrentLine())
+			return this.instance.getInlineInstance();
+		
+		return null;
+	}
+	
     /**
      * We need to do a little fancier Voodoo than the superclass
      * to actually calculate variable values, since we're only
@@ -95,12 +102,9 @@ public class InlineBuffer extends SourceBuffer {
 		return var;
     }
     
-    /**
-     * We need to do some offset calculation for the current line, since
-     * we're only displaying the body of the function
-     */
-    public int getCurrentLine(){
-    	return super.getCurrentLine() - this.declaration.getStartingLine() + 1;
+    protected void setCurrentLine(int startLine, int startCol, int endLine, int endCol){
+    	super.setCurrentLine(startLine - this.declaration.getStartingLine() + 1,
+    			startCol, endLine - this.declaration.getStartingLine() + 1, endCol);
     }
     
     protected void createTags(){

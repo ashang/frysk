@@ -100,7 +100,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	// How far to start writing breakpoints, etc. from the left side of the margin
 	protected int marginWriteOffset;
 	
-	private TextChildAnchor anchor;
+	protected TextChildAnchor anchor;
 	private SourceWindow parent;
 	
 	protected boolean expanded = false;
@@ -362,20 +362,20 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 	
 	public void setSubscopeAtCurrentLine(SourceViewWidget child){
-		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+		TextIter line = buf.getLineIter(buf.getCurrentLine() + 1);
 		
 		if(anchor != null)
 			buf.deleteText(line, buf.getIter(line.getOffset()+1));
 		else
 			buf.insertText(line, "\n");
-		this.anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine()+1));
+		this.anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine() + 1));
 		
 		this.expanded = true;
 		this.addChild(child, anchor);
 	}
 	
 	public void clearSubscopeAtCurrentLine(){
-		TextIter line = buf.getLineIter(buf.getCurrentLine()+1);
+		TextIter line = buf.getLineIter(buf.getCurrentLine() + 1);
 		buf.deleteText(line, buf.getIter(line.getOffset()+2));
 		this.expanded = false;
 		this.anchor = null;
