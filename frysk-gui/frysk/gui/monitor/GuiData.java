@@ -39,8 +39,6 @@
 
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
-
 import org.gnu.gtk.Widget;
 
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -52,7 +50,7 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class GuiData {
 	
 	Widget widget;
-	LinkedList observers;
+	ObservableLinkedList observers;
 	
 	public GuiObservable observerAdded;
 	public GuiObservable observerRemoved;
@@ -60,7 +58,7 @@ public class GuiData {
 	public GuiData(){
 		this.observerAdded = new GuiObservable();
 		this.observerRemoved = new GuiObservable();
-		this.observers = new LinkedList();
+		this.observers = new ObservableLinkedList();
 	}
 	
 //	public void add(ObserverRoot observer){
@@ -73,7 +71,7 @@ public class GuiData {
 		throw new RuntimeException("Not implemented");
 	}
 	
-	public LinkedList getObservers(){
+	public ObservableLinkedList getObservers(){
 		return this.observers;
 	}
 	

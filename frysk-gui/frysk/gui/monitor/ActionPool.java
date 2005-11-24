@@ -38,7 +38,6 @@
 // exception.
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
 
 /**
  * @author Sami Wagiaalla
@@ -61,26 +60,26 @@ public class ActionPool {
          */
 
         /** Actions that can be perfomred on a process should be appened here*/
-        public LinkedList processActions;
+        public ObservableLinkedList processActions;
         
         /** Actions that can be perfomred on a thread should be appened here*/
-        public LinkedList threadActions;
+        public ObservableLinkedList threadActions;
         
         /** Observers that can be added to a process */
-        public LinkedList processObservers;
+        public ObservableLinkedList processObservers;
        
         /** Observers that can be added to a thread */
-        public LinkedList threadObservers;
+        public ObservableLinkedList threadObservers;
        
         /** } */
 
        // private EventLogger eventLog =  new EventLogger();
 
         public ActionPool() {
-                this.processActions   = new LinkedList();
-                this.threadActions    = new LinkedList();
-                this.processObservers = new LinkedList();
-                this.threadObservers  = new LinkedList();
+                this.processActions   = new ObservableLinkedList();
+                this.threadActions    = new ObservableLinkedList();
+                this.processObservers = new ObservableLinkedList();
+                this.threadObservers  = new ObservableLinkedList();
                 
                 this.initActions();
         }

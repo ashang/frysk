@@ -39,20 +39,27 @@
 
 package frysk.gui.monitor;
 
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import org.gnu.glib.Handle;
+import org.gnu.gtk.Button;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Widget;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
 
+import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class FilterWidget extends VBox{
 
-	private ObserverRoot observer;
-	private LinkedList widgets;
-	
+	private ObserverRoot currentObserver;
+	private HashMap widgets;
+
 	public FilterWidget() {
 		super(true, 3);
 		this.init();
@@ -64,30 +71,81 @@ public class FilterWidget extends VBox{
 	}
 	
 	private void init(){
-		this.widgets = new LinkedList();
+		this.widgets = new HashMap();
+		
+		Button addButton = new Button("   Add    "); // looks better with the spaces :)
+		
+		addButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					addFilterLine(new FilterLine(currentObserver));
+				}
+			}
+		});
+		HBox hbox = new HBox(false, 0);
+		
+		hbox.packStart(new Label(""), true, true, 0);
+		hbox.packStart(addButton, false, false, 0);
+		this.packEnd(hbox, false, false, 0);
+
 		this.showAll();	
 	}
 	
 	public void setObserver(ObserverRoot newObserver){
 		this.clear();
-		this.observer = newObserver;
-		this.addFilterLine(new FilterLine(this.observer));
+		this.currentObserver = newObserver;
+		this.populateList();
+		//this.addFilterLine(new FilterLine(this.currentObserver));
+		
 	}
 
-	private void addFilterLine(FilterLine filterLine){
-//		HBox hbox = new HBox(false, 0);
-//		hbox.packStart(filterLine, true, false, 0);
-//		hbox.packStart(new Button("Add"), false, false, 0);
-//		
-//		this.packStart(hbox, true, false, 0);
+	/**
+	 * Go through the filters that are currently added to the observer
+	 * and display it.
+	 * */
+	private void populateList(){
+		Iterator i = this.currentObserver.getFilterPoints().iterator();
+		while(i.hasNext()){
+			FilterPoint filterPoint = (FilterPoint)i.next(); System.out.println("FilterWidget.populateList() : " + filterPoint.getName());
+			Iterator j = filterPoint.getFilters().iterator();
+			while (j.hasNext()) {
+				Filter filter = (Filter) j.next(); System.out.println("  FilterWidget.populateList() : " + filter.getName());
+				FilterLine filterLine = new FilterLine(currentObserver);
+				filterLine.setSelection(filterPoint, filter);
+				this.addFilterLine(filterLine);
+			}
+		}
+	}
 	
-		this.packStart(filterLine, false, false, 0);
-		this.widgets.add(filterLine);
-//		this.widgets.add(hbox);
+	private void addFilterLine(final FilterLine filterLine){
+		HBox hbox = new HBox(false, 0);
+
+		Button deleteButton = new Button("Delete");		
+		deleteButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					deleteFilterLine(filterLine);
+				}
+			}
+		});
+		
+		hbox.packStart(filterLine, true, false, 0);
+		hbox.packStart(new Label("|-----------------|"), true, true, 0); //spacer
+		hbox.packStart(deleteButton, false, false, 0);
+		
+		this.packStart(hbox, false, false, 0);
+		
+		this.widgets.put(filterLine, hbox);
+		this.showAll();
+	}
+	
+	private void deleteFilterLine(FilterLine filterLine){
+		Widget widget = (Widget) this.widgets.get(filterLine);
+		this.remove(widget);
 	}
 	
 	private void clear() {
-		Iterator iter = this.widgets.iterator();
+		Iterator iter = this.widgets.values().iterator();
 		while (iter.hasNext()) {
 			this.remove((Widget)iter.next());
 		}

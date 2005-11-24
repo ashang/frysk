@@ -71,6 +71,7 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 			public void menuItemEvent(MenuItemEvent arg0) {
 				WindowManager.theManager.customeObserverWindow.showAll();
 				WindowManager.theManager.customeObserverWindow.present();
+				WindowManager.theManager.customeObserverWindow.createNewObserver();
 			}
 		});
 		

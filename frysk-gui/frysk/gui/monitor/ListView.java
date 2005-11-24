@@ -40,6 +40,7 @@
 package frysk.gui.monitor;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -50,6 +51,7 @@ import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
@@ -68,18 +70,19 @@ public class ListView extends TreeView implements Observer {
 	
 	protected DataColumnString nameDC;
 	protected DataColumnObject objectDC;
+	private ObservableLinkedList watchedList;
 	
 	ListView(){
 		super();
-		this.initListView();
+		this.init();
 	}
 	
 	ListView(Handle handle){
 		super(handle);
-		this.initListView();
+		this.init();
 	}
 	
-	void initListView(){
+	private void init(){
 		this.setHeadersVisible(false);
 		
 		this.map = new HashMap();
@@ -115,9 +118,18 @@ public class ListView extends TreeView implements Observer {
 		
 		return selected;
 	}
-	
+
 	public void add(GuiObject object){
 		TreeIter treeIter = listStore.appendRow();
+		this.add(object, treeIter);
+	}
+	
+	public void add(GuiObject object, int index){
+		TreeIter treeIter = listStore.insertRow(index);
+		this.add(object, treeIter);
+	}
+	
+	public void add(GuiObject object, TreeIter treeIter){
 		listStore.setValue(treeIter, nameDC, object.getName());
 		listStore.setValue(treeIter, objectDC, object);
 		
@@ -140,6 +152,61 @@ public class ListView extends TreeView implements Observer {
 		listStore.setValue(treeIter, nameDC, ((GuiObject)guiObject).getName());
 	}
 	
+	/**
+	 * Tell this ComboBox to initialize itself with the given list
+	 * and watch the given ObservableLinkedList and update itself 
+	 * when the list changes
+		. Clients will then not have to worry
+	 * about updating the ComboBox.
+	 * @param linkedList the list to be watched.
+	 * */
+	public void watchLinkedList(ObservableLinkedList linkedList){
+		this.watchedList = linkedList;
+		Iterator iterator = linkedList.iterator();
+		
+		linkedList.itemAdded.addObserver(new Observer() {
+			public void update(Observable observable, Object object) {
+				GuiObject guiObject = (GuiObject) object;
+				int index = watchedList.indexOf(guiObject);
+				add(guiObject, index);
+			}
+		});
+		
+		linkedList.itemRemoved.addObserver(new Observer() {
+			public void update(Observable arg0, Object object) {
+				remove((GuiObject) object);
+			}
+		});
+		
+		while (iterator.hasNext()) {
+			GuiObject object = (GuiObject) iterator.next();
+			this.add(object);
+		}
+	}
 	
-	
+	/**
+	 * Set the selection to the first item with the text that matches
+	 * the give text. If the given text is not found an exception is
+	 * thrown.
+	 * @param text the text that is to be matched and the match selected.
+	 * */
+	public void setSelectedText(String text){
+		TreePath treePath = this.listStore.getFirstIter().getPath();
+		
+		String displayedText;
+		TreeIter iter = this.listStore.getIter(treePath);
+
+		while(iter != null){
+			displayedText = (String) this.listStore.getValue(iter, nameDC);
+
+			if(text.equals(displayedText)){
+				this.getSelection().select(iter);
+				return;
+			}
+			treePath.next();
+			iter = this.listStore.getIter(treePath);
+		}
+		throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox");
+	}
+
 }

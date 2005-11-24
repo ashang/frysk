@@ -39,8 +39,9 @@
 
 package frysk.gui.monitor.filters;
 
-import java.util.LinkedList;
 import java.util.Observable;
+
+import frysk.gui.monitor.ObservableLinkedList;
 
 /**
  * Only once instance.
@@ -51,12 +52,12 @@ public class FilterManager extends Observable {
 	
 	public static FilterManager theManager = new FilterManager();
 	
-	private LinkedList procFilters;
-	private LinkedList taskFilters;
+	private ObservableLinkedList procFilters;
+	private ObservableLinkedList taskFilters;
 	
 	public FilterManager(){
-		this.taskFilters = new LinkedList();
-		this.procFilters = new LinkedList();
+		this.taskFilters = new ObservableLinkedList();
+		this.procFilters = new ObservableLinkedList();
 		this.initFilterList();
 	}
 	
@@ -71,7 +72,7 @@ public class FilterManager extends Observable {
 	 * @param prototype a prototype of the observer to be
 	 * instantiated.
 	 * */
-	public Filter getFilter(Filter prototype){
+	public Filter getFilterCopy(Filter prototype){
 		//XXX: Not implemented.
 		throw new RuntimeException("Not implemented");
 		//return prototype.getCopy();
@@ -93,11 +94,11 @@ public class FilterManager extends Observable {
 		this.notifyObservers();
 	}
 
-	public LinkedList getProcFilters() {
+	public ObservableLinkedList getProcFilters() {
 		return this.procFilters;
 	}
 
-	public LinkedList getTaskFilters() {
+	public ObservableLinkedList getTaskFilters() {
 		return this.taskFilters;
 	}
 	

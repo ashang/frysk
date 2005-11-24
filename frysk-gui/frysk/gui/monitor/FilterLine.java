@@ -42,70 +42,141 @@ package frysk.gui.monitor;
 import java.util.Iterator;
 
 import org.gnu.gtk.HBox;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 
 import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterManager;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class FilterLine extends HBox{
 
 	private VBox filterWidgetVBox;
+	private ObserverRoot observer;
+	private SimpleComboBox filterPointComboBox;
+	private SimpleComboBox filterComboBox;
+	
+	private FilterPoint selectedFilterPoint;
+	private Filter      selectedFilter;
 	
 	public FilterLine(ObserverRoot observer) {
 		super(false, 3);
 		
+		this.observer = observer;
+		
 		//========================================
 		// add an item for each filter point
-		final SimpleComboBox comboBox = new SimpleComboBox();
+		filterPointComboBox = new SimpleComboBox();
 		Iterator iter = observer.getFilterPoints().iterator();
 		while(iter.hasNext()){
-			comboBox.add((FilterPoint)iter.next());
+			filterPointComboBox.add((FilterPoint)iter.next());
 		}
-		this.packStart(comboBox, false, false, 0);
+		this.packStart(filterPointComboBox, false, true, 0);
 		//========================================
 		
 		//========================================
 		// populate a drop-down menu for selected filterPoint
-		final SimpleComboBox filtersComboBox = new SimpleComboBox();
+		filterComboBox = new SimpleComboBox();
 		
-		comboBox.addListener(new ComboBoxListener() {
+		filterPointComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				filtersComboBox.clear();
-				filtersComboBox.setActive(-1);
-				Iterator iter = ((FilterPoint)comboBox.getSelectedObject()).getApplicableFilters().iterator();
+				filterComboBox.clear();
+				filterComboBox.setActive(-1);
+				selectedFilterPoint = (FilterPoint)filterPointComboBox.getSelectedObject();
+				Iterator iter = selectedFilterPoint.getApplicableFilters().iterator();
 				while(iter.hasNext()){
-					filtersComboBox.add((Filter)iter.next());
+					filterComboBox.add((Filter)iter.next());
 				}
 			}
 		});
-		this.packStart(filtersComboBox, false, false, 0);
+		this.packStart(filterComboBox, false, true, 0);
 		//========================================
 
 		//========================================
 		//get the selected filter's widget
 		filterWidgetVBox = new VBox(false, 0);
-		filtersComboBox.addListener(new ComboBoxListener() {
+		filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+		filterComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				System.out.println(".comboBoxEvent()" + filtersComboBox.getSelectedObject());
+				System.out.println(".comboBoxEvent()" + filterComboBox.getSelectedObject());
 				Widget[] widgets = filterWidgetVBox.getChildren();
 				for (int i = 0; i < widgets.length; i++) {
 					filterWidgetVBox.remove(widgets[i]);
 				}
 				
-				Filter filter = (Filter)filtersComboBox.getSelectedObject();
-				if(filter != null){ filterWidgetVBox.add(filter.getWidget()); }
-				filterWidgetVBox.showAll();
+				Filter filter = (Filter)filterComboBox.getSelectedObject();
+				selectedFilter = filter;
+				if(filter != null){
+					filterWidgetVBox.packStart(filter.getWidget(), true, true, 0);
+				}else{
+					filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+				}
+				
+				filterWidgetVBox.showAll();System.out.println("[3]");
 			}
 		});
-		this.packStart(filterWidgetVBox, false, false, 0);
+		this.packStart(filterWidgetVBox, true, true, 0);
 		//========================================
 		
 		
 		this.showAll();
+	}
+	
+	/**
+	 * Change the selections in the filter line to represent
+	 * the given FilterPoint and filter.
+	 * */
+	public void setSelection(FilterPoint filterPoint, final Filter filter){
+		// assertions
+		if(!this.observer.getFilterPoints().contains(filterPoint)){
+			throw new IllegalArgumentException("The given FilterPoint is not a member of the observer represented by this filter line");
+		}
+		
+		if(!filterPoint.getFilters().contains(filter)){
+			throw new IllegalArgumentException("The given filter is not a member of the given filterPoint");
+		}
+
+		this.selectedFilterPoint = filterPoint;
+		this.selectedFilter = filter;
+		
+//		ComboBoxListener listener = new ComboBoxListener() {
+//			public void comboBoxEvent(ComboBoxEvent arg0) {
+//			}
+//		};
+//		this.filterComboBox.addListener(listener);
+		
+		System.out.println("[0]");
+		filterPointComboBox.setSelectedObject(filterPoint);System.out.println("[1]");
+		filterComboBox.setSelectedText(filter.getName());System.out.println("[2]");
+		
+//   	this.filterComboBox.removeListener(listener);
+		
+	}
+	
+	/**
+	 * Remove the current filter line from the observer
+	 * ie remove the filter represented by this line from
+	 * the filter point represented by this line from the
+	 * observer represented by this line.
+	 * This is how updates are done (remove old then add new).
+	 * */
+	public void removeFromObserver(){
+		this.selectedFilterPoint.removeFilter(selectedFilter);
+	}
+	
+	/**
+	 * Add the current filter line to the observer
+	 * ie add the filter represented by this line to
+	 * the filter point represented by this line in the
+	 * observer represented by this line.
+	 * This is how updates are done (remove old then add new).
+	 * */
+	public void addToObserver(){
+		this.selectedFilterPoint.addFilter(FilterManager.theManager.getFilterCopy(selectedFilter));
 	}
 
 }

@@ -38,7 +38,6 @@
 // exception.
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.gnu.gtk.Menu;
@@ -64,7 +63,7 @@ public class ObserversMenu extends Menu{
 	/** the ProcData of the currently selected process */
 	private ProcData currentProc;
 	
-	public ObserversMenu(LinkedList actions){
+	public ObserversMenu(ObservableLinkedList actions){
 		super();
 		
 		ListIterator iter = actions.listIterator();

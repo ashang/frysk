@@ -51,6 +51,7 @@ import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeViewColumn;
 
 /**
@@ -122,6 +123,44 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	public void update(Observable guiObject, Object object) {
 		TreeIter treeIter = (TreeIter) this.map.get(guiObject);
 		listStore.setValue(treeIter, nameDC, ((GuiObject)guiObject).getName());
+	}
+
+	/**
+	 * Set the selection to the item that represents
+	 * the given object.
+	 * @param object the object that is to be displayed as selected.
+	 * */
+	public void setSelectedObject(GuiObject object){
+		TreeIter iter = (TreeIter) this.map.get(object);
+		if(iter == null){
+			throw new IllegalArgumentException("The object passed ["+ object +"] is not a member of this list");
+		}
+		this.setActiveIter(iter);
+	}
+	
+	/**
+	 * Set the selection to the first item with the text that matches
+	 * the give text. If the given text is not found an exception is
+	 * thrown.
+	 * @param text the text that is to be matched and the match selected.
+	 * */
+	public void setSelectedText(String text){
+TreePath treePath = this.listStore.getFirstIter().getPath();
+		
+		String displayedText;
+		TreeIter iter = this.listStore.getIter(treePath);
+
+		while(iter != null){
+			displayedText = (String) this.listStore.getValue(iter, nameDC);
+
+			if(text.equals(displayedText)){
+				this.setActiveIter(iter);
+				return;
+			}
+			treePath.next();
+			iter = this.listStore.getIter(treePath);
+		}
+		throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox");
 	}
 
 }

@@ -39,24 +39,25 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.LinkedList;
 import java.util.Observable;
+
+import frysk.gui.monitor.ObservableLinkedList;
 
 /**
  * Only once instance.
  * Keeps a list of available actions.
- * Provides an interface for instanciating those actions.
+ * Provides an interface for instantiating those actions.
  * */
 public class ActionManager extends Observable {
 	
 	public static ActionManager theManager = new ActionManager();
 	
-	private LinkedList procActions;
-	private LinkedList taskActions;
+	private ObservableLinkedList procActions;
+	private ObservableLinkedList taskActions;
 	
 	public ActionManager(){
-		this.procActions = new LinkedList();
-		this.taskActions = new LinkedList();
+		this.procActions = new ObservableLinkedList();
+		this.taskActions = new ObservableLinkedList();
 		this.initActionList();
 	}
 	
@@ -87,11 +88,11 @@ public class ActionManager extends Observable {
 		//return prototype.getCopy();
 	}
 	
-	public LinkedList getProcActions(){
+	public ObservableLinkedList getProcActions(){
 		return this.procActions;
 	}
 
-	public LinkedList getTaskActions(){
+	public ObservableLinkedList getTaskActions(){
 		return this.taskActions;
 	}
 

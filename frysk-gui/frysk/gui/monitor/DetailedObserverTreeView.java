@@ -39,10 +39,6 @@
 
 package frysk.gui.monitor;
 
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
-
 import org.gnu.glib.Handle;
 
 import frysk.gui.monitor.observers.ObserverManager;
@@ -66,19 +62,7 @@ public class DetailedObserverTreeView extends ListView {
 	}
 
 	private void initTreeView() {	
-		this.populateList();
-		ObserverManager.theManager.addObserver(new Observer(){
-			public void update(Observable arg0, Object arg1) {
-				populateList();
-			}
-		});
-	}
-	
-	private void populateList(){
-		Iterator iter = ObserverManager.theManager.getObservers().iterator();
-		while(iter.hasNext()){
-			this.add((ObserverRoot) iter.next());
-		}
+		this.watchLinkedList(ObserverManager.theManager.getObservers());
 	}
 	
 	public ObserverRoot getSelectedObserver(){

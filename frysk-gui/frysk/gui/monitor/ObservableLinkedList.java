@@ -37,31 +37,55 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.LinkedList;
 
-import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Proc;
+/**
+ * Extends LinkedList but accepts observers that will 
+ * be notified when elements are added/removed.
+ * Not all functions are overwritten check to see that
+ * the function you use is overwritten and the appropriate
+ * listeners are being notified.
+ * */
+public class ObservableLinkedList extends LinkedList{
 
-public class ProcFilterPoint extends FilterPoint {
+	private static final long serialVersionUID = 1L;
 	
-	public ProcFilterPoint(String name, String toolTip) {
-		super(name, toolTip);
+	public final GuiObservable itemAdded;
+	public final GuiObservable itemRemoved;
+	
+	
+	public ObservableLinkedList(){
+		super();
+		this.itemAdded = new GuiObservable();
+		this.itemRemoved = new GuiObservable();
 	}
 	
-	public boolean filter(Proc proc){
-		Iterator iter = this.filters.iterator();
-		while(iter.hasNext()){
-			ProcFilter filter = (ProcFilter) iter.next();
-			if(!filter.filter(proc)){
-				return false;
-			}
-		}
-		return true;
+	public ObservableLinkedList(Collection collection){
+		super(collection);
+		this.itemAdded = new GuiObservable();
+		this.itemRemoved = new GuiObservable();
+	}
+	
+
+	
+	public boolean add(Object o){
+		boolean val = super.add(o);
+		this.itemAdded.notifyObservers(o);
+		return val;
+	}
+	
+	public void add(int index, Object element){
+		super.add(index, element);
+		this.itemAdded.notifyObservers(element);
 	}
 
-	public ObservableLinkedList getApplicableFilters() {
-		return FilterManager.theManager.getProcFilters();
+	public Object remove(int index){
+		Object removed = super.remove(index);
+		this.itemRemoved.notifyObservers(removed);
+		return removed;
 	}
+	
 }

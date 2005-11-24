@@ -44,7 +44,6 @@
  */
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.gnu.gtk.Menu;
@@ -74,7 +73,7 @@ public class ProcMenu extends Menu{
 	ProcMenu(){
 		super();
 		
-		LinkedList list = ActionManager.theManager.getProcActions();
+		ObservableLinkedList list = ActionManager.theManager.getProcActions();
 		ListIterator iter = list.listIterator();
 		
 		while(iter.hasNext()){

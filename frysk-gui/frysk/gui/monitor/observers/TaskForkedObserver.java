@@ -7,8 +7,8 @@
 package frysk.gui.monitor.observers;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.ForkedAction;
 import frysk.gui.monitor.filters.ProcFilterPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
@@ -19,7 +19,7 @@ import frysk.proc.TaskObserver;
 
 public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver.Forked{
 
-	LinkedList forkedActions;
+	ObservableLinkedList forkedActions;
 	
 	TaskFilterPoint taskFilterPoint;
 	ProcFilterPoint procFilterPoint;
@@ -33,7 +33,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		this.addFilterPoint(this.taskFilterPoint);
 		this.addFilterPoint(this.procFilterPoint);
 		
-		this.forkedActions = new LinkedList();
+		this.forkedActions = new ObservableLinkedList();
 	}
 
 	public TaskForkedObserver(TaskForkedObserver observer) {

@@ -44,7 +44,6 @@
  */
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 import org.gnu.gtk.Menu;
@@ -55,8 +54,8 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
-import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.actions.ActionManager;
+import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.observers.ObserverManager;
 
 public class ThreadMenu extends Menu {
@@ -68,7 +67,7 @@ public class ThreadMenu extends Menu {
 	ThreadMenu(){
 		super();
 		
-		LinkedList list = ActionManager.theManager.getTaskActions();
+		ObservableLinkedList list = ActionManager.theManager.getTaskActions();
 		ListIterator iter = list.listIterator();
 		
 		while(iter.hasNext()){

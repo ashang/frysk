@@ -1,3 +1,34 @@
+2005-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskExecObserver.java: Added missing this.addFilterPoint.
+	* filters/FilterPoint.java: Added removeFilter function. Replaced LinkedList with
+	ObservableLinkedList.
+	* MenuBar.java: added call to createNewObserver.
+	* ListView.java: Added function for watching an ObserbaleLinkedList, a function
+	for adding an item at a particular index, and a function for selecting matching
+	text on the list.
+	* SimpleComboBox.java: Ditto.
+	* FilterWidget.java: Buttons for adding/removing filter lines, replace
+	widgets linked list with a hashmap.
+	* FilterLine.java: Added setSelection function, add/remove functions wich
+	add/remove the filter from the observer.
+	* DetailedObserverTreeView.java: Removed redundent code, used
+	ObservableLinkedList instead.
+	* CustomeObserverWindow.java: Removed some unused code.
+	* ObservableLinkedList.java: New file
+	* ActionPool.java: Replaced LinkedList with ObservableLinkedList.
+	* GuiData.java: Ditto.
+	* ObserversMenu.java: Ditto.
+	* ThreadMenu.java: Ditto.
+	* StatusWidget.java: Ditto.
+	* filters/FilterManager.java: Ditto.
+	* actions/ActionManager.java: Ditto.
+	* filters/TaskFilterPoint.java: Ditto.
+	* filters/ProcFilterPoint.java: Ditto.
+	* observers/ObserverManager.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/ObserverRoot.java: Ditto.
+
 2005-11-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProgramDataModel.java (find): Added.

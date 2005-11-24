@@ -1,7 +1,6 @@
 package frysk.gui.monitor.observers;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -9,6 +8,7 @@ import java.util.Observer;
 import org.gnu.glib.CustomEvents;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
@@ -19,31 +19,31 @@ import frysk.proc.TaskObserver;
  * Takes Action objects that can be used by clients to customize
  * behaviour. 
  * */
-public abstract class ObserverRoot extends GuiObject implements TaskObserver, Observer{
+public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 
-		private LinkedList actions;
-		private LinkedList runnables;
+		private ObservableLinkedList actions;
+		private ObservableLinkedList runnables;
 			
 		Runnable onAdded;
 		Runnable onDeleted;
 		
 		private String info;
 		
-		private LinkedList filterPoints;
+		private ObservableLinkedList filterPoints;
 		
 		private final String baseName;
 		
 		public ObserverRoot(String name, String toolTip){
 			super(name, toolTip);
-			this.actions     = new LinkedList();
+			this.actions     = new ObservableLinkedList();
 			this.info        = new String();
-			this.filterPoints = new LinkedList();			
+			this.filterPoints = new ObservableLinkedList();			
 			this.baseName = name;
 		}
 		
 		public ObserverRoot(ObserverRoot observer) {
 			super(observer);
-			actions     = new LinkedList(observer.actions);
+			actions     = new ObservableLinkedList(observer.actions);
 //			runnables   = new LinkedList(observer.runnables);
 			this.baseName = observer.baseName;
 		}
@@ -120,7 +120,7 @@ public abstract class ObserverRoot extends GuiObject implements TaskObserver, Ob
 			}
 		}
 		
-		public LinkedList getFilterPoints(){
+		public ObservableLinkedList getFilterPoints(){
 			return this.filterPoints;
 		}
 		

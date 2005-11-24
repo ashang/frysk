@@ -44,7 +44,6 @@
  */
 package frysk.gui.monitor;
 
-import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -207,7 +206,7 @@ public class StatusWidget extends VBox{
 
 	private void initLogTextView(){
 		this.logTextView = new TextView();
-		LinkedList observers = this.data.getObservers();
+		ObservableLinkedList observers = this.data.getObservers();
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
 			final ObserverRoot observer = (ObserverRoot) iter.next();

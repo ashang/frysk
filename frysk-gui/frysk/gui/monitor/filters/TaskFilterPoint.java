@@ -40,8 +40,8 @@
 package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
 public class TaskFilterPoint extends FilterPoint {
@@ -61,7 +61,7 @@ public class TaskFilterPoint extends FilterPoint {
 		return true;
 	}
 
-	public LinkedList getApplicableFilters() {
+	public ObservableLinkedList getApplicableFilters() {
 		return FilterManager.theManager.getTaskFilters();
 	}
 }

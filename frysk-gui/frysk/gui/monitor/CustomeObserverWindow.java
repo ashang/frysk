@@ -200,19 +200,6 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 	}
 	
-//	private void populateSourceFiltersTreeView() {
-//		if(this.selectedObserver == null) return;
-//		
-//		Iterator iter = this.selectedObserver.getFilterPoints().iterator();
-//		while(iter.hasNext()){
-//			FilterPoint filterPoint = (FilterPoint) iter.next();
-//			Iterator iter2 = filterPoint.getApplicableFilters().iterator();
-//			while(iter2.hasNext()){
-//				sourceFiltersTreeView.add((Filter)iter2.next());
-//			}
-//		}
-//	}
-
 	private void populateSourceActionsTreeView() {
 		Iterator iter = ActionManager.theManager.getProcActions().iterator();
 
@@ -268,11 +255,15 @@ public class CustomeObserverWindow extends Window implements Observer {
 
 	public void update(Observable observable, Object obj) {
 		this.updateNameSummary(this.selectedObserver.getName());
-		
-//		this.sourceFiltersTreeView.clear();
-//		this.populateSourceFiltersTreeView();
-		
-		
+	}
+	
+	/**
+	 * Create new observer as a template for a custom observer.
+	 * */
+	public void createNewObserver(){
+		ObserverRoot newObserver = new ObserverRoot("New Observer","");
+		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
+		this.observerTreeView.setSelectedText(newObserver.getName());
 	}
 	
 }

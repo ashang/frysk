@@ -39,11 +39,11 @@
 
 package frysk.gui.monitor.observers;
 
-import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
 import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ForkedAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
@@ -67,10 +67,10 @@ public class ObserverManager extends Observable {
 	 * a list containing a prototype of every available
 	 * observer;
 	 * */
-	private LinkedList taskObservers;
+	private ObservableLinkedList taskObservers;
 	
 	public ObserverManager(){
-		this.taskObservers = new LinkedList();
+		this.taskObservers = new ObservableLinkedList();
 		this.initTaskObservers();
 	}
 	
@@ -89,7 +89,7 @@ public class ObserverManager extends Observable {
 		
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
-
+		customObserver.procFilterPoint.addFilter(new TaskProcNameFilter("xxxxxx"));
 		final TaskExecObserver   lsObserver = new TaskExecObserver();
 		lsObserver.taskFilterPoint.addFilter(new TaskProcNameFilter("ls"));
 		customObserver.addAction(new Action("Dialog shower", ""){
@@ -133,7 +133,7 @@ public class ObserverManager extends Observable {
 		return prototype.getCopy();
 	}
 	
-	public LinkedList getObservers(){
+	public ObservableLinkedList getObservers(){
 		return this.taskObservers;
 	}
 
