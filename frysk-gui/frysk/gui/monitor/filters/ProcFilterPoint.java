@@ -50,6 +50,10 @@ public class ProcFilterPoint extends FilterPoint {
 		super(name, toolTip);
 	}
 	
+	public ProcFilterPoint(ProcFilterPoint other) {
+		super(other);
+	}
+	
 	public boolean filter(Proc proc){
 		Iterator iter = this.filters.iterator();
 		while(iter.hasNext()){

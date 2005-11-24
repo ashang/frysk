@@ -70,6 +70,7 @@ import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 
 public class CustomeObserverWindow extends Window implements Observer {
 	
@@ -149,15 +150,9 @@ public class CustomeObserverWindow extends Window implements Observer {
 	
 		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent event) {
-				String name = "";
-				GuiObject[] selected = baseObserverTreeView.getSelectedObjects();
-				for (int i = 0; i < selected.length; i++) {
-					if(i > 0 ){
-						name += ", ";
-					}
-					name += selected[i].getName();
-				}
-				updateBaseObserverSummary(name);
+				updateBaseObserverSummary(baseObserverTreeView.getSelectedObject().getName());
+				remove();
+				add();
 			}
 		});
 		this.populateObserverTreeView();
@@ -187,6 +182,28 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.filterWidget = new FilterWidget(((VBox)glade.getWidget("filtersWidget")).getHandle());
 		//=========================================
 
+		//=========================================
+		button = (Button)glade.getWidget("deleteObserverButton");
+		button.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					remove();
+				}
+			}
+		});
+		//=========================================
+		
+		//=========================================
+		button = (Button)glade.getWidget("newObserverButton");
+		button.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					createNewObserver();
+				}
+			}
+		});
+		//=========================================
+		
 		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel");
 		
 		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel");
@@ -262,6 +279,25 @@ public class CustomeObserverWindow extends Window implements Observer {
 	 * */
 	public void createNewObserver(){
 		ObserverRoot newObserver = new ObserverRoot("New Observer","");
+		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
+		this.observerTreeView.setSelectedText(newObserver.getName());
+	}
+
+	/**
+	 * Remove the observer represented by current settings (selected
+	 * observer).
+	 * */
+	public void remove(){
+		ObserverManager.theManager.removeTaskObserverPrototype(this.selectedObserver);
+	}
+
+	/**
+	 * Add the observer represented by given settings (Name, base observer,
+	 * filters and Actions)
+	 * */
+	public void add(){
+		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserver((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
+		newObserver.setName(this.customObserverNameEntry.getText());
 		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.observerTreeView.setSelectedText(newObserver.getName());
 	}

@@ -1,3 +1,7 @@
+2005-11-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.gladep: Renamed {delete/add}CustomObserver buttons.
+
 2005-11-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Renamed Custom Event Observer TreeViews.

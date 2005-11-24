@@ -54,6 +54,11 @@ public class ProcNameFilter extends ProcFilter {
 		this.procName = procName;
 	}
 	
+	public ProcNameFilter(ProcNameFilter other){
+		super(other);
+		this.procName = other.procName;
+	}
+	
 	public boolean filter(Proc proc) {
 		if(proc.getCommand().equals(procName)){
 			return true;

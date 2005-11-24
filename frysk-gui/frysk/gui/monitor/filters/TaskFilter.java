@@ -47,6 +47,10 @@ public abstract class TaskFilter extends Filter {
 		super(name, toolTip);
 	}
 
+	TaskFilter(TaskFilter other) {
+		super(other);
+	}
+
 	public abstract boolean filter(Task task);
 	
 }

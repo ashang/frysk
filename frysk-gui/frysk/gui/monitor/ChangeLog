@@ -1,3 +1,27 @@
+2005-11-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: Added removeTaskObserverPrototype, removed
+	some uneeded notification code.
+	* ObservableLinkedList.java: Added public boolean remove(Object o).
+	* FilterWidget.java: Removed some debug print statements.
+	* CustomeObserverWindow.java: Added add/remove functions for updating the observer
+	under concideration. Added handlers for add/delete observer buttons.
+	* GuiObject.java: Fixed copy constructor.
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/ObserverRoot.java: Ditto.
+	* observers/AttachedContinueObserver.java: Ditto.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* filters/TaskFilterPoint.java: Ditto.
+	* filters/TaskFilter.java: Ditto.
+	* filters/ProcNameFilter.java: Ditto.
+	* filters/ProcFilterPoint.java: Ditto.
+	* filters/ProcFilter.java: Ditto.
+	* filters/FilterPoint.java: Ditto.
+	* filters/Filter.java: Ditto.
+	* actions/Action.java: Ditto.
+
 2005-11-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskExecObserver.java: Added missing this.addFilterPoint.

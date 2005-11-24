@@ -36,8 +36,16 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		this.forkedActions = new ObservableLinkedList();
 	}
 
-	public TaskForkedObserver(TaskForkedObserver observer) {
-		super(observer);
+	public TaskForkedObserver(TaskForkedObserver other) {
+		super(other);
+		
+		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
+		this.procFilterPoint = new ProcFilterPoint(other.procFilterPoint);
+		
+		this.addFilterPoint(this.taskFilterPoint);
+		this.addFilterPoint(this.procFilterPoint);
+		
+		this.forkedActions = new ObservableLinkedList(); // Dont copy actions
 	}
 
 	public Action updateForked(Task task, Task child) {

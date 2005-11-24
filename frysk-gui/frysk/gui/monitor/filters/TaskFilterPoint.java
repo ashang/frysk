@@ -50,6 +50,10 @@ public class TaskFilterPoint extends FilterPoint {
 		super(name, toolTip);
 	}
 	
+	public TaskFilterPoint(TaskFilterPoint other) {
+		super(other);
+	}
+	
 	public boolean filter(Task task){
 		Iterator iter = this.filters.iterator();
 		while(iter.hasNext()){

@@ -106,10 +106,10 @@ public class FilterWidget extends VBox{
 	private void populateList(){
 		Iterator i = this.currentObserver.getFilterPoints().iterator();
 		while(i.hasNext()){
-			FilterPoint filterPoint = (FilterPoint)i.next(); System.out.println("FilterWidget.populateList() : " + filterPoint.getName());
+			FilterPoint filterPoint = (FilterPoint)i.next();
 			Iterator j = filterPoint.getFilters().iterator();
 			while (j.hasNext()) {
-				Filter filter = (Filter) j.next(); System.out.println("  FilterWidget.populateList() : " + filter.getName());
+				Filter filter = (Filter) j.next();
 				FilterLine filterLine = new FilterLine(currentObserver);
 				filterLine.setSelection(filterPoint, filter);
 				this.addFilterLine(filterLine);

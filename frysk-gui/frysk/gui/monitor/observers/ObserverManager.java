@@ -138,12 +138,26 @@ public class ObserverManager extends Observable {
 	}
 
 	/**
-	 * add an observer to the list of available observers.
+	 * add the given prototype to the list of available observers.
+	 * @param observer the observer prototype to be added.
 	 * */
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.add(observer);
-		this.hasChanged();
-		this.notifyObservers();
+//      not needed linked lists are now observable
+//		this.hasChanged();
+//		this.notifyObservers();
 	}
+	
+	/**
+	 * Remove the given prototype to the list of available observers.
+	 * @param observer the observer prototype to be removed.
+	 * */
+	public void removeTaskObserverPrototype(ObserverRoot observer){
+		this.taskObservers.remove(observer);System.out.println("ObserverManager.removeTaskObserverPrototype()");
+//      not needed linked lists are now observable
+//		this.hasChanged();
+//		this.notifyObservers();
+	}
+	
 	
 }

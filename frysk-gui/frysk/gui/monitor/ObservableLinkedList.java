@@ -88,4 +88,13 @@ public class ObservableLinkedList extends LinkedList{
 		return removed;
 	}
 	
+	public boolean remove(Object o){
+		System.out.println("ObservableLinkedList.remove()");
+		if(super.remove(o)){
+			this.itemRemoved.notifyObservers(o);			
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

@@ -46,6 +46,10 @@ public abstract class ProcFilter extends Filter {
 	ProcFilter(String name, String toolTip) {
 		super(name, toolTip);
 	}
+	
+	ProcFilter(ProcFilter other) {
+		super(other);
+	}
 
 	public abstract boolean filter(Proc proc);
 	

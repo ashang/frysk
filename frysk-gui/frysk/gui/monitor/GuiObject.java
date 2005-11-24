@@ -53,8 +53,9 @@ public class GuiObject extends GuiObservable{
 		this.toolTip = toolTip;
 	}
 
-	public GuiObject(GuiObject object) {
-		this(object.name, object.toolTip);
+	public GuiObject(GuiObject other) {
+		this.name = other.name;
+		this.toolTip = other.toolTip;
 	}
 
 	public GuiObject() {

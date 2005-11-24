@@ -35,17 +35,18 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		
 		public ObserverRoot(String name, String toolTip){
 			super(name, toolTip);
-			this.actions     = new ObservableLinkedList();
-			this.info        = new String();
+			this.actions      = new ObservableLinkedList();
+			this.info         = new String();
 			this.filterPoints = new ObservableLinkedList();			
-			this.baseName = name;
+			this.baseName     = name;
 		}
 		
-		public ObserverRoot(ObserverRoot observer) {
-			super(observer);
-			actions     = new ObservableLinkedList(observer.actions);
-//			runnables   = new LinkedList(observer.runnables);
-			this.baseName = observer.baseName;
+		public ObserverRoot(ObserverRoot other) {
+			super(other);
+			this.actions      = new ObservableLinkedList(other.actions);
+			this.info         = new String(other.info);
+			this.filterPoints = new ObservableLinkedList(other.filterPoints);			
+			this.baseName     = other.baseName;
 		}
 
 		public void update(Observable o, Object obj) {

@@ -59,6 +59,11 @@ public abstract class FilterPoint extends GuiObject {
 		this.filters = new ObservableLinkedList();
 	}
 	
+	public FilterPoint(FilterPoint other){
+		super(other);
+		this.filters = new ObservableLinkedList(); // Dont copy filters
+	}
+	
 	/**
 	 * Retrieves a list of applicable filters from the FilterManager.
 	 * */

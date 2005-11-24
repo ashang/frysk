@@ -45,8 +45,12 @@ import frysk.gui.monitor.GuiObject;
 
 public abstract class Filter extends GuiObject {
 	
-	Filter(String name, String toolTip){
+	public Filter(String name, String toolTip){
 		super(name, toolTip);
+	}
+	
+	public Filter(Filter other){
+		super(other);
 	}
 	
 	public abstract Widget getWidget();

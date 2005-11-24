@@ -11,5 +11,9 @@ public class AttachedContinueObserver extends ObserverRoot{
 	public AttachedContinueObserver() {
 		super("AttachedContinueObserver", "Fires when a proc arrives at the AttachedContinue state");
 	}
+	
+	public AttachedContinueObserver(AttachedContinueObserver other) {
+		super(other);
+	}
 
 }

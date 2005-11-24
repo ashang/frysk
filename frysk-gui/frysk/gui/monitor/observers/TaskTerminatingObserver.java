@@ -16,8 +16,8 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 		super("Task Terminating Observer", "Fires fires when this process is exiting");
 	}
 	
-	public TaskTerminatingObserver(TaskTerminatingObserver observer) {
-		super(observer.getName(), observer.getToolTip());
+	public TaskTerminatingObserver(TaskTerminatingObserver other) {
+		super(other);
 	}
 
 	public Action updateTerminating(Task task, boolean signal, int value) {

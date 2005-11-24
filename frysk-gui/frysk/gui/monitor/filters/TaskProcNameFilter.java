@@ -54,6 +54,11 @@ public class TaskProcNameFilter extends TaskFilter {
 		this.procNamefilter = new ProcNameFilter(procName);
 	}
 	
+	public TaskProcNameFilter(TaskProcNameFilter other){
+		super(other);
+		this.procNamefilter = new ProcNameFilter(other.procNamefilter);
+	}
+	
 	public boolean filter(Task task) {
 		return this.procNamefilter.filter(task.getProc());
 	}

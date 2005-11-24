@@ -62,8 +62,8 @@ public class FilterManager extends Observable {
 	}
 	
 	private void initFilterList() {
-		this.addProcFilterPrototype(new ProcNameFilter(null));
-		this.addTaskFilterPrototype(new TaskProcNameFilter(null));
+		this.addProcFilterPrototype(new ProcNameFilter(""));
+		this.addTaskFilterPrototype(new TaskProcNameFilter(""));
 	}
 	
 	/**
