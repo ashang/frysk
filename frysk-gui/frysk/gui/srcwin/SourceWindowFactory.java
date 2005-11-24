@@ -111,16 +111,16 @@ public class SourceWindowFactory {
 				DOMFrysk dom = new DOMFrysk(new Document(new Element("DOM_test")));
                 dom.addImage("test", dummyPath, dummyPath);
                 DOMImage image = dom.getImage("test");
-                for(int i = 3; i <= 6; i++)
+                for(int i = 2; i <= 6; i++)
                     image.addSource("test"+i+".cpp", dummyPath);
                 
-				DOMSource source = image.getSource("test3.cpp");
-				BufferedReader reader = null;
+                DOMSource source = image.getSource("test2.cpp");
+                BufferedReader reader = null;
 				int line = 1;
 				int offset = 0;
-                int[] execLines = new int[] {0,0,0,0,1,0,0,0,1,0};
+				int[] execLines = new int[] {0,0,0,0,0,0,0,1,0,0,0,1,0,0};
 				try{
-					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test3.cpp")));
+					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test2.cpp")));
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
 						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
@@ -129,10 +129,12 @@ public class SourceWindowFactory {
                         else
                             source.getLine(line).setExecutable(false);
 						
-						if(line++ == 9){
-							String lineText = source.getLine(9).getText();
-                        	source.getLine(9).addInlineInst("baz", lineText.indexOf("baz"), 3, 22);
-                        	DOMInlineInstance instance = source.getLine(9).getInlineInst("baz");
+						if(line++ == 12){
+							String lineText = source.getLine(12).getText();
+                        	source.getLine(12).addInlineInst("bar", lineText.indexOf("bar"), 3, 9);
+                        	DOMInlineInstance instance = source.getLine(12).getInlineInst("bar");
+                        	instance.addInlineInst("baz",10,3,22);
+                        	instance = instance.getInlineInstance();
                         	instance.addInlineInst("foobar",10,6,4);
 						}
 						
@@ -142,9 +144,47 @@ public class SourceWindowFactory {
 				catch(Exception e){
 					
 				}
-				StackLevel stack1 = new StackLevel(source, 9);
+                
+				StackLevel stack1 = new StackLevel(source, 12);
 				
 				String[] funcLines = new String[6];
+                for(int i = 0; i < funcLines.length; i++)
+                	funcLines[i] = source.getLine(i + 8).getText();
+                    
+                image.addFunction("foo", source.getFileName(),
+                		8, 8 + funcLines.length,
+                		source.getLine(8).getOffset(), 
+                		source.getLine(13).getOffset()+source.getLine(13).getLength());
+				
+				source = image.getSource("test3.cpp");
+				line = 1;
+				offset = 0;
+                execLines = new int[] {0,0,0,0,1,0,0,0,1,0};
+				try{
+					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test3.cpp")));
+					while(reader.ready()){
+						String text = reader.readLine()+"\n";
+						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
+						if(execLines[line-1] == 1)
+                            source.getLine(line++).setExecutable(true);
+                        else
+                            source.getLine(line++).setExecutable(false);
+//						
+//						if(line++ == 9){
+//							String lineText = source.getLine(9).getText();
+//                        	source.getLine(9).addInlineInst("baz", lineText.indexOf("baz"), 3, 22);
+//                        	DOMInlineInstance instance = source.getLine(9).getInlineInst("baz");
+//                        	instance.addInlineInst("foobar",10,6,4);
+//						}
+						
+						offset += text.length();
+					}
+				}
+				catch(Exception e){
+					
+				}
+				
+				funcLines = new String[6];
                 for(int i = 0; i < funcLines.length; i++)
                 	funcLines[i] = source.getLine(i + 5).getText();
                     
@@ -203,8 +243,8 @@ public class SourceWindowFactory {
 				catch (Exception e){
 					
 				}
-				StackLevel stack3 = new StackLevel(source, 3);
-				stack1.addNextScope(stack3);
+//				StackLevel stack3 = new StackLevel(source, 3);
+//				stack1.addNextScope(stack3);
 				
 				funcLines = new String[3];
                 for(int i = 0; i < funcLines.length; i++)
@@ -247,7 +287,7 @@ public class SourceWindowFactory {
                 		source.getLine(9).getOffset()+source.getLine(9).getLength());
                 
 				StackLevel stack4 = new StackLevel(source, 15);
-				stack3.addNextScope(stack4);
+				stack1.addNextScope(stack4);
 				
 				LibGlade glade = null;
                 

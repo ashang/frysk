@@ -63,29 +63,102 @@ import frysk.gui.srcwin.dom.DOMSource;
  *
  */
 public class InlineViewer extends SourceViewWidget {
-
-//	protected InlineViewer nextLevel;
-//	protected InlineViewer prevLevel;
 	
-	private boolean showEllipsis;
+	private InlineViewer previous;
+	private InlineViewer next;
+	
+	private int depth;
     
-	public InlineViewer(Preferences parentPrefs, SourceWindow top,
-			DOMSource scope, DOMInlineInstance instance){
-		this(parentPrefs, false, scope, top, instance);
+	/**
+	 * Creates a new InlineViewer
+	 * @param parentPrefs The preference model to use
+	 * @param top The SourceWindow that contains this InlineViewer and it's
+	 *     siblings
+	 * @param scope The DOMSource that contains the function that this
+	 *     InlineViewer will be displaying
+	 * @param instance The inline instance to display
+	 */
+	public InlineViewer(Preferences parentPrefs, SourceWindow top, 
+			DOMSource scope, DOMInlineInstance instance) {
+		super(parentPrefs, new InlineBuffer(scope, instance), top);
+		this.setBorderWidth(1);
+	}
+    
+	public void setSubscopeAtCurrentLine(InlineViewer nested){
+		nested.depth = this.depth + 1;
+		this.next = nested;
+		nested.previous = this;
+		
+		super.setSubscopeAtCurrentLine(nested);
 	}
 	
 	/**
-	 * @param parentPrefs
+	 * Coordinates the adding and removing of child scopes, as well as moving
+	 * the visible scopes up or down
 	 */
-	public InlineViewer(Preferences parentPrefs, boolean showEllipsis,
-			DOMSource scope, SourceWindow top, DOMInlineInstance instance) {
+	public void toggleChild(){
+		// TODO: pull this out of the preference model
+		int limit = Integer.MAX_VALUE;
 		
-		super(parentPrefs, new InlineBuffer(scope, instance), top);
-		this.setBorderWidth(1);
-		this.showEllipsis = showEllipsis;
-		this.showEllipsis = !!this.showEllipsis;
+		if(!this.expanded){
+			// Case 1: depth less than max, this level is not expanded.
+			// Action: Add a new inline viewer to this subscope (delegate to superclass)
+			if(this.depth < limit){
+				super.toggleChild();
+			}
+			// Case 2: depth greater than max, this level not expanded.
+			// Action: Move down ourselves, then tell our anscestor to move down as well
+			else{
+				// Move down a level here
+				
+				if(this.previous != null)
+					this.previous.moveDown();
+				else{
+					// We have no anscestor, therefore we need to add ellipsis
+				}
+			}
+		}
+		else{
+			// Find the top inline viewer
+			InlineViewer top = this;
+			while(top.previous != null)
+				top = top.previous;
+			
+			int numToMove = limit - (top.depth - this.depth + 1);
+			
+			int targetBottom = this.depth;
+			
+			InlineViewer bottom = this;
+			while(bottom.next != null)
+				bottom = bottom.next;
+			
+			/*
+			 * Whether or not we have to remove some viewers, we have to move the top
+			 * of the inline scope so that the scope that was clicked on is in the lowest
+			 * visible scope
+			 */
+			while(top.depth > 1 && numToMove > 0){
+				top.moveUp();
+				numToMove--;
+			}
+
+			System.out.println("here");
+			
+			/*
+			 * If we've gotten to the top before we've put the clicked scope at the bottom,
+			 * we have to remove nodes. Starting with the bottom one.
+			 */
+			while(numToMove > 0 && bottom.depth > targetBottom){
+				System.out.println(Math.min(numToMove, bottom.depth - targetBottom) + " left to move, removing bottom child");
+				bottom = bottom.previous;
+				top.removeLowestChild();
+				numToMove--;
+			}
+			
+			System.out.println("there");
+		}
 	}
-    
+	
 	public boolean mouseEvent(MouseEvent event){
 		int x = (int) event.getX();
 		int y = (int) event.getY();
@@ -156,4 +229,56 @@ public class InlineViewer extends SourceViewWidget {
         
         drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
     }
+    
+    /*
+	 * The point of this is to remove the last child in the tree
+	 */
+	private void removeLowestChild(){
+		// The next node is not the last one, keep calling down
+		if(this.next != null && this.next.next != null)
+			this.next.removeLowestChild();
+		// The next node is the last one, cull it
+		else if(this.next != null){
+			this.clearSubscopeAtCurrentLine();
+		}
+		// If we got here, that means this is the last node. This should *not* happen
+		else{
+			System.err.println("This should not be happening!");
+		}
+	}
+	
+	/**
+	 * This causes the inline scope to move down a level. This is propagated up
+	 * through the InlineViewers that are currently being used, with the topmost scope
+	 * becomming hidden
+	 * 
+	 * This method assumes that everyone below us has already moved down
+	 */
+	private void moveDown(){
+		// TODO: Do our own stuff to load the next scope...
+		depth++;
+		
+		if(this.previous != null)
+			this.previous.moveDown();
+		else{
+			// Do stuff here to update the ellipsis
+			
+		}
+	}
+	
+	/**
+	 * 
+	 *
+	 */
+	private void moveUp(){
+		// TODO: Do our own thing to move up...
+		depth--;
+		
+		if(this.previous == null){
+			// Modify the ellipsis stuff here
+		}
+		
+		if(this.next != null)
+			this.next.moveUp();
+	}
 }

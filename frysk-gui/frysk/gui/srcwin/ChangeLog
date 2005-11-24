@@ -1,3 +1,15 @@
+2005-11-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (InlineViewer): Removed boolean hasEllipsis parameter.
+	(setSubscopeAtCurrentLine): Added.
+	(toggleChild): Added.
+	(removeLowestChild): Added.
+	(moveDown): Added.
+	(moveUp): Added.
+	* SourceWindowFactory.java (createSourceWindow): Added another level to
+	the stack, all but the top and bottom are now inlined to test the inline
+	code functionality.
+
 2005-11-23  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (getInlineInstance): Added.
