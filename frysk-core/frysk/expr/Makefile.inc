@@ -37,6 +37,8 @@
 # version and license this file solely under the GPL without
 # exception.
 
+ANTLR = gij -classpath ../frysk-imports/antlr.jar antlr.Tool
+
 GEN_SOURCES += frysk/expr/CppParser.java
 GEN_SOURCES += frysk/expr/CppLexer.java
 GEN_SOURCES += frysk/expr/CppTreeParser.java
@@ -66,7 +68,7 @@ frysk/expr/CppParser.java: \
 		$(srcdir)/frysk/expr/CppTreeParserTokenTypes.sed \
 		$(srcdir)/frysk/expr/CppParserTokenTypes.sed \
 		$(srcdir)/frysk/expr/CppParser.sed
-	antlr $(srcdir)/frysk/expr/cpp.g
+	$(ANTLR) $(srcdir)/frysk/expr/cpp.g
 	mv CppParserTokenTypes.txt frysk/expr/CppParserTokenTypes.txt
 	mv CppTreeParserTokenTypes.txt frysk/expr/CppParserTokenTypes.txt
 

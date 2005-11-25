@@ -1,3 +1,7 @@
+2005-11-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.inc (ANTLR): Define.  Use.
+
 2005-11-14  Tarun Khanna  <tkhanna@redhat.com>
 
 	* CppParser.sed: made the commenting out of unused variables more

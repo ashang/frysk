@@ -1,3 +1,8 @@
+2005-11-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh: When making .jar targets in sub-directories, do
+	not specify name of .jar file.
+
 2005-11-22  Stan Cox  <scox@multics.rdu.redhat.com>
 
 	* TestRunner.sh: Add -log option.

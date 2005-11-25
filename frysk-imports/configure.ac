@@ -44,6 +44,7 @@ AC_INIT(frysk-imports, [FRYSK_VERSION])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile junit/Makefile])
+AC_CONFIG_SUBDIRS([antlr])
 
 sinclude(common/acinclude.m4)
 
@@ -59,12 +60,6 @@ JDOM_JAR=/usr/share/java/jdom.jar
 test -r ${JDOM_JAR} || AC_MSG_ERROR([no jdom.jar file found]);
 AC_SUBST([JDOM_JAR])
 AC_MSG_RESULT([$JDOM_JAR])
-
-AC_MSG_CHECKING([for antlr.jar])
-ANTLR_JAR=/usr/share/java/antlr.jar
-test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
-AC_SUBST([ANTLR_JAR])
-AC_MSG_RESULT([$ANTLR_JAR])
 
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)

@@ -1,5 +1,10 @@
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
+	* autogen.sh: Replace ANTLR_JAR with antlr/antlr/antlr.jar.
+	* configure.ac (AC_CONFIG_SUBDIRS): Add antlr.  Delete ANTLR_JAR
+	check.
+	* Makefile.am (SUBDIRS): Add antlr.
+
 	* configure.ac: Delete check for JUNIT_JAR.
 
 	* autogen.sh: Replace JUNIT_JAR with junit/junit.jar.

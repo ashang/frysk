@@ -29,7 +29,7 @@ this : all
 ## get standard make rules from autoconf
 @stdmake@
 
-test clean distclean install ::
+test clean distclean ::
 	@ if test -f examples/Makefile ; then \
 		$(MAKE) -C examples $@ ; \
 	fi
@@ -123,16 +123,16 @@ docdir   = $(datadir)/doc/$(versioneddir)
 extradir = $(datadir)/$(versioneddir)
 
 install ::
-	$(MKDIR) -p "$(bindir)"
-	$(MKDIR) -p "$(extradir)"
-	$(MKDIR) -p "$(docdir)"
-	$(INSTALL) -m 755 scripts/run-antlr                          "$(bindir)/antlr"
-	$(INSTALL) -m 755 scripts/antlr-config                       "$(bindir)/antlr-config"
-	$(INSTALL) -m 444 @abs_top_srcdir@/extras/antlr-mode.el      "$(extradir)"
-	$(INSTALL) -m 444 @abs_top_srcdir@/extras/antlr-jedit.xml    "$(extradir)"
-	$(INSTALL) -m 444 @abs_top_srcdir@/LICENSE.txt               "$(docdir)"
-	$(INSTALL) -m 444 @abs_top_srcdir@/README.txt                "$(docdir)"
-	$(INSTALL) -m 444 @abs_top_srcdir@/INSTALL.txt               "$(docdir)"
+#	$(MKDIR) -p "$(bindir)"
+#	$(MKDIR) -p "$(extradir)"
+#	$(MKDIR) -p "$(docdir)"
+#	$(INSTALL) -m 755 scripts/run-antlr                          "$(bindir)/antlr"
+#	$(INSTALL) -m 755 scripts/antlr-config                       "$(bindir)/antlr-config"
+#	$(INSTALL) -m 444 @abs_top_srcdir@/extras/antlr-mode.el      "$(extradir)"
+#	$(INSTALL) -m 444 @abs_top_srcdir@/extras/antlr-jedit.xml    "$(extradir)"
+#	$(INSTALL) -m 444 @abs_top_srcdir@/LICENSE.txt               "$(docdir)"
+#	$(INSTALL) -m 444 @abs_top_srcdir@/README.txt                "$(docdir)"
+#	$(INSTALL) -m 444 @abs_top_srcdir@/INSTALL.txt               "$(docdir)"
 
 install ::
 	echo "installation done"

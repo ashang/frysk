@@ -173,7 +173,7 @@ do
   echo ${B}_JAR = ${jar}
 cat <<EOF
 \$(${B}_JAR):
-	cd ${d} && \$(MAKE) \$(AM_MAKEFLAGS) ${b}.jar
+	cd ${d} && \$(MAKE) \$(AM_MAKEFLAGS)
 EOF
   print_jar_rule ${b} ${B}
 done
