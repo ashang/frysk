@@ -43,7 +43,7 @@ sinclude(common/version.ac)
 AC_INIT(frysk-imports, [FRYSK_VERSION])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile])
+AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile junit/Makefile])
 
 sinclude(common/acinclude.m4)
 

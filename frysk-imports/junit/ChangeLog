@@ -1,0 +1,11 @@
+2005-11-25  Andrew Cagney  <cagney@redhat.com>
+
+	* file.list: New file.
+	* Makefile.am: New file.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

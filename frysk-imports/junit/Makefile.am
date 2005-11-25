@@ -1,4 +1,3 @@
-#!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
 # Copyright 2005, Red Hat Inc.
@@ -38,24 +37,23 @@
 # version and license this file solely under the GPL without
 # exception.
 
-./common/Makefile.gen.sh \
-    frysk \
-    inua \
-    junit/junit.jar \
-    ANTLR_JAR \
-    cdtparser/cdtparser.jar \
-    JDOM_JAR \
-    jline/jline.jar \
-    jargs/jargs.jar
-    
+# The target we want to build.
+noinst_DATA = junit.jar
 
-# Generate everything (always run with --add-missing).
+# Make a jar file.
+junit.jar: classdir
+	cd classdir ; \
+	find * -name '*.class' -print | fastjar -@ -cf $@.tmp
+	mv classdir/$@.tmp $@
 
-echo "Running aclocal ..."
-aclocal -I common/m4
+classdir:
+	rm -rf classdir tmpdir
+	mkdir -p tmpdir
+	classdir=`cd tmpdir && pwd` ; \
+	cd $(srcdir)/src ; \
+	$(GCJ) -C -I -O -g -d $$classdir @../file.list
+	mv tmpdir classdir
 
-echo "Running autoconf ..."
-autoconf
-
-echo "Running automake ..."
-automake --add-missing
+CLEANFILES = junit.jar
+clean-local:
+	rm -rf classdir # directory
