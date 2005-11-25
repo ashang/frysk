@@ -54,12 +54,6 @@ fi
 	
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/${lib}/pkgconfig
 
-AC_MSG_CHECKING([for junit.jar])
-JUNIT_JAR=/usr/share/java/junit.jar
-test -r ${JUNIT_JAR} || AC_MSG_ERROR([no junit.jar file found]);
-AC_SUBST([JUNIT_JAR])
-AC_MSG_RESULT([$JUNIT_JAR])
-
 AC_MSG_CHECKING([for jdom.jar])
 JDOM_JAR=/usr/share/java/jdom.jar
 test -r ${JDOM_JAR} || AC_MSG_ERROR([no jdom.jar file found]);

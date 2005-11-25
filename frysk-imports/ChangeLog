@@ -1,5 +1,7 @@
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Delete check for JUNIT_JAR.
+
 	* autogen.sh: Replace JUNIT_JAR with junit/junit.jar.
 	* configure.ac (AC_CONFIG_FILES): Add junit/Makefile.
 	* Makefile.am (SUBDIRS): Add junit.

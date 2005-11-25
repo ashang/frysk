@@ -1,5 +1,8 @@
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
+	* src/junit/framework/TestSuite.java: Remove non UTF-8 char
+	encodings in comments that choke gcj.
+
 	* file.list: New file.
 	* Makefile.am: New file.
 
