@@ -46,9 +46,8 @@ test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
 
-# Prefer ECJ over JAVAC.
-AC_CHECK_PROGS(JAVAC, ecj javac)
-test "x$JAVAC" = x && AC_MSG_ERROR([no acceptable Java compiler found in \$(PATH)])
+# Prefer ECJ over JAVAC, failing that GCJ.
+AC_CHECK_PROGS([JAVAC], [ecj javac], [gcj -C])
 
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
@@ -58,6 +57,8 @@ ecj ) JAVACFLAGS="-warn:+semicolon ${JAVACFLAGS}" ;;
 esac
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
+
+AC_CHECK_PROGS([JAR], [jar], [fastjar])
 
 # Check for the availablity of fig2dev
 AC_PATH_PROG(FIG2DEV, fig2dev)

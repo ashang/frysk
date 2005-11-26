@@ -1,5 +1,8 @@
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
+	* acinclude.m4 (JAVAC): Default to GCJ.
+	(JAR): Check for jar/fastjar.
+
 	* Makefile.gen.sh: When making .jar targets in sub-directories, do
 	not specify name of .jar file.
 
