@@ -102,16 +102,9 @@
 
 2005-10-18  Igor Foox  <ifoox@redhat.com>
 
-	* jargs/Makefile.am, jline/Makefile.am: Substituted EXTRA_DIST for
-	DIST_SOURCES to aleviate automake warnings.
-	
-2005-10-18  Igor Foox  <ifoox@redhat.com>
-
 	* Makefile.am: Added EggTrayIcon/eggtrayicon.h to EXTRA_DIST. Added
 	include/linux.ptrace.h to noinst_HEADERS so it's included in the
 	distribution.
-	* jargs/Makefile.am, jline/Makefile.am: Added DIST_SOURCES
-	variable to include the jargs sources in the distribution.
 
 2005-10-17  Adam Jocksch  <ajocksch@redhat.com>
 
@@ -231,7 +224,7 @@
 
 	* .externalToolBuilders/AntBuilder.launch, .classpath, .project,
 	build.xml: New files.
-	* .cvsignore, jargs/.cvsignore, jline/.cvsignore: Add more files.
+	* .cvsignore: Add more files.
 
 	* configure.ac, Makefile.am: Add subdirectory tests/anoncall.
 
@@ -239,23 +232,11 @@
 
 	* Makefile.am (LIBJUNIT): Define.
 
-2005-08-19  Andrew Cagney  <cagney@redhat.com>
-
-	* jline/src/jline/ConsoleOperations.java: Delete unused import of
-	java.awt.event.KeyEvent.
-
 2005-08-18  Andrew Cagney  <cagney@redhat.com>
 
-	* jargs/.cvsignore: Add Makefile.in.
-	* jargs/src/jargs/gnu/CmdLineParser.java: Don't import
-	java.util.Enumeration.  Add serialVersionUID to serializable
-	classes.
-	* jargs/Makefile.am: New file.
 	* autogen.sh, configure.ac, Makefile.am: Add jargs/jargs.jar.
 
 	* autogen.sh: Add jline/jline.jar to Makefile.gen.sh option list.
-	* jline/Makefile.am (CLEANFILES): Add.
-	(jline.jar): Replace jline target.
 
 2005-08-12  Andrew Cagney  <cagney@redhat.com>
 

@@ -1,0 +1,32 @@
+2005-10-18  Igor Foox  <ifoox@redhat.com>
+
+	* Makefile.am: Substituted EXTRA_DIST for DIST_SOURCES to aleviate
+	automake warnings.
+	
+	* Makefile.am: Added DIST_SOURCES variable to include the jargs
+	sources in the distribution.
+
+2005-09-01  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: Add more files.
+
+2005-08-19  Andrew Cagney  <cagney@redhat.com>
+
+	* src/jline/ConsoleOperations.java: Delete unused import of
+	java.awt.event.KeyEvent.
+
+2005-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (CLEANFILES): Add.
+	(jline.jar): Replace jline target.
+
+2005-08-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Initial import.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
