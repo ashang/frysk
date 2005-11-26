@@ -44,7 +44,9 @@ package frysk.event;
  */
 
 public abstract class SignalEvent
-    extends Signal
+// XXX: Hack to get around GCJ bogosity; thinks Signal is refering to
+// frysk.model.Signal.
+    extends frysk.event.Signal
     implements Event
 {
     /**
