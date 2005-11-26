@@ -1,5 +1,7 @@
 2005-11-26  Andrew Cagney  <cagney@redhat.com>
 
+	* antlr/Makefile.in (antlr_java_FILES): Delete "damned ugly hack".
+
 	* .cvsignore: New file, add autom4te.cache.
 	* configure.in (AX_JAVA_PROGS([JAR])): Check for fastjar.
 	(AX_JAVA_PROGS([JAVAC])): Check for ecj.
