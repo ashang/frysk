@@ -51,9 +51,10 @@ AC_CHECK_PROGS([JAVAC], [ecj javac], [gcj -C])
 
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
-JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)'
 case ${JAVAC} in
+gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
 ecj ) JAVACFLAGS="-warn:+semicolon ${JAVACFLAGS}" ;;
+* ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 esac
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
