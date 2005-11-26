@@ -1,5 +1,7 @@
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh ($(dir).jar): Use $(JAR).
+
 	* acinclude.m4 (JAVAC): Default to GCJ.
 	(JAR): Check for jar/fastjar.
 

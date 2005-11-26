@@ -9,5 +9,5 @@ EXTRA_DIST= $(jargssrc)/gnu/CmdLineParser.java \
 CLEANFILES = jargs.jar jargs/gnu/*
 
 jargs.jar: $(jargssrc)/gnu/*.java
-	javac -g -d . $(jargssrc)/gnu/*.java
-	jar cf jargs.jar jargs/*
+	$(JAVAC) -g -d . $(jargssrc)/gnu/*.java
+	$(JAR) cf jargs.jar jargs/*

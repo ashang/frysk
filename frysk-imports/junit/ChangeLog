@@ -1,5 +1,7 @@
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (junit.jar): Use $(JAR).
+
 	* src/junit/framework/TestSuite.java: Remove non UTF-8 char
 	encodings in comments that choke gcj.
 

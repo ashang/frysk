@@ -8,6 +8,6 @@ EXTRA_DIST  = $(jlinesrc)/*.java \
 CLEANFILES = jline.jar jline/*
 
 jline.jar: $(jlinesrc)/*.java
-	javac -g -d . $(jlinesrc)/*.java
+	$(JAVAC) -g -d . $(jlinesrc)/*.java
 	cp $(jlinesrc)/*.properties ./jline
-	jar cf jline.jar jline/*
+	$(JAR) cf jline.jar jline/*

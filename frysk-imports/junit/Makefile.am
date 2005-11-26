@@ -43,7 +43,7 @@ noinst_DATA = junit.jar
 # Make a jar file.
 junit.jar: classdir
 	cd classdir ; \
-	find * -name '*.class' -print | fastjar -@ -cf $@.tmp
+	find * -name '*.class' -print | $(JAR) -@ -cf $@.tmp
 	mv classdir/$@.tmp $@
 
 classdir:

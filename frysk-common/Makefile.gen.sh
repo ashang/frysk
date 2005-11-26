@@ -262,7 +262,7 @@ ${dir}.jar: \$(GEN_CLASSDIR)/files
 	fi
 	cd \$(GEN_CLASSDIR) ; \
 		find * -name '*.class' -print \
-		| fastjar -@ -cf \$@
+		| \$(JAR) -@ -cf \$@
 	mv \$(GEN_CLASSDIR)/\$@ \$@
 
 # Finally, merge the .so and .jar files into the java .db file.

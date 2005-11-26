@@ -20,7 +20,7 @@ $(tlwidgetsdst)/com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat
             $<
 
 $(tlwidgetsdst)/ftk.jar: $(tlwidgetsdst)/com/redhat/ftk/Stripchart.class
-	jar cf ftk.jar -C $(tlwidgetsdst) com/redhat/ftk/Stripchart.class
+	$(JAR) cf ftk.jar -C $(tlwidgetsdst) com/redhat/ftk/Stripchart.class
 
 $(tlwidgetsdst)/Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	gcj -fjni -I/opt/frysk/share/java/gtk2.8.jar \
