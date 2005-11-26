@@ -2405,7 +2405,7 @@ EOF
     case $LANG_JAVA in
       1)
 
-    ax_arg_list="jikes javac gcj"
+    ax_arg_list="jikes javac ecj gcj"
     if test "x${JAVAC}" != "x" ; then
       ax_arg_list="${JAVAC}"
     fi
@@ -2490,7 +2490,7 @@ EOF
     case $LANG_JAVA in
       1)
 
-    ax_arg_list="jar"
+    ax_arg_list="jar fastjar"
     if test "x${JAR}" != "x" ; then
       ax_arg_list="${JAR}"
     fi

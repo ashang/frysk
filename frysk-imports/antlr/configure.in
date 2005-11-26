@@ -498,12 +498,12 @@ AX_JAVA_PROGS(
 )
 AX_JAVA_PROGS(
   [JAVAC],
-  [jikes javac gcj],
+  [jikes javac ecj gcj],
   [AX_VAR_HEAD([JAVAC])]
 )
 AX_JAVA_PROGS(
   [JAR],
-  [jar],
+  [jar fastjar],
   [
     AX_VAR_HEAD([JAR])
   ]

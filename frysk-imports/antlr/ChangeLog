@@ -1,3 +1,10 @@
+2005-11-26  Andrew Cagney  <cagney@redhat.com>
+
+	* .cvsignore: New file, add autom4te.cache.
+	* configure.in (AX_JAVA_PROGS([JAR])): Check for fastjar.
+	(AX_JAVA_PROGS([JAVAC])): Check for ecj.
+	* configure: Re-generate.
+	
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.in (install): Cripple target.
