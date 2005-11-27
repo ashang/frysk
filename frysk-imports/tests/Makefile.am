@@ -152,11 +152,11 @@ wrongclass/gcj.sh: $(wrongclass_FILES)
 	echo gcj -C \
 		-I $(srcdir)/wrongclass \
 		-d `pwd`/wrongclass \
-		frysk/sys/Wait.java \
-		frysk/model/Signal.java \
-		frysk/event/Signal.java \
-		frysk/event/SignalEvent.java \
-		frysk/proc/LinuxHost.java \
+		$(srcdir)/wrongclass/frysk/sys/Wait.java \
+		$(srcdir)/wrongclass/frysk/model/Signal.java \
+		$(srcdir)/wrongclass/frysk/event/Signal.java \
+		$(srcdir)/wrongclass/frysk/event/SignalEvent.java \
+		$(srcdir)/wrongclass/frysk/proc/LinuxHost.java \
 		> $@
 	chmod a+x $@
 
