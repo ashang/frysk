@@ -1,3 +1,12 @@
+2005-11-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (wrongclass/gcj.sh): New target.
+	* wrongclass/frysk/model/Signal.java: New file.
+	* wrongclass/frysk/event/Signal.java: New file.
+	* wrongclass/frysk/event/SignalEvent.java: New file.
+	* wrongclass/frysk/sys/Wait.java: New file.
+	* wrongclass/frysk/proc/LinuxHost.java: New file.
+
 2005-11-18  Andrew Cagney  <cagney@redhat.com>
 
 	* nestcall/Nest.java: Update.  Original was not valid java.

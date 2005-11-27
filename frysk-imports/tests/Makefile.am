@@ -137,6 +137,29 @@ textiter/a.out: $(textiter_FILES)
 		-o textiter/a.out \
 		$(srcdir)/textiter/JNICrash.java
 
+# GCJ complains that frysk.model.Signal isn't visible from
+# frysk.event.SignalEvent, it should have imported frysk.event.Signal.
+wrongclass_FILES = \
+	wrongclass/frysk/model/Signal.java \
+	wrongclass/frysk/event/Signal.java \
+	wrongclass/frysk/event/SignalEvent.java \
+	wrongclass/frysk/sys/Wait.java \
+	wrongclass/frysk/proc/LinuxHost.java
+EXTRA_DIST += $(wrongclass_FILES)
+XFAIL_TESTS += wrongclass/gcj.sh
+wrongclass/gcj.sh: $(wrongclass_FILES)
+	mkdir -p wrongclass
+	echo gcj -C \
+		-I $(srcdir)/wrongclass \
+		-d `pwd`/wrongclass \
+		frysk/sys/Wait.java \
+		frysk/model/Signal.java \
+		frysk/event/Signal.java \
+		frysk/event/SignalEvent.java \
+		frysk/proc/LinuxHost.java \
+		> $@
+	chmod a+x $@
+
 gcjtreeiter_FILES = gcjtreeiter/IterTest.java
 EXTRA_DIST += $(gcjtreeiter_FILES)
 XFAIL_TESTS += gcjtreeiter/a.out
