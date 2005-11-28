@@ -59,8 +59,7 @@ test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
 AC_MSG_CHECKING([java flags])
 case ${JAVAC} in
 gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
-ecj ) JAVACFLAGS='-warn:+semicolon ${JAVACFLAGS} -sourcepath $(SOURCEPATH)\
-	-classpath $(CLASSPATH)' ;;
+ecj ) JAVACFLAGS='-warn:+semicolon ${JAVACFLAGS} -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 * ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 esac
 AC_SUBST([JAVACFLAGS])
