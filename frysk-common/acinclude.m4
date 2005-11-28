@@ -40,14 +40,20 @@
 
 AC_PROG_RANLIB
 
-AC_PROG_CXX
+AC_PROG_CXX([g++4 g++ c++])
 test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
-
+# XXX: AM_PROG_GCJ doesn't take arguments, hack around it.
+AC_CHECK_PROGS([GCJ], [gcj4 gcj], [gcj])
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
-
 # Prefer ECJ over JAVAC, failing that GCJ.
-AC_CHECK_PROGS([JAVAC], [ecj javac], [gcj -C])
+AC_CHECK_PROGS([JAVAC], [ecj javac 'gcj4 -C' 'gcj -C'], ['gcj -C'])
+AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
+AC_CHECK_PROGS([JAR], [jar fastjar4 fastjar], [fastjar])
+AC_CHECK_PROGS([GCJ_DBTOOL], [gcj4-dbtool gcj-dbtool], [gcj-dbtool])
+AC_PROG_CC([gcc4 gcc cc])
+AM_PROG_CC_C_O
+test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
 
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
@@ -64,10 +70,6 @@ AC_CHECK_PROGS([JAR], [jar], [fastjar])
 # Check for the availablity of fig2dev
 AC_PATH_PROG(FIG2DEV, fig2dev)
 test "x$FIG2DEV" = x && AC_MSG_ERROR([no fig2dev binary is found in \$(PATH)])
-
-AC_PROG_CC
-AM_PROG_CC_C_O
-test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
 
 AM_PROG_AS
 
