@@ -42,7 +42,7 @@
     frysk \
     inua \
     junit/junit.jar \
-    antlr/antlr/antlr.jar \
+    ANTLR_JAR \
     cdtparser/cdtparser.jar \
     JDOM_JAR \
     jline/jline.jar \

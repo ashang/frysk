@@ -1,5 +1,12 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	Revert 2005-11-25 change:
+	* configure.ac (AC_CONFIG_SUBDIRS([antlr]): Delete.
+	(ANTLR_JAR, JDOM_JAR): Optionally set from the environment.
+	(PKG_CONFIG_PATH): Move to before all PKG_CHECK_MODULES.
+	* autogen.sh: Specify ANTLR_JAR.
+	* Makefile.am (SUBDIRS): Delete antlr/
+
 	* autogen.sh: Add -f to autoconf.
 
 2005-11-25  Andrew Cagney  <cagney@redhat.com>

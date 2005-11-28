@@ -44,7 +44,6 @@ AC_INIT(frysk-imports, [FRYSK_VERSION])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile junit/Makefile])
-AC_CONFIG_SUBDIRS([antlr])
 
 sinclude(common/acinclude.m4)
 
@@ -52,14 +51,20 @@ lib=lib
 if [[ "x`uname -p`" = "xx86_64" ]]; then
     lib=${lib}64
 fi
-	
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/${lib}/pkgconfig
+
+AC_MSG_CHECKING([for antlr.jar])
+ANTLR_JAR=${ANTLR_JAR:-/usr/share/java/antlr.jar}
+test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
+AC_SUBST([ANTLR_JAR])
+AC_MSG_RESULT([$ANTLR_JAR])
 
 AC_MSG_CHECKING([for jdom.jar])
-JDOM_JAR=/usr/share/java/jdom.jar
+JDOM_JAR=${JDOM_JAR:-/usr/share/java/jdom.jar}
 test -r ${JDOM_JAR} || AC_MSG_ERROR([no jdom.jar file found]);
 AC_SUBST([JDOM_JAR])
 AC_MSG_RESULT([$JDOM_JAR])
+
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
 
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)
@@ -80,7 +85,6 @@ AC_MSG_RESULT($GLIB_JAVA_JAR)
 AC_SUBST(GLIB_JAVA_JAR)
 
 dnl For EggTrayIcon
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
 PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
 PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
 

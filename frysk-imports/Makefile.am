@@ -46,8 +46,7 @@ SUBDIRS = \
 	tests \
 	tlwidgets \
 	cdtparser \
-	junit \
-	antlr
+	junit
 
 solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
