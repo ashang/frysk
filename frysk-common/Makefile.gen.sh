@@ -420,7 +420,7 @@ echo GEN_FIG =
 find ${dirs} -type f -name '*.fig' | while read f
 do
   echo GEN_FIG += $f
-  echo DIST_FILES += $f
+  echo EXTRA_DIST += $f
 done
 
 
