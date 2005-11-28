@@ -1,3 +1,7 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* autogen.sh: Add -f to autoconf.
+
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Move version.in logic to common/version.ac,

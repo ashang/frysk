@@ -49,7 +49,7 @@ echo "Running aclocal ..."
 aclocal
 
 echo "Running autoconf ..."
-autoconf
+autoconf -f
 
 echo "Running automake ..."
 automake --add-missing

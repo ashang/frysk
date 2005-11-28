@@ -1,3 +1,7 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* autogen.sh: Add -f to autoconf.
+
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
 	* autogen.sh: Replace ANTLR_JAR with antlr/antlr/antlr.jar.
