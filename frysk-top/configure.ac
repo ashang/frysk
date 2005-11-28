@@ -42,7 +42,7 @@ AC_PREREQ(2.59)
 sinclude(common/version.ac)
 AC_INIT(frysk,defn([FRYSK_VERSION]))
 
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
+AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext dist-bzip2 tar-ustar])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core frysk-gui])
 AM_PROG_GCJ

@@ -1,5 +1,8 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac (AM_INIT_AUTOMAKE): Add dist-bzip2, and tar-ustar
+	options.
+
 	* autogen.sh: Add -f to autoconf.
 
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
