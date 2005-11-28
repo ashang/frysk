@@ -1,3 +1,14 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* acinclude.m4 (AC_PROG_CXX, AC_PROG_CC): Provide explict list.
+	(AC_CHECK_PROGS([GCJ])): Add, hacks around AM_PROG_GCJ breakage.
+	(AC_CHECK_PROGS([JAR]), AC_CHECK_PROGS([GCJH]),
+	AC_CHECK_PROGS([GCJ_DBTOOL])): Add.
+	* Makefile.rules (GCJH): Delete definition; defined by
+	acinclude.m4.
+	(.jar.db): Replace gcj-dbtool with $(GCJ_DBTOOL).
+	
+
 2005-11-26  Andrew Cagney  <cagney@redhat.com>
 
 	* acinclude.m4 (JAVACFLAGS): For gcj, use -classpath not
