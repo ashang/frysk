@@ -40,7 +40,7 @@
 # Initialize everything to empty and then use += to add things in.
 
 SUFFIXES =
-BUILT_SOURCES = $(GEN_BUILT_MKJAVA) $(GEN_BUILT_SHJAVA)
+BUILT_SOURCES = 
 CLEANFILES = $(BUILT_SOURCES)
 noinst_PROGRAMS =
 bin_PROGRAMS =
@@ -147,7 +147,6 @@ SUFFIXES += .mkjava
 	$(SHELL) $(MKJAVA) < $(srcdir)/$*.mkjava > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-$(GEN_BUILT_MKJAVA): $(MKJAVA)
 
 # Rule for building a .java file from a shell|mkjava pipeline.
 
@@ -157,7 +156,6 @@ SUFFIXES += .shjava
 	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-$(SHJAVA_BUILT): $(MKJAVA)
 
 # Mimic autoconf's behavior, by doing it in the Makefile all the
 # variables are automatically expanded.

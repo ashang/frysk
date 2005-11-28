@@ -1,5 +1,10 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Do not define GEN_BUILT_H, GEN_BUILT_MKJAVA and
+	GEN_BUILT_SHJAVA.
+	* Makefile.rules: Delete references to GEN_BUILT_MKJAVA and
+	SHJAVA_BUILT.
+
 	* Makefile.gen.sh (GEN_NODIST): Define.
 	(.g): For .g files generate BUILT_SOURCES, GEN_NODIST, CLEANFILES,
 	and rule.

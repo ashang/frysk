@@ -284,15 +284,14 @@ EOF
 for suffix in .mkjava .shjava .javain ; do
     print_header "... ${suffix}"
     SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
-    echo "GEN_BUILT${SUFFIX} ="
     find ${dirs} \
 	-name "*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	echo "GEN_SOURCES += ${file}"
-	echo "GEN_BUILT${SUFFIX} += ${d}/${b}.java"
 	echo "BUILT_SOURCES += ${d}/${b}.java"
+	echo "${d}/${b}.java: \$(MKJAVA)"
     done
 done
 
@@ -352,8 +351,7 @@ done
 # little since, given Class$Nested and Class, generating Class.h will
 # automatically generate the inner Class$Nested class.
 
-print_header "... GEN_BUILT_H  += *.cxx=.h"
-echo "GEN_BUILT_H = \\"
+print_header "... *.cxx=.h"
 find ${dirs} -name 'cni' -print | while read d
 do
     find $d -name '*.cxx' -print
@@ -363,10 +361,10 @@ done \
     | sort -u \
     | while read c
 do
-    test -r $c.java && echo "	$c.h \\"
+  if test -r $c.java ; then
+      echo "BUILT_SOURCES += $c.h"
+  fi
 done
-echo '	$(ZZZ)'
-echo 'BUILT_SOURCES += $(GEN_BUILT_H)'
 
 
 
