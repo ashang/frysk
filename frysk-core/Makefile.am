@@ -41,9 +41,9 @@
 include common/Makefile.rules
 include Makefile.gen
 
-AUTOMAKE_OPTIONS = dejagnu
+ANTLR = gij -classpath ../frysk-imports/antlr.jar antlr.Tool
 
-include frysk/expr/Makefile.inc
+AUTOMAKE_OPTIONS = dejagnu
 
 GEN_SOURCEPATH += $(top_builddir)/../frysk-sys/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-sys/
@@ -66,8 +66,6 @@ noinst_PROGRAMS += prog/x86isa/x86regs
 prog_x86isa_x86modify_SOURCES = prog/x86isa/x86modify.S
 noinst_PROGRAMS += prog/x86isa/x86modify
 
-EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png \
-		$(srcdir)/frysk/expr/cpp.g \
-		$(srcdir)/frysk/expr/*.sed
+EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
 
 RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite --tool expr

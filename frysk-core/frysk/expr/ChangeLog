@@ -1,3 +1,7 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.inc: Delete, handled by Makefile.gen.sh.
+
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.inc (ANTLR): Define.  Use.

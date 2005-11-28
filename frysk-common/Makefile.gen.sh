@@ -200,6 +200,7 @@ test x"${dirs}" = x && exit 0
 
 
 echo GEN_SOURCES =
+echo GEN_NODIST =
  
 
 # Generate rule to build this directory's .jar, .a, and .so file.
@@ -219,6 +220,7 @@ cat <<EOF
 solib_PROGRAMS += lib${dir}.so
 GEN_GCJ_LDADD += lib${dir}.a
 lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
+nodist_lib${_dir}_a_SOURCES = \$(GEN_NODIST)
 lib${_dir}_so_SOURCES = 
 noinst_LIBRARIES += lib${dir}.a
 lib${dir}.so: lib${dir}.a
@@ -423,6 +425,32 @@ do
   echo EXTRA_DIST += $f
 done
 
+# Form a list of all the antlr generated files.
+
+print_header "... GEN_G = .g"
+find ${dirs} -type f -name '*.g' | while read g
+do
+  echo "EXTRA_DIST += $g"
+  d=`dirname $g`
+  (
+      awk '/class/ { print $2 }' $g
+      awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
+  ) | while read c
+  do
+    echo "GEN_NODIST += $d/$c.java"
+    echo "BUILT_SOURCES += $d/$c.java"
+    echo "EXTRA_DIST += $d/$c.sed"
+    t=$d/$c.tmp
+    echo "CLEANFILES += $t"
+cat <<EOF
+$d/$c.java: $g $d/$c.sed
+	mkdir -p $t
+	\$(ANTLR) -o $t \$(srcdir)/$g
+	sed -f \$(srcdir)/$d/$c.sed < $t/$c.java > $d/$c.java
+	rm -rf $t
+EOF
+  done
+done
 
 
 # Form a list of all the JUnit tests.  Anything named *Test*, that

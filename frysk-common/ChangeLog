@@ -1,5 +1,9 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (GEN_NODIST): Define.
+	(.g): For .g files generate BUILT_SOURCES, GEN_NODIST, CLEANFILES,
+	and rule.
+	
 	* Makefile.gen.sh (.fig): Add .fig files to EXTRA_DIST.
 
 	* acinclude.m4 (AC_PROG_CXX, AC_PROG_CC): Provide explict list.

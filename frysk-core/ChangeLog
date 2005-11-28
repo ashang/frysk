@@ -1,5 +1,9 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (ANTLR): Define.  Do not include
+	frysk/expr/Makefile.inc
+	(EXTRA_DIST): Delete frysk/expr/cpp.g and frysk/expr/*.sed.
+
 	* Makefile.am (EXTRA_DIST): Do not add .fig files, handled by
 	Makefile.gen.sh.
 
