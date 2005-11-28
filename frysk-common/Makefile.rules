@@ -206,7 +206,6 @@ SUFFIXES += .javain
 # with that of JAVAC), work around this by checking that each class
 # really exists.
 
-GCJH = $(GCJ)h
 .java.h:
 	classes=`jv-scan --list-class '$<'` ; \
 	tmpdir=`echo $$classes | ( read a b ; echo $$a )`.tmp ; \
@@ -272,8 +271,8 @@ GCJCOMPILE ?= $(GCJ) $(AM_GCJFLAGS) $(GCJFLAGS)
 
 SUFFIXES += .db
 .jar.db:
-	gcj-dbtool -n $@.tmp
-	gcj-dbtool -a $@.tmp $*.jar lib$*.so
+	$(GCJ_DBTOOL) -n $@.tmp
+	$(GCJ_DBTOOL) -a $@.tmp $*.jar lib$*.so
 	mv $@.tmp $@
 
 
