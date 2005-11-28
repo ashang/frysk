@@ -1,3 +1,8 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Do not add .fig files, handled by
+	Makefile.gen.sh.
+
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Include common/version.ac.  Update AC_INIT to
