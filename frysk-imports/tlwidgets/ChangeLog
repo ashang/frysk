@@ -1,3 +1,7 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Use $(GCJ), and $(CC).
+
 2005-11-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am ($(tlwidgetsdst)/ftk.jar): Use $(JAR).
