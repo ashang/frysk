@@ -1,5 +1,8 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* acinclude.m4 (AC_CHECK_PROGS([GCJ_DBTOOL]): Check for
+	gcj-dbtool4, not gcj4-dbtool.
+
 	* acinclude.m4 (AC_CHECK_PROGS([JAR]): Check for fastjar first.
 
 2005-11-28  Adam Jocksch  <ajocksch@redhat.com>

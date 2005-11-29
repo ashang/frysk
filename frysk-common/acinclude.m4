@@ -50,7 +50,7 @@ test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
 AC_CHECK_PROGS([JAVAC], [ecj javac 'gcj4 -C' 'gcj -C'], ['gcj -C'])
 AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
 AC_CHECK_PROGS([JAR], [fastjar4 fastjar jar], [fastjar])
-AC_CHECK_PROGS([GCJ_DBTOOL], [gcj4-dbtool gcj-dbtool], [gcj-dbtool])
+AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
 AC_PROG_CC([gcc4 gcc cc])
 AM_PROG_CC_C_O
 test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
