@@ -1,5 +1,7 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* scripts/javac.sh.in: Accept gcj4.
+
 	* configure.in (user_make): Make gcc4 and gcj first choice.
 	* configure: Re-generate.
 	

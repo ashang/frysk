@@ -100,7 +100,7 @@ case "${javac}" in
     javacflags="${javacflags} -sourcepath ${srcdir}"
     javacflags="${javacflags} -classpath ${classpath}"
     ;;
-  gcj)
+  gcj*)
     javacflags="-d ."
     javacflags="${javacflags} -I${srcdir} -C"
     javacflags="${javacflags} -classpath ${classpath}"
