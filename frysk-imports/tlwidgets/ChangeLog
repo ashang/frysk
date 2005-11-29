@@ -7,6 +7,7 @@
 	* test/widget/Makefile:     Add console widget test.to local
 	build.
 	* Makefile.am: Add console widget to frysk build.
+	* console-screenshot.jpg:   Screenshot of the console widget.
 
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
