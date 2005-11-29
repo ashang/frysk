@@ -43,7 +43,7 @@ noinst_DATA = cdtparser.jar
 # Make a jar file.
 cdtparser.jar: classdir
 	cd classdir ; \
-	find * -name '*.class' -print | fastjar -@ -cf $@.tmp
+	find * -name '*.class' -print | $(JAR) -@ -cf $@.tmp
 	mv classdir/$@.tmp $@
 
 # The file.list is required for gcj to properly build the cdt parser.
@@ -57,7 +57,7 @@ classdir:
 	mkdir -p classdir
 	classdir=`cd classdir && pwd` ; \
 	cd $(srcdir) ; \
-	$(GCJ) -C -I -O -g -d $$classdir @file.list
+	$(JAVAC) -O -g -d $$classdir @file.list
 
 CLEANFILES = cdtparser.jar
 clean-local:
