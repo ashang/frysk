@@ -1,3 +1,13 @@
+2005-11-29    <moller@mollerware.com>
+
+	* src/widgets/ftkconsole.c: Add console widget.
+	* src/widgets/ftkconsole.h: Add console widget.
+	* src/widgets/Makefile:     Add console widget to local build.
+	* test/widget/tconsole.c:   Add console widget test.
+	* test/widget/Makefile:     Add console widget test.to local
+	build.
+	* Makefile.am: Add console widget to frysk build.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Use $(GCJ), and $(CC).

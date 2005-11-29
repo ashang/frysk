@@ -16,10 +16,10 @@
            -I../../src/widgets
 
      LIBS = `pkg-config --libs   gtk+-2.0` \
-            -L../../ -lftk \
+            -L../../src/widgets -lftk \
             -lm
 
-   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib:../..
+   LD_LIBRARY_PATH=../../src/widgets
 
       CC = gcc
 
@@ -38,8 +38,13 @@ tstripchart: tstripchart.o
 
 tstripchart.o: tstripchart.c
 
-run: tstripchart
-	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./tstripchart
+tconsole: tconsole.o
+	$(CC) $(LDFLAGS) -o $@ $(LIBS) $^
+
+tconsole.o: tconsole.c
+
+run: tstripchart tconsole
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./tconsole
 
 clean:
 	rm -f *.o ttimeline tstripchart

@@ -14,15 +14,20 @@ PKGINSTALLDIR = $(LIBINSTALLDIR)/pkgconfig
 
       CC = gcc
 
+
+SOURCE_FILES = ftkconsole.c ftkstripchart.c ftktimeline.c
+OBJ_FILES = $(SOURCE_FILES:.c=.o)
+
 all::libftk.so
 
 %.o:%.c
 	$(CC) $(CFLAGS) -std=gnu99 $(INCS) -c $<
 
+ftkconsole.o:    ftkconsole.c     ftkconsole.h
 ftktimeline.o:   ftktimeline.c    ftktimeline.h
 ftkstripchart.o: ftkstripchart.c  ftkstripchart.h
 
-libftk.so: ftktimeline.o ftkstripchart.o
+libftk.so: $(OBJ_FILES)
 	$(CC) -shared -o $@ $^ -lrt
 
 install-pkg: ftk.pc
