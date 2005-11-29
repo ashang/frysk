@@ -57,7 +57,7 @@ TESTS += logger/a.out
 EXTRA_DIST += $(logger_FILES)
 logger/a.out: $(logger_FILES)
 	mkdir -p logger
-	gcj -o logger/a.out --main=Npe $(srcdir)/logger/Npe.java
+	$(GCJ) -o logger/a.out --main=Npe $(srcdir)/logger/Npe.java
 
 # This fails on gcj 4, but passes on gcj 4.1.
 anoncall_FILES = anoncall/Anon.java
@@ -65,14 +65,14 @@ XFAIL_TESTS += anoncall/a.out
 EXTRA_DIST += $(anoncall_FILES)
 anoncall/a.out: $(anoncall_FILES)
 	mkdir -p anoncall
-	gcj -o anoncall/a.out --main=Anon $(srcdir)/anoncall/Anon.java
+	$(GCJ) -o anoncall/a.out --main=Anon $(srcdir)/anoncall/Anon.java
 # This fails on gcj 4, but passes on gcj 4.1.
 nestcall_FILES = nestcall/Nest.java
 XFAIL_TESTS += nestcall/a.out
 EXTRA_DIST += $(nestcall_FILES)
 nestcall/a.out: $(nestcall_FILES)
 	mkdir -p nestcall
-	gcj -o nestcall/a.out --main=Nest $(srcdir)/nestcall/Nest.java
+	$(GCJ) -o nestcall/a.out --main=Nest $(srcdir)/nestcall/Nest.java
 
 TESTS += cniinner/a.out
 cniinner_FILES = \
@@ -82,13 +82,13 @@ cniinner_FILES = \
 EXTRA_DIST += $(cniinner_FILES)
 cniinner/a.out: $(cniinner_FILES)
 	mkdir -p cniinner
-	gcj -I$(srcdir) -d . -C $(srcdir)/cniinner/Parent.java
-	gcj -I$(srcdir) -d . -C $(srcdir)/cniinner/Child.java
-	gcjh -I. cniinner.Parent
-	gcjh -I. cniinner.Child
-	gcjh -I. 'cniinner.Child$$Nested'
-	gcj -g -I. -c -o cniinner/native.o $(srcdir)/cniinner/native.cxx
-	gcj -g -I. --main=cniinner.Child -o cniinner/a.out \
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/cniinner/Parent.java
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/cniinner/Child.java
+	$(GCJH) -I. cniinner.Parent
+	$(GCJH) -I. cniinner.Child
+	$(GCJH) -I. 'cniinner.Child$$Nested'
+	$(GCJ) -g -I. -c -o cniinner/native.o $(srcdir)/cniinner/native.cxx
+	$(GCJ) -g -I. --main=cniinner.Child -o cniinner/a.out \
 		$(srcdir)/cniinner/Parent.java \
 		$(srcdir)/cniinner/Child.java \
 		cniinner/native.o
@@ -98,7 +98,7 @@ samename_FILES = samename/SameName.java
 EXTRA_DIST += $(samename_FILES)
 samename/a.out: $(samename_FILES)
 	mkdir -p samename
-	gcj -g --main=SameName \
+	$(GCJ) -g --main=SameName \
 		$(srcdir)/samename/SameName.java \
 		-o samename/a.out
 
@@ -111,7 +111,7 @@ EXTRA_DIST += $(werror_FILES)
 XFAIL_TESTS += werror/java.sh
 werror/java.sh: $(werror_FILES)
 	mkdir -p werror
-	echo \! gcj -Werror -Wall -c -o /dev/null \
+	echo \! $(GCJ) -Werror -Wall -c -o /dev/null \
 		$(srcdir)/werror/Werror.java \
 		> $@
 	chmod a+x $@
@@ -128,7 +128,7 @@ textiter_FILES = textiter/JNICrash.java
 EXTRA_DIST += $(textiter_FILES)
 textiter/a.out: $(textiter_FILES)
 	mkdir -p textiter
-	gcj -g \
+	$(GCJ) -g \
 		-I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) $(GTK_JAVA_LIBS) \
 		-Wl,-rpath,/opt/frysk/lib \
 		-Djava.library.path=/opt/frysk/lib \
@@ -149,7 +149,7 @@ EXTRA_DIST += $(wrongclass_FILES)
 XFAIL_TESTS += wrongclass/gcj.sh
 wrongclass/gcj.sh: $(wrongclass_FILES)
 	mkdir -p wrongclass
-	echo gcj -C \
+	echo $(GCJ) -C \
 		-I $(srcdir)/wrongclass \
 		-d `pwd`/wrongclass \
 		$(srcdir)/wrongclass/frysk/sys/Wait.java \
@@ -165,7 +165,7 @@ EXTRA_DIST += $(gcjtreeiter_FILES)
 XFAIL_TESTS += gcjtreeiter/a.out
 gcjtreeiter/a.out: $(gcjtreeiter_FILES)
 	mkdir -p gcjtreeiter
-	gcj -g \
+	$(GCJ) -g \
 		-I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) $(GTK_JAVA_LIBS) \
 		-Wl,-rpath,/opt/frysk/lib \
 		-Djava.library.path=/opt/frysk/lib \
@@ -176,13 +176,13 @@ gcjtreeiter/a.out: $(gcjtreeiter_FILES)
 XFAIL_TESTS += gcjtreeiter/gij.sh
 gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 	mkdir -p gcjtreeiter
-	gcj -g -C -d . -I$(srcdir) -I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) \
+	$(GCJ) -g -C -d . -I$(srcdir) -I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) \
 		-I$(datadir)/glib0.2.jar \
 		$(srcdir)/gcjtreeiter/IterTest.java
-	echo gij -classpath $(srcdir)/..:$(GTK2_JAR):$(GLIB_JAVA_JAR) \
+	echo $(GIJ) -classpath $(srcdir)/..:$(GTK2_JAR):$(GLIB_JAVA_JAR) \
 		-Djava.library.path=/opt/frysk/lib gcjtreeiter.IterTest \
-		> gcjtreeiter/gij.sh
-	chmod a+x gcjtreeiter/gij.sh
+		> gcjtreeiter/$(GIJ).sh
+	chmod a+x gcjtreeiter/$(GIJ).sh
 
 cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
 #cdtparserversion_FILES += cdtparserversion/main.cpp
@@ -190,7 +190,7 @@ cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
 ##TESTS += cdtparserversion/a.out
 #cdtparserversion/a.out: $(cdtparserversion_FILES)
 #	mkdir -p cdtparserversion
-#	gcj -g \
+#	$(GCJ) -g \
 #		-I$(CDTPARSER_JAR) \
 #		$(CDTPARSER_LIBS) \
 #		--main=cdtparserversion.CDTParserTest \
