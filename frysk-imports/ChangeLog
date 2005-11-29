@@ -1,5 +1,7 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac (AC_INIT): Shorten package to just <<frysk>>.
+
 	Revert 2005-11-25 change:
 	* configure.ac (AC_CONFIG_SUBDIRS([antlr]): Delete.
 	(ANTLR_JAR, JDOM_JAR): Optionally set from the environment.
