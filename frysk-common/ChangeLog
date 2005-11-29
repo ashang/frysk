@@ -1,5 +1,7 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.shjava.java): Add CC to the environment.
+
 	* acinclude.m4 (AC_CHECK_PROGS([JAVA]): Add.
 	(AC_CHECK_PROGS([GIJ]): Add.
 	

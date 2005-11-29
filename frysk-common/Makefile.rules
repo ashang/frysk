@@ -153,6 +153,7 @@ SUFFIXES += .mkjava
 SUFFIXES += .shjava
 .shjava.java:
 	rm -f $*.tmp
+	export CC=$(CC) ; \
 	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
