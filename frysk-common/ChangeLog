@@ -1,3 +1,7 @@
+2005-11-29  Andrew Cagney  <cagney@redhat.com>
+
+	* acinclude.m4 (AC_CHECK_PROGS([JAVAC]): Check for javac last..
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.shjava.java): Add CC to the environment.

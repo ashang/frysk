@@ -46,8 +46,9 @@ test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
 AC_CHECK_PROGS([GCJ], [gcj4 gcj], [gcj])
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
-# Prefer ECJ over JAVAC, failing that GCJ.
-AC_CHECK_PROGS([JAVAC], [ecj javac 'gcj4 -C' 'gcj -C'], ['gcj -C'])
+# Prefer ECJ over GCJ, avoid JAVAC as that could easily be a
+# third-party compiler.
+AC_CHECK_PROGS([JAVAC], [ecj 'gcj4 -C' 'gcj -C' javac], ['gcj -C'])
 AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
 AC_CHECK_PROGS([JAR], [fastjar4 fastjar jar], [fastjar])
 AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
