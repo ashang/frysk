@@ -54,6 +54,8 @@ AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
 AC_PROG_CC([gcc4 gcc cc])
 AM_PROG_CC_C_O
 test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
+AC_CHECK_PROGS([JAVA], [gij4 gij java], [gij])
+AC_CHECK_PROGS([GIJ], [gij4 gij], [gij])
 
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
@@ -64,8 +66,6 @@ ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSP
 esac
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
-
-AC_CHECK_PROGS([JAR], [jar], [fastjar])
 
 # Check for the availablity of fig2dev
 AC_PATH_PROG(FIG2DEV, fig2dev)

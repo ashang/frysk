@@ -1,5 +1,8 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* acinclude.m4 (AC_CHECK_PROGS([JAVA]): Add.
+	(AC_CHECK_PROGS([GIJ]): Add.
+	
 	* Makefile.gen.sh (.db): Use $(GCJ_DBTOOL).
 
 	* acinclude.m4 (AC_CHECK_PROGS([GCJ_DBTOOL]): Check for
