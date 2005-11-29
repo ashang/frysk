@@ -1,5 +1,7 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (.db): Use $(GCJ_DBTOOL).
+
 	* acinclude.m4 (AC_CHECK_PROGS([GCJ_DBTOOL]): Check for
 	gcj-dbtool4, not gcj4-dbtool.
 
