@@ -2320,7 +2320,7 @@ esac
     case $LANG_JAVA in
       1)
 
-    ax_arg_list="java gij"
+    ax_arg_list="gij4 gij java"
     if test "x${JAVA}" != "x" ; then
       ax_arg_list="${JAVA}"
     fi
@@ -2405,7 +2405,7 @@ EOF
     case $LANG_JAVA in
       1)
 
-    ax_arg_list="jikes javac ecj gcj"
+    ax_arg_list="gcj4 gcj jikes javac ecj"
     if test "x${JAVAC}" != "x" ; then
       ax_arg_list="${JAVAC}"
     fi
@@ -2490,7 +2490,7 @@ EOF
     case $LANG_JAVA in
       1)
 
-    ax_arg_list="jar fastjar"
+    ax_arg_list="fastjar4 fastjar jar"
     if test "x${JAR}" != "x" ; then
       ax_arg_list="${JAR}"
     fi
@@ -2798,9 +2798,9 @@ echo "$as_me: error: no suitable value has been found for AR" >&2;}
         ## of  course GNU. If there's a GNU compiler around we prefer
         ## GNU. This avoids also  a  problem  with  vendors having CC
         ## a symbolic link to "gcc" instead of "g++".
-        cxx_compiler_list="g++ aCC CC xlC xlC_r cxx c++"
+        cxx_compiler_list="g++4 g++ aCC CC xlC xlC_r cxx c++"
 		  # FIXME: for other unix flavours
-		  c_compiler_list="cc gcc xlc_r acc"
+		  c_compiler_list="gcc4 gcc cc xlc_r acc"
         ;;
     esac
 

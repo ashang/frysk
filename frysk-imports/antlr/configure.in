@@ -493,17 +493,17 @@ AC_ARG_VAR(
 
 AX_JAVA_PROGS(
   [JAVA],
-  [java gij],
+  [gij4 gij java],
   [AX_VAR_HEAD([JAVA])]
 )
 AX_JAVA_PROGS(
   [JAVAC],
-  [jikes javac ecj gcj],
+  [gcj4 gcj jikes javac ecj],
   [AX_VAR_HEAD([JAVAC])]
 )
 AX_JAVA_PROGS(
   [JAR],
-  [jar fastjar],
+  [fastjar4 fastjar jar],
   [
     AX_VAR_HEAD([JAR])
   ]
@@ -644,9 +644,9 @@ case $LANG_CXX in
         ## of  course GNU. If there's a GNU compiler around we prefer
         ## GNU. This avoids also  a  problem  with  vendors having CC
         ## a symbolic link to "gcc" instead of "g++".
-        cxx_compiler_list="g++ aCC CC xlC xlC_r cxx c++"
+        cxx_compiler_list="g++4 g++ aCC CC xlC xlC_r cxx c++"
 		  # FIXME: for other unix flavours
-		  c_compiler_list="cc gcc xlc_r acc"
+		  c_compiler_list="gcc4 gcc cc xlc_r acc"
         ;;
     esac
 
