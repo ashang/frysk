@@ -1,5 +1,7 @@
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (ANTLR): Use $(JAVA).
+
 	* configure.ac (AC_INIT): Shorten package to just <<frysk>>.
 
 	* autogen.sh: Add -f to autoconf.

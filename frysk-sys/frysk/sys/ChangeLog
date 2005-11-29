@@ -1,3 +1,8 @@
+2005-11-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Sig.shjava: Use $CC from the environment.
+	* SyscallNum.shjava: Ditto.
+
 2005-11-14  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Wait.cxx (processStatus): Wrap case local variable in local

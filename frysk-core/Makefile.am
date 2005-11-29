@@ -41,7 +41,7 @@
 include common/Makefile.rules
 include Makefile.gen
 
-ANTLR = gij -classpath ../frysk-imports/antlr.jar antlr.Tool
+ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 
 AUTOMAKE_OPTIONS = dejagnu
 

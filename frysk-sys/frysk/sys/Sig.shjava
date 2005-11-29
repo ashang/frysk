@@ -39,8 +39,8 @@
 # exception.
 
 # Grub through the file generating a mkjava.sh table
-
-gcc -dD -E /usr/include/signal.h | sed -n '
+CC=${CC:-gcc}
+$CC -dD -E /usr/include/signal.h | sed -n '
 /SIGRTMAX/ d
 /SIGRTMIN/ d
 /SIGUNUSED/ d
