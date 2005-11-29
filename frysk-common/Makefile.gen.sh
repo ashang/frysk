@@ -272,8 +272,8 @@ ${dir}.jar: \$(GEN_CLASSDIR)/files
 noinst_PROGRAMS += ${dir}.db
 ${_dir}_db_SOURCES = 
 ${dir}.db: lib${dir}.so ${dir}.jar
-	$(GCJ_DBTOOL) -n \$@.tmp
-	$(GCJ_DBTOOL) -a \$@.tmp ${dir}.jar lib${dir}.so
+	\$(GCJ_DBTOOL) -n \$@.tmp
+	\$(GCJ_DBTOOL) -a \$@.tmp ${dir}.jar lib${dir}.so
 	mv \$@.tmp \$@
 EOF
 
