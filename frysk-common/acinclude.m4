@@ -40,6 +40,11 @@
 
 AC_PROG_RANLIB
 
+# XXX: AC_PATH_PROGS, given <<JAVAC=/path/to/gcj -C>>, looses the
+# <<-C>>.  XXX: AC_PATH_PROG, given <<JAVAC=gcj>>, discards the
+# environment variable as it isn't absolute (which is contrary to
+# AC_PATH_PROGS).
+
 AC_PROG_CXX([g++4 g++ c++])
 test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
 # XXX: AM_PROG_GCJ doesn't take arguments, hack around it.
@@ -61,8 +66,8 @@ AC_CHECK_PROGS([GIJ], [gij4 gij], [gij])
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
 case ${JAVAC} in
-gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
-ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
+gcj* | */gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
+ecj | */ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 * ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 esac
 AC_SUBST([JAVACFLAGS])
