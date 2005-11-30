@@ -75,4 +75,8 @@ public class ProcNameFilter extends ProcFilter {
 	public String getProcName(){
 		return this.procName;
 	}
+
+	public Filter getCopy() {
+		return new ProcNameFilter(this);
+	}
 }

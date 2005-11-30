@@ -69,5 +69,9 @@ public class TaskProcNameFilter extends TaskFilter {
 		widget.addString(new GuiObject("Name", "name of the process"), this.procNamefilter.getProcName() );
 		return widget;
 	}
+
+	public Filter getCopy() {
+		return new TaskProcNameFilter(this);
+	}
 	
 }

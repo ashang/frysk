@@ -85,7 +85,7 @@ public class ThreadMenu extends Menu {
 			this.add(item);
 		}
 		
-		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getObservers());
+		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getTaskObservers());
 		MenuItem item = new MenuItem("Add observer ", false);
 		item.setSubmenu(menu);
 

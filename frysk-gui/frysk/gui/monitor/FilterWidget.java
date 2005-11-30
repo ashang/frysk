@@ -58,6 +58,11 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class FilterWidget extends VBox{
 
 	private ObserverRoot currentObserver;
+	
+	/**
+	 * A structure that keeps reference to all the filter
+	 * widgets that the @link FilterLine objects are added to.
+	 * */
 	private HashMap widgets;
 
 	public FilterWidget() {
@@ -96,7 +101,6 @@ public class FilterWidget extends VBox{
 		this.currentObserver = newObserver;
 		this.populateList();
 		//this.addFilterLine(new FilterLine(this.currentObserver));
-		
 	}
 
 	/**
@@ -108,7 +112,7 @@ public class FilterWidget extends VBox{
 		while(i.hasNext()){
 			FilterPoint filterPoint = (FilterPoint)i.next();
 			Iterator j = filterPoint.getFilters().iterator();
-			while (j.hasNext()) {
+			while (j.hasNext()) {System.out.println("FilterWidget.populateList()");
 				Filter filter = (Filter) j.next();
 				FilterLine filterLine = new FilterLine(currentObserver);
 				filterLine.setSelection(filterPoint, filter);
@@ -143,6 +147,7 @@ public class FilterWidget extends VBox{
 		filterLine.removeFromObserver();
 		Widget widget = (Widget) this.widgets.get(filterLine);
 		this.remove(widget);
+		this.widgets.remove(filterLine);
 	}
 	
 	private void clear() {

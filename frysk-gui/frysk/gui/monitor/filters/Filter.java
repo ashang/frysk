@@ -54,4 +54,5 @@ public abstract class Filter extends GuiObject {
 	}
 	
 	public abstract Widget getWidget();
+	public abstract Filter getCopy();
 }

@@ -92,8 +92,12 @@ public class CustomeObserverWindow extends Window implements Observer {
 	
 	ObserverRoot selectedObserver;
 	
+	//private HashMap observerBackup;
+	
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle());
+		
+		//this.observerBackup = new HashMap();
 		
 		//=========================================
 		Button button = (Button) glade.getWidget("customObserverOkButton");
@@ -235,7 +239,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	}
 
 	private void populateObserverTreeView() {
-		Iterator iter = ObserverManager.theManager.getObservers().iterator();
+		Iterator iter = ObserverManager.theManager.getTaskObservers().iterator();
 		while(iter.hasNext()){
 			this.baseObserverTreeView.add((ObserverRoot) iter.next());
 		}
@@ -305,10 +309,37 @@ public class CustomeObserverWindow extends Window implements Observer {
 	 * filters and Actions)
 	 * */
 	public void add(){
-		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserver((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
+		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
 		newObserver.setName(this.customObserverNameEntry.getText());
 		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.observerTreeView.setSelectedText(newObserver.getName());
 	}
 	
+//	/**
+//	 * Check to see if the @link ObserverManager has that observer
+//	 * if it does, store a back up copy if not store null so that it
+//	 * can be removed when a restore is performed.
+//	 * @param observer observer to be backed up.
+//	 * */
+//	private void backupObserver(ObserverRoot observer){
+//		//XXX: Not implemented.
+//		throw new RuntimeException("Not implemented");
+//	}
+//	
+//	/**
+//	 * Delete all the back up observer copies that have been made.
+//	 * */
+//	private void clearBackupObservers(){
+//		//XXX: Not implemented.
+//		throw new RuntimeException("Not implemented");
+//	}
+//	
+//	/**
+//	 * Restore all observers in the @link ObserverManager.
+//	 * */
+//	private void restoreObservers(){
+//		//XXX: Not implemented.
+//		throw new RuntimeException("Not implemented");
+//	}
+//	
 }

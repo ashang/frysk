@@ -73,9 +73,7 @@ public class FilterManager extends Observable {
 	 * instantiated.
 	 * */
 	public Filter getFilterCopy(Filter prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-		//return prototype.getCopy();
+		return prototype.getCopy();
 	}
 	
 

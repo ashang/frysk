@@ -84,13 +84,7 @@ public class FilterLine extends HBox{
 		
 		filterPointComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				filterComboBox.clear();
-				filterComboBox.setActive(-1);
-				selectedFilterPoint = (FilterPoint)filterPointComboBox.getSelectedObject();
-				Iterator iter = selectedFilterPoint.getApplicableFilters().iterator();
-				while(iter.hasNext()){
-					filterComboBox.add((Filter)iter.next());
-				}
+				setSelectedFilterPoint((FilterPoint)filterPointComboBox.getSelectedObject());
 			}
 		});
 		this.packStart(filterComboBox, false, true, 0);
@@ -99,16 +93,10 @@ public class FilterLine extends HBox{
 		//========================================
 		//get the selected filter's widget
 		filterWidgetVBox = new VBox(false, 0);
-		filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+		filterWidgetVBox.packStart(new Label("                                     "), true, true, 0); // spacer
 		filterComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				Filter filter = (Filter)filterComboBox.getSelectedObject();
-				selectedFilter = filter;
-				if(filter!=null){
-					setFilterWidget(filter.getWidget());
-				}else{
-					setFilterWidget(null);
-				}
+				setSelectedFilter((Filter)filterComboBox.getSelectedObject());
 			}
 		});
 		this.packStart(filterWidgetVBox, true, true, 0);
@@ -118,16 +106,31 @@ public class FilterLine extends HBox{
 		this.showAll();
 	}
 	
-	protected void setFilterWidget(Widget widget) {
+	protected void setSelectedFilterPoint(FilterPoint point) {
+		selectedFilterPoint = point;
+		filterComboBox.clear();
+		filterComboBox.setActive(-1);
+		filterComboBox.watchLinkedList(selectedFilterPoint.getApplicableFilters());
+
+//		Iterator iter = selectedFilterPoint.getApplicableFilters().iterator();
+//		while(iter.hasNext()){
+//			filterComboBox.add((Filter)iter.next());
+//		}	
+	}
+
+	protected void setSelectedFilter(Filter filter) {
+		//update the filter
+		selectedFilter = filter;
+		
 		Widget[] widgets = filterWidgetVBox.getChildren();
 		for (int i = 0; i < widgets.length; i++) {
 			filterWidgetVBox.remove(widgets[i]);
 		}
 
-		if(widget != null){
-			filterWidgetVBox.packStart(widget, true, true, 0);
-		}else{
+		if(filter == null || filter.getWidget() == null){
 			filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+		}else{
+			filterWidgetVBox.packStart(filter.getWidget(), true, true, 0);
 		}
 
 		filterWidgetVBox.showAll();
@@ -147,12 +150,16 @@ public class FilterLine extends HBox{
 			throw new IllegalArgumentException("The given filter is not a member of the given filterPoint");
 		}
 
-		this.selectedFilterPoint = filterPoint;
-		this.selectedFilter = filter;
+		setSelectedFilterPoint(filterPoint);
+		setSelectedFilter(filter);
 		
 		filterPointComboBox.setSelectedObject(filterPoint);
 		filterComboBox.setSelectedText(filter.getName());
-		this.setFilterWidget(filter.getWidget());
+		
+//		this.selectedFilterPoint = filterPoint;
+//		this.selectedFilter = filter;
+//
+//		this.setSelectedFilter(filter);
 		
 	}
 	
@@ -164,7 +171,9 @@ public class FilterLine extends HBox{
 	 * This is how updates are done (remove old then add new).
 	 * */
 	public void removeFromObserver(){
-		this.selectedFilterPoint.removeFilter(selectedFilter);
+		if(this.selectedFilterPoint != null && this.selectedFilter != null){
+			this.selectedFilterPoint.removeFilter(selectedFilter);
+		}
 	}
 	
 	/**
@@ -175,7 +184,9 @@ public class FilterLine extends HBox{
 	 * This is how updates are done (remove old then add new).
 	 * */
 	public void addToObserver(){
-		this.selectedFilterPoint.addFilter(FilterManager.theManager.getFilterCopy(selectedFilter));
+		if(this.selectedFilterPoint != null && this.selectedFilter != null){
+			this.selectedFilterPoint.addFilter(FilterManager.theManager.getFilterCopy(selectedFilter));
+		}
 	}
 
 }

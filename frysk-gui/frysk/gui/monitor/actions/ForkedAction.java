@@ -39,7 +39,6 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.proc.Proc;
 import frysk.proc.Task;
 
 public abstract class ForkedAction extends Action {
@@ -53,7 +52,7 @@ public abstract class ForkedAction extends Action {
 		super();
 	}
 
-	public abstract void execute(Task task, Proc child);
+	public abstract void execute(Task task, Task child);
 	
 	public void execute(){
 		throw new RuntimeException("This function should not be called. use execute(Proc) instead");

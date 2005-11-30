@@ -62,7 +62,7 @@ public class DetailedObserverTreeView extends ListView {
 	}
 
 	private void initTreeView() {	
-		this.watchLinkedList(ObserverManager.theManager.getObservers());
+		this.watchLinkedList(ObserverManager.theManager.getTaskObservers());
 	}
 	
 	public ObserverRoot getSelectedObserver(){

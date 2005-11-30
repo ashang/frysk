@@ -1,3 +1,22 @@
+2005-11-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: Added javadoc. Added swapTaskObserverPrototype
+	for adding modified observers to the manager.
+	* filters/TaskProcNameFilter.java: Added getCopy() method.
+	* filters/FilterPoint.java (removeFilter): Added check for illegal argument.
+	* filters/FilterManager.java: Implemented getFilterCopy(Filter prototype).
+	* actions/ForkedAction.java: replaced ecute(Task task, Proc child), with 
+	execute(Task task, Task child) to match change in backend interface.
+	* SimpleComboBox.java: Added  add(GuiObject object, int index), 
+	add(GuiObject object, TreeIter treeIter), and 
+	watchLinkedList(ObservableLinkedList linkedList) to allow the combobox to watch
+	and ObservableLinkedList.
+	* FilterWidget.java: Added more javadoc.
+	* ListView.java: ditto.
+	* FilterLine.java: Created setSelectedFilter/setSelectedFilterPoint	functions.
+	* CustomeObserverWindow.java: Added stubs for backup system (when user clicks
+	cancel)
+
 2005-11-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskExecObserver.java: FilterPoints were being added twice. Fixed.

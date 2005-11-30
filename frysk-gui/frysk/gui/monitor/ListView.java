@@ -124,11 +124,22 @@ public class ListView extends TreeView implements Observer {
 		this.add(object, treeIter);
 	}
 	
+	/**
+	 * Add the given object at the given index
+	 * @param object object to be added
+	 * @param index the position to insert the given object at.
+	 * */
 	public void add(GuiObject object, int index){
 		TreeIter treeIter = listStore.insertRow(index);
 		this.add(object, treeIter);
 	}
 	
+	/**
+	 * Add the given object at the given treeIter
+	 * @param object object to be added
+	 * @param treeIter a @link TreeIter pointing to the
+	 * position to insert the given object at.
+	 * */
 	public void add(GuiObject object, TreeIter treeIter){
 		listStore.setValue(treeIter, nameDC, object.getName());
 		listStore.setValue(treeIter, objectDC, object);
@@ -153,10 +164,9 @@ public class ListView extends TreeView implements Observer {
 	}
 	
 	/**
-	 * Tell this ComboBox to initialize itself with the given list
+	 * Tell this ListView to initialize itself with the given list
 	 * and watch the given ObservableLinkedList and update itself 
-	 * when the list changes
-		. Clients will then not have to worry
+	 * when the list changes. Clients will then not have to worry
 	 * about updating the ComboBox.
 	 * @param linkedList the list to be watched.
 	 * */

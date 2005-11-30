@@ -40,14 +40,12 @@
 package frysk.gui.monitor.observers;
 
 import java.util.Observable;
-import java.util.Observer;
 
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ForkedAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 
 /**
@@ -65,7 +63,7 @@ public class ObserverManager extends Observable {
 	
 	/**
 	 * a list containing a prototype of every available
-	 * observer;
+	 * observer.
 	 * */
 	private ObservableLinkedList taskObservers;
 	
@@ -102,7 +100,7 @@ public class ObserverManager extends Observable {
 		});
 		
 		customObserver.addForkedAction(new ForkedAction(){
-			public void execute(Task task, Proc child) {
+			public void execute(Task task, Task child) {
 //				System.out.println(".execute() " + child.getPid());
 //				Iterator iter = child.getTasks().iterator();
 //				while(iter.hasNext()){
@@ -111,12 +109,8 @@ public class ObserverManager extends Observable {
 //					myTask.requestAddExecedObserver(lsObserver);
 //				}
 				
-				child.observableTaskAdded.addObserver(new Observer(){
-					public void update(Observable arg0, Object task) {
-						Task myTask = (Task) task;
-						myTask.requestAddForkedObserver(customObserver);					
-					}
-				});
+				child.requestAddForkedObserver(customObserver);					
+			
 			}
 		});
 		
@@ -129,23 +123,39 @@ public class ObserverManager extends Observable {
 	 * @param prototype a prototype of the observer to be
 	 * instantiate.
 	 * */
-	public TaskObserverRoot getTaskObserver(TaskObserverRoot prototype){
+	public TaskObserverRoot getTaskObserverCopy(TaskObserverRoot prototype){
 		return prototype.getCopy();
 	}
 	
-	public ObservableLinkedList getObservers(){
+	/**
+	 * Returns the list of taskObservers available to the @link ObserverManager
+	 * @return an @link ObservableLinkedList of TaskObservers
+	 * */
+	public ObservableLinkedList getTaskObservers(){
 		return this.taskObservers;
 	}
 
+	/**
+	 * Replace the given ObserverRoot with the other ObserverRoot.
+	 * @param toBeRemoved the observer that will be removed and replaced.
+	 * @param toBeAdded the observer that will be added in place
+	 * of the removed observer
+	 * */
+	public void swapTaskObserverPrototype(ObserverRoot toBeRemoved, ObserverRoot toBeAdded){
+		int index = this.taskObservers.indexOf(toBeRemoved);
+		if(index < 0){
+			throw new IllegalArgumentException("The passes toBeRemoved Observer ["+ toBeRemoved+"] is not a member of taskObservers");
+		}
+		this.taskObservers.remove(index);
+		this.taskObservers.add(index, toBeAdded);
+	}
+	
 	/**
 	 * add the given prototype to the list of available observers.
 	 * @param observer the observer prototype to be added.
 	 * */
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.add(observer);
-//      not needed linked lists are now observable
-//		this.hasChanged();
-//		this.notifyObservers();
 	}
 	
 	/**
@@ -154,9 +164,6 @@ public class ObserverManager extends Observable {
 	 * */
 	public void removeTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.remove(observer);System.out.println("ObserverManager.removeTaskObserverPrototype()");
-//      not needed linked lists are now observable
-//		this.hasChanged();
-//		this.notifyObservers();
 	}
 	
 	

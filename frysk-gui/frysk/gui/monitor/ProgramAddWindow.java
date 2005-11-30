@@ -327,7 +327,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		this.programObseverListBox.appendColumn(observerCol);
 		
 		// Interrogate ObserverManager for a list of available observers
-		Iterator observerIterator = ObserverManager.theManager.getObservers().iterator();
+		Iterator observerIterator = ObserverManager.theManager.getTaskObservers().iterator();
 		
 		TreeIter it = null;
 		

@@ -75,7 +75,9 @@ public abstract class FilterPoint extends GuiObject {
 	}
 	
 	public void removeFilter(Filter filter){
-		this.filters.remove(filter);
+		if(!this.filters.remove(filter)){
+			throw new IllegalArgumentException("the passed filter ["+ filter +"] is not a member of this filter point");
+		}
 		this.notifyObservers();
 	}
 	

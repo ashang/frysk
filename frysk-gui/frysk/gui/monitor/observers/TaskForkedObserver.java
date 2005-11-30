@@ -13,7 +13,6 @@ import frysk.gui.monitor.actions.ForkedAction;
 import frysk.gui.monitor.filters.ProcFilterPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -49,10 +48,14 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 
 	public Action updateForked(Task task, Task child) {
+//		WarnDialog dialog = new WarnDialog("Fork ya'll");
+//		dialog.showAll();
+//		dialog.run();
+
 		System.out.println("TaskForkedObserver.updateForked() "
 				   + child.getTid());
 		final Task myTask = task;
-		final Proc myChild = child.getProc ();
+		final Task myChild = child;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {
 				bottomHalf(myTask, myChild);
@@ -61,12 +64,15 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		return Action.BLOCK;
 	}
 	
-	private void bottomHalf(Task task, Proc child){
+	private void bottomHalf(Task task, Task child){
 		if(this.runFilters(task, child)){
 			this.runActions();
 			this.runForkedActions(task, child);
 		}
+		child.requestAddForkedObserver(new TaskForkedObserver());
+		
 		task.requestUnblock(this);
+		child.requestUnblock(this);
 	}
 	
 	public void apply(Task task){
@@ -81,7 +87,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		this.forkedActions.add(action);
 	}
 	
-	public void runForkedActions(Task task, Proc child){
+	public void runForkedActions(Task task, Task child){
 		Iterator iter = this.forkedActions.iterator();
 		while (iter.hasNext()) {
 			ForkedAction action = (ForkedAction) iter.next();
@@ -89,8 +95,8 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		}
 	}
 	
-	private boolean runFilters(Task task, Proc child){
-		if(!this.procFilterPoint.filter(child)) return false;
+	private boolean runFilters(Task task, Task child){
+//XXX		if(!this.procFilterPoint.filter(child)) return false;
 		if(!this.taskFilterPoint.filter(task )) return false;
 		return true;
 	}

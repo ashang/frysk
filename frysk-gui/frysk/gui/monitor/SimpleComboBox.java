@@ -40,6 +40,7 @@
 package frysk.gui.monitor;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -67,6 +68,7 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	
 	protected DataColumnString nameDC;
 	protected DataColumnObject objectDC;
+	private ObservableLinkedList watchedList;
 	
 	SimpleComboBox(Handle handle){
 		super(handle);
@@ -138,6 +140,7 @@ public class SimpleComboBox extends ComboBox implements Observer{
 		this.setActiveIter(iter);
 	}
 	
+	
 	/**
 	 * Set the selection to the first item with the text that matches
 	 * the give text. If the given text is not found an exception is
@@ -145,7 +148,7 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	 * @param text the text that is to be matched and the match selected.
 	 * */
 	public void setSelectedText(String text){
-TreePath treePath = this.listStore.getFirstIter().getPath();
+		TreePath treePath = this.listStore.getFirstIter().getPath();
 		
 		String displayedText;
 		TreeIter iter = this.listStore.getIter(treePath);
@@ -163,4 +166,58 @@ TreePath treePath = this.listStore.getFirstIter().getPath();
 		throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox");
 	}
 
+	/**
+	 * Add the given object at the given index
+	 * @param object object to be added
+	 * @param index the position to insert the given object at.
+	 * */
+	public void add(GuiObject object, int index){
+		TreeIter treeIter = listStore.insertRow(index);
+		this.add(object, treeIter);
+	}
+	
+	/**
+	 * Add the given object at the given treeIter
+	 * @param object object to be added
+	 * @param treeIter a @link TreeIter pointing to the
+	 * position to insert the given object at.
+	 * */
+	public void add(GuiObject object, TreeIter treeIter){
+		listStore.setValue(treeIter, nameDC, object.getName());
+		listStore.setValue(treeIter, objectDC, object);
+	
+		this.map.put(object, treeIter);
+		object.addObserver(this);	
+	}
+	
+	/**
+	 * Tell this ComboBox to initialize itself with the given list
+	 * and watch the given ObservableLinkedList and update itself 
+	 * when the list changes. Clients will then not have to worry
+	 * about updating the ComboBox.
+	 * @param linkedList the list to be watched.
+	 * */
+	public void watchLinkedList(ObservableLinkedList linkedList){
+		this.watchedList = linkedList;
+		Iterator iterator = linkedList.iterator();
+		
+		linkedList.itemAdded.addObserver(new Observer() {
+			public void update(Observable observable, Object object) {
+				GuiObject guiObject = (GuiObject) object;
+				int index = watchedList.indexOf(guiObject);
+				add(guiObject, index);
+			}
+		});
+		
+		linkedList.itemRemoved.addObserver(new Observer() {
+			public void update(Observable arg0, Object object) {
+				remove((GuiObject) object);
+			}
+		});
+		
+		while (iterator.hasNext()) {
+			GuiObject object = (GuiObject) iterator.next();
+			this.add(object);
+		}
+	}
 }
