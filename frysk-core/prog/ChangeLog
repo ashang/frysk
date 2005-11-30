@@ -1,3 +1,8 @@
+2005-11-30  Jeff Johnston  <jjohnstn@redhat.com>
+
+	* modify/modify.c: Suffix int64_t constant properly
+	to avoid warning.
+
 2005-11-20  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/child.c (PARENT_SIG, CHILD_SIG): Define.  For parent exit,

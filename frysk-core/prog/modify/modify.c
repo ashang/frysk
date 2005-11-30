@@ -148,7 +148,7 @@ main (int argc, char **argv)
 
   /* Verify a 64-bit value that is unaligned.  */
   memcpy (z.ch, arr + 17003, 8);
-  if (z.val != (int64_t) 0xabcdef0123456789L) {
+  if (z.val != (int64_t) 0xabcdef0123456789LL) {
      printf ("unaligned int64_t value is incorrect");
      abort ();
   }
