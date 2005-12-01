@@ -10,7 +10,7 @@ import frysk.proc.TaskObserver;
  * */
 public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.Execed {
 	
-	TaskFilterPoint taskFilterPoint;
+	public TaskFilterPoint taskFilterPoint;
 	
 	public TaskExecObserver(){
 		super("Exec Observer", "Fires everytime this task executes an exec call");

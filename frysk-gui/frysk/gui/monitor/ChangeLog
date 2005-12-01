@@ -2,6 +2,7 @@
 
 	* observers/TaskForkedObserver.java: Make Proc/Task Filter
 	point to public
+	* observers/TaskExecObserver.java: Ditto.
 
 2005-11-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
