@@ -44,7 +44,7 @@ public class CPPASTEnumerationSpecifier extends org.eclipse.cdt.internal.core.do
 	public IASTEnumerationSpecifier.IASTEnumerator[] getEnumerators() {
 		if (enumerators == null)
 			return IASTEnumerationSpecifier.IASTEnumerator.EMPTY_ENUMERATOR_ARRAY;
-		enumerators = (IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.removeNullsAfter( IASTEnumerator.class, enumerators, enumeratorsPos );
+		enumerators = (IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.removeNullsAfter( IASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumeratorsPos );
 		return enumerators;
 	}
 

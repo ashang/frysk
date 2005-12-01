@@ -29,7 +29,7 @@ public class CASTEnumerationSpecifier extends org.eclipse.cdt.internal.core.dom.
     public void addEnumerator(org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator enumerator) {
     	if (enumerator != null) {
     		enumeratorsPos++;
-    		enumerators = (org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.append( org.eclipse.cdt.core.dom.ast.c.ICASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumerator );
+    		enumerators = (org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.append( org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumerator );
     	}
     }
 
@@ -38,7 +38,7 @@ public class CASTEnumerationSpecifier extends org.eclipse.cdt.internal.core.dom.
      */
     public org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[] getEnumerators() {        
         if( enumerators == null ) return org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator.EMPTY_ENUMERATOR_ARRAY;
-        enumerators = (org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.removeNullsAfter( org.eclipse.cdt.core.dom.ast.c.ICASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumeratorsPos );
+        enumerators = (org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator[]) ArrayUtil.removeNullsAfter( org.eclipse.cdt.core.dom.ast.IASTEnumerationSpecifier.IASTEnumerator.class, enumerators, enumeratorsPos );
         return enumerators;
     }
 

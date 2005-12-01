@@ -1,3 +1,10 @@
+2005-11-30    <cagney@eclipse_1.hsv.redhat.com>
+
+	* org/eclipse/cdt/internal/core/dom/parser/cpp/CPPASTEnumerationSpecifier.java:
+	Work around Red Hat 4.0.2-9.EL4 errors (suspect some are in the
+	source).
+	* org/eclipse/cdt/internal/core/dom/parser/c/CASTEnumerationSpecifier.java: Ditto.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (classdir): Use $(JAVAC).
