@@ -1,3 +1,8 @@
+2005-12-01  Phil Muldoon <pmuldoon@redhat.com>
+
+	* observers/TaskForkedObserver.java: Make Proc/Task Filter
+	point to public
+
 2005-11-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverManager.java: Added javadoc. Added swapTaskObserverPrototype

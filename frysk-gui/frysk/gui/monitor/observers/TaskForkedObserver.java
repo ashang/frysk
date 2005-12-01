@@ -20,8 +20,8 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 
 	ObservableLinkedList forkedActions;
 	
-	TaskFilterPoint taskFilterPoint;
-	ProcFilterPoint procFilterPoint;
+	public TaskFilterPoint taskFilterPoint;
+	public ProcFilterPoint procFilterPoint;
 	
 	public TaskForkedObserver() {
 		super("Fork Observer", "Fires when a proc forks");
