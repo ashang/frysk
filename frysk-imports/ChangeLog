@@ -1,3 +1,8 @@
+2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* autogen.sh: added ftk.jar to the list passed to ./common/Makefile.gen.sh
+	* Makefile.am: Added $(GTK2_JAR) $(GLIB_JAVA_JAR) to classpath.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AC_INIT): Shorten package to just <<frysk>>.

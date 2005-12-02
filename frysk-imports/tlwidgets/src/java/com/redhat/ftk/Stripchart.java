@@ -92,8 +92,8 @@ public class Stripchart extends Widget
     /**
      * Create new event
      */
-    public void createEvent(String title, int red, int green, int blue) {
-	ftk_stripchart_new_event (getHandle(), title, red, green, blue);
+    public int createEvent(String title, int red, int green, int blue) {
+	return ftk_stripchart_new_event (getHandle(), title, red, green, blue);
     }
 
     /**
@@ -132,7 +132,7 @@ public class Stripchart extends Widget
 				       int type,
 				       String title);
     **************************************/
-    native static final protected void
+    native static final protected int
 	ftk_stripchart_new_event (Handle sc, String title,
 				  int red, int green, int blue);
     native static final protected void

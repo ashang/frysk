@@ -59,7 +59,7 @@ ftk_stripchart_configure( GtkWidget * widget,
   FtkStripchart * stripchart = FTK_STRIPCHART (widget);
   GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
 
-  //  fprintf (stderr, "configure\n");
+  // fprintf (stderr, "configure\n");
   
   if (stripchart_pixmap (stripchart))
     gdk_pixmap_unref(stripchart_pixmap (stripchart));
@@ -70,13 +70,15 @@ ftk_stripchart_configure( GtkWidget * widget,
   {
     int i;
     for (i = 0; i <stripchart_event_spec_next(stripchart) ; i++) {
-      if (!stripchart_event_spec_gc (stripchart, i)) 
+      if (!stripchart_event_spec_gc (stripchart, i)) {
 	stripchart_event_spec_gc (stripchart, i) =
 	  gdk_gc_new(stripchart_pixmap (stripchart));
+      }
       gdk_gc_set_rgb_fg_color(stripchart_event_spec_gc (stripchart, i),
 			      &stripchart_event_spec_color (stripchart, i));
     }
   }
+
 }
 
 static void
@@ -481,6 +483,7 @@ ftk_stripchart_init (FtkStripchart * stripchart)
 
   {
     int i;
+
     for (i = 0; i < stripchart_event_next(stripchart); i++) {
       stripchart_event_spec_gc (stripchart, i) =
 	gdk_gc_new(stripchart_pixmap (stripchart));
@@ -731,9 +734,14 @@ ftk_stripchart_new_event_e (FtkStripchart * stripchart,
      gdk_gc_set_rgb_fg_color(stripchart_event_spec_gc (stripchart, active_idx),
 			     &stripchart_event_spec_color (stripchart, active_idx));
    }
+   else {
+     stripchart_event_spec_gc (stripchart, active_idx) = NULL;
+   }
    
    stripchart_event_spec_title(stripchart, active_idx) =
      gtk_widget_create_pango_layout (GTK_WIDGET (stripchart), title);
+
+   return active_idx;
  }
  
 gint

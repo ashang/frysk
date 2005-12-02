@@ -46,7 +46,8 @@
     cdtparser/cdtparser.jar \
     JDOM_JAR \
     jline/jline.jar \
-    jargs/jargs.jar
+    jargs/jargs.jar \
+    tlwidgets/ftk.jar 
     
 
 # Generate everything (always run with --add-missing).

@@ -13,11 +13,11 @@ CLEANFILES = $(tlwidgetsdst)/*.so \
              $(tlwidgetsdst)/*.jar \
              $(tlwidgetsdst)/*.o \
              $(tlwidgetsdst)/*.class
+SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 
-$(tlwidgetsdst)/com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+$(tlwidgetsdst)/com/redhat/ftk/Stripchart.class: $(SRC) 
 	$(GCJ) -C -d $(tlwidgetsdst) \
-	    -classpath /opt/frysk/share/java/glib0.2-0.2.jar:/opt/frysk/share/java/gtk2.8.jar \
-            $<
+	    -classpath  $(GTK2_JAR):$(GLIB_JAVA_JAR) $(SRC)
 
 $(tlwidgetsdst)/ftk.jar: $(tlwidgetsdst)/com/redhat/ftk/Stripchart.class
 	$(JAR) cf ftk.jar -C $(tlwidgetsdst) com/redhat/ftk/Stripchart.class
@@ -34,14 +34,9 @@ $(tlwidgetsdst)/libftkjava.so: $(tlwidgetsdst)/Stripchart.o
 
 $(tlwidgetsdst)/com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
 	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ \
-	    -I/opt/frysk/include/gtk-2.0 \
-	    -I/opt/frysk/include/glib-java \
-	    -I/opt/frysk/include/cairo \
-	    -I/opt/frysk/include/glib-2.0 \
-	    -I/opt/frysk/include/pango-1.0 \
-	    -I/opt/frysk/include/libgtk-java \
-	    -I/opt/frysk/lib/glib-2.0/include \
-	    -I/opt/frysk/lib/gtk-2.0/include \
+            $(GTK_CFLAGS) \
+            $(GTK_JAVA_CFLAGS) \
+            $(GLIB_JAVA_CFLAGS)\
 	    `pkg-config --cflags atk` \
 	    -fPIC -DPIC -o $@
 

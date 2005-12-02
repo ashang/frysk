@@ -1,3 +1,12 @@
+2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* src/java/com/redhat/ftk/Stripchart.java: Changed createEvent to return
+	the id of the added event (patch provided by Chris Moller <moller@mollerware.com>)
+	* tlwidgets/src/widgets/ftkstripchart.c: patch provided by Chris Moller 
+	<moller@mollerware.com>
+	* Makefile.am: Replaced hardcoded classpath arguments with appropriet
+	environment variables.
+
 2005-11-29    <moller@mollerware.com>
 
 	* src/widgets/ftkconsole.c: Add console widget.
