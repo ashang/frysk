@@ -1,3 +1,8 @@
+2005-12-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (EXTRA_DIST): Add common/version.in and
+	autogen.sh.
+
 2005-11-30  Andrew Cagney  <cagney@redhat.com>
 
 	* acinclude.m4 (JAVACFLAGS): Handle JAVAC that contains an

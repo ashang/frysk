@@ -125,4 +125,7 @@ $(DOXYFILE): Doxyfile.in
 	mv $@.tmp $@
 CLEANFILES += doxygen
 
-EXTRA_DIST = EXCEPTION
+EXTRA_DIST = \
+	common/version.in \
+	autogen.sh \
+	EXCEPTION
