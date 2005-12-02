@@ -1,3 +1,7 @@
+2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StatusWidget.java: Replaced old TextView with time line widget.
+
 2005-12-01  Phil Muldoon <pmuldoon@redhat.com>
 
 	* observers/TaskForkedObserver.java: Make Proc/Task Filter

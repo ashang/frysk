@@ -73,6 +73,8 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import com.redhat.ftk.Stripchart;
+
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.observers.ObserverRoot;
 
@@ -82,9 +84,10 @@ public class StatusWidget extends VBox{
 	private GuiData data;
 	private TextView logTextView;
 	private Frame frame;
+        Stripchart area;
 	
 	public  Observable notifyUser;
-	
+    private int e2;
 	public StatusWidget(GuiData data){
 		super(false,0);
 		//FontDescription font = new FontDescription();
@@ -101,11 +104,40 @@ public class StatusWidget extends VBox{
 		
 		//========================================
 		initLogTextView();
-		ScrolledWindow logScrolledWindow = new ScrolledWindow();
-		logScrolledWindow.addWithViewport(logTextView);
-		logScrolledWindow.setShadowType(ShadowType.IN);
-		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-		mainVbox.packStart(logScrolledWindow, true, true, 0);
+//		ScrolledWindow logScrolledWindow = new ScrolledWindow();
+//		logScrolledWindow.addWithViewport(logTextView);
+//		logScrolledWindow.setShadowType(ShadowType.IN);
+//		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+//		mainVbox.packStart(logScrolledWindow, true, true, 0);
+		//========================================
+		
+		//========================================
+		initLogTextView();
+		//	ScrolledWindow logScrolledWindow = new ScrolledWindow();
+		
+		//Stripchart area;
+		area = new Stripchart();
+		//		area.resize (500, 150);
+	area.resize (0, 0);
+		//area.setEventTitle(1, "Knife");
+		//area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
+		int e1 = area.createEvent("knife", 65535, 65535, 0); /* red + green = yellow */
+		 e2 = area.createEvent("fork",  65535, 0, 65535); /* red + green = yellow */
+		int e3 = area.createEvent("spoon",  0, 65535, 65535); /* red + green = yellow */
+		System.out.println("e1 = " + e1);
+		System.out.println("e2 = " + e2);
+		area.setUpdate (1111);
+		area.setRange (60000);
+		area.appendEvent (e1);
+		area.appendEvent (e2);
+		area.appendEvent (e3);
+		
+		//		logScrolledWindow.addWithViewport(area);
+		//		logScrolledWindow.setShadowType(ShadowType.IN);
+		//		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+		mainVbox.packStart(area, true, true, 0);
+		
+		
 		//========================================
 		
 		//========================================
@@ -212,7 +244,9 @@ public class StatusWidget extends VBox{
 			final ObserverRoot observer = (ObserverRoot) iter.next();
 			observer.addAction(new Action(){
 				public void execute() {
+	System.out.println("Event: " + observer.getName() + "\n");
 					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+	area.appendEvent (e2);
 				}
 			});
 		}
@@ -225,6 +259,8 @@ public class StatusWidget extends VBox{
 				observer.addAction(new Action(){
 					public void execute() {
 						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+						System.out.println("Event: " + observer.getName() + "\n");
+		area.appendEvent (e2);
 					}
 				});
 				
