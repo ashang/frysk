@@ -1,3 +1,7 @@
+2005-12-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Define.
+
 2005-11-30    <cagney@eclipse_1.hsv.redhat.com>
 
 	* org/eclipse/cdt/internal/core/dom/parser/cpp/CPPASTEnumerationSpecifier.java:

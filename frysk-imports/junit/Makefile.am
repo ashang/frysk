@@ -57,3 +57,53 @@ classdir:
 CLEANFILES = junit.jar
 clean-local:
 	rm -rf classdir # directory
+
+EXTRA_DIST =
+EXTRA_DIST += file.list
+EXTRA_DIST += src/junit/swingui/ProgressBar.java
+EXTRA_DIST += src/junit/swingui/StatusLine.java
+EXTRA_DIST += src/junit/swingui/TestRunContext.java
+EXTRA_DIST += src/junit/swingui/AboutDialog.java
+EXTRA_DIST += src/junit/swingui/TestSuitePanel.java
+EXTRA_DIST += src/junit/swingui/TestRunView.java
+EXTRA_DIST += src/junit/swingui/TestHierarchyRunView.java
+EXTRA_DIST += src/junit/swingui/TestSelector.java
+EXTRA_DIST += src/junit/swingui/FailureRunView.java
+EXTRA_DIST += src/junit/swingui/TestTreeModel.java
+EXTRA_DIST += src/junit/swingui/TestRunner.java
+EXTRA_DIST += src/junit/swingui/CounterPanel.java
+EXTRA_DIST += src/junit/swingui/DefaultFailureDetailView.java
+EXTRA_DIST += src/junit/runner/ReloadingTestSuiteLoader.java
+EXTRA_DIST += src/junit/runner/Sorter.java
+EXTRA_DIST += src/junit/runner/StandardTestSuiteLoader.java
+EXTRA_DIST += src/junit/runner/ClassPathTestCollector.java
+EXTRA_DIST += src/junit/runner/TestCollector.java
+EXTRA_DIST += src/junit/runner/TestCaseClassLoader.java
+EXTRA_DIST += src/junit/runner/FailureDetailView.java
+EXTRA_DIST += src/junit/runner/TestSuiteLoader.java
+EXTRA_DIST += src/junit/runner/TestRunListener.java
+EXTRA_DIST += src/junit/runner/Version.java
+EXTRA_DIST += src/junit/runner/BaseTestRunner.java
+EXTRA_DIST += src/junit/runner/SimpleTestCollector.java
+EXTRA_DIST += src/junit/runner/LoadingTestCollector.java
+EXTRA_DIST += src/junit/awtui/ProgressBar.java
+EXTRA_DIST += src/junit/awtui/AboutDialog.java
+EXTRA_DIST += src/junit/awtui/Logo.java
+EXTRA_DIST += src/junit/awtui/TestRunner.java
+EXTRA_DIST += src/junit/framework/AssertionFailedError.java
+EXTRA_DIST += src/junit/framework/TestCase.java
+EXTRA_DIST += src/junit/framework/Protectable.java
+EXTRA_DIST += src/junit/framework/TestFailure.java
+EXTRA_DIST += src/junit/framework/TestResult.java
+EXTRA_DIST += src/junit/framework/TestListener.java
+EXTRA_DIST += src/junit/framework/TestSuite.java
+EXTRA_DIST += src/junit/framework/ComparisonFailure.java
+EXTRA_DIST += src/junit/framework/Test.java
+EXTRA_DIST += src/junit/framework/Assert.java
+EXTRA_DIST += src/junit/textui/ResultPrinter.java
+EXTRA_DIST += src/junit/textui/TestRunner.java
+EXTRA_DIST += src/junit/extensions/TestSetup.java
+EXTRA_DIST += src/junit/extensions/TestDecorator.java
+EXTRA_DIST += src/junit/extensions/ExceptionTestCase.java
+EXTRA_DIST += src/junit/extensions/ActiveTestSuite.java
+EXTRA_DIST += src/junit/extensions/RepeatedTest.java
