@@ -1,5 +1,9 @@
 2005-12-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: In AutoAddTaskObserverBase, directly add to Host
+	.observableTaskAdded.
+	* Proc.java: Notify the Host of tasks being added and removed.
+
 	* Host.java: Add .observableTaskAdded and .observableTaskRemoved.
 
 2005-11-22  Andrew Cagney  <cagney@redhat.com>

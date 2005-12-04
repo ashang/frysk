@@ -663,21 +663,13 @@ public class TestLib
 	 */
 	AutoAddTaskObserverBase ()
 	{
-	    Manager.host.observableProcAdded.addObserver (new Observer ()
+	    Manager.host.observableTaskAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable obj, Object o)
 		    {
-			Proc proc = (Proc) o;
-			if (!isDescendantOfMine (proc))
-			    return;
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable obj, Object o)
-				{
-				    Task task = (Task) o;
-				    updateTaskAdded (task);
-				}
-			    });
+			Task task = (Task) o;
+			if (isDescendantOfMine (task.proc))
+			    updateTaskAdded (task);
 		    }
 		});
 	}
