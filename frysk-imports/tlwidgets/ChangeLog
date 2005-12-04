@@ -1,13 +1,22 @@
+2005-12-03  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkstripchart.c: Added ftk_stripchart_set_bg_rgb_e()
+	and ftk_stripchart_set_bg_rgb() to allow the user to set the
+	background color of the chart.
+	* src/widgets/ftkstripchart.h: Added fcndefs for above.
+	* test/widget/tstripchart.c: Added tests for above.
+
 2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* src/java/com/redhat/ftk/Stripchart.java: Changed createEvent to return
-	the id of the added event (patch provided by Chris Moller <moller@mollerware.com>)
-	* tlwidgets/src/widgets/ftkstripchart.c: patch provided by Chris Moller 
-	<moller@mollerware.com>
-	* Makefile.am: Replaced hardcoded classpath arguments with appropriet
+	* src/java/com/redhat/ftk/Stripchart.java: Changed createEvent to
+	return the id of the added event (patch provided by Chris Moller
+	<moller@mollerware.com>) 
+	* src/widgets/ftkstripchart.c: patch provided by Chris Moller
+	<moller@mollerware.com> 
+	* Makefile.am: Replaced hardcoded classpath arguments with appropriate
 	environment variables.
 
-2005-11-29    <moller@mollerware.com>
+2005-11-29  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkconsole.c: Add console widget.
 	* src/widgets/ftkconsole.h: Add console widget.

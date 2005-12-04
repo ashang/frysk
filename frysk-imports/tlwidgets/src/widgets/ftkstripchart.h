@@ -49,6 +49,9 @@ typedef struct {
 
 typedef struct _FtkStripchart {
   GtkDrawingArea drawingarea;
+  GdkColor bg_color;
+  gboolean bg_color_modified;
+  GdkGC * bg_gc;
   GdkPixmap * pixmap;
   event_spec_s * event_specs;
   int event_spec_next;
@@ -67,6 +70,13 @@ typedef struct _FtkStripchart {
 } FtkStripchart;
 
 #define stripchart_drawingarea(s)	  (s)->drawingarea
+#define stripchart_bg_gc(s)		  (s)->bg_gc
+#define stripchart_bg_color(s)		  (s)->bg_color
+#define stripchart_bg_color_modified(s)	  (s)->bg_color_modified
+#define stripchart_bg_pixel(s)		  (s)->bg_color.pixel
+#define stripchart_bg_red(s)		  (s)->bg_color.red
+#define stripchart_bg_green(s)		  (s)->bg_color.green
+#define stripchart_bg_blue(s)		  (s)->bg_color.blue
 #define stripchart_pixmap(s)		  (s)->pixmap
 #define stripchart_event_specs(s)	  (s)->event_specs
 #define stripchart_event_spec(s, i)	  (s)->event_specs[i]
@@ -129,6 +139,12 @@ gboolean    ftk_stripchart_resize_e      (FtkStripchart * stripchart,
 					  GError ** err);
 gboolean    ftk_stripchart_resize        (FtkStripchart * stripchart,
 					  gint width, gint height);
+
+gboolean    ftk_stripchart_set_bg_rgb_e (FtkStripchart * stripchart,
+					 gint red, gint green, gint blue,
+					 GError ** err);
+gboolean    ftk_stripchart_set_bg_rgb (FtkStripchart * stripchart,
+				       gint red, gint green, gint blue);
 
 #ifdef OLD_API
 gboolean    ftk_stripchart_set_event_rgb_e (FtkStripchart * stripchart,

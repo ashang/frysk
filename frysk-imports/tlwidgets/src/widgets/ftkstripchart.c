@@ -17,9 +17,14 @@
 #define TOP_MARGIN           18
 #define RIGHT_MARGIN         10
 #define TIC_LENGTH            8
+#define DELTA_TS_X_OFFSET   100
 #define START_TS_X_OFFSET    10
 #define START_TS_Y_OFFSET     0
 #define BS_LENGTH 64
+
+#define DEFAULT_BG_RED   28000
+#define DEFAULT_BG_GREEN 28000
+#define DEFAULT_BG_BLUE  28000
 
 GQuark ftk_quark;
 
@@ -78,6 +83,9 @@ ftk_stripchart_configure( GtkWidget * widget,
 			      &stripchart_event_spec_color (stripchart, i));
     }
   }
+  stripchart_bg_gc (stripchart) = gdk_gc_new(stripchart_pixmap (stripchart));
+  gdk_gc_set_rgb_fg_color(stripchart_bg_gc (stripchart),
+			  &stripchart_bg_color (stripchart));
 
 }
 
@@ -102,16 +110,21 @@ ftk_stripchart_expose( GtkWidget * widget,
   
   FtkStripchart * stripchart = FTK_STRIPCHART (widget);
   GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
+  
+  if (TRUE == stripchart_bg_color_modified(stripchart)) {
+    gdk_gc_set_rgb_fg_color(stripchart_bg_gc (stripchart),
+			    &stripchart_bg_color(stripchart));
+    stripchart_bg_color_modified(stripchart) = FALSE;
+  }
 
   draw_width  = da->widget.allocation.width;
   draw_height = da->widget.allocation.height;
 
   gdk_draw_rectangle (stripchart_pixmap (stripchart),
-		      widget->style->black_gc,
+		      stripchart_bg_gc (stripchart),
 		      TRUE,
 		      0, 0,
 		      draw_width, draw_height);
-
 
   gettimeofday (&now, NULL);
   timersub (&now, &stripchart_range(stripchart), &beginning);
@@ -168,11 +181,7 @@ ftk_stripchart_expose( GtkWidget * widget,
     
     gdk_draw_layout (stripchart_pixmap (stripchart),
 		     widget->style->white_gc,
-#if 0
-		     START_TS_X_OFFSET + 200,
-#else
-		     widget->allocation.width - 100,
-#endif
+		     widget->allocation.width - DELTA_TS_X_OFFSET,
 		     START_TS_Y_OFFSET,
 		     stripchart_motion_readout(stripchart));
   }
@@ -392,13 +401,9 @@ motion_notify_event( GtkWidget * widget,
   pango_layout_get_pixel_size (stripchart_motion_readout(stripchart),
 			       &width, &height);
   gdk_draw_rectangle (stripchart_pixmap (stripchart),
-		      widget->style->black_gc,
+		      stripchart_bg_gc (stripchart),
 		      TRUE,
-#if 0
-		      widget->allocation.width - (RIGHT_MARGIN - width),
-#else
-		      widget->allocation.width - 100,
-#endif
+		      widget->allocation.width - DELTA_TS_X_OFFSET,
 		      START_TS_Y_OFFSET,
 		      width, height);
   if (1.0 >= frac) {
@@ -410,11 +415,7 @@ motion_notify_event( GtkWidget * widget,
     pango_layout_set_text (stripchart_motion_readout(stripchart), "", 0);
   gdk_draw_layout (stripchart_pixmap (stripchart),
 		   widget->style->white_gc,
-#if 0
-		   widget->allocation.width - (RIGHT_MARGIN - width),
-#else
-		   widget->allocation.width - 100,
-#endif
+		   widget->allocation.width - DELTA_TS_X_OFFSET,
 		   START_TS_Y_OFFSET,
 		   stripchart_motion_readout(stripchart));
   
@@ -422,19 +423,12 @@ motion_notify_event( GtkWidget * widget,
 			       &width, &height);
   if (GDK_IS_PIXMAP (stripchart_pixmap (stripchart)))
       gdk_draw_drawable(widget->window,
-			widget->style->bg_gc[GTK_WIDGET_STATE (widget)],
+			stripchart_bg_gc (stripchart),
 			stripchart_pixmap (stripchart),
-#if 0
-			widget->allocation.width - (RIGHT_MARGIN - width),
+			widget->allocation.width - DELTA_TS_X_OFFSET,
 			START_TS_Y_OFFSET,
-			widget->allocation.width - (RIGHT_MARGIN - width),
+			widget->allocation.width - DELTA_TS_X_OFFSET,
 			START_TS_Y_OFFSET,
-#else
-			widget->allocation.width - 100,
-			START_TS_Y_OFFSET,
-			widget->allocation.width - 100,
-			START_TS_Y_OFFSET,
-#endif
 			width,
 			height);
   return TRUE;
@@ -451,6 +445,8 @@ static void
 ftk_stripchart_init (FtkStripchart * stripchart)
 {
   GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
+  
+  // fprintf (stderr, "_init()\n");
 
   gtk_widget_set_size_request (GTK_WIDGET (da),
 			       FTK_STRIPCHART_INITIAL_WIDTH,
@@ -504,6 +500,11 @@ ftk_stripchart_init (FtkStripchart * stripchart)
   stripchart_event_spec_max(stripchart)   = 0;
   stripchart_event_specs(stripchart) = NULL;
 
+  stripchart_bg_red(stripchart)		= DEFAULT_BG_RED;
+  stripchart_bg_green(stripchart)	= DEFAULT_BG_GREEN;
+  stripchart_bg_blue(stripchart)	= DEFAULT_BG_BLUE;
+  stripchart_bg_color_modified(stripchart) = TRUE;
+
 #define STRIPCHART_EVENTS_INITIAL_INCR 64
   stripchart_event_max (stripchart)  = STRIPCHART_EVENTS_INITIAL_INCR;
   stripchart_event_next (stripchart) = 0;
@@ -548,7 +549,7 @@ ftk_stripchart_new (void)
   
   FtkStripchart * stripchart = g_object_new (ftk_stripchart_get_type (), NULL);
   
-  GtkDrawingArea * drawingarea = &(stripchart->drawingarea);
+  //fprintf (stderr, "_new()\n");
   
   return GTK_WIDGET (stripchart);
 }
@@ -575,6 +576,7 @@ ftk_stripchart_resize_e (FtkStripchart * stripchart,
   }
   
   da = &(stripchart_drawingarea(stripchart));
+  
   if (!GTK_IS_DRAWING_AREA (da)) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
@@ -595,6 +597,42 @@ ftk_stripchart_resize (FtkStripchart * stripchart,
   return ftk_stripchart_resize_e (stripchart,width, height, NULL);
 }
 
+/*
+ *
+ *	setting bg rgb
+ *
+ */
+
+gboolean
+ftk_stripchart_set_bg_rgb_e (FtkStripchart * stripchart,
+			     gint red, gint green, gint blue,
+			     GError ** err)
+{
+  if (!FTK_IS_STRIPCHART (stripchart)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_STRIPCHART_WIDGET,	/* error code */
+		 "Invalid FtkStripchart widget.");
+    return FALSE;
+  }
+
+  stripchart_bg_red(stripchart)		= red;
+  stripchart_bg_green(stripchart)	= green;
+  stripchart_bg_blue(stripchart)	= blue;
+  stripchart_bg_color_modified(stripchart) = TRUE;
+  
+  return TRUE;
+}
+
+gboolean
+ftk_stripchart_set_bg_rgb (FtkStripchart * stripchart,
+			   gint red, gint green, gint blue)
+{
+  return ftk_stripchart_set_bg_rgb_e (stripchart,
+				      red, green, blue,
+				      NULL);
+}
+
 #ifdef OLD_API
 /*
  *
@@ -608,8 +646,6 @@ ftk_stripchart_set_event_rgb_e (FtkStripchart * stripchart,
 				gint red, gint green, gint blue,
 				GError ** err)
 {
-  GdkColor color;
-  
   if (!FTK_IS_STRIPCHART (stripchart)) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
@@ -734,9 +770,7 @@ ftk_stripchart_new_event_e (FtkStripchart * stripchart,
      gdk_gc_set_rgb_fg_color(stripchart_event_spec_gc (stripchart, active_idx),
 			     &stripchart_event_spec_color (stripchart, active_idx));
    }
-   else {
-     stripchart_event_spec_gc (stripchart, active_idx) = NULL;
-   }
+   else stripchart_event_spec_gc (stripchart, active_idx) = NULL;
    
    stripchart_event_spec_title(stripchart, active_idx) =
      gtk_widget_create_pango_layout (GTK_WIDGET (stripchart), title);
