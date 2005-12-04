@@ -759,30 +759,26 @@ public class TestLib
 	protected TaskCounter (boolean descendantsOnly)
 	{
 	    this.descendantsOnly = descendantsOnly;
-	    Manager.host.observableProcAdded.addObserver (new Observer ()
+	    Manager.host.observableTaskAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
-			Proc proc = (Proc) obj;
+			Task task = (Task) obj;
 			if (TaskCounter.this.descendantsOnly
-			    && !isDescendantOfMine (proc))
+			    && !isDescendantOfMine (task.proc))
 			    return;
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable o, Object obj)
-				{
-				    Task task = (Task) obj;
-				    added.add (task);
-				}
-			    });
-			proc.observableTaskRemoved.addObserver (new Observer ()
-			    {
-				public void update (Observable o, Object obj)
-				{
-				    Task task = (Task) obj;
-				    removed.add (task);
-				}
-			    });
+			added.add (task);
+		    }
+		});
+	    Manager.host.observableTaskRemoved.addObserver (new Observer ()
+		{
+		    public void update (Observable o, Object obj)
+		    {
+			Task task = (Task) obj;
+			if (TaskCounter.this.descendantsOnly
+			    && !isDescendantOfMine (task.proc))
+			    return;
+			removed.add (task);
 		    }
 		});
 	}
@@ -1024,15 +1020,16 @@ public class TestLib
 		    Proc proc = (Proc) obj;
 		    if (isDescendantOfMine (proc)) {
 			registerChild (proc.getPid ());
-			proc.observableTaskAdded.addObserver (new Observer ()
-			    {
-				public void update (Observable o, Object obj)
-				{
-				    Task task = (Task) obj;
-				    registerChild (task.getTid ());
-				}
-			    });
 		    }
+		}
+	    });
+	Manager.host.observableTaskAdded.addObserver (new Observer ()
+	    {
+		public void update (Observable o, Object obj)
+		{
+		    Task task = (Task) obj;
+		    if (isDescendantOfMine (task.proc))
+			registerChild (task.getTid ());
 		}
 	    });
     }
