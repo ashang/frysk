@@ -238,6 +238,24 @@ public abstract class Host
     public ObservableXXX observableProcRemoved = new ObservableXXX ();
 
     /**
+     * Notify of the addition of a task attached to this process.
+     *
+     * This event indicates the presence of the task, not that it is
+     * attached or detached.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public ObservableXXX observableTaskAdded = new ObservableXXX ();
+    /**
+     * Notify of the removal of a task attached to this process.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public ObservableXXX observableTaskRemoved = new ObservableXXX ();
+
+    /**
      * Return the process corresponding to this running frysk instance
      * found on this host.
      */

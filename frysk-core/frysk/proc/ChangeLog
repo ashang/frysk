@@ -1,3 +1,7 @@
+2005-12-04  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java: Add .observableTaskAdded and .observableTaskRemoved.
+
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskState.java: In .running state, handle processRequestUnblock.
