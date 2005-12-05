@@ -58,6 +58,28 @@ Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1resize (JNIEnv *env,
   ftk_stripchart_resize (stripchart, width, height);
 }
 
+
+/*
+ * Class:     com.redhat.ftk.Stripchart
+ * Method:    ftk_stripchart_set_bg_rgb
+ */
+
+JNIEXPORT void JNICALL
+Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1bg_1rgb (JNIEnv *env, 
+							      jclass cls,
+							      jobject sc,
+							      jint rj,
+							      jint gj,
+							      jint bj)
+{
+  FtkStripchart * stripchart =
+    (FtkStripchart *)getPointerFromHandle(env, sc);
+  int red   = (int) rj;
+  int green = (int) gj;
+  int blue  = (int) bj;
+  ftk_stripchart_set_bg_rgb (stripchart, type, red, green, blue);
+}
+
 /*
  * Class:     com.redhat.ftk.Stripchart
  * Method:    ftk_stripchart_set_event_rgb

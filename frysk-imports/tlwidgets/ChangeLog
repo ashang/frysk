@@ -1,3 +1,11 @@
+2005-12-04  Chris Moller  <moller@mollerware.com>
+
+	* src/java/com/redhat/ftk/Stripchart.java: Added method
+	setBackgroundRGB using ftk_stripchart_set_bg_rgb().
+	* src/jni/com_redhat_ftk_Stripchart.c: Added jni for
+	ftk_stripchart_set_bg_rgb().
+	* test/wrapper/StripchartTest.java: Add test for setBackgroundRGB.
+
 2005-12-03  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkstripchart.c: Added ftk_stripchart_set_bg_rgb_e()
