@@ -26,6 +26,10 @@
 #define DEFAULT_BG_GREEN 28000
 #define DEFAULT_BG_BLUE  28000
 
+#define DEFAULT_READOUT_RED   65535 - DEFAULT_BG_RED
+#define DEFAULT_READOUT_GREEN 65535 - DEFAULT_BG_GREEN
+#define DEFAULT_READOUT_BLUE  65535 - DEFAULT_BG_BLUE
+
 GQuark ftk_quark;
 
 enum {
@@ -83,9 +87,14 @@ ftk_stripchart_configure( GtkWidget * widget,
 			      &stripchart_event_spec_color (stripchart, i));
     }
   }
-  stripchart_bg_gc (stripchart) = gdk_gc_new(stripchart_pixmap (stripchart));
+  stripchart_bg_gc (stripchart) =
+    gdk_gc_new(stripchart_pixmap (stripchart));
   gdk_gc_set_rgb_fg_color(stripchart_bg_gc (stripchart),
 			  &stripchart_bg_color (stripchart));
+  stripchart_readout_gc (stripchart) =
+    gdk_gc_new(stripchart_pixmap (stripchart));
+  gdk_gc_set_rgb_fg_color(stripchart_readout_gc (stripchart),
+			  &stripchart_readout_color (stripchart));
 
 }
 
@@ -115,6 +124,12 @@ ftk_stripchart_expose( GtkWidget * widget,
     gdk_gc_set_rgb_fg_color(stripchart_bg_gc (stripchart),
 			    &stripchart_bg_color(stripchart));
     stripchart_bg_color_modified(stripchart) = FALSE;
+  }
+  
+  if (TRUE == stripchart_readout_color_modified(stripchart)) {
+    gdk_gc_set_rgb_fg_color(stripchart_readout_gc (stripchart),
+			    &stripchart_readout_color(stripchart));
+    stripchart_readout_color_modified(stripchart) = FALSE;
   }
 
   draw_width  = da->widget.allocation.width;
@@ -174,13 +189,13 @@ ftk_stripchart_expose( GtkWidget * widget,
     pango_layout_set_text (stripchart_base_readout(stripchart),
 			   bs, strlen (bs));
     gdk_draw_layout (stripchart_pixmap (stripchart),
-		     widget->style->white_gc,
+		     stripchart_readout_gc(stripchart),
 		     START_TS_X_OFFSET,
 		     START_TS_Y_OFFSET,
 		     stripchart_base_readout(stripchart));
     
     gdk_draw_layout (stripchart_pixmap (stripchart),
-		     widget->style->white_gc,
+		     stripchart_readout_gc(stripchart),
 		     widget->allocation.width - DELTA_TS_X_OFFSET,
 		     START_TS_Y_OFFSET,
 		     stripchart_motion_readout(stripchart));
@@ -195,7 +210,7 @@ ftk_stripchart_expose( GtkWidget * widget,
 			       (BOTTOM_MARGIN + TOP_MARGIN)) * i))
 		    / ((double)max_count));
     gdk_draw_line (stripchart_pixmap (stripchart),
-		   widget->style->white_gc,
+		   stripchart_readout_gc(stripchart),
 		   draw_width - TIC_LENGTH,
 		   base_y - dy,
 		   draw_width,
@@ -414,7 +429,7 @@ motion_notify_event( GtkWidget * widget,
   else 
     pango_layout_set_text (stripchart_motion_readout(stripchart), "", 0);
   gdk_draw_layout (stripchart_pixmap (stripchart),
-		   widget->style->white_gc,
+		   stripchart_readout_gc(stripchart),
 		   widget->allocation.width - DELTA_TS_X_OFFSET,
 		   START_TS_Y_OFFSET,
 		   stripchart_motion_readout(stripchart));
@@ -504,6 +519,11 @@ ftk_stripchart_init (FtkStripchart * stripchart)
   stripchart_bg_green(stripchart)	= DEFAULT_BG_GREEN;
   stripchart_bg_blue(stripchart)	= DEFAULT_BG_BLUE;
   stripchart_bg_color_modified(stripchart) = TRUE;
+
+  stripchart_readout_red(stripchart)		= DEFAULT_BG_RED;
+  stripchart_readout_green(stripchart)		= DEFAULT_BG_GREEN;
+  stripchart_readout_blue(stripchart)		= DEFAULT_BG_BLUE;
+  stripchart_readout_color_modified(stripchart) = TRUE;
 
 #define STRIPCHART_EVENTS_INITIAL_INCR 64
   stripchart_event_max (stripchart)  = STRIPCHART_EVENTS_INITIAL_INCR;
@@ -616,6 +636,17 @@ ftk_stripchart_set_bg_rgb_e (FtkStripchart * stripchart,
     return FALSE;
   }
 
+  if ((red   < 0) || (red   > 65535) ||
+      (green < 0) || (green > 65535) ||
+      (blue  < 0) || (blue  > 65535)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_COLOR,		/* error code */
+		 "Invalid FtkStripchart color.");
+    return FALSE;
+  }
+
+  fprintf (stderr, "bg = %d %d %d\n", red, green, blue);
   stripchart_bg_red(stripchart)		= red;
   stripchart_bg_green(stripchart)	= green;
   stripchart_bg_blue(stripchart)	= blue;
@@ -631,6 +662,107 @@ ftk_stripchart_set_bg_rgb (FtkStripchart * stripchart,
   return ftk_stripchart_set_bg_rgb_e (stripchart,
 				      red, green, blue,
 				      NULL);
+}
+
+/*
+ *
+ *	setting readout rgb
+ *
+ */
+
+gboolean
+ftk_stripchart_set_readout_rgb_e (FtkStripchart * stripchart,
+				  gint red, gint green, gint blue,
+				  GError ** err)
+{
+  if (!FTK_IS_STRIPCHART (stripchart)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_STRIPCHART_WIDGET,	/* error code */
+		 "Invalid FtkStripchart widget.");
+    return FALSE;
+  }
+
+  if ((red   < 0) || (red   > 65535) ||
+      (green < 0) || (green > 65535) ||
+      (blue  < 0) || (blue  > 65535)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_COLOR,		/* error code */
+		 "Invalid FtkStripchart color.");
+    return FALSE;
+  }
+
+  fprintf (stderr, "ro = %d %d %d\n", red, green, blue);
+  stripchart_readout_red(stripchart)		= red;
+  stripchart_readout_green(stripchart)		= green;
+  stripchart_readout_blue(stripchart)		= blue;
+  stripchart_readout_color_modified(stripchart) = TRUE;
+  
+  return TRUE;
+}
+
+gboolean
+ftk_stripchart_set_readout_rgb (FtkStripchart * stripchart,
+				gint red, gint green, gint blue)
+{
+  return ftk_stripchart_set_readout_rgb_e (stripchart,
+					   red, green, blue,
+					   NULL);
+}
+
+/*
+ *
+ *	setting chart rgb
+ *
+ */
+
+gboolean
+ftk_stripchart_set_chart_rgb_e (FtkStripchart * stripchart,
+				  gint red, gint green, gint blue,
+				  GError ** err)
+{
+  if (!FTK_IS_STRIPCHART (stripchart)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_STRIPCHART_WIDGET,	/* error code */
+		 "Invalid FtkStripchart widget.");
+    return FALSE;
+  }
+
+  if ((red   < 0) || (red   > 65535) ||
+      (green < 0) || (green > 65535) ||
+      (blue  < 0) || (blue  > 65535)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_ERROR_INVALID_COLOR,		/* error code */
+		 "Invalid FtkStripchart color.");
+    return FALSE;
+  }
+
+  fprintf (stderr, "bg = %d %d %d\n", red, green, blue);
+  stripchart_bg_red(stripchart)		= red;
+  stripchart_bg_green(stripchart)	= green;
+  stripchart_bg_blue(stripchart)	= blue;
+  stripchart_bg_color_modified(stripchart) = TRUE;
+
+  fprintf (stderr, "ro = %d %d %d\n",
+	   65535 - red, 65535 - green, 65535 - blue);
+  stripchart_readout_red(stripchart)		= 65535 - red;
+  stripchart_readout_green(stripchart)		= 65535 - green;
+  stripchart_readout_blue(stripchart)		= 65535 - blue;
+  stripchart_readout_color_modified(stripchart) = TRUE;
+  
+  return TRUE;
+}
+
+gboolean
+ftk_stripchart_set_chart_rgb (FtkStripchart * stripchart,
+			      gint red, gint green, gint blue)
+{
+  return ftk_stripchart_set_chart_rgb_e (stripchart,
+					 red, green, blue,
+					 NULL);
 }
 
 #ifdef OLD_API

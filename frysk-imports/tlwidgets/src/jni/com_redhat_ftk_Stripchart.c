@@ -77,7 +77,51 @@ Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1bg_1rgb (JNIEnv *env,
   int red   = (int) rj;
   int green = (int) gj;
   int blue  = (int) bj;
-  ftk_stripchart_set_bg_rgb (stripchart, type, red, green, blue);
+  ftk_stripchart_set_bg_rgb (stripchart,red, green, blue);
+}
+
+
+/*
+ * Class:     com.redhat.ftk.Stripchart
+ * Method:    ftk_stripchart_set_readout_rgb
+ */
+
+JNIEXPORT void JNICALL
+Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1readout_1rgb (JNIEnv *env, 
+								   jclass cls,
+								   jobject sc,
+								   jint rj,
+								   jint gj,
+								   jint bj)
+{
+  FtkStripchart * stripchart =
+    (FtkStripchart *)getPointerFromHandle(env, sc);
+  int red   = (int) rj;
+  int green = (int) gj;
+  int blue  = (int) bj;
+  ftk_stripchart_set_readout_rgb (stripchart, red, green, blue);
+}
+
+
+/*
+ * Class:     com.redhat.ftk.Stripchart
+ * Method:    ftk_stripchart_set_chart_rgb
+ */
+
+JNIEXPORT void JNICALL
+Java_com_redhat_ftk_Stripchart_ftk_1stripchart_1set_1chart_1rgb (JNIEnv *env, 
+								 jclass cls,
+								 jobject sc,
+								 jint rj,
+								 jint gj,
+								 jint bj)
+{
+  FtkStripchart * stripchart =
+    (FtkStripchart *)getPointerFromHandle(env, sc);
+  int red   = (int) rj;
+  int green = (int) gj;
+  int blue  = (int) bj;
+  ftk_stripchart_set_chart_rgb (stripchart, red, green, blue);
 }
 
 /*

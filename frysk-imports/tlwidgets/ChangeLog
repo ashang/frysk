@@ -1,3 +1,17 @@
+2005-12-05  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkstripchart.c: Added ftk_stripchart_set_readout_rgb_e(),
+	ftk_stripchart_set_readout_rgb(),
+	ftk_stripchart_set_chart_rgb_e(), and ftk_stripchart_set_chart_rgb
+	to allow the user to set the readout color or both background and
+	readout simultaneously.
+	* src/widgets/ftkstripchart.h: Added fcndefs for above.
+	* test/widget/tstripchart.c: Added tests for above.
+	* src/java/com/redhat/ftk/Stripchart.java: Added method
+	setReadoutRGB and setChartRGB using above fcns. 
+	* src/jni/com_redhat_ftk_Stripchart.c: Added jni for above fcns.
+	* test/wrapper/StripchartTest.java: Add test for above methods.
+
 2005-12-04  Chris Moller  <moller@mollerware.com>
 
 	* src/java/com/redhat/ftk/Stripchart.java: Added method

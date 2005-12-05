@@ -42,6 +42,7 @@ catch_sigalrm (int sig)
       sigs_sent = -200;
       events_added = 1;
       ftk_stripchart_set_bg_rgb (FTK_STRIPCHART (stripchart1), 28000, 65535,  28000);
+      ftk_stripchart_set_readout_rgb (FTK_STRIPCHART (stripchart1), 65535,  0, 0);
       ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
 				"cup", 65535, 65535,0);
       ftk_stripchart_new_event (FTK_STRIPCHART (stripchart1),
@@ -98,7 +99,7 @@ int main( int   argc,
 
   stripchart1 = ftk_stripchart_new ();
   ftk_stripchart_resize (FTK_STRIPCHART (stripchart1), 500, 100);
-  ftk_stripchart_set_bg_rgb (FTK_STRIPCHART (stripchart1), 65535, 28000, 28000);
+  ftk_stripchart_set_chart_rgb (FTK_STRIPCHART (stripchart1), 65535, 28000, 28000);
 
 #if 0
   /* defaults are provided if you don't want to set this stuff */

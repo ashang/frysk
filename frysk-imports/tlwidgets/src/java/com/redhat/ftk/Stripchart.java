@@ -78,6 +78,20 @@ public class Stripchart extends Widget
     }
 
     /**
+     * Set readout color
+     */
+    public void setReadoutRGB(int red, int green, int blue) {
+	ftk_stripchart_set_readout_rgb (getHandle(), red, green, blue);
+    }
+
+    /**
+     * Set chart color
+     */
+    public void setChartRGB(int red, int green, int blue) {
+	ftk_stripchart_set_chart_rgb (getHandle(), red, green, blue);
+    }
+
+    /**
      * Set an event color
      */
     /********** removed pro-tem *************
@@ -147,6 +161,12 @@ public class Stripchart extends Widget
     native static final protected void
 	ftk_stripchart_set_bg_rgb (Handle sc,
 				   int red, int green, int blue);
+    native static final protected void
+	ftk_stripchart_set_readout_rgb (Handle sc,
+					int red, int green, int blue);
+    native static final protected void
+	ftk_stripchart_set_chart_rgb (Handle sc,
+				      int red, int green, int blue);
     native static final protected void
 	ftk_stripchart_set_update (Handle sc, int update);
     native static final protected void

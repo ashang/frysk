@@ -43,8 +43,8 @@ tconsole: tconsole.o
 
 tconsole.o: tconsole.c
 
-run: tstripchart tconsole
-	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./tconsole
+run: tstripchart
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./tstripchart
 
 clean:
 	rm -f *.o ttimeline tstripchart

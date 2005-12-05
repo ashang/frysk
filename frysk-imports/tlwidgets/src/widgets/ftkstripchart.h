@@ -30,7 +30,8 @@ typedef enum {
   FTK_ERROR_INVALID_RANGE,
   FTK_ERROR_INVALID_TYPE,
   FTK_ERROR_TIMER_NOT_ENABLED,
-  FTK_ERROR_INVALID_DRAWING_AREA
+  FTK_ERROR_INVALID_DRAWING_AREA,
+  FTK_ERROR_INVALID_COLOR
 } ftk_error_e;
 
 typedef struct {
@@ -52,6 +53,9 @@ typedef struct _FtkStripchart {
   GdkColor bg_color;
   gboolean bg_color_modified;
   GdkGC * bg_gc;
+  GdkColor readout_color;
+  gboolean readout_color_modified;
+  GdkGC * readout_gc;
   GdkPixmap * pixmap;
   event_spec_s * event_specs;
   int event_spec_next;
@@ -77,6 +81,13 @@ typedef struct _FtkStripchart {
 #define stripchart_bg_red(s)		  (s)->bg_color.red
 #define stripchart_bg_green(s)		  (s)->bg_color.green
 #define stripchart_bg_blue(s)		  (s)->bg_color.blue
+#define stripchart_readout_gc(s)		  (s)->readout_gc
+#define stripchart_readout_color(s)		  (s)->readout_color
+#define stripchart_readout_color_modified(s)	  (s)->readout_color_modified
+#define stripchart_readout_pixel(s)		  (s)->readout_color.pixel
+#define stripchart_readout_red(s)		  (s)->readout_color.red
+#define stripchart_readout_green(s)		  (s)->readout_color.green
+#define stripchart_readout_blue(s)		  (s)->readout_color.blue
 #define stripchart_pixmap(s)		  (s)->pixmap
 #define stripchart_event_specs(s)	  (s)->event_specs
 #define stripchart_event_spec(s, i)	  (s)->event_specs[i]
@@ -145,6 +156,18 @@ gboolean    ftk_stripchart_set_bg_rgb_e (FtkStripchart * stripchart,
 					 GError ** err);
 gboolean    ftk_stripchart_set_bg_rgb (FtkStripchart * stripchart,
 				       gint red, gint green, gint blue);
+
+gboolean    ftk_stripchart_set_readout_rgb_e (FtkStripchart * stripchart,
+					      gint red, gint green, gint blue,
+					      GError ** err);
+gboolean    ftk_stripchart_set_readout_rgb (FtkStripchart * stripchart,
+					    gint red, gint green, gint blue);
+
+gboolean    ftk_stripchart_set_chart_rgb_e (FtkStripchart * stripchart,
+					      gint red, gint green, gint blue,
+					      GError ** err);
+gboolean    ftk_stripchart_set_chart_rgb (FtkStripchart * stripchart,
+					    gint red, gint green, gint blue);
 
 #ifdef OLD_API
 gboolean    ftk_stripchart_set_event_rgb_e (FtkStripchart * stripchart,
