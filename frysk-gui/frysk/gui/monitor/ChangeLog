@@ -1,3 +1,17 @@
+2005-12-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskObserverRoot.java (apply): added apply(Proc) function
+	TATA! :); handles application of a task observer to all tasks (current
+	and future) of a Proc.
+	* TaskData.java: Removed uneeded notifyObserver call (done by
+	ObservableLinkedList).
+	* StatusWidget.java: Disabled stripchart widget.
+	* ProcMenu.java: Now retrieves a list of taskObservers.
+	* ProcData.java (add): New function moved from GuiData to here.
+	* ObserversMenu.java (addGuiObject): new function refactored
+	redundent code to here.
+	* GuiData.java: Removed unused commented out code.
+
 2005-12-04  Chris Moller  <moller@mollerware.com>
 
 	* StatusWidget.java: Added setBackgroundRGB to the stripchart.

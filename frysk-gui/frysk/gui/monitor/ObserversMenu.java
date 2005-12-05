@@ -39,6 +39,8 @@
 package frysk.gui.monitor;
 
 import java.util.ListIterator;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -68,24 +70,48 @@ public class ObserversMenu extends Menu{
 		
 		ListIterator iter = actions.listIterator();
 		
+		actions.itemAdded.addObserver(new Observer() {
+			public void update(Observable observable, Object object) {
+				TaskObserverRoot observer = (TaskObserverRoot)object;
+				addGuiObject(observer);
+			}
+		});
+		
+		actions.itemRemoved.addObserver(new Observer() {
+			public void update(Observable observable, Object object) {
+				//XXX: Not implemented.
+				throw new RuntimeException("\n\tNot implemented\n");
+			}
+		});
+		
+		
 		while(iter.hasNext()){
 			final TaskObserverRoot observer = (TaskObserverRoot) iter.next();
-	
-			MenuItem item = new MenuItem(observer.getName(), false);
-			ToolTips tip = new ToolTips();
-			tip.setTip(item, observer.getToolTip(), "");
-			
-			item.addListener(new MenuItemListener() {
-				public void menuItemEvent(MenuItemEvent arg0) {
-					currentTask.add(observer);
-				}
-			});
-			this.add(item);
+			this.addGuiObject(observer);
 		}
 
 		this.showAll();
 	}
 	
+	private void addGuiObject(final GuiObject observer) {
+		MenuItem item = new MenuItem(observer.getName(), false);
+		ToolTips tip = new ToolTips();
+		tip.setTip(item, observer.getToolTip(), "");
+		
+		item.addListener(new MenuItemListener() {
+			public void menuItemEvent(MenuItemEvent arg0) {
+
+				if(currentTask != null){
+					currentTask.add((TaskObserverRoot)observer);
+				}
+				if(currentProc != null){
+					currentProc.add((TaskObserverRoot)observer);
+				}
+			}
+		});
+		this.add(item);
+	}
+
 	/**
 	 * Show the pop-up menu. selected operation is to be 
 	 * applied to process with id pid
@@ -93,21 +119,22 @@ public class ObserversMenu extends Menu{
 	public void popup(ProcData selected){
 		this.popup();
 		this.currentProc = selected;
-		this.currentProc.getClass();
+		this.currentTask = null;
 	}
 	
 	public void popup(TaskData selected){
 		this.popup();
 		this.currentTask = selected;
+		this.currentProc = null;
 	}
 	
 	public void setCurrentProc(ProcData current){
-		System.out.println("setCurrentProc");
+		System.out.println("ObserversMenu.setCurrentProc() " + this);
 		this.currentProc = current;
 	}
 	
 	public void setCurrentTask(TaskData current){
-		System.out.println("setCurrentProc");
+		System.out.println("ObserversMenu.setCurrentTask()");
 		this.currentTask = current;
 	}
 }

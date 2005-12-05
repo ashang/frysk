@@ -56,6 +56,7 @@ import org.gnu.gtk.event.MouseListener;
 
 import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.actions.ProcAction;
+import frysk.gui.monitor.observers.ObserverManager;
 
 
 /**
@@ -92,7 +93,7 @@ public class ProcMenu extends Menu{
 			this.add(item);
 		}
 		
-		final ObserversMenu menu = new ObserversMenu(ActionPool.theActionPool.processObservers);
+		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getTaskObservers());
 		MenuItem item = new MenuItem("Add observer ", false);
 		item.setSubmenu(menu);
 

@@ -60,12 +60,7 @@ public class GuiData {
 		this.observerRemoved = new GuiObservable();
 		this.observers = new ObservableLinkedList();
 	}
-	
-//	public void add(ObserverRoot observer){
-//		this.observers.add(observer);
-//		this.observerAdded.notifyObservers(observer);
-//	}
-	
+
 	public void remove(ObserverRoot observer){
 		//XXX: Not implemented.
 		throw new RuntimeException("Not implemented");

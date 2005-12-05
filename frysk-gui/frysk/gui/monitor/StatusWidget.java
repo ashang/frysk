@@ -48,32 +48,22 @@ import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.DataColumn;
-import org.gnu.gtk.DataColumnObject;
-import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
-import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.ShadowType;
 import org.gnu.gtk.TextView;
-import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
-import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.VSeparator;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
-
-import com.redhat.ftk.Stripchart;
 
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -84,10 +74,10 @@ public class StatusWidget extends VBox{
 	private GuiData data;
 	private TextView logTextView;
 	private Frame frame;
-        Stripchart area;
+//        Stripchart area;
 	
 	public  Observable notifyUser;
-    private int e2;
+ //   private int e2;
 	public StatusWidget(GuiData data){
 		super(false,0);
 		//FontDescription font = new FontDescription();
@@ -104,39 +94,37 @@ public class StatusWidget extends VBox{
 		
 		//========================================
 		initLogTextView();
-//		ScrolledWindow logScrolledWindow = new ScrolledWindow();
-//		logScrolledWindow.addWithViewport(logTextView);
-//		logScrolledWindow.setShadowType(ShadowType.IN);
-//		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-//		mainVbox.packStart(logScrolledWindow, true, true, 0);
+		ScrolledWindow logScrolledWindow = new ScrolledWindow();
+		logScrolledWindow.addWithViewport(logTextView);
+		logScrolledWindow.setShadowType(ShadowType.IN);
+		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+		mainVbox.packStart(logScrolledWindow, true, true, 0);
 		//========================================
 		
 		//========================================
-		initLogTextView();
+//		initLogTextView();
 		//	ScrolledWindow logScrolledWindow = new ScrolledWindow();
 		
 		//Stripchart area;
-		area = new Stripchart();
+//		area = new Stripchart();
 		//		area.resize (500, 150);
-	area.resize (0, 0);
-	area.setBackgroundRGB (65536, 28000, 28000);
+
+//	area.resize (0, 0);
+//	area.setBackgroundRGB (65536, 28000, 28000);
+
 		//area.setEventTitle(1, "Knife");
 		//area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
-		int e1 = area.createEvent("knife", 65535, 65535, 0); /* red + green = yellow */
-		 e2 = area.createEvent("fork",  65535, 0, 65535); /* red + green = yellow */
-		int e3 = area.createEvent("spoon",  0, 65535, 65535); /* red + green = yellow */
-		System.out.println("e1 = " + e1);
-		System.out.println("e2 = " + e2);
-		area.setUpdate (1111);
-		area.setRange (60000);
-		area.appendEvent (e1);
-		area.appendEvent (e2);
-		area.appendEvent (e3);
-		
-		//		logScrolledWindow.addWithViewport(area);
-		//		logScrolledWindow.setShadowType(ShadowType.IN);
-		//		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-		mainVbox.packStart(area, true, true, 0);
+//		int e1 = area.createEvent("knife", 65535, 65535, 0); /* red + green = yellow */
+//		 e2 = area.createEvent("fork",  65535, 0, 65535); /* red + green = yellow */
+//		int e3 = area.createEvent("spoon",  0, 65535, 65535); /* red + green = yellow */
+//		System.out.println("e1 = " + e1);
+//		System.out.println("e2 = " + e2);
+//		area.setUpdate (1111);
+//		area.setRange (60000);
+//		area.appendEvent (e1);
+//		area.appendEvent (e2);
+//		area.appendEvent (e3);
+//		mainVbox.packStart(area, true, true, 0);
 		
 		
 		//========================================
@@ -164,66 +152,25 @@ public class StatusWidget extends VBox{
 	}
 	
 	private TreeView initAttacheObserversTreeView(){
-		final TreeView treeView = new TreeView();
-		final DataColumnString nameDC = new DataColumnString();
-		final DataColumnObject observersDC = new DataColumnObject();
-		DataColumn[] columns = new DataColumn[2];
-		columns[0] = nameDC;
-		columns[1] = observersDC;
-		final ListStore listStore = new ListStore(columns);
-		treeView.setHeadersVisible(false);
-		
-		// handle add evets
-		this.data.observerAdded.addObserver(new Observer(){
-			public void update(Observable observable, Object obj) {
-				ObserverRoot observer = (ObserverRoot) obj;
-				TreeIter iter = listStore.appendRow();
-				listStore.setValue(iter, nameDC, observer.getName());
-				listStore.setValue(iter, observersDC, observer);
-			}
-		});
-		
-		// handle remove evets
-		this.data.observerRemoved.addObserver(new Observer(){
-			public void update(Observable o, Object obj) {
-				TreeIter iter = listStore.getFirstIter();
-				ObserverRoot observer = (ObserverRoot)obj;
-				ObserverRoot myObserver;
-				while(iter != null){
-					myObserver = (ObserverRoot) listStore.getValue(iter, observersDC);
-					if(myObserver == observer){
-						listStore.removeRow(iter);
-						break;
-					}
-					iter = iter.getNextIter();
-				}
-			}
-		});
-		
-		treeView.setModel(listStore);
-		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn observersCol = new TreeViewColumn();
-		observersCol.packStart(cellRendererText, false);
-		observersCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		treeView.appendColumn(observersCol);
+		final ListView listView = new ListView();
+		listView.watchLinkedList(data.getObservers());
 		
 		final Menu menu = new Menu();
 		MenuItem item = new MenuItem("Remove", false);
 		item.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent event) {
-				TreePath path = (treeView.getSelection().getSelectedRows())[0];
-				data.remove((ObserverRoot) listStore.getValue(listStore.getIter(path), observersDC));
+				data.remove((ObserverRoot) listView.getSelectedObject());
 			}
 		});
 		menu.add(item);
 		menu.showAll();
 		
-		treeView.addListener(new MouseListener(){
+		listView.addListener(new MouseListener(){
 
 			public boolean mouseEvent(MouseEvent event) {
 				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
 						& event.getButtonPressed() == MouseEvent.BUTTON3){
-					if((treeView.getSelection().getSelectedRows()).length > 0){
+					if((listView.getSelection().getSelectedRows()).length > 0){
 						menu.popup();						
 					}
                     return true;
@@ -233,7 +180,7 @@ public class StatusWidget extends VBox{
 		});
 		
 		
-		return treeView;
+		return listView;
 	}
 
 
@@ -247,12 +194,12 @@ public class StatusWidget extends VBox{
 				public void execute() {
 	System.out.println("Event: " + observer.getName() + "\n");
 					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
-	area.appendEvent (e2);
+//	area.appendEvent (e2);
 				}
 			});
 		}
 		
-		this.data.observerAdded.addObserver(new Observer(){
+		this.data.getObservers().itemAdded.addObserver(new Observer(){
 
 			public void update(Observable arg0, Object obj) {
 				final ObserverRoot observer = (ObserverRoot)obj;
@@ -261,15 +208,13 @@ public class StatusWidget extends VBox{
 					public void execute() {
 						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 						System.out.println("Event: " + observer.getName() + "\n");
-		area.appendEvent (e2);
+//		area.appendEvent (e2);
 					}
 				});
-				
 			}
-			
 		});
 		
-		this.data.observerRemoved.addObserver(new Observer(){
+		this.data.getObservers().itemRemoved.addObserver(new Observer(){
 
 			public void update(Observable arg0, Object obj) {
 				ObserverRoot observer = (ObserverRoot)obj;

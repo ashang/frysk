@@ -48,6 +48,7 @@
  */
 package frysk.gui.monitor;
 
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Proc;
 
 public class ProcData  extends GuiData{
@@ -64,5 +65,22 @@ public class ProcData  extends GuiData{
 	public Proc getProc() {
 		return proc;
 	}
-
+	
+	public void add(final TaskObserverRoot observer){
+		System.out.println("ProcData.add()");
+		
+		observer.onAdded(new Runnable() {
+			public void run() {
+				observers.add(observer);
+			}
+		});
+		
+		observer.onDeleted(new Runnable() {
+			public void run() {
+				observers.remove(observer);
+			}
+		});
+		System.out.println("ProcData.add()");
+		observer.apply(this.proc);
+	}
 }

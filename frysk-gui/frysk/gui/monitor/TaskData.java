@@ -66,14 +66,14 @@ public class TaskData extends GuiData{
 		observer.onAdded(new Runnable() {
 			public void run() {
 				observers.add(observer);
-				observerAdded.notifyObservers(observer);
+				//observerAdded.notifyObservers(observer);
 			}
 		});
 		
 		observer.onDeleted(new Runnable() {
 			public void run() {
 				observers.remove(observer);
-				observerRemoved.notifyObservers(observer);
+		//		observerRemoved.notifyObservers(observer);
 			}
 		});
 		System.out.println("TaskData.add()");
