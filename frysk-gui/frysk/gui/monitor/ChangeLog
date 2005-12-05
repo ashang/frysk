@@ -1,3 +1,7 @@
+2005-12-04  Chris Moller  <moller@mollerware.com>
+
+	* StatusWidget.java: Added setBackgroundRGB to the stripchart.
+
 2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StatusWidget.java: Replaced old TextView with time line widget.

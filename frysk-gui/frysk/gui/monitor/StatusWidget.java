@@ -119,6 +119,7 @@ public class StatusWidget extends VBox{
 		area = new Stripchart();
 		//		area.resize (500, 150);
 	area.resize (0, 0);
+	area.setBackgroundRGB (65536, 28000, 28000);
 		//area.setEventTitle(1, "Knife");
 		//area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
 		int e1 = area.createEvent("knife", 65535, 65535, 0); /* red + green = yellow */
