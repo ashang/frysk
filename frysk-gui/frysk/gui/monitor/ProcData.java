@@ -67,9 +67,8 @@ public class ProcData  extends GuiData{
 	}
 	
 	public void add(final TaskObserverRoot observer){
-		System.out.println("ProcData.add()");
 		
-		observer.onAdded(new Runnable() {
+		observer.onAdded(new Runnable() { 
 			public void run() {
 				observers.add(observer);
 			}
@@ -80,7 +79,6 @@ public class ProcData  extends GuiData{
 				observers.remove(observer);
 			}
 		});
-		System.out.println("ProcData.add()");
 		observer.apply(this.proc);
 	}
 }

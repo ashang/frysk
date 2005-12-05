@@ -69,8 +69,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		 * update function is called.
 		 * */
 		public void addAction(Action action){
-			System.out.println("+Action: " + action.getName());
-			System.out.println("+Action: " + action.getToolTip());
 			this.actions.add(action);
 		}
 		
@@ -83,17 +81,21 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		}
 			
 		public void addedTo (Object o) {
-			if(this.onAdded != null) this.onAdded.run();
+			if(this.onAdded != null){
+				CustomEvents.addEvent(this.onAdded);
+			}
 		}
-
-                public void addFailed (Object o, Throwable w) {
-                    	throw new RuntimeException (w);
-                }
 
 		public void deletedFrom (Object o) {
-			if(this.onDeleted != null) this.onDeleted.run();
+			if(this.onDeleted != null){
+				CustomEvents.addEvent(this.onDeleted);
+			}
 		}
-		
+
+		public void addFailed (Object o, Throwable w) {
+			throw new RuntimeException (w);
+		}
+
 		public void onAdded(Runnable r){
 			this.onAdded = r;
 		}

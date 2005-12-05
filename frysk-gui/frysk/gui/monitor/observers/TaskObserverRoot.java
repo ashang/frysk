@@ -15,6 +15,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 	}
 
 	public void apply(Proc proc){
+
 		proc.requestAddTasksObserver(new Tasks() {
 		
 			public void taskAdded(Task task) {
@@ -36,7 +37,6 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 
 		});
 		
-		onAdded.run();
 	}
 	
 	public abstract void apply(Task task);

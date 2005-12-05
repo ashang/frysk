@@ -129,12 +129,10 @@ public class ObserversMenu extends Menu{
 	}
 	
 	public void setCurrentProc(ProcData current){
-		System.out.println("ObserversMenu.setCurrentProc() " + this);
 		this.currentProc = current;
 	}
 	
 	public void setCurrentTask(TaskData current){
-		System.out.println("ObserversMenu.setCurrentTask()");
 		this.currentTask = current;
 	}
 }
