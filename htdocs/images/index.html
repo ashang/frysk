@@ -14,7 +14,7 @@
 
 <h1><em>frysk</em> Images</h1>
 
-Last updated 2005-10-11.
+Last updated 2005-12-05.
 
 <p>
 
@@ -22,7 +22,7 @@ Below is a work-in-progress snapshot of a process view.
 
 <pr>
 
-A user is in the process of adding an observer to the <tt>exec</tt>
+A user is in the process of adding an observer to the <tt>bash</tt>
 process.  In addition to being logged, a user can associate actions to
 an observer.  Examples of observers and actions include:
 
@@ -38,18 +38,45 @@ the source browser when the program <tt>eclipse</tt> is started.
 
 <p>
 
-<img src="frysgui.png" border="0">
+<img src="set-observer.png" border="0">
 
 <p>
 
-Next is an earlier mock-up of the same window.  Note the time-line
-event viewer that is going to eventually added to the above:
+Next is a screenshot of the same window, after the observer on <tt>fork()</tt> 
+has been set.
 
 <p>
 
-<img src="small.png" border="0">
+<img src="fork-observer.png" border="0">
 
 <p>
+
+Below is the result of monitoring the process with the fork observer set.
+There was a fork event, as displayed in the timeline window.
+
+<p>
+
+<img src="one-observer.png" border="0">
+
+<p>
+
+Next is how the timeline window displays multiple events triggerred 
+when multiple observers have been set (here, the events were 
+hardcoded, obviously).
+
+<p>
+
+<img src="multiple-observers.png" border="0">
+
+<p>
+
+Below is how to navigate to the source window from the process monitor window.
+<p>
+
+<img src="sourcewindow-start.png" border="0">
+
+<p>
+
 
 Next is a partial mockup (some parts were taken from a snapshot) of
 the source view window.  On the left hand side is the stack and variable trace
@@ -61,13 +88,35 @@ the middle the corresponding source.
 <img src="sourcewin.png" border="0">
 
 <p>
+Below, is a text search run in the source window.
+<p>
 
-Finally, given inline code (here <tt>do_something</tt> was inlined),
+<img src="source_find.png" border="0">
+
+<p>
+
+Finally, a sequnce of screenshots that display how, given inline code (here <tt>do_something()</tt>, <tt>b()</tt>, and <tt>f()</tt> were inlined),
 the source window can display it in place.
 
 <p>
 
-<img src="sourcewin1.png" border="0">
+<img src="inline1.png" border="0">
+
+<p>
+
+<img src="inline2.png" border="0">
+
+<p>
+
+<img src="inline3.png" border="0">
+
+<p>
+
+<img src="inline4.png" border="0">
+
+<p>
+
+<img src="inline5.png" border="0">
 
 <p>
 
