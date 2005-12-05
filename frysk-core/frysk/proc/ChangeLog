@@ -1,3 +1,12 @@
+2005-12-04  Sami Wagiaalla  <swagiaal@redhat.com>
+	    Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java: In .unattached state, handle a request to add a
+	ProcObserver.Tasks.
+	* TestTasksObserver.java: New file.
+	* Proc.java: Add .requestAddTasksObserver
+	* ProcObserver.java: New file.
+
 2005-12-04  Andrew Cagney  <cagney@redhat.com>
 
 	* TestGoAndGo.java: Use Host.observableTaskAdded.

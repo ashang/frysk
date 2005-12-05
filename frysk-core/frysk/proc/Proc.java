@@ -473,6 +473,24 @@ public abstract class Proc
      */
     public ObservableXXX observableDetached = new ObservableXXX ();
 
+    /**
+     * Add Tasks Observer.
+     * @param tasksObserver observer to be added.
+     */
+    public void requestAddTasksObserver(final ProcObserver.Tasks tasksObserver)
+    {
+    	logger.log (Level.FINE, "{0} requestAddTasksObserver \n", this); 
+    	Manager.eventLoop.add (new ProcEvent ()
+	    {
+    		ProcObserver.Tasks theObserver = tasksObserver;
+		public void execute ()
+		{
+		    state = state.processRequestAddTasksObserver(Proc.this,
+								 theObserver);
+		}
+	    });
+    }
+    
     public String toString ()
     {
 	return ("{" + super.toString ()
