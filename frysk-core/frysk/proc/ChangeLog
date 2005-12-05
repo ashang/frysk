@@ -1,5 +1,7 @@
 2005-12-04  Andrew Cagney  <cagney@redhat.com>
 
+	* TestGoAndGo.java: Use Host.observableTaskAdded.
+
 	* TestLib.java: In TaskCounter, directly add to Host
 	.observableTaskAdded.
 	
