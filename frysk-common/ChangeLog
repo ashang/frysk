@@ -1,3 +1,7 @@
+2005-12-05  Stan Cox  <scox@redhat.com>
+
+	* TestRunner.sh: Remove -log option. Add -level option.
+
 2005-12-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (EXTRA_DIST): Add common/version.in and
@@ -68,7 +72,7 @@
 	* Makefile.gen.sh: When making .jar targets in sub-directories, do
 	not specify name of .jar file.
 
-2005-11-22  Stan Cox  <scox@multics.rdu.redhat.com>
+2005-11-22  Stan Cox  <scox@redhat.com>
 
 	* TestRunner.sh: Add -log option.
 
