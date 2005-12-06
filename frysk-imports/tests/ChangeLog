@@ -1,3 +1,7 @@
+2005-12-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (rh174912/gcj.sh): Steal from tom tromey.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Use $(GCJ) and $(GIJ).

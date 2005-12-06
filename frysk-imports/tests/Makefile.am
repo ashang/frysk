@@ -123,6 +123,18 @@ werror/cxx.sh: $(werror_FILES)
 		> $@
 	chmod a+x $@
 
+rh174912_FILES = rh174912/rh174912.java
+EXTRA_DIST += $(rh174912_FILES)
+TESTS += rh174912/gcj.sh
+rh174912/gcj.sh: $(werror_FILES)
+	mkdir -p rh174912
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo $(GCJ) -C -d rh174912 $(srcdir)/rh174912/rh174912.java >> $@.tmp
+	echo $(GCJ) -c -o rh174912/rh174912.o rh174912/rh174912.class >> $@.tmp
+	echo $(GCJ) -c -o \'rh174912/rh174912\$$1.o\' \'rh174912/rh174912\$$1.class\' >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
 TESTS += textiter/a.out
 textiter_FILES = textiter/JNICrash.java
 EXTRA_DIST += $(textiter_FILES)
