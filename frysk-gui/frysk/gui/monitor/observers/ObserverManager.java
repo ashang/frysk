@@ -41,10 +41,10 @@ package frysk.gui.monitor.observers;
 
 import java.util.Observable;
 
-import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.Action;
-import frysk.gui.monitor.filters.TaskProcNameFilter;
+import frysk.gui.monitor.actions.TaskAction;
+import frysk.proc.Proc;
+import frysk.proc.Task;
 
 /**
  * Only once instance.
@@ -83,34 +83,29 @@ public class ObserverManager extends Observable {
 		
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
-		customObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("xxxxxx"));
-		final TaskExecObserver   lsObserver = new TaskExecObserver();
-		lsObserver.taskFilterPoint.addFilter(new TaskProcNameFilter("ls"));
-		customObserver.addAction(new Action("Dialog shower", ""){
-			public void execute() {
-				System.out.println("Exec Observer ");
-				WarnDialog dialog = new WarnDialog("ls is about to happen");
-				dialog.showAll();
-				dialog.run();
+		
+		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
+		forkedObserver.setName("ProgramWatcher");
+		//final TaskExecObserver   execObserver = new TaskExecObserver();
+		
+		final TaskAction myTaskAction = new TaskAction("", "") {
+			public void execute(Task task) {
+				Proc newProc = task.getProc();
+				TaskForkedObserver newForkedObserver = (TaskForkedObserver) forkedObserver.getCopy();
+				TaskExecObserver   newExecObserver   = new TaskExecObserver();
+				newForkedObserver.forkedTaskActionPoint.addTaskAction(this);
+				
+				newForkedObserver.apply(newProc);
+				newExecObserver.apply(newProc);
 			}
-		});
+		};
 		
-//		customObserver.addForkedAction(new ForkedAction(){
-//			public void execute(Task task, Task child) {
-//				System.out.println(".execute() " + child.getPid());
-//				Iterator iter = child.getTasks().iterator();
-//				while(iter.hasNext()){
-//					Task myTask = (Task) iter.next();
-//					myTask.requestAddForkedObserver(customObserver);
-//					myTask.requestAddExecedObserver(lsObserver);
-//				}
-//				
-//				child.requestAddForkedObserver(customObserver);					
-//			
-//			}
-//		});
+		forkedObserver.forkedTaskActionPoint.addTaskAction(myTaskAction);
 		
-		this.addTaskObserverPrototype(customObserver);
+		//forkedObserver.apply(proc);
+		//execObserver.apply(proc);
+		
+		this.addTaskObserverPrototype(forkedObserver);
 	} 
 
 	/**

@@ -1,3 +1,7 @@
+2005-12-06 Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProgramObserver.java: Added
+
 2005-12-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskSyscallObserver.java: Renamed SyscallObserver to this.
