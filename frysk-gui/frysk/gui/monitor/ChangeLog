@@ -1,5 +1,28 @@
 2005-12-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/TaskSyscallObserver.java: Renamed SyscallObserver to this.
+	* observers/TaskForkedObserver.java: Added two taskActionPoints +
+	handling. fixed onld procFilterPoint  to conform to new back-end
+	interface.
+	* observers/TaskExecObserver.java: Added a taskActionPoint + handling.
+	* observers/ObserverRoot.java: Added genericActionPoint.
+	Added functions for addingActionPoints and retrieving them.
+	* actions/TaskActionPoint.java:  New file.
+	* actions/GenericActionPoint.java:  New file.
+	* actions/ActionPoint.java: New file.
+	* actions/ActionManager.java: Added genericActionsList. added
+	functions to add to and get genericActionsList. added javadoc.
+	* TaskData.java: Removed not needed code (now provided by
+	ObservableLinkedList).
+	* ObservableLinkedList.java: Removed debug output.
+	* GuiData.java: Removed redundent code that is now provided by 
+	ObservableLinkedList.
+	* FilterWidget.java: Removed debug output.
+	* FilterLine.java: Added isPrototype boolean. Added NP check when
+	adding a filter. Removed some unused uncommented code.
+	
+005-12-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* observers/TaskObserverRoot.java (apply): added apply(Proc) function
 	TATA! :); handles application of a task observer to all tasks (current
 	and future) of a Proc.

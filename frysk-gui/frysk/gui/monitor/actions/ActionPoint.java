@@ -39,92 +39,39 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.Observable;
-
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * Only once instance.
- * Keeps a list of available actions.
- * Provides an interface for instantiating those actions.
+ * In a similar manner to @link frysk.gui.monitor.filters.FilterPoint
+ * ActionPoints provide a flexible interface to add actions to Observers.
  * */
-public class ActionManager extends Observable {
+public abstract class ActionPoint extends GuiObject {
+	protected ObservableLinkedList actions;
 	
-	public static ActionManager theManager = new ActionManager();
+	public ActionPoint(String name, String toolTip){
+		super(name, toolTip);
+		this.actions = new ObservableLinkedList();
+	}
 	
-	private ObservableLinkedList procActions;
-	private ObservableLinkedList taskActions;
-	private ObservableLinkedList genericActions;
-	
-	public ActionManager(){
-		this.procActions = new ObservableLinkedList();
-		this.taskActions = new ObservableLinkedList();
-		this.genericActions = new ObservableLinkedList();
-		this.initActionList();
+	public ActionPoint(ActionPoint other){
+		super(other);
+		this.actions = new ObservableLinkedList(); // Dont copy Actions
 	}
 	
 	/**
-	 * Instantiates each one of the static task observers
-	 * and adds it to the list.
+	 * Retrieves a list of applicable actions from the ActionManager.
 	 * */
-	private void initActionList() {
-		this.addGenericActionPrototype(new Stop());
-		this.addGenericActionPrototype(new Resume());
-		this.addGenericActionPrototype(new PrintProc());
-		this.addGenericActionPrototype(new ShowSourceWin());
-
-		this.addTaskActionPrototype(new PrintTask());
-	}
-
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instantiated.
-	 * */
-	public Action getObserver(Action prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented");
-		//return prototype.getCopy();
+	public abstract ObservableLinkedList getApplicableActions();
+	
+	public void removeAction(Action action){
+		if(!this.actions.remove(action)){
+			throw new IllegalArgumentException("the passed action ["+ action +"] is not a member of this action point");
+		}
 	}
 	
-	public ObservableLinkedList getProcActions(){
-		return this.procActions;
-	}
-
-	public ObservableLinkedList getTaskActions(){
-		return this.taskActions;
-	}
-
-	public ObservableLinkedList getGenericActions(){
-		return this.taskActions;
-	}
-
-	/**
-	 * Add a ProcAction to the list of available ProcAction
-	 * prototypes.
-	 * @param prototype the action to be added.
-	 * */
-	public void addProcActionPrototype(ProcAction prototype){
-		this.procActions.add(prototype);
-	}
-	
-	/**
-	 * Add a TaskAction to the list of available TaskAction
-	 * prototypes.
-	 * @param prototype the action to be added.
-	 * */
-	public void addTaskActionPrototype(TaskAction prototype){
-		this.taskActions.add(prototype);
-	}
-
-	/**
-	 * Add a generic Action to the list of available Action
-	 * prototypes.
-	 * @param prototype the action to be added.
-	 * */
-	public void addGenericActionPrototype(Action prototype) {
-		this.genericActions.add(prototype);
+	public ObservableLinkedList getActions(){
+		return this.actions;
 	}
 	
 }

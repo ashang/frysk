@@ -6,11 +6,8 @@
  */
 package frysk.gui.monitor.observers;
 
-import java.util.Iterator;
-
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.ForkedAction;
-import frysk.gui.monitor.filters.ProcFilterPoint;
+import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -20,17 +17,27 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 
 	ObservableLinkedList forkedActions;
 	
-	public TaskFilterPoint taskFilterPoint;
-	public ProcFilterPoint procFilterPoint;
+	public TaskFilterPoint forkingTaskFilterPoint;
+	public TaskFilterPoint forkedTaskFilterPoint;
+
+	public TaskActionPoint forkingTaskActionPoint;
+	public TaskActionPoint forkedTaskActionPoint;
+
 	
 	public TaskForkedObserver() {
 		super("Fork Observer", "Fires when a proc forks");
 		
-		this.taskFilterPoint = new TaskFilterPoint("Forking Thread", "Thread that performed the fork");
-		this.procFilterPoint = new ProcFilterPoint("New Process","Newly forked created process");
+		this.forkingTaskFilterPoint = new TaskFilterPoint("Forking Thread", "Thread that performed the fork");
+		this.forkedTaskFilterPoint = new TaskFilterPoint("Forked Thread","Main thread of newly forked process");
 		
-		this.addFilterPoint(this.taskFilterPoint);
-		this.addFilterPoint(this.procFilterPoint);
+		this.addFilterPoint(this.forkingTaskFilterPoint);
+		this.addFilterPoint(this.forkedTaskFilterPoint);
+		
+		this.forkingTaskActionPoint = new TaskActionPoint("Forking Thread", "Thread that performed the fork");
+		this.forkedTaskActionPoint = new TaskActionPoint("Forked Thread","Main thread of newly forked process");
+		
+		this.addActionPoint(this.forkingTaskActionPoint);
+		this.addActionPoint(this.forkedTaskActionPoint);
 		
 		this.forkedActions = new ObservableLinkedList();
 	}
@@ -38,12 +45,18 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	public TaskForkedObserver(TaskForkedObserver other) {
 		super(other);
 		
-		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
-		this.procFilterPoint = new ProcFilterPoint(other.procFilterPoint);
+		this.forkingTaskFilterPoint = new TaskFilterPoint(other.forkingTaskFilterPoint);
+		this.forkedTaskFilterPoint = new TaskFilterPoint(other.forkedTaskFilterPoint);
+
+//		this.addFilterPoint(this.forkingTaskFilterPoint); not needed done by parent const.
+//		this.addFilterPoint(this.forkedTaskFilterPoint);
+
+		this.forkingTaskActionPoint = new TaskActionPoint("Forking Thread", "Thread that performed the fork");
+		this.forkedTaskActionPoint  = new TaskActionPoint("Forked Thread","Main thread of newly forked process");
 		
-		//this.addFilterPoint(this.taskFilterPoint); not needed done by parent constructor
-		//this.addFilterPoint(this.procFilterPoint);
-		
+//		this.addActionPoint(this.forkingTaskActionPoint); not needed done by parent const.
+//		this.addActionPoint(this.forkedTaskActionPoint);
+
 		this.forkedActions = new ObservableLinkedList(); // Dont copy actions
 	}
 
@@ -52,8 +65,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 //		dialog.showAll();
 //		dialog.run();
 
-		System.out.println("TaskForkedObserver.updateForked() "
-				   + child.getTid());
+		System.out.println("TaskForkedObserver.updateForked() " + child.getTid());
 		final Task myTask = task;
 		final Task myChild = child;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
@@ -66,10 +78,9 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	
 	private void bottomHalf(Task task, Task child){
 		if(this.runFilters(task, child)){
-			this.runActions();
-			this.runForkedActions(task, child);
+			this.runActions(task, child);
 		}
-		child.requestAddForkedObserver(new TaskForkedObserver());
+		//child.requestAddForkedObserver(new TaskForkedObserver());
 		
 		task.requestUnblock(this);
 		child.requestUnblock(this);
@@ -83,22 +94,16 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		return new TaskForkedObserver(this);
 	}
 	
-	public void addForkedAction(ForkedAction action){
-		this.forkedActions.add(action);
-	}
-	
-	public void runForkedActions(Task task, Task child){
-		Iterator iter = this.forkedActions.iterator();
-		while (iter.hasNext()) {
-			ForkedAction action = (ForkedAction) iter.next();
-			action.execute(task, child);
-		}
-	}
-	
 	private boolean runFilters(Task task, Task child){
-//XXX		if(!this.procFilterPoint.filter(child)) return false;
-		if(!this.taskFilterPoint.filter(task )) return false;
+		if(!this.forkingTaskFilterPoint.filter(task )) return false;
+		if(!this.forkedTaskFilterPoint.filter(child)) return false;
 		return true;
+	}
+	
+	private void runActions(Task task, Task child){
+		super.runActions();
+		this.forkingTaskActionPoint.runAction(task);
+		this.forkedTaskActionPoint.runAction(child);
 	}
 	
 }

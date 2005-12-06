@@ -52,12 +52,7 @@ public class GuiData {
 	Widget widget;
 	ObservableLinkedList observers;
 	
-	public GuiObservable observerAdded;
-	public GuiObservable observerRemoved;
-	
 	public GuiData(){
-		this.observerAdded = new GuiObservable();
-		this.observerRemoved = new GuiObservable();
 		this.observers = new ObservableLinkedList();
 	}
 

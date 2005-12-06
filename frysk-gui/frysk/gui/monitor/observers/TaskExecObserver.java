@@ -1,5 +1,6 @@
 package frysk.gui.monitor.observers;
 
+import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
 import frysk.proc.Task;
@@ -12,16 +13,26 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	
 	public TaskFilterPoint taskFilterPoint;
 	
+	public TaskActionPoint taskActionPoint;
+	
 	public TaskExecObserver(){
-		super("Exec Observer", "Fires everytime this task executes an exec call");
+		super("Exec Observer", "Fires every time this task executes an exec call");
+		
 		this.taskFilterPoint = new TaskFilterPoint("Exec'ing Thread", "The thread that is calling exec");
 		this.addFilterPoint(taskFilterPoint);
+		
+		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName(), taskFilterPoint.getToolTip());
+		this.addActionPoint(taskActionPoint);
 	}
 
 	public TaskExecObserver(TaskExecObserver other){
 		super(other);
+		
 		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
 		// this.addFilterPoint(taskFilterPoint); not needed done by parent constructor
+		
+		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName(), taskFilterPoint.getToolTip());
+		// this.addActionPoint(taskActionPoint); not needed done by parent constructor
 	}
 
 	public Action updateExeced(Task task) {
@@ -37,14 +48,14 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	
 	private void bottomHalf(Task task){
 		if(this.runFilters(task)){
-			this.runActions();
-			this.runExecActions(task);
+			this.runActions(task);
 		}
 		task.requestUnblock(this);
 	}
 	
-	private void runExecActions(Task task) {
-		// TODO Auto-generated method stub		
+	private void runActions(Task task) {
+		this.genericActionPoint.runActions();
+		this.taskActionPoint.runAction(task);
 	}
 
 	private boolean runFilters(Task task) {

@@ -44,9 +44,7 @@ import java.util.Observable;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.Action;
-import frysk.gui.monitor.actions.ForkedAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
-import frysk.proc.Task;
 
 /**
  * Only once instance.
@@ -81,13 +79,11 @@ public class ObserverManager extends Observable {
 		this.addTaskObserverPrototype(new TaskTerminatingObserver());
 		this.addTaskObserverPrototype(new TaskForkedObserver());
 		this.addTaskObserverPrototype(new TaskCloneObserver());
-		this.addTaskObserverPrototype(new SyscallObserver());
-		
-
+		this.addTaskObserverPrototype(new TaskSyscallObserver());
 		
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
-		customObserver.procFilterPoint.addFilter(new TaskProcNameFilter("xxxxxx"));
+		customObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("xxxxxx"));
 		final TaskExecObserver   lsObserver = new TaskExecObserver();
 		lsObserver.taskFilterPoint.addFilter(new TaskProcNameFilter("ls"));
 		customObserver.addAction(new Action("Dialog shower", ""){
@@ -99,8 +95,8 @@ public class ObserverManager extends Observable {
 			}
 		});
 		
-		customObserver.addForkedAction(new ForkedAction(){
-			public void execute(Task task, Task child) {
+//		customObserver.addForkedAction(new ForkedAction(){
+//			public void execute(Task task, Task child) {
 //				System.out.println(".execute() " + child.getPid());
 //				Iterator iter = child.getTasks().iterator();
 //				while(iter.hasNext()){
@@ -108,14 +104,14 @@ public class ObserverManager extends Observable {
 //					myTask.requestAddForkedObserver(customObserver);
 //					myTask.requestAddExecedObserver(lsObserver);
 //				}
-				
-				child.requestAddForkedObserver(customObserver);					
-			
-			}
-		});
+//				
+//				child.requestAddForkedObserver(customObserver);					
+//			
+//			}
+//		});
 		
 		this.addTaskObserverPrototype(customObserver);
-	}
+	} 
 
 	/**
 	 * Returns a copy of the prototype given.

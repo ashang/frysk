@@ -1,6 +1,5 @@
 package frysk.gui.monitor.observers;
 
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -10,6 +9,8 @@ import org.gnu.glib.CustomEvents;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.Action;
+import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
 
@@ -30,23 +31,38 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		private String info;
 		
 		private ObservableLinkedList filterPoints;
+		private ObservableLinkedList actionPoints;
 		
 		private final String baseName;
 		
+		public GenericActionPoint genericActionPoint;
+		
 		public ObserverRoot(String name, String toolTip){
 			super(name, toolTip);
+			
 			this.actions      = new ObservableLinkedList();
 			this.info         = new String();
 			this.filterPoints = new ObservableLinkedList();			
-			this.baseName     = name;
+			this.actionPoints = new ObservableLinkedList();			
+			this.baseName     = name;			
+			
+			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
+			this.addActionPoint(genericActionPoint);
+
 		}
 		
 		public ObserverRoot(ObserverRoot other) {
 			super(other);
+
 			this.actions      = new ObservableLinkedList(other.actions);
 			this.info         = new String(other.info);
 			this.filterPoints = new ObservableLinkedList(other.filterPoints);			
+			this.actionPoints = new ObservableLinkedList(other.actionPoints);			
 			this.baseName     = other.baseName;
+			
+			this.genericActionPoint = new GenericActionPoint(other.genericActionPoint);
+//			this.addActionPoint(genericActionPoint);
+
 		}
 
 		public void update(Observable o, Object obj) {
@@ -69,7 +85,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		 * update function is called.
 		 * */
 		public void addAction(Action action){
-			this.actions.add(action);
+			this.genericActionPoint.addAction(action);
 		}
 		
 		/**
@@ -116,19 +132,23 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		}
 	
 		protected void runActions(){
-			Iterator iter = this.actions.iterator();
-			while(iter.hasNext()){
-				Action action = (Action)iter.next();
-				action.execute();
-			}
+			this.genericActionPoint.runActions();
 		}
 		
 		public ObservableLinkedList getFilterPoints(){
 			return this.filterPoints;
 		}
 		
+		public ObservableLinkedList getActionPoints(){
+			return this.actionPoints;
+		}
+		
 		protected void addFilterPoint(FilterPoint filterPoint){
 			this.filterPoints.add(filterPoint);
+		}
+		
+		protected void addActionPoint(ActionPoint actionPoint){
+			this.actionPoints.add(actionPoint);
 		}
 
 		public String getBaseName() {

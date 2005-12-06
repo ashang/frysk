@@ -63,8 +63,17 @@ public class FilterLine extends HBox{
 	private FilterPoint selectedFilterPoint;
 	private Filter      selectedFilter;
 	
+	/**
+	 * States wether this filterLine represents a prototype
+	 * or an actual filter in an observer.
+	 * Hack, Hack, Hack: find a better model for prototype vs
+	 * actual filter.
+	 * */
+	private boolean isPrototype;
+	
 	public FilterLine(ObserverRoot observer) {
 		super(false, 3);
+		this.isPrototype = true;
 		
 		this.observer = observer;
 		
@@ -96,7 +105,9 @@ public class FilterLine extends HBox{
 		filterWidgetVBox.packStart(new Label("                                     "), true, true, 0); // spacer
 		filterComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				setSelectedFilter((Filter)filterComboBox.getSelectedObject());
+				if(filterComboBox.getSelectedObject() != null){
+					setSelectedFilterAndUpdate((Filter)filterComboBox.getSelectedObject());
+				}
 			}
 		});
 		this.packStart(filterWidgetVBox, true, true, 0);
@@ -109,31 +120,51 @@ public class FilterLine extends HBox{
 	protected void setSelectedFilterPoint(FilterPoint point) {
 		selectedFilterPoint = point;
 		filterComboBox.clear();
-		filterComboBox.setActive(-1);
 		filterComboBox.watchLinkedList(selectedFilterPoint.getApplicableFilters());
-
-//		Iterator iter = selectedFilterPoint.getApplicableFilters().iterator();
-//		while(iter.hasNext()){
-//			filterComboBox.add((Filter)iter.next());
-//		}	
+		filterComboBox.setActive(-1);
 	}
 
 	protected void setSelectedFilter(Filter filter) {
-		//update the filter
-		selectedFilter = filter;
-		
+		System.out.println("FilterLine.setSelectedFilter()");
+		this.selectedFilter = filter;
+
 		Widget[] widgets = filterWidgetVBox.getChildren();
 		for (int i = 0; i < widgets.length; i++) {
 			filterWidgetVBox.remove(widgets[i]);
 		}
 
 		if(filter == null || filter.getWidget() == null){
-			filterWidgetVBox.packStart(new Label(""), true, true, 0); // spacer
+			filterWidgetVBox.packStart(new Label("                                           "), true, true, 0); // spacer
 		}else{
 			filterWidgetVBox.packStart(filter.getWidget(), true, true, 0);
 		}
-
+		
 		filterWidgetVBox.showAll();
+	}
+
+	/**
+	 * Sets selected filter then updates the @link frysk.gui.monitor.observers.ObserverManager
+	 * */
+	protected void setSelectedFilterAndUpdate(Filter filter) {
+		System.out.println("FilterLine.setSelectedFilterAndUpdate()");
+		
+		if(!this.isPrototype) return;
+		this.removeFromObserver();
+		this.setSelectedFilter(filter);
+		this.addToObserver();
+		
+//		Widget[] widgets = filterWidgetVBox.getChildren();
+//		for (int i = 0; i < widgets.length; i++) {
+//			filterWidgetVBox.remove(widgets[i]);
+//		}
+//
+//		if(filter == null || filter.getWidget() == null){
+//			filterWidgetVBox.packStart(new Label("                            "), true, true, 0); // spacer
+//		}else{
+//			filterWidgetVBox.packStart(filter.getWidget(), true, true, 0);
+//		}
+//
+//		filterWidgetVBox.showAll();
 	}
 
 	/**
@@ -142,6 +173,7 @@ public class FilterLine extends HBox{
 	 * */
 	public void setSelection(FilterPoint filterPoint, final Filter filter){
 		// assertions
+		System.out.println("FilterLine.setSelection()");
 		if(!this.observer.getFilterPoints().contains(filterPoint)){
 			throw new IllegalArgumentException("The given FilterPoint is not a member of the observer represented by this filter line");
 		}
@@ -150,15 +182,17 @@ public class FilterLine extends HBox{
 			throw new IllegalArgumentException("The given filter is not a member of the given filterPoint");
 		}
 
-		setSelectedFilterPoint(filterPoint);
+		this.isPrototype = false;
+		
+//		setSelectedFilterPoint(filterPoint);
 		setSelectedFilter(filter);
 		
 		filterPointComboBox.setSelectedObject(filterPoint);
 		filterComboBox.setSelectedText(filter.getName());
 		
-//		this.selectedFilterPoint = filterPoint;
-//		this.selectedFilter = filter;
-//
+		this.selectedFilterPoint = filterPoint;
+		this.selectedFilter = filter;
+
 //		this.setSelectedFilter(filter);
 		
 	}

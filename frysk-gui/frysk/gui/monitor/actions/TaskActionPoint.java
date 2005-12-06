@@ -37,63 +37,41 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor;
+package frysk.gui.monitor.actions;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Iterator;
 
-/**
- * Extends LinkedList but accepts observers that will 
- * be notified when elements are added/removed.
- * Not all functions are overwritten check to see that
- * the function you use is overwritten and the appropriate
- * listeners are being notified.
- * */
-public class ObservableLinkedList extends LinkedList{
+import frysk.gui.monitor.ObservableLinkedList;
+import frysk.proc.Task;
 
-	private static final long serialVersionUID = 1L;
-	
-	public final GuiObservable itemAdded;
-	public final GuiObservable itemRemoved;
-	
-	
-	public ObservableLinkedList(){
-		super();
-		this.itemAdded = new GuiObservable();
-		this.itemRemoved = new GuiObservable();
-	}
-	
-	public ObservableLinkedList(Collection collection){
-		super(collection);
-		this.itemAdded = new GuiObservable();
-		this.itemRemoved = new GuiObservable();
-	}
-	
+public class TaskActionPoint extends ActionPoint{
 
-	
-	public boolean add(Object o){
-		boolean val = super.add(o);
-		this.itemAdded.notifyObservers(o);
-		return val;
-	}
-	
-	public void add(int index, Object element){
-		super.add(index, element);
-		this.itemAdded.notifyObservers(element);
+	public TaskActionPoint(String name, String toolTip) {
+		super(name, toolTip);
 	}
 
-	public Object remove(int index){
-		Object removed = super.remove(index);
-		this.itemRemoved.notifyObservers(removed);
-		return removed;
+	public TaskActionPoint(ActionPoint other) {
+		super(other);
+	}
+
+	public ObservableLinkedList getApplicableActions() {
+		return ActionManager.theManager.getTaskActions();
 	}
 	
-	public boolean remove(Object o){
-		if(super.remove(o)){
-			this.itemRemoved.notifyObservers(o);			
-			return true;
-		}else{
-			return false;
+	/**
+	 * Run all the actions that belong to this @link ActionPoint.
+	 * @param task the task to perform the actions on.
+	 * */
+	public void runAction(Task task){
+		Iterator iter = this.actions.iterator();
+		while(iter.hasNext()){
+			TaskAction action = (TaskAction) iter.next();
+			action.execute(task);
 		}
 	}
+
+	public void addTaskAction(TaskAction action){
+		this.actions.add(action);
+	}
+
 }

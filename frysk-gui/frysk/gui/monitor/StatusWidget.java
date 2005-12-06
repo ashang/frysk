@@ -77,7 +77,8 @@ public class StatusWidget extends VBox{
 //        Stripchart area;
 	
 	public  Observable notifyUser;
- //   private int e2;
+//    private int e2;
+
 	public StatusWidget(GuiData data){
 		super(false,0);
 		//FontDescription font = new FontDescription();
@@ -178,7 +179,6 @@ public class StatusWidget extends VBox{
 				return false;
 			}
 		});
-		
 		
 		return listView;
 	}

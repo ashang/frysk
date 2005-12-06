@@ -37,63 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor;
+package frysk.gui.monitor.actions;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Iterator;
 
-/**
- * Extends LinkedList but accepts observers that will 
- * be notified when elements are added/removed.
- * Not all functions are overwritten check to see that
- * the function you use is overwritten and the appropriate
- * listeners are being notified.
- * */
-public class ObservableLinkedList extends LinkedList{
+import frysk.gui.monitor.ObservableLinkedList;
 
-	private static final long serialVersionUID = 1L;
-	
-	public final GuiObservable itemAdded;
-	public final GuiObservable itemRemoved;
-	
-	
-	public ObservableLinkedList(){
-		super();
-		this.itemAdded = new GuiObservable();
-		this.itemRemoved = new GuiObservable();
+public class GenericActionPoint extends ActionPoint {
+
+	public GenericActionPoint(String name, String toolTip) {
+		super(name, toolTip);
 	}
 	
-	public ObservableLinkedList(Collection collection){
-		super(collection);
-		this.itemAdded = new GuiObservable();
-		this.itemRemoved = new GuiObservable();
-	}
-	
-
-	
-	public boolean add(Object o){
-		boolean val = super.add(o);
-		this.itemAdded.notifyObservers(o);
-		return val;
-	}
-	
-	public void add(int index, Object element){
-		super.add(index, element);
-		this.itemAdded.notifyObservers(element);
+	public GenericActionPoint(ActionPoint other) {
+		super(other);
 	}
 
-	public Object remove(int index){
-		Object removed = super.remove(index);
-		this.itemRemoved.notifyObservers(removed);
-		return removed;
+	public ObservableLinkedList getApplicableActions() {
+		return ActionManager.theManager.getGenericActions();
 	}
-	
-	public boolean remove(Object o){
-		if(super.remove(o)){
-			this.itemRemoved.notifyObservers(o);			
-			return true;
-		}else{
-			return false;
+
+	public void runActions(){
+		Iterator iterator = this.actions.iterator();
+		while (iterator.hasNext()) {
+			Action action = (Action) iterator.next();
+			action.execute();
 		}
 	}
+	
+	public void addAction(Action action){
+		this.actions.add(action);
+	}
+	
 }
