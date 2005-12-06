@@ -43,7 +43,6 @@ import java.util.Observable;
 
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskAction;
-import frysk.proc.Proc;
 import frysk.proc.Task;
 
 /**
@@ -90,13 +89,17 @@ public class ObserverManager extends Observable {
 		
 		final TaskAction myTaskAction = new TaskAction("", "") {
 			public void execute(Task task) {
-				Proc newProc = task.getProc();
+				//Proc newProc = task.getProc();
 				TaskForkedObserver newForkedObserver = (TaskForkedObserver) forkedObserver.getCopy();
 				TaskExecObserver   newExecObserver   = new TaskExecObserver();
 				newForkedObserver.forkedTaskActionPoint.addTaskAction(this);
 				
-				newForkedObserver.apply(newProc);
-				newExecObserver.apply(newProc);
+//				newForkedObserver.apply(newProc);
+//				newExecObserver.apply(newProc);
+				
+				//XXX: cheat :) use ^^
+				newForkedObserver.apply(task);
+				newExecObserver.apply(task);
 			}
 		};
 		
