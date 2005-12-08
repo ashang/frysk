@@ -1,5 +1,8 @@
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Move checks for gtk2-java, glade-java, glib-java,
+	and gtk+-2.0, to common/acinclude.m4.
+
 	* configure.ac: For GTK2_JAR, GLADE_JAR, and GLIB_JAVA_JAR use
 	FRYSK_FIND_JAR to set variable.
 

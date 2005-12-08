@@ -79,4 +79,18 @@ test "x$FIG2DEV" = x && AC_MSG_ERROR([no fig2dev binary is found in \$(PATH)])
 
 AM_PROG_AS
 
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig:/usr/lib/frysk/pkgconfig
 
+PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
+
+PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
+FRYSK_FIND_JAR(GTK2_JAR, gtk2-java)
+
+PKG_CHECK_MODULES(GLADE_JAVA, glade-java >= 2.7.0)
+FRYSK_FIND_JAR(GLADE_JAR, glade-java)
+
+PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
+FRYSK_FIND_JAR(GLIB_JAVA_JAR, glib-java)
+
+PKG_CHECK_MODULES(VTE_JAVA, vte-java >= 0.11.11)
+FRYSK_FIND_JAR(VTE_JAVA_JAR, vte-java)

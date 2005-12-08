@@ -55,19 +55,4 @@ fi
 AC_FIND_FILE([antlr.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], ANTLR_JAR)
 AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], JDOM_JAR)
 
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig:/usr/lib/frysk/pkgconfig
-
-PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
-FRYSK_FIND_JAR(GTK2_JAR, gtk2-java)
-
-PKG_CHECK_MODULES(GLADE_JAVA, glade-java >= 2.7.0)
-FRYSK_FIND_JAR(GLADE_JAR, glade-java)
-
-PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
-FRYSK_FIND_JAR(GLIB_JAVA_JAR, glib-java)
-
-dnl For EggTrayIcon
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
-PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
-
 AC_OUTPUT

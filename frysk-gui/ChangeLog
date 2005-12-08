@@ -1,3 +1,8 @@
+2005-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Move checks for gtk2-java, glade-java, glib-java,
+	and vte-java, to common/acinclude.m4.
+
 2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Makefile.am: Added frysk-imports/libfrysk-ftk.a to LDADD,

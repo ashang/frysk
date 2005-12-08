@@ -1,5 +1,9 @@
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
+	* acinclude.m4: Add checks for gtk2-java, glade-java, glib-java,
+	vte-java, and gtk+-2.0.  Moved from frysk-gui, and frysk-imports
+	configure.ac.
+
 	* m4/frysk_find_jar.m4: New file.
 
 	* m4/ac_find_file.m4: Only do search if variable not already set.
