@@ -1,3 +1,8 @@
+2005-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Replace references to /opt/frysk with corresponding
+	makefile macros.
+
 2005-12-05  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkstripchart.c: Added ftk_stripchart_set_readout_rgb_e(),
