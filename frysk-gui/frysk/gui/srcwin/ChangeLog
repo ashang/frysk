@@ -1,5 +1,17 @@
 2005-12-08  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineViewer.java (InlineViewer): Initializes base depth to 1.
+	(setSubscopeAtCurrentLine): Now correctly has parameter type as
+	SourceViewWidget, otherwise does not override superclass.
+	(doSetSubscope): Added.
+	(clearSubscopeAtCurrentLine): Added.
+	(toggleChild): Arbitrary limit set to three levels for now, added
+	debugging output.
+	(removeLowestChild): Added debugging output.
+	* SourceViewWidget.java: Added myContext member variable.
+	(drawMargin): Now uses member myContext variable, to avoid repeated
+	garbage collection of GC variables.
+
 	* dom: Moved to frysk-core, updated imports in .java files to match.
 
 2005-11-24  Adam Jocksch  <ajocksch@redhat.com>

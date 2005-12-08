@@ -82,14 +82,25 @@ public class InlineViewer extends SourceViewWidget {
 			DOMSource scope, DOMInlineInstance instance) {
 		super(parentPrefs, new InlineBuffer(scope, instance), top);
 		this.setBorderWidth(1);
+		this.depth = 1;
 	}
     
-	public void setSubscopeAtCurrentLine(InlineViewer nested){
-		nested.depth = this.depth + 1;
-		this.next = nested;
-		nested.previous = this;
+	public void setSubscopeAtCurrentLine(SourceViewWidget nested){
+		if(nested instanceof InlineViewer){
+			InlineViewer casted = (InlineViewer) nested;
+			casted.depth = this.depth + 1;
+			this.next = casted;
+			casted.previous = this;
+		}
 		
 		super.setSubscopeAtCurrentLine(nested);
+	}
+	
+	public void clearSubscopeAtCurrentLine(){
+		this.next.previous = null;
+		this.next = null;
+		
+		super.clearSubscopeAtCurrentLine();
 	}
 	
 	/**
@@ -97,8 +108,7 @@ public class InlineViewer extends SourceViewWidget {
 	 * the visible scopes up or down
 	 */
 	public void toggleChild(){
-		// TODO: pull this out of the preference model
-		int limit = Integer.MAX_VALUE;
+		int limit = 3;
 		
 		if(!this.expanded){
 			// Case 1: depth less than max, this level is not expanded.
@@ -138,11 +148,15 @@ public class InlineViewer extends SourceViewWidget {
 			 * visible scope
 			 */
 			while(top.depth > 1 && numToMove > 0){
+				System.out.println("Moving top scope up a level!");
 				top.moveUp();
 				numToMove--;
 			}
 
-			System.out.println("here");
+			
+			System.out.println("numToMove: " + numToMove);
+			System.out.println("bottom.depth: " + bottom.depth);
+			System.out.println("targetBottom: " + targetBottom);
 			
 			/*
 			 * If we've gotten to the top before we've put the clicked scope at the bottom,
@@ -235,15 +249,18 @@ public class InlineViewer extends SourceViewWidget {
 	 */
 	private void removeLowestChild(){
 		// The next node is not the last one, keep calling down
-		if(this.next != null && this.next.next != null)
+		if(this.next != null && this.next.next != null){
+			System.out.println("Depth " + this.depth + ":\tThe next node has a child, moving down");
 			this.next.removeLowestChild();
+		}
 		// The next node is the last one, cull it
 		else if(this.next != null){
+			System.out.println("Depth " + this.depth + ":\tThe next node is the last, remove it");
 			this.clearSubscopeAtCurrentLine();
 		}
 		// If we got here, that means this is the last node. This should *not* happen
 		else{
-			System.err.println("This should not be happening!");
+			System.err.println("We got to the last node! This should not be happening!");
 		}
 	}
 	

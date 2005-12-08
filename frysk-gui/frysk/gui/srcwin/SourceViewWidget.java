@@ -105,6 +105,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	
 	protected boolean expanded = false;
 
+	// keep this around, we'll be needing it
+	private GC myContext;
+	
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.
@@ -435,12 +438,14 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		Window drawingArea = this.getWindow(TextWindowType.LEFT);
 		
 		// draw the background for the margin
-		GC context = new GC((Drawable) drawingArea);
+		if(this.myContext == null)
+			this.myContext = new GC((Drawable) drawingArea);
+		
 		int r = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getRed());
 		int g = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"G", Margin.DEFAULT.getGreen());
 		int b = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"B", Margin.DEFAULT.getBlue());
-		context.setRGBForeground(new Color(r, g, b));
-		drawingArea.drawRectangle(context, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
+		myContext.setRGBForeground(new Color(r, g, b));
+		drawingArea.drawRectangle(this.myContext, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
 		
 		// get preference settings
 		boolean showLines = this.lnfPrefs.getBoolean(LineNumbers.SHOW, true);
@@ -463,7 +468,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		r = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getRed());
 		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"G", LineNumbers.DEFAULT.getGreen());
 		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"B", LineNumbers.DEFAULT.getBlue());
-		context.setRGBForeground(new Color(r,g,b));
+		this.myContext.setRGBForeground(new Color(r,g,b));
 		
 		// gets current line color
 		int lineR = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getRed());
@@ -516,24 +521,24 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			// For the current line, do some special stuff
 			if(i == this.buf.getCurrentLine()){
 					
-				context.setRGBForeground(new Color(lineR, lineG, lineB));
+				this.myContext.setRGBForeground(new Color(lineR, lineG, lineB));
 				if(showMarks)
-					drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
+					drawingArea.drawRectangle(this.myContext, true, 0, actualFirstStart+drawingHeight, 
 							this.marginWriteOffset+40, lineHeight);
 				else
-					drawingArea.drawRectangle(context, true, 0, actualFirstStart+drawingHeight, 
+					drawingArea.drawRectangle(this.myContext, true, 0, actualFirstStart+drawingHeight, 
 							this.marginWriteOffset+20, lineHeight);
-				context.setRGBForeground(new Color(r,g,b));
+				this.myContext.setRGBForeground(new Color(r,g,b));
 				
 				if(this.buf.hasInlineCode(i)){
-					context.setRGBForeground(new Color(markR,markG,markB));
+					this.myContext.setRGBForeground(new Color(markR,markG,markB));
 					Layout lo = this.createLayout("i");
 					lo.setAlignment(Alignment.RIGHT);
 					if(showMarks)
-						drawingArea.drawLayout(context, this.marginWriteOffset+25, actualFirstStart+drawingHeight, lo);
+						drawingArea.drawLayout(this.myContext, this.marginWriteOffset+25, actualFirstStart+drawingHeight, lo);
 					else
-						drawingArea.drawLayout(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
-					context.setRGBForeground(new Color(r,g,b));
+						drawingArea.drawLayout(this.myContext, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
+					this.myContext.setRGBForeground(new Color(r,g,b));
 					
 					if(this.expanded)
 						skipNextLine = true;
@@ -543,23 +548,23 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			// If it is executable, draw a mark
 			if(showMarks && this.buf.isLineExecutable(i)){
-				context.setRGBForeground(new Color(markR,markG,markB));
-				drawingArea.drawLine(context, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
+				this.myContext.setRGBForeground(new Color(markR,markG,markB));
+				drawingArea.drawLine(this.myContext, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
 						this.marginWriteOffset+12, actualFirstStart+drawingHeight+iconStart);
-				context.setRGBForeground(new Color(r,g,b));
+				this.myContext.setRGBForeground(new Color(r,g,b));
 			}
 			
 			// Draw line numbers
 			if(showLines)
-				drawLineNumber(drawingArea, context, actualFirstStart + drawingHeight, i);
+				drawLineNumber(drawingArea, this.myContext, actualFirstStart + drawingHeight, i);
 			
 			// draw breakpoints
 			if(this.buf.isLineBroken(i)){
 				int iconHeight = lineHeight - 8;
 				
-				context.setRGBForeground(new Color(65535,0,0));
-				drawingArea.drawRectangle(context, true, this.marginWriteOffset+5, actualFirstStart+drawingHeight+4, iconHeight, iconHeight);
-				context.setRGBForeground(new Color(r,g,b));
+				this.myContext.setRGBForeground(new Color(65535,0,0));
+				drawingArea.drawRectangle(this.myContext, true, this.marginWriteOffset+5, actualFirstStart+drawingHeight+4, iconHeight, iconHeight);
+				this.myContext.setRGBForeground(new Color(r,g,b));
 			}
 			
 			// update height for next line
