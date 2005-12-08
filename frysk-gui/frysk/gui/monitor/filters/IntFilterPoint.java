@@ -37,41 +37,34 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
 
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Task;
 
-public class TaskActionPoint extends ActionPoint{
-
-	public TaskActionPoint(String name, String toolTip) {
+public class IntFilterPoint extends FilterPoint {
+	
+	public IntFilterPoint(String name, String toolTip) {
 		super(name, toolTip);
 	}
-
-	public TaskActionPoint(ActionPoint other) {
+	
+	public IntFilterPoint(IntFilterPoint other) {
 		super(other);
 	}
-
-	public ObservableLinkedList getApplicableActions() {
-		return ActionManager.theManager.getTaskActions();
-	}
 	
-	/**
-	 * Run all the actions that belong to this @link ActionPoint.
-	 * @param task the task to perform the actions on.
-	 * */
-	public void runActions(Task task){
-		Iterator iter = this.actions.iterator();
+	public boolean filter(int value){
+		Iterator iter = this.filters.iterator();
 		while(iter.hasNext()){
-			TaskAction action = (TaskAction) iter.next();
-			action.execute(task);
+			IntFilter filter = (IntFilter) iter.next();
+			if(!filter.filter(value)){
+				return false;
+			}
 		}
+		return true;
 	}
 
-	public void addTaskAction(TaskAction action){
-		this.actions.add(action);
+	public ObservableLinkedList getApplicableFilters() {
+		return FilterManager.theManager.getProcFilters();
 	}
-
 }

@@ -21,8 +21,8 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	public TaskFilterPoint forkedTaskFilterPoint;
 
 	public TaskActionPoint forkingTaskActionPoint;
+	
 	public TaskActionPoint forkedTaskActionPoint;
-
 	
 	public TaskForkedObserver() {
 		super("Fork Observer", "Fires when a proc forks");
@@ -39,7 +39,6 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		this.addActionPoint(this.forkingTaskActionPoint);
 		this.addActionPoint(this.forkedTaskActionPoint);
 		
-		this.forkedActions = new ObservableLinkedList();
 	}
 
 	public TaskForkedObserver(TaskForkedObserver other) {
@@ -57,7 +56,6 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 //		this.addActionPoint(this.forkingTaskActionPoint); not needed done by parent const.
 //		this.addActionPoint(this.forkedTaskActionPoint);
 
-		this.forkedActions = new ObservableLinkedList(); // Dont copy actions
 	}
 
 	public Action updateForked(Task task, Task child) {
@@ -102,8 +100,8 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	
 	private void runActions(Task task, Task child){
 		super.runActions();
-		this.forkingTaskActionPoint.runAction(task);
-		this.forkedTaskActionPoint.runAction(child);
+		this.forkingTaskActionPoint.runActions(task);
+		this.forkedTaskActionPoint.runActions(child);
 	}
 	
 }

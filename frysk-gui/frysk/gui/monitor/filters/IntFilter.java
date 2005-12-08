@@ -37,41 +37,43 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
-import java.util.Iterator;
+import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.DynamicWidget.IntCallback;
 
-import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Task;
+public class IntFilter extends Filter {
 
-public class TaskActionPoint extends ActionPoint{
-
-	public TaskActionPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
-
-	public TaskActionPoint(ActionPoint other) {
-		super(other);
-	}
-
-	public ObservableLinkedList getApplicableActions() {
-		return ActionManager.theManager.getTaskActions();
+	int value;
+	
+	public IntFilter(int value){
+		super("Int Filter", "Passes if value at filter call matches the given value");
+		this.value = value;
+		
+		this.initWidget();
 	}
 	
-	/**
-	 * Run all the actions that belong to this @link ActionPoint.
-	 * @param task the task to perform the actions on.
-	 * */
-	public void runActions(Task task){
-		Iterator iter = this.actions.iterator();
-		while(iter.hasNext()){
-			TaskAction action = (TaskAction) iter.next();
-			action.execute(task);
-		}
+	public IntFilter(IntFilter other) {
+		super(other);
+		this.value = other.value;
+		
+		this.initWidget();
 	}
 
-	public void addTaskAction(TaskAction action){
-		this.actions.add(action);
+	private void initWidget(){
+		widget.addInteger(new GuiObject("Value","Value to match"), value, new IntCallback() {
+			public void intChanged(int i) {
+				value = i;
+			}
+		});
+	}
+	
+	public Filter getCopy() {
+		return new IntFilter(this);
+	}
+
+	public boolean filter(int value2) {
+		return (value2 == value);
 	}
 
 }

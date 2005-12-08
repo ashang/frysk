@@ -55,7 +55,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	
 	private void runActions(Task task) {
 		this.genericActionPoint.runActions();
-		this.taskActionPoint.runAction(task);
+		this.taskActionPoint.runActions(task);
 	}
 
 	private boolean runFilters(Task task) {
