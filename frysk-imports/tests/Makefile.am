@@ -135,6 +135,17 @@ rh174912/gcj.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
+gcc8544_FILES = gcc8544/DisplayRenderer.java gcc8544/StyledText.java
+EXTRA_DIST += $(gcc8544_FILES)
+XFAIL_TESTS += gcc8544/gcj.sh
+gcc8544/gcj.sh: $(gcc8544_FILES)
+	mkdir -p gcc8544
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/gcc8544/DisplayRenderer.java $(srcdir)/gcc8544/StyledText.java >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
+
 TESTS += textiter/a.out
 textiter_FILES = textiter/JNICrash.java
 EXTRA_DIST += $(textiter_FILES)

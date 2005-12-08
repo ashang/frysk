@@ -1,3 +1,9 @@
+2005-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (gcc8544/gcj.sh): Add target.
+	* gcc8544/DisplayRenderer.java: New file.
+	* gcc8544/StyledText.java: New file.
+
 2005-12-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (rh174912/gcj.sh): Steal from tom tromey.
