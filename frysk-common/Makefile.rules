@@ -222,9 +222,10 @@ SUFFIXES += .javain
 # Shared library rule (for moment assume that .a contains PIC code).
 SUFFIXES += .so
 .a.so:
+	soname=`basename $@` ; \
 	$(CC) -shared -o $@.tmp \
 		-Wl,--whole-archive,$<,--no-whole-archive \
-		-Wl,--soname,$@,-z,-defs
+		-Wl,--soname,$$soname,-z,-defs
 	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
 	mv $@.tmp $@
 
