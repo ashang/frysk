@@ -1,3 +1,9 @@
+2005-12-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH): Added jdom.
+	(GEN_GCJ_LDADD): Ditto.
+	* frysk/dom: Moved from frysk-gui/frysk/gui/srcwin.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (ANTLR): Use $(JAVA).
