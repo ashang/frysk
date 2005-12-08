@@ -1,3 +1,8 @@
+2005-12-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Fixed
+	http://sourceware.org/bugzilla/show_bug.cgi?id=1999
+
 2005-11-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.gladep: Renamed {delete/add}CustomObserver buttons.
