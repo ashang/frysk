@@ -1,5 +1,7 @@
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
+	* m4/ac_find_file.m4: Only do search if variable not already set.
+
 	* Makefile.rules (.a.so): Fix --soname parameter, strip out any
 	directory prefix.
 	

@@ -1,3 +1,7 @@
+2005-12-08  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: For antlr.jar, and jdom.jar, use AC_FIND_FILE.
+
 2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* autogen.sh: added ftk.jar to the list passed to ./common/Makefile.gen.sh

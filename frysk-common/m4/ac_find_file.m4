@@ -44,19 +44,20 @@
 
 AC_DEFUN([AC_FIND_FILE],
 [
-
-   $3=NO
-   for x in $2
-   do
-       for y in $1
-       do
-           if test -r "$x/$y"
-           then
-               $3=$x
-               break 2
-           fi
-       done
-   done
-
+    AC_MSG_CHECKING([for $1])
+    if test "x${$3}" = x ; then
+        $3=NO
+        for x in $2 ; do
+            for y in $1 ; do
+                if test -r "$x/$y" ; then
+                    $3=$x/$y
+                    break 2
+                fi
+            done
+        done
+    fi
+    test "x${$3}" = xNO && AC_MSG_ERROR([no $1 file found in $2]);
+    AC_SUBST($3)
+    AC_MSG_RESULT($$1)
 ]
 )

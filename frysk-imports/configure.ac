@@ -52,19 +52,10 @@ if [[ "x`uname -p`" = "xx86_64" ]]; then
     lib=${lib}64
 fi
 
-AC_MSG_CHECKING([for antlr.jar])
-ANTLR_JAR=${ANTLR_JAR:-/usr/share/java/antlr.jar}
-test -r ${ANTLR_JAR} || AC_MSG_ERROR([no antlr.jar file found]);
-AC_SUBST([ANTLR_JAR])
-AC_MSG_RESULT([$ANTLR_JAR])
+AC_FIND_FILE([antlr.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], ANTLR_JAR)
+AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], JDOM_JAR)
 
-AC_MSG_CHECKING([for jdom.jar])
-JDOM_JAR=${JDOM_JAR:-/usr/share/java/jdom.jar}
-test -r ${JDOM_JAR} || AC_MSG_ERROR([no jdom.jar file found]);
-AC_SUBST([JDOM_JAR])
-AC_MSG_RESULT([$JDOM_JAR])
-
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig:/usr/lib/frysk/pkgconfig
 
 PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
 AC_MSG_CHECKING(for gtk2-java jar file)
