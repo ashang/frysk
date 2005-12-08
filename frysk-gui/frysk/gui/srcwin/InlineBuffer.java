@@ -5,12 +5,12 @@ import java.util.Iterator;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
 
-import frysk.gui.srcwin.dom.DOMFunction;
-import frysk.gui.srcwin.dom.DOMInlineInstance;
-import frysk.gui.srcwin.dom.DOMLine;
-import frysk.gui.srcwin.dom.DOMSource;
-import frysk.gui.srcwin.dom.DOMTag;
-import frysk.gui.srcwin.dom.DOMTagTypes;
+import frysk.dom.DOMFunction;
+import frysk.dom.DOMInlineInstance;
+import frysk.dom.DOMLine;
+import frysk.dom.DOMSource;
+import frysk.dom.DOMTag;
+import frysk.dom.DOMTagTypes;
 
 public class InlineBuffer extends SourceBuffer {
 

@@ -38,7 +38,7 @@
 // exception.
 package frysk.gui.srcwin;
 
-import frysk.gui.srcwin.dom.DOMSource;
+import frysk.dom.DOMSource;
 
 /**
  * @author ajocksch

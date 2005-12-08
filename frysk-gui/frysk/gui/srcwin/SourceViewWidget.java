@@ -65,15 +65,15 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 import org.jdom.Element;
 
+import frysk.dom.DOMImage;
+import frysk.dom.DOMInlineInstance;
+import frysk.dom.DOMSource;
 import frysk.gui.srcwin.PreferenceConstants.Background;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
 import frysk.gui.srcwin.PreferenceConstants.Margin;
 import frysk.gui.srcwin.PreferenceConstants.Text;
-import frysk.gui.srcwin.dom.DOMImage;
-import frysk.gui.srcwin.dom.DOMInlineInstance;
-import frysk.gui.srcwin.dom.DOMSource;
 
 /** 
  * This class is used to add some functionality to TextView that may be needed

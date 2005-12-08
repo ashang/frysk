@@ -55,8 +55,8 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
-import frysk.gui.srcwin.dom.DOMInlineInstance;
-import frysk.gui.srcwin.dom.DOMSource;
+import frysk.dom.DOMInlineInstance;
+import frysk.dom.DOMSource;
 
 /**
  * @author ajocksch

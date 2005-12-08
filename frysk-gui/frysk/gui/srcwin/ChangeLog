@@ -1,3 +1,7 @@
+2005-12-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* dom: Moved to frysk-core, updated imports in .java files to match.
+
 2005-11-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (InlineViewer): Removed boolean hasEllipsis parameter.

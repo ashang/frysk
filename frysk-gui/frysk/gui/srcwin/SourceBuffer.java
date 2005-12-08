@@ -55,6 +55,10 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 import org.jdom.Element;
 
+import frysk.dom.DOMInlineInstance;
+import frysk.dom.DOMLine;
+import frysk.dom.DOMTag;
+import frysk.dom.DOMTagTypes;
 import frysk.gui.srcwin.PreferenceConstants.Classes;
 import frysk.gui.srcwin.PreferenceConstants.Comments;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
@@ -66,10 +70,6 @@ import frysk.gui.srcwin.PreferenceConstants.OutOfScopeVariables;
 import frysk.gui.srcwin.PreferenceConstants.Search;
 import frysk.gui.srcwin.PreferenceConstants.Variables;
 import frysk.gui.srcwin.cparser.CDTParser;
-import frysk.gui.srcwin.dom.DOMInlineInstance;
-import frysk.gui.srcwin.dom.DOMLine;
-import frysk.gui.srcwin.dom.DOMTag;
-import frysk.gui.srcwin.dom.DOMTagTypes;
 
 
 /**

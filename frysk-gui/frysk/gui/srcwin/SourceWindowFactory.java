@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 
+import frysk.Config;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
@@ -18,12 +19,11 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
-import frysk.gui.srcwin.dom.DOMFrysk;
-import frysk.gui.srcwin.dom.DOMImage;
-import frysk.gui.srcwin.dom.DOMInlineInstance;
-import frysk.gui.srcwin.dom.DOMSource;
+import frysk.dom.DOMFrysk;
+import frysk.dom.DOMImage;
+import frysk.dom.DOMInlineInstance;
+import frysk.dom.DOMSource;
 import frysk.proc.Task;
-import frysk.Config;
 
 /**
  * @author ajocksch

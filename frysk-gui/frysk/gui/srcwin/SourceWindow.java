@@ -96,9 +96,9 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.dom.DOMFrysk;
+import frysk.dom.DOMLine;
 import frysk.gui.common.Messages;
-import frysk.gui.srcwin.dom.DOMFrysk;
-import frysk.gui.srcwin.dom.DOMLine;
 import frysk.proc.Task;
 
 //import frysk.Config;
