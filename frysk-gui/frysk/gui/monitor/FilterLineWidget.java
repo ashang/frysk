@@ -37,65 +37,71 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
-import frysk.gui.monitor.DynamicWidget;
-import frysk.gui.monitor.GuiObject;
-import frysk.proc.Task;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.VBox;
+import org.gnu.gtk.Widget;
+import org.gnu.gtk.event.ComboBoxEvent;
+import org.gnu.gtk.event.ComboBoxListener;
 
-/**
- * @author swagiaal
- * Filter passes if the name of the parent process of 
- * the given Task matches the stored process name.
- */
-public class TaskProcNameFilter extends TaskFilter {
+import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterPoint;
+import frysk.gui.monitor.observers.ObserverRoot;
+
+public class FilterLineWidget extends HBox{
+
+	ObserverRoot observer;
+	FilterPoint  filterPoint;
+	Filter       filter;
 	
-	private ProcNameFilter procNamefilter;
+	private SimpleComboBox filterPointsComboBox;
+	private SimpleComboBox filtersComboBox;
+	private VBox filterWidgetVBox;
 	
-	public TaskProcNameFilter(String procName){
-		super("Name Filter", "Checks the process name of the parent of the given task");
-		this.procNamefilter = new ProcNameFilter(procName);
+	public FilterLineWidget(ObserverRoot observer) {
+		super(false, 3);
+		this.observer = observer;
+
+		this.filtersComboBox = new SimpleComboBox();
 		
-		this.initWidget();
-	}
-	
-	public TaskProcNameFilter(TaskProcNameFilter other){
-		super(other);
-		this.procNamefilter = new ProcNameFilter(other.procNamefilter);
-		
-		this.initWidget();
-	}
-	
-	private void initWidget(){
-		this.widget.addString(new GuiObject("Name", "name of the process"), this.getProcName(),
-				new DynamicWidget.StringCallback() {
-			public void stringChanged(String string) {
-				setProcName(string);
+		this.filterPointsComboBox = new SimpleComboBox();
+		this.filterPointsComboBox.watchLinkedList(this.observer.getFilterPoints());
+		this.filterPointsComboBox.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent event) {
+				setFilterPoint((FilterPoint)filterPointsComboBox.getSelectedObject());
 			}
 		});
+	
+		this.filterWidgetVBox = new VBox(false,0);
+		this.packStart(filterPointsComboBox);
+		this.packStart(filtersComboBox);
+		this.packEnd(this.filterWidgetVBox);
 	}
 	
-	public boolean filter(Task task) {
-		return this.procNamefilter.filter(task.getProc());
+	
+	public void setFilterPoint(FilterPoint filterPoint){
+		this.filterPoint = filterPoint;
+		this.filtersComboBox.clear();
+		this.filtersComboBox.watchLinkedList(filterPoint.getApplicableFilters());
 	}
 	
-	public Filter getCopy() {
-		return new TaskProcNameFilter(this);
+	public void setFilter(Filter filter){
+		this.filter = filter;
+		this.filtersComboBox.add(filter, 0);
+		
+		Widget[] widgets = this.filterWidgetVBox.getChildren();
+		for (int i = 0; i < widgets.length; i++) {
+			this.filterWidgetVBox.remove(widgets[i]);
+		}
+		
+		this.filterWidgetVBox.packStart(this.filter.getWidget());
+		this.filterWidgetVBox.showAll();
+		
 	}
 
-	/**
-	 * Set the name of the process to be filtered for.
-	 * @param procName the name of the process to be filtered for.
-	 */
-	public void setProcName(String procName) {
-		this.procNamefilter.setName(procName);
+	public void removeFromObserver() {
+		
 	}
-
-	/**
-	 * Get the name of the process that is being filtered for.
-	 * @return the name of the process that is being filtered for.
-	 */
-	public String getProcName() {
-		return this.procNamefilter.getProcName();
-	}
+	
 }

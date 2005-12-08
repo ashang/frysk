@@ -41,18 +41,35 @@ package frysk.gui.monitor.filters;
 
 import org.gnu.gtk.Widget;
 
+import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
 
 public abstract class Filter extends GuiObject {
 	
+	/**
+	 * The widget that is used to edit the parameters of this
+	 * filter.
+	 */
+	protected DynamicWidget widget;
+	
 	public Filter(String name, String toolTip){
 		super(name, toolTip);
+		this.widget = new DynamicWidget();
 	}
 	
 	public Filter(Filter other){
 		super(other);
+		this.widget = new DynamicWidget(other.widget);
 	}
 	
-	public abstract Widget getWidget();
+	/**
+	 * return the widget used to edit the parameters of this
+	 * filter.
+	 */
+	public Widget getWidget() {
+		System.out.println("Filter.getWidget() Filter: " + this);
+		return this.widget;
+	}
+
 	public abstract Filter getCopy();
 }

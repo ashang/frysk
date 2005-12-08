@@ -39,12 +39,17 @@
 
 package frysk.gui.monitor.filters;
 
-import org.gnu.gtk.Widget;
-
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
 import frysk.proc.Proc;
 
+/**
+ * 
+ * @author swagiaal
+ *
+ * Filter passes if the name if the given process
+ * matches the stored process name.
+ */
 public class ProcNameFilter extends ProcFilter {
 	
 	private String procName;
@@ -52,11 +57,24 @@ public class ProcNameFilter extends ProcFilter {
 	public ProcNameFilter(String procName){
 		super("Name Filter", "Filters for the proc with the name " + procName);
 		this.procName = procName;
+		
+		this.initWidget();
 	}
 	
 	public ProcNameFilter(ProcNameFilter other){
 		super(other);
 		this.procName = other.procName;
+		
+		this.initWidget();
+	}
+	
+	private void initWidget(){
+		widget.addString(new GuiObject("Name", "name of the process"), this.procName,
+				new DynamicWidget.StringCallback() {
+			public void stringChanged(String string) {
+				setProcName(string);
+			}
+		});
 	}
 	
 	public boolean filter(Proc proc) {
@@ -65,18 +83,16 @@ public class ProcNameFilter extends ProcFilter {
 		}
 		return false;
 	}
-
-	public Widget getWidget() {
-		DynamicWidget widget = new DynamicWidget();
-		widget.addString(new GuiObject("Name", "name of the process"), this.procName);
-		return widget;
-	}
-		
-	public String getProcName(){
-		return this.procName;
-	}
-
+	
 	public Filter getCopy() {
 		return new ProcNameFilter(this);
+	}
+
+	public void setProcName(String procName) {
+		this.procName = procName;
+	}
+
+	public String getProcName() {
+		return procName;
 	}
 }

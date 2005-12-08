@@ -43,6 +43,7 @@ import java.util.Observable;
 
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskAction;
+import frysk.gui.monitor.filters.TaskProcNameFilter;
 import frysk.proc.Task;
 
 /**
@@ -85,6 +86,7 @@ public class ObserverManager extends Observable {
 		
 		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
 		forkedObserver.setName("ProgramWatcher");
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
 		//final TaskExecObserver   execObserver = new TaskExecObserver();
 		
 		final TaskAction myTaskAction = new TaskAction("", "") {

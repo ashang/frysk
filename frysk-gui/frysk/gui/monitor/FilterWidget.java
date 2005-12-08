@@ -83,7 +83,7 @@ public class FilterWidget extends VBox{
 		addButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					addFilterLine(new FilterLine(currentObserver));
+					addFilterLine(new FilterLineWidget(currentObserver));
 				}
 			}
 		});
@@ -114,14 +114,15 @@ public class FilterWidget extends VBox{
 			Iterator j = filterPoint.getFilters().iterator();
 			while (j.hasNext()) {
 				Filter filter = (Filter) j.next();
-				FilterLine filterLine = new FilterLine(currentObserver);
-				filterLine.setSelection(filterPoint, filter);
+				FilterLineWidget filterLine = new FilterLineWidget(currentObserver);
+				filterLine.setFilterPoint(filterPoint);
+				filterLine.setFilter(filter);
 				this.addFilterLine(filterLine);
 			}
 		}
 	}
 	
-	private void addFilterLine(final FilterLine filterLine){
+	private void addFilterLine(final FilterLineWidget filterLine){
 		HBox hbox = new HBox(false, 0);
 
 		Button deleteButton = new Button("Delete");		
@@ -143,7 +144,7 @@ public class FilterWidget extends VBox{
 		this.showAll();
 	}
 	
-	private void deleteFilterLine(FilterLine filterLine){
+	private void deleteFilterLine(FilterLineWidget filterLine){
 		filterLine.removeFromObserver();
 		Widget widget = (Widget) this.widgets.get(filterLine);
 		this.remove(widget);

@@ -39,8 +39,6 @@
 
 package frysk.gui.monitor;
 
-import java.util.Vector;
-
 import org.gnu.gtk.AttachOptions;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Label;
@@ -50,49 +48,79 @@ import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
 
 /**
+ * 
+ * @author swagiaal
+ *
  * Allows clients to easily create an argument entry
  * widget without having to deal with widgets. Clients
  * only have to specify the type of entries they require.
  * more to come: more types, validation, etc as needed.
- * */
+ */
 public class DynamicWidget extends Table {
-
-//	Table tabel;
+	
+	public static interface StringCallback{
+		void stringChanged(String string);
+	}
+	
+	public static interface IntCallback{
+		void intChanged(int i);
+	}
+	
 	int row;
-	Vector mutables;
 	
 	public DynamicWidget(){
 		super(0,0,false);
 		this.row = 0;
-		this.mutables = new Vector();
 	}
 	
+	public DynamicWidget(DynamicWidget other) {
+		super(0,0,false);
+		this.row = other.row;
+	}
+
 	/**
-	 * Adds an Entry to allow the client to edit the given string
-	 * @param mutable string to be displayed int the Entry
-	 * and to be changed when and entry is made.
+	 * Adds an @link Entry to the dynamic widget.
+	 * When the user edits the Entry the given @link StringCallback
+	 * is notified.
+	 * @param key the key representing the entry to be added. It is used
+	 * to set the name and tool tip if the Label preceding the Entry.
+	 * @param initText the text that the entry is initialized with.
+	 * @param stringCallback the @link StringCallback object that will be
+	 * notified whey the text in the entry is edited.
 	 * */
-	public void addString(GuiObject key, String mutable){
+	public void addString(GuiObject key, String initText,final StringCallback stringCallback){
 		this.addLabel(key);
-		final int index = this.mutables.size();
-		this.mutables.add(mutable);
 		final Entry entry = this.addTextEntry(key);
-		entry.setText(mutable);
+		final StringCallback thisStringCallback = stringCallback;
 		
+		entry.setText(initText);
 		entry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent event) {
 				if(event.isOfType(EntryEvent.Type.CHANGED)){
-					System.out.println("DynamicWidget.addString()");
-					String myString = (String) mutables.get(index);
-					myString.replaceAll(myString, entry.getText()); 
+					thisStringCallback.stringChanged(entry.getText());
+					System.out.println(".entryEvent() " + entry.getText());
 				}
 			}
 		});
 		this.row++;
 	}
 	
-	public void addInteger(GuiObject key){
+	public void addInteger(GuiObject key, int initValue, final IntCallback intCallback){
 		this.addLabel(key);
+
+		final Entry entry = this.addTextEntry(key);
+		final IntCallback thisIntCallback = intCallback;
+		
+		entry.setText(""+initValue);
+		entry.addListener(new EntryListener() {
+			public void entryEvent(EntryEvent event) {
+				if(event.isOfType(EntryEvent.Type.CHANGED)){
+					thisIntCallback.intChanged(Integer.parseInt(entry.getText()));
+					System.out.println(".entryEvent() " + entry.getText());
+				}
+			}
+		});
+		
 		this.addTextEntry(key);
 		this.row++;
 	}
