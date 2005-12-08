@@ -1,5 +1,8 @@
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: For GTK2_JAR, GLADE_JAR, and GLIB_JAVA_JAR use
+	FRYSK_FIND_JAR to set variable.
+
 	* configure.ac: For antlr.jar, and jdom.jar, use AC_FIND_FILE.
 
 2005-12-02  Sami Wagiaalla  <swagiaal@redhat.com>

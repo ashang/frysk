@@ -10,11 +10,11 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with FRYSK; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-# 
+#
 # In addition, as a special exception, Red Hat, Inc. gives You the
 # additional right to link the code of FRYSK with code not covered
 # under the GNU General Public License ("Non-GPL Code") and to
@@ -37,37 +37,27 @@
 # version and license this file solely under the GPL without
 # exception.
 
-AC_PREREQ(2.59)
 
-sinclude(common/version.ac)
-AC_INIT(frysk, [FRYSK_VERSION])
+# This is used to find a file in a variety of paths, setting the value of the
+# given variable to the the in which the file was found.
+# FRYSK_FIND_JAR ( variable, package )
 
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile junit/Makefile])
-
-sinclude(common/acinclude.m4)
-
-lib=lib
-if [[ "x`uname -p`" = "xx86_64" ]]; then
-    lib=${lib}64
-fi
-
-AC_FIND_FILE([antlr.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], ANTLR_JAR)
-AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], JDOM_JAR)
-
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig:/usr/lib/frysk/pkgconfig
-
-PKG_CHECK_MODULES(GTK_JAVA, gtk2-java >= 2.7.0)
-FRYSK_FIND_JAR(GTK2_JAR, gtk2-java)
-
-PKG_CHECK_MODULES(GLADE_JAVA, glade-java >= 2.7.0)
-FRYSK_FIND_JAR(GLADE_JAR, glade-java)
-
-PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
-FRYSK_FIND_JAR(GLIB_JAVA_JAR, glib-java)
-
-dnl For EggTrayIcon
-PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.7.0)
-PKG_CHECK_MODULES(GLIB_JAVA, glib-java >= 0.2)
-
-AC_OUTPUT
+AC_DEFUN([FRYSK_FIND_JAR],
+[
+    AC_MSG_CHECKING([for $2 jar file])
+    if test "x${$1}" = x ; then
+        __c=`$PKG_CONFIG --variable classpath $2`
+        # HACK AROUND BROKEN pkg-configs
+        $1=NO
+        for f in "$__c" "`echo $__c | sed -e 's,share/java,share/frysk/java,'`" ; do
+            if test -r "$f" ; then
+                $1=$f
+                break
+            fi
+        done
+    fi
+    test "x${$1}" = xNO && AC_MSG_ERROR([no jar file for $2 set environment variable $1])
+    AC_MSG_RESULT(${$1})
+    AC_SUBST($1)
+]
+)
