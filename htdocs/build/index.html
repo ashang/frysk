@@ -12,6 +12,56 @@
 
 <div style="margin: 10px;">
 
+<h1>Building <em>frysk</em> From Source</h1>
+
+This page provides guidelines for building <em>frysk</em>, checked out
+from CVS, on a number of systems.  In all cases the basic process is:
+
+<dl>
+
+<dt>Build / Install <em>frysk</em>'s dependant libraries
+
+<dd>You will need to ensure that the following are installed:
+<br><tt>junit antlr transfig gcc-java gcc-c++ cvs </tt> <br>See the
+operating specific sections below for more details</dd>
+
+<dt>Check out <em>frysk</em> from CVS<dt>
+
+<dd><tt>cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/src co
+frysk</tt></dd>
+
+<dt>Create the configuration files</dt>
+
+<dd><tt>( cd frysk && ./autogen.sh )</tt></dd>
+
+<dt>Configure and Build</dt>
+
+<dd><tt>( mkdir build && cd build && ../frysk/configure && make -j2
+)</tt><dd>
+
+<dt><em>frysk</em> can then be run from the build tree</dd>
+
+<dd><tt>./build/frysk-gui/frysk/gui/FryskGui</tt></dd>
+
+</dl>
+
+<h1>Red Hat Enterprize Linux 4</h1>
+
+<em>frysk</em> requres Java-GNOME bindings, and a number of other
+libraries, which are not part of the base RHEL 4 distribution.  These
+libraries are are all included in the <em>frysk</em> source RPM.
+
+<dl>
+
+<dt>Build and install the existing RHEL 4 <em>frysk</em> SRC RPM</dt>
+
+<dd>This RPM provides up-to-date versions of all the libraries that
+<em>frysk</em> depends on.</dd>
+
+<dt>See above for normal instructions</dt>
+
+</dl>
+
 <!--  New version
 
 <h1> Building on Ubuntu </h1>
@@ -30,178 +80,49 @@ href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">http
 
 </ul>
 
-<h1> Building on Fedora Core 5 </h1>
-
-<u1> Building on Fedora Core 4 </h1>
-
-<u1> Building on Red Hat Enterprize Linux 4 </h1>
-
 -->
 
+<h1>Fedora Core 5</h1>
 
-<h1> Building Frysk </h1>
+All of the RPM's required by <em>frysk</em> are included in Fedora
+Core 5.
 
-These notes assume that <em>frysk</em> is being built on a <a
-href="http://fedora.redhat.com/download/">Fedora Core 4</a> i386
-system.
+<h1>Fedora Core 4</h1>
 
-<p>
-
-Building on other GNU/Linux systems is certainly possible.  People
-have managed to build <em>frysk</em> on both Red Hat Enterprize Linux
-4 and Fedora Raw Hide.
-
-<p> 
-
-A Frysk RPM for Fedora Core 4 is available that will install a snapshot of
-Frysk. These are updated a few times a week to reflect new changes. You may want
-to build frysk from CVS to get the newest version, and this will still require
-getting all of Frysk's requirements.
+The RPM's that <em>frysk</em> require are not a part of the standard
+Fedora Core 4 distribution.  Additional RPMs need to be downloaded and
+installed.  In addition the <tt>gcj</tt> compiler has problems.
 
 <dl>
 
-<dt><strong>Install additional standard RPMS</strong</dt>
+<dt>Install <tt>eclipse-ecj</tt><dt>
+
+<dd>The bundled <tt>gcj</tt> compiler contains a number of bugs; they
+can be worked around by using <tt>ecj</tt>.
+
+<dt>Add the <em>frysk</em> yum repository</dt>
 
 <dd>
 
-Install the following RPMs from the standard distribution (note
-that they have dependencies, and the dependencies should also be
-installed):
+Copy the file <a
+href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo"><tt>frysk.repo</tt></a>
+in your <tt>/etc/yum.repos.d/</tt> directory (you'll need to be root).
 
-<pre>
-java-1.4.2-gcj-compat-devel
-junit
-antlr
-transfig
-</pre>
-
-You can do this by entering the command:
-
-<pre>
-yum install java-1.4.2-gcj-compat-devel junit antlr xfig
-</pre>
-
-</dd>
-
-<dt><strong>Download and install the non-standard RPMS</strong></dt>
+<dt>Install the non-standard <em>frysk</em> libraries</dt>
 
 <dd>
 
-You can do this by downloading the following yum repository <a
-href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo">configuration
-file</a> and copying it into the <tt>/etc/yum.repos.d/</tt> directory
-(you'll need to be root). Then run:
+Run the command (<strong>note the quotes</strong>):
 
 <pre>
 yum --exclude '*debuginfo' install 'frysk-*'
 </pre>
 
-This will install all the non-standard packages needed by Frysk, but not Frysk
-itself. In the future you can update the individual packages through yum, 
-or just run <tt>yum update 'frysk*'</tt>.  The quotes are important, otherwise 
-the shell eats away the * and yum gets confused.
-
 </dd>
 
-<p>
-
-<dt><strong>Installing the Frysk RPM</strong></dt>
-
-<dd> If you would like to see it's latest state of Frysk
-without the hassle of building from source you can install the Frysk RPM.
-This is not a released version, but shows a recent snapshot of the
-development code-base. The RPM can be installed with: <tt>yum install frysk
-</tt>. All of the requirements should be pulled in by yum automatically 
-if you have not yet installed them.
-</dd>
-
-<p>
-
-<dt><strong>Command Line Build</strong></dt>
-
-<dd>
-
-Check out frysk:<br>
-
-<pre>
-cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk
-</pre>
-
-Build the configuration files:
-
-<pre>
-( cd frysk && ./autogen.sh )
-</pre>
-
-Create a separate build directory, and build in there:<br>
-
-<pre>
-( mkdir build && cd build && ../frysk/configure && make)
-</pre>
-
-</dd>
-
-<p>
-
-<dt><strong>Eclipse Build</strong></dt>
-
-<dd>
-
-For eclipse, check out the <tt>cvs</tt> module <tt>frysk-eclipse</tt>.
-
-</dd>
+<dt>Follow as for a normal build</dt>
 
 </dl>
-
-<h1>Other Systems</h1>
-
-<p>
-
-If you are interested in trying frysk on other distributions, or
-cannot use our prepackaged required dependencies then you will need to
-find packages for your distribution or compile all the required
-packages from source. Some of the dependencies for Frysk are in
-development or newly released (i.e.  Java-GNOME packages, GTK+ stack),
-therefore it may be difficult to find these in pre-packaged form if
-you are not able to use our supplied packages. Others, such as antlr
-or JUnit, may be easier to find. You can build these packages from
-source, and frysk should detect their existance in the standard /usr
-or non-standard /opt. However, please note that installing the whole
-stack from source is a formidable task.
-
-<p>
-
-For the brave here are the absolutely required packages and versions:
-
-<ul>
-    <li> <tt> antlr </tt> 2.7.4 </li>
-    <li> <tt> JUnit </tt> (version: to be determined) </li>
-    <li> <tt> GCJ </tt>  4.0.0 </li>
-    <li> A 1.4.2-compatible Java compiler
-        (<tt> ECJ </tt>  is strongly encouraged
- for compatibility reasons) </li>
- 	<li> <tt> transfig </tt> 3.2.4 </li>
-	<li> <tt> jdom </tt>  1.0.0 </li>
-	<li> <tt> frysk-cdtparser </tt> 3.0.0 (this is an extracted binary compiled
-			version of the CDT parser).
-    <li> <tt> fontconfig </tt>  3.2.3 </li>
-    <li> <tt> cairo </tt>  1.0.0 </li>
-    <li> <tt> pango </tt>  1.10.0 </li>
-	<li> <tt> GTK+ </tt>  2.8.0 </li>
-	<li> <tt> VTE </tt> 0.11.11 </li>
-    <li> <tt> jg-common </tt>  0.1 </li>
-	<li> <tt> cairo-java </tt>  1.0.0 </li>
-    <li> <tt> libgtk-java </tt> 2.8.1 </li>
-	<li> <tt> libglade-java </tt>  2.12.4 </li>
-	<li> <tt> libvte-java </tt> 0.11.11 </li>
-</ul>
-
-<p>
-
-Please note that some of these packages may have dependencies. Based
-on our testing on FC4, the above are the bare minimum packages that
-are needed, however this may differ on your distribution based on what
-versions are installed.
 
 </div>
 
