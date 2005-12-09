@@ -56,32 +56,27 @@ SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 
 $(tlwidgetsdst)/com/redhat/ftk/Stripchart.class: $(SRC) 
 	$(GCJ) -C -d $(tlwidgetsdst) \
-	    -classpath  $(GTK2_JAR):$(GLIB_JAVA_JAR) $(SRC)
+	    -classpath $(FRYSK_IMPORTS_CLASSPATH) $(SRC)
 
 $(tlwidgetsdst)/ftk.jar: $(tlwidgetsdst)/com/redhat/ftk/Stripchart.class
 	$(JAR) cf ftk.jar -C $(tlwidgetsdst) com/redhat/ftk/Stripchart.class
 
 $(tlwidgetsdst)/Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
-	$(GCJ) -fjni -I$(GTK2_JAR) -I $(GLIB_JAVA_JAR) -I ./src/java \
+	$(GCJ) -fjni -classpath $(FRYSK_IMPORTS_CLASSPATH) -I ./src/java \
             -g -O2 -c $< -o $@
 
 $(tlwidgetsdst)/libftkjava.so: $(tlwidgetsdst)/Stripchart.o
-	$(GCJ) -shared $^ $(GLADE_JAVA_LIBS) \
+	$(GCJ) -shared $^ $(FRYSK_IMPORTS_LIBS) \
 		-Wl,-soname -Wl,libftkjava.so -o $@
 
 $(tlwidgetsdst)/com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
-	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ \
-            $(GTK_CFLAGS) \
-            $(GTK_JAVA_CFLAGS) \
-            $(GLIB_JAVA_CFLAGS)\
-	    `pkg-config --cflags atk` \
-	    -fPIC -DPIC -o $@
+	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ $(FRYSK_IMPORTS_CFLAGS) -fPIC -DPIC -o $@
 
 $(tlwidgetsdst)/libftkjni.so: $(tlwidgetsdst)/com_redhat_ftk_Stripchart.o
-	$(CC) -shared $^ $(GTK_JAVA_LIBS) -o $@
+	$(CC) -shared $^ $(FRYSK_IMPORTS_LIBS) -o $@
 
 $(tlwidgetsdst)/ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
-	$(CC) $(CFLAGS) -std=gnu99 `pkg-config --cflags gtk+-2.0` -I$(tlwidgetssrc)/widgets -c -o $@ $<
+	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_LIBS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
 $(tlwidgetsdst)/ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
 	$(CC) $(CFLAGS) -std=gnu99 `pkg-config --cflags gtk+-2.0` -I$(tlwidgetssrc)/widgets -c -o $@ $<

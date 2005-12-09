@@ -57,5 +57,7 @@ AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk
 
 PKG_CHECK_MODULES(FRYSK_IMPORTS, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
 FRYSK_PKG_MODULE_VARIABLE(FRYSK_IMPORTS_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
+FRYSK_IMPORTS_CLASSPATH=`echo $FRYSK_IMPORTS_JARS | tr ' ' ':'`
+AC_SUBST(FRYSK_IMPORTS_CLASSPATH)
 
 AC_OUTPUT

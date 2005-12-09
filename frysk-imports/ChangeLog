@@ -1,5 +1,7 @@
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Define FRYSK_IMPORTS_CLASSPATH.
+
 	* configure.ac: Use PKG_CHECK_MODULES, and
 	FRYSK_PKG_MODULE_VARIABLE, to define FRYSK_IMPORTS_LIBS,
 	FRYSK_IMPORTS_CFLAGS, and FRYSK_IMPORTS_JARS.

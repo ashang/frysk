@@ -54,8 +54,8 @@ fi
 RPATH=${libdir}:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
 AC_SUBST(RPATH)
 
-PKG_CHECK_MODULES(FRYSK_GUI, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 vte-java >= 0.11.11])
-FRYSK_PKG_MODULE_VARIABLE(FRYSK_GUI_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 vte-java >= 0.11.11])
+PKG_CHECK_MODULES(FRYSK_GUI, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 vte-java >= 0.11.11 pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >= 1.10.0])
+FRYSK_PKG_MODULE_VARIABLE(FRYSK_GUI_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 vte-java >= 0.11.11 pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >= 1.10.0])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([frysk-sys frysk-core])

@@ -1,5 +1,8 @@
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
+	* configure.ac: Add pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >=
+	1.10.0 to list of required modulres.
+
 	* configure.ac (FRYSK_GUI_LIBS, FRYSK_GUI_JARS): Set using
 	PKG_CHECK_MODULES, and FRYSK_PKG_MODULE_VARIABLE.
 	* Makefile.am (GEN_GCJ_LDADD): Use FRYSK_GUI_LIBS.

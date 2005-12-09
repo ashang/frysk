@@ -152,10 +152,10 @@ EXTRA_DIST += $(textiter_FILES)
 textiter/a.out: $(textiter_FILES)
 	mkdir -p textiter
 	$(GCJ) -g \
-		-I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) $(GTK_JAVA_LIBS) \
+		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
+		$(FRYSK_IMPORTS_LIBS) \
 		-Wl,-rpath,/opt/frysk/lib \
 		-Djava.library.path=/opt/frysk/lib \
-		-I$(datadir)/glib0.2.jar \
 		--main=textiter.JNICrash \
 		-o textiter/a.out \
 		$(srcdir)/textiter/JNICrash.java
@@ -189,18 +189,18 @@ XFAIL_TESTS += gcjtreeiter/a.out
 gcjtreeiter/a.out: $(gcjtreeiter_FILES)
 	mkdir -p gcjtreeiter
 	$(GCJ) -g \
-		-I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) $(GTK_JAVA_LIBS) \
+		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
+		$(FRYSK_IMPORTS_LIBS) \
 		-Wl,-rpath,/opt/frysk/lib \
 		-Djava.library.path=/opt/frysk/lib \
-		-I$(datadir)/glib0.2.jar \
 		--main=gcjtreeiter.IterTest \
 		$(srcdir)/gcjtreeiter/IterTest.java \
 		-o gcjtreeiter/a.out
 XFAIL_TESTS += gcjtreeiter/gij.sh
 gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 	mkdir -p gcjtreeiter
-	$(GCJ) -g -C -d . -I$(srcdir) -I$(GTK2_JAR) -I$(GLIB_JAVA_JAR) \
-		-I$(datadir)/glib0.2.jar \
+	$(GCJ) -g -C -d . -I$(srcdir) \
+		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
 		$(srcdir)/gcjtreeiter/IterTest.java
 	echo $(GIJ) -classpath $(srcdir)/..:$(GTK2_JAR):$(GLIB_JAVA_JAR) \
 		-Djava.library.path=/opt/frysk/lib gcjtreeiter.IterTest \
