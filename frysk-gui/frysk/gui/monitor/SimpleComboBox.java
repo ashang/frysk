@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererText;
@@ -105,21 +106,29 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	
 	public void add(GuiObject object){
 		TreeIter treeIter = listStore.appendRow();
-		listStore.setValue(treeIter, nameDC, object.getName());
-		listStore.setValue(treeIter, objectDC, object);
-		
-		this.map.put(object, treeIter);
-		object.addObserver(this);	
+		this.add(object, treeIter);
 	}
 	
 	public void remove(GuiObject object){
 		TreeIter treeIter = (TreeIter) this.map.get(object);
 		listStore.removeRow(treeIter);
 		this.map.remove(object);
+		object.deleteObserver(this);
 	}
 	
 	public void clear(){
+		Set set = this.map.keySet();
+		Iterator iterator = set.iterator();
+		while (iterator.hasNext()) {
+			GuiObject element = (GuiObject) iterator.next();
+			element.deleteObserver(this);
+		}
 		this.listStore.clear();
+		this.map.clear();
+		if(this.watchedList!=null){
+			this.watchedList.itemAdded.deleteObserver(this);
+			this.watchedList.itemRemoved.deleteObserver(this);
+		}
 	}
 	
 	public void update(Observable guiObject, Object object) {

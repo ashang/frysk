@@ -398,6 +398,7 @@ public class ProcDataModel {
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
+
 					try{
 						if(iter == null){
 							throw new NullPointerException("proc " + proc + " Not found in TreeIter HasTable. Cannot be removed");

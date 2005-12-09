@@ -78,7 +78,8 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		if(this.runFilters(task, child)){
 			this.runActions(task, child);
 		}
-		//child.requestAddForkedObserver(new TaskForkedObserver());
+		
+//		child.requestAddForkedObserver(new TaskForkedObserver());
 		
 		task.requestUnblock(this);
 		child.requestUnblock(this);

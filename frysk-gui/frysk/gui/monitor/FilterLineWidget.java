@@ -46,9 +46,27 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 
 import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterManager;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverRoot;
 
+/*
+ * I would like to apologize to anyone after me who needs to debug this widget
+ * or extend its functionality. Although not clear it has two modes one where
+ * it displays what the user asks it to and make those changes concrete (ie
+ * add filter to observer). The second mode displays what has already been 
+ * done to the observer. So be ware of infinite loops.
+ * Sincerely,
+ *   Sami Wagiaalla
+ */
+
+/**
+ * 
+ * @author swagiaal
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
 public class FilterLineWidget extends HBox{
 
 	ObserverRoot observer;
@@ -58,18 +76,42 @@ public class FilterLineWidget extends HBox{
 	private SimpleComboBox filterPointsComboBox;
 	private SimpleComboBox filtersComboBox;
 	private VBox filterWidgetVBox;
+
+	private GuiObject spaceHolder;
 	
 	public FilterLineWidget(ObserverRoot observer) {
 		super(false, 3);
+		
 		this.observer = observer;
 
 		this.filtersComboBox = new SimpleComboBox();
+		
+		this.spaceHolder = new GuiObject("----------","");
+		
+		this.filtersComboBox.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent event) {System.out.println("filtersComboBox.ComboBoxListener()");
+		
+				if(filtersComboBox.getSelectedObject() != spaceHolder){System.out.println("filtersComboBox.ComboBoxListener() getActive()!=0");
+					if(filter == (Filter)filtersComboBox.getSelectedObject()){System.out.println("filtersComboBox.ComboBoxListener() filter == (Filter)filtersComboBox.getSelectedObject()");
+						// we now know its not a user event because public setFilter
+						// sets this.filter to selected filter
+						privateSetFilter((Filter)filtersComboBox.getSelectedObject());
+					}else{System.out.println("filtersComboBox.ComboBoxListener() filter == (Filter)filtersComboBox.getSelectedObject()");
+						// here we know the user has selected a new prototype an 
+						// would like to add that to the observers
+						Filter myConcreteFilter = FilterManager.theManager.getFilterCopy((Filter)filtersComboBox.getSelectedObject());
+						filterPoint.addFilter(myConcreteFilter);
+						setFilter(myConcreteFilter);
+					}
+				}
+			}
+		});
 		
 		this.filterPointsComboBox = new SimpleComboBox();
 		this.filterPointsComboBox.watchLinkedList(this.observer.getFilterPoints());
 		this.filterPointsComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
-				setFilterPoint((FilterPoint)filterPointsComboBox.getSelectedObject());
+				privateSetFilterPoint((FilterPoint)filterPointsComboBox.getSelectedObject());
 			}
 		});
 	
@@ -80,28 +122,64 @@ public class FilterLineWidget extends HBox{
 	}
 	
 	
-	public void setFilterPoint(FilterPoint filterPoint){
+	private void privateSetFilterPoint(FilterPoint filterPoint){
 		this.filterPoint = filterPoint;
 		this.filtersComboBox.clear();
 		this.filtersComboBox.watchLinkedList(filterPoint.getApplicableFilters());
+		this.filtersComboBox.add(this.spaceHolder, 0);
 	}
 	
-	public void setFilter(Filter filter){
-		this.filter = filter;
-		this.filtersComboBox.add(filter, 0);
+	public void setFilterPoint(FilterPoint filterPoint){
+		this.filterPointsComboBox.setSelectedObject(filterPoint);
+	}
+	
+	private void privateSetFilter(Filter filter){System.out.println("FilterLineWidget.privateSetFilter()");
+//		if(this.filter == filter) return;
 		
 		Widget[] widgets = this.filterWidgetVBox.getChildren();
 		for (int i = 0; i < widgets.length; i++) {
 			this.filterWidgetVBox.remove(widgets[i]);
 		}
 		
-		this.filterWidgetVBox.packStart(this.filter.getWidget());
-		this.filterWidgetVBox.showAll();
+		if(this.filter.getWidget().getParent() == null){
+			this.filterWidgetVBox.packStart(this.filter.getWidget());
+		}else{
+			this.filter.getWidget().reparent(filterWidgetVBox);
+		}
+		this.showAll();
+	}
+	
+	/**
+	 * Sets the current filter to the given one.
+	 * This function expects to receive a real filter not a prototype
+	 * from FilterManager.
+	 * @param filter
+	 */
+	public void setFilter(Filter filter){System.out.println("FilterLineWidget.setFilter()");
+		if(this.filter != spaceHolder && this.filter != null){
+			System.out.println("filtersComboBox.ComboBoxListener() selection has changed removing old filter since it was not ap");
+			filterPoint.removeFilter(this.filter);
+		}
+	
+		this.filter = filter;
 		
+//		filter.setName(">"+ filter.getName() +"<");
+		
+		this.filtersComboBox.setActive(0);
+		this.filtersComboBox.remove(this.filtersComboBox.getSelectedObject());
+		this.filtersComboBox.add(filter, 0);
+
+		this.filtersComboBox.setSelectedObject(filter);
 	}
 
+	public Filter addToObserver(){
+//		Filter filter = FilterManager.theManager.getFilterCopy(this.filter);
+		this.filterPoint.addFilter(filter);
+		return filter;
+	}
+	
 	public void removeFromObserver() {
-		
+		this.filterPoint.removeFilter(filter);
 	}
 	
 }

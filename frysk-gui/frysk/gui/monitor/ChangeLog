@@ -1,3 +1,9 @@
+2005-12-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SimpleComboBox.java: Was forgeting to remove observers when an item
+	is removed...fixed.
+	* FilterLineWidget.java: Rewrote from scratch this version finally works.
+
 2005-12-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskForkedObserver.java: removed forkedActions.
