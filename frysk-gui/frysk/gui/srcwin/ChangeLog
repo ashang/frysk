@@ -1,3 +1,13 @@
+2005-12-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (moveDown): Now reparents the inlined code (if it
+	exists) so that gtk doesn't clear it away when we change the text.
+	* SourceViewWidget.java (toggleChild): Changed to use new getSource
+	method in DOMFunction.
+	(setSubscopeAtCurrentLine): Checks to see if the widget has a parent,
+	and if so removes it.
+	* InlineBuffer.java (moveDown): Added code to create new StackLevel.
+
 2005-12-08  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (InlineViewer): Initializes base depth to 1.

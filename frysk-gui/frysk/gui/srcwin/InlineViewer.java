@@ -43,9 +43,11 @@ import java.util.prefs.Preferences;
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
+import org.gnu.gtk.EventBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
+import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextWindowType;
 import org.gnu.gtk.WindowType;
@@ -69,6 +71,8 @@ public class InlineViewer extends SourceViewWidget {
 	
 	private int depth;
     
+	private boolean showingEllipsis = false;
+	
 	/**
 	 * Creates a new InlineViewer
 	 * @param parentPrefs The preference model to use
@@ -108,7 +112,7 @@ public class InlineViewer extends SourceViewWidget {
 	 * the visible scopes up or down
 	 */
 	public void toggleChild(){
-		int limit = 3;
+		int limit = 2;
 		
 		if(!this.expanded){
 			// Case 1: depth less than max, this level is not expanded.
@@ -119,13 +123,7 @@ public class InlineViewer extends SourceViewWidget {
 			// Case 2: depth greater than max, this level not expanded.
 			// Action: Move down ourselves, then tell our anscestor to move down as well
 			else{
-				// Move down a level here
-				
-				if(this.previous != null)
-					this.previous.moveDown();
-				else{
-					// We have no anscestor, therefore we need to add ellipsis
-				}
+				this.moveDown();
 			}
 		}
 		else{
@@ -237,7 +235,15 @@ public class InlineViewer extends SourceViewWidget {
 	}
 	
     protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
-        Layout lo = this.createLayout(""+(number + ((InlineBuffer) this.buf).getFirstLine()));
+    	Layout lo;
+    	if(!this.showingEllipsis)
+    		lo = this.createLayout(""+(number + ((InlineBuffer) this.buf).getFirstLine()));
+    	else{
+    		// We don't draw a line number next to the ellipsis
+    		if(number == 0)
+    			return;
+    		lo = this.createLayout("" + (number + ((InlineBuffer) this.buf).getFirstLine() + 1));
+    	}
         lo.setAlignment(Alignment.RIGHT);
         lo.setWidth(this.marginWriteOffset);
         
@@ -272,15 +278,36 @@ public class InlineViewer extends SourceViewWidget {
 	 * This method assumes that everyone below us has already moved down
 	 */
 	private void moveDown(){
-		// TODO: Do our own stuff to load the next scope...
+		// We have to save the inline viewer before moving down, otherwise stupid GTK
+		// clears it
+		org.gnu.gtk.Window tmp = new org.gnu.gtk.Window();
+		tmp.hideAll();
+		if(this.next != null)
+			this.next.reparent(tmp);
+		
+		((InlineBuffer) this.buf).moveDown();
+		
 		depth++;
 		
-		if(this.previous != null)
+		if(this.previous != null){
 			this.previous.moveDown();
-		else{
-			// Do stuff here to update the ellipsis
-			
 		}
+		else{
+			this.showingEllipsis = true;
+			// Do stuff here to add/update the ellipsis
+			this.buf.insertText(this.buf.getStartIter(), "\n");
+			TextChildAnchor anchor = this.buf.createChildAnchor(this.buf.getStartIter());
+			EventBox box = new EventBox();
+			Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
+			box.add(tag);
+			box.showAll();
+			this.addChild(box, anchor);
+		}
+		
+		if(this.next != null)
+			// We need to reset the subscope at the current line since by changing
+			// the text of this one we've cleared it
+			this.setSubscopeAtCurrentLine(this.next);
 	}
 	
 	/**

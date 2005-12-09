@@ -165,4 +165,19 @@ public class InlineBuffer extends SourceBuffer {
             }
         }// end lines.hasNext()
     }
+    
+    public void moveDown(){
+    	if(this.instance.hasInlineInstance()){
+    		this.instance = instance.getInlineInstance();
+    		this.declaration = this.instance.getDeclaration(); 
+    		StackLevel myScope = new StackLevel(this.declaration.getSource(), instance.getPCLine());
+    		this.setScope(myScope);
+    	}
+    	// Can we even get a case where there is no next inline instance and this method
+    	// is called?
+    }
+    
+    public void moveUp(){
+    	
+    }
 }

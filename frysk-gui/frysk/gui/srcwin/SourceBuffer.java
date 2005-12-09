@@ -706,6 +706,8 @@ public class SourceBuffer extends TextBuffer {
 		
 		String bufferText = loadLines(lines);
 		
+		System.out.print(bufferText);
+		
 		this.deleteText(this.getStartIter(), this.getEndIter());
 		this.insertText(bufferText);
 		

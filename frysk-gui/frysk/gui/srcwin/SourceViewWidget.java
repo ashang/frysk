@@ -45,6 +45,7 @@ import org.gnu.gdk.Drawable;
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
+import org.gnu.gtk.Container;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -63,9 +64,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
-import org.jdom.Element;
 
-import frysk.dom.DOMImage;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
 import frysk.gui.srcwin.PreferenceConstants.Background;
@@ -365,6 +364,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	}
 	
 	public void setSubscopeAtCurrentLine(SourceViewWidget child){
+		Container parent = (Container) child.getParent();
+		if(parent != null)
+			parent.remove(child);
+		
 		TextIter line = buf.getLineIter(buf.getCurrentLine() + 1);
 		
 		if(anchor != null)
@@ -375,6 +378,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		
 		this.expanded = true;
 		this.addChild(child, anchor);
+		child.show();
 	}
 	
 	public void clearSubscopeAtCurrentLine(){
@@ -413,11 +417,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 			
 			DOMInlineInstance instance = this.buf.getInlineInstance(this.buf.getCurrentLine());
 			
-			Element node = instance.getElement();
-			while(!node.getName().equals(DOMImage.IMAGE_NODE))
-				node = node.getParentElement();
-			
-			DOMSource scope = new DOMImage(node).getSource(instance.getDeclaration().getSourceName());
+			DOMSource scope = instance.getDeclaration().getSource();
 			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent, 
 					scope, instance);
 			this.setSubscopeAtCurrentLine(nested);
