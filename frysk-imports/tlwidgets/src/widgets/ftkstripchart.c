@@ -253,14 +253,15 @@ ftk_stripchart_expose( GtkWidget * widget,
     }
   }
   
-  if (GDK_IS_PIXMAP (stripchart_pixmap (stripchart)))
-      gdk_draw_drawable(widget->window,
-			widget->style->bg_gc[GTK_WIDGET_STATE (widget)],
-			stripchart_pixmap (stripchart),
-			0, 0,				/* src offsets */
-			0, 0,				/* dst offsets */
-			draw_width,
-			draw_height);
+  if ((GDK_IS_PIXMAP (stripchart_pixmap (stripchart))) &&
+      GTK_WIDGET_MAPPED(widget))
+    gdk_draw_drawable(widget->window,
+		      widget->style->bg_gc[GTK_WIDGET_STATE (widget)],
+		      stripchart_pixmap (stripchart),
+		      0, 0,				/* src offsets */
+		      0, 0,				/* dst offsets */
+		      draw_width,
+		      draw_height);
 
    gdk_display_flush (gtk_widget_get_display (widget));
 }
@@ -436,16 +437,17 @@ motion_notify_event( GtkWidget * widget,
   
   pango_layout_get_pixel_size (stripchart_motion_readout(stripchart),
 			       &width, &height);
-  if (GDK_IS_PIXMAP (stripchart_pixmap (stripchart)))
-      gdk_draw_drawable(widget->window,
-			stripchart_bg_gc (stripchart),
-			stripchart_pixmap (stripchart),
-			widget->allocation.width - DELTA_TS_X_OFFSET,
-			START_TS_Y_OFFSET,
-			widget->allocation.width - DELTA_TS_X_OFFSET,
-			START_TS_Y_OFFSET,
-			width,
-			height);
+  if ((GDK_IS_PIXMAP (stripchart_pixmap (stripchart))) &&
+      GTK_WIDGET_MAPPED(widget))
+    gdk_draw_drawable(widget->window,
+		      stripchart_bg_gc (stripchart),
+		      stripchart_pixmap (stripchart),
+		      widget->allocation.width - DELTA_TS_X_OFFSET,
+		      START_TS_Y_OFFSET,
+		      widget->allocation.width - DELTA_TS_X_OFFSET,
+		      START_TS_Y_OFFSET,
+		      width,
+		      height);
   return TRUE;
 }
 

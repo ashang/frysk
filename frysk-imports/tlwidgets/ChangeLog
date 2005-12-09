@@ -1,3 +1,8 @@
+2005-12-09  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkstripchart.c: Added tests to check if the widget
+	is mapped before drawing it.
+
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Replace references to /opt/frysk with corresponding
