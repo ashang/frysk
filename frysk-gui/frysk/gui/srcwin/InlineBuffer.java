@@ -178,6 +178,12 @@ public class InlineBuffer extends SourceBuffer {
     }
     
     public void moveUp(){
-    	
+    	if(this.instance.hasParentInlineInstance()){
+    		this.instance = instance.getPreviousInstance();
+    		this.declaration = this.instance.getDeclaration();
+    		StackLevel myScope = new StackLevel(this.declaration.getSource(), instance.getPCLine());
+    		this.setScope(myScope);
+    	}
+    	// Same connundrum as above method...
     }
 }

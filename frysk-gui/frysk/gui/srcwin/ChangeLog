@@ -1,5 +1,8 @@
 2005-12-09  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (moveUp): Implemented details.
+	* InlineViewer.java (moveUp): Ditto.
+
 	* InlineViewer.java (moveDown): Now reparents the inlined code (if it
 	exists) so that gtk doesn't clear it away when we change the text.
 	* SourceViewWidget.java (toggleChild): Changed to use new getSource

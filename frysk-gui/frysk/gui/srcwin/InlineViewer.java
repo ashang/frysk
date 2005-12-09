@@ -315,14 +315,39 @@ public class InlineViewer extends SourceViewWidget {
 	 *
 	 */
 	private void moveUp(){
-		// TODO: Do our own thing to move up...
-		depth--;
+		System.out.println("Depth:\t"+this.depth);
 		
-		if(this.previous == null){
-			// Modify the ellipsis stuff here
+//		 We have to save the inline viewer before moving down, otherwise stupid GTK
+		// clears it
+		org.gnu.gtk.Window tmp = new org.gnu.gtk.Window();
+		tmp.hideAll();
+		if(this.next != null)
+			this.next.reparent(tmp);
+		
+		((InlineBuffer) this.buf).moveUp();
+		
+		if(this.previous == null)
+			this.depth--;
+		
+		if(this.previous == null && this.depth > 1){
+			this.showingEllipsis = true;
+			// Do stuff here to add/update the ellipsis
+			this.buf.insertText(this.buf.getStartIter(), "\n");
+			TextChildAnchor anchor = this.buf.createChildAnchor(this.buf.getStartIter());
+			EventBox box = new EventBox();
+			Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
+			box.add(tag);
+			box.showAll();
+			this.addChild(box, anchor);
+		}
+		else{
+			this.showingEllipsis = false;
 		}
 		
-		if(this.next != null)
+		
+		if(this.next != null){
+			this.setSubscopeAtCurrentLine(this.next);
 			this.next.moveUp();
+		}
 	}
 }
