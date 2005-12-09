@@ -10,11 +10,11 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with FRYSK; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-# 
+#
 # In addition, as a special exception, Red Hat, Inc. gives You the
 # additional right to link the code of FRYSK with code not covered
 # under the GNU General Public License ("Non-GPL Code") and to
@@ -37,26 +37,31 @@
 # version and license this file solely under the GPL without
 # exception.
 
-AC_PREREQ(2.59)
 
-sinclude(common/version.ac)
-AC_INIT(frysk, [FRYSK_VERSION])
+# This is used to find a file in a variety of paths, setting the value of the
+# given variable to the the in which the file was found.
+# FRYSK_FIND_JAR ( environment-variable, pkg-variable, packages )
 
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
+AC_DEFUN([FRYSK_PKG_MODULE_VARIABLE],
+[
+    AC_MSG_CHECKING([for $1 in $3])
+    if test x"${$1}" = x ; then
+        __c=`$PKG_CONFIG --variable $2 "$3"`
+	test x"$__c" = x && AC_MSG_ERROR([empty $2 in $3, set environment variable $1])
+        # HACK AROUND BROKEN pkg-configs
+	$1=
+	for __v in $__c ; do
+		for __f in $__v `echo $__v | sed -e 's,share/java,share/frysk/java,'` ; do
 
-sinclude(common/acinclude.m4)
-
-lib=lib
-if [[ "x`uname -p`" = "xx86_64" ]]; then
-	lib=${lib}64
-fi
-
-RPATH=${libdir}:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-java glib-java vte-java | sed -e 's/  */:/' -e 's/-L//'  -e 's/:*$//'`
-AC_SUBST(RPATH)
-
-PKG_CHECK_MODULES(FRYSK_GUI, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 vte-java >= 0.11.11])
-FRYSK_PKG_MODULE_VARIABLE(FRYSK_GUI_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glade-java >= 2.7.0 glib-java >= 0.2 vte-java >= 0.11.11])
-
-AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([frysk-sys frysk-core])
-AC_OUTPUT
+			if test -r "$__f" ; then
+				$1="${$1} $__f"
+				break
+			fi
+		done
+	done
+    fi
+    test x"${$1}" = x && AC_MSG_ERROR([no $2 in $3, set environment variable $1])
+    AC_MSG_RESULT(${$1})
+    AC_SUBST($1)
+]
+)

@@ -48,11 +48,7 @@ GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jdom.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/cdtparser.jar 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/tlwidgets/ftk.jar
-GEN_CLASSPATH += $(JAVAGNOME_JAR) 
-GEN_CLASSPATH += $(GTK2_JAR) 
-GEN_CLASSPATH += $(GLADE_JAR) 
-GEN_CLASSPATH += $(GLIB_JAVA_JAR) 
-GEN_CLASSPATH += $(VTE_JAVA_JAR)
+GEN_CLASSPATH += $(FRYSK_GUI_JARS) 
 GEN_CLASSPATH += /usr/lib
 
 # Hack, need to compile frysk.gui.monitor.EggTrayIcon.java with JNI.
@@ -70,14 +66,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-ftk.a
 GEN_GCJ_LDADD += -L../frysk-imports/EggTrayIcon
 GEN_GCJ_LDADD += -L../frysk-imports/tlwidgets
-GEN_GCJ_LDADD += $(GLADE_JAVA_LIBS)
-GEN_GCJ_LDADD += $(GTK_JAVA_LIBS)
-GEN_GCJ_LDADD += -lgtkjni -lglibjni 
-GEN_GCJ_LDADD += $(GLADE_JAVA_LIBS)
-GEN_GCJ_LDADD += $(GNOME_JAVA_LIBS) 
-GEN_GCJ_LDADD += $(CAIRO_JAVA_LIBS)
-GEN_GCJ_LDADD += $(GLIB_JAVA_LIBS)
-GEN_GCJ_LDADD += $(VTE_JAVA_LIBS)
+GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
 
 EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \
 		$(srcdir)/frysk/gui/images/*.png \

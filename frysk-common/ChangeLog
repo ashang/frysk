@@ -1,3 +1,7 @@
+2005-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* m4/frysk_pkg_module_variable.m4: New file.
+
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* acinclude.m4: Add checks for gtk2-java, glade-java, glib-java,
