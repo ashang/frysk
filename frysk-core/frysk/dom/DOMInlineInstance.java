@@ -154,10 +154,23 @@ public class DOMInlineInstance {
 		return !this.myElement.getChildren(INLINE_NODE).isEmpty();
 	}
 	
+	public boolean hasParentInlineInstance(){
+		Element parent = this.myElement.getParentElement();
+		return (parent != null && parent.getName().equals(DOMInlineInstance.INLINE_NODE));
+	}
+	
 	public DOMInlineInstance getInlineInstance(){
 		Element child = this.myElement.getChild(INLINE_NODE);
 		if(child != null)
 			return new DOMInlineInstance(child);
+		
+		return null;
+	}
+	
+	public DOMInlineInstance getPreviousInstance(){
+		Element parent = this.myElement.getParentElement();
+		if(parent != null && parent.getName().equals(DOMInlineInstance.INLINE_NODE))
+			return new DOMInlineInstance(parent);
 		
 		return null;
 	}

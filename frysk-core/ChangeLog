@@ -1,5 +1,9 @@
 2005-12-09  Adam Jocksch  <ajocksch@redhat.com>
 
+	* frysk/dom/DOMInlineInstance (hasParentInlineInstance): Added.
+	(getPreviousInstance): Added.
+	
+
 	* frysk/dom/DOMFunction.java (getSource): Added.
 	(getSourceName): Removed, should now get name through the DOMSource
 	returned by getSource.
