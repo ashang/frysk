@@ -114,8 +114,19 @@ public class DOMFunction {
 		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
 	}
 	
-	public String getSourceName(){
-		return this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
+	public DOMSource getSource(){
+		String sourceName = this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
+		
+		Element parent = this.myElement.getParentElement();
+		while(parent != null && !parent.getName().equals(DOMImage.IMAGE_NODE))
+			parent = parent.getParentElement();
+		
+		if(parent != null){
+			DOMImage image = new DOMImage(parent);
+			return image.getSource(sourceName);
+		}
+		
+		return null;
 	}
 	
 	public int getStartingLine(){
@@ -139,7 +150,6 @@ public class DOMFunction {
 		
 		for(int i = start; i< end; i++){
 			String text = source.getLine(i).getText();
-			System.out.print("Line "+ i +": "+text);
 			if(text.equals(""))
 				lines[i-start] = "\n";
 			else
