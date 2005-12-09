@@ -120,6 +120,8 @@ ftk_stripchart_expose( GtkWidget * widget,
   FtkStripchart * stripchart = FTK_STRIPCHART (widget);
   GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
   
+  if (!GTK_WIDGET_MAPPED(widget)) return;
+  
   if (TRUE == stripchart_bg_color_modified(stripchart)) {
     gdk_gc_set_rgb_fg_color(stripchart_bg_gc (stripchart),
 			    &stripchart_bg_color(stripchart));
