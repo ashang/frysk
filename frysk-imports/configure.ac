@@ -55,4 +55,7 @@ fi
 AC_FIND_FILE([antlr.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], ANTLR_JAR)
 AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], JDOM_JAR)
 
+PKG_CHECK_MODULES(FRYSK_IMPORTS, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
+FRYSK_PKG_MODULE_VARIABLE(FRYSK_IMPORTS_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
+
 AC_OUTPUT

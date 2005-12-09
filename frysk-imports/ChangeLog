@@ -1,3 +1,12 @@
+2005-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Use PKG_CHECK_MODULES, and
+	FRYSK_PKG_MODULE_VARIABLE, to define FRYSK_IMPORTS_LIBS,
+	FRYSK_IMPORTS_CFLAGS, and FRYSK_IMPORTS_JARS.
+	* Makefile.am (EggTrayIcon_libEggTrayIcon_so_LDADD): Set to
+	FRYSK_IMPORTS_LIBS.
+	(GEN_CLASSPATH): Add FRYSK_IMPORTS_JARS.
+
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Move checks for gtk2-java, glade-java, glib-java,

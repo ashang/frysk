@@ -50,24 +50,19 @@ SUBDIRS = \
 
 solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
-EggTrayIcon_libEggTrayIcon_so_LDADD =
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_JAVA_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(GTK_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(GLIB_JAVA_LIBS)
-EggTrayIcon_libEggTrayIcon_so_LDADD += -lgtkjni -lglibjni
-EggTrayIcon_libEggTrayIcon_so_LDADD += $(CAIRO_JAVA_LIBS)
+EggTrayIcon_libEggTrayIcon_so_LDADD = $(FRYSK_IMPORTS_LIBS)
 
 noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
-EggTrayIcon_libEggTrayIcon_a_SOURCES = EggTrayIcon/eggtrayicon.c \
-                                       EggTrayIcon/libEggTrayIcon.c \
-									   EggTrayIcon/eggtrayicon.h
+EggTrayIcon_libEggTrayIcon_a_SOURCES = \
+	EggTrayIcon/eggtrayicon.c \
+	EggTrayIcon/libEggTrayIcon.c \
+	EggTrayIcon/eggtrayicon.h
 
-EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(GLIB_JAVA_CFLAGS)
+EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(FRYSK_IMPORTS_CFLAGS)
 
 GEN_CLASSPATH += jargs.jar
 GEN_CLASSPATH += junit.jar
-GEN_CLASSPATH += $(GTK2_JAR)
-GEN_CLASSPATH += $(GLIB_JAVA_JAR) 
+GEN_CLASSPATH += $(FRYSK_IMPORTS_JARS)
 GEN_GCJ_LDADD += libfrysk-jargs.a
 GEN_GCJ_LDADD += libfrysk-junit.a
 
