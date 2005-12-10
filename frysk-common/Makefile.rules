@@ -361,12 +361,11 @@ BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)
 
 # Add some needed files to the distribution
 EXTRA_DIST += \
-	common/Makefile.gen.sh \
-	common/mkjava.sh \
-	common/TestRunner.sh \
+	common/ChangeLog \
+	common/*.sh \
+	common/*.m4 \
 	common/version.in \
-	common/m4/ac_find_file.m4 \
-	common/m4/ac_get_lib_line.m4 \
+	common/m4/*.m4 \
 	autogen.sh \
 	EXCEPTION
 

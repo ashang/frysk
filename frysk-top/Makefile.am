@@ -126,8 +126,10 @@ $(DOXYFILE): Doxyfile.in
 CLEANFILES += doxygen
 
 EXTRA_DIST = \
+	common/ChangeLog \
+	common/*.sh \
+	common/*.m4 \
 	common/version.in \
-	common/m4/ac_find_file.m4 \
-	common/m4/ac_get_lib_line.m4 \
+	common/m4/*.m4 \
 	autogen.sh \
 	EXCEPTION

@@ -1,5 +1,8 @@
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (EXTRA_DIST): Add common/ChangeLog, common/*.m4,
+	common/*.sh, and common/m4/*.m4.
+
 	* acinclude.m4: Delete checks for gtk+-2.0, gtk2-java, glade-java,
 	glib-java, and vte-java.
 

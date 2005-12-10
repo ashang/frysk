@@ -1,3 +1,8 @@
+2005-12-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add common/ChangeLog, common/*.m4,
+	common/*.sh, and common/m4/*.m4.
+	
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add ommon/m4/ac_find_file.m4, and
