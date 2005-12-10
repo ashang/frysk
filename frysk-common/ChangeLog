@@ -1,3 +1,8 @@
+2005-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* m4/frysk_pkg_module_variable.m4: Delete hack to work around
+	broken pkg-config information.
+
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (EXTRA_DIST): Add common/ChangeLog, common/*.m4,

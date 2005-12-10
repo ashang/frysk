@@ -38,29 +38,18 @@
 # exception.
 
 
-# This is used to find a file in a variety of paths, setting the value of the
-# given variable to the the in which the file was found.
-# FRYSK_FIND_JAR ( environment-variable, pkg-variable, packages )
+# This is used to find the value of a pkg-config variable (unless the
+corresponding autoconf variable is already defined).
+
+# FRYSK_PKG_MODULE_VARIABLE ( variable, pkg-config variable, packages )
 
 AC_DEFUN([FRYSK_PKG_MODULE_VARIABLE],
 [
-    AC_MSG_CHECKING([for $1 in $3])
+    AC_MSG_CHECKING([$1])
     if test x"${$1}" = x ; then
-        __c=`$PKG_CONFIG --variable $2 "$3"`
-	test x"$__c" = x && AC_MSG_ERROR([empty $2 in $3, set environment variable $1])
-        # HACK AROUND BROKEN pkg-configs
-	$1=
-	for __v in $__c ; do
-		for __f in $__v `echo $__v | sed -e 's,share/java,share/frysk/java,'` ; do
-
-			if test -r "$__f" ; then
-				$1="${$1} $__f"
-				break
-			fi
-		done
-	done
+        $1=`$PKG_CONFIG --variable $2 "$3"`
+        test x"${$1}" = x && AC_MSG_ERROR([package variable $2 for $3 empty, set environment variable $1])
     fi
-    test x"${$1}" = x && AC_MSG_ERROR([no $2 in $3, set environment variable $1])
     AC_MSG_RESULT(${$1})
     AC_SUBST($1)
 ]
