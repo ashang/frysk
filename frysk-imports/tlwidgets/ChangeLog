@@ -1,5 +1,9 @@
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (ftkconsole.o, ftkstripchart.o): Pass
+	FRYSK_IMPORTS_CFLAGS to CC, not FRYSK_IMPORTS_LIBS, or output from
+	pkg-config.
+
 	* Makefile.am: Use FRYSK_IMPORTS_LIBS, FRYSK_IMPORTS_CFLAGS, and
 	FRYSK_IMPORTS_CLASSPATH throughout.
 

@@ -76,11 +76,10 @@ $(tlwidgetsdst)/libftkjni.so: $(tlwidgetsdst)/com_redhat_ftk_Stripchart.o
 	$(CC) -shared $^ $(FRYSK_IMPORTS_LIBS) -o $@
 
 $(tlwidgetsdst)/ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
-	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_LIBS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
+	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
 $(tlwidgetsdst)/ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
-	$(CC) $(CFLAGS) -std=gnu99 `pkg-config --cflags gtk+-2.0` -I$(tlwidgetssrc)/widgets -c -o $@ $<
+	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
 $(tlwidgetsdst)/libftk.so: $(tlwidgetsdst)/ftkstripchart.o $(tlwidgetsdst)/ftkconsole.o
 	$(CC) -shared -o $@ $^ -lrt
-
