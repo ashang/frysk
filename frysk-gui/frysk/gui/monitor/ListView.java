@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererText;
@@ -152,10 +153,22 @@ public class ListView extends TreeView implements Observer {
 		TreeIter treeIter = (TreeIter) this.map.get(object);
 		listStore.removeRow(treeIter);
 		this.map.remove(object);
+		object.deleteObserver(this);
 	}
 	
 	public void clear(){
+		Set set = this.map.keySet();
+		Iterator iterator = set.iterator();
+		while (iterator.hasNext()) {
+			GuiObject element = (GuiObject) iterator.next();
+			element.deleteObserver(this);
+		}
 		this.listStore.clear();
+		this.map.clear();
+		if(this.watchedList!=null){
+			this.watchedList.itemAdded.deleteObserver(this);
+			this.watchedList.itemRemoved.deleteObserver(this);
+		}
 	}
 	
 	public void update(Observable guiObject, Object object) {

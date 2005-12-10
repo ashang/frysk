@@ -47,9 +47,17 @@ public class ShowSourceWin extends TaskAction {
 	public ShowSourceWin() {
 		super("Source", "Show a source window.");
 	}
+	
+	public ShowSourceWin(ShowSourceWin other) {
+		super(other);
+	}
 
 	public void execute(Task task) {
 		SourceWindowFactory.createSourceWindow(task);
+	}
+
+	public Action getCopy() {
+		return new ShowSourceWin(this);
 	}
 	
 }

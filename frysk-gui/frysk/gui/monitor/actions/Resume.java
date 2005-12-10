@@ -48,9 +48,17 @@ public class Resume extends ProcAction {
 		super("Resume", "Resume execution of the current process");
 	}
 
+	public Resume(ProcAction other){
+		super(other);
+	}
+	
 	public void execute(Proc proc) {
 		proc.observableAttached.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);       
 		proc.requestAttachedContinue();		
+	}
+
+	public Action getCopy() {
+		return new Resume(this);
 	}
 
 }

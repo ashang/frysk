@@ -68,8 +68,6 @@ import org.gnu.gtk.event.KeyListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-import frysk.gui.monitor.actions.Action;
-import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -81,9 +79,10 @@ public class CustomeObserverWindow extends Window implements Observer {
 	private Entry customObserverNameEntry;
 
 	private ListView baseObserverTreeView;
-	private ListView sourceActionsTreeView;
+//	private ListView sourceActionsTreeView;
 
 	private FilterWidget filterWidget;
+	private ActionsWidget actionsWidget;
 	
 	private Label nameSummaryLabel;
 	private Label baseObserverSummaryLabel;
@@ -181,18 +180,22 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		this.sourceActionsTreeView = new ListView(((TreeView)glade.getWidget("sourceActionsTreeView")).getHandle());
-		this.populateSourceActionsTreeView();
-		
-		ActionManager.theManager.addObserver(new Observer(){
-			public void update(Observable observable, Object obj) {
-				populateSourceActionsTreeView();
-			}
-		});
+//		this.sourceActionsTreeView = new ListView(((TreeView)glade.getWidget("sourceActionsTreeView")).getHandle());
+//		this.populateSourceActionsTreeView();
+//		
+//		ActionManager.theManager.addObserver(new Observer(){
+//			public void update(Observable observable, Object obj) {
+//				populateSourceActionsTreeView();
+//			}
+//		});
 		//=========================================
 		
 		//=========================================
 		this.filterWidget = new FilterWidget(((VBox)glade.getWidget("filtersWidget")).getHandle());
+		//=========================================
+
+		//=========================================
+		this.actionsWidget = new ActionsWidget(glade);
 		//=========================================
 
 		//=========================================
@@ -230,13 +233,13 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 	}
 	
-	private void populateSourceActionsTreeView() {
-		Iterator iter = ActionManager.theManager.getProcActions().iterator();
-
-		while(iter.hasNext()){
-			this.sourceActionsTreeView.add((Action) iter.next());
-		}
-	}
+//	private void populateSourceActionsTreeView() {
+//		Iterator iter = ActionManager.theManager.getProcActions().iterator();
+//
+//		while(iter.hasNext()){
+//			this.sourceActionsTreeView.add((Action) iter.next());
+//		}
+//	}
 
 	private void populateObserverTreeView() {
 		Iterator iter = ObserverManager.theManager.getTaskObservers().iterator();
@@ -279,6 +282,8 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.updateBaseObserverSummary(this.selectedObserver.getBaseName());
 		
 		this.filterWidget.setObserver(selectedObserver);
+
+		this.actionsWidget.setObserver(selectedObserver);
 
 		this.update(null, null);
 	}

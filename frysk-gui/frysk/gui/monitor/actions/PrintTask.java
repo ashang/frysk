@@ -47,8 +47,16 @@ public class PrintTask extends TaskAction {
 		super("Print State", "Print the state of the selected process or thread");
 	}
 
+	public PrintTask(PrintTask other){
+		super(other);
+	}
+	
 	public void execute(Task task) {
 		System.out.println("Task State : " + task);
+	}
+
+	public Action getCopy() {
+		return new PrintTask(this);
 	}
 	
 }

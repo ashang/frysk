@@ -38,6 +38,7 @@
 // exception.
 package frysk.gui.monitor;
 
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -48,6 +49,7 @@ import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
+import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
 
@@ -65,22 +67,25 @@ public class ObserversMenu extends Menu{
 	/** the ProcData of the currently selected process */
 	private ProcData currentProc;
 	
+	private HashMap map;
+	
 	public ObserversMenu(ObservableLinkedList actions){
 		super();
-		
+	
+		this.map = new HashMap();
 		ListIterator iter = actions.listIterator();
 		
 		actions.itemAdded.addObserver(new Observer() {
 			public void update(Observable observable, Object object) {
-				TaskObserverRoot observer = (TaskObserverRoot)object;
+				ObserverRoot observer = (ObserverRoot)object;
 				addGuiObject(observer);
 			}
 		});
 		
 		actions.itemRemoved.addObserver(new Observer() {
 			public void update(Observable observable, Object object) {
-				//XXX: Not implemented.
-				throw new RuntimeException("\n\tNot implemented\n");
+				ObserverRoot observer = (ObserverRoot)object;
+				removeGuiObject(observer);
 			}
 		});
 		
@@ -110,6 +115,13 @@ public class ObserversMenu extends Menu{
 			}
 		});
 		this.add(item);
+		this.map.put(observer, item);
+	}
+
+	private void removeGuiObject(final GuiObject observer) {
+		MenuItem item = (MenuItem) this.map.get(observer);
+		this.remove(item);
+		this.map.remove(observer);
 	}
 
 	/**

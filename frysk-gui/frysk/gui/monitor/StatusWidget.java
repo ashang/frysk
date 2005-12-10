@@ -190,11 +190,15 @@ public class StatusWidget extends VBox{
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
 			final ObserverRoot observer = (ObserverRoot) iter.next();
-			observer.addAction(new Action(){
+			observer.genericActionPoint.addAction(new Action(){
 				public void execute() {
 	System.out.println("Event: " + observer.getName() + "\n");
 					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 //	area.appendEvent (e2);
+				}
+
+				public Action getCopy() {
+					return null;
 				}
 			});
 		}
@@ -204,11 +208,15 @@ public class StatusWidget extends VBox{
 			public void update(Observable arg0, Object obj) {
 				final ObserverRoot observer = (ObserverRoot)obj;
 				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
-				observer.addAction(new Action(){
+				observer.genericActionPoint.addAction(new Action(){
 					public void execute() {
 						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 						System.out.println("Event: " + observer.getName() + "\n");
 //		area.appendEvent (e2);
+					}
+
+					public Action getCopy() {
+						return null;
 					}
 				});
 			}

@@ -39,20 +39,39 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.WindowManager;
-import frysk.proc.Proc;
+import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.proc.Task;
 
+/**
+ * 
+ * @author swagiaal
+ *
+ * When executed this action adds the given observer
+ * to the given task. 
+ */
+public class StickyObserverAction extends TaskAction {
 
-public class Detach extends ProcAction {
-
-	public Detach() {
-		super("Detach", "Detach from an attached process");
-	}
-
-	public void execute(Proc proc) {
-        proc.observableDetached.addObserver(WindowManager.theManager.logWindow.detachedContinueObserver);
-        proc.requestDetachedContinue();        
-	}
+	TaskObserverRoot observer;
 	
-}
+	public StickyObserverAction() {
+		super("Add Observer Action", "Add given observer to the given task");
+		this.observer = null;
+	}
 
+	public StickyObserverAction(StickyObserverAction other) {
+		super(other);
+		this.observer = other.observer;
+	}
+
+	public void execute(Task task) {
+		observer.apply(task.getProc());
+	}
+
+	public Action getCopy() {
+		return new StickyObserverAction(this);
+	}
+
+	public void setObserver(TaskObserverRoot taskObserver){
+		this.observer = taskObserver;
+	}
+}

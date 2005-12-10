@@ -42,9 +42,8 @@ package frysk.gui.monitor.observers;
 import java.util.Observable;
 
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.TaskAction;
+import frysk.gui.monitor.actions.StickyObserverAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
-import frysk.proc.Task;
 
 /**
  * Only once instance.
@@ -55,7 +54,7 @@ import frysk.proc.Task;
  * For known static observers the ObserverManager is responsible
  * for instantiating and adding their prototypes. 
  * */
-public class ObserverManager extends Observable {
+public class ObserverManager extends  Observable {
 
 	public static ObserverManager theManager = new ObserverManager();
 	
@@ -89,23 +88,10 @@ public class ObserverManager extends Observable {
 		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
 		//final TaskExecObserver   execObserver = new TaskExecObserver();
 		
-		final TaskAction myTaskAction = new TaskAction("", "") {
-			public void execute(Task task) {
-				//Proc newProc = task.getProc();
-				TaskForkedObserver newForkedObserver = (TaskForkedObserver) forkedObserver.getCopy();
-				TaskExecObserver   newExecObserver   = new TaskExecObserver();
-				newForkedObserver.forkedTaskActionPoint.addTaskAction(this);
-				
-//				newForkedObserver.apply(newProc);
-//				newExecObserver.apply(newProc);
-				
-				//XXX: cheat :) use ^^
-				newForkedObserver.apply(task);
-				newExecObserver.apply(task);
-			}
-		};
+		StickyObserverAction stickyObserverAction = new StickyObserverAction();
+		stickyObserverAction.setObserver(forkedObserver);
+		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
 		
-		forkedObserver.forkedTaskActionPoint.addTaskAction(myTaskAction);
 		
 		//forkedObserver.apply(proc);
 		//execObserver.apply(proc);

@@ -48,10 +48,18 @@ public class Stop extends ProcAction {
 		super("Stop", "Stop current process");
 	}
 
+	public Stop(Stop other){
+		super(other);
+	}
+	
     public void execute(Proc proc) {
 	    // proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
 	// proc.requestAttachedStop();
 	throw new RuntimeException ("XXX: mechanism for stopping a process/task.");
     }
+
+	public Action getCopy() {
+		return new Stop(this);
+	}
 }
 

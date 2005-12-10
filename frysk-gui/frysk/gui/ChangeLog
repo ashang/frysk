@@ -1,3 +1,8 @@
+2005-12-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Renamed a few widgets. Added action
+	point TreeView.
+
 2005-12-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Fixed

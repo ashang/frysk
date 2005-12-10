@@ -331,6 +331,7 @@ public class TrayIcon implements Saveable{
 					for(int i = 0; i < popupWindows.size(); i++){
 						((Window)popupWindows.elementAt(i)).showAll();
 						((Window)popupWindows.elementAt(i)).deiconify();
+						((Window)popupWindows.elementAt(i)).present();
 					}
 				return false;
 			}	

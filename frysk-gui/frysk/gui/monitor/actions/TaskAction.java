@@ -47,6 +47,10 @@ public abstract class TaskAction extends Action {
 		super(name, toolTip);
 	}
 
+	public TaskAction(TaskAction other){
+		super(other);
+	}
+	
 	public abstract void execute(Task task);
 
 	public void execute(Task[] tasks){
@@ -58,4 +62,6 @@ public abstract class TaskAction extends Action {
 	public void execute(){
 		throw new RuntimeException("This function should not be called. use execute(Task) instead");
 	}
+	
+	
 }

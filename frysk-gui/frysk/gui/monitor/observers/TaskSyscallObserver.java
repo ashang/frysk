@@ -35,7 +35,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.addFilterPoint(exitingTaskFilterPoint);
 		
 		this.enteringTaskActionPoint = new TaskActionPoint("Task exiting syscall","the Task when it is exiting the syscall");
-		this.enteringTaskActionPoint = new TaskActionPoint("Task entering syscall","the Task when it is entering the syscall");
+		this.exitingTaskActionPoint = new TaskActionPoint("Task entering syscall","the Task when it is entering the syscall");
 		
 		this.addActionPoint(enteringTaskActionPoint);
 		this.addActionPoint(exitingTaskActionPoint);

@@ -8,7 +8,6 @@ import org.gnu.glib.CustomEvents;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
@@ -80,14 +79,14 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 			});
 		}
 		
-		/**
-		 * Add and action to be performed when this observers
-		 * update function is called.
-		 * */
-		public void addAction(Action action){
-			this.genericActionPoint.addAction(action);
-		}
-		
+//		/**
+//		 * Add and action to be performed when this observers
+//		 * update function is called.
+//		 * */
+//		public void addAction(Action action){
+//			this.genericActionPoint.addAction(action);
+//		}
+//		
 		/**
 		 * Add and action to be performed when this observers
 		 * update function is called.

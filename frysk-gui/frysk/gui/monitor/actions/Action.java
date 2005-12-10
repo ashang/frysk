@@ -57,6 +57,9 @@ public abstract class Action extends GuiObject{
 		super(name, toolTip);
 	}
 
+	
 	public abstract void execute();
+
+	public abstract Action getCopy();
 	
 }

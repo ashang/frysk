@@ -6,7 +6,6 @@
  */
 package frysk.gui.monitor.observers;
 
-import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
@@ -15,7 +14,7 @@ import frysk.proc.TaskObserver;
 
 public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver.Forked{
 
-	ObservableLinkedList forkedActions;
+//	ObservableLinkedList forkedActions;
 	
 	public TaskFilterPoint forkingTaskFilterPoint;
 	public TaskFilterPoint forkedTaskFilterPoint;

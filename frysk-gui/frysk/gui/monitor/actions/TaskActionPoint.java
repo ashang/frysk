@@ -70,8 +70,8 @@ public class TaskActionPoint extends ActionPoint{
 		}
 	}
 
-	public void addTaskAction(TaskAction action){
-		this.actions.add(action);
+	public void addAction(Action action) {
+		this.actions.add(action);		
 	}
 
 }

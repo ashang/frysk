@@ -47,7 +47,15 @@ public class PrintProc extends ProcAction {
 		super("Print State", "Print the state of the selected process or thread");
 	}
 
+	public PrintProc(PrintProc other){
+		super(other);
+	}
+	
 	public void execute(Proc proc) {
 		System.out.println("Proc State : " + proc);
+	}
+
+	public Action getCopy() {
+		return new PrintProc(this);
 	}
 }

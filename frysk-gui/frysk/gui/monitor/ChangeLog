@@ -1,3 +1,32 @@
+2005-12-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskSyscallObserver.java (TaskSyscallObserver): initialized
+	exitingTaskActionPoint... ops.
+	* observers/TaskForkedObserver.java: Removed forkedActions list.
+	* observers/ObserverRoot.java: Removed addAction to force clients to
+	explicitly select genericActionPoint.
+	* observers/ObserverManager.java: replaced old code with StickyObserver
+	action... not tested yet.
+	* actions/TaskActionPoint.java (addAction): Implmented addAction().
+	* actions/TaskAction.java (TaskAction): Added copy Constructor.
+	* actions/Stop.java: Implemented getCopy().
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/GenericActionPoint.java (addAction): Implemented addAction.
+	* actions/ActionPoint.java (addAction): new abstract function.
+	* actions/Action.java (getCopy): new abstract function.
+	* TrayIcon.java: Added present() call to bring Frysk to the right
+	desktop.
+	* ObserversMenu.java (removeGuiObject):  new function.
+	* ListView.java: Was forgeting to remove observers when an item
+	is removed...fixed.
+	* CustomeObserverWindow.java: Removed code for handling Actions. Now
+	taken care of by ActionWidget.
+	* ActionsWidget.java: New file. Widget for editing the actions
+	of an Observer.
+
 2005-12-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SimpleComboBox.java: Was forgeting to remove observers when an item

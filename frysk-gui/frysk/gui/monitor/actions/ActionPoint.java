@@ -73,5 +73,7 @@ public abstract class ActionPoint extends GuiObject {
 	public ObservableLinkedList getActions(){
 		return this.actions;
 	}
+
+	public abstract void addAction(Action action);
 	
 }

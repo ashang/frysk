@@ -48,6 +48,10 @@ public abstract class ProcAction extends Action {
 		super(name, toolTip);
 	}
 
+	public ProcAction(ProcAction other){
+		super(other);
+	}
+	
 	public abstract void execute(Proc proc);
 
 	public void execute(Proc[] procs){

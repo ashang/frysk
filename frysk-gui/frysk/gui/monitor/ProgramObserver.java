@@ -3,6 +3,7 @@ package frysk.gui.monitor;
 import java.util.ArrayList;
 
 import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
@@ -32,14 +33,18 @@ public class ProgramObserver {
 				Proc newProc = task.getProc();
 				TaskForkedObserver newForkedObserver = (TaskForkedObserver) forkedObserver.getCopy();
 				TaskExecObserver   newExecObserver   = (TaskExecObserver) execObserver.getCopy();
-				newForkedObserver.forkedTaskActionPoint.addTaskAction(this);
+				newForkedObserver.forkedTaskActionPoint.addAction(this);
 				
 				newForkedObserver.apply(newProc);
 				newExecObserver.apply(newProc);
 			}
+
+			public Action getCopy() {
+				return null;
+			}
 		};
 		
-		forkedObserver.forkedTaskActionPoint.addTaskAction(myTaskAction);
+		forkedObserver.forkedTaskActionPoint.addAction(myTaskAction);
 		
 		forkedObserver.apply(proc);
 		execObserver.apply(proc);
