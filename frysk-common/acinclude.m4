@@ -57,6 +57,7 @@ AC_CHECK_PROGS([JAVAC], [ecj 'gcj4 -C' 'gcj -C' javac], ['gcj -C'])
 AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
 AC_CHECK_PROGS([JAR], [fastjar4 fastjar jar], [fastjar])
 AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
+AC_CHECK_PROGS([JV_SCAN], [jv-scan4 jv-scan], [jv-scan])
 AC_PROG_CC([gcc4 gcc cc])
 AM_PROG_CC_C_O
 test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"

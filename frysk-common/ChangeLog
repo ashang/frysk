@@ -1,5 +1,8 @@
 2005-12-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (MKJAVA): Use $(JV_SCAN).
+	* acinclude.m4 (JV_SCAN): Check for jv-scan.
+
 	* m4/frysk_pkg_module_variable.m4: Delete hack to work around
 	broken pkg-config information.
 

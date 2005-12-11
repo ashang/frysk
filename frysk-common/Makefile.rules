@@ -206,7 +206,7 @@ SUFFIXES += .javain
 # really exists.
 
 .java.h:
-	classes=`jv-scan --list-class '$<'` ; \
+	classes=`$(JV_SCAN) --list-class '$<'` ; \
 	tmpdir=`echo $$classes | ( read a b ; echo $$a )`.tmp ; \
 	rm -rf $$tmpdir ; \
 	mkdir -p $$tmpdir ; \

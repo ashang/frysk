@@ -1,3 +1,8 @@
+2005-12-10  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (RPATH): Move to after call to PKG_CHECK_MODULES
+	(which sets PKG_CONFIG).
+
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Add pango >= 1.10.0 pangox >= 1.10.0 pangoft2 >=
