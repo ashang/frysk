@@ -9,8 +9,8 @@ import org.gnu.gtk.event.ExposeEvent;
 import org.gnu.gtk.event.ExposeListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-import org.gnu.gtk.event.MouseEvent;
-import org.gnu.gtk.event.MouseListener;
+//import org.gnu.gtk.event.MouseEvent;
+//import org.gnu.gtk.event.MouseListener;
 
 public class StripchartTest {
 
