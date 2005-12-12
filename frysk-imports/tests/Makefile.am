@@ -135,6 +135,17 @@ rh174912/gcj.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
+rh174912ice_FILES = rh174912ice/U.java rh174912ice/T.java
+EXTRA_DIST += $(rh174912ice_FILES)
+TESTS += rh174912ice/gcj.sh
+rh174912ice/gcj.sh: $(werror_FILES)
+	mkdir -p rh174912ice
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/rh174912ice/T.java >> $@.tmp
+	echo $(GCJ) -c -I $(srcdir) rh174912ice/T.class >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
 gcc8544_FILES = gcc8544/DisplayRenderer.java gcc8544/StyledText.java
 EXTRA_DIST += $(gcc8544_FILES)
 XFAIL_TESTS += gcc8544/gcj.sh

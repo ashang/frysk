@@ -1,3 +1,8 @@
+2005-12-12  Andrew Cagney  <cagney@redhat.com>
+
+	* rh174912ice/T.java, rh174912ice/U.java: New, from Alex Oliva.
+	* Makefile.am (rh174912/gcj.sh): Add target.
+
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Use FRYSK_IMPORTS_LIBS, FRYSK_IMPORTS_CFLAGS, and
@@ -11,7 +16,8 @@
 
 2005-12-06  Andrew Cagney  <cagney@redhat.com>
 
-	* Makefile.am (rh174912/gcj.sh): Steal from tom tromey.
+	* rh174912/rh174912.java: New, from Tom Tromey.
+	* Makefile.am (rh174912/gcj.sh): Add target.
 
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
