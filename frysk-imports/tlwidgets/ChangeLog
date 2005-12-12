@@ -1,3 +1,7 @@
+2005-12-12  Chris Moller  <moller@mollerware.com>
+
+	* TODO: Added new file.
+
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (ftkconsole.o, ftkstripchart.o): Pass
