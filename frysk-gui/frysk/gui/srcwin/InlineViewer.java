@@ -59,6 +59,7 @@ import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
+import frysk.gui.srcwin.PreferenceConstants.Inline;
 
 /**
  * @author ajocksch
@@ -112,7 +113,7 @@ public class InlineViewer extends SourceViewWidget {
 	 * the visible scopes up or down
 	 */
 	public void toggleChild(){
-		int limit = 2;
+		int limit = this.lnfPrefs.getInt(Inline.NUM_LEVELS, Inline.NUM_LEVELS_DEFAULT);
 		
 		if(!this.expanded){
 			// Case 1: depth less than max, this level is not expanded.
@@ -242,7 +243,7 @@ public class InlineViewer extends SourceViewWidget {
     		// We don't draw a line number next to the ellipsis
     		if(number == 0)
     			return;
-    		lo = this.createLayout("" + (number + ((InlineBuffer) this.buf).getFirstLine() + 1));
+    		lo = this.createLayout("" + (number + ((InlineBuffer) this.buf).getFirstLine() - 1));
     	}
         lo.setAlignment(Alignment.RIGHT);
         lo.setWidth(this.marginWriteOffset);

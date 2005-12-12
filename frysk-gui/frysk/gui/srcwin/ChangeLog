@@ -1,3 +1,12 @@
+2005-12-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* PreferenceConstants.java: (Inline): Added values for the number of
+	inline code levels to display and the default value for it.
+	* InlineViewer.java (toggleChild): Now pulls the level of depth from the
+	preferences model.
+	(drawLineNumber): Needs to return (x) - 1 if we're showing ellipsis, not
+	(x) + 1.
+
 2005-12-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (moveUp): Implemented details.

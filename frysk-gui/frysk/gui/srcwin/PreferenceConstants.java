@@ -52,6 +52,8 @@ public class PreferenceConstants {
 	 *
 	 */
 	public static class Inline{
+		public static final String NUM_LEVELS = "num_levels";
+		public static final int NUM_LEVELS_DEFAULT = 2;
 		public static final String COLOR_PREFIX = "inline_";
 		public static final Color DEFAULT = new Color(0, 65535, 65535);
 	}
