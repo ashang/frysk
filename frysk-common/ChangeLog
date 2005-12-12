@@ -1,3 +1,8 @@
+2005-12-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (.java): Skip .java files when there is a
+	corresponding .g or .sed file.
+
 2005-12-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (MKJAVA): Use $(JV_SCAN).

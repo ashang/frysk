@@ -310,6 +310,8 @@ for suffix in .java ; do
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	test -r "${d}/${b}.javain" && continue
+	test -r "${d}/${b}.g" && continue
+	test -r "${d}/${b}.sed" && continue
 	echo "GEN_SOURCES += ${file}"
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES ="
