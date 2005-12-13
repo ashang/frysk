@@ -390,6 +390,13 @@ public abstract class Proc
      * Should more formally define the observable and the event.
      */
     public ObservableXXX observableTaskAdded = new ObservableXXX ();
+    /**
+     * Notify of the removal of a task attached to this process.
+     *
+     * XXX: Should be made private and instead accessor methods added.
+     * Should more formally define the observable and the event.
+     */
+    public ObservableXXX observableTaskRemovedXXX = new ObservableXXX ();
 
     /**
      * Pool of tasks belonging to this Proc.
@@ -410,6 +417,7 @@ public abstract class Proc
     void remove (Task task)
     {
 	logger.log (Level.FINE, "remove task from proc {0}\n", task); 
+	observableTaskRemovedXXX.notify (task);
 	host.observableTaskRemoved.notify (task);
 	taskPool.remove (task.id);
 	host.remove (task);

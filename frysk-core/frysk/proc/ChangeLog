@@ -1,3 +1,8 @@
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Restore .observableTaskRemoved, renamed to
+	.observableTaskRemovedXXX.  Revert 2005-12-12 change.
+
 2005-12-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestI386Modify.java: Eliminate use of .observableTaskAdded.

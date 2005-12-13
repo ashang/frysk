@@ -1,3 +1,8 @@
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcDataModel.java: Update, Proc .observableTaskRemoved renamed
+	to .observableTaskRemovedXXX.
+
 2005-12-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskSyscallObserver.java (TaskSyscallObserver): initialized
