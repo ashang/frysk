@@ -1,3 +1,8 @@
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): For files in common, include
+	$(srcdir).  Ensures that wild cards match the correct files.
+
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add common/ChangeLog, common/*.m4,

@@ -359,15 +359,17 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)
 
 
-# Add some needed files to the distribution
+# Add some needed files to the distribution, include $(srcdir) so that
+# the reg-ex expansion occures there.
+
 EXTRA_DIST += \
-	common/ChangeLog \
-	common/*.sh \
-	common/*.m4 \
-	common/version.in \
-	common/m4/*.m4 \
-	autogen.sh \
-	EXCEPTION
+	$(srcdir)/common/ChangeLog \
+	$(srcdir)/common/*.sh \
+	$(srcdir)/common/*.m4 \
+	$(srcdir)/common/version.in \
+	$(srcdir)/common/m4/*.m4 \
+	$(srcdir)/autogen.sh \
+	$(srcdir)/EXCEPTION
 
 distclean-local: distclean-cvsignored
 .PHONY: distclean-cvsignored
