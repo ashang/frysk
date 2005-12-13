@@ -146,7 +146,7 @@ rh174912ice/gcj.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-rh175569_FILES = rh175569/rh175569.java
+rh175569_FILES = rh175569/C.java
 EXTRA_DIST += $(rh175569_FILES)
 XFAIL_TESTS += rh175569/gcj.sh
 rh175569/gcj.sh: $(werror_FILES)

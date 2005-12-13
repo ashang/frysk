@@ -1,3 +1,8 @@
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (rh175569_FILES): Fix, should contain
+	rh175569/C.java.
+
 2005-12-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (rh175569/gcj.sh): Add target.
