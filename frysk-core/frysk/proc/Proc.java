@@ -389,7 +389,7 @@ public abstract class Proc
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableTaskAdded = new ObservableXXX ();
+    public ObservableXXX observableTaskAddedXXX = new ObservableXXX ();
     /**
      * Notify of the removal of a task attached to this process.
      *
@@ -408,7 +408,7 @@ public abstract class Proc
     void add (Task task)
     {
 	taskPool.put (task.id, task);
-	observableTaskAdded.notify (task);
+	observableTaskAddedXXX.notify (task);
 	host.observableTaskAdded.notify (task);
     }
     /**

@@ -51,16 +51,6 @@ import frysk.proc.Proc;
 
 class ftrace
 {
-    static class TaskCreatedObserver
-	implements Observer
-    {
-	static long count;
-	public void update (Observable o, Object obj)
-	{
-	    count++;
-	}
-    }
-
     static class ProcCreatedObserver
 	implements Observer
     {
@@ -68,8 +58,6 @@ class ftrace
 	public void update (Observable o, Object obj)
 	{
 	    count++;
-	    Proc proc = (Proc) obj;
-	    proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	}
     }
 
@@ -101,8 +89,6 @@ class ftrace
 	    (new ProcDestroyedObserver ());
 	Manager.host.requestCreateAttachedProc (args);
 	Manager.eventLoop.run ();
-	System.out.println ("Tasks Created " +
-			    Long.toString (TaskCreatedObserver.count));
 	System.out.println ("Processes Created " +
 			    Long.toString (ProcCreatedObserver.count));
 	System.out.println ("Processes Destroyed " +

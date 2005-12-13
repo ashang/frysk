@@ -1,5 +1,8 @@
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java: Rename .observableTaskAdded to
+	.observableTaskAddedXXX.
+
 	* TestUnpaused.java: Eliminate use of Proc .observableTaskAdded.
 	* TestSyscallOpen.java: Ditto.
 	* TestSyscall.java: Ditto.

@@ -1,3 +1,8 @@
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcDataModel.java: Update, Proc .observableTaskAdded renamed
+	to .observableTaskAddedXXX.
+
 2005-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskSyscallObserver.java: Added setInfo call.
