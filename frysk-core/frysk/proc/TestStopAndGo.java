@@ -61,34 +61,21 @@ public class TestStopAndGo
 	int stopTimerEventCount;
 	int goTimerEventCount;
 	
-	// As soon as the process is created, attach a task created
-	// observer.
-	
-	class ProcCreatedObserver
-	    implements Observer
-	{
-	    int pid;
-	    ProcCreatedObserver (int pid)
-	    {
-		this.pid = pid;
-	    }
-	    public void update (Observable o, Object obj)
-	    {
-		Proc proc = (Proc) obj;
-		if (proc.id.hashCode () != pid)
-		    return;
-		proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    }
-	}
-	
 	// Once the task has been created, schedule a terminate signal.
 	
 	class TaskCreatedObserver
 	    implements Observer
 	{
+	    int pid;
+	    TaskCreatedObserver (int pid)
+	    {
+		this.pid = pid;
+	    }
 	    public void update (Observable o, Object obj)
 	    {
 		Task task = (Task) obj;
+		if (task.proc.getPid () != pid)
+		    return;
 		assertEquals ("No terminated events before task creation", 0,
 			      taskDestroyedCount);
 		taskCreatedCount++;
@@ -183,7 +170,7 @@ public class TestStopAndGo
 
 	TestStopAndGoInternals (int pid)
 	{
-	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
+	    Manager.host.observableTaskAdded.addObserver (new TaskCreatedObserver (pid));
 	    new TaskDestroyedObserver ();
 	}
     }

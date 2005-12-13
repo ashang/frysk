@@ -1,5 +1,7 @@
 2005-12-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestStopAndGo.java: Eliminate use of .observableTaskAdded.
+
 	* Proc.java: Delete .observableTaskRemoved.
 
 2005-12-04  Sami Wagiaalla  <swagiaal@redhat.com>
