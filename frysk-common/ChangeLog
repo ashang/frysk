@@ -1,5 +1,8 @@
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
+	* version.in: Change version schema to MAJOR MINOR PATCHLEVEL YYYY
+	MM DD, roll patch level to 1 -> 0.0.1.2005.12.13.
+
 	* Makefile.am (EXTRA_DIST): For files in common, include
 	$(srcdir).  Ensures that wild cards match the correct files.
 
