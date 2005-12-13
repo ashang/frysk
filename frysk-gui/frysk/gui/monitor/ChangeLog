@@ -5,6 +5,10 @@
 
 2005-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* StatusWidget.java: Integrated stripchart widget.
+
+2005-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* observers/TaskSyscallObserver.java: Added setInfo call.
 	* observers/TaskForkedObserver.java: ditto.
 	* observers/TaskExecObserver.java: ditto.

@@ -97,40 +97,25 @@ public class StatusWidget extends VBox{
 		//========================================
 		
 		//========================================
-		initLogTextView();
-		ScrolledWindow logScrolledWindow = new ScrolledWindow();
-		logScrolledWindow.addWithViewport(logTextView);
-		logScrolledWindow.setShadowType(ShadowType.IN);
-		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-		mainVbox.packStart(logScrolledWindow, true, true, 0);
-		//========================================
-		
-		//========================================
 //		initLogTextView();
-		//	ScrolledWindow logScrolledWindow = new ScrolledWindow();
+//		ScrolledWindow logScrolledWindow = new ScrolledWindow();
+//		logScrolledWindow.addWithViewport(logTextView);
+//		logScrolledWindow.setShadowType(ShadowType.IN);
+//		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+//		mainVbox.packStart(logScrolledWindow, true, true, 0);
+		//========================================
 		
-		//Stripchart area;
-		area = new Stripchart();
-		area.resize (500, 150);
+		//========================================
+		this.area = new Stripchart();
+		this.area.resize (500, 150);
+		this.area.setBackgroundRGB (65536, 28000, 28000);
 
-//	area.resize (0, 0);
-//	area.setBackgroundRGB (65536, 28000, 28000);
+		this.area.setUpdate (1111);
+		this.area.setRange (60000);
 
-		//area.setEventTitle(1, "Knife");
-		//area.setEventRGB(1, 65535, 65535, 0); /* red + green = yellow */
-//		int e1 = area.createEvent("knife", 65535, 65535, 0); /* red + green = yellow */
-//		 e2 = area.createEvent("fork",  65535, 0, 65535); /* red + green = yellow */
-//		int e3 = area.createEvent("spoon",  0, 65535, 65535); /* red + green = yellow */
-//		System.out.println("e1 = " + e1);
-//		System.out.println("e2 = " + e2);
-//		area.setUpdate (1111);
-//		area.setRange (60000);
-//		area.appendEvent (e1);
-//		area.appendEvent (e2);
-//		area.appendEvent (e3);
+		initLogTextView();
+
 		mainVbox.packStart(area, true, true, 0);
-		
-		
 		//========================================
 		
 		//========================================
@@ -187,6 +172,58 @@ public class StatusWidget extends VBox{
 	}
 
 
+//	private void initLogTextView(){
+//		this.logTextView = new TextView();
+//		ObservableLinkedList observers = this.data.getObservers();
+//		ListIterator iter = observers.listIterator();
+//		while(iter.hasNext()){
+//			final ObserverRoot observer = (ObserverRoot) iter.next();
+//			observer.genericActionPoint.addAction(new GenericAction("",""){
+//				public void execute(ObserverRoot observer) {
+//					System.out.println("Event: " + observer.getName() + "\n");
+//					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+//					//	area.appendEvent (e2);
+//				}
+//
+//				public Action getCopy() {
+//					return null;
+//				}
+//				
+//			});
+//		}
+//		
+//		this.data.getObservers().itemAdded.addObserver(new Observer(){
+//
+//			public void update(Observable arg0, Object obj) {
+//				final ObserverRoot observer = (ObserverRoot)obj;
+//				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
+//				observer.genericActionPoint.addAction(new GenericAction("Logging Action",""){
+//					public void execute(ObserverRoot observer) {
+//						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+//						System.out.println("Event: " + observer.getName() + "\n");
+////		area.appendEvent (e2);
+//					}
+//
+//					public Action getCopy() {
+//						return null;
+//					}
+//					
+//				});
+//			}
+//		});
+//		
+//		this.data.getObservers().itemRemoved.addObserver(new Observer(){
+//
+//			public void update(Observable arg0, Object obj) {
+//				ObserverRoot observer = (ObserverRoot)obj;
+//				logTextView.getBuffer().insertText("Event: " + observer.getName() + " removed\n");
+//			}
+//			
+//		});
+//		
+//	}
+//	
+	
 	private void initLogTextView(){
 		this.logTextView = new TextView();
 		ObservableLinkedList observers = this.data.getObservers();
@@ -196,7 +233,7 @@ public class StatusWidget extends VBox{
 			observer.genericActionPoint.addAction(new GenericAction("",""){
 				public void execute(ObserverRoot observer) {
 					System.out.println("Event: " + observer.getName() + "\n");
-					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+					//logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 					//	area.appendEvent (e2);
 				}
 
@@ -205,6 +242,9 @@ public class StatusWidget extends VBox{
 				}
 				
 			});
+			
+			observer.genericActionPoint.addAction(new TimelineAction(observer));
+			
 		}
 		
 		this.data.getObservers().itemAdded.addObserver(new Observer(){
@@ -214,7 +254,7 @@ public class StatusWidget extends VBox{
 				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
 				observer.genericActionPoint.addAction(new GenericAction("Logging Action",""){
 					public void execute(ObserverRoot observer) {
-						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
+						//logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 						System.out.println("Event: " + observer.getName() + "\n");
 //		area.appendEvent (e2);
 					}
@@ -224,7 +264,11 @@ public class StatusWidget extends VBox{
 					}
 					
 				});
+				
+				observer.genericActionPoint.addAction(new TimelineAction(observer));
 			}
+			
+			
 		});
 		
 		this.data.getObservers().itemRemoved.addObserver(new Observer(){
@@ -240,5 +284,60 @@ public class StatusWidget extends VBox{
 	
 	public void setName(String name){
 		this.frame.setLabel(name);
+	}
+
+	private static int count = 0;
+	
+	class TimelineAction extends GenericAction{
+		
+		int eventId;
+		private ObserverRoot observer;
+		
+		public TimelineAction(ObserverRoot observer) {
+			super("TimeLine Action","");
+			this.observer = observer;
+			this.createEvent();
+		}
+
+		
+		private void createEvent() {
+			count++;
+			if(count%3 == 0){
+				this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0); /* red + green = yellow */
+			}
+			
+			if(count%3 == 1){
+				this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535); /* red + green = yellow */
+			}
+			if(count%3 == 2){
+				this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535); /* red + green = yellow */
+			}
+		}
+
+		public void execute(ObserverRoot observer) {
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			System.out.println(".execute()");
+			area.appendEvent (eventId);
+		}
+		
+		public Action getCopy() {
+			return null;
+		}
 	}
 }
