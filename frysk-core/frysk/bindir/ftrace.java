@@ -61,16 +61,6 @@ class ftrace
 	}
     }
 
-    static class TaskDestroyedObserver
-	implements Observer
-    {
-	static long count;
-	public void update (Observable o, Object obj)
-	{
-	    count++;
-	}
-    }
-
     static class ProcCreatedObserver
 	implements Observer
     {
@@ -80,7 +70,6 @@ class ftrace
 	    count++;
 	    Proc proc = (Proc) obj;
 	    proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    proc.observableTaskRemoved.addObserver (new TaskDestroyedObserver ());
 	}
     }
 
@@ -114,8 +103,6 @@ class ftrace
 	Manager.eventLoop.run ();
 	System.out.println ("Tasks Created " +
 			    Long.toString (TaskCreatedObserver.count));
-	System.out.println ("Tasks Destroyed " +
-			    Long.toString (TaskDestroyedObserver.count));
 	System.out.println ("Processes Created " +
 			    Long.toString (ProcCreatedObserver.count));
 	System.out.println ("Processes Destroyed " +

@@ -1,3 +1,7 @@
+2005-12-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Delete .observableTaskRemoved.
+
 2005-12-04  Sami Wagiaalla  <swagiaal@redhat.com>
 	    Andrew Cagney  <cagney@redhat.com>
 
