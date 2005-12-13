@@ -57,7 +57,7 @@ AC_DEFUN([AC_FIND_FILE],
         done
     fi
     test "x${$3}" = xNO && AC_MSG_ERROR([no $1 file found in $2]);
-    AC_SUBST($3)
-    AC_MSG_RESULT($$1)
+    AC_SUBST([$3])
+    AC_MSG_RESULT([${$3}])
 ]
 )
