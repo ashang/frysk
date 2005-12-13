@@ -1,5 +1,9 @@
 2005-12-12  Andrew Cagney  <cagney@redhat.com>
 
+	* TestI386Modify.java: Eliminate use of .observableTaskAdded.
+	* TestI386Regs.java: Ditto.
+	* TestModify.java: Ditto.
+
 	* TestStopAndGo.java: Eliminate use of .observableTaskAdded.
 
 	* Proc.java: Delete .observableTaskRemoved.

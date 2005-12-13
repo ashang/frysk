@@ -115,36 +115,6 @@ public class TestI386Regs
 	}
 	
 	TaskEventObserver taskEventObserver = new TaskEventObserver ();
-	class ProcCreatedObserver
-	    implements Observer
-	{
-	    Task task;
-	    public void update (Observable o, Object obj)
-	    {
-		Proc proc = (Proc) obj;
-		if (!isChildOfMine (proc))
-		    return;
-		registerChild (proc.getId ().hashCode ());
-		proc.observableTaskAdded.addObserver (new Observer () 
-		    {
-			public void update (Observable o, Object obj)
-			{
-			    task = (Task) obj;
-			    if (task.getIsa () instanceof LinuxIa32) {
-				ia32Isa = true;
-				task.traceSyscall = true;
-				task.requestAddSyscallObserver (taskEventObserver);
-				task.requestAddSignaledObserver (taskEventObserver);
-			    }
-			    else {
-				// If not ia32, stop immediately
-				ia32Isa = false;
-				Manager.eventLoop.requestStop ();
-			    }
-			}
-		    });
-	    }
-	}
 	
 	class ProcDestroyedObserver
 	    implements Observer
@@ -164,7 +134,27 @@ public class TestI386Regs
 
 	TestI386RegsInternals ()
 	{
-	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
+	    Manager.host.observableTaskAdded.addObserver (new Observer () 
+		{
+		    public void update (Observable o, Object obj)
+		    {
+			Task task = (Task) obj;
+			if (!isChildOfMine (task.proc))
+			    return;
+			registerChild (task.getTid ());
+			if (task.getIsa () instanceof LinuxIa32) {
+			    ia32Isa = true;
+			    task.traceSyscall = true;
+			    task.requestAddSyscallObserver (taskEventObserver);
+			    task.requestAddSignaledObserver (taskEventObserver);
+			}
+			else {
+			    // If not ia32, stop immediately
+			    ia32Isa = false;
+			    Manager.eventLoop.requestStop ();
+			}
+		    }
+		});
 	    Manager.host.observableProcRemoved.addObserver
 		(new ProcDestroyedObserver ());
 	}

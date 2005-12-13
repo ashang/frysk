@@ -140,26 +140,6 @@ public class TestModify
 	}
 	
 	TaskEventObserver taskEventObserver = new TaskEventObserver ();
-	class ProcDiscoveredObserver
-	    implements Observer
-	{
-	    public void update (Observable o, Object obj)
-	    {
-		Proc proc = (Proc) obj;
-		if (!isChildOfMine (proc))
-		    return;
-		registerChild (proc.getId ().hashCode ());
-		proc.observableTaskAdded.addObserver (new Observer ()
-		    {
-			public void update (Observable o, Object obj)
-			{
-			    Task task = (Task) obj;
-			    task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
-			    task.requestAddSignaledObserver (taskEventObserver);
-			}
-		    });
-	    }
-	}
 	
 	class ProcRemovedObserver
 	    implements Observer
@@ -190,7 +170,18 @@ public class TestModify
 
 	TestModifyInternals ()
 	{
-	    Manager.host.observableProcAdded.addObserver (new ProcDiscoveredObserver ());
+	    Manager.host.observableTaskAdded.addObserver (new Observer ()
+		{
+		    public void update (Observable o, Object obj)
+		    {
+			Task task = (Task) obj;
+			if (!isChildOfMine (task.proc))
+			    return;
+			registerChild (task.getTid ());
+			task.requestAddTerminatedObserver (new TaskTerminatedObserver ());
+			task.requestAddSignaledObserver (taskEventObserver);
+		    }
+		});
 	    Manager.host.observableProcRemoved.addObserver
 		(new ProcRemovedObserver ());
 	}
