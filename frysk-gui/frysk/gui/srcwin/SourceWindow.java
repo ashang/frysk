@@ -45,7 +45,6 @@ import java.util.prefs.Preferences;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
-import org.gnu.gdk.Pixbuf;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
@@ -62,9 +61,6 @@ import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.GtkStockItem;
-import org.gnu.gtk.IconFactory;
-import org.gnu.gtk.IconSet;
-import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
@@ -98,6 +94,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMLine;
+import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.proc.Task;
 
@@ -130,24 +127,6 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	// Directory where images are stored
 	public static String[] IMAGES_DIR = null; //$NON-NLS-1$
 	
-	// Image files - search bar
-	public static final String FIND_NEXT_PNG = "findNext.png"; //$NON-NLS-1$
-	public static final String FIND_PREV_PNG = "findPrev.png"; //$NON-NLS-1$
-	public static final String FIND_GO_PNG = "findGo.png"; //$NON-NLS-1$
-	public static final String HIGHLIGHT_PNG = "highlight.png"; //$NON-NLS-1$
-
-	// Names of the image files - Toolbar
-	public static final String STACK_BOTTOM_PNG = "stack_bottom.png"; //$NON-NLS-1$
-	public static final String RUN_PNG = "run.png";
-	public static final String STEP_PNG = "step.png"; //$NON-NLS-1$
-	public static final String NEXT_PNG = "next.png"; //$NON-NLS-1$
-	public static final String FINISH_PNG = "finish.png"; //$NON-NLS-1$
-	public static final String CONTINUE_PNG = "continue.png"; //$NON-NLS-1$
-	public static final String STEP_ASM_PNG = "step_asm.png"; //$NON-NLS-1$
-	public static final String NEXT_ASM_PNG = "next_asm.png"; //$NON-NLS-1$
-	public static final String STACK_DOWN_PNG = "stack_down.png"; //$NON-NLS-1$
-	public static final String STACK_UP_PNG = "stack_up.png"; //$NON-NLS-1$
-
 	// Widget that the SourceViewWidget will be placed in
 	public static final String TEXT_WINDOW = "textWindow";
 	
@@ -219,6 +198,10 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
 		
 		this.tips = new ToolTips();
+		
+		IconManager.setImageDir(IMAGES_DIR);
+		IconManager.loadIcons();
+		IconManager.useSmallIcons();
 		
 		this.createActions(ag);
 		this.createMenus();
@@ -410,44 +393,6 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	 * Creates the menus and assigns hotkeys
 	 */
 	private void createActions(AccelGroup ag) {
-		// Before we make actions, register the icons
-		IconFactory fac = new IconFactory();
-		
-		for(int i = 0; i < IMAGES_DIR.length; i++){
-			IconSet set = null;
-			try {
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.RUN_PNG));
-				fac.addIconSet("frysk-run", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STEP_PNG));
-				fac.addIconSet("frysk-step", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.NEXT_PNG));
-				fac.addIconSet("frysk-next", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FINISH_PNG));
-				fac.addIconSet("frysk-finish", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.CONTINUE_PNG));
-				fac.addIconSet("frysk-continue", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.NEXT_ASM_PNG));
-				fac.addIconSet("frysk-next-asm", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STEP_ASM_PNG));
-				fac.addIconSet("frysk-step-asm", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STACK_BOTTOM_PNG));
-				fac.addIconSet("frysk-stack-bottom", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STACK_DOWN_PNG));
-				fac.addIconSet("frysk-stack-down", set);
-				set = new IconSet(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.STACK_UP_PNG));
-				fac.addIconSet("frysk-stack-up", set);
-			} catch (Exception e){
-				if(i == IMAGES_DIR.length - 1){
-					System.err.println("Error loading images on path " + IMAGES_DIR[i]+"! Exiting");
-					System.exit(1);
-				}
-				
-				continue;
-			}
-			fac.addDefault();
-			
-			break;
-		}
 		
 		// Close action
 		this.close = new Action("close", "Close", "Close Window", GtkStockItem.CLOSE.getString());
@@ -509,7 +454,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		this.run.connectAccelerator();
 		
         // Stop program action
-        this.stop = new Action("stop", "Stop", "Stop Program execution", "");
+        this.stop = new Action("stop", "Stop", "Stop Program execution", "frysk-stop");
         this.stop.addListener(new ActionListener() {        
             public void actionEvent(ActionEvent arg0) {
                 SourceWindow.this.doStop();
@@ -577,7 +522,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		AccelMap.changeEntry("<sourceWin>/Program/Terminate", KeyValue.t, ModifierType.MOD1_MASK, true);
 		
 		// Step assembly instruction action
-		this.stepAsm = new Action("stepAsm", "Step Assembly Instruction", Messages.getString("SourceWindow.36"), "frysk-step-asm");
+		this.stepAsm = new Action("stepAsm", "Step Assembly Instruction", Messages.getString("SourceWindow.36"), "frysk-stepAI");
 		this.stepAsm.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doAsmStep();
@@ -589,7 +534,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		this.stepAsm.connectAccelerator();
 		
 		// Next assembly instruction action
-		this.nextAsm = new Action("nextAsm", "Next Assembly Instruction", Messages.getString("SourceWindow.38"), "frysk-next-asm");
+		this.nextAsm = new Action("nextAsm", "Next Assembly Instruction", Messages.getString("SourceWindow.38"), "frysk-nextAI");
 		this.nextAsm.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doAsmNext();
@@ -601,7 +546,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		this.nextAsm.connectAccelerator();
 		
 		// Bottom of stack action
-		this.stackBottom = new Action("stackBottom", "To Bottom of Stack", Messages.getString("SourceWindow.44"), "frysk-stack-bottom");
+		this.stackBottom = new Action("stackBottom", "To Bottom of Stack", Messages.getString("SourceWindow.44"), "frysk-bottom");
 		this.stackBottom.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackBottom();
@@ -613,7 +558,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		this.stackBottom.connectAccelerator();
 	
 		// Stack down action
-		this.stackDown = new Action("stackDown", "Down One Stack Frame", Messages.getString("SourceWindow.40"), "frysk-stack-down");
+		this.stackDown = new Action("stackDown", "Down One Stack Frame", Messages.getString("SourceWindow.40"), "frysk-down");
 		this.stackDown.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackDown();
@@ -625,7 +570,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		this.stackDown.connectAccelerator();
 		
 		// Stack up action
-		this.stackUp = new Action("stack Up", "Up One Stack Frame", Messages.getString("SourceWindow.42"), "frysk-stack-up");
+		this.stackUp = new Action("stack Up", "Up One Stack Frame", Messages.getString("SourceWindow.42"), "frysk-up");
 		this.stackUp.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackUp();
@@ -777,23 +722,23 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		((Button) this.glade.getWidget(SourceWindow.CASE_FIND)).setLabel(Messages.getString("SourceWindow.17")); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setLabel(Messages.getString("SourceWindow.18")); //$NON-NLS-1$
 		
-		for(int i = 0; i < IMAGES_DIR.length; i++){
-			// Add icons
-			try {
-				((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.HIGHLIGHT_PNG)));
-				((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FIND_NEXT_PNG)));
-				((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FIND_PREV_PNG)));
-				((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+SourceWindow.FIND_GO_PNG)));
-			} catch (Exception e){
-				if(i == IMAGES_DIR.length -1){
-					System.err.println("Could not find image files on " + IMAGES_DIR[i]);
-					System.exit(1);
-				}
-					
-				continue;
-			}
-			break;
-		}
+//		for(int i = 0; i < IMAGES_DIR.length; i++){
+//			// Add icons
+//			try {
+//				((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.HIGHLIGHT_PNG)));
+//				((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.FIND_NEXT_PNG)));
+//				((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.FIND_PREV_PNG)));
+//				((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.FIND_GO_PNG)));
+//			} catch (Exception e){
+//				if(i == IMAGES_DIR.length -1){
+//					System.err.println("Could not find image files on " + IMAGES_DIR[i]);
+//					System.exit(1);
+//				}
+//					
+//				continue;
+//			}
+//			break;
+//		}
 		
 		// add Tooltips
 		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$

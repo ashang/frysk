@@ -48,6 +48,7 @@ import java.util.prefs.Preferences;
 import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
+import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextTag;
@@ -122,6 +123,8 @@ public class SourceBuffer extends TextBuffer {
 	// Since conceptually each sourcebuffer will only be viewing one file, we don't
 	// need any information higher than this
 	protected StackLevel scope;
+	
+	protected TextChildAnchor anchor;
 	
 	/**
 	 * Creates a new SourceBuffer
@@ -669,6 +672,14 @@ public class SourceBuffer extends TextBuffer {
 				this.scope.getEndLine(),
 				this.scope.getColEnd());
 	}
+	
+//	public TextChildAnchor createAnchorAtCurrentLine(){
+//		
+//		TextIter line = this.getLineIter(this.getCurrentLine() + 1);
+//		
+//		if(this.anchor)
+//	}
+	
 	
 	/*-------------------*
 	 * PRIVATE METHODS   *

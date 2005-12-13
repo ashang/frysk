@@ -1,3 +1,8 @@
+2005-12-13  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* IconManager.java: Added.
+	* FryskIconSet.java: Added.
+
 2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Monitor.java: Now prints out more useful message for incorrect

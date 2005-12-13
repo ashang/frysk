@@ -1,3 +1,7 @@
+2005-12-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* images: Removed old images and added new icons and images.
+
 2005-12-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Renamed a few widgets. Added action

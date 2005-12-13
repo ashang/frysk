@@ -1,3 +1,13 @@
+2005-12-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java: Started then commented out new way of keeping track
+	of the child anchors.
+	* SourceWindow.java: Moved constants to IconManager.
+ 	(SourceWindow): Now calls IconManager to initialize the icons.
+	(createActions): No longer creates icons.
+	(createToolbar): Temporarily ditto, until IconManager can load these
+	icons too.
+
 2005-12-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* PreferenceConstants.java: (Inline): Added values for the number of
