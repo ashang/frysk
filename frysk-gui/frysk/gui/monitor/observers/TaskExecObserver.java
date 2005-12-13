@@ -3,6 +3,7 @@ package frysk.gui.monitor.observers;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
+import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -47,6 +48,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	}
 	
 	private void bottomHalf(Task task){
+		this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: called exec " + " Host: " + Manager.host.getName());
 		if(this.runFilters(task)){
 			this.runActions(task);
 		}
@@ -54,7 +56,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	}
 	
 	private void runActions(Task task) {
-		this.genericActionPoint.runActions();
+		super.runActions();
 		this.taskActionPoint.runActions(task);
 	}
 

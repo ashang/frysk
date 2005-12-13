@@ -65,7 +65,10 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import com.redhat.ftk.Stripchart;
+
 import frysk.gui.monitor.actions.Action;
+import frysk.gui.monitor.actions.GenericAction;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class StatusWidget extends VBox{
@@ -74,7 +77,7 @@ public class StatusWidget extends VBox{
 	private GuiData data;
 	private TextView logTextView;
 	private Frame frame;
-//        Stripchart area;
+	private Stripchart area;
 	
 	public  Observable notifyUser;
 //    private int e2;
@@ -107,8 +110,8 @@ public class StatusWidget extends VBox{
 		//	ScrolledWindow logScrolledWindow = new ScrolledWindow();
 		
 		//Stripchart area;
-//		area = new Stripchart();
-		//		area.resize (500, 150);
+		area = new Stripchart();
+		area.resize (500, 150);
 
 //	area.resize (0, 0);
 //	area.setBackgroundRGB (65536, 28000, 28000);
@@ -125,7 +128,7 @@ public class StatusWidget extends VBox{
 //		area.appendEvent (e1);
 //		area.appendEvent (e2);
 //		area.appendEvent (e3);
-//		mainVbox.packStart(area, true, true, 0);
+		mainVbox.packStart(area, true, true, 0);
 		
 		
 		//========================================
@@ -190,16 +193,17 @@ public class StatusWidget extends VBox{
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
 			final ObserverRoot observer = (ObserverRoot) iter.next();
-			observer.genericActionPoint.addAction(new Action(){
-				public void execute() {
-	System.out.println("Event: " + observer.getName() + "\n");
+			observer.genericActionPoint.addAction(new GenericAction("",""){
+				public void execute(ObserverRoot observer) {
+					System.out.println("Event: " + observer.getName() + "\n");
 					logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
-//	area.appendEvent (e2);
+					//	area.appendEvent (e2);
 				}
 
 				public Action getCopy() {
 					return null;
 				}
+				
 			});
 		}
 		
@@ -208,8 +212,8 @@ public class StatusWidget extends VBox{
 			public void update(Observable arg0, Object obj) {
 				final ObserverRoot observer = (ObserverRoot)obj;
 				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
-				observer.genericActionPoint.addAction(new Action(){
-					public void execute() {
+				observer.genericActionPoint.addAction(new GenericAction("Logging Action",""){
+					public void execute(ObserverRoot observer) {
 						logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
 						System.out.println("Event: " + observer.getName() + "\n");
 //		area.appendEvent (e2);
@@ -218,6 +222,7 @@ public class StatusWidget extends VBox{
 					public Action getCopy() {
 						return null;
 					}
+					
 				});
 			}
 		});

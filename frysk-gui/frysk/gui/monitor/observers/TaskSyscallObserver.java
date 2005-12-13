@@ -10,6 +10,7 @@ import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
+import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -80,6 +81,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	protected void enterBottomHalf(Task task) {
+		this.setInfo(this.getName()+": "+"PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: enter syscall" + " Host: " + Manager.host.getName());
 		if(this.runEnterFilters(task)){
 			this.runEnterActions(task);
 		}
@@ -87,7 +89,8 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	private void runEnterActions(Task task) {
-		this.enteringGenericActionPoint.runActions();
+		super.runActions();
+		this.enteringGenericActionPoint.runActions(this);
 		this.enteringTaskActionPoint.runActions(task);
 	}
 
@@ -106,6 +109,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	protected void exitBottomHalf(Task task) {
+		this.setInfo("PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: leave " + this.getName() + " Host: " + Manager.host.getName());
 		if(this.runExitFilters(task)){
 			this.runExitActions(task);
 		}
@@ -113,7 +117,8 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	private void runExitActions(Task task) {
-		this.exitingGenericActionPoint.runActions();
+		super.runActions();
+		this.exitingGenericActionPoint.runActions(this);
 		this.exitingTaskActionPoint.runActions(task);
 	}
 

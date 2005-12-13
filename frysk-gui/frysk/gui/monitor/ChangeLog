@@ -1,3 +1,30 @@
+2005-12-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskSyscallObserver.java: Added setInfo call.
+	* observers/TaskForkedObserver.java: ditto.
+	* observers/TaskExecObserver.java: ditto.
+	* observers/TaskCloneObserver.java: ditto.
+	* observers/TaskTerminatingObserver.java (TaskTerminatingObserver): 
+	* observers/ObserverRoot.java: Added LogAction by default. Added
+	setInfo function.
+	* actions/Action.java: Removed abstract execute() function.
+	* actions/ProcAction.java: Removed declaration for execute()
+	function.
+	* actions/TaskAction.java: Ditto
+	* actions/GenericActionPoint.java (runActions): Added observer as 
+	an argument.
+	* actions/ActionPoint.java (addAction): replace abstract addAction
+	with proper declaration.
+	* actions/LogAction.java: New file.
+	* actions/GenericAction.java: New file.
+	* StatusWidget.java: Replaced Action declarations with GenericAction.
+	* ProcDataModel.java: Renamed proc.observableTaskRemovedXXX to
+	 proc.observableTaskRemoved.
+	* LogWidget.java (LogWidget): Removed old logging code. Added print
+	function to print to logWidget.
+	* EventLogger.java: Converted EventLogger to a manager for event
+	loggers (created singleton instance, and added getEventLogger()).
+
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcDataModel.java: Update, Proc .observableTaskRemoved renamed

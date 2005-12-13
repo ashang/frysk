@@ -39,7 +39,6 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.WindowManager;
 import frysk.proc.Proc;
 
 public class Resume extends ProcAction {
@@ -53,7 +52,6 @@ public class Resume extends ProcAction {
 	}
 	
 	public void execute(Proc proc) {
-		proc.observableAttached.addObserver(WindowManager.theManager.logWindow.attachedResumeObserver);       
 		proc.requestAttachedContinue();		
 	}
 

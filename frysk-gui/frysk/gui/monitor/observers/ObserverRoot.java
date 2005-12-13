@@ -10,6 +10,7 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
+import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
 
@@ -48,6 +49,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
 
+			this.genericActionPoint.addAction(new LogAction());
 		}
 		
 		public ObserverRoot(ObserverRoot other) {
@@ -62,6 +64,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 			this.genericActionPoint = new GenericActionPoint(other.genericActionPoint);
 //			this.addActionPoint(genericActionPoint);
 
+			this.genericActionPoint.addAction(new LogAction());
 		}
 
 		public void update(Observable o, Object obj) {
@@ -79,14 +82,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 			});
 		}
 		
-//		/**
-//		 * Add and action to be performed when this observers
-//		 * update function is called.
-//		 * */
-//		public void addAction(Action action){
-//			this.genericActionPoint.addAction(action);
-//		}
-//		
 		/**
 		 * Add and action to be performed when this observers
 		 * update function is called.
@@ -120,18 +115,21 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 		}
 
 		/**
-		 * This string is set by the observer during its update call.
-		 * It can be useful for clients interested in printing general
-		 * information about a particular observer+event.
-		 * @deprecated this function is only there because of theoretical
-		 * need for it. it will be removed if it is provent to be needed
-		 * */
+		 * Could be called by an action during the update call to get
+		 * print generic information about the event that just occurred
+		 * format (as currently used by logger):
+		 *   PID 123 did action ACTION on Host HOST
+		 */
 		public String getInfo() {
 			return info;
 		}
 	
+		protected String setInfo(String info) {
+			return info;
+		}
+	
 		protected void runActions(){
-			this.genericActionPoint.runActions();
+			this.genericActionPoint.runActions(this);
 		}
 		
 		public ObservableLinkedList getFilterPoints(){

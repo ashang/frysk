@@ -9,6 +9,7 @@ package frysk.gui.monitor.observers;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
+import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -74,6 +75,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 	
 	private void bottomHalf(Task task, Task child){
+		this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: forked new child PID: "+ child.getProc().getPid() + " Host: " + Manager.host.getName());
 		if(this.runFilters(task, child)){
 			this.runActions(task, child);
 		}

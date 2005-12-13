@@ -174,10 +174,10 @@ public class ProcDataModel {
 	}
 
 	/**
-	 * Showes only proccessies that match the given argument
+	 * Showes only processies that match the given argument
 	 * @param type the type of the desired filter, must be one 
 	 *        of PsParser.FilterType
-	 * @param argument the chriteria that must be matched 	
+	 * @param argument the criteria that must be matched 	
 	 * */
 	public void setFilter(int type, int argument){
 		try {
@@ -189,10 +189,10 @@ public class ProcDataModel {
 	}
 
 	/**
-	 * Showes only proccessies that match the given argument
+	 * Showes only processies that match the given argument
 	 * @param type the type of the desired filter, must be one 
 	 *        of PsParser.FilterType
-	 * @param argument the chriteria that must be matched 
+	 * @param argument the criteria that must be matched 
 	 * */
 	public void setFilter(int type, String argument){
 		try {
@@ -201,16 +201,8 @@ public class ProcDataModel {
 			errorLog.log(Level.WARNING,"Cannot set filter",e);
 		}
 		this.stringFilterArgument = argument;
-//		this.refilter();
 	}
 	
-//	private void refilter() {
-//		TreeIter iter = this.treeStore.getFirstIter();
-//		while(iter != null){
-//			this.topDownFilter(treeStore, iter);
-//			iter = iter.getNextIter();
-//		}
-//	}
 
 	/**
 	 * check the give type and sets the current filter type to it
@@ -358,7 +350,7 @@ public class ProcDataModel {
             final Proc proc = (Proc) obj;
           
             proc.observableTaskAdded.addObserver (taskCreatedObserver);
-            proc.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
+            proc.observableTaskRemoved.addObserver (taskDestroyedObserver);
             
             org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				 public void run() {

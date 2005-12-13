@@ -44,8 +44,6 @@
  */
 package frysk.gui.monitor;
 
-import java.util.Observable;
-import java.util.Observer;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
@@ -53,90 +51,23 @@ import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.Widget;
 
-import frysk.proc.Proc;
-
 /**
  * @author sami wagiaalla
  * Generic log window, just prints out events it recieves
  * */
-public class LogWidget extends Widget implements Observer, Saveable {
+public class LogWidget extends Widget implements Saveable {
 	
 	public TextView logTextView;
-    public AttachedContinueObserver attachedContinueObserver;
-    public DetachedContinueObserver detachedContinueObserver;
-    public AttachedStopObserver attachedStopObserver;
-    public AttachedResumeObserver attachedResumeObserver;
-    
+   
 	public LogWidget(LibGlade glade){
 		super(glade.getWidget("logWidget").getHandle());
 		this.logTextView = (TextView) glade.getWidget("logTextView");
-        this.attachedContinueObserver = new AttachedContinueObserver();
-        this.detachedContinueObserver = new DetachedContinueObserver();
-        this.attachedStopObserver = new AttachedStopObserver();
-        this.attachedResumeObserver = new AttachedResumeObserver();
+    }
+
+	public void print(String string){
+		TextBuffer tb = logTextView.getBuffer();
+		tb.insertText(string);
 	}
-	
-	static int count = 0;
-	public void update(Observable observable, Object obj) {
-		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-			 public void run() {
-				 TextBuffer tb = logTextView.getBuffer();
-				 tb.insertText("event "+(count++)+" : ");
-		
-				 tb.insertText("\n");
-			 }
-		});
-	}
-	
-    class AttachedContinueObserver implements Observer{
-        public void update(Observable arg0, final Object arg1) {
-        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-        		public void run() {
-        			TextBuffer tb = logTextView.getBuffer();
-        			tb.insertText("event "+(count++)+" : ");
-        			tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX attached " + " \n");
-        		 }
-    		});     
-        }
-    }
-
-    class AttachedStopObserver implements Observer{
-        public void update(Observable arg0, final Object arg1) {
-        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-        		public void run() {
-        			TextBuffer tb = logTextView.getBuffer();
-        			tb.insertText("event "+(count++)+" : ");
-        		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX stopped" + " \n");
-        		    System.out.println("Got here");
-        		 }
-    		});
-        }
-    }
-
-    class AttachedResumeObserver implements Observer{
-        public void update(Observable arg0, final Object arg1) {
-        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-        		public void run() {
-        			TextBuffer tb = logTextView.getBuffer();
-        			tb.insertText("event "+(count++)+" : ");
-        		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX resumed" + " \n");
-        		 }
-    		});
-        }
-    }
-
-    
-    class DetachedContinueObserver implements Observer{
-        public void update(Observable arg0, final Object arg1) {
-        	org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-        		public void run() {
-        			TextBuffer tb = logTextView.getBuffer();
-        			tb.insertText("event "+(count++)+" : ");
-        		    tb.insertText("PID " + ((Proc)arg1).getPid() +" on Host XXX detached " + " \n");
-        		 }
-    		});
-        }
-    }
 	
 	public void save(Preferences prefs) {
 		// TODO Auto-generated method stub

@@ -39,43 +39,21 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.observers.ObserverRoot;
 
-/**
- * In a similar manner to @link frysk.gui.monitor.filters.FilterPoint
- * ActionPoints provide a flexible interface to add actions to Observers.
- * */
-public abstract class ActionPoint extends GuiObject {
-	protected ObservableLinkedList actions;
-	
-	public ActionPoint(String name, String toolTip){
+public abstract class GenericAction extends Action {
+
+	public GenericAction(String name, String toolTip) {
 		super(name, toolTip);
-		this.actions = new ObservableLinkedList();
-	}
-	
-	public ActionPoint(ActionPoint other){
-		super(other);
-		this.actions = new ObservableLinkedList(); // Dont copy Actions
-	}
-	
-	/**
-	 * Retrieves a list of applicable actions from the ActionManager.
-	 * */
-	public abstract ObservableLinkedList getApplicableActions();
-	
-	public void removeAction(Action action){
-		if(!this.actions.remove(action)){
-			throw new IllegalArgumentException("the passed action ["+ action +"] is not a member of this action point");
-		}
-	}
-	
-	public ObservableLinkedList getActions(){
-		return this.actions;
 	}
 
-	public void addAction(Action action) {
-		this.actions.add(action);		
+	public GenericAction(GenericAction other){
+		super(other);
 	}
 	
+	public abstract Action getCopy();
+
+	public abstract void execute(ObserverRoot observer);
+	
+
 }

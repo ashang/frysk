@@ -72,6 +72,8 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 
 	private Logger eventLogFile = null;
 
+	public static EventLogger theLogger = new EventLogger();
+	
 	class EventFileHandler extends FileHandler {
 
 		public EventFileHandler(String arg0, boolean arg1) throws IOException,
@@ -93,6 +95,10 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 
 	}
 
+	public Logger getEventLogger(){
+		return this.eventLogFile;
+	}
+	
 	/**{
 	 * Local Observers
 	 * */
@@ -112,16 +118,12 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 
 	public EventLogger() {
 		this.attachedContinueObserver = new AttachedContinueObserver();
-		this.attachedContinueObserver.addRunnable(new AttachedContinueRunnable());
 
 		this.detachedContinueObserver = new DetachedContinueObserver();
-		this.detachedContinueObserver.addRunnable(new DetachedContinueRunnable());
 
 		this.attachedStopObserver = new AttachedStopObserver();
-		this.attachedStopObserver.addRunnable(new AttachedStopRunnable());
 
 		this.attachedResumeObserver = new AttachedResumeObserver();
-		this.attachedResumeObserver.addRunnable(new AttachedResumeRunnable());
 
 		eventLogFile = Logger.getLogger(EVENT_LOG_ID);
 		eventLogFile.addHandler(buildHandler());

@@ -42,6 +42,7 @@ package frysk.gui.monitor.actions;
 import java.util.Iterator;
 
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.observers.ObserverRoot;
 
 public class GenericActionPoint extends ActionPoint {
 
@@ -57,16 +58,14 @@ public class GenericActionPoint extends ActionPoint {
 		return ActionManager.theManager.getGenericActions();
 	}
 
-	public void runActions(){
+	public void runActions(ObserverRoot observer){
 		Iterator iterator = this.actions.iterator();
 		while (iterator.hasNext()) {
-			Action action = (Action) iterator.next();
-			action.execute();
+			GenericAction action = (GenericAction) iterator.next();
+			action.execute(observer);
 		}
 	}
 	
-	public void addAction(Action action){
-		this.actions.add(action);
-	}
+	
 	
 }

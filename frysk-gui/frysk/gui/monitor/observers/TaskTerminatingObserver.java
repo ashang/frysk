@@ -10,6 +10,7 @@ import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.IntFilterPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
+import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -63,6 +64,7 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 	}
 	
 	protected void bottomHalf(Task task, boolean signal, int value) {
+		this.setInfo("PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: " + this.getName() + " Host: " + Manager.host.getName());
 		if(this.runFilters(task, signal, value)){
 			this.runActions(task, signal, value);
 		}
