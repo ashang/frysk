@@ -1,5 +1,14 @@
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
+	* TestUnpaused.java: Eliminate use of Proc .observableTaskAdded.
+	* TestSyscallOpen.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestStep.java: Ditto.
+	* TestPaused.java: Ditto.
+
 	* Proc.java: Restore .observableTaskRemoved, renamed to
 	.observableTaskRemovedXXX.  Revert 2005-12-12 change.
 

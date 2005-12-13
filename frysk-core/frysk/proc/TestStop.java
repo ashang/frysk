@@ -59,29 +59,9 @@ public class TestStop
     	int taskDestroyedCount;
     	int taskStopCount;
 
-    	// As soon as the process is created, attach a task created
-    	// observer.
-
-    	class ProcCreatedObserver
-            implements Observer
-    	{
-	    int pid;
-	    ProcCreatedObserver (int pid)
-	    {
-	    	this.pid = pid;
-	    }
-            public void update (Observable o, Object obj)
-            {
-            	Proc proc = (Proc) obj;
-	    	if (proc.id.hashCode () != pid)
-		    return;
-            	proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-            }
-    	}
-
     	TestStopInternals (int pid)
     	{
-            Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver (pid));
+            Manager.host.observableTaskAdded.addObserver (new TaskCreatedObserver (pid));
 	    new TaskDestroyedObserver ();
     	}
 	 
@@ -90,9 +70,17 @@ public class TestStop
     	class TaskCreatedObserver
 	    implements Observer
     	{
+	    int pid;
+	    TaskCreatedObserver (int pid)
+	    {
+	    	this.pid = pid;
+	    }
 	    public void update (Observable o, Object obj)
 	    {
 	    	Task task = (Task) obj;
+		if (task.proc.getPid () != pid)
+		    return;
+		registerChild (task.getTid ());
 	    	assertEquals ("No terminated events before task creation", 0,
 		  		  taskDestroyedCount);
 	        taskCreatedCount++;

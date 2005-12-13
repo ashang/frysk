@@ -62,22 +62,6 @@ public class TestStep
 	int taskStopCount;
 	int stepEventMatchCount;
 	
-	// As soon as the process is created, attach a task created
-	// observer.
-	
-	class ProcCreatedObserver
-	    implements Observer
-	{
-	    Task task;
-	    public void update (Observable o, Object obj)
-	    {
-		Proc proc = (Proc) obj;
-		if (!isChildOfMine (proc))
-		    return;
-		proc.observableTaskAdded.addObserver (new TaskCreatedObserver ());
-	    }
-	}
-
 	class StopEventObserver
 	    extends TaskObserverBase
 	    implements TaskObserver.Signaled
@@ -101,6 +85,9 @@ public class TestStep
 	    public void update (Observable o, Object obj)
 	    {
 		Task task = (Task) obj;
+		if (!isChildOfMine (task.proc))
+		    return;
+		registerChild (task.getTid ());
 		assertEquals ("No terminated event before task creation", 0,
 			      taskDestroyedCount);
 		taskCreatedCount++;
@@ -213,7 +200,7 @@ public class TestStep
 
 	TestStepInternals ()
 	{
-	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());	    
+	    Manager.host.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    new TaskDestroyedObserver ();
 	}
     }

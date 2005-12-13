@@ -85,28 +85,6 @@ public class TestSyscall2
 	}
 	
 	TaskEventObserver taskEventObserver = new TaskEventObserver ();
-	class ProcCreatedObserver
-	    implements Observer
-	{
-	    Task task;
-	    public void update (Observable o, Object obj)
-	    {
-		Proc proc = (Proc) obj;
-		if (!isChildOfMine (proc))
-		    return;
-		registerChild (proc.getId ().hashCode ());
-		proc.observableTaskAdded.addObserver
-		    (new Observer () {
-			    public void update (Observable o, Object obj)
-			    {
-				task = (Task) obj;
-				task.traceSyscall = true;
-				task.requestAddSyscallObserver (taskEventObserver);
-			    }
-			}
-		     );
-	    }
-	}
 	
 	class ProcDestroyedObserver
 	    implements Observer
@@ -124,7 +102,17 @@ public class TestSyscall2
 
 	TestSyscall2Internals ()
 	{
-	    Manager.host.observableProcAdded.addObserver (new ProcCreatedObserver ());
+	    Manager.host.observableTaskAdded.addObserver (new Observer () {
+		    public void update (Observable o, Object obj)
+		    {
+			Task task = (Task) obj;
+			if (!isChildOfMine (task.proc))
+			    return;
+			registerChild (task.getTid ());
+			task.traceSyscall = true;
+			task.requestAddSyscallObserver (taskEventObserver);
+		    }
+		});
 	    Manager.host.observableProcRemoved.addObserver
 		(new ProcDestroyedObserver ());
 	}
