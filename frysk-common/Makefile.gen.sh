@@ -385,12 +385,145 @@ done
 # Form a list of all the image files, these are installed in
 # PREFIX/share/PACKAGE/images/.
 
+# Images in the images directory
 print_header "... image_DATA"
-echo "imagedir = \$(pkgdatadir)/images"
+echo "imagedir = \$(pkgdatadir)/images/"
 echo "image_DATA ="
-find ${dirs} -type f -name '*.png' -o -name '*.jpg' | while read file
+find ${dirs} -name '__MACOSX' -prune -o \
+    -type d -name '16' -prune -o \
+    -type d -name '24' -prune -o \
+    -type d -name '32' -prune -o \
+    -type d -name 'icon' -prune -o \
+    -type f -name '*.png' -o \
+    -type f -name '*.jpg' -o \
+    -type f -name '*.gif' \
+    | while read file
 do
-  echo image_DATA += ${file}
+  if test -f ${file} ; then
+      echo image_DATA += ${file}
+  fi
+done
+
+# images for the tray icon
+print_header "... imageicon_DATA"
+echo "imageicondir = \$(pkgdatadir)/images/icon"
+echo "imageicon_DATA ="
+find ${dirs} -name '__MACOSX' -prune -o \
+    -name '16' -prune -o \
+    -name '24' -prune -o \
+    -name '32' -prune -o \
+    -type f -wholename '*/icon/*.png' -o \
+    -type f -wholename '*/icon/*.jpg' -o \
+    -type f -wholename '*/icon/*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then 
+      echo imageicon_DATA += ${file}
+  fi
+done
+
+# 16 px images
+print_header "... image16_DATA"
+echo "image16dir = \$(pkgdatadir)/images/16"
+echo "image16_DATA ="
+find ${dirs} -wholename '*__MACOSX*' -prune -o \
+    -type f -wholename '*/16/*.png' -o \
+    -type f -wholename '*/16/*.jpg' -o \
+    -type f -wholename '*/16/*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+      echo image16_DATA += ${file}
+  fi
+done
+
+# 24 px images
+print_header "... image24_DATA"
+echo "image24dir = \$(pkgdatadir)/images/24"
+echo "image24_DATA ="
+find ${dirs} -wholename '*__MACOSX*' -prune -o \
+    -type f -wholename '*/24/*.png' -o \
+    -type f -wholename '*/24/*.jpg' -o \
+    -type f -wholename '*/24/*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+      echo image24_DATA += ${file}
+  fi
+done
+
+# 32 px images
+print_header "... image32_DATA"
+echo "image32dir = \$(pkgdatadir)/images/32"
+echo "image32_DATA ="
+find ${dirs} -wholename '*__MACOSX*' -prune -o \
+    -type f -wholename '*/32/*.png' -o \
+    -type f -wholename '*/32/*.jpg' -o \
+    -type f -wholename '*/32/*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+    echo image32_DATA += ${file}
+  fi
+done
+
+# images for the tray icon
+print_header "... imageMACOSXicon_DATA"
+echo "imageMACOSXicondir = \$(pkgdatadir)/images/__MACOSX/icon"
+echo "imageMACOSXicon_DATA ="
+find ${dirs} -name '16' -prune -o \
+    -name '24' -prune -o \
+    -name '32' -prune -o \
+    -type f -wholename '*/__MACOSX/icon/*.png' -o \
+    -type f -wholename '*/__MACOSX/icon/*.jpg' -o \
+    -type f -wholename '*/__MACOSX/icon/*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+      echo imageMACOSXicon_DATA += ${file}
+  fi
+done
+
+# 16 px MACOSX images
+print_header "... imageMACOSX16_DATA"
+echo "imageMACOSX16dir = \$(pkgdatadir)/images/__MACOSX/16"
+echo "imageMACOSX16_DATA ="
+find ${dirs} -type f -wholename '*/__MACOSX/16/.*.png' -o \
+    -type f -wholename '*/__MACOSX/16/.*.jpg' -o \
+    -type f -wholename '*/__MACOSX/16/.*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+    echo imageMACOSX16_DATA += ${file}
+  fi
+done
+
+# 24 px MACOSX images
+print_header "... imageMACOSX24_DATA"
+echo "imageMACOSX24dir = \$(pkgdatadir)/images/__MACOSX/24"
+echo "imageMACOSX24_DATA ="
+find ${dirs} -type f -wholename '*/__MACOSX/24/.*.png' -o \
+    -type f -wholename '*/__MACOSX/24/.*.jpg' -o \
+    -type f -wholename '*/__MACOSX/24/.*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+    echo imageMACOSX24_DATA += ${file}
+  fi
+done
+
+# 32 px MACOSX images
+print_header "... imageMACOSX32_DATA"
+echo "imageMACOSX32dir = \$(pkgdatadir)/images/__MACOSX/32"
+echo "imageMACOSX32_DATA ="
+find ${dirs} -type f -wholename '*/__MACOSX/32/.*.png' -o \
+    -type f -wholename '*/__MACOSX/32/.*.jpg' -o \
+    -type f -wholename '*/__MACOSX/32/.*.gif' \
+    | while read file
+do
+  if test -f ${file} ; then
+    echo imageMACOSX32_DATA += ${file}
+  fi
 done
 
 # Form a list of all the .properties files, these need to be copied over

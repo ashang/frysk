@@ -61,6 +61,8 @@ import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.IconSize;
+import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
@@ -722,23 +724,10 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		((Button) this.glade.getWidget(SourceWindow.CASE_FIND)).setLabel(Messages.getString("SourceWindow.17")); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setLabel(Messages.getString("SourceWindow.18")); //$NON-NLS-1$
 		
-//		for(int i = 0; i < IMAGES_DIR.length; i++){
-//			// Add icons
-//			try {
-//				((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.HIGHLIGHT_PNG)));
-//				((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.FIND_NEXT_PNG)));
-//				((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.FIND_PREV_PNG)));
-//				((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(new Pixbuf(SourceWindow.IMAGES_DIR[i]+"/"+IconManager.FIND_GO_PNG)));
-//			} catch (Exception e){
-//				if(i == IMAGES_DIR.length -1){
-//					System.err.println("Could not find image files on " + IMAGES_DIR[i]);
-//					System.exit(1);
-//				}
-//					
-//				continue;
-//			}
-//			break;
-//		}
+		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(GtkStockItem.GO_FORWARD, IconSize.BUTTON));
+		((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(GtkStockItem.GO_BACK, IconSize.BUTTON));
+		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(GtkStockItem.JUMP_TO, IconSize.BUTTON));
+		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image("frysk-highlight", IconSize.BUTTON));
 		
 		// add Tooltips
 		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$

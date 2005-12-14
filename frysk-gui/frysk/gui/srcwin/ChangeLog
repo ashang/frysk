@@ -1,3 +1,8 @@
+2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (createSearchBar): Now pulls icons from stock,
+	rather than from file.
+
 2005-12-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java: Started then commented out new way of keeping track

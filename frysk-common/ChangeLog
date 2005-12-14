@@ -1,3 +1,8 @@
+2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.gen.sh: Added more complex targets for images that
+	preserve the tree structure of the images directory.
+	
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* m4/ac_find_file.m4: Fix escaping, [${$3}], not $$1.

@@ -1,3 +1,7 @@
+2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* IconManager.java (loadIcons): Now loads icon for highlight-all.
+
 2005-12-13  Adam Jocksch  <ajocksch@redhat.com>
 	
 	* IconManager.java: Added.

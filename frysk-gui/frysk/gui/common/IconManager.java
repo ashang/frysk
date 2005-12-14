@@ -2,6 +2,7 @@ package frysk.gui.common;
 
 import org.gnu.gdk.Pixbuf;
 import org.gnu.gtk.IconFactory;
+import org.gnu.gtk.IconSet;
 import org.gnu.gtk.IconSize;
 
 public class IconManager {
@@ -66,6 +67,10 @@ public class IconManager {
 					addIconSet(downSet[j], IMAGES_DIR[i], j, DOWN_PNG);
 					addIconSet(upSet[j], IMAGES_DIR[i], j, UP_PNG);
 					addIconSet(bottomSet[j], IMAGES_DIR[i], j, BOTTOM_PNG);
+					
+					// The only other image we need is the highlight image
+					IconSet set = new IconSet(new Pixbuf(IMAGES_DIR[i] + "/" + HIGHLIGHT_PNG));
+					factories[j].addIconSet("frysk-highlight", set);
 				}
 			} catch (Exception e){
 				if(i == IMAGES_DIR.length - 1){
@@ -79,6 +84,8 @@ public class IconManager {
 			
 			break;
 		}
+		
+		
 		
 		factories[0].addDefault();
 	}
