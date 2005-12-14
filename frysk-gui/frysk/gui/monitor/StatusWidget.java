@@ -56,7 +56,6 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.ShadowType;
-import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.VSeparator;
@@ -75,7 +74,6 @@ public class StatusWidget extends VBox{
 
 	Label nameLabel;
 	private GuiData data;
-	private TextView logTextView;
 	private Frame frame;
 	private Stripchart area;
 	
@@ -225,61 +223,20 @@ public class StatusWidget extends VBox{
 //	
 	
 	private void initLogTextView(){
-		this.logTextView = new TextView();
 		ObservableLinkedList observers = this.data.getObservers();
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
 			final ObserverRoot observer = (ObserverRoot) iter.next();
-			observer.genericActionPoint.addAction(new GenericAction("",""){
-				public void execute(ObserverRoot observer) {
-					System.out.println("Event: " + observer.getName() + "\n");
-					//logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
-					//	area.appendEvent (e2);
-				}
-
-				public Action getCopy() {
-					return null;
-				}
-				
-			});
-			
 			observer.genericActionPoint.addAction(new TimelineAction(observer));
-			
 		}
 		
 		this.data.getObservers().itemAdded.addObserver(new Observer(){
 
 			public void update(Observable arg0, Object obj) {
 				final ObserverRoot observer = (ObserverRoot)obj;
-				logTextView.getBuffer().insertText("Event: " + observer.getName() + " added\n");
-				observer.genericActionPoint.addAction(new GenericAction("Logging Action",""){
-					public void execute(ObserverRoot observer) {
-						//logTextView.getBuffer().insertText("Event: " + observer.getName() + "\n");
-						System.out.println("Event: " + observer.getName() + "\n");
-//		area.appendEvent (e2);
-					}
-
-					public Action getCopy() {
-						return null;
-					}
-					
-				});
-				
 				observer.genericActionPoint.addAction(new TimelineAction(observer));
 			}
-			
-			
 		});
-		
-		this.data.getObservers().itemRemoved.addObserver(new Observer(){
-
-			public void update(Observable arg0, Object obj) {
-				ObserverRoot observer = (ObserverRoot)obj;
-				logTextView.getBuffer().insertText("Event: " + observer.getName() + " removed\n");
-			}
-			
-		});
-		
 	}
 	
 	public void setName(String name){
@@ -315,24 +272,6 @@ public class StatusWidget extends VBox{
 		}
 
 		public void execute(ObserverRoot observer) {
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
-			System.out.println(".execute()");
 			area.appendEvent (eventId);
 		}
 		
