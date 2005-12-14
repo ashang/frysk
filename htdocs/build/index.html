@@ -15,56 +15,37 @@
 <h1>Building <em>frysk</em> From Source</h1>
 
 This page provides guidelines for building <em>frysk</em>, checked out
-from CVS, on a number of systems.  In all cases the basic process is:
+from CVS, on a number of systems.
 
 <dl>
 
-<dt>Build / Install <em>frysk</em>'s dependant libraries
+<dt><strong>Set up your system's build environment</strong></dt>
 
-<dd>You will need to ensure that the following are installed:
-<br><tt>junit antlr transfig gcc-java gcc-c++ cvs </tt> <br>See the
-operating specific sections below for more details</dd>
+<dd>
 
-<dt>Check out <em>frysk</em> from CVS<dt>
+First you will need to set up your system's build environment so that
+all its prerequesits are met.
 
-<dd><tt>cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/src co
-frysk</tt></dd>
+<dl>
 
-<dt>Create the configuration files</dt>
+<dt><em>Red Hat Enterprise Linux 4</em></dt>
 
-<dd><tt>( cd frysk && ./autogen.sh )</tt></dd>
-
-<dt>Configure and Build</dt>
-
-<dd><tt>( mkdir build && cd build && ../frysk/configure && make -j2
-)</tt><dd>
-
-<dt><em>frysk</em> can then be run from the build tree</dd>
-
-<dd><tt>./build/frysk-gui/frysk/gui/FryskGui</tt></dd>
-
-</dl>
-
-<h1>Red Hat Enterprize Linux 4</h1>
+<dd>
 
 <em>frysk</em> requres Java-GNOME bindings, and a number of other
-libraries, which are not part of the base RHEL 4 distribution.  These
-libraries are are all included in the <em>frysk</em> source RPM.
+libraries, which are not part of the base RHEL 4 distribution.  All
+the required libraries are included in the <em>frysk</em> source RPM,
+a copy of which can be found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>.  Download,
+build and install that RPM.
 
-<dl>
-
-<dt>Build and install the existing RHEL 4 <em>frysk</em> SRC RPM</dt>
-
-<dd>This RPM provides up-to-date versions of all the libraries that
-<em>frysk</em> depends on.</dd>
-
-<dt>See above for normal instructions</dt>
-
-</dl>
+</dd>
 
 <!--  New version
 
-<h1> Building on Ubuntu </h1>
+<dt><em>Ubuntu</em></dt>
+
+<dd>
 
 <dl>
 
@@ -78,49 +59,71 @@ href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">http
 
 <dd> aptitude install cvs </dd>
 
-</ul>
+</dl>
+
+</dd>
 
 -->
 
-<h1>Fedora Core 5</h1>
+<dt><em>Fedora Core 5</em></dt>
+
+<dd>
 
 All of the RPM's required by <em>frysk</em> are included in Fedora
 Core 5.
 
-<h1>Fedora Core 4</h1>
+</dd>
+
+<dt><em>Fedora Core 4</em></dt>
+
+<dd>
 
 The RPM's that <em>frysk</em> require are not a part of the standard
 Fedora Core 4 distribution.  Additional RPMs need to be downloaded and
 installed.  In addition the <tt>gcj</tt> compiler has problems.
 
-<dl>
+<ul>
 
-<dt>Install <tt>eclipse-ecj</tt><dt>
+<li>Install <tt>eclipse-ecj</tt><br> The bundled <tt>gcj</tt> compiler
+contains a number of bugs; they can be worked around by using
+<tt>ecj</tt>.
 
-<dd>The bundled <tt>gcj</tt> compiler contains a number of bugs; they
-can be worked around by using <tt>ecj</tt>.
-
-<dt>Add the <em>frysk</em> yum repository</dt>
-
-<dd>
-
-Copy the file <a
+<li>Add the <em>frysk</em> yum repository<br> Copy the file <a
 href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo"><tt>frysk.repo</tt></a>
 in your <tt>/etc/yum.repos.d/</tt> directory (you'll need to be root).
 
-<dt>Install the non-standard <em>frysk</em> libraries</dt>
+<li>Install the non-standard <em>frysk</em> libraries by running the
+command (<strong>note the quotes</strong>):<br>
 
-<dd>
+<tt>$ yum --exclude <strong>'</strong>*debuginfo<strong>'</strong> install <strong>'</strong>frysk-*<strong>'</strong></tt>
 
-Run the command (<strong>note the quotes</strong>):
+</ul>
 
-<pre>
-yum --exclude '*debuginfo' install 'frysk-*'
-</pre>
+</dl>
 
-</dd>
+<dt><strong>Build / Install <em>frysk</em>'s dependant libraries</strong></dt>
 
-<dt>Follow as for a normal build</dt>
+<dd>You will need to ensure that the following are installed:
+<br><tt>junit antlr transfig gcc-java gcc-c++ cvs </tt> <br>See the
+operating specific sections below for more details</dd>
+
+<dt><strong>Check out <em>frysk</em> from CVS</strong><dt>
+
+<dd><tt>$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/src co
+frysk</tt></dd>
+
+<dt><strong>Create the configuration files</strong></dt>
+
+<dd><tt>$ ( cd frysk && ./autogen.sh )</tt></dd>
+
+<dt><strong>Configure and Build</strong></dt>
+
+<dd><tt>$ ( mkdir build && cd build && ../frysk/configure && make -j2
+)</tt><dd>
+
+<dt><strong><em>frysk</em> can then be run from the build tree</strong></dd>
+
+<dd><tt>$ ./build/frysk-gui/frysk/gui/FryskGui</tt></dd>
 
 </dl>
 
