@@ -38,9 +38,12 @@
 # exception.
 
 tlwidgetssrc=$(srcdir)/src
-tlwidgetsdst=$(top_builddir)/$(subdir)
 
-all-local: $(tlwidgetsdst)/libftk.so $(tlwidgetsdst)/libftkjava.so $(tlwidgetsdst)/libftkjni.so $(tlwidgetsdst)/ftk.jar
+solibdir = $(libdir)
+solib_PROGRAMS = libftk.so libftkjava.so libftkjni.so
+
+javadir = $(datadir)/java
+java_DATA = ftk.jar
 
 EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
             $(tlwidgetssrc)/jni/*.c \
@@ -48,38 +51,34 @@ EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
             $(tlwidgetssrc)/widgets/*.h \
             $(tlwidgetssrc)/widgets/ftk.pc
 
-CLEANFILES = $(tlwidgetsdst)/*.so \
-             $(tlwidgetsdst)/*.jar \
-             $(tlwidgetsdst)/*.o \
-             $(tlwidgetsdst)/*.class
+CLEANFILES = *.so *.jar *.o *.class
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 
-$(tlwidgetsdst)/com/redhat/ftk/Stripchart.class: $(SRC) 
-	$(GCJ) -C -d $(tlwidgetsdst) \
-	    -classpath $(FRYSK_IMPORTS_CLASSPATH) $(SRC)
+com/redhat/ftk/Stripchart.class: $(SRC) 
+	$(GCJ) -C -d . -classpath $(FRYSK_IMPORTS_CLASSPATH) $(SRC)
 
-$(tlwidgetsdst)/ftk.jar: $(tlwidgetsdst)/com/redhat/ftk/Stripchart.class
-	$(JAR) cf ftk.jar -C $(tlwidgetsdst) com/redhat/ftk/Stripchart.class
+ftk.jar: com/redhat/ftk/Stripchart.class
+	$(JAR) cf ftk.jar -C . com/redhat/ftk/Stripchart.class
 
-$(tlwidgetsdst)/Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	$(GCJ) -fjni -classpath $(FRYSK_IMPORTS_CLASSPATH) -I ./src/java \
             -g -O2 -c $< -o $@
 
-$(tlwidgetsdst)/libftkjava.so: $(tlwidgetsdst)/Stripchart.o
+libftkjava.so: Stripchart.o
 	$(GCJ) -shared $^ $(FRYSK_IMPORTS_LIBS) \
 		-Wl,-soname -Wl,libftkjava.so -o $@
 
-$(tlwidgetsdst)/com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
+com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
 	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ $(FRYSK_IMPORTS_CFLAGS) -fPIC -DPIC -o $@
 
-$(tlwidgetsdst)/libftkjni.so: $(tlwidgetsdst)/com_redhat_ftk_Stripchart.o
+libftkjni.so: com_redhat_ftk_Stripchart.o
 	$(CC) -shared $^ $(FRYSK_IMPORTS_LIBS) -o $@
 
-$(tlwidgetsdst)/ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
+ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
 	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
-$(tlwidgetsdst)/ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
+ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
 	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
-$(tlwidgetsdst)/libftk.so: $(tlwidgetsdst)/ftkstripchart.o $(tlwidgetsdst)/ftkconsole.o
+libftk.so: ftkstripchart.o ftkconsole.o
 	$(CC) -shared -o $@ $^ -lrt

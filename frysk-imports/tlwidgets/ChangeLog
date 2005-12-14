@@ -1,3 +1,11 @@
+2005-12-13  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (solibdir, solib_PROGRAMS): Define, have the .so
+	files installed into $(libdir).
+	(tlwidgetsdst): Eliminate.
+	(javadir, java_DATA): Define, have the .jar file installed into
+	$(datadir)/java.
+
 2005-12-12  Chris Moller  <moller@mollerware.com>
 
 	* TODO: Added new file.
