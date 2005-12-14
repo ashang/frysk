@@ -41,6 +41,9 @@ tlwidgetssrc=$(srcdir)/src
 
 solibdir = $(libdir)
 solib_PROGRAMS = libftk.so libftkjava.so libftkjni.so
+libftk_so_SOURCES =
+libftkjava_so_SOURCES =
+libftkjni_so_SOURCES =
 
 javadir = $(datadir)/java
 java_DATA = ftk.jar
