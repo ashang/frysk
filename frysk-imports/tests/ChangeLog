@@ -1,3 +1,11 @@
+2005-12-13  Stan Cox  <scox@multics.rdu.redhat.com>
+
+	* Makefile.am (process_FILES): add.
+	* process/single_exec.c: New file.
+	* process/multi_child_exec.c: New file.
+	* process/multi_parent_exec.c: New file.
+	* process/multi_child_parent_exec.c: New file.
+
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (rh175569_FILES): Fix, should contain
