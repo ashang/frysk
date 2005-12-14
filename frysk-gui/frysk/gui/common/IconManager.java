@@ -4,6 +4,7 @@ import org.gnu.gdk.Pixbuf;
 import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.IconSet;
 import org.gnu.gtk.IconSize;
+import org.gnu.gtk.IconSource;
 
 public class IconManager {
 
@@ -69,7 +70,11 @@ public class IconManager {
 					addIconSet(bottomSet[j], IMAGES_DIR[i], j, BOTTOM_PNG);
 					
 					// The only other image we need is the highlight image
-					IconSet set = new IconSet(new Pixbuf(IMAGES_DIR[i] + "/" + HIGHLIGHT_PNG));
+					IconSet set = new IconSet();
+					IconSource source = new IconSource();
+					source.setFilename(IMAGES_DIR[i] + "/" + HIGHLIGHT_PNG);
+					source.setSize(IconSize.BUTTON);
+					set.addSource(source);
 					factories[j].addIconSet("frysk-highlight", set);
 				}
 			} catch (Exception e){
@@ -84,8 +89,6 @@ public class IconManager {
 			
 			break;
 		}
-		
-		
 		
 		factories[0].addDefault();
 	}

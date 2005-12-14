@@ -96,7 +96,6 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMLine;
-import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.proc.Task;
 
@@ -125,9 +124,6 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	public static final String FILE_SELECTOR = "fileSelector";
 	public static final String VIEW_COMBO_BOX = "viewComboBox";
 	public static final String FUNC_SELECTOR = "funcSelector";
-
-	// Directory where images are stored
-	public static String[] IMAGES_DIR = null; //$NON-NLS-1$
 	
 	// Widget that the SourceViewWidget will be placed in
 	public static final String TEXT_WINDOW = "textWindow";
@@ -182,8 +178,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 	
-	public SourceWindow(LibGlade glade, String gladePath, String[] imagePaths,
-			DOMFrysk dom, StackLevel stack) {
+	public SourceWindow(LibGlade glade, String gladePath, DOMFrysk dom, StackLevel stack) {
 		super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
         
 		this.glade = glade;
@@ -192,18 +187,12 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		this.dom.toString();
 		this.stack = stack;
 		
-		IMAGES_DIR = imagePaths;
-		
 		this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
 		
 		AccelGroup ag = new AccelGroup();
 		((Window) this.glade.getWidget(SourceWindow.SOURCE_WINDOW)).addAccelGroup(ag);
 		
 		this.tips = new ToolTips();
-		
-		IconManager.setImageDir(IMAGES_DIR);
-		IconManager.loadIcons();
-		IconManager.useSmallIcons();
 		
 		this.createActions(ag);
 		this.createMenus();
@@ -727,7 +716,7 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND)).setImage(new Image(GtkStockItem.GO_FORWARD, IconSize.BUTTON));
 		((Button) this.glade.getWidget(SourceWindow.PREV_FIND)).setImage(new Image(GtkStockItem.GO_BACK, IconSize.BUTTON));
 		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON)).setImage(new Image(GtkStockItem.JUMP_TO, IconSize.BUTTON));
-		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image("frysk-highlight", IconSize.BUTTON));
+		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setImage(new Image(new GtkStockItem("frysk-highlight"), IconSize.BUTTON));
 		
 		// add Tooltips
 		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND), Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$

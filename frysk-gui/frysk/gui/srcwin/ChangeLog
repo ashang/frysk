@@ -1,5 +1,9 @@
 2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (SourceWindow): Removed initialization of IconManager.
+	* SourceWindowFactory: Removed references to image paths since this is 
+	now handled by IconManager.
+
 	* SourceWindow.java (createSearchBar): Now pulls icons from stock,
 	rather than from file.
 

@@ -1,4 +1,6 @@
-2005-12-13  Adam Jocksch  <ajocksch@redhat.com>
+2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* FryskGui.java (mainGui): Now initializes IconManager.
 
 	* images: Removed old images and added new icons and images.
 

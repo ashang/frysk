@@ -34,8 +34,6 @@ public class SourceWindowFactory {
 	private static String dummyPath;
 	
 	private static String[] gladePaths;
-	
-	private static String[] imagePaths;
 
 	private static HashMap map;
 	
@@ -65,14 +63,6 @@ public class SourceWindowFactory {
 		gladePaths = paths;
 	}
 	
-	/**
-	 * Sets the paths to look in to find the image files needed for the gui
-	 * @param path The possible locations of the image files.
-	 */
-	public static void setImagePaths(String[] path){
-		imagePaths = path;
-	}
-	
 	static{
 		map = new HashMap();
 		/*
@@ -82,8 +72,6 @@ public class SourceWindowFactory {
 		dummyPath = Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/srcwin/testfiles";
 		gladePaths = new String[] {Config.GLADEDIR, 
 				Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/glade"};
-		imagePaths = new String[] {Config.PKGDATADIR+"/images",
-				Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/images"};
 	}
 	
 	/**
@@ -317,7 +305,6 @@ public class SourceWindowFactory {
 				s = new SourceWindow(
 						 glade,
                          gladePaths[i],
-						imagePaths,
 						dom, stack1);
 				s.setMyTask(task);
 				s.addListener(new SourceWinListener());

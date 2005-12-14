@@ -64,6 +64,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.Config;
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.PreferenceWidget;
 import frysk.gui.monitor.Saveable;
@@ -137,6 +138,13 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		setupErrorLogging();
 
+		String[] imagesDir = {Config.PKGDATADIR+"/images",
+							   Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/images"};
+		
+		IconManager.setImageDir(imagesDir);
+		IconManager.loadIcons();
+		IconManager.useSmallIcons();
+		
 		try {
 			procpop = new FryskGui(glade_dirs);
 		} catch (GladeXMLException e1) {
