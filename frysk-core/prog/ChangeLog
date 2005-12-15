@@ -1,3 +1,7 @@
+2005-12-15  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/zombie.c: Delete, no longer used.
+
 2005-11-30  Jeff Johnston  <jjohnstn@redhat.com>
 
 	* modify/modify.c: Suffix int64_t constant properly
