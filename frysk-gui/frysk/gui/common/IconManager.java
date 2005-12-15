@@ -1,6 +1,7 @@
 package frysk.gui.common;
 
 import org.gnu.gdk.Pixbuf;
+import org.gnu.gdk.PixbufAnimation;
 import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.IconSet;
 import org.gnu.gtk.IconSize;
@@ -26,11 +27,16 @@ public class IconManager {
 	private static final String UP_PNG = "up.png"; //$NON-NLS-1$
 	private static final String BOTTOM_PNG = "bottom.png"; //$NON-NLS-1$
 	
+	// Tray Icon prefix
+	private static final String TRAY_PREFIX = "fryskTrayIcon";
+	
 	private static IconFactory[] factories;
 	
 	private static String[] sizeDirs = new String[] {"16", "24", "32"};
 	
 	private static String[] IMAGES_DIR;
+	
+	public static PixbufAnimation anim;
 	
 	public static void setImageDir(String[] path){
 		IMAGES_DIR = path;
@@ -77,6 +83,22 @@ public class IconManager {
 					set.addSource(source);
 					factories[j].addIconSet("frysk-highlight", set);
 				}
+				
+				// Load the tray icons
+				for(int k = 1; k <= 24; k++){
+					IconSet set = new IconSet();
+					IconSource source = new IconSource();
+					source.setFilename(IMAGES_DIR[i] + "/icon/" + TRAY_PREFIX +
+							(k < 10 ? "0" + k : "" + k) + 
+							".png");
+					source.setSize(IconSize.SMALL_TOOLBAR);
+					set.addSource(source);
+					factories[0].addIconSet("frysk-tray-" + k, set);
+					factories[1].addIconSet("frysk-tray-" + k, set);
+				}
+				
+				anim = new PixbufAnimation(IMAGES_DIR[i] + "/" + "fryskTrayIcon.gif");
+				
 			} catch (Exception e){
 				if(i == IMAGES_DIR.length - 1){
 					System.err.println("Error loading images on path " + IMAGES_DIR[i]+"! Exiting");

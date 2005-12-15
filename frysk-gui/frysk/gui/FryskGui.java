@@ -55,6 +55,8 @@ import java.util.prefs.Preferences;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
+import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -132,7 +134,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		// System.out.println("infThreadLoop PID : " + SysUtils.infThreadLoop (2));
 		//-------------------------------------------------
 
-		TrayIcon trayIcon;
+		final TrayIcon trayIcon;
 		FryskGui procpop = null;
 		Preferences prefs = null;
 
@@ -162,9 +164,10 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
 
-		trayIcon = new TrayIcon("Accudog", "", new Image(
-				"gui/images/accudog.jpg"));
-
+		trayIcon = new TrayIcon("Accudog", "", new Image(new GtkStockItem("frysk-tray-24"),
+				IconSize.SMALL_TOOLBAR));
+		
+		
 		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
 		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
 		trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);

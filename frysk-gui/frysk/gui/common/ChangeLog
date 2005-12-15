@@ -1,3 +1,7 @@
+2005-12-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* IconManager.java (loadIcons): Now loads tray icons.
+
 2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* IconManager.java (loadIcons): Now explicitly sets the type for

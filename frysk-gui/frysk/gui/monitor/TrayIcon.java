@@ -287,9 +287,7 @@ public class TrayIcon implements Saveable{
 		else{
 			trayItem.add(icon);
 		}
-		
-		
-		
+				
 		tray.add(trayItem);
 	}
 	
