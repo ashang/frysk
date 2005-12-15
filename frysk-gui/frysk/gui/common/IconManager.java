@@ -91,7 +91,7 @@ public class IconManager {
 					source.setFilename(IMAGES_DIR[i] + "/icon/" + TRAY_PREFIX +
 							(k < 10 ? "0" + k : "" + k) + 
 							".png");
-					source.setSize(IconSize.SMALL_TOOLBAR);
+					source.setSize(IconSize.BUTTON);
 					set.addSource(source);
 					factories[0].addIconSet("frysk-tray-" + k, set);
 					factories[1].addIconSet("frysk-tray-" + k, set);

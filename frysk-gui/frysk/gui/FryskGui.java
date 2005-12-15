@@ -134,7 +134,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		// System.out.println("infThreadLoop PID : " + SysUtils.infThreadLoop (2));
 		//-------------------------------------------------
 
-		final TrayIcon trayIcon;
+		TrayIcon trayIcon;
 		FryskGui procpop = null;
 		Preferences prefs = null;
 
@@ -165,7 +165,9 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
 
 		trayIcon = new TrayIcon("Accudog", "", new Image(new GtkStockItem("frysk-tray-24"),
-				IconSize.SMALL_TOOLBAR));
+				IconSize.BUTTON));
+		
+//		trayIcon = new TrayIcon("Accudog", "", new Image(IconManager.anim));
 		
 		
 		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
