@@ -385,6 +385,11 @@ done
 # Form a list of all the image files, these are installed in
 # PREFIX/share/PACKAGE/images/.
 
+#find_images()
+#{
+#    find $1
+#}
+
 # Images in the images directory
 print_header "... image_DATA"
 echo "imagedir = \$(pkgdatadir)/images/"
@@ -486,7 +491,7 @@ find ${dirs} -name '16' -prune -o \
     -name 'icon' -path '*/images/' -prune \
     -type f -path '*/__MACOSX/icon/*' -name '.*.png' -o \
     -type f -path '*/__MACOSX/icon/*' -name '.*.jpg' -o \
-    -type f -path '*/__MACOSX/icon/*' -name '.*.gif' -o \
+    -type f -path '*/__MACOSX/icon/*' -name '.*.gif'
     | while read file
 do
   if test -f ${file} ; then
