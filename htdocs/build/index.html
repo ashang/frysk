@@ -7,8 +7,8 @@
 </head>
 
 <body>
-<div id="main_title">Frysk
-</div>
+
+<div id="main_title">Frysk</div>
 
 <div style="margin: 10px;">
 
@@ -34,43 +34,48 @@ all its prerequesits are met.
 
 <em>frysk</em> requres Java-GNOME bindings, and a number of other
 libraries, which are not part of the base RHEL 4 distribution.  All
-the required libraries are included in the <em>frysk</em> source RPM,
-a copy of which can be found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>.  Download,
-build and install that RPM.
+the required libraries are included in the <em>frysk</em> RPM, a
+source code snapshot of that RPM can be found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>.
+
+<ul>
+
+<li>Ensure that that gcc4 is installed (while these notes were written
+using <tt>gcc4 (GCC) 4.0.1 20050727 (Red Hat 4.0.1-4.EL4.2)</tt> from
+RHEL-4 U2, the RHEL-4 U3 compiler is strongly recommended)
+
+<li>Download, build and install the RHEL-4 SRC RPM, or install the
+<em>frysk</em> binary RPM from Red Hat Network.
+
+</ul>
 
 </dd>
-
-<!--  New version
-
-<dt><em>Ubuntu</em></dt>
-
-<dd>
-
-<dl>
-
-<dt> Install the Java-GNOME bindings:
-
-<dd> aptitude install libgtk-java libgnome-java libglade-java libgconf-java </tt> ref <a
-href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome</a>
-</dd>
-
-<dt> Install cvs </dt>
-
-<dd> aptitude install cvs </dd>
-
-</dl>
-
-</dd>
-
--->
 
 <dt><em>Fedora Core 5</em></dt>
 
 <dd>
 
 All of the RPM's required by <em>frysk</em> are included in Fedora
-Core 5.
+Core 5:
+
+<ul>
+
+<li>Update to at least <tt>gcc (GCC) 4.1.0 20051212 (Red Hat
+4.1.0-0.7)</tt>
+
+<li>Ensure that <tt>selinux</tt> is either disabled, or its database
+is up-to-date (otherwize <tt>gij</tt> and <tt>gcj-dbtool</tt> behave
+wierd).
+
+<li>Install (at least) <tt> junit antlr transfig gcc-java gcc-c++ cvs
+</tt>
+
+<li>As of 2005-12-15 an up-to-date jdom package wasn't available; you
+can work a round this by finding a jdom.jar and setting:<br><tt>$
+export JDOM_JAR=<path-to>/jdom.jar</tt><br> before running configure.
+
+
+</ul>
 
 </dd>
 
@@ -99,13 +104,31 @@ command (<strong>note the quotes</strong>):<br>
 
 </ul>
 
+</dd>
+
+<dt><em>Ubuntu (Breazy Badger)</em></dt>
+
+<dd>
+
+If you're trying to build <em>fryks</em> on Breezy Badger, contact us
+on either <tt><em>frysk</em>@</tt> mailing list, or the <a
+href="irc://gimp.net/frysk"><tt>#<em>frysk</em</tt></a> IRC channel.
+So far the following problems have been identified:
+
+<ul>
+
+<li>The Java-GNOME bindings included with Breazy Badger are too
+old. <br> You'll need to build/install more up-to-date bindings.
+
+<li>The default <tt>automake</tt> is version 1.4 (serious!) which is
+too old. <br> You'll need to install <tt>automake17</tt> and then hand
+configure the directories.
+
+</ul>
+
+</dd>
+
 </dl>
-
-<dt><strong>Build / Install <em>frysk</em>'s dependant libraries</strong></dt>
-
-<dd>You will need to ensure that the following are installed:
-<br><tt>junit antlr transfig gcc-java gcc-c++ cvs </tt> <br>See the
-operating specific sections below for more details</dd>
 
 <dt><strong>Check out <em>frysk</em> from CVS</strong><dt>
 
@@ -121,9 +144,17 @@ frysk</tt></dd>
 <dd><tt>$ ( mkdir build && cd build && ../frysk/configure && make -j2
 )</tt><dd>
 
-<dt><strong><em>frysk</em> can then be run from the build tree</strong></dd>
+<dt><strong><em>frysk</em> can then either be run from the build tree
+...</strong></dd>
 
 <dd><tt>$ ./build/frysk-gui/frysk/gui/FryskGui</tt></dd>
+
+<dt><strong>... or installed and run from there</strong></dt>
+
+<dd>
+<tt>$ ( cd build && make install )</tt><br>
+<tt>$ frysk</tt>
+</dd>
 
 </dl>
 
