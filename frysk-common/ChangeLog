@@ -1,3 +1,8 @@
+2005-12-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.gen.sh: Changed find commands to use -path with -name 
+	instead of -wholename, since that predicate doesn't exist on RHEL4.
+
 2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.gen.sh: Added more complex targets for images that
