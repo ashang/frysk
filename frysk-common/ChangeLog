@@ -1,5 +1,7 @@
 2005-12-15  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Makefile.gen.sh (find_images): Added.
+
 	* Makefile.gen.sh: Changed find commands to use -path with -name 
 	instead of -wholename, since that predicate doesn't exist on RHEL4.
 
