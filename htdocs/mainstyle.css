@@ -19,17 +19,6 @@ a:hover {
     background : #eeeeee;
 }
 
-h1 { font-size: 18px; }
-
-h2 { font-size: 16px; 
-    margin-bottom: 0px;
-    padding-left: 2em;
-    font-style: italic; }
-
-h2 + p { margin-top: 0px;}
-
-pre { margin-left: 20px; }
-
 div#footer {
     position: absolute; 
     width: 100%; 
