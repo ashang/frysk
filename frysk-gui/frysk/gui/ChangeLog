@@ -1,3 +1,7 @@
+2005-12-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* FryskGui.java (mainGui): Now uses refactored TrayIcon constructor.
+
 2005-12-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* FryskGui.java (mainGui): Added tray icon.
