@@ -42,9 +42,9 @@ import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import org.gnu.gtk.EventBox;
-import org.gnu.gtk.HBox;
+import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
-import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
@@ -52,6 +52,8 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
+
+import frysk.gui.common.IconManager;
 
 
 /**
@@ -74,6 +76,8 @@ public class TrayIcon implements Saveable{
 	
 	private EventBox trayItem;
 	
+	private boolean active;
+	
 	private int windowButton;
 	private int menuButton;
 
@@ -82,61 +86,19 @@ public class TrayIcon implements Saveable{
 	 */
 	
 	/**
-	 * Creates a new TrayIcon with no text or image
-	 * @param name The name of the TrayIcon
-	 */
-	public TrayIcon(String name){
-		tray = new EggTrayIcon(name);
-		this.clearPopups();
-		this.setContents("", null);
-		windowButton = 0;
-		menuButton = 0;
-		tray.showAll();
-		this.setListener();
-	}
-	
-	/**
-	 * Creates a new TrayIcon with the specified text
-	 * @param name Name of the TrayIcon
-	 * @param trayText Text to appear in the button
-	 */
-	public TrayIcon(String name, String trayText){
-		tray = new EggTrayIcon(name);
-		this.clearPopups();
-		this.setContents(trayText, null);
-		windowButton = 0;
-		menuButton = 0;
-		tray.showAll();
-		this.setListener();
-	}
-	
-	/**
 	 * Creates a new TrayIcon with the given text and image
 	 * @param name Name of the TrayIcon
 	 * @param buttonText Text to appear on the button
 	 * @param icon Icon to appear on the button
 	 */
-	public TrayIcon(String name, String buttonText, Image icon){
+	public TrayIcon(String name, boolean active){
 		tray = new EggTrayIcon(name);
 		this.clearPopups();
-		this.setContents(buttonText, icon);
-		windowButton = 0;
-		menuButton = 0;
-		tray.showAll();
-		this.setListener();
-	}
-	
-	/**
-	 * Creates a new TrayIcon with the given name, and using panelItem as the
-	 * Widget to display in the system tray (Note: the provided widget must support
-	 * mouse events in order for the popups to work)
-	 * @param name The name of the TrayIcon
-	 * @param panelItem The Widget to display in the system tray
-	 */
-	public TrayIcon(String name, Widget panelItem){
-		tray = new EggTrayIcon(name);
-		this.clearPopups();
-		this.setContents(panelItem);
+		if(!active)
+			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON));
+		else
+			this.setContents(new Image(IconManager.anim));
+		this.active = active;
 		windowButton = 0;
 		menuButton = 0;
 		tray.showAll();
@@ -254,7 +216,7 @@ public class TrayIcon implements Saveable{
 	/*
 	 * Sets the button in the system tray with the given text and Icon
 	 */
-	private void setContents(String text, Image icon){
+	private void setContents(Image icon){
 		// First clear out anything that was in the system tray, if anything
 		if(trayItem != null){
 			Widget[] inTray = trayItem.getChildren();
@@ -266,49 +228,12 @@ public class TrayIcon implements Saveable{
 			trayItem = new EventBox();
 		}
 		
-		Label textLabel;
+		trayItem.add(icon);
 		
-		// There is text to add
-		if(!text.equals(new String())){
-			textLabel = new Label(text);
-			// Text and an icon
-			if(icon != null){
-				HBox cont = new HBox(false, 1);
-				cont.packEnd(textLabel);
-				cont.packEnd(icon);
-				trayItem.add(cont);
-			}
-			// Just text
-			else{
-				trayItem.add(textLabel);
-			}
-		}
-		// Just an icon
-		else{
-			trayItem.add(icon);
-		}
-				
-		tray.add(trayItem);
-	}
-	
-	/*
-	 * Puts the provided widget into the tray
-	 */
-	private void setContents(Widget toAdd){
-		// First clear out anything that was in the system tray, if anything
-		if(trayItem != null){
-			Widget[] inTray = trayItem.getChildren();
-			
-			for(int i = 0; i < inTray.length; i++)
-				trayItem.remove(inTray[i]);
-		}
-		else{
-			trayItem = new EventBox();
-		}
+		if(trayItem.getParent() == null)
+			tray.add(trayItem);
 		
-		trayItem.add(toAdd);
-		
-		tray.add(trayItem);
+		tray.showAll();
 	}
 	
 	/*
@@ -345,5 +270,18 @@ public class TrayIcon implements Saveable{
 	public void load(Preferences prefs) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+		
+		if(!this.active)
+			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON));
+		else
+			this.setContents(new Image(IconManager.anim));
 	}
 }

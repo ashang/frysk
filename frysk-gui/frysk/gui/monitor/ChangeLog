@@ -1,3 +1,12 @@
+2005-12-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TrayIcon.java (TrayIcon): Only constructor now takes a name and a
+	boolean, which reflects whether the icons should be flashing.
+	(setContents): Refactored to only take an Icon an no longer assumes
+	that the tray icon was empty to begin with.
+	(isActive): Added.
+	(setActive): Added.
+
 2005-12-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StatusWidget.java (TimelineAction): Removed all references to
