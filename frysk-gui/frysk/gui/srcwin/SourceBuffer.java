@@ -659,6 +659,7 @@ public class SourceBuffer extends TextBuffer {
 		for(int i = 0; i < functions.size(); i++)
 			this.deleteMark(((String) functions.get(i)));
 		
+		this.anchor = null;
         this.functions = new Vector();
 		this.scope = scope;
 		try {
@@ -732,8 +733,6 @@ public class SourceBuffer extends TextBuffer {
 		Iterator lines = this.scope.getData().getLines();
 		
 		String bufferText = loadLines(lines);
-		
-		System.out.print(bufferText);
 		
 		this.deleteText(this.getStartIter(), this.getEndIter());
 		this.insertText(bufferText);

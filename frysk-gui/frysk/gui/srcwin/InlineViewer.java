@@ -283,12 +283,7 @@ public class InlineViewer extends SourceViewWidget {
 		}
 		else{
 			this.showingEllipsis = true;
-			// Do stuff here to add/update the ellipsis
-			EventBox box = new EventBox();
-			Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
-			box.add(tag);
-			box.showAll();
-			this.addChild(box, ((InlineBuffer) this.buf).createEllipsisAnchor());
+			this.createEllipsis();
 		}
 		
 		if(this.next != null)
@@ -321,12 +316,7 @@ public class InlineViewer extends SourceViewWidget {
 		
 		if(this.previous == null && this.depth > 1){
 			this.showingEllipsis = true;
-			// Do stuff here to add/update the ellipsis
-			EventBox box = new EventBox();
-			Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
-			box.add(tag);
-			box.showAll();
-			this.addChild(box, ((InlineBuffer) this.buf).createEllipsisAnchor());
+			this.createEllipsis();
 		}
 		else{
 			this.showingEllipsis = false;
@@ -339,5 +329,13 @@ public class InlineViewer extends SourceViewWidget {
 			this.setSubscopeAtCurrentLine(this.next);
 			this.next.moveUp();
 		}
+	}
+	
+	private void createEllipsis(){
+		EventBox box = new EventBox();
+		Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
+		box.add(tag);
+		box.showAll();
+		this.addChild(box, ((InlineBuffer) this.buf).createEllipsisAnchor());
 	}
 }

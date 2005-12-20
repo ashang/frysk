@@ -30,6 +30,10 @@ public class InlineBuffer extends SourceBuffer {
 	
 	
 	protected String loadLines(Iterator lines){
+		// Since we don't have/need a function to remove the anchor for 
+		// the ellipsis, we do it whenever new content is loaded
+		this.ellipsisAnchor = null;
+		
 		// I know this seems really bad, but we're just going to
 		// drop the iterator on the ground... we don't need it
 		
@@ -49,11 +53,17 @@ public class InlineBuffer extends SourceBuffer {
 	}
 	
 	public int getLineCount(){
-		return this.declaration.getEndingLine() - this.declaration.getStartingLine();
+		if(this.ellipsisAnchor == null)
+			return this.declaration.getEndingLine() - this.declaration.getStartingLine();
+		else
+			return this.declaration.getEndingLine() - this.declaration.getStartingLine() + 1;
 	}
 
     public int getLastLine(){
-        return this.declaration.getEndingLine();
+    	if(this.ellipsisAnchor == null)
+    		return this.declaration.getEndingLine();
+    	else
+    		return this.declaration.getEndingLine() + 1;
     }
     
     public int getFirstLine(){

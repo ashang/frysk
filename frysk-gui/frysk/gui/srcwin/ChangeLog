@@ -1,5 +1,16 @@
 2005-12-20  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (loadLines): Now sets the ellipsis anchor to null
+	since the contents are being overwritten.
+	(getLineCount): Is now conditional on the presence of the ellipsis,
+	since that will add an extra line to the code being displayed.
+	(getLastLine): Ditto.
+	* InlineViewer.java (createEllipsis): Added.
+	(moveUp): Now uses createEllipsis.
+	(moveDown): Ditto.
+	* SourceBuffer.java (loadFile): Now sets anchor to be null since 
+	buffer contents are about to be overwritten.
+
 	* InlineViewer.java (moveUp): Refactored to use createEllipsisAnchor in 
 	InlineBuffer.java.
 	(moveDown): Ditto.
