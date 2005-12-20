@@ -1,3 +1,16 @@
+2005-12-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (moveUp): Refactored to use createEllipsisAnchor in 
+	InlineBuffer.java.
+	(moveDown): Ditto.
+	* InlineBuffer.java (createEllipsisAnchor): Added.
+	* SourceViewWidget.java (setSubscopeAtCurrentLine): Refactored to use
+	createAnchorAtCurrentLine method in SourceBuffer.
+	(clearSubscopeAtCurrentLine): Refactored to use	clearAnchorAtCurrentLine
+	in SourceBuffer.
+	* SourceBuffer.java (createAnchorAtCurrentLine): Added.
+	(clearAnchorAtCurrentLine): Added.
+
 2005-12-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Removed initialization of IconManager.

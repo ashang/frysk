@@ -2,6 +2,7 @@ package frysk.gui.srcwin;
 
 import java.util.Iterator;
 
+import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.jdom.Element;
 
@@ -16,6 +17,8 @@ public class InlineBuffer extends SourceBuffer {
 
 	private DOMFunction declaration;
 	private DOMInlineInstance instance; 
+	
+	private TextChildAnchor ellipsisAnchor;
 	
 	public InlineBuffer(DOMSource scope, DOMInlineInstance instance) {
 		super();
@@ -100,6 +103,26 @@ public class InlineBuffer extends SourceBuffer {
 				line.getText().substring(tag.getStart(), tag.getStart() + tag.getLength()), 
 				iter.getLineNumber(), tag.getStart(), false);
 		return var;
+    }
+    
+    public TextChildAnchor createEllipsisAnchor(){
+    	/*
+    	 * Note that there is no need for a "removeEllipsisAnchor" method, since if the
+    	 * depth of this buffer changes in the stack, then the contents will be 
+    	 * overridden, destroying the anchor anyways
+    	 */
+    	if(this.ellipsisAnchor != null)
+    		this.deleteText(this.getStartIter(), 
+    				this.getLineIter(this.getStartIter().getLineNumber()+1));
+    	
+    	this.insertText(this.getStartIter(), "\n");
+		this.ellipsisAnchor = this.createChildAnchor(this.getStartIter());
+		
+		return this.ellipsisAnchor;
+    }
+    
+    public void clearEllipsisAnchor(){
+    	
     }
     
     protected void setCurrentLine(int startLine, int startCol, int endLine, int endCol){

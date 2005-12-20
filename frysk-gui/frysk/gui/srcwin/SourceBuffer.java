@@ -673,12 +673,28 @@ public class SourceBuffer extends TextBuffer {
 				this.scope.getColEnd());
 	}
 	
-//	public TextChildAnchor createAnchorAtCurrentLine(){
-//		
-//		TextIter line = this.getLineIter(this.getCurrentLine() + 1);
-//		
-//		if(this.anchor)
-//	}
+	public TextChildAnchor createAnchorAtCurrentLine(){
+		TextIter line = this.getLineIter(this.getCurrentLine() + 1);
+		
+		if(this.anchor != null)
+			this.deleteText(line, this.getIter(line.getOffset()+1));
+		else
+			this.insertText(line, "\n");
+		this.anchor = this.createChildAnchor(this.getLineIter(this.getCurrentLine() + 1));
+		
+		return this.anchor;
+	}
+	
+	public void clearAnchorAtCurrentLine(){
+		// do nothing if there's nothing to clear
+		if(this.anchor == null)
+			return;
+		
+		TextIter line = this.getLineIter(this.getCurrentLine() + 1);
+		this.deleteText(line, this.getIter(line.getOffset()+2));
+		
+		this.anchor = null;
+	}
 	
 	
 	/*-------------------*

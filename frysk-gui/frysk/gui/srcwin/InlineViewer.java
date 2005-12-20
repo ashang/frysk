@@ -47,7 +47,6 @@ import org.gnu.gtk.EventBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
-import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextWindowType;
 import org.gnu.gtk.WindowType;
@@ -147,28 +146,19 @@ public class InlineViewer extends SourceViewWidget {
 			 * visible scope
 			 */
 			while(top.depth > 1 && numToMove > 0){
-				System.out.println("Moving top scope up a level!");
 				top.moveUp();
 				numToMove--;
 			}
-
-			
-			System.out.println("numToMove: " + numToMove);
-			System.out.println("bottom.depth: " + bottom.depth);
-			System.out.println("targetBottom: " + targetBottom);
 			
 			/*
 			 * If we've gotten to the top before we've put the clicked scope at the bottom,
 			 * we have to remove nodes. Starting with the bottom one.
 			 */
 			while(numToMove > 0 && bottom.depth > targetBottom){
-				System.out.println(Math.min(numToMove, bottom.depth - targetBottom) + " left to move, removing bottom child");
 				bottom = bottom.previous;
 				top.removeLowestChild();
 				numToMove--;
 			}
-			
-			System.out.println("there");
 		}
 	}
 	
@@ -257,12 +247,10 @@ public class InlineViewer extends SourceViewWidget {
 	private void removeLowestChild(){
 		// The next node is not the last one, keep calling down
 		if(this.next != null && this.next.next != null){
-			System.out.println("Depth " + this.depth + ":\tThe next node has a child, moving down");
 			this.next.removeLowestChild();
 		}
 		// The next node is the last one, cull it
 		else if(this.next != null){
-			System.out.println("Depth " + this.depth + ":\tThe next node is the last, remove it");
 			this.clearSubscopeAtCurrentLine();
 		}
 		// If we got here, that means this is the last node. This should *not* happen
@@ -296,13 +284,11 @@ public class InlineViewer extends SourceViewWidget {
 		else{
 			this.showingEllipsis = true;
 			// Do stuff here to add/update the ellipsis
-			this.buf.insertText(this.buf.getStartIter(), "\n");
-			TextChildAnchor anchor = this.buf.createChildAnchor(this.buf.getStartIter());
 			EventBox box = new EventBox();
 			Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
 			box.add(tag);
 			box.showAll();
-			this.addChild(box, anchor);
+			this.addChild(box, ((InlineBuffer) this.buf).createEllipsisAnchor());
 		}
 		
 		if(this.next != null)
@@ -312,12 +298,15 @@ public class InlineViewer extends SourceViewWidget {
 	}
 	
 	/**
-	 * 
-	 *
+	 * This causes this level of inline scope to move up a level. This assumes a number of
+	 * things:
+	 *  1) That there is a valid scope above us to move up to
+	 *  2) Everything of higher scope than me has already moved up
+	 *  
+	 *  If this method is the top inlined scope (i.e. previous == null) and it's 
+	 *  depth is greater than one, ellipsis are created
 	 */
-	private void moveUp(){
-		System.out.println("Depth:\t"+this.depth);
-		
+	private void moveUp(){		
 //		 We have to save the inline viewer before moving down, otherwise stupid GTK
 		// clears it
 		org.gnu.gtk.Window tmp = new org.gnu.gtk.Window();
@@ -333,13 +322,11 @@ public class InlineViewer extends SourceViewWidget {
 		if(this.previous == null && this.depth > 1){
 			this.showingEllipsis = true;
 			// Do stuff here to add/update the ellipsis
-			this.buf.insertText(this.buf.getStartIter(), "\n");
-			TextChildAnchor anchor = this.buf.createChildAnchor(this.buf.getStartIter());
 			EventBox box = new EventBox();
 			Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
 			box.add(tag);
 			box.showAll();
-			this.addChild(box, anchor);
+			this.addChild(box, ((InlineBuffer) this.buf).createEllipsisAnchor());
 		}
 		else{
 			this.showingEllipsis = false;
@@ -347,6 +334,8 @@ public class InlineViewer extends SourceViewWidget {
 		
 		
 		if(this.next != null){
+			// we removed the subscope that was at the current line, we now have to 
+			// re-add it
 			this.setSubscopeAtCurrentLine(this.next);
 			this.next.moveUp();
 		}

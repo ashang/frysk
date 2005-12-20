@@ -368,22 +368,13 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		if(parent != null)
 			parent.remove(child);
 		
-		TextIter line = buf.getLineIter(buf.getCurrentLine() + 1);
-		
-		if(anchor != null)
-			buf.deleteText(line, buf.getIter(line.getOffset()+1));
-		else
-			buf.insertText(line, "\n");
-		this.anchor = buf.createChildAnchor(buf.getLineIter(buf.getCurrentLine() + 1));
-		
 		this.expanded = true;
-		this.addChild(child, anchor);
+		this.addChild(child, this.buf.createAnchorAtCurrentLine());
 		child.show();
 	}
 	
 	public void clearSubscopeAtCurrentLine(){
-		TextIter line = buf.getLineIter(buf.getCurrentLine() + 1);
-		buf.deleteText(line, buf.getIter(line.getOffset()+2));
+		this.buf.clearAnchorAtCurrentLine();
 		this.expanded = false;
 		this.anchor = null;
 	}
@@ -436,6 +427,13 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 */
 	protected void drawMargin(){
 		Window drawingArea = this.getWindow(TextWindowType.LEFT);
+		
+		
+//		String[] thisarray = this.getHandle().toString().split(" ");
+//		String[] thatarray = drawingArea.getHandle().toString().split(" ");
+//		System.err.println("Created gdkWindow " + Integer.toHexString(Integer.parseInt(thatarray[thatarray.length - 1]))
+//				+ " in " + this.getClass() + " " + 
+//				Integer.toHexString(Integer.parseInt(thisarray[thisarray.length - 1])));
 		
 		// draw the background for the margin
 		if(this.myContext == null)
