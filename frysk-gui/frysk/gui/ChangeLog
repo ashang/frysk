@@ -1,3 +1,8 @@
+2005-12-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source_prefs.glade: Added area for the number of inlined
+	scopes to display under the settings tab.
+
 2005-12-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* FryskGui.java (mainGui): Now uses refactored TrayIcon constructor.

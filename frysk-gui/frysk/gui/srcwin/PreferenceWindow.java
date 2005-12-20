@@ -46,6 +46,7 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ColorButton;
 import org.gnu.gtk.Label;
+import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -60,6 +61,7 @@ import frysk.gui.srcwin.PreferenceConstants.Classes;
 import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
 import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
 import frysk.gui.srcwin.PreferenceConstants.Functions;
+import frysk.gui.srcwin.PreferenceConstants.Inline;
 import frysk.gui.srcwin.PreferenceConstants.Variables;
 import frysk.gui.srcwin.PreferenceConstants.Keywords;
 import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
@@ -225,6 +227,10 @@ public class PreferenceWindow implements ButtonListener{
 					PreferenceWindow.FUNCTION_ITALICS_BUTTON, Functions.ITALICS);
 			this.saveStyleCheck(this.myPrefs.node(PreferenceConstants.SYNTAX_NODE),
 					PreferenceWindow.CLASS_ITALICS_BUTTON, Classes.ITALICS);
+			
+			// save number of inline scopes
+			SpinButton sb = (SpinButton) this.glade.getWidget("inlineCount");
+			this.myPrefs.node(PreferenceConstants.LNF_NODE).putInt(Inline.NUM_LEVELS, (int) sb.getValue());
 		}
 		
 		// For either button, hide the window
@@ -302,11 +308,16 @@ public class PreferenceWindow implements ButtonListener{
 		((Label) this.glade.getWidget("classLabel")).setLabel("Class Color:");
 		((Button) this.glade.getWidget(OK_BUTTON)).setLabel(Messages.getString("PreferenceWindow.11")); //$NON-NLS-1$
 		((Button) this.glade.getWidget(CANCEL_BUTTON)).setLabel(Messages.getString("PreferenceWindow.12")); //$NON-NLS-1$
+		((Label) this.glade.getWidget("inlineScopeLabel")).setLabel("Inline scopes to show:");
 		
 		// set tabs
 		((Label) this.glade.getWidget(PreferenceWindow.LNF_LABEL)).setLabel(Messages.getString("PreferenceWindow.13")); //$NON-NLS-1$
 		((Label) this.glade.getWidget(PreferenceWindow.SETTINGS_LABEL)).setLabel(Messages.getString("PreferenceWindow.14")); //$NON-NLS-1$
 		((Label) this.glade.getWidget(PreferenceWindow.SYNTAX_LABEL)).setLabel(Messages.getString("PreferenceWindow.15")); //$NON-NLS-1$
+		
+		// set the number of inlined scopes
+		SpinButton sb = (SpinButton) this.glade.getWidget("inlineCount");
+		sb.setValue(this.myPrefs.node(PreferenceConstants.LNF_NODE).getInt(Inline.NUM_LEVELS, Inline.NUM_LEVELS_DEFAULT));
 		
 		// Setup Checkboxes
 		boolean flag = this.myPrefs.node(PreferenceConstants.LNF_NODE).getBoolean(LineNumbers.SHOW, true);

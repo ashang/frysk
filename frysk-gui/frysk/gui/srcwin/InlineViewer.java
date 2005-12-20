@@ -49,6 +49,7 @@ import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextWindowType;
+import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
@@ -77,6 +78,8 @@ public class InlineViewer extends SourceViewWidget {
     
 	private boolean showingEllipsis = false;
 	
+	private ToolTips tips;
+	
 	/**
 	 * Creates a new InlineViewer
 	 * @param parentPrefs The preference model to use
@@ -91,6 +94,7 @@ public class InlineViewer extends SourceViewWidget {
 		super(parentPrefs, new InlineBuffer(scope, instance), top);
 		this.setBorderWidth(1);
 		this.depth = 1;
+		this.tips = new ToolTips();
 	}
     
 	/**
@@ -356,6 +360,8 @@ public class InlineViewer extends SourceViewWidget {
 		EventBox box = new EventBox();
 		Label tag = new Label("... " + (this.depth - 1) + " levels hidden");
 		box.add(tag);
+		this.tips.setTip(box, "Levels of inlined scope have been hidden. "+
+				"To view these levels collapse lower levels or change the number of visible scopes under preferences", "");
 		box.showAll();
 		this.addChild(box, ((InlineBuffer) this.buf).createEllipsisAnchor());
 	}
