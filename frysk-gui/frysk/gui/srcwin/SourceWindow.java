@@ -99,8 +99,13 @@ import frysk.dom.DOMLine;
 import frysk.gui.common.Messages;
 import frysk.proc.Task;
 
-//import frysk.Config;
-
+/**
+ * The SourceWindow displays the source or assembly level view of a Task's
+ * current state of execution. It has the ability to display code that has been
+ * inlined as well as optimized out by the compiler. It also provides an
+ * interface to allow to user to query for variable values, set traces on
+ * variables, and perform other such traditional debugging tasks. 
+ */
 public class SourceWindow extends Window implements ButtonListener, EntryListener, 
 									ComboBoxListener, TreeSelectionListener{
 	/*
@@ -178,6 +183,16 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 	
+	/**
+	 * Creates a new source window with the given properties. This constructor should
+	 * not be called explicitly, SourceWindow objects should be created through the
+	 * {@link SourceWindowFactory} class.
+	 * 
+	 * @param glade The LibGlade object that contains the window for this instance
+	 * @param gladePath The path that the .glade file for the LibGlade was on
+	 * @param dom The DOM that describes the executable being debugged
+	 * @param stack The stack frame that represents the current state of execution
+	 */
 	public SourceWindow(LibGlade glade, String gladePath, DOMFrysk dom, StackLevel stack) {
 		super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
         
@@ -574,6 +589,9 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 	}
 	
 	
+	/*
+	 * Populates the menus from the actions created earlier.
+	 */
 	private void createMenus(){
 		// File menu
 		MenuItem menu = new MenuItem("File", true);
@@ -977,6 +995,10 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		stackList.getSelection().select(stackList.getModel().getIter(""+(max-2)));
 	}
     
+	/*
+	 * Populates the "goto function" pull-down menu with the names of all the functions
+	 * in the current scope
+	 */
     private void populateFunctionBox(){
         ComboBoxEntry box = (ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR);
         DataColumnString col = new DataColumnString();

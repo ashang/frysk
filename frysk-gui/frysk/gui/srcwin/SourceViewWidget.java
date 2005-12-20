@@ -113,11 +113,19 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * 
 	 * @param parentPrefs The root node of the preference model to use
 	 * @param scope The source file that this widget will be displaying
+	 * @param parent The SourceWindow that this SourceViewWidget is contained in
 	 */
 	public SourceViewWidget(Preferences parentPrefs, StackLevel scope, SourceWindow parent) {
 		this(parentPrefs, new SourceBuffer(scope), parent);
 	}
 	
+	/**
+	 * Constructs a new SourceViewWidget using the previously created buffer
+	 *  
+	 * @param parentPrefs The root node of the preference model to use
+	 * @param buffer The sourceBuffer to use as the data for this object
+	 * @param parent The SourceWindow this object is contained within
+	 */
 	public SourceViewWidget(Preferences parentPrefs, SourceBuffer buffer, SourceWindow parent){
 		super(gtk_text_view_new());
 		this.parent = parent;
@@ -357,13 +365,21 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		this.scrollToIter(this.buf.getStartCurrentFind(), 0);
 	}
 	
+	/**
+	 * Loads the contents of the provided StackLevel into this view
+	 * @param data The new stack frame to load.
+	 */
 	public void load(StackLevel data){
 		this.buf.setScope(data);
 		this.expanded = false;
 		this.anchor = null;
 	}
 	
-	public void setSubscopeAtCurrentLine(SourceViewWidget child){
+	/**
+	 * Sets the inlined subscope at the current line to be the object provided.
+	 * @param child The inlined scope to display
+	 */
+	public void setSubscopeAtCurrentLine(InlineViewer child){
 		Container parent = (Container) child.getParent();
 		if(parent != null)
 			parent.remove(child);
@@ -373,6 +389,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		child.show();
 	}
 	
+	/**
+	 * Removes the inline subscope that is currently being displayed from the view.
+	 *
+	 */
 	public void clearSubscopeAtCurrentLine(){
 		this.buf.clearAnchorAtCurrentLine();
 		this.expanded = false;
@@ -402,6 +422,9 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		this.showAll();
 	}
 
+	/*
+	 * Toggles the visibility of the inlined code at the current line.
+	 */
 	public void toggleChild() {
 		if(!expanded){
 			expanded = true;
@@ -570,6 +593,16 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		}
 	}
 
+	/**
+	 * Draws the line corresponding to the number provided. Note that because of inlined
+	 * code, initial offsets or other widgets embedded in the source code this may not
+	 * be the number passed to this function. 
+	 * 
+	 * @param drawingArea The org.gnu.gdk.Window to draw on
+	 * @param context The GC to use
+	 * @param drawingHeight The height that we should draw at within the window
+	 * @param number The number to use to calcuate what number should be drawn
+	 */
     protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
         Layout lo = this.createLayout(""+(number+1));
         lo.setAlignment(Alignment.RIGHT);

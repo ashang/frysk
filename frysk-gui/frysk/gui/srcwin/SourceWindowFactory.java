@@ -26,6 +26,10 @@ import frysk.dom.DOMSource;
 import frysk.proc.Task;
 
 /**
+ * SourceWindow factory is the interface through which all SourceWindow objects in frysk
+ * should be created. It takes care of setting paths to resource files as well as
+ * making sure that at most one window is opened per Task.
+ * 
  * @author ajocksch
  *
  */

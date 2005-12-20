@@ -134,6 +134,10 @@ public class SourceBuffer extends TextBuffer {
 		this.init();
 	}
 	
+	/**
+	 * Creates a new SourceBuffer with the given scope
+	 * @param scope 
+	 */
 	public SourceBuffer(StackLevel scope){
 		this();
 		this.setScope(scope);
@@ -639,14 +643,28 @@ public class SourceBuffer extends TextBuffer {
 		return this.scope.getData().getLineCount();
 	}
     
+	/**
+	 * @return The number of the last line in the buffer, which may or may not be the
+	 * same as the number of lines in the buffer due to an initial offset
+	 */
     public int getLastLine(){
         return this.getLineCount();
     }
 	
+    /**
+     * @param lineNumber the line to check
+     * @return true iff the given line has inlined code
+     */
 	public boolean hasInlineCode(int lineNumber){
 		return this.scope.getData().getLine(lineNumber+1).hasInlinedCode();
 	}
 	
+	/**
+	 * 
+	 * @param lineNumber The line number to get Inline information from
+	 * @return The DOMInlineInstance containing the inlined code information,
+	 * or null if no information exists
+	 */
 	public DOMInlineInstance getInlineInstance(int lineNumber){
 		Iterator iter = this.scope.getData().getLine(lineNumber+1).getInlines();
 		if(!iter.hasNext())
@@ -655,6 +673,10 @@ public class SourceBuffer extends TextBuffer {
 		return new DOMInlineInstance((Element) iter.next()); 
 	}
 	
+	/**
+	 * Sets the scope that will be displayed by this buffer to the provided scope.
+	 * @param scope The stack frame to be displayed
+	 */
 	public void setScope(StackLevel scope){
 		for(int i = 0; i < functions.size(); i++)
 			this.deleteMark(((String) functions.get(i)));
@@ -674,6 +696,11 @@ public class SourceBuffer extends TextBuffer {
 				this.scope.getColEnd());
 	}
 	
+	/**
+	 * Creates the anchor at the current line that will to which the inlined
+	 * code will be attached. If a previous anchor exists it will be overridden.
+	 * @return The created anchor.
+	 */
 	public TextChildAnchor createAnchorAtCurrentLine(){
 		TextIter line = this.getLineIter(this.getCurrentLine() + 1);
 		
@@ -686,6 +713,10 @@ public class SourceBuffer extends TextBuffer {
 		return this.anchor;
 	}
 	
+	/**
+	 * Removed the anchor created by {@link SourceBuffer#createAnchorAtCurrentLine()}
+	 *
+	 */
 	public void clearAnchorAtCurrentLine(){
 		// do nothing if there's nothing to clear
 		if(this.anchor == null)
@@ -697,6 +728,13 @@ public class SourceBuffer extends TextBuffer {
 		this.anchor = null;
 	}
 	
+	/**
+	 * 
+	 * @return The stack frame currently being displayed
+	 */
+	public StackLevel getScope() {
+		return scope;
+	}
 	
 	/*-------------------*
 	 * PRIVATE METHODS   *
@@ -892,9 +930,4 @@ public class SourceBuffer extends TextBuffer {
 		int style = node.getInt(key, defaultStyle.getValue());
 		tag.setStyle(Style.intern(style));
 	}
-
-	public StackLevel getScope() {
-		return scope;
-	}
-
 }

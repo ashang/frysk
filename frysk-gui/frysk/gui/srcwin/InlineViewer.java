@@ -61,6 +61,10 @@ import frysk.dom.DOMSource;
 import frysk.gui.srcwin.PreferenceConstants.Inline;
 
 /**
+ * The InlineViewer displays code that has been inlined. InlineViewers will always
+ * appear as a child widget within a SourceViewWidget and should not be created on their
+ * own. Some information such as executable information and breakpoints is deliberately
+ * omitted since this information may vary due to compiler optimizations.
  * @author ajocksch
  *
  */
@@ -89,17 +93,22 @@ public class InlineViewer extends SourceViewWidget {
 		this.depth = 1;
 	}
     
-	public void setSubscopeAtCurrentLine(SourceViewWidget nested){
-		if(nested instanceof InlineViewer){
-			InlineViewer casted = (InlineViewer) nested;
-			casted.depth = this.depth + 1;
-			this.next = casted;
-			casted.previous = this;
-		}
+	/**
+	 * Overrides the method from SourceViewWidget to also establish the depth of
+	 * the child as well as setting up the linked list structure to keep track of it
+	 */
+	public void setSubscopeAtCurrentLine(InlineViewer nested){
+		InlineViewer casted = (InlineViewer) nested;
+		casted.depth = this.depth + 1;
+		this.next = casted;
+		casted.previous = this;
 		
 		super.setSubscopeAtCurrentLine(nested);
 	}
 	
+	/**
+	 * Override the parent method to clear the linked list structure being used.
+	 */
 	public void clearSubscopeAtCurrentLine(){
 		this.next.previous = null;
 		this.next = null;
@@ -162,6 +171,9 @@ public class InlineViewer extends SourceViewWidget {
 		}
 	}
 	
+	/**
+	 * Overriden to remove breakpoint functionality, etc. Otherwise operation is unchanged
+	 */
 	public boolean mouseEvent(MouseEvent event){
 		int x = (int) event.getX();
 		int y = (int) event.getY();
@@ -225,6 +237,10 @@ public class InlineViewer extends SourceViewWidget {
 		return false;
 	}
 	
+	/**
+	 * Draws the line number, taking into account the presence of ellipsis, offset from the
+	 * start of the file being displayed, and presence of other inline scopes
+	 */
     protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
     	Layout lo;
     	if(!this.showingEllipsis)
@@ -331,6 +347,11 @@ public class InlineViewer extends SourceViewWidget {
 		}
 	}
 	
+	/**
+	 * Creates the ellipsis at the first line of the viewer to indicate that levels
+	 * of inlined code have been hidden
+	 *
+	 */
 	private void createEllipsis(){
 		EventBox box = new EventBox();
 		Label tag = new Label("... " + (this.depth - 1) + " levels hidden");

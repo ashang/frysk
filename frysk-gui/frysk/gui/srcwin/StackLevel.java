@@ -41,6 +41,9 @@ package frysk.gui.srcwin;
 import frysk.dom.DOMSource;
 
 /**
+ * The StackLevel class represents a frame on the program execution stack (i.e. a
+ * function call).
+ * 
  * @author ajocksch
  *
  */

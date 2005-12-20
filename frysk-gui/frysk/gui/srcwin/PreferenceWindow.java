@@ -230,7 +230,11 @@ public class PreferenceWindow implements ButtonListener{
 		// For either button, hide the window
 		this.glade.getWidget(PREF_WIN).hideAll();
 	}
-	
+
+	/**
+	 * Attaches the life cycle listener to the glade widget representing the window
+	 * @param l The listener to attach
+	 */
 	public void attachLifeCycleListener(LifeCycleListener l){
 		this.glade.getWidget(PREF_WIN).addListener(l);
 	}
