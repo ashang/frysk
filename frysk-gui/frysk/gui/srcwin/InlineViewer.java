@@ -97,6 +97,13 @@ public class InlineViewer extends SourceViewWidget {
 		this.tips = new ToolTips();
 	}
     
+	public void refresh(){
+		super.refresh();
+		
+		if(this.next != null)
+			this.next.refresh();
+	}
+	
 	/**
 	 * Overrides the method from SourceViewWidget to also establish the depth of
 	 * the child as well as setting up the linked list structure to keep track of it
@@ -278,6 +285,16 @@ public class InlineViewer extends SourceViewWidget {
 			System.err.println("We got to the last node! This should not be happening!");
 		}
 	}
+	
+	/*
+	 * Expands the last node in the tree
+	 */
+//	private void expandLowestChild(){
+//		if(this.next != null)
+//			this.next.expandLowestChild();
+//		else
+//			this.toggleChild();
+//	}
 	
 	/**
 	 * This causes the inline scope to move down a level. This is propagated up

@@ -107,6 +107,8 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	// keep this around, we'll be needing it
 	private GC myContext;
 	
+	private InlineViewer child;
+	
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
 	 * a default one will be created for you.
@@ -173,7 +175,10 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 		else{
 			this.setBorderWindowSize(TextWindowType.LEFT, this.marginWriteOffset+20);
 		}
-			
+	
+		// refresh the inlined scopes, if they exist
+		if(this.child != null)
+			this.child.refresh();
 	}
 
 	/**
@@ -380,6 +385,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * @param child The inlined scope to display
 	 */
 	public void setSubscopeAtCurrentLine(InlineViewer child){
+		this.child = child;
 		Container parent = (Container) child.getParent();
 		if(parent != null)
 			parent.remove(child);

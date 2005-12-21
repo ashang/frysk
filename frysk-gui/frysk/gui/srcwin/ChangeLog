@@ -1,3 +1,13 @@
+2005-12-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (refresh): Added.
+	(expandLowestChild): Added, commented out for now since it isn't used.
+	* SourceViewWidget.java: Added child member variable of type 
+	InlineViewer.
+	(refresh): Now calls refresh on the inlined scopes.
+	(setSubscopeAtCurrentLine): Now saves the passed InlineViewer as the
+	child of this Widget so that it can be updated when preferences change.
+
 2005-12-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (createEllipsis): Now adds a tooltip to the
