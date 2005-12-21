@@ -48,18 +48,6 @@
 
 #include "frysk/sys/XXX.h"
 
-jint
-frysk::sys::XXX::infLoop ()
-{
-  pid_t pid = ::fork ();
-  if (pid == 0) {
-    // want child to loop forever
-    for (;;)
-      ;
-  }
-  return (jint)pid;
-}
-
 static void *
 infLoopThreadFunc (void *args)
 {

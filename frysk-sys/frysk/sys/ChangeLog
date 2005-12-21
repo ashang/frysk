@@ -1,3 +1,8 @@
+2005-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* XXX.java (infLoop): Delete.
+	* cni/XXX.cxx (infLoop): Delete.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Sig.shjava: Use $CC from the environment.
