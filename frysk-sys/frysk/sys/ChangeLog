@@ -1,5 +1,8 @@
 2005-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* XXX.java (infCloneLoop): Delete.
+	* cni/XXX.cxx (infCloneLoop, cloneThreadFunc, threadFunc): Delete.
+	
 	* XXX.java (infLoop): Delete.
 	* cni/XXX.cxx (infLoop): Delete.
 

@@ -42,6 +42,5 @@ package frysk.sys;
 public final class XXX
 {
     public static native int infThreadLoop (int n);
-    public static native int infCloneLoop ();
     public static native int suspendedProg ();
 }
