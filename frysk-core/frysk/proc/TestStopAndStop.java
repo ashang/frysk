@@ -189,7 +189,7 @@ public class TestStopAndStop
     public void testStopAndStop ()
     {
 	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChild (pid);
+	Child child = new PidChildXXX (pid);
 	TestStopAndStopInternals t = new TestStopAndStopInternals (pid);
 	
 	child.findProcUsingRefresh ().requestAttachedContinue ();

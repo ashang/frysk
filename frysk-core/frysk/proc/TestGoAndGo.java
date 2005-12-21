@@ -187,7 +187,7 @@ public class TestGoAndGo
     {
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChild (pid);
+	Child child = new PidChildXXX (pid);
 	TestGoAndGoInternals t = new TestGoAndGoInternals (pid);
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 

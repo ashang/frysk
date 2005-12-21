@@ -266,7 +266,7 @@ public class TestUnpaused
     public void testUnpaused ()
     {
 	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChild (pid);
+	Child child = new PidChildXXX (pid);
 	TestUnpausedInternals tu = new TestUnpausedInternals (pid);
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 

@@ -1,5 +1,13 @@
 2005-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Rename .PidChild to .PidChildXXX.
+	* TestUnpaused.java: Update.
+	* TestStop.java: Update.
+	* TestStopAndStop.java: Update.
+	* TestStopAndGo.java: Update.
+	* TestPaused.java: Update.
+	* TestGoAndGo.java: Update.
+
 	* TestExec.java, TestGoAndGo.java, TestHostGet.java,
 	TestI386Modify.java, TestI386Regs.java, TestLib.java,
 	TestModify.java, TestPaused.java, TestProcGet.java,

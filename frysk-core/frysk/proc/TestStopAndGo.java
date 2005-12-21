@@ -179,7 +179,7 @@ public class TestStopAndGo
     {
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChild (pid);
+	Child child = new PidChildXXX (pid);
 	TestStopAndGoInternals tsag = new TestStopAndGoInternals (pid);
 	child.findProcUsingRefresh ().requestAttachedContinue ();
                                                                                 

@@ -179,7 +179,7 @@ public class TestStop
     {
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChild (pid);
+	Child child = new PidChildXXX (pid);
 	TestStopInternals ts = new TestStopInternals (pid);
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 

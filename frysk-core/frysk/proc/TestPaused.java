@@ -191,7 +191,7 @@ public class TestPaused
     {
 	// Create threaded infinite loop
 	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChild (pid);
+	Child child = new PidChildXXX (pid);
 	TestPausedInternals t = new TestPausedInternals (pid);
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 

@@ -315,10 +315,10 @@ public class TestLib
     /**
      * Create a child object corresponding to an existing PID.
      */
-    protected class PidChild
+    protected class PidChildXXX
 	extends Child
     {
-	PidChild (int pid)
+	PidChildXXX (int pid)
 	{
 	    super (pid);
 	}
