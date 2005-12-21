@@ -1,5 +1,12 @@
 2005-12-21  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineViewer.java (refresh): Now performs adjustments for changes in
+	the number of inline scopes that can be visible at any one time (fixes
+	bug #2075).
+	(moveDown): Renamed to moveDownPostOrder.
+	(moveDownPreOrder): Added.
+	(expandLowestChild): Uncommented.
+
 	* InlineViewer.java (refresh): Added.
 	(expandLowestChild): Added, commented out for now since it isn't used.
 	* SourceViewWidget.java: Added child member variable of type 

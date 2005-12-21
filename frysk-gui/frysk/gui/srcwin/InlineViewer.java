@@ -100,6 +100,43 @@ public class InlineViewer extends SourceViewWidget {
 	public void refresh(){
 		super.refresh();
 		
+		/*
+		 * If this is the case, we're the top inline node, and we need to adjust for 
+		 * a possible change in depth
+		 */
+		if(this.previous == null){
+			int depth  = 1;
+			InlineViewer bottom = this;
+			while(bottom.next != null){
+				bottom = bottom.next;
+				depth++;
+			}
+			
+			int maxDepth = this.lnfPrefs.getInt(Inline.NUM_LEVELS, Inline.NUM_LEVELS_DEFAULT);
+			
+			// Less than the max number of levels is being shown
+			if(depth <= maxDepth){
+				
+				// If we're the first one, we're ok, leave things as they are
+				if(this.depth == 1)
+					return;
+				
+				while(this.depth > 1 && depth < maxDepth){
+					this.moveUp();
+					this.expandLowestChild();
+					depth++;
+				}
+			}
+			// More than the max number of levels is being shown
+			else{
+				while(depth > maxDepth){
+					this.removeLowestChild();
+					this.moveDownPreOrder();
+					depth--;
+				}
+			}
+		}
+		
 		if(this.next != null)
 			this.next.refresh();
 	}
@@ -143,7 +180,7 @@ public class InlineViewer extends SourceViewWidget {
 			// Case 2: depth greater than max, this level not expanded.
 			// Action: Move down ourselves, then tell our anscestor to move down as well
 			else{
-				this.moveDown();
+				this.moveDownPostOrder();
 			}
 		}
 		else{
@@ -289,21 +326,54 @@ public class InlineViewer extends SourceViewWidget {
 	/*
 	 * Expands the last node in the tree
 	 */
-//	private void expandLowestChild(){
-//		if(this.next != null)
-//			this.next.expandLowestChild();
-//		else
-//			this.toggleChild();
-//	}
+	private void expandLowestChild(){
+		if(this.next != null)
+			this.next.expandLowestChild();
+		else
+			this.toggleChild();
+	}
+	/**
+	 * This causes the inline scope to move down a level. This is propagated up
+	 * through the InlineViewers that are currently being used, with the topmost scope
+	 * becomming hidden. This method performs the operation in pre-order method,
+	 * meaning that the parents are moved down before the children
+	 * 
+	 * This method assumes that everyone above us has already moved down
+	 */
+	private void moveDownPreOrder(){
+		// We have to save the inline viewer before moving down, otherwise stupid GTK
+		// clears it
+		org.gnu.gtk.Window tmp = new org.gnu.gtk.Window();
+		tmp.hideAll();
+		if(this.next != null)
+			this.next.reparent(tmp);
+		
+		((InlineBuffer) this.buf).moveDown();
+		
+		depth++;
+		
+		if(this.next != null){
+			this.next.moveDownPreOrder();
+			// We need to reset the subscope at the current line since by changing
+			// the text of this one we've cleared it
+			this.setSubscopeAtCurrentLine(this.next);
+		}
+		
+		if(this.previous == null){
+			this.showingEllipsis = true;
+			this.createEllipsis();
+		}
+	}
 	
 	/**
 	 * This causes the inline scope to move down a level. This is propagated up
 	 * through the InlineViewers that are currently being used, with the topmost scope
-	 * becomming hidden
+	 * becomming hidden. This method performs the operation in post-order method,
+	 * meaning that the children are moved down before the parents are
 	 * 
 	 * This method assumes that everyone below us has already moved down
 	 */
-	private void moveDown(){
+	private void moveDownPostOrder(){
 		// We have to save the inline viewer before moving down, otherwise stupid GTK
 		// clears it
 		org.gnu.gtk.Window tmp = new org.gnu.gtk.Window();
@@ -316,7 +386,7 @@ public class InlineViewer extends SourceViewWidget {
 		depth++;
 		
 		if(this.previous != null){
-			this.previous.moveDown();
+			this.previous.moveDownPostOrder();
 		}
 		else{
 			this.showingEllipsis = true;
