@@ -251,7 +251,7 @@ public class SourceBuffer extends TextBuffer {
 				this.currentLine, false);
 		
 		// Search color
-		this.updateTagColor(currentNode, Search.COLOR_PREFIX, Search.DEFAULT, this.foundText, true);
+		this.updateTagColor(currentNode, Search.COLOR_PREFIX, Search.DEFAULT, this.foundText, false);
 		
 		currentNode = topNode.node(PreferenceConstants.SYNTAX_NODE);
 		
@@ -322,6 +322,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether the search was successful
 	 */
 	public boolean findNext(String toFind, boolean matchCase, boolean findAll){
+		
 		this.checkReset(toFind, matchCase);
 		
 		if(this.startCurrentFind == null || findAll){

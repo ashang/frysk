@@ -1,5 +1,13 @@
 2005-12-21  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (refresh): Now correctly sets the color of the
+	search results tag to the background, rather than foreground.
+	* SourceViewWidget.java (scrollToLine): Fixed off-by-one error.
+	* SourceWindow.java (handlButtonClicked): Now correctly returns
+	for empty search targets as well as malformed input in the goto
+	line box.
+	(entryEvent): No longer searches on empty (or whitespace) text.
+
 	* InlineViewer.java (refresh): Now performs adjustments for changes in
 	the number of inline scopes that can be visible at any one time (fixes
 	bug #2075).

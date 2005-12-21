@@ -261,6 +261,10 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		
 		if(event.isOfType(EntryEvent.Type.CHANGED)){
 			String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT)).getText();
+			// do nothing if no text to search for
+			if(text.trim().equals(""))
+				return;
+			
 			boolean matchCase = ((CheckButton) this.glade.getWidget(SourceWindow.CASE_FIND)).getState();
 			
 			if(!this.view.findNext(text, matchCase))
@@ -802,8 +806,15 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 			this.glade.getWidget(SourceWindow.FIND_BOX).hideAll();
 		
 		else if(buttonName.equals(SourceWindow.GOTO_BUTTON)){
-			int gotoLine = Integer.parseInt(((Entry) this.glade.getWidget(SourceWindow.LINE_ENTRY)).getText());
-			this.view.scrollToLine(gotoLine);
+			String text = ((Entry) this.glade.getWidget(SourceWindow.LINE_ENTRY)).getText();
+			try{
+				int gotoLine = Integer.parseInt(text);
+				this.view.scrollToLine(gotoLine);
+			}
+			// If it's not a number in the box (or if it's nothing), return
+			catch(NumberFormatException e){
+				return;
+			}
 		}
 		
 		boolean findNext = buttonName.equals(SourceWindow.NEXT_FIND);
@@ -813,6 +824,10 @@ public class SourceWindow extends Window implements ButtonListener, EntryListene
 		if(findNext || findPrevious || highlightAll){
 			boolean caseSensitive = ((CheckButton) this.glade.getWidget(SourceWindow.CASE_FIND)).getState();
 			String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT)).getText();
+			
+			// Do nothing for if nothing to search for
+			if(text.trim().equals(""))
+				return;
 			
 			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(StateType.NORMAL, Color.WHITE);
 			

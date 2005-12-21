@@ -324,7 +324,7 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * @param lineNum The line to scroll to
 	 */
 	public void scrollToLine(int lineNum){
-		this.scrollToIter(this.buf.getLineIter(lineNum), 0);
+		this.scrollToIter(this.buf.getLineIter(lineNum-1), 0);
 	}
 	
 	/**
