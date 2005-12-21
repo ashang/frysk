@@ -1,3 +1,16 @@
+2005-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* TestExec.java, TestGoAndGo.java, TestHostGet.java,
+	TestI386Modify.java, TestI386Regs.java, TestLib.java,
+	TestModify.java, TestPaused.java, TestProcGet.java,
+	TestRefresh.java, TestRun.java, TestStep.java, TestStop.java,
+	TestStopAndGo.java, TestStopAndStop.java, TestSyscall.java,
+	TestSyscall2.java, TestSyscallInterrupt.java,
+	TestSyscallOpen.java, TestTaskClonedObserver.java,
+	TestTaskObserverBlocked.java, TestTasksObserver.java,
+	TestUnpaused.java: Clean up assert text messages so that they
+	state what is being checked, not the expected value or why.
+
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java: Rename .observableTaskAdded to

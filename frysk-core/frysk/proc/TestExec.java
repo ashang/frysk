@@ -70,8 +70,8 @@ public class TestExec
 
 	assertRunUntilStop ("run \"exec\" until exit");
 
-	assertEquals ("Number of execs", 1, execCounter.numberExecs);
-	assertTrue ("Tmp file was removed", !tmpFile.stillExists ());
+	assertEquals ("number of execs", 1, execCounter.numberExecs);
+	assertFalse ("tmp file exists", tmpFile.stillExists ());
     }
 
     /**
@@ -99,13 +99,12 @@ public class TestExec
 
 	assertRunUntilStop ("run \"threadexec\" to exit");
 
-	assertEquals ("One task is expected to exec", 1,
-		      execCounter.numberExecs);
-	assertEquals ("number of tasks created",
-		      2, taskCounter.added.size ());
-	assertEquals ("number of tasks destroyed (one task disappears"
-		      + " in a puff of exec)", 1, taskCounter.removed.size ());
-	assertTrue ("Tmp file was removed", !tmpFile.stillExists ());
-
+	assertEquals ("number of child exec's", 1, execCounter.numberExecs);
+	assertEquals ("number of child tasks created", 2,
+		      taskCounter.added.size ());
+	// The exec makes one task disappear.
+	assertEquals ("number of tasks destroyed", 1,
+		      taskCounter.removed.size ());
+	assertFalse ("tmp file exists", tmpFile.stillExists ());
     }
 }

@@ -80,7 +80,7 @@ public class TestPaused
 		if (task.proc.getPid () != pid)
 		    return;
 		registerChild (task.getTid ());
-		assertEquals ("No terminated event before task creation", 0,
+		assertEquals ("task destroyed count before task create", 0,
 			      taskDestroyedCount);
 		taskCreatedCount++;
 		// Register child to be removed at end of test
@@ -197,11 +197,8 @@ public class TestPaused
 
 	assertRunUntilStop ("XXX: run until?");
 
-	assertEquals ("TaskCreatedEvents received = 3", 3,
-		      t.taskCreatedCount);
-	assertEquals ("Forced StopTaskEvents received = 3", 3,
-		      t.taskStopCount);
-	assertEquals ("No TaskDestroyedEvents received", 0,
-		      t.taskDestroyedCount);
+	assertEquals ("task created count", 3, t.taskCreatedCount);
+	assertEquals ("forced task stop count", 3, t.taskStopCount);
+	assertEquals ("task destroyed count", 0, t.taskDestroyedCount);
     }
 }

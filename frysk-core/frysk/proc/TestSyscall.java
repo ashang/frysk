@@ -56,6 +56,7 @@ public class TestSyscall
     // Timers, observers, counters, etc.. needed for the test.
     class TestSyscallInternals {
 	volatile int syscallTaskEventCount;
+	// XXX: Should be a boolean
 	volatile int syscallState;
 	volatile boolean exited;
 	volatile int exitedTaskEventStatus;
@@ -130,10 +131,9 @@ public class TestSyscall
 
  	assertRunUntilStop ("run \"syscalls\" until exit");
 
-	assertTrue ("At least 8 syscall events received",
+	assertTrue ("syscall events received >= 8",
 		    t.syscallTaskEventCount >= 8);
-	assertTrue ("Number of syscall events is even",
-		    t.syscallState == 0);
-	assertTrue ("Process exited", t.exited);
+	assertEquals ("syscall events", 0, t.syscallState);
+	assertTrue ("process exited", t.exited);
     }
 }

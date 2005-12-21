@@ -73,7 +73,7 @@ public class TestLib
      */
     static void assertRunUntilStop (String reason)
     {
-	assertTrue ("Event loop run was explictly stopped (" + reason + ")",
+	assertTrue ("event loop run explictly stopped (" + reason + ")",
 		    Manager.eventLoop.runPolling (5000));
     }
 
@@ -498,8 +498,7 @@ public class TestLib
 						    boolean coreDumped)
 			    {
 				// Termination with signal is ok.
-				assertTrue ("terminated with signal",
-					    signal);
+				assertTrue ("terminated with signal", signal);
 			    }
 			});
 		}
@@ -1002,7 +1001,8 @@ public class TestLib
      */
     protected final void registerChild (int child)
     {
-	assertTrue ("child is not process 1", child != 1);
+	// Had better not try to register process one.
+	assertFalse ("child is process one", child == 1);
 	children.add (new Integer (child));
     }
 

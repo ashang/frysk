@@ -68,10 +68,12 @@ public class TestTasksObserver extends TestLib {
 		}
 	    });
 
-	assertRunUntilStop("Running to attach");
-	assertEquals("Task Added Count ", 0, observerTester.taskAddedCount);
-	assertEquals("Task Removed Count ", 0, observerTester.taskRemovedCount);
-	assertEquals("Existing Task Count ", 4, observerTester.existingTaskCount);
+	assertRunUntilStop ("running to attach");
+	assertEquals ("task added count", 0, observerTester.taskAddedCount);
+	assertEquals ("task removed count", 0,
+		      observerTester.taskRemovedCount);
+	assertEquals ("existing task count", 4,
+		      observerTester.existingTaskCount);
 		
     }
 	

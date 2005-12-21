@@ -76,7 +76,7 @@ public class TestStopAndGo
 		Task task = (Task) obj;
 		if (task.proc.getPid () != pid)
 		    return;
-		assertEquals ("No terminated events before task creation", 0,
+		assertEquals ("task destroyed count before task creation", 0,
 			      taskDestroyedCount);
 		taskCreatedCount++;
 		if (task.id.hashCode () == task.proc.id.hashCode ()) {
@@ -185,15 +185,11 @@ public class TestStopAndGo
                                                                                 
 	assertRunUntilStop ("XXX: run until?");
 
-	assertEquals ("Task created events received = 3", 3,
-		      tsag.taskCreatedCount);
-	assertEquals ("StopTimerEvents = 2", 2,
-		      tsag.stopTimerEventCount);
-	assertEquals ("One GoTimerEvent triggered", 1,
-		      tsag.goTimerEventCount);
-	assertEquals ("Forced stop task events = 6", 6,
-		      tsag.taskStopCount);
-	assertEquals ("No task destroyed events received", 0,
+	assertEquals ("task created events", 3, tsag.taskCreatedCount);
+	assertEquals ("stop timer events", 2, tsag.stopTimerEventCount);
+	assertEquals ("GoTimerEvent triggered", 1, tsag.goTimerEventCount);
+	assertEquals ("forced stop task events", 6, tsag.taskStopCount);
+	assertEquals ("task destroyed events received", 0,
 		      tsag.taskDestroyedCount);
     }
 }

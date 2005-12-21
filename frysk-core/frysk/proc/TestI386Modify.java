@@ -102,19 +102,19 @@ public class TestI386Modify
 		if (syscallNum == 20) { 
 		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    ebx = isa.ebx.get (task);
-		    assertEquals ("EBX is 22", 22, ebx);
+		    assertEquals ("ebx register", 22, ebx);
 		    ecx = isa.ecx.get (task);
-		    assertEquals ("ECX is 23", 23, ecx);
+		    assertEquals ("ecx register", 23, ecx);
 		    // edx contains address of memory location we
 		    // are expected to write 8 to
 		    edx = isa.edx.get (task);
 		    int mem = task.memory.getInt (edx);
-		    assertEquals ("Old mem value is 3", 3, mem);
+		    assertEquals ("old mem value", 3, mem);
 		    task.memory.putInt (edx, 8);
 		    mem = task.memory.getInt (edx);
-		    assertEquals ("New mem value is 8", 8, mem);
+		    assertEquals ("new mem value", 8, mem);
 		    ebp = isa.ebp.get (task);
-		    assertEquals ("ebp is 21", 21, ebp);
+		    assertEquals ("ebp register", 21, ebp);
 		    // esi contains the address we want to jump to
 		    // when we return from the syscall
 		    esi = isa.esi.get (task);
@@ -129,7 +129,7 @@ public class TestI386Modify
 		else if (syscallNum == 1) {
 		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    ebx = isa.ebx.get (task);
-		    assertEquals ("Exit code 2", 2, ebx);
+		    assertEquals ("exit code", 2, ebx);
 		    exitSyscall = true;
 		}
 		return Action.CONTINUE;
@@ -203,8 +203,8 @@ public class TestI386Modify
 	assertRunUntilStop ("run \"x86modify\" to exit");
 
 	if (t.ia32Isa) {
-	    assertTrue ("Proc destruction confirmed", t.exited);
-	    assertTrue ("Exit syscall found", t.exitSyscall);
+	    assertTrue ("proc exited", t.exited);
+	    assertTrue ("exit syscall found", t.exitSyscall);
 	}
    }
 }

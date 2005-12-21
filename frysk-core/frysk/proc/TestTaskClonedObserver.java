@@ -87,7 +87,7 @@ public class TestTaskClonedObserver
  	Fibonacci fib = new Fibonacci (fibCount);
 	// The first task, included in fib.callCount isn't included in
 	// the clone count.
-	assertEquals ("Number of clones", fib.callCount - 1,
+	assertEquals ("number of clones", fib.callCount - 1,
 		      cloneCounter.count);
     }
 }

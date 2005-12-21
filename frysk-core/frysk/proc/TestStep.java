@@ -88,7 +88,7 @@ public class TestStep
 		if (!isChildOfMine (task.proc))
 		    return;
 		registerChild (task.getTid ());
-		assertEquals ("No terminated event before task creation", 0,
+		assertEquals ("task destroyed count before task creation", 0,
 			      taskDestroyedCount);
 		taskCreatedCount++;
 		if (task.id.hashCode () == task.proc.id.hashCode ())
@@ -218,13 +218,9 @@ public class TestStep
 
 	assertRunUntilStop ("run \"infThreadLoop\" until exit");
 
-	assertEquals ("Task created events = 3", 3,
-		      t.taskCreatedCount);
-	assertTrue ("At least 3 stop events received",
-		    t.taskStopCount >= 3);
-	assertTrue ("At least 5 loops occurred",
-		    t.stepEventMatchCount >= 5);
-	assertEquals ("No task destroyed events", 0,
-		      t.taskDestroyedCount);
+	assertEquals ("task created events", 3, t.taskCreatedCount);
+	assertTrue ("stop events received >= 3", t.taskStopCount >= 3);
+	assertTrue ("loops count >= 5", t.stepEventMatchCount >= 5);
+	assertEquals ("task destroyed events", 0, t.taskDestroyedCount);
     }
 }

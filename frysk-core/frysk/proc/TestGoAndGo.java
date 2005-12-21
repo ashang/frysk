@@ -81,7 +81,7 @@ public class TestGoAndGo
 		Task task = (Task) obj;
 		if (task.proc.getPid () != pid)
 		    return;
-		assertEquals ("No termination events before task creation", 0,
+		assertEquals ("task destroyed count before task create", 0,
 			      taskDestroyedCount);
 		taskCreatedCount++;
 		if (task.id.hashCode () == task.proc.id.hashCode ()) {
@@ -108,7 +108,7 @@ public class TestGoAndGo
 	    public Action updateTerminated (Task task, boolean signal,
 					    int value)
 	    {
-		assertTrue ("a signal", signal);
+		assertTrue ("terminated by signal", signal);
 		taskDestroyedCount++;
 		return Action.CONTINUE;
 	    }
@@ -193,15 +193,10 @@ public class TestGoAndGo
 
 	assertRunUntilStop ("XXX: run until?");
 
-	assertEquals ("Task creation events = 3", 3,
-		      t.taskCreatedCount);
-	assertEquals ("Two stop timer events triggered", 2,
-		      t.stopTimerEventCount);
-	assertEquals ("Only 1 go timer event", 1,
-		      t.goTimerEventCount);
-	assertEquals ("Forced stop events = 6", 6,
-		      t.taskStopCount);
-	assertEquals ("No task destroyed events", 0,
-		      t.taskDestroyedCount);
+	assertEquals ("task creation events", 3, t.taskCreatedCount);
+	assertEquals ("stop timer events", 2, t.stopTimerEventCount);
+	assertEquals ("timer events", 1, t.goTimerEventCount);
+	assertEquals ("forced stop events", 6, t.taskStopCount);
+	assertEquals ("task destroyed events", 0, t.taskDestroyedCount);
     }
 }

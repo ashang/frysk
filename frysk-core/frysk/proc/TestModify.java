@@ -198,6 +198,6 @@ public class TestModify
 
 	assertRunUntilStop ("run \"modify\" to exit");
 
-	assertTrue ("Proc successful exit confirmed", t.exited);
+	assertTrue ("proc exit confirmed", t.exited);
    }
 }

@@ -57,6 +57,7 @@ public class TestSyscall2
     class TestSyscall2Internals {
 	volatile int stoppedTaskEventCount;
 	volatile int syscallTaskEventCount;
+	// XXX: Should be a boolean!
 	volatile int syscallState;
 	volatile boolean exited;
 	volatile int exitedTaskEventStatus;
@@ -132,9 +133,9 @@ public class TestSyscall2
 
  	assertRunUntilStop ("run \"syscallloop\" until exit");
 
- 	assertTrue ("Enough syscall task events",
+ 	assertTrue ("enough syscall task events",
  		    t.syscallTaskEventCount >= Integer.parseInt (arg));
- 	assertEquals ("Even number of syscall events", 0, t.syscallState);
- 	assertTrue ("Exited", t.exited);
+ 	assertEquals ("syscall state", 0, t.syscallState);
+ 	assertTrue ("exited", t.exited);
     }
 }

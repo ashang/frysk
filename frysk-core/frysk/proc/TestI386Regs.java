@@ -173,16 +173,16 @@ public class TestI386Regs
  	assertRunUntilStop ("run \"x86regs\" until exit");
 
 	if (t.ia32Isa) {
-	    assertEquals ("orig_eax = 1", 1, t.orig_eax);
-	    assertEquals ("ebx = 2", 2, t.ebx);
-	    assertEquals ("ecx = 3", 3, t.ecx);
-	    assertEquals ("edx = 4", 4, t.edx);
-	    assertEquals ("ebp = 5", 5, t.ebp);
-	    assertEquals ("esi = 6", 6, t.esi);
-	    assertEquals ("edi = 7", 7, t.edi);
-	    assertEquals ("esp = 8", 8, t.esp);
+	    assertEquals ("orig_eax register", 1, t.orig_eax);
+	    assertEquals ("ebx register", 2, t.ebx);
+	    assertEquals ("ecx register", 3, t.ecx);
+	    assertEquals ("edx register", 4, t.edx);
+	    assertEquals ("ebp register", 5, t.ebp);
+	    assertEquals ("esi register", 6, t.esi);
+	    assertEquals ("edi register", 7, t.edi);
+	    assertEquals ("esp register", 8, t.esp);
 
-            assertTrue ("Exited", t.exited);
+            assertTrue ("exited", t.exited);
 	}
     }
 }

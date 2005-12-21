@@ -81,8 +81,8 @@ public class TestStop
 		if (task.proc.getPid () != pid)
 		    return;
 		registerChild (task.getTid ());
-	    	assertEquals ("No terminated events before task creation", 0,
-		  		  taskDestroyedCount);
+	    	assertEquals ("task destroyed events before task creation", 0,
+			      taskDestroyedCount);
 	        taskCreatedCount++;
 	    	if (task.id.id == task.proc.id.id)
 		    mainTask = task;
@@ -185,11 +185,8 @@ public class TestStop
 
 	assertRunUntilStop ("XXX: run until?");
 
-	assertEquals ("Task created events = 3", 3,
-		      ts.taskCreatedCount);
-	assertEquals ("Stop events received = 3", 3,
-		      ts.taskStopCount);
-	assertEquals ("No task destroyed events", 0,
-		      ts.taskDestroyedCount);
+	assertEquals ("task created events", 3, ts.taskCreatedCount);
+	assertEquals ("stop events received", 3, ts.taskStopCount);
+	assertEquals ("task destroyed events", 0, ts.taskDestroyedCount);
     }
 }

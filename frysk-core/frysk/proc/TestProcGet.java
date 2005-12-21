@@ -83,7 +83,7 @@ public class TestProcGet
 
 	assertRunUntilStop ("run \"auxv\" to completion");
 
-	assertNotNull ("AUXV successfully captured", captureAuxv.auxv);
+	assertNotNull ("captured AUXV", captureAuxv.auxv);
 	Auxv[] auxv = captureAuxv.auxv;
 
 	// Compare the AUXV as printed against that extracted using
@@ -97,12 +97,10 @@ public class TestProcGet
 		reader.skipWhitespace ();
 		long val = reader.readDecimalLong ();
 		reader.skipWhitespace ();
-		assertEquals ("auxv[" + i + "].type",
-			      type, auxv[i].type);
-		assertEquals ("auxv[" + i + "].val",
-			      val, auxv[i].val);
+		assertEquals ("auxv[" + i + "].type", type, auxv[i].type);
+		assertEquals ("auxv[" + i + "].val", val, auxv[i].val);
 	    }
-	    assertTrue ("Read the entire AUXV file", reader.endOfFile ());
+	    assertTrue ("reached AUXV end-of-file", reader.endOfFile ());
 	}
 	catch (Exception e) {
 	    throw new RuntimeException (e);
@@ -117,7 +115,7 @@ public class TestProcGet
     {
 	Child child = new AckDaemonProcess ();
 	Proc childProc = child.findProcUsingRefresh ();
-	assertEquals ("Child's name", "child",
+	assertEquals ("value of child's getCommand()", "child",
 		      childProc.getCommand ());
     }
 

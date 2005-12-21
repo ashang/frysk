@@ -272,10 +272,8 @@ public class TestUnpaused
 
 	assertRunUntilStop ("XXX: run until?");
 
-	assertEquals ("TaskCreatedEvents received = 3", 3,
-		      tu.taskCreatedCount);
-	assertEquals ("Forced StopTaskEvents", 3, tu.taskStopCount);
-	assertEquals ("No TaskDestroyedEvents received", 0,
-		      tu.taskDestroyedCount);
+	assertEquals ("task created count", 3, tu.taskCreatedCount);
+	assertEquals ("forced task stop count", 3, tu.taskStopCount);
+	assertEquals ("task destroyed count", 0, tu.taskDestroyedCount);
     }
 }

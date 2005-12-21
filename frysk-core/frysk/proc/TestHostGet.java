@@ -55,16 +55,18 @@ public class TestHostGet
     public void testGetSelf ()
     {
 	Proc self = Manager.host.getSelf ();
-	assertSame ("self is a singleton", self, Manager.host.getSelf ());
-	assertEquals ("process id", self.getPid (), Pid.get ());
+	// Self is a singleton.
+	assertSame ("value from host.getSelf", self, Manager.host.getSelf ());
+	assertEquals ("self's process id", self.getPid (), Pid.get ());
 	Proc proc = self;
 	int level = 0;
 	while (proc.getParent () != null) {
-	    assertTrue ("non-root process pid is not 1", 1 != proc.getPid ());
+	    // Non-root processes can't have a PID of 1.
+	    assertFalse ("is process one", 1 == proc.getPid ());
 	    proc = proc.getParent ();
-	    assertTrue ("reasonable number of levels", 100 > level);
+	    assertTrue ("within tree level limit", 100 > level);
 	    level++;
 	}
-	assertEquals ("root process pid", 1, proc.getPid ());
+	assertTrue ("is process one", 1 == proc.getPid ());
     }
 }

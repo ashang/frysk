@@ -160,11 +160,11 @@ public class TestSyscallOpen
 
  	assertRunUntilStop ("run \"syscalls\" until exit");
 	
-	assertTrue ("At least 8 syscall events received",
+	assertTrue ("syscall events received >= 8",
 		    t.syscallTaskEventCount >= 8); 
-	assertFalse ("Syscall state is initial state", t.inSyscall);
-	assertTrue ("Attempt to open a.file", t.testFileOpened);
-	assertTrue ("Open of a.file failed", t.expectedRcFound);
-	assertTrue ("Process exited", t.exited);
+	assertFalse ("in syscall", t.inSyscall);
+	assertTrue ("attempt to open a.file", t.testFileOpened);
+	assertTrue ("open of a.file failed", t.expectedRcFound);
+	assertTrue ("process exited", t.exited);
     }
 }

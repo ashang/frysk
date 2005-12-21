@@ -125,7 +125,7 @@ public class TestRefresh
 	Manager.eventLoop.runPending ();
 	
 	// Check that it isn't empty.
-	assertTrue ("Host.procPool non-empty",
+	assertTrue ("host.procPool non-empty",
 		    Manager.host.procPool.size () > 0);
 
 	// Create a suspended sub-process, and wait for it to start.
@@ -214,7 +214,7 @@ public class TestRefresh
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
-	    assertEquals ("Task " + task + " state", "unattached",
+	    assertEquals ("task " + task + " state", "unattached",
 			  task.getStateString ());
  	}
 	assertEquals ("tasks removed by refresh after kills",
@@ -271,14 +271,14 @@ public class TestRefresh
 	ChildTracker tracker = new ChildTracker (new DetachedAckProcess ());
 	Manager.host.requestRefresh ();
 	Manager.eventLoop.runPending ();
-	tracker.verifyAdd ("Find child", 0);
+	tracker.verifyAdd ("find child", 0);
 	
 	// Find this process.
 	Proc me = Manager.host.getProc (new ProcId (Pid.get ()));
-	assertNotNull ("This process found", me);
+	assertNotNull ("this process", me);
 
-	assertEquals ("This process is the parent",
-		      me, tracker.proc.getParent ());
+	assertSame ("this process and child's parent",
+		    me, tracker.proc.getParent ());
 	// Don't check for tracker.child being the only process; other
 	// tests may have corrupted things leaving this process with
 	// other children.
@@ -298,11 +298,11 @@ public class TestRefresh
 	// Do a refresh, find the zombie maker, check it has one child
 	// process, save it.
 	Proc zombieParent = zombie.findProcUsingRefresh ();
-	assertEquals ("Zombie maker has one child",
+	assertEquals ("zombie maker has one child",
 		      1, zombieParent.getChildren ().size ());
 	Proc zombieChild = (Proc) zombieParent.getChildren ().getFirst ();
-	assertSame ("Is child of zombie",
-		      zombieChild.getParent (), zombieParent);
+	assertSame ("zombie and zombie child's parent",
+		    zombieChild.getParent (), zombieParent);
 	Proc procOne = Manager.host.getProc (new ProcId (1));
 
 	// Blow away the parent, this turns the child into a daemon,
@@ -311,13 +311,13 @@ public class TestRefresh
 	zombie.fryParent ();
 	Manager.host.requestRefresh ();
 	Manager.eventLoop.runPending ();
-	assertNotSame ("Child's parent and zombie maker",
+	assertNotSame ("child's parent and zombie maker",
 		       zombieChild.getParent (), zombieParent);
-	assertSame ("Child's parent and process 1",
+	assertSame ("child's parent and process 1",
 		    zombieChild.getParent (), procOne);
-	assertTrue ("Process 1 includes child",
+	assertTrue ("process 1 includes child",
 		    procOne.getChildren ().contains (zombieChild));
-	assertEquals ("Count of children of dead zombie parent",
+	assertEquals ("count of children of dead zombie parent",
 		      0, zombieParent.getChildren ().size ());
 	// XXX: What about notification.
     }
@@ -339,12 +339,12 @@ public class TestRefresh
 	// the zombie maker, check that it's child has one task and no
 	// processes.
 	Proc zombieParent = zombie.findProcUsingRefresh (true);
-	assertEquals ("Zombie maker has one child",
-		      1, zombieParent.getChildren ().size ());
+	assertEquals ("zombie maker child count", 1,
+		      zombieParent.getChildren ().size ());
 	Proc zombieChild = (Proc) zombieParent.getChildren ().getFirst ();
-	assertEquals ("Zombie child has one task",
-		      1, zombieChild.taskPool.size ());
-	assertEquals ("Zombie child has no processes",
+	assertEquals ("zombie child task count", 1,
+		      zombieChild.taskPool.size ());
+	assertEquals ("zombie child process count",
 		      0, zombieChild.getChildren ().size ());
 
 	// Turn the zombie-child into a true zombie, check things are
@@ -352,13 +352,13 @@ public class TestRefresh
 	zombie.zombieFork ();
 	Manager.host.requestRefresh (true);
 	Manager.eventLoop.runPending ();
- 	assertEquals ("Zombie maker has one child",
+ 	assertEquals ("zombie maker child count",
  		      1, zombieParent.getChildren ().size ());
-	assertEquals ("Zombie child has zero tasks",
+	assertEquals ("Zombie child task count",
 		      0, zombieChild.taskPool.size ());
-	assertEquals ("Zombie child has no processes",
+	assertEquals ("Zombie child process count",
 		      0, zombieChild.getChildren ().size ());
-	assertSame ("Zombie parent of child",
+	assertSame ("zombie and zombie's child's parent",
 		    zombieParent, zombieChild.getParent ());
     }
 }

@@ -55,7 +55,7 @@ public class TestRun
     public void testCreateAttachedContinuedProc ()
     {
 	TmpFile tmpFile = new TmpFile ();
-	assertNotNull ("Temporary file created", tmpFile);
+	assertNotNull ("temporary file", tmpFile);
 
 	// Add an observer that counts the number of proc create
 	// events.

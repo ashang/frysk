@@ -224,10 +224,10 @@ public class TestSyscallInterrupt
 	    = new TestSyscallInterruptInternals (prc.getPid ());
 
  	assertRunUntilStop ("run \"syscallint\" until exit");
-	assertTrue ("Process exited", t.exited);
-	assertEquals ("Read enter events", 1, t.readEnter);
-	assertEquals ("Read exit events", 1, t.readExit);
-	assertEquals ("Sigusr1 events", 1, t.sigusr1Count);
+	assertTrue ("process exited", t.exited);
+	assertEquals ("read enter events", 1, t.readEnter);
+	assertEquals ("read exit events", 1, t.readExit);
+	assertEquals ("SIGUSR1 events", 1, t.sigusr1Count);
     }
 
     public void testSyscallInterruptRestart ()
@@ -238,9 +238,9 @@ public class TestSyscallInterrupt
 	    = new TestSyscallInterruptInternals (prc.getPid ());
 
  	assertRunUntilStop ("run \"syscallint\" with restart until exit");
-	assertTrue ("Process exited", t.exited);
-	assertEquals ("Restart read enter events", 2, t.readEnter);
-	assertEquals ("Restart read exit events", 2, t.readExit);
-	assertEquals ("Restart sigusr1 events", 1, t.sigusr1Count);
+	assertTrue ("process exited", t.exited);
+	assertEquals ("restart read enter events", 2, t.readEnter);
+	assertEquals ("restart read exit events", 2, t.readExit);
+	assertEquals ("restart sigusr1 events", 1, t.sigusr1Count);
     }
 }

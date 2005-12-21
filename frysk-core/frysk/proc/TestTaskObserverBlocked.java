@@ -370,8 +370,8 @@ public class TestTaskObserverBlocked
 	    assertEquals ("number of times spawnObserver deleted",
 			  0, deletedCount);
 	    assertEquals ("Number of spawns", fib.callCount - 1, spawnCount);
-	    assertTrue ("Child exited", childRemoved.p);
-	    assertTrue ("At least two iterations of the spawn loop",
+	    assertTrue ("child exited", childRemoved.p);
+	    assertTrue ("at least two iterations of the spawn loop",
 			loopCount > 2);
 	}
     }
