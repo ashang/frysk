@@ -41,7 +41,6 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import frysk.sys.XXX;
 
 /**
  * Check that tasks can be manually stopped and restarted.
@@ -177,12 +176,11 @@ public class TestStopAndGo
 
     public void testStopAndGo ()
     {
-	// Create threaded infinite loop
-	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChildXXX (pid);
-	TestStopAndGoInternals tsag = new TestStopAndGoInternals (pid);
+	Child child = new AckDaemonProcess (2, true);
+	TestStopAndGoInternals tsag
+	    = new TestStopAndGoInternals (child.getPid ());
 	child.findProcUsingRefresh ().requestAttachedContinue ();
-                                                                                
+
 	assertRunUntilStop ("XXX: run until?");
 
 	assertEquals ("task created events", 3, tsag.taskCreatedCount);

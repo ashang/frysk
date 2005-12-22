@@ -1,3 +1,8 @@
+2005-12-21  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/child.c: Implement --wait=busy-loop, and --wait=suspend
+	options.
+
 2005-12-15  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/zombie.c: Delete, no longer used.

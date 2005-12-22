@@ -41,7 +41,6 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import frysk.sys.XXX;
 
 /**
  * Check that a running program can handle extraneous go requests.
@@ -185,10 +184,8 @@ public class TestGoAndGo
 
     public void testGoAndGo ()
     {
-	// Create threaded infinite loop
-	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChildXXX (pid);
-	TestGoAndGoInternals t = new TestGoAndGoInternals (pid);
+	Child child = new AckDaemonProcess (2, true);
+	TestGoAndGoInternals t = new TestGoAndGoInternals (child.getPid ());
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 
 	assertRunUntilStop ("XXX: run until?");

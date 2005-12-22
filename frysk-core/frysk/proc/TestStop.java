@@ -41,7 +41,6 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import frysk.sys.XXX;
 
 /**
  * Check that tasks of a process can be manually stopped.
@@ -177,10 +176,8 @@ public class TestStop
 
     public void testStop ()
     {
-	// Create threaded infinite loop
-	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChildXXX (pid);
-	TestStopInternals ts = new TestStopInternals (pid);
+	Child child = new AckDaemonProcess (2, true);
+	TestStopInternals ts = new TestStopInternals (child.getPid ());
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 
 	assertRunUntilStop ("XXX: run until?");

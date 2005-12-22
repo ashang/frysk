@@ -344,10 +344,11 @@ public class TestLib
 	static final int delForkSig = Sig.INT;
 	static final int zombieForkSig = Sig.URG;
 	static final int execSig = Sig.PWR;
-	AckProcess (int ack, String[] argv)
+	private AckProcess (int ack, String[] argv)
 	{
 	    super (ack, argv);
 	}
+	/** Create an ack process.  */
 	AckProcess ()
 	{
 	    this (childAck, new String[]
@@ -360,9 +361,35 @@ public class TestLib
 		    Integer.toString (Pid.get ()),
 		});
 	}
+	/**
+	 * Create an AckProcess; if BUSY, the process will use a
+	 * busy-loop, instead of suspending, when waiting for signal
+	 * commands.
+	 */
+	AckProcess (boolean busy)
+	{
+	    this (childAck, new String[]
+		{
+		    "./prog/kill/child",
+		    busy ? "--wait=busy-loop" : "--wait=suspend",
+		    "20",
+		    // Use getpid as this testsuite always runs the
+		    // event loop from the main thread (which has
+		    // tid==pid).
+		    Integer.toString (Pid.get ()),
+		});
+	}
+	/** Create an AckProcess, and then add COUNT threads.  */
 	AckProcess (int count)
 	{
 	    this ();
+	    for (int i = 0; i < count; i++)
+		addClone ();
+	}
+	/** Create a possibly busy AckProcess.  Add COUNT threads.  */
+	AckProcess (int count, boolean busy)
+	{
+	    this (busy);
 	    for (int i = 0; i < count; i++)
 		addClone ();
 	}
@@ -418,7 +445,17 @@ public class TestLib
 	    ack.await ();
 	}
 	/**
-	 * Perform an exec.
+	 * Request that TID (assumed to be a child) perform an exec
+	 * call.
+	 */
+	void exec (int tid)
+	{
+	    AckHandler ack = new AckHandler (childAck);
+	    Signal.tkill (tid, execSig);
+	    ack.await ();
+	}
+	/**
+	 * Request that the main task perform an exec.
 	 */
 	void exec ()
 	{
@@ -457,6 +494,10 @@ public class TestLib
 	AckDaemonProcess (int count)
 	{
 	    super (count);
+	}
+	AckDaemonProcess (int count, boolean busy)
+	{
+	    super (count, busy);
 	}
     }
 

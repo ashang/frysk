@@ -41,7 +41,6 @@ package frysk.proc;
 
 import java.util.Observer;
 import java.util.Observable;
-import frysk.sys.XXX;
 
 /**
  * Check that task can be stopped and that extraneous stop requests
@@ -188,9 +187,9 @@ public class TestStopAndStop
 	
     public void testStopAndStop ()
     {
-	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChildXXX (pid);
-	TestStopAndStopInternals t = new TestStopAndStopInternals (pid);
+	Child child = new AckDaemonProcess (2, true);
+	TestStopAndStopInternals t
+	    = new TestStopAndStopInternals (child.getPid ());
 	
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 

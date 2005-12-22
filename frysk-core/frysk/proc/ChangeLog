@@ -1,5 +1,16 @@
 2005-12-21  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Add .AckProcess and .AckDaemonProcess constructors
+	that take a boolean busy parameter to enable use of busy waits.
+	* TestUnpaused.java: Use .AckDaemonProcess instead of
+	XXX.infThreadLoop.
+	* TestGoAndGo.java: Ditto.
+	* TestPaused.java: Ditto.
+	* TestStop.java: Ditto.
+	* TestStopAndGo.java: Ditto.
+	* TestStopAndStop.java: Ditto.
+	* TestUnpaused.java: Ditto.
+	
 	* TestLib.java: Rename .PidChild to .PidChildXXX.
 	* TestUnpaused.java: Update.
 	* TestStop.java: Update.

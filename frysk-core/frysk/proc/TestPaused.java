@@ -43,7 +43,6 @@ import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
-import frysk.sys.XXX;
 
 /**
  * Check that a task will go into paused state.  This occurs when a
@@ -190,9 +189,8 @@ public class TestPaused
     public void testPaused ()
     {
 	// Create threaded infinite loop
-	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChildXXX (pid);
-	TestPausedInternals t = new TestPausedInternals (pid);
+	Child child = new AckDaemonProcess (2, true);
+	TestPausedInternals t = new TestPausedInternals (child.getPid ());
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 
 	assertRunUntilStop ("XXX: run until?");

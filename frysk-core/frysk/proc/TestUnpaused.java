@@ -43,7 +43,6 @@ import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
-import frysk.sys.XXX;
 
 /**
  * Check that if a task is requested to stop and receives a natural
@@ -265,9 +264,8 @@ public class TestUnpaused
 	
     public void testUnpaused ()
     {
-	int pid = XXX.infThreadLoop (2);
-	Child child = new PidChildXXX (pid);
-	TestUnpausedInternals tu = new TestUnpausedInternals (pid);
+	Child child = new AckDaemonProcess (2, true);
+	TestUnpausedInternals tu = new TestUnpausedInternals (child.getPid ());
 	child.findProcUsingRefresh ().requestAttachedContinue ();
 
 	assertRunUntilStop ("XXX: run until?");

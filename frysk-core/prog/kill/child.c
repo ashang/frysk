@@ -57,34 +57,45 @@ _syscall0(pid_t,gettid);
 _syscall2(int, tkill, pid_t, tid, int, sig);
 
 
+
 static void usage ()
 {
   printf ("\
 Usage:\n\
-\t<sleep> [ <pid> ]\n\
+  child [ --wait=busy-loop | --wait=suspend ] <sleep> [ <pid> ]\n\
 Where:\n\
-\t<sleep>          Number of seconds that the program should sleep before\n\
-\t                 exiting.\n\
-\t<pid>            Manager process to send task acknowledgments to.\n\
+  --wait=busy-loop\n\
+               Use a busy-loop loop, instead of sigsuspend when\n\
+               waiting for a signal.\n\
+  --wait=suspend\n\
+               Use the blocking sigsuspend call when waiting for\n\
+               a signal. (default)\n\
+  <sleep>      Number of seconds that the program should sleep\n\
+               before exiting.\n\
+  <pid>        Manager process to send task acknowledgments to.\n\
 Operation:\n\
-\tEach task, once started, sends <pid> a SIGUSR1 notification, and then\n\
-\twaits <sleep> seconds for signal commands.  Valid signal commands are:\n\
-\t\tSIGUSR1: Add a clone\n\
-\t\tSIGUSR2: Delete a fork\n\
-\t\tSIGHUP: Add a fork\n\
-\t\tSIGINT: Delete a fork\n\
-\t\tSIGURG: Terminate a fork; results in a child zombie\n\
-\t\tSIGALRM: Exit.\n\
-\t\tSIGPWR: Re-exec this program\n\
-\t\tSIGPIPE: (internal) Parent exited event (child notifies with SIGUSR1).\n\
-\t\tSIGCHLD: (internal) Child exited event.\n\
-\tFor any operation, the parent also acks by sending a SIGUSR2\n\
+  Each task, once started, sends <pid> a SIGUSR1 notification, and\n\
+  then waits for and processes signal requests.  After <sleep> seconds\n\
+  the program will exit.  Valid signal commands are:\n\
+    SIGUSR1:   Add a clone\n\
+    SIGUSR2:   Delete a fork\n\
+    SIGHUP:    Add a fork\n\
+    SIGINT:    Delete a fork\n\
+    SIGURG:    Terminate a fork; results in a child zombie\n\
+    SIGALRM:   Exit.\n\
+    SIGPWR:    Re-exec this program\n\
+    SIGPIPE:   (internal) Parent exited event (child notifies with SIGUSR1).\n\
+    SIGCHLD:   (internal) Child exited event.\n\
+  For any operation, the parent also acks by sending a SIGUSR2\n\
 ");
 }
+
 
+
 const int CHILD_SIG = SIGUSR1;
 const int PARENT_SIG = SIGUSR2;
 pid_t manager_tid;
+
 static void
 notify_manager (int sig)
 {
@@ -99,13 +110,17 @@ notify_manager (int sig)
     }
   }
 }
+
 
+
+// The per-TID tiddle, in addition to space to store the TID's last
+// signal, contains space for the TID's created threads and forks.
 
 #define MAX_PIDS 100
 struct tiddle {
   pid_t pid;
   pid_t tid;
-  int sig;
+  volatile int sig;
   int nr_threads;
   pthread_t threads[MAX_PIDS];
   int nr_forks;
@@ -147,6 +162,11 @@ struct tiddle *new_tiddle ()
   abort ();
 }
 
+
+
+// Interrupt handler, attached to all relevant signals on all threads.
+// Save the interrupting signal in the TID's tiddle block.
+
 static void
 handler (int sig)
 {
@@ -155,20 +175,31 @@ handler (int sig)
   tiddle->sig = sig;
 }
 
+
+
+// Per-thread server, wait for a signal and then performs that
+// signal's corresponding action.
+
+int use_busy_wait = 0;
 int main_pid;
 char **main_argv;
 char **main_envp;
+sigset_t sigmask;
 
 void *
 server (void *np)
 {
+  // This task's tiddle.
   struct tiddle *tiddle = NULL;
-  // Action for a SIGCHLD: >0 -> waitpid and ack; <0 -> ack; ==0 ->
-  // discard.
+  // Action for a SIGCHLD:: >0: waitpid and ack; <0: ack; =0: discard.
   int sigchld_pid = 0;
- start:
-  // Find this tasks entry.
+
+  // Come here when ever a new process is created.
+ new_process:
+
+  // Find THIS tasks tiddle entry.
   tiddle = new_tiddle ();
+
   // If a child processes' main thread finds that it's parent exits,
   // get a SIGPIPE.
   if (main_pid != tiddle->pid) {
@@ -176,15 +207,24 @@ server (void *np)
       prctl (PR_SET_PDEATHSIG, SIGPIPE);
     }
   }
+
   // Signal that this new "child" task is ready.
   notify_manager (CHILD_SIG);
   printf ("+%d\n", (int) tiddle->tid);
+
   // handle any signals.
   while (1) {
     // Block waiting on a signal.
-    sigset_t mask;
-    sigemptyset (&mask);
-    sigsuspend (&mask);
+    if (use_busy_wait) {
+      sigprocmask (SIG_UNBLOCK, &sigmask, NULL);
+      while (tiddle->sig == 0);
+      sigprocmask (SIG_BLOCK, &sigmask, NULL);
+    }
+    else {
+      sigset_t empty_mask;
+      sigemptyset (&empty_mask);
+      sigsuspend (&empty_mask);
+    }
     // Now check the signal.
     int sig = tiddle->sig;
     tiddle->sig = 0;
@@ -225,7 +265,7 @@ server (void *np)
 	  perror ("fork");
 	  exit (1);
 	case 0: // child
-	  goto start;
+	  goto new_process;
 	  break;
 	default: // parent
 	  tiddle->forks[tiddle->nr_forks] = pid;
@@ -304,16 +344,29 @@ int
 main (int argc, char *argv[], char *envp[])
 {
   int n;
+  int argi;
 
-  if (argc < 2 || argc > 3)
-    {
-      usage ();
-      exit (1);
-    }
+  // Parse any arguments; do it on the cheap.
+  for (argi = 1; argi < argc; argi++) {
+    if (strcmp (argv[argi], "--wait=busy-loop") == 0)
+      use_busy_wait = 1;
+    else if (strcmp (argv[argi], "--wait=suspend") == 0)
+      use_busy_wait = 0;
+    else
+      break;
+  }
 
-  int sec = atol (argv[1]);
-  if (argc > 2)
-    manager_tid = atol (argv[2]);
+  // Sufficient parameters remaining?
+  printf ("argi %d\n", argi);
+  if (argc - argi > 2 || argc - argi < 1) {
+    usage ();
+    exit (1);
+  }
+
+  int sec = atol (argv[argi + 0]);
+  if (argc - argi > 1)
+    manager_tid = atol (argv[argi + 1]);
+
   main_pid = getpid ();
   main_argv = argv;
   main_envp = envp;
@@ -322,21 +375,23 @@ main (int argc, char *argv[], char *envp[])
   setbuf (stdout, NULL);
   printf ("%d\n", getpid ());
 
-  // Set up a signal handlers that will either add or release one
-  // thread.  For each mask out the others signals.  Make certain that
-  // the signals are not masked (don't ask, it appears that this
-  // process, when started via vfork / fork / exec, inherits the
-  // original processes mask).
+  // Create a signal-mask containing all the signals that this program
+  // is interested in; mask all those signals.
 
-  struct sigaction action;
-  memset (&action, 0, sizeof (action));
-  sigemptyset (&action.sa_mask);
+  sigemptyset (&sigmask);
   int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
-    sigaddset (&action.sa_mask, signals[i]);
+    sigaddset (&sigmask, signals[i]);
+  sigprocmask (SIG_BLOCK, &sigmask, NULL);
+
+  // Set up a signal handlers that will either add or release one
+  // thread.  For each mask out the others signals (found in SIGMASK).
+
+  struct sigaction action;
+  memset (&action, 0, sizeof (action));
   action.sa_handler = handler;
-  sigprocmask (SIG_BLOCK, &action.sa_mask, NULL);
+  action.sa_mask = sigmask;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaction (signals[i], &action, NULL);
 
