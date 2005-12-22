@@ -62,17 +62,21 @@ static void usage ()
 {
   printf ("\
 Usage:\n\
-  child [ --wait=busy-loop | --wait=suspend ] <sleep> [ <pid> ]\n\
+  child [ <options> ] <sleep> [ <pid> ]\n\
 Where:\n\
+  <sleep>      Number of seconds that the program should sleep\n\
+               before exiting.\n\
+  <pid>        Manager process to send task acknowledgments to.\n\
+And valid options are:\n\
   --wait=busy-loop\n\
                Use a busy-loop loop, instead of sigsuspend when\n\
                waiting for a signal.\n\
   --wait=suspend\n\
                Use the blocking sigsuspend call when waiting for\n\
                a signal. (default)\n\
-  <sleep>      Number of seconds that the program should sleep\n\
-               before exiting.\n\
-  <pid>        Manager process to send task acknowledgments to.\n\
+  --filename=<program>\n\
+               When performing an exec, execute <program> instead of\n\
+               argv[0].\n\
 Operation:\n\
   Each task, once started, sends <pid> a SIGUSR1 notification, and\n\
   then waits for and processes signal requests.  After <sleep> seconds\n\
@@ -182,6 +186,7 @@ handler (int sig)
 
 int use_busy_wait = 0;
 int main_pid;
+char *main_filename;
 char **main_argv;
 char **main_envp;
 sigset_t sigmask;
@@ -328,7 +333,19 @@ server (void *np)
       exit (0);
     case SIGPWR:
       {
-	execve (main_argv[0], main_argv, main_envp);
+	const int ARGN = 7;
+	char **argv = calloc (ARGN, sizeof (const char *));
+	asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
+	asprintf (&argv[1], "--wait=%s", use_busy_wait ? "busy-loop" : "suspend");
+	asprintf (&argv[2], "--filename=%s", main_filename);
+	int argi;
+	for (argi = 0; main_argv[argi] != NULL; argi++)
+	  argv[3 + argi] = main_argv[argi];
+	argv[3 + argi] = NULL;
+	if (ARGN <= 3 + argi) {
+	  abort ();
+	}
+	execve (main_filename, argv, main_envp);
 	// Any execve return is an error.
 	perror ("execve");
 	exit (errno);
@@ -345,31 +362,38 @@ main (int argc, char *argv[], char *envp[])
 {
   int n;
   int argi;
+  const char FILENAME_OPT[] = "--filename=";
+
+  main_filename = argv[0];
+  main_pid = getpid ();
+  main_argv = argv;
+  main_envp = envp;
+
+  for (argi = 0; argi < argc; argi++)
+    printf ("argv[%d]=%s\n", argi, argv[argi]);
 
   // Parse any arguments; do it on the cheap.
-  for (argi = 1; argi < argc; argi++) {
-    if (strcmp (argv[argi], "--wait=busy-loop") == 0)
+  for (main_argv++; *main_argv != NULL; main_argv++) {
+    if (strcmp (*main_argv, "--wait=busy-loop") == 0)
       use_busy_wait = 1;
-    else if (strcmp (argv[argi], "--wait=suspend") == 0)
+    else if (strcmp (*main_argv, "--wait=suspend") == 0)
       use_busy_wait = 0;
+    else if (strncmp (*main_argv, FILENAME_OPT, strlen (FILENAME_OPT)) == 0)
+      main_filename = *main_argv + strlen (FILENAME_OPT);
     else
       break;
   }
 
-  // Sufficient parameters remaining?
-  printf ("argi %d\n", argi);
-  if (argc - argi > 2 || argc - argi < 1) {
+  // Too few, too many, parameters?
+  if (argv + argc <= main_argv
+      || argv + argc > main_argv + 2) {
     usage ();
     exit (1);
   }
+  int sec = atol (main_argv[0]);
 
-  int sec = atol (argv[argi + 0]);
-  if (argc - argi > 1)
-    manager_tid = atol (argv[argi + 1]);
-
-  main_pid = getpid ();
-  main_argv = argv;
-  main_envp = envp;
+  if (main_argv[1] != NULL)
+    manager_tid = atol (main_argv[1]);
 
   // Disable buffering; tell the world the pid.
   setbuf (stdout, NULL);

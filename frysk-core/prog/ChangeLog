@@ -1,3 +1,8 @@
+2005-12-22  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/child.c: Implement --filename=<program> argument.  For
+	execve, argv[0] to PID:TID, and pass through --filename=, --wait=.
+
 2005-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/child.c: Implement --wait=busy-loop, and --wait=suspend
