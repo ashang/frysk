@@ -313,23 +313,6 @@ public class TestLib
     }
 
     /**
-     * Create a child object corresponding to an existing PID.
-     */
-    protected class PidChildXXX
-	extends Child
-    {
-	PidChildXXX (int pid)
-	{
-	    super (pid);
-	}
-	protected int startChild (String stdin, String stdout, String stderr,
-				  String[] argv)
-	{
-	    throw new RuntimeException ("should not be here");
-	}
-    }
-
-    /**
      * Create an ack-process that can be manipulated using various
      * signals (see below).
      */

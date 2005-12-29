@@ -1,3 +1,7 @@
+2005-12-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Delete .PidChildXXX.
+
 2005-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Add .AckProcess and .AckDaemonProcess constructors
