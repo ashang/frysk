@@ -102,6 +102,15 @@ samename/a.out: $(samename_FILES)
 		$(srcdir)/samename/SameName.java \
 		-o samename/a.out
 
+XFAIL_TESTS += packagename/a.out
+packagename_FILES = packagename/O.java
+EXTRA_DIST += $(packagename_FILES)
+packagename/a.out: $(packagename_FILES)
+	mkdir -p packagename
+	$(GCJ) -g --main=packagename.O \
+		$(srcdir)/packagename/O.java \
+		-o packagename/a.out
+
 # Compiling Werror with -Werror -Wall should get a warning and hence
 # abort the compilation.  At least GCC 4.0.1 20050727 (Red Hat
 # 4.0.1-5) does not abort, and consequently this test is marked as a

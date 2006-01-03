@@ -1,3 +1,8 @@
+2006-01-03  Andrew Cagney  <cagney@redhat.com>
+
+	* packagename/O.java: New file.  From Tom Tromey.
+	* Makefile.am (packagename/a.out): New target.
+
 2005-12-13  Stan Cox  <scox@multics.rdu.redhat.com>
 
 	* Makefile.am (process_FILES): add.
