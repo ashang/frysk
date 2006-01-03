@@ -42,6 +42,7 @@ webpages -a htdocs
 frysk-eclipse -a \
 	frysk-imports \
 	frysk-sys \
+	frysk-gtk \
 	frysk-core \
 	frysk-gui
 
@@ -49,6 +50,7 @@ frysk-eclipse -a \
 # directory.
 
 frysk-sys frysk-sys &frysk-common
+frysk-gtk frysk-gtk &frysk-common
 frysk-core frysk-core &frysk-common
 frysk-gui frysk-gui &frysk-common
 frysk-imports frysk-imports &frysk-common
@@ -65,6 +67,7 @@ frysk-common -d common frysk-common
 frysk -a \
 	frysk-build-top \
 	frysk-build-sys \
+	frysk-build-gtk \
 	frysk-build-core \
 	frysk-build-gui \
 	frysk-build-imports
@@ -74,6 +77,7 @@ frysk -a \
 
 frysk-build-top -d frysk frysk-top &frysk-common
 frysk-build-sys -d frysk/frysk-sys frysk-sys &frysk-common
+frysk-build-gtk -d frysk/frysk-gtk frysk-gtk &frysk-common
 frysk-build-core -d frysk/frysk-core frysk-core &frysk-common
 frysk-build-gui -d frysk/frysk-gui frysk-gui &frysk-common
 frysk-build-imports -d frysk/frysk-imports frysk-imports &frysk-common
