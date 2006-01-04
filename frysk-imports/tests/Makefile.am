@@ -61,7 +61,7 @@ logger/a.out: $(logger_FILES)
 
 # This fails on gcj 4, but passes on gcj 4.1.
 anoncall_FILES = anoncall/Anon.java
-XFAIL_TESTS += anoncall/a.out
+TESTS += anoncall/a.out
 EXTRA_DIST += $(anoncall_FILES)
 anoncall/a.out: $(anoncall_FILES)
 	mkdir -p anoncall
@@ -223,7 +223,7 @@ wrongclass_FILES = \
 	wrongclass/frysk/sys/Wait.java \
 	wrongclass/frysk/proc/LinuxHost.java
 EXTRA_DIST += $(wrongclass_FILES)
-XFAIL_TESTS += wrongclass/gcj.sh
+TESTS += wrongclass/gcj.sh
 wrongclass/gcj.sh: $(wrongclass_FILES)
 	mkdir -p wrongclass
 	echo $(GCJ) -C \

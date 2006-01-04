@@ -1,5 +1,8 @@
 2006-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am: Add anoncall/a.out, and wrongclass/gcj.sh to TESTS
+	instead of XFAIL_TESTS.
+	
 	* packagename/C.java: New file; from Tom Tromey.
 	* Makefile.am (packagename/C.out): New target.
 	(packagename/O.out): Rename packagename/a.out.
