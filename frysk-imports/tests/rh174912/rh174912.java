@@ -1,3 +1,5 @@
+package rh174912;
+
 public class rh174912 {
   public rh174912(char[][] args) { }
 

@@ -1,5 +1,9 @@
 2006-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* rh174912/rh174912.java: Add "package rh17492".
+	* Makefile.am (rh174912/gcj.sh): Change -drh17492 to -d.
+	(rh174912ice/gcj.sh): Ditto.
+
 	* Makefile.am (rh174912/gcj.sh): Add missing -Irh174912.
 	(rh174912ice/gcj.sh): Ditto.
 	(textiter/a.out, gcjtreeiter/a.out, gcjtreeiter/gij.sh): Add

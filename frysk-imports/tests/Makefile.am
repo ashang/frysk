@@ -146,9 +146,9 @@ TESTS += rh174912/gcj.sh
 rh174912/gcj.sh: $(werror_FILES)
 	mkdir -p rh174912
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d rh174912 $(srcdir)/rh174912/rh174912.java >> $@.tmp
-	echo $(GCJ) -c -I rh174912 -o rh174912/rh174912.o rh174912/rh174912.class >> $@.tmp
-	echo $(GCJ) -c -I rh174912 -o \'rh174912/rh174912\$$1.o\' \'rh174912/rh174912\$$1.class\' >> $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/rh174912/rh174912.java >> $@.tmp
+	echo $(GCJ) -c -I . -o rh174912/rh174912.o rh174912/rh174912.class >> $@.tmp
+	echo $(GCJ) -c -I . -o \'rh174912/rh174912\$$1.o\' \'rh174912/rh174912\$$1.class\' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
@@ -158,8 +158,8 @@ TESTS += rh174912ice/gcj.sh
 rh174912ice/gcj.sh: $(werror_FILES)
 	mkdir -p rh174912ice
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -I $(srcdir) -d rh174912ice $(srcdir)/rh174912ice/T.java >> $@.tmp
-	echo $(GCJ) -c -I $(srcdir) -I rh174912ice rh174912ice/T.class >> $@.tmp
+	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/rh174912ice/T.java >> $@.tmp
+	echo $(GCJ) -c -I $(srcdir) -I . rh174912ice/T.class >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
