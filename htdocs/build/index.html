@@ -117,13 +117,15 @@ So far the following problems have been identified:
 
 <ul>
 
+<li>The compiler is too old and buggy.
+
 <li>The gtk2-java bindings are too old, version 2.6.2 is provided,
 2.7.0 is required, the latest version is 2.8.2
 
-<li>The glib-java binding is missing.
+<li>The glib-java bindings are missing.
 
-<li>The default <tt>automake</tt> is version 1.4 (serious!) which is
-too old. <br> You'll need to install <tt>automake17</tt> and then hand
+<li>The default <tt>automake</tt> is version 1.4 (serious!)  is too
+old. <br> You'll need to install <tt>automake17</tt> and then hand
 configure the directories.
 
 </ul>
@@ -141,7 +143,19 @@ frysk</tt></dd>
 
 <dd><tt>$ ( cd frysk && ./autogen.sh )</tt></dd>
 
-<dt><strong>Configure and Build</strong></dt>
+<dt><strong>Create and configure the build directory</strong></dt>
+
+<dd><tt>$ ( mkdir build && cd build && ../frysk/configure )</tt><dd>
+
+<dt><strong>Test the build environment (optional)</strong></dt>
+
+<dd>This runs a number of tests against both the system's kernel and
+compiler.  Any FAILs (not XFAILs) indicate a likely problem with the
+build system (bugs that have been worked around will XFAIL or
+XPASS).<br><tt>$ ( cd build/frysk-imports/tests && make check
+)</tt></dd>
+
+<dt><strong>Build</strong></dt>
 
 <dd><tt>$ ( mkdir build && cd build && ../frysk/configure && make -j2
 )</tt><dd>
