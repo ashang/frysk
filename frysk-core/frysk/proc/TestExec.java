@@ -107,4 +107,41 @@ public class TestExec
 		      taskCounter.removed.size ());
 	assertFalse ("tmp file exists", tmpFile.stillExists ());
     }
+
+    /**
+     * A single threaded program performs an exec, check that it is correctly
+     * tracked. 
+     */
+    public void testUnattachedSingleExec ()
+    {
+	AckProcess child = new AckDaemonProcess ();
+	Proc proc = child.findProcUsingRefresh ();
+	
+	child.exec (child.getPid ());
+
+	Manager.host.requestRefresh ();
+	Manager.eventLoop.runPending ();
+
+
+	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
+    }
+
+    /**
+     * A single threaded program performs an exec, check that it is correctly
+     * tracked. 
+     *
+     */
+    public void testAttachedSingleExec ()
+    {
+	AckProcess child = new AttachedAckProcess ();
+	Proc proc = child.findProcUsingRefresh ();
+	
+	child.exec (child.getPid ());
+
+	Manager.host.requestRefresh ();
+	Manager.eventLoop.runPending ();
+
+
+	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
+    }
 }
