@@ -1,5 +1,10 @@
 2006-01-04  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (rh174912/gcj.sh): Add missing -Irh174912.
+	(rh174912ice/gcj.sh): Ditto.
+	(textiter/a.out, gcjtreeiter/a.out, gcjtreeiter/gij.sh): Add
+	/usr/lib/frysk to hard wired rpath.
+
 	* Makefile.am: Add anoncall/a.out, and wrongclass/gcj.sh to TESTS
 	instead of XFAIL_TESTS.
 	

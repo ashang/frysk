@@ -147,8 +147,8 @@ rh174912/gcj.sh: $(werror_FILES)
 	mkdir -p rh174912
 	echo '#!/bin/sh -xe' > $@.tmp
 	echo $(GCJ) -C -d rh174912 $(srcdir)/rh174912/rh174912.java >> $@.tmp
-	echo $(GCJ) -c -o rh174912/rh174912.o rh174912/rh174912.class >> $@.tmp
-	echo $(GCJ) -c -o \'rh174912/rh174912\$$1.o\' \'rh174912/rh174912\$$1.class\' >> $@.tmp
+	echo $(GCJ) -c -I rh174912 -o rh174912/rh174912.o rh174912/rh174912.class >> $@.tmp
+	echo $(GCJ) -c -I rh174912 -o \'rh174912/rh174912\$$1.o\' \'rh174912/rh174912\$$1.class\' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
@@ -158,8 +158,8 @@ TESTS += rh174912ice/gcj.sh
 rh174912ice/gcj.sh: $(werror_FILES)
 	mkdir -p rh174912ice
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/rh174912ice/T.java >> $@.tmp
-	echo $(GCJ) -c -I $(srcdir) rh174912ice/T.class >> $@.tmp
+	echo $(GCJ) -C -I $(srcdir) -d rh174912ice $(srcdir)/rh174912ice/T.java >> $@.tmp
+	echo $(GCJ) -c -I $(srcdir) -I rh174912ice rh174912ice/T.class >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
@@ -192,8 +192,8 @@ textiter/a.out: $(textiter_FILES)
 	$(GCJ) -g \
 		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
 		$(FRYSK_IMPORTS_LIBS) \
-		-Wl,-rpath,/opt/frysk/lib \
-		-Djava.library.path=/opt/frysk/lib \
+		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
+		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
 		--main=textiter.JNICrash \
 		-o textiter/a.out \
 		$(srcdir)/textiter/JNICrash.java
@@ -245,8 +245,8 @@ gcjtreeiter/a.out: $(gcjtreeiter_FILES)
 	$(GCJ) -g \
 		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
 		$(FRYSK_IMPORTS_LIBS) \
-		-Wl,-rpath,/opt/frysk/lib \
-		-Djava.library.path=/opt/frysk/lib \
+		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
+		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
 		--main=gcjtreeiter.IterTest \
 		$(srcdir)/gcjtreeiter/IterTest.java \
 		-o gcjtreeiter/a.out
@@ -256,10 +256,11 @@ gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 	$(GCJ) -g -C -d . -I$(srcdir) \
 		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
 		$(srcdir)/gcjtreeiter/IterTest.java
-	echo $(GIJ) -classpath $(srcdir)/..:$(GTK2_JAR):$(GLIB_JAVA_JAR) \
-		-Djava.library.path=/opt/frysk/lib gcjtreeiter.IterTest \
-		> gcjtreeiter/$(GIJ).sh
-	chmod a+x gcjtreeiter/$(GIJ).sh
+	echo $(GIJ) -classpath .:$(FRYSK_IMPORTS_CLASSPATH) \
+		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		gcjtreeiter.IterTest \
+		> gcjtreeiter/gij.sh
+	chmod a+x gcjtreeiter/gij.sh
 
 cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
 #cdtparserversion_FILES += cdtparserversion/main.cpp
