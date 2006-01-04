@@ -102,14 +102,22 @@ samename/a.out: $(samename_FILES)
 		$(srcdir)/samename/SameName.java \
 		-o samename/a.out
 
-XFAIL_TESTS += packagename/a.out
-packagename_FILES = packagename/O.java
-EXTRA_DIST += $(packagename_FILES)
-packagename/a.out: $(packagename_FILES)
+XFAIL_TESTS += packagename/O.out
+packagename_O_FILES = packagename/O.java
+EXTRA_DIST += $(packagename_O_FILES)
+packagename/O.out: $(packagename_O_FILES)
 	mkdir -p packagename
 	$(GCJ) -g --main=packagename.O \
 		$(srcdir)/packagename/O.java \
-		-o packagename/a.out
+		-o packagename/O.out
+TESTS += packagename/C.out
+packagename_C_FILES = packagename/C.java
+EXTRA_DIST += $(packagename_C_FILES)
+packagename/C.out: $(packagename_C_FILES)
+	mkdir -p packagename
+	$(GCJ) -g --main=packagename.C \
+		$(srcdir)/packagename/C.java \
+		-o packagename/C.out
 
 # Compiling Werror with -Werror -Wall should get a warning and hence
 # abort the compilation.  At least GCC 4.0.1 20050727 (Red Hat

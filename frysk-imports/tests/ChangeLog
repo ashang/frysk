@@ -1,3 +1,9 @@
+2006-01-04  Andrew Cagney  <cagney@redhat.com>
+
+	* packagename/C.java: New file; from Tom Tromey.
+	* Makefile.am (packagename/C.out): New target.
+	(packagename/O.out): Rename packagename/a.out.
+	
 2006-01-03  Andrew Cagney  <cagney@redhat.com>
 
 	* packagename/O.java: New file.  From Tom Tromey.
