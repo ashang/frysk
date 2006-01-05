@@ -1,0 +1,15 @@
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Based on frysk-impots/tests/Makefile.am.
+	* gcjtreeiter/.cvsignore: Copied from frysk-imports/tests/.
+	* gcjtreeiter/IterTest.java: Ditto.
+	* textiter/.cvsignore: Ditto.
+	* textiter/JNICrash.java: Ditto.
+	* .cvsignore: New.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

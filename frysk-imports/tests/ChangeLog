@@ -1,5 +1,11 @@
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
 
+	* gcjtreeiter/.cvsignore: Delete.
+	* gcjtreeiter/IterTest.java: Delete.
+	* textiter/.cvsignore: Delete.
+	* textiter/JNICrash.java: Delete.
+	* Makefile.am: Delete corresponding, but disabled rules.
+	
 	* Makefile.am (gcjtreeiter/a.out, gcjtreeiter/gij.sh)
 	(textiter/a.out): Disable.
 

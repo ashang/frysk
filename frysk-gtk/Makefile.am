@@ -40,7 +40,7 @@
 include common/Makefile.rules
 include Makefile.gen
 
-SUBDIRS = tlwidgets
+SUBDIRS = tlwidgets tests
 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar

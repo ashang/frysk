@@ -36,20 +36,56 @@
 # modification, you must delete this exception statement from your
 # version and license this file solely under the GPL without
 # exception.
-
-AC_PREREQ(2.59)
-
-sinclude(common/version.ac)
-AC_INIT(frysk, [FRYSK_VERSION])
-
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile tlwidgets/Makefile tests/Makefile])
-
-sinclude(common/acinclude.m4)
-
-PKG_CHECK_MODULES(FRYSK_GTK, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
-FRYSK_PKG_MODULE_VARIABLE(FRYSK_GTK_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
-FRYSK_GTK_CLASSPATH=`echo $FRYSK_GTK_JARS | tr ' ' ':'`
-AC_SUBST(FRYSK_GTK_CLASSPATH)
-
-AC_OUTPUT
+
+EXTRA_DIST =
+# Gag all the output from the failing tests
+TESTS_ENVIRONMENT = eval > log 2>&1
+XFAIL_TESTS =
+TESTS = $(XFAIL_TESTS)
+all-local: $(TESTS)
+$(TESTS) $(XFAIL_TESTS): Makefile
+CLEANFILES = $(TESTS)
+clean-local:
+	rm -f */.class
+	rm -f */*.o
+	rm -f */a.out
+	rm -f a.out
+
+TESTS += textiter/a.out
+textiter_FILES = textiter/JNICrash.java
+EXTRA_DIST += $(textiter_FILES)
+textiter/a.out: $(textiter_FILES)
+	mkdir -p textiter
+	$(GCJ) -g \
+		-classpath $(FRYSK_GTK_CLASSPATH) \
+		$(FRYSK_GTK_LIBS) \
+		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
+		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		--main=textiter.JNICrash \
+		-o textiter/a.out \
+		$(srcdir)/textiter/JNICrash.java
+
+gcjtreeiter_FILES = gcjtreeiter/IterTest.java
+EXTRA_DIST += $(gcjtreeiter_FILES)
+XFAIL_TESTS += gcjtreeiter/a.out
+gcjtreeiter/a.out: $(gcjtreeiter_FILES)
+	mkdir -p gcjtreeiter
+	$(GCJ) -g \
+		-classpath $(FRYSK_GTK_CLASSPATH) \
+		$(FRYSK_GTK_LIBS) \
+		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
+		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		--main=gcjtreeiter.IterTest \
+		$(srcdir)/gcjtreeiter/IterTest.java \
+		-o gcjtreeiter/a.out
+XFAIL_TESTS += gcjtreeiter/gij.sh
+gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
+	mkdir -p gcjtreeiter
+	$(GCJ) -g -C -d . -I$(srcdir) \
+		-classpath $(FRYSK_GTK_CLASSPATH) \
+		$(srcdir)/gcjtreeiter/IterTest.java
+	echo $(GIJ) -classpath .:$(FRYSK_GTK_CLASSPATH) \
+		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		gcjtreeiter.IterTest \
+		> gcjtreeiter/gij.sh
+	chmod a+x gcjtreeiter/gij.sh
