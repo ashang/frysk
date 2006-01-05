@@ -88,6 +88,18 @@ public abstract class Proc
     abstract public String getCommand ();
 
     /**
+     * Return the Proc's command line argument list
+     */
+    public String[] getCmdLine ()
+    {
+	if (argv == null)
+	    argv = sendrecCmdLine ();
+	return argv;
+    }
+    protected abstract String[] sendrecCmdLine ();
+    private String[] argv;
+
+    /**
      * Create a new Proc skeleton.  Since PARENT could be NULL,
      * explicitly specify the HOST.
      */

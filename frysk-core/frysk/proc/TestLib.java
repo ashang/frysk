@@ -211,6 +211,14 @@ public class TestLib
 	{
 	    return pid;
 	}
+	private String[] argv;
+	/**
+	 * Return the Process's argv.
+	 */
+	public String[] getArgv ()
+	{
+	    return argv;
+	}
 	/**
 	 * Send the child the sig.
 	 */
@@ -230,7 +238,8 @@ public class TestLib
 	protected Child (int sig, String[] argv)
 	{
 	    AckHandler ack = new AckHandler (sig);
-	    pid = startChild (null, "/dev/null", null, argv);
+	    this.argv = argv;
+	    this.pid = startChild (null, "/dev/null", null, argv);
 	    registerChild (pid);
 	    ack.await ();
 	}
@@ -241,14 +250,6 @@ public class TestLib
 	protected Child (String[] argv)
 	{
 	    this (AckHandler.signal, argv);
-	}
-	/**
-	 * Fudge up a Child object using PID.
-	 */
-	protected Child (int pid)
-	{
-	    this.pid = pid;
-	    registerChild (pid);
 	}
 	/**
 	 * Attempt to kill the child.  Return false if the child

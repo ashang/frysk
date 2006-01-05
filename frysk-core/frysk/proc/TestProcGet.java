@@ -164,4 +164,20 @@ public class TestProcGet
 			self.getChildren ().contains (child[i]));
 	}
     }
+
+    /**
+     * Check that getCmdLine returns the list of arguments that
+     * matches what was passed to a detached child.
+     */
+    public void testGetCmdLine ()
+    {
+	Child child = new AckDaemonProcess ();
+	String[] argv = child.getArgv ();
+	Proc proc = child.findProcUsingRefresh ();
+	String[] cmdLine = proc.getCmdLine ();
+	assertEquals ("cmdLine.length", argv.length, cmdLine.length);
+	for (int i = 0; i < argv.length; i++) {
+	    assertEquals ("cmdLine[" + i + "]", argv[i], cmdLine[i]);
+	}
+    }
 }

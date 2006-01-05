@@ -1,3 +1,13 @@
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxProc.java (sendrecCmdLine): IMplement stub.
+	* Proc.java (getCmdLine()): Add.
+	(sendrecCmdLine()): Add, abstract.
+	(argv): Add, private.
+	* TestLib.java (Child.getArgv()): Add.
+	(Child.Child(int)): Delete.
+	* TestProcGet.java: Add .testGetCmdLine.
+
 2006-01-04  Stan Cox  <scox@multics.rdu.redhat.com>
 
 	* TestExec.java (testUnattachedSingleExec, testAttachedSingleExec): New.

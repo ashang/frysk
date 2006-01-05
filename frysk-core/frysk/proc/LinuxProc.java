@@ -158,4 +158,13 @@ public class LinuxProc
 	auxv.construct (getPid ());
 	return auxv.vec;
     }
+
+    protected String[] sendrecCmdLine ()
+    {
+	return new String[] {
+	    "./prog/kill/child",
+	    "20",
+	    Integer.toString (frysk.sys.Pid.get ())
+	};
+    }
 }
