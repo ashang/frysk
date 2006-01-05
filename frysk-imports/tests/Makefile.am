@@ -223,26 +223,28 @@ wrongclass/gcj.sh: $(wrongclass_FILES)
 		> $@
 	chmod a+x $@
 
-#cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
-#cdtparserversion_FILES += cdtparserversion/main.cpp
-#EXTRA_DIST += $(cdtparserversion_FILES)
-#TESTS += cdtparserversion/a.out
-#cdtparserversion/a.out: $(cdtparserversion_FILES)
-#	mkdir -p cdtparserversion
-#	$(GCJ) -g \
-#		-I$(CDTPARSER_JAR) \
-#		$(CDTPARSER_LIBS) \
-#		--main=cdtparserversion.CDTParserTest \
-#		$(srcdir)/cdtparserversion/CDTParserTest.java \
-#		-o cdtparserversion/a.out
-#TESTS += cdtparserversion/cdttest.sh
-#cdtparserversion/cdttest.sh: cdtparserversion/a.out
-#	mkdir -p cdtparserversion
-#	echo "#!/bin/sh" > cdtparserversion/cdttest.sh
-#	echo "cdtparserversion/a.out cdtparserversion/main.cpp > cdtparserversion/RESULT" \
-#	>> cdtparserversion/cdttest.sh
-#	echo "if [ ! \`cat cdtparserversion/RESULT\` == \"4,5\" ]; then" \
-#	>> cdtparserversion/cdttest.sh
-#	echo "FAIL" >> cdtparserversion/cdttest.sh
-#	echo "fi" >> cdtparserversion/cdttest.sh
-#	chmod a+x cdtparserversion/cdttest.sh
+CDTPARSER_JAR = ../cdtparser/cdtparser.jar
+cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
+cdtparserversion_FILES += cdtparserversion/main.cpp
+EXTRA_DIST += $(cdtparserversion_FILES)
+CLEANFILES += cdtparserversion/*.class
+cdtparserversion/CDTParserTest.class: $(cdtparserversion_FILES) $(CDTPARSER_JAR)
+	mkdir -p cdtparserversion
+	$(JAVAC) -d . \
+		-classpath $(CDTPARSER_JAR) \
+		$(srcdir)/cdtparserversion/CDTParserTest.java
+TESTS += cdtparserversion/cdttest.sh
+cdtparserversion/cdttest.sh: cdtparserversion/CDTParserTest.class $(CDTPARSER_JAR)
+	mkdir -p cdtparserversion
+	rm -f $@.tmp
+	echo "#!/bin/sh" >> $@.tmp
+	echo '$(JAVA) \' >> $@.tmp
+	echo '  -classpath .:$(CDTPARSER_JAR) \' >> $@.tmp
+	echo '  cdtparserversion.CDTParserTest \' >> $@.tmp
+	echo '  $(srcdir)/cdtparserversion/main.cpp \' >> $@.tmp
+	echo '  > cdtparserversion/RESULT' >> $@.tmp
+	echo 'test `cat cdtparserversion/RESULT` == 4,5' >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+$(CDTPARSER_JAR):
+	cd `dirname $(CDTPARSER_JAR)` && $(MAKE)

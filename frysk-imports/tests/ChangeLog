@@ -1,5 +1,8 @@
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (cdtparserversion/cdttest.sh): Re-implement using
+	JAVAC and JAVA.
+	
 	* gcjtreeiter/.cvsignore: Delete.
 	* gcjtreeiter/IterTest.java: Delete.
 	* textiter/.cvsignore: Delete.
