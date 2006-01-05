@@ -1,3 +1,17 @@
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* EggTrayIcon/: Directory moved to ../frysk-gtk/.
+	* tlwidgets/: Directory moved to ../frysk-gtk/.
+	* configure.ac (PKG_CHECK_MODULES, FRYSK_IMPORTS_JARS)
+	(FRYSK_IMPORTS_CLASSPATH): Delete.
+	(lib): Delete.
+	* autogen.sh: Delete tlwidgets/ftk.jar.
+	* Makefile.am (solib_PROGRAMS, EggTrayIcon/libEggTrayIcon.so)
+	(EggTrayIcon_libEggTrayIcon_so_LDADD)
+	(EggTrayIcon_libEggTrayIcon_a_CFLAGS): Delete.
+	(GEN_CLASSPATH): Do not add $(FRYSK_IMPORTS_JARS).
+	(SUBDIRS): Do not add tlwidgets.
+	
 2005-12-09  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Define FRYSK_IMPORTS_CLASSPATH.

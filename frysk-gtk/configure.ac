@@ -1,7 +1,6 @@
-#!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -38,18 +37,19 @@
 # version and license this file solely under the GPL without
 # exception.
 
-for d in frysk-imports frysk-sys frysk-core frysk-gui frysk-gtk
-do
-    ( test -d $d && cd $d && ./autogen.sh )
-done
+AC_PREREQ(2.59)
 
-# Generate everything (always run with --add-missing).
+sinclude(common/version.ac)
+AC_INIT(frysk, [FRYSK_VERSION])
 
-echo "Running aclocal ..."
-aclocal
+AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
+AC_CONFIG_FILES([Makefile tlwidgets/Makefile])
 
-echo "Running autoconf ..."
-autoconf -f
+sinclude(common/acinclude.m4)
 
-echo "Running automake ..."
-automake --add-missing
+PKG_CHECK_MODULES(FRYSK_GTK, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
+FRYSK_PKG_MODULE_VARIABLE(FRYSK_GTK_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
+FRYSK_GTK_CLASSPATH=`echo $FRYSK_GTK_JARS | tr ' ' ':'`
+AC_SUBST(FRYSK_GTK_CLASSPATH)
+
+AC_OUTPUT

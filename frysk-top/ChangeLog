@@ -1,3 +1,9 @@
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac (AC_CONFIG_SUBDIRS): Add frysk-gtk.
+	* Makefile.am (SUBDIRS): Add frysk-gtk.
+	* autogen.sh: Add frysk-gtk.
+
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): For files in common, include

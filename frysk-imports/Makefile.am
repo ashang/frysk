@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -44,25 +44,11 @@ SUBDIRS = \
 	jline \
 	jargs \
 	tests \
-	tlwidgets \
 	cdtparser \
 	junit
-
-solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
-EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
-EggTrayIcon_libEggTrayIcon_so_LDADD = $(FRYSK_IMPORTS_LIBS)
-
-noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
-EggTrayIcon_libEggTrayIcon_a_SOURCES = \
-	EggTrayIcon/eggtrayicon.c \
-	EggTrayIcon/libEggTrayIcon.c \
-	EggTrayIcon/eggtrayicon.h
-
-EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(FRYSK_IMPORTS_CFLAGS)
 
 GEN_CLASSPATH += jargs.jar
 GEN_CLASSPATH += junit.jar
-GEN_CLASSPATH += $(FRYSK_IMPORTS_JARS)
 GEN_GCJ_LDADD += libfrysk-jargs.a
 GEN_GCJ_LDADD += libfrysk-junit.a
 

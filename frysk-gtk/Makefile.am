@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -37,51 +37,31 @@
 # version and license this file solely under the GPL without
 # exception.
 
-tlwidgetssrc=$(srcdir)/src
+include common/Makefile.rules
+include Makefile.gen
 
-solibdir = $(libdir)
-solib_PROGRAMS = libftk.so libftkjava.so libftkjni.so
-libftk_so_SOURCES =
-libftkjava_so_SOURCES =
-libftkjni_so_SOURCES =
+SUBDIRS = tlwidgets
 
-javadir = $(datadir)/java
-java_DATA = ftk.jar
+GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
+GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar
+GEN_CLASSPATH += $(FRYSK_GTK_JARS)
 
-EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
-            $(tlwidgetssrc)/jni/*.c \
-            $(tlwidgetssrc)/widgets/*.c \
-            $(tlwidgetssrc)/widgets/*.h \
-            $(tlwidgetssrc)/widgets/ftk.pc
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
+GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a 
+GEN_GCJ_LDADD += $(FRYSK_GTK_LIBS)
 
-CLEANFILES = *.so *.jar *.o *.class
-SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+# Hack, need to compile this entire sub-tree with JNI.
+AM_GCJFLAGS += -fjni 
+
+solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
+EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
+EggTrayIcon_libEggTrayIcon_so_LDADD = $(FRYSK_GTK_LIBS)
 
-com/redhat/ftk/Stripchart.class: $(SRC) 
-	$(GCJ) -C -d . -classpath $(FRYSK_IMPORTS_CLASSPATH) $(SRC)
+noinst_LIBRARIES += EggTrayIcon/libEggTrayIcon.a 
+EggTrayIcon_libEggTrayIcon_a_SOURCES = \
+	EggTrayIcon/eggtrayicon.c \
+	EggTrayIcon/libEggTrayIcon.c \
+	EggTrayIcon/eggtrayicon.h
 
-ftk.jar: com/redhat/ftk/Stripchart.class
-	$(JAR) cf ftk.jar -C . com/redhat/ftk/Stripchart.class
-
-Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
-	$(GCJ) -fjni -classpath $(FRYSK_IMPORTS_CLASSPATH) -I ./src/java \
-            -g -O2 -c $< -o $@
-
-libftkjava.so: Stripchart.o
-	$(GCJ) -shared $^ $(FRYSK_IMPORTS_LIBS) \
-		-Wl,-soname -Wl,libftkjava.so -o $@
-
-com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
-	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ $(FRYSK_IMPORTS_CFLAGS) -fPIC -DPIC -o $@
-
-libftkjni.so: com_redhat_ftk_Stripchart.o
-	$(CC) -shared $^ $(FRYSK_IMPORTS_LIBS) -o $@
-
-ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
-	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
-
-ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
-	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_IMPORTS_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
-
-libftk.so: ftkstripchart.o ftkconsole.o
-	$(CC) -shared -o $@ $^ -lrt
+EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(FRYSK_GTK_CFLAGS)

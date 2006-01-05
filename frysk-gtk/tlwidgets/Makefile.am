@@ -1,4 +1,3 @@
-#!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
 # Copyright 2005, Red Hat Inc.
@@ -38,18 +37,51 @@
 # version and license this file solely under the GPL without
 # exception.
 
-for d in frysk-imports frysk-sys frysk-core frysk-gui frysk-gtk
-do
-    ( test -d $d && cd $d && ./autogen.sh )
-done
+tlwidgetssrc=$(srcdir)/src
 
-# Generate everything (always run with --add-missing).
+solibdir = $(libdir)
+solib_PROGRAMS = libftk.so libftkjava.so libftkjni.so
+libftk_so_SOURCES =
+libftkjava_so_SOURCES =
+libftkjni_so_SOURCES =
 
-echo "Running aclocal ..."
-aclocal
+javadir = $(datadir)/java
+java_DATA = ftk.jar
 
-echo "Running autoconf ..."
-autoconf -f
+EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
+            $(tlwidgetssrc)/jni/*.c \
+            $(tlwidgetssrc)/widgets/*.c \
+            $(tlwidgetssrc)/widgets/*.h \
+            $(tlwidgetssrc)/widgets/ftk.pc
 
-echo "Running automake ..."
-automake --add-missing
+CLEANFILES = *.so *.jar *.o *.class
+SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+
+com/redhat/ftk/Stripchart.class: $(SRC) 
+	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
+
+ftk.jar: com/redhat/ftk/Stripchart.class
+	$(JAR) cf ftk.jar -C . com/redhat/ftk/Stripchart.class
+
+Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
+            -g -O2 -c $< -o $@
+
+libftkjava.so: Stripchart.o
+	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
+		-Wl,-soname -Wl,libftkjava.so -o $@
+
+com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
+	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ $(FRYSK_GTK_CFLAGS) -fPIC -DPIC -o $@
+
+libftkjni.so: com_redhat_ftk_Stripchart.o
+	$(CC) -shared $^ $(FRYSK_GTK_LIBS) -o $@
+
+ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
+	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
+
+ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
+	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
+
+libftk.so: ftkstripchart.o ftkconsole.o
+	$(CC) -shared -o $@ $^ -lrt

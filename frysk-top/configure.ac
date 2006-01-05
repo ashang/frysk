@@ -44,6 +44,6 @@ AC_INIT(frysk,defn([FRYSK_VERSION]))
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext dist-bzip2 tar-ustar])
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core frysk-gui])
+AC_CONFIG_SUBDIRS([frysk-imports frysk-sys frysk-core frysk-gtk frysk-gui])
 AM_PROG_GCJ
 AC_OUTPUT

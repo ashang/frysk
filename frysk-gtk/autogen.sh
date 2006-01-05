@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -38,15 +38,14 @@
 # version and license this file solely under the GPL without
 # exception.
 
-for d in frysk-imports frysk-sys frysk-core frysk-gui frysk-gtk
-do
-    ( test -d $d && cd $d && ./autogen.sh )
-done
+./common/Makefile.gen.sh \
+    tlwidgets/ftk.jar \
+    org
 
 # Generate everything (always run with --add-missing).
 
 echo "Running aclocal ..."
-aclocal
+aclocal -I common/m4
 
 echo "Running autoconf ..."
 autoconf -f

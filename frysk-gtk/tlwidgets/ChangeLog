@@ -1,3 +1,7 @@
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* Directory moved from frysk-imports/ to frysk-gtk/.
+
 2005-12-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (libftk_SOURCES): Define.

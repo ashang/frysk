@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -43,21 +43,11 @@ sinclude(common/version.ac)
 AC_INIT(frysk, [FRYSK_VERSION])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile tlwidgets/Makefile cdtparser/Makefile junit/Makefile])
+AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile cdtparser/Makefile junit/Makefile])
 
 sinclude(common/acinclude.m4)
 
-lib=lib
-if [[ "x`uname -p`" = "xx86_64" ]]; then
-    lib=${lib}64
-fi
-
 AC_FIND_FILE([antlr.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], ANTLR_JAR)
 AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], JDOM_JAR)
-
-PKG_CHECK_MODULES(FRYSK_IMPORTS, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
-FRYSK_PKG_MODULE_VARIABLE(FRYSK_IMPORTS_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
-FRYSK_IMPORTS_CLASSPATH=`echo $FRYSK_IMPORTS_JARS | tr ' ' ':'`
-AC_SUBST(FRYSK_IMPORTS_CLASSPATH)
 
 AC_OUTPUT

@@ -184,19 +184,19 @@ gcc8544/gcj.sh: $(gcc8544_FILES)
 	mv $@.tmp $@
 
 
-TESTS += textiter/a.out
-textiter_FILES = textiter/JNICrash.java
-EXTRA_DIST += $(textiter_FILES)
-textiter/a.out: $(textiter_FILES)
-	mkdir -p textiter
-	$(GCJ) -g \
-		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
-		$(FRYSK_IMPORTS_LIBS) \
-		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
-		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
-		--main=textiter.JNICrash \
-		-o textiter/a.out \
-		$(srcdir)/textiter/JNICrash.java
+#TESTS += textiter/a.out
+#textiter_FILES = textiter/JNICrash.java
+#EXTRA_DIST += $(textiter_FILES)
+#textiter/a.out: $(textiter_FILES)
+#	mkdir -p textiter
+#	$(GCJ) -g \
+#		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
+#		$(FRYSK_IMPORTS_LIBS) \
+#		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
+#		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+#		--main=textiter.JNICrash \
+#		-o textiter/a.out \
+#		$(srcdir)/textiter/JNICrash.java
 
 TESTS += process/single_exec
 TESTS += process/multi_child_exec
@@ -237,32 +237,32 @@ wrongclass/gcj.sh: $(wrongclass_FILES)
 		> $@
 	chmod a+x $@
 
-gcjtreeiter_FILES = gcjtreeiter/IterTest.java
-EXTRA_DIST += $(gcjtreeiter_FILES)
-XFAIL_TESTS += gcjtreeiter/a.out
-gcjtreeiter/a.out: $(gcjtreeiter_FILES)
-	mkdir -p gcjtreeiter
-	$(GCJ) -g \
-		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
-		$(FRYSK_IMPORTS_LIBS) \
-		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
-		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
-		--main=gcjtreeiter.IterTest \
-		$(srcdir)/gcjtreeiter/IterTest.java \
-		-o gcjtreeiter/a.out
-XFAIL_TESTS += gcjtreeiter/gij.sh
-gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
-	mkdir -p gcjtreeiter
-	$(GCJ) -g -C -d . -I$(srcdir) \
-		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
-		$(srcdir)/gcjtreeiter/IterTest.java
-	echo $(GIJ) -classpath .:$(FRYSK_IMPORTS_CLASSPATH) \
-		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
-		gcjtreeiter.IterTest \
-		> gcjtreeiter/gij.sh
-	chmod a+x gcjtreeiter/gij.sh
-
-cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
+#gcjtreeiter_FILES = gcjtreeiter/IterTest.java
+#EXTRA_DIST += $(gcjtreeiter_FILES)
+#XFAIL_TESTS += gcjtreeiter/a.out
+#gcjtreeiter/a.out: $(gcjtreeiter_FILES)
+#	mkdir -p gcjtreeiter
+#	$(GCJ) -g \
+#		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
+#		$(FRYSK_IMPORTS_LIBS) \
+#		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
+#		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+#		--main=gcjtreeiter.IterTest \
+#		$(srcdir)/gcjtreeiter/IterTest.java \
+#		-o gcjtreeiter/a.out
+#XFAIL_TESTS += gcjtreeiter/gij.sh
+#gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
+#	mkdir -p gcjtreeiter
+#	$(GCJ) -g -C -d . -I$(srcdir) \
+#		-classpath $(FRYSK_IMPORTS_CLASSPATH) \
+#		$(srcdir)/gcjtreeiter/IterTest.java
+#	echo $(GIJ) -classpath .:$(FRYSK_IMPORTS_CLASSPATH) \
+#		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+#		gcjtreeiter.IterTest \
+#		> gcjtreeiter/gij.sh
+#	chmod a+x gcjtreeiter/gij.sh
+#
+#cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
 #cdtparserversion_FILES += cdtparserversion/main.cpp
 #EXTRA_DIST += $(cdtparserversion_FILES)
 ##TESTS += cdtparserversion/a.out

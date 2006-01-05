@@ -44,6 +44,7 @@ SUBDIRS = \
 	frysk-imports \
 	frysk-sys \
 	frysk-core \
+	frysk-gtk \
 	frysk-gui
 
 empty=

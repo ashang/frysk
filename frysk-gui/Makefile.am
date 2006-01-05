@@ -40,6 +40,7 @@
 include common/Makefile.rules
 include Makefile.gen
 
+GEN_CLASSPATH += $(top_builddir)/../frysk-gtk/frysk-gtk.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-core/frysk-core.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys/frysk-sys.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/antlr.jar
@@ -47,13 +48,11 @@ GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jdom.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/cdtparser.jar 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/tlwidgets/ftk.jar
+GEN_CLASSPATH += $(top_builddir)/../frysk-gtk/tlwidgets/ftk.jar
 GEN_CLASSPATH += $(FRYSK_GUI_JARS) 
 GEN_CLASSPATH += /usr/lib
 
-# Hack, need to compile frysk.gui.monitor.EggTrayIcon.java with JNI.
-AM_GCJFLAGS += -fjni 
-
+GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-gtk.a
 GEN_GCJ_LDADD += ../frysk-core/libfrysk-core.a
 GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
@@ -63,9 +62,9 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-cdtparser.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a 
-GEN_GCJ_LDADD += ../frysk-imports/libfrysk-ftk.a
-GEN_GCJ_LDADD += -L../frysk-imports/EggTrayIcon
-GEN_GCJ_LDADD += -L../frysk-imports/tlwidgets
+GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-ftk.a
+GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon
+GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets
 GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
 
 EXTRA_DIST += 	$(srcdir)/frysk/gui/glade/*.glade \

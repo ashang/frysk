@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,40 +36,47 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package frysk.gui.monitor;
+
+package org.gnu.gtk.frysk;
 
 import org.gnu.gtk.Plug;
 import org.gnu.glib.Handle;
 
-public class EggTrayIcon extends Plug{
-	static {
-		System.loadLibrary("EggTrayIcon");
-	}
+public class EggTrayIcon extends Plug
+{
+    static {
+	System.loadLibrary("EggTrayIcon");
+    }
 
-	EggTrayIcon(String name){
-		super(egg_tray_icon_new(name));
-	}
+    public EggTrayIcon(String name)
+    {
+	super(egg_tray_icon_new(name));
+    }
 	
-	EggTrayIcon(Handle screen, String name){
-		super(egg_tray_icon_new_for_screen(screen, name));
-	}
+    public EggTrayIcon(Handle screen, String name)
+    {
+	super(egg_tray_icon_new_for_screen(screen, name));
+    }
 	
-	public int sendMessage(int timeout, String message, int len){
-		return egg_tray_icon_send_message(this,timeout,message,len);
-	}
+    public int sendMessage(int timeout, String message, int len)
+    {
+	return egg_tray_icon_send_message(this,timeout,message,len);
+    }
 
-	public void cancelMessage(int id){
-		egg_tray_icon_cancel_message (this,id);
-	}
+    public void cancelMessage(int id)
+    {
+	egg_tray_icon_cancel_message (this,id);
+    }
 	
-	public int getOrientation(){
-		return egg_tray_icon_get_orientation (this);
-	}
+    public int getOrientation()
+    {
+	return egg_tray_icon_get_orientation (this);
+    }
 	
-	native static final protected int[]  egg_tray_icon_get_type();
-	native static final protected Handle egg_tray_icon_new_for_screen (Handle screen, String name);
-	native static final protected Handle egg_tray_icon_new(String name);
-	native static final protected int    egg_tray_icon_send_message   (EggTrayIcon icon, int timeout, String message, int len);
-	native static final protected void   egg_tray_icon_cancel_message (EggTrayIcon icon, int id);
-	native static final protected int    egg_tray_icon_get_orientation (EggTrayIcon icon);
+    native static final protected int[]  egg_tray_icon_get_type();
+    native static final protected Handle egg_tray_icon_new_for_screen (Handle screen, String name);
+    native static final protected Handle egg_tray_icon_new(String name);
+    native static final protected int    egg_tray_icon_send_message   (EggTrayIcon icon, int timeout, String message, int len);
+    native static final protected void   egg_tray_icon_cancel_message (EggTrayIcon icon, int id);
+    native static final protected int    egg_tray_icon_get_orientation (EggTrayIcon icon);
 }

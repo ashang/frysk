@@ -1,3 +1,8 @@
+2006-01-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TrayIcon.java: Import org.gnu.gtk.frysk.EggTrayIcon.
+	* EggTrayIcon.java: Delete.  Moved to frysk-gtk/.
+
 2005-12-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TrayIcon.java (TrayIcon): Only constructor now takes a name and a
