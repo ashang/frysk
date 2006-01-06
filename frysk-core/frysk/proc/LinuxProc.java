@@ -45,6 +45,7 @@ import java.util.HashMap;
 import frysk.sys.proc.Stat;
 import frysk.sys.proc.IdBuilder;
 import frysk.sys.proc.AuxvBuilder;
+import frysk.sys.proc.CmdLineBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.Config;
@@ -161,10 +162,20 @@ public class LinuxProc
 
     protected String[] sendrecCmdLine ()
     {
-	return new String[] {
-	    "./prog/kill/child",
-	    "20",
-	    Integer.toString (frysk.sys.Pid.get ())
-	};
+	class BuildCmdLine
+	    extends CmdLineBuilder
+	{
+	    String[] argv;
+	    public void buildBuffer (byte[] buf)
+	    {
+	    }
+	    public void buildArgv (String[] argv)
+	    {
+		this.argv = argv;
+	    }
+	}
+	BuildCmdLine cmdLine = new BuildCmdLine ();
+	cmdLine.construct (getPid ());
+	return cmdLine.argv;
     }
 }
