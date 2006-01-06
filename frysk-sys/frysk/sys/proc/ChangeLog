@@ -1,3 +1,10 @@
+2006-01-06  Andrew Cagney  <cagney@redhat.com>
+
+	* CmdLineBuilder.java (construct): Make abstract.
+	* cni/CmdLineBuilder.cxx: New file.
+	* TestCmdLine.java: Implement, test {}, {""}, {"a"}, {"",""},
+	{"a",""}, {"","b"}, {"a","b"}, {"a","b","c"}.
+
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TestCmdLine.java: New file.

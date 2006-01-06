@@ -37,45 +37,41 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys.proc;
+// Dumps the contents of /proc/PID/cmdline in a Java-code like format.
 
-/**
- * The build the command line argument list from the contents of the
- * file <tt>/proc/PID/cmdline</tt>.
- *
- * While this isn't a pure builder pattern, it is close enough.
- */
-public abstract class CmdLineBuilder
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+
+int
+main (int argc, char **argv, char **envp)
 {
-    /**
-     * Create a CmdLineBuilder; can only extend.
-     */
-    protected CmdLineBuilder ()
-    {
-    }
+  char *cmdline;
+  if (asprintf (&cmdline, "/proc/%d/cmdline", getpid ()) < 0) {
+    perror ("asprintf");
+    abort ();
+  }
 
-    /**
-     * Scan the maps file found in <tt>/proc/PID/cmdline</tt> building
-     * up the command line.  Return true if the scan was successful.
-     */
-    public final native boolean construct (int pid);
+  int fd = open (cmdline, O_RDONLY);
+  if (fd < 0) {
+    perror ("open");
+    abort ();
+  }
 
-    /**
-     * Scan the CMDLINE byte array building the corresponding command
-     * line string.  It is assumed that the byte array contains ASCII
-     * characters, and for each entry includes a terminating NUL.
-     * {@link #buildArgv} is called with the command line.
-     */
-    public final native boolean construct (byte[] cmdline);
+  char buf[BUFSIZ];
+  int len = read (fd, buf, sizeof buf);
+  if (len < 0 || len >= BUFSIZ) {
+    perror ("read");
+    abort ();
+  }
 
-    /**
-     * Called with the raw byte buffer slurped by {@link
-     * #construct(int)}.
-     */
-    abstract public void buildBuffer (byte[] cmdline);
-
-    /**
-     * Build the argument vector corresponding to <tt>cmdline</tt>.
-     */
-    abstract public void buildArgv (String[] argv);
+  int i;
+  printf ("/*%d*/", len);
+  for (i = 0; i < len; i++) {
+    printf ("%s%d", i ? ", " : " ", (signed char) buf[i]);
+  }
+  return 0;
 }

@@ -37,45 +37,84 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys.proc;
+// Passes various combinations of argv values to a sub process, that
+// sub process prints them out in a java-code like form.
 
-/**
- * The build the command line argument list from the contents of the
- * file <tt>/proc/PID/cmdline</tt>.
- *
- * While this isn't a pure builder pattern, it is close enough.
- */
-public abstract class CmdLineBuilder
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <sys/wait.h>
+
+void
+spawn (char *filename, char *envp[], ...)
 {
-    /**
-     * Create a CmdLineBuilder; can only extend.
-     */
-    protected CmdLineBuilder ()
+  int argc;
+  va_list ap;
+  char **argv = NULL;
+  
+  argc = 0;
+  va_start (ap, envp);
+  while (1) {
+    argv = realloc (argv, sizeof (char **) * (argc + 1));
+    argv[argc] = va_arg (ap, char *);
+    if (argv[argc] == NULL) break;
+    argc++;
+  }
+  va_end (ap);
+
+  printf ("public void test");
+  for (argc = 0; argv[argc] != NULL; argc++) {
+    printf ("_%s0", argv[argc]);
+  }
+  printf (" ()\n{\n");
+
+  printf ("  check (new String[] {");
+  for (argc = 0; argv[argc] != NULL; argc++) {
+    printf ("%s\"%s\"", argc ? ", " : " ", argv[argc]);
+  }
+  printf (" },\n");
+  printf ("         new byte[] {");
+  fflush (stdout);
+
+  int pid = fork ();
+  switch (pid) {
+  case 0:
+    execve (filename, argv, envp);
+    perror ("execve");
+    abort ();
+  case -1:
+    perror ("fork");
+    abort ();
+  default:
     {
+      int status;
+      if (waitpid (pid, &status, 0) < 0) {
+	perror ("waitpid");
+	abort ();
+      }
+      if (!WIFEXITED (status) || WEXITSTATUS (status) != 0) {
+	fprintf (stderr, "bad status %d\n", status);
+	abort ();
+      }
     }
+  }
 
-    /**
-     * Scan the maps file found in <tt>/proc/PID/cmdline</tt> building
-     * up the command line.  Return true if the scan was successful.
-     */
-    public final native boolean construct (int pid);
+  printf ("});\n}\n");
+}
 
-    /**
-     * Scan the CMDLINE byte array building the corresponding command
-     * line string.  It is assumed that the byte array contains ASCII
-     * characters, and for each entry includes a terminating NUL.
-     * {@link #buildArgv} is called with the command line.
-     */
-    public final native boolean construct (byte[] cmdline);
-
-    /**
-     * Called with the raw byte buffer slurped by {@link
-     * #construct(int)}.
-     */
-    abstract public void buildBuffer (byte[] cmdline);
-
-    /**
-     * Build the argument vector corresponding to <tt>cmdline</tt>.
-     */
-    abstract public void buildArgv (String[] argv);
+int
+main (int argc, char **argv, char **envp)
+{
+  char dump[] = "./cmdline/dump";
+  spawn (dump, envp, NULL);
+  spawn (dump, envp, "", NULL);
+  spawn (dump, envp, "a", NULL);
+  spawn (dump, envp, "", "", NULL);
+  spawn (dump, envp, "a", "", NULL);
+  spawn (dump, envp, "", "b", NULL);
+  spawn (dump, envp, "a", "b", NULL);
+  spawn (dump, envp, "a", "b", "c", NULL);
+  return (0);
 }

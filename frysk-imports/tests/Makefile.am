@@ -39,6 +39,7 @@
 
 EXTRA_DIST =
 # Gag all the output from the failing tests
+check_PROGRAMS =
 TESTS_ENVIRONMENT = eval > log 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
@@ -248,3 +249,7 @@ cdtparserversion/cdttest.sh: cdtparserversion/CDTParserTest.class $(CDTPARSER_JA
 	mv $@.tmp $@
 $(CDTPARSER_JAR):
 	cd `dirname $(CDTPARSER_JAR)` && $(MAKE)
+
+# Test effect of argv on /proc/PID/cmdline (should not abort)
+check_PROGRAMS += cmdline/dump cmdline/print
+TESTS += cmdline/print

@@ -37,45 +37,46 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys.proc;
+#include <gcj/cni.h>
 
-/**
- * The build the command line argument list from the contents of the
- * file <tt>/proc/PID/cmdline</tt>.
- *
- * While this isn't a pure builder pattern, it is close enough.
- */
-public abstract class CmdLineBuilder
+#include "frysk/sys/proc/cni/slurp.hxx"
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/proc/CmdLineBuilder.h"
+#include "java/lang/String.h"
+
+jboolean
+frysk::sys::proc::CmdLineBuilder::construct (jint pid)
 {
-    /**
-     * Create a CmdLineBuilder; can only extend.
-     */
-    protected CmdLineBuilder ()
-    {
+  jbyteArray buf = slurp (pid, "cmdline");
+  if (buf == NULL)
+    return false;
+  buildBuffer (buf);
+  return construct (buf);
+}
+
+jboolean
+frysk::sys::proc::CmdLineBuilder::construct (jbyteArray buf)
+{
+  int argc = 0;
+  for (int i = 0; i < buf->length; i++) {
+    if (elements (buf)[i] == '\0')
+      argc++;
+  }
+  JArray<jstring>* argv
+    = (JArray<jstring>*) JvNewObjectArray (argc, &java::lang::String::class$,
+					   NULL);
+  int start = 0;
+  argc = 0;
+  for (int i = 0; i < buf->length; i++) {
+    if (elements (buf)[i] == '\0') {
+      elements (argv)[argc]
+	= JvNewStringLatin1 ((char *) (elements (buf) + start), i - start);
+      start = i + 1;
+      argc++;
     }
+  }
 
-    /**
-     * Scan the maps file found in <tt>/proc/PID/cmdline</tt> building
-     * up the command line.  Return true if the scan was successful.
-     */
-    public final native boolean construct (int pid);
+  buildArgv (argv);
 
-    /**
-     * Scan the CMDLINE byte array building the corresponding command
-     * line string.  It is assumed that the byte array contains ASCII
-     * characters, and for each entry includes a terminating NUL.
-     * {@link #buildArgv} is called with the command line.
-     */
-    public final native boolean construct (byte[] cmdline);
-
-    /**
-     * Called with the raw byte buffer slurped by {@link
-     * #construct(int)}.
-     */
-    abstract public void buildBuffer (byte[] cmdline);
-
-    /**
-     * Build the argument vector corresponding to <tt>cmdline</tt>.
-     */
-    abstract public void buildArgv (String[] argv);
+  return true;
 }

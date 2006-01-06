@@ -1,5 +1,11 @@
 2006-01-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (check_PROGRAMS): Add cmdline/dump, and
+	cmdline/print.
+	(TESTS): Add cmdline/print.
+	* cmdline/dump.c: New file.
+	* cmdline/print.c: New file.
+
 	* Makefile.am (rh175569/gcj.sh): Change to expected pass.
 
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
