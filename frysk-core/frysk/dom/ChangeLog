@@ -1,0 +1,468 @@
+2006-01-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestDOM.java: Fix reverse logic errors.
+	(DOMImage): Put assert* in iteration loop for testDOMImage.
+	Remove System.out.prinln stmts.
+
+2006-01-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* TestDOM.java: New for junit testing.
+
+2005-12-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMInlineInstance (hasParentInlineInstance): Added.
+	(getPreviousInstance): Added.
+
+	* DOMFunction.java (getSource): Added.
+	(getSourceName): Removed, should now get name through the
+	DOMSource returned by getSource.
+
+2005-12-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Directory moved to frysk-core/frysk/dom/, from
+	frysk-gui/frysk/srcwin/dom/.
+	
+2005-11-23  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFrysk.java: Moved IMAGE_ATTR constant to DOMImage.
+	* DOMFunction.java: Added FUNCTION_NODE constant and moved
+	INLINE_NODE constant to DOMInlineInstance.
+	* DOMImage.java: Removed INLINE_NODE constant, was redundant.
+	(getFunction): Now uses FUNCTION_NODE from DOMFunction.
+	* DOMInlineInstance.java: Created INLINE_NODE constant.
+	(addInlineInstance): Added.
+	(hasInlineInstance): Added.
+	(getInlineInstance): Added.
+	* DOMLine.java (setHasInline): Removed.
+	(hasInlinedCode): No longer relies on the member variable.
+	(addInlineCode): No longer sets member variable.
+	* DOMSource.java: Removed LINENO_NODE = "line";
+	(addLine): No longer takes 'has_inline' variable.
+	* DOMTagTypes: Added constant for out of scope variables.
+	* DOMTestDOMFrysk: Commented out unused variable due to DOMLine
+	no longer needing a 'has_inline' variable for addLine.
+	
+2005-11-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMLine.java (getTag): Now only gets tags of type "tag", no
+	longer erroneously includes inline instances tags.
+
+2005-11-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMInlineInstance.java (getPCLine): Added.
+	* DOMLine.java (addInlineInst): Now takes PC line number within the
+	inlined code.
+	* DOMTestDOMFrysk: Added parameter to calls to addInlineInst.
+	* DOMTestGUIBuilder: Ditto.
+
+2005-11-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTestDOMFrysk/java (testDOMLine): Commented out area of
+	test that temporarily no longer works to do DOM fiddling to make
+	inlines work.
+
+2005-11-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFunction.java (getLines): No longer throws exception, now
+	actually works as expected.
+	* DOMInlineInstance.java (DOMInlineInstance): Removed constructor
+	that doesn't take an Element since it wasn't being used.
+	(getDeclaration): Now actually browses the tree to find the proper
+	DOMFunction object.
+
+2005-11-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFrysk.java: Made IMAGE_ATTR protected.
+	
+	* DOMFunction.java (createDOMFunction): takes source name,
+	start and end line numbers instead of an array of Strings.
+	(getStartLine): Renamed to getStartingLine and now uses attributes.
+	(getEndLine): Renamed to getEndingLine and now uses attributes.
+	(getLines): Now fetches the lines from the DOMSource.
+	(getLinesIter): Removed.
+	* DOMImage.java (addInlineFunction): Renamed to addFunction, uses
+	createDOMFunction.
+	* DOMLine.java (addInlineInst): Changed last parameter name to
+	'length'.
+	* DOMTestDOMFrysk.java (testDOMImage): Commented out sections
+	dealing with refactored DOMFunction, since this will be changed to
+	JUnit soon anyways.
+	(testDOMFunction): Ditto.
+	* DOMTestGuiBuilder.java: Commented section that adds function info
+	temporarily until it can be refactored to match DOMFunction.
+
+2005-11-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTagTypes.java: Added FUNCTION_BODY as a tag type.
+
+2005-11-04  Rick Moseley  <rmoseley@redhat.com>
+	
+	* DOMTestDOMFrysk.java: Added test for DOMImage.getFunction();
+	to be added to JUnit also.
+
+2005-11-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMInlineFunc.java: Extraneous, removed.
+	
+2005-10-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTagTypes: Added.
+
+2005-10-28  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTestGUIBuilder: Added data to more accurately reflect the
+	state of test6.cpp.
+	(buildDOM): Added boolean flag to decide whether or not to
+	populate tags.
+
+2005-10-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMLine.java (getTag): Removed check for line offset, since all 
+	offsets are w.r.t the start of the current line.
+	* DOMTag.java (isInRange): Fixed, now treats length properly and
+	includes the endpoints.
+
+2005-10-26  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTag.java (getEnd): Changed to getLength.
+	(setEnd): Changed to setLength.
+	(END_ATTR): Changed to LENGTH_ATTR.
+	* DOMTestGUIBuilder.java (test_prog): Added missing newline.
+	(tags_classes): Added.
+	(main): Refactored out buildDOM method.
+	(buildDOM): Added.
+
+2005-10-25  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Change Boolean to boolean for line attributes
+	change Integer.toString to "".
+	* DOMSource.java: Added getLineCount method (BZ# 1544) change
+	Boolean to boolean for line attributes.
+	* DOMTestDOMFrysk.java: Implement change for Boolean to
+	boolean added test for getLineCount few comment changes.
+	* DOMTestGUIBuilder.java: Change Boolean to boolean for line
+	attributes fix error of "has_inline" not being set.
+
+2005-10-25  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMTag.java: Changed END_ATTR from "end" to "length".
+	* DOMTestGUIBuilder.java: Add "inline instance" to line node.
+
+2005-10-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: added new addTag method
+	* DOMTag.java: added TOKEN_ATTR
+	* DOMTestDOMFrysk.java: fixed addPID error print out
+	* DOMTestGUIBuilder.java: new to create DOM for GUI testing
+
+2005-10-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMTag.java: added setType/setStart/setEnd methods
+	
+	* DOMTestDOMFrysk.java: added tests for above
+
+2005-10-20  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMInlineInstance.java: added setStart/setEnd methods
+	
+	* DOMLine.java: added getInlineInst method
+	
+	* DOMTestDOMFrysk.java: added tests for the above
+
+2005-10-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFunction.java: added getLineIter method
+	
+	* DOMTextDOMFrysk.java: added test for above
+	
+2005-10-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Modded getTags/getInLines removed unused
+	variables.
+	* DOMTestDOMFrysk.java: Added tests for the above.
+	
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Fix addTag method.
+	
+	* DOMTag.java: Redo constructors.
+	
+	* DOMTestDOMFrysk.java: Add tests for DOMTag methods getType,
+	getStart, getEnd.
+
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Comment out getImages method for now; it
+	breaks the build.
+
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMInlineInstance.java: Comment out of import of
+	java.util.vector; added Element myElement; added
+	DOMInlineInstance(Element) constructor; added
+	getInlineInstance(Element) method.
+		
+	* DOMLine.java: Reformatted.
+	
+	* DOMTestDOMFrysk.java: Added tests for above new methods.
+
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMSource.java: Use getText/setText to get/set the text of a
+	line.
+	
+	* DOMLine.java: Use getText/setText methods to get/set the
+	text of a line; fix setText method bug for setting length.
+	
+	* DOMTestDOMFrysk.java: Added getStartLine/getEndLine methods;
+	use setText/getText methods as above.
+			
+2005-10-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFunction.java: renamed from DOMInlineFunc
+	
+	* DOMImage.java: Removed INLINENAME_ATTR; added new
+	addInlineFunction method; getFunction now returns a DOMFunction
+	type.
+						 
+	* DOMInlineInstance.java: Renamed DOMInlineFunc to DOMFunction.
+	
+	* DOMLine.java: fixed addInstance bug; commented out
+	getInstElement method for now
+						
+	* DOMSource.java: More renaming of DOMInlineFunc to DOMFunction.
+	
+	* DOMTestDOMFrysk.java: Modded to relfect above changes; added
+	tests for the DOMFunction class.
+
+2005-10-14  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Added Copyright/License information.
+	* DOMImage.java: Ditto.
+	* DOMTag.java: Ditto.
+	* DOMInlineFunc.java: Ditto.
+	* DOMSource.java: Ditto.
+	* DOMLine.java: Ditto Added hasBreakPoint method.  When
+	changing text, change the "length" attibute too.  Added
+	addInstance method.  Added getInstElement method.
+	* DOMInlineInstance.java: Added Copyright/License information.
+	Added LINEINST_NODE, LINEINST_ATTR variables.
+	* DOMTestDOMFrysk.java: Added Copyright/License information.
+	Added tests for methods added to DOMLine.java
+
+2005-10-12  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMLine.java: Added setText/getText/setOffset/getOffset
+	methods; modded hasInlinedCode/isExecutable method.
+	* DOMTestDOMFrysk: Added tests for above methods.
+	* DOMSource.java: Added HAS_BREAK attribute; added some much
+	needed comments for addLine; renamed some vars to make them more
+	uniform; changed calling params for addLine.
+
+2005-10-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMTestDOMFrysk.java: Add testDOMLine method; change name of
+	getLineNum1 method to getLine; added test for DOMLine.getLineNum;
+	added test for DOMLine.getLength.
+	* DOMSource.java: Change getLineNum1 name to getLine; change
+	END_ATTR to LENGTH_ATTR from DOMLine; rename getLineNum1 to
+	getLineNum & comment out; old getLineNum for now, may delete
+	later.
+	* DOMLine.java: Comment out *possibly* unneeded constructors;
+	fix getLength method.
+
+2005-10-11  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: Change LINENO_ATTR to use NUMBER_ATTR from
+	DOMSource.
+	* DOMLine.java: Added LENGTH_ATTR variable.
+	* DOMSource.java: Use variables from DOMLine instead of local
+	ones; add getLineNum1 method as alternative to getLineNum.
+	* DOMTestDOMFrysk.java: Add test for getLineNum1 method.
+
+2005-10-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMSource.java: modded getLines() method
+	
+	* DOMTestDOMFrysk.java: added test for getLines() method
+
+2005-10-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMSource.java: Screw-up, missed checking it in with the
+	below entry.
+
+2005-10-10  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: Removed LINENO/LINENO_ATTR variables.
+	* DOMSource.java: Import java.math.BigInteger; added
+	LINENO/LINENO_ATTR variables; added varibles for adding lines to
+	DOM; added addLine method.
+	* DOMTestDOMFrysk.java: Added test of DOMSource.addLine
+	method; cleaned up a lot of variables.
+
+2005-10-07  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: Changed addSource/AddInlineFunction to return
+	void; added getInlineFunction method.
+	* DOMSource.java: Added setFileName/setFilePath methods.
+	* DOMTestDOMFrysk.java: Added tests for above
+	additons/changes; more work on test messages to make them clearer.
+
+2005-10-07  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: Add getSource method.
+	* DOMTestDOMFrysk.java: Add tests for getSource/getSources.
+	
+2005-10-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: Modifed getInlinedFunctions method.
+	* DOMTestDOMFrysk.java: Added test for above.
+
+2005-10-05  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Moved printDOM method to DOMTestDOMFrysk;
+	removed uneeded imports and variable for above.
+	* DOMImage.java: Added addInlineFunction method.
+	* DOMTestDOMFrysk.java: Added tests for addInlineFunction;
+	added printDOM method from DOMFrysk.java.
+
+2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: standardize constant names with DOMSource
+	
+	* DOMImage.java: Ditto.  Add setCCPath() method.
+						 
+	* DOMTestDOMFrysk.java: Added test for set CCPath().  Made
+	test output messages more uniform.
+
+2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* dom.DOMImage.java: added back in accidentally deleted getElement method
+
+2005-10-04  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMImage.java: added addSource() method
+	
+	* DOMTestDOMFrysk.java: added tests for above
+
+2005-10-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Renamed pcValue to value.
+	* DOMTestDOMFrysk.java: split test suite into 2 new methods -
+	testDOMFrysk() and testDOMImage().  Added tests for
+	DOMImage.getCCPath() and DOMImage.getName()
+
+2005-10-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Added addPID() method.  Modified getPID()
+	method.
+	* DOMTestDOMFrysk.java: Added addPPID()/getPID() tests.  Added
+	DOMGetImage tests.  Made test messages all look similar.
+
+2005-10-03  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMFrysk.java: Added addImage() method.  Added
+	checkImageDup() method.  Modified getImage() method.
+	* DOMTestDOMFrysk.java: Added tests for above methods plus
+	some others.
+
+2005-09-28  Rick Moseley  <rmoseley@redhat.com>	
+	
+	* DOMFrysk.java: rename to setPC
+	
+	* DOMFrysk.java: add getPC method
+	
+	* DOMTestDOMFrysk.java: add test for getPC method
+
+2005-09-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMCreate.java: merged into DOMFrysk.java and deleted
+	
+	* DOMTestCreate.java: renamed to DOMTestDOMFrysk.java
+	
+	* DOMGetter.java: merged into DOMFrysk and deleted
+	
+	* DOMTestDOMFrysk: removed unneeded imports and variables
+
+2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMInlineFunc (createDOMInlineFunc): Added.
+
+	* DOMImage (getInlinedFunctions): Moved to DOMSource.
+	(addInlineFunciton): Ditto.
+
+	* DOMSource (getInlinedFunctions): Moved here from DOMImage.
+	(addInlineFunction): Ditto.
+
+2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTag.java (createDOMTag): Added.
+	(getElement): Added.
+
+	* DOMLine.java: Removed extraneous import.
+	(createDOMLine): Added.
+	(getElement): Added.
+	(addTag): Added.
+
+	* DOMSource.java (createDOMSource): Added.
+	(getElement): Added.
+	(addLine): Added.
+
+	* DOMImage.java (createDOMImage): Added.
+	(getElement): Added.
+	(addSource): Added.
+	(addInlinedFunction): Added.
+
+	* DOMInlinedFunc.java (getElement): Added.
+
+2005-09-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMLine.java (hasBreakpoint): Added.
+
+2005-09-21  Rick Moseley  <rmoseley@redhat.com>
+
+	* DOMCreate.java: Added.
+	
+	* DOMTestCreate.java: Added.
+	
+2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMInlinedFunc.java: Added.
+
+	* DOMInlinedInstance.java: Added.
+
+	* DOMImage.java (getInlinedFunctions): Added.
+
+	* DOMLine.java: Added private member inlines.
+	(getInlines): Added.
+
+2005-09-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMSource.java: fixed warning about serialVersionUID not 
+	being found and Added javadoc comments. Extracted constants.
+
+	* DOMGetter.java: Added javadoc comments and extracted constants.
+
+	* DOMImage.java: Ditto.
+
+	* DOMTag.java: Ditto.
+	
+	* DOMLine.java: Added javadoc comments and extracted constants.
+	(getTag): Index can now be relative to line or start of file.
+	
+
+2005-09-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* New directory.
+	* DOMGetter.java: Ditto.
+	* DOMImage.java: Ditto.
+	* DOMSource.java: Ditto.
+	* DOMLine.java: Ditto.
+	* DOMTag.java: Ditto.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:
