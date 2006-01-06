@@ -84,6 +84,7 @@ public class TestDOM extends TestCase {
 	 * tests the DOMFrysk Class methods
 	 * 
 	 *************************************************************************/
+	
 	public static void testDOMFrysk() {
 
 		pc = new BigInteger("25");
@@ -103,7 +104,7 @@ public class TestDOM extends TestCase {
 		
 		assertTrue("testing DOMFrysk.addPID() - 256", dom.addPID(256));
 		
-		assertTrue("testing DOMFrysk.addPID() - 12", dom.addPID(12));
+		assertFalse("testing DOMFrysk.addPID() - 12", dom.addPID(12));
 		
 		assertEquals("testing DOMFrysk.getPID()", dom.getPID(), 256);
 		
@@ -151,17 +152,27 @@ public class TestDOM extends TestCase {
 			ctr++;
 			String inlinename = test_sources
 					.getAttributeValue(DOMSource.FILENAME_ATTR);
-			if (ctr == 1 && (inlinename == "test_source1")) {
-				System.out.println("passed...DOMImage.getSources..."
-						+ inlinename);
+			if (ctr == 1) {
+				assertEquals("testing DOMImage.getSources - ctr = 1",
+						inlinename, "test_source1");
 				continue;
 			}
-			if (ctr == 2 && (inlinename == "test_source2")) {
-				System.out.println("passed...DOMImage.getSources..."
-						+ inlinename);
+//			if (ctr == 1 && (inlinename == "test_source1")) {
+//				System.out.println("passed...DOMImage.getSources..."
+//						+ inlinename);
+//				continue;
+//			}
+			if (ctr == 2) {
+				assertEquals("testing DOMImage.getSources - ctr = 2",
+						inlinename, "test_source2");
 				continue;
 			}
-			System.out.println("failed...DOMImage.getSources..." + inlinename);
+//			if (ctr == 2 && (inlinename == "test_source2")) {
+//				System.out.println("passed...DOMImage.getSources..."
+//						+ inlinename);
+//				continue;
+//			}
+//			System.out.println("failed...DOMImage.getSources..." + inlinename);
 		}
 	}
 	
@@ -333,7 +344,7 @@ public class TestDOM extends TestCase {
 		
 		testDOMLine.setExecutable(true);
 
-		assertTrue("testing DOMLine.hasInlinedCode()", testDOMLine.hasInlinedCode());
+		assertFalse("testing DOMLine.hasInlinedCode()", testDOMLine.hasInlinedCode());
 
 		assertFalse("testing DOMLine.hasBreakPoint() - false", testDOMLine.hasBreakPoint());
 
