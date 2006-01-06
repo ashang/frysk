@@ -1,5 +1,8 @@
 2006-01-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (process_TESTS): Define.  Append to check_PROGRAMS
+	and TESTS.
+	
 	* Makefile.am (check_PROGRAMS): Add cmdline/dump, and
 	cmdline/print.
 	(TESTS): Add cmdline/print.

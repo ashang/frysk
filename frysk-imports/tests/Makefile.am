@@ -185,21 +185,17 @@ gcc8544/gcj.sh: $(gcc8544_FILES)
 	mv $@.tmp $@
 
 
-TESTS += process/single_exec
-TESTS += process/multi_child_exec
-TESTS += process/multi_parent_exec
-TESTS += process/multi_child_parent_exec
-process_FILES = process/single_exec.c \
-	process/multi_child_exec.c \
-	process/multi_parent_exec.c \
-	process/multi_child_parent_exec.c 
-EXTRA_DIST += $(process_FILES)
-process/single_exec: $(process_FILES)
-	mkdir -p process
-	$(GCJ) $(srcdir)/process/single_exec.c -o process/single_exec
-	$(GCJ) $(srcdir)/process/multi_child_exec.c -o process/multi_child_exec
-	$(GCJ) $(srcdir)/process/multi_parent_exec.c -o process/multi_parent_exec
-	$(GCJ) $(srcdir)/process/multi_child_parent_exec.c -o process/multi_child_parent_exec
+process_TESTS = \
+	process/single_exec \
+	process/multi_child_exec \
+	process/multi_parent_exec \
+	process/multi_child_parent_exec
+process_single_exec_LDFLAGS = -lpthread
+process_multi_child_exec_LDFLAGS = -lpthread
+process_multi_parent_exec_LDFLAGS = -lpthread
+process_multi_child_parent_exec_LDFLAGS = -lpthread
+TESTS += $(process_TESTS)
+check_PROGRAMS += $(process_TESTS)
 
 # GCJ complains that frysk.model.Signal isn't visible from
 # frysk.event.SignalEvent, it should have imported frysk.event.Signal.
