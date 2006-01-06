@@ -165,7 +165,7 @@ rh174912ice/gcj.sh: $(werror_FILES)
 
 rh175569_FILES = rh175569/C.java
 EXTRA_DIST += $(rh175569_FILES)
-XFAIL_TESTS += rh175569/gcj.sh
+TESTS += rh175569/gcj.sh
 rh175569/gcj.sh: $(werror_FILES)
 	mkdir -p rh175569
 	echo '#!/bin/sh -xe' > $@.tmp
