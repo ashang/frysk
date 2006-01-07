@@ -180,7 +180,7 @@ public class TestStopAndStop
 
 	TestStopAndStopInternals (int pid)
 	{
-	    Manager.host.observableTaskAdded.addObserver (new TaskCreatedObserver (pid));
+	    host.observableTaskAdded.addObserver (new TaskCreatedObserver (pid));
 	    new TaskDestroyedObserver ();
 	}
     }

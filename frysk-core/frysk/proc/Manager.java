@@ -59,9 +59,14 @@ public class Manager
     public static EventLoop eventLoop = new EventLoop ();
     public static Host host = new LinuxHost (eventLoop);
 
-    static void resetXXX ()
+    /**
+     * XXX: For testing, resets the Manager back to it's default
+     * state.
+     */
+    static Host resetXXX ()
     {
 	eventLoop = new EventLoop ();
 	host = new LinuxHost (eventLoop);
+	return host;
     }
 }

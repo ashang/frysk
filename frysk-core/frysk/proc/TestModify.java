@@ -170,7 +170,7 @@ public class TestModify
 
 	TestModifyInternals ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new Observer ()
+	    host.observableTaskAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -182,7 +182,7 @@ public class TestModify
 			task.requestAddSignaledObserver (taskEventObserver);
 		    }
 		});
-	    Manager.host.observableProcRemoved.addObserver
+	    host.observableProcRemoved.addObserver
 		(new ProcRemovedObserver ());
 	}
     }
@@ -191,7 +191,7 @@ public class TestModify
     {
 	TestModifyInternals t = new TestModifyInternals ();
 	// Create program making syscalls
-	Manager.host.requestCreateAttachedProc ( new String[]
+	host.requestCreateAttachedProc ( new String[]
 	    {
 		"./prog/modify/modify"
 	    });

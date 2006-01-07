@@ -195,10 +195,10 @@ public class TestSyscallInterrupt
 	TestSyscallInterruptInternals (int pid)
 	{
             this.pid = pid;
-            Manager.host.requestRefresh (true);
+            host.requestRefresh (true);
             Manager.eventLoop.runPending ();
 
-            Proc p = Manager.host.getProc (new ProcId (pid));
+            Proc p = host.getProc (new ProcId (pid));
 
             if (p != null) {
                 List tasks = p.getTasks ();
@@ -211,7 +211,7 @@ public class TestSyscallInterrupt
                     }
                 }
             }
-            Manager.host.observableProcRemoved.addObserver
+            host.observableProcRemoved.addObserver
                 (new ProcDestroyedObserver ());
         }
     }

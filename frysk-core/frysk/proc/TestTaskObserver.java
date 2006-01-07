@@ -88,7 +88,7 @@ public class TestTaskObserver
 	}
 	AddToAttached addToAttached = new AddToAttached ();
 
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (new String[] {
 		"./prog/terminated/exit",
 		"0"

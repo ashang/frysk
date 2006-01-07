@@ -1031,14 +1031,20 @@ public class TestLib
 	children.add (new Integer (child));
     }
 
+    /**
+     * The host being used by the current test.
+     */
+    protected Host host;
+
     public void setUp ()
     {
 	children = new HashSet ();
-	Manager.resetXXX ();
+	// Extract a fresh new Host and EventLoop from the Manager.
+	host = Manager.resetXXX ();
 	// Add every descendant of this process, and all their tasks,
 	// to the set of children that should be killed off after the
 	// test has run.
-	Manager.host.observableProcAdded.addObserver (new Observer ()
+	host.observableProcAdded.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
 		{
@@ -1048,7 +1054,7 @@ public class TestLib
 		    }
 		}
 	    });
-	Manager.host.observableTaskAdded.addObserver (new Observer ()
+	host.observableTaskAdded.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
 		{

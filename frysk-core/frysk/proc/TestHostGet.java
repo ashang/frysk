@@ -54,9 +54,9 @@ public class TestHostGet
      */
     public void testGetSelf ()
     {
-	Proc self = Manager.host.getSelf ();
+	Proc self = host.getSelf ();
 	// Self is a singleton.
-	assertSame ("value from host.getSelf", self, Manager.host.getSelf ());
+	assertSame ("value from host.getSelf", self, host.getSelf ());
 	assertEquals ("self's process id", self.getPid (), Pid.get ());
 	Proc proc = self;
 	int level = 0;

@@ -131,7 +131,7 @@ public class TestSyscallOpen
 
 	TestSyscallOpenInternals ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new Observer ()
+	    host.observableTaskAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -143,7 +143,7 @@ public class TestSyscallOpen
 			task.requestAddSyscallObserver (taskEventObserver);
 		    }
 		});
-	    Manager.host.observableProcRemoved.addObserver
+	    host.observableProcRemoved.addObserver
 		(new ProcDestroyedObserver ());
 	}
     }
@@ -153,7 +153,7 @@ public class TestSyscallOpen
 	TestSyscallOpenInternals t = new TestSyscallOpenInternals ();
 
  	// Create program making syscalls
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (new String[] {
  		"./prog/syscall/syscalls"
  	    });

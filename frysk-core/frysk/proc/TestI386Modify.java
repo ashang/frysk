@@ -165,7 +165,7 @@ public class TestI386Modify
 
 	TestI386ModifyInternals ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new Observer ()
+	    host.observableTaskAdded.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -186,7 +186,7 @@ public class TestI386Modify
 			}
 		    }
 		});
-	    Manager.host.observableProcRemoved.addObserver
+	    host.observableProcRemoved.addObserver
 		(new ProcRemovedObserver ());
 	}
     }
@@ -195,7 +195,7 @@ public class TestI386Modify
     {
 	TestI386ModifyInternals t = new TestI386ModifyInternals ();
 	// Create program making syscalls
-	Manager.host.requestCreateAttachedProc ( new String[]
+	host.requestCreateAttachedProc ( new String[]
 	    {
 		"./prog/x86isa/x86modify"
 	    });

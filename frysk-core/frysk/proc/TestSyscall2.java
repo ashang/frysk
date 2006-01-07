@@ -103,7 +103,7 @@ public class TestSyscall2
 
 	TestSyscall2Internals ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new Observer () {
+	    host.observableTaskAdded.addObserver (new Observer () {
 		    public void update (Observable o, Object obj)
 		    {
 			Task task = (Task) obj;
@@ -114,7 +114,7 @@ public class TestSyscall2
 			task.requestAddSyscallObserver (taskEventObserver);
 		    }
 		});
-	    Manager.host.observableProcRemoved.addObserver
+	    host.observableProcRemoved.addObserver
 		(new ProcDestroyedObserver ());
 	}
     }
@@ -125,7 +125,7 @@ public class TestSyscall2
  	String arg = "1000";
         TestSyscall2Internals t = new TestSyscall2Internals ();
 
- 	Manager.host.requestCreateAttachedProc
+ 	host.requestCreateAttachedProc
  	    ( new String[] {
   		"./prog/syscall/syscallloop",
  		arg

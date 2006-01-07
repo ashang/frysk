@@ -200,7 +200,7 @@ public class TestStep
 
 	TestStepInternals ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new TaskCreatedObserver ());
+	    host.observableTaskAdded.addObserver (new TaskCreatedObserver ());
 	    new TaskDestroyedObserver ();
 	}
     }
@@ -211,7 +211,7 @@ public class TestStep
 	TestStepInternals t = new TestStepInternals ();
 
 	// Create threaded infinite loop
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (new String[] {
                 "./prog/step/infThreadLoop"
             });

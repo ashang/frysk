@@ -76,7 +76,7 @@ public class TestTaskClonedObserver
 	}
 	CloneCounter cloneCounter = new CloneCounter ();
 
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
 		"./prog/fib/clone",
 		Integer.toString (fibCount)

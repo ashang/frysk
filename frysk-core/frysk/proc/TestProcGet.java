@@ -78,7 +78,7 @@ public class TestProcGet
 
 	TmpFile tmpFile = new TmpFile ();
 	new StopEventLoopWhenChildProcRemoved ();
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (null, tmpFile.toString (), "/dev/null", new String[] {
 		"./prog/print/auxv"
 	    });
@@ -157,7 +157,7 @@ public class TestProcGet
 	    new DetachedAckProcess ().findProcUsingRefresh (),
 	    new DetachedAckProcess ().findProcUsingRefresh ()
 	};
-	Proc self = Manager.host.getSelf ();
+	Proc self = host.getSelf ();
 
 	assertEquals ("number of children", 2, self.getChildren ().size ());
 	assertNotSame ("children", child[0], child[1]);

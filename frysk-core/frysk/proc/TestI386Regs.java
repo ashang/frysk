@@ -134,7 +134,7 @@ public class TestI386Regs
 
 	TestI386RegsInternals ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new Observer () 
+	    host.observableTaskAdded.addObserver (new Observer () 
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -155,7 +155,7 @@ public class TestI386Regs
 			}
 		    }
 		});
-	    Manager.host.observableProcRemoved.addObserver
+	    host.observableProcRemoved.addObserver
 		(new ProcDestroyedObserver ());
 	}
    }
@@ -165,7 +165,7 @@ public class TestI386Regs
     {
 	TestI386RegsInternals t = new TestI386RegsInternals ();
  	// Create program making an exit syscall");
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (new String[] {
 		"./prog/x86isa/x86regs"
 	    });

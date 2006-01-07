@@ -67,7 +67,7 @@ public class TestRun
 	// Create a program that removes the above tempoary file, when
 	// it exits the event loop will be shutdown.
 	String[] command = new String[] {"rm", "-f", tmpFile.toString () };
-	Manager.host.requestCreateAttachedProc (command);
+	host.requestCreateAttachedProc (command);
 
 	// Run the event loop, cap it at 5 seconds.
 	assertRunUntilStop ("run \"rm\" to exit");
@@ -94,7 +94,7 @@ public class TestRun
 
 	// Create a program that removes the above temporary file, when
 	// it exits the event loop will be shutdown.
-	Manager.host.requestCreateAttachedProc (new String[]
+	host.requestCreateAttachedProc (new String[]
 	    {
 		"rm",
 		"-f",

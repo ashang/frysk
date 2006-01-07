@@ -78,7 +78,7 @@ public class TestTaskObserverBlocked
 
 	// Run a program, any program so that blockedAttached has
 	// something to block.
-	Manager.host.requestCreateAttachedProc
+	host.requestCreateAttachedProc
 	    (new String[] {
 		"./prog/terminated/exit",
 		"0"
@@ -342,7 +342,7 @@ public class TestTaskObserverBlocked
 	    // main task).
 	    Fibonacci fib = new Fibonacci (fibCount);
 	    
-	    Manager.host.requestCreateAttachedProc
+	    host.requestCreateAttachedProc
 		(null, "/dev/null", null, new String[] {
 		    fibonacciProgram (),
 		    Integer.toString (fibCount)

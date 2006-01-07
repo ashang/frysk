@@ -62,14 +62,14 @@ public class TestRefresh
 	{
 	    this.child = child;
 	    added = new PidCounter (child.getPid (),
-				    Manager.host.observableProcAdded);
+				    host.observableProcAdded);
 	    removed = new PidCounter (child.getPid (),
-				      Manager.host.observableProcRemoved);
+				      host.observableProcRemoved);
 	}
 	Proc proc;
 	void verifyAdd (String reason, int tasks)
 	{
-	    proc = Manager.host.getProc (new ProcId (child.getPid ()));
+	    proc = host.getProc (new ProcId (child.getPid ()));
 	    assertNotNull (reason + ", child in process pool;",
 			   proc);
 	    assertEquals (reason + ", child's task count",
@@ -84,7 +84,7 @@ public class TestRefresh
 	void verifyRemove (String reason)
 	{
 	    assertNull (reason + ", child removed from process pool",
-			Manager.host.getProc (new ProcId (child.getPid ())));
+			host.getProc (new ProcId (child.getPid ())));
 	    assertEquals (reason + ", child discovered once",
 			  1, added.count);
 	    assertEquals (reason + ", child removed once",
@@ -106,7 +106,7 @@ public class TestRefresh
 	// Do several refreshes, check that the child is only added
 	// once, and never removed.
 	for (int i = 0; i < 2; i++) {
-	    Manager.host.requestRefresh ();
+	    host.requestRefresh ();
 	    Manager.eventLoop.runPending ();
 	    tracker.verifyAdd ("iteration " + i, 0);
 	}
@@ -121,12 +121,12 @@ public class TestRefresh
     public void testHostRefresh ()
     {
 	// Get an initial PS reading.
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	
 	// Check that it isn't empty.
 	assertTrue ("host.procPool non-empty",
-		    Manager.host.procPool.size () > 0);
+		    host.procPool.size () > 0);
 
 	// Create a suspended sub-process, and wait for it to start.
 	DetachedAckProcess child = new DetachedAckProcess ();
@@ -137,7 +137,7 @@ public class TestRefresh
 
 	// Do a refresh, check that the process was added and
 	// corresponding observable events occured.
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("first add", 0);
 
@@ -147,7 +147,7 @@ public class TestRefresh
 	// Check that a further refresh removes the process, generates
 	// a removed event, and puts the proc into the removed
 	// state.
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	tracker.verifyRemove ("first removed");
     }
@@ -178,7 +178,7 @@ public class TestRefresh
 	// At this stage, since the process's tasks are only located
 	// on an explicit refresh, the process should have no tasks,
 	// and no task events should have been seen.
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("refresh without tasks", 0);
 
@@ -246,7 +246,7 @@ public class TestRefresh
     public void testRefreshAll ()
     {
 	// Get an initial PS reading.
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	
 	// Create a suspended sub-process with two threads (in
@@ -257,7 +257,7 @@ public class TestRefresh
 	ChildTracker tracker = new ChildTracker (child);
 
 	// Do a refresh, check that the process was added.
-	Manager.host.requestRefresh (true);
+	host.requestRefresh (true);
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("all refreshed", 3);
     }
@@ -269,12 +269,12 @@ public class TestRefresh
     {
 	// Create a sub process, refresh things so that it is known.
 	ChildTracker tracker = new ChildTracker (new DetachedAckProcess ());
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("find child", 0);
 	
 	// Find this process.
-	Proc me = Manager.host.getProc (new ProcId (Pid.get ()));
+	Proc me = host.getProc (new ProcId (Pid.get ()));
 	assertNotNull ("this process", me);
 
 	assertSame ("this process and child's parent",
@@ -303,13 +303,13 @@ public class TestRefresh
 	Proc zombieChild = (Proc) zombieParent.getChildren ().getFirst ();
 	assertSame ("zombie and zombie child's parent",
 		    zombieChild.getParent (), zombieParent);
-	Proc procOne = Manager.host.getProc (new ProcId (1));
+	Proc procOne = host.getProc (new ProcId (1));
 
 	// Blow away the parent, this turns the child into a daemon,
 	// do a refresh and check that the child's parent changed to
 	// process one.
 	zombie.fryParent ();
-	Manager.host.requestRefresh ();
+	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertNotSame ("child's parent and zombie maker",
 		       zombieChild.getParent (), zombieParent);
@@ -350,7 +350,7 @@ public class TestRefresh
 	// Turn the zombie-child into a true zombie, check things are
 	// updated.
 	zombie.zombieFork ();
-	Manager.host.requestRefresh (true);
+	host.requestRefresh (true);
 	Manager.eventLoop.runPending ();
  	assertEquals ("zombie maker child count",
  		      1, zombieParent.getChildren ().size ());
