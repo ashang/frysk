@@ -132,7 +132,7 @@ public class LinuxHost
 	    else if (removed.get (procId) != null) {
 		// Process 1 never gets a [new] parent.
 		if (pid > 1) {
-		    Stat stat = ((LinuxProc)proc).stat;
+		    Stat stat = ((LinuxProc)proc).getStat ();
 		    // An existing process that hasn't yet been
 		    // updated.  Still need check that its parent
 		    // didn't change (assuming there is one).

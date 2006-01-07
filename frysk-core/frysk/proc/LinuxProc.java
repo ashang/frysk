@@ -62,7 +62,7 @@ public class LinuxProc
     /**
      * If it hasn't already been read, read the stat structure.
      */
-    private Stat getStat ()
+    Stat getStat ()
     {
 	if (stat == null) {
 	    stat = new Stat ();
@@ -70,7 +70,7 @@ public class LinuxProc
 	}
 	return stat;
     }
-    Stat stat;
+    private Stat stat;
 
     public String getCommand ()
     {

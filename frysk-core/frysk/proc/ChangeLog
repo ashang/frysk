@@ -1,5 +1,10 @@
 2006-01-07  Andrew Cagney  <cagney@redhat.com>
 
+	* LinuxProc.java (getStat): Make package visible.
+	(stat): Make private.
+	* LinuxHost.java (ProcChanges.update): Use LinuxProc.getStat, not
+	LinuxProc.stat.
+
 	* TestLib.java (host): Add, use.
 	(setUp()): Initialize the host using resetXXX.
 	* Manager.java (resetXXX()): Return the Host.
