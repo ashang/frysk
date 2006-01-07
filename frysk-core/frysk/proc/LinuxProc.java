@@ -46,6 +46,7 @@ import frysk.sys.proc.Stat;
 import frysk.sys.proc.IdBuilder;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
+import frysk.sys.proc.Exe;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.Config;
@@ -177,5 +178,10 @@ public class LinuxProc
 	BuildCmdLine cmdLine = new BuildCmdLine ();
 	cmdLine.construct (getPid ());
 	return cmdLine.argv;
+    }
+
+    protected String sendrecExe ()
+    {
+	return Exe.get (getPid ());
     }
 }

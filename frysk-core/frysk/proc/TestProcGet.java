@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -179,5 +181,24 @@ public class TestProcGet
 	for (int i = 0; i < argv.length; i++) {
 	    assertEquals ("cmdLine[" + i + "]", argv[i], cmdLine[i]);
 	}
+    }
+
+    /**
+     * Check that getExe returns the fully qualified path to the
+     * ack-daemon program.
+     */
+    public void testGetExe ()
+    {
+	Child child = new AckDaemonProcess ();
+	String[] argv = child.getArgv ();
+	String file;
+	try {
+	    file = new File (argv[0]).getCanonicalPath ();
+	}
+	catch (IOException e) {
+	    throw new RuntimeException (e);
+	}
+	Proc proc = child.findProcUsingRefresh ();
+	assertEquals ("exe", proc.getExe (), file);
     }
 }

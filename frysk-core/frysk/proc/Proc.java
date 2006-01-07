@@ -85,7 +85,20 @@ public abstract class Proc
      * Return the basename of the program that this process is
      * running.
      */
-    abstract public String getCommand ();
+    public abstract String getCommand ();
+
+    /**
+     * Return the full path of the program that this process is
+     * running.
+     */
+    public String getExe ()
+    {
+	if (exe == null)
+	    exe = sendrecExe ();
+	return exe;
+    }
+    private String exe;
+    protected abstract String sendrecExe ();
 
     /**
      * Return the Proc's command line argument list

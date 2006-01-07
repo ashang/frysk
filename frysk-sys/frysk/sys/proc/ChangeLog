@@ -1,3 +1,8 @@
+2006-01-07  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Exe.cxx: New.
+	* Exe.java: New.
+
 2006-01-06  Andrew Cagney  <cagney@redhat.com>
 
 	* CmdLineBuilder.java (construct): Make abstract.
