@@ -89,18 +89,22 @@ spontaneously kills the program).
 <dd>
 
 The RPM's that <em>frysk</em> require are not a part of the standard
-Fedora Core 4 distribution.  Additional RPMs need to be downloaded and
-installed.  In addition the <tt>gcj</tt> compiler has problems.
+Fedora Core 4 distribution, additional RPMs need to be downloaded and
+installed.
 
 <ul>
 
-<li>Install <tt>eclipse-ecj</tt><br> The bundled <tt>gcj</tt> compiler
-contains a number of bugs; they can be worked around by using
-<tt>ecj</tt>.
+<li><tt>gcj 4.0.2-8.fc4</tt> has a number of serious regressions that
+result in Internal Compiler Errors when building <em>frysk</em>; if at
+all possible install a slightly newer or older compiler
+
+<li>Install <tt>eclipse-ecj</tt><br> <tt>gcj</tt>'s front end has bugs
+that can be worked around by instead using this compiler.
 
 <li>Add the <em>frysk</em> yum repository<br> Copy the file <a
 href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo"><tt>frysk.repo</tt></a>
-in your <tt>/etc/yum.repos.d/</tt> directory (you'll need to be root).
+in your <tt>/etc/yum.repos.d/</tt> directory (you will need to be
+root).
 
 <li>Install the non-standard <em>frysk</em> libraries by running the
 command (<strong>note the quotes</strong>):<br>
