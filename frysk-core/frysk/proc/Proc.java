@@ -135,7 +135,8 @@ public abstract class Proc
     {
 	this (id, parent, host);
 	state = ProcState.initial (this, false);
-	logger.log (Level.FINE, "create detached proc {0}\n", this); 
+	logger.log (Level.FINE, "{0} new - create unattached running proc\n",
+		    this); 
     }
     /**
      * Create a new, attached, running, process forked by Task.
@@ -144,7 +145,8 @@ public abstract class Proc
     {
 	this (forkId, task.proc, task.proc.host);
 	state = ProcState.initial (this, true);
-	logger.log (Level.FINE, "create attached forked proc {0}\n", this); 
+	logger.log (Level.FINE, "{0} new - create attached running proc\n",
+		    this); 
     }
 
     abstract void sendRefresh ();
@@ -169,11 +171,11 @@ public abstract class Proc
      */
     public void requestAttachedContinue ()
     {
+	logger.log (Level.FINE, "{0} requestAttachedContinue\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "request proc attach/run execute\n", ""); 
 		    state = state.processRequestAttachedContinue (Proc.this);
 		}
 	    });
@@ -186,11 +188,11 @@ public abstract class Proc
      */
     public void requestDetachedContinue ()
     {
+	logger.log (Level.FINE, "{0} requestDetachedContinue\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "request process detach\n", ""); 
 		    state = state.processRequestDetachedContinue (Proc.this);
 		}
 	    });
@@ -201,11 +203,11 @@ public abstract class Proc
      */
     public void requestRefresh ()
     {
+	logger.log (Level.FINE, "{0} requestRefresh\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "request process task refresh\n", ""); 
 		    state = state.processRequestRefresh (Proc.this);
 		}
 	    });
@@ -216,11 +218,12 @@ public abstract class Proc
      */
     void performRemoval ()
     {
+	logger.log (Level.FINE, "{0} performRemoval -- no longer in /proc\n",
+		    this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "request proc removal\n", ""); 
 		    state = state.processPerformRemoval (Proc.this);
 		}
 	    });
@@ -288,12 +291,12 @@ public abstract class Proc
      */
     void performTaskStopCompleted (final Task theTask)
     {
+	logger.log (Level.FINE, "{0} performTaskStopCompleted\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "task stopped {0}\n", theTask); 
 		    state = state.processPerformTaskStopCompleted (Proc.this,
 								   task);
 		}
@@ -306,12 +309,12 @@ public abstract class Proc
      */
     void performTaskContinueCompleted (final Task theTask)
     {
+	logger.log (Level.FINE, "{0} performTaskContinueCompleted\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Task task = theTask;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "task continued {0}\n", theTask); 
 		    state = state.processPerformTaskContinueCompleted
 			(Proc.this, task);
 		}
@@ -329,12 +332,12 @@ public abstract class Proc
      */
     void performAddObservation (final Observation observationArg)
     {
+	logger.log (Level.FINE, "{0} performAddObservation\n", this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
 		Observation observation = observationArg;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "add observer {0} \n", observationArg); 
 		    state = state.processPerformAddObservation
 			(Proc.this, observation);
 		}
@@ -371,7 +374,7 @@ public abstract class Proc
      */
     void add (Proc child)
     {
-	logger.log (Level.FINE, "add proc as new child {0}\n", child); 
+	logger.log (Level.FINE, "{0} add(Proc) -- a child process\n", this); 
 	childPool.add (child);
     }
     /**
@@ -379,7 +382,7 @@ public abstract class Proc
      */
     void remove (Proc child)
     {
-	logger.log (Level.FINE, "remove proc as child {0}\n", child); 
+	logger.log (Level.FINE, "{0} remove(Proc) -- a child proces\n", this); 
 	childPool.remove (child);
     }
     /**
@@ -399,7 +402,7 @@ public abstract class Proc
     {
 	void notify (Object o)
 	{
-	    logger.log (Level.FINE, "notify observers {0}\n", o); 
+	    logger.log (Level.FINE, "{0} notify -- all observers\n", o); 
 	    setChanged ();
 	    notifyObservers (o);
 	}
@@ -441,7 +444,8 @@ public abstract class Proc
      */
     void remove (Task task)
     {
-	logger.log (Level.FINE, "remove task from proc {0}\n", task); 
+	logger.log (Level.FINE, "{0} remove(Task) -- within this Proc\n",
+		    this); 
 	observableTaskRemovedXXX.notify (task);
 	host.observableTaskRemoved.notify (task);
 	taskPool.remove (task.id);
@@ -452,7 +456,8 @@ public abstract class Proc
      */
     void retain (Task task)
     {
-	logger.log (Level.FINE, "remove all but task from proc {0}\n", task); 
+	logger.log (Level.FINE, "{0} retain(Task) -- remove all but task\n",
+		    this); 
 	Collection tasks = taskPool.values();
 	tasks.remove (task);
 	taskPool.values().removeAll (tasks);

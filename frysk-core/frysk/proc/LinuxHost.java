@@ -71,7 +71,7 @@ public class LinuxHost
      */
     LinuxHost (EventLoop eventLoop)
     {
-	logger.log (Level.FINE, "initialize\n", eventLoop);	
+	logger.log (Level.FINE, "{0} new\n", this);
 	this.eventLoop = eventLoop;
 	eventLoop.add (new PollWaitOnSigChld ());
     }
@@ -192,7 +192,7 @@ public class LinuxHost
     void sendCreateAttachedProc (String in, String out, String err,
 				 String[] args)
     {
-	logger.log (Level.FINE, "create child of this process\n", "");	
+	logger.log (Level.FINE, "{0} sendCreateAttachedProc\n", this);	
 	int pid = Ptrace.child (in, out, err, args);
 	// See if the Host knows about this task.
 	TaskId myTaskId = new TaskId (Tid.get ());
@@ -221,33 +221,45 @@ public class LinuxHost
 	PollWaitOnSigChld ()
 	{
 	    super (Sig.CHLD);
-	    logger.log (Level.FINE, "poll waitpid queue\n", ""); 
+	    logger.log (Level.FINE, "{0} new\n"); 
 	}
 	Wait.Observer waitObserver = new Wait.Observer ()
 	    {
+		// Hold onto a scratch ID; avoids overhead of
+		// allocating a new taskId everytime a new event
+		// arrives -- micro optimization..
+		private TaskId scratchId = new TaskId (0);
+		/**
+		 * Looks up and returns task corresponding to PID;
+		 * logs reason for lookup.
+		 */
+		Task getTask (int pid, String why)
+		{
+		    scratchId.id = pid;
+		    logger.log (Level.FINE, why, scratchId);
+		    return get (scratchId);
+		}
 		public void cloneEvent (int pid, int clonePid)
 		{
-		    logger.log (Level.FINE, "clone event {0}\n", new Integer (pid)); 
 		    // Find the task, create its new peer, and then
 		    // tell the task what happened.  Note that hot on
 		    // the heels of this event is a clone.stopped
 		    // event, and the clone Task must be created
 		    // before that event arrives.
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} cloneEvent\n");
 		    // Create an attached, and running, clone of TASK.
 		    Task clone = new LinuxTask (task, new TaskId (clonePid));
 		    task.performCloned (clone);
 		}
 		public void forkEvent (int pid, int childPid)
 		{
-		    logger.log (Level.FINE, "fork event {0}\n", new Integer (pid)); 
 		    // Find the task, create the new process under it
 		    // (well ok the task's process) and then notify
 		    // the task of what happened.  Note that hot on
 		    // the heels of this fork event is the child's
 		    // stop event, the fork Proc must be created
 		    // before that event arrives.
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} forkEvent\n");
 		    // Create an attached and running fork of TASK.
 		    ProcId forkId = new ProcId (childPid);
 		    Proc forkProc = new LinuxProc (task, forkId);
@@ -258,32 +270,27 @@ public class LinuxHost
 		public void exitEvent (int pid, boolean signal, int value,
 				       boolean coreDumped)
 		{
-		    logger.log (Level.FINE, "exit event {0}\n", new Integer (pid)); 
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} exitEvent\n");
 		    task.performTerminating (signal, value);
 		}
 		public void execEvent (int pid)
 		{
-		    logger.log (Level.FINE, "exec event {0}\n", new Integer (pid)); 
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} execEvent\n");
 		    task.performExeced ();
 		}
 		public void disappeared (int pid, Throwable w)
 		{
-		    logger.log (Level.FINE, "disappeared {0}\n", new Integer (pid)); 
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} disappeared\n");
 		    task.performDisappeared (w);
 		}
 		public void syscallEvent (int pid)
 		{
-		    logger.log (Level.FINE, "syscall {0}\n", new Integer (pid)); 
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} syscallEvent\n");
 		    task.performSyscalled ();
 		}
 		public void stopped (int pid, int sig)
 		{
-		    logger.log (Level.FINE, "stopped {0}\n", new Integer (pid)); 
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} stopped\n");
 		    switch (sig) {
 		    case Sig.STOP:
 			task.performStopped ();
@@ -299,8 +306,7 @@ public class LinuxHost
 		public void terminated (int pid, boolean signal, int value,
 					boolean coreDumped)
 		{
-		    logger.log (Level.FINE, "terminated {0}\n", new Integer (pid)); 
-		    Task task = get (new TaskId (pid));
+		    Task task = getTask (pid, "{0} terminated\n");
 		    task.performTerminated (signal, value);
 		}
 	    };

@@ -1,3 +1,10 @@
+2006-01-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java, Proc.java: For logging, print THIS at start of log
+	message.
+	* LinuxHost.java: Simplify wait event logging; use a scratch
+	TaskId when looking up tasks.
+
 2006-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* LinuxProc.java (getStat): Make package visible.
