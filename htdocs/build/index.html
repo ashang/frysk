@@ -122,20 +122,32 @@ command (<strong>note the quotes</strong>):<br>
 If you're trying to build <em>fryks</em> on Breezy Badger, contact us
 on either <tt><em>frysk</em>@</tt> mailing list, or the <a
 href="irc://gimp.net/frysk"><tt>#<em>frysk</em</tt></a> IRC channel.
-So far the following problems have been identified:
+There is a <a
+href="http://sourceware.org/bugzilla/show_bug.cgi?id=1976">
+<em>frysk</em> Ubuntu tracker</a>. <br> So far the following fixes
+have been identified:
 
 <ul>
 
+<li>Make certain that <tt>automake-1.9</tt> is installed and selected
+as the default: <br> <tt>$ sudo aptitude install automake1.9</tt> <br>
+<tt>$ sudo update-alternatives --display automake</tt> <br>
+<tt>...</tt> <br> <tt>$ sudo update-alternatives --set automake
+/usr/bin/automake-1.9</tt>
+
+<li>Per <a
+href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
+Java Gnome</a>, append <tt>deb
+http://www.natemccallum.com/uploads/debs/ ./</tt> to
+<tt>/etc/apt/sources.list</tt> and then install the the java-gnome
+stuff vis: <br> <tt>$ sudo aptitude install libglade-java libgtk-java
+libglade2-dev libvte-dev</tt> <br> <tt>$ pkg-config --modversion
+gtk2-java</tt> <br> <tt>2.8.1</tt>
+
+<li>the libvte-java bindings are missing <br> hack around this by
+disabling the code using vte (there isn't much)
+
 <li>The compiler is too old and buggy.
-
-<li>The gtk2-java bindings are too old, version 2.6.2 is provided,
-2.7.0 is required, the latest version is 2.8.2
-
-<li>The glib-java bindings are missing.
-
-<li>The default <tt>automake</tt> is version 1.4 (serious!)  is too
-old. <br> You'll need to install <tt>automake17</tt> and then hand
-configure the directories.
 
 </ul>
 
