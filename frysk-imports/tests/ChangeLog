@@ -1,3 +1,13 @@
+2006-01-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (check_PROGRAMS): Add rh177240/threadexec.
+	(check_SCRIPTS): Add rh177240/strace-clone-exec.sh
+	(TESTS): Add rh177240/strace-clone-exec.sh.
+	(.shin.sh): New rule.
+	* rh177240/threadexec.c: New file; copied from
+	frysk-core/prog/syscall.
+	* rh177240/strace-clone-exec.shin: New file.
+
 2006-01-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (process_TESTS): Define.  Append to check_PROGRAMS

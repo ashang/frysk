@@ -40,12 +40,17 @@
 EXTRA_DIST =
 # Gag all the output from the failing tests
 check_PROGRAMS =
+check_SCRIPTS =
 TESTS_ENVIRONMENT = eval > log 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
 $(TESTS) $(XFAIL_TESTS): Makefile
-CLEANFILES = $(TESTS)
+CLEANFILES = $(TESTS) $(check_SCRIPTS)
+.shin.sh:
+	cp $< $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
 clean-local:
 	rm -f */.class
 	rm -f */*.o
@@ -249,3 +254,9 @@ $(CDTPARSER_JAR):
 # Test effect of argv on /proc/PID/cmdline (should not abort)
 check_PROGRAMS += cmdline/dump cmdline/print
 TESTS += cmdline/print
+
+# Test an strace of a cloned exec.
+check_PROGRAMS += rh177240/threadexec
+check_SCRIPTS += rh177240/strace-clone-exec.sh
+rh177240_threadexec_LDFLAGS = -lpthread
+TESTS += rh177240/strace-clone-exec.sh
