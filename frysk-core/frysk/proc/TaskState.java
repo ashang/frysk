@@ -40,8 +40,6 @@
 package frysk.proc;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * The task state machine.
@@ -50,7 +48,6 @@ import frysk.Config;
 class TaskState
     extends State
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * Return the initial state of a detached task.
      */
@@ -96,97 +93,78 @@ class TaskState
     }
     TaskState processPerformSignaled (Task task, int sig)
     {
-	logger.log (Level.FINE, "signal task {0}\n", task); 
 	throw unhandled (task, "PerformSignaled");
     }
     TaskState processStoppedEvent (Task task)
     {
-	logger.log (Level.FINE, "stop task {0}\n", task); 
 	throw unhandled (task, "processStoppedEvent");
     }
     TaskState processTrappedEvent (Task task)
     {
-	logger.log (Level.FINE, "trap task {0}\n", task); 
 	throw unhandled (task, "processTrappedEvent");
     }
     TaskState processSyscalledEvent (Task task)
     {
-	logger.log (Level.FINE, "syscall task {0}\n", task); 
 	throw unhandled (task, "processSyscalledEvent");
     }
     TaskState processTerminatedEvent (Task task, boolean signal, int value)
     {
-	logger.log (Level.FINE, "terminated task {0}\n", task); 
 	throw unhandled (task, "processTerminatedEvent");
     }
     TaskState processTerminatingEvent (Task task, boolean signal, int value)
     {
-	logger.log (Level.FINE, "terminating task {0}\n", task); 
 	throw unhandled (task, "processTerminatingEvent");
     }
     TaskState processExecedEvent (Task task)
     {
-	logger.log (Level.FINE, "exec task {0}\n", task); 
 	throw unhandled (task, "processExecedEvent");
     }
     TaskState processDisappearedEvent (Task task, Throwable w)
     {
-	logger.log (Level.FINE, "disappeared task {0}\n", task); 
 	throw unhandled (task, "processDisappearedEvent");
     }
     TaskState processRequestStop (Task task)
     {
-	logger.log (Level.FINE, "stop task {0}\n", task); 
 	throw unhandled (task, "RequestStop");
     }
     TaskState processRequestContinue (Task task)
     {
-	logger.log (Level.FINE, "continue task {0}\n", task); 
 	throw unhandled (task, "RequestContinue");
     }
     TaskState processRequestStepInstruction (Task task)
     {
-	logger.log (Level.FINE, "step insn task {0}\n", task); 
 	throw unhandled (task, "RequestStepInstruction");
     }
     TaskState processPerformRemoval (Task task)
     {
-	logger.log (Level.FINE, "remove task {0}\n", task); 
 	throw unhandled (task, "PerformRemoval");
     }
     TaskState processPerformAttach (Task task)
     {
-	logger.log (Level.FINE, "attach task {0}\n", task); 
 	throw unhandled (task, "PerformAttach");
     }
     TaskState processPerformDetach (Task task)
     {
-	logger.log (Level.FINE, "detach task {0}\n", task); 
 	throw unhandled (task, "PerformDetach");
     }
     TaskState processPerformStop (Task task)
     {
-	logger.log (Level.FINE, "stop task {0}\n", task); 
 	throw unhandled (task, "PerformStop");
     }
     TaskState processPerformContinue (Task task)
     {
-	logger.log (Level.FINE, "continue task {0}\n", task); 
 	throw unhandled (task, "PerformContinue");
     }
     TaskState processClonedEvent (Task task, Task clone)
     {
-	logger.log (Level.FINE, "{0} processCloned\n", task); 
 	throw unhandled (task, "processClonedEvent");
     }
     TaskState processForkedEvent (Task task, Task fork)
     {
-	logger.log (Level.FINE, "fork task {0}\n", task); 
 	throw unhandled (task, "processForkedEvent");
     }
     TaskState processRequestUnblock (Task task, TaskObserver observer)
     {
-	logger.log (Level.FINE, "unblock task {0}\n", task); 
 	throw unhandled (task, "RequestUnblock");
     }
     TaskState processPerformAddObservation (Task task,

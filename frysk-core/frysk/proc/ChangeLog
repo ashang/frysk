@@ -1,5 +1,10 @@
 2006-01-09  Andrew Cagney  <cagney@redhat.com>
 
+	* State.java (unhandled): Log the event.
+	* TaskState.java: For unhandled cases delete redundant log call.
+	* ProcState.java: Ditto.
+	* HostState.java: Ditto.
+
 	* TaskState.java (processStoppedEvent): Rename
 	processPerformStopped.
 	(processTrappedEvent): Rename .processPerformTrapped.

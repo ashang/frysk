@@ -43,8 +43,6 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * A UNIX Process State
@@ -54,7 +52,6 @@ import frysk.Config;
 abstract class ProcState
     extends State
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * Return the Proc's initial state.
      */
@@ -78,51 +75,39 @@ abstract class ProcState
     }
     ProcState processPerformRemoval (Proc proc)
     {
-	logger.log (Level.FINE, "remove {0}\n", proc); 
 	throw unhandled (proc, "RequestRemoval");
     }
     ProcState processRequestAttachedContinue (Proc proc)
     {
-	logger.log (Level.FINE, "continue {0}\n", proc); 
 	throw unhandled (proc, "RequestAttachedContinue");
     }
     ProcState processRequestDetachedContinue (Proc proc)
     {
-	logger.log (Level.FINE, "detach {0}\n", proc); 
 	throw unhandled (proc, "RequestDetachedContinue");
     }
     ProcState processRequestRefresh (Proc proc)
     {
-	logger.log (Level.FINE, "request refresh {0}\n", proc); 
 	throw unhandled (proc, "RequestRefresh");
     }
     ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
     {
-	logger.log (Level.FINE, "{0} processPerformTaskAttachCompleted\n",
-		    proc); 
 	throw unhandled (proc, "PerformTaskAttachCompleted");
     }
     ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
     {
-	logger.log (Level.FINE, "detached task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskDetachCompleted");
     }
     ProcState processPerformTaskDetachCompleted (Proc proc, Task task,
 						 Task clone)
     {
-	logger.log (Level.FINE,
-		    "{0} processPerformTaskDetachCompleted/clone\n",
-		    proc); 
 	throw unhandled (proc, "PerformTaskDetachCompleted/clone");
     }
     ProcState processPerformTaskStopCompleted (Proc proc, Task task)
     {
-	logger.log (Level.FINE, "stop task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskStopCompleted");
     }
     ProcState processPerformTaskContinueCompleted (Proc proc, Task task)
     {
-	logger.log (Level.FINE, "continue task {0}\n", task); 
 	throw unhandled (proc, "PerformTaskContinueCompleted");
     }
     ProcState processPerformAddObservation (Proc proc,
@@ -131,14 +116,14 @@ abstract class ProcState
 	throw unhandled (proc, "PerformAddObservation");
     }
     ProcState processPerformDeleteObservation (Proc proc,
-		       Observation observation)
+					       Observation observation)
     {
-    throw unhandled (proc, "PerformDeleteObservation");
+	throw unhandled (proc, "PerformDeleteObservation");
     }
     ProcState processRequestAddTasksObserver(Proc proc,
-    		ProcObserver.Tasks tasksObserver)
+					     ProcObserver.Tasks tasksObserver)
     {
-    throw unhandled (proc, "processRequestAddTasksObserver");
+	throw unhandled (proc, "processRequestAddTasksObserver");
     }
 
 

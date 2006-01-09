@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,18 +39,15 @@
 
 package frysk.proc;
 
+import java.util.logging.Level;
+
 /**
  * Possible host states.
  */
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import frysk.Config;
-
 class HostState
     extends State
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * Return the hosts initial state.
      */
@@ -64,14 +61,12 @@ class HostState
     }
     HostState processRequestRefresh (Host host, boolean refreshAll)
     {
-	logger.log (Level.FINE, "", this); 
 	throw unhandled (host, "RequestRefresh");
     }
     HostState processRequestCreateAttachedProc (Host host,
 						String stdin, String stdout,
 						String stderr, String[] args)
     {
-	logger.log (Level.FINE, "", this); 
 	throw unhandled (host, "PerformCreateAttachedProc");
     }
 
