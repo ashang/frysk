@@ -1,5 +1,7 @@
 2006-01-09  Andrew Cagney  <cagney@redhat.com>
 
+	* rh177240/strace-clone-exec.shin: Add -f option to strace.
+	
 	* Makefile.am (check_PROGRAMS): Add rh177240/threadexec.
 	(check_SCRIPTS): Add rh177240/strace-clone-exec.sh
 	(TESTS): Add rh177240/strace-clone-exec.sh.
