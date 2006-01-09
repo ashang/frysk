@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -99,40 +99,40 @@ class TaskState
 	logger.log (Level.FINE, "signal task {0}\n", task); 
 	throw unhandled (task, "PerformSignaled");
     }
-    TaskState processPerformStopped (Task task)
+    TaskState processStoppedEvent (Task task)
     {
 	logger.log (Level.FINE, "stop task {0}\n", task); 
-	throw unhandled (task, "PerformStopped");
+	throw unhandled (task, "processStoppedEvent");
     }
-    TaskState processPerformTrapped (Task task)
+    TaskState processTrappedEvent (Task task)
     {
 	logger.log (Level.FINE, "trap task {0}\n", task); 
-	throw unhandled (task, "PerformTrapped");
+	throw unhandled (task, "processTrappedEvent");
     }
-    TaskState processPerformSyscalled (Task task)
+    TaskState processSyscalledEvent (Task task)
     {
 	logger.log (Level.FINE, "syscall task {0}\n", task); 
-	 throw unhandled (task, "PerformSyscalled");
-     }
-    TaskState processPerformTerminated (Task task, boolean signal, int value)
+	throw unhandled (task, "processSyscalledEvent");
+    }
+    TaskState processTerminatedEvent (Task task, boolean signal, int value)
     {
 	logger.log (Level.FINE, "terminated task {0}\n", task); 
-	throw unhandled (task, "PerformTerminated");
+	throw unhandled (task, "processTerminatedEvent");
     }
-    TaskState processPerformTerminating (Task task, boolean signal, int value)
+    TaskState processTerminatingEvent (Task task, boolean signal, int value)
     {
 	logger.log (Level.FINE, "terminating task {0}\n", task); 
-	throw unhandled (task, "PerformTerminating");
+	throw unhandled (task, "processTerminatingEvent");
     }
-    TaskState processPerformExeced (Task task)
+    TaskState processExecedEvent (Task task)
     {
 	logger.log (Level.FINE, "exec task {0}\n", task); 
-	throw unhandled (task, "PerformExeced");
+	throw unhandled (task, "processExecedEvent");
     }
-    TaskState processPerformDisappeared (Task task, Throwable w)
+    TaskState processDisappearedEvent (Task task, Throwable w)
     {
 	logger.log (Level.FINE, "disappeared task {0}\n", task); 
-	throw unhandled (task, "PerformDisappeared");
+	throw unhandled (task, "processDisappearedEvent");
     }
     TaskState processRequestStop (Task task)
     {
@@ -174,15 +174,15 @@ class TaskState
 	logger.log (Level.FINE, "continue task {0}\n", task); 
 	throw unhandled (task, "PerformContinue");
     }
-    TaskState processPerformCloned (Task task, Task clone)
+    TaskState processClonedEvent (Task task, Task clone)
     {
-	logger.log (Level.FINE, "{0} PerformCloned\n", task); 
-	throw unhandled (task, "PerformCloned");
+	logger.log (Level.FINE, "{0} processCloned\n", task); 
+	throw unhandled (task, "processClonedEvent");
     }
-    TaskState processPerformForked (Task task, Task fork)
+    TaskState processForkedEvent (Task task, Task fork)
     {
 	logger.log (Level.FINE, "fork task {0}\n", task); 
-	throw unhandled (task, "PerformForked");
+	throw unhandled (task, "processForkedEvent");
     }
     TaskState processRequestUnblock (Task task, TaskObserver observer)
     {
@@ -243,19 +243,19 @@ class TaskState
      */
     private static TaskState attaching = new TaskState ("attaching")
 	{
-	    TaskState processPerformStopped (Task task)
+	    TaskState processStoppedEvent (Task task)
 	    {
-		logger.log (Level.FINE, "{0} PerformStopped\n", task); 
+		logger.log (Level.FINE, "{0} processStoppedEvent\n", task); 
 		task.proc.performTaskAttachCompleted (task);
 		return attached;
 	    }
-	    TaskState processPerformTrapped (Task task)
+	    TaskState processTrappedEvent (Task task)
 	    {
-		logger.log (Level.FINE, "{0} PerformTrapped\n", task); 
+		logger.log (Level.FINE, "{0} processTrappedEvent\n", task); 
 		task.proc.performTaskAttachCompleted (task);
 		return attached;
 	    }
-    	    TaskState processPerformDisappeared (Task task, Throwable w)
+    	    TaskState processDisappearedEvent (Task task, Throwable w)
     	    {
 		// Outch, the task disappeared before the attach
 		// reached it, just abandon this one (but ack the
@@ -344,14 +344,14 @@ class TaskState
 		    task.blockers.remove (observer);
 		    return Start.waitForStop;
 		}
-		TaskState processPerformTrapped (Task task)
+		TaskState processTrappedEvent (Task task)
 		{
-		    logger.log (Level.FINE, "{0} PerformTrapped\n", task);
+		    logger.log (Level.FINE, "{0} processTrappedEvent\n", task);
 		    return attemptAttach (task);
 		}
-		TaskState processPerformStopped (Task task)
+		TaskState processStoppedEvent (Task task)
 		{
-		    logger.log (Level.FINE, "{0} PerformStopped\n", task);
+		    logger.log (Level.FINE, "{0} processStoppedEvent\n", task);
 		    return attemptAttach (task);
 		}
 	    };
@@ -376,20 +376,20 @@ class TaskState
 		logger.log (Level.FINE, "stop {0}\n", task); 
 		return stopping;
 	    }
-	    TaskState processPerformSyscalled (Task task)
+	    TaskState processSyscalledEvent (Task task)
 	    {
 		task.notifySyscallEnter ();
 		task.sendContinue (0);
 		return stoppingInSyscall;
 	    }
-	    TaskState processPerformStopped (Task task)
+	    TaskState processStoppedEvent (Task task)
 	    {
 		// XXX: Not a standard observer.
 		logger.log (Level.FINE, "stop {0}\n", task); 
 		task.requestedStopEvent.notify (task);
 		return stopped;
 	    }
-	    TaskState processPerformTrapped (Task task)
+	    TaskState processTrappedEvent (Task task)
 	    {
 		// XXX: Not a standard observer.
 		logger.log (Level.FINE, "trap {0}\n", task); 
@@ -405,7 +405,7 @@ class TaskState
 	    {
 		return stoppingInSyscall;
 	    }
-	    TaskState processPerformSyscalled (Task task)
+	    TaskState processSyscalledEvent (Task task)
 	    {
 		task.notifySyscallExit ();
 		task.sendContinue (0);
@@ -431,15 +431,15 @@ class TaskState
 		    return running;
 		}
 	    }
-	    TaskState processPerformSyscalled (Task task)
+	    TaskState processSyscalledEvent (Task task)
 	    {
 		logger.log (Level.FINE, "syscall {0}\n", this); 
 		task.notifySyscallEnter ();
 		task.sendContinue (0);
 		return runningInSyscall;
 	    }
-	    TaskState processPerformTerminating (Task task, boolean signal,
-						 int value)
+	    TaskState processTerminatingEvent (Task task, boolean signal,
+					       int value)
 	    {
 		logger.log (Level.FINE, "terminate {0}\n", this); 
 		task.notifyTerminating (signal, value);
@@ -449,15 +449,15 @@ class TaskState
 		    task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processPerformTerminated (Task task, boolean signal,
-						int value)
+	    TaskState processTerminatedEvent (Task task, boolean signal,
+					      int value)
 	    {
 		logger.log (Level.FINE, "terminate {0}\n", this); 
 		task.proc.remove (task);
 		processAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
-	    TaskState processPerformExeced (Task task)
+	    TaskState processExecedEvent (Task task)
 	    {
 		// Remove all tasks, retaining just this one.
 		logger.log (Level.FINE, "exec {0}\n", this); 
@@ -470,7 +470,7 @@ class TaskState
 		    return running;
 		}
 	    }
-    	    TaskState processPerformDisappeared (Task task, Throwable w)
+    	    TaskState processDisappearedEvent (Task task, Throwable w)
     	    {
 		logger.log (Level.FINE, "disappeared {0}\n", this); 
 		return disappeared;
@@ -498,7 +498,7 @@ class TaskState
 		task.sendStop ();
 		return performingStop;
 	    }
-	    TaskState processPerformCloned (Task task, Task clone)
+	    TaskState processClonedEvent (Task task, Task clone)
 	    {
 		logger.log (Level.FINE, "{0} PerformedClone\n", task); 
 		if (task.notifyCloned (clone) > 0)
@@ -506,7 +506,7 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processPerformForked (Task task, Task fork)
+	    TaskState processForkedEvent (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "fork {0}\n", this); 
 		if (task.notifyForked (fork) > 0)
@@ -521,7 +521,7 @@ class TaskState
 		return running;
 	    }
 	    TaskState processRequestUnblock (Task task,
-						    TaskObserver observer)
+					     TaskObserver observer)
 	    {
 		// XXX: What to do about a stray unblock?
 		// observer.fail (new RuntimeException (task, "not blocked");
@@ -542,14 +542,14 @@ class TaskState
 	    {
 		return true;
 	    }
-	    TaskState processPerformSyscalled (Task task)
+	    TaskState processSyscalledEvent (Task task)
 	    {
 		task.notifySyscallExit ();
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processPerformTerminating (Task task, boolean signal,
-						 int value)
+	    TaskState processTerminatingEvent (Task task, boolean signal,
+					       int value)
 	    {
 		task.notifyTerminating (signal, value);
 		if (signal)
@@ -558,8 +558,8 @@ class TaskState
 		    task.sendContinue (0);
 		return runningInSyscall;
 	    }
-	    TaskState processPerformTerminated (Task task, boolean signal,
-						int value)
+	    TaskState processTerminatedEvent (Task task, boolean signal,
+					      int value)
 	    {
 		task.proc.remove (task);
 		processAttachedTerminated (task, signal, value);
@@ -583,7 +583,7 @@ class TaskState
 
     private static TaskState performingStop = new TaskState ("performingStop")
 	{
-	    TaskState processPerformStopped (Task task)
+	    TaskState processStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "stop {0}\n", this); 
 		task.proc.performTaskStopCompleted (task);
@@ -597,15 +597,15 @@ class TaskState
 	    {
 		return attaching;
 	    }
-	    TaskState processPerformStopped (Task task)
+	    TaskState processStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "stop {0}\n", this); 
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformTerminating (Task task, boolean signal,
-						 int value)
+	    TaskState processTerminatingEvent (Task task, boolean signal,
+					       int value)
 	    {
 		if (signal)
 		    task.sendDetach (value);
@@ -614,25 +614,25 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformForked (Task task, Task fork)
+	    TaskState processForkedEvent (Task task, Task fork)
 	    {
-		logger.log (Level.FINE, "{0} PerformForked\n", this);
+		logger.log (Level.FINE, "{0} processForkedEvent\n", this);
 		fork.sendDetach (0);
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformCloned (Task task, Task clone)
+	    TaskState processClonedEvent (Task task, Task clone)
 	    {
-		logger.log (Level.FINE, "{0} PerformCloned\n", task);
+		logger.log (Level.FINE, "{0} processClonedEvent\n", task);
 		task.sendDetach (0);
 		// Let the proc sort out the clone.
 		task.proc.performTaskDetachCompleted (task, clone);
 		return unattached;
 	    }
-	    TaskState processPerformExeced (Task task)
+	    TaskState processExecedEvent (Task task)
 	    {
-		logger.log (Level.FINE, "{0} PerformExeced\n", this);
+		logger.log (Level.FINE, "{0} processExecedEvent\n", this);
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
@@ -648,20 +648,20 @@ class TaskState
 
     private static TaskState detachingInSyscall = new TaskState ("detachingInSyscall")
 	{
-	    TaskState processPerformStopped (Task task)
+	    TaskState processStoppedEvent (Task task)
 	    {
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformSyscalled (Task task)
+	    TaskState processSyscalledEvent (Task task)
 	    {
 		task.notifySyscallExit ();
 		task.sendContinue (0);
 		return detaching;
 	    }
-	    TaskState processPerformTerminating (Task task, boolean signal,
-						 int value)
+	    TaskState processTerminatingEvent (Task task, boolean signal,
+					       int value)
 	    {
 		logger.log (Level.FINE, "terminate {0}\n", this); 
 		if (signal)
@@ -675,7 +675,7 @@ class TaskState
 
     private static TaskState stepping = new TaskState ("stepping")
 	{
-	    TaskState processPerformTrapped (Task task)
+	    TaskState processTrappedEvent (Task task)
 	    {
 		// XXX: Not a standard observer.  Notify SIGTRAP
 		// indicating that the step is done.
@@ -798,7 +798,7 @@ class TaskState
 		logger.log (Level.FINE, "continue {0}\n", this); 
 		return unpaused;
 	    }
-	    TaskState processPerformStopped (Task task)
+	    TaskState processStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "stop {0}\n", this); 
 		task.sendContinue (0);
@@ -814,26 +814,26 @@ class TaskState
 
     private static TaskState disappeared = new TaskState ("disappeared")
 	{
-	    TaskState processPerformTerminated (Task task, boolean signal,
-						int value)
+	    TaskState processTerminatedEvent (Task task, boolean signal,
+					      int value)
 	    {
 		logger.log (Level.FINE, "terminate {0}\n", this); 
 		task.proc.remove (task);
 		processAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
-	    TaskState processPerformTerminating (Task task, boolean signal,
-						 int value)
+	    TaskState processTerminatingEvent (Task task, boolean signal,
+					       int value)
 	    {
 		logger.log (Level.FINE, "terminate {0}\n", this); 
 		task.notifyTerminating (signal, value);
-// 		if (signal)
-// 		    task.sendContinue (value);
-// 		else
-// 		    task.sendContinue (0);
+		// 		if (signal)
+		// 		    task.sendContinue (value);
+		// 		else
+		// 		    task.sendContinue (0);
 		return disappeared;
 	    }
-    	    TaskState processPerformDisappeared (Task task, Throwable w)
+    	    TaskState processDisappearedEvent (Task task, Throwable w)
     	    {
 		logger.log (Level.FINE, "disappeared {0}\n", this); 
 		return disappeared;

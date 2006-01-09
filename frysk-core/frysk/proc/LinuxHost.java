@@ -249,7 +249,7 @@ public class LinuxHost
 		    Task task = getTask (pid, "{0} cloneEvent\n");
 		    // Create an attached, and running, clone of TASK.
 		    Task clone = new LinuxTask (task, new TaskId (clonePid));
-		    task.performCloned (clone);
+		    task.receiveClonedEvent (clone);
 		}
 		public void forkEvent (int pid, int childPid)
 		{
@@ -265,41 +265,41 @@ public class LinuxHost
 		    Proc forkProc = new LinuxProc (task, forkId);
 		    // The main task.
 		    Task forkTask = new LinuxTask (forkProc);
-		    task.performForked (forkTask);
+		    task.receiveForkedEvent (forkTask);
 		}
 		public void exitEvent (int pid, boolean signal, int value,
 				       boolean coreDumped)
 		{
 		    Task task = getTask (pid, "{0} exitEvent\n");
-		    task.performTerminating (signal, value);
+		    task.receiveTerminatingEvent (signal, value);
 		}
 		public void execEvent (int pid)
 		{
 		    Task task = getTask (pid, "{0} execEvent\n");
-		    task.performExeced ();
+		    task.receiveExecedEvent ();
 		}
 		public void disappeared (int pid, Throwable w)
 		{
 		    Task task = getTask (pid, "{0} disappeared\n");
-		    task.performDisappeared (w);
+		    task.receiveDisappearedEvent (w);
 		}
 		public void syscallEvent (int pid)
 		{
 		    Task task = getTask (pid, "{0} syscallEvent\n");
-		    task.performSyscalled ();
+		    task.receiveSyscalledEvent ();
 		}
 		public void stopped (int pid, int sig)
 		{
 		    Task task = getTask (pid, "{0} stopped\n");
 		    switch (sig) {
 		    case Sig.STOP:
-			task.performStopped ();
+			task.receiveStoppedEvent ();
 			break;
 		    case Sig.TRAP:
-			task.performTrapped ();
+			task.receiveTrappedEvent ();
 			break;
 		    default:
-			task.performSignaled (sig);
+			task.receiveSignaledEvent (sig);
 			break;
 		    }
 		}
@@ -307,7 +307,7 @@ public class LinuxHost
 					boolean coreDumped)
 		{
 		    Task task = getTask (pid, "{0} terminated\n");
-		    task.performTerminated (signal, value);
+		    task.receiveTerminatedEvent (signal, value);
 		}
 	    };
 	public final void execute ()

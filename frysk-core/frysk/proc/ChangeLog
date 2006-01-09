@@ -1,3 +1,28 @@
+2006-01-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java (processStoppedEvent): Rename
+	processPerformStopped.
+	(processTrappedEvent): Rename .processPerformTrapped.
+	(processSyscallEvent): Rename .processPerformSyscall.
+	(processTerminatingEvent): Rename .processPerformTerminating.
+	(processTerminatedEvent): Rename .processPerformTerminated.
+	(processExecedEvent): Rename .processPerformExeced.
+	(processDisappearedEvent): Rename .processPerformDisappeared.
+	(processClonedEvent): Rename .processPerformCloned.
+	(processForkedEvent): Rename .processPerformForked.
+	* Task.java (receiveClonedEvent): Rename .performCloned.
+	(receiveForkedEvent): Rename .performForked.
+	(receiveStoppedEvent): Rename .performStopped.
+	(receiveTrappedEvent): Rename .performTrapped.
+	(receiveSignaledEvent): Rename .performSignaled.
+	(receiveTerminatingEvent): Rename .performTerminating.
+	(receiveDisappearedEvent): Rename .performDisappeared.
+	(receiveSyscalledEvent): Rename .performSyscalled.
+	(receiveTerminatedEvent): Rename .performTerminated.
+	(receiveExecedEvent): Rename .performExeced.
+	* LinuxHost.java: Update.
+	* LinuxTask.java: Update.
+
 2006-01-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java, Proc.java: For logging, print THIS at start of log

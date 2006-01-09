@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ abstract public class Task
      */
     public final String getName ()
     {
-    return "Task " + getTid();
+	return "Task " + getTid();
     }
     
     /**
@@ -321,15 +321,15 @@ abstract public class Task
     /**
      * (internal) This task cloned creating the new Task cloneArg.
      */
-    void performCloned (final Task cloneArg)
+    void receiveClonedEvent (final Task cloneArg)
     {
-	logger.log (Level.FINE, "{0} performCloned\n", this);
+	logger.log (Level.FINE, "{0} receiveClonedEvent\n", this);
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		Task clone = cloneArg;
 		public void execute ()
 		{
-		    state = state.processPerformCloned (Task.this, clone);
+		    state = state.processClonedEvent (Task.this, clone);
 		}
 	    });
     }
@@ -338,15 +338,15 @@ abstract public class Task
      * (internal) This Task forked creating an entirely new child
      * process containing one (the fork) task.
      */
-    void performForked (final Task forkArg)
+    void receiveForkedEvent (final Task forkArg)
     {
-	logger.log (Level.FINE, "{0} performForked\n", this); 
+	logger.log (Level.FINE, "{0} receiveForkedEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		Task fork = forkArg;
 		public void execute ()
 		{
-		    state = state.processPerformForked (Task.this, fork);
+		    state = state.processForkedEvent (Task.this, fork);
 		}
 	    });
     }
@@ -354,37 +354,37 @@ abstract public class Task
     /**
      * (internal) This task stopped.
      */
-    void performStopped ()
+    void receiveStoppedEvent ()
     {
-	logger.log (Level.FINE, "{0} performStopped\n", this); 
+	logger.log (Level.FINE, "{0} receiveStoppedEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformStopped (Task.this);
+		    state = state.processStoppedEvent (Task.this);
 		}
 	    });
     }
     /**
      * (internal) This task encountered a trap.
      */
-    void performTrapped ()
+    void receiveTrappedEvent ()
     {
-	logger.log (Level.FINE, "{0} performTrapped\n", this); 
+	logger.log (Level.FINE, "{0} receiveTrappedEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformTrapped (Task.this);
+		    state = state.processTrappedEvent (Task.this);
 		}
 	    });
     }
     /**
      * (internal) This task received a signal.
      */
-    void performSignaled (final int sigArg)
+    void receiveSignaledEvent (final int sigArg)
     {
-	logger.log (Level.FINE, "{0} performSignaled\n", this); 
+	logger.log (Level.FINE, "{0} receiveSignaledEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		int sig = sigArg;
@@ -399,17 +399,17 @@ abstract public class Task
      * (internal) The task is in the process of terminating.  If
      * SIGNAL, VALUE is the signal, otherwize it is the exit status.
      */
-    void performTerminating (final boolean signalArg, final int valueArg)
+    void receiveTerminatingEvent (final boolean signalArg, final int valueArg)
     {
-	logger.log (Level.FINE, "{0} performTerminating\n", this); 
+	logger.log (Level.FINE, "{0} receiveTerminatingEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		boolean signal = signalArg;
 		int value = valueArg;
 		public void execute ()
 		{
-		    state = state.processPerformTerminating (Task.this, signal,
-							     value);
+		    state = state.processTerminatingEvent (Task.this, signal,
+							   value);
 		}
 	    });
     }
@@ -418,15 +418,15 @@ abstract public class Task
      * (internal) The task has disappeared (due to an exit or some
      * other error operation).
      */
-    void performDisappeared (final Throwable arg)
+    void receiveDisappearedEvent (final Throwable arg)
     {
-	logger.log (Level.FINE, "{0} performDisappeared\n", this); 
+	logger.log (Level.FINE, "{0} receiveDisappearedEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		Throwable w = arg;
 		public void execute ()
 		{
-		    state = state.processPerformDisappeared (Task.this, w);
+		    state = state.processDisappearedEvent (Task.this, w);
 		}
 	    });
     }
@@ -434,14 +434,14 @@ abstract public class Task
     /**
      * (internal) The task is performing a system call.
      */
-    void performSyscalled ()
+    void receiveSyscalledEvent ()
     {
-	logger.log (Level.FINE, "{0} performSyscalled\n", this); 
+	logger.log (Level.FINE, "{0} receiveSyscalledEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformSyscalled (Task.this);
+		    state = state.processSyscalledEvent (Task.this);
 		}
 	    });
     }
@@ -450,17 +450,17 @@ abstract public class Task
      * (internal) The task has terminated; if SIGNAL, VALUE is the
      * signal, otherwize it is the exit status.
      */
-    void performTerminated (final boolean signalArg, final int valueArg)
+    void receiveTerminatedEvent (final boolean signalArg, final int valueArg)
     {
-	logger.log (Level.FINE, "{0} performTerminated\n", this); 
+	logger.log (Level.FINE, "{0} receiveTerminatedEvent\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		boolean signal = signalArg;
 		int value = valueArg;
 		public void execute ()
 		{
-		    state = state.processPerformTerminated (Task.this, signal,
-							    value);
+		    state = state.processTerminatedEvent (Task.this, signal,
+							  value);
 		}
 	    });
     }
@@ -469,14 +469,14 @@ abstract public class Task
      * (internal) The task has execed, overlaying itself with another
      * program.
      */
-    void performExeced ()
+    void receiveExecedEvent ()
     {
-	logger.log (Level.FINE, "{0} performExeced\n", this);
+	logger.log (Level.FINE, "{0} receiveExecedEvent\n", this);
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformExeced (Task.this);
+		    state = state.processExecedEvent (Task.this);
 		}
 	    });
     }

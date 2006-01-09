@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ public class LinuxTask
 		Ptrace.cont (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    performDisappeared (e);
+	    receiveDisappearedEvent (e);
 	}
     }
     protected void sendStepInstruction (int sig)
@@ -121,7 +121,7 @@ public class LinuxTask
 	    Ptrace.singleStep (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    performDisappeared (e);
+	    receiveDisappearedEvent (e);
 	}
     }
     protected void sendStop ()
@@ -145,7 +145,7 @@ public class LinuxTask
 	    Ptrace.setOptions (getTid (), options);
 	}
 	catch (Errno.Esrch e) {
-	    performDisappeared (e);
+	    receiveDisappearedEvent (e);
 	}
     }
     protected void sendAttach ()
@@ -155,7 +155,7 @@ public class LinuxTask
 	    Ptrace.attach (getTid ());
 	}
 	catch (Errno.Esrch e) {
-	    performDisappeared (e);
+	    receiveDisappearedEvent (e);
 	}
     }
     protected void sendDetach (int sig)
