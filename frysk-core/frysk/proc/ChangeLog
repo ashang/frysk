@@ -1,3 +1,11 @@
+2006-01-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserver.java (deleteUnattachedObserver): Add.
+	(testDeleteUnattachedFromAttachedMain):	Add.
+	(testDeleteUnattachedFromDetachedMain): Add.
+	* ProcState.java: In states "unattached", and "running" handle
+	processPerformDeleteObservation.  Delete state "startRunning".
+
 2006-01-09  Andrew Cagney  <cagney@redhat.com>
 
 	* State.java (unhandled): Log the event.

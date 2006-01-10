@@ -514,6 +514,49 @@ public class TestTaskObserver
     }
 
     /**
+     * Check that removing a non-existant observer doesn't cause a
+     * panic.
+     */
+    private void deleteUnattachedObserver (Child child, boolean main)
+    {
+	TaskObserver.Attached unattachedObserver = new TaskObserver.Attached ()
+	    {
+		public Action updateAttached (Task task)
+		{
+		    fail ("updateAttached called with " + task);
+		    return null;
+		}
+		public void addedTo (Object task)
+		{
+		    fail ("addedTo task called with " + task);
+		}
+		public void deletedFrom (Object task)
+		{
+		    fail ("deletedFrom task called with " + task);
+		}
+		public void addFailed (Object task, Throwable reason)
+		{
+		    Manager.eventLoop.requestStop ();
+		}
+	    };
+	Task task = child.findTaskUsingRefresh (main);
+	task.requestDeleteAttachedObserver (unattachedObserver);
+	assertRunUntilStop ("delete failing");
+    }	    
+    /** {@link #deleteUnattachedObserver} */
+    public void testDeleteUnattachedFromAttachedMain ()
+    {
+	Child child = new AttachedAckProcess ();
+	deleteUnattachedObserver (child, true);
+    }
+    /** {@link #deleteUnattachedObserver} */
+    public void testDeleteUnattachedFromDetachedMain ()
+    {
+	Child child = new AckDaemonProcess ();
+	deleteUnattachedObserver (child, true);
+    }
+
+    /**
      * Check that attaching to a rapidly cloning task works.
      */
     public void testAttachDetachRapidlyCloningMainTask ()

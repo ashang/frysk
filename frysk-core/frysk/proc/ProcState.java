@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ abstract class ProcState
     {
 	logger.log (Level.FINE, "initial {0}\n", proc); 
 	if (attached)
-	    return startRunning;
+	    return running;
 	else
 	    return unattached;
     }
@@ -153,10 +153,21 @@ abstract class ProcState
 		return destroyed;
 	    }
 	    ProcState processPerformAddObservation (Proc proc,
-			    Observation observation)
+						    Observation observation)
 	    {
 	    	logger.log (Level.FINE, "request add observer {0}\n", proc); 
 	    	return Attaching.state (proc, observation);
+	    }
+
+	    ProcState processPerformDeleteObservation (Proc proc,
+						       Observation observation)
+	    {
+	    	logger.log (Level.FINE,
+			    "{0} processPerformDeleteObservation\n", proc); 
+		// Must be bogus; if there were observations then the
+		// Proc wouldn't be in this state.
+		observation.fail (new RuntimeException ("not attached"));
+		return unattached;
 	    }
 
 	    ProcState processRequestAddTasksObserver (final Proc proc,
@@ -480,35 +491,14 @@ abstract class ProcState
 						       Observation observation)
 	    {
 		logger.log (Level.FINE, "delete observer {0}\n", observation); 
-		observation.delete ();
-		proc.observations.remove (observation);
-		if (proc.observations.size () == 0)
-		    return Detaching.state (proc);
+		if (proc.observations.remove (observation)) {
+		    observation.delete ();
+		    if (proc.observations.size () == 0)
+			return Detaching.state (proc);
+		}
 		else
-		    return running;
-	    }
-	};
-
-    private static ProcState startRunning = new ProcState ("startRunning")
-	{
-	    ProcState processRequestAttachedContinue (Proc proc)
-	    {
-		logger.log (Level.FINE, "request attach {0}\n", proc); 
-		proc.observableAttached.notify (proc);
+		    observation.fail (new RuntimeException ("not added"));
 		return running;
-	    } 
-	    ProcState processRequestDetachedContinue (Proc proc)
-	    {
-		logger.log (Level.FINE, "request detach {0}\n", proc); 
-		return Detaching.state (proc);
-	    }
-	    ProcState processPerformAddObservation (Proc proc,
-						    Observation observation)
-	    {
-		logger.log (Level.FINE, "add observer {0}\n", observation); 
-		proc.observations.add (observation);
-		observation.requestAdd ();
-		return startRunning;
 	    }
 	};
 }
