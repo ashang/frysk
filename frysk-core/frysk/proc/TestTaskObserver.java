@@ -160,14 +160,13 @@ public class TestTaskObserver
     }
 
     /**
-     * Attach to the list of tasks.
+     * Attach the specified observer to the list of tasks.
      */
-    private AttachedObserver attach (final Task[] tasks)
+    private void attach (final Task[] tasks, AttachedObserver attachedObserver)
     {
 	// Add the AttachedObserver to the task causing <em>frysk</em>
 	// to attach to the Task's Proc..  Run the event loop until
 	// the process reports back that the attach occured.
-	AttachedObserver attachedObserver = new AttachedObserver ();
 	for (int i = 0; i < tasks.length; i++)
 	    tasks[i].requestAddAttachedObserver (attachedObserver);
 	tasks[0].proc.observableAttached.addObserver (new Observer ()
@@ -180,6 +179,14 @@ public class TestTaskObserver
 		}
 	    });
 	assertRunUntilStop ("attaching to task");
+    }
+    /**
+     * Attach AttachedObserver to the list of tasks.
+     */
+    private AttachedObserver attach (Task[] tasks)
+    {
+	AttachedObserver attachedObserver = new AttachedObserver ();
+	attach (tasks, attachedObserver);
 	assertEquals ("attached count", tasks.length,
 		      attachedObserver.attachedCount);
 	assertEquals ("deleted count", 0,
@@ -557,7 +564,8 @@ public class TestTaskObserver
     }
 
     /**
-     * Check that attaching to a rapidly cloning task works.
+     * Stress test to confirm that attaching to rapidly cloning tasks
+     * works.
      */
     public void testAttachDetachRapidlyCloningMainTask ()
     {
@@ -570,8 +578,29 @@ public class TestTaskObserver
 		"100" // Tasks
 	    });
 	Task task = child.findTaskUsingRefresh (true);
+
+	// Create a list of tasks.  Since the above is constantly
+	// creating new tasks (with the old ones exiting) it is almost
+	// always out-of-date.
 	Task[] tasks = (Task[]) task.proc.getTasks ().toArray (new Task[0]);
-	AttachedObserver attachedObserver = attach (tasks);
-	detach (tasks, attachedObserver);
+
+	// Failure is an option and will occure when ever an attach to
+	// one of those old tasks is attempted.
+	class CanFailObserver
+	    extends AttachedObserver
+	{
+	    int failedCount;
+	    public void addFailed (Object o, Throwable w)
+	    {
+		failedCount++;
+	    }
+	}
+	CanFailObserver canFailObserver = new CanFailObserver ();
+	attach (tasks, canFailObserver);
+	// The main task never dies so at least it will have been
+	// successfully attached.
+	assertTrue ("successful attach count greater than zero",
+		    canFailObserver.addedCount > 0);
+	detach (tasks, canFailObserver);
     }
 }

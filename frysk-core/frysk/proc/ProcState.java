@@ -342,6 +342,8 @@ abstract class ProcState
 	    ProcState processPerformDeleteObservation (Proc proc,
 						       Observation observation)
 	    {
+		// If the observation was never added, this will
+		// return false, but that is ok.
 		proc.observations.remove (observation);
 		observation.fail (new RuntimeException ("canceled"));
 		if (proc.observations.size () == 0) {
@@ -456,6 +458,15 @@ abstract class ProcState
 	    {
 		// Ulgh, detaching and a new observer arrived.
 		return Attaching.state (proc, observation);
+	    }
+	    ProcState processPerformDeleteObservation (Proc proc,
+						       Observation observation)
+	    {
+		// Outch; request to remove what must be an already
+		// removed observation.
+		logger.log (Level.FINE, "{0} processPerformDeleteObservation\n");
+		observation.fail (new RuntimeException ("canceled"));
+		return this;
 	    }
 	}
     }

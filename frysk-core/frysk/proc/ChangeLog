@@ -1,5 +1,12 @@
 2006-01-10  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java (attach(Task)): Refactor, creating ...
+	(attach(Task,AttachedObserver): New function.
+	(testAttachDetachRapidlyCloningMainTask): Add local
+	AttachedObserver object that allows failure.
+	* ProcState.java: In .Detaching state, handle
+	processPerformDeleteObservation; always fail it.
+	
 	* TestTaskObserver.java (deleteUnattachedObserver): Add.
 	(testDeleteUnattachedFromAttachedMain):	Add.
 	(testDeleteUnattachedFromDetachedMain): Add.

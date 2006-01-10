@@ -524,6 +524,7 @@ abstract public class Task
     private void requestAddObserver (TaskObservable observable,
 				     TaskObserver observer)
     {
+	logger.log (Level.FINE, "{0} requestAddObserver\n", this);
 	proc.performAddObservation (new TaskObservation (this, observable,
 							 observer));
     }
