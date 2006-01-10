@@ -1,3 +1,11 @@
+2006-01-10  Andrew Cagney  <cagney@redhat.com>
+
+	* kill/child.c: Make log messages more verbose; check pthread
+	return codes.
+	(pfatal, fatal, trace, ok, OK): New.
+	(notify_manager): Add trace message parameters.
+	(server): Use throughout.  Fix parameter to pthread_join.
+
 2006-01-10  Stan Cox  <scox@redhat.com>
 
 	* kill/child.c (server): New case SIGFPE.

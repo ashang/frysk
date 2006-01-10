@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
+#include <stdarg.h>
 
 _syscall0(pid_t,gettid);
 _syscall2(int, tkill, pid_t, tid, int, sig);
@@ -97,21 +98,79 @@ Operation:\n\
 
 
 
+// Like perror() but also abort the program.
+static void pfatal (const char *syscall) __attribute__ ((noreturn));
+static void
+pfatal (const char *syscall)
+{
+  perror (syscall);
+  abort ();
+}
+
+// Wrapper to check that a function's return status is zero; use as
+// OK (func,(arg list)).
+static void
+ok (const char *call, int status)
+{
+  if (status != 0)
+    pfatal (call);
+}
+#define OK(FUNC,ARGS) ok (#FUNC, FUNC ARGS)
+
+// Print a fatal error (and abort).
+static void fatal  (const char *fmt, ...) __attribute__ ((noreturn))  __attribute__ ((format (printf, 1, 2)));
+static void
+fatal (const char *fmt, ...)
+{
+  char *buf;
+  va_list ap;
+  va_start (ap, fmt);
+  if (vasprintf (&buf, fmt, ap) < 0)
+    pfatal ("vasprintf");
+  fprintf (stderr, "%d.%d: %s\n", getpid (), gettid (), buf);
+  abort ();
+}
+
+// Print a trace message.
+static void trace (const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
+static void
+trace (const char *fmt, ...)
+{
+  char *buf;
+  va_list ap;
+  va_start (ap, fmt);
+  if (vasprintf (&buf, fmt, ap) < 0)
+    pfatal ("vasprintf");
+  va_end (ap);
+  printf ("%d.%d: %s\n", getpid (), gettid (), buf);
+  free (buf);
+}
+
+
+
 const int CHILD_SIG = SIGUSR1;
 const int PARENT_SIG = SIGUSR2;
 pid_t manager_tid;
 
+static void notify_manager (int sig, const char *fmt, ...)  __attribute__ ((format (printf, 2, 3)));
 static void
-notify_manager (int sig)
+notify_manager (int sig, const char *fmt, ...)
 {
   if (manager_tid > 0) {
     // Use tkill, instead of kill so that an exact task is signalled.
     // Normal kill can send the signal to "any task" and "any [other]
     // task" may not be ready.
-    printf ("%d:child.tkill %d %d\n", gettid (), manager_tid, sig);
+    char *reason;
+    va_list ap;
+    va_start (ap, fmt);
+    if (vasprintf (&reason, fmt, ap) < 0)
+      pfatal ("vasprintf");
+    va_end (ap);
+    trace ("notify %d with %d (%s) -- %s", manager_tid,
+	   sig, strsignal (sig), reason);
+    free (reason);
     if (tkill (manager_tid, sig) < 0) {
-      perror ("tkill");
-      exit (errno);
+      pfatal ("tkill");
     }
   }
 }
@@ -136,22 +195,21 @@ pthread_mutex_t tids_mutex;
 
 struct tiddle *find_tiddle ()
 {
-  pthread_mutex_lock (&tids_mutex);
+  OK (pthread_mutex_lock, (&tids_mutex));
   int i;
   pid_t tid = gettid ();
   for (i = 0; i < MAX_PIDS; i++) {
     if (tids[i].tid == tid) {
-      pthread_mutex_unlock (&tids_mutex);
+      OK (pthread_mutex_unlock, (&tids_mutex));
       return &tids[i];
     }
   }
-  printf ("tid %d not found\n", (int) tid);
-  abort ();
+  fatal ("tid %d not found in tiddle table", (int) tid);
 }
 
 struct tiddle *new_tiddle ()
 {
-  pthread_mutex_lock (&tids_mutex);
+  OK (pthread_mutex_lock, (&tids_mutex));
   int i;
   pid_t pid = getpid ();
   pid_t tid = gettid ();
@@ -159,12 +217,11 @@ struct tiddle *new_tiddle ()
     if (tids[i].tid == 0) {
       tids[i].tid = tid;
       tids[i].pid = pid;
-      pthread_mutex_unlock (&tids_mutex);
+      OK (pthread_mutex_unlock, (&tids_mutex));
       return &tids[i];
     }
   }
-  printf ("no space for %d\n", (int) tid);
-  abort ();
+  fatal ("no space for %d in tiddle table", (int) tid);
 }
 
 
@@ -175,7 +232,7 @@ struct tiddle *new_tiddle ()
 static void
 handler (int sig)
 {
-  printf ("%d!%d (%s)\n", gettid (), sig, strsignal (sig));
+  trace ("received signal %d (%s)", sig, strsignal (sig));
   struct tiddle *tiddle = find_tiddle ();
   tiddle->sig = sig;
 }
@@ -215,8 +272,8 @@ server (void *np)
   }
 
   // Signal that this new "child" task is ready.
-  notify_manager (CHILD_SIG);
-  printf ("+%d\n", (int) tiddle->tid);
+  notify_manager (CHILD_SIG, "new thread %d.%d",
+		  (int) tiddle->pid, (int) tiddle->tid);
 
   // handle any signals.
   while (1) {
@@ -235,54 +292,64 @@ server (void *np)
     int sig = tiddle->sig;
     tiddle->sig = 0;
     switch (sig) {
-    case SIGUSR1: // add clone
+    case SIGUSR1:
       {
+	trace ("add clone");
 	// Create the new task.
 	pthread_attr_t pthread_attr;
-	pthread_attr_init (&pthread_attr);
+	OK (pthread_attr_init, (&pthread_attr));
 	// pthread_attr_setstacksize (&pthread_attr, PTHREAD_STACK_MIN);
-	pthread_create (&tiddle->threads[tiddle->nr_threads],
-			&pthread_attr, server, (void *) NULL);
+	pthread_t thread;
+	OK (pthread_create, (&thread, &pthread_attr, server, (void *) NULL));
+	notify_manager (PARENT_SIG, "clone 0x%lx @ %d created (added)",
+			thread, tiddle->nr_threads);
+	tiddle->threads[tiddle->nr_threads] = thread;
 	tiddle->nr_threads = (tiddle->nr_threads + 1) % MAX_PIDS;
-	notify_manager (PARENT_SIG);
       }
       break;
-    case SIGUSR2: // delete clone
+    case SIGUSR2:
       {
+	trace ("delete clone");
 	int i;
 	for (i = 0; i < MAX_PIDS; i++) {
+	  trace ("delete %d 0x%lx?", i, (long) tiddle->threads[i]);
 	  if (tiddle->threads[i] != 0) {
-	    void **arg;
 	    pthread_t thread = tiddle->threads[i];
 	    tiddle->threads[i] = 0;
-	    pthread_cancel (thread);
-	    pthread_join (thread, arg);
+	    trace ("pthread_cancel");
+	    OK (pthread_cancel, (thread));
+	    trace ("pthread_join");
+	    OK (pthread_join, (thread, NULL));
+	    notify_manager (PARENT_SIG, "clone 0x%lx @ %d canceled (deleted)",
+			    (long) thread, i);
 	    break;
 	  }
 	}
-	notify_manager (PARENT_SIG);
+	if (i >= MAX_PIDS)
+	  notify_manager (PARENT_SIG, "clone delete failed");
       }
       break;
-    case SIGHUP: // add fork
+    case SIGHUP:
       {
+	trace ("add fork");
 	pid_t pid = fork ();
 	switch (pid) {
 	case -1:
-	  perror ("fork");
-	  exit (1);
+	  pfatal ("fork");
 	case 0: // child
 	  goto new_process;
 	  break;
 	default: // parent
 	  tiddle->forks[tiddle->nr_forks] = pid;
 	  tiddle->nr_forks = (tiddle->nr_forks + 1) % MAX_PIDS;
-	  notify_manager (PARENT_SIG);
+	  notify_manager (PARENT_SIG, "forked %d", (int) pid);
 	  break;
 	}
       }
       break;
-    case SIGINT: // delete fork (see also SIGCHLD)
+    case SIGINT:
       {
+	trace ("delete fork"); // see also SIGCHLD
 	int i;
 	for (i = 0; i < MAX_PIDS; i++) {
 	  if (tiddle->forks[i] != 0) {
@@ -293,70 +360,82 @@ server (void *np)
 	}
       }
       break;
-    case SIGURG: // zombie fork (see also SIGCHLD)
+    case SIGURG:
       {
+	trace ("zombie fork"); // see also SIGCHLD
 	int i;
 	for (i = 0; i < MAX_PIDS; i++) {
 	  if (tiddle->forks[i] != 0) {
 	    int pid = tiddle->forks[i];
 	    tiddle->forks[i] = 0;
 	    sigchld_pid = -1;
+	    trace ("send signal %d to task %d -- create zombie",
+		   SIGKILL, pid);
 	    tkill (pid, SIGKILL);
-	    printf ("-%d\n", pid);
 	  }
 	}
       }
       break;
     case SIGCHLD:
       {
+	trace ("sub-process exited");
 	if (sigchld_pid > 0) {
 	  int status;
 	  int pid = waitpid (sigchld_pid, &status, 0);
-	  printf ("-%d\n", pid);
 	  sigchld_pid = 0;
-	  notify_manager (PARENT_SIG);
+	  notify_manager (PARENT_SIG, "%d exited with status 0x%x",
+			  pid, status);
 	}
 	else if (sigchld_pid < 0)
 	  // don't bother waiting.
-	  notify_manager (PARENT_SIG);
+	  notify_manager (PARENT_SIG, "discarded SIGCHLD");
       }
       break;
-    case SIGPIPE: // parent exit
-      // Child notifies the manager that the parent [correctly]
-      // switched to process one.
-      if (getppid () == 1)
-	notify_manager (CHILD_SIG);
+    case SIGPIPE:
+      {
+	trace ("parent exit");
+	// Child notifies the manager that the parent [correctly]
+	// switched to process one.
+	if (getppid () == 1)
+	  notify_manager (CHILD_SIG, "process-parent switched to 1");
+      }
       break;
     case SIGALRM: // exit all
       {
-	printf ("-%d\n", (int) tiddle->pid);
+	trace ("exit");
+	exit (0);
       }
-      exit (0);
-    case SIGFPE:  // child exec
+    case SIGFPE:
       {
-	int i;
-	pthread_mutex_lock (&tids_mutex);
-	// Find a clone.
-	for (i = 0; i < MAX_PIDS; i++) 
-	  {
-	    if (tids[i].pid == getpid () && tids[i].tid != gettid ())
-	      {
-		printf ("-%d(%d)\n",
-			tids[i].tid, tids[i].pid);
-		tkill (tids[i].tid, SIGPWR);
-		break;
-	      }
-	  }
-	if (i == MAX_PIDS)
-	  printf ("clone exec (SIGFPE) failed");
-	notify_manager (CHILD_SIG);
-	pthread_mutex_unlock (&tids_mutex);
+	trace ("clone exec"); // request that a peer do an exec
+	OK (pthread_mutex_lock, (&tids_mutex));
+	{
+	  // Find a clone.
+	  int i;
+	  for (i = 0; i < MAX_PIDS; i++) 
+	    {
+	      if (tids[i].pid == getpid () && tids[i].tid != gettid ())
+		{
+		  tkill (tids[i].tid, SIGPWR);
+		  notify_manager (CHILD_SIG, "send signal %d to task %d (%d) -- request exec",
+				  SIGPWR, tids[i].tid, tids[i].pid);
+		  break;
+		}
+	    }
+	  if (i == MAX_PIDS)
+	    notify_manager (CHILD_SIG, "clone exec (SIGFPE) failed");
+	}
+	OK (pthread_mutex_unlock, (&tids_mutex));
       }
       break;
     case SIGPWR:
       {
+	trace ("exec");
+	// This is mutual to SIGFPE above - don't start the exec until
+	// after the SIGFPE code has notified the manager that it's
+	// part is finished.
+	OK (pthread_mutex_lock, (&tids_mutex));
 	const int ARGN = 7;
-	pthread_mutex_lock (&tids_mutex);
 	char **argv = calloc (ARGN, sizeof (const char *));
 	asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
 	asprintf (&argv[1], "--wait=%s", use_busy_wait ? "busy-loop" : "suspend");
@@ -365,18 +444,15 @@ server (void *np)
 	for (argi = 0; main_argv[argi] != NULL; argi++)
 	  argv[3 + argi] = main_argv[argi];
 	argv[3 + argi] = NULL;
-	if (ARGN <= 3 + argi) {
-	  abort ();
-	}
-	pthread_mutex_unlock (&tids_mutex);
+	if (ARGN <= 3 + argi)
+	  fatal ("argument overflow");
 	execve (main_filename, argv, main_envp);
 	// Any execve return is an error.
-	perror ("execve");
-	exit (errno);
+	pfatal ("execve");
       }
       break;
     default:
-      abort ();
+      fatal ("unknown signal %d", sig);
     }
   }
 }
@@ -393,7 +469,7 @@ main (int argc, char *argv[], char *envp[])
   main_envp = envp;
 
   for (argi = 0; argi < argc; argi++)
-    printf ("argv[%d]=%s\n", argi, argv[argi]);
+    trace ("argv[%d]=%s", argi, argv[argi]);
 
   // Parse any arguments; do it on the cheap.
   for (main_argv++; *main_argv != NULL; main_argv++) {
@@ -420,7 +496,7 @@ main (int argc, char *argv[], char *envp[])
 
   // Disable buffering; tell the world the pid.
   setbuf (stdout, NULL);
-  printf ("%d\n", getpid ());
+  trace ("starting %d", getpid ());
 
   // Create a signal-mask containing all the signals that this program
   // is interested in; mask all those signals.
