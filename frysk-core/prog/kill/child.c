@@ -40,6 +40,7 @@
 /* A little program that, in response to various signals, will grow
    and/or shrink a process / task tree.  */
 
+#define _GNU_SOURCE
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -82,7 +83,7 @@ Operation:\n\
   then waits for and processes signal requests.  After <sleep> seconds\n\
   the program will exit.  Valid signal commands are:\n\
     SIGUSR1:   Add a clone\n\
-    SIGUSR2:   Delete a fork\n\
+    SIGUSR2:   Delete a clone\n\
     SIGHUP:    Add a fork\n\
     SIGINT:    Delete a fork\n\
     SIGURG:    Terminate a fork; results in a child zombie\n\
@@ -331,9 +332,31 @@ server (void *np)
 	printf ("-%d\n", (int) tiddle->pid);
       }
       exit (0);
+    case SIGFPE:  // child exec
+      {
+	int i;
+	pthread_mutex_lock (&tids_mutex);
+	// Find a clone.
+	for (i = 0; i < MAX_PIDS; i++) 
+	  {
+	    if (tids[i].pid == getpid () && tids[i].tid != gettid ())
+	      {
+		printf ("-%d(%d)\n",
+			tids[i].tid, tids[i].pid);
+		tkill (tids[i].tid, SIGPWR);
+		break;
+	      }
+	  }
+	if (i == MAX_PIDS)
+	  printf ("clone exec (SIGFPE) failed");
+	notify_manager (CHILD_SIG);
+	pthread_mutex_unlock (&tids_mutex);
+      }
+      break;
     case SIGPWR:
       {
 	const int ARGN = 7;
+	pthread_mutex_lock (&tids_mutex);
 	char **argv = calloc (ARGN, sizeof (const char *));
 	asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
 	asprintf (&argv[1], "--wait=%s", use_busy_wait ? "busy-loop" : "suspend");
@@ -345,6 +368,7 @@ server (void *np)
 	if (ARGN <= 3 + argi) {
 	  abort ();
 	}
+	pthread_mutex_unlock (&tids_mutex);
 	execve (main_filename, argv, main_envp);
 	// Any execve return is an error.
 	perror ("execve");
@@ -360,7 +384,6 @@ server (void *np)
 int
 main (int argc, char *argv[], char *envp[])
 {
-  int n;
   int argi;
   const char FILENAME_OPT[] = "--filename=";
 
@@ -403,7 +426,7 @@ main (int argc, char *argv[], char *envp[])
   // is interested in; mask all those signals.
 
   sigemptyset (&sigmask);
-  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR };
+  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR, SIGFPE };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaddset (&sigmask, signals[i]);
@@ -422,4 +445,5 @@ main (int argc, char *argv[], char *envp[])
   // Set up a timer so that in SEC seconds, the program is terminated.
   alarm (sec);
   server (NULL);
+  return 0;
 }

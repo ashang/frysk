@@ -1,3 +1,7 @@
+2006-01-10  Stan Cox  <scox@redhat.com>
+
+	* kill/child.c (server): New case SIGFPE.
+
 2005-12-22  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/child.c: Implement --filename=<program> argument.  For
