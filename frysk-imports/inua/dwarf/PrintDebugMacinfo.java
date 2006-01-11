@@ -36,10 +36,11 @@
 // exception.
 package inua.dwarf;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
+import inua.util.Print;
 
 public class PrintDebugMacinfo
-    implements inua.Print
+    implements Print
 {
     DebugMacinfo debugMacinfoSection;
     public PrintDebugMacinfo (DebugMacinfo debugMacinfoSection)

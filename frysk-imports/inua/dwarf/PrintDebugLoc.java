@@ -40,10 +40,11 @@ package inua.dwarf;
 import java.util.Set;
 import java.util.Iterator;
 import java.util.TreeSet;
-import inua.PrintWriter;
+import inua.util.PrintWriter;
+import inua.util.Print;
 
 public class PrintDebugLoc
-    implements inua.Print
+    implements Print
 {
     DebugLoc debugLocSection;
     Set locReferences; // Remove duplicates.

@@ -36,7 +36,7 @@
 // exception.
 package inua.elf;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
 
 public class PrintSym
 {

@@ -34,48 +34,37 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package inua.elf;
 
-import inua.util.PrintWriter;
+package inua.util;
 
-public class PrintNote
+public class Misc
 {
-    Elf elf;
-
-    public PrintNote (Elf elf)
+    static public void verifyPrint (Print printer,
+				    String[] expected)
     {
-	this.elf = elf;
-    }
-
-    public void print (PrintWriter o)
-    {
-	Phdr phdrs[] = elf.getPhdrs ();
-	for (int i = 0; i < phdrs.length; i++) {
-	    Phdr phdr = phdrs[i];
-	    Note[] notes = phdr.asNotes ();
-	    if (notes != null) {
-		o.print ("Notes at offset 0x");
-		o.printx (8, '0', phdr.offset);
-		o.print (" with length 0x");
-		o.printx (8, '0' , phdr.filesz);
-		o.print (":");
-		o.println ();
-		o.println ("  Owner         Data size       Description");
-		for (int n = 0; n < notes.length; n++) {
-		    Note note = notes[n];
-		    o.print ("  ");
-		    o.print (-14,note.name.getString (0));
-		    o.print ("0x");
-		    o.printx (8,'0',note.descsz ());
-		    o.print ("      ");
-		    o.print (NT.toString (note.type));
-		    o.print (" (");
-		    o.print (NT.toPrintString (note.type));
-		    o.print (')');
-		    o.println ();
-		}
+	java.io.StringWriter writer = new java.io.StringWriter ();
+	PrintWriter out = new PrintWriter (writer);
+	printer.print (out);
+	out.flush ();
+	
+	String output = writer.toString ();
+	java.io.StringReader stringReader = new java.io.StringReader (output);
+	java.io.BufferedReader reader
+	    = new java.io.BufferedReader (stringReader);
+	try {
+	    String line;
+	    for (int i = 0; i < expected.length; i++) {
+		line = reader.readLine ();
+		if (!expected[i].equals (line))
+		    throw new RuntimeException (i + " mismatch: " + line
+						+ "\nexpected: " + expected[i]);
 	    }
+	    line = reader.readLine ();
+	    if (line != null)
+		throw new RuntimeException ("more output: " + line);
+	}
+	catch (Exception e) {
+	    throw new RuntimeException (e);
 	}
     }
 }
-

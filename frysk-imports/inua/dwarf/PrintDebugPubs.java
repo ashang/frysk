@@ -36,10 +36,11 @@
 // exception.
 package inua.dwarf;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
+import inua.util.Print;
 
 public class PrintDebugPubs
-    implements inua.Print
+    implements Print
 {
     DebugPubs debugPubsSection;
     public PrintDebugPubs (DebugPubs debugPubsSection)

@@ -34,48 +34,17 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package inua.elf;
 
-import inua.util.PrintWriter;
+package inua.util;
 
-public class PrintNote
+public class Mask
 {
-    Elf elf;
-
-    public PrintNote (Elf elf)
+    public long mask;
+    public char ch;
+    public Mask (long m, char c)
     {
-	this.elf = elf;
-    }
-
-    public void print (PrintWriter o)
-    {
-	Phdr phdrs[] = elf.getPhdrs ();
-	for (int i = 0; i < phdrs.length; i++) {
-	    Phdr phdr = phdrs[i];
-	    Note[] notes = phdr.asNotes ();
-	    if (notes != null) {
-		o.print ("Notes at offset 0x");
-		o.printx (8, '0', phdr.offset);
-		o.print (" with length 0x");
-		o.printx (8, '0' , phdr.filesz);
-		o.print (":");
-		o.println ();
-		o.println ("  Owner         Data size       Description");
-		for (int n = 0; n < notes.length; n++) {
-		    Note note = notes[n];
-		    o.print ("  ");
-		    o.print (-14,note.name.getString (0));
-		    o.print ("0x");
-		    o.printx (8,'0',note.descsz ());
-		    o.print ("      ");
-		    o.print (NT.toString (note.type));
-		    o.print (" (");
-		    o.print (NT.toPrintString (note.type));
-		    o.print (')');
-		    o.println ();
-		}
-	    }
-	}
+	mask = m;
+	ch = c;
     }
 }
 

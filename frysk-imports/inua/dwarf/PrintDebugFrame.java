@@ -36,10 +36,11 @@
 // exception.
 package inua.dwarf;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
+import inua.util.Print;
 
 public class PrintDebugFrame
-    implements inua.Print
+    implements Print
 {
     DebugFrame[] debugFrameSections;
     public PrintDebugFrame (Dwarf dwarf)

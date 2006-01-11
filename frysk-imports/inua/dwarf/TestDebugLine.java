@@ -34,7 +34,10 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package inua.dwarf;
+
+import inua.util.Misc;
 
 class TestDebugLine
     extends TestLib
@@ -258,7 +261,7 @@ class TestDebugLine
 	    0x01, 0x01
 	};
 
-	inua.Misc.verifyPrint (new PrintDebugLine (test), new String[] {
+	Misc.verifyPrint (new PrintDebugLine (test), new String[] {
 "",
 "Dump of debug contents of section .debug_line:",
 "",

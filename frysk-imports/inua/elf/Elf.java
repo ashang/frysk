@@ -38,7 +38,7 @@ package inua.elf;
 
 public class Elf
 {
-    public ElfBuffer buffer;
+    ElfBuffer buffer;
 
     public Elf (String name)
     {

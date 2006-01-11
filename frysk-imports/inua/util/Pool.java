@@ -34,48 +34,78 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package inua.elf;
 
-import inua.util.PrintWriter;
+package inua.util;
 
-public class PrintNote
+import java.util.List;
+import java.util.ArrayList;
+
+/**
+ * Object pool, call recycle to start reusing them.
+ */
+
+public class Pool
 {
-    Elf elf;
+    private java.lang.reflect.Constructor constructor;
+    private Object[] constructorArgs;
 
-    public PrintNote (Elf elf)
+    /**
+     * A simple pool.
+     */
+    public Pool (Class sample)
     {
-	this.elf = elf;
-    }
-
-    public void print (PrintWriter o)
-    {
-	Phdr phdrs[] = elf.getPhdrs ();
-	for (int i = 0; i < phdrs.length; i++) {
-	    Phdr phdr = phdrs[i];
-	    Note[] notes = phdr.asNotes ();
-	    if (notes != null) {
-		o.print ("Notes at offset 0x");
-		o.printx (8, '0', phdr.offset);
-		o.print (" with length 0x");
-		o.printx (8, '0' , phdr.filesz);
-		o.print (":");
-		o.println ();
-		o.println ("  Owner         Data size       Description");
-		for (int n = 0; n < notes.length; n++) {
-		    Note note = notes[n];
-		    o.print ("  ");
-		    o.print (-14,note.name.getString (0));
-		    o.print ("0x");
-		    o.printx (8,'0',note.descsz ());
-		    o.print ("      ");
-		    o.print (NT.toString (note.type));
-		    o.print (" (");
-		    o.print (NT.toPrintString (note.type));
-		    o.print (')');
-		    o.println ();
-		}
-	    }
+	try {
+	    // Find the "Object()" constructor.
+	    Class[] constructorArgsClass = new Class[0];
+	    constructor = sample.getConstructor (constructorArgsClass);
+	    constructorArgs = new Object[0];
+	}
+	catch (Exception e) {
+	    throw new RuntimeException (e);
 	}
     }
-}
 
+    /**
+     * A pool where each object's constructor is parameterized with
+     * PARAM (It does an exact match of PARAM's class, is that a good
+     * idea?).
+     */
+    public Pool (Class sample, Object param)
+    {
+	try {
+	    // Find the "Object()" constructor.
+	    Class[] constructorArgsClass = new Class[] { param.getClass () };
+	    constructor = sample.getConstructor (constructorArgsClass);
+	    constructorArgs = new Object[] { param };
+	}
+	catch (Exception e) {
+	    throw new RuntimeException (e);
+	}
+    }
+
+    private List pool = new ArrayList ();
+    private int nextEvent = 0;
+
+    /**
+     * Return an object from the pool.
+     */
+    public Object get ()
+    {
+	if (nextEvent >= pool.size ()) {
+	    try {
+		pool.add (constructor.newInstance (constructorArgs));
+	    }
+	    catch (Exception e) {
+		throw new RuntimeException (e);
+	    }
+	}
+	return pool.get (nextEvent++);
+    }
+    /**
+     * Recycle all objects from the pool.
+     */
+    public void recycle ()
+    {
+	nextEvent = 0;
+    }
+}

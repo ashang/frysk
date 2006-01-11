@@ -53,7 +53,7 @@ import inua.dwarf.PrintDebugInfo;
 import inua.dwarf.PrintDebugPubs;
 import inua.dwarf.PrintDebugAranges;
 import inua.dwarf.PrintDebugAbbrev;
-import inua.PrintWriter;
+import inua.util.PrintWriter;
 
 class readelf
 {

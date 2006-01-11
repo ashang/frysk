@@ -36,11 +36,12 @@
 // exception.
 package inua.elf;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
+import inua.util.Print;
 
 public class TestLib
 {
-    static public void verifyPrint (inua.Print printer,
+    static public void verifyPrint (Print printer,
 				    String[] expected)
     {
 	java.io.StringWriter writer = new java.io.StringWriter ();

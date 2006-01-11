@@ -34,48 +34,62 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package inua.elf;
 
-import inua.util.PrintWriter;
+package inua.util;
 
-public class PrintNote
+import junit.framework.TestCase;
+
+public class TestPool
+    extends TestCase
 {
-    Elf elf;
-
-    public PrintNote (Elf elf)
+    static class Counter
     {
-	this.elf = elf;
+	int counter;
     }
 
-    public void print (PrintWriter o)
+    static class ParameterlessObject
+	extends Counter
     {
-	Phdr phdrs[] = elf.getPhdrs ();
-	for (int i = 0; i < phdrs.length; i++) {
-	    Phdr phdr = phdrs[i];
-	    Note[] notes = phdr.asNotes ();
-	    if (notes != null) {
-		o.print ("Notes at offset 0x");
-		o.printx (8, '0', phdr.offset);
-		o.print (" with length 0x");
-		o.printx (8, '0' , phdr.filesz);
-		o.print (":");
-		o.println ();
-		o.println ("  Owner         Data size       Description");
-		for (int n = 0; n < notes.length; n++) {
-		    Note note = notes[n];
-		    o.print ("  ");
-		    o.print (-14,note.name.getString (0));
-		    o.print ("0x");
-		    o.printx (8,'0',note.descsz ());
-		    o.print ("      ");
-		    o.print (NT.toString (note.type));
-		    o.print (" (");
-		    o.print (NT.toPrintString (note.type));
-		    o.print (')');
-		    o.println ();
-		}
-	    }
+	static int count = 0;
+	public ParameterlessObject ()
+	{
+	    counter = count++;
 	}
     }
-}
 
+    static class ParameteredObject
+	extends Counter
+    {
+	public ParameteredObject (Counter c)
+	{
+	    this.counter = c.counter++;
+	}
+    }
+
+    void usePool (String what, Pool pool, Counter[] counters)
+    {
+	for (int i = 0; i < counters.length; i++) {
+	    counters[i] = (Counter) pool.get ();
+	    assertEquals (what, i, counters[i].counter);
+	}
+    }
+
+    public void testParamaterlessPool ()
+    {
+	Counter[] counters = new Counter[10];
+	Pool parameterlessPool = new Pool (ParameterlessObject.class);
+	usePool ("Allocate parameterless", parameterlessPool, counters);
+	parameterlessPool.recycle ();
+	usePool ("Recycle parameterless", parameterlessPool, counters);
+    }
+
+    public void testParameteredPool ()
+    {
+	Counter[] counters = new Counter[10];
+	Pool parameteredPool = new Pool (ParameteredObject.class,
+					 new Counter ());
+	usePool ("Allocate parametered", parameteredPool, counters);
+	parameteredPool.recycle ();
+	usePool ("Recycle parametered", parameteredPool, counters);
+    }
+}

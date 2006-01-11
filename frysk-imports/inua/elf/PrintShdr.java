@@ -36,8 +36,8 @@
 // exception.
 package inua.elf;
 
-import inua.PrintWriter;
-import inua.Mask;
+import inua.util.PrintWriter;
+import inua.util.Mask;
 
 public class PrintShdr
 {
