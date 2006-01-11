@@ -52,7 +52,10 @@ public class Resume extends ProcAction {
 	}
 	
 	public void execute(Proc proc) {
-		proc.requestAttachedContinue();		
+	    // XXX: Resume behavior should be implemented by removing,
+	    // or unblocking, all blocking observers.
+	    // proc.requestAttachedContinue();		
+	    throw new RuntimeException ("not applicable");
 	}
 
 	public Action getCopy() {

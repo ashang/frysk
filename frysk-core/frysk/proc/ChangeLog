@@ -1,5 +1,11 @@
 2006-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (requestDetachedContinue): Delete.
+	(requestAttachedContinue): Delete.
+	* ProcState.java (processRequestAttachedContinue): Delete.
+	(processRequestDetachedContinue): Delete.
+	* TestProcStates.java: Delete.
+
 	* Task.java (stepEvent): Delete.
 	* TaskState.java: Delete calls to Task .stepEvent .notify.
 

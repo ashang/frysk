@@ -164,40 +164,6 @@ public abstract class Proc
     }
 
     /**
-     * Request that the process be both attached and running.
-     *
-     * An un-attached process will be attached.  A stopped process
-     * will resume execution.
-     */
-    public void requestAttachedContinue ()
-    {
-	logger.log (Level.FINE, "{0} requestAttachedContinue\n", this); 
-	Manager.eventLoop.add (new ProcEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processRequestAttachedContinue (Proc.this);
-		}
-	    });
-    }
-    /**
-     * Request that the process be both detached and left running.
-     *
-     * An attached process is detached.  If the attached process was
-     * stopped, it's execution is resumed.
-     */
-    public void requestDetachedContinue ()
-    {
-	logger.log (Level.FINE, "{0} requestDetachedContinue\n", this); 
-	Manager.eventLoop.add (new ProcEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processRequestDetachedContinue (Proc.this);
-		}
-	    });
-    }
-    /**
      * Request that the Proc's task list be refreshed using system
      * tables.
      */

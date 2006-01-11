@@ -77,14 +77,6 @@ abstract class ProcState
     {
 	throw unhandled (proc, "RequestRemoval");
     }
-    ProcState processRequestAttachedContinue (Proc proc)
-    {
-	throw unhandled (proc, "RequestAttachedContinue");
-    }
-    ProcState processRequestDetachedContinue (Proc proc)
-    {
-	throw unhandled (proc, "RequestDetachedContinue");
-    }
     ProcState processRequestRefresh (Proc proc)
     {
 	throw unhandled (proc, "RequestRefresh");
@@ -133,11 +125,6 @@ abstract class ProcState
      */
     private static ProcState unattached = new ProcState ("unattached")
 	{
-	    ProcState processRequestAttachedContinue (Proc proc)
-	    {
-		logger.log (Level.FINE, "request continue {0}\n", proc); 
-		return Attaching.state (proc, null);
-	    }
 	    ProcState processRequestRefresh (Proc proc)
 	    {
 		logger.log (Level.FINE, "request refresh {0}\n", proc); 
@@ -480,17 +467,6 @@ abstract class ProcState
 
     private static ProcState running = new ProcState ("running")
 	{
-	    ProcState processRequestAttachedContinue (Proc proc)
-	    {
-		logger.log (Level.FINE, "request attach {0}\n", proc); 
-		proc.observableAttached.notify (proc);
-		return running;
-	    } 
-	    ProcState processRequestDetachedContinue (Proc proc)
-	    {
-		logger.log (Level.FINE, "request detach {0}\n", proc); 
-		return Detaching.state (proc);
-	    }
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
