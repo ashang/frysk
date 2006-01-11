@@ -504,7 +504,6 @@ abstract public class Task
 	}
     }
     public TaskEventObservable stepEvent = new TaskEventObservable ();
-    public TaskEventObservable requestedStopEvent = new TaskEventObservable ();
 
     public String toString ()
     {

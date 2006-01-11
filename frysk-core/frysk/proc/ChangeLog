@@ -1,3 +1,16 @@
+2006-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	* Task.java (requestedStopEvent): Delete.
+	* TaskState.java: Delete calls to Task .requestedStopEvent
+	.notify.
+	* TestUnpaused.java: Delete.
+	* TestStop.java: Delete.
+	* TestStopAndStop.java: Delete.
+	* TestStep.java: Delete.
+	* TestStopAndGo.java: Delete.
+	* TestPaused.java: Delete.
+	* TestGoAndGo.java: Delete.
+
 2006-01-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserver.java (attach(Task)): Refactor, creating ...

@@ -362,16 +362,12 @@ class TaskState
 	    }
 	    TaskState processStoppedEvent (Task task)
 	    {
-		// XXX: Not a standard observer.
-		logger.log (Level.FINE, "stop {0}\n", task); 
-		task.requestedStopEvent.notify (task);
+		logger.log (Level.FINE, "{0} processStoppedEvent\n", task); 
 		return stopped;
 	    }
 	    TaskState processTrappedEvent (Task task)
 	    {
-		// XXX: Not a standard observer.
-		logger.log (Level.FINE, "trap {0}\n", task); 
-		task.requestedStopEvent.notify (task);
+		logger.log (Level.FINE, "{0} processTrappedEvent\n", task); 
 		return paused;
 	    }
 	};
