@@ -1,5 +1,8 @@
 2006-01-11  Andrew Cagney  <cagney@redhat.com>
 
+	* TestProcGet.java, Syscall.java, Auxv.java: Update inua imports
+	to match latest import.
+
 	* Proc.java (requestDetachedContinue): Delete.
 	(requestAttachedContinue): Delete.
 	* ProcState.java (processRequestAttachedContinue): Delete.

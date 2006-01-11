@@ -43,7 +43,7 @@
 
 package prog.util;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
 import frysk.proc.Auxv;
 import frysk.sys.proc.AuxvBuilder;
 

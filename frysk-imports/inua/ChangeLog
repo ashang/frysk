@@ -1,3 +1,20 @@
+2006-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	Import 2006-01-11.
+	* Mask.java, Misc.java, Pool.java, Print.java, PrintWriter.java,
+	Scanner.java, TestPool.java: Delete.
+	* EXCEPTION, dwarf/PrintDebugAbbrev.java,
+	dwarf/PrintDebugAranges.java, dwarf/PrintDebugFrame.java,
+	dwarf/PrintDebugInfo.java, dwarf/PrintDebugLine.java,
+	dwarf/PrintDebugLoc.java, dwarf/PrintDebugMacinfo.java,
+	dwarf/PrintDebugPubs.java, dwarf/PrintDebugRanges.java,
+	dwarf/PrintDebugStr.java, dwarf/TestDebugLine.java, elf/Elf.java,
+	elf/PrintEhdr.java, elf/PrintNote.java, elf/PrintPhdr.java,
+	elf/PrintShdr.java, elf/PrintSym.java: Update.
+	* elf/TestLib.java, util/Mask.java, util/Misc.java,
+	util/Pool.java, util/Print.java, util/PrintWriter.java,
+	util/Scanner.java, util/TestPool.java, util/readelf.java: New.
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Pool.java, Print.java, PrintWriter.java, Scanner.java,

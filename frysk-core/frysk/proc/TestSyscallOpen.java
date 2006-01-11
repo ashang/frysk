@@ -42,7 +42,7 @@ package frysk.proc;
 import java.util.Observer;
 import java.util.Observable;
 import frysk.sys.SyscallNum;
-import inua.PrintWriter;
+import inua.util.PrintWriter;
 
 /**
  * Check that a specific syscall event can be detected.  In this case,

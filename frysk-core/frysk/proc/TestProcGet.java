@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import inua.util.Scanner;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
@@ -91,7 +92,7 @@ public class TestProcGet
 	// Compare the AUXV as printed against that extracted using
 	// Proc.getAuxv.
 	try {
-	    inua.Scanner reader = new inua.Scanner (tmpFile.getFile ());
+	    Scanner reader = new Scanner (tmpFile.getFile ());
 	    for (int i = 0; i < auxv.length; i++) {
 		if (auxv[i].type == 0)
 		    break;

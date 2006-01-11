@@ -1,3 +1,7 @@
+2006-01-11  Andrew Cagney  <cagney@redhat.com>
+
+	* util/auxv.java: Update inua imports to match latest inua inport.
+
 2006-01-10  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/child.c: Make log messages more verbose; check pthread

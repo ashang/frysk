@@ -39,7 +39,7 @@
 
 package frysk.proc;
 
-import inua.PrintWriter;
+import inua.util.PrintWriter;
 
 public class Auxv
 {
