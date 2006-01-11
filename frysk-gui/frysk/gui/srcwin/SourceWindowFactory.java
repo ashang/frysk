@@ -290,6 +290,7 @@ public class SourceWindowFactory {
 						glade = new LibGlade(gladePaths[i]+"/"+SourceWindow.GLADE_FILE, null);
 					}
 					catch (Exception e){
+						e.printStackTrace();
 						// If we don't find the glade file, continue looking
 						continue;
 					}
