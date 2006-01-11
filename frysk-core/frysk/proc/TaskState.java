@@ -651,10 +651,7 @@ class TaskState
 	{
 	    TaskState processTrappedEvent (Task task)
 	    {
-		// XXX: Not a standard observer.  Notify SIGTRAP
-		// indicating that the step is done.
 		logger.log (Level.FINE, "trap {0}\n", this); 
-		task.stepEvent.notify (task);
 		return stopped;
 	    }
 	};

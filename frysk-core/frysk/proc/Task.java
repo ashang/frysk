@@ -503,7 +503,6 @@ abstract public class Task
 	    notifyObservers (o);
 	}
     }
-    public TaskEventObservable stepEvent = new TaskEventObservable ();
 
     public String toString ()
     {
