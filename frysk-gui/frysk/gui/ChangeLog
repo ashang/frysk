@@ -1,3 +1,7 @@
+2005-01-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: removed requires gnome tag.
+
 2005-12-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source_prefs.glade: Added area for the number of inlined
