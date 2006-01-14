@@ -56,6 +56,7 @@ EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
 
 CLEANFILES = *.so *.jar *.o *.class
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+CFLAGS += -fPIC -DPIC -std=gnu99
 
 com/redhat/ftk/Stripchart.class: $(SRC) 
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
@@ -65,7 +66,7 @@ ftk.jar: com/redhat/ftk/Stripchart.class
 
 Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
-            -g -O2 -c $< -o $@
+            -g -O2 -fPIC -c $< -o $@
 
 libftkjava.so: Stripchart.o
 	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
@@ -78,10 +79,10 @@ libftkjni.so: com_redhat_ftk_Stripchart.o
 	$(CC) -shared $^ $(FRYSK_GTK_LIBS) -o $@
 
 ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
-	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
+	$(CC) $(CFLAGS) $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
 ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
-	$(CC) $(CFLAGS) -std=gnu99 $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
+	$(CC) $(CFLAGS) $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
 
 libftk.so: ftkstripchart.o ftkconsole.o
 	$(CC) -shared -o $@ $^ -lrt

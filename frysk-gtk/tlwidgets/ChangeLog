@@ -1,3 +1,9 @@
+2006-01-14  Diego Novillo  <dnovillo@redhat.com>
+
+	* Makefile.am (CFLAGS): Add -fPIC -DPIC -std=gnu99.
+	(ftkstripchart.o, ftkconsole.o): Use.
+	(Stripchart.o): Add -fPIC.
+
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Directory moved from frysk-imports/ to frysk-gtk/.
