@@ -80,4 +80,5 @@ test "x$FIG2DEV" = x && AC_MSG_ERROR([no fig2dev binary is found in \$(PATH)])
 
 AM_PROG_AS
 
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/lib/pkgconfig:/usr/lib/frysk/pkgconfig
+lib=`pkg-config --debug 2>&1 |awk -F '/' '/^Scanning.*pkgconfig.$/ { print $(NF - 1); exit; }'`
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/$lib/pkgconfig:/usr/$lib/frysk/pkgconfig
