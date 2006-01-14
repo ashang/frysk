@@ -32,22 +32,12 @@ all its prerequesits are met.
 
 <dd>
 
-<em>frysk</em> requres Java-GNOME bindings, and a number of other
-libraries, which are not part of the base RHEL 4 distribution.  All
-the required libraries are included in the <em>frysk</em> RPM, a
-source code snapshot of that RPM can be found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>.
-
-<ul>
-
-<li>Ensure that that gcc4 is installed (while these notes were written
-using <tt>gcc4 (GCC) 4.0.1 20050727 (Red Hat 4.0.1-4.EL4.2)</tt> from
-RHEL-4 U2, the RHEL-4 U3 compiler is strongly recommended)
-
-<li>Download, build and install the RHEL-4 SRC RPM, or install the
-<em>frysk</em> binary RPM from Red Hat Network.
-
-</ul>
+Red Hat Enterprise Linux 4 Update 3 includes <tt>gcc4</tt> and
+<tt><em>frysk</em></tt> RPM's that include everything needed to build
+<em>frysk</em> from CVS; just install those RPM's. <br> If you've an
+earlier RHEL 4 release, sources for the compiler and <em>frysk</em>
+libraries can be found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>
 
 </dd>
 
@@ -55,30 +45,23 @@ RHEL-4 U2, the RHEL-4 U3 compiler is strongly recommended)
 
 <dd>
 
-With the release of Fedora Core 5 Test-2 it is possible to build and
-run <em>frysk</em> using the distributed rpms.  <br>Please note:
+With the release of Fedora Core 5 Test 2 it is possible to build and
+run <em>frysk</em> using the distributed rpms.  Just note:
 
 <ul>
 
-<li>FC-5 GCC's prior to <tt>gcc-4.1.0-0.14</tt> had serious
-regressions
+<li>
 
-<li>Either <tt>selinux</tt> is disabled, or its database is
-up-to-date.  Otherwize <tt>gij</tt> and <tt>gcj-dbtool</tt> behave
-wierd; and <tt>/proc</tt> will not be accessable
+Either <tt>selinux</tt> should be disabled, or its database updated.
+Otherwize <tt>gij</tt> and <tt>gcj-dbtool</tt> behave wierd; and
+<tt>/proc</tt> will not be accessable
 
-<li>All required packages are installed (others?); using
-yum:<br><tt>sudo yum install antlr transfig gcc-java libgcj-devel
-gcc-c++ cvs jdom libgtk-java-devel cairo-java-devel glib-java-devel
-libvtej-ava-devel</tt>
+<li>
 
-<li>the <tt>java-1.4.2-gcj-compat</tt> is not required (but doesn't
-hurt)
-
-<li>A regression common to both the <tt>2.6.15-1.1826.2.5_FC5</tt>
-kernel and its upstream counterpart prevents the tracking of a
-multi-threaded programs that make execve calls (the kernel
-spontaneously kills the program).
+A regression common to both the <tt>2.6.15-1.1826.2.5_FC5</tt> kernel
+and its upstream counterpart prevents the tracking of a multi-threaded
+programs that make execve calls (the kernel spontaneously kills the
+program).
 
 </ul>
 
@@ -88,28 +71,31 @@ spontaneously kills the program).
 
 <dd>
 
-The RPM's that <em>frysk</em> require are not a part of the standard
-Fedora Core 4 distribution, additional RPMs need to be downloaded and
-installed.
+Both the compiler needs to be updated, and additional libraries need
+to be built and installed:
 
 <ul>
 
-<li><tt>gcj 4.0.2-8.fc4</tt> has a number of serious regressions that
-result in Internal Compiler Errors when building <em>frysk</em>; if at
-all possible install a slightly newer or older compiler
+<li>
 
-<li>Install <tt>eclipse-ecj</tt><br> <tt>gcj</tt>'s front end has bugs
-that can be worked around by instead using this compiler.
+<tt>gcj 4.0.2-8.fc4</tt> has a number of serious bugs. <br> Download,
+build, and install a snapshot of the RHEL-4 gcc4 compiler (found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
 
-<li>Add the <em>frysk</em> yum repository<br> Copy the file <a
-href="ftp://sources.redhat.com/pub/frysk/build/frysk.repo"><tt>frysk.repo</tt></a>
-in your <tt>/etc/yum.repos.d/</tt> directory (you will need to be
-root).
+<li>
 
-<li>Install the non-standard <em>frysk</em> libraries by running the
-command (<strong>note the quotes</strong>):<br>
+Download, build, and install the RHEL 4 jumbo <em>frysk</em> RPM
+(found <a href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
+You will need to change these two lines in <tt>frysk.spec</tt>: <br>
 
-<tt>$ yum --exclude <strong>'</strong>*debuginfo<strong>'</strong> install <strong>'</strong>frysk-*<strong>'</strong></tt>
+<tt>&nbsp;&nbsp;%define gccp /usr/bin/</tt><br>
+<tt>&nbsp;&nbsp;%define gccs 4</tt><br>
+
+so that they describe the location of the above installed compiler:
+<br>
+
+<tt>&nbsp;&nbsp;%define gccp /path/to/up-to-date/gcc/</tt> </br>
+<tt>&nbsp;&nbsp;%define gccs %{nil}</tt>
 
 </ul>
 
@@ -119,35 +105,42 @@ command (<strong>note the quotes</strong>):<br>
 
 <dd>
 
-If you're trying to build <em>fryks</em> on Breezy Badger, contact us
-on either <tt><em>frysk</em>@</tt> mailing list, or the <a
-href="irc://gimp.net/frysk"><tt>#<em>frysk</em</tt></a> IRC channel.
-There is a <a
-href="http://sourceware.org/bugzilla/show_bug.cgi?id=1976">
-<em>frysk</em> Ubuntu tracker</a>. <br> So far the following fixes
-have been identified:
+While it's a bit of a struggle, it is possible to build <em>frysk</em>
+on Ubuntu:
 
 <ul>
 
-<li>Make certain that <tt>automake-1.9</tt> is installed and selected
-as the default: <br> <tt>$ sudo aptitude install automake1.9</tt> <br>
-<tt>$ sudo update-alternatives --display automake</tt> <br>
-<tt>...</tt> <br> <tt>$ sudo update-alternatives --set automake
+<li>
+
+<tt>gcc 4.0.1-4ubuntu9</tt> has a number of serious bugs. <br>
+Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
+(found <a href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
+
+<li>
+
+Make certain that <tt>automake-1.9</tt> is installed and selected as
+the default: <br> <tt>&nbsp;&nbsp;$ sudo aptitude install
+automake1.9</tt> <br> <tt>&nbsp;&nbsp;$ sudo update-alternatives
+--display automake</tt> <br> <tt>&nbsp;&nbsp;...</tt> <br>
+<tt>&nbsp;&nbsp;$ sudo update-alternatives --set automake
 /usr/bin/automake-1.9</tt>
 
-<li>Per <a
+<li>
+
+Per <a
 href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
-Java Gnome</a>, append <tt>deb
-http://www.natemccallum.com/uploads/debs/ ./</tt> to
-<tt>/etc/apt/sources.list</tt> and then install the the java-gnome
-stuff vis: <br> <tt>$ sudo aptitude install libglade-java libgtk-java
-libglade2-dev libvte-dev</tt> <br> <tt>$ pkg-config --modversion
-gtk2-java</tt> <br> <tt>2.8.1</tt>
+Java Gnome</a>, append the line: <br> <tt>&nbsp;&nbsp;deb
+http://www.natemccallum.com/uploads/debs/ ./</tt> <br> to the file:
+<br> <tt>&nbsp;&nbsp;/etc/apt/sources.list</tt> <br> and then install
+the the java-gnome stuff vis: <br> <tt>&nbsp;&nbsp;$ sudo aptitude
+install libglade-java libgtk-java libglade2-dev libvte-dev</tt> <br>
+<tt>&nbsp;&nbsp;$ pkg-config --modversion gtk2-java</tt> <br>
+<tt>&nbsp;&nbsp;2.8.1</tt>
 
-<li>the libvte-java bindings are missing <br> hack around this by
+<li>
+
+The libvte-java bindings are missing. <br> You can hack around this by
 disabling the code using vte (there isn't much)
-
-<li>The compiler is too old and buggy.
 
 </ul>
 
