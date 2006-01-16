@@ -107,7 +107,7 @@ public class TestTaskTerminateObserver
 	new StopEventLoopWhenChildProcRemoved ();
 
 	// Start the program.
-	host.requestCreateAttachedProc
+	host.requestCreateAttachedProcXXX
 	    (new String[] {
 		"./prog/terminated/exit",
 		Integer.toString (expected)

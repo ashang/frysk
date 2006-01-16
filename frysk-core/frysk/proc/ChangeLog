@@ -1,3 +1,18 @@
+2006-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (requestCreateAttachedProcXXX): Rename
+	requestCreateAttachedProc.
+	* TestTaskTerminateObserver.java: Update.
+	* TestTaskObserver.java: Update.
+	* TestTaskObserverBlocked.java: Update.
+	* TestSyscallOpen.java: Update.
+	* TestSyscall.java: Update.
+	* TestSyscall2.java: Update.
+	* TestRun.java: Update.
+	* TestModify.java: Update.
+	* TestI386Regs.java: Update.
+	* TestI386Modify.java: Update.
+
 2006-01-16  Stan Cox  <scox@redhat.com>
 
 	* TestLib.java (findProcUsingRefresh): Always poll.

@@ -195,7 +195,7 @@ public class TestI386Modify
     {
 	TestI386ModifyInternals t = new TestI386ModifyInternals ();
 	// Create program making syscalls
-	host.requestCreateAttachedProc ( new String[]
+	host.requestCreateAttachedProcXXX ( new String[]
 	    {
 		"./prog/x86isa/x86modify"
 	    });

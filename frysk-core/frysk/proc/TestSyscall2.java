@@ -125,7 +125,7 @@ public class TestSyscall2
  	String arg = "1000";
         TestSyscall2Internals t = new TestSyscall2Internals ();
 
- 	host.requestCreateAttachedProc
+ 	host.requestCreateAttachedProcXXX
  	    ( new String[] {
   		"./prog/syscall/syscallloop",
  		arg

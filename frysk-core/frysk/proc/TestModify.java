@@ -191,7 +191,7 @@ public class TestModify
     {
 	TestModifyInternals t = new TestModifyInternals ();
 	// Create program making syscalls
-	host.requestCreateAttachedProc ( new String[]
+	host.requestCreateAttachedProcXXX ( new String[]
 	    {
 		"./prog/modify/modify"
 	    });

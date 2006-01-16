@@ -175,7 +175,7 @@ public abstract class Host
      * Request that a new attached and running process (with stdin,
      * stdout, and stderr are shared with this process) be created.
      */
-    public final void requestCreateAttachedProc (String[] args)
+    public final void requestCreateAttachedProcXXX (String[] args)
     {
 	logger.log (Level.FINE, "create process\n", ""); 
 	requestCreateAttachedProc (null, null, null, args);

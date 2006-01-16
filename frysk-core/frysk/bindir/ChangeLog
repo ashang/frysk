@@ -1,3 +1,7 @@
+2006-01-16  Andrew Cagney  <cagney@redhat.com>
+
+	* ftrace.java: Update; call requestCreateAttachedProcXXX.
+
 2005-12-13  Andrew Cagney  <cagney@redhat.com>
 
 	* ftrace.java: Delete reference to Proc .observableTaskAdded.

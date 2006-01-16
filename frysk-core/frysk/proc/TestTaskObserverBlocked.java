@@ -78,7 +78,7 @@ public class TestTaskObserverBlocked
 
 	// Run a program, any program so that blockedAttached has
 	// something to block.
-	host.requestCreateAttachedProc
+	host.requestCreateAttachedProcXXX
 	    (new String[] {
 		"./prog/terminated/exit",
 		"0"
