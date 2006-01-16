@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Frysk
+#GenericName=Frysk
+Comment=Frysk Monitoring Tool/Debugger
+Exec=frysk
+Icon=frysk.png
+Terminal=false
+Type=Application
+Categories=X-Red-Hat-Extra;Application;System;
