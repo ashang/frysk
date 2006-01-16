@@ -1,4 +1,9 @@
 2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* Moved frysk,desktop to ./frysk-gui.
+
+2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+
 	* Added frysk.desktop for startup sequence.
 
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
