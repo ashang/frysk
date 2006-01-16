@@ -406,7 +406,7 @@ public class TestRefresh
 	String argv [] = proc.getCmdLine ();
 	int colon = argv[0].indexOf (":");
 	int pid = 0;
-	assertFalse ("pid:task after unattached multiple clone exec", colon == 0);
+	assertFalse ("pid:task after unattached multiple clone exec", colon < 0);
 	pid = Integer.parseInt (argv[0].substring (0,colon));
 	// tid = Integer.parseInt (argv[0].substring (colon + 1));
 	
