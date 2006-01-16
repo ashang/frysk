@@ -1,3 +1,6 @@
+2005-01-16  Rick Moseley  <rmoseley@redhat.com>
+	* Actually add the icons this time.
+
 2005-01-13  Rick Moseley  <rmoseley@redhat.com>
 	* Added images/48 directory.
 	* Added images/xx/fryskTrayIconxx.png files for startup sequence.
