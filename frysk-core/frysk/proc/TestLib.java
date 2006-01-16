@@ -270,16 +270,10 @@ public class TestLib
 	 */
 	Proc findProcUsingRefresh (boolean refreshTasks)
 	{
-	    // See if it is already known.
-	    if (proc == null) {
-		proc = Manager.host.getProc (new ProcId (pid));
-	    }
 	    // Try polling /proc.
-	    if (proc == null) {
-		Manager.host.requestRefresh (refreshTasks);
-		Manager.eventLoop.runPending ();
-		proc = Manager.host.getProc (new ProcId (pid));
-	    }
+	    Manager.host.requestRefresh (refreshTasks);
+	    Manager.eventLoop.runPending ();
+	    proc = Manager.host.getProc (new ProcId (pid));
 	    return proc;
 	}
 	/**
@@ -328,6 +322,7 @@ public class TestLib
 	static final int delForkSig = Sig.INT;
 	static final int zombieForkSig = Sig.URG;
 	static final int execSig = Sig.PWR;
+	static final int execCloneSig = Sig.FPE;
 	private AckProcess (int ack, String[] argv)
 	{
 	    super (ack, argv);
@@ -445,6 +440,15 @@ public class TestLib
 	{
 	    AckHandler ack = new AckHandler (childAck);
 	    signal (execSig);
+	    ack.await ();
+	}
+	/**
+	 * Request that the cloned task perform an exec.
+	 */
+	void execClone ()
+	{
+	    AckHandler ack = new AckHandler (childAck);
+	    signal (execCloneSig);
 	    ack.await ();
 	}
     }

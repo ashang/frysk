@@ -361,4 +361,58 @@ public class TestRefresh
 	assertSame ("zombie and zombie's child's parent",
 		    zombieParent, zombieChild.getParent ());
     }
+
+    /**
+     * A single threaded program performs an exec, check that it is correctly
+     * tracked. 
+     */
+    public void testUnattachedSingleExec ()
+    {
+	AckProcess child = new AckDaemonProcess ();
+	Proc proc = child.findProcUsingRefresh ();
+	
+	child.exec ();
+
+	host.requestRefresh ();
+	Manager.eventLoop.runPending ();
+
+
+	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
+    }
+
+    /**
+     * A multiple threaded program performs an exec, check that it is correctly
+     * tracked. 
+     */
+    public void testUnattachedMultipleExec ()
+    {
+	AckProcess child = new AckDaemonProcess ();
+	Proc proc = child.findProcUsingRefresh (true);
+
+	child.addClone ();
+	child.addClone ();
+	Manager.host.requestRefresh (true);
+	Task task_before = child.findTaskUsingRefresh (false);
+	assertSame ("task before unattached multiple clone exec", proc,
+		    task_before.getProc()); // parent/child relationship
+	assertTrue ("task before unattached multiple clone exec",
+		    proc.getPid () != task_before.getTid ()); // not main task
+	    //	assertSame ("task before unattached multiple clone exec", proc.getPid (), task_before.getProc ().getPid ());
+ 	child.execClone ();
+
+	Manager.host.requestRefresh (true);
+ 	Manager.eventLoop.runPending ();
+	
+	String argv [] = proc.getCmdLine ();
+	int colon = argv[0].indexOf (":");
+	int pid = 0;
+	assertFalse ("pid:task after unattached multiple clone exec", colon == 0);
+	pid = Integer.parseInt (argv[0].substring (0,colon));
+	// tid = Integer.parseInt (argv[0].substring (colon + 1));
+	
+	Task task = child.findTaskUsingRefresh (false);
+	// Task execs as parent so task is now null
+	assertNull ("task after unattached multiple clone exec", task);
+	assertEquals ("pid after unattached multiple clone exec", pid, proc.getPid ());
+    }
 }

@@ -1,3 +1,10 @@
+2006-01-16  Stan Cox  <scox@redhat.com>
+
+	* TestLib.java (findProcUsingRefresh): Always poll.
+	(execClone): New.
+	* TestRefresh.java (testUnattachedSingleExec): New.
+	(testUnattachedMultipleExec): New.
+
 2006-01-11  Andrew Cagney  <cagney@redhat.com>
 
 	* TestProcGet.java, Syscall.java, Auxv.java: Update inua imports
