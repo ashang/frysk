@@ -15,6 +15,10 @@
 
 2006-01-16  Stan Cox  <scox@redhat.com>
 
+	* TestRefresh.java (testUnattachedMultipleExec): Check colon. 
+
+2006-01-16  Stan Cox  <scox@redhat.com>
+
 	* TestLib.java (findProcUsingRefresh): Always poll.
 	(execClone): New.
 	* TestRefresh.java (testUnattachedSingleExec): New.
