@@ -139,6 +139,12 @@ install libglade-java libgtk-java libglade2-dev libvte-dev</tt> <br>
 
 <li>
 
+<tt>jdom</tt> had problems building; there appears to be some missing
+.jar dependencies. <br> Grabbing the jdom out of the RHEL-4 mega-rpm
+and building that worked.
+
+<li>
+
 The libvte-java bindings are missing. <br> You can hack around this by
 disabling the code using vte (there isn't much)
 
