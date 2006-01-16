@@ -409,12 +409,12 @@ find_images "imageicon" "images/icon"
 find_images "image16" "images/16"
 find_images "image24" "images/24"
 find_images "image32" "images/32"
+find_images "image48" "images/48"
 find_images "imageMACOSX" "images/__MACOSX"
 find_images "imageMACOSXicon" "images/__MACOSX/icon"
 find_images "imageMACOSX16" "images/__MACOSX/16"
 find_images "imageMACOSX24" "images/__MACOSX/24"
 find_images "imageMACOSX32" "images/__MACOSX/32"
-
 
 # Form a list of all the .properties files, these need to be copied over
 # after install

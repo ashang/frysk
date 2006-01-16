@@ -1,3 +1,7 @@
+2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+	
+	* Makefile.gen.sh: added 48 dir for images.
+
 2006-01-14  Diego Novillo  <dnovillo@redhat.com>
 
 	* acinclude.m4: Use lib64 if appropriate.
