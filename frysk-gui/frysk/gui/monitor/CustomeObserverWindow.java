@@ -298,7 +298,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	public void createNewObserver(){
 		ObserverRoot newObserver = new ObserverRoot("New Observer","");
 		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
-		this.observerTreeView.setSelectedText(newObserver.getName());
+		this.observerTreeView.setSelected(newObserver); //XXX
 	}
 
 	/**
@@ -317,7 +317,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
 		newObserver.setName(this.customObserverNameEntry.getText());
 		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
-		this.observerTreeView.setSelectedText(newObserver.getName());
+		this.observerTreeView.setSelected(newObserver);//XXX
 	}
 	
 //	/**

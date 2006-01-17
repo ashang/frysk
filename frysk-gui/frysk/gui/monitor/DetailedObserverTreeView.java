@@ -39,7 +39,20 @@
 
 package frysk.gui.monitor;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+
 import org.gnu.glib.Handle;
+import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnObject;
+import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeStore;
+import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeViewColumn;
 
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -49,30 +62,152 @@ import frysk.gui.monitor.observers.ObserverRoot;
  *  in the system.
  *  TODO: add more details to this widget.
  * */
-public class DetailedObserverTreeView extends ListView {
+public class DetailedObserverTreeView extends TreeView implements Observer {
 
+	private ObservableLinkedList observerList;
+	
+	private TreeStore treeStore;
+	private DataColumnString nameDC;
+	private DataColumnObject objectDC;
+	
+	private HashMap map;
+	
 	public DetailedObserverTreeView() {
 		super();
-		this.initTreeView();
+		this.init();
 	}
 
 	public DetailedObserverTreeView(Handle handle) {
 		super(handle);
-		this.initTreeView();
+		this.init();
 	}
 
-	private void initTreeView() {	
-		this.watchLinkedList(ObserverManager.theManager.getTaskObservers());
+	private void init() {	
+		this.map = new HashMap();
+		this.nameDC = new DataColumnString();
+		this.objectDC = new DataColumnObject();
+		this.treeStore = new TreeStore(new DataColumn[]{nameDC,objectDC});
+		this.setModel(treeStore);
+		
+		CellRendererText cellRendererText = new CellRendererText();
+		TreeViewColumn nameCol = new TreeViewColumn();
+		nameCol.packStart(cellRendererText, false);
+		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		this.appendColumn(nameCol);
+		
+		this.observerList = ObserverManager.theManager.getTaskObservers();
+		
+		this.addObserverList(observerList);
+	}
+	
+	private void addObserverList(ObservableLinkedList list) {
+		this.addList(null, list);
+		
+		Iterator iterator = list.iterator();
+		
+		list.itemAdded.addObserver(new Observer() {
+			public void update(Observable observable, Object object) {
+				addObserverRoot((ObserverRoot) object);
+			}
+		});
+		
+		list.itemRemoved.addObserver(new Observer() {
+			public void update(Observable arg0, Object object) {
+				remove((GuiObject) object);
+				//XXX: Not implemented.
+				throw new RuntimeException("Not implemented");
+			}
+		});
+		
+		while (iterator.hasNext()) {
+			GuiObject object = (GuiObject) iterator.next();
+			addObserverRoot((ObserverRoot) object);
+		}
+	}
+
+	private void addObserverRoot(ObserverRoot observer){
+		GuiObject label = new GuiObject("FilterPoints","");
+		this.add(label, observer);
+		addList(label, observer.getFilterPoints());
+		
+		label = new GuiObject("ActionPoints","");
+		this.add(label, observer);
+		addList(label, observer.getActionPoints());
+	}
+	
+	private void addList(final GuiObject parent, final ObservableLinkedList list){
+		Iterator iterator = list.iterator();
+		
+		list.itemAdded.addObserver(new Observer() {
+			public void update(Observable observable, Object object) {
+				GuiObject guiObject = (GuiObject) object;
+				int index = list.indexOf(guiObject);
+				add(guiObject,parent, index);
+			}
+		});
+		
+		list.itemRemoved.addObserver(new Observer() {
+			public void update(Observable arg0, Object object) {
+				remove((GuiObject) object);
+			}
+		});
+		
+		while (iterator.hasNext()) {
+			GuiObject object = (GuiObject) iterator.next();
+			this.add(object, parent);
+		}
+	}
+	
+	private void add(GuiObject object, GuiObject parent) {
+		TreeIter parentIter = (TreeIter) this.map.get(parent);
+		TreeIter iter = this.treeStore.appendRow(parentIter);
+		this.add(object, iter);
+	}
+
+	protected void remove(GuiObject object) {
+		TreeIter iter = (TreeIter) this.map.get(object);
+		this.map.remove(object);
+		this.treeStore.removeRow(iter);
+		object.deleteObserver(this);
+	}
+
+	protected void add(GuiObject guiObject, GuiObject parent, int index) {
+		TreeIter iter = (TreeIter) this.map.get(parent);
+		TreeIter newIter = this.treeStore.insertRow(iter, index);
+		this.add(guiObject, newIter);
+	}
+
+	public void add(GuiObject guiObject, TreeIter iter){
+		//System.out.println("DetailedObserverTreeView.add() guiObject: "+ guiObject+ " iter: "+ iter );
+		this.treeStore.setValue(iter, nameDC, guiObject.getName());
+		this.map.put(guiObject, iter);
+		guiObject.addObserver(this);
 	}
 	
 	public ObserverRoot getSelectedObserver(){
-		ObserverRoot selected = null;
-		
-		if(this.getSelection().getSelectedRows().length > 0){
-			selected = (ObserverRoot) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), objectDC);
+		if(this.getSelection().getSelectedRows().length == 0){
+			return null;
 		}
 		
-		return selected;
+		TreeIter iter = this.treeStore.getIter(this.getSelection().getSelectedRows()[0]);
+		GuiObject selected = (GuiObject)this.treeStore.getValue(iter, objectDC);
+		
+		if(!(selected instanceof ObserverRoot)){
+			selected = (GuiObject)this.treeStore.getValue(iter.getParent(), objectDC);
+		}
+		
+		return (ObserverRoot) selected;
+	}
+	
+	public void setSelected(GuiObject guiObject){
+		TreeIter iter = (TreeIter) this.map.get(guiObject);
+		this.getSelection().select(iter);
+	}
+
+	public void update(Observable observable, Object object) {
+		GuiObject guiObject = (GuiObject) observable;
+		TreeIter iter = (TreeIter) this.map.get(guiObject);
+		this.treeStore.setValue(iter, nameDC, guiObject.getName());
 	}
 	
 }
