@@ -54,6 +54,8 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
+import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
@@ -130,9 +132,20 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.add(label, observer);
 		addList(label, observer.getFilterPoints());
 		
+		Iterator iterator = observer.getFilterPoints().iterator();
+		while (iterator.hasNext()) {
+			FilterPoint filterPoint = (FilterPoint) iterator.next();
+			this.addList(filterPoint, filterPoint.getFilters());
+		}
+		
 		label = new GuiObject("ActionPoints","");
 		this.add(label, observer);
 		addList(label, observer.getActionPoints());
+		iterator = observer.getActionPoints().iterator();	
+		while (iterator.hasNext()) {
+			ActionPoint actionPoint = (ActionPoint) iterator.next();
+			this.addList(actionPoint, actionPoint.getActions());
+		}
 	}
 	
 	private void addList(final GuiObject parent, final ObservableLinkedList list){

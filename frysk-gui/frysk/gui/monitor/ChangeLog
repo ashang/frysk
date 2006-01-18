@@ -1,3 +1,11 @@
+2006-01-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/FilterPoint.java (removeFilter): Added number of added
+	actions to the name.
+	* actions/ActionPoint.java (ActionPoint): Ditto.
+	* DetailedObserverTreeView.java (getSelectedObserver): Added code
+	to populate the tree with an observers action and filters.
+
 2006-01-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DetailedObserverTreeView.java (addObserverRoot): Embelishing view:

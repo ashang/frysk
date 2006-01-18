@@ -54,14 +54,18 @@ import frysk.gui.monitor.ObservableLinkedList;
 public abstract class FilterPoint extends GuiObject {
 	protected ObservableLinkedList filters;
 	
+	private final String name;
+	
 	public FilterPoint(String name, String toolTip){
 		super(name, toolTip);
 		this.filters = new ObservableLinkedList();
+		this.name = name;
 	}
 	
 	public FilterPoint(FilterPoint other){
 		super(other);
 		this.filters = new ObservableLinkedList(); // Dont copy filters
+		this.name = other.name;
 	}
 	
 	/**
@@ -71,17 +75,21 @@ public abstract class FilterPoint extends GuiObject {
 	
 	public void addFilter(Filter filter){
 		this.filters.add(filter);
-		this.notifyObservers();
+		this.setNumberInName();
 	}
 	
 	public void removeFilter(Filter filter){
 		if(!this.filters.remove(filter)){
 			throw new IllegalArgumentException("the passed filter ["+ filter +"] is not a member of this filter point");
 		}
-		this.notifyObservers();
+		this.setNumberInName();
 	}
 	
 	public ObservableLinkedList getFilters(){
 		return this.filters;
+	}
+	
+	private void setNumberInName(){
+		this.setName(this.name + " ("+ this.filters.size() +")");
 	}
 }

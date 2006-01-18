@@ -49,14 +49,18 @@ import frysk.gui.monitor.ObservableLinkedList;
 public abstract class ActionPoint extends GuiObject {
 	protected ObservableLinkedList actions;
 	
+	private final String name;
+	
 	public ActionPoint(String name, String toolTip){
 		super(name, toolTip);
 		this.actions = new ObservableLinkedList();
+		this.name = name;
 	}
 	
 	public ActionPoint(ActionPoint other){
 		super(other);
 		this.actions = new ObservableLinkedList(); // Dont copy Actions
+		this.name = other.name;
 	}
 	
 	/**
@@ -68,6 +72,7 @@ public abstract class ActionPoint extends GuiObject {
 		if(!this.actions.remove(action)){
 			throw new IllegalArgumentException("the passed action ["+ action +"] is not a member of this action point");
 		}
+		this.setNumberInName();
 	}
 	
 	public ObservableLinkedList getActions(){
@@ -76,6 +81,10 @@ public abstract class ActionPoint extends GuiObject {
 
 	public void addAction(Action action) {
 		this.actions.add(action);		
+		this.setNumberInName();
 	}
 	
+	private void setNumberInName(){
+		this.setName(this.name + " ("+ this.actions.size() +")");
+	}
 }
