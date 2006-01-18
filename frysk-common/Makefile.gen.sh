@@ -416,6 +416,25 @@ find_images "imageMACOSX16" "images/__MACOSX/16"
 find_images "imageMACOSX24" "images/__MACOSX/24"
 find_images "imageMACOSX32" "images/__MACOSX/32"
 
+# Form a list of all the .desktop files, these are installed in
+# PREFIX/usr/share/applications
+
+print_header "... desktop_DATA"
+echo "desktopdir = /usr/share/applications/"
+echo "desktop_DATA ="
+find ${dirs} -type f -name '*.desktop' | while read file
+do
+  echo desktop_DATA += ${file}
+done
+
+print_header "... icon_DATA"
+echo "icondir = /usr/share/pixmaps"
+echo "icon_DATA ="
+find ${dirs} -type f -name 'fryskTrayIcon48.png' | while read file
+do
+  echo icon_DATA += ${file}
+done
+
 # Form a list of all the .properties files, these need to be copied over
 # after install
 

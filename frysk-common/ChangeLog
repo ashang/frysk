@@ -1,4 +1,9 @@
 2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.gen.sh: added install logic for the
+	   frysk.desktop and fryskTrayIcon files.
+
+2006-01-16  Rick Moseley  <rmoseley@redhat.com>
 	
 	* Makefile.gen.sh: added 48 dir for images.
 
