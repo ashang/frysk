@@ -38,8 +38,6 @@
 // exception.
 package frysk.gui.srcwin;
 
-import java.util.prefs.Preferences;
-
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
 import org.gnu.gdk.Window;
@@ -59,7 +57,8 @@ import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
-import frysk.gui.srcwin.PreferenceConstants.Inline;
+import frysk.gui.srcwin.prefs.IntPreference;
+import frysk.gui.srcwin.prefs.PreferenceManager;
 
 /**
  * The InlineViewer displays code that has been inlined. InlineViewers will always
@@ -89,9 +88,9 @@ public class InlineViewer extends SourceViewWidget {
 	 *     InlineViewer will be displaying
 	 * @param instance The inline instance to display
 	 */
-	public InlineViewer(Preferences parentPrefs, SourceWindow top, 
+	public InlineViewer(SourceWindow top, 
 			DOMSource scope, DOMInlineInstance instance) {
-		super(parentPrefs, new InlineBuffer(scope, instance), top);
+		super(new InlineBuffer(scope, instance), top);
 		this.setBorderWidth(1);
 		this.depth = 1;
 		this.tips = new ToolTips();
@@ -112,7 +111,7 @@ public class InlineViewer extends SourceViewWidget {
 				depth++;
 			}
 			
-			int maxDepth = this.lnfPrefs.getInt(Inline.NUM_LEVELS, Inline.NUM_LEVELS_DEFAULT);
+			int maxDepth = PreferenceManager.getIntPreference(IntPreference.INLINE_LEVELS);
 			
 			// Less than the max number of levels is being shown
 			if(depth <= maxDepth){
@@ -169,7 +168,7 @@ public class InlineViewer extends SourceViewWidget {
 	 * the visible scopes up or down
 	 */
 	public void toggleChild(){
-		int limit = this.lnfPrefs.getInt(Inline.NUM_LEVELS, Inline.NUM_LEVELS_DEFAULT);
+		int limit = PreferenceManager.getIntPreference(IntPreference.INLINE_LEVELS);
 		
 		if(!this.expanded){
 			// Case 1: depth less than max, this level is not expanded.

@@ -38,8 +38,6 @@
 // exception.
 package frysk.gui.srcwin;
 
-import java.util.prefs.Preferences;
-
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Drawable;
 import org.gnu.gdk.GC;
@@ -67,232 +65,226 @@ import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
-import frysk.gui.srcwin.PreferenceConstants.Background;
-import frysk.gui.srcwin.PreferenceConstants.CurrentLine;
-import frysk.gui.srcwin.PreferenceConstants.ExecMarks;
-import frysk.gui.srcwin.PreferenceConstants.LineNumbers;
-import frysk.gui.srcwin.PreferenceConstants.Margin;
-import frysk.gui.srcwin.PreferenceConstants.Text;
+import frysk.gui.srcwin.prefs.BooleanPreference;
+import frysk.gui.srcwin.prefs.ColorPreference;
+import frysk.gui.srcwin.prefs.IntPreference;
+import frysk.gui.srcwin.prefs.PreferenceManager;
 
-/** 
+/**
  * This class is used to add some functionality to TextView that may be needed
  * by the source window but is not directly available or easily accessible in
  * TextView.
  * 
  * This widget uses a SourceBuffer instead of a TextBuffer. A SourceBuffer
- * allows some extras that are needed by the source window such as break-
- * point management.
+ * allows some extras that are needed by the source window such as break- point
+ * management.
  * 
  * @author ifoox, ajocksch
- *
+ * 
  */
-public class SourceViewWidget extends TextView implements ExposeListener, MouseListener{
+public class SourceViewWidget extends TextView implements ExposeListener,
+		MouseListener {
 
 	// my SourceBuffer
 	protected SourceBuffer buf;
-	
-	// preferences model nodes
-	protected Preferences topPrefs;
-	
-	protected Preferences lnfPrefs;
-	
-	// How far to start writing breakpoints, etc. from the left side of the margin
+
+	// How far to start writing breakpoints, etc. from the left side of the
+	// margin
 	protected int marginWriteOffset;
-	
+
 	protected TextChildAnchor anchor;
+
 	private SourceWindow parent;
-	
+
 	protected boolean expanded = false;
 
 	// keep this around, we'll be needing it
 	private GC myContext;
-	
+
 	private InlineViewer child;
-	
+
 	/**
-	 * Constructs a new SourceViewWidget. If you don't specify a buffer before using it,
-	 * a default one will be created for you.
-	 * 
-	 * @param parentPrefs The root node of the preference model to use
-	 * @param scope The source file that this widget will be displaying
-	 * @param parent The SourceWindow that this SourceViewWidget is contained in
+	 * Constructs a new SourceViewWidget. If you don't specify a buffer before
+	 * using it, a default one will be created for you.
+	 * @param scope
+	 *            The source file that this widget will be displaying
+	 * @param parent
+	 *            The SourceWindow that this SourceViewWidget is contained in
 	 */
-	public SourceViewWidget(Preferences parentPrefs, StackLevel scope, SourceWindow parent) {
-		this(parentPrefs, new SourceBuffer(scope), parent);
+	public SourceViewWidget(StackLevel scope, SourceWindow parent) {
+		this(new SourceBuffer(scope), parent);
 	}
-	
+
 	/**
 	 * Constructs a new SourceViewWidget using the previously created buffer
-	 *  
-	 * @param parentPrefs The root node of the preference model to use
-	 * @param buffer The sourceBuffer to use as the data for this object
-	 * @param parent The SourceWindow this object is contained within
+	 * @param buffer
+	 *            The sourceBuffer to use as the data for this object
+	 * @param parent
+	 *            The SourceWindow this object is contained within
 	 */
-	public SourceViewWidget(Preferences parentPrefs, SourceBuffer buffer, SourceWindow parent){
+	public SourceViewWidget(SourceBuffer buffer, SourceWindow parent) {
 		super(gtk_text_view_new());
 		this.parent = parent;
 		this.buf = buffer;
 		this.setBuffer(this.buf);
-		this.topPrefs = parentPrefs;
-		this.lnfPrefs = parentPrefs.node(PreferenceConstants.LNF_NODE);
 		this.initialize();
 	}
-	
+
 	/**
-	 * Redraws the SourceViewWidget on screen, taking changes in the preference model
-	 * into account
+	 * Redraws the SourceViewWidget on screen, taking changes in the preference
+	 * model into account
 	 */
-	public void refresh(){
+	public void refresh() {
 		// Look & Feel
-		int r = this.lnfPrefs.getInt(Text.COLOR_PREFIX+"R", Text.DEFAULT.getRed());
-		int g = this.lnfPrefs.getInt(Text.COLOR_PREFIX+"G", Text.DEFAULT.getGreen());
-		int b = this.lnfPrefs.getInt(Text.COLOR_PREFIX+"B", Text.DEFAULT.getBlue());
-		this.setTextColor(StateType.NORMAL, new Color(r,g,b));
-		
-		r = this.lnfPrefs.getInt(Background.COLOR_PREFIX+"R", Background.DEFAULT.getRed());
-		g = this.lnfPrefs.getInt(Background.COLOR_PREFIX+"G", Background.DEFAULT.getGreen());
-		b = this.lnfPrefs.getInt(Background.COLOR_PREFIX+"B", Background.DEFAULT.getBlue());
-		this.setBaseColor(StateType.NORMAL, new Color(r,g,b));
-	
-		this.buf.updatePreferences(this.topPrefs);
-		
+		Color tmpColor = PreferenceManager.getColorPreference(ColorPreference.TEXT);
+		this.setTextColor(StateType.NORMAL, tmpColor);
+
+		tmpColor = PreferenceManager.getColorPreference(ColorPreference.BACKGROUND);
+		this.setBaseColor(StateType.NORMAL, tmpColor);
+
 		// Sidebar
-		if(this.lnfPrefs.getBoolean(LineNumbers.SHOW, true)){
+		if (PreferenceManager.getBooleanPreference(BooleanPreference.LINE_NUMS)) {
 			Layout lo = new Layout(this.getContext());
-			lo.setText(""+(this.buf.getLastLine()+1));
+			lo.setText("" + (this.buf.getLastLine() + 1));
 			this.marginWriteOffset = lo.getPixelWidth();
-		}
-		else{
+		} else {
 			this.setBorderWindowSize(TextWindowType.LEFT, 20);
-			Layout lo = new Layout(this.getContext());
-			lo.setText(" i ");
 			this.marginWriteOffset = 0;
 		}
-		
-		if(this.lnfPrefs.getBoolean(ExecMarks.SHOW, true)){
-			this.setBorderWindowSize(TextWindowType.LEFT, this.marginWriteOffset+40);
+
+		if (PreferenceManager.getBooleanPreference(BooleanPreference.EXEC_MARKS)) {
+			this.setBorderWindowSize(TextWindowType.LEFT,
+					this.marginWriteOffset + 40);
+		} else {
+			this.setBorderWindowSize(TextWindowType.LEFT,
+					this.marginWriteOffset + 20);
 		}
-		else{
-			this.setBorderWindowSize(TextWindowType.LEFT, this.marginWriteOffset+20);
-		}
-	
+
 		// refresh the inlined scopes, if they exist
-		if(this.child != null)
+		if (this.child != null)
 			this.child.refresh();
 	}
 
 	/**
 	 * Returns the SourceBuffer being used
+	 * 
 	 * @return The SourceBuffer used in the widget.
 	 */
 	public TextBuffer getBuffer() {
-	    return buf;
+		return buf;
 	}
 
 	/**
-	 * Implementation from ExposeListener Interface. When the 
+	 * Implementation from ExposeListener Interface. When the
 	 */
 	public boolean exposeEvent(ExposeEvent event) {
 		// Ignore events that aren't expose events or don't have anything
 		// to do with the sidebar
-		if(event.isOfType(ExposeEvent.Type.NO_EXPOSE) ||
-				!event.getWindow().equals(this.getWindow(TextWindowType.LEFT)))
+		if (event.isOfType(ExposeEvent.Type.NO_EXPOSE)
+				|| !event.getWindow().equals(
+						this.getWindow(TextWindowType.LEFT)))
 			return false;
-		
+
 		this.drawMargin();
-		
+
 		return false;
-	} 
-	
+	}
+
 	/**
 	 * Called in response to the user clicking on the text area. In the future
-	 * this will be used to be able to mouse-over variables and show their contents
+	 * this will be used to be able to mouse-over variables and show their
+	 * contents
 	 */
 	public boolean mouseEvent(MouseEvent event) {
 		int x = (int) event.getX();
 		int y = (int) event.getY();
-		
-		// Middle click over the main text area will trigger the variable-finding
-		if(event.getButtonPressed() == MouseEvent.BUTTON3 
-				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS) &&
-				event.getWindow().equals(this.getWindow(TextWindowType.TEXT))){
-			
+
+		// Middle click over the main text area will trigger the
+		// variable-finding
+		if (event.getButtonPressed() == MouseEvent.BUTTON3
+				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)
+				&& event.getWindow()
+						.equals(this.getWindow(TextWindowType.TEXT))) {
+
 			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
-			
+
 			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
-			
+
 			final Variable var = this.buf.getVariable(iter);
-			
+
 			Menu m = new Menu();
 			MenuItem mi = new MenuItem("Display variable value...", false);
 			MenuItem mi2 = new MenuItem("Add Trace", false);
 			m.append(mi);
 			m.append(mi2);
-			if(var != null){
+			if (var != null) {
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent arg0) {
-						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
-						popup.add(new Label(var.getName()+ " = 0xfeedcalf"));
+						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
+								WindowType.TOPLEVEL);
+						popup.add(new Label(var.getName() + " = 0xfeedcalf"));
 						popup.showAll();
 					}
 				});
 				mi2.addListener(new MenuItemListener() {
-				
+
 					public void menuItemEvent(MenuItemEvent arg0) {
 						SourceViewWidget.this.parent.addVariableTrace(var);
 					}
-				
+
 				});
-			}
-			else{
+			} else {
 				mi.setSensitive(false);
 				mi2.setSensitive(false);
 			}
 
 			m.showAll();
 			m.popup();
-			
+
 			return true;
 		}
 		// clicked on the border
-		else if(event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
-				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)){
+		else if (event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
+				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)) {
 			Point p = this.windowToBufferCoords(TextWindowType.TEXT, 0, y);
-			
+
 			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
-			
+
 			int theLine = iter.getLineNumber();
 			boolean overNested = false;
-			
-			// We want to ignore mouse clicks in the margin next to 
+
+			// We want to ignore mouse clicks in the margin next to
 			// expanded inline code
-			if(theLine == this.buf.getCurrentLine() + 1 && expanded)
+			if (theLine == this.buf.getCurrentLine() + 1 && expanded)
 				return false;
-			
-			if(theLine > this.buf.getCurrentLine() && expanded){
+
+			if (theLine > this.buf.getCurrentLine() && expanded) {
 				theLine--;
 				overNested = true;
 			}
-			
+
 			final int lineNum = theLine;
-			
+
 			// only popup a window if the line is executable
-			if(event.getButtonPressed() == MouseEvent.BUTTON3 &&
-					this.buf.isLineExecutable(lineNum) &&
-					(!expanded || overNested)){
+			if (event.getButtonPressed() == MouseEvent.BUTTON3
+					&& this.buf.isLineExecutable(lineNum)
+					&& (!expanded || overNested)) {
 				Menu m = new Menu();
 				MenuItem mi = new MenuItem("Breakpoint information...", false);
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent arg0) {
-						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(WindowType.TOPLEVEL);
+						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
+								WindowType.TOPLEVEL);
 						popup.add(new Label("Line: " + (lineNum + 1)));
 						popup.showAll();
 					}
 				});
 				m.append(mi);
-				MenuItem mi2 = new MenuItem("Customize breakpoint actions...", false);
+				MenuItem mi2 = new MenuItem("Customize breakpoint actions...",
+						false);
 				m.append(mi2);
-				if(!this.buf.isLineBroken(lineNum)){ // no breakpoint, no info to show
+				if (!this.buf.isLineBroken(lineNum)) { // no breakpoint, no
+					// info to show
 					mi.setSensitive(false);
 					mi2.setSensitive(false);
 				}
@@ -307,124 +299,142 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 				m.popup();
 				m.showAll();
 			}
-			
-			// Left click in the margin for a line with inline code - toggle the display of it
-			if(event.getButtonPressed() == MouseEvent.BUTTON1 &&
-					lineNum == this.buf.getCurrentLine() &&
-					this.buf.hasInlineCode(lineNum)){
+
+			// Left click in the margin for a line with inline code - toggle the
+			// display of it
+			if (event.getButtonPressed() == MouseEvent.BUTTON1
+					&& lineNum == this.buf.getCurrentLine()
+					&& this.buf.hasInlineCode(lineNum)) {
 				this.toggleChild();
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * Scrolls the TextView so that the given line is visible in the widget
-	 * @param lineNum The line to scroll to
+	 * 
+	 * @param lineNum
+	 *            The line to scroll to
 	 */
-	public void scrollToLine(int lineNum){
-		this.scrollToIter(this.buf.getLineIter(lineNum-1), 0);
+	public void scrollToLine(int lineNum) {
+		this.scrollToIter(this.buf.getLineIter(lineNum - 1), 0);
 	}
-	
+
 	/**
 	 * Finds the next instance of toFind in the buffer and highlights it.
 	 * returns true if succesful, false otherwise
 	 * 
-	 * @param toFind The string to find
-	 * @param caseSensitive Whether to do a case sensitive search
+	 * @param toFind
+	 *            The string to find
+	 * @param caseSensitive
+	 *            Whether to do a case sensitive search
 	 * @return If the search was successful
 	 */
-	public boolean findNext(String toFind, boolean caseSensitive){
+	public boolean findNext(String toFind, boolean caseSensitive) {
 		return this.buf.findNext(toFind, caseSensitive, false);
 	}
-	
+
 	/**
 	 * Finds the previous instance of toFind in the buffer and highlights it.
 	 * Returns true if succesful, false otherwise
 	 * 
-	 * @param toFind The string to find
-	 * @param caseSensitive Whether to do a case sensitive search
+	 * @param toFind
+	 *            The string to find
+	 * @param caseSensitive
+	 *            Whether to do a case sensitive search
 	 * @return If the search was successful
 	 */
-	public boolean findPrevious(String toFind, boolean caseSensitive){
+	public boolean findPrevious(String toFind, boolean caseSensitive) {
 		return this.buf.findPrevious(toFind, caseSensitive);
 	}
-	
+
 	/**
-	 * Finds all instances of toFind in the current buffer and highlights
-	 * them. Returns true if successful, false otherwise
+	 * Finds all instances of toFind in the current buffer and highlights them.
+	 * Returns true if successful, false otherwise
 	 * 
-	 * @param toFind The string to find in the buffer
-	 * @param caseSensitive Whether to do a case sensitive search
+	 * @param toFind
+	 *            The string to find in the buffer
+	 * @param caseSensitive
+	 *            Whether to do a case sensitive search
 	 * @return If the search was successful
 	 */
-	public boolean highlightAll(String toFind, boolean caseSensitive){
+	public boolean highlightAll(String toFind, boolean caseSensitive) {
 		return this.buf.findNext(toFind, caseSensitive, true);
 	}
-	
+
 	/**
 	 * Scrolls the TextView to show the current location of the found text
 	 */
-	public void scrollToFound(){
+	public void scrollToFound() {
 		this.scrollToIter(this.buf.getStartCurrentFind(), 0);
 	}
-	
+
 	/**
 	 * Loads the contents of the provided StackLevel into this view
-	 * @param data The new stack frame to load.
+	 * 
+	 * @param data
+	 *            The new stack frame to load.
 	 */
-	public void load(StackLevel data){
+	public void load(StackLevel data) {
 		this.buf.setScope(data);
 		this.expanded = false;
 		this.anchor = null;
 	}
-	
+
 	/**
 	 * Sets the inlined subscope at the current line to be the object provided.
-	 * @param child The inlined scope to display
+	 * 
+	 * @param child
+	 *            The inlined scope to display
 	 */
-	public void setSubscopeAtCurrentLine(InlineViewer child){
+	public void setSubscopeAtCurrentLine(InlineViewer child) {
 		this.child = child;
 		Container parent = (Container) child.getParent();
-		if(parent != null)
+		if (parent != null)
 			parent.remove(child);
-		
+
 		this.expanded = true;
 		this.addChild(child, this.buf.createAnchorAtCurrentLine());
 		child.show();
 	}
-	
+
 	/**
-	 * Removes the inline subscope that is currently being displayed from the view.
-	 *
+	 * Removes the inline subscope that is currently being displayed from the
+	 * view.
+	 * 
 	 */
-	public void clearSubscopeAtCurrentLine(){
+	public void clearSubscopeAtCurrentLine() {
 		this.buf.clearAnchorAtCurrentLine();
 		this.expanded = false;
 		this.anchor = null;
 	}
-	
+
 	/*---------------------------*
 	 * PRIVATE METHODS           *
 	 *---------------------------*/
-	
+
 	/*
 	 * Performs some operations before the window is shown
 	 */
-	private void initialize(){
+	private void initialize() {
 		// Set all preference-related data
 		this.refresh();
-		
+
 		// Stuff that never changes
 		this.setLeftMargin(3);
 		this.setEditable(false);
 		this.setCursorVisible(false);
-		
+
 		// Listeners
 		this.addListener((ExposeListener) this);
 		this.addListener((MouseListener) this);
 		
+		// Preferences
+		PreferenceManager.addPreference(new IntPreference(IntPreference.INLINE_LEVELS), PreferenceManager.LNF_NODE);
+		PreferenceManager.addPreference(new ColorPreference(ColorPreference.EXEC_MARKS), PreferenceManager.LNF_NODE);
+
 		this.showAll();
 	}
 
@@ -432,189 +442,216 @@ public class SourceViewWidget extends TextView implements ExposeListener, MouseL
 	 * Toggles the visibility of the inlined code at the current line.
 	 */
 	public void toggleChild() {
-		if(!expanded){
+		if (!expanded) {
 			expanded = true;
-			
-			DOMInlineInstance instance = this.buf.getInlineInstance(this.buf.getCurrentLine());
-			
+
+			DOMInlineInstance instance = this.buf.getInlineInstance(this.buf
+					.getCurrentLine());
+
 			DOMSource scope = instance.getDeclaration().getSource();
-			InlineViewer nested = new InlineViewer(this.topPrefs, this.parent, 
+			InlineViewer nested = new InlineViewer(this.parent,
 					scope, instance);
 			this.setSubscopeAtCurrentLine(nested);
-		}
-		else{
+		} else {
 			expanded = false;
 			this.clearSubscopeAtCurrentLine();
 		}
-			
+
 	}
-	
+
 	/*
-	 * Function responsible for drawing the side area where breakpoints, etc. are
-	 * drawn. Called either in response to an expose event or when a preference 
-	 * changes
+	 * Function responsible for drawing the side area where breakpoints, etc.
+	 * are drawn. Called either in response to an expose event or when a
+	 * preference changes
 	 */
-	protected void drawMargin(){
+	protected void drawMargin() {
 		Window drawingArea = this.getWindow(TextWindowType.LEFT);
-		
-		
-//		String[] thisarray = this.getHandle().toString().split(" ");
-//		String[] thatarray = drawingArea.getHandle().toString().split(" ");
-//		System.err.println("Created gdkWindow " + Integer.toHexString(Integer.parseInt(thatarray[thatarray.length - 1]))
-//				+ " in " + this.getClass() + " " + 
-//				Integer.toHexString(Integer.parseInt(thisarray[thisarray.length - 1])));
-		
+
+		// String[] thisarray = this.getHandle().toString().split(" ");
+		// String[] thatarray = drawingArea.getHandle().toString().split(" ");
+		// System.err.println("Created gdkWindow " +
+		// Integer.toHexString(Integer.parseInt(thatarray[thatarray.length -
+		// 1]))
+		// + " in " + this.getClass() + " " +
+		// Integer.toHexString(Integer.parseInt(thisarray[thisarray.length -
+		// 1])));
+
 		// draw the background for the margin
-		if(this.myContext == null)
+		if (this.myContext == null)
 			this.myContext = new GC((Drawable) drawingArea);
-		
-		int r = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"R", Margin.DEFAULT.getRed());
-		int g = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"G", Margin.DEFAULT.getGreen());
-		int b = this.lnfPrefs.getInt(Margin.COLOR_PREFIX+"B", Margin.DEFAULT.getBlue());
-		myContext.setRGBForeground(new Color(r, g, b));
-		drawingArea.drawRectangle(this.myContext, true, 0, 0, drawingArea.getWidth(), drawingArea.getHeight());
-		
+
+		Color tmp = PreferenceManager.getColorPreference(ColorPreference.MARGIN);
+		myContext.setRGBForeground(tmp);
+		drawingArea.drawRectangle(this.myContext, true, 0, 0, drawingArea
+				.getWidth(), drawingArea.getHeight());
+
 		// get preference settings
-		boolean showLines = this.lnfPrefs.getBoolean(LineNumbers.SHOW, true);
-		boolean showMarks = this.lnfPrefs.getBoolean(ExecMarks.SHOW, true);
-		
+		boolean showLines = PreferenceManager.getBooleanPreference(BooleanPreference.LINE_NUMS);
+		boolean showMarks = PreferenceManager.getBooleanPreference(BooleanPreference.EXEC_MARKS);
+
 		// get the y coordinates for the top and bottom of the window
 		int minY = drawingArea.getClipRegion().getClipbox().getY();
-		int maxY = minY+drawingArea.getClipRegion().getClipbox().getHeight();
-		
-		// find out what the actual starting coordinates of the first line on screen is
-		TextIter firstIter = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, minY));
+		int maxY = minY + drawingArea.getClipRegion().getClipbox().getHeight();
+
+		// find out what the actual starting coordinates of the first line on
+		// screen is
+		TextIter firstIter = this.getIterAtLocation(this.windowToBufferCoords(
+				TextWindowType.LEFT, 0, minY));
 		VerticalLineRange firstRange = this.getLineYRange(firstIter);
-		int actualFirstStart = this.bufferToWindowCoords(TextWindowType.LEFT, 0, firstRange.getY()).getY();
-		
+		int actualFirstStart = this.bufferToWindowCoords(TextWindowType.LEFT,
+				0, firstRange.getY()).getY();
+
 		// get the line numbers we'll be drawing
 		int firstLine = firstIter.getLineNumber();
-		int lastLine = this.getIterAtLocation(this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY)).getLineNumber();
+		int lastLine = this.getIterAtLocation(
+				this.windowToBufferCoords(TextWindowType.LEFT, 0, maxY))
+				.getLineNumber();
 
 		// Get Color to draw the text in
-		r = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"R", LineNumbers.DEFAULT.getRed());
-		g = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"G", LineNumbers.DEFAULT.getGreen());
-		b = this.lnfPrefs.getInt(LineNumbers.COLOR_PREFIX+"B", LineNumbers.DEFAULT.getBlue());
-		this.myContext.setRGBForeground(new Color(r,g,b));
-		
+		Color lineColor = PreferenceManager.getColorPreference(ColorPreference.LINE_NUMBER);
+		this.myContext.setRGBForeground(lineColor);
+
 		// gets current line color
-		int lineR = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"R", CurrentLine.DEFAULT.getRed());
-		int lineG = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"G", CurrentLine.DEFAULT.getGreen());
-		int lineB = this.lnfPrefs.getInt(CurrentLine.COLOR_PREFIX+"B", CurrentLine.DEFAULT.getBlue());
-		
+		Color currentLine = PreferenceManager.getColorPreference(ColorPreference.CURRENT_LINE);
+
 		// gets executable mark color
-		int markR = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"R", ExecMarks.DEFAULT.getRed());
-		int markG = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"G", ExecMarks.DEFAULT.getGreen());
-		int markB = this.lnfPrefs.getInt(ExecMarks.COLOR_PREFIX+"B", ExecMarks.DEFAULT.getBlue());
-		
-		int currentHeight = 0;		
+		Color markColor = PreferenceManager.getColorPreference(ColorPreference.EXEC_MARKS);
+
+		int currentHeight = 0;
 		int actualIndex = firstLine;
 		boolean skipNextLine = false;
-		
+
 		int drawingHeight = 0;
-        int lineHeight = 0;
+		int lineHeight = 0;
 		int gapHeight = 0;
-		
-		// If the refresh is starting after the current line, we have to add that offset in to
+
+		// If the refresh is starting after the current line, we have to add
+		// that offset in to
 		// make sure the gap in line numbers is maintained
-		if(expanded && firstLine > this.buf.getCurrentLine())
-			gapHeight = this.getLineYRange(this.getBuffer().getLineIter(this.buf.getCurrentLine() + 1)).getHeight();
-		
-		for(int i = firstLine; i <= lastLine && i < this.buf.getLineCount(); i++){
-			
-			if(i > this.buf.getCurrentLine()){
+		if (expanded && firstLine > this.buf.getCurrentLine())
+			gapHeight = this
+					.getLineYRange(
+							this.getBuffer().getLineIter(
+									this.buf.getCurrentLine() + 1)).getHeight();
+
+		for (int i = firstLine; i <= lastLine && i < this.buf.getLineCount(); i++) {
+
+			if (i > this.buf.getCurrentLine()) {
 				drawingHeight = currentHeight + gapHeight;
-                if(expanded)
-                    lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i+1)).getHeight();
-                else
-                    lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
-            }
-			else{
+				if (expanded)
+					lineHeight = this.getLineYRange(
+							this.getBuffer().getLineIter(i + 1)).getHeight();
+				else
+					lineHeight = this.getLineYRange(
+							this.getBuffer().getLineIter(i)).getHeight();
+			} else {
 				drawingHeight = currentHeight;
-                lineHeight = this.getLineYRange(this.getBuffer().getLineIter(i)).getHeight();
-            }
-			
-			int iconStart = lineHeight/2;
-			
-			if(skipNextLine){
+				lineHeight = this
+						.getLineYRange(this.getBuffer().getLineIter(i))
+						.getHeight();
+			}
+
+			int iconStart = lineHeight / 2;
+
+			if (skipNextLine) {
 				skipNextLine = false;
-				
-				gapHeight = this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
-				
+
+				gapHeight = this.getLineYRange(
+						this.getBuffer().getLineIter(actualIndex++))
+						.getHeight();
+
 				i--;
 				continue;
 			}
-			
+
 			// For the current line, do some special stuff
-			if(i == this.buf.getCurrentLine()){
-					
-				this.myContext.setRGBForeground(new Color(lineR, lineG, lineB));
-				if(showMarks)
-					drawingArea.drawRectangle(this.myContext, true, 0, actualFirstStart+drawingHeight, 
-							this.marginWriteOffset+40, lineHeight);
+			if (i == this.buf.getCurrentLine()) {
+
+				this.myContext.setRGBForeground(currentLine);
+				if (showMarks)
+					drawingArea.drawRectangle(this.myContext, true, 0,
+							actualFirstStart + drawingHeight,
+							this.marginWriteOffset + 40, lineHeight);
 				else
-					drawingArea.drawRectangle(this.myContext, true, 0, actualFirstStart+drawingHeight, 
-							this.marginWriteOffset+20, lineHeight);
-				this.myContext.setRGBForeground(new Color(r,g,b));
-				
-				if(this.buf.hasInlineCode(i)){
-					this.myContext.setRGBForeground(new Color(markR,markG,markB));
+					drawingArea.drawRectangle(this.myContext, true, 0,
+							actualFirstStart + drawingHeight,
+							this.marginWriteOffset + 20, lineHeight);
+				this.myContext.setRGBForeground(lineColor);
+
+				if (this.buf.hasInlineCode(i)) {
+					this.myContext.setRGBForeground(markColor);
 					Layout lo = this.createLayout("i");
 					lo.setAlignment(Alignment.RIGHT);
-					if(showMarks)
-						drawingArea.drawLayout(this.myContext, this.marginWriteOffset+25, actualFirstStart+drawingHeight, lo);
+					if (showMarks)
+						drawingArea.drawLayout(this.myContext,
+								this.marginWriteOffset + 25, actualFirstStart
+										+ drawingHeight, lo);
 					else
-						drawingArea.drawLayout(this.myContext, this.marginWriteOffset+5, actualFirstStart+drawingHeight, lo);
-					this.myContext.setRGBForeground(new Color(r,g,b));
-					
-					if(this.expanded)
+						drawingArea.drawLayout(this.myContext,
+								this.marginWriteOffset + 5, actualFirstStart
+										+ drawingHeight, lo);
+					this.myContext.setRGBForeground(lineColor);
+
+					if (this.expanded)
 						skipNextLine = true;
 				}
 			}
-			
-			
+
 			// If it is executable, draw a mark
-			if(showMarks && this.buf.isLineExecutable(i)){
-				this.myContext.setRGBForeground(new Color(markR,markG,markB));
-				drawingArea.drawLine(this.myContext, this.marginWriteOffset+5, actualFirstStart+drawingHeight+iconStart, 
-						this.marginWriteOffset+12, actualFirstStart+drawingHeight+iconStart);
-				this.myContext.setRGBForeground(new Color(r,g,b));
+			if (showMarks && this.buf.isLineExecutable(i)) {
+				this.myContext.setRGBForeground(markColor);
+				drawingArea.drawLine(this.myContext,
+						this.marginWriteOffset + 5, actualFirstStart
+								+ drawingHeight + iconStart,
+						this.marginWriteOffset + 12, actualFirstStart
+								+ drawingHeight + iconStart);
+				this.myContext.setRGBForeground(lineColor);
 			}
-			
+
 			// Draw line numbers
-			if(showLines)
-				drawLineNumber(drawingArea, this.myContext, actualFirstStart + drawingHeight, i);
-			
+			if (showLines)
+				drawLineNumber(drawingArea, this.myContext, actualFirstStart
+						+ drawingHeight, i);
+
 			// draw breakpoints
-			if(this.buf.isLineBroken(i)){
+			if (this.buf.isLineBroken(i)) {
 				int iconHeight = lineHeight - 8;
-				
-				this.myContext.setRGBForeground(new Color(65535,0,0));
-				drawingArea.drawRectangle(this.myContext, true, this.marginWriteOffset+5, actualFirstStart+drawingHeight+4, iconHeight, iconHeight);
-				this.myContext.setRGBForeground(new Color(r,g,b));
+
+				this.myContext.setRGBForeground(new Color(65535, 0, 0));
+				drawingArea.drawRectangle(this.myContext, true,
+						this.marginWriteOffset + 5, actualFirstStart
+								+ drawingHeight + 4, iconHeight, iconHeight);
+				this.myContext.setRGBForeground(lineColor);
 			}
-			
+
 			// update height for next line
-			currentHeight += this.getLineYRange(this.getBuffer().getLineIter(actualIndex++)).getHeight();
+			currentHeight += this.getLineYRange(
+					this.getBuffer().getLineIter(actualIndex++)).getHeight();
 		}
 	}
 
 	/**
-	 * Draws the line corresponding to the number provided. Note that because of inlined
-	 * code, initial offsets or other widgets embedded in the source code this may not
-	 * be the number passed to this function. 
+	 * Draws the line corresponding to the number provided. Note that because of
+	 * inlined code, initial offsets or other widgets embedded in the source
+	 * code this may not be the number passed to this function.
 	 * 
-	 * @param drawingArea The org.gnu.gdk.Window to draw on
-	 * @param context The GC to use
-	 * @param drawingHeight The height that we should draw at within the window
-	 * @param number The number to use to calcuate what number should be drawn
+	 * @param drawingArea
+	 *            The org.gnu.gdk.Window to draw on
+	 * @param context
+	 *            The GC to use
+	 * @param drawingHeight
+	 *            The height that we should draw at within the window
+	 * @param number
+	 *            The number to use to calcuate what number should be drawn
 	 */
-    protected void drawLineNumber(Window drawingArea, GC context, int drawingHeight, int number) {
-        Layout lo = this.createLayout(""+(number+1));
-        lo.setAlignment(Alignment.RIGHT);
-        lo.setWidth(this.marginWriteOffset);
-        
-        drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight, lo);
-    }
-	
+	protected void drawLineNumber(Window drawingArea, GC context,
+			int drawingHeight, int number) {
+		Layout lo = this.createLayout("" + (number + 1));
+		lo.setAlignment(Alignment.RIGHT);
+		lo.setWidth(this.marginWriteOffset);
+
+		drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight,
+				lo);
+	}
+
 }

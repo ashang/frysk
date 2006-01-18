@@ -1,3 +1,31 @@
+2006-01-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (InlineViewer): No longer takes a Preferences.
+	(refresh): Now uses PreferenceManager.
+	(toggleChild): Ditto.
+	* PreferenceConstants.java: Removed.
+	* PreferenceWindow.java: Moved to prefs/PreferenceManager.
+	* prefs: Added.
+	* SourceBuffer.java: Reformatted.
+	(updatePreferences): Removed, tags are now updated automatically.
+	(init): Now creates preferences for the various tags.
+	* SourceViewWidget.java: Reformatted.
+	(SourceViewWidget): No longer takes Preference object.
+	(refresh): Now uses PreferencesManager to pull preference data.
+	(drawMargin): Ditto.
+	(initialize): Initializes some higher-level preferences.
+	* SourceWindow.java: Reformatted.
+	(SourceWindow): No longer creates preferences object.
+	* prefs/BooleanPreference.java: Added.
+	* prefs/ColorPreference.java: Ditto.
+	* prefs/ColorPreferenceEditor.java: Ditto.
+	* prefs/FryskPreference.java: Ditto.
+	* prefs/IntPreference.java: Ditto.
+	* prefs/PreferenceManager.java: Ditto.
+	* prefs/SyntaxPrefsList.java: Ditto.
+	* prefs/SyntaxPreference.java: Ditto.
+	* prefs/SyntaxPreferenceViewer.java: Ditto.
+
 2006-01-11  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (createSourceWindow): Now prints out
