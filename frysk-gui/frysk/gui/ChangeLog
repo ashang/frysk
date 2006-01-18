@@ -1,11 +1,18 @@
-2005-01-16  Rick Moseley  <rmoseley@redhat.com>
+2006-01-18  Rick Moseley  <rmoseley@redhat.com>
+
+	* Added frysk.desktop here.
+	* frysk.desktop: changed icon name to fryskTrayIcon48.png.
+
+2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+
 	* Actually add the icons this time.
 
-2005-01-13  Rick Moseley  <rmoseley@redhat.com>
+2006-01-13  Rick Moseley  <rmoseley@redhat.com>
+
 	* Added images/48 directory.
 	* Added images/xx/fryskTrayIconxx.png files for startup sequence.
 
-2005-01-12  Adam Jocksch  <ajocksch@redhat.com>
+2006-01-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: removed requires gnome tag.
 
