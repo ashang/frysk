@@ -1,5 +1,9 @@
 2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceWindow.java (preferenceWindow): Now calls addListeners
+	prior to calling setupButtons so that the initial selection is handled
+	properly.
+
 	* prefs/ColorPreference.java (setModel): No longer calls saveValues, now
 	sets tag properties.
 	* prefs/PreferenceList.java (selectionChangedEvent): Changed type of 

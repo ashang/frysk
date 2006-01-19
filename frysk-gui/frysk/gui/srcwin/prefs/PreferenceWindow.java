@@ -179,8 +179,8 @@ public class PreferenceWindow implements ButtonListener {
 			e.printStackTrace();
 		}
 
+        this.addListeners();
 		this.setupButtons();
-		this.addListeners();
 	}
 
 	/**
