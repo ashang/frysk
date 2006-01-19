@@ -447,7 +447,10 @@ public class TestLib
 	 */
 	void execClone ()
 	{
-	    AckHandler ack = new AckHandler (parentAck);
+	    // First the main thread acks with .parentAck, and then
+	    // the execed process acks with .childAck.
+	    AckHandler ack = new AckHandler (new int[] { parentAck,
+							 childAck });
 	    signal (execCloneSig);
 	    ack.await ();
 	}
