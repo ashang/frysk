@@ -1,5 +1,8 @@
 2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceViewer.java (saveAll): Added.
+	* prefs/LNFPreferenceViewer.java: Added.
+
 	* prefs/PreferenceWindow.java (setupButtons): No longer creates a 
 	SyntaxPreferenceViewer on startup.
 	* prefs/IntPreference.java: Rearranged constants to fix ecj warning.
