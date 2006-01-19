@@ -1,5 +1,13 @@
 2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/ColorPreference.java (setModel): No longer calls saveValues, now
+	sets tag properties.
+	* prefs/PreferenceList.java (selectionChangedEvent): Changed type of 
+	preference being retrieved to ColorPreference from SyntaxPreference.
+	* prefs/PreferenceWindow.java (updateShownPrefs): Fixed typo for name
+	of glade widget and syntax highlighting option, now shows all widgets
+	after they've been added.
+
 	* prefs/PreferenceWindow.java (updateShownPrefs): Now actually changes
 	the preference editor being displayed based on the selection.
 

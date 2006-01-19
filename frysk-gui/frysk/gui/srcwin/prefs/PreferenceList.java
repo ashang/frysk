@@ -59,10 +59,10 @@ public class PreferenceList extends TreeView implements TreeSelectionListener {
 
 		TreeIter iter = this.getModel().getIter(path);
 
-		SyntaxPreference synPref = (SyntaxPreference) this.getModel().getValue(
+		ColorPreference pref = (ColorPreference) this.getModel().getValue(
 				iter, (DataColumnObject) this.cols[1]);
 
-		this.parent.showPreferenceEditor(synPref);
+		this.parent.showPreferenceEditor(pref);
 	}
 
 	public void saveAll() {

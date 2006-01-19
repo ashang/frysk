@@ -71,7 +71,17 @@ public class ColorPreference extends FryskPreference {
 		int b = model.getInt(name + "_B", fallback.getBlue());
 		this.currentColor = new Color(r, g, b);
 		
-		this.saveValues();
+        /*
+         * there may or may not be a text tag associated with this item
+         */
+        if (tag != null) {
+            if (foreground)
+                tag.setForeground(ColorConverter
+                        .colorToHexString(this.currentColor));
+            else
+                tag.setBackground(ColorConverter
+                        .colorToHexString(this.currentColor));
+        }
 	}
 	
 	public void setCurrentColor(Color currentColor) {

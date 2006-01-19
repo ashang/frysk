@@ -305,7 +305,7 @@ public class PreferenceWindow implements ButtonListener {
 			String text = sidePanel.getModel().getValue(iter,
 					(DataColumnString) cols[0]);
 			
-            HBox panel = (HBox) this.glade.getWidget("mainPanel");
+            HBox panel = (HBox) this.glade.getWidget("mainPane");
             while(panel.getChildren().length > 1)
                 panel.remove(panel.getChildren()[1]);
             
@@ -318,11 +318,13 @@ public class PreferenceWindow implements ButtonListener {
                 this.viewer = lnfView;
                 panel.packStart(lnfView);
             }
-            else if(text.equals("SyntaxHighlighting")){
+            else if(text.equals("Syntax Highlighting")){
                 SyntaxPreferenceViewer synView = new SyntaxPreferenceViewer();
                 this.viewer = synView;
                 panel.packStart(synView);
             }
+            
+            panel.showAll();
         }
 	}
 }
