@@ -1,13 +1,17 @@
 package frysk.gui.monitor.observers;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
 
 import org.gnu.glib.CustomEvents;
+import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
@@ -20,7 +24,7 @@ import frysk.proc.TaskObserver;
  * Takes Action objects that can be used by clients to customize
  * behaviour. 
  * */
-public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
+public class ObserverRoot extends GuiObject implements TaskObserver, Observer, SaveableXXX{
 
 		private ObservableLinkedList actions;
 		private ObservableLinkedList runnables;
@@ -150,6 +154,79 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer{
 
 		public String getBaseName() {
 			return baseName;
+		}
+
+		public void save(Element node) {
+			node.setAttribute("type", this.getClass().getName());
+			node.setAttribute("name", this.getName());
+			node.setAttribute("tooltip", this.getToolTip());
+			
+			//actions
+			Element actionPointsXML = new Element("actionPoints");
+			
+			Iterator iterator = this.getActionPoints().iterator();
+			while (iterator.hasNext()) {
+				ActionPoint actionPoint = (ActionPoint) iterator.next();
+				Element actionPointXML = new Element("actionPoint");
+				actionPoint.save(actionPointXML);
+				actionPointsXML.addContent(actionPointXML);
+			}
+			node.addContent(actionPointsXML);
+			
+			//filters
+			
+			Element filterPointsXML = new Element("filterPoints");
+			
+			iterator = this.getFilterPoints().iterator();
+			while (iterator.hasNext()) {
+				FilterPoint filterPoint = (FilterPoint) iterator.next();
+				Element filterPointXML = new Element("filterPoint");
+				filterPoint.save(filterPointXML);
+				filterPointsXML.addContent(filterPointXML);
+			}
+			node.addContent(filterPointsXML);
+			
+		}
+
+		public Object load(Element node) {
+			ObserverRoot loadedObserver = null;
+			String type = node.getAttribute("type").getValue();
+			
+			Class cls;
+			try {
+				cls = Class.forName(type);
+				java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
+				loadedObserver =  (ObserverRoot)constr.newInstance(new Object[] {});
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			loadedObserver.setName(node.getAttribute("name").getValue());
+			loadedObserver.setToolTip(node.getAttribute("tooltip").getValue());
+			
+			
+			//actions
+			Element actionPointsXML = node.getChild("actionPoints");
+			List list = (List) (actionPointsXML.getChildren("actionPoint"));
+			Iterator i = list.iterator();
+			Iterator j = loadedObserver.getActionPoints().iterator();
+			
+			while (i.hasNext()){
+				((ActionPoint)j.next()).load(((Element) i.next()));
+			}
+
+			//filters
+			Element filterPointsXML = node.getChild("filterPoints");
+			list = (List) filterPointsXML.getChildren("filterPoint");
+			i = list.iterator();
+			j = loadedObserver.getFilterPoints().iterator();
+			
+			while (i.hasNext()){
+				((FilterPoint)j.next()).load(((Element) i.next()));
+			}
+			
+			return loadedObserver;
 		}
 		
 	}

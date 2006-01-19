@@ -1,3 +1,10 @@
+2006-01-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* actions/ActionPoint.java: Added save/load functions.
+	* filters/FilterPoint.java: Ditto.
+	* observers/ObserverRoot.java: Ditto. 
+	* SaveableXXX.java: New file.
+
 2006-01-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/FilterPoint.java (removeFilter): Added number of added

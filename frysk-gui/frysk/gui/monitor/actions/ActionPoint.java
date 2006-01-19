@@ -39,14 +39,17 @@
 
 package frysk.gui.monitor.actions;
 
+import org.jdom.Element;
+
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.SaveableXXX;
 
 /**
  * In a similar manner to @link frysk.gui.monitor.filters.FilterPoint
  * ActionPoints provide a flexible interface to add actions to Observers.
  * */
-public abstract class ActionPoint extends GuiObject {
+public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 	protected ObservableLinkedList actions;
 	
 	private final String name;
@@ -87,4 +90,17 @@ public abstract class ActionPoint extends GuiObject {
 	private void setNumberInName(){
 		this.setName(this.name + " ("+ this.actions.size() +")");
 	}
+	
+	public void save(Element node) {
+		node.setAttribute("name", this.getName());
+		node.setAttribute("tooltip", this.getToolTip());
+	}
+	
+	public Object load(Element node) {
+		this.setName(node.getAttribute("name").getValue());
+		this.setToolTip(node.getAttribute("tooltip").getValue());
+		
+		return this;
+	}
+	
 }

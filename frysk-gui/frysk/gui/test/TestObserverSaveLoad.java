@@ -37,75 +37,61 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.test;
+
+import java.util.Iterator;
 
 import org.jdom.Element;
 
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.SaveableXXX;
+import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.filters.FilterPoint;
+import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskForkedObserver;
+import junit.framework.TestCase;
 
-/**
- * FilterPoints provide a flexible interface between Observers
- * and the clients that would like to add filters to those observers.
- * Thus allowing reuse of a filter with different observer.
- * Observers add FilterPoints to themselves to allowed
- * their clients to filter the events.
- * Clients of observers add desired Filters to the correct
- * filter points.
- * */
-public abstract class FilterPoint extends GuiObject implements SaveableXXX {
-	protected ObservableLinkedList filters;
-	
-	private final String name;
-	
-	public FilterPoint(String name, String toolTip){
-		super(name, toolTip);
-		this.filters = new ObservableLinkedList();
-		this.name = name;
-	}
-	
-	public FilterPoint(FilterPoint other){
-		super(other);
-		this.filters = new ObservableLinkedList(); // Dont copy filters
-		this.name = other.name;
-	}
-	
-	/**
-	 * Retrieves a list of applicable filters from the FilterManager.
-	 * */
-	public abstract ObservableLinkedList getApplicableFilters();
-	
-	public void addFilter(Filter filter){
-		this.filters.add(filter);
-		this.setNumberInName();
-	}
-	
-	public void removeFilter(Filter filter){
-		if(!this.filters.remove(filter)){
-			throw new IllegalArgumentException("the passed filter ["+ filter +"] is not a member of this filter point");
-		}
-		this.setNumberInName();
-	}
-	
-	public ObservableLinkedList getFilters(){
-		return this.filters;
-	}
-	
-	private void setNumberInName(){
-		this.setName(this.name + " ("+ this.filters.size() +")");
-	}
-	
-	public void save(Element node) {
-		node.setAttribute("name", this.getName());
-		node.setAttribute("tooltip", this.getToolTip());
-	}
-	
-	public Object load(Element node) {
-		this.setName(node.getAttribute("name").getValue());
-		this.setToolTip(node.getAttribute("tooltip").getValue());
+public class TestObserverSaveLoad extends TestCase{
+
+	public void testSaveLoad(){
 		
-		return this;
+		Element node = new Element("testNode");
+		
+		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
+		taskForkedObserver.setName("blablabla");
+		taskForkedObserver.setToolTip("blablobla");
+		
+		Iterator i = taskForkedObserver.getFilterPoints().iterator();
+		while (i.hasNext()) {
+			FilterPoint filterPoint = (FilterPoint) i.next();
+			filterPoint.setName(""+taskForkedObserver.getFilterPoints().indexOf(filterPoint));
+		}
+		
+		i = taskForkedObserver.getActionPoints().iterator();
+		while (i.hasNext()) {
+			ActionPoint actionPoint = (ActionPoint) i.next();
+			actionPoint.setName(""+taskForkedObserver.getActionPoints().indexOf(actionPoint));
+		}
+		
+		taskForkedObserver.save(node);
+		
+		ObserverRoot observerRoot = new ObserverRoot("", "");
+		observerRoot = (ObserverRoot) observerRoot.load(node);
+		
+		
+		assertEquals("Class type", taskForkedObserver.getClass() , observerRoot.getClass());
+		assertEquals("Name", taskForkedObserver.getName(), observerRoot.getName());
+		assertEquals("ToolTip", taskForkedObserver.getToolTip(), observerRoot.getToolTip());
+		
+		i = observerRoot.getFilterPoints().iterator();
+		while (i.hasNext()) {
+			FilterPoint filterPoint = (FilterPoint) i.next();
+			assertEquals("filterPoint name", ""+ observerRoot.getFilterPoints().indexOf(filterPoint), filterPoint.getName() );
+		}
+		
+		i = observerRoot.getActionPoints().iterator();
+		while (i.hasNext()) {
+			ActionPoint actionPoint = (ActionPoint) i.next();
+			assertEquals("actionPoint name", ""+ observerRoot.getActionPoints().indexOf(actionPoint), actionPoint.getName() );
+		}
+		
 	}
-	
 }
