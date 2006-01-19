@@ -188,7 +188,6 @@ public class PreferenceWindow implements ButtonListener {
 	 * preference model
 	 */
 	public void show() {
-		this.setupButtons();
 		this.glade.getWidget(PREF_WIN).showAll();
 	}
 

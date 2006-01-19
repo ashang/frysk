@@ -21,25 +21,23 @@ import org.gnu.gtk.event.TreeSelectionListener;
  * @author ajocksch
  * 
  */
-public class SyntaxPrefList extends TreeView implements TreeSelectionListener {
+public class PreferenceList extends TreeView implements TreeSelectionListener {
 
 	private DataColumn[] cols = { new DataColumnString(),
 			new DataColumnObject() };
 
-	private SyntaxPreferenceViewer parent;
+	private PreferenceViewer parent;
 
-	public SyntaxPrefList(SyntaxPreferenceViewer parent) {
+	public PreferenceList(PreferenceViewer parent, String[] names) {
 		this.setHeadersVisible(false);
 		this.getSelection().setMode(SelectionMode.SINGLE);
 
 		this.parent = parent;
 
 		ListStore model = new ListStore(cols);
-		System.out.println("before test");
-		System.out.println("before loop");
-		for (int i = 0; i < SyntaxPreference.NAMES.length; i++) {
+		for (int i = 0; i < names.length; i++) {
 			TreeIter iter = model.appendRow();
-			FryskPreference synPref = PreferenceManager.getPreference(SyntaxPreference.NAMES[i]);
+			FryskPreference synPref = PreferenceManager.getPreference(names[i]);
 			model.setValue(iter, (DataColumnString) cols[0], synPref.getName());
 			model.setValue(iter, (DataColumnObject) cols[1], synPref);
 		}
@@ -64,7 +62,7 @@ public class SyntaxPrefList extends TreeView implements TreeSelectionListener {
 		SyntaxPreference synPref = (SyntaxPreference) this.getModel().getValue(
 				iter, (DataColumnObject) this.cols[1]);
 
-		this.parent.showSyntaxPrefEditor(synPref);
+		this.parent.showPreferenceEditor(synPref);
 	}
 
 	public void saveAll() {
@@ -72,9 +70,9 @@ public class SyntaxPrefList extends TreeView implements TreeSelectionListener {
 		int index = 1;
 		
 		while (iter != null) {
-			SyntaxPreference synPref = (SyntaxPreference) this.getModel()
+			FryskPreference pref = (FryskPreference) this.getModel()
 					.getValue(iter, (DataColumnObject) this.cols[1]);
-			synPref.saveValues();
+			pref.saveValues();
 			iter = this.getModel().getIter(new TreePath(""+(++index)));
 		}
 	}

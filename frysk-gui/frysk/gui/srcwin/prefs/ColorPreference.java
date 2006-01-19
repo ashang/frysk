@@ -15,6 +15,14 @@ public class ColorPreference extends FryskPreference {
 	public static final String[] NAMES = { "Text", "Background", "Margin",
 			"Line Number Color", "Current Line", "Search Results", "Executable Marks"};
 
+    public static final int TEXT = 0;
+    public static final int BACKGROUND = 1;
+    public static final int MARGIN = 2;
+    public static final int LINE_NUMBER = 3;
+    public static final int CURRENT_LINE = 4;
+    public static final int SEARCH = 5;
+    public static final int EXEC_MARKS = 6;
+    
 	static {
 		defaultColors = new HashMap();
 		
@@ -27,13 +35,7 @@ public class ColorPreference extends FryskPreference {
 		defaultColors.put(NAMES[EXEC_MARKS], Color.BLACK);
 	}
 
-	public static final int TEXT = 0;
-	public static final int BACKGROUND = 1;
-	public static final int MARGIN = 2;
-	public static final int LINE_NUMBER = 3;
-	public static final int CURRENT_LINE = 4;
-	public static final int SEARCH = 5;
-	public static final int EXEC_MARKS = 6;
+	
 	
 	private static Color getDefaultColor(String name) {
 		return (Color) defaultColors.get(name);

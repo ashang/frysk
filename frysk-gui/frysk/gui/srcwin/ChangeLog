@@ -1,3 +1,26 @@
+2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* prefs/BooleanPreference.java: Moved constant declarations so that
+	they're before the first use; solves ecj warning.
+	* prefs/ColorPreference.java: Ditto.
+	* prefs/ColorPreferenceEditor (setCurrentPref): Now takes argument
+	of type ColorPreference rather than SyntaxPreference, also sets
+	state of weight and style buttons based on input.
+	(toggleEvent): Added cast to SyntaxPreference, see comment for more
+	details.
+	* prefs/SyntaxPrefList.java: Renamed to PreferenceList.java.
+	* prefs/PreferenceList.java (PreferenceList): Now takes an array of
+	Strings to use as names.
+	* prefs/PreferenceViewer.java: Added.
+	* prefs/PreferenceWindow.java (show): No longer re-calls setupButtons,
+	as this was causing an Exception if the prefs window was launched
+	more than once.
+	* prefs/SyntaxPreference.java (setModel): Now updates tag weight and
+	style.
+	* prefs/SyntaxPreferenceViewer.java: Now implements PreferenceViewer.
+	(showSyntaxPrefEditor): Changed to showPreferenceEditor.
+	
+
 2006-01-18  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineViewer.java (InlineViewer): No longer takes a Preferences.

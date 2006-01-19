@@ -30,7 +30,7 @@ public class ColorPreferenceEditor extends VBox implements ColorButtonListener,
 
 	private CheckButton styleButton;
 
-	private SyntaxPreference currentPref = null;
+	private ColorPreference currentPref = null;
 
 	public ColorPreferenceEditor() {
 		super(false, 0);
@@ -45,34 +45,43 @@ public class ColorPreferenceEditor extends VBox implements ColorButtonListener,
 		box.packStart(this.button, false, true, 0);
 		this.packStart(box, false, true, 0);
 
-		this.weightButton = new CheckButton();
-		this.weightButton.setLabel("Bold");
-		this.weightButton.setSensitive(false);
-		this.weightButton.addListener(this);
-		this.packStart(this.weightButton, false, true, 0);
+   		this.weightButton = new CheckButton();
+   		this.weightButton.setLabel("Bold");
+   		this.weightButton.setSensitive(false);
+   		this.weightButton.addListener(this);
+   		this.packStart(this.weightButton, false, true, 0);
+        this.weightButton.addListener(this);
 
-		this.weightButton.addListener(this);
-
-		this.styleButton = new CheckButton();
-		this.styleButton.setLabel("Italics");
-		this.styleButton.setSensitive(false);
-		this.styleButton.addListener(this);
-		this.packStart(this.styleButton, false, true, 0);
+  		this.styleButton = new CheckButton();
+   		this.styleButton.setLabel("Italics");
+   		this.styleButton.setSensitive(false);
+   		this.styleButton.addListener(this);
+   		this.packStart(this.styleButton, false, true, 0);
 
 		this.setBorderWidth(20);
 	}
 
-	public void setCurrentPref(SyntaxPreference newPref) {
+	public void setCurrentPref(ColorPreference newPref) {
 		this.currentPref = null;
 	
 		this.button.setColor(newPref.getCurrentColor());
 		this.button.setSensitive(true);
-		this.weightButton.setState(newPref.getCurrentWeight().equals(
-				Weight.BOLD));
-		this.weightButton.setSensitive(true);
-		this.styleButton.setState(newPref.getCurrentStyle()
-				.equals(Style.ITALIC));
-		this.styleButton.setSensitive(true);
+        
+        if(newPref instanceof SyntaxPreference){
+            SyntaxPreference tmp = (SyntaxPreference) newPref;
+    		this.weightButton.setState(tmp.getCurrentWeight().equals(
+    				Weight.BOLD));
+    		this.weightButton.setSensitive(true);
+    		this.styleButton.setState(tmp.getCurrentStyle()
+    				.equals(Style.ITALIC));
+    		this.styleButton.setSensitive(true);
+        }
+        else{
+            this.weightButton.setState(false);
+            this.weightButton.setSensitive(false);
+            this.styleButton.setState(true);
+            this.styleButton.setSensitive(false);
+        }
 
 		this.currentPref = newPref;
 		this.showAll();
@@ -91,10 +100,16 @@ public class ColorPreferenceEditor extends VBox implements ColorButtonListener,
 		if(this.currentPref == null)
 			return;
 		
+        /*
+         * If we only have a ColorPreference, the toggle boxes will be
+         * disabled, therefore we won't even be recieving these events.
+         * The fact that we are means that we must have a SyntaxPreference.
+         * Hence we don't need to check it.
+         */
 		if(((Button) arg0.getSource()).getLabel().equals("Italics"))
-			this.currentPref.toggleItalics();
+			((SyntaxPreference) this.currentPref).toggleItalics();
 		else
-			this.currentPref.toggleBold();
+			((SyntaxPreference) this.currentPref).toggleBold();
 	}
 }
 

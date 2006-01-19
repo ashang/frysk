@@ -113,6 +113,9 @@ public class SyntaxPreference extends ColorPreference {
 
 		this.currentStyle = Style.intern(this.model.getInt(name + "_style",
 				getDefaultStyle(name).getValue()));
+        
+        this.tag.setWeight(this.currentWeight);
+        this.tag.setStyle(this.currentStyle);
 	}
 	
 	private static Weight getDefaultWeight(String name) {
