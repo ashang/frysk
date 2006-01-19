@@ -447,7 +447,7 @@ public class TestLib
 	 */
 	void execClone ()
 	{
-	    AckHandler ack = new AckHandler (childAck);
+	    AckHandler ack = new AckHandler (parentAck);
 	    signal (execCloneSig);
 	    ack.await ();
 	}

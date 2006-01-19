@@ -89,6 +89,7 @@ Operation:\n\
     SIGINT:    Delete a fork\n\
     SIGURG:    Terminate a fork; results in a child zombie\n\
     SIGALRM:   Exit.\n\
+    SIGFPE:    Exec program in a clone\n\
     SIGPWR:    Re-exec this program\n\
     SIGPIPE:   (internal) Parent exited event (child notifies with SIGUSR1).\n\
     SIGCHLD:   (internal) Child exited event.\n\
@@ -257,7 +258,7 @@ server (void *np)
   // Action for a SIGCHLD:: >0: waitpid and ack; <0: ack; =0: discard.
   int sigchld_pid = 0;
 
-  // Come here when ever a new process is created.
+  // Come here whenever a new process is created.
  new_process:
 
   // Find THIS tasks tiddle entry.
@@ -417,13 +418,13 @@ server (void *np)
 	      if (tids[i].pid == getpid () && tids[i].tid != gettid ())
 		{
 		  tkill (tids[i].tid, SIGPWR);
-		  notify_manager (CHILD_SIG, "send signal %d to task %d (%d) -- request exec",
-				  SIGPWR, tids[i].tid, tids[i].pid);
+ 		  notify_manager (PARENT_SIG, "send signal %s to %d:%d -- request exec",
+		  		  strsignal (SIGPWR), tids[i].pid, tids[i].tid);
 		  break;
 		}
 	    }
 	  if (i == MAX_PIDS)
-	    notify_manager (CHILD_SIG, "clone exec (SIGFPE) failed");
+	    notify_manager (PARENT_SIG, "clone exec (SIGFPE) failed");
 	}
 	OK (pthread_mutex_unlock, (&tids_mutex));
       }
@@ -446,6 +447,8 @@ server (void *np)
 	argv[3 + argi] = NULL;
 	if (ARGN <= 3 + argi)
 	  fatal ("argument overflow");
+	trace ("exec from %d:%d, argv[0]=%s argv[1]=%s argv[2]=%s",
+		getpid (), gettid (), argv[0], argv[1], argv[2]); 
 	execve (main_filename, argv, main_envp);
 	// Any execve return is an error.
 	pfatal ("execve");

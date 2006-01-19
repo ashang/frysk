@@ -1,3 +1,7 @@
+2006-01-19  Stan Cox  <scox@redhat.com>
+
+	* child.c (server): Use parentAck instead of childAck for SIGFPE.
+
 2006-01-11  Andrew Cagney  <cagney@redhat.com>
 
 	* util/auxv.java: Update inua imports to match latest inua inport.
