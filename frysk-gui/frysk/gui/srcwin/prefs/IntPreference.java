@@ -9,13 +9,13 @@ public class IntPreference extends FryskPreference {
 	
 	public static final String[] NAMES = {"Visible Levels of Inline Code"};
 	
+    public static final int INLINE_LEVELS = 0;
+    
 	static{
 		defaultValues = new HashMap();
 		
 		defaultValues.put(NAMES[INLINE_LEVELS], new Integer(2));
 	}
-	
-	public static final int INLINE_LEVELS = 0;
 	
 	public static int getDefaultValue(String name){
 		return ((Integer) defaultValues.get(name)).intValue();

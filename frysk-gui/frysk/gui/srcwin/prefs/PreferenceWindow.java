@@ -162,7 +162,7 @@ public class PreferenceWindow implements ButtonListener {
 
 	private LibGlade glade;
 
-	private SyntaxPreferenceViewer viewer;
+	private PreferenceViewer viewer;
 
 	private DataColumn[] cols = { new DataColumnString() };
 
@@ -270,9 +270,6 @@ public class PreferenceWindow implements ButtonListener {
 	 * states of all other appropriate widgets.
 	 */
 	private void setupButtons() {
-		this.viewer = new SyntaxPreferenceViewer();
-
-		((HBox) this.glade.getWidget("mainPane")).packStart(viewer);
 
 		TreeView sidePanel = (TreeView) this.glade.getWidget("preferenceTree");
 
@@ -307,7 +304,12 @@ public class PreferenceWindow implements ButtonListener {
 			TreeIter iter = sidePanel.getModel().getIter(selectedPath);
 			String text = sidePanel.getModel().getValue(iter,
 					(DataColumnString) cols[0]);
-			System.out.println(text);
-		}
+			
+            /*
+             * FIXME: This will have to be changed, since we won't have only two 
+             * entries, but for now it will do
+             */
+            
+        }
 	}
 }

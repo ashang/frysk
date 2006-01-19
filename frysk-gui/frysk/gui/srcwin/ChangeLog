@@ -1,5 +1,9 @@
 2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceWindow.java (setupButtons): No longer creates a 
+	SyntaxPreferenceViewer on startup.
+	* prefs/IntPreference.java: Rearranged constants to fix ecj warning.
+
 	* prefs/BooleanPreference.java: Moved constant declarations so that
 	they're before the first use; solves ecj warning.
 	* prefs/ColorPreference.java: Ditto.
