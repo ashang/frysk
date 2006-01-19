@@ -376,7 +376,10 @@ public class TestRefresh
 	host.requestRefresh ();
 	Manager.eventLoop.runPending ();
 
-
+	assertEquals ("proc's getCmdLine[0]",
+		      proc.getPid () + ":" + proc.getPid (),
+		      proc.getCmdLine ()[0]);
+	
 	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
     }
 
@@ -386,33 +389,27 @@ public class TestRefresh
      */
     public void testUnattachedMultipleExec ()
     {
-	AckProcess child = new AckDaemonProcess ();
+	AckProcess child = new AckDaemonProcess (1);
 	Proc proc = child.findProcUsingRefresh (true);
 
-	child.addClone ();
-	child.addClone ();
 	Manager.host.requestRefresh (true);
-	Task task_before = child.findTaskUsingRefresh (false);
+	Task taskBefore = child.findTaskUsingRefresh (false);
 	assertSame ("task before unattached multiple clone exec", proc,
-		    task_before.getProc()); // parent/child relationship
+		    taskBefore.getProc()); // parent/child relationship
 	assertTrue ("task before unattached multiple clone exec",
-		    proc.getPid () != task_before.getTid ()); // not main task
-	    //	assertSame ("task before unattached multiple clone exec", proc.getPid (), task_before.getProc ().getPid ());
+		    proc.getPid () != taskBefore.getTid ()); // not main task
+
  	child.execClone ();
 
 	Manager.host.requestRefresh (true);
  	Manager.eventLoop.runPending ();
 	
-	String argv [] = proc.getCmdLine ();
-	int colon = argv[0].indexOf (":");
-	int pid = 0;
-	assertFalse ("pid:task after unattached multiple clone exec", colon < 0);
-	pid = Integer.parseInt (argv[0].substring (0,colon));
-	// tid = Integer.parseInt (argv[0].substring (colon + 1));
+	assertEquals ("proc's getCmdLine[0]",
+		      proc.getPid () + ":" + taskBefore.getTid (),
+		      proc.getCmdLine ()[0]);
 	
 	Task task = child.findTaskUsingRefresh (false);
-	// Task execs as parent so task is now null
+	// Exec wipes out non-main tasks so now get back nul.
 	assertNull ("task after unattached multiple clone exec", task);
-	assertEquals ("pid after unattached multiple clone exec", pid, proc.getPid ());
     }
 }

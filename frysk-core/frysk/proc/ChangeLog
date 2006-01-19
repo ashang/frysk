@@ -1,5 +1,9 @@
 2006-01-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRefresh.java (testUnattachedMultipleExec)
+	(testUnattachedSingleExec): Simplify, use string comparison to
+	check getCmdLine()[0].
+
 	* TestLib.java (AckProcess.execClone): Wait for both parentAck and
 	childAck.
 
