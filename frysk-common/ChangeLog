@@ -1,4 +1,9 @@
-2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+2006-01-19  Rick Moseley  <rmoseley@redhat.com>
+
+	* Fix so %{prefix} is used for frysk.desktop and
+	   fryskTrayIcon48.png so installation is done properly.
+
+2006-01-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.gen.sh: added install logic for the
 	   frysk.desktop and fryskTrayIcon files.

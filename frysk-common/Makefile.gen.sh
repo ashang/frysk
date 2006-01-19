@@ -420,7 +420,7 @@ find_images "imageMACOSX32" "images/__MACOSX/32"
 # PREFIX/usr/share/applications
 
 print_header "... desktop_DATA"
-echo "desktopdir = /usr/share/applications/"
+echo "desktopdir = \${prefix}/share/applications"
 echo "desktop_DATA ="
 find ${dirs} -type f -name '*.desktop' | while read file
 do
@@ -428,7 +428,7 @@ do
 done
 
 print_header "... icon_DATA"
-echo "icondir = /usr/share/pixmaps"
+echo "icondir = \${prefix}/share/pixmaps"
 echo "icon_DATA ="
 find ${dirs} -type f -name 'fryskTrayIcon48.png' | while read file
 do
