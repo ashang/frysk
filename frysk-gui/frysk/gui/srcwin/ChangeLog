@@ -1,5 +1,8 @@
 2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceWindow.java (updateShownPrefs): Now actually changes
+	the preference editor being displayed based on the selection.
+
 	* prefs/PreferenceViewer.java (saveAll): Added.
 	* prefs/LNFPreferenceViewer.java: Added.
 

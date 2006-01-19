@@ -305,11 +305,24 @@ public class PreferenceWindow implements ButtonListener {
 			String text = sidePanel.getModel().getValue(iter,
 					(DataColumnString) cols[0]);
 			
+            HBox panel = (HBox) this.glade.getWidget("mainPanel");
+            while(panel.getChildren().length > 1)
+                panel.remove(panel.getChildren()[1]);
+            
             /*
              * FIXME: This will have to be changed, since we won't have only two 
              * entries, but for now it will do
              */
-            
+            if(text.equals("General Appearance")){
+                LNFPreferenceViewer lnfView = new LNFPreferenceViewer();
+                this.viewer = lnfView;
+                panel.packStart(lnfView);
+            }
+            else if(text.equals("SyntaxHighlighting")){
+                SyntaxPreferenceViewer synView = new SyntaxPreferenceViewer();
+                this.viewer = synView;
+                panel.packStart(synView);
+            }
         }
 	}
 }
