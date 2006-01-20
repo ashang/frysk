@@ -1,5 +1,9 @@
 2006-01-20  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceViewer.java (showPreferenceEditor): Removed public to
+	fix warning.
+	(saveAll): Ditto.
+
 	* InlineViewer.java (refresh): Now calls getIntPreferenceValue rather
 	than getIntPreference.
 	(toggleChild): Ditto.

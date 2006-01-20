@@ -2,7 +2,7 @@ package frysk.gui.srcwin.prefs;
 
 public interface PreferenceViewer {
     
-    public void showPreferenceEditor(ColorPreference toShow);
+    void showPreferenceEditor(ColorPreference toShow);
     
-    public void saveAll();
+    void saveAll();
 }
