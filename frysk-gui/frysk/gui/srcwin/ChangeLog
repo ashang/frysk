@@ -1,3 +1,36 @@
+2006-01-20  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineViewer.java (refresh): Now calls getIntPreferenceValue rather
+	than getIntPreference.
+	(toggleChild): Ditto.
+	* SourceViewWidget.java (refresh): Calls to get___Preference replaced
+	with get___PreferenceValue.
+	(drawMargin): Ditto.
+	* SourceWindow (refresh): Ditto.
+	* prefs/IntPreference.java (setCurrentValue): Added.
+	* prefs/LNFPreferenceViewer.java (LNFPreferenceViewer): Now creates
+	checkboxes and spinner for toolbar, line number, executable, and
+	inline code depth preferences.
+	(saveAll): saves preferences for toolbar, line number, executable mark
+	and inline code depth.
+	(toggleEvent): Added.
+	(spinEvent): Added.
+	* prefs/PreferenceManager.java: Now initializes toolbar preference
+	using addPreference rather than directly inserting into the HashMap.
+	(getBooleanPreferenceValue): Added.
+	(getIntPreferenceValue): Added.
+	(getColorPreferenceValue): Added.
+	(getBooleanPreference): Now returns the preference, rather than the value.
+	(getIntPreference): Ditto.
+	(getColorPreference): Ditto.
+	* prefs/PreferenceWindow.java: Now stores both lnf and syntax pref
+	viewers.
+	(buttonEvent): Both viewers are now saved, not just the current one.
+	(setupButtons): Now initializes both viewers, although neither is added
+	to the window.
+	(updateShownPrefs): Now uses the previously initialized preference
+	viewers.
+
 2006-01-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferenceWindow.java (preferenceWindow): Now calls addListeners

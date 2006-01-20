@@ -162,7 +162,7 @@ public class PreferenceWindow implements ButtonListener {
 
 	private LibGlade glade;
 
-	private PreferenceViewer viewer;
+	private PreferenceViewer[] viewers = new PreferenceViewer[2];
 
 	private DataColumn[] cols = { new DataColumnString() };
 
@@ -205,7 +205,8 @@ public class PreferenceWindow implements ButtonListener {
 
 		// If the ok button was hit, save settings first
 		if (buttonName.equals(OK_BUTTON)) {
-			this.viewer.saveAll();
+			this.viewers[0].saveAll();
+			this.viewers[1].saveAll();
 		}
 
 		// For either button, hide the window
@@ -271,6 +272,9 @@ public class PreferenceWindow implements ButtonListener {
 	 */
 	private void setupButtons() {
 
+		this.viewers[0] = new LNFPreferenceViewer();
+		this.viewers[1] = new SyntaxPreferenceViewer();
+		
 		TreeView sidePanel = (TreeView) this.glade.getWidget("preferenceTree");
 
 		TreeStore model = new TreeStore(cols);
@@ -299,8 +303,9 @@ public class PreferenceWindow implements ButtonListener {
 			return;
 
 		TreePath selectedPath = sidePanel.getSelection().getSelectedRows()[0];
-
+		
 		if (selectedPath != null) {
+			
 			TreeIter iter = sidePanel.getModel().getIter(selectedPath);
 			String text = sidePanel.getModel().getValue(iter,
 					(DataColumnString) cols[0]);
@@ -314,13 +319,11 @@ public class PreferenceWindow implements ButtonListener {
              * entries, but for now it will do
              */
             if(text.equals("General Appearance")){
-                LNFPreferenceViewer lnfView = new LNFPreferenceViewer();
-                this.viewer = lnfView;
+            		LNFPreferenceViewer lnfView = (LNFPreferenceViewer) this.viewers[0];
                 panel.packStart(lnfView);
             }
             else if(text.equals("Syntax Highlighting")){
-                SyntaxPreferenceViewer synView = new SyntaxPreferenceViewer();
-                this.viewer = synView;
+            		SyntaxPreferenceViewer synView = (SyntaxPreferenceViewer) this.viewers[1];
                 panel.packStart(synView);
             }
             

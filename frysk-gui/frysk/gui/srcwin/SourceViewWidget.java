@@ -136,14 +136,14 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 	 */
 	public void refresh() {
 		// Look & Feel
-		Color tmpColor = PreferenceManager.getColorPreference(ColorPreference.TEXT);
+		Color tmpColor = PreferenceManager.getColorPreferenceValue(ColorPreference.TEXT);
 		this.setTextColor(StateType.NORMAL, tmpColor);
 
-		tmpColor = PreferenceManager.getColorPreference(ColorPreference.BACKGROUND);
+		tmpColor = PreferenceManager.getColorPreferenceValue(ColorPreference.BACKGROUND);
 		this.setBaseColor(StateType.NORMAL, tmpColor);
 
 		// Sidebar
-		if (PreferenceManager.getBooleanPreference(BooleanPreference.LINE_NUMS)) {
+		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.LINE_NUMS)) {
 			Layout lo = new Layout(this.getContext());
 			lo.setText("" + (this.buf.getLastLine() + 1));
 			this.marginWriteOffset = lo.getPixelWidth();
@@ -152,7 +152,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 			this.marginWriteOffset = 0;
 		}
 
-		if (PreferenceManager.getBooleanPreference(BooleanPreference.EXEC_MARKS)) {
+		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.EXEC_MARKS)) {
 			this.setBorderWindowSize(TextWindowType.LEFT,
 					this.marginWriteOffset + 40);
 		} else {
@@ -480,14 +480,14 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 		if (this.myContext == null)
 			this.myContext = new GC((Drawable) drawingArea);
 
-		Color tmp = PreferenceManager.getColorPreference(ColorPreference.MARGIN);
+		Color tmp = PreferenceManager.getColorPreferenceValue(ColorPreference.MARGIN);
 		myContext.setRGBForeground(tmp);
 		drawingArea.drawRectangle(this.myContext, true, 0, 0, drawingArea
 				.getWidth(), drawingArea.getHeight());
 
 		// get preference settings
-		boolean showLines = PreferenceManager.getBooleanPreference(BooleanPreference.LINE_NUMS);
-		boolean showMarks = PreferenceManager.getBooleanPreference(BooleanPreference.EXEC_MARKS);
+		boolean showLines = PreferenceManager.getBooleanPreferenceValue(BooleanPreference.LINE_NUMS);
+		boolean showMarks = PreferenceManager.getBooleanPreferenceValue(BooleanPreference.EXEC_MARKS);
 
 		// get the y coordinates for the top and bottom of the window
 		int minY = drawingArea.getClipRegion().getClipbox().getY();
@@ -508,14 +508,14 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 				.getLineNumber();
 
 		// Get Color to draw the text in
-		Color lineColor = PreferenceManager.getColorPreference(ColorPreference.LINE_NUMBER);
+		Color lineColor = PreferenceManager.getColorPreferenceValue(ColorPreference.LINE_NUMBER);
 		this.myContext.setRGBForeground(lineColor);
 
 		// gets current line color
-		Color currentLine = PreferenceManager.getColorPreference(ColorPreference.CURRENT_LINE);
+		Color currentLine = PreferenceManager.getColorPreferenceValue(ColorPreference.CURRENT_LINE);
 
 		// gets executable mark color
-		Color markColor = PreferenceManager.getColorPreference(ColorPreference.EXEC_MARKS);
+		Color markColor = PreferenceManager.getColorPreferenceValue(ColorPreference.EXEC_MARKS);
 
 		int currentHeight = 0;
 		int actualIndex = firstLine;

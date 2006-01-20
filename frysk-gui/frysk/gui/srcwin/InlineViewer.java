@@ -111,7 +111,7 @@ public class InlineViewer extends SourceViewWidget {
 				depth++;
 			}
 			
-			int maxDepth = PreferenceManager.getIntPreference(IntPreference.INLINE_LEVELS);
+			int maxDepth = PreferenceManager.getIntPreferenceValue(IntPreference.INLINE_LEVELS);
 			
 			// Less than the max number of levels is being shown
 			if(depth <= maxDepth){
@@ -168,7 +168,7 @@ public class InlineViewer extends SourceViewWidget {
 	 * the visible scopes up or down
 	 */
 	public void toggleChild(){
-		int limit = PreferenceManager.getIntPreference(IntPreference.INLINE_LEVELS);
+		int limit = PreferenceManager.getIntPreferenceValue(IntPreference.INLINE_LEVELS);
 		
 		if(!this.expanded){
 			// Case 1: depth less than max, this level is not expanded.

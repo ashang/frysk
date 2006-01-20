@@ -248,10 +248,6 @@ public class SourceWindow extends Window implements ButtonListener,
 		this.createSearchBar();
 		this.attachEvents();
 
-		/*--------------------------------------*
-		 *  TODO INSERT LOADING PREFS FROM FILE HERE *
-		 *--------------------------------------*/
-
 		this.populateStackBrowser(this.stack);
 
 		((Label) this.glade.getWidget("stackFrame"))
@@ -326,12 +322,14 @@ public class SourceWindow extends Window implements ButtonListener,
 	public void refresh() {
 		this.view.refresh();
 
-		if (((BooleanPreference) PreferenceManager
-				.getPreference(BooleanPreference.NAMES[BooleanPreference.TOOLBAR]))
-				.getCurrentValue())
+		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.TOOLBAR)){
+			System.out.println("Showing toolbar");
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
-		else
+		}
+		else{
+			System.out.println("Hiding toolbar");
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
+		}
 	}
 
 	/**

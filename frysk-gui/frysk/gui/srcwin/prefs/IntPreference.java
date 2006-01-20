@@ -34,6 +34,10 @@ public class IntPreference extends FryskPreference {
 	public int getCurrentValue(){
 		return this.currentValue;
 	}
+    
+    public void setCurrentValue(int newVal){
+        this.currentValue = newVal;
+    }
 	
 	public void saveValues() {
 		this.model.putInt(this.name, this.currentValue);

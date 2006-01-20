@@ -20,8 +20,7 @@ public class PreferenceManager {
 		 * is created.
 		 */
 		// Show Toolbar?
-		preferences.put(BooleanPreference.NAMES[0],
-				new BooleanPreference(BooleanPreference.NAMES[0]));
+		addPreference(new BooleanPreference(BooleanPreference.NAMES[0]), PreferenceManager.LNF_NODE);
 	}
 
 	public static void addPreference(FryskPreference preference, String node) {
@@ -32,22 +31,34 @@ public class PreferenceManager {
 		preferences.put(preference.getName(), preference);
 	}
 	
-	public static boolean getBooleanPreference(int name){
+	public static boolean getBooleanPreferenceValue(int name){
 		return ((BooleanPreference) getPreference(BooleanPreference.NAMES[name])).getCurrentValue();
 	}
 	
-	public static Color getColorPreference(int name){
+    public static BooleanPreference getBooleanPreference(int name){
+        return (BooleanPreference) getPreference(BooleanPreference.NAMES[name]);
+    }
+    
+	public static Color getColorPreferenceValue(int name){
 		return ((ColorPreference) getPreference(ColorPreference.NAMES[name])).getCurrentColor();
 	}
 	
+    public static ColorPreference getColorPreference(int name){
+        return (ColorPreference) getPreference(ColorPreference.NAMES[name]);
+    }
+    
 	public static SyntaxPreference getSyntaxPreference(int name){
 		return (SyntaxPreference) getPreference(SyntaxPreference.NAMES[name]);
 	}
 	
-	public static int getIntPreference(int name){
+	public static int getIntPreferenceValue(int name){
 		return ((IntPreference) getPreference(IntPreference.NAMES[name])).getCurrentValue();
 	}
 	
+    public static IntPreference getIntPreference(int name){
+        return (IntPreference) getPreference(IntPreference.NAMES[name]);
+    }
+    
 	public static FryskPreference getPreference(String name){
 		return (FryskPreference) preferences.get(name);
 	}
