@@ -274,7 +274,16 @@ SUFFIXES += .db
 	$(GCJ_DBTOOL) -n $@.tmp
 	$(GCJ_DBTOOL) -a $@.tmp $*.jar lib$*.so
 	mv $@.tmp $@
+
+# Given a .java file convert it to a .o file.  GCJ has a bug
+# where, when given a -Werror fail, it still exits with success.  Hack
+# around this by saving the message in a log file and then checking
+# that it is empty.
 
+.java.o:
+	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
+	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 | tee $*.log && test ! -s $*.log ; \
+	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
 
 # Build the TestJUnits program.
 
