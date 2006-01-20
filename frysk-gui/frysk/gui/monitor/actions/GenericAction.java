@@ -43,6 +43,10 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 public abstract class GenericAction extends Action {
 
+	public GenericAction(){
+		super();
+	}
+	
 	public GenericAction(String name, String toolTip) {
 		super(name, toolTip);
 	}

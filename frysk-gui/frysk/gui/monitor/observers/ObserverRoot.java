@@ -53,7 +53,9 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
 
-			this.genericActionPoint.addAction(new LogAction());
+			LogAction logAction = new LogAction();
+			logAction.setSaveObject(false);
+			this.genericActionPoint.addAction(logAction);
 		}
 		
 		public ObserverRoot(ObserverRoot other) {
@@ -68,7 +70,9 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.genericActionPoint = new GenericActionPoint(other.genericActionPoint);
 //			this.addActionPoint(genericActionPoint);
 
-			this.genericActionPoint.addAction(new LogAction());
+			LogAction logAction = new LogAction();
+			logAction.setSaveObject(false);
+			this.genericActionPoint.addAction(logAction);
 		}
 
 		public void update(Observable o, Object obj) {
@@ -157,9 +161,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 
 		public void save(Element node) {
-			node.setAttribute("type", this.getClass().getName());
-			node.setAttribute("name", this.getName());
-			node.setAttribute("tooltip", this.getToolTip());
+			super.save(node);
 			
 			//actions
 			Element actionPointsXML = new Element("actionPoints");
@@ -188,29 +190,14 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 		}
 
-		public Object load(Element node) {
-			ObserverRoot loadedObserver = null;
-			String type = node.getAttribute("type").getValue();
-			
-			Class cls;
-			try {
-				cls = Class.forName(type);
-				java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
-				loadedObserver =  (ObserverRoot)constr.newInstance(new Object[] {});
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			loadedObserver.setName(node.getAttribute("name").getValue());
-			loadedObserver.setToolTip(node.getAttribute("tooltip").getValue());
-			
+		public void load(Element node) {			
+			super.load(node);
 			
 			//actions
 			Element actionPointsXML = node.getChild("actionPoints");
 			List list = (List) (actionPointsXML.getChildren("actionPoint"));
 			Iterator i = list.iterator();
-			Iterator j = loadedObserver.getActionPoints().iterator();
+			Iterator j = this.getActionPoints().iterator();
 			
 			while (i.hasNext()){
 				((ActionPoint)j.next()).load(((Element) i.next()));
@@ -220,13 +207,11 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			Element filterPointsXML = node.getChild("filterPoints");
 			list = (List) filterPointsXML.getChildren("filterPoint");
 			i = list.iterator();
-			j = loadedObserver.getFilterPoints().iterator();
+			j = this.getFilterPoints().iterator();
 			
 			while (i.hasNext()){
 				((FilterPoint)j.next()).load(((Element) i.next()));
 			}
-			
-			return loadedObserver;
 		}
 		
 	}

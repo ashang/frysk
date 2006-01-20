@@ -43,5 +43,12 @@ import org.jdom.Element;
 
 public interface SaveableXXX {
 	void save(Element node);
-	Object load(Element node);
+	void load(Element node);
+	
+	/**
+	 * queried to see if this object should be saved
+	 * or not
+	 * @return wether this object should be saved or not
+	 */
+	boolean saveObject();
 }

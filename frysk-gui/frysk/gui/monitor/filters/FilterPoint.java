@@ -39,9 +39,13 @@
 
 package frysk.gui.monitor.filters;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 
@@ -57,18 +61,19 @@ import frysk.gui.monitor.SaveableXXX;
 public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 	protected ObservableLinkedList filters;
 	
-	private final String name;
+	public FilterPoint(){
+		super();
+		this.filters = new ObservableLinkedList();
+	}
 	
 	public FilterPoint(String name, String toolTip){
 		super(name, toolTip);
 		this.filters = new ObservableLinkedList();
-		this.name = name;
 	}
 	
 	public FilterPoint(FilterPoint other){
 		super(other);
 		this.filters = new ObservableLinkedList(); // Dont copy filters
-		this.name = other.name;
 	}
 	
 	/**
@@ -78,34 +83,49 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 	
 	public void addFilter(Filter filter){
 		this.filters.add(filter);
-		this.setNumberInName();
 	}
 	
 	public void removeFilter(Filter filter){
 		if(!this.filters.remove(filter)){
 			throw new IllegalArgumentException("the passed filter ["+ filter +"] is not a member of this filter point");
 		}
-		this.setNumberInName();
 	}
 	
 	public ObservableLinkedList getFilters(){
 		return this.filters;
 	}
 	
-	private void setNumberInName(){
-		this.setName(this.name + " ("+ this.filters.size() +")");
-	}
-	
 	public void save(Element node) {
-		node.setAttribute("name", this.getName());
-		node.setAttribute("tooltip", this.getToolTip());
+		super.save(node);
+		
+		//filters
+		Element filtersXML = new Element("filters");
+		
+		Iterator iterator = this.getFilters().iterator();
+		while (iterator.hasNext()) {
+			Filter filter = (Filter) iterator.next();
+			if(filter.saveObject()){
+				Element filterXML = new Element("filter");
+				ObjectFactory.theFactory.saveObject(filter, filterXML);
+				filtersXML.addContent(filterXML);	
+			}
+		}
+		node.addContent(filtersXML);
 	}
 	
-	public Object load(Element node) {
-		this.setName(node.getAttribute("name").getValue());
-		this.setToolTip(node.getAttribute("tooltip").getValue());
+	public void load(Element node) {
+		super.load(node);
 		
-		return this;
+		//filters
+		Element filtersXML = node.getChild("filters");
+		List list = (List) filtersXML.getChildren("filter");
+		Iterator i = list.iterator();
+		
+		Filter filter;
+		while (i.hasNext()){
+			filter = (Filter) ObjectFactory.theFactory.loadObject((Element) i.next());
+			this.addFilter(filter);
+		}
 	}
 	
 }

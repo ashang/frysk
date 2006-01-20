@@ -39,8 +39,11 @@
 
 package frysk.gui.monitor.filters;
 
+import org.jdom.Element;
+
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.SaveableXXX;
 import frysk.proc.Proc;
 
 /**
@@ -50,10 +53,17 @@ import frysk.proc.Proc;
  * Filter passes if the name if the given process
  * matches the stored process name.
  */
-public class ProcNameFilter extends ProcFilter {
+public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 	
 	private String procName;
 
+	public ProcNameFilter(){
+		super("Name Filter", "Filters for the proc with the given name ");
+	//	this.procName = procName;
+		
+		this.initWidget();
+	}
+	
 	public ProcNameFilter(String procName){
 		super("Name Filter", "Filters for the proc with the name " + procName);
 		this.procName = procName;
@@ -94,5 +104,15 @@ public class ProcNameFilter extends ProcFilter {
 
 	public String getProcName() {
 		return procName;
+	}
+	
+	public void save(Element node){
+		super.save(node);
+		node.setAttribute("procName", this.procName);
+	}
+	
+	public void load(Element node){
+		super.load(node);
+		this.setName(node.getAttribute("procName").getValue());
 	}
 }

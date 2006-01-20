@@ -1,3 +1,30 @@
+2006-01-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/Filter.java: Added no argument constructor for
+	instantiation during load time. Implemented SaveableXXX.
+	* filters/ProcNameFilter.java: Ditto.
+	* filters/IntFilter.java: Ditto.
+	* actions/GenericAction.java: Added no argument constructor for
+	instantiation during load time.
+	* actions/TaskActionPoint.java: Ditto.
+	* actions/TaskAction.java: Ditto.
+	* actions/ProcAction.java: Ditto.
+	* actions/GenericActionPoint.java: Ditto.
+	* filters/IntFilterPoint.java: Ditto.
+	* filters/ProcFilter.java: Ditto.
+	* filters/ProcFilterPoint.java: Ditto.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* filters/TaskFilterPoint.java: Ditto.
+	* filters/TaskFilter.java: Ditto.
+	* filters/FilterPoint.java: Removed setNumberInName. Added save/load
+	of contained elements.
+	* actions/ActionPoint.java: Ditto.
+	* SaveableXXX.java: Added boolean saveObject() which returns
+	weather the object should be saved or not.
+	* ObjectFactory.java: New file.
+	* GuiObject.java: Implemented SaveableXXX. Added setSaveObject
+	to specify weather the object is to be saved or not.
+
 2006-01-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* actions/ActionPoint.java: Added save/load functions.

@@ -37,39 +37,63 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor;
 
-import java.util.Iterator;
+import org.jdom.Element;
 
-import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.observers.ObserverRoot;
-
-public class GenericActionPoint extends ActionPoint {
-
-	public GenericActionPoint(){
-		super();
-	}
+/**
+ * The factory instantiates an object using the information
+ * stored in an XML node.
+ * If an object is dynamically instantiated during runtime then
+ * the written code does not know its type so the type must be saved
+ * and the object dynamically instantiated again at load time. For this
+ * purpose the saveObject/loadObject methods of ObjectFactory must
+ * be used instead of directly calling the objects save/load.
+ * It doesnt harm of course of objects were always saved/loaded using the 
+ * factory methods so one might as well do that for safety.
+ * */
+public class ObjectFactory {
+	public static final ObjectFactory theFactory = new ObjectFactory();
 	
-	public GenericActionPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	public GenericActionPoint(ActionPoint other) {
-		super(other);
-	}
-
-	public ObservableLinkedList getApplicableActions() {
-		return ActionManager.theManager.getGenericActions();
-	}
-
-	public void runActions(ObserverRoot observer){
-		Iterator iterator = this.actions.iterator();
-		while (iterator.hasNext()) {
-			GenericAction action = (GenericAction) iterator.next();
-			action.execute(observer);
+	/**
+	 * Dynamically instantiates a saved object,
+	 * @param node the node form where to retrieved object information.
+	 * @return the instantiated object.
+	 */
+	public Object getObject(Element node){
+		Object loadedObject = null;
+		String type = node.getAttribute("type").getValue();
+//		System.out.println("\n===========================================");
+//		System.out.println("ObjectFactory.getObject() " + type);
+		
+		Class cls;
+		try {
+			cls = Class.forName(type);
+			java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
+			loadedObject =  constr.newInstance(new Object[] {});
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+//		System.out.println("ObjectFactory.getObject() " + loadedObject.getClass());
+//		System.out.println("===========================================\n");
+
+		return loadedObject;
 	}
 	
+	/**
+	 * Instantiates the object then calls its load function.
+	 * @param node The node from wich to retrieve the information
+	 * @return instantiated and loaded object
+	 */
+	public Object loadObject(Element node){
+		Object loadedObject = this.getObject(node);
+		((SaveableXXX)loadedObject).load(node);
+		return loadedObject;
+	}
 	
-	
+	public void saveObject(SaveableXXX saveable, Element node){
+		node.setAttribute("type", saveable.getClass().getName());
+		saveable.save(node);
+	}
 }

@@ -46,6 +46,10 @@ import frysk.proc.Task;
 
 public class TaskActionPoint extends ActionPoint{
 
+	public TaskActionPoint(){
+		super();
+	}
+	
 	public TaskActionPoint(String name, String toolTip) {
 		super(name, toolTip);
 	}

@@ -49,12 +49,10 @@ public class LogAction extends GenericAction {
 
 	public LogAction() {
 		super("Logger", "logs what is going on with this ");
-
 	}
 
 	public LogAction(GenericAction other) {
 		super(other);
-
 	}
 
 	public Action getCopy() {

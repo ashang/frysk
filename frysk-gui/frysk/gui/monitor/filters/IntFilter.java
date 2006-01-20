@@ -39,12 +39,22 @@
 
 package frysk.gui.monitor.filters;
 
+import org.jdom.Element;
+
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.DynamicWidget.IntCallback;
 
-public class IntFilter extends Filter {
+public class IntFilter extends Filter implements SaveableXXX{
 
 	int value;
+	
+	public IntFilter(){
+		super("Int Filter", "Passes if value at filter call matches the given value");
+		//this.value = value;
+		
+		this.initWidget();
+	}
 	
 	public IntFilter(int value){
 		super("Int Filter", "Passes if value at filter call matches the given value");
@@ -74,6 +84,16 @@ public class IntFilter extends Filter {
 
 	public boolean filter(int value2) {
 		return (value2 == value);
+	}
+
+	public void save(Element node) {
+		super.save(node);
+		node.setAttribute("value", ""+this.value);
+	}
+
+	public void load(Element node) {
+		super.load(node);
+		this.value = Integer.parseInt(node.getAttribute("value").getValue());
 	}
 
 }

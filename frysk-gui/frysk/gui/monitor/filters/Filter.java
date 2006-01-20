@@ -40,17 +40,24 @@
 package frysk.gui.monitor.filters;
 
 import org.gnu.gtk.Widget;
+import org.jdom.Element;
 
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.SaveableXXX;
 
-public abstract class Filter extends GuiObject {
+public abstract class Filter extends GuiObject implements SaveableXXX {
 	
 	/**
 	 * The widget that is used to edit the parameters of this
 	 * filter.
 	 */
 	protected DynamicWidget widget;
+	
+	public Filter(){
+		super();
+		this.widget = new DynamicWidget();
+	}
 	
 	public Filter(String name, String toolTip){
 		super(name, toolTip);
@@ -72,4 +79,12 @@ public abstract class Filter extends GuiObject {
 	}
 
 	public abstract Filter getCopy();
+	
+	public void save(Element node){
+		super.save(node);
+	}
+	
+	public void load(Element node){
+		super.load(node);
+	}
 }

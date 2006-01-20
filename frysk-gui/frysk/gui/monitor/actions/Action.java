@@ -42,7 +42,7 @@ package frysk.gui.monitor.actions;
 import frysk.gui.monitor.GuiObject;
 
 
-public abstract class Action extends GuiObject{
+public abstract class Action extends GuiObject {
 	protected Runnable runnable;
 	
 	public Action() {

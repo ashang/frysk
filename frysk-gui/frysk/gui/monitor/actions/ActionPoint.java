@@ -39,9 +39,13 @@
 
 package frysk.gui.monitor.actions;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 
@@ -52,18 +56,19 @@ import frysk.gui.monitor.SaveableXXX;
 public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 	protected ObservableLinkedList actions;
 	
-	private final String name;
-	
+	public ActionPoint() {
+		super();
+		this.actions = new ObservableLinkedList();
+	}
+
 	public ActionPoint(String name, String toolTip){
 		super(name, toolTip);
 		this.actions = new ObservableLinkedList();
-		this.name = name;
 	}
 	
 	public ActionPoint(ActionPoint other){
 		super(other);
 		this.actions = new ObservableLinkedList(); // Dont copy Actions
-		this.name = other.name;
 	}
 	
 	/**
@@ -75,7 +80,6 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 		if(!this.actions.remove(action)){
 			throw new IllegalArgumentException("the passed action ["+ action +"] is not a member of this action point");
 		}
-		this.setNumberInName();
 	}
 	
 	public ObservableLinkedList getActions(){
@@ -84,23 +88,40 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 
 	public void addAction(Action action) {
 		this.actions.add(action);		
-		this.setNumberInName();
-	}
-	
-	private void setNumberInName(){
-		this.setName(this.name + " ("+ this.actions.size() +")");
 	}
 	
 	public void save(Element node) {
-		node.setAttribute("name", this.getName());
-		node.setAttribute("tooltip", this.getToolTip());
+		super.save(node);
+		
+		//actions
+		Element actionsXML = new Element("actions");
+		
+		Iterator iterator = this.getActions().iterator();
+		while (iterator.hasNext()) {
+			Action action = (Action) iterator.next();
+			if(action.saveObject()){
+				Element actionXML = new Element("action");
+				ObjectFactory.theFactory.saveObject(action, actionXML);
+				actionsXML.addContent(actionXML);
+			}
+		}
+		node.addContent(actionsXML);
 	}
 	
-	public Object load(Element node) {
-		this.setName(node.getAttribute("name").getValue());
-		this.setToolTip(node.getAttribute("tooltip").getValue());
+	public void load(Element node) {
+		super.load(node);
 		
-		return this;
+		//actions
+		Element actionsXML = node.getChild("actions");
+		List list = (List) actionsXML.getChildren("action");
+		Iterator i = list.iterator();
+		
+		Action action;
+		while (i.hasNext()){
+			action = (Action) ObjectFactory.theFactory.loadObject((Element) i.next());
+			this.addAction(action);
+		}
 	}
+
 	
 }

@@ -43,6 +43,10 @@ import frysk.proc.Proc;
 
 public abstract class ProcFilter extends Filter {
 	
+	ProcFilter(){
+		super();
+	}
+	
 	ProcFilter(String name, String toolTip) {
 		super(name, toolTip);
 	}

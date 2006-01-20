@@ -52,6 +52,13 @@ public class TaskProcNameFilter extends TaskFilter {
 	
 	private ProcNameFilter procNamefilter;
 	
+	public TaskProcNameFilter(){
+		super();
+		this.procNamefilter = new ProcNameFilter();
+		
+		this.initWidget();
+	}
+	
 	public TaskProcNameFilter(String procName){
 		super("Name Filter", "Checks the process name of the parent of the given task");
 		this.procNamefilter = new ProcNameFilter(procName);

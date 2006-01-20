@@ -46,6 +46,10 @@ import frysk.proc.Task;
 
 public class TaskFilterPoint extends FilterPoint {
 	
+	public TaskFilterPoint(){
+		super();
+	}
+	
 	public TaskFilterPoint(String name, String toolTip) {
 		super(name, toolTip);
 	}

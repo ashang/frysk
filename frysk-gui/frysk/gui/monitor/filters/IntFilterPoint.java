@@ -45,6 +45,10 @@ import frysk.gui.monitor.ObservableLinkedList;
 
 public class IntFilterPoint extends FilterPoint {
 	
+	public IntFilterPoint(){
+		super();
+	}
+	
 	public IntFilterPoint(String name, String toolTip) {
 		super(name, toolTip);
 	}

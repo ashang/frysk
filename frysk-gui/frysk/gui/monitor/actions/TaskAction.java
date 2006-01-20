@@ -43,6 +43,10 @@ import frysk.proc.Task;
 
 public abstract class TaskAction extends Action {
 	
+	public TaskAction(){
+		super();
+	}
+	
 	public TaskAction(String name, String toolTip) {
 		super(name, toolTip);
 	}

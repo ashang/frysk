@@ -41,18 +41,25 @@ package frysk.gui.test;
 
 import java.util.Iterator;
 
+import junit.framework.TestCase;
+
+import org.gnu.gtk.Gtk;
 import org.jdom.Element;
 
+import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.actions.PrintTask;
+import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
+import frysk.gui.monitor.filters.ProcNameFilter;
+import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskForkedObserver;
-import junit.framework.TestCase;
 
 public class TestObserverSaveLoad extends TestCase{
 
 	public void testSaveLoad(){
-		
+		Gtk.init(new String[]{});
 		Element node = new Element("testNode");
 		
 		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
@@ -70,13 +77,29 @@ public class TestObserverSaveLoad extends TestCase{
 			ActionPoint actionPoint = (ActionPoint) i.next();
 			actionPoint.setName(""+taskForkedObserver.getActionPoints().indexOf(actionPoint));
 		}
+
+		i = taskForkedObserver.getActionPoints().iterator();
+		while (i.hasNext()) {
+			ActionPoint actionPoint = (ActionPoint) i.next();
+			actionPoint.setName(""+taskForkedObserver.getActionPoints().indexOf(actionPoint));
+		}
 		
-		taskForkedObserver.save(node);
+
+		ObjectFactory.theFactory.saveObject(taskForkedObserver, node);
+	
+//		System.out.println("\n==============saved node==========");
+//		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+//		try {
+//			outputter.output(node, System.out);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println("===================================\n");
 		
-		ObserverRoot observerRoot = new ObserverRoot("", "");
-		observerRoot = (ObserverRoot) observerRoot.load(node);
 		
-		
+		ObserverRoot observerRoot = (ObserverRoot) ObjectFactory.theFactory.loadObject(node);
+	
 		assertEquals("Class type", taskForkedObserver.getClass() , observerRoot.getClass());
 		assertEquals("Name", taskForkedObserver.getName(), observerRoot.getName());
 		assertEquals("ToolTip", taskForkedObserver.getToolTip(), observerRoot.getToolTip());
@@ -90,8 +113,57 @@ public class TestObserverSaveLoad extends TestCase{
 		i = observerRoot.getActionPoints().iterator();
 		while (i.hasNext()) {
 			ActionPoint actionPoint = (ActionPoint) i.next();
-			assertEquals("actionPoint name", ""+ observerRoot.getActionPoints().indexOf(actionPoint), actionPoint.getName() );
+			assertEquals("ActionPoint name", ""+ observerRoot.getActionPoints().indexOf(actionPoint), actionPoint.getName() );
 		}
 		
+		assertEquals("ActionPoints size", observerRoot.getActionPoints().size(), taskForkedObserver.getActionPoints().size() );
+		assertEquals("FilterPoints size", observerRoot.getFilterPoints().size(), taskForkedObserver.getFilterPoints().size() );
+	}
+	
+	
+	public void testFilterPointSaveLoad(){
+		Element node = new Element("testNode");
+		TaskFilterPoint taskFilterPoint = new TaskFilterPoint("","");
+		taskFilterPoint.addFilter(new ProcNameFilter("1"));
+		taskFilterPoint.addFilter(new ProcNameFilter("2"));
+		taskFilterPoint.addFilter(new ProcNameFilter("3"));
+		taskFilterPoint.addFilter(new ProcNameFilter("4"));
+		ObjectFactory.theFactory.saveObject(taskFilterPoint, node);
+		
+		FilterPoint filterPoint = (FilterPoint) ObjectFactory.theFactory.loadObject(node);
+		Iterator i = filterPoint.getFilters().iterator();
+		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"1");
+		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"2");
+		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"3");
+		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"4");
+	}
+	
+	public void testActionPointSaveLoad(){
+		Element node = new Element("testNode");
+		TaskActionPoint taskActionPoint = new TaskActionPoint("", "");
+		PrintTask printTask = new PrintTask();
+		printTask.setName("1");
+		taskActionPoint.addAction(printTask);
+		
+		printTask = new PrintTask();
+		printTask.setName("2");
+		taskActionPoint.addAction(printTask);
+		
+		printTask = new PrintTask();
+		printTask.setName("3");
+		taskActionPoint.addAction(printTask);
+		
+		printTask = new PrintTask();
+		printTask.setName("4");
+		taskActionPoint.addAction(printTask);
+		
+		ObjectFactory.theFactory.saveObject(taskActionPoint, node);
+		
+		ActionPoint actionPoint = (ActionPoint) ObjectFactory.theFactory.loadObject(node);
+		Iterator i = actionPoint.getActions().iterator();
+		assertEquals("ActionName", ((PrintTask)i.next()).getName(),"1");
+		assertEquals("ActionName", ((PrintTask)i.next()).getName(),"2");
+		assertEquals("ActionName", ((PrintTask)i.next()).getName(),"3");
+		assertEquals("ActionName", ((PrintTask)i.next()).getName(),"4");
 	}
 }

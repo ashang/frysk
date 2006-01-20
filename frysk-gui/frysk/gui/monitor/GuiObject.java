@@ -39,11 +39,15 @@
 
 package frysk.gui.monitor;
 
+import org.jdom.Element;
+
 
 /**
  * A GuiObject is one that has a name and a tooltip.
  * */
-public class GuiObject extends GuiObservable{
+public class GuiObject extends GuiObservable implements SaveableXXX{
+	
+	private boolean saveObject = true;
 	
 	private String name;
 	private String toolTip;
@@ -81,5 +85,23 @@ public class GuiObject extends GuiObservable{
 
 	public String getToolTip() {
 		return toolTip;
+	}
+
+	public void save(Element node) {
+		node.setAttribute("name", this.getName());
+		node.setAttribute("tooltip", this.getToolTip());
+	}
+
+	public void load(Element node) {
+		this.setName(node.getAttribute("name").getValue());
+		this.setToolTip(node.getAttribute("tooltip").getValue());
+	}
+	
+	public void setSaveObject(boolean saveObject){
+		this.saveObject = saveObject;
+	}
+	
+	public boolean saveObject(){
+		return this.saveObject;
 	}
 }

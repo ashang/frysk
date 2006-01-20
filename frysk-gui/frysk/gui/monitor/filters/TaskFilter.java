@@ -43,6 +43,10 @@ import frysk.proc.Task;
 
 public abstract class TaskFilter extends Filter {
 	
+	TaskFilter(){
+		super();
+	}
+	
 	TaskFilter(String name, String toolTip) {
 		super(name, toolTip);
 	}

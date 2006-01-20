@@ -46,6 +46,10 @@ import frysk.proc.Proc;
 
 public class ProcFilterPoint extends FilterPoint {
 	
+	public ProcFilterPoint(){
+		super();
+	}
+	
 	public ProcFilterPoint(String name, String toolTip) {
 		super(name, toolTip);
 	}
