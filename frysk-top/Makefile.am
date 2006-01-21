@@ -136,5 +136,4 @@ EXTRA_DIST += \
 	$(srcdir)/common/*.m4 \
 	$(srcdir)/common/version.in \
 	$(srcdir)/common/m4/*.m4 \
-	$(srcdir)/autogen.sh \
-	$(srcdir)/EXCEPTION
+	$(srcdir)/autogen.sh

@@ -1,5 +1,6 @@
 2006-01-21  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (EXTRA_DIST): Delete EXCEPTION.
 	* EXCEPTION: Delete, moved to common/.
 
 2006-01-16  Rick Moseley  <rmoseley@redhat.com>

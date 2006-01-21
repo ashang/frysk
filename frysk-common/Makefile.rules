@@ -373,12 +373,12 @@ BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)
 
 EXTRA_DIST += \
 	$(srcdir)/common/ChangeLog \
+	$(srcdir)/common/EXCEPTION \
 	$(srcdir)/common/*.sh \
 	$(srcdir)/common/*.m4 \
 	$(srcdir)/common/version.in \
 	$(srcdir)/common/m4/*.m4 \
-	$(srcdir)/autogen.sh \
-	$(srcdir)/EXCEPTION
+	$(srcdir)/autogen.sh
 
 distclean-local: distclean-cvsignored
 .PHONY: distclean-cvsignored
