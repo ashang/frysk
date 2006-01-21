@@ -67,7 +67,7 @@ GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon
 GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets
 GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
 
-EXTRA_DIST += 	$(srcdir)/frysk.desktop \
+EXTRA_DIST += 	$(srcdir)/frysk/gui/frysk.desktop \
 		$(srcdir)/frysk/gui/glade/*.glade \
 		$(srcdir)/frysk/gui/images/*.png \
 		$(srcdir)/frysk/gui/images/*.jpg \
