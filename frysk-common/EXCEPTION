@@ -36,3 +36,8 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
+Extend frysk.*... classes.
+Implement frysk.*... interfaces.
+Call frysk.*... methods.
+Access frysk.*... fields.

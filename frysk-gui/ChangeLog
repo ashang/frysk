@@ -1,5 +1,7 @@
 2006-01-21  Andrew Cagney  <cagney@redhat.com>
 
+	* EXCEPTION: Delete, moved to common/.
+
 	* Makefile.am (EXTRA_DIST): Update, frysk.desktop moved to
 	frysk/gui/.
 

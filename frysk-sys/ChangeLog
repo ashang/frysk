@@ -1,3 +1,7 @@
+2006-01-21  Andrew Cagney  <cagney@redhat.com>
+
+	* EXCEPTION: Delete, moved to common/.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac (AC_INIT): Shorten package to just <<frysk>>.

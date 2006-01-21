@@ -1,3 +1,7 @@
+2006-01-21  Andrew Cagney  <cagney@redhat.com>
+
+	* EXCEPTION: Replace per-module exception files.
+
 2006-01-20  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (.java.o): Modify automake's rule to fail if gcc

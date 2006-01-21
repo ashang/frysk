@@ -1,3 +1,7 @@
+2006-01-21  Andrew Cagney  <cagney@redhat.com>
+
+	* EXCEPTION: Delete, moved to common/.
+
 2005-12-08  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH): Added jdom.
