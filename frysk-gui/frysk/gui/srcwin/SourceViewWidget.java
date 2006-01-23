@@ -659,23 +659,40 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 				lo);
 	}
 
-	public boolean mouseMotionEvent(MouseMotionEvent arg0) {
+	public boolean mouseMotionEvent(MouseMotionEvent event) {
 		
-		if(arg0.getWindow().equals(this.getWindow(TextWindowType.LEFT))){
-			int x = (int) arg0.getX();
-			int y = (int) arg0.getY();
+		Window win = event.getWindow();
+		
+		if(win.equals(this.getWindow(TextWindowType.LEFT))){
+			int x = (int) event.getX();
+			int y = (int) event.getY();
 			
 			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
 			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
 			
 			if(this.buf.hasInlineCode(iter.getLineNumber()))
-				arg0.getWindow().setCursor(new Cursor(CursorType.HAND1));
+				event.getWindow().setCursor(new Cursor(CursorType.HAND1));
 			else
-				arg0.getWindow().setCursor(new Cursor(CursorType.LEFT_PTR));
-			
-			arg0.refireIfHint();
+				event.getWindow().setCursor(new Cursor(CursorType.LEFT_PTR));
 		}
 		
+		else if(win.equals(this.getWindow(TextWindowType.TEXT))){
+			int x = (int) event.getX();
+			int y = (int) event.getY();
+			
+			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
+			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
+			
+			Variable var = this.buf.getVariable(iter);
+			
+			if(var != null)
+				event.getWindow().setCursor(new Cursor(CursorType.HAND1));
+			else
+				event.getWindow().setCursor(new Cursor(CursorType.XTERM));
+		}
+		
+		event.refireIfHint();
+			
 		return false;
 	}
 }

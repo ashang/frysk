@@ -1,5 +1,9 @@
 2006-01-23  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceViewWidget.java (mouseMotionEvent): Now checks for the existance
+	of variables when the cursor is over the Text area of the widget and 
+	changes the cursor to a hand if there is a variable there.
+
 	* SourceViewWidget.java: Now implements MouseMotionListener.
 	(initialize): Now adds this as a MouseMotionListener.
 	(mouseMotionEvent): Added, changes the cursor over the margin and
