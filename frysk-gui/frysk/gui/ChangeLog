@@ -1,3 +1,7 @@
+2006-01-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* Delete the images/__MACOSX/icon/._.DS_Store file.
+
 2006-01-18  Rick Moseley  <rmoseley@redhat.com>
 
 	* Added frysk.desktop here.
