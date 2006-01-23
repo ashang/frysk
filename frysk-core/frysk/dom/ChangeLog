@@ -1,4 +1,9 @@
+2006-01-23  Andrew Cagney  <cagney@redhat.com>
+
+	* DOMTestGUIBuilder.java: Delete; not used.
+
 2006-01-16  Rick Moseley  <rmoseley@redhat.com>
+	
 	* Remove DOMTestDOMFrysk.java(now is TestDOM.java).
 
 2006-01-06  Rick Moseley  <rmoseley@redhat.com>
