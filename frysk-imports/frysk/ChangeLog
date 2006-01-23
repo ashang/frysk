@@ -1,3 +1,7 @@
+2006-01-23  Stan Cox  <scox@redhat.com>
+
+	* Config.javain (EventLogger): Add ConsoleHandler.
+
 2005-11-22  Andrew Cagney  <cagney@redhat.com>
 
 	* configure.ac: Delete.
