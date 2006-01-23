@@ -39,6 +39,8 @@
 package frysk.gui.srcwin;
 
 import org.gnu.gdk.Color;
+import org.gnu.gdk.Cursor;
+import org.gnu.gdk.CursorType;
 import org.gnu.gdk.Drawable;
 import org.gnu.gdk.GC;
 import org.gnu.gdk.Point;
@@ -60,6 +62,8 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
+import org.gnu.gtk.event.MouseMotionEvent;
+import org.gnu.gtk.event.MouseMotionListener;
 import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
@@ -83,7 +87,7 @@ import frysk.gui.srcwin.prefs.PreferenceManager;
  * 
  */
 public class SourceViewWidget extends TextView implements ExposeListener,
-		MouseListener {
+		MouseListener, MouseMotionListener {
 
 	// my SourceBuffer
 	protected SourceBuffer buf;
@@ -430,6 +434,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 		// Listeners
 		this.addListener((ExposeListener) this);
 		this.addListener((MouseListener) this);
+		this.addListener((MouseMotionListener) this);
 		
 		// Preferences
 		PreferenceManager.addPreference(new IntPreference(IntPreference.INLINE_LEVELS), PreferenceManager.LNF_NODE);
@@ -654,4 +659,23 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 				lo);
 	}
 
+	public boolean mouseMotionEvent(MouseMotionEvent arg0) {
+		
+		if(arg0.getWindow().equals(this.getWindow(TextWindowType.LEFT))){
+			int x = (int) arg0.getX();
+			int y = (int) arg0.getY();
+			
+			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
+			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
+			
+			if(this.buf.hasInlineCode(iter.getLineNumber()))
+				arg0.getWindow().setCursor(new Cursor(CursorType.HAND1));
+			else
+				arg0.getWindow().setCursor(new Cursor(CursorType.LEFT_PTR));
+			
+			arg0.refireIfHint();
+		}
+		
+		return false;
+	}
 }

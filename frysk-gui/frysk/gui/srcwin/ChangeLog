@@ -1,3 +1,10 @@
+2006-01-23  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceViewWidget.java: Now implements MouseMotionListener.
+	(initialize): Now adds this as a MouseMotionListener.
+	(mouseMotionEvent): Added, changes the cursor over the margin and
+	over lines that contain inline code.
+
 2006-01-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferenceViewer.java (showPreferenceEditor): Removed public to
