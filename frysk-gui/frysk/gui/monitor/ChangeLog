@@ -1,3 +1,11 @@
+2006-01-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java (loadObservers): Now saves
+	observers when they are added to the manager and loads them
+	when instantiated.
+	* ObjectFactory.java (importNode): Added importing and 
+	exporting to objects save to a node to disk.
+
 2006-01-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/Filter.java: Added no argument constructor for

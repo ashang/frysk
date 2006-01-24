@@ -48,11 +48,13 @@ import org.jdom.Element;
 
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.actions.PrintTask;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.filters.ProcNameFilter;
 import frysk.gui.monitor.filters.TaskFilterPoint;
+import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskForkedObserver;
 
@@ -60,6 +62,7 @@ public class TestObserverSaveLoad extends TestCase{
 
 	public void testSaveLoad(){
 		Gtk.init(new String[]{});
+		
 		Element node = new Element("testNode");
 		
 		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
@@ -166,4 +169,32 @@ public class TestObserverSaveLoad extends TestCase{
 		assertEquals("ActionName", ((PrintTask)i.next()).getName(),"3");
 		assertEquals("ActionName", ((PrintTask)i.next()).getName(),"4");
 	}
+	
+	public void testExport(){
+		ObserverManager observerManager = new ObserverManager();
+		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
+		
+		//customize taskForkedObserver
+		LogAction logAction = new LogAction();
+		taskForkedObserver.genericActionPoint.addAction(logAction);
+		taskForkedObserver.setName("MyCustomObserver");
+		observerManager.addTaskObserverPrototype(taskForkedObserver);
+		
+		ObserverManager anotherObserverManager = new ObserverManager();
+		assertEquals("Number of Observers", observerManager.getTaskObservers().size(), anotherObserverManager.getTaskObservers().size());
+		
+		//get custom observer
+		Iterator i = anotherObserverManager.getTaskObservers().iterator();
+		ObserverRoot myLoadedObserver = null;
+		while (i.hasNext()) {
+			myLoadedObserver = (ObserverRoot) i.next();
+		}
+		
+		// check that they are the same
+		assertNotNull("Loaded Observer", myLoadedObserver);
+		assertEquals("Class Type", taskForkedObserver.getClass(), myLoadedObserver.getClass());
+		assertEquals("ObserverName", taskForkedObserver.getName(), myLoadedObserver.getName());
+		assertEquals("Numbser of Actions", taskForkedObserver.genericActionPoint.getActions().size(), myLoadedObserver.genericActionPoint.getActions().size());
+	}
+	
 }

@@ -1,3 +1,8 @@
+2006-01-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestObserverSaveLoad.java (testExport): Added test
+	for exporting and importing saved Observers.
+
 2006-01-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* Delete the images/__MACOSX/icon/._.DS_Store file.

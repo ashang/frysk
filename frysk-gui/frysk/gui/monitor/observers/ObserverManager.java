@@ -39,8 +39,13 @@
 
 package frysk.gui.monitor.observers;
 
+import java.io.File;
 import java.util.Observable;
 
+import org.jdom.Element;
+
+import frysk.gui.FryskGui;
+import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.StickyObserverAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
@@ -58,6 +63,8 @@ public class ObserverManager extends  Observable {
 
 	public static ObserverManager theManager = new ObserverManager();
 	
+	private final String OBSERVERS_DIR = FryskGui.FRYSK_CONFIG + "Observers" + "/";
+	
 	/**
 	 * a list containing a prototype of every available
 	 * observer.
@@ -67,6 +74,8 @@ public class ObserverManager extends  Observable {
 	public ObserverManager(){
 		this.taskObservers = new ObservableLinkedList();
 		this.initTaskObservers();
+		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
+		this.loadObservers();
 	}
 	
 	/**
@@ -138,6 +147,9 @@ public class ObserverManager extends  Observable {
 	 * */
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.add(observer);
+		Element node = new Element("observer");
+		ObjectFactory.theFactory.saveObject(observer, node);
+		ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
 	}
 	
 	/**
@@ -148,5 +160,22 @@ public class ObserverManager extends  Observable {
 		this.taskObservers.remove(observer);System.out.println("ObserverManager.removeTaskObserverPrototype()");
 	}
 	
-	
+	private void loadObservers(){
+		Element node = new Element("Observer");
+		File observerDir = new File(this.OBSERVERS_DIR);
+		
+		System.out.println("");
+		System.out.println("=================================");
+		
+		String[] array = observerDir.list();
+		
+		for (int i = 0; i < array.length; i++) {
+			System.out.println(			array[i]);
+			node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
+			this.addTaskObserverPrototype((ObserverRoot)ObjectFactory.theFactory.loadObject(node));
+		}
+		
+		System.out.println("=================================");
+		
+	}
 }

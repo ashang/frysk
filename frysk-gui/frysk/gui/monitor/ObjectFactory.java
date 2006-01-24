@@ -39,7 +39,18 @@
 
 package frysk.gui.monitor;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.input.DOMBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * The factory instantiates an object using the information
@@ -56,7 +67,7 @@ public class ObjectFactory {
 	public static final ObjectFactory theFactory = new ObjectFactory();
 	
 	/**
-	 * Dynamically instantiates a saved object,
+	 * Dynamically instantiates the object save to the given node,
 	 * @param node the node form where to retrieved object information.
 	 * @return the instantiated object.
 	 */
@@ -93,7 +104,57 @@ public class ObjectFactory {
 	}
 	
 	public void saveObject(SaveableXXX saveable, Element node){
-		node.setAttribute("type", saveable.getClass().getName());
-		saveable.save(node);
+		if(saveable.saveObject()){
+			node.setAttribute("type", saveable.getClass().getName());
+			saveable.save(node);
+		}
+	}
+	
+	public void exportNode(String path, Element node){
+		
+		path = path.replace(' ', '_');
+		
+//		System.out.println("\n==============saved node==========");
+//		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+//		try {
+//			outputter.output(node, System.out);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println("===================================\n");
+		
+		XMLOutputter output = new XMLOutputter(Format.getPrettyFormat());
+
+		try {
+			output.output(node,new FileWriter(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public Element importNode(String path){
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        org.w3c.dom.Document doc = null; 
+        try {
+           DocumentBuilder builder = factory.newDocumentBuilder();
+           doc = (org.w3c.dom.Document) builder.parse(new File(path));
+ 
+        } catch (Exception e) {
+			e.printStackTrace();
+        } 
+        
+        DOMBuilder doo = new DOMBuilder();
+		Document document =	doo.build(doc);
+        		
+		return document.getRootElement();
+	}
+	
+	public void makeDir(String path){
+		File store = new File(path);
+		if (store.exists() == false){
+			store.mkdirs();
+		}
 	}
 }
