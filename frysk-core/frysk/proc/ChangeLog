@@ -1,3 +1,11 @@
+2006-01-24  Stan Cox  <scox@redhat.com>
+
+	* Host.java (add,remove,removeTasks,get,getProc,requestRefresh,execute)
+	(requestRefresh,requestCreateAttachedProc): Improve logger messages.
+	* ProcState.java (ProcState,isStopped,process*,state): logger messages.
+	* TaskEvent.java (getTask): logger messages.
+	* TaskState.java (process*): logger messages.
+
 2006-01-19  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRefresh.java (testUnattachedMultipleExec)
@@ -400,7 +408,7 @@
 	* TestTaskAttachedObserver.java: Delete.  Fold into ...
 	* TestTaskObserver.java: Merge in TestTaskAttachedObserver.
 
-2005-11-16  Stam Cox  <scox@redhat.com>
+2005-11-16  Stan Cox  <scox@redhat.com>
 
 	* Host.java (Host): Add logger.
 	(add,remove,removeTasks,get,getProc,requestRefresh,execute)

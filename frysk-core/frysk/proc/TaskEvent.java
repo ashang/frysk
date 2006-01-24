@@ -75,12 +75,12 @@ public abstract class TaskEvent
      */
     TaskEvent (TaskId taskId)
     {
-	logger.log (Level.FINE, "construct event {0}\n", taskId); 
+	logger.log (Level.FINE, "{0} TaskEvent\n", taskId); 
 	this.taskId = taskId;
     }
     public Task getTask ()
     {
-	logger.log (Level.FINE, "get task\n", "");
+	logger.log (Level.FINE, "{0} getTask\n", this);
 	return this.task;
     }
     public String toString ()

@@ -77,22 +77,22 @@ public abstract class Host
     Map taskPool = new HashMap ();
     void add (Task task)
     {
-	logger.log (Level.FINE, "add task {0}\n", task);	
+	logger.log (Level.FINE, "{0} add task\n", task);	
 	taskPool.put (task.id, task);
     }
     void remove (Task task)
     {
-	logger.log (Level.FINE, "remove task {0}\n", task);	
+	logger.log (Level.FINE, "{0} remove task\n", task);	
 	taskPool.remove (task.id);
     }
     void removeTasks (Collection c)
     {
-	logger.log (Level.FINE, "remove tasks {0}\n", c);	
+	logger.log (Level.FINE, "{0} removeTasks tasks\n", c);	
 	taskPool.values().removeAll (c);
     }
     Task get (TaskId id)
     {
-	logger.log (Level.FINE, "get task {0}\n", id);	
+	logger.log (Level.FINE, "{0} get task\n", id);	
 	return (Task) taskPool.get (id);
     }
 
@@ -102,13 +102,13 @@ public abstract class Host
     protected Map procPool = new HashMap ();
     void add (Proc proc)
     {
-	logger.log (Level.FINE, "add proc {0}\n", proc);	
+	logger.log (Level.FINE, "{0} add proc\n", proc);	
 	observableProcAdded.notify (proc);
 	procPool.put (proc.id, proc);
     }
     void remove (Proc proc)
     {
-	logger.log (Level.FINE, "remove proc {0}\n", proc); 
+	logger.log (Level.FINE, "{0} remove proc\n", proc); 
 	procPool.remove (proc.id);
 	observableProcRemoved.notify (proc);
     }
@@ -118,7 +118,7 @@ public abstract class Host
     }
     public Proc getProc (ProcId id)
     {
-	logger.log (Level.FINE, "get proc {0}\n", id); 
+	logger.log (Level.FINE, "{0} getProc\n", id); 
 	return (Proc) procPool.get (id);
     }
 
@@ -149,13 +149,13 @@ public abstract class Host
      */
     public void requestRefresh (final boolean refreshAllArg)
     {
-	logger.log (Level.FINEST, "refresh from process table\n", ""); 
+	logger.log (Level.FINEST, "requestRefresh\n", ""); 
 	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
 	    {
 		boolean refreshAll = refreshAllArg;
 		public void execute ()
 		{
-		    logger.log (Level.FINEST, "request refresh execute\n", ""); 
+		    logger.log (Level.FINEST, "requestRefresh execute\n", ""); 
 		    state = state.processRequestRefresh (Host.this,
 							 refreshAll);
 		}
@@ -167,7 +167,7 @@ public abstract class Host
      */
     public final void requestRefresh ()
     {
-	logger.log (Level.FINEST, "refresh from process table\n", ""); 
+	logger.log (Level.FINEST, "requestRefresh\n", ""); 
 	requestRefresh (false);
     }
 
@@ -177,7 +177,7 @@ public abstract class Host
      */
     public final void requestCreateAttachedProcXXX (String[] args)
     {
-	logger.log (Level.FINE, "create process\n", ""); 
+	logger.log (Level.FINE, "requestCreateAttachedProcXXX\n", ""); 
 	requestCreateAttachedProc (null, null, null, args);
     }
     /**
@@ -188,7 +188,7 @@ public abstract class Host
 						 final String stderrArg,
 						 final String[] argsArg)
     {
-	logger.log (Level.FINE, "create new process\n", ""); 
+	logger.log (Level.FINE, "requestCreateAttachedProc\n", ""); 
 	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
 	    {
 		String stdin = stdinArg;
@@ -197,7 +197,7 @@ public abstract class Host
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "create new process execute\n", ""); 
+		    logger.log (Level.FINE, "requestCreateAttachedProc execute\n", ""); 
 		    state = state.processRequestCreateAttachedProc
 			(Host.this, stdin, stdout, stderr, args);
 		}
