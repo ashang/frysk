@@ -40,6 +40,8 @@
 
 package frysk.gui.common.dialogs;
 
+import org.gnu.glib.CustomEvents;
+
 /**
  * A class with public static methods for showing dialogs
  * and getting user responces
@@ -51,16 +53,25 @@ public class DialogManager {
 	 * Pops up a WarnDialog with the given message
 	 * @param message the message to be shown to the user
 	 * */
-	public static void showWarnDialog(String message){
-		WarnDialog myDialog = new WarnDialog(message);
-		myDialog.showAll();
-		myDialog.run();
+	public static void showWarnDialog(final String message){
+		CustomEvents.addEvent(new Runnable(){
+
+			public void run() {
+				WarnDialog myDialog = new WarnDialog(message);
+				myDialog.showAll();
+				myDialog.run();
+			}
+		});
 	}
 	
-	public static void showWarnDialog(String title, String message){
-		WarnDialog myDialog = new WarnDialog(title, message);
-		myDialog.showAll();
-		myDialog.run();
+	public static void showWarnDialog(final String title, final String message){
+		CustomEvents.addEvent(new Runnable(){
+			public void run() {
+				WarnDialog myDialog = new WarnDialog(title, message);
+				myDialog.showAll();
+				myDialog.run();
+			}
+		});
 	}
 
 
