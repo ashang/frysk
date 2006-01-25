@@ -252,7 +252,7 @@ public class SourceWindowFactory {
                     reader = new BufferedReader(new FileReader(new File(dummyPath + "/test6.cpp")));
                     line = 1;
                     offset = 0;
-                    execLines = new int[] {0,0,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0};
+                    execLines = new int[] {0,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0};
                     while(reader.ready()){
                         String text = reader.readLine()+"\n";
                         source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
@@ -269,16 +269,15 @@ public class SourceWindowFactory {
                 }
                 
                 funcLines = new String[6];
-                for(int i = 0; i < funcLines.length; i++){
-                	funcLines[i] = source.getLine(i + 4).getText();
-                }
+                for(int i = 0; i < funcLines.length; i++)
+                		funcLines[i] = source.getLine(i + 4).getText();
                     
                 image.addFunction("min", source.getFileName(),
-                		4, 4 + funcLines.length,
-                		source.getLine(4).getOffset(), 
-                		source.getLine(9).getOffset()+source.getLine(9).getLength());
+                		10, 10 + funcLines.length,
+                		source.getLine(10).getOffset(), 
+                		source.getLine(10 + funcLines.length).getOffset()+source.getLine(10 + funcLines.length).getLength());
                 
-				StackLevel stack4 = new StackLevel(source, 15);
+				StackLevel stack4 = new StackLevel(source, 21);
 				stack1.addNextScope(stack4);
 				
 				LibGlade glade = null;

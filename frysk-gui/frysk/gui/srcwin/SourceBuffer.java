@@ -550,11 +550,13 @@ public class SourceBuffer extends TextBuffer {
 	public void addVariable(int offset, int length) {
 		DOMLine line = this.scope.getData().getLine(
 				this.getIter(offset).getLineNumber() + 1);
-		if (line.getLineNum() == 15)
+		/* TODO: Don't hardcode this, we need a way to tell what type of
+		 * variable this is */
+		if (line.getLineNum() == 21)
 			line.addTag(DOMTagTypes.LOCAL_VAR, this.getText(this
 					.getIter(offset), this.getIter(offset + length), true),
 					this.getIter(offset).getLineOffset());
-		else if (line.getLineNum() < 15)
+		else if (line.getLineNum() < 20)
 			line.addTag(DOMTagTypes.OUT_OF_SCOPE_VAR, this.getText(this
 					.getIter(offset), this.getIter(offset + length), true),
 					this.getIter(offset).getLineOffset());
@@ -704,8 +706,7 @@ public class SourceBuffer extends TextBuffer {
 			e.printStackTrace();
 		}
 
-		this
-				.setCurrentLine(this.scope.getStartingLineNum(), this.scope
+		this.setCurrentLine(this.scope.getStartingLineNum(), this.scope
 						.getColStart(), this.scope.getEndLine(), this.scope
 						.getColEnd());
 	}
@@ -773,6 +774,9 @@ public class SourceBuffer extends TextBuffer {
 		this.classTag = this.createTag(CLASS_TAG);
 		this.optimizedVarTag = this.createTag(OPTIMIZED_VAR_TAG);
 		this.oosVarTag = this.createTag(OUT_OF_SCOPE_VAR_TAG);
+		
+		// We have to set this manually since this isn't controlled by the preferences
+		this.optimizedVarTag.setStrikethrough(true);
 
 		// Initialize preferences
 		PreferenceManager.addPreference(new SyntaxPreference(

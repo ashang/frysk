@@ -1,3 +1,13 @@
+2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (addVariable): Re-hardcoded offsets for different
+	variable types due to change to sample files.
+	(init): Now sets strikethrough on optimized variable tag.
+	* SourceWindowFactory.java (createSourceWindow): Re-hardcoded
+	executable lines and current line due to changes in sample files.
+	* testfiles/common.h: Removed declaration of myClass.
+	* testfiles/test6.cpp: Added declaration of myClass.
+
 2006-01-23  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceViewWidget.java (mouseMotionEvent): Now checks for the existance
