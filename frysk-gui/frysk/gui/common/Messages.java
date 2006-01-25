@@ -39,8 +39,6 @@
 package frysk.gui.common;
 
 // If you're trying to run the source window in eclipse, comment the next line out
-import frysk.Config;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.MissingResourceException;
@@ -49,30 +47,32 @@ import java.util.ResourceBundle;
 
 public class Messages {
 	// Comment the first line and uncomment the second if running in eclipse
-	private static final String[] BUNDLE_PATHS = new String[] {Config.PKGDATADIR, Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/common"};
+	private static String[] BUNDLE_PATHS = null;
 	private static final String BUNDLE_NAME = "/messages.properties"; //$NON-NLS-1$
 //	private static final String BUNDLE_NAME = "frysk-gui/frysk/gui/common"+"/messages.properties"; //$NON-NLS-1$
 
 	private static ResourceBundle RESOURCE_BUNDLE;
 
-	static{
+	private Messages(){}
+	
+	public static void setBundlePaths(String[] paths){
+		BUNDLE_PATHS = paths;
 		
 		for(int i = 0; i < BUNDLE_PATHS.length; i++){
 			try{
 				Messages.RESOURCE_BUNDLE = new PropertyResourceBundle(new FileInputStream(new File(BUNDLE_PATHS[i] + BUNDLE_NAME)));
 			}
 			catch (Exception e){
-				System.out.println("Failed for path "+BUNDLE_PATHS[i] + BUNDLE_NAME + ", moving to next");
 				continue;
 			}
-			System.out.println("Found message bundle");
-			break;
+
+			return;
 		}
+		
+		System.err.println("Could not find resource bundle for externalized strings");
+		System.exit(1);
 	}
 	
-	private Messages() {
-	}
-
 	public static String getString(String key) {
 		// TODO Auto-generated method stub
 		try {
