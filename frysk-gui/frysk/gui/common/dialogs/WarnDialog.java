@@ -45,8 +45,8 @@
  */
 package frysk.gui.common.dialogs;
 
-import org.gnu.gtk.Box;
 import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ScrolledWindow;
@@ -79,13 +79,18 @@ public class WarnDialog extends Dialog{
 		this.addButton(GtkStockItem.OK, 1);
 		this.setTitle(this.title);
 		this.setDefaultSize(400,200);
+		HBox mainBox = new HBox(false,0);
+		this.getDialogLayout().add(mainBox);
+		
 		ScrolledWindow sWindow = new ScrolledWindow(null,null);
 		sWindow.setBorderWidth(10);
 		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
-		((Box) (this.getDialogLayout())).packStart(sWindow);
-
+		
 		Label warnLabel = new Label(this.message);
 		sWindow.addWithViewport(warnLabel);
+		
+		mainBox.packStart(sWindow,true, true, 0);
+
 		this.addListener(new DialogListener(){
 			public boolean dialogEvent(DialogEvent arg0) {
 				hideAll();
