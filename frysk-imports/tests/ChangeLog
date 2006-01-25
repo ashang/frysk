@@ -1,3 +1,8 @@
+2006-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am: Where possible use check_PROGRAMS.
+	(check-local): Print the compiler version.
+
 2006-01-09  Andrew Cagney  <cagney@redhat.com>
 
 	* rh177240/strace-clone-exec.shin: Add -f option to strace.

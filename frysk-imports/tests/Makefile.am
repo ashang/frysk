@@ -56,29 +56,31 @@ clean-local:
 	rm -f */*.o
 	rm -f */a.out
 	rm -f a.out
+check-local:
+	@echo ''
+	@echo 'vvvvvvvvvvvvvvvv PLEASE NOTE THE FOLLOWING vvvvvvvvvvvvvvvvv'
+	@$(GCJ) --version
+	@uname -a
+	@echo '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+	@echo ''
 
-# This failed in 4.0 betas
-logger_FILES = logger/Npe.java
-TESTS += logger/a.out
-EXTRA_DIST += $(logger_FILES)
-logger/a.out: $(logger_FILES)
-	mkdir -p logger
-	$(GCJ) -o logger/a.out --main=Npe $(srcdir)/logger/Npe.java
+# This failed in GCC 4.0 beta
+logger_Npe_SOURCES = logger/Npe.java
+logger_Npe_LDFLAGS = --main=Npe
+check_PROGRAMS += logger/Npe
+TESTS += logger/Npe
+
+# This failed in GCJ 4, but passes in GCJ 4.1.
+anoncall_Anon_SOURCES = anoncall/Anon.java
+anoncall_Anon_LDFLAGS = --main=Anon
+TESTS += anoncall/Anon
+check_PROGRAMS += anoncall/Anon
 
 # This fails on gcj 4, but passes on gcj 4.1.
-anoncall_FILES = anoncall/Anon.java
-TESTS += anoncall/a.out
-EXTRA_DIST += $(anoncall_FILES)
-anoncall/a.out: $(anoncall_FILES)
-	mkdir -p anoncall
-	$(GCJ) -o anoncall/a.out --main=Anon $(srcdir)/anoncall/Anon.java
-# This fails on gcj 4, but passes on gcj 4.1.
-nestcall_FILES = nestcall/Nest.java
-XFAIL_TESTS += nestcall/a.out
-EXTRA_DIST += $(nestcall_FILES)
-nestcall/a.out: $(nestcall_FILES)
-	mkdir -p nestcall
-	$(GCJ) -o nestcall/a.out --main=Nest $(srcdir)/nestcall/Nest.java
+nestcall_Nest_SOURCES = nestcall/Nest.java
+nestcall_Nest_LDFLAGS = --main=Nest
+XFAIL_TESTS += nestcall/Nest
+check_PROGRAMS += nestcall/Nest
 
 TESTS += cniinner/a.out
 cniinner_FILES = \
@@ -99,31 +101,19 @@ cniinner/a.out: $(cniinner_FILES)
 		$(srcdir)/cniinner/Child.java \
 		cniinner/native.o
 
-XFAIL_TESTS += samename/a.out
-samename_FILES = samename/SameName.java
-EXTRA_DIST += $(samename_FILES)
-samename/a.out: $(samename_FILES)
-	mkdir -p samename
-	$(GCJ) -g --main=SameName \
-		$(srcdir)/samename/SameName.java \
-		-o samename/a.out
+XFAIL_TESTS += samename/SameName
+samename_SameName_SOURCES = samename/SameName.java
+samename_SameName_LDFLAGS = --main=SameName
+check_PROGRAMS += samename/SameName
 
 XFAIL_TESTS += packagename/O.out
-packagename_O_FILES = packagename/O.java
-EXTRA_DIST += $(packagename_O_FILES)
-packagename/O.out: $(packagename_O_FILES)
-	mkdir -p packagename
-	$(GCJ) -g --main=packagename.O \
-		$(srcdir)/packagename/O.java \
-		-o packagename/O.out
+packagename_O_SOURCES = packagename/O.java
+packagename_O_LDFLAGS = --main=packagename.O
+check_PROGRAMS += packagename/O
 TESTS += packagename/C.out
-packagename_C_FILES = packagename/C.java
-EXTRA_DIST += $(packagename_C_FILES)
-packagename/C.out: $(packagename_C_FILES)
-	mkdir -p packagename
-	$(GCJ) -g --main=packagename.C \
-		$(srcdir)/packagename/C.java \
-		-o packagename/C.out
+packagename_C_SOURCES = packagename/C.java
+packagename_C_LDFLAGS = --main=packagename.C
+check_PROGRAMS += packagename/C
 
 # Compiling Werror with -Werror -Wall should get a warning and hence
 # abort the compilation.  At least GCC 4.0.1 20050727 (Red Hat
