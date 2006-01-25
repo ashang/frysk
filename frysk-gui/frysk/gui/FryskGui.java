@@ -63,7 +63,9 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.Config;
+//import frysk.event.EventLoop;
 import frysk.gui.common.IconManager;
+import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.PreferenceWidget;
 import frysk.gui.monitor.Saveable;
@@ -189,15 +191,25 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		});
 		popupMenu.prepend(consoleWindowItem);
 
-
-		Thread backendStarter = new Thread(new Runnable() {
+		Thread backendStarter =  null;
+		backendStarter = new Thread(new Runnable() {
 			public void run() {
-				Manager.eventLoop.run();
+				try {
+					// EventLoop eventLoop = new EventLoop();
+					// eventLoop.run();
+					Manager.eventLoop.run();
+				}
+				catch (Exception e)
+				{
+					DialogManager.showWarnDialog("Frysk Core Errors", "Frysk Core has reported the following errors \n\n" + e.getMessage());
+					
+				}
 			}
-		});
+			});
 		
 		procpop.load(prefs);
 		backendStarter.start();
+
 
 		WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
 		WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));

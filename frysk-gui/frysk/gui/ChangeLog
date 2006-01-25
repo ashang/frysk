@@ -1,3 +1,7 @@
+2006-01-25  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FryskGui.java (mainGui): Wrapped event loop in catch.
+
 2006-01-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestObserverSaveLoad.java (testExport): Added test
