@@ -1,3 +1,19 @@
+2006-01-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.sh: Delete.
+	* TestRunner.javain: New file, based on TestRunner.sh.
+	* Build.javain: New file, based on frysk/Config.javain.
+	* Makefile.gen.sh (GEN_DIRS, GEN_GENDIRNAME, GEN_PACKAGENAME)
+	(GEN_SOURCENAME, GEN_BASENAME): Define.
+	(GEN_JUNIT_TESTS): Do not generate.
+	* Makefile.rules (SUBST): Define.
+	(.javain.java): Use $(SUBST).
+	(TestRunner.java): Use $(SUBST).
+	($(GEN_SOURCENAME)/Build.java): New.
+	($(GEN_SOURCENAME)/JUnitTests.java): New.
+	(TestRunner_SOURCES, TestRunner_LINK, TestRunner_LDFLAGS)
+	(TestRunner_LDADD): Delete, moved to Makefile.gen.sh.
+
 2006-01-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (clean-local-po): Update, EXCEPTION moved to

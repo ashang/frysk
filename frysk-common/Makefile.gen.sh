@@ -132,8 +132,17 @@ has_main ()
 
 
 GEN_ARGS="${dirs} ${jars} ${JARS}"
+GEN_DIRNAME=`basename $PWD`
+GEN_PACKAGENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,.,g'`
+GEN_SOURCENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,/,g'`
+GEN_BASENAME=`echo ${GEN_DIRNAME} | sed -e 's,.*-,,'`
 print_header Makefile.gen.in arguments: ${GEN_ARGS}
 echo GEN_ARGS="${GEN_ARGS}"
+echo GEN_DIRS = ${dirs}
+echo GEN_DIRNAME=${GEN_DIRNAME}
+echo GEN_PACKAGENAME=${GEN_PACKAGENAME}
+echo GEN_SOURCENAME=${GEN_SOURCENAME}
+echo GEN_BASENAME=${GEN_BASENAME}
 
 
 # Generate rules to compile any .jar and _JAR files.
@@ -198,10 +207,26 @@ done
 
 test x"${dirs}" = x && exit 0
 
-
 echo GEN_SOURCES =
 echo GEN_NODIST =
- 
+
+cat <<EOF
+BUILT_SOURCES += ${GEN_SOURCENAME}/Build.java
+EOF
+
+# Test runner program.
+
+cat <<EOF
+BUILT_SOURCES += TestRunner.java
+BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
+TestRunner_SOURCES = TestRunner.java ${GEN_SOURCENAME}/JUnitTests.java
+TestRunner_LINK = \${GCJLINK}
+TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
+TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
+TESTS += TestRunner
+check_PROGRAMS += TestRunner
+EOF
+
 
 # Generate rule to build this directory's .jar, .a, and .so file.
 # Need to do this here as automake gets grumpy when things like
@@ -369,8 +394,6 @@ do
 done
 
 
-
-
 # Form a list of all the .glade files, these are installed in
 # PREFIX/share/PACKAGE/glade/.
 
@@ -492,21 +515,6 @@ $d/$c.java: $g $d/$c.sed
 	rm -rf $t
 EOF
   done
-done
-
-
-# Form a list of all the JUnit tests.  Anything named *Test*, that
-# does not contain a main method is considered a candidate for the
-# list.
-
-print_header "... GEN_JUNIT_TESTS += *.java"
-echo GEN_JUNIT_TESTS =
-find ${dirs} \
-    -name 'TestLib.*' -prune -o \
-    -name '*Test*.java' -print \
-    | sort -f | while read test ; do
-    has_main ${test} && continue
-    echo GEN_JUNIT_TESTS += ${test}
 done
 
 

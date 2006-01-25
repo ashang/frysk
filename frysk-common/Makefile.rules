@@ -50,6 +50,7 @@ noinst_LIBRARIES =
 LDADD = 
 
 check_SCRIPTS =
+check_PROGRAMS =
 TESTS =
 GEN_CLASSPATH =
 GEN_SOURCEPATH = $(srcdir) $(top_builddir)
@@ -157,18 +158,22 @@ SUFFIXES += .shjava
 	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-
-# Mimic autoconf's behavior, by doing it in the Makefile all the
-# variables are automatically expanded.
+
+# Similar to autoconf's config.status --file=NEW:OLD but with all
+# variables expanded.
 
 # Don't be confused by top_builddir and top_srcdir, they are actually
 # the directory corresponding to current sub-directory (frysk-gui,
 # frysk-core, ...).
 
-SUFFIXES += .javain
-.javain.java:
-	rm -f $*.tmp
-	sed < $< \
+SUBST = \
+	mkdir -p `dirname $@` ; \
+	rm -f $@.tmp ; \
+	touch $@.tmp ; \
+	echo ''						>> $@.tmp ; \
+	echo '// Generated from: $<'			>> $@.tmp ; \
+	echo ''						>> $@.tmp ; \
+	sed < $<					>> $@.tmp \
 		-e 's,[@]prefix[@],@prefix@,g' \
 		-e 's,[@]bindir[@],@bindir@,g' \
 		-e 's,[@]libdir[@],@libdir@,g' \
@@ -183,10 +188,44 @@ SUFFIXES += .javain
 		-e 's,[@]pkgdatadir[@],$(pkgdatadir),g' \
 		-e 's,[@]pkglibdir[@],$(pkglibdir),g' \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
-		-e 's,[@]VERSION[@],$(VERSION),g' \
-		> $*.tmp
-	mv -f $*.tmp $@
+		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
+		-e 's,[@]VERSION[@],$(VERSION),g' ; \
+	chmod a-w $@.tmp ; \
+	mv -f $@.tmp $@
 
+SUFFIXES += .javain
+.javain.java: Makefile
+	$(SUBST)
+$(GEN_SOURCENAME)/Build.java: common/Build.javain Makefile
+	$(SUBST)
+TestRunner.java: common/TestRunner.javain Makefile
+	$(SUBST)
+$(GEN_SOURCENAME)/JUnitTests.java: Makefile
+	mkdir -p $(GEN_SOURCENAME)
+	rm -f $@.tmp
+	touch $@.tmp
+	echo 'package $(GEN_PACKAGENAME);'			>> $@.tmp
+	echo 'public class JUnitTests'				>> $@.tmp
+	echo '{'						>> $@.tmp
+	echo '  public static final Class[] classes'		>> $@.tmp
+	echo '    = new Class[] {'				>> $@.tmp
+	( cd $(srcdir) ; \
+	  find ${GEN_DIRS} \
+	    -name 'TestLib.*' -prune -o \
+	    -name 'JUnit*' -prune -o \
+	    -name '*Test*.java' -print \
+	    | sort -f | while read test ; do \
+		main=`$(JV_SCAN) --print-main $${test}` ; \
+		if test "$$main"x = x ; then \
+			echo $${test} | sed \
+				-e 's;/;.;g' \
+				-e 's;.java$$;.class,;' ; \
+		fi ; \
+	  done \
+	)							>> $@.tmp
+	echo '    };'						>> $@.tmp
+	echo '}'						>> $@.tmp
+	mv -f $@.tmp $@
 
 # Generate a .h file (using CNI) from the corresponding .java file.
 
@@ -284,21 +323,6 @@ SUFFIXES += .db
 	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
 	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 | tee $*.log && test ! -s $*.log ; \
 	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
-
-# Build the TestJUnits program.
-
-TestRunner_SOURCES = TestRunner.java
-TestRunner_LINK = ${GCJLINK}
-TestRunner_LDFLAGS = --main=TestRunner $(GEN_GCJ_RPATH_FLAGS)
-TestRunner_LDADD = $(LIBJUNIT) $(GEN_GCJ_LDADD)
-TESTS += TestRunner
-noinst_PROGRAMS += TestRunner
-CLEANFILES += TestRunner.java
-
-TestRunner.java: common/TestRunner.sh Makefile
-	$(srcdir)/common/TestRunner.sh $(GEN_JUNIT_TESTS) > TestRunner.tmp
-	mv  TestRunner.tmp  TestRunner.java
-
 
 # Build a version of frysk that behaves like the Java interpreter
 # (while it is set up to be run anywhere it is not installed -- there
