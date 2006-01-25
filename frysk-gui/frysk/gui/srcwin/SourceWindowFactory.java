@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-import frysk.Config;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
@@ -35,7 +34,7 @@ import frysk.proc.Task;
  */
 public class SourceWindowFactory {
 
-	private static String dummyPath;
+	private static String[] testFilesPath;
 	
 	private static String[] gladePaths;
 
@@ -47,16 +46,16 @@ public class SourceWindowFactory {
 	 * otherwise it will load the test files
 	 * @param path The directory where the test files are located
 	 */
-	public static void setDummyPath(String path){
-		dummyPath = path;
+	public static void setTestFilesPath(String[] path){
+		testFilesPath = path;
 	}
 	
 	/**
 	 * Clears the test file path, so that all future SourceWindows will be
 	 * launched using realy information from the Task
 	 */
-	public static void clearDummyPath(){
-		dummyPath = "";
+	public static void clearTestFilesPath(){
+		testFilesPath = null;
 	}
 	
 	/**
@@ -69,13 +68,6 @@ public class SourceWindowFactory {
 	
 	static{
 		map = new HashMap();
-		/*
-		 * TODO: Make it so that the dummyPath is left empty by default once we can read
-		 * the required info from Tasks
-		 */ 
-		dummyPath = Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/srcwin/testfiles";
-		gladePaths = new String[] {Config.GLADEDIR, 
-				Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/glade"};
 	}
 	
 	/**
@@ -96,15 +88,31 @@ public class SourceWindowFactory {
 			s.grabFocus();
 		}
 		else{
-			// Do real stuff here
-			System.out.println("Creating new window");
+			// Try to find the correct path to load the test files from
+			int index = 0;
+			String finalTestPath = "";
+			while(index < testFilesPath.length){
+				System.out.println("Trying " + testFilesPath[index] + "/test2.cpp");
+				File test = new File(testFilesPath[index] + "/test2.cpp");
+				if(test.exists()){
+					finalTestPath = testFilesPath[index];
+					break;
+				}
+				
+				index++;
+			}
 			
-			if(!dummyPath.equals("")){
+			if(finalTestPath.equals("")){
+				System.err.println("Could not load test files from provided paths!");
+				System.exit(1);
+			}
+			
+			if(!testFilesPath.equals("")){
 				DOMFrysk dom = new DOMFrysk(new Document(new Element("DOM_test")));
-                dom.addImage("test", dummyPath, dummyPath);
+                dom.addImage("test", finalTestPath, finalTestPath);
                 DOMImage image = dom.getImage("test");
                 for(int i = 2; i <= 6; i++)
-                    image.addSource("test"+i+".cpp", dummyPath);
+                    image.addSource("test"+i+".cpp", finalTestPath);
                 
                 DOMSource source = image.getSource("test2.cpp");
                 BufferedReader reader = null;
@@ -112,7 +120,7 @@ public class SourceWindowFactory {
 				int offset = 0;
 				int[] execLines = new int[] {0,0,0,0,0,0,0,1,0,0,0,1,0,0};
 				try{
-					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test2.cpp")));
+					reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test2.cpp")));
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
 						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
@@ -134,14 +142,14 @@ public class SourceWindowFactory {
 					}
 				}
 				catch(Exception e){
-					
+					e.printStackTrace();
 				}
                 
 				StackLevel stack1 = new StackLevel(source, 12);
 				
 				String[] funcLines = new String[6];
                 for(int i = 0; i < funcLines.length; i++)
-                	funcLines[i] = source.getLine(i + 8).getText();
+                		funcLines[i] = source.getLine(i + 8).getText();
                     
                 image.addFunction("foo", source.getFileName(),
                 		8, 8 + funcLines.length,
@@ -153,7 +161,7 @@ public class SourceWindowFactory {
 				offset = 0;
                 execLines = new int[] {0,0,0,0,1,0,0,0,1,0};
 				try{
-					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test3.cpp")));
+					reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test3.cpp")));
 					while(reader.ready()){
 						String text = reader.readLine()+"\n";
 						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
@@ -187,7 +195,7 @@ public class SourceWindowFactory {
 				
 				source = image.getSource("test4.cpp");
 				try{
-					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test4.cpp")));
+					reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test4.cpp")));
 					line = 1;
 					offset = 0;
                     execLines = new int[] {0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0};
@@ -218,7 +226,7 @@ public class SourceWindowFactory {
 				
 				source = image.getSource("test5.cpp");
 				try{
-					reader = new BufferedReader(new FileReader(new File(dummyPath + "/test5.cpp")));
+					reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test5.cpp")));
 					line = 1;
 					offset = 0;
                     execLines = new int[] {0,0,1,1,0};
@@ -249,7 +257,7 @@ public class SourceWindowFactory {
 				
 				source = image.getSource("test6.cpp");
                 try{
-                    reader = new BufferedReader(new FileReader(new File(dummyPath + "/test6.cpp")));
+                    reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test6.cpp")));
                     line = 1;
                     offset = 0;
                     execLines = new int[] {0,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0};

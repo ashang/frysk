@@ -695,7 +695,8 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void setScope(StackLevel scope) {
 		for (int i = 0; i < functions.size(); i++)
-			this.deleteMark(((String) functions.get(i)));
+			if(this.markExists((String) functions.get(i)))
+				this.deleteMark(((String) functions.get(i)));
 
 		this.anchor = null;
 		this.functions = new Vector();

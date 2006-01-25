@@ -51,7 +51,10 @@ class frysk
     public static void main (String[] args)
     {
     	if(args.length == 0){
-    		FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"});
+    		FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"},
+    				new String[] {Config.PKGDATADIR + "/images"}, 
+    				new String[] {Config.PKGDATADIR + "/"},
+    				new String[] {Config.PKGDATADIR + "/samples"});
     	} else if(args[0].equals("--help")){
     		System.out.println("Useage: 'frysk [option]");
     		System.out.println();

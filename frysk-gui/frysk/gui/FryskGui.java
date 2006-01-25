@@ -62,9 +62,10 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
-import frysk.Config;
+import frysk.gui.Build;
 //import frysk.event.EventLoop;
 import frysk.gui.common.IconManager;
+import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.PreferenceWidget;
@@ -75,6 +76,7 @@ import frysk.proc.Manager;
 
 
 import frysk.gui.monitor.ConsoleWindow;
+import frysk.gui.srcwin.SourceWindowFactory;
 
 public class FryskGui implements LifeCycleListener, Saveable {
 
@@ -83,7 +85,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	private static Logger errorLogFile = null;
 	private static final String SETTINGSFILE = ".settings";
 	private static final String GLADE_FILE = "procpop.glade";
-	private static final String GLADE_DEV_PATH = "frysk/gui/glade/";
+	private static final String BASE_PATH = "frysk/gui/";
 	private static final String GLADE_PKG_PATH = "glade/";
 	static public final String FRYSK_CONFIG = System.getProperty("user.home")
 			+ "/" + ".frysk" + "/";
@@ -124,7 +126,8 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 	}
 
-	public static void mainGui(String[] args, String[] glade_dirs) {
+	public static void mainGui(String[] args, String[] glade_dirs, String[] imagePaths, 
+			String[] messagePaths, String[] testfilePaths) {
 
 		Gtk.init(args);
 
@@ -138,13 +141,15 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		Preferences prefs = null;
 
 		setupErrorLogging();
-
-		String[] imagesDir = {Config.PKGDATADIR+"/images",
-							   Config.ABS_SRCDIR + "/../frysk-gui/frysk/gui/images"};
 		
-		IconManager.setImageDir(imagesDir);
+		IconManager.setImageDir(imagePaths);
 		IconManager.loadIcons();
 		IconManager.useSmallIcons();
+		
+		Messages.setBundlePaths(messagePaths);
+		
+		SourceWindowFactory.setTestFilesPath(testfilePaths);
+			
 		
 		try {
 			procpop = new FryskGui(glade_dirs);
@@ -160,6 +165,9 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			errorLogFile.log(Level.SEVERE, "IOException: ", e1);
 			System.exit(1);
 		}
+		
+		// Now that we now the glade paths are good, send the paths to the SourceWindowFactory
+		SourceWindowFactory.setGladePaths(glade_dirs);
 
 		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
 
@@ -237,12 +245,18 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 	public static void main(String[] args) {
 		mainGui(args, new String[]
-		    { GLADE_PKG_PATH, GLADE_DEV_PATH,
+		    { GLADE_PKG_PATH, BASE_PATH + GLADE_PKG_PATH,
 		      // Check both relative ...
-		      Config.SRCDIR + "/../frysk-gui/" + GLADE_DEV_PATH,
+		      Build.SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
 		      // ... and absolute.
-		      Config.ABS_SRCDIR + "/../frysk-gui/" + GLADE_DEV_PATH,
-		    });
+		      Build.ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
+		    },
+		    new String[] {"./images", Build.SRCDIR+ "/" + BASE_PATH + "images/", 
+				Build.ABS_SRCDIR + "/" + BASE_PATH + "images/"}, 
+			new String[] {"./common", Build.SRCDIR + "/" + BASE_PATH + "common/",
+				Build.ABS_SRCDIR + "/" + BASE_PATH + "common/"},
+			new String[] {"./srcwin/testfiles", Build.SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",
+				Build.ABS_SRCDIR + "/" + BASE_PATH + "srcwin/testfiles"});
 	}
 
 	private static FileHandler buildHandler() {

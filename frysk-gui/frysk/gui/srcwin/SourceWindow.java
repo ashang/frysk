@@ -76,6 +76,7 @@ import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
@@ -114,34 +115,21 @@ public class SourceWindow extends Window implements ButtonListener,
 	 */
 	// Search bar widgets
 	public static final String LINE_ENTRY = "lineEntry";
-
 	public static final String FIND_TEXT = "findText";
-
 	public static final String FIND_BOX = "findBox";
-
 	public static final String FIND_LABEL = "findLabel"; //$NON-NLS-1$
-
 	public static final String LINE_LABEL = "lineLabel"; //$NON-NLS-1$
-
 	public static final String NEXT_FIND = "nextFind"; //$NON-NLS-1$
-
 	public static final String PREV_FIND = "prevFind"; //$NON-NLS-1$
-
 	public static final String HIGHLIGHT_FIND = "highlightFind"; //$NON-NLS-1$
-
 	public static final String CASE_FIND = "caseFind"; //$NON-NLS-1$
-
 	public static final String GOTO_BUTTON = "gotoButton"; //$NON-NLS-1$
-
 	public static final String CLOSE_FIND = "closeFind"; //$NON-NLS-1$
 
 	// Widget names - toolbar
 	public static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
-
 	public static final String FILE_SELECTOR = "fileSelector";
-
 	public static final String VIEW_COMBO_BOX = "viewComboBox";
-
 	public static final String FUNC_SELECTOR = "funcSelector";
 
 	// Widget that the SourceViewWidget will be placed in
@@ -158,7 +146,6 @@ public class SourceWindow extends Window implements ButtonListener,
 	 */
 
 	private String gladePath;
-
 	private LibGlade glade;
 
 	private SourceViewWidget view;
@@ -167,37 +154,21 @@ public class SourceWindow extends Window implements ButtonListener,
 
 	// ACTIONS
 	private Action close;
-
 	private Action copy;
-
 	private Action find;
-
 	private Action prefsLaunch;
-
 	private Action run;
-
 	private Action stop;
-
 	private Action step;
-
 	private Action next;
-
 	private Action cont;
-
 	private Action finish;
-
 	private Action terminate;
-
 	private Action stepAsm;
-
 	private Action nextAsm;
-
 	private Action stackUp;
-
 	private Action stackDown;
-
 	private Action stackBottom;
-
 	private DOMFrysk dom;
 
 	private Task myTask;
@@ -205,8 +176,11 @@ public class SourceWindow extends Window implements ButtonListener,
 	private StackLevel stack;
 
 	// Data Columns for the stack browser
-	private DataColumn[] dataColumns;
+	private DataColumn[] stackColumns;
 
+	// Data Columns for the variable trace viewer
+	private DataColumn[] traceColumns;
+	
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 
@@ -249,7 +223,26 @@ public class SourceWindow extends Window implements ButtonListener,
 		this.attachEvents();
 
 		this.populateStackBrowser(this.stack);
+		
+		this.traceColumns = new DataColumn[] {new DataColumnString(), new DataColumnString()};
+		TreeView traceView = (TreeView) this.glade.getWidget("traceBrowser");
+		traceView.setModel(new ListStore(this.traceColumns));
 
+		TreeViewColumn col = new TreeViewColumn();
+		CellRenderer renderer = new CellRendererText();
+		col.packStart(renderer, true);
+		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, this.traceColumns[0]);
+		col.setTitle("Name");
+		traceView.appendColumn(col);
+		
+		col = new TreeViewColumn();
+		renderer = new CellRendererText();
+		col.packStart(renderer, true);
+		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, this.traceColumns[1]);
+		col.setTitle("Value");
+		traceView.appendColumn(col);
+		
+		
 		((Label) this.glade.getWidget("stackFrame"))
 				.setText("<b>Current Stack</b>");
 		((Label) this.glade.getWidget("stackFrame")).setUseMarkup(true);
@@ -340,9 +333,9 @@ public class SourceWindow extends Window implements ButtonListener,
 	public void populateStackBrowser(StackLevel top) {
 		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
 
-		dataColumns = new DataColumn[] { new DataColumnString(),
+		stackColumns = new DataColumn[] { new DataColumnString(),
 				new DataColumnObject() };
-		ListStore listModel = new ListStore(dataColumns);
+		ListStore listModel = new ListStore(stackColumns);
 
 		TreeIter iter = null;
 		TreeIter last = null;
@@ -356,13 +349,13 @@ public class SourceWindow extends Window implements ButtonListener,
 			if (line != null
 					&& top.getData().getLine(top.getStartingLineNum())
 							.hasInlinedCode())
-				listModel.setValue(iter, (DataColumnString) dataColumns[0], top
+				listModel.setValue(iter, (DataColumnString) stackColumns[0], top
 						.getData().getFileName()
 						+ "  (i)");
 			else
-				listModel.setValue(iter, (DataColumnString) dataColumns[0], top
+				listModel.setValue(iter, (DataColumnString) stackColumns[0], top
 						.getData().getFileName());
-			listModel.setValue(iter, (DataColumnObject) dataColumns[1], top);
+			listModel.setValue(iter, (DataColumnObject) stackColumns[1], top);
 
 			// Save the last node so we can select it
 			if (top.getNextScope() == null) {
@@ -378,7 +371,7 @@ public class SourceWindow extends Window implements ButtonListener,
 		CellRenderer renderer = new CellRendererText();
 		column.packStart(renderer, true);
 		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-				dataColumns[0]);
+				stackColumns[0]);
 		stackList.appendColumn(column);
 
 		if (this.view != null)
@@ -400,7 +393,14 @@ public class SourceWindow extends Window implements ButtonListener,
 	 *            The variable to trace
 	 */
 	public void addVariableTrace(Variable var) {
-		System.out.println("Adding trace to variable " + var);
+		TreeView traceView = (TreeView) this.glade.getWidget("traceBrowser");
+		ListStore store = (ListStore) traceView.getModel();
+		
+		TreeIter iter = store.appendRow();
+		store.setValue(iter, (DataColumnString) this.traceColumns[0], var.getName());
+		store.setValue(iter, (DataColumnString) this.traceColumns[1], "0xfeedcalf");
+		
+		traceView.showAll();
 	}
 
 	/**
@@ -411,9 +411,12 @@ public class SourceWindow extends Window implements ButtonListener,
 		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
 		TreeModel model = view.getModel();
 
-		StackLevel selected = (StackLevel) model.getValue(model.getIter(view
-				.getSelection().getSelectedRows()[0]),
-				(DataColumnObject) dataColumns[1]);
+		TreePath[] paths = view.getSelection().getSelectedRows();
+		if(paths.length == 0)
+			return;
+		
+		StackLevel selected = (StackLevel) model.getValue(model.getIter(paths[0]),
+				(DataColumnObject) stackColumns[1]);
 
 		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
 				+ selected.getData().getFileName() + "</b>");

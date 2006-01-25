@@ -1,5 +1,17 @@
 2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (setScope): Now checks for the existence of tags
+	before removing them.
+	* SourceWindow.java (SourceWindow): Now initializes trace view widget.
+	(addVariableTrace): Now adds variable name and a default value to the
+	trace window.
+	(selectionChanged): Now checks for no selection existing.
+	* SourceWindowFactory.java: No longer initlializes variables in
+	static constructor.
+	(setDummyPath): Renamed to setTestFilesPath.
+	(clearDummyPath): Renamed to clearTestFilesPath.
+	(createSourceWindow): Added search to find proper test file path
+
 	* SourceBuffer.java (addVariable): Re-hardcoded offsets for different
 	variable types due to change to sample files.
 	(init): Now sets strikethrough on optimized variable tag.

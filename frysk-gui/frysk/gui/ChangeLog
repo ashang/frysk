@@ -1,3 +1,11 @@
+2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
+
+	* FryskGui.java (mainGui): Now takes paths for image, message bungle,
+	and test files as well as for glade files; Also initializes the paths
+	in Messages and SourceWindowFactory.
+	(main): Now passes in paths for image, message bundle, and test files.
+	* glade/frysk_source.glade: Made the trace viewer display headers.
+
 2006-01-25  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java (mainGui): Wrapped event loop in catch.
