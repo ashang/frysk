@@ -149,6 +149,7 @@ hang (void *np)
   send (&thread->start);
   recv (&thread->stop);
   thread->tid = 0;
+  return NULL;
 }
 
 // Create a new thread (if there is space).
@@ -276,4 +277,6 @@ Operation:\n\
 
   // Set up a timer so that in SEC seconds, the program is terminated.
   snooze (sec);
+
+  return 0;
 }

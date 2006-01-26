@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,8 +39,10 @@
 
 /* Use exec to compute a Fibonacci number.  */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 void
 print (char **p)
@@ -112,5 +114,8 @@ main (int argc, char *argv[], char *envp[])
       break;
     }
     execve (newv[0], newv, envp);
+    // Reaching here implies failure.
+    perror ("execve");
+    exit (1);
   }
 }

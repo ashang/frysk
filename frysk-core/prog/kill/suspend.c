@@ -54,6 +54,7 @@ hang (void *np)
 {
   pthread_mutex_unlock (&start);
   pthread_mutex_lock (&stop);
+  return NULL;
 }
 
 int

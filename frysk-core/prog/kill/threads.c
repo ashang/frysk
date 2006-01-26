@@ -74,6 +74,7 @@ loop (void *np)
   return NULL;
 }
 
+int
 main (int argc, char *argv[])
 {
   int i;
@@ -128,4 +129,5 @@ Where:\n\
   }
 
   printf ("%lld threads\n", count);
+  return 0;
 }

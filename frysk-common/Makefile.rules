@@ -134,7 +134,15 @@ AM_CXXFLAGS = \
 	-I$(top_builddir) \
 	-Werror \
 	-Wall \
-	-fpic \
+	-fPIC \
+	$(ZZZ)
+
+AM_CFLAGS = \
+	-I$(srcdir) \
+	-I$(top_builddir) \
+	-Werror \
+	-Wall \
+	-fPIC \
 	$(ZZZ)
 
 

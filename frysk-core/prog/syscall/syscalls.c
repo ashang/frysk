@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2005, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,14 +36,18 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-#include <stdio.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
-int main ()
+int
+main ()
 {
-   int fd = open ("a.file", O_RDONLY);
+  int fd = open ("a.file", O_RDONLY);
 
-   close (fd);
+  close (fd);
 
-   return 0;
+  return 0;
 }

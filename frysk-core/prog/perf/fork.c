@@ -42,6 +42,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 
 static int created_processes;
 static int joined_processes;
@@ -89,7 +92,6 @@ process_join (pid_t pid)
 int
 main (int argc, char *argv[], char *envp[])
 {
-  int c;
   int i;
 
   if (argc < 2 || argc > 3)

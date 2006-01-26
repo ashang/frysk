@@ -82,7 +82,6 @@ thread_join (pthread_t thread)
 int
 main (int argc, char *argv[], char *envp[])
 {
-  int c;
   int i;
 
   if (argc < 2 || argc > 3)

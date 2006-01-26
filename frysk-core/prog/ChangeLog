@@ -1,3 +1,24 @@
+2006-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* syscall/syscalls.c: Add missing #include <unistd.h>.
+	* syscall/syscallloop.c: Add missing #include <stdlib.h>, and
+	<unistd.h>.
+	* step/infThreadLoop.c (threadFunc): Return NULL.
+	* print/argc.c: Drop envp, and auxv parameters.
+	* print/envp.c (main): Drop auxv parameter.
+	* print/argv.c (main): Drop envp, and auxv parameters.
+	* perf/fork.c: Add missing #include <sys/types.h>, and <unistd.h>.
+	(main): Delete unused variable <<c>>.
+	* kill/threads.c (main): Fix prototype, exit cleanly.
+	* perf/clone.c (main): Delete unused variable <<c>>..
+	* kill/detach.c (main): Exit cleanly.
+	* kill/suspend.c (hang): Return NULL.
+	* kill/detach.c (hang): Return NULL.
+	* fib/fork.c: Add missing #include <sys/types.h>, and <unistd.h>.
+	* fib/exec.c: Add missing #include <unistd.h>.
+	(_GNU_SOURCE): Add definition to get asprintf.
+	(main): When execve fails, report an error.
+
 2006-01-19  Stan Cox  <scox@redhat.com>
 
 	* child.c (server): Use parentAck instead of childAck for SIGFPE.

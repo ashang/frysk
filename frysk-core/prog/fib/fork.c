@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 int
 main (int argc, char *argv[], char *envp[])

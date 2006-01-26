@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 #include <pthread.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -55,6 +56,7 @@ void *threadFunc (void *args)
   // has indeed started the infinite loop
   signal (SIGSEGV, &infLoop);
   *i = 0;
+  return NULL;
 }
 
 int
