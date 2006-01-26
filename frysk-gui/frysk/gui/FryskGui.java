@@ -209,8 +209,8 @@ public class FryskGui implements LifeCycleListener, Saveable {
 				}
 				catch (Exception e)
 				{
-					DialogManager.showWarnDialog("Frysk Core Errors", "Frysk Core has reported the following errors \n\n" + e.getMessage());
-					
+					DialogManager.showErrorDialog("Frysk Core Errors", "Frysk Core has reported the following errors", e);
+					System.exit(1);
 				}
 			}
 			});
