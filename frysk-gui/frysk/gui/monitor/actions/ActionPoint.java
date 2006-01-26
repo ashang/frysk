@@ -99,7 +99,7 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 		Iterator iterator = this.getActions().iterator();
 		while (iterator.hasNext()) {
 			Action action = (Action) iterator.next();
-			if(action.saveObject()){
+			if(action.shouldSaveObject()){
 				Element actionXML = new Element("action");
 				ObjectFactory.theFactory.saveObject(action, actionXML);
 				actionsXML.addContent(actionXML);

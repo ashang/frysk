@@ -1,8 +1,16 @@
 2006-01-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* SaveableXXX.java : removed setSaveObject. added 
+	{do/dont}SaveObject.
 	* ObjectFactory.java (saveObject): Removed some debug output.
 	Added check for invalid saved Observer files.
-
+	updated to match SaveableXXX refactor.
+	* GuiObject.java: updated to match SaveableXXX refactor.
+	* observers/ObserverRoot.java: Ditto.
+	* observers/ObserverManager.java: Ditto.
+	* actions/ActionPoint.java: Ditto.
+	* filters/FilterPoint.java: Ditto.
+	
 2006-01-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverManager.java (loadObservers): Now saves

@@ -97,11 +97,16 @@ public class GuiObject extends GuiObservable implements SaveableXXX{
 		this.setToolTip(node.getAttribute("tooltip").getValue());
 	}
 	
-	public void setSaveObject(boolean saveObject){
-		this.saveObject = saveObject;
-	}
-	
-	public boolean saveObject(){
+	public boolean shouldSaveObject(){
 		return this.saveObject;
 	}
+
+	public void doSaveObject() {
+		this.saveObject = true;
+	}
+
+	public void dontSaveObject() {
+		this.saveObject = false;
+	}
+	
 }

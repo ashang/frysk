@@ -85,33 +85,33 @@ public class ObserverManager extends  Observable {
 	private void initTaskObservers() {
 		//============================================
 		ObserverRoot observer = new TaskExecObserver();
-		observer.setSaveObject(false);
+		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
 		observer = new TaskTerminatingObserver();
-		observer.setSaveObject(false);
+		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
 		observer = new TaskForkedObserver();
-		observer.setSaveObject(false);
+		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
 		observer = new TaskCloneObserver();
-		observer.setSaveObject(false);
+		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
 		observer = new TaskSyscallObserver();
-		observer.setSaveObject(false);
+		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
-		customObserver.setSaveObject(false);
+		
 		
 		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
 		forkedObserver.setName("ProgramWatcher");
@@ -124,7 +124,7 @@ public class ObserverManager extends  Observable {
 		
 		//forkedObserver.apply(proc);
 		//execObserver.apply(proc);
-		
+		forkedObserver.dontSaveObject();
 		this.addTaskObserverPrototype(forkedObserver);
 	} 
 
@@ -168,7 +168,7 @@ public class ObserverManager extends  Observable {
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.add(observer);
 		Element node = new Element("observer");
-		if(observer.saveObject()){
+		if(observer.shouldSaveObject()){
 			ObjectFactory.theFactory.saveObject(observer, node);
 			ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
 		}

@@ -104,7 +104,7 @@ public class ObjectFactory {
 	}
 	
 	public void saveObject(SaveableXXX saveable, Element node){
-		if(saveable.saveObject()){
+		if(saveable.shouldSaveObject()){
 			node.setAttribute("type", saveable.getClass().getName());
 			saveable.save(node);
 		}

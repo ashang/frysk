@@ -54,7 +54,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.addActionPoint(genericActionPoint);
 
 			LogAction logAction = new LogAction();
-			logAction.setSaveObject(false);
+			logAction.dontSaveObject();
 			this.genericActionPoint.addAction(logAction);
 		}
 		
@@ -71,7 +71,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 //			this.addActionPoint(genericActionPoint);
 
 			LogAction logAction = new LogAction();
-			logAction.setSaveObject(false);
+			logAction.dontSaveObject();
 			this.genericActionPoint.addAction(logAction);
 		}
 

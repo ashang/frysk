@@ -50,5 +50,15 @@ public interface SaveableXXX {
 	 * or not
 	 * @return wether this object should be saved or not
 	 */
-	boolean saveObject();
+	boolean shouldSaveObject();
+	
+	/**
+	 * Object will be savable if save is called
+	 */
+	void doSaveObject();
+
+	/**
+	 * object will not be saved if save is called
+	 */
+	void dontSaveObject();
 }

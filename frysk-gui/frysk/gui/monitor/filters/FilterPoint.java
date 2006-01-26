@@ -104,7 +104,7 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 		Iterator iterator = this.getFilters().iterator();
 		while (iterator.hasNext()) {
 			Filter filter = (Filter) iterator.next();
-			if(filter.saveObject()){
+			if(filter.shouldSaveObject()){
 				Element filterXML = new Element("filter");
 				ObjectFactory.theFactory.saveObject(filter, filterXML);
 				filtersXML.addContent(filterXML);	
