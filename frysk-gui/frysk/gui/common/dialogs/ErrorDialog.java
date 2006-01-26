@@ -37,99 +37,91 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
+/*
+ * Created on Sep 26, 2005
+ *
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
 package frysk.gui.common.dialogs;
 
-import org.gnu.glib.CustomEvents;
+import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.Label;
+import org.gnu.gtk.PolicyType;
+import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.event.DialogEvent;
+import org.gnu.gtk.event.DialogListener;
 
-/**
- * A class with public static methods for showing dialogs
- * and getting user responces
- * */
-public class DialogManager {
+public class ErrorDialog extends Dialog{
 
+	private String title = "";
+	private String message = "";
+	private Exception except = null;
 
-	/**
-	 * Pops up a WarnDialog with the given message
-	 * @param message the message to be shown to the user
-	 * */
-	public static void showWarnDialog(final String message){
-		final WarnDialog myDialog = new WarnDialog(message);
-		CustomEvents.addEvent(new Runnable(){
-			public void run() {		
-				myDialog.showAll();
-				myDialog.run();
-			}
-		});
-		try {
-			myDialog.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public  ErrorDialog(String title, String message, Exception except) {
+		super();
+		this.title = title;
+		this.message = message;
+		this.except = except;
+		doImplementation();
 	}
 	
-	public static void showWarnDialog(final String title, final String message){
-		CustomEvents.addEvent(new Runnable(){
-			public void run() {
-				WarnDialog myDialog = new WarnDialog(title, message);
-				myDialog.showAll();
-				myDialog.run();
-				
-	
-			}
-		});
+	public ErrorDialog(String message, Exception except) {
+		super();
+		this.title = "Error";
+	    this.message = message;
+		this.except = except;
+
+		doImplementation();
+	}
+
+	private synchronized String getStringTrace(Exception e)
+	{
+		String stackText = "";
+		StackTraceElement[] stackElements = e.getStackTrace();
+		if (stackElements.length < 1)
+			return "No Stack Trace Given";
+		
+		for (int i=0; i<stackElements.length; i++)
+			stackText = stackText + stackElements[i].toString() + "\n";
+		
+		return stackText;
+			
 	}
 	
-	public static synchronized void showErrorDialog(final String message, final Exception except){
+	private  void doImplementation()
+	{
 		
-		final ErrorDialog myDialog = new ErrorDialog(message, except);
+		System.out.println("Doing dialog");
+		this.addButton(GtkStockItem.QUIT, 1);
+		this.setTitle(this.title);
+		this.setDefaultSize(400,200);
+		HBox mainBox = new HBox(false,0);
+		this.getDialogLayout().add(mainBox);
 		
-		CustomEvents.addEvent(new Runnable(){
+		ScrolledWindow sWindow = new ScrolledWindow(null,null);
+		sWindow.setBorderWidth(10);
+		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
+		
+		String errorText = this.message + "\n\n" + this.except.getMessage()+"\n\n" +
+		getStringTrace(this.except);
+		
+		Label warnLabel = new Label(errorText);
+		sWindow.addWithViewport(warnLabel);
+		
+		mainBox.packStart(sWindow,true, true, 0);
 
-			public void run() {
-
-				myDialog.showAll();
-				myDialog.run();
-				DialogManager.myNotifyAll();
-			}
-		});
-		
-
-		try {
-			DialogManager.class.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
-	}
-	
-	public static synchronized void showErrorDialog(String title, String message,
-		Exception except){
-		
-		final ErrorDialog myDialog = new ErrorDialog(title, message, except);
-		
-		CustomEvents.addEvent(new Runnable(){
-			public void run() {
-				myDialog.showAll();
-				myDialog.run();
-				DialogManager.myNotifyAll();
+		this.addListener(new DialogListener(){
+			public boolean dialogEvent(DialogEvent arg0) {
+				hideAll();
+				return false;
 			}
 		});
 		
-		try {
-			DialogManager.class.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
+		
 	}
 	
-	public synchronized static void myNotifyAll(){
-		DialogManager.class.notifyAll();
-	}
-
-
+		
 }

@@ -1,8 +1,12 @@
+2006-01-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* dialogs/ErrorDialog.java: Added.
+	* dialogs/DialogManager.java (showErrorDialog): Added. Make synchronized.
+
 2006-01-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* dialogs/DialogManager.java: added showing of dialog
 	with CustomEvents queue.
-
 
 2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
 	
