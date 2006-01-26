@@ -83,14 +83,35 @@ public class ObserverManager extends  Observable {
 	 * and adds it to the list.
 	 * */
 	private void initTaskObservers() {
-		this.addTaskObserverPrototype(new TaskExecObserver());
-		this.addTaskObserverPrototype(new TaskTerminatingObserver());
-		this.addTaskObserverPrototype(new TaskForkedObserver());
-		this.addTaskObserverPrototype(new TaskCloneObserver());
-		this.addTaskObserverPrototype(new TaskSyscallObserver());
+		//============================================
+		ObserverRoot observer = new TaskExecObserver();
+		observer.setSaveObject(false);
+		this.addTaskObserverPrototype(observer);
 		
+		//============================================
+		observer = new TaskTerminatingObserver();
+		observer.setSaveObject(false);
+		this.addTaskObserverPrototype(observer);
+		
+		//============================================
+		observer = new TaskForkedObserver();
+		observer.setSaveObject(false);
+		this.addTaskObserverPrototype(observer);
+		
+		//============================================
+		observer = new TaskCloneObserver();
+		observer.setSaveObject(false);
+		this.addTaskObserverPrototype(observer);
+		
+		//============================================
+		observer = new TaskSyscallObserver();
+		observer.setSaveObject(false);
+		this.addTaskObserverPrototype(observer);
+		
+		//============================================
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
+		customObserver.setSaveObject(false);
 		
 		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
 		forkedObserver.setName("ProgramWatcher");
@@ -100,7 +121,6 @@ public class ObserverManager extends  Observable {
 		StickyObserverAction stickyObserverAction = new StickyObserverAction();
 		stickyObserverAction.setObserver(forkedObserver);
 		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
-		
 		
 		//forkedObserver.apply(proc);
 		//execObserver.apply(proc);
@@ -148,8 +168,10 @@ public class ObserverManager extends  Observable {
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.add(observer);
 		Element node = new Element("observer");
-		ObjectFactory.theFactory.saveObject(observer, node);
-		ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
+		if(observer.saveObject()){
+			ObjectFactory.theFactory.saveObject(observer, node);
+			ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
+		}
 	}
 	
 	/**
@@ -164,18 +186,19 @@ public class ObserverManager extends  Observable {
 		Element node = new Element("Observer");
 		File observerDir = new File(this.OBSERVERS_DIR);
 		
-		System.out.println("");
-		System.out.println("=================================");
-		
 		String[] array = observerDir.list();
-		
+		ObserverRoot loadedObserver = null;
 		for (int i = 0; i < array.length; i++) {
 			System.out.println(			array[i]);
-			node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
-			this.addTaskObserverPrototype((ObserverRoot)ObjectFactory.theFactory.loadObject(node));
+			try{
+				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
+				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
+			}catch(Exception e){
+				System.out.println("Could not load " + array[i]);
+				continue;
+			}
+			this.addTaskObserverPrototype(loadedObserver);
 		}
-		
-		System.out.println("=================================");
 		
 	}
 }
