@@ -201,8 +201,6 @@ ftk_console_get_type ()
 GtkWidget*
 ftk_console_new (void)
 {
-  gint i;
-  
   FtkConsole * stripchart = g_object_new (ftk_console_get_type (), NULL);
   
   return GTK_WIDGET (stripchart);
@@ -259,6 +257,7 @@ ftk_console_append_text_e(FtkConsole * console, char * str, GError ** err)
                                   1.0,
                                   1.0);
   }
+  return TRUE;
 }
 
 gboolean

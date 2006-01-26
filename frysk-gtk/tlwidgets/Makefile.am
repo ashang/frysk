@@ -40,23 +40,30 @@
 tlwidgetssrc=$(srcdir)/src
 
 solibdir = $(libdir)
-solib_PROGRAMS = libftk.so libftkjava.so libftkjni.so
-libftk_so_SOURCES =
+solib_PROGRAMS = libftkjava.so
+noinst_LIBRARIES =
 libftkjava_so_SOURCES =
-libftkjni_so_SOURCES =
 
 javadir = $(datadir)/java
 java_DATA = ftk.jar
 
-EXTRA_DIST= $(tlwidgetssrc)/java/com/redhat/ftk/*.java \
-            $(tlwidgetssrc)/jni/*.c \
-            $(tlwidgetssrc)/widgets/*.c \
-            $(tlwidgetssrc)/widgets/*.h \
-            $(tlwidgetssrc)/widgets/ftk.pc
+EXTRA_DIST= $(SRC)
+
 
 CLEANFILES = *.so *.jar *.o *.class
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
-CFLAGS += -fPIC -DPIC -std=gnu99
+AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
+	-Wall -Werror \
+	-I$(srcdir)/src/widgets \
+	$(FRYSK_GTK_CFLAGS)
+
+.a.so:
+	soname=`basename $@` ; \
+	$(CC) -shared -o $@.tmp \
+		-Wl,--whole-archive,$<,--no-whole-archive \
+		-Wl,--soname,$$soname,-z,-defs
+	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
+	mv $@.tmp $@
 
 com/redhat/ftk/Stripchart.class: $(SRC) 
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
@@ -72,17 +79,14 @@ libftkjava.so: Stripchart.o
 	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
 		-Wl,-soname -Wl,libftkjava.so -o $@
 
-com_redhat_ftk_Stripchart.o: $(tlwidgetssrc)/jni/com_redhat_ftk_Stripchart.c
-	$(CC) -c $< -I$(tlwidgetssrc)/widgets/ $(FRYSK_GTK_CFLAGS) -fPIC -DPIC -o $@
+libftkjni_a_SOURCES = src/jni/com_redhat_ftk_Stripchart.c
+noinst_LIBRARIES += libftkjni.a
+libftkjni_so_SOURCES =
+solib_PROGRAMS += libftkjni.so
+libftkjni.so: libftkjni.a
 
-libftkjni.so: com_redhat_ftk_Stripchart.o
-	$(CC) -shared $^ $(FRYSK_GTK_LIBS) -o $@
-
-ftkstripchart.o: $(tlwidgetssrc)/widgets/ftkstripchart.c  $(tlwidgetssrc)/widgets/ftkstripchart.h
-	$(CC) $(CFLAGS) $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
-
-ftkconsole.o: $(tlwidgetssrc)/widgets/ftkconsole.c  $(tlwidgetssrc)/widgets/ftkconsole.h
-	$(CC) $(CFLAGS) $(FRYSK_GTK_CFLAGS) -I$(tlwidgetssrc)/widgets -c -o $@ $<
-
-libftk.so: ftkstripchart.o ftkconsole.o
-	$(CC) -shared -o $@ $^ -lrt
+libftk_a_SOURCES = src/widgets/ftkstripchart.c src/widgets/ftkconsole.c
+noinst_LIBRARIES += libftk.a
+solib_PROGRAMS += libftk.so
+libftk_so_SOURCES =
+libftk.so: libftk.a

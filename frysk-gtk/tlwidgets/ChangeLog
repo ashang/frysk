@@ -1,3 +1,19 @@
+2006-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* src/widgets/ftkconsole.c (ftk_console_new): Delete <<i>>,
+	unused.
+	(ftk_console_append_text_e): Return TRUE.
+	* src/widgets/ftkstripchart.c (ftk_stripchart_configure): Delete
+	<<ds>>, unused.
+	(ftk_stripchart_expose): Delete <<d_this>>, unsed.
+	(ftk_stripchart_new): Delete <<i>>, unused.
+	(ftk_stripchart_expose): Cast tv_usec.
+	* Makefile.am (AM_CFLAGS): Replace CFLAGS, add -Werror and -Wall.
+	(libftkjni_a_SOURCES, noinst_LIBRARIES, libftkjni_so_SOURCES) 
+	(libftkjni.so, libftk_a_SOURCES, noinst_LIBRARIES)
+	(libftk_so_SOURCES, libftk.so): Define.
+	(.a.so): New rule.
+
 2006-01-14  Diego Novillo  <dnovillo@redhat.com>
 
 	* Makefile.am (CFLAGS): Add -fPIC -DPIC -std=gnu99.

@@ -66,7 +66,6 @@ ftk_stripchart_configure( GtkWidget * widget,
 			  gpointer data)
 {
   FtkStripchart * stripchart = FTK_STRIPCHART (widget);
-  GtkDrawingArea * da = &(stripchart_drawingarea(stripchart));
 
   // fprintf (stderr, "configure\n");
   
@@ -110,7 +109,6 @@ ftk_stripchart_expose( GtkWidget * widget,
   double d_range;
   double d_bin_width;
   int bin_width;
-  double d_this;
   int max_count;
   int draw_width;
   int draw_height;
@@ -184,9 +182,10 @@ ftk_stripchart_expose( GtkWidget * widget,
     char bs[BS_LENGTH];
 
     localtime_r (&beginning.tv_sec, &res);
+    // tv_usec is <= 1_000_000.
     snprintf (bs, BS_LENGTH, "%02d:%02d:%02d.%04d",
 	      res.tm_hour, res.tm_min, res.tm_sec,
-	      beginning.tv_usec/100);
+	      (int) (beginning.tv_usec / 100));
     
     pango_layout_set_text (stripchart_base_readout(stripchart),
 			   bs, strlen (bs));
@@ -569,8 +568,6 @@ ftk_stripchart_get_type ()
 GtkWidget*
 ftk_stripchart_new (void)
 {
-  gint i;
-  
   FtkStripchart * stripchart = g_object_new (ftk_stripchart_get_type (), NULL);
   
   //fprintf (stderr, "_new()\n");
