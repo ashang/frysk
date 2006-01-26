@@ -1,3 +1,8 @@
+2006-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* libEggTrayIcon.c: Include "eggtrayicon.h", and <gtk_java.h>.
+	Cast EggTrayIcon object to GObject.
+
 2006-01-04  Andrew Cagney  <cagney@redhat.com>
 
 	* libEggTrayIcon.c, eggtrayicon.c, eggtrayicon.h: New files;

@@ -53,6 +53,7 @@ GEN_GCJ_LDADD += $(FRYSK_GTK_LIBS)
 
 # Hack, need to compile this entire sub-tree with JNI.
 AM_GCJFLAGS += -fjni 
+AM_CFLAGS += $(GTK_CFLAGS) $(FRYSK_GTK_CFLAGS)
 
 solib_PROGRAMS += EggTrayIcon/libEggTrayIcon.so
 EggTrayIcon/libEggTrayIcon.so: EggTrayIcon/libEggTrayIcon.a
@@ -63,5 +64,3 @@ EggTrayIcon_libEggTrayIcon_a_SOURCES = \
 	EggTrayIcon/eggtrayicon.c \
 	EggTrayIcon/libEggTrayIcon.c \
 	EggTrayIcon/eggtrayicon.h
-
-EggTrayIcon_libEggTrayIcon_a_CFLAGS = -fPIC $(GTK_CFLAGS) $(FRYSK_GTK_CFLAGS)
