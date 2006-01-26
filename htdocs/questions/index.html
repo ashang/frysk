@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Frysk System Monitor / Debugger</title>
+<link rel="stylesheet" href="../frysk.css" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+</head>
+
+<body>
+
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
+<tr>
+    <td valign="bottom" height="80"><img src="../frysklogo.png" alt="Frysk logo"></td>
+    <td valign="bottom" class="topnavright" align="right"><a href="../index.html">Overview</a>&nbsp;|&nbsp;<a href="../usecases/index.html">Use Cases</a>&nbsp;|&nbsp;Questions&nbsp;|&nbsp;<a href="../getinvolved/index.html">Get Involved</a>&nbsp;|&nbsp;<a href="../documentation/index.html">Documentation</a>&nbsp;|&nbsp;<a href="../links/index.html">Links</a></td>
+</tr>
+</table>
+<div class="mainbackground">
+<div class="maintextregion"><img src="../fryskcorner.gif">
+<table cellspacing="2" cellpadding="4" border="0" width="95%" style="margin-top:17;">
+<tr>
+    <td width="200">&nbsp;</td>
+    <td valign="bottom"><h1>More Questions?</h1></td>
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td valign="top">
+<p>If your question isn't answered, post it to the <em>frysk</em>@
+mailing list or ask it on <a href="irc://gimp.net/frysk">IRC</a>.</p>
+
+<h1>Some <em>frysk</em> Questions, With Answers</h1>
+
+<dl>
+<dt><strong>Is <em>frysk</em> Free?</strong></dt>
+<dd>Yes.
+<br><em>frysk</em> is available under a "GPL + Exception" license.  
+You can read the license on the 
+<a href="http://directory.fedora.redhat.com/wiki/GPL_Exception_License_Text">license
+text</a> page or get more information on the 
+<a href="http://directory.fedora.redhat.com/wiki/Annotated_GPL_Exception_License">annotated
+license text</a> page.
+</dd>
+
+<dt><strong>What is an <i>Execution Analysis Tool</i>?</strong></dt>
+<dd>An <i>Execution Analysis Tool</i> emphasizes being
+able to examine, analyze, monitor, and visualize an application as it
+continues to execute normally.
+
+<p>With <em>frysk</em>, other operations to more directly control
+and manipulate the application (such as starting and stopping threads, or
+modifying variables) are also available.
+</p>
+</dd>
+
+<dt><strong> How does <em>frysk</em> compare to other execution
+analysis tools, such as <tt>oprofile</tt> and <tt>systemtap</tt>?</strong></dt>
+<dd>
+<table border="1" cellpadding="4" cellspacing="0">
+<tr valign="top">
+<th>frysk</th>
+<th>oprofile</th>
+<th>systemtap</th>
+</tr>
+<tr valign="top" class="odd">
+<td>Strictly user mode</td>
+<td>Require kernel modules
+<br>Requires elevated privilege</td>
+<td>Require kernel modules
+<br>Requires elevated privilege</td>
+</tr>
+<tr valign="top" class="even">
+<td>100% reliable information</td>
+<td>Uses sampling</td>
+<td>100% reliable information</td>
+</tr>
+<tr valign="top" class="odd">
+<td>Active control: can stop or restart a single thread, 
+a process, or an entire application</td>
+<td>N/A</td>
+<td>Passive</td>
+</tr>
+</table>
+</dd>
+
+<dt><strong> How does <em>frysk</em> compare to a traditional 
+command-line debugger, such as <tt>adb</tt> or <tt>sdb</tt>?</strong></dt>
+<dd>Here is a quick comparison table that highlights some of the differences:
+
+<table border="1" cellpadding="4" cellspacing="0">
+<tr valign="top">
+<th>traditional</th>
+<th>frysk</th>
+</tr>
+<tr valign="top" class="odd">
+<td>single thread; single process; single host</td>
+<td>multi-thread; multi-process; multi-host</td>
+</tr>
+<tr valign="top" class="even">
+<td>either the program is running or it is stopped&mdash;there is no middle ground</td>
+<td>non-stop: threads, processes, and hosts can be monitored
+individually or as a group; by default all are left running</td>
+</tr>
+<tr valign="top" class="odd">
+<td>explicit attach: the user must explicitly start or attach to a
+process under the debugger's control; operations are strictly limited 
+to the process currently under the debugger's control</td>
+<td>always on: the user specifies the operation, <em>frysk</em>
+handles the details (attaching if and when needed)</td>
+</tr>
+<tr valign="top" class="even">
+<td>explicit control: the user must explicitly stop, start, or
+otherwise control the program</td>
+<td>event driven: the user specifies the events of interest (program
+start, exec call, variable change, ...), <em>frysk</em> handles the
+details</td>
+</tr>
+<tr valign="top" class="odd">
+<td>command-line based</td>
+<td>graphical, visual</td>
+</tr>
+<tr valign="top" class="even">
+<td>assume unoptimized C</td>
+<td>assume optimized, inline, multi-threaded, object-oriented, and
+event-driven code</td>
+</tr>
+<tr valign="top" class="odd">
+<td>debug information loaded immediately, kept in memory</td>
+<td>debug information loaded on demand, left on disk, or on the server</td>
+</tr>
+<tr valign="top" class="even">
+<td>implemented in C; single-threaded, procedural, blocking and
+polling</td>
+<td>implemented in Java and C++; multi-threaded, object-oriented,
+event-driven</td>
+</tr>
+</table>
+</dd>
+
+<dt><strong>Will there be a scripting language?</strong></dt>
+<dd>Yes.
+<br>Because the <em>frysk</em> core is directly programmable, the addition
+of a scripting language such as Guile, Perl, or Python is more than
+feasible.  In fact, there has already been multiple proposals to
+directly integrate <tt>jpython</tt> into <em>frysk</em>.
+<br>As for which scripting language?  That choice is yours.</dd>
+
+<dt><strong> Will there be a command-line interpreter? </strong></dt>
+<dd>Yes.
+<br>Because the <em>frysk</em> core is directly programmable, the addition
+of a command-line interpreter such as the High-Performance Debugger
+Forum Interface or ADB is more than feasible.  In fact, the code base
+already contains a skeleton of the HPD command-line.</dd>
+
+<dt><strong> Will there be stand-alone utilities? </strong></dt>
+<dd>Yes.
+<br><em>frysk</em>'s modular design makes possible the implementation of
+stand-alone utilities including <tt>ftrace</tt> and <tt>fstack</tt>.</dd>
+
+<dt><strong> Why is <em>frysk</em> written in Java?
+<br>Why not use the systems programming language of choice, C? </strong></dt>
+<dd><em>frysk</em> is principally written in native Java.  Where
+performance is a significant factor, or where system interfaces are
+involved, C++/CNI has been used.  This has a number of advantages:
+<ul>
+<li>Those developers who are focused on the rapid development of
+domain object models and graphical interfaces have access to a 
+modern, object-oriented garbage-collecting language.</li>
+<li>It avoids the quagmire that comes with fudging objects using a
+procedure-based language.</li>
+<li>It provides a solid overlap between developers and users: software
+engineers working on large, multi-thread, multi-process, 
+object-oriented, distributed applications.</li>
+<!-- li>It is 2006, not 1975.  Most modern applications are written in Java,
+or C++, not C.</li -->
+</ul>
+</dd>
+
+<dt><strong> Why use the Java-Gnome Toolkit? </strong></dt>
+<dd>Like anything, there is a trade off.  Below is a quick comparison
+table highlighting some of the differences.  The requirement is for a
+modern, lightweight toolkit that provides a native look-and-feel, 
+relying only on Free tools.
+
+<table border="1" cellpadding="4" cellspacing="0">
+<tr>
+<th>&nbsp;</th>
+<th>Swing</th>
+<th>SWT</th>
+<th>Java-GNOME</th>
+</tr>
+<tr valign="top" class="odd">
+<th>Pro:</th>
+<td>
+<ul class="intable">
+<li>Mostly JVM independent<br>
+(but is the Free JVM complete?)</li>
+</ul>
+</td>
+<td>
+<ul class="intable">
+<li>Native look and feel, sort of</li>
+<li>Some local knowledge</li>
+</ul>
+</td>
+<td>
+<ul class="intable">
+<li>Modern toolkit</li>
+<li>Some momentum</li>
+<li><tt>glade</tt> GUI builder</li>
+<li><tt>dogtail</tt> GUI tester</li>
+</ul>
+</td>
+</tr>
+<tr valign="top" class="even">
+<th>Con:</th>
+<td>
+<ul class="intable">
+<li>Not native look-and-feel</li>
+<li>Not really cross-platform</li>
+<li>Is the Free implementation complete enough?</li>
+<li>Free gui builder?</li>
+<li>Free testing tool?</li>
+</ul>
+</td>
+<td>
+<ul class="intable">
+<li>Not true native look-and-feel</li>
+<li>Somewhat messy</li>
+<li>Free gui builder?</li>
+<li>Free testing tool?</li>
+</ul>
+</td>
+<td>
+<ul class="intable">
+<li>Under development (mature?)</li>
+</ul>
+</td>
+</tr>
+</table>
+</dd>
+
+<dt><strong> Will <em>frysk</em> be integrated into Eclipse?</strong></dt>
+<dd>Yes.
+<br>The <em>frysk</em> core is designed with direct and tight integration
+into the Eclipse IDE in mind.  However, the more immediate need is to
+provide users with a light-weight, standalone, graphical
+tool that wraps around the <em>frysk</em> core.</dd>
+
+<dt><strong> Does <em>frysk</em> replace the traditional command-line
+debugger?</strong></dt>
+<dd>No.
+<br>However, traditional debugger users will appreciate <em>frysk</em>
+when they take on challenging tasks such as analyzing large, complex
+applications.</dd>
+</dl>
+
+</td>
+</tr>
+</table>
+
+</div>
+</div>
+
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
+<tr><td align="center" class="footer"><a href="http://sources.redhat.com">sources.redhat.com</a></td></tr>
+</table>
+
+</body>
+</html>
