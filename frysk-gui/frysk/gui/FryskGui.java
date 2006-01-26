@@ -140,7 +140,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		FryskGui procpop = null;
 		Preferences prefs = null;
 
-		setupErrorLogging();
+		setupErrorLogging(); 
 		
 		IconManager.setImageDir(imagePaths);
 		IconManager.loadIcons();
@@ -251,8 +251,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		      // ... and absolute.
 		      Build.ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
 		    },
-		    new String[] {"./images", Build.SRCDIR+ "/" + BASE_PATH + "images/", 
-				Build.ABS_SRCDIR + "/" + BASE_PATH + "images/"}, 
+		    new String[] {"./images", Build.ABS_SRCDIR + "/" + BASE_PATH + "images/"}, 
 			new String[] {"./common", Build.SRCDIR + "/" + BASE_PATH + "common/",
 				Build.ABS_SRCDIR + "/" + BASE_PATH + "common/"},
 			new String[] {"./srcwin/testfiles", Build.SRCDIR + "/" + BASE_PATH + "srcwin/testfiles",

@@ -1,3 +1,8 @@
+2006-01-26  Adam Jocksch  <ajocksch@redhat.com>
+
+	*  FryskGui.java (main): No longer includes relative paths on image
+	search path.
+
 2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* FryskGui.java (mainGui): Now takes paths for image, message bungle,
