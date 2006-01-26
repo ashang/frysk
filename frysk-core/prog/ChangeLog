@@ -1,5 +1,8 @@
 2006-01-26  Andrew Cagney  <cagney@redhat.com>
 
+	* kill/suspend.c (main): Do not pass N to hang -- via
+	pthread_create.
+	
 	* syscall/syscalls.c: Add missing #include <unistd.h>.
 	* syscall/syscallloop.c: Add missing #include <stdlib.h>, and
 	<unistd.h>.

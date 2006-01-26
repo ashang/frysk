@@ -88,7 +88,7 @@ thread <pid>, and then suspend for <suspend-seconds>.\n");
   pthread_t *threads = NULL;
   for (n = 0; n < thr; n++) {
     threads = realloc (threads, sizeof (pthread_t) * (n + 1));
-    pthread_create (&threads[n], &pthread_attr, hang, (void *) n);
+    pthread_create (&threads[n], &pthread_attr, hang, NULL);
     pthread_detach (threads[n]);
     pthread_mutex_lock (&start); // released by running SUB.
   }
