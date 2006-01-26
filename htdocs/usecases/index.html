@@ -1,0 +1,126 @@
+<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Frysk System Monitor / Debugger</title>
+<link rel="stylesheet" href="../frysk.css" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+</head>
+<body>
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
+<tr>
+<td valign="bottom" height="80"><img src="../frysklogo.png" alt="Frysk logo"></td>
+<td valign="bottom" class="topnavright" align="right"><a href="../index.html">Overview</a>&nbsp;|&nbsp;Use Cases&nbsp;|&nbsp;<a href="../questions/index.html">Questions</a>&nbsp;|&nbsp;<a href="../getinvolved/index.html">Get Involved</a>&nbsp;|&nbsp;<a href="../documentation/index.html">Documentation</a>&nbsp;|&nbsp;<a href="../links/index.html">Links</a></td>
+</tr>
+</table>
+<div class="mainbackground">
+<div class="maintextregion"><img src="../fryskcorner.gif">
+<table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17;">
+<tr>
+<td width="100">&nbsp;</td>
+<td valign="top">
+
+<h1>Use Cases</h1>
+
+<p>Here are a few examples of how <i>frysk</i> can help:
+</p>
+
+<ul>
+<li><p>K., a compiler developer, spends a lot of time running the testsuite,constantly monitoring for compiler crashes.  For each crash, K. then has to go back and reproduce the failing scenario under the debugger so that it is possible to diagnose what is going wrong.  Using
+<i>frysk</i>, K.  can set up:
+
+<ul>
+<li>An exit observer that alerts K. that the test compiler is  crashing (and gives K. an opportunity to debug it).</li>
+<li>A trace observer that logs key parts of compiler as it runs.</li>
+</ul>
+</p>
+<p>As soon as the compiler crashes, K. is alerted, and can start analyzing the problem.
+</p>
+</li>
+<li>
+<p>G., a GNU/Linux SysAdmin, is having trouble with the web server.Every so often, but always at 2am, the shopping-cart daemon will repeatedly crash when being started. G., using 
+<i>frysk</i>, can implement a custom observer script that, when a repeated exec/crash is detected:
+
+<ul>
+<li>Runs a pager to notify G. of the problem</li>
+<li>Snapshot the system</li>
+<li>Saves the trace log</li>
+<li>Disables the shopping-cart.</li>
+</ul>
+</p>
+
+<p>G., on receiving the page, can first login and restart the server, and second save the captured state for later off-line analysis by the development group.
+</p>
+
+<li>
+<p>J., a first year university student, is trying to understand how their first program works (or doesn't).  In class, the lecturer has shown J. how to trace a program's variables by hand.  
+J. instead turns to <i>frysk</i>, requesting that it trace all the program's variables 
+as the program is run.  
+Then, using 
+<i>frysk</i>'s trace view, J. is able to both see all the variables and their values, 
+and navigate back to the source code to where each variable assignment occurs.
+</p>
+</ul>
+
+
+<h1><em>frysk</em> Images</h1>
+
+<p>Last updated 2005-12-05.
+</p>
+<p>Below is a work-in-progress snapshot of a process view.
+</p>
+<p>A user is in the process of adding an observer to the <tt>bash</tt> process.  
+In addition to being logged, a user can associate actions to an observer.  
+Examples of observers and actions include:
+<ul>
+<li>monitor <tt>TestRunner</tt> processes prompt to kill when one exceeds more than 5 minutes of cpu</li>
+<li>monitor <tt>gnome-terminal</tt>, and its children prompt for the source browser when the program 
+<tt>eclipse</tt> is started.</li>
+</ul>
+</p>
+
+<div class="imgholder"><img src="set-observer.png" border="0"></div>
+<p>Next is a screenshot of the same window, after the observer on 
+<tt>fork()</tt> has been set.
+</p>
+<div class="imgholder"><img src="fork-observer.png" border="0"></div>
+<p>Below is the result of monitoring the process with the fork observer set. 
+There was a fork event, as displayed in the timeline window.
+</p>
+<div class="imgholder"><img src="one-observer.png" border="0"></div>
+<p>Next is how the timeline window displays multiple events triggered when multiple observers have been set (here, the events were hardcoded, obviously).
+</p>
+<div class="imgholder"><img src="multiple-observers.png" border="0"></div>
+<p>Below is how to navigate to the source window from the process monitor window.
+</p>
+<div class="imgholder"><img src="sourcewindow-start.png" border="0"></div>
+<p>Next is a partial mockup (some parts were taken from a snapshot) of the source view window.  
+On the left hand side is the stack and variable trace, and in the middle the corresponding source.
+</p>
+<div class="imgholder"><img src="sourcewin.png" border="0"></div>
+<p>Below, is a text search run in the source window.
+</p>
+<div class="imgholder"><img src="source_find.png" border="0"></div>
+<p>Finally, a sequence of screenshots that display how, given inline code (here 
+<tt>do_something()
+</tt>, 
+<tt>b()</tt>, and 
+<tt>f()</tt> were inlined),the source window can display it in place.
+</p>
+<div class="imgholder"><img src="inline1.png" border="0"></div>
+<div class="imgholder"><img src="inline2.png" border="0"></div>
+<div class="imgholder"><img src="inline3.png" border="0"></div>
+<div class="imgholder"><img src="inline4.png" border="0"></div>
+<div class="imgholder"><img src="inline5.png" border="0"></div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
+<tr>
+<td align="center" class="footer"><a href="http://sources.redhat.com">sources.redhat.com</a></td>
+</tr>
+</table>
+</body>
+</html>
