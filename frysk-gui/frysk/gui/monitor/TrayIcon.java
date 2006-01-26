@@ -48,6 +48,7 @@ import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Menu;
+import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -78,6 +79,9 @@ public class TrayIcon implements Saveable{
 	
 	private EventBox trayItem;
 	
+	private String tooltip;
+	private ToolTips tips;
+	
 	private boolean active;
 	
 	private int windowButton;
@@ -89,12 +93,14 @@ public class TrayIcon implements Saveable{
 	
 	/**
 	 * Creates a new TrayIcon with the given text and image
-	 * @param name Name of the TrayIcon
+	 * @param tooltip Name of the TrayIcon
 	 * @param buttonText Text to appear on the button
 	 * @param icon Icon to appear on the button
 	 */
-	public TrayIcon(String name, boolean active){
-		tray = new EggTrayIcon(name);
+	public TrayIcon(String tooltip, boolean active){
+		this.tooltip = tooltip;
+		this.tips = new ToolTips();
+		tray = new EggTrayIcon(tooltip);
 		this.clearPopups();
 		if(!active)
 			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON));
@@ -231,6 +237,8 @@ public class TrayIcon implements Saveable{
 		}
 		
 		trayItem.add(icon);
+		
+		tips.setTip(trayItem, this.tooltip, "");
 		
 		if(trayItem.getParent() == null)
 			tray.add(trayItem);

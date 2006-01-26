@@ -171,7 +171,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
 
-		trayIcon = new TrayIcon("Accudog", false);
+		trayIcon = new TrayIcon("Frysk Monitor/Debugger", false);
 		
 		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
 		trayIcon.setWindowButton(TrayIcon.BUTTON_1);

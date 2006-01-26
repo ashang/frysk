@@ -1,5 +1,8 @@
 2006-01-26  Adam Jocksch  <ajocksch@redhat.com>
 
+	* FryskGui.java (mainGui): Now passes in "Frysk Monitor/Debugger" as
+	the tooltip to the tray icon.
+
 	* FryskGui.java (main): Forgot to remove one relative path, fixed.
 
 	* FryskGui.java (main): No longer includes relative paths on image
