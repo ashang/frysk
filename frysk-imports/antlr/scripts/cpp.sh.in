@@ -16,8 +16,8 @@ if test -z "${CXX}" ; then
   CXX="@CXX@"
   cxx="@cxx@"
 else
-  cxx="`basename $CXX`"
-  cxx="`echo $cxx|sed 's,\..*$,,'`"
+  cxx=`basename "$CXX"`
+  cxx=`echo $cxx|sed 's,\..*$,,'`
 fi
 
 ## use whitespace  to separate dirs, don't use compiler specific

@@ -71,7 +71,7 @@ if test -z "${JAVAC}" ; then
   JAVAC="@JAVAC@"
   javac="@javac@"
 else
-  javac=`basename $JAVAC`
+  javac=`basename "$JAVAC"`
   javac=`echo $javac|sed 's,\..*$,,'`
 fi
 

@@ -14,8 +14,8 @@ if test -z "${AR}" ; then
   AR="@AR@"
   ar="@ar@"
 else
-  ar="`basename $AR`"
-  ar="`echo $ar|sed 's,\..*$,,'`"
+  ar=`basename "$AR"`
+  ar=`echo $ar|sed 's,\..*$,,'`
 fi
 
 test -z "${DEBUG}" && {

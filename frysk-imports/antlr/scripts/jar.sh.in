@@ -32,8 +32,8 @@ if test -z "${JAR}" ; then
   JAR="@JAR@"
   jar="@jar@"
 else
-  jar="`basename $JAR`"
-  jar="`echo $jar|sed 's,\..*$,,'`"
+  jar=`basename "$JAR"`
+  jar=`echo $jar|sed 's,\..*$,,'`
 fi
 
 test -z "${DEBUG}" && {

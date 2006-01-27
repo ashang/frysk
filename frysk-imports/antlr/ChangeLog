@@ -1,5 +1,15 @@
 2006-01-26  Andrew Cagney  <cagney@redhat.com>
 
+	Fix from Wu Zhou <woodzltc@cn.ibm.com>:
+	* configure.in: Correctly quote basename applied to commands.
+	* scripts/cpp.sh.in: Ditto.
+	* scripts/cxx.sh.in: Ditto.
+	* scripts/jar.sh.in: Ditto.
+	* scripts/javac.sh.in: Ditto.
+	* scripts/lib.sh.in: Ditto.
+	* scripts/link.sh.in: Ditto.
+	* configure: Re-generate.
+	
 	* scripts/config.sub, scripts/config.guess: Import 2006-01-02.
 
 2005-11-28  Andrew Cagney  <cagney@redhat.com>

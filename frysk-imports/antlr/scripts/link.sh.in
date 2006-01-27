@@ -57,8 +57,8 @@ if test -z "${LD}" ; then
   LD="@CXX@"
   ld="@cxx@"
 else
-  ld="`basename $LD`"
-  ld="`echo $ld|sed 's,\..*$,,'`"
+  ld=`basename "$LD"`
+  ld=`echo $ld|sed 's,\..*$,,'`
 fi
 
 ##xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx##

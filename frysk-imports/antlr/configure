@@ -2575,7 +2575,7 @@ EOF
 
 case $LANG_JAVA in
   1)
-    jar="`basename $JAR`"
+    jar=`basename "$JAR"`
     jar="`echo ${jar}|sed 's,\..*$,,'`"
 
     ## This macro tries to determine which javac compiler is
@@ -3891,7 +3891,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
     if test "x$GXX" = xyes; then
       cxx="gcc"
     else
-      cxx=`basename $CXX`
+      cxx=`basename "$CXX"`
       cxx=`echo ${cxx}|sed 's,\.[^.]*$,,'`
     fi
 
@@ -5999,8 +5999,8 @@ EOF
 ## get the basename of C# compiler. Depending on basename we try to
 ## decide about the CLR.
 test -n "${CSHARPC}"  && {
-  csharpc=`basename ${CSHARPC}`
-  csharpc_d=`dirname ${CSHARPC}`
+  csharpc=`basename "${CSHARPC}"`
+  csharpc_d=`dirname "${CSHARPC}"`
 }
 
 case $csharpc in
@@ -6490,11 +6490,11 @@ case $LANG_JAVA in
 esac
 
 ## compute basename of core libraries
-antlr_jar=`basename ${ANTLR_JAR}`
-antlr_net=`basename ${ANTLR_NET}`
-antlr_lib=`basename ${ANTLR_LIB}`
-antlr_py=`basename ${ANTLR_PY}`
-astframe_net=`basename ${ASTFRAME_NET}`
+antlr_jar=`basename "${ANTLR_JAR}"`
+antlr_net=`basename "${ANTLR_NET}"`
+antlr_lib=`basename "${ANTLR_LIB}"`
+antlr_py=`basename "${ANTLR_PY}"`
+astframe_net=`basename "${ASTFRAME_NET}"`
 
 test -z "${JAVA}" && {
   JAVA=java
