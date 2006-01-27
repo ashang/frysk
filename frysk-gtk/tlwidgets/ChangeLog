@@ -1,3 +1,8 @@
+2006-01-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add src/widgets/ftkconsole.h,
+	src/widgets/ftkstripchart.h, and src/widgets/ftktimeline.h.
+
 2006-01-26  Andrew Cagney  <cagney@redhat.com>
 
 	* src/widgets/ftkconsole.c (ftk_console_new): Delete <<i>>,

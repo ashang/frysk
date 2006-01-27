@@ -47,8 +47,10 @@ libftkjava_so_SOURCES =
 javadir = $(datadir)/java
 java_DATA = ftk.jar
 
-EXTRA_DIST= $(SRC)
-
+EXTRA_DIST = $(SRC) \
+	src/widgets/ftkconsole.h \
+	src/widgets/ftkstripchart.h \
+	src/widgets/ftktimeline.h
 
 CLEANFILES = *.so *.jar *.o *.class
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
