@@ -1,3 +1,7 @@
+2006-01-27  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add rh177240/strace-clone-exec.shin.
+
 2006-01-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Where possible use check_PROGRAMS.

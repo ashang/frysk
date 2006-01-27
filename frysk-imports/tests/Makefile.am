@@ -246,6 +246,7 @@ check_PROGRAMS += cmdline/dump cmdline/print
 TESTS += cmdline/print
 
 # Test an strace of a cloned exec.
+EXTRA_DIST += rh177240/strace-clone-exec.shin
 check_PROGRAMS += rh177240/threadexec
 check_SCRIPTS += rh177240/strace-clone-exec.sh
 rh177240_threadexec_LDFLAGS = -lpthread
