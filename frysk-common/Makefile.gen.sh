@@ -299,7 +299,7 @@ EOF
 # Test runner program.
 
 cat <<EOF
-EXTRA_DIST += common/TestRunner.javain common/JUnitTests.javain
+EXTRA_DIST += common/TestRunner.javain
 nodist_TestRunner_SOURCES = TestRunner.java
 ${nodist_sources} += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LINK = \${GCJLINK}

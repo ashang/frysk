@@ -1,5 +1,7 @@
 2006-01-27  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (EXTRA_DIST): Remove common/JUnitTests.javain.
+
 	* Makefile.rules (EXTRA_DIST): Delete *.javain.
 	* Makefile.gen.sh (GEN_MAKENAME): Define, replace <<_dir>>.
 	(GEN_NODIST, GEN_SOURCES): Replace with <<sources>> and
