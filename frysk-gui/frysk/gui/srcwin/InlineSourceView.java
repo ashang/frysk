@@ -68,7 +68,7 @@ import frysk.gui.srcwin.prefs.PreferenceManager;
  * @author ajocksch
  *
  */
-public class InlineSourceView extends SourceView implements InlineView{
+public class InlineSourceView extends SourceView{
 	
 	private InlineSourceView previous;
 	private InlineSourceView next;

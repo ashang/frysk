@@ -1,5 +1,9 @@
 2006-01-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* AssemblyView: Removed, will be worked in as part of SourceView.
+	* InlineAssemblyView: Ditto, but with  InlineSourceView.
+	* InlineView.java: Removed.
+
 	* SourceViewWidget.java: Refactored to SourceView.java.
 	* InlineViewer.java: Refactored to InlineSourceView.java.
 	* View.java: Added.

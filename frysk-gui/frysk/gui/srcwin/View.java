@@ -15,7 +15,7 @@ public interface View{
 	
 	void load(StackLevel data);
 	
-	void setSubscopeAtCurrentLine(InlineView child);
+	void setSubscopeAtCurrentLine(InlineSourceView child);
 	
 	void clearSubscopeAtCurrentLine();
 	

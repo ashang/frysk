@@ -32,7 +32,7 @@ public class MixedView implements View {
 
 	}
 
-	public void setSubscopeAtCurrentLine(InlineView child) {
+	public void setSubscopeAtCurrentLine(InlineSourceView child) {
 		// TODO Auto-generated method stub
 
 	}

@@ -393,7 +393,7 @@ public class SourceView extends TextView implements View,
 	 * @param child
 	 *            The inlined scope to display
 	 */
-	public void setSubscopeAtCurrentLine(InlineView child) {
+	public void setSubscopeAtCurrentLine(InlineSourceView child) {
 		// Only inline source viewers in a source viewer
 		if(!(child instanceof InlineSourceView))
 			return;
