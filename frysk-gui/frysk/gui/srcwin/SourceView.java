@@ -86,8 +86,8 @@ import frysk.gui.srcwin.prefs.PreferenceManager;
  * @author ifoox, ajocksch
  * 
  */
-public class SourceViewWidget extends TextView implements ExposeListener,
-		MouseListener, MouseMotionListener {
+public class SourceView extends TextView implements View,
+		ExposeListener, MouseListener, MouseMotionListener {
 
 	// my SourceBuffer
 	protected SourceBuffer buf;
@@ -105,7 +105,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 	// keep this around, we'll be needing it
 	private GC myContext;
 
-	private InlineViewer child;
+	private InlineSourceView child;
 
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before
@@ -115,7 +115,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 	 * @param parent
 	 *            The SourceWindow that this SourceViewWidget is contained in
 	 */
-	public SourceViewWidget(StackLevel scope, SourceWindow parent) {
+	public SourceView(StackLevel scope, SourceWindow parent) {
 		this(new SourceBuffer(scope), parent);
 	}
 
@@ -126,14 +126,14 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 	 * @param parent
 	 *            The SourceWindow this object is contained within
 	 */
-	public SourceViewWidget(SourceBuffer buffer, SourceWindow parent) {
+	public SourceView(SourceBuffer buffer, SourceWindow parent) {
 		super(gtk_text_view_new());
 		this.parent = parent;
 		this.buf = buffer;
 		this.setBuffer(this.buf);
 		this.initialize();
 	}
-
+	
 	/**
 	 * Redraws the SourceViewWidget on screen, taking changes in the preference
 	 * model into account
@@ -233,7 +233,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 				mi2.addListener(new MenuItemListener() {
 
 					public void menuItemEvent(MenuItemEvent arg0) {
-						SourceViewWidget.this.parent.addVariableTrace(var);
+						SourceView.this.parent.addVariableTrace(var);
 					}
 
 				});
@@ -297,7 +297,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 				m.append(mi);
 				mi.addListener(new MenuItemListener() {
 					public void menuItemEvent(MenuItemEvent event) {
-						SourceViewWidget.this.buf.toggleBreakpoint(lineNum);
+						SourceView.this.buf.toggleBreakpoint(lineNum);
 					}
 				});
 				m.popup();
@@ -393,15 +393,19 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 	 * @param child
 	 *            The inlined scope to display
 	 */
-	public void setSubscopeAtCurrentLine(InlineViewer child) {
-		this.child = child;
-		Container parent = (Container) child.getParent();
+	public void setSubscopeAtCurrentLine(InlineView child) {
+		// Only inline source viewers in a source viewer
+		if(!(child instanceof InlineSourceView))
+			return;
+		
+		this.child = (InlineSourceView) child;
+		Container parent = (Container) this.child.getParent();
 		if (parent != null)
-			parent.remove(child);
+			parent.remove(this.child);
 
 		this.expanded = true;
-		this.addChild(child, this.buf.createAnchorAtCurrentLine());
-		child.show();
+		this.addChild(this.child, this.buf.createAnchorAtCurrentLine());
+		this.child.show();
 	}
 
 	/**
@@ -454,7 +458,7 @@ public class SourceViewWidget extends TextView implements ExposeListener,
 					.getCurrentLine());
 
 			DOMSource scope = instance.getDeclaration().getSource();
-			InlineViewer nested = new InlineViewer(this.parent,
+			InlineSourceView nested = new InlineSourceView(this.parent,
 					scope, instance);
 			this.setSubscopeAtCurrentLine(nested);
 		} else {

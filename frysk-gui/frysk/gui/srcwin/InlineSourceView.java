@@ -68,10 +68,10 @@ import frysk.gui.srcwin.prefs.PreferenceManager;
  * @author ajocksch
  *
  */
-public class InlineViewer extends SourceViewWidget {
+public class InlineSourceView extends SourceView implements InlineView{
 	
-	private InlineViewer previous;
-	private InlineViewer next;
+	private InlineSourceView previous;
+	private InlineSourceView next;
 	
 	private int depth;
     
@@ -88,7 +88,7 @@ public class InlineViewer extends SourceViewWidget {
 	 *     InlineViewer will be displaying
 	 * @param instance The inline instance to display
 	 */
-	public InlineViewer(SourceWindow top, 
+	public InlineSourceView(SourceWindow top, 
 			DOMSource scope, DOMInlineInstance instance) {
 		super(new InlineBuffer(scope, instance), top);
 		this.setBorderWidth(1);
@@ -105,7 +105,7 @@ public class InlineViewer extends SourceViewWidget {
 		 */
 		if(this.previous == null){
 			int depth  = 1;
-			InlineViewer bottom = this;
+			InlineSourceView bottom = this;
 			while(bottom.next != null){
 				bottom = bottom.next;
 				depth++;
@@ -144,8 +144,8 @@ public class InlineViewer extends SourceViewWidget {
 	 * Overrides the method from SourceViewWidget to also establish the depth of
 	 * the child as well as setting up the linked list structure to keep track of it
 	 */
-	public void setSubscopeAtCurrentLine(InlineViewer nested){
-		InlineViewer casted = (InlineViewer) nested;
+	public void setSubscopeAtCurrentLine(InlineSourceView nested){
+		InlineSourceView casted = (InlineSourceView) nested;
 		casted.depth = this.depth + 1;
 		this.next = casted;
 		casted.previous = this;
@@ -184,7 +184,7 @@ public class InlineViewer extends SourceViewWidget {
 		}
 		else{
 			// Find the top inline viewer
-			InlineViewer top = this;
+			InlineSourceView top = this;
 			while(top.previous != null)
 				top = top.previous;
 			
@@ -192,7 +192,7 @@ public class InlineViewer extends SourceViewWidget {
 			
 			int targetBottom = this.depth;
 			
-			InlineViewer bottom = this;
+			InlineSourceView bottom = this;
 			while(bottom.next != null)
 				bottom = bottom.next;
 			

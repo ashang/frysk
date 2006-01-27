@@ -18,7 +18,7 @@ public class BooleanPreference extends FryskPreference {
 		defaultValues = new HashMap();
 
 		// Whether to show the toolbar
-		defaultValues.put(NAMES[TOOLBAR], new Boolean(false));
+		defaultValues.put(NAMES[TOOLBAR], new Boolean(true));
 		defaultValues.put(NAMES[LINE_NUMS], new Boolean(true));
 		defaultValues.put(NAMES[EXEC_MARKS], new Boolean(true));
 	}

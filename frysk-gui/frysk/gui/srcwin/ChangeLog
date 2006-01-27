@@ -1,3 +1,16 @@
+2006-01-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceViewWidget.java: Refactored to SourceView.java.
+	* InlineViewer.java: Refactored to InlineSourceView.java.
+	* View.java: Added.
+	* SourceView.java: Refactored from SourceViewWidget.java, now implements
+	View.java.
+	* AssemblyView.java: Added.
+	* MixedView.java: Added.
+	* InlineView.java: Added.
+	* InlineSourceView.java: Added.
+	* InlineAssemblyView.java: Added.
+
 2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (setScope): Now checks for the existence of tags

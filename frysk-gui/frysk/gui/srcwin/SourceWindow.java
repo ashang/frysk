@@ -148,7 +148,7 @@ public class SourceWindow extends Window implements ButtonListener,
 	private String gladePath;
 	private LibGlade glade;
 
-	private SourceViewWidget view;
+	private SourceView view;
 
 	private PreferenceWindow prefWin;
 
@@ -376,7 +376,7 @@ public class SourceWindow extends Window implements ButtonListener,
 
 		if (this.view != null)
 			((Container) this.view.getParent()).remove(this.view);
-		this.view = new SourceViewWidget(lastStack, this);
+		this.view = new SourceView(lastStack, this);
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
 				.add(this.view);
 		this.view.showAll();
