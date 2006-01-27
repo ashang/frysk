@@ -1,3 +1,7 @@
+2006-01-26  Andrew Cagney  <cagney@redhat.com>
+
+	* scripts/config.sub, scripts/config.guess: Import 2006-01-02.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* scripts/javac.sh.in: Accept gcj4.
