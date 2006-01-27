@@ -211,6 +211,7 @@ echo GEN_SOURCES =
 echo GEN_NODIST =
 
 cat <<EOF
+GEN_NODIST += ${GEN_SOURCENAME}/Build.java
 BUILT_SOURCES += ${GEN_SOURCENAME}/Build.java
 EOF
 
@@ -219,7 +220,7 @@ EOF
 cat <<EOF
 BUILT_SOURCES += TestRunner.java
 BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
-TestRunner_SOURCES = TestRunner.java ${GEN_SOURCENAME}/JUnitTests.java
+nodist_TestRunner_SOURCES = TestRunner.java ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LINK = \${GCJLINK}
 TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
