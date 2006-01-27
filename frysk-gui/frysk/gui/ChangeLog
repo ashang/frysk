@@ -1,3 +1,8 @@
+2006-01-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* FryskGui.java (mainGui): Add hideAll() to help with
+	1924
+
 2006-01-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java (mainGui): Use errorDialog instead of

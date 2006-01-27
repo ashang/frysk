@@ -165,7 +165,9 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			errorLogFile.log(Level.SEVERE, "IOException: ", e1);
 			System.exit(1);
 		}
-		
+
+		WindowManager.theManager.mainWindow.hideAll();
+
 		// Now that we now the glade paths are good, send the paths to the SourceWindowFactory
 		SourceWindowFactory.setGladePaths(glade_dirs);
 
@@ -215,14 +217,14 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			}
 			});
 		
-		procpop.load(prefs);
 		backendStarter.start();
 
-
+		
 		WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
 		WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));
 		WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
-		
+
+		procpop.load(prefs);
 		WindowManager.theManager.mainWindow.showAll();
 		
 		Gtk.main();
