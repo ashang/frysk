@@ -50,6 +50,7 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
@@ -137,6 +138,8 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 			FilterPoint filterPoint = (FilterPoint) iterator.next();
 			this.addList(filterPoint, filterPoint.getFilters());
 		}
+//		selected = (GuiObject)this.treeStore.getValue(iter.getParent(), objectDC);
+		
 		
 		label = new GuiObject("ActionPoints","");
 		this.add(label, observer);
@@ -193,6 +196,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	public void add(GuiObject guiObject, TreeIter iter){
 		//System.out.println("DetailedObserverTreeView.add() guiObject: "+ guiObject+ " iter: "+ iter );
 		this.treeStore.setValue(iter, nameDC, guiObject.getName());
+		this.treeStore.setValue(iter, objectDC, guiObject);
 		this.map.put(guiObject, iter);
 		guiObject.addObserver(this);
 	}
@@ -205,8 +209,15 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		TreeIter iter = this.treeStore.getIter(this.getSelection().getSelectedRows()[0]);
 		GuiObject selected = (GuiObject)this.treeStore.getValue(iter, objectDC);
 		
-		if(!(selected instanceof ObserverRoot)){
-			selected = (GuiObject)this.treeStore.getValue(iter.getParent(), objectDC);
+		while(selected != null && !(selected instanceof ObserverRoot)){
+			System.out.println("DetailedObserverTreeView.getSelectedObserver(): " + iter);
+			TreePath treePath = iter.getPath();
+			treePath.up();
+			iter = treeStore.getIter(treePath);
+			System.out.println("DetailedObserverTreeView.getSelectedObserver(): " + iter);
+			
+			selected = (GuiObject)this.treeStore.getValue(iter, objectDC);
+//			return null;
 		}
 		
 		return (ObserverRoot) selected;
