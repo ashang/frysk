@@ -301,10 +301,27 @@ public class SourceWindow extends Window implements ButtonListener,
 	 */
 	public void comboBoxEvent(ComboBoxEvent event) {
 		String text = ((ComboBox) event.getSource()).getActiveText();
-		if (((SourceBuffer) this.view.getBuffer()).getFunctions().contains(
-				text + "_FUNC")) {
-			TextMark mark = this.view.getBuffer().getMark(text + "_FUNC");
-			this.view.scrollToMark(mark, 0);
+		if(event.getSource() instanceof ComboBoxEntry){
+			if (((SourceBuffer) this.view.getBuffer()).getFunctions().contains(
+					text + "_FUNC")) {
+				TextMark mark = this.view.getBuffer().getMark(text + "_FUNC");
+				this.view.scrollToMark(mark, 0);
+			}
+		}
+		else{
+			System.out.println(text);
+			if(text.equals("SOURCE")){
+				this.view.setMode(false);
+			}
+			else if(text.equals("ASM")){
+				this.view.setMode(true);
+			}
+			else if(text.equals("SOURCE/ASM")){
+				
+			}
+			else if(text.equals("MIXED")){
+				
+			}
 		}
 	}
 
@@ -881,6 +898,9 @@ public class SourceWindow extends Window implements ButtonListener,
 		// function jump box
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR))
 				.addListener(this);
+		
+		// Mode box
+		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(this);
 
 		// // Stack browser
 		((TreeView) this.glade.getWidget("stackBrowser")).getSelection()

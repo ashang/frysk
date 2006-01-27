@@ -382,11 +382,19 @@ public class SourceView extends TextView implements View,
 	 *            The new stack frame to load.
 	 */
 	public void load(StackLevel data) {
-		this.buf.setScope(data);
+		this.load(data, false);
+	}
+
+	public void load(StackLevel data, boolean isAssembly){
+		this.buf.setScope(data, isAssembly);
 		this.expanded = false;
 		this.anchor = null;
 	}
-
+	
+	public void setMode(boolean isAssembly){
+		this.load(this.buf.getScope(), isAssembly);
+	}
+	
 	/**
 	 * Sets the inlined subscope at the current line to be the object provided.
 	 * 

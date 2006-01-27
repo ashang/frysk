@@ -1,5 +1,16 @@
 2006-01-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (setScope): Now takes boolean as to whether the
+	assembly should be shown rather than the source.
+	(loadAssembly): Added.
+	* SourceView.java (load): Added second method that takes boolean 
+	indicating whether assembly code is to be shown rather than source
+	code.
+	(setMode): Added.
+	* SourceWindow.java (comboBoxEvent): Now looks for changes in the
+	viewing mode.
+	(addEvents): Now adds listener to the mode combobox.
+
 	* AssemblyView: Removed, will be worked in as part of SourceView.
 	* InlineAssemblyView: Ditto, but with  InlineSourceView.
 	* InlineView.java: Removed.

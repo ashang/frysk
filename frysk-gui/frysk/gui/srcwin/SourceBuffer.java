@@ -152,7 +152,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public SourceBuffer(StackLevel scope) {
 		this();
-		this.setScope(scope);
+		this.setScope(scope, false);
 	}
 
 	/**
@@ -692,8 +692,9 @@ public class SourceBuffer extends TextBuffer {
 	 * 
 	 * @param scope
 	 *            The stack frame to be displayed
+	 * @param isAssembly TODO
 	 */
-	public void setScope(StackLevel scope) {
+	public void setScope(StackLevel scope, boolean isAssembly) {
 		for (int i = 0; i < functions.size(); i++)
 			if(this.markExists((String) functions.get(i)))
 				this.deleteMark(((String) functions.get(i)));
@@ -702,7 +703,10 @@ public class SourceBuffer extends TextBuffer {
 		this.functions = new Vector();
 		this.scope = scope;
 		try {
-			this.loadFile();
+			if(!isAssembly)
+				this.loadFile();
+			else
+				this.loadAssembly();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -857,6 +861,17 @@ public class SourceBuffer extends TextBuffer {
 		}
 
 		this.createTags();
+	}
+	
+	protected void loadAssembly(){
+		this.deleteText(this.getStartIter(), this.getEndIter());
+		
+		String text = "";
+		
+		for(int i = 10000; i < 10100; i++)
+			text += "0x" + Integer.toHexString(i) + " mv $a0 $a1\n";
+		
+		this.insertText(text);
 	}
 
 	/**
