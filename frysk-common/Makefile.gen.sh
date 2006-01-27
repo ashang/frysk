@@ -133,6 +133,7 @@ has_main ()
 
 GEN_ARGS="${dirs} ${jars} ${JARS}"
 GEN_DIRNAME=`basename $PWD`
+GEN_MAKENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,_,g'`
 GEN_PACKAGENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,.,g'`
 GEN_SOURCENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,/,g'`
 GEN_BASENAME=`echo ${GEN_DIRNAME} | sed -e 's,.*-,,'`
@@ -203,53 +204,38 @@ do
 done
 
 
-# If there are no directories, bail here.
+# If there are no directories, bail here. # Need to do this here as
+# automake gets grumpy when things like $(GEN__DIR)_jar_SOURCES appear
+# in Makefile.am
+
 
 test x"${dirs}" = x && exit 0
 
-echo GEN_SOURCES =
-echo GEN_NODIST =
+
+print_header "... the lib${GEN_DIRNAME}.a skeleton"
+
+nodist_sources=nodist_lib${GEN_MAKENAME}_a_SOURCES
+sources=lib${GEN_MAKENAME}_a_SOURCES
 
 cat <<EOF
-GEN_NODIST += ${GEN_SOURCENAME}/Build.java
-BUILT_SOURCES += ${GEN_SOURCENAME}/Build.java
-EOF
 
-# Test runner program.
+# Most of the directory's sources will be built into a single archive
+# (.a).  Start with a skeleton for that archive and then accumulate
+# the relevant files.
 
-cat <<EOF
-BUILT_SOURCES += TestRunner.java
-BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
-nodist_TestRunner_SOURCES = TestRunner.java ${GEN_SOURCENAME}/JUnitTests.java
-TestRunner_LINK = \${GCJLINK}
-TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
-TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
-TESTS += TestRunner
-check_PROGRAMS += TestRunner
-EOF
+noinst_LIBRARIES += lib${GEN_DIRNAME}.a
+${sources} =
+${nodist_sources} =
+# Ensure generated files are all built early.
+BUILT_SOURCES += \${${nodist_sources}}
+GEN_GCJ_LDADD += lib${GEN_DIRNAME}.a
 
+# Compile the .a into a .so; Makefile.rules contains the rule and does
+# not use libtool.
 
-# Generate rule to build this directory's .jar, .a, and .so file.
-# Need to do this here as automake gets grumpy when things like
-# $(GEN__DIR)_jar_SOURCES appear in Makefile.am
-
-# Generate a file containing the .java files that need compiling,
-# otherwize the list of files is so long that SH gets an argument
-# length error.
-
-pwd=`pwd`
-dir=`basename $pwd`
-_dir=`echo ${dir} | sed -e 's,[-/],_,g'`
-print_header "... creating rule for ${dir}.db et.al."
-
-cat <<EOF
-solib_PROGRAMS += lib${dir}.so
-GEN_GCJ_LDADD += lib${dir}.a
-lib${_dir}_a_SOURCES = \$(GEN_SOURCES)
-nodist_lib${_dir}_a_SOURCES = \$(GEN_NODIST)
-lib${_dir}_so_SOURCES = 
-noinst_LIBRARIES += lib${dir}.a
-lib${dir}.so: lib${dir}.a
+solib_PROGRAMS += lib${GEN_DIRNAME}.so
+lib${GEN_MAKENAME}_so_SOURCES = 
+lib${GEN_DIRNAME}.so: lib${GEN_DIRNAME}.a
 
 # Create a list of .java files that need to be compiled.  It turns out
 # that it is faster to just feed all the files en-mass to the compiler
@@ -257,7 +243,7 @@ lib${dir}.so: lib${dir}.a
 # having too-long an argument list.  Remember to filter out duplicate
 # directories.
 
-\$(GEN_CLASSDIR)/files: lib${dir}.a
+\$(GEN_CLASSDIR)/files: lib${GEN_DIRNAME}.a
 	rm -rf \$(GEN_CLASSDIR)
 	mkdir -p \$(GEN_CLASSDIR)
 	dirs= ; \
@@ -273,15 +259,14 @@ lib${dir}.so: lib${dir}.a
                     -name '[A-Za-z]*.java' -print ; \
 	    done ; \
 	done > \$@.tmp
-	echo TestRunner.java >> \$@.tmp
 	mv \$@.tmp \$@
 
 # Using that list, convert to .class files and from there to a .jar.
 # Since java compilers don't abort on a warning, fake the behavior by
 # checking for any output.
 
-java_DATA += ${dir}.jar
-${dir}.jar: \$(GEN_CLASSDIR)/files
+java_DATA += ${GEN_DIRNAME}.jar
+${GEN_DIRNAME}.jar: \$(GEN_CLASSDIR)/files
 	\$(JAVAC) -d \$(GEN_CLASSDIR) \$(JAVACFLAGS) \
 		@\$(GEN_CLASSDIR)/files \
 		2>&1 | tee \$*.log
@@ -295,14 +280,34 @@ ${dir}.jar: \$(GEN_CLASSDIR)/files
 
 # Finally, merge the .so and .jar files into the java .db file.
 
-noinst_PROGRAMS += ${dir}.db
-${_dir}_db_SOURCES = 
-${dir}.db: lib${dir}.so ${dir}.jar
+noinst_PROGRAMS += ${GEN_DIRNAME}.db
+${GEN_MAKENAME}_db_SOURCES = 
+${GEN_DIRNAME}.db: lib${GEN_DIRNAME}.so ${GEN_DIRNAME}.jar
 	\$(GCJ_DBTOOL) -n \$@.tmp
-	\$(GCJ_DBTOOL) -a \$@.tmp ${dir}.jar lib${dir}.so
+	\$(GCJ_DBTOOL) -a \$@.tmp ${GEN_DIRNAME}.jar lib${GEN_DIRNAME}.so
 	mv \$@.tmp \$@
 EOF
 
+
+
+cat <<EOF
+EXTRA_DIST += common/Build.javain
+${nodist_sources} += ${GEN_SOURCENAME}/Build.java
+EOF
+
+
+# Test runner program.
+
+cat <<EOF
+EXTRA_DIST += common/TestRunner.javain common/JUnitTests.javain
+nodist_TestRunner_SOURCES = TestRunner.java
+${nodist_sources} += ${GEN_SOURCENAME}/JUnitTests.java
+TestRunner_LINK = \${GCJLINK}
+TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
+TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
+TESTS += TestRunner
+check_PROGRAMS += TestRunner
+EOF
 
 
 
@@ -315,8 +320,8 @@ for suffix in .mkjava .shjava .javain ; do
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
-	echo "GEN_SOURCES += ${file}"
-	echo "BUILT_SOURCES += ${d}/${b}.java"
+	echo "EXTRA_DIST += ${file}"
+	echo "${nodist_sources} += ${d}/${b}.java"
 	echo "${d}/${b}.java: \$(MKJAVA)"
     done
 done
@@ -338,7 +343,7 @@ for suffix in .java ; do
 	test -r "${d}/${b}.javain" && continue
 	test -r "${d}/${b}.g" && continue
 	test -r "${d}/${b}.sed" && continue
-	echo "GEN_SOURCES += ${file}"
+	echo "${sources} += ${file}"
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES ="
 	    echo "${name_}_LINK = \$(GCJLINK)"
@@ -368,13 +373,13 @@ for suffix in .cxx .c .hxx ; do
 		echo "${name_}_LDADD = -lpthread"
 	    fi
 	else
-	    echo "GEN_SOURCES += ${file}"
+	    echo "${sources} += ${file}"
 	fi
     done
 done
 
 
-# Grep the cni/*.cxx files forming a list of any includes.  Assume
+# Grep the cni/*.cxx files forming a list of includeed files.  Assume
 # these are all generated from .class files.  The list can be pruned a
 # little since, given Class$Nested and Class, generating Class.h will
 # automatically generate the inner Class$Nested class.
@@ -390,7 +395,7 @@ done \
     | while read c
 do
   if test -r $c.java ; then
-      echo "BUILT_SOURCES += $c.h"
+      echo "${nodist_sources} += $c.h"
   fi
 done
 
@@ -503,8 +508,7 @@ do
       awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
   ) | while read c
   do
-    echo "GEN_NODIST += $d/$c.java"
-    echo "BUILT_SOURCES += $d/$c.java"
+    echo "${nodist_sources} += $d/$c.java"
     echo "EXTRA_DIST += $d/$c.sed"
     t=$d/$c.tmp
     echo "CLEANFILES += $t"
