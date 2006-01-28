@@ -1,3 +1,15 @@
+2006-01-28  Andrew Cagney  <cagney@redhat.com>
+
+	* acinclude.m4: General cleanup.
+	(JAVAC, JAVA): Always set to GCJ, and JAVA.
+	(ECJ_JAVA, ECJ, HAVE_ECJ): Define.
+	* Makefile.gen.sh: Delete code generating rules for
+	$(GEN_CLASSDIR)/files, ${GEN_DIRNAME}.jar.
+	* Makefile.rules (JAVAC, JAVACFLAGS): Delete.
+	(files.list, ${GEN_DIRNAME}.jar, ecj/checked): Moved to here from
+	Makefile.gen.sh.
+	(all-local): Add ecj/checked, when HAVE_ECJ.
+
 2006-01-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (EXTRA_DIST): Remove common/JUnitTests.javain.
