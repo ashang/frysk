@@ -81,11 +81,12 @@ div.maintextregion li pre
 	margin-bottom: 0px;
 	padding: 0 0 0 0;
 }
-div.maintextregion dt 
+div.maintextregion dt
 {	color: #ffffff;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	margin-top: 10px;
 	font-size: 14px;
+	font-weight: bold
 }
 div.maintextregion dd 
 {	color: #ffffff;
