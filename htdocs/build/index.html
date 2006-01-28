@@ -2,33 +2,45 @@
 <html>
 <head>
 <title>Building Frysk</title>
-<link rel="stylesheet" type="text/css"
- href="../mainstyle.css"/ >
+<link rel="stylesheet" href="../frysk.css" type="text/css">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
 </head>
 
 <body>
 
-<div id="main_title">Frysk</div>
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
+<tr>
+    <td valign="bottom" height="80"><img src="../frysklogo.png" alt="Frysk logo"></td>
+    <td valign="bottom" class="topnavright" align="right"><a href="../">Overview</a>&nbsp;|&nbsp;<a href="../usecases/">Use Cases</a>&nbsp;|&nbsp;<a href="../questions/">Questions</a>&nbsp;|&nbsp;<a href="../getinvolved/">Get Involved</a>&nbsp;|&nbsp;<a href="../documentation/">Documentation</a>&nbsp;|&nbsp;<a href="../links/">Links</a></td>
+</tr>
+</table>
+<div class="mainbackground">
+<div class="maintextregion"><img src="../fryskcorner.gif">
+<table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17;">
+<tr>
+    <td width="200">&nbsp;</td>
+    <td valign="bottom"><h1>Building <em>frysk</em> From Source</h1></td>
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td valign="top">
 
-<div style="margin: 10px;">
-
-<h1>Building <em>frysk</em> From Source</h1>
-
+<p>
 This page provides guidelines for building <em>frysk</em>, checked out
 from CVS, on a number of systems.
+</p>
 
-<dl>
+<h2>Set up your system's build environment</h2>
 
-<dt><strong>Set up your system's build environment</strong></dt>
-
-<dd>
-
+<p>
 First you will need to set up your system's build environment so that
 all its prerequesits are met.
+</p>
 
 <dl>
 
-<dt><a name="rhel4"><em>Red Hat Enterprise Linux 4</em></dt>
+<dt><a name="rhel4"></a>Red Hat Enterprise Linux 4</dt>
 
 <dd>
 
@@ -41,7 +53,7 @@ href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>
 
 </dd>
 
-<dt><a name="fc5"><em>Fedora Core 5</em></dt>
+<dt><a name="fc5">Fedora Core 5</a></dt>
 
 <dd>
 
@@ -64,16 +76,17 @@ programs that make execve calls (the kernel spontaneously kills the
 program).
 
 <li>
-You will need to have the following packages installed: <tt>antlr</tt>,
-<tt>jdom</tt>, <tt>glib-java</tt>, <tt>libgtk-java</tt>,
-<tt>libvte-java</tt>, <tt>vte-devel</tt>, <tt>libglade-java</tt> and
-<tt>gcc-java</tt>.
+You will need to install a number of packages vis:
+<pre>
+sudo yum install antlr jdom glib-java libgtk-java \
+libvte-java vte-devel libglade-java gcc-java
+</pre>
 
 </ul>
 
 </dd>
 
-<dt><a name="fc4"><em>Fedora Core 4</em></dt>
+<dt><a name="fc4">Fedora Core 4</a></dt>
 
 <dd>
 
@@ -94,20 +107,24 @@ Download, build, and install the RHEL 4 jumbo <em>frysk</em> RPM
 (found <a href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
 You will need to change these two lines in <tt>frysk.spec</tt>: <br>
 
-<tt>&nbsp;&nbsp;%define gccp /usr/bin/</tt><br>
-<tt>&nbsp;&nbsp;%define gccs 4</tt><br>
+<pre>
+#define frysk_gcc_prefix /usr/bin/
+#define frysk_gcc_suffix 4
+</pre>
 
 so that they describe the location of the above installed compiler:
 <br>
 
-<tt>&nbsp;&nbsp;%define gccp /path/to/up-to-date/gcc/</tt> </br>
-<tt>&nbsp;&nbsp;%define gccs %{nil}</tt>
+<pre>
+%define frysk_gcc_prefix /path/to/up-to-date/gcc/
+%define frysk_gcc_suffix %{nil}
+</pre>
 
 </ul>
 
 </dd>
 
-<dt><a name="ubuntu"><em>Ubuntu (Breazy Badger)</em></dt>
+<dt><a name="ubuntu">Ubuntu (Breezy Badger)</a></dt>
 
 <dd>
 
@@ -125,23 +142,31 @@ Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
 <li>
 
 Make certain that <tt>automake-1.9</tt> is installed and selected as
-the default: <br> <tt>&nbsp;&nbsp;$ sudo aptitude install
-automake1.9</tt> <br> <tt>&nbsp;&nbsp;$ sudo update-alternatives
---display automake</tt> <br> <tt>&nbsp;&nbsp;...</tt> <br>
-<tt>&nbsp;&nbsp;$ sudo update-alternatives --set automake
-/usr/bin/automake-1.9</tt>
+the default:
+<pre>
+$ sudo aptitude install automake1.9
+$ sudo update-alternatives --display automake
+$ sudo update-alternatives --set automake /usr/bin/automake-1.9
+</pre>
 
 <li>
 
 Per <a
 href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
-Java Gnome</a>, append the line: <br> <tt>&nbsp;&nbsp;deb
-http://www.natemccallum.com/uploads/debs/ ./</tt> <br> to the file:
-<br> <tt>&nbsp;&nbsp;/etc/apt/sources.list</tt> <br> and then install
-the the java-gnome stuff vis: <br> <tt>&nbsp;&nbsp;$ sudo aptitude
-install libglade-java libgtk-java libglade2-dev libvte-dev</tt> <br>
-<tt>&nbsp;&nbsp;$ pkg-config --modversion gtk2-java</tt> <br>
-<tt>&nbsp;&nbsp;2.8.1</tt>
+Java Gnome</a>, append the line:
+<pre>
+http://www.natemccallum.com/uploads/debs/ ./
+</pre>
+to the file:
+<pre>
+/etc/apt/sources.list
+</pre>
+and then install the java-gnome stuff vis:
+<pre>
+$ sudo aptitude install libglade-java libgtk-java libglade2-dev libvte-dev
+$ pkg-config --modversion gtk2-java
+2.8.1
+</pre>
 
 <li>
 
@@ -160,53 +185,67 @@ disabling the code using vte (there isn't much)
 
 </dl>
 
-<dt><strong>Check out <em>frysk</em> from CVS</strong><dt>
+<h2>Check out <em>frysk</em> from CVS</h2>
 
-<dd><tt>$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/src co
-frysk</tt></dd>
+<pre>
+$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/src co frysk
+</pre>
 
-<dt><strong>Create the configuration files</strong></dt>
+<h2>Create the configuration files</h2>
 
-<dd><tt>$ ( cd frysk && ./autogen.sh )</tt></dd>
+<pre>
+$ ( cd frysk && ./autogen.sh )
+</pre>
 
-<dt><strong>Create and configure the build directory</strong></dt>
+<h2>Create and configure the build directory</h2>
 
-<dd><tt>$ ( mkdir build && cd build && ../frysk/configure )</tt><dd>
+<pre>
+$ ( mkdir build && cd build && ../frysk/configure )
+</pre>
 
-<dt><strong>Verify the build environment (optional)</strong></dt>
+<h2>Verify the build environment (optional)</h2>
 
-<dd>
-
+<p>
 Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
 include tests to ensure that the build system (compiler, kernel, and
 libraries) are working correctly.  Any FAILing tests should be
-investigated (XFAIL and XPASS tests are ok).<br><tt>$ ( cd
-build/frysk-imports/tests && make check )</tt><br><tt>$ ( cd
-build/frysk-gtk/tests && make check )</tt></dd>
+investigated (XFAIL and XPASS tests are ok).</p>
 
-<dt><strong>Build</strong></dt>
+<pre>
+$ ( cd build/frysk-imports/tests && make check )
+$ ( cd build/frysk-gtk/tests && make check )
+</pre>
+
+<h2>Build</h2>
 
 <dd><tt>$ ( cd build && make -j2 )</tt></dd>
 
-<dt><strong>Test</strong></dt>
+<h2>Test</h2>
 
 <dd><tt>$ ( cd build && make check )</tt></dd>
 
-<dt><strong><em>frysk</em> can then either be run from the build tree
-...</strong></dd>
+<h2>Run</h2>
 
-<dd><tt>$ ./build/frysk-gui/frysk/gui/FryskGui</tt></dd>
+<p><em>frysk</em> can then either be run from the build tree ...</p>
 
-<dt><strong>... or installed and run from there</strong></dt>
+<pre>
+$ ./build/frysk-gui/frysk/gui/FryskGui
+</pre>
 
-<dd>
-<tt>$ ( cd build && sudo make install )</tt><br>
-<tt>$ frysk</tt>
-</dd>
+<p>... or installed and run from there</p>
 
-</dl>
+<pre>
+$ ( cd build && sudo make install )
+$ frysk
+</pre>
 
+</table>
 </div>
+</div>
+
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
+<tr><td align="center" class="footer"><a href="http://sources.redhat.com">sources.redhat.com</a></td></tr>
+</table>
 
 </body>
 </html>

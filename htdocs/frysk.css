@@ -65,17 +65,26 @@ div.maintextregion td ul ul
 {	color: #ffffff;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
-div.maintextregion dt 
-{	color: #ffffff;
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	margin-top: 10px;
-}
 div.maintextregion pre 
 {	color: #ffffff;
 	font-size: 14px;
 }
 div.maintextregion td pre 
 {	color: #ffffff;
+	font-size: 14px;
+}
+div.maintextregion li pre
+{       color: #ffffff;
+        font-size: 14px;
+	margin-left: 20px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding: 0 0 0 0;
+}
+div.maintextregion dt 
+{	color: #ffffff;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	margin-top: 10px;
 	font-size: 14px;
 }
 div.maintextregion dd 
