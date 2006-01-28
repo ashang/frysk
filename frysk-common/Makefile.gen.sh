@@ -237,46 +237,12 @@ solib_PROGRAMS += lib${GEN_DIRNAME}.so
 lib${GEN_MAKENAME}_so_SOURCES = 
 lib${GEN_DIRNAME}.so: lib${GEN_DIRNAME}.a
 
-# Create a list of .java files that need to be compiled.  It turns out
-# that it is faster to just feed all the files en-mass to the compiler
-# (then compile each individually).  Put the list into a file to avoid
-# having too-long an argument list.  Remember to filter out duplicate
-# directories.
-
-\$(GEN_CLASSDIR)/files: lib${GEN_DIRNAME}.a
-	rm -rf \$(GEN_CLASSDIR)
-	mkdir -p \$(GEN_CLASSDIR)
-	dirs= ; \
-	for d in \$(top_builddir) \$(top_srcdir) ; do \
-	    p=\`cd \$\$d && pwd\` ; \
-	    case " \$\$dirs " in \
-	        *\$\$p* ) continue ;; \
-	    esac ; \
-	    dirs="\$\$dirs \$\$p" ; \
-	    for g in ${dirs} ; do \
-		find \$\$d/\$\$g \
-	            -name '*#*' -prune -o \
-                    -name '[A-Za-z]*.java' -print ; \
-	    done ; \
-	done > \$@.tmp
-	mv \$@.tmp \$@
 
 # Using that list, convert to .class files and from there to a .jar.
 # Since java compilers don't abort on a warning, fake the behavior by
 # checking for any output.
 
 java_DATA += ${GEN_DIRNAME}.jar
-${GEN_DIRNAME}.jar: \$(GEN_CLASSDIR)/files
-	\$(JAVAC) -d \$(GEN_CLASSDIR) \$(JAVACFLAGS) \
-		@\$(GEN_CLASSDIR)/files \
-		2>&1 | tee \$*.log
-	if test -s \$*.log ; \
-	then rm \$*.log ; false ; \
-	fi
-	cd \$(GEN_CLASSDIR) ; \
-		find * -name '*.class' -print \
-		| \$(JAR) -@ -cf \$@
-	mv \$(GEN_CLASSDIR)/\$@ \$@
 
 # Finally, merge the .so and .jar files into the java .db file.
 

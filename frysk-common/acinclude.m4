@@ -40,33 +40,49 @@
 
 AC_PROG_RANLIB
 
-# XXX: AC_PATH_PROGS, given <<JAVAC=/path/to/gcj -C>>, looses the
-# <<-C>>.  XXX: AC_PATH_PROG, given <<JAVAC=gcj>>, discards the
-# environment variable as it isn't absolute (which is contrary to
-# AC_PATH_PROGS).
+# Use AC_CHECK_PROGS, and not AC_PATH_PROGS and AC_PATH_PROG.
+
+# AC_PATH_PROGS, as when given an environment containing the variable
+# <<JAVAC=/path/to/gcj -C>> it looses the <<-C>>.  AC_PATH_PROG, when
+# given an environment containing a variable like <<JAVAC=gcj>> it
+# ignores it (which is contrary behavior to AC_PATH_PROGS).
 
 AC_PROG_CXX([g++4 g++ c++])
 test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
-# XXX: AM_PROG_GCJ doesn't take arguments, hack around it.
+AC_PROG_CC([gcc4 gcc cc])
+AM_PROG_CC_C_O
+test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
+AM_PROG_AS
+
+# XXX: AM_PROG_GCJ doesn't take arguments, hack around it by first
+# explictly searching for the GCJ program pushing it into the
+# environment where AM_PROG_GCJ will find it.
+
 AC_CHECK_PROGS([GCJ], [gcj4 gcj], [gcj])
 AM_PROG_GCJ
 test x"$GCJFLAGS" = "x-g -O2" && GCJFLAGS="-g -O"
-# Prefer ECJ over GCJ, avoid JAVAC as that could easily be a
-# third-party compiler.
-AC_CHECK_PROGS([JAVAC], [ecj 'gcj4 -C' 'gcj -C' javac], ['gcj -C'])
+
+# Find all the GCJ utilities.  Prefer gcc4.
+
 AC_CHECK_PROGS([GCJH], [gcjh4 gcjh])
 AC_CHECK_PROGS([JAR], [fastjar4 fastjar jar], [fastjar])
 AC_CHECK_PROGS([GCJ_DBTOOL], [gcj-dbtool4 gcj-dbtool], [gcj-dbtool])
 AC_CHECK_PROGS([JV_SCAN], [jv-scan4 jv-scan], [jv-scan])
-AC_PROG_CC([gcc4 gcc cc])
-AM_PROG_CC_C_O
-test x"$CFLAGS" = "x-g -O2" && CFLAGS="-g -O"
-AC_CHECK_PROGS([JAVA], [gij4 gij java], [gij])
 AC_CHECK_PROGS([GIJ], [gij4 gij], [gij])
+
+# Always use GCJ as the Java compiler.  While other, possibly better,
+# alternatives might be available, using those alternatives can (and
+# did) lead to problems such as: developers missing problems in the
+# base-line build compiler; and developers testing code different to
+# what will be shipped.  Having said that, do allow people to override
+# this.
+
+JAVAC="${JAVAC:-$GCJ -C}"
+AC_SUBST([JAVAC])
 
 # Only add -warn flags when the compiler is known to be ECJ.
 AC_MSG_CHECKING([java flags])
-case ${JAVAC} in
+case "${JAVAC}" in
 gcj* | */gcj* ) JAVACFLAGS='-g -classpath $(SOURCEPATH):$(CLASSPATH)' ;;
 ecj | */ecj ) JAVACFLAGS='-warn:+semicolon -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
 * ) JAVACFLAGS='-g -sourcepath $(SOURCEPATH) -classpath $(CLASSPATH)' ;;
@@ -74,11 +90,31 @@ esac
 AC_SUBST([JAVACFLAGS])
 AC_MSG_RESULT(${JAVACFLAGS})
 
+# Always use GIJ as the byte code interpreter.  java programs, run
+# during the build, need to see the GNU Java environment.  That
+# environment classes such as gnu.gcj.RawData which can be found using
+# reflection.
+
+JAVA="${JAVA:-$GIJ}"
+AC_SUBST([JAVA])
+
+# Check for the ECJ compiler.  If available, enable rules that push
+# all the java code through that compiler.  Doing this adds an
+# additional (but optional) code check -- ECJ tends to find more
+# errors than GCJ.
+
+ECJ_JAR=${ECJ_JAR:-/usr/share/java/eclipse-ecj.jar}
+AC_SUBST([ECJ_JAR])
+AC_CHECK_PROGS([ECJ], [ecj], [no])
+AM_CONDITIONAL(HAVE_ECJ, test x"${ECJ}" != xno)
+
 # Check for the availablity of fig2dev
+
 AC_PATH_PROG(FIG2DEV, fig2dev)
 test "x$FIG2DEV" = x && AC_MSG_ERROR([no fig2dev binary is found in \$(PATH)])
 
-AM_PROG_AS
+# Padd PKG_CONFIG_PATH with frysk's local directories.  Be careful to
+# use lib|lib64.
 
 lib=`pkg-config --debug 2>&1 |awk -F '/' '/^Scanning.*pkgconfig.$/ { print $(NF - 1); exit; }'`
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/frysk/$lib/pkgconfig:/usr/$lib/frysk/pkgconfig

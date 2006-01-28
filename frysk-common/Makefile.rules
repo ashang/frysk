@@ -112,10 +112,6 @@ DBPATH = $(subst $(space),:,$(strip \
 	$(foreach dir,$(patsubst %/$(GEN_CLASSDIR),%,$(filter-out %.jar,$(GEN_CLASSPATH))),$(dir)/$(notdir $(dir)).db) \
 	))
 
-JAVAC = @JAVAC@
-JAVACFLAGS = @JAVACFLAGS@
-
-
 # XXX: GCJ: I think there should be a -Wextraneous-throws; I think
 # -Wno-deprecated is backward; I think -Wredundant-modifiers is broken
 # with gcc4.  It appears to complain about abstract methods in a
@@ -420,3 +416,62 @@ distclean-cvsignored:
 	| while read f ; do \
 		( cd `dirname $$f` && rm -rf `cat .cvsignore` ) ; \
 	done
+
+# Create a list of .java files that need to be compiled.  It turns out
+# that it is faster to just feed all the files en-mass to the compiler
+# (then compile each individually).  Put the list into a file to avoid
+# having too-long an argument list.  Remember to filter out duplicate
+# directories (as occures when building in the source tree).
+
+CLEANFILES += files.list
+files.list: lib${GEN_DIRNAME}.a
+	topdirs= ; \
+	for d in $(top_builddir) $(top_srcdir) ; do \
+	    p=`cd $$d && pwd` ; \
+	    case " $$topdirs " in \
+	        *$$p* ) continue ;; \
+	    esac ; \
+	    topdirs="$$dirs $$p" ; \
+	    for g in $(GEN_DIRS) ; do \
+		find $$p/$$g \
+		    -name '*#*' -prune -o \
+		    -name '[A-Za-z]*.java' -print ; \
+	    done \
+	done > $@.tmp
+	mv $@.tmp $@
+
+${GEN_DIRNAME}.jar: files.list
+	rm -rf $(GEN_CLASSDIR)
+	mkdir -p $(GEN_CLASSDIR)
+	$(JAVAC) -d $(GEN_CLASSDIR) $(JAVACFLAGS) \
+		@$(top_builddir)/files.list \
+		2>&1 | tee $*.log
+	if test -s $*.log ; \
+	then rm $*.log ; false ; \
+	fi
+	rm -f $*.log
+	cd $(GEN_CLASSDIR) ; \
+		find * -name '*.class' -print \
+		| $(JAR) -@ -cf $@
+	mv $(GEN_CLASSDIR)/$@ $@
+
+CLEANFILES += ecj/checked
+ecj/checked: files.list
+	rm -rf ecj
+	mkdir -p ecj
+	$(ECJ) \
+		-d ecj \
+		-warn:+semicolon \
+		-sourcepath $(SOURCEPATH) \
+		-classpath $(CLASSPATH) \
+		@$(top_builddir)/files.list \
+		2>&1 | tee $@.log
+	if test -s $@.log ; \
+	then rm $*.log ; false ; \
+	fi
+	rm -f $@.log
+	touch $@
+
+if HAVE_ECJ
+all-local: ecj/checked
+endif
