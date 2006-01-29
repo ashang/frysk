@@ -18,7 +18,7 @@ body
 }
 div.mainbackground 
 {	background-color: #ffffff;
-	padding: 17 17 17 17;
+	padding: 17px 17px 17px 17px;
 }
 div.maintextregion 
 {	background-color: #5e5e5e;
@@ -97,7 +97,7 @@ div.maintextregion dd
 	margin-left: 10px;
 }
 div.maintextregion table 
-{	margin-top: 20;
+{	margin-top: 20px;
 }
 div.maintextregion th 
 {	color: #ffffff;
@@ -120,7 +120,7 @@ div.maintextregion form
 	background-color: #4d4d4d;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	border: thin solid #424242;
-	padding: 6;
+	padding: 6px;
 }
 div.maintextregion dd.left 
 {	color: #ffffff;
@@ -136,7 +136,7 @@ a:visited
 }
 .imgholder 
 {	text-align: center;
-	padding: 8;
+	padding: 8px;
 }
 .footer a:link 
 {	text-decoration: underline;
@@ -152,7 +152,7 @@ a:visited
 }
 .imgholder 
 {	text-align: center;
-	padding: 1;
+	padding: 1px;
 	width: 99%;
 	overflow: auto;
  	overflow-y: visible;
@@ -161,17 +161,17 @@ div.maintextregion h3
 {	color: #0094ff;
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size: 22px;
-	padding-left: 10;
+	padding-left: 10px;
 }
 .inh3  
 {	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	padding-left: 10;
+	padding-left: 10px;
 }
 ol 
 {	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	color: #ffffff;
-	padding-left: 10;
+	padding-left: 10px;
 }
 ul.intable 
-{	margin-left:16;
+{	margin-left:16px;
 }
