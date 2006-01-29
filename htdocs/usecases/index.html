@@ -14,7 +14,7 @@
 </tr>
 </table>
 <div class="mainbackground">
-<div class="maintextregion"><img src="../fryskcorner.gif">
+<div class="maintextregion"><img src="../fryskcorner.gif" alt="triangle">
 <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17;">
 <tr>
 <td width="100">&nbsp;</td>
@@ -26,19 +26,27 @@
 </p>
 
 <ul>
-<li><p>K., a compiler developer, spends a lot of time running the testsuite,constantly monitoring for compiler crashes.  For each crash, K. then has to go back and reproduce the failing scenario under the debugger so that it is possible to diagnose what is going wrong.  Using
-<i>frysk</i>, K.  can set up:
+<li>
+
+<p>K., a compiler developer, spends a lot of time running the
+testsuite,constantly monitoring for compiler crashes.  For each crash,
+K. then has to go back and reproduce the failing scenario under the
+debugger so that it is possible to diagnose what is going wrong.
+Using <i>frysk</i>, K.  can set up:
 
 <ul>
 <li>An exit observer that alerts K. that the test compiler is  crashing (and gives K. an opportunity to debug it).</li>
 <li>A trace observer that logs key parts of compiler as it runs.</li>
 </ul>
-</p>
-<p>As soon as the compiler crashes, K. is alerted, and can start analyzing the problem.
-</p>
+
+<p>As soon as the compiler crashes, K. is alerted, and can start
+analyzing the problem.</p>
+
 </li>
 <li>
-<p>G., a GNU/Linux SysAdmin, is having trouble with the web server.Every so often, but always at 2am, the shopping-cart daemon will repeatedly crash when being started. G., using 
+<p>G., a GNU/Linux SysAdmin, is having trouble with the web
+server.Every so often, but always at 2am, the shopping-cart daemon
+will repeatedly crash when being started. G., using
 <i>frysk</i>, can implement a custom observer script that, when a repeated exec/crash is detected:
 
 <ul>
@@ -47,7 +55,6 @@
 <li>Saves the trace log</li>
 <li>Disables the shopping-cart.</li>
 </ul>
-</p>
 
 <p>G., on receiving the page, can first login and restart the server, and second save the captured state for later off-line analysis by the development group.
 </p>
@@ -77,41 +84,40 @@ Examples of observers and actions include:
 <li>monitor <tt>gnome-terminal</tt>, and its children prompt for the source browser when the program 
 <tt>eclipse</tt> is started.</li>
 </ul>
-</p>
 
-<div class="imgholder"><img src="set-observer.png" border="0"></div>
+<div class="imgholder"><img src="set-observer.png" border="0" alt="setting an observer"></div>
 <p>Next is a screenshot of the same window, after the observer on 
 <tt>fork()</tt> has been set.
 </p>
-<div class="imgholder"><img src="fork-observer.png" border="0"></div>
+<div class="imgholder"><img src="fork-observer.png" border="0" alt="setting a fork boserver"></div>
 <p>Below is the result of monitoring the process with the fork observer set. 
 There was a fork event, as displayed in the timeline window.
 </p>
-<div class="imgholder"><img src="one-observer.png" border="0"></div>
+<div class="imgholder"><img src="one-observer.png" border="0" alt="one observer"></div>
 <p>Next is how the timeline window displays multiple events triggered when multiple observers have been set (here, the events were hardcoded, obviously).
 </p>
-<div class="imgholder"><img src="multiple-observers.png" border="0"></div>
+<div class="imgholder"><img src="multiple-observers.png" border="0" alt="multiple observers"></div>
 <p>Below is how to navigate to the source window from the process monitor window.
 </p>
-<div class="imgholder"><img src="sourcewindow-start.png" border="0"></div>
+<div class="imgholder"><img src="sourcewindow-start.png" border="0" alt="source window"></div>
 <p>Next is a partial mockup (some parts were taken from a snapshot) of the source view window.  
 On the left hand side is the stack and variable trace, and in the middle the corresponding source.
 </p>
-<div class="imgholder"><img src="sourcewin.png" border="0"></div>
+<div class="imgholder"><img src="sourcewin.png" border="0" alt="source window"></div>
 <p>Below, is a text search run in the source window.
 </p>
-<div class="imgholder"><img src="source_find.png" border="0"></div>
+<div class="imgholder"><img src="source_find.png" border="0" alt="search source"></div>
 <p>Finally, a sequence of screenshots that display how, given inline code (here 
 <tt>do_something()
 </tt>, 
 <tt>b()</tt>, and 
 <tt>f()</tt> were inlined),the source window can display it in place.
 </p>
-<div class="imgholder"><img src="inline1.png" border="0"></div>
-<div class="imgholder"><img src="inline2.png" border="0"></div>
-<div class="imgholder"><img src="inline3.png" border="0"></div>
-<div class="imgholder"><img src="inline4.png" border="0"></div>
-<div class="imgholder"><img src="inline5.png" border="0"></div>
+<div class="imgholder"><img src="inline1.png" border="0" alt="inline code"></div>
+<div class="imgholder"><img src="inline2.png" border="0" alt="inline code"></div>
+<div class="imgholder"><img src="inline3.png" border="0" alt="inline code"></div>
+<div class="imgholder"><img src="inline4.png" border="0" alt="inline code"></div>
+<div class="imgholder"><img src="inline5.png" border="0" alt="inline code"></div>
 </td>
 </tr>
 </table>
