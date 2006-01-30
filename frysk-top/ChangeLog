@@ -1,3 +1,10 @@
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (javadoc): Add -link to
+	http://developer.classpath.org/doc/, and
+	http://java-gnome.sourceforge.net/docs/javadoc/.
+	(PACKAGE_LIST): Delete.
+	
 2006-01-21  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Delete EXCEPTION.

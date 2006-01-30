@@ -53,27 +53,26 @@ SOURCEDIRS = \
 	$(patsubst %,$(srcdir)/%,$(SUBDIRS)) \
 	$(patsubst %,$(top_builddir)/%,$(SUBDIRS)) \
 	$(srcdir)/frysk-imports/jargs/src \
-	$(srcdir)/frysk-imports/jline/src
+	$(srcdir)/frysk-imports/jline/src \
+	$(srcdir)/frysk-imports/junit/src
 SOURCEPATH = $(subst $(space),:,$(strip $(SOURCEDIRS)))
 
 
 
 # Generate JAVADOC documentation.
-
 JAVADOC = gjdoc
-API = j2se/1.4.2/docs/api
-PACKAGE_LIST = $(API)/package-list
 JAVADOC_CLASSPATH = /usr/share/java/libgcj-`$(GCJ) -dumpversion`.jar
 .PHONY: javadoc
-javadoc: javadoc/$(PACKAGE_LIST) all
+javadoc: all
 	for scope in public private ; do \
 		mkdir -p javadoc/$$scope ; \
 		CLASSPATH=$(JAVADOC_CLASSPATH) \
 		$(JAVADOC) \
 		-$$scope \
-		-linkoffline \
-			http://java.sun.com/$(API) \
-			javadoc/$(PACKAGE_LIST) \
+		-link http://developer.classpath.org/doc/ \
+		-link http://java-gnome.sourceforge.net/docs/javadoc/ \
+		-validhtml \
+		-reflection \
 		-sourcepath $(SOURCEPATH) \
 		-overview $(srcdir)/overview.html \
 		-source 1.4 \
@@ -86,9 +85,6 @@ javadoc: javadoc/$(PACKAGE_LIST) all
 		-group "Imported Packages" 'jline*:jargs*:inua*' \
 		-subpackages 'frysk:inua:jline:jargs' ; \
 	done
-javadoc/$(PACKAGE_LIST):
-	mkdir -p `dirname javadoc/$(PACKAGE_LIST)`
-	wget -O javadoc/$(PACKAGE_LIST) http://java.sun.com/$(PACKAGE_LIST)
 
 # Since javadoc re-generates all the files, changing their
 # last-modified time (even when the contents don't change), rsync-a
