@@ -47,7 +47,6 @@ import java.io.FileNotFoundException;
 import java.io.FileInputStream;
 import java.util.logging.Formatter;
 import java.util.logging.FileHandler;
-import java.util.logging.ConsoleHandler;
 
 
 /**
@@ -98,7 +97,6 @@ public class EventLogger
 		    }
 		});
 	    logger.addHandler (handler);
-	    logger.addHandler (new ConsoleHandler ());
 	}
 	catch (IOException e) {
 	    e.printStackTrace ();

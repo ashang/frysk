@@ -1,5 +1,7 @@
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLogger.java: Do not add a ConsoleHandler.
+	
 	* Config.javain: Refactor EventLogger to ...
 	* EventLogger.java: ... new file.  Simplify.
 

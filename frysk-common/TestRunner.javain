@@ -39,16 +39,18 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import junit.framework.TestSuite;
-import junit.framework.TestResult;
-import junit.framework.AssertionFailedError;
-import junit.textui.ResultPrinter;
-import junit.framework.Test;
-import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import frysk.EventLogger;
 import jargs.gnu.CmdLineParser;
+import java.io.PrintStream;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
+import junit.textui.ResultPrinter;
 
 public class TestRunner
     extends junit.textui.TestRunner
@@ -113,6 +115,8 @@ public class TestRunner
 	CmdLineParser parser = new CmdLineParser ();
 	CmdLineParser.Option levelOption
 	    = parser.addStringOption ('l', "level");
+	CmdLineParser.Option consoleOption
+	    = parser.addStringOption ('c', "console");
 	CmdLineParser.Option repeatOption
 	    = parser.addIntegerOption ('r', "repeat");
 
@@ -121,7 +125,7 @@ public class TestRunner
 	}
 	catch (CmdLineParser.OptionException e) {
 	    System.out.println (e.getMessage());
-	    System.out.println ("Usage: [ -l <log-level> ] [ -r <repeat-count> ] [ class ... ]");
+	    System.out.println ("Usage: [ -c <console-level> ] [ -l <log-level> ] [ -r <repeat-count> ] [ class ... ]");
 	    System.exit (FAILURE_EXIT);
 	}
 
@@ -136,6 +140,26 @@ public class TestRunner
 		System.exit (FAILURE_EXIT);
 	    }
 	    logger.setLevel (level);
+	}
+
+	// Need to set both the console and the main logger as
+	// otherwize the console won't see the log messages.
+	String consoleValue = (String) parser.getOptionValue (consoleOption);
+	if (consoleValue != null) {
+	    Level consoleLevel = null;
+	    try {
+		consoleLevel = Level.parse (consoleValue);
+	    }
+	    catch (IllegalArgumentException e) {
+		System.out.println ("Invalid log console: " + consoleValue);
+		System.exit (FAILURE_EXIT);
+	    }
+	    System.out.println ("console " + consoleLevel);
+	    Handler consoleHandler = new ConsoleHandler ();
+	    consoleHandler.setLevel (consoleLevel);
+	    logger.addHandler (consoleHandler);
+	    logger.setLevel (consoleLevel);
+	    System.out.println (consoleHandler);
 	}
 
 	Integer repeatValue = (Integer) parser.getOptionValue (repeatOption);
