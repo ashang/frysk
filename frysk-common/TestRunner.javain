@@ -48,6 +48,7 @@ import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.Config;
+import jargs.gnu.CmdLineParser;
 
 public class TestRunner
     extends junit.textui.TestRunner
@@ -103,41 +104,54 @@ public class TestRunner
 
     public static void main (String[] args)
     {
-	Logger logger = Config.EventLogger.get ("logs/", "frysk_core_event.log");
-	Level level = logger.getLevel ();
-	String level_name = "";
-	String level_names [] = {"INFO", "CONFIG", "FINE", "FINER", "FINEST"};
-	Level levels [] = {Level.INFO, Level.CONFIG, Level.FINE, Level.FINER, Level.FINEST};
-	int first_test_arg = 0;
+	Logger logger = Config.EventLogger.get ("logs/",
+						"frysk_core_event.log");
+
 	TestRunner runner = new TestRunner (new Results (System.out));
         TestSuite testSuite = new TestSuite ();
         int repeats = 1;
 
-	if (args.length > 0 && args[0].compareTo ("-level") == 0) {
-	    int j;
-	    if (args.length >= 2) 
-		level_name = args[1];
-	    first_test_arg = 2;
-	    for (j = 0; j < level_names.length; j++)
-		if (level_name.compareTo (level_names[j]) == 0) {
-		    logger.setLevel (levels [j]);
-		    break;
-		}
-	    if (j == level_names.length) {
-		System.err.println ("Usage -level L, where L is one of:");
-		for (int k = 0; k < level_names.length; k++)
-		    System.err.println (level_names[k]);
-		System.exit (FAILURE_EXIT);
-	    }
+	CmdLineParser parser = new CmdLineParser ();
+	CmdLineParser.Option levelOption
+	    = parser.addStringOption ('l', "level");
+	CmdLineParser.Option repeatOption
+	    = parser.addIntegerOptioni ('r', "repeat");
+
+	try {
+	    parser.parse(args);
+	}
+	catch (CmdLineParser.OptionException e) {
+	    System.out.println (e.getMessage());
+	    System.out.println ("Usage: [ -l <log-level> ] [ -r <repeat-count> ] [ class ... ]");
+	    System.exit (FAILURE_EXIT);
 	}
 
-        if (args.length > first_test_arg) {
+	String levelValue = (String) parser.getOptionValue (levelOption);
+	if (levelValue != null) {
+	    Level level = null;
+	    try {
+		level = Level.parse (levelValue);
+	    }
+	    catch (IllegalArgumentException e) {
+		System.out.println ("Invalid log level: " + levelValue);
+		System.exit (FAILURE_EXIT);
+	    }
+	    logger.setLevel (level);
+	}
+
+	Integer repeatValue = (Integer) parser.getOptionValue (repeatOption);
+	if (repeatValue != null) {
+	    repeats = repeatValue.intValue ();
+	}
+
+	String[] otherArgs = parser.getRemainingArgs ();
+        if (otherArgs.length > 0) {
 	    // Construct the testsuite from the list of names.
-            for (int i = first_test_arg; i < args.length; i++) {
-                if (args[i].charAt (0) == '-')
-		    repeats = -Integer.parseInt (args[i]);
+            for (int i = 0; i < otherArgs.length; i++) {
+                if (otherArgs[i].charAt (0) == '-')
+		    repeats = -Integer.parseInt (otherArgs[i]);
                 else
-                    testSuite.addTest (runner.getTest (args[i]));
+                    testSuite.addTest (runner.getTest (otherArgs[i]));
             }
         }
         else {
@@ -152,11 +166,10 @@ public class TestRunner
 	        if (!testResult.wasSuccessful()) 
 		    System.exit (FAILURE_EXIT);
             }
-	    System.exit(SUCCESS_EXIT);
 	} catch(Exception e) {
 	    System.err.println(e.getMessage());
 	    System.exit (EXCEPTION_EXIT);
 	}
-	logger.setLevel (level);
+	System.exit (SUCCESS_EXIT);
     }
 }
