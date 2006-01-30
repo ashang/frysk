@@ -393,6 +393,7 @@ public class SourceView extends TextView implements View,
 	
 	public void setMode(boolean isAssembly){
 		this.load(this.buf.getScope(), isAssembly);
+		this.refresh();
 	}
 	
 	/**

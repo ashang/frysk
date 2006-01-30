@@ -1,3 +1,22 @@
+2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (isLineExecutable): Now returns true for every line
+	less than or equal to the last line if assembly code is being shown.
+	(isLineBroken): Returns false if assembly code is being shown, will
+	have to review this later as to breakpoints in assembly code.
+	(toggleBreakpoint): Returns false if assembly code is being shown,
+	see above comment.
+	(getVariable): Always returns null if assembly code is being shown,
+	since variables do not make sense in that context.
+	(getLineCount): If assembly is being shown returns the length
+	of the buffer, rather than the contents of the DOM.
+	(hasInlineCode): Now returns false if assembly code is being shown for
+	now, will this change once we're displaying mixed mode with inlined code?
+	(setScope): Now sets member variable indicating whether assembly code
+	is being displayed.
+	* SourceView.java (setMode): Now calls refresh on the widget after
+	showing assembly code.
+
 2006-01-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (setScope): Now takes boolean as to whether the

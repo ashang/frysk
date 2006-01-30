@@ -77,55 +77,32 @@ public class SourceBuffer extends TextBuffer {
 
 	/* CONSTANTS */
 	protected static final String INLINE_TAG = "INLINE";
-
 	protected static final String COMMENT_TAG = "COMMENT";
-
 	protected static final String MEMBER_TAG = "MEMBER";
-
 	protected static final String FUNCTION_TAG = "FUNCTION";
-
 	protected static final String ID_TAG = "ID";
-
 	protected static final String OPTIMIZED_VAR_TAG = "OPTIMIZED_VAR";
-
 	protected static final String OUT_OF_SCOPE_VAR_TAG = "OOS_VAR";
-
 	protected static final String KEYWORD_TAG = "TYPE";
-
 	protected static final String CURRENT_LINE = "currentLine";
-
 	protected static final String FOUND_TEXT = "foundText";
 
 	/* END CONSTANTS */
 
 	private Vector functions;
-
 	private TextMark startCurrentLine;
-
 	private TextMark endCurrentLine;
-
 	private TextIter startCurrentFind;
-
 	private TextIter endCurrentFind;
-
 	private TextTag currentLine;
-
 	private TextTag foundText;
-
 	private TextTag functionTag;
-
 	private TextTag variableTag;
-
 	private TextTag globalTag;
-
 	private TextTag keywordTag;
-
 //	private TextTag commentTag;
-
 	private TextTag classTag;
-
 	private TextTag optimizedVarTag;
-
 	private TextTag oosVarTag;
 
 	private StaticParser staticParser;
@@ -137,6 +114,8 @@ public class SourceBuffer extends TextBuffer {
 
 	protected TextChildAnchor anchor;
 
+	private boolean showingAssembly = false;
+	
 	/**
 	 * Creates a new SourceBuffer
 	 */
@@ -163,6 +142,9 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether or not the line is executable
 	 */
 	public boolean isLineExecutable(int lineNo) {
+		if(showingAssembly)
+			return lineNo <= this.getLineCount();
+		
 		DOMLine line = this.scope.getData().getLine(lineNo + 1);
 		if (line == null)
 			return false;
@@ -176,6 +158,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @return
 	 */
 	public boolean isLineBroken(int lineNo) {
+		// TODO: How do we deal with breakpoints for assembly code?
+		if(showingAssembly)
+			return false;
+		
 		DOMLine line = this.scope.getData().getLine(lineNo + 1);
 		if (line == null)
 			return false;
@@ -198,6 +184,10 @@ public class SourceBuffer extends TextBuffer {
 	 *             valid line number
 	 */
 	public boolean toggleBreakpoint(int lineNum) {
+		// TODO: Assembly breakpoints?
+		if(showingAssembly)
+			return false;
+		
 		if (!this.isLineExecutable(lineNum))
 			return false;
 
@@ -470,6 +460,9 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The variable at that location, or null
 	 */
 	public Variable getVariable(TextIter iter) {
+		if(showingAssembly)
+			return null;
+		
 		DOMLine line = this.scope.getData().getLine(iter.getLineNumber() + 1);
 		DOMTag tag = line.getTag(iter.getLineOffset());
 
@@ -649,7 +642,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The number of lines in the file
 	 */
 	public int getLineCount() {
-		return this.scope.getData().getLineCount();
+		if(!showingAssembly)
+			return this.scope.getData().getLineCount();
+		else
+			return this.getEndIter().getLineNumber();
 	}
 
 	/**
@@ -667,6 +663,10 @@ public class SourceBuffer extends TextBuffer {
 	 * @return true iff the given line has inlined code
 	 */
 	public boolean hasInlineCode(int lineNumber) {
+		// TODO: Inline code with assembly?
+		if(showingAssembly)
+			return false;
+		
 		return this.scope.getData().getLine(lineNumber + 1).hasInlinedCode();
 	}
 
@@ -699,6 +699,8 @@ public class SourceBuffer extends TextBuffer {
 			if(this.markExists((String) functions.get(i)))
 				this.deleteMark(((String) functions.get(i)));
 
+		this.showingAssembly = isAssembly;
+		
 		this.anchor = null;
 		this.functions = new Vector();
 		this.scope = scope;
