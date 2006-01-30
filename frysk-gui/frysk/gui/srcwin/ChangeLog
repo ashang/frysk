@@ -1,5 +1,26 @@
 2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
 
+	* View.java (scrollToFunction): Added.
+	(scrollToLine): Added.
+	(getFunctions): Added.
+	(getScope): Added.
+	(showAll): Added.
+	(getParent): Added.
+	* MixedView.java: Added new interface methods.
+	(MixedView): Created.
+	(refresh): Added, calls refresh on children.
+	(findNext): Now searches through the source, then assembly.
+	(highlightAll): Now highlights every match in both buffers.
+	(load): Loads data for both buffers.
+	(getScope): Funnels call down to source buffer.
+	* SourceView.java: Added new interface methods.
+	* SourceWindow.java (comboBoxEvent): Now deals with the case where 
+	the SOURCE/ASM option is chosen, as well as delegating the function
+	goto cababilities to the View.
+	(populateStackBrowser): Removed casts made possible by interface changes.
+	(populateFunctionBox): Now uses getFunctions from View.
+	
+
 	* SourceBuffer.java (setScope): No longer takes boolean for assembly
 	code, now to set assembly code you must call setShowAssembly, old
 	version was made private.

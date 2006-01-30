@@ -70,7 +70,6 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
-import org.gnu.gtk.TextMark;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
@@ -79,6 +78,7 @@ import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
 import org.gnu.gtk.event.ActionListener;
@@ -148,7 +148,7 @@ public class SourceWindow extends Window implements ButtonListener,
 	private String gladePath;
 	private LibGlade glade;
 
-	private SourceView view;
+	private View view;
 
 	private PreferenceWindow prefWin;
 
@@ -302,25 +302,45 @@ public class SourceWindow extends Window implements ButtonListener,
 	public void comboBoxEvent(ComboBoxEvent event) {
 		String text = ((ComboBox) event.getSource()).getActiveText();
 		if(event.getSource() instanceof ComboBoxEntry){
-			if (((SourceBuffer) this.view.getBuffer()).getFunctions().contains(
-					text + "_FUNC")) {
-				TextMark mark = this.view.getBuffer().getMark(text + "_FUNC");
-				this.view.scrollToMark(mark, 0);
-			}
+			this.view.scrollToFunction(text + "_FUNC");
 		}
 		else{
-			System.out.println(text);
 			if(text.equals("SOURCE")){
-				this.view.setMode(false);
+				if(this.view instanceof SourceView){
+					((SourceView) this.view).setMode(false);
+				}
+				else{
+					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
+						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
+					this.view = new SourceView(this.view.getScope(), this);
+					
+					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+						.add((Widget) this.view);
+					this.view.showAll();
+				}
 			}
 			else if(text.equals("ASM")){
-				this.view.setMode(true);
+				if(this.view instanceof SourceView){
+					((SourceView) this.view).setMode(true);
+				}
+				else{
+					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
+						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
+					this.view = new SourceView(this.view.getScope(), this);
+					
+					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+						.add((Widget) this.view);
+					((SourceView) this.view).setMode(true);
+					this.view.showAll();
+				}
 			}
-			else if(text.equals("SOURCE/ASM")){
+			else if(text.equals("SOURCE/ASM") && !(this.view instanceof MixedView)){
+				((Container) this.view.getParent()).remove((Widget) this.view);
+				this.view = new MixedView(this.view.getScope(), this);
 				
-			}
-			else if(text.equals("MIXED")){
-				
+				((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+					.addWithViewport((Widget) this.view);
+				this.view.showAll();
 			}
 		}
 	}
@@ -333,11 +353,9 @@ public class SourceWindow extends Window implements ButtonListener,
 		this.view.refresh();
 
 		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.TOOLBAR)){
-			System.out.println("Showing toolbar");
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
 		}
 		else{
-			System.out.println("Hiding toolbar");
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
 		}
 	}
@@ -392,10 +410,10 @@ public class SourceWindow extends Window implements ButtonListener,
 		stackList.appendColumn(column);
 
 		if (this.view != null)
-			((Container) this.view.getParent()).remove(this.view);
+			((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
 		this.view = new SourceView(lastStack, this);
 		((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
-				.add(this.view);
+				.add((Widget) this.view);
 		this.view.showAll();
 
 		stackList.getSelection().setMode(SelectionMode.SINGLE);
@@ -1166,7 +1184,7 @@ public class SourceWindow extends Window implements ButtonListener,
 				.getWidget(SourceWindow.FUNC_SELECTOR);
 		DataColumnString col = new DataColumnString();
 		ListStore newModel = new ListStore(new DataColumn[] { col });
-		Vector funcs = ((SourceBuffer) this.view.getBuffer()).getFunctions();
+		Vector funcs = this.view.getFunctions();
 		TreeIter iter = newModel.appendRow();
 		for (int i = 0; i < funcs.size(); i++) {
 			newModel.setValue(iter, col, ((String) funcs.get(i)).split("_")[0]);

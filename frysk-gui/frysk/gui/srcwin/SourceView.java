@@ -38,6 +38,8 @@
 // exception.
 package frysk.gui.srcwin;
 
+import java.util.Vector;
+
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
 import org.gnu.gdk.CursorType;
@@ -53,6 +55,7 @@ import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
+import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.TextWindowType;
 import org.gnu.gtk.WindowType;
@@ -703,5 +706,20 @@ public class SourceView extends TextView implements View,
 		event.refireIfHint();
 			
 		return false;
+	}
+
+	public void scrollToFunction(String markName) {
+		if (this.buf.getFunctions().contains(markName)) {
+			TextMark mark = this.buf.getMark(markName);
+			this.scrollToMark(mark, 0);
+		}
+	}
+
+	public Vector getFunctions() {
+		return this.buf.getFunctions();
+	}
+
+	public StackLevel getScope() {
+		return this.buf.getScope();
 	}
 }
