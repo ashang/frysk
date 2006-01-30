@@ -52,6 +52,7 @@ GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/
 GEN_CLASSPATH += ../frysk-imports/jline.jar
 GEN_CLASSPATH += ../frysk-imports/antlr.jar
 GEN_CLASSPATH += ../frysk-imports/junit.jar
+GEN_CLASSPATH += ../frysk-imports/jargs.jar
 GEN_CLASSPATH += ../frysk-imports/jdom.jar
 GEN_GCJ_LDADD += ../frysk-sys/libfrysk-sys.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a

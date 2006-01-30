@@ -1,3 +1,7 @@
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_CLASSPATH): Add jargs.jar.
+
 2006-01-26  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EggTrayIcon_libEggTrayIcon_a_CFLAGS): Delete.

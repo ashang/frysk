@@ -43,6 +43,7 @@ include Makefile.gen
 SUBDIRS = tlwidgets tests
 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
+GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jargs.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += $(FRYSK_GTK_JARS)
 
