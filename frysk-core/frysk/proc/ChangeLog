@@ -1,3 +1,9 @@
+2006-01-29  Stan Cox  <scox@redhat.com>
+
+	* Proc.java (retain): Use HashMap instead of Collection.
+	* TestExec.java (testAttachedSingleExec): New.
+	(testAttachedMultipleExec): New.
+
 2006-01-24  Stan Cox  <scox@redhat.com>
 
 	* Host.java (add,remove,removeTasks,get,getProc,requestRefresh,execute)

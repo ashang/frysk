@@ -112,36 +112,68 @@ public class TestExec
      * A single threaded program performs an exec, check that it is correctly
      * tracked. 
      */
-    public void testUnattachedSingleExec ()
+    public void testAttachedSingleExec ()
     {
-	AckProcess child = new AckDaemonProcess ();
-	Proc proc = child.findProcUsingRefresh ();
+	AckProcess child = new AttachedAckProcess ();
+	Proc proc = child.findProcUsingRefresh (true);
 	
-	child.exec (child.getPid ());
+	child.exec ();
 
-	host.requestRefresh ();
+	Manager.host.requestRefresh (true);
 	Manager.eventLoop.runPending ();
-
 
 	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
     }
 
     /**
-     * A single threaded program performs an exec, check that it is correctly
+     * A multiple threaded program performs an exec, check that it is correctly
      * tracked. 
-     *
      */
-    public void testAttachedSingleExec ()
+    public void testAttachedMultipleExec ()
     {
 	AckProcess child = new AttachedAckProcess ();
-	Proc proc = child.findProcUsingRefresh ();
+	Proc proc = child.findProcUsingRefresh (true);
+
+	// Watch for any Task exec events, accumulating them as they arrive.
+	class ExecObserver
+	    extends AutoAddTaskObserverBase
+	    implements TaskObserver.Execed
+	{
+	    int saved_tid = 0;
+	    public Action updateExeced (Task task)
+	    {
+	    Manager.eventLoop.requestStop ();
+		return Action.CONTINUE;
+	    }
+	    void requestAdd (Task task)
+	    {
+		task.requestAddExecedObserver (this);
+	    }
+	    void updateTaskAdded (Task task)
+	    {
+		saved_tid = task.getTid ();
+		task.requestAddExecedObserver (this);
+	    }
+	}
+	ExecObserver execObserver = new ExecObserver ();
+
+	child.addClone ();
+	execObserver.requestAdd (child.findTaskUsingRefresh (false));
+	child.addClone ();
+	Task task = child.findTaskUsingRefresh (false);
+	child.exec (task.getTid ());
+
+	Manager.host.requestRefresh (true);
 	
-	child.exec (child.getPid ());
-
-	host.requestRefresh ();
-	Manager.eventLoop.runPending ();
-
-
-	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
+	assertSame ("task after attached multiple clone exec", proc,
+		    task.getProc()); // parent/child relationship
+	assertTrue ("task after attached multiple clone exec",
+		    proc.getPid () != task.getTid ()); // not main task
+	
+	assertEquals ("proc's getCmdLine[0]",
+		      proc.getPid () + ":" + task.getTid (),
+		      proc.getCmdLine ()[0]);
+	
+	assertEquals ("pid after attached multiple clone exec", task.getTid (), execObserver.saved_tid);
     }
 }

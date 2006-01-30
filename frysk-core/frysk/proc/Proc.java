@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Map;
@@ -424,11 +423,13 @@ public abstract class Proc
     {
 	logger.log (Level.FINE, "{0} retain(Task) -- remove all but task\n",
 		    this); 
-	Collection tasks = taskPool.values();
-	tasks.remove (task);
-	taskPool.values().removeAll (tasks);
-	host.removeTasks (tasks);
+	HashMap new_tasks = new HashMap();
+	new_tasks = (HashMap)((HashMap)taskPool).clone ();
+	new_tasks.values().remove( task);
+	taskPool.values().removeAll (new_tasks.values());
+	host.removeTasks (new_tasks.values());
     }
+    
     /**
      * Return this Proc's Task's as a list.
      */
