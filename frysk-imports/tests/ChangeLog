@@ -1,3 +1,8 @@
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS, noinst_SCRIPTS): Replace
+	check_PROGRAMS, and check_SCRIPTS so that tests are always built.
+
 2006-01-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add rh177240/strace-clone-exec.shin.

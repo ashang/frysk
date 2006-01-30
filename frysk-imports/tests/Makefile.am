@@ -39,14 +39,14 @@
 
 EXTRA_DIST =
 # Gag all the output from the failing tests
-check_PROGRAMS =
-check_SCRIPTS =
+noinst_PROGRAMS =
+noinst_SCRIPTS =
 TESTS_ENVIRONMENT = eval > log 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
 $(TESTS) $(XFAIL_TESTS): Makefile
-CLEANFILES = $(TESTS) $(check_SCRIPTS)
+CLEANFILES = $(TESTS) $(noinst_SCRIPTS)
 .shin.sh:
 	cp $< $@.tmp
 	chmod a+x $@.tmp
@@ -67,20 +67,20 @@ check-local:
 # This failed in GCC 4.0 beta
 logger_Npe_SOURCES = logger/Npe.java
 logger_Npe_LDFLAGS = --main=Npe
-check_PROGRAMS += logger/Npe
+noinst_PROGRAMS += logger/Npe
 TESTS += logger/Npe
 
 # This failed in GCJ 4, but passes in GCJ 4.1.
 anoncall_Anon_SOURCES = anoncall/Anon.java
 anoncall_Anon_LDFLAGS = --main=Anon
 TESTS += anoncall/Anon
-check_PROGRAMS += anoncall/Anon
+noinst_PROGRAMS += anoncall/Anon
 
 # This fails on gcj 4, but passes on gcj 4.1.
 nestcall_Nest_SOURCES = nestcall/Nest.java
 nestcall_Nest_LDFLAGS = --main=Nest
 XFAIL_TESTS += nestcall/Nest
-check_PROGRAMS += nestcall/Nest
+noinst_PROGRAMS += nestcall/Nest
 
 TESTS += cniinner/a.out
 cniinner_FILES = \
@@ -104,16 +104,16 @@ cniinner/a.out: $(cniinner_FILES)
 XFAIL_TESTS += samename/SameName
 samename_SameName_SOURCES = samename/SameName.java
 samename_SameName_LDFLAGS = --main=SameName
-check_PROGRAMS += samename/SameName
+noinst_PROGRAMS += samename/SameName
 
 XFAIL_TESTS += packagename/O.out
 packagename_O_SOURCES = packagename/O.java
 packagename_O_LDFLAGS = --main=packagename.O
-check_PROGRAMS += packagename/O
+noinst_PROGRAMS += packagename/O
 TESTS += packagename/C.out
 packagename_C_SOURCES = packagename/C.java
 packagename_C_LDFLAGS = --main=packagename.C
-check_PROGRAMS += packagename/C
+noinst_PROGRAMS += packagename/C
 
 # Compiling Werror with -Werror -Wall should get a warning and hence
 # abort the compilation.  At least GCC 4.0.1 20050727 (Red Hat
@@ -190,7 +190,7 @@ process_multi_child_exec_LDFLAGS = -lpthread
 process_multi_parent_exec_LDFLAGS = -lpthread
 process_multi_child_parent_exec_LDFLAGS = -lpthread
 TESTS += $(process_TESTS)
-check_PROGRAMS += $(process_TESTS)
+noinst_PROGRAMS += $(process_TESTS)
 
 # GCJ complains that frysk.model.Signal isn't visible from
 # frysk.event.SignalEvent, it should have imported frysk.event.Signal.
@@ -242,12 +242,12 @@ $(CDTPARSER_JAR):
 	cd `dirname $(CDTPARSER_JAR)` && $(MAKE)
 
 # Test effect of argv on /proc/PID/cmdline (should not abort)
-check_PROGRAMS += cmdline/dump cmdline/print
+noinst_PROGRAMS += cmdline/dump cmdline/print
 TESTS += cmdline/print
 
 # Test an strace of a cloned exec.
 EXTRA_DIST += rh177240/strace-clone-exec.shin
-check_PROGRAMS += rh177240/threadexec
-check_SCRIPTS += rh177240/strace-clone-exec.sh
+noinst_PROGRAMS += rh177240/threadexec
+noinst_SCRIPTS += rh177240/strace-clone-exec.sh
 rh177240_threadexec_LDFLAGS = -lpthread
 TESTS += rh177240/strace-clone-exec.sh

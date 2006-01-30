@@ -272,7 +272,7 @@ TestRunner_LINK = \${GCJLINK}
 TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
 TESTS += TestRunner
-check_PROGRAMS += TestRunner
+noinst_PROGRAMS += TestRunner
 EOF
 
 
