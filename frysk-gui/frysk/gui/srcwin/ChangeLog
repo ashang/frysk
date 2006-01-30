@@ -19,7 +19,6 @@
 	goto cababilities to the View.
 	(populateStackBrowser): Removed casts made possible by interface changes.
 	(populateFunctionBox): Now uses getFunctions from View.
-	
 
 	* SourceBuffer.java (setScope): No longer takes boolean for assembly
 	code, now to set assembly code you must call setShowAssembly, old

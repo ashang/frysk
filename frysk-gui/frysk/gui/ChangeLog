@@ -1,3 +1,7 @@
+2006-01-31  Adam Jocksch <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Removed "MIXED" option from mode selector.
+
 2006-01-27  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FryskGui.java (mainGui): Add hideAll() to help with
