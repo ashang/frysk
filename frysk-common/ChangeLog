@@ -1,5 +1,7 @@
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRunner.javain: Fix typo, Optioni -> Option.
+	
 	* TestRunner.javain: Implement options using jargs, new option
 	names are --level and --repeat.
 

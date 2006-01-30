@@ -115,7 +115,7 @@ public class TestRunner
 	CmdLineParser.Option levelOption
 	    = parser.addStringOption ('l', "level");
 	CmdLineParser.Option repeatOption
-	    = parser.addIntegerOptioni ('r', "repeat");
+	    = parser.addIntegerOption ('r', "repeat");
 
 	try {
 	    parser.parse(args);
