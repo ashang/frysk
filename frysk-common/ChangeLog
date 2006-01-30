@@ -1,5 +1,8 @@
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (distclean-cvsignored): Fix typo, $@.log, not
+	$*.log.
+
 	* TestRunner.javain: Import frysk.EventLogger.
 
 	* Makefile.gen.sh (noinst_PROGRAMS): Add TestRunner so that it is

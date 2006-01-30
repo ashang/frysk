@@ -467,7 +467,7 @@ ecj/checked: files.list
 		@$(top_builddir)/files.list \
 		2>&1 | tee $@.log
 	if test -s $@.log ; \
-	then rm $*.log ; false ; \
+	then rm $@.log ; false ; \
 	fi
 	rm -f $@.log
 	touch $@
