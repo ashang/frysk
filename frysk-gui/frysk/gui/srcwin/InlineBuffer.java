@@ -38,7 +38,7 @@ public class InlineBuffer extends SourceBuffer {
 		this.instance = instance;
 		this.declaration = this.instance.getDeclaration();
 		StackLevel myScope = new StackLevel(scope, instance.getPCLine());
-		this.setScope(myScope, false);
+		this.setScope(myScope);
 	}
 	
 	
@@ -246,7 +246,7 @@ public class InlineBuffer extends SourceBuffer {
     		this.instance = instance.getInlineInstance();
     		this.declaration = this.instance.getDeclaration(); 
     		StackLevel myScope = new StackLevel(this.declaration.getSource(), instance.getPCLine());
-    		this.setScope(myScope, false);
+    		this.setScope(myScope);
     	}
     	// Can we even get a case where there is no next inline instance and this method
     	// is called?
@@ -262,7 +262,7 @@ public class InlineBuffer extends SourceBuffer {
     		this.instance = instance.getPreviousInstance();
     		this.declaration = this.instance.getDeclaration();
     		StackLevel myScope = new StackLevel(this.declaration.getSource(), instance.getPCLine());
-    		this.setScope(myScope, false);
+    		this.setScope(myScope);
     	}
     	// Same connundrum as above method...
     }

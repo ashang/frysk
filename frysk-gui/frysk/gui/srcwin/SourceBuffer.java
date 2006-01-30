@@ -131,7 +131,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public SourceBuffer(StackLevel scope) {
 		this();
-		this.setScope(scope, false);
+		this.setScope(scope);
 	}
 
 	/**
@@ -686,15 +686,18 @@ public class SourceBuffer extends TextBuffer {
 		return new DOMInlineInstance((Element) iter.next());
 	}
 
+	public void setScope(StackLevel scope){
+		this.setScope(scope, false);
+	}
+	
 	/**
 	 * Sets the scope that will be displayed by this buffer to the provided
 	 * scope.
 	 * 
 	 * @param scope
 	 *            The stack frame to be displayed
-	 * @param isAssembly TODO
 	 */
-	public void setScope(StackLevel scope, boolean isAssembly) {
+	private void setScope(StackLevel scope, boolean isAssembly) {
 		for (int i = 0; i < functions.size(); i++)
 			if(this.markExists((String) functions.get(i)))
 				this.deleteMark(((String) functions.get(i)));
@@ -718,6 +721,11 @@ public class SourceBuffer extends TextBuffer {
 						.getColEnd());
 	}
 
+	public void setShowAssembly(boolean showAssembly){
+		this.setScope(this.getScope(), showAssembly);
+	}
+		
+	
 	/**
 	 * Creates the anchor at the current line that will to which the inlined
 	 * code will be attached. If a previous anchor exists it will be overridden.

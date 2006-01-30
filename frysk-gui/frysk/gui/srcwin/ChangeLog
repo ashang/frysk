@@ -1,5 +1,12 @@
 2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (setScope): No longer takes boolean for assembly
+	code, now to set assembly code you must call setShowAssembly, old
+	version was made private.
+	(setShowAssembly): Added.
+	* SourceView.java (load): No longer takes boolean for assembly code.
+	(setMode): Now calls setShowAssembly rather than setScope.
+
 	* SourceBuffer.java (isLineExecutable): Now returns true for every line
 	less than or equal to the last line if assembly code is being shown.
 	(isLineBroken): Returns false if assembly code is being shown, will
