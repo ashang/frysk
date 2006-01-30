@@ -1,5 +1,3 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
 // Copyright 2005, Red Hat Inc.
@@ -41,27 +39,72 @@
 
 package frysk;
 
+import java.util.logging.Logger;
+import java.util.logging.LogRecord;
+import java.util.logging.LogManager;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.util.logging.Formatter;
+import java.util.logging.FileHandler;
+import java.util.logging.ConsoleHandler;
+
+
 /**
- * All the run-time (install time) configuration information.
+ * The event looger for internal state.
  */
 
-public class Config
+public class EventLogger
 {
-    public static final String PREFIX = "@prefix@";
-    public static final String BINDIR = "@bindir@";
-    public static final String LIBDIR = "@libdir@";
-    public static final String LIBEXECDIR = "@libexecdir@";
-    public static final String DATADIR = "@datadir@";
+    protected EventLogger () {}
+    static private Logger logger = null;
+    
+    static public Logger get (String log_subdir, String log_entry)
+    {
+	if (logger != null) {
+	    return logger;
+	}
+	LogManager manager = LogManager.getLogManager();
 
-    public static final String GLADEDIR = "@gladedir@";
-    public static final String IMAGEDIR = "@imagedir@";
-    public static final String PKGDATADIR = "@pkgdatadir@";
-    public static final String PKGLIBDIR = "@pkglibdir@";
-    public static final String PKGINCLUDEDIR = "@pkgincludedir@";
+	// Read $HOME/.frysk/logging.properties, if present.
+	try {
+	    FileInputStream properties
+		= new FileInputStream (Config.FRYSK_CONFIG
+				       + ".frysk/logging.properties");
+	    manager.readConfiguration (properties);
+	}
+	catch (FileNotFoundException e) {
+	    // toss, don't care
+	}
+	catch (IOException e) {
+	    e.printStackTrace ();
+	    System.exit (1);
+	}
+	catch (SecurityException e) {
+	    e.printStackTrace ();
+	    System.exit (1);
+	}
 
-    public static final String VERSION = "@VERSION@";
+	logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+	try {
+	    FileHandler handler = new FileHandler
+		(Config.FRYSK_CONFIG + log_subdir + log_entry,
+		 1024 * 128, 1);
+	    handler.setFormatter (new Formatter ()
+		{
+		    public String format(LogRecord record)
+		    {
+			return formatMessage(record);
+		    }
+		});
+	    logger.addHandler (handler);
+	    logger.addHandler (new ConsoleHandler ());
+	}
+	catch (IOException e) {
+	    e.printStackTrace ();
+	}
 
-    public static final String FRYSK_CONFIG = System.getProperty("user.home")
-        + "/" + ".frysk" + "/";
-    public static final String FRYSK_LOG_ID = "frysk.core.eventlog";
+	logger.setUseParentHandlers(false);
+	return logger;
+    }
 }

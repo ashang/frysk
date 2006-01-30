@@ -1,5 +1,7 @@
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRunner.javain: Import frysk.EventLogger.
+
 	* Makefile.gen.sh (noinst_PROGRAMS): Add TestRunner so that it is
 	always built.
 

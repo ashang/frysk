@@ -1,5 +1,8 @@
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.javain: Refactor EventLogger to ...
+	* EventLogger.java: ... new file.  Simplify.
+
 	* Config.javain (BUILDDIR, SRCDIR, ABS_BUILDDIR, ABS_SRCDIR):
 	Delete.  Add -*- Java -*- marker.  Re-indent.
 

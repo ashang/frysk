@@ -53,7 +53,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.Long;
 import java.lang.Integer;
-import frysk.Config;
+import frysk.EventLogger;
 
 /**
  * Implements an event loop.
@@ -68,7 +68,7 @@ public class EventLoop
      */
     public EventLoop ()
     {
-	logger = Config.EventLogger.get ("logs/", "frysk_core_event.log");
+	logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	logger.log (Level.FINE, "initializing\n", ""); 
 	// Make certain that the global signal set is empty.
 	Poll.SignalSet.empty ();
