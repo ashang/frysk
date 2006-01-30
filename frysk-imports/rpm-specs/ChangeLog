@@ -1,3 +1,20 @@
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	Now part of Fedora.
+	* cdtparser-3.0.0.spec: Delete.
+	* frysk-glib-java.spec: Delete
+	* frysk-libvte-java.spec: Delete.
+	* frysk-cairo-java.spec: Delete.
+	* frysk-gtk2.spec: Delete.
+	* frysk-pango.spec: Delete.
+	* frysk-cairo.spec: Delete.
+	* frysk-jdom.spec: Delete.
+	* frysk.spec: Delete.
+	* frysk-fontconfig.spec: Delete.
+	* frysk-libglade-java.spec: Delete.
+	* frysk-glib2.spec: Delete.
+	* frysk-libgtk-java.spec: Delete.
+
 2005-10-27  Igor Foox  <ifoox@redhat.com>
 
 	* cdtparser-3.0.0.spec: Removed attribute setting for every file.

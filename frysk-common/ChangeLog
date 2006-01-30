@@ -1,5 +1,7 @@
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
+	* acinclude.m4 (PKG_CONFIG_PATH): Delete /opt/frysk/${lib}.
+
 	* TestRunner.javain (get): Add -c|--console option.  When
 	specified, add a console logger set to log at specified level.
 	
