@@ -1,4 +1,4 @@
-2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
+2006-01-30  Adam Jocksch  <ajocksch@redhat.com>
 
 	* View.java (scrollToFunction): Added.
 	(scrollToLine): Added.
