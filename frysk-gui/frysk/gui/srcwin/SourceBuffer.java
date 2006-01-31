@@ -468,6 +468,8 @@ public class SourceBuffer extends TextBuffer {
 			return null;
 		
 		DOMLine line = this.scope.getData().getLine(iter.getLineNumber() + 1);
+		if(line == null)
+			return null;
 		DOMTag tag = line.getTag(iter.getLineOffset());
 
 		// No var (or no tag), do nothing
@@ -671,7 +673,11 @@ public class SourceBuffer extends TextBuffer {
 		if(mode != SOURCE_MODE)
 			return false;
 		
-		return this.scope.getData().getLine(lineNumber + 1).hasInlinedCode();
+		DOMLine line = this.scope.getData().getLine(lineNumber + 1);
+		if(line == null)
+			return false;
+		
+		return line.hasInlinedCode();
 	}
 
 	/**
@@ -780,6 +786,18 @@ public class SourceBuffer extends TextBuffer {
 		return scope;
 	}
 
+	/**
+	 * Returns the number of lines of assembly code for each line of source code.
+	 * This is used mostly internally to aid in drawing line numbers.
+	 * @param sourceLine The line of source code
+	 * @return The number of assembly instructions associated with the line.
+	 */
+	public int getNumberOfAssemblyLines(int sourceLine){
+		if(this.mode == MIXED_MODE)
+			return 0;
+		return 3;
+	}
+	
 	/*-------------------*
 	 * PRIVATE METHODS   *
 	 *-------------------*/
@@ -1015,31 +1033,4 @@ public class SourceBuffer extends TextBuffer {
 			this.endCurrentFind = null;
 		}
 	}
-
-	// /*
-	// * Generic method to take the given color from the preference model and
-	// update the
-	// * properties of the provided tag to match
-	// */
-	// private void updateTagColor(Preferences node, String prefix, Color
-	// defaultColor, TextTag tag, boolean foreground){
-	// int r = node.getInt(prefix+"_R", defaultColor.getRed());
-	// int g = node.getInt(prefix+"_G", defaultColor.getGreen());
-	// int b = node.getInt(prefix+"_B", defaultColor.getBlue());
-	// if(foreground)
-	// tag.setForeground(ColorConverter.colorToHexString(new Color(r,g,b)));
-	// else
-	// tag.setBackground(ColorConverter.colorToHexString(new Color(r,g,b)));
-	// }
-	//	
-	// /*
-	// * Gets the style from the preference model and uses it to update the
-	// provided
-	// * TextTag
-	// */
-	// private void updateTagStyle(Preferences node, String key, Style
-	// defaultStyle, TextTag tag){
-	// int style = node.getInt(key, defaultStyle.getValue());
-	// tag.setStyle(Style.intern(style));
-	// }
 }

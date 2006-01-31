@@ -365,14 +365,21 @@ public class SourceWindow extends Window implements ButtonListener,
 				 * state
 				 */
 				if(this.view instanceof SourceView){
-					
+					((SourceView) this.view).setMode(SourceBuffer.MIXED_MODE);
 				}
 				/*
 				 * If we're switching from Source/Assembly mode, we need to re-create the
 				 * source view widget
 				 */
 				else{
+					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
+						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
+					this.view = new SourceView(this.view.getScope(), this);
 					
+					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+						.add((Widget) this.view);
+					((SourceView) this.view).setMode(SourceBuffer.MIXED_MODE);
+					this.view.showAll();	
 				}
 			}
 			/*

@@ -1,5 +1,13 @@
 2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (getVariable): Now added check to see if line
+	was null, fixed NPE that can occur when mouse past end of text.
+	(hasInlinedCode): Ditto.
+	(getNumberOfAssemblyLines): Added.
+	* SourceView.java (initialize): Now sets font to monospace.
+	* SourceWindow.java (comboBoxEvent): Added code to set mode of the
+	view to MIXED when appropriate.
+
 	* SourceWindowFactory.java (createSourceWindow): Removed debugging 
 	output, now will print stack trace and exit if source window glade
 	file cannot be found.

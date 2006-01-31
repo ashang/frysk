@@ -68,6 +68,7 @@ import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.MouseMotionEvent;
 import org.gnu.gtk.event.MouseMotionListener;
 import org.gnu.pango.Alignment;
+import org.gnu.pango.FontDescription;
 import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
@@ -435,6 +436,10 @@ public class SourceView extends TextView implements View,
 	 * Performs some operations before the window is shown
 	 */
 	private void initialize() {
+		FontDescription desc = new FontDescription();
+		desc.setFamily("Monospace");
+		this.setFont(desc);
+		
 		// Set all preference-related data
 		this.refresh();
 
