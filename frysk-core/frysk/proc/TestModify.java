@@ -170,7 +170,7 @@ public class TestModify
 
 	TestModifyInternals ()
 	{
-	    host.observableTaskAdded.addObserver (new Observer ()
+	    host.observableTaskAddedXXX.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -182,7 +182,7 @@ public class TestModify
 			task.requestAddSignaledObserver (taskEventObserver);
 		    }
 		});
-	    host.observableProcRemoved.addObserver
+	    host.observableProcRemovedXXX.addObserver
 		(new ProcRemovedObserver ());
 	}
     }

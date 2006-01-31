@@ -402,7 +402,7 @@ public abstract class Proc
     {
 	taskPool.put (task.id, task);
 	observableTaskAddedXXX.notify (task);
-	host.observableTaskAdded.notify (task);
+	host.observableTaskAddedXXX.notify (task);
     }
     /**
      * Remove Task from this Proc.
@@ -412,7 +412,7 @@ public abstract class Proc
 	logger.log (Level.FINE, "{0} remove(Task) -- within this Proc\n",
 		    this); 
 	observableTaskRemovedXXX.notify (task);
-	host.observableTaskRemoved.notify (task);
+	host.observableTaskRemovedXXX.notify (task);
 	taskPool.remove (task.id);
 	host.remove (task);
     }

@@ -573,11 +573,11 @@ public class TestLib
 			return;
 		    pid = proc.getPid ();
 		    Manager.eventLoop.requestStop ();
-		    Manager.host.observableProcAdded.deleteObserver (this);
+		    Manager.host.observableProcAddedXXX.deleteObserver (this);
 		}
 	    }
 	    PidObserver pidObserver = new PidObserver ();
-	    Manager.host.observableProcAdded.addObserver (pidObserver);
+	    Manager.host.observableProcAddedXXX.addObserver (pidObserver);
 	    // Start the child process, run the event loop until the
 	    // pid is known.
 	    Manager.host.requestCreateAttachedProc (stdin, stdout,
@@ -694,7 +694,7 @@ public class TestLib
 	 */
 	AutoAddTaskObserverBase ()
 	{
-	    Manager.host.observableTaskAdded.addObserver (new Observer ()
+	    Manager.host.observableTaskAddedXXX.addObserver (new Observer ()
 		{
 		    public void update (Observable obj, Object o)
 		    {
@@ -790,7 +790,7 @@ public class TestLib
 	protected TaskCounter (boolean descendantsOnly)
 	{
 	    this.descendantsOnly = descendantsOnly;
-	    Manager.host.observableTaskAdded.addObserver (new Observer ()
+	    Manager.host.observableTaskAddedXXX.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -801,7 +801,7 @@ public class TestLib
 			added.add (task);
 		    }
 		});
-	    Manager.host.observableTaskRemoved.addObserver (new Observer ()
+	    Manager.host.observableTaskRemovedXXX.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -844,7 +844,7 @@ public class TestLib
 	{
 	    this.descendantsOnly = descendantsOnly;
 	    // Set up observers to count proc add and delete events.
-	    Manager.host.observableProcAdded.addObserver (new Observer ()
+	    Manager.host.observableProcAddedXXX.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -855,7 +855,7 @@ public class TestLib
 			added.add (proc);
 		    }
 		});
-	    Manager.host.observableProcRemoved.addObserver (new Observer ()
+	    Manager.host.observableProcRemovedXXX.addObserver (new Observer ()
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -998,7 +998,7 @@ public class TestLib
 	boolean p;
 	StopEventLoopWhenChildProcRemoved ()
 	{
-	    Manager.host.observableProcRemoved.addObserver (this);
+	    Manager.host.observableProcRemovedXXX.addObserver (this);
 	}
 	public void update (Observable o, Object obj)
 	{
@@ -1051,7 +1051,7 @@ public class TestLib
 	// Add every descendant of this process, and all their tasks,
 	// to the set of children that should be killed off after the
 	// test has run.
-	host.observableProcAdded.addObserver (new Observer ()
+	host.observableProcAddedXXX.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
 		{
@@ -1061,7 +1061,7 @@ public class TestLib
 		    }
 		}
 	    });
-	host.observableTaskAdded.addObserver (new Observer ()
+	host.observableTaskAddedXXX.addObserver (new Observer ()
 	    {
 		public void update (Observable o, Object obj)
 		{

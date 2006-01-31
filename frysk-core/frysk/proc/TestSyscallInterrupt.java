@@ -211,7 +211,7 @@ public class TestSyscallInterrupt
                     }
                 }
             }
-            host.observableProcRemoved.addObserver
+            host.observableProcRemovedXXX.addObserver
                 (new ProcDestroyedObserver ());
         }
     }

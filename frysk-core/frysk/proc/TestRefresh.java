@@ -62,9 +62,9 @@ public class TestRefresh
 	{
 	    this.child = child;
 	    added = new PidCounter (child.getPid (),
-				    host.observableProcAdded);
+				    host.observableProcAddedXXX);
 	    removed = new PidCounter (child.getPid (),
-				      host.observableProcRemoved);
+				      host.observableProcRemovedXXX);
 	}
 	Proc proc;
 	void verifyAdd (String reason, int tasks)

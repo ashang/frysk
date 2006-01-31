@@ -83,9 +83,9 @@ class ftrace
 	    return;
 	}
 
-	Manager.host.observableProcAdded.addObserver
+	Manager.host.observableProcAddedXXX.addObserver
 	    (new ProcCreatedObserver ());
-	Manager.host.observableProcRemoved.addObserver
+	Manager.host.observableProcRemovedXXX.addObserver
 	    (new ProcDestroyedObserver ());
 	Manager.host.requestCreateAttachedProcXXX (args);
 	Manager.eventLoop.run ();

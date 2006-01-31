@@ -1,3 +1,8 @@
+2006-01-31  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcDataModel.java: Update, use renamed observableProcAddedXXX,
+	and observableProcRemovedXXX.
+
 2006-01-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* DetailedObserverTreeView.java (getSelectedObserver): Fixed npe

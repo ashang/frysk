@@ -134,7 +134,7 @@ public class TestI386Regs
 
 	TestI386RegsInternals ()
 	{
-	    host.observableTaskAdded.addObserver (new Observer () 
+	    host.observableTaskAddedXXX.addObserver (new Observer () 
 		{
 		    public void update (Observable o, Object obj)
 		    {
@@ -155,7 +155,7 @@ public class TestI386Regs
 			}
 		    }
 		});
-	    host.observableProcRemoved.addObserver
+	    host.observableProcRemovedXXX.addObserver
 		(new ProcDestroyedObserver ());
 	}
    }

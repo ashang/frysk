@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -103,14 +103,14 @@ public abstract class Host
     void add (Proc proc)
     {
 	logger.log (Level.FINE, "{0} add proc\n", proc);	
-	observableProcAdded.notify (proc);
+	observableProcAddedXXX.notify (proc);
 	procPool.put (proc.id, proc);
     }
     void remove (Proc proc)
     {
 	logger.log (Level.FINE, "{0} remove proc\n", proc); 
 	procPool.remove (proc.id);
-	observableProcRemoved.notify (proc);
+	observableProcRemovedXXX.notify (proc);
     }
     public Iterator getProcIterator ()
     {
@@ -225,7 +225,7 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableProcAdded = new ObservableXXX ();
+    public ObservableXXX observableProcAddedXXX = new ObservableXXX ();
 
     /*
      * An existing process has been removed.  Possible reasons include
@@ -235,7 +235,7 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableProcRemoved = new ObservableXXX ();
+    public ObservableXXX observableProcRemovedXXX = new ObservableXXX ();
 
     /**
      * Notify of the addition of a task attached to this process.
@@ -246,14 +246,14 @@ public abstract class Host
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableTaskAdded = new ObservableXXX ();
+    public ObservableXXX observableTaskAddedXXX = new ObservableXXX ();
     /**
      * Notify of the removal of a task attached to this process.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.
      */
-    public ObservableXXX observableTaskRemoved = new ObservableXXX ();
+    public ObservableXXX observableTaskRemovedXXX = new ObservableXXX ();
 
     /**
      * Return the process corresponding to this running frysk instance

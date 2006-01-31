@@ -103,7 +103,7 @@ public class TestSyscall2
 
 	TestSyscall2Internals ()
 	{
-	    host.observableTaskAdded.addObserver (new Observer () {
+	    host.observableTaskAddedXXX.addObserver (new Observer () {
 		    public void update (Observable o, Object obj)
 		    {
 			Task task = (Task) obj;
@@ -114,7 +114,7 @@ public class TestSyscall2
 			task.requestAddSyscallObserver (taskEventObserver);
 		    }
 		});
-	    host.observableProcRemoved.addObserver
+	    host.observableProcRemovedXXX.addObserver
 		(new ProcDestroyedObserver ());
 	}
     }

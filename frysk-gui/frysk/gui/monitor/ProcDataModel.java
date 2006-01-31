@@ -148,8 +148,8 @@ public class ProcDataModel {
 		this.taskCreatedObserver = new TaskCreatedObserver();
 		this.taskDestroyedObserver = new TaskDestroyedObserver ();
 		
-		Manager.host.observableProcAdded.addObserver(this.procCreatedObserver);
-		Manager.host.observableProcRemoved.addObserver(this.procDestroyedObserver);
+		Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
+		Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
 	}
 	
 	public void stopRefreshing(){
