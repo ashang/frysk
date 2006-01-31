@@ -9,7 +9,7 @@
 #            `pkg-config --libs   ftk` \
 #            -lm
 #
-#    LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib
+#    LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib
 
 #  for local
     INCS = `pkg-config --cflags gtk+-2.0` \

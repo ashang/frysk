@@ -1,6 +1,6 @@
 INSTALL       = install
 INSTALLOPTS   =
-INSTALLDIR    = /opt/frysk
+INSTALLDIR    = /usr/local
 INCINSTALLDIR = $(INSTALLDIR)/include
 LIBINSTALLDIR = $(INSTALLDIR)/lib
 JARINSTALLDIR = $(INSTALLDIR)/share/java

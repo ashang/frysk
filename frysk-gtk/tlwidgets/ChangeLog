@@ -1,3 +1,14 @@
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* test/widget/Makefile: Delete references to /opt/frysk.
+	* test/wrapper/Makefile: Ditto.
+	* test/wrapper/Makefile-vte: Ditto.
+	* Makefile-native (INSTALLDIR): Replace /opt/frysk with
+	/usr/local.
+	* src/widgets/ftk.pc: Replace /opt/frysk with ${prefix}.
+	* src/widgets/Makefile (INSTALLDIR): Replace /opt/frysk with
+	/usr/local.
+
 2006-01-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add src/widgets/ftkconsole.h,

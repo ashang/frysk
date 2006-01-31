@@ -59,8 +59,8 @@ textiter/a.out: $(textiter_FILES)
 	$(GCJ) -g \
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(FRYSK_GTK_LIBS) \
-		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
-		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		-Wl,-rpath,/usr/lib/frysk \
+		-Djava.library.path=/usr/lib/frysk \
 		--main=textiter.JNICrash \
 		-o textiter/a.out \
 		$(srcdir)/textiter/JNICrash.java
@@ -73,8 +73,8 @@ gcjtreeiter/a.out: $(gcjtreeiter_FILES)
 	$(GCJ) -g \
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(FRYSK_GTK_LIBS) \
-		-Wl,-rpath,/opt/frysk/lib:/usr/lib/frysk \
-		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		-Wl,-rpath,/usr/lib/frysk \
+		-Djava.library.path=/usr/lib/frysk \
 		--main=gcjtreeiter.IterTest \
 		$(srcdir)/gcjtreeiter/IterTest.java \
 		-o gcjtreeiter/a.out
@@ -85,7 +85,7 @@ gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(srcdir)/gcjtreeiter/IterTest.java
 	echo $(GIJ) -classpath .:$(FRYSK_GTK_CLASSPATH) \
-		-Djava.library.path=/opt/frysk/lib:/usr/lib/frysk \
+		-Djava.library.path=/usr/lib/frysk \
 		gcjtreeiter.IterTest \
 		> gcjtreeiter/gij.sh
 	chmod a+x gcjtreeiter/gij.sh

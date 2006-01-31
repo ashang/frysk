@@ -1,6 +1,6 @@
-   CLASSPATH=.:.:/opt/frysk/lib:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar:/opt/frysk/share/java/gtk2.8.jar:/opt/frysk/share/java/cairo1.0.jar:/opt/frysk/share/java/glib0.2.jar:/opt/frysk/share/java/vte0.11.jar
+   CLASSPATH=.:.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar
 
-   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:/opt/frysk/lib:
+   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib
 
 all::run
 

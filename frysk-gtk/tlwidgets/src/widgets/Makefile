@@ -3,7 +3,7 @@
 
 INSTALL       = install
 INSTALLOPTS   =
-INSTALLDIR    = /opt/frysk
+INSTALLDIR    = /usr/local
 LIBINSTALLDIR = $(INSTALLDIR)/lib
 INCINSTALLDIR = $(INSTALLDIR)/include/ftk
 PKGINSTALLDIR = $(LIBINSTALLDIR)/pkgconfig

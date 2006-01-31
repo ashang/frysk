@@ -47,7 +47,7 @@ AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile cdtparser
 
 sinclude(common/acinclude.m4)
 
-AC_FIND_FILE([antlr.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], ANTLR_JAR)
-AC_FIND_FILE([jdom.jar], [/usr/share/java /opt/frysk/share/java /usr/share/frysk/java], JDOM_JAR)
+AC_FIND_FILE([antlr.jar], [/usr/share/java /usr/share/frysk/java], ANTLR_JAR)
+AC_FIND_FILE([jdom.jar], [/usr/share/java /usr/share/frysk/java], JDOM_JAR)
 
 AC_OUTPUT

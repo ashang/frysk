@@ -1,3 +1,7 @@
+2006-01-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (textiter/a.out): Delete reference to /opt/frysk.
+
 2006-01-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am: Based on frysk-impots/tests/Makefile.am.
