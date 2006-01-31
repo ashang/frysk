@@ -1,3 +1,28 @@
+2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactory.java (createSourceWindow): Removed debugging 
+	output, now will print stack trace and exit if source window glade
+	file cannot be found.
+	* MixedView.java (MixedView): Switched mode setting to use new
+	interface.
+	(load): Ditto.
+	* SourceBuffer.java: Changed state from being a boolean to being an
+	int with 3 possible values: source, assembly, or mixed.
+	(isLineExecutable): Refactored to reflect above change.
+	(isLineBroken): Ditto.
+	(toggleBreakpoint): Ditto.
+	(getVariable): Ditto.
+	(getLineCount): Ditto.
+	(hasInlineInstance): Ditto.
+	(setScope): Single parameter version now uses above int-based mode
+	system, dual parameter version now has switch statement for the three
+	modes.
+	(setShowAssembly): Refactored to setMode(int).
+	* SourceView.java (setMode): Refactored to take an int instead of a
+	booean.
+	* SourceWindow.java (comboBoxEvent): Added section to deal with Mixed
+	mode, added comments.
+
 2006-01-30  Adam Jocksch  <ajocksch@redhat.com>
 
 	* View.java (scrollToFunction): Added.

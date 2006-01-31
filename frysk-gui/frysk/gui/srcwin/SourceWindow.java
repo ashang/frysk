@@ -301,14 +301,29 @@ public class SourceWindow extends Window implements ButtonListener,
 	 */
 	public void comboBoxEvent(ComboBoxEvent event) {
 		String text = ((ComboBox) event.getSource()).getActiveText();
+		// The only ComboBoxEntry is the function goto box
 		if(event.getSource() instanceof ComboBoxEntry){
 			this.view.scrollToFunction(text + "_FUNC");
 		}
+		/*
+		 * The only widget other than the function goto box that this listener is
+		 * added to is the mode selector: so we know by know that it must have come
+		 * from this widget
+		 */
 		else{
+			// Switch to source mode
 			if(text.equals("SOURCE")){
+				/*
+				 * If we're switching from Assembly or Mixed mode, we can just toggle the
+				 * state.
+				 */
 				if(this.view instanceof SourceView){
-					((SourceView) this.view).setMode(false);
+					((SourceView) this.view).setMode(SourceBuffer.SOURCE_MODE);
 				}
+				/*
+				 * If we're switching from Source/Assembly mode, we need to re-create the
+				 * source view widget
+				 */
 				else{
 					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
 						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
@@ -319,10 +334,19 @@ public class SourceWindow extends Window implements ButtonListener,
 					this.view.showAll();
 				}
 			}
+			// Swithc to Assembly mode
 			else if(text.equals("ASM")){
+				/*
+				 * If we're switching from Source or Mixed more, we can just toggle
+				 * the state
+				 */
 				if(this.view instanceof SourceView){
-					((SourceView) this.view).setMode(true);
+					((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
 				}
+				/*
+				 * If we're switching from Source/Assembly mode, we need to re-create the
+				 * source view widget
+				 */
 				else{
 					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
 						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
@@ -330,11 +354,35 @@ public class SourceWindow extends Window implements ButtonListener,
 					
 					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
 						.add((Widget) this.view);
-					((SourceView) this.view).setMode(true);
+					((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
 					this.view.showAll();
 				}
 			}
+			// Switch to Mixed mode
+			else if(text.equals("MIXED")){
+				/*
+				 * If we're switching from Source or Assembly we can just toggle the
+				 * state
+				 */
+				if(this.view instanceof SourceView){
+					
+				}
+				/*
+				 * If we're switching from Source/Assembly mode, we need to re-create the
+				 * source view widget
+				 */
+				else{
+					
+				}
+			}
+			/*
+			 * Switch to Source/Assembly mode - we only need to worry about this
+			 * case if we're switching from Source, Assembly, or Mixed view. If 
+			 * we were previously in Source/Assembly view we don't need to
+			 * do anything
+			 */
 			else if(text.equals("SOURCE/ASM") && !(this.view instanceof MixedView)){
+				// Replace the SourceView with a Mixedview to display Source/Assembly mode
 				((Container) this.view.getParent()).remove((Widget) this.view);
 				this.view = new MixedView(this.view.getScope(), this);
 				

@@ -87,6 +87,10 @@ public class SourceBuffer extends TextBuffer {
 	protected static final String CURRENT_LINE = "currentLine";
 	protected static final String FOUND_TEXT = "foundText";
 
+	protected static final int SOURCE_MODE = 0;
+	protected static final int ASM_MODE = 1;
+	protected static final int MIXED_MODE = 2;
+	
 	/* END CONSTANTS */
 
 	private Vector functions;
@@ -114,7 +118,7 @@ public class SourceBuffer extends TextBuffer {
 
 	protected TextChildAnchor anchor;
 
-	private boolean showingAssembly = false;
+	private int mode = SOURCE_MODE;
 	
 	/**
 	 * Creates a new SourceBuffer
@@ -142,7 +146,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return Whether or not the line is executable
 	 */
 	public boolean isLineExecutable(int lineNo) {
-		if(showingAssembly)
+		if(mode != SOURCE_MODE)
 			return lineNo <= this.getLineCount();
 		
 		DOMLine line = this.scope.getData().getLine(lineNo + 1);
@@ -159,7 +163,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public boolean isLineBroken(int lineNo) {
 		// TODO: How do we deal with breakpoints for assembly code?
-		if(showingAssembly)
+		if(mode != SOURCE_MODE)
 			return false;
 		
 		DOMLine line = this.scope.getData().getLine(lineNo + 1);
@@ -185,7 +189,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public boolean toggleBreakpoint(int lineNum) {
 		// TODO: Assembly breakpoints?
-		if(showingAssembly)
+		if(mode != SOURCE_MODE)
 			return false;
 		
 		if (!this.isLineExecutable(lineNum))
@@ -460,7 +464,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The variable at that location, or null
 	 */
 	public Variable getVariable(TextIter iter) {
-		if(showingAssembly)
+		if(mode != SOURCE_MODE)
 			return null;
 		
 		DOMLine line = this.scope.getData().getLine(iter.getLineNumber() + 1);
@@ -642,7 +646,7 @@ public class SourceBuffer extends TextBuffer {
 	 * @return The number of lines in the file
 	 */
 	public int getLineCount() {
-		if(!showingAssembly)
+		if(mode == SOURCE_MODE)
 			return this.scope.getData().getLineCount();
 		else
 			return this.getEndIter().getLineNumber();
@@ -664,7 +668,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public boolean hasInlineCode(int lineNumber) {
 		// TODO: Inline code with assembly?
-		if(showingAssembly)
+		if(mode != SOURCE_MODE)
 			return false;
 		
 		return this.scope.getData().getLine(lineNumber + 1).hasInlinedCode();
@@ -687,7 +691,7 @@ public class SourceBuffer extends TextBuffer {
 	}
 
 	public void setScope(StackLevel scope){
-		this.setScope(scope, false);
+		this.setScope(scope, SOURCE_MODE);
 	}
 	
 	/**
@@ -697,21 +701,28 @@ public class SourceBuffer extends TextBuffer {
 	 * @param scope
 	 *            The stack frame to be displayed
 	 */
-	private void setScope(StackLevel scope, boolean isAssembly) {
+	private void setScope(StackLevel scope, int mode) {
 		for (int i = 0; i < functions.size(); i++)
 			if(this.markExists((String) functions.get(i)))
 				this.deleteMark(((String) functions.get(i)));
 
-		this.showingAssembly = isAssembly;
+		this.mode = mode;
 		
 		this.anchor = null;
 		this.functions = new Vector();
 		this.scope = scope;
 		try {
-			if(!isAssembly)
+			switch(mode){
+			case SOURCE_MODE:
 				this.loadFile();
-			else
+				break;
+			case ASM_MODE:
 				this.loadAssembly();
+				break;
+			case MIXED_MODE:
+				break;
+			}
+				
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -721,8 +732,8 @@ public class SourceBuffer extends TextBuffer {
 						.getColEnd());
 	}
 
-	public void setShowAssembly(boolean showAssembly){
-		this.setScope(this.getScope(), showAssembly);
+	public void setMode(int mode){
+		this.setScope(this.getScope(), mode);
 	}
 		
 	

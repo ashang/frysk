@@ -390,8 +390,8 @@ public class SourceView extends TextView implements View,
 		this.anchor = null;
 	}
 	
-	public void setMode(boolean isAssembly){
-		this.buf.setShowAssembly(isAssembly);
+	public void setMode(int mode){
+		this.buf.setMode(mode);
 		this.refresh();
 	}
 	

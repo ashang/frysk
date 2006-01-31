@@ -1,3 +1,8 @@
+2006-01-31  Adam Jocksch <ajocksch@redhat.com>
+	
+	* glade/frysk_source.glade: Re-added "MIXED" option to mode
+	selector.
+
 2006-01-30  Adam Jocksch <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: Removed "MIXED" option from mode selector.

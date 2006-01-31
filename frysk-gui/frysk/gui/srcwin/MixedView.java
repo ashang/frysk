@@ -14,7 +14,7 @@ public class MixedView extends HPaned implements View {
 		
 		this.sourceWidget = new SourceView(scope, parent);
 		this.assemblyWidget = new SourceView(scope, parent);
-		this.assemblyWidget.setMode(true);
+		this.assemblyWidget.setMode(SourceBuffer.ASM_MODE);
 
 		this.add1(this.sourceWidget);
 		this.add2(this.assemblyWidget);
@@ -52,7 +52,7 @@ public class MixedView extends HPaned implements View {
 	public void load(StackLevel data) {
 		this.sourceWidget.load(data);
 		this.assemblyWidget.load(data);
-		this.assemblyWidget.setMode(true);
+		this.assemblyWidget.setMode(SourceBuffer.ASM_MODE);
 	}
 
 	public void setSubscopeAtCurrentLine(InlineSourceView child) {

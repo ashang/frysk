@@ -109,7 +109,8 @@
 		  <property name="visible">True</property>
 		  <property name="items" translatable="yes">SOURCE
 ASM
-SOURCE/ASM</property>
+SOURCE/ASM
+MIXED</property>
 		  <property name="add_tearoffs">False</property>
 		  <property name="focus_on_click">True</property>
 		</widget>

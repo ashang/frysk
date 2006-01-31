@@ -92,7 +92,6 @@ public class SourceWindowFactory {
 			int index = 0;
 			String finalTestPath = "";
 			while(index < testFilesPath.length){
-				System.out.println("Trying " + testFilesPath[index] + "/test2.cpp");
 				File test = new File(testFilesPath[index] + "/test2.cpp");
 				if(test.exists()){
 					finalTestPath = testFilesPath[index];
@@ -297,9 +296,14 @@ public class SourceWindowFactory {
 						glade = new LibGlade(gladePaths[i]+"/"+SourceWindow.GLADE_FILE, null);
 					}
 					catch (Exception e){
-						e.printStackTrace();
-						// If we don't find the glade file, continue looking
-						continue;
+						if (i < gladePaths.length -1 )
+							// If we don't find the glade file, look at the next file
+							continue;
+						else{
+							e.printStackTrace();
+							System.exit(1);
+						}
+							
 					}
 					
 					// If we've found it, break
@@ -312,7 +316,7 @@ public class SourceWindowFactory {
 					return;
 				}
 				
-				printDOM(dom);
+//				printDOM(dom);
 				
 				s = new SourceWindow(
 						 glade,
