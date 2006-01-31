@@ -109,7 +109,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			} catch (FileNotFoundException missingFile) {
 				searchPath += glade_dirs[i] + "\n";
 				if(i == glade_dirs.length -1){
-					throw new FileNotFoundException("Glade file not found in path " + searchPath);
+					throw new FileNotFoundException(Messages.getString("FryskGui.10") + searchPath); //$NON-NLS-1$
 				}else{
 					continue;
 				}
@@ -154,15 +154,15 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		try {
 			procpop = new FryskGui(glade_dirs);
 		} catch (GladeXMLException e1) {
-			errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed",
+			errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.11"), //$NON-NLS-1$
 					e1);
 			System.exit(1);
 		} catch (FileNotFoundException e1) {
-			errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found",
+			errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.12"), //$NON-NLS-1$
 					e1);
 			System.exit(1);
 		} catch (IOException e1) {
-			errorLogFile.log(Level.SEVERE, "IOException: ", e1);
+			errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.13"), e1); //$NON-NLS-1$
 			System.exit(1);
 		}
 
@@ -173,7 +173,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
 
-		trayIcon = new TrayIcon("Frysk Monitor/Debugger", false);
+		trayIcon = new TrayIcon(Messages.getString("FryskGui.14"), false); //$NON-NLS-1$
 		
 		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
 		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
@@ -184,7 +184,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		trayIcon.setPopupMenu(popupMenu);
 		
 		// Quit 
-		MenuItem quitItem = new MenuItem("Quit", false);
+		MenuItem quitItem = new MenuItem(Messages.getString("FryskGui.15"), false); //$NON-NLS-1$
 		quitItem.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0) {
 				Gtk.mainQuit();
@@ -193,7 +193,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		popupMenu.add(quitItem);
 		
 		// Console Window
-		MenuItem consoleWindowItem = new MenuItem("Console Window", false);
+		MenuItem consoleWindowItem = new MenuItem(Messages.getString("FryskGui.16"), false); //$NON-NLS-1$
 		consoleWindowItem.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0){
 				new ConsoleWindow();
@@ -211,7 +211,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 				}
 				catch (Exception e)
 				{
-					DialogManager.showErrorDialog("Frysk Core Errors", "Frysk Core has reported the following errors", e);
+					DialogManager.showErrorDialog(Messages.getString("FryskGui.17"), Messages.getString("FryskGui.18"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					System.exit(1);
 				}
 			}
@@ -239,7 +239,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 				checkFrysk.mkdirs();
 			prefs.exportSubtree(new FileOutputStream(FRYSK_CONFIG + SETTINGSFILE));
 		} catch (Exception e) {
-			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e);
+			errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.25"), e); //$NON-NLS-1$
 
 		}
 
@@ -295,11 +295,11 @@ public class FryskGui implements LifeCycleListener, Saveable {
 			Preferences.importPreferences(is);
 		} catch (FileNotFoundException e1) {
 			errorLogFile.log(Level.WARNING, location
-					+ " not found. Will be created on program exit", e1);
+					+ Messages.getString("FryskGui.44"), e1); //$NON-NLS-1$
 		} catch (IOException e) {
-			errorLogFile.log(Level.SEVERE, location + " io error", e);
+			errorLogFile.log(Level.SEVERE, location + Messages.getString("FryskGui.45"), e); //$NON-NLS-1$
 		} catch (InvalidPreferencesFormatException e) {
-			errorLogFile.log(Level.SEVERE, location + " Invalid Format", e);
+			errorLogFile.log(Level.SEVERE, location + Messages.getString("FryskGui.46"), e); //$NON-NLS-1$
 		}
 
 		prefs = Preferences.userRoot();
