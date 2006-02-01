@@ -68,6 +68,7 @@ import org.gnu.gtk.event.KeyListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -94,12 +95,12 @@ public class CustomeObserverWindow extends Window implements Observer {
 	//private HashMap observerBackup;
 	
 	public CustomeObserverWindow(LibGlade glade){
-		super(((Window)glade.getWidget("customeObserverWindow")).getHandle());
+		super(((Window)glade.getWidget("customeObserverWindow")).getHandle()); //$NON-NLS-1$
 		
 		//this.observerBackup = new HashMap();
 		
 		//=========================================
-		Button button = (Button) glade.getWidget("customObserverOkButton");
+		Button button = (Button) glade.getWidget("customObserverOkButton"); //$NON-NLS-1$
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
@@ -110,7 +111,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		button = (Button) glade.getWidget("customObserverCancelButton");
+		button = (Button) glade.getWidget("customObserverCancelButton"); //$NON-NLS-1$
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
@@ -121,7 +122,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		this.customObserverNameEntry = (Entry) glade.getWidget("customObserverNameEntry");
+		this.customObserverNameEntry = (Entry) glade.getWidget("customObserverNameEntry"); //$NON-NLS-1$
 		this.customObserverNameEntry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent event) {
 				if(event.isOfType(EntryEvent.Type.CHANGED)){
@@ -152,7 +153,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		this.baseObserverTreeView = new ListView(((TreeView)glade.getWidget("baseObserversTreeView")).getHandle());
+		this.baseObserverTreeView = new ListView(((TreeView)glade.getWidget("baseObserversTreeView")).getHandle()); //$NON-NLS-1$
 		ObserverManager.theManager.addObserver(new Observer(){
 			public void update(Observable observable, Object obj) {
 				populateObserverTreeView();
@@ -171,7 +172,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		this.observerTreeView = new DetailedObserverTreeView(((TreeView)glade.getWidget("simplexListView")).getHandle());
+		this.observerTreeView = new DetailedObserverTreeView(((TreeView)glade.getWidget("simplexListView")).getHandle()); //$NON-NLS-1$
 		this.observerTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
 				setSelectedObserver(observerTreeView.getSelectedObserver());
@@ -191,7 +192,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		this.filterWidget = new FilterWidget(((VBox)glade.getWidget("filtersWidget")).getHandle());
+		this.filterWidget = new FilterWidget(((VBox)glade.getWidget("filtersWidget")).getHandle()); //$NON-NLS-1$
 		//=========================================
 
 		//=========================================
@@ -199,7 +200,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 
 		//=========================================
-		button = (Button)glade.getWidget("deleteObserverButton");
+		button = (Button)glade.getWidget("deleteObserverButton"); //$NON-NLS-1$
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
@@ -210,7 +211,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//=========================================
 		
 		//=========================================
-		button = (Button)glade.getWidget("newObserverButton");
+		button = (Button)glade.getWidget("newObserverButton"); //$NON-NLS-1$
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
@@ -220,15 +221,15 @@ public class CustomeObserverWindow extends Window implements Observer {
 		});
 		//=========================================
 		
-		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel");
+		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel"); //$NON-NLS-1$
 		
-		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel");
+		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel"); //$NON-NLS-1$
 	
-		this.filtersSummaryLabel      = (Label) glade.getWidget("filtersSummaryLabel");
-		this.updateFiltersSummary("");
+		this.filtersSummaryLabel      = (Label) glade.getWidget("filtersSummaryLabel"); //$NON-NLS-1$
+		this.updateFiltersSummary(""); //$NON-NLS-1$
 		
-		this.actionsSummaryLabel      = (Label) glade.getWidget("actionsSummaryLabel");
-		this.updateActionsSummary("");
+		this.actionsSummaryLabel      = (Label) glade.getWidget("actionsSummaryLabel"); //$NON-NLS-1$
+		this.updateActionsSummary(""); //$NON-NLS-1$
 	
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 	}
@@ -253,12 +254,12 @@ public class CustomeObserverWindow extends Window implements Observer {
 	}
 	
 	private void updateNameSummary(String summary){
-		this.nameSummaryLabel.setText("("+summary+")");
+		this.nameSummaryLabel.setText("("+summary+")"); //$NON-NLS-1$ //$NON-NLS-2$
 		this.customObserverNameEntry.setText(summary);
 	}
 
 	private void updateBaseObserverSummary(String summary){
-		this.baseObserverSummaryLabel.setText("("+summary+")");
+		this.baseObserverSummaryLabel.setText("("+summary+")"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private void updateFiltersSummary(String summary){
@@ -296,7 +297,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	 * Create new observer as a template for a custom observer.
 	 * */
 	public void createNewObserver(){
-		ObserverRoot newObserver = new ObserverRoot("New Observer","");
+		ObserverRoot newObserver = new ObserverRoot(Messages.getString("CustomeObserverWindow.19"),""); //$NON-NLS-1$ //$NON-NLS-2$
 		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.observerTreeView.setSelected(newObserver); //XXX
 	}

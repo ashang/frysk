@@ -54,6 +54,7 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.observers.ObserverManager;
@@ -75,7 +76,7 @@ public class ThreadMenu extends Menu {
 			
 			MenuItem item = new MenuItem(action.getName(), false);
 			ToolTips tip = new ToolTips();
-			tip.setTip(item, action.getToolTip(), "");
+			tip.setTip(item, action.getToolTip(), ""); //$NON-NLS-1$
 			
 			item.addListener(new MenuItemListener() {
 				public void menuItemEvent(MenuItemEvent event) {
@@ -86,7 +87,7 @@ public class ThreadMenu extends Menu {
 		}
 		
 		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getTaskObservers());
-		MenuItem item = new MenuItem("Add observer ", false);
+		MenuItem item = new MenuItem(Messages.getString("ThreadMenu.1"), false); //$NON-NLS-1$
 		item.setSubmenu(menu);
 
 		item.addListener(new MouseListener(){
@@ -118,6 +119,6 @@ public class ThreadMenu extends Menu {
 	public void popup(TaskData selected){
 		this.popup();
 		this.current = selected;
-		System.out.println("-- PID: " + current.getTask().getTid());
+		System.out.println("-- PID: " + current.getTask().getTid()); //$NON-NLS-1$
 	}
 }

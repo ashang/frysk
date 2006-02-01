@@ -58,6 +58,8 @@ import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreePath;
 import org.gnu.pango.Weight;
 
+import frysk.gui.common.Messages;
+
 /**
  * 
  * The data model that stores data about currently watched
@@ -180,32 +182,32 @@ public class ProgramDataModel {
 	 */
 	public String getTip(TreePath path)
 	{
-		String tip = "";
+		String tip = ""; //$NON-NLS-1$
 		TreeIter item = listStore.getIter(path.toString());
 		ProgramData tipStore = (ProgramData) listStore.getValue(item,this.programEventDataDC);
 		
 		
-		tip = "* Name: " + tipStore.getName();
-		tip+="\n" + "* Executable: " + tipStore.getExecutable();
-		tip+="\n" + "* Enabled: " + tipStore.isEnabled(); 
-		tip+="\n" + "* Watched Processes: ";
+		tip = Messages.getString("ProgramDataModel.1") + tipStore.getName(); //$NON-NLS-1$
+		tip+="\n" + Messages.getString("ProgramDataModel.3") + tipStore.getExecutable(); //$NON-NLS-1$ //$NON-NLS-2$
+		tip+="\n" + Messages.getString("ProgramDataModel.5") + tipStore.isEnabled();  //$NON-NLS-1$ //$NON-NLS-2$
+		tip+="\n" + Messages.getString("ProgramDataModel.7"); //$NON-NLS-1$ //$NON-NLS-2$
 			 
 		Iterator i = tipStore.getProcessList().iterator();
 		while (i.hasNext())
 		{
 			tip+= ((String)i.next());
 				   if (i.hasNext())
-					   tip+=", ";
+					   tip+=", "; //$NON-NLS-1$
 		}
 			   
-	    tip+="\n* Observers: ";
+	    tip+=Messages.getString("ProgramDataModel.9"); //$NON-NLS-1$
 
 	    i = tipStore.getObserverList().iterator();
 		while (i.hasNext())
 			   {
 				   tip+=((String)i.next());
 				   if (i.hasNext())
-					   tip+=", ";
+					   tip+=", "; //$NON-NLS-1$
 				   
 			   }
 		return tip;

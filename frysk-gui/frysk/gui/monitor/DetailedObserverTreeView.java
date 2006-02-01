@@ -55,6 +55,7 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverManager;
@@ -118,7 +119,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 			public void update(Observable arg0, Object object) {
 				remove((GuiObject) object);
 				//XXX: Not implemented.
-				throw new RuntimeException("Not implemented");
+				throw new RuntimeException(Messages.getString("DetailedObserverTreeView.0")); //$NON-NLS-1$
 			}
 		});
 		
@@ -129,7 +130,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 
 	private void addObserverRoot(ObserverRoot observer){
-		GuiObject label = new GuiObject("FilterPoints","");
+		GuiObject label = new GuiObject(Messages.getString("DetailedObserverTreeView.1"),""); //$NON-NLS-1$ //$NON-NLS-2$
 		this.add(label, observer);
 		addList(label, observer.getFilterPoints());
 		
@@ -141,7 +142,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 //		selected = (GuiObject)this.treeStore.getValue(iter.getParent(), objectDC);
 		
 		
-		label = new GuiObject("ActionPoints","");
+		label = new GuiObject(Messages.getString("DetailedObserverTreeView.3"),""); //$NON-NLS-1$ //$NON-NLS-2$
 		this.add(label, observer);
 		addList(label, observer.getActionPoints());
 		iterator = observer.getActionPoints().iterator();	
@@ -210,11 +211,11 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		GuiObject selected = (GuiObject)this.treeStore.getValue(iter, objectDC);
 		
 		while(selected != null && !(selected instanceof ObserverRoot)){
-			System.out.println("DetailedObserverTreeView.getSelectedObserver(): " + iter);
+			System.out.println("DetailedObserverTreeView.getSelectedObserver(): " + iter); //$NON-NLS-1$
 			TreePath treePath = iter.getPath();
 			treePath.up();
 			iter = treeStore.getIter(treePath);
-			System.out.println("DetailedObserverTreeView.getSelectedObserver(): " + iter);
+			System.out.println("DetailedObserverTreeView.getSelectedObserver(): " + iter); //$NON-NLS-1$
 			
 			selected = (GuiObject)this.treeStore.getValue(iter, objectDC);
 //			return null;

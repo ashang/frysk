@@ -57,6 +57,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.Messages;
 
 
 /**
@@ -103,7 +104,7 @@ public class TrayIcon implements Saveable{
 		tray = new EggTrayIcon(tooltip);
 		this.clearPopups();
 		if(!active)
-			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON));
+			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON)); //$NON-NLS-1$
 		else
 			this.setContents(new Image(IconManager.anim));
 		this.active = active;
@@ -169,7 +170,7 @@ public class TrayIcon implements Saveable{
 	 */
 	public void setMenuButton(int button) throws IllegalArgumentException{
 		if(button < 0 || button > BUTTON_3)
-			throw new IllegalArgumentException("Button must be one of BUTTON_1, BUTTON_2, BUTTON_3, or NO_BUTTON");
+			throw new IllegalArgumentException(Messages.getString("TrayIcon.1")); //$NON-NLS-1$
 		
 		if(button == windowButton)
 			windowButton = NO_BUTTON;
@@ -185,7 +186,7 @@ public class TrayIcon implements Saveable{
 	 */
 	public void setWindowButton(int button) throws IllegalArgumentException{
 		if(button < 0 || button > BUTTON_3)
-			throw new IllegalArgumentException("Button must be one of BUTTON_1, BUTTON_2, BUTTON_3, or NO_BUTTON");
+			throw new IllegalArgumentException(Messages.getString("TrayIcon.2")); //$NON-NLS-1$
 		
 		if(button == menuButton)
 			menuButton = NO_BUTTON;
@@ -238,7 +239,7 @@ public class TrayIcon implements Saveable{
 		
 		trayItem.add(icon);
 		
-		tips.setTip(trayItem, this.tooltip, "");
+		tips.setTip(trayItem, this.tooltip, ""); //$NON-NLS-1$
 		
 		if(trayItem.getParent() == null)
 			tray.add(trayItem);
@@ -290,7 +291,7 @@ public class TrayIcon implements Saveable{
 		this.active = active;
 		
 		if(!this.active)
-			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON));
+			this.setContents(new Image(new GtkStockItem(Messages.getString("TrayIcon.4")), IconSize.BUTTON)); //$NON-NLS-1$
 		else
 			this.setContents(new Image(IconManager.anim));
 	}

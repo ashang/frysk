@@ -1,3 +1,27 @@
+2006-02-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* TrayIcon.java: Externalize all translation strings.
+	* ThreadMenu.java: Ditto.
+	* TaskStatusWidget.java: Ditto.
+	* StatusWidget.java: Ditto.
+	* SimpleComboBox.java: Ditto.
+	* ProgramViewPage.java: Ditto.
+	* ProgramDataModel.java: Ditto.
+	* ProgramData.java: Ditto.
+	* ProgramAddWindow.java: Ditto.
+	* ProcViewPage.java: Ditto.
+	* ProcMenu.java: Ditto.
+	* ProcDataModel.java: Ditto.
+	* PreferencesWindow.java: Ditto.
+	* MainWindow.java: Ditto.
+	* ListView.java: Ditto.
+	* InfoWidget.java: Ditto.
+	* GuiData.java: Ditto.
+	* FilterWidget.java: Ditto.
+	* EventLogger.java: Ditto.
+	* DetailedObserverTreeView.java: Ditto.
+	* CustomeObserverWindow.java: Ditto.
+
 2006-01-31  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcDataModel.java: Update, use renamed observableProcAddedXXX,

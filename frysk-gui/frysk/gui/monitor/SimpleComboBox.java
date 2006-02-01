@@ -56,6 +56,8 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeViewColumn;
 
+import frysk.gui.common.Messages;
+
 /**
  * A simple combo box that abstracts away all the complexity
  * of Combo box and provides simple methods for adding, removing
@@ -144,7 +146,7 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	public void setSelectedObject(GuiObject object){
 		TreeIter iter = (TreeIter) this.map.get(object);
 		if(iter == null){
-			throw new IllegalArgumentException("The object passed ["+ object +"] is not a member of this list");
+			throw new IllegalArgumentException(Messages.getString("SimpleComboBox.0")+ object +Messages.getString("SimpleComboBox.1")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		this.setActiveIter(iter);
 	}
@@ -172,7 +174,7 @@ public class SimpleComboBox extends ComboBox implements Observer{
 			treePath.next();
 			iter = this.listStore.getIter(treePath);
 		}
-		throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox");
+		throw new IllegalArgumentException(Messages.getString("SimpleComboBox.2")+ text +Messages.getString("SimpleComboBox.3")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**

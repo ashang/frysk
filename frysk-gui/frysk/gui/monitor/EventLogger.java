@@ -46,6 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.observers.AttachedContinueObserver;
 import frysk.gui.monitor.observers.AttachedResumeObserver;
 import frysk.gui.monitor.observers.AttachedStopObserver;
@@ -65,10 +66,10 @@ import frysk.proc.TaskObserver;
 public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		TaskObserver.Cloned, TaskObserver.Forked, TaskObserver.Terminating {
 
-	private static final String FRYSK_CONFIG = System.getProperty("user.home")
-			+ "/" + ".frysk" + "/";
+	private static final String FRYSK_CONFIG = System.getProperty("user.home") //$NON-NLS-1$
+			+ "/" + ".frysk" + "/"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
-	public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog";
+	public static final String EVENT_LOG_ID = "frysk.gui.monitor.eventlog"; //$NON-NLS-1$
 
 	private Logger eventLogFile = null;
 
@@ -131,14 +132,14 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 
 	private FileHandler buildHandler() {
 		FileHandler handler = null;
-		File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/");
+		File log_dir = new File(FRYSK_CONFIG + "eventlogs" + "/"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		if (!log_dir.exists())
 			log_dir.mkdirs();
 
 		try {
-			handler = new EventFileHandler(log_dir.getAbsolutePath() + "/"
-					+ "frysk_event_log.log", true);
+			handler = new EventFileHandler(log_dir.getAbsolutePath() + "/" //$NON-NLS-1$
+					+ Messages.getString("EventLogger.8"), true); //$NON-NLS-1$
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,69 +151,69 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 	//XXX: soon to be removed
 	class AttachedContinueRunnable implements ObserverRunnable {
 		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
-					+ " Host XXX Attached ");
+			eventLogFile.log(Level.INFO, Messages.getString("EventLogger.7") + ((Proc) obj).getPid() //$NON-NLS-1$
+					+ Messages.getString("EventLogger.10")); //$NON-NLS-1$
 		}
 	}
 
 	//XXX: soon to be removed
 	class DetachedContinueRunnable implements ObserverRunnable {
 		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
-					+ " Host XXX Detached ");
+			eventLogFile.log(Level.INFO, Messages.getString("EventLogger.11") + ((Proc) obj).getPid() //$NON-NLS-1$
+					+ Messages.getString("EventLogger.12")); //$NON-NLS-1$
 		}
 	}
 
 	//XXX: soon to be removed
 	class AttachedStopRunnable implements ObserverRunnable {
 		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
-					+ " Host XXX Stopped");
+			eventLogFile.log(Level.INFO, Messages.getString("EventLogger.13") + ((Proc) obj).getPid() //$NON-NLS-1$
+					+ Messages.getString("EventLogger.14")); //$NON-NLS-1$
 		}
 	}
 
 	//XXX: soon to be removed
 	class AttachedResumeRunnable implements ObserverRunnable {
 		public void run(Observable o, Object obj) {
-			eventLogFile.log(Level.INFO, "PID " + ((Proc) obj).getPid()
-					+ " Host XXX Resumed");
+			eventLogFile.log(Level.INFO, Messages.getString("EventLogger.15") + ((Proc) obj).getPid() //$NON-NLS-1$
+					+ Messages.getString("EventLogger.16")); //$NON-NLS-1$
 		}
 	}
 
 	public Action updateExeced(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX Execed");
+		eventLogFile.log(Level.INFO, Messages.getString("EventLogger.17") + task.getTid() //$NON-NLS-1$
+				+ Messages.getString("EventLogger.18")); //$NON-NLS-1$
 		return Action.CONTINUE;
 	}
 
 	public Action updateSyscallEnter(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX entered syscall");
+		eventLogFile.log(Level.INFO, Messages.getString("EventLogger.19") + task.getTid() //$NON-NLS-1$
+				+ Messages.getString("EventLogger.20")); //$NON-NLS-1$
 		return Action.CONTINUE;
 	}
 
 	public Action updateSyscallExit(Task task) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX left syscall");
+		eventLogFile.log(Level.INFO, Messages.getString("EventLogger.21") + task.getTid() //$NON-NLS-1$
+				+ Messages.getString("EventLogger.22")); //$NON-NLS-1$
 		return Action.CONTINUE;
 	}
 
 	public Action updateCloned(Task task, Task clone) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX cloned new task: " + clone);
+		eventLogFile.log(Level.INFO, Messages.getString("EventLogger.23") + task.getTid() //$NON-NLS-1$
+				+ Messages.getString("EventLogger.24") + clone); //$NON-NLS-1$
 		return Action.CONTINUE;
 	}
 
 	public Action updateForked(Task task, Task child) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX Forked a new proccess: "
+		eventLogFile.log(Level.INFO, Messages.getString("EventLogger.25") + task.getTid() //$NON-NLS-1$
+				+ Messages.getString("EventLogger.26") //$NON-NLS-1$
 				 + child.getProc ());
 		return Action.CONTINUE;
 	}
 
 	public Action updateTerminating(Task task, boolean signal, int value) {
-		eventLogFile.log(Level.INFO, "PID " + task.getTid()
-				+ " Host XXX is exiting with signal: " + value);
+		eventLogFile.log(Level.INFO, Messages.getString("EventLogger.27") + task.getTid() //$NON-NLS-1$
+				+ Messages.getString("EventLogger.28") + value); //$NON-NLS-1$
 		return Action.CONTINUE;
 	}
 	

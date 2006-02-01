@@ -50,6 +50,8 @@ import org.gnu.gtk.Notebook;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Widget;
 
+import frysk.gui.common.Messages;
+
 public class InfoWidget extends Notebook {
 
 	public Observable notifyUser;
@@ -69,7 +71,7 @@ public class InfoWidget extends Notebook {
 		
 		//========================================
 		VBox statusVbox = new VBox(true, 0);
-		NotifyingLabel statusWidgetLabel = new NotifyingLabel("Status");
+		NotifyingLabel statusWidgetLabel = new NotifyingLabel(Messages.getString("InfoWidget.0")); //$NON-NLS-1$
 		statusVbox.packStart(procStatusVbox);
 		statusVbox.packStart(taskStatusVbox);
 		this.appendPage(statusVbox, statusWidgetLabel);		

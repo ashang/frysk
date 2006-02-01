@@ -56,6 +56,7 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.GuiObject;
 
 /**
@@ -229,7 +230,7 @@ public class ListView extends TreeView implements Observer {
 			treePath.next();
 			iter = this.listStore.getIter(treePath);
 		}
-		throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox");
+		throw new IllegalArgumentException(Messages.getString("ListView.0")+ text +Messages.getString("ListView.1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

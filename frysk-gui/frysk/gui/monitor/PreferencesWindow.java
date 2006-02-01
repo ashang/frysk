@@ -66,6 +66,8 @@ import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.Messages;
+
 /**
  * The preference window. This also provides a place
  * to extend the preferences window.
@@ -84,9 +86,9 @@ public class PreferencesWindow extends Window {
 	private VBox prefsWidget;
 	
 	public PreferencesWindow(LibGlade glade){
-		super(((Window)glade.getWidget("preferencesWindow")).getHandle());
-		this.treeView  = (TreeView)glade.getWidget("prefsTreeView");
-		this.prefsWidget = (VBox)glade.getWidget("prefsWidget");
+		super(((Window)glade.getWidget("preferencesWindow")).getHandle()); //$NON-NLS-1$
+		this.treeView  = (TreeView)glade.getWidget("prefsTreeView"); //$NON-NLS-1$
+		this.prefsWidget = (VBox)glade.getWidget("prefsWidget"); //$NON-NLS-1$
 		
 		this.iterHashMap = new HashMap();
 		
@@ -124,7 +126,7 @@ public class PreferencesWindow extends Window {
 		});
 		
 		
-		Button button = (Button) glade.getWidget("prefsOkButton");
+		Button button = (Button) glade.getWidget("prefsOkButton"); //$NON-NLS-1$
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
@@ -133,7 +135,7 @@ public class PreferencesWindow extends Window {
 			}
 		});
 		
-		button = (Button) glade.getWidget("prefsCancelButton");
+		button = (Button) glade.getWidget("prefsCancelButton"); //$NON-NLS-1$
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
@@ -156,7 +158,7 @@ public class PreferencesWindow extends Window {
 		if(this.iterHashMap.get(path) == null){
 			this.iterHashMap.put(path, iter);
 		}else{
-			throw new IllegalArgumentException("Catagory " + name + " already exists");
+			throw new IllegalArgumentException(Messages.getString("PreferencesWindow.5") + name + Messages.getString("PreferencesWindow.6")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		this.treeStore.setValue(iter, this.nameDC, name);

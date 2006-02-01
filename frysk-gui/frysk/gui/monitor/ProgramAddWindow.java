@@ -81,6 +81,7 @@ import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -105,7 +106,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 
 	public ProgramAddWindow(LibGlade glade) {
 		// Get Window
-		super(((Window) glade.getWidget("programAddWindow")).getHandle());
+		super(((Window) glade.getWidget("programAddWindow")).getHandle()); //$NON-NLS-1$
 		// Apply Listener
 		this.addListener(this);
 		// Get widgets from glade file.
@@ -138,8 +139,8 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
 					String message = doValidation();
-					if (!message.equals(""))
-						DialogManager.showWarnDialog("Validation Errors", message);
+					if (!message.equals("")) //$NON-NLS-1$
+						DialogManager.showWarnDialog(Messages.getString("ProgramAddWindow.2"), message); //$NON-NLS-1$
 					else
 					{
 						saveDialog();
@@ -189,7 +190,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private String doValidation() {
 		// File Checks
 		if (programEntry.getText().length() <= 0)
-			return "You must give this monitor a name";
+			return Messages.getString("ProgramAddWindow.3"); //$NON-NLS-1$
 		
 
 		// This is wierd. If I do getFilename()
@@ -206,36 +207,36 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			// If doing the getFilename() spawns and NPE
 			// the user has never clicked the FileChooserButton
 			
-			return "You must choose an executable to watch";
+			return Messages.getString("ProgramAddWindow.4"); //$NON-NLS-1$
 		}
 		
 		// Check an executable has been given.
 		if (programOpenFileDialog.getFilename().length() < 1)
-			return "You must choose an executable to watch";
+			return Messages.getString("ProgramAddWindow.5"); //$NON-NLS-1$
 		
 		File existenceCheck = new File(programOpenFileDialog.getFilename());
 		
 		// Checks to see if executable actually exists.
 		if (existenceCheck.exists() == false)
-			return "Filename specified does not exist on disk";
+			return Messages.getString("ProgramAddWindow.6"); //$NON-NLS-1$
 		
 		// Checks to see if the executable is readable
 		if (existenceCheck.canRead() == false)
-			return "Cannot read specified file";
+			return Messages.getString("ProgramAddWindow.7"); //$NON-NLS-1$
 		
 		// Checks to see if the executable is a file, not a directory.
 		if (existenceCheck.isDirectory())
-			return "Must be a filename, not a directory";
+			return Messages.getString("ProgramAddWindow.8"); //$NON-NLS-1$
 		
 		// Checks to see if at least one process is selected.
 		if (programTreeView.getSelection().getSelectedRows().length < 1)
-			return "Please select at least one process that will spawn filename";
+			return Messages.getString("ProgramAddWindow.9"); //$NON-NLS-1$
 		
 		// Checks to see if at least one  observer is selected.
 		if (programObseverListBox.getSelection().getSelectedRows().length < 1)
-			return "Please select at least one observer to apply";
+			return Messages.getString("ProgramAddWindow.10"); //$NON-NLS-1$
 
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	public void mountProcModel(final ProcDataModel psDataModel) {
@@ -276,13 +277,13 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		commandCol.addAttributeMapping(cellRendererText4,
 				CellRendererText.Attribute.WEIGHT, psDataModel.getWeightDC());
 
-		pidCol.setTitle("PID");
+		pidCol.setTitle(Messages.getString("ProgramAddWindow.12")); //$NON-NLS-1$
 		pidCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				programTreeView.setSearchDataColumn(psDataModel.getPidDC());
 			}
 		});
-		commandCol.setTitle("Command");
+		commandCol.setTitle(Messages.getString("ProgramAddWindow.13")); //$NON-NLS-1$
 		commandCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				programTreeView.setSearchDataColumn(psDataModel.getCommandDC());
@@ -322,7 +323,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		   observerCol.addAttributeMapping(Obrender,
 		 CellRendererText.Attribute.TEXT, (DataColumnString)observerDC[0]);
 		 
-		observerCol.setTitle("Available Observers");
+		observerCol.setTitle(Messages.getString("ProgramAddWindow.14")); //$NON-NLS-1$
 		   
 		this.programObseverListBox.appendColumn(observerCol);
 		
@@ -341,15 +342,15 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	
 
 	private void getGladeWidgets(LibGlade glade) {
-		this.programEntry = (Entry) glade.getWidget("programName");
+		this.programEntry = (Entry) glade.getWidget("programName"); //$NON-NLS-1$
 		this.programOpenFileDialog = (FileChooserButton) glade
-				.getWidget("programFileChooser");
+				.getWidget("programFileChooser"); //$NON-NLS-1$
 //		this.programOpenFileDialog.setFilename("");
 //		System.out.println(this.programOpenFileDialog);
-		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView");
-		this.programObseverListBox = (TreeView) glade.getWidget("programApplyObserversListBox");
-		this.programCancel = (Button) glade.getWidget("programCancel");
-		this.programApply = (Button) glade.getWidget("programApply");
+		this.programTreeView = (TreeView) glade.getWidget("programWizardTreeView"); //$NON-NLS-1$
+		this.programObseverListBox = (TreeView) glade.getWidget("programApplyObserversListBox"); //$NON-NLS-1$
+		this.programCancel = (Button) glade.getWidget("programCancel"); //$NON-NLS-1$
+		this.programApply = (Button) glade.getWidget("programApply"); //$NON-NLS-1$
 	}
 
 
@@ -358,7 +359,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			this.psDataModel = new ProcDataModel();
 		} catch (IOException e) {
 			errorLog.log(Level.SEVERE,
-					"Error setting data model in program tree view ", e);
+					Messages.getString("ProgramAddWindow.21"), e); //$NON-NLS-1$
 		}
 		psDataModel.setFilterON(true);
 	}
@@ -399,21 +400,21 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	}
 
 	public void save(Preferences prefs) {
-		prefs.putInt("position.x", this.getPosition().getX());
-		prefs.putInt("position.y", this.getPosition().getY());
+		prefs.putInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
+		prefs.putInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
 		
-		prefs.putInt("size.height", this.getSize().getHeight());
-		prefs.putInt("size.width", this.getSize().getWidth());
+		prefs.putInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
+		prefs.putInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
 			
 	}
 
 	public void load(Preferences prefs) {
-		int x = prefs.getInt("position.x", this.getPosition().getX());
-		int y = prefs.getInt("position.y", this.getPosition().getY());
+		int x = prefs.getInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
+		int y = prefs.getInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
 		this.move(x,y);
 		
-		int width  = prefs.getInt("size.width", this.getSize().getWidth());
-		int height = prefs.getInt("size.height", this.getSize().getHeight());
+		int width  = prefs.getInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
+		int height = prefs.getInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
 		this.resize(width, height);
 	}
 	

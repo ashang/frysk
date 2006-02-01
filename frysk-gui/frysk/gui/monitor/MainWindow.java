@@ -48,6 +48,7 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Window;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.Messages;
 
 public class MainWindow extends Window implements Saveable{
 	
@@ -55,7 +56,7 @@ public class MainWindow extends Window implements Saveable{
 	
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	public MainWindow(LibGlade glade) throws IOException {
-		super(((Window)glade.getWidget("procpopWindow")).getHandle());
+		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		
 		try {
 			this.procViewPage = new ProcViewPage(glade);
@@ -63,35 +64,35 @@ public class MainWindow extends Window implements Saveable{
 			procViewPage.getClass();
 			programViewPage.getClass();
 		} catch (IOException e){
-			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e);
+			errorLog.log(Level.SEVERE,Messages.getString("MainWindow.1"),e); //$NON-NLS-1$
 		}
 		
-		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle());
+		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle()); //$NON-NLS-1$
 		//XXX:
 		noteBook.getClass();
 		this.showAll();
 	}
 
 	public void save(Preferences prefs) {
-		prefs.putInt("position.x", this.getPosition().getX());
-		prefs.putInt("position.y", this.getPosition().getY());
+		prefs.putInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
+		prefs.putInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
 		
-		prefs.putInt("size.height", this.getSize().getHeight());
-		prefs.putInt("size.width", this.getSize().getWidth());
+		prefs.putInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
+		prefs.putInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
 		
-		procViewPage.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget"));
+		procViewPage.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 
 	public void load(Preferences prefs) {
-		int x = prefs.getInt("position.x", this.getPosition().getX());
-		int y = prefs.getInt("position.y", this.getPosition().getY());
+		int x = prefs.getInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
+		int y = prefs.getInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
 		this.move(x,y);
 		
-		int width  = prefs.getInt("size.width", this.getSize().getWidth());
-		int height = prefs.getInt("size.height", this.getSize().getHeight());
+		int width  = prefs.getInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
+		int height = prefs.getInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
 		this.resize(width, height);
 		
-		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget"));
+		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 	
 }

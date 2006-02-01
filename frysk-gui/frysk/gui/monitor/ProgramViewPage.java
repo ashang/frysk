@@ -71,6 +71,7 @@ import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 
 /**
@@ -79,7 +80,7 @@ import frysk.gui.common.dialogs.DialogManager;
 public class ProgramViewPage extends Widget {
 
 	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
-	"event_watchers_store" + "/";
+	"event_watchers_store" + "/"; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	// private TreeView programTreeView;
 	public ProgramAddWindow fileChooserDialog;
@@ -94,13 +95,13 @@ public class ProgramViewPage extends Widget {
 	
 
 	public ProgramViewPage(final LibGlade glade) throws IOException {
-		super((glade.getWidget("programVBox")).getHandle());
+		super((glade.getWidget("programVBox")).getHandle()); //$NON-NLS-1$
 		
 		
 		
-		this.programTreeView = (TreeView) glade.getWidget("programTreeView");
-		Button browseButton = (Button) glade.getWidget("programBrowseButton");
-		Button deleteButton = (Button) glade.getWidget("programDeleteButton");
+		this.programTreeView = (TreeView) glade.getWidget("programTreeView"); //$NON-NLS-1$
+		Button browseButton = (Button) glade.getWidget("programBrowseButton"); //$NON-NLS-1$
+		Button deleteButton = (Button) glade.getWidget("programDeleteButton"); //$NON-NLS-1$
 		
 		
 		this.programDataModel = ProgramDataModel.theManager;
@@ -222,7 +223,7 @@ public class ProgramViewPage extends Widget {
 		enabledCol.addAttributeMapping(renderToggle,
 				CellRendererToggle.Attribute.ACTIVE, programDataModel
 						.getEnabledDC());
-		enabledCol.setTitle("Enabled?");
+		enabledCol.setTitle(Messages.getString("ProgramViewPage.6")); //$NON-NLS-1$
 		enabledCol.setVisible(true);
 
 		CellRendererText nameRender = new CellRendererText();
@@ -236,7 +237,7 @@ public class ProgramViewPage extends Widget {
 		nameCol.addAttributeMapping(nameRender,
 				CellRendererText.Attribute.WEIGHT, programDataModel
 						.getWeightDC());
-		nameCol.setTitle("Observered Executable");
+		nameCol.setTitle(Messages.getString("ProgramViewPage.7")); //$NON-NLS-1$
 
 		nameCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
@@ -258,7 +259,7 @@ public class ProgramViewPage extends Widget {
 		
 		TreePath[] deleteSelection = this.programTreeView.getSelection().getSelectedRows();
 		
-		DialogManager.showWarnDialog("Delete Confirm", "Are you sure you wanted to delete selected monitors?");
+		DialogManager.showWarnDialog(Messages.getString("ProgramViewPage.8"), Messages.getString("ProgramViewPage.9")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0; i<deleteSelection.length; i++)
 		{
 			ProgramDataModel.theManager.delete(deleteSelection[i]);

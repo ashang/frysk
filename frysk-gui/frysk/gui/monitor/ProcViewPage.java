@@ -80,6 +80,7 @@ import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.Messages;
 
 public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
@@ -103,19 +104,19 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 	private LibGlade glade;
 	
 	public ProcViewPage(LibGlade libGlade) throws IOException {
-		super((libGlade.getWidget("allProcVBox")).getHandle());
+		super((libGlade.getWidget("allProcVBox")).getHandle()); //$NON-NLS-1$
 		this.glade = libGlade;
 		
-		this.refreshSpinButton   = (SpinButton)  glade.getWidget("refreshSpinButton");
-		this.refreshButton       = (Button)      glade.getWidget("refreshButton");
-		this.holdButton          = (Button)      glade.getWidget("holdButton");
+		this.refreshSpinButton   = (SpinButton)  glade.getWidget("refreshSpinButton"); //$NON-NLS-1$
+		this.refreshButton       = (Button)      glade.getWidget("refreshButton"); //$NON-NLS-1$
+		this.holdButton          = (Button)      glade.getWidget("holdButton"); //$NON-NLS-1$
 		
-		this.procTreeView        = (TreeView)    glade.getWidget("procTreeView");
-		this.threadTreeView      = (TreeView)    glade.getWidget("threadTreeView");
+		this.procTreeView        = (TreeView)    glade.getWidget("procTreeView"); //$NON-NLS-1$
+		this.threadTreeView      = (TreeView)    glade.getWidget("threadTreeView"); //$NON-NLS-1$
 		
-		this.vPane               = (VPaned)  glade.getWidget("vPane");
+		this.vPane               = (VPaned)  glade.getWidget("vPane"); //$NON-NLS-1$
 		
-		this.statusWidget          = (VBox)        glade.getWidget("statusWidget");
+		this.statusWidget          = (VBox)        glade.getWidget("statusWidget"); //$NON-NLS-1$
 		
 		this.infoWidget = new InfoWidget();
 		this.statusWidget.add(infoWidget);
@@ -188,7 +189,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 					ProcData data = getSelectedProc();
 					if(data != null) ProcMenu.getMenu().popup(data);
 					
-                    System.out.println("click : " + data);
+                    System.out.println("click : " + data); //$NON-NLS-1$
                     return true;
 				}
 				return false;
@@ -204,7 +205,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 					TaskData data = getSelectedThread();
 					if(data != null) ThreadMenu.getMenu().popup(data);
 					
-                    System.out.println("click : " + data);
+                    System.out.println("click : " + data); //$NON-NLS-1$
                     return true;
 				}
 				return false;
@@ -251,13 +252,13 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
 
-		pidCol.setTitle("PID");
+		pidCol.setTitle(Messages.getString("ProcViewPage.10")); //$NON-NLS-1$
 		pidCol.addListener(new TreeViewColumnListener(){
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				procTreeView.setSearchDataColumn(psDataModel.getPidDC());
 			}
 		});
-		commandCol.setTitle("Command");
+		commandCol.setTitle(Messages.getString("ProcViewPage.11")); //$NON-NLS-1$
 		commandCol.addListener(new TreeViewColumnListener(){
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				procTreeView.setSearchDataColumn(psDataModel.getCommandDC());
@@ -273,7 +274,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		psDataModel.getModel().addListener(new PropertyNotificationListener(){
 			public void notify(GObject arg0, String arg1) {
-				System.out.println("Notification : " + arg1);
+				System.out.println(Messages.getString("ProcViewPage.12") + arg1); //$NON-NLS-1$
 			}
 		});
 		
@@ -327,8 +328,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
 
-		pidCol.setTitle("PID");
-		commandCol.setTitle("Entry Functions");
+		pidCol.setTitle(Messages.getString("ProcViewPage.13")); //$NON-NLS-1$
+		commandCol.setTitle(Messages.getString("ProcViewPage.14")); //$NON-NLS-1$
 		
 		pidCol.setVisible(true);
 		commandCol.setVisible(true);
@@ -364,7 +365,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		try {
 			this.psDataModel.refresh();
 		} catch (IOException e) {
-			errorLog.log(Level.SEVERE,"Cannot refresh",e);
+			errorLog.log(Level.SEVERE,Messages.getString("ProcViewPage.15"),e); //$NON-NLS-1$
 		}
 	}
 
@@ -399,12 +400,12 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 	}
 
 	public void save(Preferences prefs) {
-		prefs.putInt("vPane.position", this.vPane.getPosition());
+		prefs.putInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
 	}
 
 
 	public void load(Preferences prefs) {
-		int position = prefs.getInt("vPane.position", this.vPane.getPosition());
+		int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
 		
 		this.vPane.setPosition(position);
 	}

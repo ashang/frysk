@@ -60,6 +60,7 @@ import org.jdom.output.XMLOutputter;
 import org.xml.sax.SAXException;
 
 import frysk.gui.FryskGui;
+import frysk.gui.common.Messages;
 
 
 public class ProgramData {
@@ -73,7 +74,7 @@ public class ProgramData {
 	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
 	
 	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
-	"event_watchers_store" + "/";
+	"event_watchers_store" + "/"; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	/**
 	 * @param name. Name of this monitor.
@@ -93,9 +94,9 @@ public class ProgramData {
 	
 	public ProgramData()
 	{
-		this.name = "";
+		this.name = ""; //$NON-NLS-1$
 		this.enabled = false;
-		this.executable = "";
+		this.executable = ""; //$NON-NLS-1$
 		this.processList = new ArrayList();
 		this.observerList = new ArrayList();
 	}
@@ -143,25 +144,25 @@ public class ProgramData {
 	public void save(String filename)
 	{   
 
-		Element root = new Element("ProgramEvent");
+		Element root = new Element("ProgramEvent"); //$NON-NLS-1$
 		Document doc =  new Document(root);
 
-		root.setAttribute("name", this.name);
-		root.setAttribute("enabled", ""+this.enabled);
-		root.setAttribute("executable",this.executable);
+		root.setAttribute("name", this.name); //$NON-NLS-1$
+		root.setAttribute("enabled", ""+this.enabled); //$NON-NLS-1$ //$NON-NLS-2$
+		root.setAttribute("executable",this.executable); //$NON-NLS-1$
 		
-		Element processList = new Element("processes");
+		Element processList = new Element("processes"); //$NON-NLS-1$
 		
 		Iterator i = this.processList.iterator();
 		while (i.hasNext())
-			processList.addContent(new Element("process").setText(((String)i.next())));
+			processList.addContent(new Element("process").setText(((String)i.next()))); //$NON-NLS-1$
 		
-		Element observerList = new Element("observers");
+		Element observerList = new Element("observers"); //$NON-NLS-1$
 		
 		i = this.observerList.iterator();
 		
 		while (i.hasNext())
-			observerList.addContent(new Element("observer").setText(((String)i.next())));
+			observerList.addContent(new Element("observer").setText(((String)i.next()))); //$NON-NLS-1$
 			
 		
 		root.addContent(processList);
@@ -172,13 +173,13 @@ public class ProgramData {
 		try {
 			output.output(doc,new FileWriter(filename));
 		} catch (IOException e) {
-			errorLog.log(Level.SEVERE,"Errors writing execution event monitor " + filename,e);
+			errorLog.log(Level.SEVERE,Messages.getString("ProgramData.13") + filename,e); //$NON-NLS-1$
 		}
 	}
 	
 	public void save() {
 		buildStore();
-		save(EVENT_STORE_LOC + this.name + ".xml");
+		save(EVENT_STORE_LOC + this.name + ".xml"); //$NON-NLS-1$
 	}
 	
 	public void load(String filename) {		
@@ -192,11 +193,11 @@ public class ProgramData {
            doc = (org.w3c.dom.Document) builder.parse(new File(filename));
  
         } catch (SAXException sxe) {
-			errorLog.log(Level.SEVERE,"Errors parsing (SAX Exception) " + filename,sxe);
+			errorLog.log(Level.SEVERE,Messages.getString("ProgramData.15") + filename,sxe); //$NON-NLS-1$
         } catch (ParserConfigurationException pce) {
-        	errorLog.log(Level.SEVERE,"Errors parsing (Parser Configuration Exception) " + filename,pce);
+        	errorLog.log(Level.SEVERE,Messages.getString("ProgramData.16") + filename,pce); //$NON-NLS-1$
         } catch (IOException ioe) {
-        	errorLog.log(Level.SEVERE,"Errors parsing (IO Exception) " + filename,ioe);
+        	errorLog.log(Level.SEVERE,Messages.getString("ProgramData.17") + filename,ioe); //$NON-NLS-1$
         }
 		
         DOMBuilder doo = new DOMBuilder();
@@ -204,26 +205,26 @@ public class ProgramData {
         		
 		Element root = document.getRootElement();
 				
-		this.name = root.getAttribute("name").getValue();
+		this.name = root.getAttribute("name").getValue(); //$NON-NLS-1$
 
-		if (root.getAttribute("enabled").getValue().equals("true"))
+		if (root.getAttribute("enabled").getValue().equals("true")) //$NON-NLS-1$ //$NON-NLS-2$
 			this.enabled = true;
 		else
 			this.enabled = false;
 
-		this.executable = root.getAttribute("executable").getValue();
+		this.executable = root.getAttribute("executable").getValue(); //$NON-NLS-1$
 
-		Element observers = root.getChild("observers");
+		Element observers = root.getChild("observers"); //$NON-NLS-1$
 		List XMLobserverList = (List) observers
-				.getChildren("observer");
+				.getChildren("observer"); //$NON-NLS-1$
 		Iterator i = XMLobserverList.iterator();
 
 		observerList.clear();
 		while (i.hasNext())
 			observerList.add(((Element) i.next()).getText());
 
-		Element processes = root.getChild("processes");
-		List XMLprocessList = (List) processes.getChildren("process");
+		Element processes = root.getChild("processes"); //$NON-NLS-1$
+		List XMLprocessList = (List) processes.getChildren("process"); //$NON-NLS-1$
 		i = XMLprocessList.iterator();
 
 		processList.clear();
@@ -240,7 +241,7 @@ public class ProgramData {
 	}
 
 	public void delete() {
-		File delete = new File(EVENT_STORE_LOC + this.name + ".xml");
+		File delete = new File(EVENT_STORE_LOC + this.name + ".xml"); //$NON-NLS-1$
 		if (delete.isFile() && delete.canWrite())
 			delete.delete();
 	
