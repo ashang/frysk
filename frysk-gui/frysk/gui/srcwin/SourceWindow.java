@@ -422,7 +422,7 @@ public class SourceWindow extends Window implements ButtonListener,
 	 */
 	public void populateStackBrowser(StackLevel top) {
 		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
-
+		
 		stackColumns = new DataColumn[] { new DataColumnString(),
 				new DataColumnObject() };
 		ListStore listModel = new ListStore(stackColumns);
@@ -435,16 +435,32 @@ public class SourceWindow extends Window implements ButtonListener,
 		while (top != null) {
 			iter = listModel.appendRow();
 
-			DOMLine line = top.getData().getLine(top.getStartingLineNum());
-			if (line != null
-					&& top.getData().getLine(top.getStartingLineNum())
-							.hasInlinedCode())
+			CurrentLineSection current = top.getCurrentLine();
+			boolean hasInlinedCode = false;
+				
+			// Go through each segment of the current line, but once we've found
+			// one stop checking
+			while(current != null && !hasInlinedCode){
+				// Go through each line of the segment
+				for(int i = current.getStartLine(); i < current.getEndLine(); i++){
+					// Check for inlined code
+					DOMLine line = top.getData().getLine(i);
+					if(line != null && line.hasInlinedCode()){
+						hasInlinedCode = true;
+						break;
+					}
+				}
+			}
+				
+			// If we've found inlined code, update the display
+			if(hasInlinedCode)
 				listModel.setValue(iter, (DataColumnString) stackColumns[0], top
 						.getData().getFileName()
 						+ "  (i)");
 			else
 				listModel.setValue(iter, (DataColumnString) stackColumns[0], top
 						.getData().getFileName());
+				
 			listModel.setValue(iter, (DataColumnObject) stackColumns[1], top);
 
 			// Save the last node so we can select it

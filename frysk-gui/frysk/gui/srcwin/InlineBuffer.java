@@ -168,9 +168,10 @@ public class InlineBuffer extends SourceBuffer {
     /**
      * Sets the current line, taking into account the offset from the start of the file
      */
-    protected void setCurrentLine(int startLine, int startCol, int endLine, int endCol){
-    	super.setCurrentLine(startLine - this.declaration.getStartingLine() + 1,
-    			startCol, endLine - this.declaration.getStartingLine() + 1, endCol);
+    protected void setCurrentLine(CurrentLineSection currentLine){
+    		currentLine.setStartLine(currentLine.getStartLine() - this.declaration.getStartingLine()+1);
+    		currentLine.setEndLine(currentLine.getEndLine() - this.declaration.getStartingLine()+1);
+    		super.setCurrentLine(currentLine);
     }
     
     /**

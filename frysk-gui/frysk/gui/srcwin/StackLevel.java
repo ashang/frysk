@@ -51,11 +51,8 @@ public class StackLevel {
 	// Constant signifying the end of the line (length independantly)
 	public static int EOL = -1;
 	
-	// Line number and column offsets for the current line
-	private int lineNum;
-	private int endLine;
-	private int colStart;
-	private int colEnd;
+	// current line information
+	private CurrentLineSection currentLine;
 	
 	// Depth in the stack
 	private int depth;
@@ -80,11 +77,8 @@ public class StackLevel {
 	 * @param colStart The column of the current instruction
 	 * @param colEnd The column of the end of the current instruction
 	 */
-	public StackLevel(DOMSource data, int line, int endLine, int colStart, int colEnd){
-		this.lineNum = line;
-		this.endLine = endLine;
-		this.colStart = colStart;
-		this.colEnd = colEnd;
+	public StackLevel(DOMSource data, CurrentLineSection currentLine){
+		this.currentLine = currentLine;
 		
 		this.depth = 0;
 		this.data = data;
@@ -97,7 +91,7 @@ public class StackLevel {
 	 * @param line
 	 */
 	public StackLevel(DOMSource data, int line){
-		this(data, line, line, 0, StackLevel.EOL);
+		this(data, new CurrentLineSection(line, line, 0, StackLevel.EOL));
 	}
 	
 	/**
@@ -105,20 +99,6 @@ public class StackLevel {
 	 */
 	public StackLevel getNextScope() {
 		return nextScope;
-	}
-
-	/**
-	 * @return The line that the current instruction starts on
-	 */
-	public int getStartingLineNum() {
-		return lineNum;
-	}
-
-	/**
-	 * @param lineNum The line that the current instruction starts on
-	 */
-	public void setLineNum(int lineNum) {
-		this.lineNum = lineNum;
 	}
 
 	/**
@@ -174,49 +154,11 @@ public class StackLevel {
 		this.parsed = parsed;
 	}
 
-	/**
-	 * @return The column offset (wrt the start of the line) of the end of the
-	 * current instruction.
-	 */
-	public int getColEnd() {
-		return colEnd;
+	public CurrentLineSection getCurrentLine() {
+		return currentLine;
 	}
 
-	/**
-	 * @param colEnd The column offset (wrt the start of the line) of the end of the
-	 * current instruction.
-	 */
-	public void setColEnd(int colEnd) {
-		this.colEnd = colEnd;
-	}
-
-	/**
-	 * @return The column offset (wrt the start of the line) of the start of
-	 * the current instruction
-	 */
-	public int getColStart() {
-		return colStart;
-	}
-
-	/**
-	 * @param colStart The column offset (wrt the start of the line) of the start 
-	 * of the current instruction
-	 */
-	public void setColStart(int colStart) {
-		this.colStart = colStart;
-	}
-
-	/**
-	 * @return The line number that the current instruction ends on
-	 */
-	public int getEndLine() {
-		return endLine;
-	}
-
-	/**
-	 * @param endLine The line number that the current instruction ends on
-	 */
-	public void setEndLine(int endLine) {
-		this.endLine = endLine;
+	public void setCurrentLine(CurrentLineSection currentLine) {
+		this.currentLine = currentLine;
 	}
 }

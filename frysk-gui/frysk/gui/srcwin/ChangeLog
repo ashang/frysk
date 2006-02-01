@@ -1,3 +1,24 @@
+2006-02-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* CurrentLineSection.java: Added, is able to represent the
+	"current line" as an arbitrary number of contiguous sections.
+	* InlineBuffer.java (setCurrentLine): Refactored to use 
+	CurrentLineSection.
+	* SourceBuffer.java (setCurrentLine): Ditto.
+	(load): Ditto.
+	* SourceWindow.java (populateStackBrowser): Ditto.
+	* StackLevel.java (StackLevel): Ditto.
+	(getStartingLineNum): Removed.
+	(getEndingLineNum): Ditto.
+	(setStartingLineNum): Ditto.
+	(setEndingLineNum): Ditto.
+	(getColEnd): Ditto.
+	(setColEnd): Ditto.
+	(getColStart): Ditto.
+	(setColStart): Ditto.
+	(getCurrentLine): Added.
+	(setCurrentLine): Added.
+
 2006-01-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (getVariable): Now added check to see if line

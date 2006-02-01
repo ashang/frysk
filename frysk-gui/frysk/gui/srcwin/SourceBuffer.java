@@ -228,9 +228,13 @@ public class SourceBuffer extends TextBuffer {
 	 *            The offset (wrt. the start of the line) that the instruction
 	 *            ends on
 	 */
-	protected void setCurrentLine(int startLine, int startCol, int endLine,
-			int endCol) {
+	protected void setCurrentLine(CurrentLineSection currentLine) {
 
+		int startLine = currentLine.getStartLine();
+		int startCol = currentLine.getStartOffsset();
+		int endLine = currentLine.getEndLine();
+		int endCol = currentLine.getEndOffset();
+		
 		this.startCurrentLine = this.createMark("currentLineStart",
 				this.getIter(this.getLineIter(startLine - 1).getOffset()
 						+ startCol), true);
@@ -247,6 +251,11 @@ public class SourceBuffer extends TextBuffer {
 
 		this.applyTag(this.currentLine, this.getIter(this.startCurrentLine),
 				this.getIter(this.endCurrentLine));
+		
+		// Apply the next sections of the 'current line'
+		currentLine = currentLine.getNextSection();
+		if(currentLine != null)
+			setCurrentLine(currentLine);
 	}
 
 	/**
@@ -733,9 +742,7 @@ public class SourceBuffer extends TextBuffer {
 			e.printStackTrace();
 		}
 
-		this.setCurrentLine(this.scope.getStartingLineNum(), this.scope
-						.getColStart(), this.scope.getEndLine(), this.scope
-						.getColEnd());
+		this.setCurrentLine(this.scope.getCurrentLine());
 	}
 
 	public void setMode(int mode){
