@@ -1,5 +1,13 @@
 2006-02-01  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* message.properties: Added 	actions/Stop.java,
+	actions/StickyObserverAction.java, 
+	actions/ShowSourceWin.java,
+	actions/Resume.java, actions/PrintTask.java,
+	actions/PrintProc.java, actions/LogAction.java,
+	actions/ActionPoint.java, 
+	actions/ActionManager.java strings
+
 	* message.properties: Added TrayIcon.java, ThreadMenu.java,
 	TaskStatusWidget.java, StatusWidget.java, SimpleComboBox.java,
 	ProgramViewPage.java, ProgramDataModel.java, ProgramData.java,
