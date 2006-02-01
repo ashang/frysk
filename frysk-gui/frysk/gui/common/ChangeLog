@@ -1,5 +1,15 @@
 2006-02-01  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* message.properties: Added TrayIcon.java, ThreadMenu.java,
+	TaskStatusWidget.java, StatusWidget.java, SimpleComboBox.java,
+	ProgramViewPage.java, ProgramDataModel.java, ProgramData.java,
+	ProgramAddWindow.java, ProcViewPage.java, ProcMenu.java,
+	ProcDataModel.java, PreferencesWindow.java, MainWindow.java,
+	ListView.java, InfoWidget.java, GuiData.java, 
+	FilterWidget.java, EventLogger.java, 
+	DetailedObserverTreeView.java, CustomeObserverWindow.java 
+	strings.
+
 	* dialogs/ErrorDialog.java: Externalize Strings.
 	* dialogs/WarnDialog.java: Externalize Strings
 	* messages.properties: Added WarnDialog.java and
