@@ -201,7 +201,7 @@ public class SourceWindow extends Window implements ButtonListener,
 	public SourceWindow(LibGlade glade, String gladePath, DOMFrysk dom,
 			StackLevel stack) {
 		super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
-
+		
 		this.glade = glade;
 		this.gladePath = gladePath;
 		this.dom = dom;
@@ -450,6 +450,8 @@ public class SourceWindow extends Window implements ButtonListener,
 						break;
 					}
 				}
+				
+				current = current.getNextSection();
 			}
 				
 			// If we've found inlined code, update the display

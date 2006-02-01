@@ -1,5 +1,7 @@
 2006-02-01  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (populateStackBrowser): Fixed infinite loop.
+
 	* CurrentLineSection.java: Added, is able to represent the
 	"current line" as an arbitrary number of contiguous sections.
 	* InlineBuffer.java (setCurrentLine): Refactored to use 
