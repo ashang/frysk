@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
@@ -54,7 +55,7 @@ public class StickyObserverAction extends TaskAction {
 	TaskObserverRoot observer;
 	
 	public StickyObserverAction() {
-		super("Add Observer Action", "Add given observer to the given task");
+		super(Messages.getString("StickyObserverAction.0"), Messages.getString("StickyObserverAction.1")); //$NON-NLS-1$ //$NON-NLS-2$
 		this.observer = null;
 	}
 

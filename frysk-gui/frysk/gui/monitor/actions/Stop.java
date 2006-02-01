@@ -40,12 +40,13 @@
 package frysk.gui.monitor.actions;
 
 // import frysk.gui.monitor.WindowManager;
+import frysk.gui.common.Messages;
 import frysk.proc.Proc;
 
 public class Stop extends ProcAction {
 	
 	public Stop() {
-		super("Stop", "Stop current process");
+		super(Messages.getString("Stop.0"), Messages.getString("Stop.1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public Stop(Stop other){
@@ -55,7 +56,7 @@ public class Stop extends ProcAction {
     public void execute(Proc proc) {
 	    // proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
 	// proc.requestAttachedStop();
-	throw new RuntimeException ("XXX: mechanism for stopping a process/task.");
+	throw new RuntimeException (Messages.getString("Stop.2")); //$NON-NLS-1$
     }
 
 	public Action getCopy() {

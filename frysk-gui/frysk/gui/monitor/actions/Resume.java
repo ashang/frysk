@@ -39,12 +39,13 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.common.Messages;
 import frysk.proc.Proc;
 
 public class Resume extends ProcAction {
 	
 	public Resume() {
-		super("Resume", "Resume execution of the current process");
+		super(Messages.getString("Resume.0"), Messages.getString("Resume.1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public Resume(ProcAction other){
@@ -55,7 +56,7 @@ public class Resume extends ProcAction {
 	    // XXX: Resume behavior should be implemented by removing,
 	    // or unblocking, all blocking observers.
 	    // proc.requestAttachedContinue();		
-	    throw new RuntimeException ("not applicable");
+	    throw new RuntimeException (Messages.getString("Resume.2")); //$NON-NLS-1$
 	}
 
 	public Action getCopy() {

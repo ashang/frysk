@@ -39,13 +39,14 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.common.Messages;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Task;
 
 public class ShowSourceWin extends TaskAction {
 	
 	public ShowSourceWin() {
-		super("Source", "Show a source window.");
+		super(Messages.getString("ShowSourceWin.0"), Messages.getString("ShowSourceWin.1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public ShowSourceWin(ShowSourceWin other) {

@@ -44,6 +44,7 @@ import java.util.List;
 
 import org.jdom.Element;
 
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
@@ -78,7 +79,7 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 	
 	public void removeAction(Action action){
 		if(!this.actions.remove(action)){
-			throw new IllegalArgumentException("the passed action ["+ action +"] is not a member of this action point");
+			throw new IllegalArgumentException(Messages.getString("ActionPoint.0")+ action +Messages.getString("ActionPoint.1")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -94,13 +95,13 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 		super.save(node);
 		
 		//actions
-		Element actionsXML = new Element("actions");
+		Element actionsXML = new Element("actions"); //$NON-NLS-1$
 		
 		Iterator iterator = this.getActions().iterator();
 		while (iterator.hasNext()) {
 			Action action = (Action) iterator.next();
 			if(action.shouldSaveObject()){
-				Element actionXML = new Element("action");
+				Element actionXML = new Element("action"); //$NON-NLS-1$
 				ObjectFactory.theFactory.saveObject(action, actionXML);
 				actionsXML.addContent(actionXML);
 			}
@@ -112,8 +113,8 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 		super.load(node);
 		
 		//actions
-		Element actionsXML = node.getChild("actions");
-		List list = (List) actionsXML.getChildren("action");
+		Element actionsXML = node.getChild("actions"); //$NON-NLS-1$
+		List list = (List) actionsXML.getChildren("action"); //$NON-NLS-1$
 		Iterator i = list.iterator();
 		
 		Action action;

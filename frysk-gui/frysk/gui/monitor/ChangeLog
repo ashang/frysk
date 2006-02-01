@@ -1,5 +1,15 @@
 2006-02-01  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* actions/Stop.java: Externalize all translation strings.
+	* actions/StickyObserverAction.java: Ditto.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* actions/ActionPoint.java: Ditto.
+	* actions/ActionManager.java: Ditto.
+	
 	* TrayIcon.java: Externalize all translation strings.
 	* ThreadMenu.java: Ditto.
 	* TaskStatusWidget.java: Ditto.

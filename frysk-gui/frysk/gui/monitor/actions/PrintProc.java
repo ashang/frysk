@@ -39,12 +39,13 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.common.Messages;
 import frysk.proc.Proc;
 
 public class PrintProc extends ProcAction {
 	
 	public PrintProc() {
-		super("Print State", "Print the state of the selected process or thread");
+		super(Messages.getString("PrintProc.0"), Messages.getString("PrintProc.1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public PrintProc(PrintProc other){
@@ -52,7 +53,7 @@ public class PrintProc extends ProcAction {
 	}
 	
 	public void execute(Proc proc) {
-		System.out.println("Proc State : " + proc);
+		System.out.println(Messages.getString("PrintProc.2") + proc); //$NON-NLS-1$
 	}
 
 	public Action getCopy() {
