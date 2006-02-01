@@ -1,3 +1,10 @@
+2006-02-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* dialogs/ErrorDialog.java: Externalize Strings.
+	* dialogs/WarnDialog.java: Externalize Strings
+	* messages.properties: Added WarnDialog.java and
+	ErrorDialog.java strings.
+
 2006-01-31  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* messages.properties: Added FryskGui.java strings.

@@ -53,10 +53,12 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
+import frysk.gui.common.Messages;
+
 public class WarnDialog extends Dialog{
 
-	private String title = "";
-	private String message = "";
+	private String title = ""; //$NON-NLS-1$
+	private String message = ""; //$NON-NLS-1$
 
 	public WarnDialog(String title, String message) {
 		super();
@@ -67,7 +69,7 @@ public class WarnDialog extends Dialog{
 	
 	public WarnDialog(String message) {
 		super();
-		this.title = "Warning";
+		this.title = Messages.getString("WarnDialog.2"); //$NON-NLS-1$
 	    this.message = message;
 		doImplementation();
 	}

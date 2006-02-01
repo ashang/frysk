@@ -53,10 +53,12 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
+import frysk.gui.common.Messages;
+
 public class ErrorDialog extends Dialog{
 
-	private String title = "";
-	private String message = "";
+	private String title = ""; //$NON-NLS-1$
+	private String message = ""; //$NON-NLS-1$
 	private Exception except = null;
 
 	public  ErrorDialog(String title, String message, Exception except) {
@@ -69,7 +71,7 @@ public class ErrorDialog extends Dialog{
 	
 	public ErrorDialog(String message, Exception except) {
 		super();
-		this.title = "Error";
+		this.title = Messages.getString("ErrorDialog.2"); //$NON-NLS-1$
 	    this.message = message;
 		this.except = except;
 
@@ -78,13 +80,13 @@ public class ErrorDialog extends Dialog{
 
 	private synchronized String getStringTrace(Exception e)
 	{
-		String stackText = "";
+		String stackText = ""; //$NON-NLS-1$
 		StackTraceElement[] stackElements = e.getStackTrace();
 		if (stackElements.length < 1)
-			return "No Stack Trace Given";
+			return Messages.getString("ErrorDialog.4"); //$NON-NLS-1$
 		
 		for (int i=0; i<stackElements.length; i++)
-			stackText = stackText + stackElements[i].toString() + "\n";
+			stackText = stackText + stackElements[i].toString() + "\n"; //$NON-NLS-1$
 		
 		return stackText;
 			
@@ -93,7 +95,7 @@ public class ErrorDialog extends Dialog{
 	private  void doImplementation()
 	{
 		
-		System.out.println("Doing dialog");
+		System.out.println("Doing dialog"); //$NON-NLS-1$
 		this.addButton(GtkStockItem.QUIT, 1);
 		this.setTitle(this.title);
 		this.setDefaultSize(400,200);
@@ -104,7 +106,7 @@ public class ErrorDialog extends Dialog{
 		sWindow.setBorderWidth(10);
 		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
 		
-		String errorText = this.message + "\n\n" + this.except.getMessage()+"\n\n" +
+		String errorText = this.message + "\n\n" + this.except.getMessage()+"\n\n" + //$NON-NLS-1$ //$NON-NLS-2$
 		getStringTrace(this.except);
 		
 		Label warnLabel = new Label(errorText);
