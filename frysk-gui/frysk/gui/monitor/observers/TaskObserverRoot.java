@@ -10,8 +10,8 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		super(name, toolTip);
 	}
 
-	public TaskObserverRoot(TaskObserverRoot observer) {
-		super(observer);
+	public TaskObserverRoot(TaskObserverRoot other) {
+		super(other);
 	}
 
 	public void apply(Proc proc){

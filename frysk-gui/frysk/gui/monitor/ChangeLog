@@ -1,3 +1,16 @@
+2006-02-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskCloneObserver.java: Fixed some bugs in copy
+	constructor.
+	* observers/TaskObserverRoot.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* ObserversMenu.java: Changed TaskObserverRoot to ObserverRoot
+	was casing an npe if you right click after creating a new
+	observer.
+	* DetailedObserverTreeView.java: Fixed npe during removal
+	of and observer from Manager.
+
 2006-02-01  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcDataModel.java: Update, use .requestRefreshXXX instead of

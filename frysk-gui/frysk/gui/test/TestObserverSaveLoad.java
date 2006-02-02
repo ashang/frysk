@@ -194,7 +194,7 @@ public class TestObserverSaveLoad extends TestCase{
 		assertNotNull("Loaded Observer", myLoadedObserver);
 		assertEquals("Class Type", taskForkedObserver.getClass(), myLoadedObserver.getClass());
 		assertEquals("ObserverName", taskForkedObserver.getName(), myLoadedObserver.getName());
-		assertEquals("Numbser of Actions", taskForkedObserver.genericActionPoint.getActions().size(), myLoadedObserver.genericActionPoint.getActions().size());
+		assertEquals("Number of Actions", taskForkedObserver.genericActionPoint.getActions().size(), myLoadedObserver.genericActionPoint.getActions().size());
 	}
 	
 }

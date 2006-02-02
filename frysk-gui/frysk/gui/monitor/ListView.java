@@ -117,7 +117,6 @@ public class ListView extends TreeView implements Observer {
 		if(this.getSelection().getSelectedRows().length > 0){
 			selected = (GuiObject) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), objectDC);
 		}
-		
 		return selected;
 	}
 

@@ -89,14 +89,15 @@ public class ObserverManager extends  Observable {
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
-		observer = new TaskTerminatingObserver();
+		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
 		
 		//============================================
-		observer = new TaskForkedObserver();
+		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
+		
 		
 		//============================================
 		observer = new TaskCloneObserver();
@@ -179,7 +180,7 @@ public class ObserverManager extends  Observable {
 	 * @param observer the observer prototype to be removed.
 	 * */
 	public void removeTaskObserverPrototype(ObserverRoot observer){
-		this.taskObservers.remove(observer);System.out.println("ObserverManager.removeTaskObserverPrototype()");
+		this.taskObservers.remove(observer);
 	}
 	
 	private void loadObservers(){

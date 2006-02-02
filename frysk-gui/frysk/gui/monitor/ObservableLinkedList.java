@@ -94,6 +94,7 @@ public class ObservableLinkedList extends LinkedList{
 			return true;
 		}else{
 			return false;
-		}
+		} 
 	}
+	
 }

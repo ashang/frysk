@@ -22,7 +22,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 		this.taskFilterPoint = new TaskFilterPoint("Exec'ing Thread", "The thread that is calling exec");
 		this.addFilterPoint(taskFilterPoint);
 		
-		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName(), taskFilterPoint.getToolTip());
+		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName() + " (A)", taskFilterPoint.getToolTip());
 		this.addActionPoint(taskActionPoint);
 	}
 
@@ -32,7 +32,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
 		// this.addFilterPoint(taskFilterPoint); not needed done by parent constructor
 		
-		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName(), taskFilterPoint.getToolTip());
+		this.taskActionPoint = new TaskActionPoint(other.taskActionPoint);
 		// this.addActionPoint(taskActionPoint); not needed done by parent constructor
 	}
 

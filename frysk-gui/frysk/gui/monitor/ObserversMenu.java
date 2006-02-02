@@ -91,7 +91,7 @@ public class ObserversMenu extends Menu{
 		
 		
 		while(iter.hasNext()){
-			final TaskObserverRoot observer = (TaskObserverRoot) iter.next();
+			final ObserverRoot observer = (ObserverRoot) iter.next();
 			this.addGuiObject(observer);
 		}
 

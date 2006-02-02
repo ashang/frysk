@@ -22,7 +22,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 	public TaskActionPoint clonedTaskActionPoint;
 
 	public TaskCloneObserver(){
-		super("ProcCloneObserver", "Fires when a proc calls clone");
+		super("TaskCloneObserver", "Fires when a proc calls clone");
 
 		this.cloningTaskFilterPoint = new TaskFilterPoint("Cloning Thread","Thread that made the clone system call");
 		this.clonedTaskFilterPoint = new TaskFilterPoint("Cloned Thread","New thread that has just been created as a result of clone call");
@@ -38,17 +38,17 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		
 	}
 
-	public TaskCloneObserver(TaskCloneObserver observer) {
-		super(observer.getName(), observer.getToolTip());
+	public TaskCloneObserver(TaskCloneObserver other) {
+		super(other);
 		
-		this.cloningTaskFilterPoint = new TaskFilterPoint(this.cloningTaskFilterPoint);
-		this.clonedTaskFilterPoint = new TaskFilterPoint(this.clonedTaskFilterPoint);
+		this.cloningTaskFilterPoint = new TaskFilterPoint(other.cloningTaskFilterPoint);
+		this.clonedTaskFilterPoint = new TaskFilterPoint(other.clonedTaskFilterPoint);
 		
 //		this.addFilterPoint(cloningTaskFilterPoint);
 //		this.addFilterPoint(clonedTaskFilterPoint);
 		
-		this.cloningTaskActionPoint = new TaskActionPoint(this.cloningTaskActionPoint);
-		this.clonedTaskActionPoint = new TaskActionPoint(this.cloningTaskActionPoint);
+		this.cloningTaskActionPoint = new TaskActionPoint(other.cloningTaskActionPoint);
+		this.clonedTaskActionPoint = new TaskActionPoint(other.cloningTaskActionPoint);
 		
 //		this.addActionPoint(cloningTaskActionPoint);
 //		this.addActionPoint(clonedTaskActionPoint);
