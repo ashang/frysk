@@ -375,6 +375,7 @@ echo "glade_DATA ="
 find ${dirs} -type f -name '*.glade' | while read file
 do
   echo glade_DATA += ${file}
+  echo EXTRA_DIST += ${file}
 done
 
 # Form a list of all the image files, these are installed in
@@ -395,6 +396,7 @@ find_images ()
    do
      if test -f ${file} ; then
 	 echo ${1}"_DATA += "${file} 
+	 echo EXTRA_DIST += ${file} 
      fi
    done
 }
@@ -420,6 +422,7 @@ echo "desktop_DATA ="
 find ${dirs} -type f -name '*.desktop' | while read file
 do
   echo desktop_DATA += ${file}
+  echo EXTRA_DIST += ${file}
 done
 
 print_header "... icon_DATA"
@@ -428,6 +431,7 @@ echo "icon_DATA ="
 find ${dirs} -type f -name 'fryskTrayIcon48.png' | while read file
 do
   echo icon_DATA += ${file}
+  echo EXTRA_DIST += ${file}
 done
 
 # Form a list of all the .properties files, these need to be copied over
@@ -439,6 +443,7 @@ echo "property_DATA ="
 find ${dirs} -type f -name '*.properties' | while read file
 do
   echo property_DATA += ${file}
+  echo EXTRA_DIST += ${file}
 done
 
 # Form a list of all the .fig files, they need to be compiled into
@@ -449,6 +454,7 @@ echo "sample_DATA ="
 find ${dirs} -type f -name 'test*.cpp' | while read file
 do
   echo sample_DATA += ${file}
+  echo EXTRA_DIST += ${file}
 done
 
 # Form a list of all the .fig files, they need to be compiled into
