@@ -73,12 +73,18 @@ public class Messages {
 		System.exit(1);
 	}
 	
+
+
 	public static String getString(String key) {
 		// TODO Auto-generated method stub
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
 			return '!' + key + '!';
+		} catch (Exception e1) {
+			return '!' + key + '!';
 		}
+		
 	}
+
 }
