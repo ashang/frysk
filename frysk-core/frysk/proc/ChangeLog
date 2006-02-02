@@ -1,3 +1,7 @@
+2006-02-02  Stan Cox  <scox@redhat.com>
+
+	* TestExec.java (testAttachedSingleExec): Add ExecObserver. 
+
 2006-02-01  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java (toString): Do not print the command, has sideffects.

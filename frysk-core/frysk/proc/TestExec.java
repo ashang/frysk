@@ -115,14 +115,36 @@ public class TestExec
     public void testAttachedSingleExec ()
     {
 	AckProcess child = new AttachedAckProcess ();
-	Proc proc = child.findProcUsingRefresh (true);
 	
+	// Watch for any Task exec events, accumulating them as they arrive.
+	class ExecObserver
+	    extends AutoAddTaskObserverBase
+	    implements TaskObserver.Execed
+	{
+	    int saved_tid = 0;
+	    public Action updateExeced (Task task)
+	    {
+		saved_tid = task.getTid ();
+		return Action.CONTINUE;
+	    }
+	    void updateTaskAdded (Task task)
+	    {
+		saved_tid = task.getTid ();
+		task.requestAddExecedObserver (this);
+	    }
+	}
+	ExecObserver execObserver = new ExecObserver ();
+
+	child = new DetachedAckProcess ();
+	Task task = child.findTaskUsingRefresh (true);
+	task.requestAddExecedObserver (execObserver);
 	child.exec ();
 
 	Manager.host.requestRefreshXXX (true);
 	Manager.eventLoop.runPending ();
 
-	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
+	assertEquals ("pid after attached single exec", child.getPid (),
+		      execObserver.saved_tid);
     }
 
     /**
@@ -142,7 +164,7 @@ public class TestExec
 	    int saved_tid = 0;
 	    public Action updateExeced (Task task)
 	    {
-	    Manager.eventLoop.requestStop ();
+		Manager.eventLoop.requestStop ();
 		return Action.CONTINUE;
 	    }
 	    void requestAdd (Task task)
