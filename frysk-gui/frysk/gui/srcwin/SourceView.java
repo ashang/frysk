@@ -90,8 +90,7 @@ import frysk.gui.srcwin.prefs.PreferenceManager;
  * @author ifoox, ajocksch
  * 
  */
-public class SourceView extends TextView implements View,
-		ExposeListener, MouseListener, MouseMotionListener {
+public class SourceView extends TextView implements View, ExposeListener {
 
 	// my SourceBuffer
 	protected SourceBuffer buf;
@@ -111,6 +110,8 @@ public class SourceView extends TextView implements View,
 
 	private InlineSourceView child;
 
+	private SourceViewListener listener;
+	
 	/**
 	 * Constructs a new SourceViewWidget. If you don't specify a buffer before
 	 * using it, a default one will be created for you.
@@ -134,6 +135,7 @@ public class SourceView extends TextView implements View,
 		super(gtk_text_view_new());
 		this.parent = parent;
 		this.buf = buffer;
+		this.listener = new SourceViewListener(this);
 		this.setBuffer(this.buf);
 		this.initialize();
 	}
@@ -197,129 +199,7 @@ public class SourceView extends TextView implements View,
 
 		return false;
 	}
-
-	/**
-	 * Called in response to the user clicking on the text area. In the future
-	 * this will be used to be able to mouse-over variables and show their
-	 * contents
-	 */
-	public boolean mouseEvent(MouseEvent event) {
-		int x = (int) event.getX();
-		int y = (int) event.getY();
-
-		// Middle click over the main text area will trigger the
-		// variable-finding
-		if (event.getButtonPressed() == MouseEvent.BUTTON3
-				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)
-				&& event.getWindow()
-						.equals(this.getWindow(TextWindowType.TEXT))) {
-
-			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
-
-			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
-
-			final Variable var = this.buf.getVariable(iter);
-
-			Menu m = new Menu();
-			MenuItem mi = new MenuItem("Display variable value...", false);
-			MenuItem mi2 = new MenuItem("Add Trace", false);
-			m.append(mi);
-			m.append(mi2);
-			if (var != null) {
-				mi.addListener(new MenuItemListener() {
-					public void menuItemEvent(MenuItemEvent arg0) {
-						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
-								WindowType.TOPLEVEL);
-						popup.add(new Label(var.getName() + " = 0xfeedcalf"));
-						popup.showAll();
-					}
-				});
-				mi2.addListener(new MenuItemListener() {
-
-					public void menuItemEvent(MenuItemEvent arg0) {
-						SourceView.this.parent.addVariableTrace(var);
-					}
-
-				});
-			} else {
-				mi.setSensitive(false);
-				mi2.setSensitive(false);
-			}
-
-			m.showAll();
-			m.popup();
-
-			return true;
-		}
-		// clicked on the border
-		else if (event.getWindow().equals(this.getWindow(TextWindowType.LEFT))
-				&& event.isOfType(MouseEvent.Type.BUTTON_PRESS)) {
-			Point p = this.windowToBufferCoords(TextWindowType.TEXT, 0, y);
-
-			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
-
-			int theLine = iter.getLineNumber();
-			boolean overNested = false;
-
-			// We want to ignore mouse clicks in the margin next to
-			// expanded inline code
-			if (theLine == this.buf.getCurrentLine() + 1 && expanded)
-				return false;
-
-			if (theLine > this.buf.getCurrentLine() && expanded) {
-				theLine--;
-				overNested = true;
-			}
-
-			final int lineNum = theLine;
-
-			// only popup a window if the line is executable
-			if (event.getButtonPressed() == MouseEvent.BUTTON3
-					&& this.buf.isLineExecutable(lineNum)
-					&& (!expanded || overNested)) {
-				Menu m = new Menu();
-				MenuItem mi = new MenuItem("Breakpoint information...", false);
-				mi.addListener(new MenuItemListener() {
-					public void menuItemEvent(MenuItemEvent arg0) {
-						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
-								WindowType.TOPLEVEL);
-						popup.add(new Label("Line: " + (lineNum + 1)));
-						popup.showAll();
-					}
-				});
-				m.append(mi);
-				MenuItem mi2 = new MenuItem("Customize breakpoint actions...",
-						false);
-				m.append(mi2);
-				if (!this.buf.isLineBroken(lineNum)) { // no breakpoint, no
-					// info to show
-					mi.setSensitive(false);
-					mi2.setSensitive(false);
-				}
-				m.append(new MenuItem()); // Separator
-				mi = new MenuItem("Toggle Breakpoint", false);
-				m.append(mi);
-				mi.addListener(new MenuItemListener() {
-					public void menuItemEvent(MenuItemEvent event) {
-						SourceView.this.buf.toggleBreakpoint(lineNum);
-					}
-				});
-				m.popup();
-				m.showAll();
-			}
-
-			// Left click in the margin for a line with inline code - toggle the
-			// display of it
-			if (event.getButtonPressed() == MouseEvent.BUTTON1
-					&& lineNum == this.buf.getCurrentLine()
-					&& this.buf.hasInlineCode(lineNum)) {
-				this.toggleChild();
-			}
-		}
-
-		return false;
-	}
-
+	
 	/**
 	 * Scrolls the TextView so that the given line is visible in the widget
 	 * 
@@ -341,7 +221,11 @@ public class SourceView extends TextView implements View,
 	 * @return If the search was successful
 	 */
 	public boolean findNext(String toFind, boolean caseSensitive) {
-		return this.buf.findNext(toFind, caseSensitive, false);
+		boolean result =  this.buf.findNext(toFind, caseSensitive, false);
+		if(result)
+			this.scrollToIter(this.buf.getStartCurrentFind(), 0);
+		
+		return result;
 	}
 
 	/**
@@ -355,7 +239,12 @@ public class SourceView extends TextView implements View,
 	 * @return If the search was successful
 	 */
 	public boolean findPrevious(String toFind, boolean caseSensitive) {
-		return this.buf.findPrevious(toFind, caseSensitive);
+		boolean result =  this.buf.findPrevious(toFind, caseSensitive);
+		
+		if(result)
+			this.scrollToIter(this.buf.getStartCurrentFind(), 0);
+		
+		return result;
 	}
 
 	/**
@@ -371,14 +260,6 @@ public class SourceView extends TextView implements View,
 	public boolean highlightAll(String toFind, boolean caseSensitive) {
 		return this.buf.findNext(toFind, caseSensitive, true);
 	}
-
-	/**
-	 * Scrolls the TextView to show the current location of the found text
-	 */
-	public void scrollToFound() {
-		this.scrollToIter(this.buf.getStartCurrentFind(), 0);
-	}
-
 	/**
 	 * Loads the contents of the provided StackLevel into this view
 	 * 
@@ -428,38 +309,6 @@ public class SourceView extends TextView implements View,
 		this.anchor = null;
 	}
 
-	/*---------------------------*
-	 * PRIVATE METHODS           *
-	 *---------------------------*/
-
-	/*
-	 * Performs some operations before the window is shown
-	 */
-	private void initialize() {
-		FontDescription desc = new FontDescription();
-		desc.setFamily("Monospace");
-		this.setFont(desc);
-		
-		// Set all preference-related data
-		this.refresh();
-
-		// Stuff that never changes
-		this.setLeftMargin(3);
-		this.setEditable(false);
-		this.setCursorVisible(false);
-
-		// Listeners
-		this.addListener((ExposeListener) this);
-		this.addListener((MouseListener) this);
-		this.addListener((MouseMotionListener) this);
-		
-		// Preferences
-		PreferenceManager.addPreference(new IntPreference(IntPreference.INLINE_LEVELS), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(ColorPreference.EXEC_MARKS), PreferenceManager.LNF_NODE);
-
-		this.showAll();
-	}
-
 	/*
 	 * Toggles the visibility of the inlined code at the current line.
 	 */
@@ -481,6 +330,21 @@ public class SourceView extends TextView implements View,
 
 	}
 
+	public void scrollToFunction(String markName) {
+		if (this.buf.getFunctions().contains(markName)) {
+			TextMark mark = this.buf.getMark(markName);
+			this.scrollToMark(mark, 0);
+		}
+	}
+
+	public Vector getFunctions() {
+		return this.buf.getFunctions();
+	}
+
+	public StackLevel getScope() {
+		return this.buf.getScope();
+	}
+	
 	/*
 	 * Function responsible for drawing the side area where breakpoints, etc.
 	 * are drawn. Called either in response to an expose event or when a
@@ -488,15 +352,6 @@ public class SourceView extends TextView implements View,
 	 */
 	protected void drawMargin() {
 		Window drawingArea = this.getWindow(TextWindowType.LEFT);
-
-		// String[] thisarray = this.getHandle().toString().split(" ");
-		// String[] thatarray = drawingArea.getHandle().toString().split(" ");
-		// System.err.println("Created gdkWindow " +
-		// Integer.toHexString(Integer.parseInt(thatarray[thatarray.length -
-		// 1]))
-		// + " in " + this.getClass() + " " +
-		// Integer.toHexString(Integer.parseInt(thisarray[thisarray.length -
-		// 1])));
 
 		// draw the background for the margin
 		if (this.myContext == null)
@@ -675,56 +530,215 @@ public class SourceView extends TextView implements View,
 		drawingArea.drawLayout(context, this.marginWriteOffset, drawingHeight,
 				lo);
 	}
+	
+	/*---------------------------*
+	 * PRIVATE METHODS           *
+	 *---------------------------*/
 
-	public boolean mouseMotionEvent(MouseMotionEvent event) {
+	/*
+	 * Performs some operations before the window is shown
+	 */
+	private void initialize() {
+		FontDescription desc = new FontDescription();
+		desc.setFamily("Monospace");
+		this.setFont(desc);
 		
-		Window win = event.getWindow();
+		// Set all preference-related data
+		this.refresh();
+
+		// Stuff that never changes
+		this.setLeftMargin(3);
+		this.setEditable(false);
+		this.setCursorVisible(false);
+
+		// Listeners
+		this.addListener((ExposeListener) this);
+		this.addListener((MouseListener) listener);
+		this.addListener((MouseMotionListener) listener);
 		
-		if(win.equals(this.getWindow(TextWindowType.LEFT))){
-			int x = (int) event.getX();
-			int y = (int) event.getY();
-			
-			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
-			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
-			
-			if(this.buf.hasInlineCode(iter.getLineNumber()))
-				event.getWindow().setCursor(new Cursor(CursorType.HAND1));
-			else
-				event.getWindow().setCursor(new Cursor(CursorType.LEFT_PTR));
+		// Preferences
+		PreferenceManager.addPreference(new IntPreference(IntPreference.INLINE_LEVELS), PreferenceManager.LNF_NODE);
+		PreferenceManager.addPreference(new ColorPreference(ColorPreference.EXEC_MARKS), PreferenceManager.LNF_NODE);
+
+		this.showAll();
+	}
+	
+	private boolean isTextArea(Window win){
+		return win.equals(this.getWindow(TextWindowType.TEXT));
+	}
+	
+	private boolean isMargin(Window win){
+		return win.equals(this.getWindow(TextWindowType.LEFT));
+	}
+	
+	private boolean clickedOnMargin(MouseEvent event){
+		TextIter iter = this.getIterFromWindowCoords(0, (int)event.getY());
+
+		int theLine = iter.getLineNumber();
+		boolean overNested = false;
+
+		// We want to ignore mouse clicks in the margin next to
+		// expanded inline code
+		if (theLine == this.buf.getCurrentLine() + 1 && expanded)
+			return false;
+
+		if (theLine > this.buf.getCurrentLine() && expanded) {
+			theLine--;
+			overNested = true;
+		}
+
+		final int lineNum = theLine;
+
+		// only popup a window if the line is executable
+		if (event.getButtonPressed() == MouseEvent.BUTTON3
+				&& this.buf.isLineExecutable(lineNum)
+				&& (!expanded || overNested)) {
+			Menu m = new Menu();
+			MenuItem mi = new MenuItem("Breakpoint information...", false);
+			mi.addListener(new MenuItemListener() {
+				public void menuItemEvent(MenuItemEvent arg0) {
+					org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
+							WindowType.TOPLEVEL);
+					popup.add(new Label("Line: " + (lineNum + 1)));
+					popup.showAll();
+				}
+			});
+			m.append(mi);
+			MenuItem mi2 = new MenuItem("Customize breakpoint actions...",
+					false);
+			m.append(mi2);
+			if (!this.buf.isLineBroken(lineNum)) { // no breakpoint, no
+				// info to show
+				mi.setSensitive(false);
+				mi2.setSensitive(false);
+			}
+			m.append(new MenuItem()); // Separator
+			mi = new MenuItem("Toggle Breakpoint", false);
+			m.append(mi);
+			mi.addListener(new MenuItemListener() {
+				public void menuItemEvent(MenuItemEvent event) {
+					SourceView.this.buf.toggleBreakpoint(lineNum);
+				}
+			});
+			m.popup();
+			m.showAll();
+		}
+
+		// Left click in the margin for a line with inline code - toggle the
+		// display of it
+		if (event.getButtonPressed() == MouseEvent.BUTTON1
+				&& lineNum == this.buf.getCurrentLine()
+				&& this.buf.hasInlineCode(lineNum)) {
+			this.toggleChild();
 		}
 		
-		else if(win.equals(this.getWindow(TextWindowType.TEXT))){
-			int x = (int) event.getX();
-			int y = (int) event.getY();
-			
-			Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
-			TextIter iter = this.getIterAtLocation(p.getX(), p.getY());
-			
-			Variable var = this.buf.getVariable(iter);
-			
-			if(var != null)
-				event.getWindow().setCursor(new Cursor(CursorType.HAND1));
-			else
-				event.getWindow().setCursor(new Cursor(CursorType.XTERM));
+		return true;
+	}
+	
+	private boolean clickedOnTextArea(MouseEvent event){
+		// Right click over the main text area will trigger the
+		// variable-finding
+		if (event.getButtonPressed() == MouseEvent.BUTTON3){
+			TextIter iter = this.getIterFromWindowCoords(
+					(int)event.getX(), (int)event.getY());
+			final Variable var = this.buf.getVariable(iter);
+
+			Menu m = new Menu();
+			MenuItem mi = new MenuItem("Display variable value...", false);
+			MenuItem mi2 = new MenuItem("Add Trace", false);
+			m.append(mi);
+			m.append(mi2);
+			if (var != null) {
+				mi.addListener(new MenuItemListener() {
+					public void menuItemEvent(MenuItemEvent arg0) {
+						org.gnu.gtk.Window popup = new org.gnu.gtk.Window(
+								WindowType.TOPLEVEL);
+						popup.add(new Label(var.getName() + " = 0xfeedcalf"));
+						popup.showAll();
+					}
+				});
+				mi2.addListener(new MenuItemListener() {
+					public void menuItemEvent(MenuItemEvent arg0) {
+						SourceView.this.parent.addVariableTrace(var);
+					}
+				});
+			} else {
+				mi.setSensitive(false);
+				mi2.setSensitive(false);
+			}
+
+			m.showAll();
+			m.popup();
+
+			return true;
 		}
+		return false;
+	}
+	
+	private boolean mousedOverMargin(MouseMotionEvent event){
+		TextIter iter = this.getIterFromWindowCoords(
+				(int)event.getX(), (int)event.getY());
 		
-		event.refireIfHint();
+		if(this.buf.hasInlineCode(iter.getLineNumber()))
+			event.getWindow().setCursor(new Cursor(CursorType.HAND1));
+		else
+			event.getWindow().setCursor(new Cursor(CursorType.LEFT_PTR));
 			
 		return false;
 	}
+	
+	private boolean mousedOverText(MouseMotionEvent event){
+		TextIter iter = this.getIterFromWindowCoords(
+				(int)event.getX(), (int)event.getY());
+		Variable var = this.buf.getVariable(iter);
+		
+		if(var != null)
+			event.getWindow().setCursor(new Cursor(CursorType.HAND1));
+		else
+			event.getWindow().setCursor(new Cursor(CursorType.XTERM));
+		
+		return false;
+	}
+	
+	private TextIter getIterFromWindowCoords(int x, int y){
+		Point p = this.windowToBufferCoords(TextWindowType.TEXT, x, y);
+		return this.getIterAtLocation(p.getX(), p.getY());
+	}
+	
+	private class SourceViewListener implements MouseListener, MouseMotionListener{
 
-	public void scrollToFunction(String markName) {
-		if (this.buf.getFunctions().contains(markName)) {
-			TextMark mark = this.buf.getMark(markName);
-			this.scrollToMark(mark, 0);
+		private SourceView target;
+		
+		public SourceViewListener(SourceView target){
+			this.target = target;
 		}
-	}
+		
+		public boolean mouseEvent(MouseEvent event) {
+			if(!event.isOfType(MouseEvent.Type.BUTTON_PRESS))
+				return false;
+			
+			// Clicked on text area
+			if(target.isTextArea(event.getWindow())) 
+				return target.clickedOnTextArea(event);
+			// clicked on the border
+			else if (target.isMargin(event.getWindow()))
+				return target.clickedOnMargin(event);
 
-	public Vector getFunctions() {
-		return this.buf.getFunctions();
-	}
+			return false;
+		}
 
-	public StackLevel getScope() {
-		return this.buf.getScope();
+		public boolean mouseMotionEvent(MouseMotionEvent event) {
+			Window win = event.getWindow();
+			boolean result = false;
+			
+			if(target.isMargin(win))
+				result = target.mousedOverMargin(event);
+			else if(target.isTextArea(win))
+				result =  target.mousedOverText(event);
+			
+			event.refireIfHint();
+			return result;
+		}
+		
 	}
 }

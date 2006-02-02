@@ -95,6 +95,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMLine;
+import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.gui.srcwin.prefs.BooleanPreference;
 import frysk.gui.srcwin.prefs.PreferenceManager;
@@ -108,8 +109,7 @@ import frysk.proc.Task;
  * interface to allow to user to query for variable values, set traces on
  * variables, and perform other such traditional debugging tasks.
  */
-public class SourceWindow extends Window implements ButtonListener,
-		EntryListener, ComboBoxListener, TreeSelectionListener {
+public class SourceWindow extends Window {
 	/*
 	 * GLADE CONSTANTS
 	 */
@@ -184,6 +184,9 @@ public class SourceWindow extends Window implements ButtonListener,
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
 
+	// Private inner class to take care of the event handling
+	private SourceWindowListener listener;
+	
 	/**
 	 * Creates a new source window with the given properties. This constructor
 	 * should not be called explicitly, SourceWindow objects should be created
@@ -202,6 +205,9 @@ public class SourceWindow extends Window implements ButtonListener,
 			StackLevel stack) {
 		super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 		
+		this.setIcon(IconManager.windowIcon);
+		
+		this.listener = new SourceWindowListener(this);
 		this.glade = glade;
 		this.gladePath = gladePath;
 		this.dom = dom;
@@ -261,146 +267,6 @@ public class SourceWindow extends Window implements ButtonListener,
 	}
 
 	/**
-	 * Called in response to buttons being clicked on the widget. Not meant to
-	 * be called manually, should only be called from within Gtk event loop
-	 */
-	public void buttonEvent(ButtonEvent event) {
-		if (event.isOfType(ButtonEvent.Type.CLICK))
-			this.handleButtonClicked(event);
-	}
-
-	/**
-	 * Called in response to a change in the value of the textbox. Automatically
-	 * searches for the string as entered in the text
-	 */
-	public void entryEvent(EntryEvent event) {
-		if (event.isOfType(EntryEvent.Type.DELETE_TEXT))
-			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
-					StateType.NORMAL, Color.WHITE);
-
-		if (event.isOfType(EntryEvent.Type.CHANGED)) {
-			String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT))
-					.getText();
-			// do nothing if no text to search for
-			if (text.trim().equals(""))
-				return;
-
-			boolean matchCase = ((CheckButton) this.glade
-					.getWidget(SourceWindow.CASE_FIND)).getState();
-
-			if (!this.view.findNext(text, matchCase))
-				this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
-						StateType.NORMAL, Color.RED);
-			else
-				this.view.scrollToFound();
-		}
-	}
-
-	/**
-	 * Called in response to an entry in one of the combo boxes being changed
-	 */
-	public void comboBoxEvent(ComboBoxEvent event) {
-		String text = ((ComboBox) event.getSource()).getActiveText();
-		// The only ComboBoxEntry is the function goto box
-		if(event.getSource() instanceof ComboBoxEntry){
-			this.view.scrollToFunction(text + "_FUNC");
-		}
-		/*
-		 * The only widget other than the function goto box that this listener is
-		 * added to is the mode selector: so we know by know that it must have come
-		 * from this widget
-		 */
-		else{
-			// Switch to source mode
-			if(text.equals("SOURCE")){
-				/*
-				 * If we're switching from Assembly or Mixed mode, we can just toggle the
-				 * state.
-				 */
-				if(this.view instanceof SourceView){
-					((SourceView) this.view).setMode(SourceBuffer.SOURCE_MODE);
-				}
-				/*
-				 * If we're switching from Source/Assembly mode, we need to re-create the
-				 * source view widget
-				 */
-				else{
-					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
-						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
-					this.view = new SourceView(this.view.getScope(), this);
-					
-					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
-						.add((Widget) this.view);
-					this.view.showAll();
-				}
-			}
-			// Swithc to Assembly mode
-			else if(text.equals("ASM")){
-				/*
-				 * If we're switching from Source or Mixed more, we can just toggle
-				 * the state
-				 */
-				if(this.view instanceof SourceView){
-					((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
-				}
-				/*
-				 * If we're switching from Source/Assembly mode, we need to re-create the
-				 * source view widget
-				 */
-				else{
-					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
-						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
-					this.view = new SourceView(this.view.getScope(), this);
-					
-					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
-						.add((Widget) this.view);
-					((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
-					this.view.showAll();
-				}
-			}
-			// Switch to Mixed mode
-			else if(text.equals("MIXED")){
-				/*
-				 * If we're switching from Source or Assembly we can just toggle the
-				 * state
-				 */
-				if(this.view instanceof SourceView){
-					((SourceView) this.view).setMode(SourceBuffer.MIXED_MODE);
-				}
-				/*
-				 * If we're switching from Source/Assembly mode, we need to re-create the
-				 * source view widget
-				 */
-				else{
-					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
-						remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
-					this.view = new SourceView(this.view.getScope(), this);
-					
-					((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
-						.add((Widget) this.view);
-					((SourceView) this.view).setMode(SourceBuffer.MIXED_MODE);
-					this.view.showAll();	
-				}
-			}
-			/*
-			 * Switch to Source/Assembly mode - we only need to worry about this
-			 * case if we're switching from Source, Assembly, or Mixed view. If 
-			 * we were previously in Source/Assembly view we don't need to
-			 * do anything
-			 */
-			else if(text.equals("SOURCE/ASM") && !(this.view instanceof MixedView)){
-				// Replace the SourceView with a Mixedview to display Source/Assembly mode
-				((Container) this.view.getParent()).remove((Widget) this.view);
-				this.view = new MixedView(this.view.getScope(), this);
-				
-				((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
-					.addWithViewport((Widget) this.view);
-				this.view.showAll();
-			}
-		}
-	}
-
-	/**
 	 * To be called internally when a change in the preference model occurs.
 	 * Updates the window and children to reflect the new changes
 	 */
@@ -416,11 +282,63 @@ public class SourceWindow extends Window implements ButtonListener,
 	}
 
 	/**
+	 * Adds the selected variable to the variable trace window
+	 * 
+	 * @param var
+	 *            The variable to trace
+	 */
+	public void addVariableTrace(Variable var) {
+		TreeView traceView = (TreeView) this.glade.getWidget("traceBrowser");
+		ListStore store = (ListStore) traceView.getModel();
+		
+		TreeIter iter = store.appendRow();
+		store.setValue(iter, (DataColumnString) this.traceColumns[0], var.getName());
+		store.setValue(iter, (DataColumnString) this.traceColumns[1], "0xfeedcalf");
+		
+		traceView.showAll();
+	}
+
+	/**
+	 * @return The Task being shown by this SourceWindow
+	 */
+	public Task getMyTask() {
+		return myTask;
+	}
+
+	/**
+	 * Sets the task that is being displayed by the SourceWindow
+	 * 
+	 * @param myTask
+	 *            The new task
+	 * 
+	 * TODO: This doesn't actually update the display, all it will do (if called
+	 * more than once) is screw up the removal of this SourceWindow from
+	 * SourceWindowFactory's HashMap. Maybe integrate into constructor?
+	 */
+	public void setMyTask(Task myTask) {
+		this.myTask = myTask;
+		this.setTitle(this.getTitle() + " - "
+				+ this.myTask.getProc().getCommand() + " "
+				+ this.myTask.getName() + " - " + this.myTask.getStateString());
+	}
+
+	/***************************************************************************
+	 * PRIVATE METHODS
+	 **************************************************************************/
+	/**
+	 * 
+	 */
+	private void resetSearchBox() {
+		this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
+				StateType.NORMAL, Color.WHITE);
+	}
+	
+	/**
 	 * Populates the stack browser window
 	 * 
 	 * @param top
 	 */
-	public void populateStackBrowser(StackLevel top) {
+	private void populateStackBrowser(StackLevel top) {
 		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
 		
 		stackColumns = new DataColumn[] { new DataColumnString(),
@@ -493,74 +411,7 @@ public class SourceWindow extends Window implements ButtonListener,
 		stackList.getSelection().select(last);
 		stackList.showAll();
 	}
-
-	/**
-	 * Adds the selected variable to the variable trace window
-	 * 
-	 * @param var
-	 *            The variable to trace
-	 */
-	public void addVariableTrace(Variable var) {
-		TreeView traceView = (TreeView) this.glade.getWidget("traceBrowser");
-		ListStore store = (ListStore) traceView.getModel();
-		
-		TreeIter iter = store.appendRow();
-		store.setValue(iter, (DataColumnString) this.traceColumns[0], var.getName());
-		store.setValue(iter, (DataColumnString) this.traceColumns[1], "0xfeedcalf");
-		
-		traceView.showAll();
-	}
-
-	/**
-	 * This is triggered whenever the a different level of the stack is selected
-	 * in the stack navigation window
-	 */
-	public void selectionChangedEvent(TreeSelectionEvent arg0) {
-		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
-		TreeModel model = view.getModel();
-
-		TreePath[] paths = view.getSelection().getSelectedRows();
-		if(paths.length == 0)
-			return;
-		
-		StackLevel selected = (StackLevel) model.getValue(model.getIter(paths[0]),
-				(DataColumnObject) stackColumns[1]);
-
-		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-				+ selected.getData().getFileName() + "</b>");
-		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
-		this.view.load(selected);
-		this.view.showAll();
-		this.populateFunctionBox();
-	}
-
-	/**
-	 * @return The Task being shown by this SourceWindow
-	 */
-	public Task getMyTask() {
-		return myTask;
-	}
-
-	/**
-	 * Sets the task that is being displayed by the SourceWindow
-	 * 
-	 * @param myTask
-	 *            The new task
-	 * 
-	 * TODO: This doesn't actually update the display, all it will do (if called
-	 * more than once) is screw up the removal of this SourceWindow from
-	 * SourceWindowFactory's HashMap. Maybe integrate into constructor?
-	 */
-	public void setMyTask(Task myTask) {
-		this.myTask = myTask;
-		this.setTitle(this.getTitle() + " - "
-				+ this.myTask.getProc().getCommand() + " "
-				+ this.myTask.getName() + " - " + this.myTask.getStateString());
-	}
-
-	/***************************************************************************
-	 * PRIVATE METHODS
-	 **************************************************************************/
+	
 	/**
 	 * Creates the menus and assigns hotkeys
 	 */
@@ -972,30 +823,30 @@ public class SourceWindow extends Window implements ButtonListener,
 
 		// Buttons in searchBar
 		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND))
-				.addListener(this);
+				.addListener(listener);
 		((Button) this.glade.getWidget(SourceWindow.PREV_FIND))
-				.addListener(this);
+				.addListener(listener);
 		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
-				.addListener(this);
+				.addListener(listener);
 		((Button) this.glade.getWidget(SourceWindow.CLOSE_FIND))
-				.addListener(this);
+				.addListener(listener);
 		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON))
-				.addListener(this);
+				.addListener(listener);
 
 		// Text field in search bar
 		((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT))
-				.addListener(this);
+				.addListener(listener);
 
 		// function jump box
 		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR))
-				.addListener(this);
+				.addListener(listener);
 		
 		// Mode box
-		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(this);
+		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
 
 		// // Stack browser
 		((TreeView) this.glade.getWidget("stackBrowser")).getSelection()
-				.addListener(this);
+				.addListener(listener);
 	}
 
 	/**
@@ -1021,68 +872,180 @@ public class SourceWindow extends Window implements ButtonListener,
 		});
 	}
 
-	/**
-	 * Handles a ButtonEvent that is know to be of type ButtonEvent.Type.CLICK.
-	 * Should not be called except from handleEvent(ButtonEvent event)
-	 * 
-	 * @param event
-	 *            ButtonEvent of type CLICK
-	 */
-	private void handleButtonClicked(ButtonEvent event) {
-		String buttonName = ((Button) event.getSource()).getName();
-
-		if (buttonName.equals(SourceWindow.CLOSE_FIND))
-			this.glade.getWidget(SourceWindow.FIND_BOX).hideAll();
-
-		else if (buttonName.equals(SourceWindow.GOTO_BUTTON)) {
-			String text = ((Entry) this.glade
-					.getWidget(SourceWindow.LINE_ENTRY)).getText();
-			try {
-				int gotoLine = Integer.parseInt(text);
-				this.view.scrollToLine(gotoLine);
-			}
-			// If it's not a number in the box (or if it's nothing), return
-			catch (NumberFormatException e) {
-				return;
-			}
+	private void hideFindBox(){
+		this.glade.getWidget(SourceWindow.FIND_BOX).hideAll();
+	}
+	
+	private void gotoLine(){
+		String text = ((Entry) this.glade
+				.getWidget(SourceWindow.LINE_ENTRY)).getText();
+		try {
+			int gotoLine = Integer.parseInt(text);
+			this.view.scrollToLine(gotoLine);
 		}
-
-		boolean findNext = buttonName.equals(SourceWindow.NEXT_FIND);
-		boolean findPrevious = buttonName.equals(SourceWindow.PREV_FIND);
-		boolean highlightAll = buttonName.equals(SourceWindow.HIGHLIGHT_FIND);
-
-		if (findNext || findPrevious || highlightAll) {
-			boolean caseSensitive = ((CheckButton) this.glade
-					.getWidget(SourceWindow.CASE_FIND)).getState();
-			String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT))
-					.getText();
-
-			// Do nothing for if nothing to search for
-			if (text.trim().equals(""))
-				return;
-
-			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
-					StateType.NORMAL, Color.WHITE);
-
-			boolean result = false;
-
-			if (findNext)
-				result = this.view.findNext(text, caseSensitive);
-
-			else if (findPrevious)
-				result = this.view.findPrevious(text, caseSensitive);
-
-			else if (highlightAll)
-				result = this.view.highlightAll(text, caseSensitive);
-
-			if (!result)
-				this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
-						StateType.NORMAL, Color.RED);
-			else if (!highlightAll)
-				this.view.scrollToFound();
+		// If it's not a number in the box (or if it's nothing), return
+		catch (NumberFormatException e) {
+			return;
 		}
 	}
+	
+	private void doFindNext(){
+		boolean caseSensitive = ((CheckButton) this.glade
+				.getWidget(SourceWindow.CASE_FIND)).getState();
+		String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT))
+				.getText();
 
+		// Do nothing for if nothing to search for
+		if (text.trim().equals(""))
+			return;
+
+		resetSearchBox();
+		
+		if (!this.view.findNext(text, caseSensitive))
+			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
+					StateType.NORMAL, Color.RED);
+	}
+	
+	private void doFindPrev(){
+		boolean caseSensitive = ((CheckButton) this.glade
+				.getWidget(SourceWindow.CASE_FIND)).getState();
+		String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT))
+				.getText();
+
+		// Do nothing for if nothing to search for
+		if (text.trim().equals(""))
+			return;
+
+		resetSearchBox();
+		
+		if (!this.view.findPrevious(text, caseSensitive))
+			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
+					StateType.NORMAL, Color.RED);
+	}
+	
+	private void doHighlightAll(){
+		boolean caseSensitive = ((CheckButton) this.glade
+				.getWidget(SourceWindow.CASE_FIND)).getState();
+		String text = ((Entry) this.glade.getWidget(SourceWindow.FIND_TEXT))
+				.getText();
+
+		// Do nothing for if nothing to search for
+		if (text.trim().equals(""))
+			return;
+
+		resetSearchBox();
+		
+		if (!this.view.highlightAll(text, caseSensitive))
+			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
+					StateType.NORMAL, Color.RED);
+	}
+
+	private void doScrollTofunction(String text){
+		this.view.scrollToFunction(text + "_FUNC");
+	}
+	
+	private void switchToSourceMode(){
+		/*
+		 * If we're switching from Assembly or Mixed mode, we can just toggle the
+		 * state.
+		 */
+		if(this.view instanceof SourceView){
+			((SourceView) this.view).setMode(SourceBuffer.SOURCE_MODE);
+		}
+		/*
+		 * If we're switching from Source/Assembly mode, we need to re-create the
+		 * source view widget
+		 */
+		else{
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
+				remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
+			this.view = new SourceView(this.view.getScope(), this);
+			
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+				.add((Widget) this.view);
+			this.view.showAll();
+		}
+	}
+	
+	private void switchToAsmMode(){
+		/*
+		 * If we're switching from Source or Mixed more, we can just toggle
+		 * the state
+		 */
+		if(this.view instanceof SourceView){
+			((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
+		}
+		/*
+		 * If we're switching from Source/Assembly mode, we need to re-create the
+		 * source view widget
+		 */
+		else{
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
+				remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
+			this.view = new SourceView(this.view.getScope(), this);
+			
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+				.add((Widget) this.view);
+			((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
+			this.view.showAll();
+		}
+	}
+	
+	private void switchToMixedMode(){
+		/*
+		 * If we're switching from Source or Assembly we can just toggle the
+		 * state
+		 */
+		if(this.view instanceof SourceView){
+			((SourceView) this.view).setMode(SourceBuffer.MIXED_MODE);
+		}
+		/*
+		 * If we're switching from Source/Assembly mode, we need to re-create the
+		 * source view widget
+		 */
+		else{
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
+				remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
+			this.view = new SourceView(this.view.getScope(), this);
+			
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+				.add((Widget) this.view);
+			((SourceView) this.view).setMode(SourceBuffer.MIXED_MODE);
+			this.view.showAll();	
+		}
+	}
+	
+	private void switchToSourceAsmMode(){
+		if(!(this.view instanceof MixedView)){
+			// Replace the SourceView with a Mixedview to display Source/Assembly mode
+			((Container) this.view.getParent()).remove((Widget) this.view);
+			this.view = new MixedView(this.view.getScope(), this);
+			
+			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
+				.addWithViewport((Widget) this.view);
+			this.view.showAll();
+		}
+	}
+	
+	private void updateShownStackFrame(){
+		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
+		TreeModel model = view.getModel();
+
+		TreePath[] paths = view.getSelection().getSelectedRows();
+		if(paths.length == 0)
+			return;
+		
+		StackLevel selected = (StackLevel) model.getValue(model.getIter(paths[0]),
+				(DataColumnObject) stackColumns[1]);
+
+		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
+				+ selected.getData().getFileName() + "</b>");
+		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
+		this.view.load(selected);
+		this.view.showAll();
+		this.populateFunctionBox();
+	}
+	
 	/**
 	 * Tells the debugger to run the program
 	 */
@@ -1266,5 +1229,76 @@ public class SourceWindow extends Window implements ButtonListener,
 		}
 
 		box.setModel(newModel);
+	}
+	
+	private class SourceWindowListener implements ButtonListener, 
+			EntryListener, ComboBoxListener, TreeSelectionListener{
+
+		private SourceWindow target;
+		
+		public SourceWindowListener(SourceWindow target){
+			this.target = target;
+		}
+		
+		public void buttonEvent(ButtonEvent event) {
+			String buttonName = ((Button) event.getSource()).getName();
+			if (buttonName.equals(SourceWindow.CLOSE_FIND))
+				target.hideFindBox();
+			else if(buttonName.equals(SourceWindow.GOTO_BUTTON))
+				target.gotoLine();
+			else if(buttonName.equals(SourceWindow.NEXT_FIND))
+				target.doFindNext();
+			else if(buttonName.equals(SourceWindow.PREV_FIND))
+				target.doFindPrev();
+			else if(buttonName.equals(SourceWindow.HIGHLIGHT_FIND))
+				target.doHighlightAll();
+		}
+
+		public void entryEvent(EntryEvent event) {
+			if (event.isOfType(EntryEvent.Type.DELETE_TEXT))
+				target.resetSearchBox();
+			else if (event.isOfType(EntryEvent.Type.CHANGED))
+				target.doFindNext();
+		}
+
+		public void comboBoxEvent(ComboBoxEvent event) {
+			String text = ((ComboBox) event.getSource()).getActiveText();
+			
+			// The only ComboBoxEntry is the function goto box
+			if(event.getSource() instanceof ComboBoxEntry){
+				target.doScrollTofunction(text);
+			}
+			/*
+			 * The only widget other than the function goto box that this listener is
+			 * added to is the mode selector: so we know by know that it must have come
+			 * from this widget
+			 */
+			else{
+				
+				// Switch to source mode
+				if(text.equals("SOURCE"))
+					target.switchToSourceMode();
+				// Switch to Assembly mode
+				else if(text.equals("ASM"))
+					target.switchToAsmMode();
+				// Switch to Mixed mode
+				else if(text.equals("MIXED"))
+					target.switchToMixedMode();
+				/*
+				 * Switch to Source/Assembly mode - we only need to worry about this
+				 * case if we're switching from Source, Assembly, or Mixed view. If 
+				 * we were previously in Source/Assembly view we don't need to
+				 * do anything
+				 */
+				else if(text.equals("SOURCE/ASM"))
+					target.switchToSourceAsmMode();
+				
+			}
+		}
+
+		public void selectionChangedEvent(TreeSelectionEvent arg0) {
+			target.updateShownStackFrame();
+		}
+		
 	}
 }

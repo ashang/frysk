@@ -38,6 +38,8 @@ public class IconManager {
 	
 	public static PixbufAnimation anim;
 	
+	public static Pixbuf windowIcon;
+	
 	public static void setImageDir(String[] path){
 		IMAGES_DIR = path;
 	}
@@ -91,6 +93,11 @@ public class IconManager {
 					source.setFilename(IMAGES_DIR[i] + "/icon/" + TRAY_PREFIX +
 							(k < 10 ? "0" + k : "" + k) + 
 							".png");
+					
+					if(k == 24){
+						windowIcon = new Pixbuf(IMAGES_DIR[i] + "/icon/" + TRAY_PREFIX + k + ".png");
+					}
+					
 					source.setSize(IconSize.BUTTON);
 					set.addSource(source);
 					factories[0].addIconSet("frysk-tray-" + k, set);

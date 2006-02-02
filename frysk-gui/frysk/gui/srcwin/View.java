@@ -14,9 +14,6 @@ public interface View{
 	boolean findPrevious(String toFind, boolean caseSensitive);
 	
 	boolean highlightAll(String toFind, boolean caseSensitive);
-	
-	void scrollToFound();
-	
 	void scrollToFunction(String markName);
 	
 	void scrollToLine(int line);

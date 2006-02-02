@@ -1,3 +1,48 @@
+2006-02-02  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceView.java: Created inner class to handle listener
+	responsabilities.
+	(mouseEvent): Removed.
+	(findNext): Now does the scrolling in this method.
+	(findPrevious): Ditto.
+	(scrollToFound): Removed.
+	(scrollToFunction): Added.
+	(getFunctions): Added.
+	(getScope): Ditto.
+	(drawMargin): Removed commented out debugging output.
+	(mouseMotionEvent): Removed.
+	(isTextArea): Added.
+	(isMargin): Added.
+	(clickedOnMargin): Added.
+	(clickedOnTextArea): Ditto.
+	(mouseOverMargin): Ditto.
+	(mouseOverText): Ditto.
+	(getIterFromWindowCoords): Ditto.
+	* SourceWindow.java: Created inner class to handle listener
+	responsabilities.
+	(SourceWindow): Now sets the icon of the window to be the Frysk
+	icon.
+	(buttonEvent): Removed.
+	(entryEvent): Removed.
+	(comboBoxEvent): Removed.
+	(resetSearchBox): Added.
+	(populateStackBrowser): Made private.
+	(SelectionChangedEvent): Removed.
+	(addListeners): Now assigns listeners to the inner class.
+	(hideFindBox): Added.
+	(gotoLine): Ditto.
+	(doFindNext): Ditto.
+	(doFindPrev): Ditto.
+	(doHighlightAll): Ditto.
+	(doScrollToFunction): Ditto.
+	(switchToSourceMode): Ditto.
+	(switchToAsmMode): Ditto.
+	(switchToMixedMode): Ditto.
+	(switchToSourceAsmMode): Ditto.
+	(updateShownStackFrame): Ditto.
+	* View.java (scrollToFound): Removed.
+	
+
 2006-02-01  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (populateStackBrowser): Fixed infinite loop.

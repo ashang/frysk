@@ -225,6 +225,8 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
 
 		procpop.load(prefs);
+		
+		WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
 		WindowManager.theManager.mainWindow.showAll();
 		
 		Gtk.main();
