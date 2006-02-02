@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -84,7 +84,14 @@ public abstract class Proc
      * Return the basename of the program that this process is
      * running.
      */
-    public abstract String getCommand ();
+    public String getCommand ()
+    {
+	if (command == null)
+	    command = sendrecCommand ();
+	return command;
+    }
+    private String command;
+    protected abstract String sendrecCommand ();
 
     /**
      * Return the full path of the program that this process is
@@ -493,7 +500,6 @@ public abstract class Proc
 	return ("{" + super.toString ()
 		+ ",id=" + id
 		+ ",state=" + state
-		+ ",command=" + getCommand ()
 		+ "}");
     }
 }

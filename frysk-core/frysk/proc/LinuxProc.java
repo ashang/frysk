@@ -72,7 +72,7 @@ public class LinuxProc
     }
     private Stat stat;
 
-    public String getCommand ()
+    public String sendrecCommand ()
     {
 	return getStat ().comm;
     }

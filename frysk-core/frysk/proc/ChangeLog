@@ -1,5 +1,11 @@
 2006-02-01  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (toString): Do not print the command, has sideffects.
+	(sendrecCommand): New abstract method.
+	(getCommand): Change to a function.
+	(command): New private variable.
+	* LinuxProc.java (sendrecCommand): Rename getCommand.
+
 	* Host.java (requestRefreshXXX(boolean)): Rename requestRefresh.
 	(requestRefresh()): Delete.
 	* TestSyscallInterrupt.java: Update.
