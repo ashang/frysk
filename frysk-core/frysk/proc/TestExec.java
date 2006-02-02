@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -114,37 +114,47 @@ public class TestExec
      */
     public void testAttachedSingleExec ()
     {
-	AckProcess child = new AttachedAckProcess ();
-	
-	// Watch for any Task exec events, accumulating them as they arrive.
-	class ExecObserver
-	    extends AutoAddTaskObserverBase
+	// Watch for any Task exec events, accumulating them as they
+	// arrive.
+	class SingleExecObserver
+	    extends TaskObserverBase
 	    implements TaskObserver.Execed
 	{
-	    int saved_tid = 0;
+	    int savedTid = 0;
 	    public Action updateExeced (Task task)
 	    {
-		saved_tid = task.getTid ();
+		assertEquals ("savedTid", 0, savedTid);
+		savedTid = task.getTid ();
+		assertEquals ("argv[0]",
+			      savedTid + ":" + savedTid,
+			      task.getProc ().getCmdLine () [0]);
 		return Action.CONTINUE;
 	    }
-	    void updateTaskAdded (Task task)
+	    public void addedTo (Object o)
 	    {
-		saved_tid = task.getTid ();
-		task.requestAddExecedObserver (this);
+		Manager.eventLoop.requestStop ();
 	    }
 	}
-	ExecObserver execObserver = new ExecObserver ();
+	SingleExecObserver execObserver = new SingleExecObserver ();
 
-	child = new DetachedAckProcess ();
+	// Create an unattached child process.
+	AckProcess child = new DetachedAckProcess ();
+
+	// Attach to the process using the exec observer.  The event
+	// loop is kept running until SingleExecObserver .addedTo is
+	// called indicating that the attach succedded.
 	Task task = child.findTaskUsingRefresh (true);
 	task.requestAddExecedObserver (execObserver);
+	assertRunUntilStop ("adding exec observer causing attach");
+
+	// Do the exec; this call keeps the event loop running until
+	// the child process has notified this process that the exec
+	// has finished which is well after SingleExecObserver
+	// .updateExeced has been called.
 	child.exec ();
 
-	Manager.host.requestRefreshXXX (true);
-	Manager.eventLoop.runPending ();
-
 	assertEquals ("pid after attached single exec", child.getPid (),
-		      execObserver.saved_tid);
+		      execObserver.savedTid);
     }
 
     /**
