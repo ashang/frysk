@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -112,6 +112,9 @@ AM_CONDITIONAL(HAVE_ECJ, test x"${ECJ}" != xno)
 
 AC_PATH_PROG(FIG2DEV, fig2dev)
 test "x$FIG2DEV" = x && AC_MSG_ERROR([no fig2dev binary is found in \$(PATH)])
+
+AC_CHECK_PROGS(XMLTO, [xmlto], [no])
+test "x${XMLTO}" = xno && AC_MSG_ERROR([no xmlto binary found in \${PATH)])
 
 # Padd PKG_CONFIG_PATH with frysk's local directories.  Be careful to
 # use lib|lib64.

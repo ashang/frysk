@@ -97,26 +97,53 @@ EOF
     echo "$@" 1>&2
 }
 
+echo_MANS ()
+{
+    echo "EXTRA_DIST += $1.xml"
+    # extract the section number
+    local n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $1.xml`
+    local d=`dirname $1`
+    # And the possible list of names.
+    sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $1.xml \
+	| while read title ; do
+	# Need to generate explicit rules
+	cat <<EOF
+man_MANS += ${d}/${title}.${n}
+${d}/${title}.${n}: $1.xml
+	\$(XMLTO) -o ${d} man \$<
+EOF
+    done
+}
+
 echo_PROGRAMS ()
 {
     case "$1" in
-	*/bindir/* ) echo "bin_PROGRAMS += $1" ;;
-	*/sbindir/* ) echo "sbin_PROGRAMS += $1" ;;
-	*/libexecdir/* ) echo "libexec_PROGRAMS += $1" ;;
+	*/bindir/* )
+            echo "bin_PROGRAMS += $1"
+	    echo_MANS $1
+	    ;;
+	*/sbindir/* )
+	    echo "sbin_PROGRAMS += $1"
+	    echo_MANS $1
+	    ;;
+	*/libexecdir/* )
+	    echo "pkglibexec_PROGRAMS += $1"
+	    echo_MANS $1
+	    ;;
         * ) echo "noinst_PROGRAMS += $1" ;;
     esac
 }
 
 echo_LDFLAGS ()
 {
+    echo "$1_LDFLAGS = --main=$2"
     case "$1" in
 	*_bindir_* | *_sbindir_* | *_libexec_* )
-                echo "$1_LDFLAGS = --main=$2"
                 echo "$1_LDFLAGS += -Djava.library.path=@RPATH@"
                 echo "$1_LDFLAGS += -Wl,-rpath,@RPATH@"
 		;;
 	* )
-                echo "$1_LDFLAGS = --main=$2 \$(GEN_GCJ_RPATH_FLAGS)"
+                echo "$1_LDFLAGS += \$(GEN_GCJ_RPATH_FLAGS)"
 		;;
     esac
 }

@@ -1,3 +1,7 @@
+2006-02-02  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk.xml: new file.
+
 2006-01-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* frysk.java (main): Now passes in paths for images, message bundle and
