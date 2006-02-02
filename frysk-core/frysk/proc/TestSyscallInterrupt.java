@@ -195,7 +195,7 @@ public class TestSyscallInterrupt
 	TestSyscallInterruptInternals (int pid)
 	{
             this.pid = pid;
-            host.requestRefresh (true);
+            host.requestRefreshXXX (true);
             Manager.eventLoop.runPending ();
 
             Proc p = host.getProc (new ProcId (pid));

@@ -138,7 +138,7 @@ public class ProcDataModel {
 
 		this.refreshTimer = new TimerEvent(0, 5000){
 			public void execute() {
-				Manager.host.requestRefresh(true);
+				Manager.host.requestRefreshXXX (true);
 			}
 		};
 		
@@ -161,7 +161,7 @@ public class ProcDataModel {
 		Manager.eventLoop.remove(refreshTimer);
 		this.refreshTimer = new TimerEvent(0, sec*1000){
 			public void execute() { 
-				Manager.host.requestRefresh(true); 
+				Manager.host.requestRefreshXXX (true); 
 			}
 		};
 		Manager.eventLoop.add (refreshTimer);
@@ -171,7 +171,7 @@ public class ProcDataModel {
 	 * call ps, parse the input and store in the treeStore
 	 * */
 	public void refresh() throws IOException{
-		Manager.host.requestRefresh(true);
+		Manager.host.requestRefreshXXX (true);
 	}
 
 	/**

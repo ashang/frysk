@@ -106,7 +106,7 @@ public class TestRefresh
 	// Do several refreshes, check that the child is only added
 	// once, and never removed.
 	for (int i = 0; i < 2; i++) {
-	    host.requestRefresh ();
+	    host.requestRefreshXXX (false);
 	    Manager.eventLoop.runPending ();
 	    tracker.verifyAdd ("iteration " + i, 0);
 	}
@@ -121,7 +121,7 @@ public class TestRefresh
     public void testHostRefresh ()
     {
 	// Get an initial PS reading.
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	
 	// Check that it isn't empty.
@@ -137,7 +137,7 @@ public class TestRefresh
 
 	// Do a refresh, check that the process was added and
 	// corresponding observable events occured.
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("first add", 0);
 
@@ -147,7 +147,7 @@ public class TestRefresh
 	// Check that a further refresh removes the process, generates
 	// a removed event, and puts the proc into the removed
 	// state.
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	tracker.verifyRemove ("first removed");
     }
@@ -178,7 +178,7 @@ public class TestRefresh
 	// At this stage, since the process's tasks are only located
 	// on an explicit refresh, the process should have no tasks,
 	// and no task events should have been seen.
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("refresh without tasks", 0);
 
@@ -246,7 +246,7 @@ public class TestRefresh
     public void testRefreshAll ()
     {
 	// Get an initial PS reading.
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	
 	// Create a suspended sub-process with two threads (in
@@ -257,7 +257,7 @@ public class TestRefresh
 	ChildTracker tracker = new ChildTracker (child);
 
 	// Do a refresh, check that the process was added.
-	host.requestRefresh (true);
+	host.requestRefreshXXX (true);
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("all refreshed", 3);
     }
@@ -269,7 +269,7 @@ public class TestRefresh
     {
 	// Create a sub process, refresh things so that it is known.
 	ChildTracker tracker = new ChildTracker (new DetachedAckProcess ());
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("find child", 0);
 	
@@ -309,7 +309,7 @@ public class TestRefresh
 	// do a refresh and check that the child's parent changed to
 	// process one.
 	zombie.fryParent ();
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	assertNotSame ("child's parent and zombie maker",
 		       zombieChild.getParent (), zombieParent);
@@ -350,7 +350,7 @@ public class TestRefresh
 	// Turn the zombie-child into a true zombie, check things are
 	// updated.
 	zombie.zombieFork ();
-	host.requestRefresh (true);
+	host.requestRefreshXXX (true);
 	Manager.eventLoop.runPending ();
  	assertEquals ("zombie maker child count",
  		      1, zombieParent.getChildren ().size ());
@@ -373,7 +373,7 @@ public class TestRefresh
 	
 	child.exec ();
 
-	host.requestRefresh ();
+	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 
 	assertEquals ("proc's getCmdLine[0]",
@@ -392,7 +392,7 @@ public class TestRefresh
 	AckProcess child = new AckDaemonProcess (1);
 	Proc proc = child.findProcUsingRefresh (true);
 
-	Manager.host.requestRefresh (true);
+	Manager.host.requestRefreshXXX (true);
 	Task taskBefore = child.findTaskUsingRefresh (false);
 	assertSame ("task before unattached multiple clone exec", proc,
 		    taskBefore.getProc()); // parent/child relationship
@@ -401,7 +401,7 @@ public class TestRefresh
 
  	child.execClone ();
 
-	Manager.host.requestRefresh (true);
+	Manager.host.requestRefreshXXX (true);
  	Manager.eventLoop.runPending ();
 	
 	assertEquals ("proc's getCmdLine[0]",

@@ -147,7 +147,7 @@ public abstract class Host
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
      */
-    public void requestRefresh (final boolean refreshAllArg)
+    public void requestRefreshXXX (final boolean refreshAllArg)
     {
 	logger.log (Level.FINEST, "requestRefresh\n", ""); 
 	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
@@ -160,15 +160,6 @@ public abstract class Host
 							 refreshAll);
 		}
 	    });
-    }
-    /**
-     * Request that the Host scan the system's process tables
-     * refreshing the internal structures to match.
-     */
-    public final void requestRefresh ()
-    {
-	logger.log (Level.FINEST, "requestRefresh\n", ""); 
-	requestRefresh (false);
     }
 
     /**

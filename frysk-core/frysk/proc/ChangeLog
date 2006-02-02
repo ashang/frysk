@@ -1,3 +1,11 @@
+2006-02-01  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (requestRefreshXXX(boolean)): Rename requestRefresh.
+	(requestRefresh()): Delete.
+	* TestSyscallInterrupt.java: Update.
+	* TestRefresh.java: Update.
+	* TestLib.java: Update.
+
 2006-01-31  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java (observableProcAddedXXX): Rename observableProcAdded.

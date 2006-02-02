@@ -119,7 +119,7 @@ public class TestExec
 	
 	child.exec ();
 
-	Manager.host.requestRefresh (true);
+	Manager.host.requestRefreshXXX (true);
 	Manager.eventLoop.runPending ();
 
 	assertEquals ("pid after exec", child.getPid (), proc.getPid ());
@@ -163,7 +163,7 @@ public class TestExec
 	Task task = child.findTaskUsingRefresh (false);
 	child.exec (task.getTid ());
 
-	Manager.host.requestRefresh (true);
+	Manager.host.requestRefreshXXX (true);
 	
 	assertSame ("task after attached multiple clone exec", proc,
 		    task.getProc()); // parent/child relationship

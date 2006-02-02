@@ -271,7 +271,7 @@ public class TestLib
 	Proc findProcUsingRefresh (boolean refreshTasks)
 	{
 	    // Try polling /proc.
-	    Manager.host.requestRefresh (refreshTasks);
+	    Manager.host.requestRefreshXXX (refreshTasks);
 	    Manager.eventLoop.runPending ();
 	    proc = Manager.host.getProc (new ProcId (pid));
 	    return proc;
