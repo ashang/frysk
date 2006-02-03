@@ -1,3 +1,10 @@
+2006-02-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Add samename/WrongVariable, and
+	samename/WrongScope.gcj.
+	* samename/WrongVariable.java: New file.
+	* samename/WrongScope.java: New file.
+	
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS, noinst_SCRIPTS): Replace

@@ -106,6 +106,19 @@ samename_SameName_SOURCES = samename/SameName.java
 samename_SameName_LDFLAGS = --main=SameName
 noinst_PROGRAMS += samename/SameName
 
+XFAIL_TESTS += samename/WrongVariable
+samename_WrongVariable_SOURCES = samename/WrongVariable.java
+samename_WrongVariable_LDFLAGS = --main=samename.WrongVariable
+noinst_PROGRAMS += samename/WrongVariable
+
+XFAIL_TESTS += samename/WrongScope.gcj
+EXTRA_DIST += samename/WrongScope.java
+noinst_SCRIPTS += samename/WrongScope.gcj
+samename/WrongScope.gcj:
+	echo '#!/bin/sh' > $@
+	echo \! $(GCJ) -C -d . $(srcdir)/samename/WrongScope.java >> $@
+	chmod a+x $@
+
 XFAIL_TESTS += packagename/O.out
 packagename_O_SOURCES = packagename/O.java
 packagename_O_LDFLAGS = --main=packagename.O
