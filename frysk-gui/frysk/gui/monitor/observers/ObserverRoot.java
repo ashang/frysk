@@ -214,4 +214,25 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			}
 		}
 		
+		public String toString(){
+			String myString = "";
+			myString+= "Name: " + this.getName() + "\n";
+			myString+= "Base Name: " + this.getBaseName() + "\n";
+			myString+= "FilterPoints:" + "\n";
+			Iterator iter = this.filterPoints.iterator();
+			while (iter.hasNext()) {
+				FilterPoint filterPoint = (FilterPoint) iter.next();
+				myString+=  filterPoint + "\n";
+			}
+			
+			myString += "ActionPoints: \n";
+			iter = this.actionPoints.iterator();
+			while (iter.hasNext()) {
+				ActionPoint actionPoint = (ActionPoint) iter.next();
+				myString += actionPoint + "\n";
+			}
+			
+			return myString;
+		}
+		
 	}

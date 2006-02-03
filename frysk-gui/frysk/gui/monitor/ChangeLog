@@ -1,3 +1,20 @@
+2006-02-03  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java: Added toString method.
+	* filters/FilterPoint.java: Added toString method.
+	* actions/TaskActionPoint.java (TaskActionPoint): eplaced
+	ActionPoint argument in copy constructor with correct
+	TaskActionPoint.
+	* actions/GenericActionPoint.java (GenericActionPoint): replaced
+	ActionPoint argument in copy constructor with correct
+	GenericActionPoint.
+	* actions/ActionPoint.java: Added toString method.
+	* ObservableLinkedList.java: Fixed copy constructor to dynamically
+	call copy constructor of each element.
+	* FilterLineWidget.java: Removed debug output.
+	* DetailedObserverTreeView.java: Removed debug output. Added
+	code for properly removing observers from removed lists.
+
 2006-02-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskCloneObserver.java: Fixed some bugs in copy

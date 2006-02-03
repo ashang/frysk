@@ -89,14 +89,13 @@ public class FilterLineWidget extends HBox{
 		this.spaceHolder = new GuiObject("----------","");
 		
 		this.filtersComboBox.addListener(new ComboBoxListener() {
-			public void comboBoxEvent(ComboBoxEvent event) {System.out.println("filtersComboBox.ComboBoxListener()");
-		
-				if(filtersComboBox.getSelectedObject() != spaceHolder){System.out.println("filtersComboBox.ComboBoxListener() getActive()!=0");
-					if(filter == (Filter)filtersComboBox.getSelectedObject()){System.out.println("filtersComboBox.ComboBoxListener() filter == (Filter)filtersComboBox.getSelectedObject()");
+			public void comboBoxEvent(ComboBoxEvent event) {
+				if(filtersComboBox.getSelectedObject() != spaceHolder){
+					if(filter == (Filter)filtersComboBox.getSelectedObject()){
 						// we now know its not a user event because public setFilter
 						// sets this.filter to selected filter
 						privateSetFilter((Filter)filtersComboBox.getSelectedObject());
-					}else{System.out.println("filtersComboBox.ComboBoxListener() filter == (Filter)filtersComboBox.getSelectedObject()");
+					}else{
 						// here we know the user has selected a new prototype an 
 						// would like to add that to the observers
 						Filter myConcreteFilter = FilterManager.theManager.getFilterCopy((Filter)filtersComboBox.getSelectedObject());

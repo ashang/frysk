@@ -54,7 +54,7 @@ public class TaskActionPoint extends ActionPoint{
 		super(name, toolTip);
 	}
 
-	public TaskActionPoint(ActionPoint other) {
+	public TaskActionPoint(TaskActionPoint other) {
 		super(other);
 	}
 

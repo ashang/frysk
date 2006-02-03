@@ -124,5 +124,15 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 		}
 	}
 
-	
+	public String toString(){
+		String string = "";
+		
+		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
+		Iterator iterator = this.actions.iterator();
+		while (iterator.hasNext()) {
+			Action action = (Action) iterator.next();
+			string += "    " + action + "\n";
+		}
+		return string;
+	}
 }

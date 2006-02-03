@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor;
 
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -48,6 +48,10 @@ import java.util.LinkedList;
  * Not all functions are overwritten check to see that
  * the function you use is overwritten and the appropriate
  * listeners are being notified.
+ * 
+ * Overwrites the copy constructor to dynamically call
+ * copy constructor of all elements and add them to the
+ * new list.
  * */
 public class ObservableLinkedList extends LinkedList{
 
@@ -63,13 +67,29 @@ public class ObservableLinkedList extends LinkedList{
 		this.itemRemoved = new GuiObservable();
 	}
 	
-	public ObservableLinkedList(Collection collection){
-		super(collection);
+	public ObservableLinkedList(ObservableLinkedList other){
+//		super(collection);
+
 		this.itemAdded = new GuiObservable();
 		this.itemRemoved = new GuiObservable();
+		
+		Iterator iterator = other.iterator();
+		while (iterator.hasNext()) {
+			Object original = iterator.next() ;
+			Object copy;
+//			System.out.println("ObservableLinkedList.ObservableLinkedList() original " + original.getClass());
+			Class cls;
+			try {
+				cls = Class.forName(original.getClass().getName());
+				java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{original.getClass()});
+				copy =  constr.newInstance(new Object[] {original});
+				this.add(copy);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
-	
-
 	
 	public boolean add(Object o){
 		boolean val = super.add(o);

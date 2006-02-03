@@ -128,4 +128,15 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 		}
 	}
 	
+	public String toString(){
+		String string = "";
+		
+		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
+		Iterator iterator = this.filters.iterator();
+		while (iterator.hasNext()) {
+			Filter filter = (Filter) iterator.next();
+			string += "    " + filter + "\n";
+		}
+		return string;
+	}
 }

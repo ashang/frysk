@@ -55,6 +55,8 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.event.TreeSelectionEvent;
+import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Messages;
 import frysk.gui.monitor.actions.ActionPoint;
@@ -88,7 +90,14 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.init();
 	}
 
-	private void init() {	
+	private void init() {
+		
+		this.getSelection().addListener(new TreeSelectionListener() {
+			public void selectionChangedEvent(TreeSelectionEvent arg0) {
+				System.out.println("SELECTED: " + getSelectedObject());
+			}
+		});
+		
 		this.map = new HashMap();
 		this.listObservers = new Vector();
 		
@@ -135,11 +144,11 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 
 
 	private void removeObserverRoot(ObserverRoot observer) {
-		System.out.println("DetailedObserverTreeView.removeObserverRoot() removing " + observer.getName() + " base " + observer.getBaseName() );
+//		System.out.println("DetailedObserverTreeView.removeObserverRoot() removing " + observer.getName() + " base " + observer.getBaseName() );
 		Iterator iterator = observer.getFilterPoints().iterator();
 		while (iterator.hasNext()) {
 			FilterPoint filterPoint = (FilterPoint) iterator.next();
-			System.out.println("DetailedObserverTreeView.removeObserverRoot() FilterPoint " + filterPoint.getName());
+//			System.out.println("DetailedObserverTreeView.removeObserverRoot() FilterPoint " + filterPoint.getName());
 			this.removeList(filterPoint.getFilters());
 		}
 		removeList(observer.getFilterPoints());
@@ -147,7 +156,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		iterator = observer.getActionPoints().iterator();	
 		while (iterator.hasNext()) {
 			ActionPoint actionPoint = (ActionPoint) iterator.next();
-			System.out.println("DetailedObserverTreeView.removeObserverRoot() ActionPoint " + actionPoint.getName());
+//			System.out.println("DetailedObserverTreeView.removeObserverRoot() ActionPoint " + actionPoint.getName());
 			this.removeList(actionPoint.getActions());
 		}
 		removeList(observer.getActionPoints());
@@ -165,10 +174,11 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 	
 	private void addObserverRoot(ObserverRoot observer){
-
+		System.out.println("DetailedObserverTreeView.addObserverRoot()========= " + observer.getName());
 		this.add(observer, (GuiObject)null);
-		GuiObject label = new GuiObject(Messages.getString("DetailedObserverTreeView.1"),""); //$NON-NLS-1$ //$NON-NLS-2$
-
+		
+		//filterPoints
+		GuiObject label = new GuiObject(Messages.getString("DetailedObserverTreeView.1"),""); //$NON-NLS-1$ //$NON-NLS-2
 		this.add(label, observer);
 		addList(label, observer.getFilterPoints());
 		
@@ -178,7 +188,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 			this.addList(filterPoint, filterPoint.getFilters());
 		}
 
-		
+		//actionPoints
 		label = new GuiObject(Messages.getString("DetailedObserverTreeView.3"),""); //$NON-NLS-1$ //$NON-NLS-2$
 		this.add(label, observer);
 		addList(label, observer.getActionPoints());
@@ -190,17 +200,20 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 	
 	private void addList(final GuiObject parent, final ObservableLinkedList list){
-		//System.out.println("DetailedObserverTreeView.addList() " + list.hashCode() + " size: " + list.size());
+//		System.out.println("DetailedObserverTreeView.addList() " + list.hashCode() + " size: " + list.size());
 		Iterator iterator = list.iterator();
 		
 		 Observer itemAddedObserver = new Observer() {
 			 public void update(Observable observable, Object object) {
 				 GuiObject guiObject = (GuiObject) object;
+				 System.out.println("DetailedObserverTreeView.addList() adding GuiObject " + guiObject + " this: " + this);
 				 int index = list.indexOf(guiObject);
 				 add(guiObject,parent, index);
 			 }
 		 };
 		 list.itemAdded.addObserver(itemAddedObserver);
+		 System.out.println("DetailedObserverTreeView.addList() adding observer " + itemAddedObserver);
+
 		 
 		 Observer itemRemovedObserver = new Observer() {
 			 public void update(Observable arg0, Object object) {
@@ -217,7 +230,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 	
 	private void removeList(final ObservableLinkedList list){
-		System.out.println("DetailedObserverTreeView.removeList() " + list.hashCode() + " size: " + list.size());
+//		System.out.println("DetailedObserverTreeView.removeList() " + list.hashCode() + " size: " + list.size());
 		Iterator iterator = list.iterator();
 		
 		while (iterator.hasNext()) {
@@ -236,7 +249,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 
 	protected void remove(GuiObject object) {
 		TreeIter iter = (TreeIter) this.map.get(object);
-		System.out.println("DetailedObserverTreeView.remove() removing " + object.getName() + " iter: " + iter );
+//		System.out.println("DetailedObserverTreeView.remove() removing " + object.getName() + " iter: " + iter );
 		this.map.remove(object);
 		this.treeStore.removeRow(iter);
 		object.deleteObserver(this);
@@ -253,7 +266,19 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.treeStore.setValue(iter, objectDC, guiObject);
 		this.map.put(guiObject, iter);
 		guiObject.addObserver(this);
-		System.out.println("DetailedObserverTreeView.add() adding " + guiObject.getName() +" "+ iter );
+//		System.out.println("\n===========================================");
+//		System.out.println("DetailedObserverTreeView.add() adding " + guiObject.getName() + " " + guiObject );
+//		Thread.dumpStack();
+//		System.out.println("\n===========================================");
+	}
+	
+	public GuiObject getSelectedObject(){
+		if(this.getSelection().getSelectedRows().length == 0){
+			return null;
+		}
+		
+		TreeIter iter = this.treeStore.getIter(this.getSelection().getSelectedRows()[0]);
+		return (GuiObject)this.treeStore.getValue(iter, objectDC);
 	}
 	
 	public ObserverRoot getSelectedObserver(){
@@ -288,14 +313,17 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 	
 	private void removeListObservers(ObservableLinkedList list){
+//		System.out.print("DetailedObserverTreeView.removeListObservers() from " + list.hashCode());
 		for (int i = 0; i < listObservers.size(); i++) {
-			ObservableLinkedList storeList = (ObservableLinkedList) (((Object[])listObservers.elementAt(i))[0]);
-			if(storeList == list){
+			ObservableLinkedList storedList = (ObservableLinkedList) (((Object[])listObservers.elementAt(i))[0]);
+			if(storedList == list){
 				list.itemAdded.deleteObserver((Observer) ((((Object[])listObservers.elementAt(i))[1])));
 				list.itemRemoved.deleteObserver((Observer) ((((Object[])listObservers.elementAt(i))[2])));
 				listObservers.remove(i);
+//				System.out.println("...DONE " + list.hashCode());
 				return;
 			}
 		}
+		throw new IllegalArgumentException("the given list is not in listObservers");
 	}
 }

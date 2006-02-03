@@ -54,7 +54,7 @@ public class GenericActionPoint extends ActionPoint {
 		super(name, toolTip);
 	}
 	
-	public GenericActionPoint(ActionPoint other) {
+	public GenericActionPoint(GenericActionPoint other) {
 		super(other);
 	}
 
