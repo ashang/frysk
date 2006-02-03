@@ -48,14 +48,19 @@ package frysk.gui.srcwin;
  *
  */
 
-public class Variable extends CodeItem {
+public class Variable{
 	private boolean isMember = false;
-
+	private String name;
+	private int line;
+	private int col;
+	
 	/**
 	 * Create a new, empty variable
 	 */
 	public Variable(){
-		super("", -1, -1);
+		this.name = "";
+		this.line = -1;
+		this.col = -1;
 	}
 	
 	/**
@@ -66,7 +71,9 @@ public class Variable extends CodeItem {
 	 * @param endCol End of the column span (wrt the line it's on)
 	 */
 	public Variable(String name, int lineNum, int startCol, boolean member){
-		super(name, lineNum, startCol);
+		this.name = name;
+		this.line = lineNum;
+		this.col = startCol;
 		this.isMember = member;
 	}
 	
@@ -76,5 +83,32 @@ public class Variable extends CodeItem {
 
 	public boolean isMember() {
 		return isMember;
+	}
+	
+	public int getCol() {
+		return col;
+	}
+	public int getLine() {
+		return line;
+	}
+	public String getName() {
+		return name;
+	}
+	
+	/**
+	 * Returns true if col is contained within the column range of this VariableLocation,
+	 * false otherwise
+	 * 
+	 * @param col The column to test
+	 * @return
+	 */
+	public boolean isInRange(int col){
+		if(col >= this.col && col <= this.col+this.name.length())
+			return true;
+		
+		return false;
+	}
+	public void setCol(int col) {
+		this.col = col;
 	}
 }

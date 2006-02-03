@@ -1,3 +1,7 @@
+2006-02-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* CodeItem.java: Removed, merged contents into Variable.java.
+
 2006-02-02  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceView.java: Created inner class to handle listener
