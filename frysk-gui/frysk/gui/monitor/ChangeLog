@@ -1,3 +1,12 @@
+2006-02-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ListView.java: Added proper observer removal upon list
+	clearing (fixed double action addition bug).
+	* DetailedObserverTreeView.java : Removed debug output. 
+	* FilterLineWidget.java : Ditto.
+	* ActionsWidget.java: Now clears lists upon selection change.
+	Removed debug output.
+
 2006-02-03  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Added toString method.

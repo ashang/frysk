@@ -74,6 +74,9 @@ public class ListView extends TreeView implements Observer {
 	protected DataColumnObject objectDC;
 	private ObservableLinkedList watchedList;
 	
+	private ItemAddedObserver itemAddedObserver;
+	private ItemRemvoedObserver itemRemvoedObserver;
+	
 	ListView(){
 		super();
 		this.init();
@@ -86,6 +89,9 @@ public class ListView extends TreeView implements Observer {
 	
 	private void init(){
 		this.setHeadersVisible(false);
+	
+		this.itemAddedObserver = new ItemAddedObserver();
+		this.itemRemvoedObserver = new ItemRemvoedObserver();
 		
 		this.map = new HashMap();
 		
@@ -166,8 +172,8 @@ public class ListView extends TreeView implements Observer {
 		this.listStore.clear();
 		this.map.clear();
 		if(this.watchedList!=null){
-			this.watchedList.itemAdded.deleteObserver(this);
-			this.watchedList.itemRemoved.deleteObserver(this);
+			this.watchedList.itemAdded.deleteObserver(this.itemAddedObserver);
+			this.watchedList.itemRemoved.deleteObserver(this.itemRemvoedObserver);
 		}
 	}
 	
@@ -187,19 +193,8 @@ public class ListView extends TreeView implements Observer {
 		this.watchedList = linkedList;
 		Iterator iterator = linkedList.iterator();
 		
-		linkedList.itemAdded.addObserver(new Observer() {
-			public void update(Observable observable, Object object) {
-				GuiObject guiObject = (GuiObject) object;
-				int index = watchedList.indexOf(guiObject);
-				add(guiObject, index);
-			}
-		});
-		
-		linkedList.itemRemoved.addObserver(new Observer() {
-			public void update(Observable arg0, Object object) {
-				remove((GuiObject) object);
-			}
-		});
+		linkedList.itemAdded.addObserver(this.itemAddedObserver);
+		linkedList.itemRemoved.addObserver(this.itemRemvoedObserver);
 		
 		while (iterator.hasNext()) {
 			GuiObject object = (GuiObject) iterator.next();
@@ -231,5 +226,18 @@ public class ListView extends TreeView implements Observer {
 		}
 		throw new IllegalArgumentException(Messages.getString("ListView.0")+ text +Messages.getString("ListView.1")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
-
+	
+	class ItemAddedObserver implements Observer{
+		public void update(Observable arg0, Object object) {
+			GuiObject guiObject = (GuiObject) object;
+			int index = watchedList.indexOf(guiObject);
+			add(guiObject, index);
+		}
+	}
+	
+	class ItemRemvoedObserver implements Observer{
+		public void update(Observable arg0, Object object) {
+			remove((GuiObject) object);
+		}
+	}
 }

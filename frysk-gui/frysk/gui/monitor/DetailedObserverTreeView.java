@@ -55,8 +55,6 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
-import org.gnu.gtk.event.TreeSelectionEvent;
-import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.common.Messages;
 import frysk.gui.monitor.actions.ActionPoint;
@@ -91,12 +89,17 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 
 	private void init() {
+		this.setHeadersVisible(false);
 		
-		this.getSelection().addListener(new TreeSelectionListener() {
-			public void selectionChangedEvent(TreeSelectionEvent arg0) {
-				System.out.println("SELECTED: " + getSelectedObject());
-			}
-		});
+//		this.getSelection().addListener(new TreeSelectionListener() {
+//			public void selectionChangedEvent(TreeSelectionEvent event) {
+//				System.out.println("SELECTED: " + getSelectedObject());
+//				DetailedObserverTreeView.this.collapseAll();
+//				if(getSelection().getSelectedRows().length > 0){
+//					DetailedObserverTreeView.this.expandRow(getSelection().getSelectedRows()[0], true);
+//				}
+//			}
+//		});
 		
 		this.map = new HashMap();
 		this.listObservers = new Vector();
@@ -174,7 +177,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 	
 	private void addObserverRoot(ObserverRoot observer){
-		System.out.println("DetailedObserverTreeView.addObserverRoot()========= " + observer.getName());
+//		System.out.println("DetailedObserverTreeView.addObserverRoot()========= " + observer.getName());
 		this.add(observer, (GuiObject)null);
 		
 		//filterPoints
@@ -212,7 +215,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 			 }
 		 };
 		 list.itemAdded.addObserver(itemAddedObserver);
-		 System.out.println("DetailedObserverTreeView.addList() adding observer " + itemAddedObserver);
+//		 System.out.println("DetailedObserverTreeView.addList() adding observer " + itemAddedObserver);
 
 		 
 		 Observer itemRemovedObserver = new Observer() {

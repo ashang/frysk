@@ -88,7 +88,7 @@ public class ActionsWidget extends VBox{
 		});
 	}
 
-	public void setObserver(ObserverRoot selectedObserver) {System.out.println("ActionsWidget.setObserver()");
+	public void setObserver(ObserverRoot selectedObserver) {
 		this.actionPointListView.clear();
 		this.actionPointListView.watchLinkedList(selectedObserver.getActionPoints());
 		
@@ -101,7 +101,8 @@ public class ActionsWidget extends VBox{
 				addedActionsListView.watchLinkedList(((ActionPoint)actionPointListView.getSelectedObject()).getActions());
 			}
 		});
-		
+		applicableActionsListView.clear();
+		addedActionsListView.clear();
 	}
 
 }

@@ -132,7 +132,7 @@ public class FilterLineWidget extends HBox{
 		this.filterPointsComboBox.setSelectedObject(filterPoint);
 	}
 	
-	private void privateSetFilter(Filter filter){System.out.println("FilterLineWidget.privateSetFilter()");
+	private void privateSetFilter(Filter filter){//System.out.println("FilterLineWidget.privateSetFilter()");
 //		if(this.filter == filter) return;
 		
 		Widget[] widgets = this.filterWidgetVBox.getChildren();
@@ -154,9 +154,9 @@ public class FilterLineWidget extends HBox{
 	 * from FilterManager.
 	 * @param filter
 	 */
-	public void setFilter(Filter filter){System.out.println("FilterLineWidget.setFilter()");
+	public void setFilter(Filter filter){//System.out.println("FilterLineWidget.setFilter()");
 		if(this.filter != spaceHolder && this.filter != null){
-			System.out.println("filtersComboBox.ComboBoxListener() selection has changed removing old filter since it was not ap");
+			//System.out.println("filtersComboBox.ComboBoxListener() selection has changed removing old filter since it was not ap");
 			filterPoint.removeFilter(this.filter);
 		}
 	
