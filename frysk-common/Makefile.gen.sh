@@ -110,7 +110,9 @@ echo_MANS ()
 	cat <<EOF
 man_MANS += ${d}/${title}.${n}
 ${d}/${title}.${n}: $1.xml
-	\$(XMLTO) -o ${d} man \$<
+	\$(SUBST_SED) < \$< > \$@.tmp
+	\$(XMLTO) -o ${d} man \$@.tmp
+	rm -f \$@.tmp
 EOF
     done
 }
@@ -127,6 +129,10 @@ echo_PROGRAMS ()
 	    echo_MANS $1
 	    ;;
 	*/libexecdir/* )
+	    echo "libexec_PROGRAMS += $1"
+	    echo_MANS $1
+	    ;;
+	*/pkglibexecdir/* )
 	    echo "pkglibexec_PROGRAMS += $1"
 	    echo_MANS $1
 	    ;;

@@ -1,0 +1,10 @@
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.xml, funit.java: New files.
+
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

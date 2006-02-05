@@ -1,8 +1,6 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,18 +37,25 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import frysk.JUnitRunner;
+package frysk.pkglibexecdir;
 
-import @GEN_PACKAGENAME@.JUnitTests;
+import frysk.JUnitRunner;
+import java.util.LinkedList;
 
 /**
- * Run the JUnit tests from within the build tree.
+ * Run all of <em>frysk</em>'s non-graphical JUnit tests from the
+ * install directory.
  */
 
-public class TestRunner
+public class funit
 {
     public static void main (String[] args)
     {
-	new JUnitRunner (args, JUnitTests.get ());
+	LinkedList list = new LinkedList ();
+	list.addAll (frysk.imports.JUnitTests.get ());
+	list.addAll (frysk.sys.JUnitTests.get ());
+	list.addAll (frysk.core.JUnitTests.get ());
+	// XXX: Need to cd to PKGLIBEXECDIR.
+	new JUnitRunner (args, list);
     }
 }

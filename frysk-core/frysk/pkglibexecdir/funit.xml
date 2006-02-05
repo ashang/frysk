@@ -48,57 +48,73 @@
 
 <!-- http://docbook.sourceforge.net/snapshots/xsl/manpages/README -->
 
-<refentry id="frysk">
+<refentry id="funit">
 
   <refentryinfo>
-    <title>frysk</title>
-    <date>2 February 2006</date>
+    <title>funit</title>
+    <date>5 February 2006</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>frysk</refentrytitle>
-    <manvolnum>1</manvolnum>
+    <refentrytitle>funit</refentrytitle>
+    <manvolnum>8</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>frysk</refname>
-    <refpurpose>launches the Frysk Execution Analysis Tool</refpurpose>
+    <refname>funit</refname>
+    <refpurpose>runs frysk's JUnit testsuite</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>frysk</command>
-      <!-- arg choice="opt">
-        <option>-list of options</option>
-      </arg -->
+      <command>funit</command>
+      <arg choice="opt">
+        <option>-r <replaceable>repeat-count</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option>-c <replaceable>console-log-level</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option>-l <replaceable>log-level</replaceable></option>
+      </arg>
+      <arg choice="opt">
+        <option><replaceable>test-class</replaceable> ...</option>
+      </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para><function>frysk</function> launches the Frysk Execution
-    Analsys Tool.</para>
+    <para> <function>funit</function> runs frysk's entire JUnit
+    testsuite, or just the specified
+    <replaceable>test-class</replaceable>s. </para>
 
-    <para>The goal of the frysk project is to create an intelligent,
-    distributed, always-on system monitoring and debugging tool that
-    allows developers and system administrators to monitor running
-    processes and threads (including creation and destruction events),
-    monitor the use of locking primitives, expose deadlocks, gather
-    data and debug any given process by either choosing it from a list
-    or by accepting frysk's offer to open a source code or other
-    window on a process that is in the process of crashing or that has
-    been misbehaving in certain user-definable ways. </para>
+    <para> Frysk's JUnit testsuite, in addition to testing frysk's
+    internals, tests the stability of the underlying kernel. </para>
 
-    <!-- variablelist>
+    <variablelist>
       <varlistentry>
-	<term>-option <replaceable>option-argument</replaceable></term>
+	<term>-r <replaceable>repeat-count</replaceable></term>
 	<listitem>
-          <para> Description of option. </para>
+          <para> Run the JUnit tests
+          <replaceable>repeat-count</replaceable> times. </para>
         </listitem>
       </varlistentry>
-      <varlistentry>...</varlistentry>
-    </variablelist -->
+      <varlistentry>
+	<term>-c <replaceable>console-log-level</replaceable></term>
+	<listitem>
+          <para> Enable logging to the console and at the specified
+          log level.  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>-l <replaceable>log-level</replaceable></term>
+	<listitem>
+          <para> Specify the file logging level. </para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
   </refsect1>
   
   <!-- refsect1>
@@ -123,7 +139,7 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>frysk</screen>
+    <screen>@pkglibexecdir@/funit</screen>
   </refsect1>
    
   <!-- refsect1>
@@ -137,7 +153,7 @@
       <varlistentry>
 	<term>An error message.</term>
 	<listitem>
-          <para> This error can appear when Frysk is terminated
+          <para> This error can appear when Funit is terminated
           abruptly (as during a loss of power).  Typically you need to
           manually open the perspectives and views that you want.
           </para>
@@ -148,7 +164,7 @@
 
   <refsect1>
     <title>SEE ALSO</title>
-    <para>funit(8)</para>
+    <para>frysk(1)</para>
   </refsect1>
   
   <!-- refsect1>

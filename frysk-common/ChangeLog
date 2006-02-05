@@ -1,3 +1,15 @@
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestRunner.javain: Rewrite; use frysk.JUnitRunner found in
+	frysk-imports/frysk/JUnitRunner.java.
+	* Makefile.rules (JUnitTests.java): Replace static array of
+	classes with a get method returning a LinkedList.
+	(pkglibexec_PROGRAMS, pkglibexecdir): Define.
+	(SUBST_SED): Define.   Extract from SUBST, add pkglibexecdir.
+	(SUBST): Use SUBST_SED.
+	* Makefile.gen.sh (echo_MANS): Push .xml input through SUBST_SED.
+	(echo_PROGRAMS): Handle libexecdir.
+
 2006-02-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (man_MANS): Initialize.
