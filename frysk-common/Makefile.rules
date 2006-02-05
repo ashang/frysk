@@ -329,15 +329,25 @@ SUFFIXES += .db
 	$(GCJ_DBTOOL) -a $@.tmp $*.jar lib$*.so
 	mv $@.tmp $@
 
-# Given a .java file convert it to a .o file.  GCJ has a bug
-# where, when given a -Werror fail, it still exits with success.  Hack
-# around this by saving the message in a log file and then checking
-# that it is empty.
+# Given a .java file convert it to a .o file.
+
+# XXX: GCJ has a bug where it totally scrambles nested classes with
+# identical names.  Reject any code with duplicate class names.
+
+# XXX: GCJ has a bug where, when given a -Werror fail, it still exits
+# with success.  Hack around this by saving the message in a log file
+# and then checking that it is empty.
 
 .java.o:
+	dups=`$(JV_SCAN) --list-class $< \
+		| tr '[ ]' '[\n]' \
+		| sed -n -e 's,^.*$$\([A-Z]\),\1,p' \
+		| sort | uniq -d` ; \
+	if test x"$$dups" != x ; then echo "Duplicate class names tickle a GCJ bug: $$dups" ; exit 1 ; fi
 	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
 	if $(GCJCOMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $< 2>&1 | tee $*.log && test ! -s $*.log ; \
 	then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
+	rm -f $*.log
 
 # Build a version of frysk that behaves like the Java interpreter
 # (while it is set up to be run anywhere it is not installed -- there

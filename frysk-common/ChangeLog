@@ -1,5 +1,8 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (.java.o): Check and reject duplicate classes --
+	avoids a GCJ bug.
+
 	* TestRunner.javain: Rewrite; use frysk.JUnitRunner found in
 	frysk-imports/frysk/JUnitRunner.java.
 	* Makefile.rules (JUnitTests.java): Replace static array of
