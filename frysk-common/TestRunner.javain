@@ -39,7 +39,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-import frysk.JUnitRunner;
+import frysk.junit.Runner;
 
 import @GEN_PACKAGENAME@.JUnitTests;
 
@@ -51,6 +51,6 @@ public class TestRunner
 {
     public static void main (String[] args)
     {
-	new JUnitRunner (args, JUnitTests.get ());
+	new Runner (args, JUnitTests.get ());
     }
 }

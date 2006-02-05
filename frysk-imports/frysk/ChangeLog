@@ -1,5 +1,7 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* JUnitRunner.java: Move to frysk-imports/frysk/junit/Runner.java.
+
 	* JUnitRunner.java: New; based heavily on common/TestRunner.java.
 
 2006-01-30  Andrew Cagney  <cagney@redhat.com>

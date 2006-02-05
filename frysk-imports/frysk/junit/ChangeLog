@@ -1,8 +1,7 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
-	* funit.java: Import frysk.junit.Runner.
+	* Runner.java: Moved from frysk-imports/frysk/JUnitRunner.java.
 
-	* funit.xml, funit.java: New files.
 
 Local Variables:
 mode: change-log

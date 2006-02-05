@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk;
+package frysk.junit;
 
 import frysk.EventLogger;
 import jargs.gnu.CmdLineParser;
@@ -59,7 +59,7 @@ import junit.textui.TestRunner;
  * <em>frysk</em> specific extension to the JUnit test framework.
  */
 
-public class JUnitRunner
+public class Runner
     extends TestRunner
 {
     /**
@@ -115,7 +115,7 @@ public class JUnitRunner
      * Create a JUnit TestRunner, using command-line arguments args,
      * and the supplied testClasses.
      */
-    public JUnitRunner (String[] args, Collection testClasses)
+    public Runner (String[] args, Collection testClasses)
     {
 	// Override the print methods.
 	super (new Results (System.out));

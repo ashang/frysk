@@ -39,7 +39,7 @@
 
 package frysk.pkglibexecdir;
 
-import frysk.JUnitRunner;
+import frysk.junit.Runner;
 import java.util.LinkedList;
 
 /**
@@ -56,6 +56,6 @@ public class funit
 	list.addAll (frysk.sys.JUnitTests.get ());
 	list.addAll (frysk.core.JUnitTests.get ());
 	// XXX: Need to cd to PKGLIBEXECDIR.
-	new JUnitRunner (args, list);
+	new Runner (args, list);
     }
 }
