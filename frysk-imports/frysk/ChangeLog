@@ -1,3 +1,7 @@
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* JUnitRunner.java: New; based heavily on common/TestRunner.java.
+
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLogger.java: Do not add a ConsoleHandler.
