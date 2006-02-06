@@ -86,7 +86,6 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
 	private SpinButton refreshSpinButton;
 	private Button refreshButton;
-	private Button holdButton;
 	
 	private TreeView procTreeView;
 	private TreeView threadTreeView;
@@ -109,7 +108,6 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		this.refreshSpinButton   = (SpinButton)  glade.getWidget("refreshSpinButton"); //$NON-NLS-1$
 		this.refreshButton       = (Button)      glade.getWidget("refreshButton"); //$NON-NLS-1$
-		this.holdButton          = (Button)      glade.getWidget("holdButton"); //$NON-NLS-1$
 		
 		this.procTreeView        = (TreeView)    glade.getWidget("procTreeView"); //$NON-NLS-1$
 		this.threadTreeView      = (TreeView)    glade.getWidget("threadTreeView"); //$NON-NLS-1$
@@ -353,12 +351,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				&& event.getType() == ButtonEvent.Type.CLICK){
 			this.refresh();
 		}
-		
-		if(this.holdButton.equals(event.getSource()) 
-				&& event.getType() == ButtonEvent.Type.CLICK){
-			this.psDataModel.stopRefreshing();
-		}
-		
+	
 	}
 	
 	private void refresh(){
@@ -401,13 +394,16 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
 	public void save(Preferences prefs) {
 		prefs.putInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
+		prefs.putInt("refreshSpinButton", (int) this.refreshSpinButton.getValue());
 	}
 
 
 	public void load(Preferences prefs) {
 		int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
+		int refreshTime = prefs.getInt("refreshSpinButton", (int) this.refreshSpinButton.getValue());
 		
 		this.vPane.setPosition(position);
+		this.refreshSpinButton.setValue(refreshTime);
 	}
 	
 }
