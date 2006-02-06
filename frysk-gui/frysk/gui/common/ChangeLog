@@ -1,5 +1,7 @@
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* message.properties: Fix typo noted at sources.redhat.com bz 2284.
+
 	* dialogs/ErrorDialog.java (doImplementation): Made core error
 	dialog box error messages selectable and able to be copied via
 	right click menu. Helps in PRs.
