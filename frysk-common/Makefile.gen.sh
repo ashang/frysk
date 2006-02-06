@@ -241,12 +241,6 @@ done
 # automake gets grumpy when things like $(GEN__DIR)_jar_SOURCES appear
 # in Makefile.am
 
-for dir in pkglibexecdir bindir ; do
-  if test -d ${dir} ; then
-      dirs="${dirs} ${dir}"
-  fi
-done
-
 test x"${dirs}" = x && exit 0
 
 

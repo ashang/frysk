@@ -1,5 +1,8 @@
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (GEN_DIRS): Don't add pkglibexecdir, and bindir.
+	* Makefile.rules (clean-local-po): Limit to just GEN_DIRS.
+
 	* Makefile.gen.sh: Add generated .h files to BUILT_SOURCES, not
 	nodist_lib_sources.  Add both the generated .h file, and a
 	wildcard match for any nested classes, to CLEANFILES.

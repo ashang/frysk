@@ -396,7 +396,7 @@ gij.sh: Makefile
 clean-local: clean-local-po
 .PHONY: clean-local-po
 clean-local-po:
-	find . -name '*.Po' -exec cp /dev/null \{\} \;
+	find $(GEN_DIRS) -name '*.Po' -exec cp /dev/null \{\} \;
 
 SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 .fig.jpg:
