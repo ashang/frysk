@@ -1,8 +1,6 @@
-// -*- Java -*-
-
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,31 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk;
+package frysk.junit;
 
 /**
- * All the run-time (install time) configuration information.
+ * Directory prefixes that should be used by JUnit tests when they
+ * need to access files.  Set differently according to the build or
+ * install.
  */
-
-public class Config
+public class Paths
 {
-    public static final String PREFIX = "@prefix@";
-    public static final String BINDIR = "@bindir@";
-    public static final String LIBDIR = "@libdir@";
-    public static final String LIBEXECDIR = "@libexecdir@";
-    public static final String DATADIR = "@datadir@";
-
-    public static final String GLADEDIR = "@gladedir@";
-    public static final String IMAGEDIR = "@imagedir@";
-    public static final String PKGDATADIR = "@pkgdatadir@";
-    public static final String PKGLIBDIR = "@pkglibdir@";
-    public static final String PKGLIBEXECDIR = "@pkglibexecdir@";
-    public static final String PKGINCLUDEDIR = "@pkgincludedir@";
-
-    public static final String VERSION = "@VERSION@";
-
-    // User's config directory.
-    public static final String FRYSK_DIR
-	= System.getProperty("user.home") + "/" + ".frysk" + "/";
-    public static final String FRYSK_LOG_ID = "frysk.core.eventlog";
+    static private String execPrefix;
+    /**
+     * Set the TestRunner's executable working directory.  Tests
+     * should prefix any executable paths paths with this.
+     */
+    static public void setExecPrefix (String wd)
+    {
+	execPrefix = wd;
+    }
+    /**
+     * Get the TestRunner's working directory.  Tests should prefix
+     * any file paths with this.
+     */
+    static public String getExecPrefix ()
+    {
+	return execPrefix;
+    }
 }
