@@ -1,5 +1,11 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (echo_PROGRAMS): Simplify, for *dir paths,
+	extract the directory prefix from the path.
+	(echo_LDFLAGS): For *dir paths, specify just the file name as the
+	class.
+	(.java): Do not add main program to the directory's solib sources.
+	
 	* Makefile.rules (.java.o): Check and reject duplicate classes --
 	avoids a GCJ bug.
 
