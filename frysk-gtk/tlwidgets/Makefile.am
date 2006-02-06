@@ -52,7 +52,7 @@ EXTRA_DIST = $(SRC) \
 	src/widgets/ftkstripchart.h \
 	src/widgets/ftktimeline.h
 
-CLEANFILES = *.so *.jar *.o *.class
+CLEANFILES = *.so *.jar
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	-Wall -Werror \
@@ -67,6 +67,7 @@ AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
 	mv $@.tmp $@
 
+CLEANFILES += com/redhat/ftk/Stripchart.class
 com/redhat/ftk/Stripchart.class: $(SRC) 
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 
