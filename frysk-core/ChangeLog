@@ -1,5 +1,8 @@
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (installcheck-funit): New.
+	(installcheck-local): Add installcheck-funit.
+
 	* Makefile.am (CLEANFILES): Add *.sum, and *.log from dejagnu.
 	
 	* Makefile.am (frysk_pkglibexecdir_funit_ia32_regs_SOURCES) 

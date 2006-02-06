@@ -45,6 +45,7 @@ ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 
 # Add dejagnu, remember to clean up.
 AUTOMAKE_OPTIONS = dejagnu
+RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite --tool expr
 CLEANFILES += *.sum *.log
 
 GEN_SOURCEPATH += $(top_builddir)/../frysk-sys/
@@ -72,5 +73,10 @@ frysk_pkglibexecdir_funit_ia32_modify_SOURCES = frysk/pkglibexecdir/funit-ia32-m
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-ia32-modify
 
 EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
-
-RUNTESTDEFAULTFLAGS = --srcdir $$srcdir/testsuite --tool expr
+
+# Try running funit from the install directory; ignore things like
+# program transform name for the moment.
+installcheck-local: installcheck-funit
+.PHONY: installcheck-funit
+installcheck-funit:
+	$(DESTDIR)$(pkglibexecdir)/funit
