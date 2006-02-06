@@ -46,6 +46,19 @@
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">_File</property>
 		  <property name="use_underline">True</property>
+
+		  <child>
+		    <widget class="GtkMenu" id="menuitem6_menu">
+
+		      <child>
+			<widget class="GtkImageMenuItem" id="frysk_quit">
+			  <property name="visible">True</property>
+			  <property name="label">gtk-close</property>
+			  <property name="use_stock">True</property>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
 		</widget>
 	      </child>
 
