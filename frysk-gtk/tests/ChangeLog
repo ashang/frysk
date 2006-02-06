@@ -1,3 +1,7 @@
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (TESTS_ENVIRONMENT): Skip tests when no display.
+
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (textiter/a.out): Delete reference to /opt/frysk.

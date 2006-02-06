@@ -38,8 +38,11 @@
 # exception.
 
 EXTRA_DIST =
-# Gag all the output from the failing tests
-TESTS_ENVIRONMENT = eval > log 2>&1
+# If there's no display, exit with code 77 (SKIP); otherwize gag all
+# the output from the failing tests
+TESTS_ENVIRONMENT = \
+	( test x"$$DISPLAY" != x || sh -c "exit 77" ) \
+	&& eval > log 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
