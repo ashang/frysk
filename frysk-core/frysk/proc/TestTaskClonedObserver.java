@@ -78,7 +78,7 @@ public class TestTaskClonedObserver
 
 	host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
-		"./prog/fib/clone",
+		getExecPrefix () + "funit-fib-clone",
 		Integer.toString (fibCount)
 	    });
 	

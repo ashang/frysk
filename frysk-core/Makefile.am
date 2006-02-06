@@ -64,10 +64,10 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
 
 # XXX: This needs to be make less-architecture independant.
 
-prog_x86isa_x86regs_SOURCES = prog/x86isa/x86regs.S
-noinst_PROGRAMS += prog/x86isa/x86regs
-prog_x86isa_x86modify_SOURCES = prog/x86isa/x86modify.S
-noinst_PROGRAMS += prog/x86isa/x86modify
+frysk_pkglibexecdir_funit_ia32_regs_SOURCES = frysk/pkglibexecdir/funit-ia32-regs.S
+pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-ia32-regs
+frysk_pkglibexecdir_funit_ia32_modify_SOURCES = frysk/pkglibexecdir/funit-ia32-modify.S
+pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-ia32-modify
 
 EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
 

@@ -64,7 +64,7 @@ public class TestExec
 	host.requestCreateAttachedProc
 	    (null, "/dev/null", null,
 	     new String[] {
-		"./prog/syscall/exec",
+		getExecPrefix () + "funit-syscall-exec",
 		"/bin/rm", tmpFile.toString (),
 	    });
 
@@ -93,7 +93,7 @@ public class TestExec
 	host.requestCreateAttachedProc
 	    (null, "/dev/null", null,
 	     new String[] {
-		"./prog/syscall/threadexec",
+		getExecPrefix () + "funit-syscall-threadexec",
 		"/bin/rm", tmpFile.toString (),
 	    });
 

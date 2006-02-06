@@ -90,7 +90,7 @@ public class TestTaskObserver
 
 	host.requestCreateAttachedProcXXX
 	    (new String[] {
-		"./prog/terminated/exit",
+		getExecPrefix () + "funit-exit",
 		"0"
 	    });
 	assertRunUntilStop ("run \"exit\" to exit");
@@ -571,7 +571,7 @@ public class TestTaskObserver
     {
 	Child child = new AckDaemonProcess (AckHandler.signal, new String[]
 	    {
-		"./prog/kill/threads",
+		getExecPrefix () + "funit-threads",
 		Integer.toString (Pid.get ()),
 		Integer.toString (AckHandler.signal),
 		"5", // Seconds

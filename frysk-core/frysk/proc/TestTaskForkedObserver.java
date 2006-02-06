@@ -79,7 +79,7 @@ public class TestTaskForkedObserver
 	// Run a program that forks wildly.
 	host.requestCreateAttachedProc
 	    (null, "/dev/null", null, new String[] {
-		"./prog/fib/fork",
+		getExecPrefix () + "funit-fib-fork",
 		Integer.toString (n)
 	    });
 

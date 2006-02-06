@@ -126,7 +126,7 @@ public class TestSyscall
  	// Create program making syscalls
 	host.requestCreateAttachedProcXXX
 	    (new String[] {
- 		"./prog/syscall/syscalls"
+		getExecPrefix () + "funit-syscalls"
  	    });
 
  	assertRunUntilStop ("run \"syscalls\" until exit");

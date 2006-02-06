@@ -127,7 +127,7 @@ public class TestSyscall2
 
  	host.requestCreateAttachedProcXXX
  	    ( new String[] {
-  		"./prog/syscall/syscallloop",
+		getExecPrefix () + "funit-syscallloop",
  		arg
   	    });
 

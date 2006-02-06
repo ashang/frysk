@@ -193,7 +193,7 @@ public class TestModify
 	// Create program making syscalls
 	host.requestCreateAttachedProcXXX ( new String[]
 	    {
-		"./prog/modify/modify"
+		getExecPrefix () + "funit-modify"
 	    });
 
 	assertRunUntilStop ("run \"modify\" to exit");

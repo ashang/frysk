@@ -109,7 +109,7 @@ public class TestTaskTerminateObserver
 	// Start the program.
 	host.requestCreateAttachedProcXXX
 	    (new String[] {
-		"./prog/terminated/exit",
+		getExecPrefix () + "funit-exit",
 		Integer.toString (expected)
 	    });
 

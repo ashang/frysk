@@ -1,3 +1,24 @@
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* x86isa/x86regs.S: Move to frysk/pkglibexecdir/
+	* fib/clone.c: Ditto.
+	* fib/exec.c: Ditto.
+	* fib/fork.c: Ditto.
+	* kill/child.c: Ditto.
+	* kill/threads.c: Ditto.
+	* modify/modify.c: Ditto.
+	* print/argc.c: Ditto.
+	* print/argv.c: Ditto.
+	* print/auxv.c: Ditto.
+	* print/envp.c: Ditto.
+	* syscall/exec.c: Ditto.
+	* syscall/syscallint.c: Ditto.
+	* syscall/syscallloop.c: Ditto.
+	* syscall/syscalls.c: Ditto.
+	* syscall/threadexec.c: Ditto.
+	* terminated/exit.c: Ditto.
+	* x86isa/x86modify.S: Ditto.
+
 2006-01-26  Andrew Cagney  <cagney@redhat.com>
 
 	* kill/suspend.c (main): Do not pass N to hang -- via

@@ -1,3 +1,22 @@
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Prefix executables with prefix from
+	frysk.junit.Paths; add funit- et.al. prefixes to program names.
+	* TestExec.java: Ditto.
+	* TestI386Modify.java: Ditto.
+	* TestI386Regs.java: Ditto.
+	* TestModify.java: Ditto.
+	* TestProcGet.java: Ditto.
+	* TestSyscall.java: Ditto.
+	* TestSyscall2.java: Ditto.
+	* TestSyscallInterrupt.java: Ditto.
+	* TestSyscallOpen.java: Ditto.
+	* TestTaskClonedObserver.java: Ditto.
+	* TestTaskForkedObserver.java: Ditto.
+	* TestTaskObserver.java: Ditto.
+	* TestTaskObserverBlocked.java: Ditto.
+	* TestTaskTerminateObserver.java: Ditto.
+
 2006-02-02  Andrew Cagney  <cagney@redhat.com>
 
 	* TestExec.java (testAttachedSingleExec): Simplify, eliminate

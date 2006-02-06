@@ -75,7 +75,7 @@ public class TestSyscallInterrupt
 	PipeReadChild (boolean restart)
 	{
 	    this (new String[] {
-		      "./prog/syscall/syscallint",
+		      getExecPrefix () + "funit-syscallint",
 		      Integer.toString (Pid.get ()),
 		      Integer.toString (AckHandler.signal),
 		      Integer.toString (restart ? 1 : 0)

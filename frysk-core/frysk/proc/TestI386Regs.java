@@ -167,7 +167,7 @@ public class TestI386Regs
  	// Create program making an exit syscall");
 	host.requestCreateAttachedProcXXX
 	    (new String[] {
-		"./prog/x86isa/x86regs"
+		getExecPrefix () + "funit-ia32-regs"
 	    });
 
  	assertRunUntilStop ("run \"x86regs\" until exit");

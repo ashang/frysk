@@ -81,7 +81,7 @@ public class TestProcGet
 	new StopEventLoopWhenChildProcRemoved ();
 	host.requestCreateAttachedProc
 	    (null, tmpFile.toString (), "/dev/null", new String[] {
-		"./prog/print/auxv"
+		getExecPrefix () + "funit-print-auxv"
 	    });
 
 	assertRunUntilStop ("run \"auxv\" to completion");
@@ -118,7 +118,7 @@ public class TestProcGet
     {
 	Child child = new AckDaemonProcess ();
 	Proc childProc = child.findProcUsingRefresh ();
-	assertEquals ("value of child's getCommand()", "child",
+	assertEquals ("value of child's getCommand()", "funit-child",
 		      childProc.getCommand ());
     }
 

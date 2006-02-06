@@ -1,5 +1,25 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-child.xml: New file.
+	* funit-child.c: Copy from frysk-core/prog/.
+	* funit-exit.c: Ditto.
+	* funit-fib-clone.c: Ditto.
+	* funit-fib-exec.c: Ditto.
+	* funit-fib-fork.c: Ditto.
+	* funit-ia32-modify.S: Ditto.
+	* funit-ia32-regs.S: Ditto.
+	* funit-modify.c: Ditto.
+	* funit-print-argc.c: Ditto.
+	* funit-print-argv.c: Ditto.
+	* funit-print-auxv.c: Ditto.
+	* funit-print-envp.c: Ditto.
+	* funit-syscall-exec.c: Ditto.
+	* funit-syscall-threadexec.c: Ditto.
+	* funit-syscallint.c: Ditto.
+	* funit-syscallloop.c: Ditto.
+	* funit-syscalls.c: Ditto.
+	* funit-threads.c: Ditto.
+
 	* funit.java: Delete package specification.
 
 	* funit.java: Import frysk.junit.Runner.

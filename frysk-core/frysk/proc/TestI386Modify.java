@@ -197,7 +197,7 @@ public class TestI386Modify
 	// Create program making syscalls
 	host.requestCreateAttachedProcXXX ( new String[]
 	    {
-		"./prog/x86isa/x86modify"
+		getExecPrefix () + "funit-ia32-modify"
 	    });
 
 	assertRunUntilStop ("run \"x86modify\" to exit");

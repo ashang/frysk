@@ -80,7 +80,7 @@ public class TestTaskObserverBlocked
 	// something to block.
 	host.requestCreateAttachedProcXXX
 	    (new String[] {
-		"./prog/terminated/exit",
+		getExecPrefix () + "funit-exit",
 		"0"
 	    });
 	assertRunUntilStop ("run \"exit\" to exit");
@@ -398,7 +398,7 @@ public class TestTaskObserverBlocked
 	    }
 	    String fibonacciProgram ()
 	    {
-		return "./prog/fib/clone";
+		return getExecPrefix () + "funit-fib-clone";
 	    }
 	}
     }
@@ -425,7 +425,7 @@ public class TestTaskObserverBlocked
 	    }
 	    String fibonacciProgram ()
 	    {
-		return "./prog/fib/fork";
+		return getExecPrefix () + "funit-fib-fork";
 	    }
 	}
     }

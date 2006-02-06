@@ -39,9 +39,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
+import frysk.junit.Paths;
 import frysk.junit.Runner;
-
 import @GEN_PACKAGENAME@.JUnitTests;
+import @GEN_PACKAGENAME@.Build;
 
 /**
  * Run the JUnit tests from within the build tree.
@@ -51,6 +52,7 @@ public class TestRunner
 {
     public static void main (String[] args)
     {
+	Paths.setExecPrefix (Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/");
 	new Runner (args, JUnitTests.get ());
     }
 }

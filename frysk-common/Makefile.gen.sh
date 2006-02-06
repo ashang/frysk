@@ -99,22 +99,24 @@ EOF
 
 echo_MANS ()
 {
-    echo "EXTRA_DIST += $1.xml"
-    # extract the section number
-    local n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $1.xml`
-    local d=`dirname $1`
-    # And the possible list of names.
-    sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $1.xml \
-	| while read title ; do
-	# Need to generate explicit rules
-	cat <<EOF
+    if test -r $1.xml ; then
+	echo "EXTRA_DIST += $1.xml"
+        # extract the section number
+	local n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $1.xml`
+	local d=`dirname $1`
+        # And the possible list of names.
+	sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $1.xml \
+	    | while read title ; do
+	    # Need to generate explicit rules
+	    cat <<EOF
 man_MANS += ${d}/${title}.${n}
 ${d}/${title}.${n}: $1.xml
 	\$(SUBST_SED) < \$< > \$@.tmp
 	\$(XMLTO) -o ${d} man \$@.tmp
 	rm -f \$@.tmp
 EOF
-    done
+	done
+    fi
 }
 
 echo_PROGRAMS ()
@@ -327,8 +329,6 @@ for suffix in .mkjava .shjava .javain ; do
     done
 done
 
-
-
 for suffix in .java ; do
     print_header "... ${suffix}"
     find ${dirs} \
@@ -337,7 +337,7 @@ for suffix in .java ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
-	name_=`echo ${name} | tr '[/]' '[_]'`
+	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	test -r "${d}/${b}.javain" && continue
@@ -355,8 +355,6 @@ for suffix in .java ; do
     done
 done
 
-
-
 for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
     find ${dirs} \
@@ -365,7 +363,7 @@ for suffix in .cxx .c .hxx ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
-	name_=`echo ${name} | tr '[/]' '[_]'`
+	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	if has_main ${file} ; then
 	    echo "${name_}_SOURCES = ${file}"
 	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"

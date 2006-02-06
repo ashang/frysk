@@ -1,5 +1,11 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRunner.javain: Set Paths.setExecPrefix to
+	frysk/pkglibexecdir/ in the build tree.
+	* Makefile.gen.sh (name_): Use sed's y to transliterate
+	characters, convert <<->> to <<_>>.
+	(echo_MANS): Do not require .xml file.
+	
 	* Makefile.gen.sh (echo_PROGRAMS): Simplify, for *dir paths,
 	extract the directory prefix from the path.
 	(echo_LDFLAGS): For *dir paths, specify just the file name as the

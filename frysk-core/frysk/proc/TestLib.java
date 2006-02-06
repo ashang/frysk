@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.junit.Paths;
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
@@ -64,6 +65,15 @@ import junit.framework.TestCase;
 public class TestLib
     extends TestCase
 {
+    /**
+     * Return the exec prefix that should be prepended to all
+     * programs.
+     */
+    static String getExecPrefix ()
+    {
+	return Paths.getExecPrefix ();
+    }
+
     /**
      * Run the event loop for a short period of time until it is
      * explicitly stopped (using EventLoop . requestStop).  During
@@ -332,7 +342,7 @@ public class TestLib
 	{
 	    this (childAck, new String[]
 		{
-		    "./prog/kill/child",
+		    getExecPrefix () + "funit-child",
 		    "20",
 		    // Use getpid as this testsuite always runs the
 		    // event loop from the main thread (which has
@@ -349,7 +359,7 @@ public class TestLib
 	{
 	    this (childAck, new String[]
 		{
-		    "./prog/kill/child",
+		    getExecPrefix () + "funit-child",
 		    busy ? "--wait=busy-loop" : "--wait=suspend",
 		    "20",
 		    // Use getpid as this testsuite always runs the
