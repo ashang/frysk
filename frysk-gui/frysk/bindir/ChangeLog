@@ -1,5 +1,7 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk.java: Remove package specification.
+
 	* frysk.java: Replace frysk.gui.FryskGui.mainGui with
 	frysk.gui.Gui.gui.
 

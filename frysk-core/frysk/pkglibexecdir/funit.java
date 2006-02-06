@@ -37,8 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.pkglibexecdir;
-
 import frysk.junit.Runner;
 import java.util.LinkedList;
 

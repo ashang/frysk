@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,14 +37,12 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Runs frysk.
- */
-
-package frysk.bindir;
-
 import frysk.Config;
 import frysk.gui.Gui;
+
+/**
+ * Start the frysk GUI.
+ */
 
 class frysk
 {
@@ -53,11 +51,11 @@ class frysk
     	if (args.length == 0) {
 	    Gui.gui (args,
 		     new String[] { Config.GLADEDIR + "/" },
-		     new String[] { Config.PKGDATADIR + "/images" },
+		     new String[] { Config.PKGDATADIR + "/images" }, 
 		     new String[] { Config.PKGDATADIR + "/" },
 		     new String[] { Config.PKGDATADIR + "/samples" });
     	}
-	else if (args[0].equals("--help")) {
+	else if (args[0].equals ("--help")) {
 	    System.out.println ("Useage: 'frysk [option]");
 	    System.out.println ();
 	    System.out.println ("options:");
