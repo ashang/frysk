@@ -63,22 +63,6 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkMenuItem" id="menuitem7">
-		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">_Edit</property>
-		  <property name="use_underline">True</property>
-		</widget>
-	      </child>
-
-	      <child>
-		<widget class="GtkMenuItem" id="menuitem8">
-		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">_View</property>
-		  <property name="use_underline">True</property>
-		</widget>
-	      </child>
-
-	      <child>
 		<widget class="GtkMenuItem" id="observersMenuItem">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">_Observers</property>

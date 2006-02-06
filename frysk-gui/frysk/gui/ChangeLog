@@ -1,5 +1,7 @@
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/procpop.glade: Removed View and Edit menus.
+
 	* glade/procpop.glade: Added File -> Close menu.
 
 2006-02-06  Sami Wagiaalla  <swagiaal@redhat.com>
