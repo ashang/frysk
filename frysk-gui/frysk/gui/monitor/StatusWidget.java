@@ -91,6 +91,7 @@ public class StatusWidget extends VBox{
 		
 		//========================================
 		frame = new Frame(""); //$NON-NLS-1$
+		frame.setBorderWidth(10);
 		frame.add(mainVbox);
 		this.add(frame);
 		//========================================
@@ -108,12 +109,12 @@ public class StatusWidget extends VBox{
 		this.area = new Stripchart();
 		this.area.resize (500, 150);
 		this.area.setBackgroundRGB (65536, 28000, 28000);
-
 		this.area.setUpdate (1111);
 		this.area.setRange (60000);
 
 		initLogTextView();
 
+		mainVbox.setBorderWidth(5);
 		mainVbox.packStart(area, true, true, 0);
 		//========================================
 		
@@ -124,10 +125,12 @@ public class StatusWidget extends VBox{
 		
 		//========================================
 		HBox hbox = new HBox(false, 0);
+		hbox.setBorderWidth(5);
 		VBox vbox = new VBox(false, 0);
 		hbox.packStart(new Label(Messages.getString("StatusWidget.1")), false, false, 0); //$NON-NLS-1$
 		hbox.packStart(new Label(""), true, false, 0); //$NON-NLS-1$
 		vbox.packStart(hbox, false, false, 0);
+
 		ScrolledWindow scrolledWindow = new ScrolledWindow();
 		scrolledWindow.addWithViewport(initAttacheObserversTreeView());
 		scrolledWindow.setShadowType(ShadowType.IN);

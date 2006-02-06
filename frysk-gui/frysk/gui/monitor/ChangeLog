@@ -1,5 +1,8 @@
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* StatusWidget.java (StatusWidget): Added border width 5
+	to several frames and hboxes
+	
 	* MenuBar.java (menuItemEvent): Added File -> Close handler
 
 2006-02-06  Sami Wagiaalla  <swagiaal@redhat.com>
