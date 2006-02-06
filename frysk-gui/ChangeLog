@@ -1,6 +1,6 @@
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
-	* Makefile.am (TEST_ENVIRONMENT): Define.  Cause exit 77 when no
+	* Makefile.am (TESTS_ENVIRONMENT): Define.  Cause exit 77 when no
 	display.
 
 2006-02-01  Andrew Cagney  <cagney@redhat.com>

@@ -69,4 +69,4 @@ GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets
 GEN_GCJ_LDADD += $(FRYSK_GUI_LIBS)
 
 # Skip tests (exit with status 77) when there is no display.
-TEST_ENVIRONMENT = ( test x"$$DISPLAY" != x || sh -c "exit 77" ) && 
+TESTS_ENVIRONMENT = ( test x"$$DISPLAY" != x || sh -c "exit 77" ) && 
