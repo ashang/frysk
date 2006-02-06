@@ -41,6 +41,23 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		
 		public GenericActionPoint genericActionPoint;
 		
+		public ObserverRoot(){
+			super();
+			
+			this.actions      = new ObservableLinkedList();
+			this.info         = new String();
+			this.filterPoints = new ObservableLinkedList();			
+			this.actionPoints = new ObservableLinkedList();			
+			this.baseName     = "";			
+			
+			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
+			this.addActionPoint(genericActionPoint);
+
+			LogAction logAction = new LogAction();
+			logAction.dontSaveObject();
+			this.genericActionPoint.addAction(logAction);
+		}
+		
 		public ObserverRoot(String name, String toolTip){
 			super(name, toolTip);
 			

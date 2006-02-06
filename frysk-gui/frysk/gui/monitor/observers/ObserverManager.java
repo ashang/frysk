@@ -40,6 +40,7 @@
 package frysk.gui.monitor.observers;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.Observable;
 
 import org.jdom.Element;
@@ -201,5 +202,40 @@ public class ObserverManager extends  Observable {
 			this.addTaskObserverPrototype(loadedObserver);
 		}
 		
+	}
+	
+	private void saveObservers(){
+//		File observerDir = new File(this.OBSERVERS_DIR);
+//		
+//		String[] array = observerDir.list();
+//		ObserverRoot loadedObserver = null;
+//		for (int i = 0; i < array.length; i++) {
+//			System.out.println(			array[i]);
+//			try{
+//				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
+//				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
+//			}catch(Exception e){
+//				System.out.println("Could not load " + array[i]);
+//				continue;
+//			}
+//			this.addTaskObserverPrototype(loadedObserver);
+//		}
+//		
+		Iterator iterator = this.getTaskObservers().iterator();
+		while (iterator.hasNext()) {
+			ObserverRoot observer = (ObserverRoot) iterator.next();
+			if(observer.shouldSaveObject()){
+				Element node = new Element("Observer");
+				ObjectFactory.theFactory.saveObject(observer, node);
+				ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
+			}
+		}
+		
+	}
+	
+	protected void finalize() throws Throwable {
+		super.finalize();
+		System.out.println("\n===========================================");
+		this.saveObservers();
 	}
 }

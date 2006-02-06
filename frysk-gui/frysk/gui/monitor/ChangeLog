@@ -1,3 +1,11 @@
+2006-02-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java: Added no argument constructor for
+	loading.
+	* observers/ObserverManager.java: Added saveObserver function.
+	* actions/ActionManager.java (getGenericActions): was returning
+	the wrong list...fixed.
+
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StatusWidget.java (StatusWidget): Added border width 5

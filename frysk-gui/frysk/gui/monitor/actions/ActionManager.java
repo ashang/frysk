@@ -99,7 +99,7 @@ public class ActionManager extends Observable {
 	}
 
 	public ObservableLinkedList getGenericActions(){
-		return this.taskActions;
+		return this.genericActions;
 	}
 
 	/**
