@@ -95,7 +95,6 @@ public class ErrorDialog extends Dialog{
 	private  void doImplementation()
 	{
 		
-		System.out.println("Doing dialog"); //$NON-NLS-1$
 		this.addButton(GtkStockItem.QUIT, 1);
 		this.setTitle(this.title);
 		this.setDefaultSize(400,200);
@@ -110,6 +109,7 @@ public class ErrorDialog extends Dialog{
 		getStringTrace(this.except);
 		
 		Label warnLabel = new Label(errorText);
+		warnLabel.setSelectable(true);
 		sWindow.addWithViewport(warnLabel);
 		
 		mainBox.packStart(sWindow,true, true, 0);
