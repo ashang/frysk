@@ -1,3 +1,7 @@
+2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* MenuBar.java (menuItemEvent): Added File -> Close handler
+
 2006-02-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcViewPage.java (buttonEvent): Removed 'Hold' button.
