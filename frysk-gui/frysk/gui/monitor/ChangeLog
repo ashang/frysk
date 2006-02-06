@@ -1,5 +1,11 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* MainWindow.java: Replace FryskGui, with Gui.
+	* ProcDataModel.java: Ditto.
+	* ProcViewPage.java: Ditto.
+	* ProgramData.java: Ditto.
+	* ProgramAddWindow.java: Ditto.
+
 	* observers/ObserverManager.java: Replace FryskGui.FRYSK_CONFIG
 	with Config.FRYSK_DIR.
 	* ProgramData.java: Ditto.

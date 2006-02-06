@@ -47,14 +47,14 @@ import org.gnu.glade.LibGlade;
 // import org.gnu.gtk.Notebook;
 import org.gnu.gtk.Window;
 
-import frysk.gui.FryskGui;
+import frysk.gui.Gui;
 import frysk.gui.common.Messages;
 
 public class MainWindow extends Window implements Saveable{
 	
 	private ProcViewPage procViewPage;
 	
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	public MainWindow(LibGlade glade) throws IOException {
 		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		

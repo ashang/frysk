@@ -1,5 +1,8 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk.java: Replace frysk.gui.FryskGui.mainGui with
+	frysk.gui.Gui.gui.
+
 	* frysk.xml: Add funit(8) to new SEE ALSO section.
 
 2006-02-02  Andrew Cagney  <cagney@redhat.com>

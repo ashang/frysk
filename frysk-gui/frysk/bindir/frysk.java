@@ -44,25 +44,28 @@
 package frysk.bindir;
 
 import frysk.Config;
-import frysk.gui.FryskGui;
+import frysk.gui.Gui;
 
 class frysk
 {
     public static void main (String[] args)
     {
-    	if(args.length == 0){
-    		FryskGui.mainGui (args, new String[] {Config.GLADEDIR + "/"},
-    				new String[] {Config.PKGDATADIR + "/images"}, 
-    				new String[] {Config.PKGDATADIR + "/"},
-    				new String[] {Config.PKGDATADIR + "/samples"});
-    	} else if(args[0].equals("--help")){
-    		System.out.println("Useage: 'frysk [option]");
-    		System.out.println();
-    		System.out.println("options:");
-    		System.out.println("\t--help\t\tDisplays this message");
-    	} else {
-			System.err.println("Invalid arugment:" + args[0]);
-			System.err.println("See 'frysk --help' for valid options");
-		}
+    	if (args.length == 0) {
+	    Gui.gui (args,
+		     new String[] { Config.GLADEDIR + "/" },
+		     new String[] { Config.PKGDATADIR + "/images" },
+		     new String[] { Config.PKGDATADIR + "/" },
+		     new String[] { Config.PKGDATADIR + "/samples" });
+    	}
+	else if (args[0].equals("--help")) {
+	    System.out.println ("Useage: 'frysk [option]");
+	    System.out.println ();
+	    System.out.println ("options:");
+	    System.out.println ("\t--help\t\tDisplays this message");
+    	}
+	else {
+	    System.err.println ("Invalid arugment:" + args[0]);
+	    System.err.println ("See 'frysk --help' for valid options");
+	}
     }
 }

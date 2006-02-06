@@ -80,7 +80,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
-import frysk.gui.FryskGui;
+import frysk.gui.Gui;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverManager;
@@ -102,7 +102,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	
 	
 	// Static error logger.
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 
 	public ProgramAddWindow(LibGlade glade) {
 		// Get Window

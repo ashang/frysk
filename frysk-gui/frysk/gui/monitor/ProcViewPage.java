@@ -79,7 +79,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
-import frysk.gui.FryskGui;
+import frysk.gui.Gui;
 import frysk.gui.common.Messages;
 
 public class ProcViewPage extends Widget implements ButtonListener, Saveable{
@@ -99,7 +99,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 	private VBox statusWidget;
 	private InfoWidget infoWidget;
 	
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	private LibGlade glade;
 	

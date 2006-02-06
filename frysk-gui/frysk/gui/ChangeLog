@@ -1,5 +1,8 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Gui.java: New file, split out the bulk of FryskGui.
+	* FryskGui.java: Split into Gui.java.
+
 	* FryskGui.java (FRYSK_CONFIG): Delete, use Config.FRYSK_DIR.
 
 2006-02-04  Sami Wagiaalla  <swagiaal@redhat.com>

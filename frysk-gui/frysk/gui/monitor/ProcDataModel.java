@@ -57,7 +57,7 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.pango.Weight;
 
 import frysk.event.TimerEvent;
-import frysk.gui.FryskGui;
+import frysk.gui.Gui;
 import frysk.gui.common.Messages;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -92,7 +92,7 @@ public class ProcDataModel {
 			
 	private TimerEvent refreshTimer;
 	
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	/**{
 	 * Local Observers
