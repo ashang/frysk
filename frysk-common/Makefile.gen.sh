@@ -252,7 +252,7 @@ test x"${dirs}" = x && exit 0
 
 print_header "... the lib${GEN_DIRNAME}.a skeleton"
 
-nodist_sources=nodist_lib${GEN_MAKENAME}_a_SOURCES
+nodist_lib_sources=nodist_lib${GEN_MAKENAME}_a_SOURCES
 sources=lib${GEN_MAKENAME}_a_SOURCES
 
 cat <<EOF
@@ -263,9 +263,9 @@ cat <<EOF
 
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
 ${sources} =
-${nodist_sources} =
+${nodist_lib_sources} =
 # Ensure generated files are all built early.
-BUILT_SOURCES += \${${nodist_sources}}
+BUILT_SOURCES += \${${nodist_lib_sources}}
 GEN_GCJ_LDADD += lib${GEN_DIRNAME}.a
 
 # Compile the .a into a .so; Makefile.rules contains the rule and does
@@ -297,7 +297,7 @@ EOF
 
 cat <<EOF
 EXTRA_DIST += common/Build.javain
-${nodist_sources} += ${GEN_SOURCENAME}/Build.java
+${nodist_lib_sources} += ${GEN_SOURCENAME}/Build.java
 EOF
 
 
@@ -307,7 +307,7 @@ cat <<EOF
 EXTRA_DIST += common/TestRunner.javain
 nodist_TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
-${nodist_sources} += ${GEN_SOURCENAME}/JUnitTests.java
+${nodist_lib_sources} += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LINK = \${GCJLINK}
 TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
@@ -316,7 +316,7 @@ noinst_PROGRAMS += TestRunner
 EOF
 
 
-
+# Generate SOURCES list for all files.
 
 for suffix in .mkjava .shjava .javain ; do
     print_header "... ${suffix}"
@@ -327,7 +327,7 @@ for suffix in .mkjava .shjava .javain ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	echo "EXTRA_DIST += ${file}"
-	echo "${nodist_sources} += ${d}/${b}.java"
+	echo "${nodist_lib_sources} += ${d}/${b}.java"
 	echo "${d}/${b}.java: \$(MKJAVA)"
     done
 done
@@ -397,7 +397,10 @@ done \
     | while read c
 do
   if test -r $c.java ; then
-      echo "${nodist_sources} += $c.h"
+      echo "BUILT_SOURCES += ${c}.h"
+      # Delete both the main class, and the nested classes.
+      echo "CLEANFILES += ${c}.h"
+      echo "CLEANFILES += ${c}\\\$\$*.h"
   fi
 done
 
@@ -516,7 +519,7 @@ do
       awk '/class .* extends .*Parser/ { print $2"TokenTypes" }' $g
   ) | while read c
   do
-    echo "${nodist_sources} += $d/$c.java"
+    echo "${nodist_lib_sources} += $d/$c.java"
     echo "EXTRA_DIST += $d/$c.sed"
     t=$d/$c.tmp
     echo "CLEANFILES += $t"

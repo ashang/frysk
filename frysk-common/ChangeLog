@@ -1,5 +1,10 @@
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Add generated .h files to BUILT_SOURCES, not
+	nodist_lib_sources.  Add both the generated .h file, and a
+	wildcard match for any nested classes, to CLEANFILES.
+	(nodist_lib_sources): Rename nodist_sources.
+
 	* Makefile.rules (clean-ecj-dir, clean-classes-dir): New.  Delete
 	ecj, and classes directories.  Add to clean-local.
 	* Makefile.gen.sh (CLEANFILES): Add generated man pages,
