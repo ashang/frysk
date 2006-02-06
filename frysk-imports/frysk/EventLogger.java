@@ -68,7 +68,7 @@ public class EventLogger
 	// Read $HOME/.frysk/logging.properties, if present.
 	try {
 	    FileInputStream properties
-		= new FileInputStream (Config.FRYSK_CONFIG
+		= new FileInputStream (Config.FRYSK_DIR
 				       + ".frysk/logging.properties");
 	    manager.readConfiguration (properties);
 	}
@@ -87,7 +87,7 @@ public class EventLogger
 	logger = Logger.getLogger (Config.FRYSK_LOG_ID);
 	try {
 	    FileHandler handler = new FileHandler
-		(Config.FRYSK_CONFIG + log_subdir + log_entry,
+		(Config.FRYSK_DIR + log_subdir + log_entry,
 		 1024 * 128, 1);
 	    handler.setFormatter (new Formatter ()
 		{

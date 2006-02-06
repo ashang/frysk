@@ -1,5 +1,8 @@
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
+	* Config.javain (FRYSK_DIR): Rename FRYSK_CONFIG.
+	* EventLogger.java: Update.
+
 	* JUnitRunner.java: Move to frysk-imports/frysk/junit/Runner.java.
 
 	* JUnitRunner.java: New; based heavily on common/TestRunner.java.

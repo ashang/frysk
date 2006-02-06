@@ -62,6 +62,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
+import frysk.Config;
 import frysk.gui.Build;
 //import frysk.event.EventLoop;
 import frysk.gui.common.IconManager;
@@ -87,9 +88,6 @@ public class FryskGui implements LifeCycleListener, Saveable {
 	private static final String GLADE_FILE = "procpop.glade";
 	private static final String BASE_PATH = "frysk/gui/";
 	private static final String GLADE_PKG_PATH = "glade/";
-	static public final String FRYSK_CONFIG = System.getProperty("user.home")
-			+ "/" + ".frysk" + "/";
-	
 	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
 	FryskGui(String[] glade_dirs) throws GladeXMLException, FileNotFoundException,
@@ -171,7 +169,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 		// Now that we now the glade paths are good, send the paths to the SourceWindowFactory
 		SourceWindowFactory.setGladePaths(glade_dirs);
 
-		prefs = importPreferences(FRYSK_CONFIG + SETTINGSFILE);
+		prefs = importPreferences(Config.FRYSK_DIR + SETTINGSFILE);
 
 		trayIcon = new TrayIcon(Messages.getString("FryskGui.14"), false); //$NON-NLS-1$
 		
@@ -236,10 +234,10 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 		try {
 			// Export the node to a file
-			File checkFrysk = new File(FRYSK_CONFIG);
+			File checkFrysk = new File (Config.FRYSK_DIR);
 			if (!checkFrysk.exists())
 				checkFrysk.mkdirs();
-			prefs.exportSubtree(new FileOutputStream(FRYSK_CONFIG + SETTINGSFILE));
+			prefs.exportSubtree(new FileOutputStream (Config.FRYSK_DIR + SETTINGSFILE));
 		} catch (Exception e) {
 			errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.25"), e); //$NON-NLS-1$
 
@@ -264,7 +262,7 @@ public class FryskGui implements LifeCycleListener, Saveable {
 
 	private static FileHandler buildHandler() {
 		FileHandler handler = null;
-		File log_dir = new File(FRYSK_CONFIG + "logs" + "/");
+		File log_dir = new File (Config.FRYSK_DIR + "logs" + "/");
 
 		if (!log_dir.exists())
 			log_dir.mkdirs();

@@ -1,3 +1,10 @@
+2006-02-05  Andrew Cagney  <cagney@redhat.com>
+
+	* observers/ObserverManager.java: Replace FryskGui.FRYSK_CONFIG
+	with Config.FRYSK_DIR.
+	* ProgramData.java: Ditto.
+	* ProgramViewPage.java: Ditto.
+
 2006-02-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ListView.java: Added proper observer removal upon list

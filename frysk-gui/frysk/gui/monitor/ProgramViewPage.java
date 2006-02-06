@@ -70,7 +70,7 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
-import frysk.gui.FryskGui;
+import frysk.Config;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 
@@ -79,7 +79,7 @@ import frysk.gui.common.dialogs.DialogManager;
  * */
 public class ProgramViewPage extends Widget {
 
-	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
+	private static final String EVENT_STORE_LOC = Config.FRYSK_DIR +
 	"event_watchers_store" + "/"; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	// private TreeView programTreeView;

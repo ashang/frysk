@@ -59,6 +59,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.xml.sax.SAXException;
 
+import frysk.Config;
 import frysk.gui.FryskGui;
 import frysk.gui.common.Messages;
 
@@ -71,9 +72,9 @@ public class ProgramData {
 	private ArrayList processList;
 	private ArrayList observerList;
 	
-	private Logger errorLog = Logger.getLogger(FryskGui.ERROR_LOG_ID);
+	private Logger errorLog = Logger.getLogger (FryskGui.ERROR_LOG_ID);
 	
-	private static final String EVENT_STORE_LOC = FryskGui.FRYSK_CONFIG +
+	private static final String EVENT_STORE_LOC = Config.FRYSK_DIR +
 	"event_watchers_store" + "/"; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	/**

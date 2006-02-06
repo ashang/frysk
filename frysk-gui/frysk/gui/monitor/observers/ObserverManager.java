@@ -44,7 +44,7 @@ import java.util.Observable;
 
 import org.jdom.Element;
 
-import frysk.gui.FryskGui;
+import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.StickyObserverAction;
@@ -63,7 +63,7 @@ public class ObserverManager extends  Observable {
 
 	public static ObserverManager theManager = new ObserverManager();
 	
-	private final String OBSERVERS_DIR = FryskGui.FRYSK_CONFIG + "Observers" + "/";
+	private final String OBSERVERS_DIR = Config.FRYSK_DIR + "Observers" + "/";
 	
 	/**
 	 * a list containing a prototype of every available

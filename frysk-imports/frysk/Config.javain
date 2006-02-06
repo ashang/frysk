@@ -61,7 +61,8 @@ public class Config
 
     public static final String VERSION = "@VERSION@";
 
-    public static final String FRYSK_CONFIG = System.getProperty("user.home")
-        + "/" + ".frysk" + "/";
+    // User's config directory.
+    public static final String FRYSK_DIR
+	= System.getProperty("user.home") + "/" + ".frysk" + "/";
     public static final String FRYSK_LOG_ID = "frysk.core.eventlog";
 }
