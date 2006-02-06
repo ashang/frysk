@@ -475,8 +475,11 @@ ${GEN_DIRNAME}.jar: files.list
 		find * -name '*.class' -print \
 		| $(JAR) -@ -cf $@
 	mv $(GEN_CLASSDIR)/$@ $@
+.PHONY: clean-classes-dir
+clean-local: clean-classes-dir
+clean-classes-dir:
+	rm -rf $(GEN_CLASSDIR)
 
-CLEANFILES += ecj/checked
 ecj/checked: files.list
 	rm -rf ecj
 	mkdir -p ecj
@@ -492,6 +495,10 @@ ecj/checked: files.list
 	fi
 	rm -f $@.log
 	touch $@
+.PHONY: clean-ecj-dir
+clean-local: clean-ecj-dir
+clean-ecj-dir:
+	rm -rf ecj
 
 if HAVE_ECJ
 all-local: ecj/checked

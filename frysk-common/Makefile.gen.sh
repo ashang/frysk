@@ -110,6 +110,7 @@ echo_MANS ()
 	    # Need to generate explicit rules
 	    cat <<EOF
 man_MANS += ${d}/${title}.${n}
+CLEANFILES += ${d}/${title}.${n}
 ${d}/${title}.${n}: $1.xml
 	\$(SUBST_SED) < \$< > \$@.tmp
 	\$(XMLTO) -o ${d} man \$@.tmp
@@ -280,6 +281,7 @@ lib${GEN_DIRNAME}.so: lib${GEN_DIRNAME}.a
 # checking for any output.
 
 java_DATA += ${GEN_DIRNAME}.jar
+CLEANFILES += ${GEN_DIRNAME}.jar
 
 # Finally, merge the .so and .jar files into the java .db file.
 
@@ -304,6 +306,7 @@ EOF
 cat <<EOF
 EXTRA_DIST += common/TestRunner.javain
 nodist_TestRunner_SOURCES = TestRunner.java
+CLEANFILES += TestRunner.java
 ${nodist_sources} += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LINK = \${GCJLINK}
 TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}

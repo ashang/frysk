@@ -1,3 +1,10 @@
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (clean-ecj-dir, clean-classes-dir): New.  Delete
+	ecj, and classes directories.  Add to clean-local.
+	* Makefile.gen.sh (CLEANFILES): Add generated man pages,
+	TestRunner.java, and ${GEN_DIRNAME}.jar.
+
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRunner.javain: Set Paths.setExecPrefix to
