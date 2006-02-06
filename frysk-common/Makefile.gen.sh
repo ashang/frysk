@@ -120,36 +120,33 @@ EOF
 echo_PROGRAMS ()
 {
     case "$1" in
-	*/bindir/* )
-            echo "bin_PROGRAMS += $1"
+	*dir/* )
+            # extract the directory prefix
+            local dir=`echo /"$1" | sed -e 's,.*/\([a-z]*\)dir/.*,\1,'`
+            echo "${dir}_PROGRAMS += $1"
 	    echo_MANS $1
 	    ;;
-	*/sbindir/* )
-	    echo "sbin_PROGRAMS += $1"
-	    echo_MANS $1
+        * )
+	    echo "noinst_PROGRAMS += $1"
 	    ;;
-	*/libexecdir/* )
-	    echo "libexec_PROGRAMS += $1"
-	    echo_MANS $1
-	    ;;
-	*/pkglibexecdir/* )
-	    echo "pkglibexec_PROGRAMS += $1"
-	    echo_MANS $1
-	    ;;
-        * ) echo "noinst_PROGRAMS += $1" ;;
     esac
 }
 
 echo_LDFLAGS ()
 {
-    echo "$1_LDFLAGS = --main=$2"
-    case "$1" in
-	*_bindir_* | *_sbindir_* | *_libexec_* )
-                echo "$1_LDFLAGS += -Djava.library.path=@RPATH@"
-                echo "$1_LDFLAGS += -Wl,-rpath,@RPATH@"
+    local name=$1
+    local name_=$2
+    local class=`echo $1 | tr '[/]' '[.]'`
+    case "${name}" in
+	*dir/* )
+                local base=`echo "${class}" | sed -e 's,.*\.,,'`
+                echo "${name_}_LDFLAGS = --main=${base}"
+                echo "${name_}_LDFLAGS += -Djava.library.path=@RPATH@"
+                echo "${name_}_LDFLAGS += -Wl,-rpath,@RPATH@"
 		;;
 	* )
-                echo "$1_LDFLAGS += \$(GEN_GCJ_RPATH_FLAGS)"
+	        echo "${name_}_LDFLAGS = --main=${class}"
+                echo "${name_}_LDFLAGS += \$(GEN_GCJ_RPATH_FLAGS)"
 		;;
     esac
 }
@@ -237,10 +234,15 @@ do
 done
 
 
-# If there are no directories, bail here. # Need to do this here as
+# If there are no directories, bail here.  Need to do this here as
 # automake gets grumpy when things like $(GEN__DIR)_jar_SOURCES appear
 # in Makefile.am
 
+for dir in pkglibexecdir bindir ; do
+  if test -d ${dir} ; then
+      dirs="${dirs} ${dir}"
+  fi
+done
 
 test x"${dirs}" = x && exit 0
 
@@ -336,19 +338,19 @@ for suffix in .java ; do
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
 	name_=`echo ${name} | tr '[/]' '[_]'`
-	class=`echo ${name} | tr '[/]' '[.]'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	test -r "${d}/${b}.javain" && continue
 	test -r "${d}/${b}.g" && continue
 	test -r "${d}/${b}.sed" && continue
-	echo "${sources} += ${file}"
 	if has_main ${file} ; then
-	    echo "${name_}_SOURCES ="
-	    echo "${name_}_LINK = \$(GCJLINK)"
 	    echo_PROGRAMS ${name}
-	    echo_LDFLAGS ${name_} ${class}
+	    echo "${name_}_SOURCES = ${file}"
+	    echo "${name_}_LINK = \$(GCJLINK)"
+	    echo_LDFLAGS ${name} ${name_}
 	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
+	else
+	    echo "${sources} += ${file}"
 	fi
     done
 done
