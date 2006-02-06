@@ -1,3 +1,7 @@
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.java: Call Paths .setExecPrefix with PKGLIBEXECDIR.
+
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-child.xml: New file.

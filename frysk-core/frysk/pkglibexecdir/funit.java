@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+import frysk.Config;
+import frysk.junit.Paths;
 import frysk.junit.Runner;
 import java.util.LinkedList;
 
@@ -53,7 +55,7 @@ public class funit
 	list.addAll (frysk.imports.JUnitTests.get ());
 	list.addAll (frysk.sys.JUnitTests.get ());
 	list.addAll (frysk.core.JUnitTests.get ());
-	// XXX: Need to cd to PKGLIBEXECDIR.
+	Paths.setExecPrefix (Config.PKGLIBEXECDIR + "/");
 	new Runner (args, list);
     }
 }
