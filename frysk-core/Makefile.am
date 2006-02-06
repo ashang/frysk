@@ -43,7 +43,9 @@ include Makefile.gen
 
 ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 
+# Add dejagnu, remember to clean up.
 AUTOMAKE_OPTIONS = dejagnu
+CLEANFILES += *.sum *.log
 
 GEN_SOURCEPATH += $(top_builddir)/../frysk-sys/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-sys/

@@ -1,5 +1,7 @@
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (CLEANFILES): Add *.sum, and *.log from dejagnu.
+	
 	* Makefile.am (frysk_pkglibexecdir_funit_ia32_regs_SOURCES) 
 	(pkglibexec_PROGRAMS) 
 	(frysk_pkglibexecdir_funit_ia32_modify_SOURCES) 
