@@ -41,7 +41,7 @@ EXTRA_DIST =
 # Gag all the output from the failing tests
 noinst_PROGRAMS =
 noinst_SCRIPTS =
-TESTS_ENVIRONMENT = eval > log 2>&1
+TESTS_ENVIRONMENT = eval > /dev/null 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
@@ -52,10 +52,10 @@ CLEANFILES = $(TESTS) $(noinst_SCRIPTS)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 clean-local:
-	rm -f */.class
-	rm -f */*.o
-	rm -f */a.out
-	rm -f a.out
+	find * -name '*.class' -print | xargs rm -f
+	find * -name '*.o' -print | xargs rm -f
+	find * -name '*$$*.h' -print | xargs rm -f
+	find * -name 'a.out' -print | xargs rm -f
 check-local:
 	@echo ''
 	@echo 'vvvvvvvvvvvvvvvv PLEASE NOTE THE FOLLOWING vvvvvvvvvvvvvvvvv'
@@ -88,6 +88,7 @@ cniinner_FILES = \
 	cniinner/Parent.java \
 	cniinner/Child.java
 EXTRA_DIST += $(cniinner_FILES)
+CLEANFILES += cniinner/Child.h cniinner/Parent.h
 cniinner/a.out: $(cniinner_FILES)
 	mkdir -p cniinner
 	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/cniinner/Parent.java
@@ -232,12 +233,12 @@ CDTPARSER_JAR = ../cdtparser/cdtparser.jar
 cdtparserversion_FILES = cdtparserversion/CDTParserTest.java
 cdtparserversion_FILES += cdtparserversion/main.cpp
 EXTRA_DIST += $(cdtparserversion_FILES)
-CLEANFILES += cdtparserversion/*.class
 cdtparserversion/CDTParserTest.class: $(cdtparserversion_FILES) $(CDTPARSER_JAR)
 	mkdir -p cdtparserversion
 	$(JAVAC) -d . \
 		-classpath $(CDTPARSER_JAR) \
 		$(srcdir)/cdtparserversion/CDTParserTest.java
+CLEANFILES += cdtparserversion/RESULT
 TESTS += cdtparserversion/cdttest.sh
 cdtparserversion/cdttest.sh: cdtparserversion/CDTParserTest.class $(CDTPARSER_JAR)
 	mkdir -p cdtparserversion

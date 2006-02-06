@@ -1,3 +1,9 @@
+2006-02-06  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (clean-local): Use find to locate all the stray
+	files.  Remove any *$*.h files.
+	(TESTS_ENVIRONMENT): Send output to /dev/null, not <<log>>.
+
 2006-02-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Add samename/WrongVariable, and
