@@ -1,5 +1,10 @@
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (clean-local): Delete.
+	(gcjtreeiter/IterTest.class): Separate out as explict rule.  Add
+	to CLEANFILES.
+	(TESTS_ENVIRONMENT): Send output to /dev/null.
+
 	* Makefile.am (TESTS_ENVIRONMENT): Skip tests when no display.
 
 2006-01-30  Andrew Cagney  <cagney@redhat.com>

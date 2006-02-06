@@ -42,17 +42,12 @@ EXTRA_DIST =
 # the output from the failing tests
 TESTS_ENVIRONMENT = \
 	( test x"$$DISPLAY" != x || sh -c "exit 77" ) \
-	&& eval > log 2>&1
+	&& eval > /dev/null 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
 $(TESTS) $(XFAIL_TESTS): Makefile
 CLEANFILES = $(TESTS)
-clean-local:
-	rm -f */.class
-	rm -f */*.o
-	rm -f */a.out
-	rm -f a.out
 
 TESTS += textiter/a.out
 textiter_FILES = textiter/JNICrash.java
@@ -82,11 +77,13 @@ gcjtreeiter/a.out: $(gcjtreeiter_FILES)
 		$(srcdir)/gcjtreeiter/IterTest.java \
 		-o gcjtreeiter/a.out
 XFAIL_TESTS += gcjtreeiter/gij.sh
-gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
+CLEANFILES += gcjtreeiter/IterTest.class
+gcjtreeiter/IterTest.class: $(gcjtreeiter_FILES)
 	mkdir -p gcjtreeiter
 	$(GCJ) -g -C -d . -I$(srcdir) \
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(srcdir)/gcjtreeiter/IterTest.java
+gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 	echo $(GIJ) -classpath .:$(FRYSK_GTK_CLASSPATH) \
 		-Djava.library.path=/usr/lib/frysk \
 		gcjtreeiter.IterTest \
