@@ -69,7 +69,7 @@ public class EventLogger
 	try {
 	    FileInputStream properties
 		= new FileInputStream (Config.FRYSK_DIR
-				       + ".frysk/logging.properties");
+				       + "logging.properties");
 	    manager.readConfiguration (properties);
 	}
 	catch (FileNotFoundException e) {

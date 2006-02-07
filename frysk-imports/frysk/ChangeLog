@@ -1,3 +1,7 @@
+2006-02-07  Stan Cox  <scox@redhat.com>
+
+	* EventLogger.java (get): Look for FRYSK_DIR/logging.properties.
+
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain PKGLIBEXECDIR): Add.
