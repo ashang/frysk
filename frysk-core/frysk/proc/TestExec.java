@@ -142,7 +142,7 @@ public class TestExec
 
 	// Attach to the process using the exec observer.  The event
 	// loop is kept running until SingleExecObserver .addedTo is
-	// called indicating that the attach succedded.
+	// called indicating that the attach succeeded.
 	Task task = child.findTaskUsingRefresh (true);
 	task.requestAddExecedObserver (execObserver);
 	assertRunUntilStop ("adding exec observer causing attach");
@@ -161,51 +161,129 @@ public class TestExec
      * A multiple threaded program performs an exec, check that it is correctly
      * tracked. 
      */
-    public void testAttachedMultipleExec ()
+    public void testAttachedMultipleParentExec ()
     {
-	AckProcess child = new AttachedAckProcess ();
-	Proc proc = child.findProcUsingRefresh (true);
-
 	// Watch for any Task exec events, accumulating them as they arrive.
-	class ExecObserver
-	    extends AutoAddTaskObserverBase
+	class ExecParentObserver
+	    extends TaskObserverBase
 	    implements TaskObserver.Execed
 	{
-	    int saved_tid = 0;
+	    int savedTid = 0;
 	    public Action updateExeced (Task task)
 	    {
-		Manager.eventLoop.requestStop ();
+		assertEquals ("savedTid", 0, savedTid);
+		savedTid = task.getTid ();
+		assertEquals ("argv[0]",
+			      savedTid + ":" + savedTid,
+			      task.getProc ().getCmdLine () [0]);
 		return Action.CONTINUE;
 	    }
-	    void requestAdd (Task task)
+	    public void addedTo (Object o)
 	    {
-		task.requestAddExecedObserver (this);
-	    }
-	    void updateTaskAdded (Task task)
-	    {
-		saved_tid = task.getTid ();
-		task.requestAddExecedObserver (this);
+		Manager.eventLoop.requestStop ();
 	    }
 	}
-	ExecObserver execObserver = new ExecObserver ();
 
-	child.addClone ();
-	execObserver.requestAdd (child.findTaskUsingRefresh (false));
-	child.addClone ();
-	Task task = child.findTaskUsingRefresh (false);
-	child.exec (task.getTid ());
+	// Create an unattached child process.
+	AckProcess child = new DetachedAckProcess ();
 
-	Manager.host.requestRefreshXXX (true);
-	
-	assertSame ("task after attached multiple clone exec", proc,
-		    task.getProc()); // parent/child relationship
-	assertTrue ("task after attached multiple clone exec",
-		    proc.getPid () != task.getTid ()); // not main task
+	Proc proc = child.findProcUsingRefresh (true);
+	ExecParentObserver execParentObserver = new ExecParentObserver ();
+
+	// Attach to the process using the exec observer.  The event
+	// loop is kept running until ExecParentObserver .addedTo is
+	// called indicating that the attach succeeded.
+	Task task = child.findTaskUsingRefresh (true);
+	task.requestAddExecedObserver (execParentObserver);
+	assertRunUntilStop ("adding exec observer causing attach");
+
+	// Add the clones, then do the exec; this call keeps the event
+	// loop running until the child process has notified this
+	// process that the exec has finished which is well after
+	// ExecParentObserver .updateExeced has been called.
+	child.addClone ();
+	child.addClone ();
+	child.exec ();
+
+	assertTrue ("task after attached multiple parent exec",
+		    proc.getPid () == task.getTid ()); // not main task
 	
 	assertEquals ("proc's getCmdLine[0]",
 		      proc.getPid () + ":" + task.getTid (),
 		      proc.getCmdLine ()[0]);
 	
-	assertEquals ("pid after attached multiple clone exec", task.getTid (), execObserver.saved_tid);
+	assertEquals ("pid after attached multiple parent exec",
+		      task.getTid (), execParentObserver.savedTid);
+
+	assertEquals ("number of children", proc.getChildren ().size (), 0);
+    }
+
+    /**
+     * A multiple threaded program's child performs an exec, check that it is 
+     * correctly tracked. 
+     */
+    public void testAttachedMultipleChildExec ()
+    {
+	// Watch for any Task exec events, accumulating them as they arrive.
+	class ExecChildObserver
+	    extends TaskObserverBase
+	    implements TaskObserver.Execed
+	{
+	    int savedTid = 0;
+	    public Action updateExeced (Task task)
+	    {
+		assertEquals ("savedTid", 0, savedTid);
+		savedTid = task.getTid ();
+ 		return Action.CONTINUE;
+	    }
+	    public void addedTo (Object o)
+	    {
+		Manager.eventLoop.requestStop ();
+	    }
+	}
+
+	// Create an unattached child process.
+	AckProcess child = new DetachedAckProcess ();
+
+	Proc proc = child.findProcUsingRefresh (true);
+	ExecChildObserver execObserverParent = new ExecChildObserver ();
+	ExecChildObserver execObserverChild = new ExecChildObserver ();
+
+	// Attach to the process using the exec observer.  The event
+	// loop is kept running until execObserverParent .addedTo is
+	// called indicating that the attach succeeded.
+	Task task = child.findTaskUsingRefresh (true);
+	task.requestAddExecedObserver (execObserverParent);
+	assertRunUntilStop ("adding exec observer causing attach");
+
+	// Add the clones, then do the exec; this call keeps the event
+	// loop running until the child process has notified this
+	// process that the exec has finished which is well after
+	// execObserverParent .updateExeced has been called.
+	// execObserverChild .updateExeced should not be called 
+	// since the event only arrives after the exec has completed, and only 
+	// the main thread is left and is therefore the only thread that 
+	// can receive the event. 
+
+	child.addClone ();
+	child.addClone ();
+	Task childtask = child.findTaskUsingRefresh (false);
+	childtask.requestAddExecedObserver (execObserverChild);
+	child.exec (childtask.getTid ());
+	
+	assertEquals ("task after attached multiple clone exec", proc,
+		    task.getProc()); // parent/child relationship
+	assertTrue ("task after attached multiple clone exec",
+		    proc.getPid () == task.getTid ());
+	
+	assertEquals ("proc's getCmdLine[0]",
+		      proc.getPid () + ":" + childtask.getTid (),
+		      proc.getCmdLine ()[0]);
+	
+	assertEquals ("Parent pid after attached multiple clone exec", proc.getPid (), execObserverParent.savedTid);
+
+	assertEquals ("Child pid after attached multiple clone exec", execObserverChild.savedTid, 0);
+
+	assertEquals ("number of children", proc.getChildren ().size (), 0);
     }
 }
