@@ -71,11 +71,11 @@ public class ActionManager extends Observable {
 	private void initActionList() {
 		this.addGenericActionPrototype(new Stop());
 		this.addGenericActionPrototype(new Resume());
-		this.addGenericActionPrototype(new PrintProc());
-		this.addGenericActionPrototype(new ShowSourceWin());
-
+		
 		this.addTaskActionPrototype(new ShowSourceWin());
 		this.addTaskActionPrototype(new PrintTask());
+
+		this.addProcActionPrototype(new PrintProc());
 	}
 
 	/**

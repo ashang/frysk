@@ -1,3 +1,8 @@
+2006-02-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Gui.java (gui): Added a call to 
+	ObserverManager.theManager.save().
+
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Removed View and Edit menus.

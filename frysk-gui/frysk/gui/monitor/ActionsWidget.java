@@ -94,11 +94,14 @@ public class ActionsWidget extends VBox{
 		
 		this.actionPointListView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
+				ActionPoint selectedActionPoint = (ActionPoint)actionPointListView.getSelectedObject();
 				applicableActionsListView.clear();
-				applicableActionsListView.watchLinkedList(((ActionPoint)actionPointListView.getSelectedObject()).getApplicableActions());
-				
 				addedActionsListView.clear();
-				addedActionsListView.watchLinkedList(((ActionPoint)actionPointListView.getSelectedObject()).getActions());
+			
+				if(selectedActionPoint != null){
+					applicableActionsListView.watchLinkedList(selectedActionPoint.getApplicableActions());
+					addedActionsListView.watchLinkedList(selectedActionPoint.getActions());
+				}
 			}
 		});
 		applicableActionsListView.clear();

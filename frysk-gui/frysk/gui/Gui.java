@@ -75,6 +75,7 @@ import frysk.proc.Manager;
 
 
 import frysk.gui.monitor.ConsoleWindow;
+import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.srcwin.SourceWindowFactory;
 
 public class Gui
@@ -300,6 +301,9 @@ public class Gui
 	Manager.eventLoop.requestStop();
 	procpop.save(prefs);
 
+	//XXX:
+	ObserverManager.theManager.save();
+	
 	try {
 	    // Export the node to a file
 	    File checkFrysk = new File (Config.FRYSK_DIR);

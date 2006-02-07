@@ -204,7 +204,7 @@ public class ObserverManager extends  Observable {
 		
 	}
 	
-	private void saveObservers(){
+	public void save(){
 //		File observerDir = new File(this.OBSERVERS_DIR);
 //		
 //		String[] array = observerDir.list();
@@ -233,9 +233,4 @@ public class ObserverManager extends  Observable {
 		
 	}
 	
-	protected void finalize() throws Throwable {
-		super.finalize();
-		System.out.println("\n===========================================");
-		this.saveObservers();
-	}
 }

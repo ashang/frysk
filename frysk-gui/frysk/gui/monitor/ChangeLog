@@ -1,3 +1,11 @@
+2006-02-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: Renamed saveObservers to save.
+	Removed finalize function.
+	* actions/ActionManager.java: Some prototypes were being added
+	to the wrong list...fixed.
+	* ActionsWidget.java (selectionChangedEvent): Added a null check.
+
 2006-02-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Added no argument constructor for
