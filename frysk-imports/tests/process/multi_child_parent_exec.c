@@ -1,5 +1,6 @@
 /* Create pthreads and exec from a pthread */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -20,7 +21,7 @@ BusyWorkExec (int pthid)
 {
   char * buf;
   char * pe_p;
-  int i, rc;
+  int rc;
   int pe_i;
 
 #ifdef DEBUG
@@ -54,11 +55,10 @@ BusyWorkExec (int pthid)
 void *
 BusyWork (int pthid)
 {
-  char *buf ;
   struct timeval tv;
-  buf;  
 
 #ifdef DEBUG
+  char *buf ;
   asprintf (buf, "echo 'in child ppid %d pid %d';"
 	   "ps  -o 'pid,ppid,nlwp,lwp,user,stat,bsdstart,bsdtime,pid,cmd'",
 	   getppid (), getpid ());
@@ -76,7 +76,8 @@ main (int argc, char **argv)
 {
   pthread_t thread[NUM_THREADS];
   pthread_attr_t attr;
-  int rc, t, status;
+  int rc, t;
+  void * status;
 
   args[0] = argv[0];
   if (argc != 1)		/* did we exec from below? */
@@ -113,7 +114,7 @@ main (int argc, char **argv)
   pthread_attr_destroy (&attr);
   for (t = 0; t < NUM_THREADS; t++)
     {
-      rc = pthread_join (thread[t], (void **) &status);
+      rc = pthread_join (thread[t], &status);
       if (rc)
         {
           perror ("pthread_join\n");

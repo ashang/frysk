@@ -1,5 +1,6 @@
 /* Create pthreads and exec the parent from the parent */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -56,13 +57,13 @@ main (int argc, char **argv)
       exit (EXIT_SUCCESS);
     }
 
-  pthread_attr_init (&attr);
+  rc = pthread_attr_init (&attr);
   if (rc == -1)
     {
       perror ("pthread_attr_init\n");
       exit (EXIT_FAILURE);
     }
-  pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
+  rc = pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
   if (rc == -1)
     {
       perror ("pthread_attr_setdetachstate\n");

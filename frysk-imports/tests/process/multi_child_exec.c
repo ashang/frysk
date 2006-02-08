@@ -1,5 +1,6 @@
 /* Create pthreads and exec the parent from a pthread */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -26,14 +27,14 @@ BusyWorkExec (int pthid)
 	   getppid (), getpid ());
   system (buf);
 #endif
-  asprintf (&buf, "%d", getpid ());
+  rc = asprintf (&buf, "%d", getpid ());
   if (rc == -1)
     {
       perror ("asprintf\n");
       exit (EXIT_FAILURE);
     }
   args[1] = buf;
-  execv (args[0], args); /* exec ourself with pid option */
+  rc = execv (args[0], args); /* exec ourself with pid option */
   if (rc == -1)
     {
       perror ("execv\n");
@@ -45,10 +46,10 @@ BusyWorkExec (int pthid)
 void *
 BusyWork (int pthid)
 {
-  char *buf ;
   struct timeval tv;
 
 #ifdef DEBUG
+  char *buf ;
   asprintf (&buf, "echo 'in child ppid %d pid %d';"
 	   "ps  -o 'pid,ppid,nlwp,lwp,user,stat,bsdstart,bsdtime,pid,cmd'",
 	   getppid (), getpid ());
@@ -66,7 +67,8 @@ main (int argc, char **argv)
 {
   pthread_t thread[NUM_THREADS];
   pthread_attr_t attr;
-  int rc, t, status;
+  int rc, t;
+  void * status;
 
   args[0] = argv[0];
   if (argc != 1)		/* did we exec from below? */
@@ -84,14 +86,14 @@ main (int argc, char **argv)
       exit (EXIT_SUCCESS);
     }
 
-  pthread_attr_init (&attr);
-  if (rc == -1)
+  rc = pthread_attr_init (&attr);
+  if (rc != 0)
     {
       perror ("pthread_attr_init\n");
       exit (EXIT_FAILURE);
     }
-  pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
-  if (rc == -1)
+  rc = pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
+  if (rc != 0)
     {
       perror ("pthread_attr_setdetachstate\n");
       exit (EXIT_FAILURE);
@@ -119,13 +121,13 @@ main (int argc, char **argv)
     }
   for (t = 0; t < NUM_THREADS; t++)
     {
-      rc = pthread_join (thread[t], (void **) &status);
+      rc = pthread_join (thread[t], &status);
       if (rc)
         {
           perror ("pthread_join\n");
           exit (EXIT_FAILURE);
         }
-      printf ("Completed join with thread %d status= %d\n", t, status);
+      printf ("Completed join with thread %d status= %d\n", t, (int) status);
     }
   pthread_exit (NULL);
 
