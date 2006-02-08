@@ -83,7 +83,7 @@ public class ObjectFactory {
 			java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
 			loadedObject =  constr.newInstance(new Object[] {});
 		} catch (Exception e) {
-			System.out.println("ObjectFactory.getObject() " + type);
+			//System.out.println("ObjectFactory.getObject() " + type);
 			e.printStackTrace();
 		}
 

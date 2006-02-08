@@ -60,7 +60,7 @@ public class LogAction extends GenericAction {
 	}
 
 	public void execute(ObserverRoot observer) {
-		System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
+		//System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
 		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getInfo());
 		WindowManager.theManager.logWindow.print(observer.getInfo());
 	}

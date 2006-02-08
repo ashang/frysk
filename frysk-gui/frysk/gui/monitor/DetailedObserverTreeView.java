@@ -208,7 +208,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		 Observer itemAddedObserver = new Observer() {
 			 public void update(Observable observable, Object object) {
 				 GuiObject guiObject = (GuiObject) object;
-				 System.out.println("DetailedObserverTreeView.addList() adding GuiObject " + guiObject + " this: " + this);
+				 //System.out.println("DetailedObserverTreeView.addList() adding GuiObject " + guiObject + " this: " + this);
 				 int index = list.indexOf(guiObject);
 				 add(guiObject,parent, index);
 			 }

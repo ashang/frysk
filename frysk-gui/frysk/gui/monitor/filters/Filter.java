@@ -74,7 +74,7 @@ public abstract class Filter extends GuiObject implements SaveableXXX {
 	 * filter.
 	 */
 	public Widget getWidget() {
-		System.out.println("Filter.getWidget() Filter: " + this);
+		//System.out.println("Filter.getWidget() Filter: " + this);
 		return this.widget;
 	}
 

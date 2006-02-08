@@ -134,7 +134,7 @@ public class TearOffNotebook extends Notebook {
 					newNotebook.appendPage(widget, label);
 			
 					window.add(newNotebook);
-					System.out.println("newNotebook window: " + window.getRootWindow());
+					//System.out.println("newNotebook window: " + window.getRootWindow());
 					children.put(window.getRootWindow(), newNotebook);
 					
 					window.resize(200, 300);

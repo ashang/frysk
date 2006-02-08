@@ -118,6 +118,6 @@ public class ThreadMenu extends Menu {
 	public void popup(TaskData selected){
 		this.popup();
 		this.current = selected;
-		System.out.println("-- PID: " + current.getTask().getTid()); //$NON-NLS-1$
+		//System.out.println("-- PID: " + current.getTask().getTid()); //$NON-NLS-1$
 	}
 }

@@ -37,7 +37,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	}
 
 	public Action updateExeced(Task task) {
-		System.out.println("TaskExecObserver.updateExeced() " + task.getProc().getCommand());
+		//System.out.println("TaskExecObserver.updateExeced() " + task.getProc().getCommand());
 		final Task myTask = task;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {

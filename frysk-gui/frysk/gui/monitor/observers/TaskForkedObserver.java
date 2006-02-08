@@ -63,7 +63,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 //		dialog.showAll();
 //		dialog.run();
 
-		System.out.println("TaskForkedObserver.updateForked() " + child.getTid());
+		//System.out.println("TaskForkedObserver.updateForked() " + child.getTid());
 		final Task myTask = task;
 		final Task myChild = child;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){

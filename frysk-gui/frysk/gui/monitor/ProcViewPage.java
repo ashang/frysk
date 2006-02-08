@@ -186,7 +186,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 					ProcData data = getSelectedProc();
 					if(data != null) ProcMenu.getMenu().popup(data);
 					
-                    System.out.println("click : " + data); //$NON-NLS-1$
+                    //System.out.println("click : " + data); //$NON-NLS-1$
                     return true;
 				}
 				return false;
@@ -202,7 +202,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 					TaskData data = getSelectedThread();
 					if(data != null) ThreadMenu.getMenu().popup(data);
 					
-                    System.out.println("click : " + data); //$NON-NLS-1$
+                    //System.out.println("click : " + data); //$NON-NLS-1$
                     return true;
 				}
 				return false;
@@ -271,7 +271,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		psDataModel.getModel().addListener(new PropertyNotificationListener(){
 			public void notify(GObject arg0, String arg1) {
-				System.out.println("Notification : " + arg1); //$NON-NLS-1$
+				//System.out.println("Notification : " + arg1); //$NON-NLS-1$
 			}
 		});
 		

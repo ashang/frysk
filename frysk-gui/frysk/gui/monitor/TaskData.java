@@ -74,7 +74,7 @@ public class TaskData extends GuiData{
 				observers.remove(observer);
 			}
 		});
-		System.out.println("TaskData.add()");
+		//System.out.println("TaskData.add()");
 		observer.apply(this.task);
 	}
 	

@@ -191,12 +191,12 @@ public class ObserverManager extends  Observable {
 		String[] array = observerDir.list();
 		ObserverRoot loadedObserver = null;
 		for (int i = 0; i < array.length; i++) {
-			System.out.println(			array[i]);
+			//System.out.println(			array[i]);
 			try{
 				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
 				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
 			}catch(Exception e){
-				System.out.println("Could not load " + array[i]);
+				//System.out.println("Could not load " + array[i]);
 				continue;
 			}
 			this.addTaskObserverPrototype(loadedObserver);

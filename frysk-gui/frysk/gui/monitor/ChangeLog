@@ -1,5 +1,20 @@
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* DetailedObserverTreeView.java: Comment out
+	System.out.println statements used for debugging.
+	* DynamicWidget.java: Ditto.
+	* ObjectFactory.java: Ditto.
+	* ProcViewPage.java: Ditto
+	* TaskData.java: Ditto.
+	* TearOffNotebook.java: Ditto.
+	* ThreadMenu.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* filters/Filter.java: Ditto.
+	* observers/ObserverManager.java: Ditto.
+	* observers/TaskCloneObserver.java (updateCloned):Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	
 	* MainWindow.java (MainWindow): Removed programs tab
 	from GUI.
 	

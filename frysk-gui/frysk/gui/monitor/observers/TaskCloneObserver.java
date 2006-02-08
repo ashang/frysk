@@ -58,7 +58,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 	
 	public Action updateCloned(Task task, Task clone) {
 		// TODO Auto-generated method stub
-		System.out.println("TaskCloneObserver.updateCloned()");
+		//System.out.println("TaskCloneObserver.updateCloned()");
 		final Task myTask = task;
 		final Task myClone = clone;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
