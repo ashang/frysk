@@ -1,3 +1,37 @@
+2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PreferencesWindow.java: Revert i8n.
+	* ProgramAddWindow.java: Ditto.
+	* ProgramData.java: Ditto.
+	* ProcDataModel.java: Ditto.
+	* ProcViewPage.java: Ditto.
+	* ProgramDataModel.java: Ditto.
+	* ProgramViewPage.java: Ditto.
+	* CustomeObserverWindow.java: Ditto.
+	* TrayIcon.java: Ditto.
+	* SimpleComboBox.java: Ditto.
+	* ProcMenu.java: Ditto.
+	* EventLogger.java: Ditto.
+	* GuiData.java: Ditto.
+	* MainWindow.java: Ditto.
+	* TaskStatusWidget.java: Ditto.
+	* ListView.java: Ditto.
+	* InfoWidget.java: Ditto.
+	* ThreadMenu.java: Ditto.
+	* DetailedObserverTreeView.java: Ditto.
+	* StatusWidget.java: Ditto.
+	* FilterWidget.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/ActionManager.java: Ditto.
+	* actions/ActionPoint.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* actions/StickyObserverAction.java: Ditto.
+	* actions/Stop.java: Ditto.
+
+
 2006-02-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverManager.java: Renamed saveObservers to save.

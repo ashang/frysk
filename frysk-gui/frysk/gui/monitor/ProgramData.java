@@ -61,7 +61,6 @@ import org.xml.sax.SAXException;
 
 import frysk.Config;
 import frysk.gui.Gui;
-import frysk.gui.common.Messages;
 
 
 public class ProgramData {
@@ -174,7 +173,7 @@ public class ProgramData {
 		try {
 			output.output(doc,new FileWriter(filename));
 		} catch (IOException e) {
-			errorLog.log(Level.SEVERE,Messages.getString("ProgramData.13") + filename,e); //$NON-NLS-1$
+			errorLog.log(Level.SEVERE,"Errors writing execution event monitor " + filename,e); //$NON-NLS-1$
 		}
 	}
 	
@@ -194,11 +193,11 @@ public class ProgramData {
            doc = (org.w3c.dom.Document) builder.parse(new File(filename));
  
         } catch (SAXException sxe) {
-			errorLog.log(Level.SEVERE,Messages.getString("ProgramData.15") + filename,sxe); //$NON-NLS-1$
+			errorLog.log(Level.SEVERE,"Errors parsing (SAX Exception) " + filename,sxe); //$NON-NLS-1$
         } catch (ParserConfigurationException pce) {
-        	errorLog.log(Level.SEVERE,Messages.getString("ProgramData.16") + filename,pce); //$NON-NLS-1$
+        	errorLog.log(Level.SEVERE,"Errors parsing (Parser Configuration Exception) " + filename,pce); //$NON-NLS-1$
         } catch (IOException ioe) {
-        	errorLog.log(Level.SEVERE,Messages.getString("ProgramData.17") + filename,ioe); //$NON-NLS-1$
+        	errorLog.log(Level.SEVERE,"Errors parsing (IO Exception) " + filename,ioe); //$NON-NLS-1$
         }
 		
         DOMBuilder doo = new DOMBuilder();

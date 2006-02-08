@@ -80,7 +80,6 @@ import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.Gui;
-import frysk.gui.common.Messages;
 
 public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
@@ -250,13 +249,13 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
 
-		pidCol.setTitle(Messages.getString("ProcViewPage.10")); //$NON-NLS-1$
+		pidCol.setTitle("PID"); //$NON-NLS-1$
 		pidCol.addListener(new TreeViewColumnListener(){
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				procTreeView.setSearchDataColumn(psDataModel.getPidDC());
 			}
 		});
-		commandCol.setTitle(Messages.getString("ProcViewPage.11")); //$NON-NLS-1$
+		commandCol.setTitle("Command"); //$NON-NLS-1$
 		commandCol.addListener(new TreeViewColumnListener(){
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				procTreeView.setSearchDataColumn(psDataModel.getCommandDC());
@@ -272,7 +271,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		psDataModel.getModel().addListener(new PropertyNotificationListener(){
 			public void notify(GObject arg0, String arg1) {
-				System.out.println(Messages.getString("ProcViewPage.12") + arg1); //$NON-NLS-1$
+				System.out.println("Notification : " + arg1); //$NON-NLS-1$
 			}
 		});
 		
@@ -326,8 +325,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
 
-		pidCol.setTitle(Messages.getString("ProcViewPage.13")); //$NON-NLS-1$
-		commandCol.setTitle(Messages.getString("ProcViewPage.14")); //$NON-NLS-1$
+		pidCol.setTitle("PID"); //$NON-NLS-1$
+		commandCol.setTitle("Entry Functions"); //$NON-NLS-1$
 		
 		pidCol.setVisible(true);
 		commandCol.setVisible(true);
@@ -358,7 +357,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		try {
 			this.psDataModel.refresh();
 		} catch (IOException e) {
-			errorLog.log(Level.SEVERE,Messages.getString("ProcViewPage.15"),e); //$NON-NLS-1$
+			errorLog.log(Level.SEVERE,"Cannot refresh",e); //$NON-NLS-1$
 		}
 	}
 

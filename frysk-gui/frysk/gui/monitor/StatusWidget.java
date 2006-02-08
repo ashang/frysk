@@ -66,7 +66,6 @@ import org.gnu.gtk.event.MouseListener;
 
 import com.redhat.ftk.Stripchart;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.GenericAction;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -127,7 +126,7 @@ public class StatusWidget extends VBox{
 		HBox hbox = new HBox(false, 0);
 		hbox.setBorderWidth(5);
 		VBox vbox = new VBox(false, 0);
-		hbox.packStart(new Label(Messages.getString("StatusWidget.1")), false, false, 0); //$NON-NLS-1$
+		hbox.packStart(new Label("Attached Observers: "), false, false, 0); //$NON-NLS-1$
 		hbox.packStart(new Label(""), true, false, 0); //$NON-NLS-1$
 		vbox.packStart(hbox, false, false, 0);
 
@@ -147,7 +146,7 @@ public class StatusWidget extends VBox{
 		listView.watchLinkedList(data.getObservers());
 		
 		final Menu menu = new Menu();
-		MenuItem item = new MenuItem(Messages.getString("StatusWidget.3"), false); //$NON-NLS-1$
+		MenuItem item = new MenuItem("Remove", false); //$NON-NLS-1$
 		item.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent event) {
 				data.remove((ObserverRoot) listView.getSelectedObject());
@@ -255,7 +254,7 @@ public class StatusWidget extends VBox{
 		private ObserverRoot observer;
 		
 		public TimelineAction(ObserverRoot observer) {
-			super(Messages.getString("StatusWidget.4"),""); //$NON-NLS-1$ //$NON-NLS-2$
+			super("TimeLine Action",""); //$NON-NLS-1$ //$NON-NLS-2$
 			this.observer = observer;
 			this.createEvent();
 		}

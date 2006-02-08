@@ -71,7 +71,6 @@ import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.Config;
-import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 
 /**
@@ -223,7 +222,7 @@ public class ProgramViewPage extends Widget {
 		enabledCol.addAttributeMapping(renderToggle,
 				CellRendererToggle.Attribute.ACTIVE, programDataModel
 						.getEnabledDC());
-		enabledCol.setTitle(Messages.getString("ProgramViewPage.6")); //$NON-NLS-1$
+		enabledCol.setTitle("Enabled?"); //$NON-NLS-1$
 		enabledCol.setVisible(true);
 
 		CellRendererText nameRender = new CellRendererText();
@@ -237,7 +236,7 @@ public class ProgramViewPage extends Widget {
 		nameCol.addAttributeMapping(nameRender,
 				CellRendererText.Attribute.WEIGHT, programDataModel
 						.getWeightDC());
-		nameCol.setTitle(Messages.getString("ProgramViewPage.7")); //$NON-NLS-1$
+		nameCol.setTitle("Observed Executable"); //$NON-NLS-1$
 
 		nameCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
@@ -259,7 +258,7 @@ public class ProgramViewPage extends Widget {
 		
 		TreePath[] deleteSelection = this.programTreeView.getSelection().getSelectedRows();
 		
-		DialogManager.showWarnDialog(Messages.getString("ProgramViewPage.8"), Messages.getString("ProgramViewPage.9")); //$NON-NLS-1$ //$NON-NLS-2$
+		DialogManager.showWarnDialog("Delete Confirm", "Are you sure you wanted to delete selected monitors?"); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0; i<deleteSelection.length; i++)
 		{
 			ProgramDataModel.theManager.delete(deleteSelection[i]);

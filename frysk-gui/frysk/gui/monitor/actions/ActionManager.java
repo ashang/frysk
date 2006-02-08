@@ -41,7 +41,6 @@ package frysk.gui.monitor.actions;
 
 import java.util.Observable;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
@@ -86,7 +85,7 @@ public class ActionManager extends Observable {
 	 * */
 	public Action getObserver(Action prototype){
 		//XXX: Not implemented.
-		throw new RuntimeException(Messages.getString("ActionManager.0")); //$NON-NLS-1$
+		throw new RuntimeException("Not implemented"); //$NON-NLS-1$
 		//return prototype.getCopy();
 	}
 	

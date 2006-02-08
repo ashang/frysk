@@ -58,7 +58,6 @@ import org.gnu.pango.Weight;
 
 import frysk.event.TimerEvent;
 import frysk.gui.Gui;
-import frysk.gui.common.Messages;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -184,7 +183,7 @@ public class ProcDataModel {
 		try {
 			this.setFilterType(type);
 		} catch (Exception e) {
-			errorLog.log(Level.WARNING,Messages.getString("ProcDataModel.0"),e); //$NON-NLS-1$
+			errorLog.log(Level.WARNING,"Cannot set filter",e); //$NON-NLS-1$
 		}
 		this.intFilterArgument = argument;
 	}
@@ -199,7 +198,7 @@ public class ProcDataModel {
 		try {
 			this.setFilterType(type);
 		} catch (Exception e) {
-			errorLog.log(Level.WARNING,Messages.getString("ProcDataModel.1"),e); //$NON-NLS-1$
+			errorLog.log(Level.WARNING,"Cannot set filter",e); //$NON-NLS-1$
 		}
 		this.stringFilterArgument = argument;
 	}
@@ -215,8 +214,8 @@ public class ProcDataModel {
 			type != FilterType.PID &&
 			type != FilterType.UID &&
 			type != FilterType.COMMAND) {
-				errorLog.log(Level.WARNING,Messages.getString("ProcDataModel.2")); //$NON-NLS-1$
-				throw(new Exception(Messages.getString("ProcDataModel.3"))); //$NON-NLS-1$
+				errorLog.log(Level.WARNING,"Thrown excpetion Invalid FilterType"); //$NON-NLS-1$
+				throw(new Exception("Invalid FilterType argument")); //$NON-NLS-1$
 		}
 		this.currentFilter = type;
 	}
@@ -394,12 +393,12 @@ public class ProcDataModel {
 
 					try{
 						if(iter == null){
-							throw new NullPointerException(Messages.getString("ProcDataModel.4") + proc + Messages.getString("ProcDataModel.5")); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						treeStore.removeRow(iter);
 						iterHash.remove(proc.getId());
 					}catch (NullPointerException e) {
-						errorLog.log(Level.WARNING,Messages.getString("ProcDataModel.6") + proc + Messages.getString("ProcDataModel.7"),e); //$NON-NLS-1$ //$NON-NLS-2$
+						errorLog.log(Level.WARNING,"proc " + proc + "Not found in TreeIter HasTable. Cannot be removed",e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			});
@@ -449,12 +448,12 @@ public class ProcDataModel {
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
 					try{
 						if(iter == null){
-							throw new NullPointerException(Messages.getString("ProcDataModel.8") + task + Messages.getString("ProcDataModel.9")); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						treeStore.removeRow(iter);
 						iterHash.remove(task.getTaskId());
 					}catch (NullPointerException e) {
-						errorLog.log(Level.WARNING,Messages.getString("ProcDataModel.10") + task + Messages.getString("ProcDataModel.11"),e); //$NON-NLS-1$ //$NON-NLS-2$
+						errorLog.log(Level.WARNING,"trying to remove task " + task + "before it is added",e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			});

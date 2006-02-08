@@ -81,7 +81,6 @@ import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.Gui;
-import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -140,7 +139,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 				if(event.getType() == ButtonEvent.Type.CLICK){
 					String message = doValidation();
 					if (!message.equals("")) //$NON-NLS-1$
-						DialogManager.showWarnDialog(Messages.getString("ProgramAddWindow.2"), message); //$NON-NLS-1$
+						DialogManager.showWarnDialog("Validation Errors", message); //$NON-NLS-1$
 					else
 					{
 						saveDialog();
@@ -190,7 +189,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 	private String doValidation() {
 		// File Checks
 		if (programEntry.getText().length() <= 0)
-			return Messages.getString("ProgramAddWindow.3"); //$NON-NLS-1$
+			return "You must give this monitor a name"; //$NON-NLS-1$
 		
 
 		// This is wierd. If I do getFilename()
@@ -207,34 +206,34 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			// If doing the getFilename() spawns and NPE
 			// the user has never clicked the FileChooserButton
 			
-			return Messages.getString("ProgramAddWindow.4"); //$NON-NLS-1$
+			return "You must choose an executable to watch"; //$NON-NLS-1$
 		}
 		
 		// Check an executable has been given.
 		if (programOpenFileDialog.getFilename().length() < 1)
-			return Messages.getString("ProgramAddWindow.5"); //$NON-NLS-1$
+			return "You must choose an executable to watch"; //$NON-NLS-1$
 		
 		File existenceCheck = new File(programOpenFileDialog.getFilename());
 		
 		// Checks to see if executable actually exists.
 		if (existenceCheck.exists() == false)
-			return Messages.getString("ProgramAddWindow.6"); //$NON-NLS-1$
+			return "Filename specified does not exist on disk"; //$NON-NLS-1$
 		
 		// Checks to see if the executable is readable
 		if (existenceCheck.canRead() == false)
-			return Messages.getString("ProgramAddWindow.7"); //$NON-NLS-1$
+			return "Cannot read specified file"; //$NON-NLS-1$
 		
 		// Checks to see if the executable is a file, not a directory.
 		if (existenceCheck.isDirectory())
-			return Messages.getString("ProgramAddWindow.8"); //$NON-NLS-1$
+			return "Must be a filename, not a directory"; //$NON-NLS-1$
 		
 		// Checks to see if at least one process is selected.
 		if (programTreeView.getSelection().getSelectedRows().length < 1)
-			return Messages.getString("ProgramAddWindow.9"); //$NON-NLS-1$
+			return "Please select at least one process that will spawn filename"; //$NON-NLS-1$
 		
 		// Checks to see if at least one  observer is selected.
 		if (programObseverListBox.getSelection().getSelectedRows().length < 1)
-			return Messages.getString("ProgramAddWindow.10"); //$NON-NLS-1$
+			return "Please select at least one observer to apply"; //$NON-NLS-1$
 
 		return ""; //$NON-NLS-1$
 	}
@@ -277,13 +276,13 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		commandCol.addAttributeMapping(cellRendererText4,
 				CellRendererText.Attribute.WEIGHT, psDataModel.getWeightDC());
 
-		pidCol.setTitle(Messages.getString("ProgramAddWindow.12")); //$NON-NLS-1$
+		pidCol.setTitle("PID"); //$NON-NLS-1$
 		pidCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				programTreeView.setSearchDataColumn(psDataModel.getPidDC());
 			}
 		});
-		commandCol.setTitle(Messages.getString("ProgramAddWindow.13")); //$NON-NLS-1$
+		commandCol.setTitle("Command"); //$NON-NLS-1$
 		commandCol.addListener(new TreeViewColumnListener() {
 			public void columnClickedEvent(TreeViewColumnEvent arg0) {
 				programTreeView.setSearchDataColumn(psDataModel.getCommandDC());
@@ -323,7 +322,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		   observerCol.addAttributeMapping(Obrender,
 		 CellRendererText.Attribute.TEXT, (DataColumnString)observerDC[0]);
 		 
-		observerCol.setTitle(Messages.getString("ProgramAddWindow.14")); //$NON-NLS-1$
+		observerCol.setTitle("Available Observers"); //$NON-NLS-1$
 		   
 		this.programObseverListBox.appendColumn(observerCol);
 		
@@ -359,7 +358,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			this.psDataModel = new ProcDataModel();
 		} catch (IOException e) {
 			errorLog.log(Level.SEVERE,
-					Messages.getString("ProgramAddWindow.21"), e); //$NON-NLS-1$
+					"Error setting data model in program tree view ", e); //$NON-NLS-1$
 		}
 		psDataModel.setFilterON(true);
 	}

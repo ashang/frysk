@@ -39,13 +39,12 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.common.Messages;
 import frysk.proc.Task;
 
 public class PrintTask extends TaskAction {
 	
 	public PrintTask() {
-		super(Messages.getString("PrintTask.0"), Messages.getString("PrintTask.1")); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Print State", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public PrintTask(PrintTask other){
@@ -53,7 +52,7 @@ public class PrintTask extends TaskAction {
 	}
 	
 	public void execute(Task task) {
-		System.out.println(Messages.getString("PrintTask.2") + task); //$NON-NLS-1$
+		System.out.println("Task State : " + task); //$NON-NLS-1$
 	}
 
 	public Action getCopy() {

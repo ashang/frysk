@@ -41,7 +41,6 @@ package frysk.gui.monitor.actions;
 
 import java.util.logging.Level;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -49,7 +48,7 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class LogAction extends GenericAction {
 
 	public LogAction() {
-		super(Messages.getString("LogAction.0"), Messages.getString("LogAction.1")); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Logger", "logs what is going on with this "); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public LogAction(GenericAction other) {
@@ -61,7 +60,7 @@ public class LogAction extends GenericAction {
 	}
 
 	public void execute(ObserverRoot observer) {
-		System.out.println(Messages.getString("LogAction.2")+ observer.getInfo()); //$NON-NLS-1$
+		System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
 		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getInfo());
 		WindowManager.theManager.logWindow.print(observer.getInfo());
 	}

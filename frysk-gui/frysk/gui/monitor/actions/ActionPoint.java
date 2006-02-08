@@ -44,7 +44,6 @@ import java.util.List;
 
 import org.jdom.Element;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
@@ -79,7 +78,7 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 	
 	public void removeAction(Action action){
 		if(!this.actions.remove(action)){
-			throw new IllegalArgumentException(Messages.getString("ActionPoint.0")+ action +Messages.getString("ActionPoint.1")); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new IllegalArgumentException("the passed action ["+ action +"] is not a member of this action point"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

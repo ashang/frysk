@@ -56,7 +56,6 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverManager;
@@ -181,7 +180,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.add(observer, (GuiObject)null);
 		
 		//filterPoints
-		GuiObject label = new GuiObject(Messages.getString("DetailedObserverTreeView.1"),""); //$NON-NLS-1$ //$NON-NLS-2
+		GuiObject label = new GuiObject("FilterPoints",""); //$NON-NLS-1$ //$NON-NLS-2
 		this.add(label, observer);
 		addList(label, observer.getFilterPoints());
 		
@@ -192,7 +191,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		}
 
 		//actionPoints
-		label = new GuiObject(Messages.getString("DetailedObserverTreeView.3"),""); //$NON-NLS-1$ //$NON-NLS-2$
+		label = new GuiObject("ActionPoints",""); //$NON-NLS-1$ //$NON-NLS-2$
 		this.add(label, observer);
 		addList(label, observer.getActionPoints());
 		iterator = observer.getActionPoints().iterator();	

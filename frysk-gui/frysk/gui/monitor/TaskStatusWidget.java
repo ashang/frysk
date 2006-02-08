@@ -44,13 +44,12 @@
  */
 package frysk.gui.monitor;
 
-import frysk.gui.common.Messages;
 
 public class TaskStatusWidget extends StatusWidget {
 
 	public TaskStatusWidget(TaskData data) {
 		super(data);
-		this.setName(Messages.getString("TaskStatusWidget.0") + data.getTask().getTid()); //$NON-NLS-1$
+		this.setName("Thread ID: " + data.getTask().getTid()); //$NON-NLS-1$
 	}
 
 }

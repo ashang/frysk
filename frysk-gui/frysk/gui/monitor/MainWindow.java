@@ -48,7 +48,6 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Window;
 
 import frysk.gui.Gui;
-import frysk.gui.common.Messages;
 
 public class MainWindow extends Window implements Saveable{
 	
@@ -64,7 +63,7 @@ public class MainWindow extends Window implements Saveable{
 			procViewPage.getClass();
 			programViewPage.getClass();
 		} catch (IOException e){
-			errorLog.log(Level.SEVERE,Messages.getString("MainWindow.1"),e); //$NON-NLS-1$
+			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e); //$NON-NLS-1$
 		}
 		
 		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle()); //$NON-NLS-1$

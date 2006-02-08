@@ -41,7 +41,6 @@ package frysk.gui.monitor;
 
 import org.gnu.gtk.Widget;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
@@ -59,7 +58,7 @@ public class GuiData {
 
 	public void remove(ObserverRoot observer){
 		//XXX: Not implemented.
-		throw new RuntimeException(Messages.getString("GuiData.0")); //$NON-NLS-1$
+		throw new RuntimeException("Not implemented"); //$NON-NLS-1$
 	}
 	
 	public ObservableLinkedList getObservers(){
@@ -68,7 +67,7 @@ public class GuiData {
 	
 	public void setWidget(Widget widget){
 		if(this.widget != null){
-			throw new RuntimeException(Messages.getString("GuiData.1")); //$NON-NLS-1$
+			throw new RuntimeException("Trying to set widget when widget is already set."); //$NON-NLS-1$
 		}
 		this.widget = widget;
 	}

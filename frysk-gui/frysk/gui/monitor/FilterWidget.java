@@ -51,7 +51,6 @@ import org.gnu.gtk.Widget;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -79,7 +78,7 @@ public class FilterWidget extends VBox{
 	private void init(){
 		this.widgets = new HashMap();
 		
-		Button addButton = new Button(Messages.getString("FilterWidget.0")); // looks better with the spaces :) //$NON-NLS-1$
+		Button addButton = new Button("Add    "); // looks better with the spaces :) //$NON-NLS-1$
 		
 		addButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
@@ -126,7 +125,7 @@ public class FilterWidget extends VBox{
 	private void addFilterLine(final FilterLineWidget filterLine){
 		HBox hbox = new HBox(false, 0);
 
-		Button deleteButton = new Button(Messages.getString("FilterWidget.2"));		 //$NON-NLS-1$
+		Button deleteButton = new Button("Delete");		 //$NON-NLS-1$
 		deleteButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){

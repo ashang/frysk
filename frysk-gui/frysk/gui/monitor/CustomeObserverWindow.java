@@ -68,7 +68,6 @@ import org.gnu.gtk.event.KeyListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-import frysk.gui.common.Messages;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -297,7 +296,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	 * Create new observer as a template for a custom observer.
 	 * */
 	public void createNewObserver(){
-		ObserverRoot newObserver = new ObserverRoot(Messages.getString("CustomeObserverWindow.19"),""); //$NON-NLS-1$ //$NON-NLS-2$
+		ObserverRoot newObserver = new ObserverRoot("New Observer",""); //$NON-NLS-1$ //$NON-NLS-2$
 		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.observerTreeView.setSelected(newObserver); //XXX
 	}
