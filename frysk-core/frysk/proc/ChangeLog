@@ -1,3 +1,7 @@
+2006-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* HostObserver.java: New file.  Draft.
+
 2006-02-07  Stan Cox  <scox@redhat.com>
 
 	* TestExec.java (testAttachedMultipleParentExec): New.
