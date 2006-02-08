@@ -65,6 +65,7 @@ import org.gnu.gtk.event.MenuItemListener;
 import frysk.Config;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.common.Messages;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.PreferenceWidget;
 import frysk.gui.monitor.Saveable;

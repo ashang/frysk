@@ -1,4 +1,6 @@
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
+	
+	* Gui.java: Add Messages import statement back.
 
 	* Gui.java: Revert i8n.
 
