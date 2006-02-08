@@ -265,3 +265,9 @@ noinst_PROGRAMS += rh177240/threadexec
 noinst_SCRIPTS += rh177240/strace-clone-exec.sh
 rh177240_threadexec_LDFLAGS = -lpthread
 TESTS += rh177240/strace-clone-exec.sh
+
+# A garbage collector stress test.
+noinst_PROGRAMS += gctest/GCTest
+gctest_GCTest_SOURCES = gctest/GCTest.java
+gctest_GCTest_LDFLAGS = --main=GCTest
+TESTS += gctest/GCTest

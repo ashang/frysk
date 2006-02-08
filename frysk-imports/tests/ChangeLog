@@ -1,3 +1,9 @@
+2006-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS): Add gctest/GCTest.
+	* gctest/GCTest.java: New file.  From Pat Tullmann
+	(tullmann@cs.utah.edu), via Bryce.
+
 2006-02-08  Adam Jocksch  <ajocksch@toothpaste.toronto.redhat.com>
 
 	* process/single_exec.c (main): Fixed pedantic compiler errors.
