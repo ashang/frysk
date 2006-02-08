@@ -64,7 +64,6 @@ import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.Config;
 import frysk.gui.common.IconManager;
-import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.PreferenceWidget;
@@ -104,7 +103,7 @@ public class Gui
 	    catch (FileNotFoundException missingFile) {
 		searchPath += glade_dirs[i] + "\n";
 		if(i == glade_dirs.length -1){
-		    throw new FileNotFoundException (Messages.getString ("FryskGui.10") + searchPath); //$NON-NLS-1$
+		    throw new FileNotFoundException ("Glade file not found in path " + searchPath); //$NON-NLS-1$
 		}else{
 		    continue;
 		}
@@ -156,11 +155,11 @@ public class Gui
 	    Preferences.importPreferences(is);
 	} catch (FileNotFoundException e1) {
 	    errorLogFile.log(Level.WARNING, location
-			     + Messages.getString("FryskGui.44"), e1); //$NON-NLS-1$
+			     + " not found. Will be created on program exit", e1); //$NON-NLS-1$
 	} catch (IOException e) {
-	    errorLogFile.log(Level.SEVERE, location + Messages.getString("FryskGui.45"), e); //$NON-NLS-1$
+	    errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
 	} catch (InvalidPreferencesFormatException e) {
-	    errorLogFile.log(Level.SEVERE, location + Messages.getString("FryskGui.46"), e); //$NON-NLS-1$
+	    errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
 	}
 
 	prefs = Preferences.userRoot();
@@ -218,15 +217,15 @@ public class Gui
 	try {
 	    procpop = new Gui (glade_dirs);
 	} catch (GladeXMLException e1) {
-	    errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.11"), //$NON-NLS-1$
+	    errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed", //$NON-NLS-1$
 			     e1);
 	    System.exit(1);
 	} catch (FileNotFoundException e1) {
-	    errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.12"), //$NON-NLS-1$
+	    errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found", //$NON-NLS-1$
 			     e1);
 	    System.exit(1);
 	} catch (IOException e1) {
-	    errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.13"), e1); //$NON-NLS-1$
+	    errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
 	    System.exit(1);
 	}
 
@@ -238,7 +237,7 @@ public class Gui
 
 	prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
 
-	trayIcon = new TrayIcon(Messages.getString("FryskGui.14"), false); //$NON-NLS-1$
+	trayIcon = new TrayIcon("Frysk Monitor/Debugger", false); //$NON-NLS-1$
 		
 	trayIcon.setMenuButton(TrayIcon.BUTTON_3);
 	trayIcon.setWindowButton(TrayIcon.BUTTON_1);
@@ -249,7 +248,7 @@ public class Gui
 	trayIcon.setPopupMenu(popupMenu);
 		
 	// Quit 
-	MenuItem quitItem = new MenuItem(Messages.getString("FryskGui.15"), false); //$NON-NLS-1$
+	MenuItem quitItem = new MenuItem("Quit", false); //$NON-NLS-1$
 	quitItem.addListener (new MenuItemListener()
 	    {
 		public void menuItemEvent(MenuItemEvent arg0) {
@@ -259,7 +258,7 @@ public class Gui
 	popupMenu.add(quitItem);
 		
 	// Console Window
-	MenuItem consoleWindowItem = new MenuItem(Messages.getString("FryskGui.16"), false); //$NON-NLS-1$
+	MenuItem consoleWindowItem = new MenuItem("Console Window", false); //$NON-NLS-1$
 	consoleWindowItem.addListener (new MenuItemListener()
 	    {
 		public void menuItemEvent(MenuItemEvent arg0){
@@ -279,7 +278,7 @@ public class Gui
 			Manager.eventLoop.run();
 		    }
 		    catch (Exception e) {
-			DialogManager.showErrorDialog(Messages.getString("FryskGui.17"), Messages.getString("FryskGui.18"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			DialogManager.showErrorDialog("Frysk Core Errors", "Frysk Core has reported the following errors", e); //$NON-NLS-1$ //$NON-NLS-2$
 			System.exit(1);
 		    }
 		}
@@ -311,7 +310,7 @@ public class Gui
 		checkFrysk.mkdirs();
 	    prefs.exportSubtree (new FileOutputStream (Config.FRYSK_DIR + SETTINGSFILE));
 	} catch (Exception e) {
-	    errorLogFile.log(Level.SEVERE, Messages.getString("FryskGui.25"), e); //$NON-NLS-1$
+	    errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
 
 	}
 

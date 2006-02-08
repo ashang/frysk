@@ -1,3 +1,7 @@
+2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java: Revert i8n.
+
 2006-02-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Gui.java (gui): Added a call to 
