@@ -96,7 +96,6 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMLine;
 import frysk.gui.common.IconManager;
-import frysk.gui.common.Messages;
 import frysk.gui.srcwin.prefs.BooleanPreference;
 import frysk.gui.srcwin.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.PreferenceWindow;
@@ -472,8 +471,7 @@ public class SourceWindow extends Window {
 		});
 
 		// Run program action
-		this.run = new Action("run", "Run", Messages
-				.getString("SourceWindow.26"), "frysk-run");
+		this.run = new Action("run", "Run", "Run Program", "frysk-run");
 		this.run.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doRun();
@@ -496,8 +494,7 @@ public class SourceWindow extends Window {
 		this.stop.setSensitive(false);
 
 		// Step action
-		this.step = new Action("step", "Step", Messages
-				.getString("SourceWindow.28"), "frysk-step");
+		this.step = new Action("step", "Step", "Step", "frysk-step");
 		this.step.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStep();
@@ -510,8 +507,7 @@ public class SourceWindow extends Window {
 		this.step.connectAccelerator();
 
 		// Next action
-		this.next = new Action("next", "Next", Messages
-				.getString("SourceWindow.30"), "frysk-next");
+		this.next = new Action("next", "Next", "Next", "frysk-next");
 		this.next.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doNext();
@@ -524,8 +520,7 @@ public class SourceWindow extends Window {
 		this.next.connectAccelerator();
 
 		// Finish action
-		this.finish = new Action("finish", "Finish", Messages
-				.getString("SourceWindow.32"), "frysk-finish");
+		this.finish = new Action("finish", "Finish", "Finish Function Call", "frysk-finish");
 		this.finish.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doFinish();
@@ -538,8 +533,7 @@ public class SourceWindow extends Window {
 		this.finish.connectAccelerator();
 
 		// Continue action
-		this.cont = new Action("continue", "Continue", Messages
-				.getString("SourceWindow.34"), "frysk-continue");
+		this.cont = new Action("continue", "Continue", "Continue Execution", "frysk-continue");
 		this.cont.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doContinue();
@@ -566,7 +560,7 @@ public class SourceWindow extends Window {
 
 		// Step assembly instruction action
 		this.stepAsm = new Action("stepAsm", "Step Assembly Instruction",
-				Messages.getString("SourceWindow.36"), "frysk-stepAI");
+				"Step Assembly Instruction", "frysk-stepAI");
 		this.stepAsm.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doAsmStep();
@@ -580,7 +574,7 @@ public class SourceWindow extends Window {
 
 		// Next assembly instruction action
 		this.nextAsm = new Action("nextAsm", "Next Assembly Instruction",
-				Messages.getString("SourceWindow.38"), "frysk-nextAI");
+				"Next Assembly Instruction", "frysk-nextAI");
 		this.nextAsm.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doAsmNext();
@@ -594,7 +588,7 @@ public class SourceWindow extends Window {
 
 		// Bottom of stack action
 		this.stackBottom = new Action("stackBottom", "To Bottom of Stack",
-				Messages.getString("SourceWindow.44"), "frysk-bottom");
+				"To Bottom of Stack", "frysk-bottom");
 		this.stackBottom.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackBottom();
@@ -608,7 +602,7 @@ public class SourceWindow extends Window {
 
 		// Stack down action
 		this.stackDown = new Action("stackDown", "Down One Stack Frame",
-				Messages.getString("SourceWindow.40"), "frysk-down");
+				"Down One Stack Frame", "frysk-down");
 		this.stackDown.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackDown();
@@ -621,8 +615,8 @@ public class SourceWindow extends Window {
 		this.stackDown.connectAccelerator();
 
 		// Stack up action
-		this.stackUp = new Action("stack Up", "Up One Stack Frame", Messages
-				.getString("SourceWindow.42"), "frysk-up");
+		this.stackUp = new Action("stack Up", "Up One Stack Frame", 
+			"Up One Stack Frame", "frysk-up");
 		this.stackUp.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
 				SourceWindow.this.doStackUp();
@@ -723,39 +717,39 @@ public class SourceWindow extends Window {
 		ToolItem item;
 
 		item = (ToolItem) this.run.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.26"), "");
+		item.setToolTip(this.tips, "Run Program", "");
 		toolbar.insert(item, 0);
 		item = (ToolItem) this.stop.createToolItem();
 		item.setToolTip(this.tips, "Stops execution", "");
 		toolbar.insert(item, 1);
 		item = (ToolItem) this.step.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.28"), "");
+		item.setToolTip(this.tips, "Step", "");
 		toolbar.insert(item, 2);
 		item = (ToolItem) this.next.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.30"), "");
+		item.setToolTip(this.tips, "Next", "");
 		toolbar.insert(item, 3);
 		item = (ToolItem) this.cont.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.34"), "");
+		item.setToolTip(this.tips, "Cotinue Execution", "");
 		toolbar.insert(item, 4);
 		item = (ToolItem) this.finish.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.32"), "");
+		item.setToolTip(this.tips, "Finish Function Call", "");
 		toolbar.insert(item, 5);
 		toolbar.insert((ToolItem) new SeparatorToolItem(), 6);
 		item = (ToolItem) this.stepAsm.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.38"), "");
+		item.setToolTip(this.tips, "Next Assembly Instruction", "");
 		toolbar.insert(item, 7);
 		item = (ToolItem) this.nextAsm.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.36"), "");
+		item.setToolTip(this.tips, "Step Assembly Instruction", "");
 		toolbar.insert(item, 8);
 		toolbar.insert((ToolItem) new SeparatorToolItem(), 9);
 		item = (ToolItem) this.stackUp.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.42"), "");
+		item.setToolTip(this.tips, "Up One Stack Frame", "");
 		toolbar.insert(item, 10);
 		item = (ToolItem) this.stackDown.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.40"), "");
+		item.setToolTip(this.tips, "Down One Stack Frame", "");
 		toolbar.insert(item, 11);
 		item = (ToolItem) this.stackBottom.createToolItem();
-		item.setToolTip(this.tips, Messages.getString("SourceWindow.44"), "");
+		item.setToolTip(this.tips, "To Bottom of Stack", "");
 		toolbar.insert(item, 12);
 
 		toolbar.showAll();
@@ -768,20 +762,20 @@ public class SourceWindow extends Window {
 	private void createSearchBar() {
 		// Add text to widgets
 		((Label) this.glade.getWidget(SourceWindow.FIND_LABEL))
-				.setLabel(Messages.getString("SourceWindow.12")); //$NON-NLS-1$
+				.setLabel("Find: "); //$NON-NLS-1$
 		((Label) this.glade.getWidget(SourceWindow.LINE_LABEL))
-				.setLabel(Messages.getString("SourceWindow.13")); //$NON-NLS-1$
+				.setLabel("Goto Line: "); //$NON-NLS-1$
 
 		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
-				.setLabel(Messages.getString("SourceWindow.14")); //$NON-NLS-1$
+				.setLabel("Next"); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.PREV_FIND))
-				.setLabel(Messages.getString("SourceWindow.15")); //$NON-NLS-1$
+				.setLabel("Previous"); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND))
-				.setLabel(Messages.getString("SourceWindow.16")); //$NON-NLS-1$
+				.setLabel("Highlight"); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.CASE_FIND))
-				.setLabel(Messages.getString("SourceWindow.17")); //$NON-NLS-1$
+				.setLabel("Match Case"); //$NON-NLS-1$
 		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON))
-				.setLabel(Messages.getString("SourceWindow.18")); //$NON-NLS-1$
+				.setLabel("Go"); //$NON-NLS-1$
 
 		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
 				.setImage(new Image(GtkStockItem.GO_FORWARD, IconSize.BUTTON));
@@ -797,23 +791,23 @@ public class SourceWindow extends Window {
 		tips
 				.setTip(
 						this.glade.getWidget(SourceWindow.NEXT_FIND),
-						Messages.getString("SourceWindow.19"), Messages.getString("SourceWindow.20")); //$NON-NLS-1$ //$NON-NLS-2$
+						"Find Next Match", "Locate the next occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
 		tips
 				.setTip(
 						this.glade.getWidget(SourceWindow.PREV_FIND),
-						Messages.getString("SourceWindow.21"), Messages.getString("SourceWindow.22")); //$NON-NLS-1$ //$NON-NLS-2$
+						"Find Previous Match", "Locate the previous occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
 		tips
 				.setTip(
 						this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND),
-						Messages.getString("SourceWindow.23"), Messages.getString("SourceWindow.24")); //$NON-NLS-1$ //$NON-NLS-2$
+						"Highlight All Matches", "Locate all occurances in the file"); //$NON-NLS-1$ //$NON-NLS-2$
 		tips
 				.setTip(
 						this.glade.getWidget(SourceWindow.GOTO_BUTTON),
-						Messages.getString("SourceWindow.25"), Messages.getString("SourceWindow.46")); //$NON-NLS-1$ //$NON-NLS-2$
+						"Go to Entered Line Number", "Jump to the line number that was entered"); //$NON-NLS-1$ //$NON-NLS-2$
 		tips
 				.setTip(
 						this.glade.getWidget(SourceWindow.CLOSE_FIND),
-						Messages.getString("SourceWindow.47"), Messages.getString("SourceWindow.48")); //$NON-NLS-1$ //$NON-NLS-2$
+						"Hide Find Window", "Close the find window"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/**
