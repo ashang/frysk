@@ -1,3 +1,8 @@
+2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* dialogs/WarnDialog.java: Revert i8n.
+	* dialogs/ErrorDialog.java: Revert i8n.
+
 2006-02-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* message.properties: Fix typo noted at sources.redhat.com bz 2284.

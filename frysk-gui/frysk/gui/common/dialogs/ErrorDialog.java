@@ -53,7 +53,6 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
-import frysk.gui.common.Messages;
 
 public class ErrorDialog extends Dialog{
 
@@ -71,7 +70,7 @@ public class ErrorDialog extends Dialog{
 	
 	public ErrorDialog(String message, Exception except) {
 		super();
-		this.title = Messages.getString("ErrorDialog.2"); //$NON-NLS-1$
+		this.title = "Error"; //$NON-NLS-1$
 	    this.message = message;
 		this.except = except;
 
@@ -83,7 +82,7 @@ public class ErrorDialog extends Dialog{
 		String stackText = ""; //$NON-NLS-1$
 		StackTraceElement[] stackElements = e.getStackTrace();
 		if (stackElements.length < 1)
-			return Messages.getString("ErrorDialog.4"); //$NON-NLS-1$
+			return "No Stack Trace Given"; //$NON-NLS-1$
 		
 		for (int i=0; i<stackElements.length; i++)
 			stackText = stackText + stackElements[i].toString() + "\n"; //$NON-NLS-1$
