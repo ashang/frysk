@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <linux/unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 int childPid;
 
@@ -97,10 +98,16 @@ int main (int argc, char **argv)
     sigaction (SIGUSR2, &action, NULL);
     sigemptyset (&a);
     // Signal to the parent process that child is ready.
-    write (fd2[1], "a", 1);
+    if (write (fd2[1], "a", 1) < 0){
+      perror ("write");
+      abort ();
+    }
     // Wait until we get a signal and then allow program to finish.
     sigsuspend (&a);
-    write (fd[1], "a", 1);
+    if (write (fd[1], "a", 1)){
+      perror ("write");
+      abort ();
+    }
     close (fd[1]);
   }
   else {
@@ -122,10 +129,16 @@ int main (int argc, char **argv)
       action.sa_flags = SA_RESTART;
     sigaction (SIGUSR1, &action, NULL);
     // Wait until child is ready.
-    read (fd2[0], buf, 1);
+    if (read (fd2[0], buf, 1)){
+      perror ("read");
+      abort ();
+    }
     // Indicate to frysk that parent and child processes are ready.
     tkill (fryskPid, fryskSig);
-    read (fd[0], buf, 1);
+    if (read (fd[0], buf, 1)){
+      perror ("read");
+      abort ();
+    }
     close (fd[0]);
   }
 

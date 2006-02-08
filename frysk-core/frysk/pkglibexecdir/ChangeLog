@@ -1,3 +1,9 @@
+2006-02-08  Adam Jocksch  <ajocksch@toothpaste.toronto.redhat.com>
+
+	* funit-syscallint.c (main): Fix compiler warnings.
+	* funit-modify.c (main): Now checks return value of fwrite, aborts
+	if it is != 1.
+
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* funit.java: Call Paths .setExecPrefix with PKGLIBEXECDIR.

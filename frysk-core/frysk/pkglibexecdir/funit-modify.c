@@ -84,7 +84,10 @@ main (int argc, char **argv)
   /* Write out the memory area address (and its size) so frysk
      can modify the memory without having to know the architecture.  */
   fp = fopen ("memAddr.file", "wb");
-  fwrite (&arrPtr, sizeof (arrPtr), 1, fp);
+  if (fwrite (&arrPtr, sizeof (arrPtr), 1, fp) != 1) {
+    perror ("fwrite");
+    abort ();
+  }
   fclose (fp);
  
   /* Signal to frysk that memory address is accessible via special file.  */ 
