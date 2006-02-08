@@ -389,15 +389,6 @@ gij.sh: Makefile
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-# When it comes to clean, automake forgets to scrub the .Po files
-# (which contain built dependencies).  After a file rename or similar,
-# this can result in a .Po file refering to a non-existant file.  Hack
-# around it by emptying all the .Po files.
-clean-local: clean-local-po
-.PHONY: clean-local-po
-clean-local-po:
-	find $(GEN_DIRS) -name '*.Po' -exec cp /dev/null \{\} \;
-
 SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 .fig.jpg:
 	mkdir -p `dirname $@`
@@ -429,6 +420,21 @@ EXTRA_DIST += \
 	$(srcdir)/common/m4/*.m4 \
 	$(srcdir)/autogen.sh
 
+# .Po files contain generated build dependencies.  Automake has no way
+# to efficiently detect a file rename or remove, and consequently, the
+# need to update .Po files that contain the no-longer-exists file.
+# Hack this by scrubbing .Po files as part of make clean -- this
+# abuses the developer's reflex to type: make - barf; make clean;
+# make :-)
+
+clean-local: clean-local-po
+.PHONY: clean-local-po
+clean-local-po:
+	find $(GEN_DIRS) -name '*.Po' -exec cp /dev/null \{\} \;
+
+# For distclean, which is ment to leave a 100% pristine source tree,
+# remove everything listed in .cvsignore.
+
 distclean-local: distclean-cvsignored
 .PHONY: distclean-cvsignored
 distclean-cvsignored:
@@ -442,7 +448,8 @@ distclean-cvsignored:
 # that it is faster to just feed all the files en-mass to the compiler
 # (then compile each individually).  Put the list into a file to avoid
 # having too-long an argument list.  Remember to filter out duplicate
-# directories (as occures when building in the source tree).
+# directories (as occures when building in the source tree).  An
+# explict clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files.list
 files.list: lib${GEN_DIRNAME}.a
@@ -460,7 +467,6 @@ files.list: lib${GEN_DIRNAME}.a
 	    done \
 	done > $@.tmp
 	mv $@.tmp $@
-
 ${GEN_DIRNAME}.jar: files.list
 	rm -rf $(GEN_CLASSDIR)
 	mkdir -p $(GEN_CLASSDIR)
@@ -479,7 +485,14 @@ ${GEN_DIRNAME}.jar: files.list
 clean-local: clean-classes-dir
 clean-classes-dir:
 	rm -rf $(GEN_CLASSDIR)
+
+# When ECJ is available, use it as an extra lint pass.  GCJ has the
+# habit of silently compiling invalid Java code (garbage in, garbage out),
+# fortunatly ECJ rejects it.
 
+if HAVE_ECJ
+all-local: ecj/checked
+endif
 ecj/checked: files.list
 	rm -rf ecj
 	mkdir -p ecj
@@ -499,7 +512,3 @@ ecj/checked: files.list
 clean-local: clean-ecj-dir
 clean-ecj-dir:
 	rm -rf ecj
-
-if HAVE_ECJ
-all-local: ecj/checked
-endif

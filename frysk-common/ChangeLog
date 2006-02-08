@@ -1,3 +1,8 @@
+2006-02-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules: Add more comments explaining local clean and
+	build rules.
+
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (GEN_DIRS): Don't add pkglibexecdir, and bindir.
