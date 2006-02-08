@@ -47,9 +47,11 @@ all its prerequesits are met.
 Red Hat Enterprise Linux 4 Update 3 includes <tt>gcc4</tt> and
 <tt><em>frysk</em></tt> RPM's that include everything needed to build
 <em>frysk</em> from CVS; just install those RPM's. <br> If you've an
-earlier RHEL 4 release, sources for the compiler and <em>frysk</em>
-libraries can be found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>
+earlier RHEL 4 release, sources for the compiler and specific
+<em>frysk</em> libraries can be found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>.  Please
+note that the RPM is specific to RHEL-4 and FC-4 (FC-5 has its own
+simpler RPM).
 
 <br>
 
@@ -88,6 +90,14 @@ You will need to install a number of packages vis:
 sudo yum install antlr jdom glib-java libgtk-java \
 libvte-java vte-devel libglade-java gcc-java
 </pre>
+
+<li>
+
+The <em>frysk</em> RPM included in FC-5 is very different to that used
+for RHEL-4 (the former is a lot simpler).  The Fedora Core 5 source
+RPM can be found in the <a
+href="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
+development SRPM directory</a>.
 
 </ul>
 
