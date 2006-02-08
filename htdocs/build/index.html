@@ -35,7 +35,7 @@ from CVS, on a number of systems.
 
 <p>
 First you will need to set up your system's build environment so that
-all its prerequesits are met.
+all its prerequisites are met.
 </p>
 
 <dl>
@@ -45,8 +45,8 @@ all its prerequesits are met.
 <dd>
 
 Red Hat Enterprise Linux 4 Update 3 includes <tt>gcc4</tt> and
-<tt><em>frysk</em></tt> RPM's that include everything needed to build
-<em>frysk</em> from CVS; just install those RPM's. <br> If you've an
+<tt><em>frysk</em></tt> RPMs that include everything needed to build
+<em>frysk</em> from CVS; just install those RPMs. <br> If you have an
 earlier RHEL 4 release, sources for the compiler and specific
 <em>frysk</em> libraries can be found <a
 href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>.  Please
@@ -67,15 +67,15 @@ tree</a>.
 <dd>
 
 With the release of Fedora Core 5 Test 2 it is possible to build and
-run <em>frysk</em> using the distributed rpms.  Just note:
+run <em>frysk</em> using the distributed RPMs.  Just note:
 
 <ul>
 
 <li>
 
 Either <tt>selinux</tt> should be disabled, or its database updated.
-Otherwize <tt>gij</tt> and <tt>gcj-dbtool</tt> behave wierd; and
-<tt>/proc</tt> will not be accessable
+Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt> behave weird; and
+<tt>/proc</tt> will not be accessible
 
 <li>
 
@@ -88,7 +88,7 @@ program).
 You will need to install a number of packages vis:
 <pre>
 sudo yum install antlr jdom glib-java libgtk-java \
-libvte-java vte-devel libglade-java gcc-java
+libvte-java vte-devel libglade-java gcc-java xmlto
 </pre>
 
 <li>
@@ -238,7 +238,7 @@ $ ( mkdir build && cd build && ../frysk/configure )
 Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
 include tests to ensure that the build system (compiler, kernel, and
 libraries) are working correctly.  Any FAILing tests should be
-investigated (XFAIL and XPASS tests are ok).</p>
+investigated (XFAIL and XPASS tests are OK).</p>
 
 <pre>
 $ ( cd build/frysk-imports/tests && make check )
