@@ -129,7 +129,7 @@ public class ProcMenu extends Menu{
 	public void popup(ProcData selected){
 		this.popup();
 		this.current = selected;
-		System.out.println("-- PID: " + current.getProc().getPid()); //$NON-NLS-1$
+		//System.out.println("-- PID: " + current.getProc().getPid()); //$NON-NLS-1$
 	}
 	
 }

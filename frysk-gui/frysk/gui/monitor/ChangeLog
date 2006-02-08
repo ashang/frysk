@@ -1,5 +1,7 @@
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ProcMenu.java (popup): Remove PID echo.
+
 	* DetailedObserverTreeView.java: Comment out
 	System.out.println statements used for debugging.
 	* DynamicWidget.java: Ditto.
