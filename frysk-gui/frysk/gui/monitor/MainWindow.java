@@ -69,6 +69,7 @@ public class MainWindow extends Window implements Saveable{
 		TearOffNotebook noteBook = new TearOffNotebook((glade.getWidget("noteBook")).getHandle()); //$NON-NLS-1$
 		//XXX:
 		noteBook.getClass();
+		noteBook.removePage(1);
 		this.showAll();
 	}
 
