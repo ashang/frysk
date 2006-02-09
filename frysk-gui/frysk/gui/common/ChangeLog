@@ -1,3 +1,7 @@
+2006-02-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* IconManager.java: Now added Pixbuf for splash screen.
+
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* dialogs/WarnDialog.java: Revert i8n.

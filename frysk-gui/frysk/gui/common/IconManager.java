@@ -40,6 +40,8 @@ public class IconManager {
 	
 	public static Pixbuf windowIcon;
 	
+	public static Pixbuf splashImage;
+	
 	public static void setImageDir(String[] path){
 		IMAGES_DIR = path;
 	}
@@ -105,6 +107,9 @@ public class IconManager {
 				}
 				
 				anim = new PixbufAnimation(IMAGES_DIR[i] + "/" + "fryskTrayIcon.gif");
+				
+				// Load the spash screen image
+				splashImage = new Pixbuf(IMAGES_DIR[i] + "/" + "SplashScreen.png");
 				
 			} catch (Exception e){
 				if(i == IMAGES_DIR.length - 1){
