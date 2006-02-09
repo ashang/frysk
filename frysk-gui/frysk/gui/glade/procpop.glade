@@ -128,7 +128,7 @@
 		    <widget class="GtkMenu" id="menuitem9_menu">
 
 		      <child>
-			<widget class="GtkMenuItem" id="about1">
+			<widget class="GtkMenuItem" id="aboutFrysk">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">_About</property>
 			  <property name="use_underline">True</property>
@@ -3032,6 +3032,17 @@
       </child>
     </widget>
   </child>
+</widget>
+
+<widget class="GtkAboutDialog" id="fryskAboutDialog">
+  <property name="destroy_with_parent">False</property>
+  <property name="name" translatable="yes">Frysk - Technology Preview</property>
+  <property name="license" translatable="yes">http://www.gnu.org/copyleft/gpl.html
+</property>
+  <property name="wrap_license">True</property>
+  <property name="website">http://sources.redhat.com/frysk</property>
+  <property name="website_label" translatable="yes">Frysk Website</property>
+  <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
 </widget>
 
 </glade-interface>
