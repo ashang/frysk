@@ -47,7 +47,7 @@ import org.jdom.Element;
  * */
 public class GuiObject extends GuiObservable implements SaveableXXX{
 	
-	private boolean saveObject = true;
+	private boolean saveObject;
 	
 	private String name;
 	private String toolTip;
@@ -55,11 +55,13 @@ public class GuiObject extends GuiObservable implements SaveableXXX{
 	public GuiObject(String name, String toolTip){
 		this.name = name;
 		this.toolTip = toolTip;
+		this.saveObject = true;
 	}
 
 	public GuiObject(GuiObject other) {
 		this.name = other.name;
 		this.toolTip = other.toolTip;
+		this.saveObject = other.saveObject;
 	}
 
 	public GuiObject() {

@@ -1,3 +1,9 @@
+2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Added "Save" Button to 
+	CustomObserverWindow
+	* Gui.java (gui): Added splash screen showing/hiding.
+	
 2006-02-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* images/SplashScreen.png: Added.

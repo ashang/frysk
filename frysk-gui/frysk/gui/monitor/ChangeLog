@@ -1,3 +1,14 @@
+2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* WindowManager.java: Added handle for splash screen.
+	* ProcData.java: Added hack to fix multiple addition of
+	and observer to a proc (last comment on 2303)..
+	* GuiObject.java (GuiObject): Fixed copy constructor (was
+	forgetting to copy value of saveObject).
+	* CustomeObserverWindow.java: Added support for saving and 
+	rolling back changes.
+	* SplashScreenWindow.java: New file.
+	
 2006-02-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* actions/ShowSourceWin.java (ShowSourceWin): Changed the menu 

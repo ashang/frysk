@@ -68,6 +68,7 @@ import org.gnu.gtk.event.KeyListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -115,7 +116,10 @@ public class CustomeObserverWindow extends Window implements Observer {
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
-					WindowManager.theManager.customeObserverWindow.hideAll();
+					if(DialogManager.showQueryDialog("Changes you have made will be lost.\nAre you sure you want to close Edit Dialog ?")){
+						dumpChanges();
+						WindowManager.theManager.customeObserverWindow.hideAll();
+					}
 				}
 			}
 		});
@@ -233,34 +237,32 @@ public class CustomeObserverWindow extends Window implements Observer {
 	
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 
-		button = (Button) glade.getWidget("customObserverCancelButton");
-		button.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					// Cancel... dump all editing refresh list.
-					CustomeObserverWindow.this.scratchList.clear();
-					CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
-				}
-			}
-		});
+//		button = (Button) glade.getWidget("customObserverCancelButton");
+//		button.addListener(new ButtonListener() {
+//			public void buttonEvent(ButtonEvent event) {
+//				if(event.isOfType(ButtonEvent.Type.CLICK)){
+//					
+//				}
+//			}
+//		});
 		
 		button = (Button) glade.getWidget("customObserverOkButton");
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					ObserverManager.theManager.getTaskObservers().clear();
-					Iterator iterator = CustomeObserverWindow.this.scratchList.iterator();
-					while (iterator.hasNext()) {
-						ObserverRoot observer = (ObserverRoot) iterator.next();
-						ObserverManager.theManager.addTaskObserverPrototype(observer);
-					}
-//					CustomeObserverWindow.this.scratchList.clear();
-//					CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+					commiteChanges();
 				}
 			}
 		});
 	
-		
+		button = (Button) glade.getWidget("customObserverSaveButton");
+		button.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					commiteChanges();
+				}
+			}
+		});
 	}
 	
 //	private void populateObserverTreeView() {
@@ -343,6 +345,20 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.scratchList.add(newObserver);
 		this.observerTreeView.setSelected(newObserver);//XXX
+	}
+	
+	private void commiteChanges(){
+		ObserverManager.theManager.getTaskObservers().clear();
+		Iterator iterator = CustomeObserverWindow.this.scratchList.iterator();
+		while (iterator.hasNext()) {
+			ObserverRoot observer = (ObserverRoot) iterator.next();
+			ObserverManager.theManager.addTaskObserverPrototype(observer);
+		}
+	}
+	
+	private void dumpChanges(){
+		CustomeObserverWindow.this.scratchList.clear();
+		CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
 	}
 	
 }

@@ -54,6 +54,9 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
+import org.gnu.glib.Fireable;
+import org.gnu.glib.Timer;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -64,25 +67,22 @@ import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.Config;
 import frysk.gui.common.IconManager;
-import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.common.Messages;
+import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.FryskErrorFileHandler;
-import frysk.gui.monitor.PreferenceWidget;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
-import frysk.proc.Manager;
-
-
-import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.srcwin.SourceWindowFactory;
+import frysk.proc.Manager;
 
 public class Gui
     implements LifeCycleListener, Saveable
 {
     LibGlade glade;
-
+    
     private static Logger errorLogFile = null;
     private static final String SETTINGSFILE = ".settings";
     private static final String GLADE_FILE = "procpop.glade";
@@ -111,7 +111,7 @@ public class Gui
 	    }
 	    break;
 	}
-		
+
 	try {
 	    WindowManager.theManager.initWindows (glade);
 	} catch (IOException e) {
@@ -287,15 +287,29 @@ public class Gui
 	
 	backendStarter.start();
 
-	WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
-	WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));
-	WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
+//	WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
+//	WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));
+//	WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
 
 	procpop.load(prefs);
 		
 	WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
-	WindowManager.theManager.mainWindow.showAll();
-		
+
+	
+	CustomEvents.addEvent(new Runnable() {
+		public void run() {
+			WindowManager.theManager.splashScreen.showAll();
+			Timer timer = new Timer(2000, new Fireable() {
+				public boolean fire() {
+					WindowManager.theManager.splashScreen.hideAll();
+					WindowManager.theManager.mainWindow.showAll();
+					return false;
+				}
+			});
+			timer.start();
+		}
+	});
+	
 	Gtk.main();
 		
 	Manager.eventLoop.requestStop();

@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+// type filter text
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -36,53 +36,23 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-/**
- * Used to store a pointer to the Proc object
- * and any data that is relates to the process but is gui specific.
- * Used to pass data to ActionPool Actions.
- * Actions also manipulate data stored in here
- * to keep it up to date.
- * for example the Attach action will set proc from null
- * to point to the Proc object returned by the backend
- * attach function.
- */
+
 package frysk.gui.monitor;
 
-import frysk.gui.monitor.observers.TaskObserverRoot;
-import frysk.proc.Proc;
+import org.gnu.gtk.Image;
+import org.gnu.gtk.Window;
+import org.gnu.gtk.WindowPosition;
 
-public class ProcData  extends GuiData{
-	private Proc proc;
-	
-	ProcData(Proc proc){
-		this.proc = proc;
-	}
+import frysk.gui.common.IconManager;
 
-	public void setProc(Proc proc) {
-		this.proc = proc;
-	}
+public class SplashScreenWindow extends Window {
 
-	public Proc getProc() {
-		return proc;
+	public SplashScreenWindow(){
+		Image image = new Image(IconManager.splashImage);
+		this.add(image);
+		this.setDecorated(false);
+		this.setPosition(WindowPosition.CENTER_ALWAYS);
+		this.setModal(true);
 	}
 	
-	public void add(final TaskObserverRoot observer){
-		
-		observer.onAdded(new Runnable() { 
-			public void run() {
-				//XXX: this will result in the Observer being
-				// added too many times this is solved by a 
-				// hack right now. better model should be found
-				//observers.add(observer);
-			}
-		});
-		
-		observer.onDeleted(new Runnable() {
-			public void run() {
-				observers.remove(observer);
-			}
-		});
-		observer.apply(this.proc);
-		observers.add(observer);
-	}
 }

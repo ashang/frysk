@@ -66,6 +66,7 @@ public class WindowManager implements Saveable{
 	public CustomeObserverWindow customeObserverWindow;
 	public ProgramAddWindow programAddWindow;
 	public AboutWindow aboutWindow;
+	public SplashScreenWindow splashScreen;
 	/**}*/
 	
 	public WindowManager(){
@@ -73,6 +74,8 @@ public class WindowManager implements Saveable{
 	}
 	
 	public void initWindows(LibGlade glade) throws IOException{
+		this.splashScreen = new SplashScreenWindow();
+		
 		this.mainWindow = new MainWindow(glade);
 		
 		this.aboutWindow = new AboutWindow(glade);
@@ -86,7 +89,6 @@ public class WindowManager implements Saveable{
 		this.programAddWindow = new ProgramAddWindow(glade);
 
 		this.menuBar = new MenuBar(glade);
-		
 	}
 
 	public void save(Preferences prefs) {

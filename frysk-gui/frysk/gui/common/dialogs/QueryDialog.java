@@ -37,106 +37,72 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
+/*
+ * Created on Sep 26, 2005
+ *
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
 package frysk.gui.common.dialogs;
 
-import org.gnu.glib.CustomEvents;
+import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.Label;
+import org.gnu.gtk.PolicyType;
+import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.event.DialogEvent;
+import org.gnu.gtk.event.DialogListener;
 
-/**
- * A class with public static methods for showing dialogs
- * and getting user responces
- * */
-public class DialogManager {
+
+public class QueryDialog extends Dialog{
+
+	private String title = ""; 
+	private String message = "";
+
+	private boolean result = false;
+	
+	public QueryDialog(String message) {
+		super();
+		this.title = "";
+	    this.message = message;
+		doImplementation();
+	}
 
 	
-	public static boolean showQueryDialog(String message){
-		QueryDialog myDialog = new QueryDialog(message);
-		myDialog.showAll();
-		myDialog.run();
-		return myDialog.getAnswer();
-	}
-	
-	/**
-	 * Pops up a WarnDialog with the given message
-	 * @param message the message to be shown to the user
-	 * */
-	public static void showWarnDialog(final String message){
-		final WarnDialog myDialog = new WarnDialog(message);
-		CustomEvents.addEvent(new Runnable(){
-			public void run() {		
-				myDialog.showAll();
-				myDialog.run();
-			}
-		});
-		try {
-			myDialog.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public static void showWarnDialog(final String title, final String message){
-		CustomEvents.addEvent(new Runnable(){
-			public void run() {
-				WarnDialog myDialog = new WarnDialog(title, message);
-				myDialog.showAll();
-				myDialog.run();
-				
-	
-			}
-		});
-	}
-	
-	public static synchronized void showErrorDialog(final String message, final Exception except){
+	private void doImplementation()
+	{
 		
-		final ErrorDialog myDialog = new ErrorDialog(message, except);
+		this.addButton(GtkStockItem.YES, 1);
+		this.addButton(GtkStockItem.NO, 2);
+		this.setTitle(this.title);
+		this.setDefaultSize(400,200);
+		HBox mainBox = new HBox(false,0);
+		this.getDialogLayout().add(mainBox);
 		
-		CustomEvents.addEvent(new Runnable(){
+		ScrolledWindow sWindow = new ScrolledWindow(null,null);
+		sWindow.setBorderWidth(10);
+		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
+		
+		Label warnLabel = new Label(this.message);
+		sWindow.addWithViewport(warnLabel);
+		
+		mainBox.packStart(sWindow,true, true, 0);
 
-			public void run() {
-
-				myDialog.showAll();
-				myDialog.run();
-				DialogManager.myNotifyAll();
+		this.addListener(new DialogListener(){
+			public boolean dialogEvent(DialogEvent event) {
+				if(event.getResponse() == 1){
+					result = true;
+				}else{
+					result = false;
+				}
+				hideAll();
+				return false;
 			}
 		});
 		
-
-		try {
-			DialogManager.class.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
 	}
 	
-	public static synchronized void showErrorDialog(String title, String message,
-		Exception except){
-		
-		final ErrorDialog myDialog = new ErrorDialog(title, message, except);
-		
-		CustomEvents.addEvent(new Runnable(){
-			public void run() {
-				myDialog.showAll();
-				myDialog.run();
-				DialogManager.myNotifyAll();
-			}
-		});
-		
-		try {
-			DialogManager.class.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+	public boolean getAnswer(){
+		return this.result;
 	}
-	
-	public synchronized static void myNotifyAll(){
-		DialogManager.class.notifyAll();
-	}
-
-
 }
