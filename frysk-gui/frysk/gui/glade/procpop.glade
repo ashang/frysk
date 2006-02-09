@@ -3041,8 +3041,7 @@
 </property>
   <property name="wrap_license">True</property>
   <property name="website">http://sources.redhat.com/frysk</property>
-  <property name="website_label" translatable="yes">Frysk Website</property>
-  <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
+  <property name="website_label" translatable="no">Frysk Website</property>
 </widget>
 
 </glade-interface>

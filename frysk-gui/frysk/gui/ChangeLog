@@ -5,7 +5,9 @@
 
 2006-02-09  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* glade/procpop.glade: Added About window
+	* glade/procpop.glade: Removed Credits button.
+
+	* glade/procpop.glade: Added About window.
 
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 	
