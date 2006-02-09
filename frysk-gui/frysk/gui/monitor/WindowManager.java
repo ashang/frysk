@@ -65,6 +65,7 @@ public class WindowManager implements Saveable{
 	public PreferencesWindow prefsWindow;
 	public CustomeObserverWindow customeObserverWindow;
 	public ProgramAddWindow programAddWindow;
+	public AboutWindow aboutWindow;
 	/**}*/
 	
 	public WindowManager(){
@@ -74,6 +75,7 @@ public class WindowManager implements Saveable{
 	public void initWindows(LibGlade glade) throws IOException{
 		this.mainWindow = new MainWindow(glade);
 		
+		this.aboutWindow = new AboutWindow(glade);
 		
 		this.logWindow = new LogWidget(glade);
 		

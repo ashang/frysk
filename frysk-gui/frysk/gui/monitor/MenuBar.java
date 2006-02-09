@@ -85,6 +85,14 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 				WindowManager.theManager.customeObserverWindow.hideAll();
 			}
 		});
+		
+		item = (MenuItem) glade.getWidget("aboutFrysk");
+		item.addListener(new MenuItemListener(){
+			public void menuItemEvent(MenuItemEvent arg0) {
+				WindowManager.theManager.aboutWindow.showAll();
+			}
+		});
+
 	}
 	
 }

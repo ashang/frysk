@@ -1,3 +1,11 @@
+2006-02-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* MenuBar.java (menuItemEvent): Added about window
+	menubar event.
+	* AboutWindow.java (AboutWindow): Added.
+	* WindowManager.java (initWindows): Added About
+	window to window manager.
+
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcMenu.java (popup): Remove PID echo.
