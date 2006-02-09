@@ -5,6 +5,7 @@ package frysk.gui.srcwin;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -118,31 +119,37 @@ public class SourceWindowFactory {
 				int line = 1;
 				int offset = 0;
 				int[] execLines = new int[] {0,0,0,0,0,0,0,1,0,0,0,1,0,0};
-				try{
-					reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test2.cpp")));
-					while(reader.ready()){
-						String text = reader.readLine()+"\n";
-						source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
-						if(execLines[line-1] == 1)
-                            source.getLine(line).setExecutable(true);
-                        else
-                            source.getLine(line).setExecutable(false);
-						
-						if(line++ == 12){
-							String lineText = source.getLine(12).getText();
-                        	source.getLine(12).addInlineInst("bar", lineText.indexOf("bar"), 3, 9);
-                        	DOMInlineInstance instance = source.getLine(12).getInlineInst("bar");
-                        	instance.addInlineInst("baz",10,3,22);
-                        	instance = instance.getInlineInstance();
-                        	instance.addInlineInst("foobar",10,6,4);
-						}
-						
-						offset += text.length();
+					try {
+						reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test2.cpp")));
+					} catch (FileNotFoundException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
 					}
-				}
-				catch(Exception e){
-					e.printStackTrace();
-				}
+					try {
+						while(reader.ready()){
+							String text = reader.readLine()+"\n";
+							source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
+							if(execLines[line-1] == 1)
+						        source.getLine(line).setExecutable(true);
+						    else
+						        source.getLine(line).setExecutable(false);
+							
+							if(line++ == 12){
+								String lineText = source.getLine(12).getText();
+						    	source.getLine(12).addInlineInst("bar", lineText.indexOf("bar"), 3, 9);
+						    	DOMInlineInstance instance = source.getLine(12).getInlineInst("bar");
+						    	instance.addInlineInst("baz",10,3,22);
+						    	instance = instance.getInlineInstance();
+						    	instance.addInlineInst("foobar",10,6,4);
+							}
+							
+							offset += text.length();
+						}
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				
                 
 				StackLevel stack1 = new StackLevel(source, 12);
 				

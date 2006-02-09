@@ -1,3 +1,10 @@
+2006-02-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* actions/ShowSourceWin.java (ShowSourceWin): Changed the menu 
+	item for the source window launcher to indicate that this is only
+	sample code and isn't meant to represent the state of execution of
+	the program.
+
 2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* StatusWidget.java: Removed limitation from StripChard widget

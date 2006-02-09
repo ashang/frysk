@@ -45,7 +45,7 @@ import frysk.proc.Task;
 public class ShowSourceWin extends TaskAction {
 	
 	public ShowSourceWin() {
-		super("Source", "Show a source window."); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Source (EXAMPLE ONLY)", "Show a source window.\n This is an example only and does not reflect the state of your program"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public ShowSourceWin(ShowSourceWin other) {

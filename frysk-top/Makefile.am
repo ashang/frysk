@@ -39,7 +39,6 @@
 
 CLEANFILES =
 
-
 SUBDIRS = \
 	frysk-imports \
 	frysk-sys \
