@@ -144,8 +144,7 @@ echo_LDFLAGS ()
 	*dir/* )
                 local base=`echo "${class}" | sed -e 's,.*\.,,'`
                 echo "${name_}_LDFLAGS = --main=${base}"
-                echo "${name_}_LDFLAGS += -Djava.library.path=@RPATH@"
-                echo "${name_}_LDFLAGS += -Wl,-rpath,@RPATH@"
+                echo "${name_}_LDFLAGS += \${GEN_${GEN_BASEUNAME}_RPATH_FLAGS}"
 		;;
 	* )
 	        echo "${name_}_LDFLAGS = --main=${class}"
@@ -170,6 +169,7 @@ GEN_MAKENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,_,g'`
 GEN_PACKAGENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,.,g'`
 GEN_SOURCENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,/,g'`
 GEN_BASENAME=`echo ${GEN_DIRNAME} | sed -e 's,.*-,,'`
+GEN_BASEUNAME=`echo ${GEN_BASENAME} | tr 'a-z' 'A-Z'`
 print_header Makefile.gen.in arguments: ${GEN_ARGS}
 echo GEN_ARGS="${GEN_ARGS}"
 echo GEN_DIRS = ${dirs}
@@ -177,6 +177,8 @@ echo GEN_DIRNAME=${GEN_DIRNAME}
 echo GEN_PACKAGENAME=${GEN_PACKAGENAME}
 echo GEN_SOURCENAME=${GEN_SOURCENAME}
 echo GEN_BASENAME=${GEN_BASENAME}
+echo GEN_BASEUNAME=${GEN_BASEUNAME}
+echo GEN_${GEN_BASEUNAME}_RPATH_FLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
 
 
 # Generate rules to compile any .jar and _JAR files.

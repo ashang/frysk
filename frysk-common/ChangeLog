@@ -1,3 +1,9 @@
+2006-02-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (GEN_BASEUNAME): Define
+	(GEN_${GEN_BASEUNAME}_RPATH_FLAGS): Define.
+	(echo_LDFLAGS): Append to each programs LDFLAGS.
+
 2006-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules: Add more comments explaining local clean and
