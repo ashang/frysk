@@ -106,7 +106,7 @@ public class StatusWidget extends VBox{
 		
 		//========================================
 		this.area = new Stripchart();
-		this.area.resize (500, 150);
+		this.area.resize (1, 1);
 		this.area.setBackgroundRGB (65536, 28000, 28000);
 		this.area.setUpdate (1111);
 		this.area.setRange (60000);

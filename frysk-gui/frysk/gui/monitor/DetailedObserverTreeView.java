@@ -58,7 +58,6 @@ import org.gnu.gtk.TreeViewColumn;
 
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.filters.FilterPoint;
-import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
@@ -77,19 +76,19 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	private HashMap map;
 	private Vector listObservers;
 
-	public DetailedObserverTreeView() {
+	public DetailedObserverTreeView(ObservableLinkedList observers) {
 		super();
-		this.init();
+		this.init(observers);
 	}
 
-	public DetailedObserverTreeView(Handle handle) {
+	public DetailedObserverTreeView(Handle handle, ObservableLinkedList observers) {
 		super(handle);
-		this.init();
+		this.init(observers);
 	}
 
-	private void init() {
+	private void init(ObservableLinkedList observers) {
 		this.setHeadersVisible(false);
-		
+		this.observerList = observers;
 //		this.getSelection().addListener(new TreeSelectionListener() {
 //			public void selectionChangedEvent(TreeSelectionEvent event) {
 //				System.out.println("SELECTED: " + getSelectedObject());
@@ -113,8 +112,6 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		nameCol.packStart(cellRendererText, false);
 		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
 		this.appendColumn(nameCol);
-		
-		this.observerList = ObserverManager.theManager.getTaskObservers();
 		
 		this.addObserverList(observerList);
 	}

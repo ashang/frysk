@@ -79,7 +79,6 @@ public class CustomeObserverWindow extends Window implements Observer {
 	private Entry customObserverNameEntry;
 
 	private ListView baseObserverTreeView;
-//	private ListView sourceActionsTreeView;
 
 	private FilterWidget filterWidget;
 	private ActionsWidget actionsWidget;
@@ -91,12 +90,14 @@ public class CustomeObserverWindow extends Window implements Observer {
 	
 	ObserverRoot selectedObserver;
 	
-	//private HashMap observerBackup;
+	//private Vector observerBackup;
+	
+	private ObservableLinkedList scratchList;
 	
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle()); //$NON-NLS-1$
 		
-		//this.observerBackup = new HashMap();
+		this.scratchList = new ObservableLinkedList(ObserverManager.theManager.getTaskObservers());
 		
 		//=========================================
 		Button button = (Button) glade.getWidget("customObserverOkButton"); //$NON-NLS-1$
@@ -138,7 +139,6 @@ public class CustomeObserverWindow extends Window implements Observer {
 				}
 				return false;
 			}
-		
 		});
 		
 		this.customObserverNameEntry.addListener(new FocusListener() {
@@ -153,11 +153,12 @@ public class CustomeObserverWindow extends Window implements Observer {
 		
 		//=========================================
 		this.baseObserverTreeView = new ListView(((TreeView)glade.getWidget("baseObserversTreeView")).getHandle()); //$NON-NLS-1$
-		ObserverManager.theManager.addObserver(new Observer(){
-			public void update(Observable observable, Object obj) {
-				populateObserverTreeView();
-			}
-		});
+		this.baseObserverTreeView.watchLinkedList(scratchList);
+//		ObserverManager.theManager.addObserver(new Observer(){
+//			public void update(Observable observable, Object obj) {
+//				populateObserverTreeView();
+//			}
+//		});
 
 	
 		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
@@ -167,11 +168,11 @@ public class CustomeObserverWindow extends Window implements Observer {
 				add();
 			}
 		});
-		this.populateObserverTreeView();
+//		this.populateObserverTreeView();
 		//=========================================
 		
 		//=========================================
-		this.observerTreeView = new DetailedObserverTreeView(((TreeView)glade.getWidget("simplexListView")).getHandle()); //$NON-NLS-1$
+		this.observerTreeView = new DetailedObserverTreeView(((TreeView)glade.getWidget("simplexListView")).getHandle(), this.scratchList); //$NON-NLS-1$
 		this.observerTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
 				setSelectedObserver(observerTreeView.getSelectedObserver());
@@ -231,22 +232,43 @@ public class CustomeObserverWindow extends Window implements Observer {
 		this.updateActionsSummary(""); //$NON-NLS-1$
 	
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
+
+		button = (Button) glade.getWidget("customObserverCancelButton");
+		button.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					// Cancel... dump all editing refresh list.
+					CustomeObserverWindow.this.scratchList.clear();
+					CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+				}
+			}
+		});
+		
+		button = (Button) glade.getWidget("customObserverOkButton");
+		button.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					ObserverManager.theManager.getTaskObservers().clear();
+					Iterator iterator = CustomeObserverWindow.this.scratchList.iterator();
+					while (iterator.hasNext()) {
+						ObserverRoot observer = (ObserverRoot) iterator.next();
+						ObserverManager.theManager.addTaskObserverPrototype(observer);
+					}
+//					CustomeObserverWindow.this.scratchList.clear();
+//					CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+				}
+			}
+		});
+	
+		
 	}
 	
-//	private void populateSourceActionsTreeView() {
-//		Iterator iter = ActionManager.theManager.getProcActions().iterator();
-//
+//	private void populateObserverTreeView() {
+//		Iterator iter = ObserverManager.theManager.getTaskObservers().iterator();
 //		while(iter.hasNext()){
-//			this.sourceActionsTreeView.add((Action) iter.next());
+//			this.baseObserverTreeView.add((ObserverRoot) iter.next());
 //		}
 //	}
-
-	private void populateObserverTreeView() {
-		Iterator iter = ObserverManager.theManager.getTaskObservers().iterator();
-		while(iter.hasNext()){
-			this.baseObserverTreeView.add((ObserverRoot) iter.next());
-		}
-	}
 	
 	private void setObserverName(String name){
 		this.selectedObserver.setName(name);
@@ -297,7 +319,8 @@ public class CustomeObserverWindow extends Window implements Observer {
 	 * */
 	public void createNewObserver(){
 		ObserverRoot newObserver = new ObserverRoot("New Observer",""); //$NON-NLS-1$ //$NON-NLS-2$
-		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
+		this.scratchList.add(newObserver);
+		//ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.observerTreeView.setSelected(newObserver); //XXX
 	}
 
@@ -306,7 +329,8 @@ public class CustomeObserverWindow extends Window implements Observer {
 	 * observer).
 	 * */
 	public void remove(){
-		ObserverManager.theManager.removeTaskObserverPrototype(this.selectedObserver);
+		//ObserverManager.theManager.removeTaskObserverPrototype(this.selectedObserver);
+		this.scratchList.remove(this.selectedObserver);
 	}
 
 	/**
@@ -316,35 +340,9 @@ public class CustomeObserverWindow extends Window implements Observer {
 	public void add(){
 		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
 		newObserver.setName(this.customObserverNameEntry.getText());
-		ObserverManager.theManager.addTaskObserverPrototype(newObserver);
+		//ObserverManager.theManager.addTaskObserverPrototype(newObserver);
+		this.scratchList.add(newObserver);
 		this.observerTreeView.setSelected(newObserver);//XXX
 	}
 	
-//	/**
-//	 * Check to see if the @link ObserverManager has that observer
-//	 * if it does, store a back up copy if not store null so that it
-//	 * can be removed when a restore is performed.
-//	 * @param observer observer to be backed up.
-//	 * */
-//	private void backupObserver(ObserverRoot observer){
-//		//XXX: Not implemented.
-//		throw new RuntimeException("Not implemented");
-//	}
-//	
-//	/**
-//	 * Delete all the back up observer copies that have been made.
-//	 * */
-//	private void clearBackupObservers(){
-//		//XXX: Not implemented.
-//		throw new RuntimeException("Not implemented");
-//	}
-//	
-//	/**
-//	 * Restore all observers in the @link ObserverManager.
-//	 * */
-//	private void restoreObservers(){
-//		//XXX: Not implemented.
-//		throw new RuntimeException("Not implemented");
-//	}
-//	
 }

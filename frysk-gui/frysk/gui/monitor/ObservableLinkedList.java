@@ -73,6 +73,11 @@ public class ObservableLinkedList extends LinkedList{
 		this.itemAdded = new GuiObservable();
 		this.itemRemoved = new GuiObservable();
 		
+		this.copyFromList(other);
+		
+	}
+	
+	public void copyFromList(ObservableLinkedList other){
 		Iterator iterator = other.iterator();
 		while (iterator.hasNext()) {
 			Object original = iterator.next() ;
@@ -88,7 +93,6 @@ public class ObservableLinkedList extends LinkedList{
 				e.printStackTrace();
 			}
 		}
-		
 	}
 	
 	public boolean add(Object o){
@@ -117,4 +121,9 @@ public class ObservableLinkedList extends LinkedList{
 		} 
 	}
 	
+	public void clear(){
+		for (int i = 0; i < this.size(); ) {
+			this.remove(i);	
+		}
+	}
 }

@@ -1,3 +1,15 @@
+2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StatusWidget.java: Removed limitation from StripChard widget
+	closed (bz 2303).
+	* ObservableLinkedList.java: Overwrote the clear() function.
+	* MenuBar.java (menuItemEvent): Removed creation of a new observer
+	upon showing the CustomObserverWindow.
+	* DetailedObserverTreeView.java: Changed constructor to take
+	in a list of observers so that it can handle a scratch list.
+	* CustomeObserverWindow.java: Added handling for roling back
+	editing.
+
 2006-02-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* MenuBar.java (menuItemEvent): Added about window
