@@ -104,7 +104,7 @@ int main (int argc, char **argv)
     }
     // Wait until we get a signal and then allow program to finish.
     sigsuspend (&a);
-    if (write (fd[1], "a", 1)){
+    if (write (fd[1], "a", 1) < 0) {
       perror ("write");
       abort ();
     }
@@ -129,13 +129,13 @@ int main (int argc, char **argv)
       action.sa_flags = SA_RESTART;
     sigaction (SIGUSR1, &action, NULL);
     // Wait until child is ready.
-    if (read (fd2[0], buf, 1)){
+    if (read (fd2[0], buf, 1) < 0) {
       perror ("read");
       abort ();
     }
     // Indicate to frysk that parent and child processes are ready.
     tkill (fryskPid, fryskSig);
-    if (read (fd[0], buf, 1)){
+    if (read (fd[0], buf, 1) < 0) {
       perror ("read");
       abort ();
     }
