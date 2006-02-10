@@ -99,16 +99,19 @@ EOF
 
 echo_MANS ()
 {
-    if test -r $1.xml ; then
-	echo "EXTRA_DIST += $1.xml"
-        # extract the section number
-	local n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $1.xml`
-	local d=`dirname $1`
-        # And the possible list of names.
-	sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $1.xml \
-	    | while read title ; do
-	    # Need to generate explicit rules
-	    cat <<EOF
+    case "$1" in
+      *dir/* )
+          # Only programs in bindir, pkglibexecdir et.al. get man pages.
+          if test -r $1.xml ; then
+	      echo "EXTRA_DIST += $1.xml"
+              # extract the section number
+              local n=`sed -n -e 's,.*<manvolnum>\([0-9]\)</manvolnum>.*,\1,p' < $1.xml`
+              local d=`dirname $1`
+              # And the possible list of names.
+	      sed -n -e 's,^.*<refname>\(.*\)</refname>.*$,\1,p' < $1.xml \
+	          | while read title ; do
+                  # Need to generate explicit rules
+                  cat <<EOF
 man_MANS += ${d}/${title}.${n}
 CLEANFILES += ${d}/${title}.${n}
 ${d}/${title}.${n}: $1.xml
@@ -116,8 +119,10 @@ ${d}/${title}.${n}: $1.xml
 	\$(XMLTO) -o ${d} man \$@.tmp
 	rm -f \$@.tmp
 EOF
-	done
-    fi
+	      done
+	  fi
+	  ;;
+  esac
 }
 
 echo_PROGRAMS ()
@@ -127,7 +132,6 @@ echo_PROGRAMS ()
             # extract the directory prefix
             local dir=`echo /"$1" | sed -e 's,.*/\([a-z]*\)dir/.*,\1,'`
             echo "${dir}_PROGRAMS += $1"
-	    echo_MANS $1
 	    ;;
         * )
 	    echo "noinst_PROGRAMS += $1"
@@ -135,22 +139,30 @@ echo_PROGRAMS ()
     esac
 }
 
+# Convert path to the automake equivalent (/ replaced with _).
+echo_name_ ()
+{
+    echo "$1" | sed -e 'y,/-,__,'
+}
+
+# Print the LD flags for program.
 echo_LDFLAGS ()
 {
     local name=$1
-    local name_=$2
+    local name_=`echo_name_ $1`
     local class=`echo $1 | tr '[/]' '[.]'`
     case "${name}" in
 	*dir/* )
                 local base=`echo "${class}" | sed -e 's,.*\.,,'`
                 echo "${name_}_LDFLAGS = --main=${base}"
-                echo "${name_}_LDFLAGS += \${GEN_${GEN_BASEUNAME}_RPATH_FLAGS}"
+                echo "${name_}_LDFLAGS += \${GEN_${GEN_UBASENAME}_RPATH_FLAGS}"
 		;;
 	* )
 	        echo "${name_}_LDFLAGS = --main=${class}"
                 echo "${name_}_LDFLAGS += \$(GEN_GCJ_RPATH_FLAGS)"
 		;;
     esac
+    echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
 }
 
 has_main ()
@@ -169,7 +181,7 @@ GEN_MAKENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,_,g'`
 GEN_PACKAGENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,.,g'`
 GEN_SOURCENAME=`echo ${GEN_DIRNAME} | sed -e 's,-,/,g'`
 GEN_BASENAME=`echo ${GEN_DIRNAME} | sed -e 's,.*-,,'`
-GEN_BASEUNAME=`echo ${GEN_BASENAME} | tr 'a-z' 'A-Z'`
+GEN_UBASENAME=`echo ${GEN_BASENAME} | tr 'a-z' 'A-Z'`
 print_header Makefile.gen.in arguments: ${GEN_ARGS}
 echo GEN_ARGS="${GEN_ARGS}"
 echo GEN_DIRS = ${dirs}
@@ -177,8 +189,8 @@ echo GEN_DIRNAME=${GEN_DIRNAME}
 echo GEN_PACKAGENAME=${GEN_PACKAGENAME}
 echo GEN_SOURCENAME=${GEN_SOURCENAME}
 echo GEN_BASENAME=${GEN_BASENAME}
-echo GEN_BASEUNAME=${GEN_BASEUNAME}
-echo GEN_${GEN_BASEUNAME}_RPATH_FLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
+echo GEN_UBASENAME=${GEN_UBASENAME}
+echo GEN_${GEN_UBASENAME}_RPATH_FLAGS = -Djava.library.path=@RPATH@ -Wl,-rpath,@RPATH@
 
 
 # Generate rules to compile any .jar and _JAR files.
@@ -304,13 +316,11 @@ EXTRA_DIST += common/TestRunner.javain
 nodist_TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
 ${nodist_lib_sources} += ${GEN_SOURCENAME}/JUnitTests.java
-TestRunner_LINK = \${GCJLINK}
-TestRunner_LDFLAGS = --main=TestRunner \${GEN_GCJ_RPATH_FLAGS}
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
 EOF
-
+echo_LDFLAGS TestRunner
 
 # Generate SOURCES list for all files.
 
@@ -336,17 +346,18 @@ for suffix in .java ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
-	name_=`echo ${name} | sed -e 'y,/-,__,'`
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	test -r "${d}/${b}.javain" && continue
 	test -r "${d}/${b}.g" && continue
 	test -r "${d}/${b}.sed" && continue
 	if has_main ${file} ; then
+	    name_=`echo_name_ ${name}`
 	    echo_PROGRAMS ${name}
+	    echo_MANS ${name}
 	    echo "${name_}_SOURCES = ${file}"
 	    echo "${name_}_LINK = \$(GCJLINK)"
-	    echo_LDFLAGS ${name} ${name_}
+	    echo_LDFLAGS ${name}
 	    echo "${name_}_LDADD = \$(GEN_GCJ_LDADD)"
 	else
 	    echo "${sources} += ${file}"
@@ -367,6 +378,7 @@ for suffix in .cxx .c .hxx ; do
 	    echo "${name_}_SOURCES = ${file}"
 	    test ${suffix} = .cxx && echo "${name_}_LINK = \$(CXXLINK)"
 	    echo_PROGRAMS ${name}
+	    echo_MANS ${name}
 	    if grep pthread.h ${file} > /dev/null 2>&1 ; then
 		echo "${name_}_LDADD = -lpthread"
 	    fi
