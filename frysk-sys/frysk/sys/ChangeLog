@@ -1,3 +1,10 @@
+2006-02-10  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (handler): If poll_jmpbuf is invalid, throw a
+	RuntimeException.
+	(poll): Mark when poll_jmpbuf is valid.
+	(struct poll_jmpbuf): Replace poll_env, a per-thread buffer.
+
 2005-12-21  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/XXX.cxx: Delete.

@@ -42,12 +42,14 @@
 #include <signal.h>
 #include <alloca.h>
 #include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
 
 #include <gcj/cni.h>
 #include <gnu/gcj/RawDataManaged.h>
 
 #include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/Tid.h"
 #include "frysk/sys/Poll.h"
 #include "frysk/sys/Poll$Fds.h"
 #include "frysk/sys/Poll$SignalSet.h"
@@ -57,11 +59,19 @@
 // If there's a signal abort the wait() function using a longjmp (and
 // return the signal).  Should the jmpbuf be per-thread?
 
-sigjmp_buf poll_env;
+struct poll_jmpbuf {
+  bool p;
+  sigjmp_buf buf;
+};
+__thread struct poll_jmpbuf poll_jmpbuf;
+
 static void
 handler (int signum)
 {
-  siglongjmp (poll_env, signum);
+  if (!poll_jmpbuf.p)
+    throwRuntimeException ("frysk.sys.Poll: bad jmpbuf", "tid",
+			   frysk::sys::Tid::get ());
+  siglongjmp (poll_jmpbuf.buf, signum);
 }
 
 gnu::gcj::RawDataManaged*
@@ -103,7 +113,9 @@ frysk::sys::Poll$SignalSet::empty ()
   sigset_t* sigset = (sigset_t*) get ();
   sigemptyset (sigset);
 }
+
 
+
 void
 frysk::sys::Poll$Fds::init ()
 {
@@ -139,12 +151,12 @@ frysk::sys::Poll$Fds::addPollIn (jint fd)
   addPollFd (fds, numFds, fd, POLLIN);
 }
 
-
 
+
 void
 frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
-					     frysk::sys::Poll$Observer* pollObserver,
-					     jlong timeout)
+			frysk::sys::Poll$Observer* pollObserver,
+			jlong timeout)
 {
   // Set up a SIGSETJMP call that jumps back to here when any watched
   // signal is delivered.  This code then notifies the client of the
@@ -154,7 +166,7 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
   // more events, or a timeout has occured).
 
   sigset_t mask = *(sigset_t*) frysk::sys::Poll$SignalSet::get ();
-  int signum = sigsetjmp (poll_env, 1);
+  int signum = sigsetjmp (poll_jmpbuf.buf, 1);
   if (signum > 0) {
     // Remove the signal from the local copy of the signal-mask set,
     // doing this allows other signals to get through (otherwize this
@@ -167,22 +179,19 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
     timeout = 0;
   }
 
-  // Wait for an event.  If any sort of signal occures, long jump back
-  // to the above which adds the signal to the event queue and then
-  // sets things up again (minus that signal).  Wrapped in a SIGSETJMP
-  // call which actives on any signal - avoids a race condition where
-  // a signal can be missed while entering poll.  Even when there
-  // isn't a poll, disable/enable masks - letting a signal pass
-  // through.
-
-  int status = 0;
-
-  sigprocmask (SIG_UNBLOCK, &mask, 0);
+  // Unblock signals, and then wait for an event.  During the period
+  // after the unmask, but before the poll call, signals could be
+  // delivered but missed.  Avoid the problem by having the signal
+  // handler longjmp back to above re-starting this code and forcing
+  // the poll (even if it wasn't reached) to be canceled.
+  poll_jmpbuf.p = true;
+  pthread_sigmask (SIG_UNBLOCK, &mask, 0);
   errno = 0;
-  status = ::poll ((struct pollfd*)pollFds->fds, pollFds->numFds, timeout);
+  int status = ::poll ((struct pollfd*)pollFds->fds, pollFds->numFds, timeout);
   if (status < 0)
     status = -errno; // Save the errno.
-  sigprocmask (SIG_BLOCK, &mask, NULL);
+  pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  poll_jmpbuf.p = false;
 
   // Did something go wrong?
   if (status < 0) {
