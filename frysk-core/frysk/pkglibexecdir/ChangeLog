@@ -1,3 +1,7 @@
+2006-02-10  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-syscallint.c (main): Allow EINTR as a return code.
+
 2006-02-09  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-syscallint.c (main): Fix return status check for <<read>>,

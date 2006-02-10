@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@
 #include <linux/unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
 int childPid;
 
@@ -98,15 +99,19 @@ int main (int argc, char **argv)
     sigaction (SIGUSR2, &action, NULL);
     sigemptyset (&a);
     // Signal to the parent process that child is ready.
-    if (write (fd2[1], "a", 1) < 0){
-      perror ("write");
-      abort ();
+    if (write (fd2[1], "a", 1) < 0) {
+      if (errno != EINTR) {
+	perror ("write");
+	abort ();
+      }
     }
     // Wait until we get a signal and then allow program to finish.
     sigsuspend (&a);
     if (write (fd[1], "a", 1) < 0) {
-      perror ("write");
-      abort ();
+      if (errno != EINTR) {
+	perror ("write");
+	abort ();
+      }
     }
     close (fd[1]);
   }
@@ -130,14 +135,18 @@ int main (int argc, char **argv)
     sigaction (SIGUSR1, &action, NULL);
     // Wait until child is ready.
     if (read (fd2[0], buf, 1) < 0) {
-      perror ("read");
-      abort ();
+      if (errno != EINTR) {
+	perror ("read");
+	abort ();
+      }
     }
     // Indicate to frysk that parent and child processes are ready.
     tkill (fryskPid, fryskSig);
     if (read (fd[0], buf, 1) < 0) {
-      perror ("read");
-      abort ();
+      if (errno != EINTR) {
+	perror ("read");
+	abort ();
+      }
     }
     close (fd[0]);
   }
