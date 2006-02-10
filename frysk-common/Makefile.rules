@@ -491,7 +491,9 @@ clean-classes-dir:
 # fortunatly ECJ rejects it.
 
 if HAVE_ECJ
-all-local: ecj/checked
+all-local: ecj/checked glade.checked
+else
+all-local: glade.checked
 endif
 ecj/checked: files.list
 	rm -rf ecj
@@ -512,3 +514,20 @@ ecj/checked: files.list
 clean-local: clean-ecj-dir
 clean-ecj-dir:
 	rm -rf ecj
+
+# Run through the glade files and check to see that they don't contain
+# references to glade libraries
+
+glade.checked:
+	for f in $(glade_DATA) ; do \
+		echo checking $(srcdir)/$$f; \
+		if xmllint --noout --valid $(srcdir)/$$f; then \
+			if grep 'lib="gnome"' $(srcdir)/$$f; then \
+				echo Gnome library found in $(srcdir)/$$f;\
+				exit 1; \
+			fi; \
+		else \
+			echo Malformed glade xml file: $(srcdir)/$$f; \
+			exit 1; \
+		fi; \
+        done 
