@@ -1,5 +1,17 @@
 2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ObservableLinkedList.java (swap): New function swaps and old
+	object for an new one and palces it at the same position.
+	* DetailedObserverTreeView.java: Newly added objects are now
+	automatically selected.
+	Observers are added to their proper position in the list instead
+	of at the end of the tree.
+	* CustomeObserverWindow.java (swap): New function swaps
+	a selected observer for a new one. 
+	Added Handling for null selection.
+	
+2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* observers/TaskCloneObserver.java: Changed return type of
 	getCopy() from TaskObserverRoot to ObserverRoot.
 	* observers/TaskSyscallObserver.java: Ditto. 

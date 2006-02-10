@@ -168,8 +168,9 @@ public class CustomeObserverWindow extends Window implements Observer {
 		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent event) {
 				updateBaseObserverSummary(baseObserverTreeView.getSelectedObject().getName());
-				remove();
-				add();
+				if(selectedObserver != null){
+					swap();
+				}
 			}
 		});
 //		this.populateObserverTreeView();
@@ -294,7 +295,10 @@ public class CustomeObserverWindow extends Window implements Observer {
 	}
 	
 	public void setSelectedObserver(ObserverRoot selectedObserver){
-		if(selectedObserver == null) return;
+		if(selectedObserver == null){ 
+			this.selectedObserver = null;
+			return;
+		}
 		if(this.selectedObserver != null){
 			this.selectedObserver.deleteObserver(this);
 		}
@@ -345,6 +349,12 @@ public class CustomeObserverWindow extends Window implements Observer {
 		//ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.scratchList.add(newObserver);
 		this.observerTreeView.setSelected(newObserver);//XXX
+	}
+	
+	public void swap(){
+		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
+		newObserver.setName(this.customObserverNameEntry.getText());
+		this.scratchList.swap(this.selectedObserver, newObserver);
 	}
 	
 	private void commiteChanges(){

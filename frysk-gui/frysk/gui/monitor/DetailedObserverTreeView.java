@@ -116,12 +116,12 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.addObserverList(observerList);
 	}
 	
-	private void addObserverList(ObservableLinkedList list) {
+	private void addObserverList(final ObservableLinkedList list) {
 		Iterator iterator = list.iterator();
 		
 		Observer itemAddedObserver = new Observer() {
 			public void update(Observable observable, Object object) {
-				addObserverRoot((ObserverRoot) object);
+				addObserverRoot(list.indexOf(object),(ObserverRoot) object);
 			}
 		}; 
 		list.itemAdded.addObserver(itemAddedObserver);
@@ -137,7 +137,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		
 		while (iterator.hasNext()) {
 			GuiObject object = (GuiObject) iterator.next();
-			addObserverRoot((ObserverRoot) object);
+			addObserverRoot(list.indexOf(object),(ObserverRoot) object);
 		}
 	}
 
@@ -172,9 +172,9 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.remove(observer);
 	}
 	
-	private void addObserverRoot(ObserverRoot observer){
+	private void addObserverRoot(int index, ObserverRoot observer){
 //		System.out.println("DetailedObserverTreeView.addObserverRoot()========= " + observer.getName());
-		this.add(observer, (GuiObject)null);
+		this.add(observer, (GuiObject)null, index);
 		
 		//filterPoints
 		GuiObject label = new GuiObject("FilterPoints",""); //$NON-NLS-1$ //$NON-NLS-2
@@ -265,6 +265,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		this.treeStore.setValue(iter, objectDC, guiObject);
 		this.map.put(guiObject, iter);
 		guiObject.addObserver(this);
+		this.setSelected(guiObject);
 //		System.out.println("\n===========================================");
 //		System.out.println("DetailedObserverTreeView.add() adding " + guiObject.getName() + " " + guiObject );
 //		Thread.dumpStack();
@@ -281,6 +282,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 	}
 	
 	public ObserverRoot getSelectedObserver(){
+		
 		if(this.getSelection().getSelectedRows().length == 0){
 			return null;
 		}

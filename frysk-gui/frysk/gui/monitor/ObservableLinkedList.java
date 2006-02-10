@@ -126,4 +126,19 @@ public class ObservableLinkedList extends LinkedList{
 			this.remove(i);	
 		}
 	}
+	
+	/**
+	 * Removed oldObject and add newObject in its spot 
+	 * @param oldObject
+	 * @param newObject
+	 */
+	public void swap(Object oldObject, Object newObject){
+		int index = this.indexOf(oldObject);
+		if(index < 0){
+			throw new IllegalArgumentException("The object passed oldObject ["+ oldObject +"] is not an element in this list");
+		}
+		
+		this.remove(index);
+		this.add(index, newObject);
+	}
 }
