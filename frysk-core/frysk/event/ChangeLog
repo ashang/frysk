@@ -1,3 +1,7 @@
+2006-02-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TestSigChild.java: New.
+
 2006-01-30  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java: Instead of frysk.Config, import
