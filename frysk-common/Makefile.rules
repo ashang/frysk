@@ -491,9 +491,7 @@ clean-classes-dir:
 # fortunatly ECJ rejects it.
 
 if HAVE_ECJ
-all-local: ecj/checked glade.checked
-else
-all-local: glade.checked
+all-local: ecj/checked
 endif
 ecj/checked: files.list
 	rm -rf ecj
@@ -518,6 +516,7 @@ clean-ecj-dir:
 # Run through the glade files and check to see that they don't contain
 # references to glade libraries
 
+all-local: glade.checked
 glade.checked:
 	for f in $(glade_DATA) ; do \
 		echo checking $(srcdir)/$$f; \

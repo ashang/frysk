@@ -1,5 +1,8 @@
 2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Makefile.rules: Added seperate line to add glade.checked to
+	all-local.
+
 	* Makefile.rules: Added glade.checked target to run xmllint on the
 	glade files and check for references to the gnome libraries.
 
