@@ -102,6 +102,15 @@ GEN_GCJ_RPATH_FLAGS = \
 	-Djava.library.path=$(GEN_GCJ_RPATH) \
 	-Wl,-rpath,$(GEN_GCJ_RPATH)
 
+# Prevent GCJ from creating child processses (or at least a feable
+# attempt) -- children are created for both demangling and for
+# addr2line lookups.  Without this FRYSK and GCJ end up fighting over
+# who owns SIGCHLD.
+GEN_GCJ_NO_SIGCHLD_FLAGS = \
+	-Dgnu.gcj.runtime.NameFinder.demangle=false \
+	-Dgnu.gcj.runtime.NameFinder.use_addr2line=false
+
+
 # Get some common macro definitions
 
 ACLOCAL_AMFLAGS = -I common/m4
