@@ -152,6 +152,13 @@ public class ObjectFactory {
 		return document.getRootElement();
 	}
 	
+	
+	public boolean deleteNode(String path){
+		File file = new File(path);
+		return file.delete();
+	}
+	
+	
 	public void makeDir(String path){
 		File store = new File(path);
 		if (store.exists() == false){

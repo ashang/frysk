@@ -1,3 +1,8 @@
+2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestObserverSaveLoad.java (testExport): Cleaned up
+	after test is run (closed bz 2318).
+
 2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Added "Save" Button to 

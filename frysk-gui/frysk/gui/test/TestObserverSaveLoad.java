@@ -177,8 +177,9 @@ public class TestObserverSaveLoad extends TestCase{
 		//customize taskForkedObserver
 		LogAction logAction = new LogAction();
 		taskForkedObserver.genericActionPoint.addAction(logAction);
-		taskForkedObserver.setName("MyCustomObserver");
+		taskForkedObserver.setName("MyCustomObserverXXX");
 		observerManager.addTaskObserverPrototype(taskForkedObserver);
+		observerManager.save();
 		
 		ObserverManager anotherObserverManager = new ObserverManager();
 		assertEquals("Number of Observers", observerManager.getTaskObservers().size(), anotherObserverManager.getTaskObservers().size());
@@ -195,6 +196,8 @@ public class TestObserverSaveLoad extends TestCase{
 		assertEquals("Class Type", taskForkedObserver.getClass(), myLoadedObserver.getClass());
 		assertEquals("ObserverName", taskForkedObserver.getName(), myLoadedObserver.getName());
 		assertEquals("Number of Actions", taskForkedObserver.genericActionPoint.getActions().size(), myLoadedObserver.genericActionPoint.getActions().size());
+
+		observerManager.removeTaskObserverPrototype(taskForkedObserver);
 	}
 	
 }

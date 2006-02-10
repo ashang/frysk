@@ -1,3 +1,10 @@
+2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: Added deletion from disk
+	after observer removal.
+	* ObjectFactory.java (deleteNode): Added deletion of a node
+	saved to disk.
+
 2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* WindowManager.java: Added handle for splash screen.
