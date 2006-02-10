@@ -1,3 +1,13 @@
+2006-02-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (echo_LDFLAGS): Append $(GEN_GCJ_NO_SIGCHLD_FLAGS).
+	(echo_name_): New function.
+	(echo_LDFLAGS): Use.
+	(echo_MANS): Check if man page is needed.
+	(echo_PROGRAMS): Move call to echo_MANS out of echo_PROGRAMS.
+	(GEN_UBASENAME): Rename GEN_BASEUNAME).
+	* Makefile.rules (GEN_GCJ_NO_SIGCHLD_FLAGS): Define.
+
 2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.rules: Fixed broken build.
