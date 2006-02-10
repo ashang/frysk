@@ -1,3 +1,7 @@
+2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DummySourceWindow.java: Added.
+
 2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestObserverSaveLoad.java (testExport): Cleaned up
