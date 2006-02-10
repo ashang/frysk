@@ -1,5 +1,8 @@
 2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Makefile.rules: Fixed complaints from automake about all-local
+	appearing multiple times.
+
 	* Makefile.rules: Added seperate line to add glade.checked to
 	all-local.
 
