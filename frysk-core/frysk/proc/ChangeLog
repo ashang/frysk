@@ -1,3 +1,9 @@
+2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DummyHost.java: Added.
+	* DummyProc.java: Added.
+	* DummyTask.java: Added.
+
 2006-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* HostObserver.java: New file.  Draft.
