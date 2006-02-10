@@ -90,7 +90,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		task.requestAddForkedObserver(this);
 	}
 	
-	public TaskObserverRoot getCopy(){
+	public ObserverRoot getCopy(){
 		return new TaskForkedObserver(this);
 	}
 	

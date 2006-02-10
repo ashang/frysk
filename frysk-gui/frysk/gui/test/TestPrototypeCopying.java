@@ -60,7 +60,7 @@ public class TestPrototypeCopying extends TestCase{
 		while (iter.hasNext()) {
 			TaskObserverRoot a = (TaskObserverRoot) iter.next();
 			System.out.println("Testing copy of :" + a.getName());
-			TaskObserverRoot b = observerManager.getTaskObserverCopy(a);
+			ObserverRoot b = observerManager.getTaskObserverCopy(a);
 			assertCorrectCopy(a, b);
 		}
 	}

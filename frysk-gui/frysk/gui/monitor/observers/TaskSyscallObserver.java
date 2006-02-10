@@ -130,7 +130,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		task.requestAddSyscallObserver(this);
 	}
 	
-	public TaskObserverRoot getCopy(){
+	public ObserverRoot getCopy(){
 		return new TaskSyscallObserver(this);
 	}
 	

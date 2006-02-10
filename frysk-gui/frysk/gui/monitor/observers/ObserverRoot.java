@@ -251,5 +251,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 			return myString;
 		}
-		
+
+		public ObserverRoot getCopy() {
+			return new ObserverRoot(this);
+		}
 	}

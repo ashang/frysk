@@ -72,7 +72,10 @@ public class ObserverManager extends  Observable {
 	 * */
 	private ObservableLinkedList taskObservers;
 	
+	private ObservableLinkedList baseObservers;
+	
 	public ObserverManager(){
+		this.baseObservers = new ObservableLinkedList();
 		this.taskObservers = new ObservableLinkedList();
 		this.initTaskObservers();
 		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
@@ -88,27 +91,32 @@ public class ObserverManager extends  Observable {
 		ObserverRoot observer = new TaskExecObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
+		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
+		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
+		this.addBaseObserverPrototype(observer.getCopy());
 		
 		
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
+		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		observer = new TaskSyscallObserver();
 		observer.dontSaveObject();
 		this.addTaskObserverPrototype(observer);
+		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
@@ -136,7 +144,7 @@ public class ObserverManager extends  Observable {
 	 * @param prototype a prototype of the observer to be
 	 * instantiate.
 	 * */
-	public TaskObserverRoot getTaskObserverCopy(TaskObserverRoot prototype){
+	public ObserverRoot getTaskObserverCopy(TaskObserverRoot prototype){
 		return prototype.getCopy();
 	}
 	
@@ -148,6 +156,10 @@ public class ObserverManager extends  Observable {
 		return this.taskObservers;
 	}
 
+	public ObservableLinkedList getBaseObservers(){
+		return this.baseObservers;
+	}
+	
 	/**
 	 * Replace the given ObserverRoot with the other ObserverRoot.
 	 * @param toBeRemoved the observer that will be removed and replaced.
@@ -174,6 +186,10 @@ public class ObserverManager extends  Observable {
 			ObjectFactory.theFactory.saveObject(observer, node);
 			ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
 		}
+	}
+	
+	public void addBaseObserverPrototype(ObserverRoot observer){
+		this.baseObservers.add(observer);
 	}
 	
 	/**

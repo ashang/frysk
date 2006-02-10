@@ -95,7 +95,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		task.requestAddClonedObserver(this);
 	}
 	
-	public TaskObserverRoot getCopy(){
+	public ObserverRoot getCopy(){
 		return new TaskCloneObserver(this);
 	}
 	

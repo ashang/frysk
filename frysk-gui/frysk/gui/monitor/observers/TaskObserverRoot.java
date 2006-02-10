@@ -40,6 +40,5 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 	}
 	
 	public abstract void apply(Task task);
-	
-	public abstract TaskObserverRoot getCopy();
+
 }

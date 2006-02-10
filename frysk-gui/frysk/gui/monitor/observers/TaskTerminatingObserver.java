@@ -88,7 +88,7 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 		task.requestAddTerminatingObserver(this);
 	}
 	
-	public TaskObserverRoot getCopy(){
+	public ObserverRoot getCopy(){
 		return new TaskTerminatingObserver(this);
 	}
 

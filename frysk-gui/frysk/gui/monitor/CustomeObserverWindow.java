@@ -157,7 +157,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 		
 		//=========================================
 		this.baseObserverTreeView = new ListView(((TreeView)glade.getWidget("baseObserversTreeView")).getHandle()); //$NON-NLS-1$
-		this.baseObserverTreeView.watchLinkedList(scratchList);
+		this.baseObserverTreeView.watchLinkedList(ObserverManager.theManager.getBaseObservers());
 //		ObserverManager.theManager.addObserver(new Observer(){
 //			public void update(Observable observable, Object obj) {
 //				populateObserverTreeView();

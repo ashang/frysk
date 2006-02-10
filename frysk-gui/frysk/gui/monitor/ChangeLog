@@ -1,5 +1,22 @@
 2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/TaskCloneObserver.java: Changed return type of
+	getCopy() from TaskObserverRoot to ObserverRoot.
+	* observers/TaskSyscallObserver.java: Ditto. 
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskObserverRoot.java: Removed getCopy().
+	* observers/ObserverRoot.java: Moved getCopy up from 
+	TaskObserverRoot.
+	* observers/ObserverManager.java: Added baseObserver list
+	for use by clients requiring base observers for reference.
+	* CustomeObserverWindow.java: Made BaseObserver view watch
+	baseObserver list instead of the original observer list (
+	closed bz 2316).
+
+2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* observers/ObserverManager.java: Added deletion from disk
 	after observer removal.
 	* ObjectFactory.java (deleteNode): Added deletion of a node

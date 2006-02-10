@@ -68,7 +68,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 		task.requestAddExecedObserver(this);
 	}
 	
-	public TaskObserverRoot getCopy(){
+	public ObserverRoot getCopy(){
 		return new TaskExecObserver(this);
 	}
 	
