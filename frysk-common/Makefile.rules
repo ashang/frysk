@@ -494,7 +494,7 @@ all-local: ecj/checked
 ecj/checked: files.list
 	rm -rf ecj
 	mkdir -p ecj
-	if HAVE_ECJ
+if HAVE_ECJ
 	$(ECJ) \
 		-d ecj \
 		-warn:+semicolon \
@@ -506,7 +506,7 @@ ecj/checked: files.list
 	then rm $@.log ; false ; \
 	fi
 	rm -f $@.log
-	endif
+endif
 	touch $@
 .PHONY: clean-ecj-dir
 clean-local: clean-ecj-dir
