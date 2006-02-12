@@ -39,7 +39,10 @@
 
 package frysk.proc;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Observer;
+import java.util.Observable;
 import frysk.sys.Pid;
 
 /**
@@ -322,6 +325,59 @@ public class TestRefresh
 	// XXX: What about notification.
     }
 
+    /**
+     * Check that when a process exits, all its children are removed
+     * (and moved to pid 1).
+     */
+    public void testExitLoosesAllChildren ()
+    {
+	AckProcess daemon = new AckDaemonProcess ();
+	daemon.addFork ();
+	daemon.addFork ();
+	daemon.addFork ();
+
+	// Find the process and it's children.
+	Proc daemonProc = daemon.findProcUsingRefresh ();
+
+	// Monitor proc deleted events looking for the daemon being
+	// removed.
+	class DaemonCheck
+	    implements Observer
+	{
+	    Proc procOne = host.getProc (new ProcId (1));
+	    Proc proc;
+	    boolean deleted;
+	    Collection children;
+	    DaemonCheck (Proc proc)
+	    {
+		this.proc = proc;
+		this.children = proc.getChildren ();
+	    }
+	    public void update (Observable o, Object obj)
+	    {
+		Proc d = (Proc) obj;
+		if (d != proc)
+		    return;
+		assertFalse ("deleted", deleted);
+		assertEquals ("proc has no children", 0,
+			      proc.getChildren ().size ());
+		for (Iterator i = children.iterator (); i.hasNext (); ) {
+		    Proc child = (Proc) i.next ();
+		    assertSame ("child has 1 as parent", procOne,
+				child.getParent ());
+		}
+		deleted = true;
+	    }
+	}
+	DaemonCheck daemonCheck = new DaemonCheck (daemonProc);
+	host.observableProcRemovedXXX.addObserver (daemonCheck);
+
+	// Blow away the daemon, force an update.
+	daemon.fryParent ();
+	host.requestRefreshXXX (false);
+	Manager.eventLoop.runPending ();
+	assertTrue ("daemonCheck.deleted", daemonCheck.deleted);
+    }
     /**
      * Check that a refresh involving a zombie is ok.
      *

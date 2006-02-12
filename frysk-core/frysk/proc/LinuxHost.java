@@ -156,6 +156,8 @@ public class LinuxHost
 
     void sendRefresh (boolean refreshAll)
     {
+	// Iterate (build) the /proc tree, passing each found PID to
+	// procChanges where it can update the /proc tree.
 	final ProcChanges procChanges = new ProcChanges ();
 	IdBuilder pidBuilder = new IdBuilder ()
 	    {
@@ -165,6 +167,7 @@ public class LinuxHost
 		}
 	    };
 	pidBuilder.construct ();
+	// If requested, tell each process that it too should refresh.
 	if (refreshAll) {
 	    // Changes individual process.
 	    for (Iterator i = procPool.values ().iterator(); i.hasNext (); ) {
