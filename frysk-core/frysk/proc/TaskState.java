@@ -436,6 +436,7 @@ class TaskState
 		// Remove all tasks, retaining just this one.
 		logger.log (Level.FINE, "{0} ExecedEvent\n", this); 
 		task.proc.retain (task);
+		((LinuxProc)task.proc).getStat ().refresh();
 		if (task.notifyExeced () > 0) {
 		    return blockedContinue;
 		}

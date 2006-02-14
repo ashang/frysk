@@ -224,7 +224,7 @@ public class LinuxHost
 	PollWaitOnSigChld ()
 	{
 	    super (Sig.CHLD);
-	    logger.log (Level.FINE, "{0} new\n"); 
+	    logger.log (Level.FINE, "{0} new\n", this); 
 	}
 	Wait.Observer waitObserver = new Wait.Observer ()
 	    {

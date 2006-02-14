@@ -86,8 +86,7 @@ public abstract class Proc
      */
     public String getCommand ()
     {
-	if (command == null)
-	    command = sendrecCommand ();
+	command = sendrecCommand ();
 	return command;
     }
     private String command;
@@ -99,8 +98,7 @@ public abstract class Proc
      */
     public String getExe ()
     {
-	if (exe == null)
-	    exe = sendrecExe ();
+	exe = sendrecExe ();
 	return exe;
     }
     private String exe;
@@ -111,8 +109,7 @@ public abstract class Proc
      */
     public String[] getCmdLine ()
     {
-	if (argv == null)
-	    argv = sendrecCmdLine ();
+	argv = sendrecCmdLine ();
 	return argv;
     }
     protected abstract String[] sendrecCmdLine ();

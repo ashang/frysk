@@ -1,3 +1,11 @@
+2006-02-14  Stan Cox  <scox@redhat.com>
+
+	* TaskState.java (processExecedEvent): Refresh stat call.
+	* Proc.java (getCommand): Don't cache.
+	(getExe): Likewise.
+	(getCmdLine): Likewise.
+	* LinuxHost.java (PollWaitOnSigChld):  Pass arg to logger message.
+
 2006-02-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestRefresh.java (testExitLoosesAllChildren): New.
