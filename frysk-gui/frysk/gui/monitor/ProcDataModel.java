@@ -174,7 +174,7 @@ public class ProcDataModel {
 	}
 
 	/**
-	 * Showes only processies that match the given argument
+	 * Shows only processes that match the given argument
 	 * @param type the type of the desired filter, must be one 
 	 *        of PsParser.FilterType
 	 * @param argument the criteria that must be matched 	
@@ -189,7 +189,7 @@ public class ProcDataModel {
 	}
 
 	/**
-	 * Showes only processies that match the given argument
+	 * Shows only processes that match the given argument
 	 * @param type the type of the desired filter, must be one 
 	 *        of PsParser.FilterType
 	 * @param argument the criteria that must be matched 
@@ -214,7 +214,7 @@ public class ProcDataModel {
 			type != FilterType.PID &&
 			type != FilterType.UID &&
 			type != FilterType.COMMAND) {
-				errorLog.log(Level.WARNING,"Thrown excpetion Invalid FilterType"); //$NON-NLS-1$
+				errorLog.log(Level.WARNING,"Thrown exception Invalid FilterType"); //$NON-NLS-1$
 				throw(new Exception("Invalid FilterType argument")); //$NON-NLS-1$
 		}
 		this.currentFilter = type;
@@ -246,8 +246,8 @@ public class ProcDataModel {
 
 	public TreeModel getModel() {
 //		XXX: filtering should be part of the view not model		return this.filteredStore;
-				return this.treeStore;
-			}
+		return this.treeStore;
+	}
 	
 	/**
 	 * Called to filter entries in the treeStore
@@ -294,9 +294,9 @@ public class ProcDataModel {
 	
 	/**
 	 * called to refilter an entry
-	 * if a node is found to be visble it sents the parents to
+	 * if a node is found to be visible it sents the parents to
 	 * be visible as well.
-	 * more effecient than topDownFilter when just one entry has
+	 * more efficient than topDownFilter when just one entry has
 	 * been added.
 	 * @see topDownFilter
 	 * */
@@ -377,7 +377,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, procDataDC, (new ProcData(proc)));
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, threadParentDC, -1); // -1 == N/A
-					
+
 				 }
 			});
         }
@@ -390,16 +390,25 @@ public class ProcDataModel {
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
-
+					//System.out.println(this+": ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
+					
 					try{
 						if(iter == null){
 							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						treeStore.removeRow(iter);
 						iterHash.remove(proc.getId());
+						
+						int n = iter.getChildCount();
+						for (int i = 0; i < n; i++) {
+							if(treeStore.getValue(iter, threadParentDC) == -1){
+								reparent(treeStore.getIter("0"), iter.getChild(i));
+							}
+						}
 					}catch (NullPointerException e) {
 						errorLog.log(Level.WARNING,"proc " + proc + "Not found in TreeIter HasTable. Cannot be removed",e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
+
 				}
 			});
 		}
@@ -446,6 +455,7 @@ public class ProcDataModel {
 				public void run() {
 					final Task task = (Task) obj;
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
+					//System.out.println(this+": TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
 					try{
 						if(iter == null){
 							throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -459,5 +469,55 @@ public class ProcDataModel {
 			});
 		}
     }
+    
+    private void reparent(TreeIter newParent, TreeIter child){
+    		//System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
+    		TreeIter to = this.treeStore.insertRow(newParent, 0);
+    		copyRow(to, child);
+    		
+    		int n = child.getChildCount();
+    		for (int i = 0; i < n; i++) {
+    			reparent(to, child.getChild(i));
+    		}
 
+    		treeStore.removeRow(child);
+    }
+
+    private void copyRow(TreeIter to, TreeIter from){
+    		// switch iters in hash
+    		Object data = treeStore.getValue(from, procDataDC);
+    		if(data instanceof ProcData){
+    			ProcData procData = (ProcData)data;
+    			TreeIter iter = (TreeIter) iterHash.get(procData.getProc().getId());
+    			if(!iter.toString().equals(from.toString())){
+    				try {
+						throw new Exception("Corrupted data: iter retrieved from hash table ["+ iter+"] is not the same as given iter ["+ from +"]");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    			}
+  //  			iterHash.remove(procData.getProc().getId());
+    			iterHash.put(procData.getProc().getId(), to);
+    		}else{
+    			TaskData taskData = (TaskData)data;
+    			TreeIter iter = (TreeIter) iterHash.get(taskData.getTask().getTaskId());
+    			if(!iter.toString().equals(from.toString())){
+    				try {
+						throw new Exception("Corrupted data: iter retrieved from hash table ["+ iter+"] is not the same as given iter ["+ from +"]");
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    			}
+//    			iterHash.remove(taskData.getTask().getTaskId());
+    			iterHash.put(taskData.getTask().getTaskId(), to);
+    		}
+    		
+    		treeStore.setValue(to, commandDC,      treeStore.getValue(from, commandDC));
+		treeStore.setValue(to, pidDC,          treeStore.getValue(from, pidDC));
+		treeStore.setValue(to, procDataDC,     treeStore.getValue(from, procDataDC));
+		treeStore.setValue(to, weightDC,       treeStore.getValue(from, weightDC));
+		treeStore.setValue(to, threadParentDC, treeStore.getValue(from, threadParentDC));
+    }
 }
