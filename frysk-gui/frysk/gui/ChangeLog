@@ -1,5 +1,7 @@
 2006-02-15  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DummySourceWindow.java: Removed excess imports.
+
 	* glade/frysk_source.glade: Re-added labels into glade file, changed
 	padding and alignment of search bar items.
 	* glade/frysk_source_prefs.glade: Changed padding.
