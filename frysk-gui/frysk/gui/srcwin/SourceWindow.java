@@ -69,6 +69,8 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SeparatorToolItem;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
@@ -117,7 +119,7 @@ public class SourceWindow extends Window {
 	public static final String FIND_TEXT = "findText";
 	public static final String FIND_BOX = "findBox";
 	public static final String FIND_LABEL = "findLabel"; //$NON-NLS-1$
-	public static final String LINE_LABEL = "lineLabel"; //$NON-NLS-1$
+	public static final String LINE_LABEL = "gotoLabel"; //$NON-NLS-1$
 	public static final String NEXT_FIND = "nextFind"; //$NON-NLS-1$
 	public static final String PREV_FIND = "prevFind"; //$NON-NLS-1$
 	public static final String HIGHLIGHT_FIND = "highlightFind"; //$NON-NLS-1$
@@ -760,22 +762,6 @@ public class SourceWindow extends Window {
 	 * Adds icons, text, and tooltips to the widgets in the search bar
 	 */
 	private void createSearchBar() {
-		// Add text to widgets
-		((Label) this.glade.getWidget(SourceWindow.FIND_LABEL))
-				.setLabel("Find: "); //$NON-NLS-1$
-		((Label) this.glade.getWidget(SourceWindow.LINE_LABEL))
-				.setLabel("Goto Line: "); //$NON-NLS-1$
-
-		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
-				.setLabel("Next"); //$NON-NLS-1$
-		((Button) this.glade.getWidget(SourceWindow.PREV_FIND))
-				.setLabel("Previous"); //$NON-NLS-1$
-		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND))
-				.setLabel("Highlight"); //$NON-NLS-1$
-		((Button) this.glade.getWidget(SourceWindow.CASE_FIND))
-				.setLabel("Match Case"); //$NON-NLS-1$
-		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON))
-				.setLabel("Go"); //$NON-NLS-1$
 
 		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
 				.setImage(new Image(GtkStockItem.GO_FORWARD, IconSize.BUTTON));
@@ -787,26 +773,24 @@ public class SourceWindow extends Window {
 				.setImage(new Image(new GtkStockItem("frysk-highlight"),
 						IconSize.BUTTON));
 
+		SizeGroup group1 = new SizeGroup(SizeGroupMode.HORIZONTAL);
+		group1.addWidget(this.glade.getWidget(CLOSE_FIND));
+		group1.addWidget(this.glade.getWidget("gotoPadding"));
+		
+		SizeGroup group2 = new SizeGroup(SizeGroupMode.HORIZONTAL);
+		group2.addWidget(this.glade.getWidget(FIND_LABEL));
+		group2.addWidget(this.glade.getWidget(LINE_LABEL));
+		
 		// add Tooltips
-		tips
-				.setTip(
-						this.glade.getWidget(SourceWindow.NEXT_FIND),
+		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND),
 						"Find Next Match", "Locate the next occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
-		tips
-				.setTip(
-						this.glade.getWidget(SourceWindow.PREV_FIND),
+		tips.setTip(this.glade.getWidget(SourceWindow.PREV_FIND),
 						"Find Previous Match", "Locate the previous occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
-		tips
-				.setTip(
-						this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND),
+		tips.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND),
 						"Highlight All Matches", "Locate all occurances in the file"); //$NON-NLS-1$ //$NON-NLS-2$
-		tips
-				.setTip(
-						this.glade.getWidget(SourceWindow.GOTO_BUTTON),
+		tips.setTip(this.glade.getWidget(SourceWindow.GOTO_BUTTON),
 						"Go to Entered Line Number", "Jump to the line number that was entered"); //$NON-NLS-1$ //$NON-NLS-2$
-		tips
-				.setTip(
-						this.glade.getWidget(SourceWindow.CLOSE_FIND),
+		tips.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND),
 						"Hide Find Window", "Close the find window"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -1235,6 +1219,9 @@ public class SourceWindow extends Window {
 		}
 		
 		public void buttonEvent(ButtonEvent event) {
+			if(!event.isOfType(ButtonEvent.Type.CLICK))
+				return;
+			
 			String buttonName = ((Button) event.getSource()).getName();
 			if (buttonName.equals(SourceWindow.CLOSE_FIND))
 				target.hideFindBox();

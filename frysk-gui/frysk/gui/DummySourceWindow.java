@@ -4,9 +4,11 @@ import org.gnu.gtk.Gtk;
 
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
+import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.DummyProc;
 import frysk.proc.DummyTask;
+import frysk.proc.Manager;
 
 public class DummySourceWindow {
 

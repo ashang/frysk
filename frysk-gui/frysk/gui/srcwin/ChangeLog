@@ -1,3 +1,10 @@
+2006-02-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Sourcewindow.java: (createSearchBar): No longers sets label text,
+	adds size groups to necessary items.
+	(SourceWindowListener.ButtonEvent): Added check to make sure button
+	was actually clicked.
+
 2006-02-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* srcwin/SourceWindow.java: Revert i8n.

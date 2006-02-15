@@ -1,3 +1,9 @@
+2006-02-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Re-added labels into glade file, changed
+	padding and alignment of search bar items.
+	* glade/frysk_source_prefs.glade: Changed padding.
+
 2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DummySourceWindow.java: Added.
