@@ -347,9 +347,9 @@ public class ProcDataModel {
 	
 	class ProcCreatedObserver implements Observer{
     	public void update (Observable o, Object obj){
-            final Proc proc = (Proc) obj;
-          
-            proc.observableTaskAddedXXX.addObserver (taskCreatedObserver);
+    		final Proc proc = (Proc) obj;
+
+    		proc.observableTaskAddedXXX.addObserver (taskCreatedObserver);
             proc.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
             
             org.gnu.glib.CustomEvents.addEvent(new Runnable(){
@@ -396,14 +396,17 @@ public class ProcDataModel {
 						if(iter == null){
 							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
-						treeStore.removeRow(iter);
-						iterHash.remove(proc.getId());
 						
-						int n = iter.getChildCount();
-						for (int i = 0; i < n; i++) {
-							if(treeStore.getValue(iter, threadParentDC) == -1){
-								reparent(treeStore.getIter("0"), iter.getChild(i));
+						if(iter != null){
+							int n = iter.getChildCount();
+							for (int i = 0; i < n; i++) {
+								if(treeStore.getValue(iter, threadParentDC) == -1){
+									reparent(treeStore.getIter("0"), iter.getChild(i));
+								}
 							}
+							
+							treeStore.removeRow(iter);
+							iterHash.remove(proc.getId());
 						}
 					}catch (NullPointerException e) {
 						errorLog.log(Level.WARNING,"proc " + proc + "Not found in TreeIter HasTable. Cannot be removed",e); //$NON-NLS-1$ //$NON-NLS-2$
