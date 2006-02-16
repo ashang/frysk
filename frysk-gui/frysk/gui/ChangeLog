@@ -1,3 +1,8 @@
+2006-02-16  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* DebugHistory.java: Added.
+	* DummyDebugResults.java: Added.
+
 2006-02-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DummySourceWindow.java: Removed excess imports.
@@ -9,6 +14,8 @@
 2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DummySourceWindow.java: Added.
+	* glade/frysk_source.glade: Removed reference to gnome library again,
+	seems that glade is re-inserting it when the file it saved.
 
 2006-02-10  Sami Wagiaalla  <swagiaal@redhat.com>
 

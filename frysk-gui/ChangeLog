@@ -1,7 +1,6 @@
-2006-02-10  Adam Jocksch  <ajocksch@redhat.com>
+2006-02-16  Adam Jocksch  <ajocksch@redhat.com>
 
-	* glade/frysk_source.glade: Removed reference to gnome library again,
-	seems that glade is re-inserting it when the file it saved.
+	* configure.ac: Added cairo paths to classpaths.
 
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
