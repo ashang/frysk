@@ -71,6 +71,13 @@ frysk_pkglibexecdir_funit_ia32_regs_SOURCES = frysk/pkglibexecdir/funit-ia32-reg
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-ia32-regs
 frysk_pkglibexecdir_funit_ia32_modify_SOURCES = frysk/pkglibexecdir/funit-ia32-modify.S
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-ia32-modify
+# For TestExec.java
+pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-child-alias
+frysk_pkglibexecdir_funit_child_alias_SOURCES =
+frysk_pkglibexecdir_funit_child_alias_LDADD = frysk/pkglibexecdir/funit-child-alias.o
+frysk_pkglibexecdir_funit_child_alias_LDFLAGS = -pthread
+frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_child_SOURCES)
+	$(COMPILE) -o $@ -c $^
 
 EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
 

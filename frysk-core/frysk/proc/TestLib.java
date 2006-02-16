@@ -368,6 +368,23 @@ public class TestLib
 		    Integer.toString (Pid.get ()),
 		});
 	}
+	/**
+	 * Create an AckProcess; the process will use FILENAME as the
+	 * program to exec.
+	 */
+	AckProcess (String filename)
+	{
+	    this (childAck, new String[]
+		{
+		    getExecPrefix () + "funit-child",
+		    "--filename=" + getExecPrefix () + filename,
+		    "20",
+		    // Use getpid as this testsuite always runs the
+		    // event loop from the main thread (which has
+		    // tid==pid).
+		    Integer.toString (Pid.get ()),
+		});
+	}
 	/** Create an AckProcess, and then add COUNT threads.  */
 	AckProcess (int count)
 	{
@@ -513,6 +530,14 @@ public class TestLib
     protected class DetachedAckProcess
 	extends AckProcess
     {
+	DetachedAckProcess ()
+	{
+	    super ();
+	}
+	DetachedAckProcess (String filename)
+	{
+	    super (filename);
+	}
 	/**
 	 * Create a detached process that is a child of this one.
 	 */

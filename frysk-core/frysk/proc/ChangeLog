@@ -1,3 +1,9 @@
+2006-02-16  Stan Cox  <scox@redhat.com>
+
+	* TestExec.java (testAttachedMultipleChildExec): Check getCmdLine
+	and getCommand before and after exec.
+	* TestLib.java (AckProcess (String)): New
+	
 2006-02-14  Stan Cox  <scox@redhat.com>
 
 	* TaskState.java (processExecedEvent): Refresh stat call.

@@ -42,7 +42,7 @@ package frysk.proc;
 /**
  * Test the exec event.
  *
- * The exec needs to completly replace the existing (possibly
+ * The exec needs to completely replace the existing (possibly
  * multi-threaded) process with an entirely new one.
  */
 
@@ -243,7 +243,7 @@ public class TestExec
 	}
 
 	// Create an unattached child process.
-	AckProcess child = new DetachedAckProcess ();
+	AckProcess child = new DetachedAckProcess("funit-child-alias");
 
 	Proc proc = child.findProcUsingRefresh (true);
 	ExecChildObserver execObserverParent = new ExecChildObserver ();
@@ -267,10 +267,14 @@ public class TestExec
 
 	child.addClone ();
 	child.addClone ();
+
+	String beforeCmdLine = proc.getCmdLine ()[1];
+	String beforeCommand = proc.getCommand ();
+	
 	Task childtask = child.findTaskUsingRefresh (false);
 	childtask.requestAddExecedObserver (execObserverChild);
 	child.exec (childtask.getTid ());
-	
+
 	assertEquals ("task after attached multiple clone exec", proc,
 		    task.getProc()); // parent/child relationship
 	assertTrue ("task after attached multiple clone exec",
@@ -285,5 +289,10 @@ public class TestExec
 	assertEquals ("Child pid after attached multiple clone exec", execObserverChild.savedTid, 0);
 
 	assertEquals ("number of children", proc.getChildren ().size (), 0);
+	assertEquals ("proc's getCommand after exec", proc.getCommand (), "funit-child-ali");
+	assertTrue ("proc's getCommand before/after exec",
+		    beforeCommand.compareTo (proc.getCommand ()) != 0);
+	assertTrue ("proc's getCmdLine before/after exec",
+		    beforeCmdLine.compareTo (proc.getCmdLine ()[1]) != 0);
     }
 }
