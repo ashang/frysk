@@ -142,6 +142,7 @@ public class Gui
 	// Get a logger; the logger is automatically created if it
 	// doesn't already exist
 	errorLogFile = Logger.getLogger(ERROR_LOG_ID);
+	errorLogFile.setUseParentHandlers(false);
 	errorLogFile.addHandler(buildHandler());
     }
 
