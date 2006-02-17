@@ -1,3 +1,9 @@
+2006-02-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java: Do not use Timer objects
+	in splashscreen (causes sigabort on GC)
+	see sourceware.org bza #2333
+
 2006-02-16  Adam Jocksch  <ajocksch@redhat.com>
 	
 	* DebugHistory.java: Added.

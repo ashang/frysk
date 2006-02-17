@@ -55,8 +55,6 @@ import java.util.prefs.Preferences;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
-import org.gnu.glib.Fireable;
-import org.gnu.glib.Timer;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -66,6 +64,7 @@ import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
 import frysk.Config;
+import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
@@ -299,16 +298,33 @@ public class Gui
 	CustomEvents.addEvent(new Runnable() {
 		public void run() {
 			WindowManager.theManager.splashScreen.showAll();
-			Timer timer = new Timer(2000, new Fireable() {
-				public boolean fire() {
+
+			TimerEvent timerEvent = new TimerEvent(0, 5000){
+				public void execute() {
 					WindowManager.theManager.splashScreen.hideAll();
 					WindowManager.theManager.mainWindow.showAll();
-					return false;
+					Manager.eventLoop.remove(this);
 				}
-			});
-			timer.start();
+			};
+			
+			Manager.eventLoop.add (timerEvent);
 		}
 	});
+	
+	
+//	CustomEvents.addEvent(new Runnable() {
+//		public void run() {
+//			WindowManager.theManager.splashScreen.showAll();
+//			Timer timer = new Timer(2000, new Fireable() {
+//				public boolean fire() {
+//					WindowManager.theManager.splashScreen.hideAll();
+//					WindowManager.theManager.mainWindow.showAll();
+//					return false;
+//				}
+//			});
+//			timer.start();
+//		}
+//	});
 	
 	Gtk.main();
 		
