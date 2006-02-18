@@ -153,6 +153,8 @@ public class ProcDataModel {
 		
 		Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
 		Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
+		Manager.host.observableTaskAddedXXX.addObserver (taskCreatedObserver);
+		Manager.host.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
 	}
 	
 	public void stopRefreshing(){
@@ -356,8 +358,8 @@ public class ProcDataModel {
     	public void update (Observable o, Object obj){
     		final Proc proc = (Proc) obj;
 
-    		proc.observableTaskAddedXXX.addObserver (taskCreatedObserver);
-            proc.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
+//    		proc.observableTaskAddedXXX.addObserver (taskCreatedObserver);
+//            proc.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
             
             org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				 public void run() {

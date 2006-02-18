@@ -1,3 +1,8 @@
+2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcDataModel.java: Replaced proc task observers with host
+	task observers.
+
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
 
 	* MenuBar.java (MenuBar): Removed preferences item logic
