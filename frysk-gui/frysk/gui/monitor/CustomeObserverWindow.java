@@ -48,6 +48,7 @@ package frysk.gui.monitor;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.prefs.Preferences;
 
 import org.gnu.gdk.KeyValue;
 import org.gnu.glade.LibGlade;
@@ -65,6 +66,8 @@ import org.gnu.gtk.event.FocusEvent;
 import org.gnu.gtk.event.FocusListener;
 import org.gnu.gtk.event.KeyEvent;
 import org.gnu.gtk.event.KeyListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
@@ -73,7 +76,7 @@ import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
-public class CustomeObserverWindow extends Window implements Observer {
+public class CustomeObserverWindow extends Window implements Observer, LifeCycleListener, Saveable {
 	
 	private DetailedObserverTreeView observerTreeView;
 	
@@ -98,6 +101,7 @@ public class CustomeObserverWindow extends Window implements Observer {
 	public CustomeObserverWindow(LibGlade glade){
 		super(((Window)glade.getWidget("customeObserverWindow")).getHandle()); //$NON-NLS-1$
 		
+		this.addListener(this);
 		this.scratchList = new ObservableLinkedList(ObserverManager.theManager.getTaskObservers());
 		
 		//=========================================
@@ -369,6 +373,42 @@ public class CustomeObserverWindow extends Window implements Observer {
 	private void dumpChanges(){
 		CustomeObserverWindow.this.scratchList.clear();
 		CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+	}
+
+	public void save(Preferences prefs) {
+		prefs.putInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
+		prefs.putInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
+		
+		prefs.putInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
+		prefs.putInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
+	}
+
+	public void load(Preferences prefs) {
+		int x = prefs.getInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
+		int y = prefs.getInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
+
+		if ((x >=0) && (y >=0))
+			this.move(x,y);
+		
+		int width  = prefs.getInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
+		int height = prefs.getInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
+		if ((width > 0) && (height > 0))
+			this.resize(width, height);
+	}
+
+	public void lifeCycleEvent(LifeCycleEvent event) {
+	
+
+	}
+
+	public boolean lifeCycleQuery(LifeCycleEvent event) {
+		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+                event.isOfType(LifeCycleEvent.Type.DELETE)) {
+					dumpChanges();
+					WindowManager.theManager.customeObserverWindow.hideAll();					
+					return true;
+		}
+		return false;
 	}
 	
 }

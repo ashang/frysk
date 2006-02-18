@@ -1,3 +1,11 @@
+2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
+
+	* CustomeObserverWindow.java: Implement Saveable.
+	Implement LifeCycleListener.
+	* WindowManager.java (save): Add customObserverWindow
+	to save list.
+	(load): Add customObserverWindow to load list.
+
 2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcDataModel.java: Replaced proc task observers with host
