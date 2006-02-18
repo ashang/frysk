@@ -1,3 +1,8 @@
+2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Makefile.am: Added an explicit rule to link libftk.so in
+	order to insert -lrt into the list of libraries (see bz 2353).
+
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (CLEANFILES): Remove *.o, and *.class.  Add
