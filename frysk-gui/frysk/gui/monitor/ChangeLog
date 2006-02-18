@@ -1,5 +1,10 @@
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
 
+	* WindowManager.java (initWindows): Do not load
+	ProgramAddWindow.
+	* MenuBar.java (menuItemEvent): Do not close 
+	ProgramAddWindow on File -> Close
+
 	* ProcViewPage.java: Sort and Filter on new
 	Boolean DataColumn.
 	* ProcDataModel.java: Check thread parentage in a tree

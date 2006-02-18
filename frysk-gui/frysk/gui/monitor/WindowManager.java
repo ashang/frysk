@@ -86,7 +86,7 @@ public class WindowManager implements Saveable{
 
 		this.customeObserverWindow = new CustomeObserverWindow(glade);
 		
-		this.programAddWindow = new ProgramAddWindow(glade);
+		//this.programAddWindow = new ProgramAddWindow(glade);
 
 		this.menuBar = new MenuBar(glade);
 	}
@@ -94,12 +94,12 @@ public class WindowManager implements Saveable{
 	public void save(Preferences prefs) {
 		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
+		//programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
 
 	public void load(Preferences prefs) {
 		mainWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
+		//programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
 }
