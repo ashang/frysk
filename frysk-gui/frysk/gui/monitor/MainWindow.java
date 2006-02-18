@@ -86,11 +86,14 @@ public class MainWindow extends Window implements Saveable{
 	public void load(Preferences prefs) {
 		int x = prefs.getInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
 		int y = prefs.getInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
-		this.move(x,y);
+		if ((x >=0) && (y >=0))
+			this.move(x,y);
 		
 		int width  = prefs.getInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
 		int height = prefs.getInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
-		this.resize(width, height);
+		
+		if ((width > 0) && (height > 0))
+			this.resize(width, height);
 		
 		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}

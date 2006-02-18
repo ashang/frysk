@@ -1,5 +1,8 @@
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
 
+	* MainWindow.java (load): Check size and height, and 
+	move x and y are valid before doing operations.
+	
 	* CustomeObserverWindow.java: Implement Saveable.
 	Implement LifeCycleListener.
 	* WindowManager.java (save): Add customObserverWindow
