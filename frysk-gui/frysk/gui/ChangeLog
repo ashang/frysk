@@ -1,3 +1,7 @@
+2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Fixed proc/thread view sizes.
+
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com>
 
 	glade/procpop.glade: Removed unused or 
