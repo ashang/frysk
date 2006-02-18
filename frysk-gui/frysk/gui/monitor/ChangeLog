@@ -1,3 +1,11 @@
+2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
+
+	* ProcViewPage.java: Sort and Filter on new
+	Boolean DataColumn.
+	* ProcDataModel.java: Check thread parentage in a tree
+	using a Boolean DataColumn instead of a -1 ...  +1
+	model using DataColumnInt.
+
 2006-02-16  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcDataModel.java : Was removing an iterator before reparenting

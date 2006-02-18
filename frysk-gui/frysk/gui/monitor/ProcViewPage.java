@@ -222,7 +222,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
 			public boolean filter(TreeModel model, TreeIter iter) {
 
-				if(model.getValue(iter, psDataModel.getThreadParentDC()) == -1){
+				if(model.getValue(iter, psDataModel.getHasParentDC()) == false){
 					return true;
 				}else{
 					return false;

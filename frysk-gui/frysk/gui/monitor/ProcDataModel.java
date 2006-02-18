@@ -77,6 +77,7 @@ public class ProcDataModel {
 	private DataColumnObject procDataDC;
 	private DataColumnInt weightDC;
 	private DataColumnInt threadParentDC;
+	private DataColumnBoolean hasParentDC;
 	
 	private HashMap iterHash;
 	
@@ -110,9 +111,10 @@ public class ProcDataModel {
 		this.visibleDC = new DataColumnBoolean();
 		this.procDataDC= new DataColumnObject();
 		this.weightDC = new DataColumnInt();
+		this.hasParentDC = new DataColumnBoolean();
 		this.threadParentDC = new DataColumnInt();
 		
-		columns = new DataColumn[7];
+		columns = new DataColumn[8];
 		columns[0] = this.getPidDC(); 
 		columns[1] = this.getCommandDC(); 
 		columns[2] = this.getColorDC(); 
@@ -120,6 +122,7 @@ public class ProcDataModel {
 		columns[4] = this.procDataDC;
 		columns[5] = this.weightDC;
 		columns[6] = this.threadParentDC;
+		columns[7] = this.hasParentDC;
 		
 		this.treeStore = new TreeStore(columns);
 		
@@ -242,6 +245,10 @@ public class ProcDataModel {
 
 	public DataColumnInt getThreadParentDC() {
 		return this.threadParentDC;
+	}
+	
+	public DataColumnBoolean getHasParentDC() {
+		return this.hasParentDC;
 	}
 
 	public TreeModel getModel() {
@@ -376,7 +383,9 @@ public class ProcDataModel {
 					treeStore.setValue(iter, pidDC, proc.getPid());
 					treeStore.setValue(iter, procDataDC, (new ProcData(proc)));
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
-					treeStore.setValue(iter, threadParentDC, -1); // -1 == N/A
+					treeStore.setValue(iter, hasParentDC, false);
+						
+					//treeStore.setValue(iter,threadParentDC, -1);
 
 				 }
 			});
@@ -400,7 +409,7 @@ public class ProcDataModel {
 						if(iter != null){
 							int n = iter.getChildCount();
 							for (int i = 0; i < n; i++) {
-								if(treeStore.getValue(iter, threadParentDC) == -1){
+								if(treeStore.getValue(iter, hasParentDC) == false){
 									reparent(treeStore.getIter("0"), iter.getChild(i));
 								}
 							}
@@ -445,6 +454,8 @@ public class ProcDataModel {
 					treeStore.setValue(iter, pidDC, task.getTid());
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
+					treeStore.setValue(iter, hasParentDC, true);
+						
 					treeStore.setValue(iter, procDataDC, (new TaskData(task)));
 					
 				}
@@ -522,5 +533,6 @@ public class ProcDataModel {
 		treeStore.setValue(to, procDataDC,     treeStore.getValue(from, procDataDC));
 		treeStore.setValue(to, weightDC,       treeStore.getValue(from, weightDC));
 		treeStore.setValue(to, threadParentDC, treeStore.getValue(from, threadParentDC));
+		treeStore.setValue(to, hasParentDC, treeStore.getValue(from,hasParentDC));
     }
 }
