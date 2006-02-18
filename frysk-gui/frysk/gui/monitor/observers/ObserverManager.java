@@ -48,8 +48,6 @@ import org.jdom.Element;
 import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.StickyObserverAction;
-import frysk.gui.monitor.filters.TaskProcNameFilter;
 
 /**
  * Only once instance.
@@ -123,19 +121,19 @@ public class ObserverManager extends  Observable {
 		customObserver.setName("Custom 'ls' Watcher");
 		
 		
-		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
-		forkedObserver.setName("ProgramWatcher");
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		//final TaskExecObserver   execObserver = new TaskExecObserver();
-		
-		StickyObserverAction stickyObserverAction = new StickyObserverAction();
-		stickyObserverAction.setObserver(forkedObserver);
-		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
-		
-		//forkedObserver.apply(proc);
-		//execObserver.apply(proc);
-		forkedObserver.dontSaveObject();
-		this.addTaskObserverPrototype(forkedObserver);
+//		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
+//		forkedObserver.setName("ProgramWatcher");
+//		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+//		//final TaskExecObserver   execObserver = new TaskExecObserver();
+//		
+//		StickyObserverAction stickyObserverAction = new StickyObserverAction();
+//		stickyObserverAction.setObserver(forkedObserver);
+//		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
+//		
+//		//forkedObserver.apply(proc);
+//		//execObserver.apply(proc);
+//		forkedObserver.dontSaveObject();
+//		this.addTaskObserverPrototype(forkedObserver);
 	} 
 
 	/**

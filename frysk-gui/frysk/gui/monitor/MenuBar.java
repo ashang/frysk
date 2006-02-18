@@ -58,15 +58,15 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 	
 	public MenuBar(LibGlade glade){
 		super((glade.getWidget("menuBar")).getHandle());
-		MenuItem item = (MenuItem) glade.getWidget("prefrencesMenuItem");
-		item.addListener(new MenuItemListener(){
-			public void menuItemEvent(MenuItemEvent arg0) {
-				WindowManager.theManager.prefsWindow.showAll();
-				WindowManager.theManager.prefsWindow.present();
-			}
-		});
+//		MenuItem item = (MenuItem) glade.getWidget("prefrencesMenuItem");
+//		item.addListener(new MenuItemListener(){
+//			public void menuItemEvent(MenuItemEvent arg0) {
+//				WindowManager.theManager.prefsWindow.showAll();
+//				WindowManager.theManager.prefsWindow.present();
+//			}
+//		});
 		
-		item = (MenuItem) glade.getWidget("editCustomObserversMenuItem");
+		MenuItem item = (MenuItem) glade.getWidget("editCustomObserversMenuItem");
 		item.addListener(new MenuItemListener(){
 			public void menuItemEvent(MenuItemEvent arg0) {
 				WindowManager.theManager.customeObserverWindow.showAll();

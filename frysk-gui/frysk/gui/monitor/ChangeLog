@@ -1,5 +1,9 @@
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
 
+	* MenuBar.java (MenuBar): Removed preferences item logic
+	* observers/ObserverManager.java (initTaskObservers): Removed
+	ProgramObserver for U3 release.
+
 	* WindowManager.java (initWindows): Do not load
 	ProgramAddWindow.
 	* MenuBar.java (menuItemEvent): Do not close 
