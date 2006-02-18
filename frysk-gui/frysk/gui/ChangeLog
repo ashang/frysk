@@ -1,6 +1,9 @@
 2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* Gui.java (gui): rearanged splash screen show/hide calls
+	to be done in the proper order.
 	* glade/procpop.glade: Fixed proc/thread view sizes.
+	Halved the size of threadView.
 
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com>
 

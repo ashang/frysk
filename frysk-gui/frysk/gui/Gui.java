@@ -230,6 +230,7 @@ public class Gui
 	    System.exit(1);
 	}
 
+	
 	WindowManager.theManager.mainWindow.hideAll();
 
 	// Now that we now the glade paths are good, send the paths to
@@ -237,7 +238,7 @@ public class Gui
 	SourceWindowFactory.setGladePaths(glade_dirs);
 
 	prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
-
+	
 	trayIcon = new TrayIcon("Frysk Monitor/Debugger", false); //$NON-NLS-1$
 		
 	trayIcon.setMenuButton(TrayIcon.BUTTON_3);
@@ -268,49 +269,53 @@ public class Gui
 	    });
 	popupMenu.prepend(consoleWindowItem);
 
-	Thread backendStarter =  null;
-	backendStarter = new Thread(new Runnable()
-	    {
-		public void run()
-		{
+	final Thread backendStarter  = new Thread(new Runnable(){
+		public void run(){
 		    try {
-			// EventLoop eventLoop = new EventLoop();
-			// eventLoop.run();
-			Manager.eventLoop.run();
+		    	// EventLoop eventLoop = new EventLoop();
+		    	// eventLoop.run();
+		    	Manager.eventLoop.run();
 		    }
 		    catch (Exception e) {
-			DialogManager.showErrorDialog("Frysk Core Errors", "Frysk Core has reported the following errors", e); //$NON-NLS-1$ //$NON-NLS-2$
-			System.exit(1);
+		    	DialogManager.showErrorDialog("Frysk Core Errors", "Frysk Core has reported the following errors", e); //$NON-NLS-1$ //$NON-NLS-2$
+		    	System.exit(1);
 		    }
 		}
-	    });
-	
+	});
 	backendStarter.start();
+
 
 //	WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
 //	WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));
 //	WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
 
-	procpop.load(prefs);
-		
 	WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
 
-	
+	final Gui myGui = procpop;
+	final Preferences myPrefs = prefs;
+
+	myGui.load(myPrefs);
+
+//	WindowManager.theManager.mainWindow.hideAll();
+
 	CustomEvents.addEvent(new Runnable() {
 		public void run() {
 			WindowManager.theManager.splashScreen.showAll();
-
-			TimerEvent timerEvent = new TimerEvent(0, 5000){
-				public void execute() {
-					WindowManager.theManager.splashScreen.hideAll();
-					WindowManager.theManager.mainWindow.showAll();
-					Manager.eventLoop.remove(this);
-				}
-			};
-			
-			Manager.eventLoop.add (timerEvent);
 		}
 	});
+
+	TimerEvent timerEvent = new TimerEvent(0, 5000){
+		public void execute() {
+			CustomEvents.addEvent(new Runnable() {
+				public void run() {
+					WindowManager.theManager.mainWindow.showAll();
+					WindowManager.theManager.splashScreen.hideAll();
+				}
+			});
+			Manager.eventLoop.remove(this);
+		}
+	};
+	Manager.eventLoop.add (timerEvent);
 	
 	
 //	CustomEvents.addEvent(new Runnable() {
