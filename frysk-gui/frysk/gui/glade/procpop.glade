@@ -72,44 +72,9 @@
 		    <widget class="GtkMenu" id="observersMenuItem_menu">
 
 		      <child>
-			<widget class="GtkMenuItem" id="addObserverMenuItem">
-			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">_Add observers...</property>
-			  <property name="use_underline">True</property>
-			</widget>
-		      </child>
-
-		      <child>
-			<widget class="GtkSeparatorMenuItem" id="separator1">
-			  <property name="visible">True</property>
-			</widget>
-		      </child>
-
-		      <child>
 			<widget class="GtkMenuItem" id="editCustomObserversMenuItem">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Edit custom observers...</property>
-			  <property name="use_underline">True</property>
-			</widget>
-		      </child>
-		    </widget>
-		  </child>
-		</widget>
-	      </child>
-
-	      <child>
-		<widget class="GtkMenuItem" id="windowMenuItem">
-		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">_Window</property>
-		  <property name="use_underline">True</property>
-
-		  <child>
-		    <widget class="GtkMenu" id="windowMenuItem_menu">
-
-		      <child>
-			<widget class="GtkMenuItem" id="prefrencesMenuItem">
-			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">_Preferences</property>
 			  <property name="use_underline">True</property>
 			</widget>
 		      </child>

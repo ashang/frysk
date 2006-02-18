@@ -1,3 +1,8 @@
+2006-02-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	glade/procpop.glade: Removed unused or 
+	unimplemented menu items.
+
 2006-02-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (setupErrorHandlers): Log only to logfile
