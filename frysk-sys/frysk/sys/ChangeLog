@@ -1,3 +1,10 @@
+2006-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (handler): If the signal is to the wrong thread,
+	re-send it to the correct one.
+	(poll_jmpbuf): Replace .p with .tid.
+	(poll): Set the .tid.
+
 2006-02-10  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Poll.cxx (handler): If poll_jmpbuf is invalid, throw a

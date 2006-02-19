@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -44,6 +44,10 @@
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <linux/unistd.h>
+
+_syscall2(int, tkill, pid_t, tid, int, sig);
 
 #include <gcj/cni.h>
 #include <gnu/gcj/RawDataManaged.h>
@@ -60,18 +64,21 @@
 // return the signal).  Should the jmpbuf be per-thread?
 
 struct poll_jmpbuf {
-  bool p;
+  pid_t tid;
   sigjmp_buf buf;
 };
-__thread struct poll_jmpbuf poll_jmpbuf;
+struct poll_jmpbuf poll_jmpbuf;
 
 static void
 handler (int signum)
 {
-  if (!poll_jmpbuf.p)
-    throwRuntimeException ("frysk.sys.Poll: bad jmpbuf", "tid",
-			   frysk::sys::Tid::get ());
-  siglongjmp (poll_jmpbuf.buf, signum);
+  // For what ever reason, the signal can come in on the wrong thread.
+  // When that occures, re-direct it (explicitly) to the thread that
+  // can handle the signal.
+  if (poll_jmpbuf.tid == frysk::sys::Tid::get ())
+    siglongjmp (poll_jmpbuf.buf, signum);
+  else
+    tkill (poll_jmpbuf.tid, signum);
 }
 
 gnu::gcj::RawDataManaged*
@@ -184,14 +191,14 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
   // delivered but missed.  Avoid the problem by having the signal
   // handler longjmp back to above re-starting this code and forcing
   // the poll (even if it wasn't reached) to be canceled.
-  poll_jmpbuf.p = true;
+  poll_jmpbuf.tid = frysk::sys::Tid::get ();
   pthread_sigmask (SIG_UNBLOCK, &mask, 0);
   errno = 0;
   int status = ::poll ((struct pollfd*)pollFds->fds, pollFds->numFds, timeout);
   if (status < 0)
     status = -errno; // Save the errno.
   pthread_sigmask (SIG_BLOCK, &mask, NULL);
-  poll_jmpbuf.p = false;
+  // poll_jmpbuf.p = false;
 
   // Did something go wrong?
   if (status < 0) {
