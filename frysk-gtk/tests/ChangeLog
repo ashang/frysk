@@ -1,3 +1,8 @@
+2006-02-19  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (gcjtreeiter/gij.sh): Create gcjtreeiter directory
+	before creating gcjtreeiter/gij.sh.
+
 2006-02-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (clean-local): Delete.

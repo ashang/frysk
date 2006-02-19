@@ -84,6 +84,7 @@ gcjtreeiter/IterTest.class: $(gcjtreeiter_FILES)
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(srcdir)/gcjtreeiter/IterTest.java
 gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
+	mkdir -p gcjtreeiter
 	echo $(GIJ) -classpath .:$(FRYSK_GTK_CLASSPATH) \
 		-Djava.library.path=/usr/lib/frysk \
 		gcjtreeiter.IterTest \
