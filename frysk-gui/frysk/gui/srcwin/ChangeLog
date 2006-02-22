@@ -1,3 +1,28 @@
+2006-02-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* MixedView.java (MixedView): Now adds source windows to scrolled
+	widgets so that you can scroll laterally.
+	* SourceBuffer.java (SourceBuffer): Added constructor that takes
+	the mode to be displayed.
+	(finalize): Added, removes this buffer's texttags from the preferences
+	that update them.
+	* SourceView.java (SourceView): Added constructor that takes the
+	mode to be displayed.
+	* SourceWindow.java (switchToAsmMode): Now uses new SourceView
+	constructor.
+	* prefs/ColorPreference.java (ColorPreference): Now adds tag to
+	an internal vector of tags if non-null.
+	(setModel): Now iteratres through all tags and updates them.
+	(saveValues): Ditto.
+	(appendTags): Added.
+	(removeTag): Added.
+	* prefs/PreferenceManager.java (addPreference): If the duplicate
+	preference is a color preference, it now concatenates the new
+	observer's list of tags with the old one's.
+	(getColorPreference): Added private version that takes a string.
+	* SyntaxPreference.java (updateTags): Extracted to save the
+	properties of all the tags.
+
 2006-02-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Sourcewindow.java: (createSearchBar): No longers sets label text,

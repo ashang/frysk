@@ -1,6 +1,8 @@
 package frysk.gui.srcwin.prefs;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
@@ -45,11 +47,13 @@ public class ColorPreference extends FryskPreference {
 
 	protected boolean foreground;
 
-	protected TextTag tag;
+	protected Vector tags;
 
 	protected ColorPreference(String name, boolean foreground,
 			TextTag tag) {
-		this.tag = tag;
+		this.tags = new Vector();
+		if(tag != null)
+			this.tags.add(tag);
 		this.foreground = foreground;
 		this.name = name;
 	}
@@ -74,13 +78,17 @@ public class ColorPreference extends FryskPreference {
         /*
          * there may or may not be a text tag associated with this item
          */
-        if (tag != null) {
-            if (foreground)
-                tag.setForeground(ColorConverter
-                        .colorToHexString(this.currentColor));
-            else
-                tag.setBackground(ColorConverter
-                        .colorToHexString(this.currentColor));
+        if (tags != null) {
+        	Iterator it = this.tags.iterator();
+        	while(it.hasNext()){
+        		TextTag tag = (TextTag) it.next();
+	            if (foreground)
+	                tag.setForeground(ColorConverter
+	                        .colorToHexString(this.currentColor));
+	            else
+	                tag.setBackground(ColorConverter
+	                        .colorToHexString(this.currentColor));
+        	}
         }
 	}
 	
@@ -92,6 +100,20 @@ public class ColorPreference extends FryskPreference {
 		return this.currentColor;
 	}
 
+	public void appendTags(ColorPreference pref2){
+		Iterator it = pref2.tags.iterator();
+		
+		while(it.hasNext()){
+			TextTag tag = (TextTag) it.next();
+			if(!this.tags.contains(tag))
+				this.tags.add(tag);
+		}
+	}
+	
+	public void removeTag(TextTag tag){
+		this.tags.remove(tag);
+	}
+	
 	public void saveValues() {
 		this.model.putInt(name + "_R", this.currentColor.getRed());
 		this.model.putInt(name + "_G", this.currentColor.getGreen());
@@ -100,13 +122,17 @@ public class ColorPreference extends FryskPreference {
 		/*
 		 * there may or may not be a text tag associated with this item
 		 */
-		if (tag != null) {
-			if (foreground)
-				tag.setForeground(ColorConverter
-						.colorToHexString(this.currentColor));
-			else
-				tag.setBackground(ColorConverter
-						.colorToHexString(this.currentColor));
+		if (tags != null) {
+			Iterator it = this.tags.iterator();
+        	while(it.hasNext()){
+        		TextTag tag = (TextTag) it.next();
+	            if (foreground)
+	                tag.setForeground(ColorConverter
+	                        .colorToHexString(this.currentColor));
+	            else
+	                tag.setBackground(ColorConverter
+	                        .colorToHexString(this.currentColor));
+        	}
 		}
 	}
 

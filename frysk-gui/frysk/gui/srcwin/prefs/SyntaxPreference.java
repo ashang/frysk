@@ -1,6 +1,7 @@
 package frysk.gui.srcwin.prefs;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
@@ -101,8 +102,7 @@ public class SyntaxPreference extends ColorPreference {
 
 		this.model.putInt(name + "_weight", this.currentWeight.getValue());
 		this.model.putInt(name + "_style", this.currentStyle.getValue());
-		this.tag.setWeight(this.currentWeight);
-		this.tag.setStyle(this.currentStyle);
+		this.updateTags();
 	}
 
 	protected void setModel(Preferences model){
@@ -114,8 +114,7 @@ public class SyntaxPreference extends ColorPreference {
 		this.currentStyle = Style.intern(this.model.getInt(name + "_style",
 				getDefaultStyle(name).getValue()));
         
-        this.tag.setWeight(this.currentWeight);
-        this.tag.setStyle(this.currentStyle);
+        this.updateTags();
 	}
 	
 	private static Weight getDefaultWeight(String name) {
@@ -124,5 +123,14 @@ public class SyntaxPreference extends ColorPreference {
 
 	private static Style getDefaultStyle(String name) {
 		return (Style) defaultStyles.get(name);
+	}
+	
+	private void updateTags(){
+		Iterator it = this.tags.iterator();
+		while(it.hasNext()){
+			TextTag tag = (TextTag) it.next();
+			tag.setWeight(this.currentWeight);
+	        tag.setStyle(this.currentStyle);
+		}
 	}
 }

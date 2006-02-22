@@ -960,11 +960,10 @@ public class SourceWindow extends Window {
 		else{
 			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).
 				remove(((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).getChild());
-			this.view = new SourceView(this.view.getScope(), this);
+			this.view = new SourceView(this.view.getScope(), this, SourceBuffer.ASM_MODE);
 			
 			((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW))
 				.add((Widget) this.view);
-			((SourceView) this.view).setMode(SourceBuffer.ASM_MODE);
 			this.view.showAll();
 		}
 	}

@@ -124,6 +124,10 @@ public class SourceView extends TextView implements View, ExposeListener {
 		this(new SourceBuffer(scope), parent);
 	}
 
+	public SourceView(StackLevel scope, SourceWindow parent, int mode){
+		this(new SourceBuffer(scope, mode), parent);
+	}
+	
 	/**
 	 * Constructs a new SourceViewWidget using the previously created buffer
 	 * @param buffer

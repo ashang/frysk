@@ -25,7 +25,10 @@ public class PreferenceManager {
 
 	public static void addPreference(FryskPreference preference, String node) {
 		if(preferences.containsKey(preference.getName()))
-			return;
+			if(preference instanceof ColorPreference)
+				getColorPreference(preference.name).appendTags((ColorPreference) preference);
+			else
+				return;
 		
 		preference.setModel(prefs.node(node));
 		preferences.put(preference.getName(), preference);
@@ -45,6 +48,10 @@ public class PreferenceManager {
 	
     public static ColorPreference getColorPreference(int name){
         return (ColorPreference) getPreference(ColorPreference.NAMES[name]);
+    }
+    
+    private static ColorPreference getColorPreference(String name){
+    	return (ColorPreference) getPreference(name);
     }
     
 	public static SyntaxPreference getSyntaxPreference(int name){

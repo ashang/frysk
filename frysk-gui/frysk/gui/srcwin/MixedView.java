@@ -3,6 +3,7 @@ package frysk.gui.srcwin;
 import java.util.Vector;
 
 import org.gnu.gtk.HPaned;
+import org.gnu.gtk.ScrolledWindow;
 
 public class MixedView extends HPaned implements View {
 
@@ -13,11 +14,16 @@ public class MixedView extends HPaned implements View {
 		super();
 		
 		this.sourceWidget = new SourceView(scope, parent);
-		this.assemblyWidget = new SourceView(scope, parent);
-		this.assemblyWidget.setMode(SourceBuffer.ASM_MODE);
+		this.assemblyWidget = new SourceView(scope, parent, SourceBuffer.ASM_MODE);
 
-		this.add1(this.sourceWidget);
-		this.add2(this.assemblyWidget);
+		ScrolledWindow sw1 = new ScrolledWindow();
+		sw1.add(this.sourceWidget);
+		this.sourceWidget.showAll();
+		this.add1(sw1);
+		
+		ScrolledWindow sw2 = new ScrolledWindow();
+		sw2.add(this.assemblyWidget);
+		this.add2(sw2);
 		
 		this.showAll();
 	}

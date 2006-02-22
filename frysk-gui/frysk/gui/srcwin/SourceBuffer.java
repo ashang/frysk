@@ -135,7 +135,12 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public SourceBuffer(StackLevel scope) {
 		this();
-		this.setScope(scope);
+		this.setScope(scope, SOURCE_MODE);
+	}
+	
+	public SourceBuffer(StackLevel scope, int mode){
+		this();
+		this.setScope(scope, mode);
 	}
 
 	/**
@@ -892,7 +897,7 @@ public class SourceBuffer extends TextBuffer {
 		this.insertText(bufferText);
 
 		if (!this.scope.isParsed()) {
-
+			
 			// now pass the resulting text to the parser
 			if (this.staticParser == null)
 				this.staticParser = new CDTParser();
@@ -949,7 +954,7 @@ public class SourceBuffer extends TextBuffer {
 		// Iterate through all the lines
 		while (lines.hasNext()) {
 			DOMLine line = new DOMLine((Element) lines.next());
-
+			
 			Iterator tags = line.getTags();
 			int lineOffset = line.getOffset();
 
@@ -1019,8 +1024,9 @@ public class SourceBuffer extends TextBuffer {
 						+ func.getStart() + func.getEnd()));
 			}
 		}// end lines.hasNext()
-	}
 
+	}
+	
 	/*
 	 * Checks whether or not the current search should be restarted by comparing
 	 * the string last searched with the new string
@@ -1039,5 +1045,23 @@ public class SourceBuffer extends TextBuffer {
 			this.startCurrentFind = null;
 			this.endCurrentFind = null;
 		}
+	}
+	
+	/**
+	 * When this object dies, remove it's text tags from the preferences
+	 */
+	protected void finalize() throws Throwable {
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.FUNCTIONS).removeTag(this.functionTag);
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.VARIABLES).removeTag(this.variableTag);
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.OPTIMIZED).removeTag(this.optimizedVarTag);
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.OUT_OF_SCOPE).removeTag(this.oosVarTag);
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.KEYWORDS).removeTag(this.keywordTag);
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.GLOBALS).removeTag(this.globalTag);
+		PreferenceManager.getSyntaxPreference(SyntaxPreference.CLASSES).removeTag(this.classTag);
+		PreferenceManager.getColorPreference(ColorPreference.CURRENT_LINE).removeTag(this.currentLine);
+		PreferenceManager.getColorPreference(ColorPreference.SEARCH).removeTag(this.foundText);
+		
+		// TODO Auto-generated method stub
+		super.finalize();
 	}
 }
