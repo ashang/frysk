@@ -33,6 +33,7 @@ public class DummyDebugResults {
 			
 		for(int i = 0; i < gladep.length; i++){
 			try {
+				System.out.println("Trying " + gladep[i]);
 				glade = new LibGlade(gladep[i] + "/debugresultswindow.glade", this);
 			} catch (GladeXMLException e) {
 				continue;

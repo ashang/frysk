@@ -1,3 +1,8 @@
+2006-02-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/debugresultswindow.glade: Added.
+	* glade/debugresultswindow.gladep: Added.
+
 2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Gui.java (gui): rearanged splash screen show/hide calls
