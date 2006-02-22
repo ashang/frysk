@@ -1,5 +1,7 @@
 2006-02-22  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DebugHistory.java (exposeEvent): Added text over each 'event'.
+
 	* glade/debugresultswindow.glade: Added.
 	* glade/debugresultswindow.gladep: Added.
 

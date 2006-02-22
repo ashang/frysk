@@ -1,5 +1,6 @@
 package frysk.gui;
 
+import org.freedesktop.cairo.Antialias;
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
@@ -46,9 +47,9 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		cairo.rectangle(new Point(x,y), new Point(x+width, y+height));
 		cairo.fill();
 		
-		// Events every 100 pixels, 20 pixels wide
-		cairo.setSourceColor(Color.BLUE);
+		// Events every 100 pixels, 10 pixels wide
 		for(int i = (x/100)*100; i < x + width; i += 100){
+			cairo.setSourceColor(Color.BLUE);
 			cairo.moveTo(i, height - 10);
 			cairo.lineTo(i, height/2 - 10);
 			cairo.relLineTo(10,0);
@@ -56,8 +57,18 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 			cairo.relLineTo(-10,0);
 			cairo.closePath();
 			cairo.fill();
+			
+			// Text over each event
+			cairo.setSourceColor(Color.BLACK);
+			cairo.newPath();
+			cairo.moveTo(i+5, height/2 - 10);
+			cairo.rotate(Math.PI/-4);
+			cairo.showText("Test");
+			cairo.stroke();
+			
+			cairo.rotate(Math.PI/4);
 		}
-		cairo.stroke();
+		
 		
 		// Line accross the bottom
 		cairo.setSourceColor(Color.BLACK);
