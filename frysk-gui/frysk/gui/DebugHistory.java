@@ -1,6 +1,5 @@
 package frysk.gui;
 
-import org.freedesktop.cairo.Antialias;
 import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
