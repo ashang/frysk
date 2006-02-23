@@ -93,9 +93,3 @@ noinst_LIBRARIES += libftk.a
 solib_PROGRAMS += libftk.so
 libftk_so_SOURCES =
 libftk.so: libftk.a
-	soname=`basename $@` ; \
-	$(CC) -shared -o $@.tmp -lrt \
-		-Wl,--whole-archive,$<,--no-whole-archive \
-		-Wl,--soname,$$soname,-z,-defs
-	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
-	mv $@.tmp $@

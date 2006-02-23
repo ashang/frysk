@@ -1,3 +1,8 @@
+2006-02-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Makefile.am: Removed fix commited on 2006-02-18 as it is no
+	longer needed.
+
 2006-02-23  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkstripchart.c: Replaced librt timer_*() timers
