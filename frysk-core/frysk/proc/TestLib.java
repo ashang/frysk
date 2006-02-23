@@ -333,6 +333,8 @@ public class TestLib
 	static final int zombieForkSig = Sig.URG;
 	static final int execSig = Sig.PWR;
 	static final int execCloneSig = Sig.FPE;
+	static final String sleepTime = "10";
+
 	private AckProcess (int ack, String[] argv)
 	{
 	    super (ack, argv);
@@ -343,7 +345,7 @@ public class TestLib
 	    this (childAck, new String[]
 		{
 		    getExecPrefix () + "funit-child",
-		    "20",
+		    sleepTime,
 		    // Use getpid as this testsuite always runs the
 		    // event loop from the main thread (which has
 		    // tid==pid).
@@ -361,7 +363,7 @@ public class TestLib
 		{
 		    getExecPrefix () + "funit-child",
 		    busy ? "--wait=busy-loop" : "--wait=suspend",
-		    "20",
+		    sleepTime,
 		    // Use getpid as this testsuite always runs the
 		    // event loop from the main thread (which has
 		    // tid==pid).
@@ -378,7 +380,7 @@ public class TestLib
 		{
 		    getExecPrefix () + "funit-child",
 		    "--filename=" + getExecPrefix () + filename,
-		    "20",
+		    sleepTime,
 		    // Use getpid as this testsuite always runs the
 		    // event loop from the main thread (which has
 		    // tid==pid).

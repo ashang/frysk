@@ -1,3 +1,9 @@
+2006-02-23  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-child.c (main, server, main_alarm): Add global variable
+	main_alarm.  Move alarm call to server function, all new processes
+	get an alarm.
+
 2006-02-10  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-syscallint.c (main): Allow EINTR as a return code.

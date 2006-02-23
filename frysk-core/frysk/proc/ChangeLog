@@ -1,3 +1,8 @@
+2006-02-23  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (Child): Add static .sleepTime member.  Pass to
+	funit-child.  Reduce sleep-time to 10, from 20 seconds.
+
 2006-02-16  Stan Cox  <scox@redhat.com>
 
 	* TestExec.java (testAttachedMultipleChildExec): Check getCmdLine

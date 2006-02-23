@@ -248,6 +248,7 @@ int main_pid;
 char *main_filename;
 char **main_argv;
 char **main_envp;
+int main_alarm;
 sigset_t sigmask;
 
 void *
@@ -263,6 +264,11 @@ server (void *np)
 
   // Find THIS tasks tiddle entry.
   tiddle = new_tiddle ();
+
+  // If the main thread, set up a timer so that in MAIN_ALARM seconds,
+  // the program receives a SIGALARM causing the program to exit.
+  if (tiddle->pid == tiddle->tid)
+    alarm (main_alarm);
 
   // If a child processes' main thread finds that it's parent exits,
   // get a SIGPIPE.
@@ -492,7 +498,7 @@ main (int argc, char *argv[], char *envp[])
     usage ();
     exit (1);
   }
-  int sec = atol (main_argv[0]);
+  main_alarm = atol (main_argv[0]);
 
   if (main_argv[1] != NULL)
     manager_tid = atol (main_argv[1]);
@@ -521,8 +527,6 @@ main (int argc, char *argv[], char *envp[])
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaction (signals[i], &action, NULL);
 
-  // Set up a timer so that in SEC seconds, the program is terminated.
-  alarm (sec);
   server (NULL);
   return 0;
 }
