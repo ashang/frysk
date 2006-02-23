@@ -271,3 +271,10 @@ noinst_PROGRAMS += gctest/GCTest
 gctest_GCTest_SOURCES = gctest/GCTest.java
 gctest_GCTest_LDFLAGS = --main=GCTest
 TESTS += gctest/GCTest
+
+# Frysk, when creating test processes uses the sequence vfork -> fork
+# -> exec to create a process of known pid that has process 1 as its
+# parent.
+TESTS += vfork-exec/vfork-exec
+vfork_exec_vfork_exec_SOURCES = vfork-exec/vfork-exec.c
+noinst_PROGRAMS += vfork-exec/vfork-exec

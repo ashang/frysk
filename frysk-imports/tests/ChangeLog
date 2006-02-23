@@ -1,3 +1,9 @@
+2006-02-23  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (vfork_exec_vfork_exec_SOURCES, noinst_PROGRAMS)
+	(TESTS): Add vfork-exec/vfork-exec.c.
+	* vfork-exec/vfork-exec.c: New test.
+
 2006-02-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Add gctest/GCTest.
