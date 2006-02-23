@@ -6,7 +6,11 @@ import java.io.IOException;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.CheckButton;
+import org.gnu.gtk.ColorButton;
 import org.gnu.gtk.Gtk;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
 
@@ -52,9 +56,17 @@ public class DummyDebugResults {
 		
 		Viewport vp = (Viewport) this.glade.getWidget("observerSelectViewport");
 		
+		SizeGroup checkSize = new SizeGroup(SizeGroupMode.HORIZONTAL);
+		
 		VBox box = new VBox(true, 6);
-		for(int i = 0; i < 10; i++)
-			box.packStart(new CheckButton("Observer "+ i, true));
+		for(int i = 0; i < 10; i++){
+			HBox box2 = new HBox(false, 12);
+			CheckButton button = new CheckButton("Observer "+ i, true);
+			checkSize.addWidget(button);
+			box2.packStart(button, false, false, 0);
+			box2.packStart(new ColorButton(), false, false, 0);
+			box.packStart(box2);
+		}
 		box.showAll();
 		vp.add(box);
 		

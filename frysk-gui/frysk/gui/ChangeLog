@@ -1,5 +1,18 @@
 2006-02-23  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DebugHistory.java: Now keeps 'events' in a Vector.
+	(DebugHistory): Initializes events in the vector and sets the
+	size of the widget based on the number of events.
+	(exposeEvent): Delegates drawing of actual events to the events
+	themselves.
+	(ObserverEvent): Added, represents an event and is responsible
+	for the drawing said event.
+	* DummyDebugResults.java (DummyDebugResults): Checkboxes are now
+	added to a SizeGroup and ColorButtons have been added next to each
+	checkbox.
+	* glade/debugresultswindow.glade: Fixed widget spacing and added label
+	to the observer selector scrolled area.
+
 	* DebugHistory.java: Removed extraneous import.
 
 2006-02-22  Adam Jocksch  <ajocksch@redhat.com>
