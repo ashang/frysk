@@ -1,5 +1,7 @@
 2006-02-23  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/TagPreference.java: Added.
+
 	* prefs/BooleanPreference.java: Moved to frysk.gui.common.prefs, .
 	* prefs/PreferenceManager.java: Ditto.
 	* prefs/IntPreference.java: Ditto.
