@@ -1,9 +1,12 @@
-package frysk.gui.srcwin.prefs;
+package frysk.gui.common.prefs;
 
 import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
+
+import frysk.gui.srcwin.prefs.SyntaxPreference;
+import frysk.gui.srcwin.prefs.TagPreference;
 
 public class PreferenceManager {
 	private static HashMap preferences;
@@ -25,12 +28,12 @@ public class PreferenceManager {
 
 	public static void addPreference(FryskPreference preference, String node) {
 		if(preferences.containsKey(preference.getName()))
-			if(preference instanceof ColorPreference)
-				getColorPreference(preference.name).appendTags((ColorPreference) preference);
+			if(preference instanceof TagPreference)
+				((TagPreference) getColorPreference(preference.name)).appendTags((TagPreference) preference);
 			else
 				return;
 		
-		preference.setModel(prefs.node(node));
+		preference.load(prefs.node(node));
 		preferences.put(preference.getName(), preference);
 	}
 	

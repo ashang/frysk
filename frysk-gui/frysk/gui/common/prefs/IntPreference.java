@@ -1,4 +1,4 @@
-package frysk.gui.srcwin.prefs;
+package frysk.gui.common.prefs;
 
 import java.util.HashMap;
 import java.util.prefs.Preferences;
@@ -38,12 +38,12 @@ public class IntPreference extends FryskPreference {
     public void setCurrentValue(int newVal){
         this.currentValue = newVal;
     }
-	
-	public void saveValues() {
+
+	public void save(Preferences prefs) {
 		this.model.putInt(this.name, this.currentValue);
 	}
 
-	protected void setModel(Preferences prefs) {
+	public void load(Preferences prefs) {
 		this.model = prefs;
 		
 		this.currentValue = model.getInt(this.name, getDefaultValue(this.name));

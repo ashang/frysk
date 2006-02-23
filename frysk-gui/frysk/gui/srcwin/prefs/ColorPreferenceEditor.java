@@ -17,6 +17,8 @@ import org.gnu.gtk.event.ToggleListener;
 import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
+import frysk.gui.common.prefs.ColorPreference;
+
 /**
  * @author ajocksch
  * 

@@ -98,8 +98,8 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMLine;
 import frysk.gui.common.IconManager;
-import frysk.gui.srcwin.prefs.BooleanPreference;
-import frysk.gui.srcwin.prefs.PreferenceManager;
+import frysk.gui.common.prefs.BooleanPreference;
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.PreferenceWindow;
 import frysk.proc.Task;
 

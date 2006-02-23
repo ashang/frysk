@@ -1,3 +1,12 @@
+2006-02-23  Adam Jocksch  <ajocksch@redhat.com>
+
+	* prefs: Added.
+	* prefs/FryskPreference.java: Moved from frysk.gui.srcwin.prefs.
+	* prefs/IntPreference.java: Ditto.
+	* prefs/BooleanPreference.java: Ditto.
+	* prefs/ColorPreference.java: Ditto.
+	* prefs/PreferenceManager.java: Ditto.
+
 2006-02-09  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* dialogs/QueryDialog.java: New dialog.

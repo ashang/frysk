@@ -73,10 +73,10 @@ import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
-import frysk.gui.srcwin.prefs.BooleanPreference;
-import frysk.gui.srcwin.prefs.ColorPreference;
-import frysk.gui.srcwin.prefs.IntPreference;
-import frysk.gui.srcwin.prefs.PreferenceManager;
+import frysk.gui.common.prefs.BooleanPreference;
+import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.common.prefs.IntPreference;
+import frysk.gui.common.prefs.PreferenceManager;
 
 /**
  * This class is used to add some functionality to TextView that may be needed

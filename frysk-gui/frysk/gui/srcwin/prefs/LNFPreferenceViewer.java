@@ -10,6 +10,11 @@ import org.gnu.gtk.event.SpinListener;
 import org.gnu.gtk.event.ToggleEvent;
 import org.gnu.gtk.event.ToggleListener;
 
+import frysk.gui.common.prefs.BooleanPreference;
+import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.common.prefs.IntPreference;
+import frysk.gui.common.prefs.PreferenceManager;
+
 public class LNFPreferenceViewer extends VBox implements PreferenceViewer, ToggleListener, SpinListener{
 
     private ColorPreferenceEditor editor;
@@ -68,10 +73,10 @@ public class LNFPreferenceViewer extends VBox implements PreferenceViewer, Toggl
     }
 
     public void saveAll() {
-    		PreferenceManager.getBooleanPreference(BooleanPreference.LINE_NUMS).saveValues();
-    		PreferenceManager.getBooleanPreference(BooleanPreference.EXEC_MARKS).saveValues();
-    		PreferenceManager.getBooleanPreference(BooleanPreference.TOOLBAR).saveValues();
-    		PreferenceManager.getIntPreference(IntPreference.INLINE_LEVELS).saveValues();
+    		PreferenceManager.getBooleanPreference(BooleanPreference.LINE_NUMS).save(null);
+    		PreferenceManager.getBooleanPreference(BooleanPreference.EXEC_MARKS).save(null);
+    		PreferenceManager.getBooleanPreference(BooleanPreference.TOOLBAR).save(null);
+    		PreferenceManager.getIntPreference(IntPreference.INLINE_LEVELS).save(null);
     		
         this.list.saveAll();
     }

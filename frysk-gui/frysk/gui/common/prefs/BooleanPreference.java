@@ -1,4 +1,4 @@
-package frysk.gui.srcwin.prefs;
+package frysk.gui.common.prefs;
 
 import java.util.HashMap;
 import java.util.prefs.Preferences;
@@ -45,11 +45,11 @@ public class BooleanPreference extends FryskPreference {
 		value = val;
 	}
 
-	public void saveValues() {
+	public void save(Preferences prefs) {
 		this.model.putBoolean(name, value);
 	}
 
-	protected void setModel(Preferences prefs) {
+	public void load(Preferences prefs) {
 		this.model = prefs;
 		this.value = this.model.getBoolean(name, getDefaultValue(name));
 	}

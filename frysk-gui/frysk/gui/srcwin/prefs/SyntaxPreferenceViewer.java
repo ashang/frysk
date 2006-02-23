@@ -2,6 +2,8 @@ package frysk.gui.srcwin.prefs;
 
 import org.gnu.gtk.HBox;
 
+import frysk.gui.common.prefs.ColorPreference;
+
 public class SyntaxPreferenceViewer extends HBox implements PreferenceViewer{
 	
 	private ColorPreferenceEditor editor;

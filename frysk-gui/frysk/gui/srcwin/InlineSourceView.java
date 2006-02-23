@@ -57,8 +57,8 @@ import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
-import frysk.gui.srcwin.prefs.IntPreference;
-import frysk.gui.srcwin.prefs.PreferenceManager;
+import frysk.gui.common.prefs.IntPreference;
+import frysk.gui.common.prefs.PreferenceManager;
 
 /**
  * The InlineViewer displays code that has been inlined. InlineViewers will always

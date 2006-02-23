@@ -55,11 +55,12 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
+import frysk.gui.common.prefs.BooleanPreference;
+import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.srcwin.cparser.CDTParser;
-import frysk.gui.srcwin.prefs.BooleanPreference;
-import frysk.gui.srcwin.prefs.ColorPreference;
-import frysk.gui.srcwin.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
+import frysk.gui.srcwin.prefs.TagPreference;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -870,10 +871,10 @@ public class SourceBuffer extends TextBuffer {
 				ColorPreference.LINE_NUMBER), PreferenceManager.LNF_NODE);
 		PreferenceManager.addPreference(new ColorPreference(
 				ColorPreference.MARGIN), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(
+		PreferenceManager.addPreference(new TagPreference(
 				ColorPreference.CURRENT_LINE, false, this.currentLine),
 				PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(
+		PreferenceManager.addPreference(new TagPreference(
 				ColorPreference.SEARCH, false, this.foundText),
 				PreferenceManager.LNF_NODE);
 
@@ -1058,8 +1059,8 @@ public class SourceBuffer extends TextBuffer {
 		PreferenceManager.getSyntaxPreference(SyntaxPreference.KEYWORDS).removeTag(this.keywordTag);
 		PreferenceManager.getSyntaxPreference(SyntaxPreference.GLOBALS).removeTag(this.globalTag);
 		PreferenceManager.getSyntaxPreference(SyntaxPreference.CLASSES).removeTag(this.classTag);
-		PreferenceManager.getColorPreference(ColorPreference.CURRENT_LINE).removeTag(this.currentLine);
-		PreferenceManager.getColorPreference(ColorPreference.SEARCH).removeTag(this.foundText);
+		((TagPreference) PreferenceManager.getColorPreference(ColorPreference.CURRENT_LINE)).removeTag(this.currentLine);
+		((TagPreference) PreferenceManager.getColorPreference(ColorPreference.SEARCH)).removeTag(this.foundText);
 		
 		// TODO Auto-generated method stub
 		super.finalize();

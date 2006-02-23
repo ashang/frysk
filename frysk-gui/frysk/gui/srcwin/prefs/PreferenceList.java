@@ -17,6 +17,10 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.common.prefs.FryskPreference;
+import frysk.gui.common.prefs.PreferenceManager;
+
 /**
  * @author ajocksch
  * 
@@ -72,7 +76,7 @@ public class PreferenceList extends TreeView implements TreeSelectionListener {
 		while (iter != null) {
 			FryskPreference pref = (FryskPreference) this.getModel()
 					.getValue(iter, (DataColumnObject) this.cols[1]);
-			pref.saveValues();
+			pref.save(null);
 			iter = this.getModel().getIter(new TreePath(""+(++index)));
 		}
 	}

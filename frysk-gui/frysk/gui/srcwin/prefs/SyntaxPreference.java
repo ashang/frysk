@@ -9,7 +9,7 @@ import org.gnu.gtk.TextTag;
 import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
-public class SyntaxPreference extends ColorPreference {
+public class SyntaxPreference extends TagPreference {
 
 	private static HashMap defaultWeights;
 
@@ -90,23 +90,22 @@ public class SyntaxPreference extends ColorPreference {
 	}
 
 	public void toggleBold() {
-		System.out.println("Toggling bold");
 		if (this.currentWeight.equals(Weight.BOLD))
 			this.currentWeight = Weight.NORMAL;
 		else
 			this.currentWeight = Weight.BOLD;
 	}
 
-	public void saveValues() {
-		super.saveValues();
+	public void save(Preferences prefs) {
+		super.save(prefs);
 
 		this.model.putInt(name + "_weight", this.currentWeight.getValue());
 		this.model.putInt(name + "_style", this.currentStyle.getValue());
 		this.updateTags();
 	}
 
-	protected void setModel(Preferences model){
-		super.setModel(model);
+	public void load(Preferences model){
+		super.load(model);
 		
 		this.currentWeight = Weight.intern(this.model.getInt(name + "_weight",
 				getDefaultWeight(name).getValue()));
