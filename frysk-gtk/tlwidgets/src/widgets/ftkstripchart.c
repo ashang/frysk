@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#ifdef USE_THREAD_TIMER
 #include <signal.h>
+#endif
 #include <math.h>
 #include <time.h>
 #include <gtk/gtk.h>
@@ -293,10 +295,28 @@ init_current_bin (FtkStripchart * stripchart)
 }
 
 
+#ifdef USE_THREAD_TIMER
 static void
 timer_catcher (sigval_t sigval)
+#else
+static gboolean
+timer_catcher (gpointer sc)
+#endif
 {
-  FtkStripchart * stripchart = GINT_TO_POINTER(sigval.sival_int);
+  FtkStripchart * stripchart;
+
+#ifdef USE_THREAD_TIMER
+  stripchart = GINT_TO_POINTER(sigval.sival_int);
+#else
+  stripchart = FTK_STRIPCHART (sc);
+  
+  if (TRUE == stripchart_kill_timer_pending(stripchart)) {
+    stripchart_timer_set(stripchart) = FALSE;
+    stripchart_kill_timer_pending(stripchart) = FALSE;
+    return FALSE;	/* kills the timer */
+  }
+#endif
+  
   //  ftk_stripchart_expose(GTK_WIDGET (stripchart), NULL, NULL);
   
   if (TRUE == stripchart_current_modified(stripchart)) {
@@ -330,6 +350,10 @@ timer_catcher (sigval_t sigval)
 #if 0
   g_signal_emit_by_name (GTK_OBJECT (stripchart_tc), "expose_event");
 #endif
+  
+#ifndef USE_THREAD_TIMER
+  return TRUE;
+#endif
 }
 
 static gboolean
@@ -346,11 +370,16 @@ timer_init(FtkStripchart * stripchart, gint ms, GError ** err)
   
   if ((TRUE == stripchart_timer_set(stripchart)) &&
       ((ms == 0) || (ms >= MINIMUM_UPDATE))) {
+#ifdef USE_THREAD_TIMER
     timer_delete(stripchart_timer_id(stripchart));
     stripchart_timer_set(stripchart) = FALSE;
+#else
+    stripchart_kill_timer_pending(stripchart) = TRUE;
+#endif
   }
 
   if (ms >= MINIMUM_UPDATE) {
+#ifdef USE_THREAD_TIMER
     timer_t timer_id;
     sigval_t sigval;
     sigevent_t sigevent;
@@ -387,6 +416,17 @@ timer_init(FtkStripchart * stripchart, gint ms, GError ** err)
 
       rc = (0 == timer_settime (timer_id, 0, &value, &ovalue)) ? TRUE : FALSE;
     }
+#else
+    stripchart_timer_set(stripchart) = TRUE;
+    stripchart_bin_width_secs(stripchart)  = ms/1000;
+    stripchart_bin_width_usecs(stripchart) = (ms%1000) * 1000;
+
+    g_timeout_add ((guint)ms, timer_catcher, stripchart);
+
+    init_current_bin (stripchart);
+
+    rc = TRUE;
+#endif
   }
   else {
     g_set_error (err,
@@ -528,6 +568,10 @@ ftk_stripchart_init (FtkStripchart * stripchart)
   stripchart_readout_blue(stripchart)		= DEFAULT_BG_BLUE;
   stripchart_readout_color_modified(stripchart) = TRUE;
 
+#ifndef USE_THREAD_TIMER
+  stripchart_kill_timer_pending(stripchart) = FALSE;
+#endif
+
 #define STRIPCHART_EVENTS_INITIAL_INCR 64
   stripchart_event_max (stripchart)  = STRIPCHART_EVENTS_INITIAL_INCR;
   stripchart_event_next (stripchart) = 0;
@@ -647,7 +691,7 @@ ftk_stripchart_set_bg_rgb_e (FtkStripchart * stripchart,
     return FALSE;
   }
 
-  fprintf (stderr, "bg = %d %d %d\n", red, green, blue);
+  // fprintf (stderr, "bg = %d %d %d\n", red, green, blue);
   stripchart_bg_red(stripchart)		= red;
   stripchart_bg_green(stripchart)	= green;
   stripchart_bg_blue(stripchart)	= blue;
@@ -694,7 +738,7 @@ ftk_stripchart_set_readout_rgb_e (FtkStripchart * stripchart,
     return FALSE;
   }
 
-  fprintf (stderr, "ro = %d %d %d\n", red, green, blue);
+  // fprintf (stderr, "ro = %d %d %d\n", red, green, blue);
   stripchart_readout_red(stripchart)		= red;
   stripchart_readout_green(stripchart)		= green;
   stripchart_readout_blue(stripchart)		= blue;
@@ -741,14 +785,14 @@ ftk_stripchart_set_chart_rgb_e (FtkStripchart * stripchart,
     return FALSE;
   }
 
-  fprintf (stderr, "bg = %d %d %d\n", red, green, blue);
+  // fprintf (stderr, "bg = %d %d %d\n", red, green, blue);
   stripchart_bg_red(stripchart)		= red;
   stripchart_bg_green(stripchart)	= green;
   stripchart_bg_blue(stripchart)	= blue;
   stripchart_bg_color_modified(stripchart) = TRUE;
 
-  fprintf (stderr, "ro = %d %d %d\n",
-	   65535 - red, 65535 - green, 65535 - blue);
+  // fprintf (stderr, "ro = %d %d %d\n",
+  //	   65535 - red, 65535 - green, 65535 - blue);
   stripchart_readout_red(stripchart)		= 65535 - red;
   stripchart_readout_green(stripchart)		= 65535 - green;
   stripchart_readout_blue(stripchart)		= 65535 - blue;

@@ -64,7 +64,11 @@ typedef struct _FtkStripchart {
   int event_next;
   int event_max;
   event_s * current_event;
+#ifdef USE_THREAD_TIMER
   timer_t timer_id;
+#else
+  gboolean kill_timer_pending;
+#endif
   gboolean timer_set;
   struct timeval range;
   struct timeval bin_width;
@@ -121,7 +125,11 @@ typedef struct _FtkStripchart {
 #define stripchart_current_count(s,j)     (s)->current_event->count_vec[j]
 #define stripchart_current_count_rho(s)   (s)->current_event->count_rho
 #define stripchart_current_total(s)       (s)->current_event->total
+#ifdef USE_THREAD_TIMER
 #define stripchart_timer_id(s)            (s)->timer_id
+#else
+#define stripchart_kill_timer_pending(s)  (s)->kill_timer_pending
+#endif
 #define stripchart_timer_set(s)           (s)->timer_set
 #define stripchart_range(s)               (s)->range
 #define stripchart_range_secs(s)          (s)->range.tv_sec

@@ -1,3 +1,10 @@
+2006-02-23  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkstripchart.c: Replaced librt timer_*() timers
+	with glib g_timeout_add().
+	* src/widgets/ftkstripchart.h: Removed unnecessary stuff for
+	timer_*() timers.
+
 2006-02-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Makefile.am: Added an explicit rule to link libftk.so in

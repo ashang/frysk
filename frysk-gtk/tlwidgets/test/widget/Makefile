@@ -16,10 +16,10 @@
            -I../../src/widgets
 
      LIBS = `pkg-config --libs   gtk+-2.0` \
-            -L../../src/widgets -lftk \
+            -L../../../../../build/frysk-gtk/tlwidgets -ltftk \
             -lm
 
-   LD_LIBRARY_PATH=../../src/widgets
+   LD_LIBRARY_PATH=../../../../../build/frysk-gtk/tlwidgets
 
       CC = gcc
 
