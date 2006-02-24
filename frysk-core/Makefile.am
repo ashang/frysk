@@ -79,6 +79,7 @@ frysk_pkglibexecdir_funit_child_alias_LDFLAGS = -pthread
 frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_child_SOURCES)
 	$(COMPILE) -o $@ -c $^
 
+MOSTLYCLEANFILES = frysk/pkglibexecdir/funit-child-alias.$(OBJEXT)
 EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
 
 # Try running funit from the install directory; ignore things like
