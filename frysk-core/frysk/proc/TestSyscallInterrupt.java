@@ -66,7 +66,7 @@ public class TestSyscallInterrupt
 	protected int startChild (String stdin, String stdout, String stderr,
 				  String[] argv)
 	{
-	    return Fork.exec (stdin, stdout, stderr, argv);
+	    return Fork.daemon (stdin, stdout, stderr, argv);
 	}
 	PipeReadChild (String[] argv)
 	{
@@ -184,11 +184,9 @@ public class TestSyscallInterrupt
 	    public void update (Observable o, Object obj)
 	    {
 		Proc process = (Proc) obj;
-		if (isChildOfMine (process)) {
-		    inSyscall = !inSyscall;  // we won't return from exit syscall
-		    exited = true;
-		    Manager.eventLoop.requestStop ();
-		}
+		inSyscall = !inSyscall;  // we won't return from exit syscall
+		exited = true;
+		Manager.eventLoop.requestStop ();
 	    }
 	}
 

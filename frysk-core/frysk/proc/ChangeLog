@@ -1,3 +1,8 @@
+2006-02-27  Stan Cox  <scox@redhat.com>
+
+	* TestSyscallInterrupt.java (TestSyscallInterrupt): Use fork.daemon.
+	(ProcDestroyedObserver): Remove parent check.	
+
 2006-02-23  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (Child): Add static .sleepTime member.  Pass to
