@@ -39,9 +39,11 @@
 
 package frysk;
 
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 import java.util.logging.LogRecord;
 import java.util.logging.LogManager;
+import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileInputStream;
@@ -86,9 +88,13 @@ public class EventLogger
 
 	logger = Logger.getLogger (Config.FRYSK_LOG_ID);
 	try {
+	    File log_dir = new File (Config.FRYSK_DIR + log_subdir + "/");
+
+	    if (!log_dir.exists())
+		log_dir.mkdirs();
+
 	    FileHandler handler = new FileHandler
-		(Config.FRYSK_DIR + log_subdir + log_entry,
-		 1024 * 128, 1);
+		(log_dir.getAbsolutePath() + "/" + log_entry, 1024 * 128, 1);
 	    handler.setFormatter (new Formatter ()
 		{
 		    public String format(LogRecord record)

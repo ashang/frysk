@@ -1,3 +1,7 @@
+2006-02-27  Stan Cox  <scox@redhat.com>
+
+	* EventLogger.java (get): Create FRYSK_DIR/logs if necessary.
+
 2006-02-07  Stan Cox  <scox@redhat.com>
 
 	* EventLogger.java (get): Look for FRYSK_DIR/logging.properties.
