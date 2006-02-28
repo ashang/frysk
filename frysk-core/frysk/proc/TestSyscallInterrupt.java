@@ -183,7 +183,6 @@ public class TestSyscallInterrupt
 	{
 	    public void update (Observable o, Object obj)
 	    {
-		Proc process = (Proc) obj;
 		inSyscall = !inSyscall;  // we won't return from exit syscall
 		exited = true;
 		Manager.eventLoop.requestStop ();
