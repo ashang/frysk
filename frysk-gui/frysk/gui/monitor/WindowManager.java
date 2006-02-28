@@ -43,6 +43,8 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 
+import frysk.gui.StartDebugSessionDialog;
+
 
 /**
  * @author sami wagiaalla
@@ -67,6 +69,7 @@ public class WindowManager implements Saveable{
 	public ProgramAddWindow programAddWindow;
 	public AboutWindow aboutWindow;
 	public SplashScreenWindow splashScreen;
+	public StartDebugSessionDialog startDebugSessionDialog;
 	/**}*/
 	
 	public WindowManager(){
@@ -88,6 +91,8 @@ public class WindowManager implements Saveable{
 		
 		//this.programAddWindow = new ProgramAddWindow(glade);
 
+		this.startDebugSessionDialog = new StartDebugSessionDialog(glade);
+		
 		this.menuBar = new MenuBar(glade);
 	}
 

@@ -1,3 +1,9 @@
+2006-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* WindowManager.java: Added handle for StartDebugSessionDialog.
+	* ProcWiseTreeView.java: New class.
+	* ProcWiseDataModel.java: New class.
+
 2006-02-18  Phil Muldoon  <pmuldoon@redhat.com?
 
 	* MainWindow.java (load): Check size and height, and 

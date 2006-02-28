@@ -56,8 +56,6 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 
-import frysk.gui.monitor.GuiObject;
-
 /**
  * A widget that combines the TreeView and DataModel and displays
  * a simple linear list. Meant to take away all the complexities of
