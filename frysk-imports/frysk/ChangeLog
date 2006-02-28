@@ -1,3 +1,6 @@
+2006-02-28  Rick Moseley  <rmoseley@redhat.com>
+	* EventLogger.java:  Remove unneeded import of ConsoleHnadler.
+
 2006-02-27  Stan Cox  <scox@redhat.com>
 
 	* EventLogger.java (get): Create FRYSK_DIR/logs if necessary.
