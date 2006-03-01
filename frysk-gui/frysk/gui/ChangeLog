@@ -1,3 +1,8 @@
+2006-03-01  Sami Wagiaalla  <swagiaal@toxic.toronto.redhat.com>
+
+	* glade/procpop.glade: Fixed text != NULL bug.
+	More hig compatablility changes.
+
 2006-02-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Fixed vPane position... was causing

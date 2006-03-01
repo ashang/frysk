@@ -87,10 +87,20 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 	private FilterWidget filterWidget;
 	private ActionsWidget actionsWidget;
 	
-	private Label nameSummaryLabel;
-	private Label baseObserverSummaryLabel;
-	private Label filtersSummaryLabel;
-	private Label actionsSummaryLabel;
+//	private Label nameSummaryLabel;
+//	private Label baseObserverSummaryLabel;
+//	private Label filtersSummaryLabel;
+//	private Label actionsSummaryLabel;
+	
+	private final String nameString;
+	private final String baseObserverString;
+	private final String filtersString;
+	private final String actionsString;
+	
+	private Label nameLabel;
+	private Label baseObserverLabel;
+	private Label filtersLabel;
+	private Label actionsLabel;
 	
 	ObserverRoot selectedObserver;
 	
@@ -230,27 +240,21 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 		});
 		//=========================================
 		
-		this.nameSummaryLabel         = (Label) glade.getWidget("nameSummaryLabel"); //$NON-NLS-1$
+		this.nameLabel         = (Label) glade.getWidget("customObserverNameLabel");		
+		this.baseObserverLabel = (Label) glade.getWidget("customObserverBaseLabel");	
+		this.filtersLabel      = (Label) glade.getWidget("customObserverFiltersLabel");
+		this.actionsLabel      = (Label) glade.getWidget("customObserverActionsLabel");
 		
-		this.baseObserverSummaryLabel = (Label) glade.getWidget("baseObserverSummaryLabel"); //$NON-NLS-1$
+		this.nameString = this.nameLabel.getText();
+		this.baseObserverString = this.baseObserverLabel.getText();
+		this.filtersString = this.filtersLabel.getText();
+		this.actionsString = this.actionsLabel.getText();
 	
-		this.filtersSummaryLabel      = (Label) glade.getWidget("filtersSummaryLabel"); //$NON-NLS-1$
-		this.updateFiltersSummary(""); //$NON-NLS-1$
+		this.updateActionsSummary("");
+		this.updateFiltersSummary("");
 		
-		this.actionsSummaryLabel      = (Label) glade.getWidget("actionsSummaryLabel"); //$NON-NLS-1$
-		this.updateActionsSummary(""); //$NON-NLS-1$
-	
 		this.setSelectedObserver(this.observerTreeView.getSelectedObserver());
 
-//		button = (Button) glade.getWidget("customObserverCancelButton");
-//		button.addListener(new ButtonListener() {
-//			public void buttonEvent(ButtonEvent event) {
-//				if(event.isOfType(ButtonEvent.Type.CLICK)){
-//					
-//				}
-//			}
-//		});
-		
 		button = (Button) glade.getWidget("customObserverOkButton");
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
@@ -282,20 +286,28 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 	}
 	
 	private void updateNameSummary(String summary){
-		this.nameSummaryLabel.setText("("+summary+")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(summary == null)
+			summary = "";
+		this.nameLabel.setText(this.nameString + " ("+summary+")"); //$NON-NLS-1$ //$NON-NLS-2$
 		this.customObserverNameEntry.setText(summary);
 	}
 
 	private void updateBaseObserverSummary(String summary){
-		this.baseObserverSummaryLabel.setText("("+summary+")"); //$NON-NLS-1$ //$NON-NLS-2$
+		if(summary == null)
+			summary = "";
+		this.baseObserverLabel.setText( this.baseObserverString + " ("+summary+")"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private void updateFiltersSummary(String summary){
-		this.filtersSummaryLabel.setText(summary);
+		if(summary == null)
+			summary = "";
+		this.filtersLabel.setText( this.filtersString + " " + summary);
 	}
 	
 	private void updateActionsSummary(String summary){
-		this.actionsSummaryLabel.setText(summary);		
+		if(summary == null)
+			summary = "";
+		this.actionsLabel.setText(this.actionsString + " " + summary);		
 	}
 	
 	public void setSelectedObserver(ObserverRoot selectedObserver){

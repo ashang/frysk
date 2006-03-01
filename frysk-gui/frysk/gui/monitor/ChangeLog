@@ -1,3 +1,11 @@
+2006-03-01  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CustomeObserverWindow.java: Changed it to work with the new
+	structure for customObserverWindow in glade (Fix for text !=NULL)
+	bug.
+	* StatusWidget.java: Reverted accedental disabling of stripchart
+	...oops :).
+
 2006-02-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* WindowManager.java: Added handle for StartDebugSessionDialog.

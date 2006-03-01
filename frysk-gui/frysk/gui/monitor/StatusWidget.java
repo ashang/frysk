@@ -64,6 +64,8 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
+import com.redhat.ftk.Stripchart;
+
 import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.GenericAction;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -73,7 +75,7 @@ public class StatusWidget extends VBox{
 	Label nameLabel;
 	private GuiData data;
 	private Frame frame;
-	//private Stripchart area;
+	private Stripchart area;
 	
 	public  Observable notifyUser;
 //    private int e2;
@@ -103,16 +105,16 @@ public class StatusWidget extends VBox{
 		//========================================
 		
 		//========================================
-//		this.area = new Stripchart();
-//		this.area.resize (1, 1);
-//		this.area.setBackgroundRGB (65536, 28000, 28000);
-//		this.area.setUpdate (1111);
-//		this.area.setRange (60000);
+		this.area = new Stripchart();
+		this.area.resize (1, 1);
+		this.area.setBackgroundRGB (65536, 28000, 28000);
+		this.area.setUpdate (1111);
+		this.area.setRange (60000);
 
 		initLogTextView();
 
 		mainVbox.setBorderWidth(5);
-//		mainVbox.packStart(area, true, true, 0);
+		mainVbox.packStart(area, true, true, 0);
 		//========================================
 		
 		//========================================
@@ -254,7 +256,6 @@ public class StatusWidget extends VBox{
 		public TimelineAction(ObserverRoot observer) {
 			super("TimeLine Action",""); //$NON-NLS-1$ //$NON-NLS-2$
 			this.observer = observer;
-			this.observer.getClass();
 			this.createEvent();
 		}
 
@@ -262,19 +263,19 @@ public class StatusWidget extends VBox{
 		private void createEvent() {
 			count++;
 			if(count%3 == 0){
-		//		this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0); /* red + green = yellow */
+				this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0); /* red + green = yellow */
 			}
 			
 			if(count%3 == 1){
-			//	this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535); /* red + green = yellow */
+				this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535); /* red + green = yellow */
 			}
 			if(count%3 == 2){
-				//this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535); /* red + green = yellow */
+				this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535); /* red + green = yellow */
 			}
 		}
 
 		public void execute(ObserverRoot observer) {
-			//area.appendEvent (eventId);
+			area.appendEvent (eventId);
 		}
 		
 		public Action getCopy() {
