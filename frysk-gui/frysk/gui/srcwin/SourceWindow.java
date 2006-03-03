@@ -38,11 +38,14 @@
 // exception.
 package frysk.gui.srcwin;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Vector;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
 import org.gnu.gdk.ModifierType;
+import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
@@ -90,8 +93,6 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
@@ -100,7 +101,9 @@ import frysk.dom.DOMLine;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
-import frysk.gui.srcwin.prefs.PreferenceWindow;
+import frysk.gui.common.prefs.PreferenceWindow;
+import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
+import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
 
 /**
@@ -151,7 +154,7 @@ public class SourceWindow extends Window {
 
 	private View view;
 
-	private PreferenceWindow prefWin;
+//	private PreferenceWindow prefWin;
 
 	// ACTIONS
 	private Action close;
@@ -264,22 +267,17 @@ public class SourceWindow extends Window {
 
 		this.glade.getWidget(SOURCE_WINDOW).showAll();
 		this.glade.getWidget(FIND_BOX).hideAll();
-		this.refresh();
 	}
 
 	/**
-	 * To be called internally when a change in the preference model occurs.
-	 * Updates the window and children to reflect the new changes
+	 * Toggles whether the toolbar is visible
+	 * @param value Whether or not to show the toolbar
 	 */
-	public void refresh() {
-		this.view.refresh();
-
-		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.TOOLBAR)){
+	public void setShowToolbar(boolean value){
+		if (value)
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).showAll();
-		}
-		else{
+		else
 			this.glade.getWidget(SourceWindow.GLADE_TOOLBAR_NAME).hideAll();
-		}
 	}
 
 	/**
@@ -825,6 +823,15 @@ public class SourceWindow extends Window {
 		// // Stack browser
 		((TreeView) this.glade.getWidget("stackBrowser")).getSelection()
 				.addListener(listener);
+				
+		// Preferences
+		((BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TOOLBAR)).
+				addListener(new BooleanPreferenceListener(){
+			public void preferenceChanged(String prefName, boolean newValue){
+				SourceWindow.this.setShowToolbar(newValue);
+			}
+		});
+	
 	}
 
 	/**
@@ -832,22 +839,21 @@ public class SourceWindow extends Window {
 	 * this method is called
 	 */
 	private void launchPreferencesWindow() {
-		if (this.prefWin == null)
-			this.prefWin = new PreferenceWindow(this.gladePath);
-		else
-			this.prefWin.show();
-
-		// find out when the window closes and refresh the source
-		this.prefWin.attachLifeCycleListener(new LifeCycleListener() {
-			public boolean lifeCycleQuery(LifeCycleEvent event) {
-				return false;
-			}
-
-			public void lifeCycleEvent(LifeCycleEvent event) {
-				if (event.isOfType(LifeCycleEvent.Type.HIDE))
-					SourceWindow.this.refresh();
-			}
-		});
+		PreferenceWindow prefWin = null;
+		try {
+			prefWin = new PreferenceWindow(new LibGlade(this.gladePath+"/frysk_source_prefs.glade", prefWin));
+		} catch (GladeXMLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		prefWin.showAll();
 	}
 
 	private void hideFindBox(){

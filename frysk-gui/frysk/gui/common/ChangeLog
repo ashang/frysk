@@ -1,3 +1,52 @@
+2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* prefs/BooleanPreference.java: Removed constants.
+	(BooleanPreferenceListener): Added.
+	(getDefaultValue): Removed.
+	(BooleanPreference): Only constructor now takes a string, not an int,
+	as well as a default value.
+	(save): Now fires off events to listeners of this preference.
+	(addListener): Added.
+	(revert): Added.
+	* prefs/ColorPreference.java: Removed constants.
+	(ColorPreferenceListener): Added.
+	(getDefaultValue): Removed.
+	(ColorPreference): Now takes a string and a default color to use.
+	(save): Now fires off events to listeners.
+	(addListener): Added.
+	(revert): Added.
+	* prefs/FryskPreference.java (revert): Added.
+	* prefs/IntPreference.java: Removed constants/
+	(IntPreferenceListener): Added.
+	(getDefaultValue): Removed.
+	(IntPreference): Now takes a string, a default value to use, and a
+	max and min value for the preference.
+	(save): Now fires events to listeners.
+	(addListener): Added.
+	(revert): Added.
+	(getMinValue): Added.
+	(getMaxValue): Added.
+	* prefs/PreferenceEditor.java: Added.
+	* prefs/PreferenceGroup.java: Changed internal storage method to a
+	HashMap from a Vector.
+	(getPreference): Added.
+	(contains): Added.
+	* prefs/PreferenceManager.java (sourceWinGroup): Added.
+	(syntaxHighlightingGroup): Added.
+	(addPreference): Removed.
+	(getBooleanPreference): Removed.
+	(getBooleanPreferenceValue): Removed.
+	(getColorPreferenceValue): Removed.
+	(getColorPreference): Removed.
+	(getSyntaxPreference): Removed.
+	(getIntPreferenceValue): Removed.
+	(getIntPreference): Removed.
+	(setPreferenceModel): Added.
+	(addPreferenceGroup): Added.
+	(getPreferenceGroups): Added.
+	(saveAll): Added.
+	* prefs/PreferenceWindow.java: Added.
+
 2006-02-23  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferenceGroup.java: Added.

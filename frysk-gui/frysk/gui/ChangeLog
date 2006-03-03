@@ -1,4 +1,10 @@
-2006-03-01  Sami Wagiaalla  <swagiaal@toxic.toronto.redhat.com>
+2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Gui.java (initializePreferences): Added.
+	* glade/frysk_source_prefs.java: Removed HBox from right side
+	of widget, replaced with VBox in a scrollable area.
+
+2006-03-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Fixed text != NULL bug.
 	More hig compatablility changes.

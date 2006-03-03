@@ -59,6 +59,7 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 
 /**
  * The InlineViewer displays code that has been inlined. InlineViewers will always
@@ -111,7 +112,8 @@ public class InlineSourceView extends SourceView{
 				depth++;
 			}
 			
-			int maxDepth = PreferenceManager.getIntPreferenceValue(IntPreference.INLINE_LEVELS);
+			IntPreference iPref = (IntPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.INLINE_LEVELS);
+			int maxDepth = iPref.getCurrentValue();
 			
 			// Less than the max number of levels is being shown
 			if(depth <= maxDepth){
@@ -168,7 +170,8 @@ public class InlineSourceView extends SourceView{
 	 * the visible scopes up or down
 	 */
 	public void toggleChild(){
-		int limit = PreferenceManager.getIntPreferenceValue(IntPreference.INLINE_LEVELS);
+		IntPreference iPref = (IntPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.INLINE_LEVELS);
+		int limit = iPref.getCurrentValue();
 		
 		if(!this.expanded){
 			// Case 1: depth less than max, this level is not expanded.

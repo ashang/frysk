@@ -1,40 +1,24 @@
 package frysk.gui.common.prefs;
 
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 public class BooleanPreference extends FryskPreference {
 
-	private static HashMap defaultValues;
-
-	public static String[] NAMES = { "Show Toolbar", "Show Line Numbers",
-			"Show Executable Marks" };
-
-    public static final int TOOLBAR = 0;
-    public static final int LINE_NUMS = 1;
-    public static final int EXEC_MARKS = 2;
-    
-	static {
-		defaultValues = new HashMap();
-
-		// Whether to show the toolbar
-		defaultValues.put(NAMES[TOOLBAR], new Boolean(true));
-		defaultValues.put(NAMES[LINE_NUMS], new Boolean(true));
-		defaultValues.put(NAMES[EXEC_MARKS], new Boolean(true));
+	public interface BooleanPreferenceListener{
+		void preferenceChanged(String prefName, boolean newValue);
 	}
 
-	private static boolean getDefaultValue(String name) {
-		return ((Boolean) defaultValues.get(name)).booleanValue();
-	}
-
-	private boolean value;
-
-	protected BooleanPreference(String name) {
+    protected boolean value;
+	protected boolean fallback;
+	
+	protected Vector listeners;
+	
+	public BooleanPreference(String name, boolean fallback) {
 		this.name = name;
-	}
-
-	public BooleanPreference(int name) {
-		this(NAMES[name]);
+		this.fallback = fallback;
+		this.listeners = new Vector();
 	}
 
 	public boolean getCurrentValue() {
@@ -47,10 +31,23 @@ public class BooleanPreference extends FryskPreference {
 
 	public void save(Preferences prefs) {
 		this.model.putBoolean(name, value);
+		
+		Iterator it = this.listeners.iterator();
+		while(it.hasNext())
+			((BooleanPreferenceListener) it.next()).preferenceChanged(this.name, this.value);
 	}
 
 	public void load(Preferences prefs) {
 		this.model = prefs;
-		this.value = this.model.getBoolean(name, getDefaultValue(name));
+		this.revert();
+	}
+	
+	public void addListener(BooleanPreferenceListener listener){
+		this.listeners.add(listener);
+		listener.preferenceChanged(this.name, this.value);
+	}
+
+	public void revert() {
+		this.value = this.model.getBoolean(name, this.fallback);
 	}
 }

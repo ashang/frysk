@@ -13,4 +13,6 @@ public abstract class FryskPreference implements Saveable{
 	public String getName(){
 		return name;
 	}
+	
+	public abstract void revert();
 }

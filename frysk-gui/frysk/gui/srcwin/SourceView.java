@@ -75,8 +75,8 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
-import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 
 /**
  * This class is used to add some functionality to TextView that may be needed
@@ -150,14 +150,17 @@ public class SourceView extends TextView implements View, ExposeListener {
 	 */
 	public void refresh() {
 		// Look & Feel
-		Color tmpColor = PreferenceManager.getColorPreferenceValue(ColorPreference.TEXT);
+		ColorPreference cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TEXT);
+		Color tmpColor = cPref.getCurrentColor();
 		this.setTextColor(StateType.NORMAL, tmpColor);
 
-		tmpColor = PreferenceManager.getColorPreferenceValue(ColorPreference.BACKGROUND);
+		cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.BACKGROUND);
+		tmpColor = cPref.getCurrentColor();
 		this.setBaseColor(StateType.NORMAL, tmpColor);
 
 		// Sidebar
-		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.LINE_NUMS)) {
+		BooleanPreference bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMS); 
+		if (bPref.getCurrentValue()) {
 			Layout lo = new Layout(this.getContext());
 			lo.setText("" + (this.buf.getLastLine() + 1));
 			this.marginWriteOffset = lo.getPixelWidth();
@@ -166,7 +169,8 @@ public class SourceView extends TextView implements View, ExposeListener {
 			this.marginWriteOffset = 0;
 		}
 
-		if (PreferenceManager.getBooleanPreferenceValue(BooleanPreference.EXEC_MARKS)) {
+		bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS);
+		if (bPref.getCurrentValue()) {
 			this.setBorderWindowSize(TextWindowType.LEFT,
 					this.marginWriteOffset + 40);
 		} else {
@@ -361,14 +365,17 @@ public class SourceView extends TextView implements View, ExposeListener {
 		if (this.myContext == null)
 			this.myContext = new GC((Drawable) drawingArea);
 
-		Color tmp = PreferenceManager.getColorPreferenceValue(ColorPreference.MARGIN);
+		ColorPreference tmpPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.MARGIN);
+		Color tmp = tmpPref.getCurrentColor();
 		myContext.setRGBForeground(tmp);
 		drawingArea.drawRectangle(this.myContext, true, 0, 0, drawingArea
 				.getWidth(), drawingArea.getHeight());
 
 		// get preference settings
-		boolean showLines = PreferenceManager.getBooleanPreferenceValue(BooleanPreference.LINE_NUMS);
-		boolean showMarks = PreferenceManager.getBooleanPreferenceValue(BooleanPreference.EXEC_MARKS);
+		BooleanPreference bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMS);
+		boolean showLines = bPref.getCurrentValue();
+		bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS);
+		boolean showMarks = bPref.getCurrentValue();
 
 		// get the y coordinates for the top and bottom of the window
 		int minY = drawingArea.getClipRegion().getClipbox().getY();
@@ -389,14 +396,17 @@ public class SourceView extends TextView implements View, ExposeListener {
 				.getLineNumber();
 
 		// Get Color to draw the text in
-		Color lineColor = PreferenceManager.getColorPreferenceValue(ColorPreference.LINE_NUMBER);
+		ColorPreference cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMBER_COLOR);
+		Color lineColor = cPref.getCurrentColor();
 		this.myContext.setRGBForeground(lineColor);
 
 		// gets current line color
-		Color currentLine = PreferenceManager.getColorPreferenceValue(ColorPreference.CURRENT_LINE);
+		cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.CURRENT_LINE);
+		Color currentLine = cPref.getCurrentColor();
 
 		// gets executable mark color
-		Color markColor = PreferenceManager.getColorPreferenceValue(ColorPreference.EXEC_MARKS);
+		cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS_COLOR);
+		Color markColor = cPref.getCurrentColor();
 
 		int currentHeight = 0;
 		int actualIndex = firstLine;
@@ -559,10 +569,6 @@ public class SourceView extends TextView implements View, ExposeListener {
 		this.addListener((ExposeListener) this);
 		this.addListener((MouseListener) listener);
 		this.addListener((MouseMotionListener) listener);
-		
-		// Preferences
-		PreferenceManager.addPreference(new IntPreference(IntPreference.INLINE_LEVELS), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(ColorPreference.EXEC_MARKS), PreferenceManager.LNF_NODE);
 
 		this.showAll();
 	}

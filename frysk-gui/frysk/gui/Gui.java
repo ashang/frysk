@@ -52,6 +52,7 @@ import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
 
+import org.gnu.gdk.Color;
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
@@ -62,12 +63,18 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
+import org.gnu.pango.Style;
+import org.gnu.pango.Weight;
 
 import frysk.Config;
 import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.common.prefs.BooleanPreference;
+import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.common.prefs.IntPreference;
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.Saveable;
@@ -75,6 +82,9 @@ import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.srcwin.SourceWindowFactory;
+import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
+import frysk.gui.srcwin.prefs.SyntaxPreference;
+import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.proc.Manager;
 
 public class Gui
@@ -88,6 +98,34 @@ public class Gui
 
     public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
+    private static void initializePreferences(){
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.BACKGROUND,Color.WHITE));
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.CURRENT_LINE,Color.GREEN));
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.EXEC_MARKS_COLOR,Color.BLACK));
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.LINE_NUMBER_COLOR,Color.BLACK));
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.SEARCH,Color.ORANGE));
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.TEXT,Color.BLACK));
+    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.MARGIN,new Color(37779, 40349, 50115)));
+    	
+    	PreferenceManager.sourceWinGroup.addPreference(new IntPreference(SourceWinPreferenceGroup.INLINE_LEVELS, 0, 10, 2));
+
+    	PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.EXEC_MARKS, true));
+    	PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.LINE_NUMS, true));
+    	PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.TOOLBAR, true));
+    	
+    	PreferenceManager.addPreferenceGroup(PreferenceManager.sourceWinGroup);
+    	
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.CLASSES, Color.RED, Weight.BOLD, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.FUNCTIONS, new Color(4369, 6939, 51914), Weight.BOLD, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.GLOBALS, new Color(8224, 36494, 16191), Weight.NORMAL, Style.ITALIC));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.KEYWORDS, new Color(22102, 4112, 31868), Weight.BOLD, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OPTIMIZED, new Color(38293, 38293, 38293), Weight.NORMAL, Style.ITALIC));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OUT_OF_SCOPE, new Color(38293, 38293, 38293), Weight.NORMAL, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.VARIABLES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
+    	
+    	PreferenceManager.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
+    }
+    
     Gui (String[] glade_dirs)
 	throws GladeXMLException, FileNotFoundException, IOException
     {
@@ -238,6 +276,8 @@ public class Gui
 	SourceWindowFactory.setGladePaths(glade_dirs);
 
 	prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
+	PreferenceManager.setPreferenceModel(prefs);
+	initializePreferences();
 	
 	trayIcon = new TrayIcon("Frysk Monitor/Debugger", false); //$NON-NLS-1$
 		

@@ -43,24 +43,29 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.gnu.gdk.Color;
 import org.gnu.glib.JGException;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextChildAnchor;
 import org.gnu.gtk.TextIter;
 import org.gnu.gtk.TextMark;
 import org.gnu.gtk.TextTag;
+import org.gnu.pango.Style;
+import org.gnu.pango.Weight;
 import org.jdom.Element;
 
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
-import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
 import frysk.gui.srcwin.cparser.CDTParser;
+import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
-import frysk.gui.srcwin.prefs.TagPreference;
+import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
+import frysk.gui.srcwin.prefs.SyntaxPreference.SyntaxPreferenceListener;
 
 /**
  * This class is a wrapper around TextBuffer, it allows for extra functionality
@@ -836,48 +841,41 @@ public class SourceBuffer extends TextBuffer {
 		this.optimizedVarTag.setStrikethrough(true);
 
 		// Initialize preferences
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.FUNCTIONS, this.functionTag),
-				PreferenceManager.SYNTAX_NODE);
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.VARIABLES, this.variableTag),
-				PreferenceManager.SYNTAX_NODE);
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.OPTIMIZED, this.optimizedVarTag),
-				PreferenceManager.SYNTAX_NODE);
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.OUT_OF_SCOPE, this.oosVarTag),
-				PreferenceManager.SYNTAX_NODE);
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.KEYWORDS, this.keywordTag),
-				PreferenceManager.SYNTAX_NODE);
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.GLOBALS, this.globalTag),
-				PreferenceManager.SYNTAX_NODE);
-		PreferenceManager.addPreference(new SyntaxPreference(
-				SyntaxPreference.CLASSES, this.classTag),
-				PreferenceManager.SYNTAX_NODE);
+		
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.CURRENT_LINE)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceBuffer.this.currentLine.setBackground(ColorConverter.colorToHexString(newColor));
+			}
+		});
 
-		PreferenceManager.addPreference(new BooleanPreference(
-				BooleanPreference.LINE_NUMS), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new BooleanPreference(
-				BooleanPreference.EXEC_MARKS), PreferenceManager.LNF_NODE);
-
-		PreferenceManager.addPreference(new ColorPreference(
-				ColorPreference.TEXT), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(
-				ColorPreference.BACKGROUND), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(
-				ColorPreference.LINE_NUMBER), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new ColorPreference(
-				ColorPreference.MARGIN), PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new TagPreference(
-				ColorPreference.CURRENT_LINE, false, this.currentLine),
-				PreferenceManager.LNF_NODE);
-		PreferenceManager.addPreference(new TagPreference(
-				ColorPreference.SEARCH, false, this.foundText),
-				PreferenceManager.LNF_NODE);
-
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.SEARCH)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceBuffer.this.foundText.setBackground(ColorConverter.colorToHexString(newColor));
+			}
+		});
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.CLASSES)).
+				addListener(new TagPreferenceListener(this.classTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.FUNCTIONS)).
+				addListener(new TagPreferenceListener(this.functionTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.GLOBALS)).
+				addListener(new TagPreferenceListener(this.globalTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.KEYWORDS)).
+				addListener(new TagPreferenceListener(this.keywordTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.OPTIMIZED)).
+				addListener(new TagPreferenceListener(this.oosVarTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.VARIABLES)).
+				addListener(new TagPreferenceListener(this.variableTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.OUT_OF_SCOPE)).
+				addListener(new TagPreferenceListener(this.oosVarTag));
 	}
 
 	/**
@@ -1048,21 +1046,17 @@ public class SourceBuffer extends TextBuffer {
 		}
 	}
 	
-	/**
-	 * When this object dies, remove it's text tags from the preferences
-	 */
-	protected void finalize() throws Throwable {
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.FUNCTIONS).removeTag(this.functionTag);
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.VARIABLES).removeTag(this.variableTag);
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.OPTIMIZED).removeTag(this.optimizedVarTag);
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.OUT_OF_SCOPE).removeTag(this.oosVarTag);
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.KEYWORDS).removeTag(this.keywordTag);
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.GLOBALS).removeTag(this.globalTag);
-		PreferenceManager.getSyntaxPreference(SyntaxPreference.CLASSES).removeTag(this.classTag);
-		((TagPreference) PreferenceManager.getColorPreference(ColorPreference.CURRENT_LINE)).removeTag(this.currentLine);
-		((TagPreference) PreferenceManager.getColorPreference(ColorPreference.SEARCH)).removeTag(this.foundText);
+	private class TagPreferenceListener implements SyntaxPreferenceListener{
+		private TextTag myTag;
 		
-		// TODO Auto-generated method stub
-		super.finalize();
+		public TagPreferenceListener(TextTag myTag){
+			this.myTag = myTag;
+		}
+		
+		public void preferenceChanged(String name, Color newColor, Weight newWeight, Style newStyle){
+			this.myTag.setForeground(ColorConverter.colorToHexString(newColor));
+			this.myTag.setWeight(newWeight);
+			this.myTag.setStyle(newStyle);
+		}
 	}
 }
