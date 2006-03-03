@@ -97,9 +97,7 @@ public class InlineSourceView extends SourceView{
 		this.tips = new ToolTips();
 	}
     
-	public void refresh(){
-		super.refresh();
-		
+	public void recalculateVisibleScopes(){
 		/*
 		 * If this is the case, we're the top inline node, and we need to adjust for 
 		 * a possible change in depth
@@ -139,7 +137,7 @@ public class InlineSourceView extends SourceView{
 		}
 		
 		if(this.next != null)
-			this.next.refresh();
+			this.next.recalculateVisibleScopes();
 	}
 	
 	/**

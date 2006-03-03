@@ -1,5 +1,14 @@
 2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineSourceView.java (refresh): Renamed to recalculateVisibleScopes.
+	* MixedView.java (refresh): Removed.
+	* SourceView.java (refresh): Removed.
+	(drawMargin): Now uses member variables that are set by the preference
+	listeners.
+	(initialize): Adds listeners to appropriate preferences.
+	(calculateMargin): Added.
+	* View.java (refresh): Removed.
+
 	* InlineSourceView.java (refresh): Now gets number of inline 
 	levels from new preferences model.
 	(toggleChild): Ditto.

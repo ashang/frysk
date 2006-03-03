@@ -27,11 +27,6 @@ public class MixedView extends HPaned implements View {
 		
 		this.showAll();
 	}
-	
-	public void refresh() {
-		this.sourceWidget.refresh();
-		this.assemblyWidget.refresh();
-	}
 
 	public boolean findNext(String toFind, boolean caseSensitive) {
 		boolean result = this.sourceWidget.findNext(toFind, caseSensitive);

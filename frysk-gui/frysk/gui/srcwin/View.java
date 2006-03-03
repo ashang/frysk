@@ -7,8 +7,6 @@ import org.gnu.gtk.Widget;
 
 public interface View{
 	
-	void refresh();
-	
 	boolean findNext(String toFind, boolean caseSensitive);
 	
 	boolean findPrevious(String toFind, boolean caseSensitive);

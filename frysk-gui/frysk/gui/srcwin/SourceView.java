@@ -75,7 +75,11 @@ import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMSource;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
+import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
+import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
+import frysk.gui.common.prefs.IntPreference.IntPreferenceListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 
 /**
@@ -105,6 +109,14 @@ public class SourceView extends TextView implements View, ExposeListener {
 
 	protected boolean expanded = false;
 
+	protected boolean showingLineNums;
+	protected boolean showingExecMarks;
+	
+	protected Color marginColor;
+	protected Color lineColor;
+	protected Color execMarkColor;
+	protected Color currentLineColor;
+	
 	// keep this around, we'll be needing it
 	private GC myContext;
 
@@ -142,45 +154,6 @@ public class SourceView extends TextView implements View, ExposeListener {
 		this.listener = new SourceViewListener(this);
 		this.setBuffer(this.buf);
 		this.initialize();
-	}
-	
-	/**
-	 * Redraws the SourceViewWidget on screen, taking changes in the preference
-	 * model into account
-	 */
-	public void refresh() {
-		// Look & Feel
-		ColorPreference cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TEXT);
-		Color tmpColor = cPref.getCurrentColor();
-		this.setTextColor(StateType.NORMAL, tmpColor);
-
-		cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.BACKGROUND);
-		tmpColor = cPref.getCurrentColor();
-		this.setBaseColor(StateType.NORMAL, tmpColor);
-
-		// Sidebar
-		BooleanPreference bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMS); 
-		if (bPref.getCurrentValue()) {
-			Layout lo = new Layout(this.getContext());
-			lo.setText("" + (this.buf.getLastLine() + 1));
-			this.marginWriteOffset = lo.getPixelWidth();
-		} else {
-			this.setBorderWindowSize(TextWindowType.LEFT, 20);
-			this.marginWriteOffset = 0;
-		}
-
-		bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS);
-		if (bPref.getCurrentValue()) {
-			this.setBorderWindowSize(TextWindowType.LEFT,
-					this.marginWriteOffset + 40);
-		} else {
-			this.setBorderWindowSize(TextWindowType.LEFT,
-					this.marginWriteOffset + 20);
-		}
-
-		// refresh the inlined scopes, if they exist
-		if (this.child != null)
-			this.child.refresh();
 	}
 
 	/**
@@ -282,7 +255,6 @@ public class SourceView extends TextView implements View, ExposeListener {
 	
 	public void setMode(int mode){
 		this.buf.setMode(mode);
-		this.refresh();
 	}
 	
 	/**
@@ -365,17 +337,9 @@ public class SourceView extends TextView implements View, ExposeListener {
 		if (this.myContext == null)
 			this.myContext = new GC((Drawable) drawingArea);
 
-		ColorPreference tmpPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.MARGIN);
-		Color tmp = tmpPref.getCurrentColor();
-		myContext.setRGBForeground(tmp);
+		myContext.setRGBForeground(marginColor);
 		drawingArea.drawRectangle(this.myContext, true, 0, 0, drawingArea
 				.getWidth(), drawingArea.getHeight());
-
-		// get preference settings
-		BooleanPreference bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMS);
-		boolean showLines = bPref.getCurrentValue();
-		bPref = (BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS);
-		boolean showMarks = bPref.getCurrentValue();
 
 		// get the y coordinates for the top and bottom of the window
 		int minY = drawingArea.getClipRegion().getClipbox().getY();
@@ -396,17 +360,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 				.getLineNumber();
 
 		// Get Color to draw the text in
-		ColorPreference cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMBER_COLOR);
-		Color lineColor = cPref.getCurrentColor();
 		this.myContext.setRGBForeground(lineColor);
-
-		// gets current line color
-		cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.CURRENT_LINE);
-		Color currentLine = cPref.getCurrentColor();
-
-		// gets executable mark color
-		cPref = (ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS_COLOR);
-		Color markColor = cPref.getCurrentColor();
 
 		int currentHeight = 0;
 		int actualIndex = firstLine;
@@ -458,8 +412,8 @@ public class SourceView extends TextView implements View, ExposeListener {
 			// For the current line, do some special stuff
 			if (i == this.buf.getCurrentLine()) {
 
-				this.myContext.setRGBForeground(currentLine);
-				if (showMarks)
+				this.myContext.setRGBForeground(this.currentLineColor);
+				if (showingExecMarks)
 					drawingArea.drawRectangle(this.myContext, true, 0,
 							actualFirstStart + drawingHeight,
 							this.marginWriteOffset + 40, lineHeight);
@@ -470,10 +424,10 @@ public class SourceView extends TextView implements View, ExposeListener {
 				this.myContext.setRGBForeground(lineColor);
 
 				if (this.buf.hasInlineCode(i)) {
-					this.myContext.setRGBForeground(markColor);
+					this.myContext.setRGBForeground(this.execMarkColor);
 					Layout lo = this.createLayout("i");
 					lo.setAlignment(Alignment.RIGHT);
-					if (showMarks)
+					if (showingExecMarks)
 						drawingArea.drawLayout(this.myContext,
 								this.marginWriteOffset + 25, actualFirstStart
 										+ drawingHeight, lo);
@@ -489,8 +443,8 @@ public class SourceView extends TextView implements View, ExposeListener {
 			}
 
 			// If it is executable, draw a mark
-			if (showMarks && this.buf.isLineExecutable(i)) {
-				this.myContext.setRGBForeground(markColor);
+			if (showingExecMarks && this.buf.isLineExecutable(i)) {
+				this.myContext.setRGBForeground(this.execMarkColor);
 				drawingArea.drawLine(this.myContext,
 						this.marginWriteOffset + 5, actualFirstStart
 								+ drawingHeight + iconStart,
@@ -500,7 +454,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 			}
 
 			// Draw line numbers
-			if (showLines)
+			if (showingLineNums)
 				drawLineNumber(drawingArea, this.myContext, actualFirstStart
 						+ drawingHeight, i);
 
@@ -556,9 +510,6 @@ public class SourceView extends TextView implements View, ExposeListener {
 		FontDescription desc = new FontDescription();
 		desc.setFamily("Monospace");
 		this.setFont(desc);
-		
-		// Set all preference-related data
-		this.refresh();
 
 		// Stuff that never changes
 		this.setLeftMargin(3);
@@ -570,7 +521,99 @@ public class SourceView extends TextView implements View, ExposeListener {
 		this.addListener((MouseListener) listener);
 		this.addListener((MouseMotionListener) listener);
 
+		// PreferenceListeners
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TEXT)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor) {
+				SourceView.this.setTextColor(StateType.NORMAL, newColor);
+			}			
+		});
+
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.BACKGROUND)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceView.this.setBaseColor(StateType.NORMAL, newColor);
+			}
+		});
+
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.MARGIN)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceView.this.marginColor = newColor;
+			}
+		});
+		
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMBER_COLOR)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceView.this.lineColor = newColor;
+			}
+		});
+		
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS_COLOR)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceView.this.execMarkColor = newColor;
+			}
+		});
+		
+		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.CURRENT_LINE)).
+				addListener(new ColorPreferenceListener(){
+			public void preferenceChanged(String prefName, Color newColor){
+				SourceView.this.currentLineColor = newColor;
+			}
+		});
+		
+		
+		
+		((IntPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.INLINE_LEVELS)).
+				addListener(new IntPreferenceListener(){
+			public void preferenceChanged(String prefName, int newValue) {
+				if (SourceView.this.child != null)
+					SourceView.this.child.recalculateVisibleScopes();
+			}
+		});
+		
+		// Sidebar
+		((BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.LINE_NUMS)).
+				addListener(new BooleanPreferenceListener(){
+			public void preferenceChanged(String prefName, boolean newValue) {
+				SourceView.this.showingLineNums = newValue;
+				SourceView.this.calculateMargin();
+			}
+		});
+		
+		((BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.EXEC_MARKS)).
+				addListener(new BooleanPreferenceListener(){
+			public void preferenceChanged(String prefName, boolean newValue) {
+				SourceView.this.showingExecMarks = newValue;
+				SourceView.this.calculateMargin();
+			}
+		});
+		
 		this.showAll();
+	}
+
+	/**
+	 * 
+	 */
+	private void calculateMargin() {
+		if (showingLineNums) {
+			Layout lo = new Layout(this.getContext());
+			lo.setText("" + (this.buf.getLastLine() + 1));
+			this.marginWriteOffset = lo.getPixelWidth();
+		} else {
+			this.setBorderWindowSize(TextWindowType.LEFT, 20);
+			this.marginWriteOffset = 0;
+		}
+
+		if (showingExecMarks) {
+			this.setBorderWindowSize(TextWindowType.LEFT,
+					this.marginWriteOffset + 40);
+		} else {
+			this.setBorderWindowSize(TextWindowType.LEFT,
+					this.marginWriteOffset + 20);
+		}
 	}
 	
 	private boolean isTextArea(Window win){
