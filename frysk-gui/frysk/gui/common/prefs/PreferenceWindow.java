@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Alignment;
+import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
@@ -20,6 +21,8 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
@@ -32,7 +35,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
  * and then add that group to the {@see frysk.gui.common.prefs.PreferenceManager}.
  *
  */
-public class PreferenceWindow extends Window implements TreeSelectionListener{
+public class PreferenceWindow extends Window implements TreeSelectionListener, ButtonListener{
 
 	private LibGlade glade; // My glade file
 	private TreeView prefView; // The view that will display the preference groups
@@ -48,6 +51,10 @@ public class PreferenceWindow extends Window implements TreeSelectionListener{
 		this.glade = glade;
 		this.prefView = (TreeView) this.glade.getWidget("preferenceTree");
 		this.prefView.getSelection().addListener(this);
+		
+		((Button) this.glade.getWidget("okButton")).addListener(this);
+		((Button) this.glade.getWidget("cancelButton")).addListener(this);
+		
 		this.setupPreferenceTree();
 	}
 	
@@ -115,6 +122,29 @@ public class PreferenceWindow extends Window implements TreeSelectionListener{
 		}
 		
 		this.showAll();
+	}
+
+	/*
+	 * Whenever the user clicks on a button (there's only 2, apply and cancel),
+	 * perform the appropriate action and then close the window
+	 * (non-Javadoc)
+	 * @see org.gnu.gtk.event.ButtonListener#buttonEvent(org.gnu.gtk.event.ButtonEvent)
+	 */
+	public void buttonEvent(ButtonEvent arg0) {
+		// Ignore non-clicks
+		if(!arg0.isOfType(ButtonEvent.Type.CLICK))
+			return;
+		
+		String buttonText = ((Button) arg0.getSource()).getName();
+		
+		if(buttonText.equals("okButton")){
+			PreferenceManager.saveAll();
+		}
+		else{
+			PreferenceManager.revertAll();
+		}
+		
+		this.hideAll();
 	}
 	
 }

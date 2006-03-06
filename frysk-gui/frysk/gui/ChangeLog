@@ -1,5 +1,12 @@
 2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DummySourceWindow.java (initializePreferences): Copied
+	from Gui.java.
+	(buildHandler): Ditto.
+	(setupErrorLogging): Ditto.
+	(importPreferences): Ditto.
+	(DummySourceWin): Now loads preferences and initializes model.
+
 	* DebugHistory.java: Added comments.
 
 2006-03-03  Adam Jocksch  <ajocksch@redhat.com>

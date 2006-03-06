@@ -113,4 +113,16 @@ public class PreferenceGroup implements Saveable{
 	public boolean contains(FryskPreference preference){
 		return this.prefs.values().contains(preference);
 	}
+	
+	/**
+	 * Reverts all the preferences in this group back to the
+	 * values in the model
+	 *
+	 */
+	public void revertAll(){
+		Iterator it = this.prefs.values().iterator();
+		
+		while(it.hasNext())
+			((FryskPreference) it.next()).revert();
+	}
 }

@@ -64,4 +64,15 @@ public class PreferenceManager {
 			((PreferenceGroup) it.next()).save(prefs);
 	}
 	
+	/**
+	 * Reverts the preferences in each of the groups back to the values
+	 * in the model.
+	 *
+	 */
+	public static void revertAll(){
+		Iterator it = getPreferenceGroups();
+		while(it.hasNext())
+			((PreferenceGroup) it.next()).revertAll();
+	}
+	
 }

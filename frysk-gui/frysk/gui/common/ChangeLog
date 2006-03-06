@@ -1,5 +1,11 @@
 2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceGroup.java (revertAll): Added.
+	* prefs/PreferenceManager.java (revertAll): Added.
+	* prefs/PreferenceWindow.java (PreferenceWindow): Adds self as listener
+	to apply, cancel buttons.
+	(buttonEvent): Added.
+
 	* prefs/BooleanPreference.java: Added comments.
 	* prefs/ColorPreference.java: Ditto.
 	* prefs/FryskPreference.java: Ditto.
