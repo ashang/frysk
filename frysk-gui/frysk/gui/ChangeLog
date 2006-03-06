@@ -1,5 +1,8 @@
 2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* glade/frysk_source_prefs.glade: Increased width of preferences window
+	to 500.
+
 	* glade/frysk_source_prefs.glade: Gave meaningful names to scrolled
 	pane and viewport for preferences.
 
