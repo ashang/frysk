@@ -18,12 +18,26 @@ import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.MouseMotionEvent;
 import org.gnu.gtk.event.MouseMotionListener;
 
+/**
+ * The DebugHistory widget is intended to display the events
+ * that have been triggered up to an abnormal termination of a 
+ * program. It allows the user to scroll backwards and forwards through
+ * the lifetime of the process (up to a user-defined point), change 
+ * the threshold of importance for what events are displayed, and upon
+ * clicking on an event recieve more details about the event
+ *
+ */
 public class DebugHistory extends DrawingArea implements ExposeListener, MouseMotionListener, MouseListener{
 	
 	boolean isOverEvent = false;
 	
 	Vector events;
 	
+	/**
+	 * Creates a new debug history widget
+	 *
+	 * TODO: This is still a mockup, we need a way to get the information
+	 */
 	public DebugHistory(){
 		super();
 		
@@ -37,6 +51,9 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		this.addListener((MouseListener) this);
 	}
 
+	/**
+	 * Does the actual drawing of the widget.
+	 */
 	public boolean exposeEvent(ExposeEvent arg0) {
 		if(arg0.isOfType(ExposeEvent.Type.NO_EXPOSE))
 			return false;
@@ -68,6 +85,9 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		return true;
 	}
 
+	/**
+	 * Whenever the mouse is over an event, change the cursor to a hand
+	 */
 	public boolean mouseMotionEvent(MouseMotionEvent arg0) {
 		int x = (int)arg0.getX();
 		int y = (int)arg0.getY();
@@ -87,6 +107,10 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		return false;
 	}
 
+	/**
+	 * If the mouse is over an event and the user clicks, open a window
+	 * with more information about the event.
+	 */
 	public boolean mouseEvent(MouseEvent arg0) {
 	
 		if(isOverEvent && arg0.getButtonPressed() == MouseEvent.BUTTON1){
@@ -100,6 +124,10 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		return false;
 	}
 	
+	/*
+	 * Private class to represent a time when a observer fired. In the future this
+	 * will probably be replaced by some other, externally visible data structure.
+	 */
 	private class ObserverEvent{
 		int time;
 		String text;
@@ -109,6 +137,10 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 			this.text = text;
 		}
 		
+		/*
+		 * Events are responsable for drawing themselves on the
+		 * provided Cairo context.
+		 */
 		public void draw(GdkCairo cairo, int height){
 			cairo.save();
 			

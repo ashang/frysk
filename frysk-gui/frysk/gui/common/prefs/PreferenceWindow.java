@@ -23,21 +23,38 @@ import org.gnu.gtk.Window;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+/**
+ * The PreferenceWindow allows the user to display and edit
+ * any of the preferences in any of the groups registered with 
+ * the preference manager. The list of preferences is constructed
+ * dynamically so in order for a preference to be visible here all
+ * that needs to be done is add that Preference to a {@see frysk.gui.common.prefs.PreferenceGroup}
+ * and then add that group to the {@see frysk.gui.common.prefs.PreferenceManager}.
+ *
+ */
 public class PreferenceWindow extends Window implements TreeSelectionListener{
 
-	private LibGlade glade;
-	private TreeView prefView;
+	private LibGlade glade; // My glade file
+	private TreeView prefView; // The view that will display the preference groups
 	
 	private DataColumn[] cols = {new DataColumnString(), new DataColumnObject()};
 	
+	/**
+	 * Creates a new Preference Window
+	 * @param glade The glade object for the preference window
+	 */
 	public PreferenceWindow(LibGlade glade){
 		super(((Window) glade.getWidget("prefWin")).getHandle());
 		this.glade = glade;
 		this.prefView = (TreeView) this.glade.getWidget("preferenceTree");
-		
+		this.prefView.getSelection().addListener(this);
 		this.setupPreferenceTree();
 	}
 	
+	/*
+	 * Generates the list of preference groups based on the information in 
+	 * PreferenceManager
+	 */
 	private void setupPreferenceTree(){
 		TreeStore model = new TreeStore(cols);
 		Iterator groups = PreferenceManager.getPreferenceGroups();
@@ -64,9 +81,14 @@ public class PreferenceWindow extends Window implements TreeSelectionListener{
 		
 		this.prefView.getSelection().unselectAll();
 		this.prefView.getSelection().setMode(SelectionMode.SINGLE);
-		this.prefView.getSelection().addListener(this);
 	}
 
+	/*
+	 * Called when the group selection changes, it finds all the preferences in that
+	 * group and then creates preferenceEditors for them.
+	 * (non-Javadoc)
+	 * @see org.gnu.gtk.event.TreeSelectionListener#selectionChangedEvent(org.gnu.gtk.event.TreeSelectionEvent)
+	 */
 	public void selectionChangedEvent(TreeSelectionEvent arg0) {
 		TreePath[] paths = this.prefView.getSelection().getSelectedRows();
 		

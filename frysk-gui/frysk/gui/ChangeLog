@@ -1,3 +1,7 @@
+2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DebugHistory.java: Added comments.
+
 2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Gui.java (initializePreferences): Added.

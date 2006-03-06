@@ -1,3 +1,14 @@
+2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* prefs/BooleanPreference.java: Added comments.
+	* prefs/ColorPreference.java: Ditto.
+	* prefs/FryskPreference.java: Ditto.
+	* prefs/IntPreference.java: Ditto.
+	* prefs/PreferenceEditor.java: Ditto.
+	* prefs/PreferenceGroup.java: Ditto.
+	* prefs/PreferenceManager.java: Ditto.
+	* prefs/PreferenceWindow.java: Ditto.
+
 2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/BooleanPreference.java: Removed constants.

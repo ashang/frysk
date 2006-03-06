@@ -22,16 +22,27 @@ import org.gnu.pango.Weight;
 
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 
+/**
+ * PreferenceEditor allows the user to change the value of a preference.
+ *
+ */
 public class PreferenceEditor extends HBox {
 
 	FryskPreference myPref;
 	
+	/**
+	 * Creates a new Preference editor.
+	 * @param pref The preference to edit
+	 */
 	public PreferenceEditor(FryskPreference pref) {
 		super(false, 12);
 		
 		this.setPreference(pref);
 	}
 	
+	/*
+	 * Sets the preference to edit.
+	 */
 	private void setPreference(FryskPreference pref){
 		if(pref instanceof SyntaxPreference)
 			setPreference((SyntaxPreference) pref);
@@ -43,6 +54,10 @@ public class PreferenceEditor extends HBox {
 			setPreference((BooleanPreference) pref);
 	}
 	
+	/*
+	 * Provides a spinner box with which the user can edit a 
+	 * integer-valued preference.
+	 */
 	private void setPreference(IntPreference newPref){
 		this.myPref = newPref;
 		
@@ -56,6 +71,7 @@ public class PreferenceEditor extends HBox {
 		
 		this.packStart(new Label(newPref.getName()+":"), false, false, 0);
 		
+		// Push the button to the far right, so that all the buttons will line up
 		Alignment align = new Alignment(1.0, 0.0, 0.0, 0.0);
 		align.add(button);
 		
@@ -63,6 +79,9 @@ public class PreferenceEditor extends HBox {
 		this.showAll();
 	}
 	
+	/*
+	 * Provides a checkbox to edit boolean-valued preferences
+	 */
 	private void setPreference(BooleanPreference newPref){
 		this.myPref = newPref;
 		
@@ -76,6 +95,7 @@ public class PreferenceEditor extends HBox {
 		
 		this.packStart(new Label(newPref.getName()+":"), false, false, 0);
 		
+		// Push the button to the far right.
 		Alignment align = new Alignment(1.0, 0.0, 0.0, 0.0);
 		align.add(button);
 		
@@ -83,6 +103,9 @@ public class PreferenceEditor extends HBox {
 		this.showAll();
 	}
 	
+	/*
+	 * Provides a ColorChooserButton to change the value of color-valued preferences
+	 */
 	private void setPreference(ColorPreference newPref){
 		this.myPref = newPref;
 		
@@ -96,6 +119,7 @@ public class PreferenceEditor extends HBox {
 		
 		this.packStart(new Label(newPref.getName()+":"), false, false, 0);
 		
+		// Push the button all the way to the right
 		Alignment align = new Alignment(1.0, 0.0, 0.0, 0.0);
 		align.add(button);
 		
@@ -103,6 +127,10 @@ public class PreferenceEditor extends HBox {
 		this.showAll();
 	}
 	
+	/*
+	 * Provides a color button as well as bold and italics checkmarks so that
+	 * the user can edit the way that syntax highlighting is performed
+	 */
 	private void setPreference(SyntaxPreference newPref){
 		this.myPref = newPref;
 		
