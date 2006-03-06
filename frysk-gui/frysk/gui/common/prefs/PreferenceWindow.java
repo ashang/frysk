@@ -11,6 +11,8 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.SelectionMode;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
@@ -113,10 +115,14 @@ public class PreferenceWindow extends Window implements TreeSelectionListener, B
 			box.remove(children[i]);
 		
 		Iterator prefs = group.getPreferences();
+		
+		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
+		
 		while(prefs.hasNext()){
 			FryskPreference pref = (FryskPreference) prefs.next();
 			PreferenceEditor editor = new PreferenceEditor(pref);
-			Alignment align = new Alignment(0,0,1.0,0.0);
+			sizeGroup.addWidget(editor);
+			Alignment align = new Alignment(0,0,0.0,0.0);
 			align.add(editor);
 			box.packStart(align, true, true, 12);
 		}

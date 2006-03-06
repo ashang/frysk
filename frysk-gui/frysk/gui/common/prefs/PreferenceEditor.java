@@ -38,6 +38,7 @@ public class PreferenceEditor extends HBox {
 		super(false, 12);
 		
 		this.setPreference(pref);
+		this.showAll();
 	}
 	
 	/*
@@ -76,7 +77,6 @@ public class PreferenceEditor extends HBox {
 		align.add(button);
 		
 		this.packStart(align, true, true, 0);
-		this.showAll();
 	}
 	
 	/*
@@ -124,7 +124,6 @@ public class PreferenceEditor extends HBox {
 		align.add(button);
 		
 		this.packStart(align, true, true, 0);
-		this.showAll();
 	}
 	
 	/*
@@ -175,7 +174,6 @@ public class PreferenceEditor extends HBox {
 		
 		this.packStart(align, true, true, 0);
 		this.packStart(box, false, false, 0);
-		this.showAll();
 	}
 
 }

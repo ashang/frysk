@@ -1,5 +1,11 @@
 2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceEditor.java (PreferenceEditor): Added showAll().
+	(setPreference): Removed call to showAll().
+	* prefs/PreferenceWindow.java (selectionChangedEvent): Now adds the
+	PreferenceEditors to a SizeGroup and no longer adds them with expand
+	set to true.
+
 	* prefs/PreferenceGroup.java (revertAll): Added.
 	* prefs/PreferenceManager.java (revertAll): Added.
 	* prefs/PreferenceWindow.java (PreferenceWindow): Adds self as listener

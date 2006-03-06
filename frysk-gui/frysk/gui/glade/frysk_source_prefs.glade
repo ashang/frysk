@@ -65,7 +65,8 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkScrolledWindow" id="scrolledwindow1">
+	    <widget class="GtkScrolledWindow" id="scrollingPrefArea">
+	      <property name="width_request">0</property>
 	      <property name="visible">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
@@ -74,7 +75,7 @@
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkViewport" id="viewport1">
+		<widget class="GtkViewport" id="scrollingPrefViewport">
 		  <property name="visible">True</property>
 		  <property name="shadow_type">GTK_SHADOW_IN</property>
 
