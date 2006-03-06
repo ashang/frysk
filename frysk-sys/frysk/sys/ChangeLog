@@ -1,5 +1,10 @@
 2006-03-06  Andrew Cagney  <cagney@redhat.com>
 
+	* SigSet.java (getPending, suspend, blockProcMask)
+	(unblockProcMask, setProcMask, getProcMask): Add.
+	* cni/SigSet.cxx: Ditto.
+	* TestSigSet.java (testProcMask): New test.
+
 	* cni/SigSet.hxx, cni/SigSet.cxx, SigSet.java, TestSigSet.java:
 	New files.
 

@@ -91,4 +91,54 @@ public final class SigSet
      * java.
      */
     public native boolean contains (int sigNum);
+
+    /**
+     * Get the pending set of signals.
+     */
+    public native void getPending ();
+    /**
+     * Suspend the thread, unblocking signals in SigSet.
+     */
+    public native void suspend ();
+
+    /**
+     * Block this SigSet's signals; if oldSet is non-null, return the
+     * previous signal set.
+     */
+    public native void blockProcMask (SigSet oldSet);
+    /**
+     * Block this SigSet's signals.
+     */
+    public void blockProcMask ()
+    {
+	blockProcMask (null);
+    }
+    /**
+     * Unblock this SigSet's signals; if oldSet is non-null, return the
+     * previous signal set.
+     */
+    public native void unblockProcMask (SigSet oldSet);
+    /**
+     * Unblock this SigSet's signals.
+     */
+    public void unblockProcMask ()
+    {
+	unblockProcMask (null);
+    }
+    /**
+     * Set the signal mask to this SigSet's signals; if oldSet is
+     * non-null, return the previous signal set.
+     */
+    public native void setProcMask (SigSet oldSet);
+    /**
+     * Set the process signal mask to this SigSet's signals.
+     */
+    public void setProcMask ()
+    {
+	setProcMask (null);
+    }
+    /**
+     * Get the current process signal mask.
+     */
+    public native void getProcMask ();
 }

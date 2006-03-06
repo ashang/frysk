@@ -38,12 +38,14 @@
 // exception.
 
 #include <signal.h>
+#include <errno.h>
 
 #include <gcj/cni.h>
 #include <gnu/gcj/RawDataManaged.h>
 
 #include "frysk/sys/SigSet.h"
 #include "frysk/sys/cni/SigSet.hxx"
+#include "frysk/sys/cni/Errno.hxx"
 
 sigset_t *
 getSigSet (frysk::sys::SigSet* set)
@@ -99,3 +101,62 @@ frysk::sys::SigSet::empty ()
   ::sigemptyset (sigset);
 }
 
+void
+frysk::sys::SigSet::getPending ()
+{
+  sigset_t *sigset = (sigset_t*) sigSet;
+  errno = 0;
+  if (::sigpending (sigset) < 0)
+    throwErrno (errno, "sigpending");
+}
+
+void
+frysk::sys::SigSet::suspend()
+{
+  sigset_t *sigset = (sigset_t*) sigSet;
+  errno = 0;
+  ::sigsuspend (sigset); // always fails with EINTR.
+  if (errno != EINTR)
+    throwErrno (errno, "sigsuspend");
+}
+
+
+
+void
+frysk::sys::SigSet::blockProcMask (frysk::sys::SigSet* oset)
+{
+  sigset_t *set = (sigset_t*) sigSet;
+  sigset_t* old = (sigset_t*) (oset == NULL ? NULL : oset->sigSet);
+  errno = 0;
+  if (::sigprocmask (SIG_BLOCK, set, old) < 0)
+    throwErrno (errno, "sigprocmask.SIG_BLOCK");
+}
+
+void
+frysk::sys::SigSet::unblockProcMask (frysk::sys::SigSet* oset)
+{
+  sigset_t *set = (sigset_t*) sigSet;
+  sigset_t* old = (sigset_t*) (oset == NULL ? NULL : oset->sigSet);
+  errno = 0;
+  if (::sigprocmask (SIG_UNBLOCK, set, old) < 0)
+    throwErrno (errno, "sigprocmask.SIG_UNBLOCK");
+}
+
+void
+frysk::sys::SigSet::setProcMask (frysk::sys::SigSet* oset)
+{
+  sigset_t *set = (sigset_t*) sigSet;
+  sigset_t* old = (sigset_t*) (oset == NULL ? NULL : oset->sigSet);
+  errno = 0;
+  if (::sigprocmask (SIG_SETMASK, set, old) < 0)
+    throwErrno (errno, "sigprocmask.SIG_SETMASK");
+}
+
+void
+frysk::sys::SigSet::getProcMask ()
+{
+  sigset_t *set = (sigset_t*) sigSet;
+  errno = 0;
+  if (::sigprocmask (SIG_SETMASK, NULL, set) < 0)
+    throwErrno (errno, "sigprocmask.SIG_SETMASK");
+}

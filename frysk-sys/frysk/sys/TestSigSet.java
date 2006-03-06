@@ -94,4 +94,28 @@ public class TestSigSet
 	assertTrue ("set contains Sig.USR1", set.contains (Sig.USR1));
 	assertFalse ("set contains Sig.USR2", set.contains (Sig.USR2));
     }
+
+
+    public void testProcMask ()
+    {
+	SigSet set = new SigSet (new int[] { Sig.WINCH });
+	SigSet old = new SigSet ();
+	SigSet pending = new SigSet ();
+	set.setProcMask (old);
+
+	// Check that a masked signal becomes pending
+	pending.getPending ();
+	assertFalse ("pending contains Sig.WINCH",
+		     pending.contains (Sig.WINCH));
+	Signal.tkill (Tid.get (), Sig.WINCH);
+	pending.getPending ();
+	assertTrue ("pending contains Sig.WINCH",
+		    pending.contains (Sig.WINCH));
+
+	// Calling sigsuspend, unblocking the SigWINCH signal, hangs.
+	// This is because the signal is ignored.
+
+	// Put things back
+	old.setProcMask ();
+    }
 }
