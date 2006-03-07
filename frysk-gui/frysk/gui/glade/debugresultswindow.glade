@@ -104,13 +104,13 @@
 		  <property name="right_padding">0</property>
 
 		  <child>
-		    <widget class="GtkHScale" id="hscale1">
+		    <widget class="GtkHScale" id="thresholdBar">
 		      <property name="width_request">158</property>
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="draw_value">False</property>
 		      <property name="value_pos">GTK_POS_TOP</property>
-		      <property name="digits">1</property>
+		      <property name="digits">0</property>
 		      <property name="update_policy">GTK_UPDATE_CONTINUOUS</property>
 		      <property name="inverted">False</property>
 		      <property name="adjustment">0 0 10 1 0 0</property>

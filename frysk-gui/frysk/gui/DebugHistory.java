@@ -31,6 +31,8 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 	
 	boolean isOverEvent = false;
 	
+	private int threshold;
+	
 	Vector events;
 	
 	/**
@@ -38,17 +40,21 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 	 *
 	 * TODO: This is still a mockup, we need a way to get the information
 	 */
-	public DebugHistory(){
+	public DebugHistory(int threshold){
 		super();
+		
+		this.threshold = threshold;
 		
 		this.events = new Vector();
 		for(int i = 0; i < 100; i++)
-			events.add(new ObserverEvent(i*100, "Test " + i));
-		this.setMinimumSize(events.size()*100,0);
+			events.add(new ObserverEvent(i*25, i%10, "Test " + i));
+		this.setMinimumSize(events.size()*25,0);
 		
 		this.addListener((ExposeListener)this);
 		this.addListener((MouseMotionListener)this);
 		this.addListener((MouseListener) this);
+		
+		
 	}
 
 	/**
@@ -71,8 +77,11 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		cairo.fill();
 		
 		// Draw each visible event
-		for(int i = (x/100)*100; i < x + width; i += 100)
-			((ObserverEvent) this.events.elementAt(i/100)).draw(cairo, height);
+		for(int i = (x/25)*25; i < x + width; i += 25){
+			ObserverEvent event = ((ObserverEvent) this.events.elementAt(i/25));
+			if(event.importance >= this.threshold)
+				event.draw(cairo, height);
+		}
 		
 		// Line accross the bottom
 		cairo.setSourceColor(Color.BLACK);
@@ -93,7 +102,7 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		int y = (int)arg0.getY();
 		
 		if((y >= this.getWindow().getHeight()/2 - 10 && y <= this.getWindow().getHeight() - 10)  
-				&& x%100 <= 10){
+				&& x%25 <= 10){
 			this.getWindow().setCursor(new Cursor(CursorType.HAND1));
 			isOverEvent = true;
 		}
@@ -105,6 +114,11 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		arg0.refireIfHint();
 		
 		return false;
+	}
+	
+	public void setThreshold(int newThreshold){
+		this.threshold = newThreshold;
+		this.draw();
 	}
 
 	/**
@@ -130,10 +144,12 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 	 */
 	private class ObserverEvent{
 		int time;
+		int importance;
 		String text;
 		
-		public ObserverEvent(int time, String text){
+		public ObserverEvent(int time, int importance, String text){
 			this.time = time;
+			this.importance = importance;
 			this.text = text;
 		}
 		
@@ -144,11 +160,12 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		public void draw(GdkCairo cairo, int height){
 			cairo.save();
 			
+			
 			cairo.setSourceColor(Color.BLUE);
 			cairo.moveTo(time, height - 10);
-			cairo.lineTo(time, height/2 - 10);
+			cairo.relLineTo(0, ((double)-height/2.0) * ((double)this.importance + 1.0)/10.0);
 			cairo.relLineTo(10,0);
-			cairo.relLineTo(0,height/2);
+			cairo.relLineTo(0,((double)height/2.0) * ((double)this.importance + 1.0)/10.0);
 			cairo.relLineTo(-10,0);
 			cairo.closePath();
 			cairo.fill();

@@ -9,10 +9,13 @@ import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ColorButton;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.HBox;
+import org.gnu.gtk.HScale;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Viewport;
+import org.gnu.gtk.event.RangeEvent;
+import org.gnu.gtk.event.RangeListener;
 
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
@@ -52,7 +55,7 @@ public class DummyDebugResults {
 		}
 		
 		if(glade == null)
-			System.exit(1);
+			System.exit(1);		
 		
 		Viewport vp = (Viewport) this.glade.getWidget("observerSelectViewport");
 		
@@ -71,8 +74,16 @@ public class DummyDebugResults {
 		vp.add(box);
 		
 		vp = (Viewport) this.glade.getWidget("timelineViewport");
-		vp.add(new DebugHistory());
+		final DebugHistory hist = new DebugHistory(0);
+		vp.add(hist);
 		vp.showAll();
+		
+		final HScale scale = (HScale) this.glade.getWidget("thresholdBar");
+		scale.addListener(new RangeListener() {
+			public void rangeEvent(RangeEvent arg0) {
+				hist.setThreshold((int)scale.getValue());
+			}
+		});
 		
 		Gtk.main();
 	}

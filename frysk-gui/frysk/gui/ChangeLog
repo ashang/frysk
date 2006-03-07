@@ -1,3 +1,15 @@
+2006-03-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DebugHistory.java (DebugHistory): Now takes initial threshold,
+	also changed spacing of events to 25px apiece.
+	(exposeEvent): Now checks event threshold before drawing.
+	(setThreshold): Added.
+	(ObserverEvent): Now takes an importance.
+	(ObserverEvent::draw): Now scales it's height to it's importance.
+	* DummyDebugResults.java (DummyDebugResults): Now listens to the
+	slider and adjusts the threshold accordingly.
+	* glade/debugresultswindow.glade: Named threshold scroller.
+
 2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source_prefs.glade: Increased width of preferences window
