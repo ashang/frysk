@@ -3655,10 +3655,12 @@
 
 <widget class="GtkDialog" id="observersDialog">
   <property name="border_width">6</property>
+  <property name="width_request">400</property>
+  <property name="height_request">500</property>
   <property name="title" translatable="yes">Observers</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
-  <property name="window_position">GTK_WIN_POS_NONE</property>
-  <property name="modal">False</property>
+  <property name="window_position">GTK_WIN_POS_CENTER</property>
+  <property name="modal">True</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
   <property name="decorated">True</property>
@@ -3682,7 +3684,7 @@
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
 
 	  <child>
-	    <widget class="GtkButton" id="applybutton1">
+	    <widget class="GtkButton" id="observersApplyButton">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -3695,7 +3697,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkButton" id="cancelbutton1">
+	    <widget class="GtkButton" id="observersCancelButton">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -3708,7 +3710,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkButton" id="okbutton1">
+	    <widget class="GtkButton" id="observersOkButton">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="has_default">True</property>
@@ -3993,7 +3995,7 @@
   <property name="border_width">6</property>
   <property name="title" translatable="yes">Observer Details</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
-  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">True</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>

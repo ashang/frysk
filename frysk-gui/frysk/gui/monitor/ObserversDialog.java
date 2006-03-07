@@ -39,6 +39,8 @@
 
 package frysk.gui.monitor;
 
+import java.util.Iterator;
+
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ResponseType;
@@ -60,12 +62,17 @@ public class ObserversDialog extends Dialog {
 	Button deleteObserverButton;
 	Button duplicateObserverButton;
 	
+	Button okButton;
+	Button applyButton;
+	Button cancelButton;
+	
 	private ObservableLinkedList scratchList;
 	
 	ObserversDialog(LibGlade glade){
 		super(glade.getWidget("observersDialog").getHandle());
 	
 		this.scratchList = new ObservableLinkedList();
+		this.retrieveList();
 		
 		this.observersListView = new ListView(glade.getWidget("observersTreeView").getHandle());
 		this.observersListView.watchLinkedList(scratchList);
@@ -92,6 +99,7 @@ public class ObserversDialog extends Dialog {
 			}
 		});
 		
+		
 		this.editObserverButton = (Button) glade.getWidget("editCustomObserverButton");
 		this.editObserverButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
@@ -107,20 +115,23 @@ public class ObserversDialog extends Dialog {
 			}
 		});
 		
+		
 		this.deleteObserverButton = (Button) glade.getWidget("removeObserverButton");
 		this.deleteObserverButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot) observersListView.getSelectedObject();
 					if(selected != null){
+						int index = scratchList.indexOf(selected);
 						scratchList.remove(selected);
-						if(scratchList.size() > 0){
-							observersListView.setSelectedObject((GuiObject) scratchList.getLast());
+						if(scratchList.size() > index){
+							observersListView.setSelectedObject((GuiObject) scratchList.get(index));
 						}
 					}
 				}
 			}
 		});
+	
 		
 		duplicateObserverButton = (Button) glade.getWidget("observerDuplicateButton");
 		duplicateObserverButton.addListener(new ButtonListener() {
@@ -128,12 +139,44 @@ public class ObserversDialog extends Dialog {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
 					ObserverRoot copy = ObserverManager.theManager.getObserverCopy(selected);
-					copy.setName("CopyOf" + selected.getName());
-					scratchList.add(scratchList.indexOf(selected), event);
+					copy.setName("CopyOf_" + selected.getName());
+					scratchList.add(scratchList.indexOf(selected)+1, copy);
 				}
 			}
 		});
-
+		
+		
+		this.okButton = (Button) glade.getWidget("observersOkButton");
+		okButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if (event.isOfType(ButtonEvent.Type.CLICK)) {
+					ObserversDialog.this.hideAll();
+					commitChanges();
+				}
+			}
+		});
+		
+		
+		this.cancelButton = (Button) glade.getWidget("observersCancelButton");
+		cancelButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if (event.isOfType(ButtonEvent.Type.CLICK)) {
+					ObserversDialog.this.hideAll();
+					dumpChanges();
+				}
+			}
+		});
+		
+		
+		this.applyButton = (Button) glade.getWidget("observersApplyButton");
+		applyButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if (event.isOfType(ButtonEvent.Type.CLICK)) {
+					commitChanges();
+				}
+			}
+		});
+		
 		this.updateEnabled();
 	}
 	
@@ -148,4 +191,28 @@ public class ObserversDialog extends Dialog {
 		return WindowManager.theManager.editObserverDialog.run();
 	}
 	
+	
+	private void retrieveList(){
+		scratchList.clear();
+		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+	}
+	
+	private void commitChanges(){
+		ObserverManager.theManager.getTaskObservers().clear();
+		Iterator iterator = scratchList.iterator();
+		while (iterator.hasNext()) {
+			ObserverRoot observer = (ObserverRoot) iterator.next();
+			ObserverManager.theManager.addTaskObserverPrototype(observer);
+		}
+	}
+	
+	private void dumpChanges(){
+		scratchList.clear();
+		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+	}
+
+	public int run(){
+		this.retrieveList();
+		return super.run();
+	}
 }

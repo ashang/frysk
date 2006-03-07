@@ -1,5 +1,7 @@
 2006-03-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* CustomObserverDialog.java: Added handling for okay,apply,
+	and cancel.
 	* observers/ObserverManager.java (getObserverCopy): Changed
 	from getTaskObserverCopy to this.
 	* MenuBar.java: Added handle for new observersDialog.

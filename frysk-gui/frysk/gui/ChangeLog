@@ -6,6 +6,8 @@
 	Made old customObservers window hidden by default.
 	Removed extranious widgets and did some general clean up and
 	spacing.
+	Renamed okay,apply, and cancel buttons in observersDialog.
+	Added a default size to observersDialog.
 
 2006-03-07  Adam Jocksch  <ajocksch@redhat.com>
 

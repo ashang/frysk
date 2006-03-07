@@ -394,4 +394,9 @@ public class CustomObserverDialog extends Dialog implements Observer, LifeCycleL
 		return false;
 	}
 	
+	public int run(){
+		CustomObserverDialog.this.scratchList.clear();
+		CustomObserverDialog.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+		return super.run();
+	}
 }
