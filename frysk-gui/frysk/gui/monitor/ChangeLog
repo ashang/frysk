@@ -1,3 +1,13 @@
+2006-03-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java (getObserverCopy): Changed
+	from getTaskObserverCopy to this.
+	* MenuBar.java: Added handle for new observersDialog.
+	* WindowManager.java: Ditto
+	* EditObserverDialog.java: New file. 
+	* ObserversDialog.java: New file.
+	* ListView.java: Added setSelectedObject function.
+
 2006-03-01  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CustomeObserverWindow.java: Changed it to work with the new

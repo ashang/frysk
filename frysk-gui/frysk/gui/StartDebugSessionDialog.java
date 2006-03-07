@@ -43,6 +43,9 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Notebook;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
+import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 
@@ -52,7 +55,8 @@ public class StartDebugSessionDialog extends Dialog {
 	
 	Notebook notebook;
 	
-	ProcWiseTreeView procWiseTreeView;  
+	ProcWiseTreeView procWiseTreeView;
+	TreeView addedProcsTreeView;
 	Button nextButton;
 	Button backButton;
 	Button finishButton;
@@ -84,6 +88,12 @@ public class StartDebugSessionDialog extends Dialog {
 		
 		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("procWiseTreeView").getHandle());
 		this.setUpCurrentPage();
+		
+		this.addedProcsTreeView = (TreeView) glade.getWidget("addedProcsTreeView");
+		
+		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+		sizeGroup.addWidget(procWiseTreeView);
+		sizeGroup.addWidget(addedProcsTreeView);
     }
 	
 	private void nextPage(){

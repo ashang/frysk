@@ -47,6 +47,12 @@
  */
 package frysk.gui.common.dialogs;
 
+import org.gnu.glib.Handle;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
+
+import frysk.gui.common.IconManager;
+
 
 public class Dialog extends org.gnu.gtk.Dialog {
 
@@ -54,7 +60,27 @@ public class Dialog extends org.gnu.gtk.Dialog {
 	
 	public Dialog(){
 		super();
+		this.init();
 	}
 	
+	public Dialog(Handle handle){
+		super(handle);
+		this.init();
+	}
+	
+	private void init(){
+		this.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {}
+	         public boolean lifeCycleQuery(LifeCycleEvent event) {
+	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
+	            	 Dialog.this.hideAll();
+	             }	
+	             return true;
+	         }
+		});
+		
+		this.setIcon(IconManager.windowIcon);
+	}
 	
 }

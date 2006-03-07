@@ -54,7 +54,6 @@ import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
-import org.gnu.gtk.TreeViewColumn;
 
 
 /**
@@ -88,13 +87,16 @@ public class SimpleComboBox extends ComboBox implements Observer{
 		this.nameDC = new DataColumnString();
 		this.objectDC = new DataColumnObject();
 		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
+		
 		this.setModel(listStore);
 		
 		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn nameCol = new TreeViewColumn();
-		nameCol.packStart(cellRendererText, false);
-		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		
+//		TreeViewColumn nameCol = new TreeViewColumn();
+//		nameCol.packStart(cellRendererText, false);
+//		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		this.packStart(cellRendererText, false);
+		this.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+
 	}
 	
 	public GuiObject getSelectedObject(){
@@ -143,6 +145,11 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	 * @param object the object that is to be displayed as selected.
 	 * */
 	public void setSelectedObject(GuiObject object){
+		if(object == null){
+			this.setActive(-1);
+			return;
+		}
+
 		TreeIter iter = (TreeIter) this.map.get(object);
 		if(iter == null){
 			throw new IllegalArgumentException("The object passed ["+ object +"] is not a member of this list"); //$NON-NLS-1$ //$NON-NLS-2$

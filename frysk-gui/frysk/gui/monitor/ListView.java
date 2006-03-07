@@ -129,6 +129,19 @@ public class ListView extends TreeView implements Observer {
 	}
 	
 	/**
+	 * Set the selection to the item that represents
+	 * the given object.
+	 * @param object the object that is to be displayed as selected.
+	 * */
+	public void setSelectedObject(GuiObject object){
+		TreeIter iter = (TreeIter) this.map.get(object);
+		if(iter == null){
+			throw new IllegalArgumentException("The object passed ["+ object +"] is not a member of this list"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		this.getSelection().select(iter);
+	}
+	
+	/**
 	 * Add the given object at the given index
 	 * @param object object to be added
 	 * @param index the position to insert the given object at.

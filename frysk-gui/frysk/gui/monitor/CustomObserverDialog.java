@@ -53,6 +53,7 @@ import java.util.prefs.Preferences;
 import org.gnu.gdk.KeyValue;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.TreeView;
@@ -71,12 +72,13 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.IconManager;
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
-public class CustomeObserverWindow extends Window implements Observer, LifeCycleListener, Saveable {
+public class CustomObserverDialog extends Dialog implements Observer, LifeCycleListener, Saveable {
 	
 	private DetailedObserverTreeView observerTreeView;
 	
@@ -86,11 +88,6 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 
 	private FilterWidget filterWidget;
 	private ActionsWidget actionsWidget;
-	
-//	private Label nameSummaryLabel;
-//	private Label baseObserverSummaryLabel;
-//	private Label filtersSummaryLabel;
-//	private Label actionsSummaryLabel;
 	
 	private final String nameString;
 	private final String baseObserverString;
@@ -103,14 +100,13 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 	private Label actionsLabel;
 	
 	ObserverRoot selectedObserver;
-	
-	//private Vector observerBackup;
-	
+
 	private ObservableLinkedList scratchList;
 	
-	public CustomeObserverWindow(LibGlade glade){
-		super(((Window)glade.getWidget("customeObserverWindow")).getHandle()); //$NON-NLS-1$
+	public CustomObserverDialog(LibGlade glade){
+		super(((Window)glade.getWidget("customObserverDialog")).getHandle()); //$NON-NLS-1$
 		
+		this.setIcon(IconManager.windowIcon);
 		this.addListener(this);
 		this.scratchList = new ObservableLinkedList(ObserverManager.theManager.getTaskObservers());
 		
@@ -119,7 +115,7 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 		button.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.getType() == ButtonEvent.Type.CLICK){
-					WindowManager.theManager.customeObserverWindow.hideAll();
+					WindowManager.theManager.customeObserverDialog.hideAll();
 				}
 			}
 		});
@@ -132,7 +128,7 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 				if(event.getType() == ButtonEvent.Type.CLICK){
 					if(DialogManager.showQueryDialog("Changes you have made will be lost.\nAre you sure you want to close Edit Dialog ?")){
 						dumpChanges();
-						WindowManager.theManager.customeObserverWindow.hideAll();
+						WindowManager.theManager.customeObserverDialog.hideAll();
 					}
 				}
 			}
@@ -172,12 +168,6 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 		//=========================================
 		this.baseObserverTreeView = new ListView(((TreeView)glade.getWidget("baseObserversTreeView")).getHandle()); //$NON-NLS-1$
 		this.baseObserverTreeView.watchLinkedList(ObserverManager.theManager.getBaseObservers());
-//		ObserverManager.theManager.addObserver(new Observer(){
-//			public void update(Observable observable, Object obj) {
-//				populateObserverTreeView();
-//			}
-//		});
-
 	
 		baseObserverTreeView.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent event) {
@@ -187,7 +177,6 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 				}
 			}
 		});
-//		this.populateObserverTreeView();
 		//=========================================
 		
 		//=========================================
@@ -197,17 +186,6 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 				setSelectedObserver(observerTreeView.getSelectedObserver());
 			}
 		});
-		//=========================================
-		
-		//=========================================
-//		this.sourceActionsTreeView = new ListView(((TreeView)glade.getWidget("sourceActionsTreeView")).getHandle());
-//		this.populateSourceActionsTreeView();
-//		
-//		ActionManager.theManager.addObserver(new Observer(){
-//			public void update(Observable observable, Object obj) {
-//				populateSourceActionsTreeView();
-//			}
-//		});
 		//=========================================
 		
 		//=========================================
@@ -273,13 +251,6 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 			}
 		});
 	}
-	
-//	private void populateObserverTreeView() {
-//		Iterator iter = ObserverManager.theManager.getTaskObservers().iterator();
-//		while(iter.hasNext()){
-//			this.baseObserverTreeView.add((ObserverRoot) iter.next());
-//		}
-//	}
 	
 	private void setObserverName(String name){
 		this.selectedObserver.setName(name);
@@ -360,7 +331,7 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 	 * filters and Actions)
 	 * */
 	public void add(){
-		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
+		ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
 		newObserver.setName(this.customObserverNameEntry.getText());
 		//ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 		this.scratchList.add(newObserver);
@@ -368,14 +339,14 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 	}
 	
 	public void swap(){
-		ObserverRoot newObserver = ObserverManager.theManager.getTaskObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
+		ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy((TaskObserverRoot)this.baseObserverTreeView.getSelectedObject());
 		newObserver.setName(this.customObserverNameEntry.getText());
 		this.scratchList.swap(this.selectedObserver, newObserver);
 	}
 	
 	private void commiteChanges(){
 		ObserverManager.theManager.getTaskObservers().clear();
-		Iterator iterator = CustomeObserverWindow.this.scratchList.iterator();
+		Iterator iterator = CustomObserverDialog.this.scratchList.iterator();
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
 			ObserverManager.theManager.addTaskObserverPrototype(observer);
@@ -383,8 +354,8 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 	}
 	
 	private void dumpChanges(){
-		CustomeObserverWindow.this.scratchList.clear();
-		CustomeObserverWindow.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+		CustomObserverDialog.this.scratchList.clear();
+		CustomObserverDialog.this.scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
 	}
 
 	public void save(Preferences prefs) {
@@ -417,7 +388,7 @@ public class CustomeObserverWindow extends Window implements Observer, LifeCycle
 		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
 					dumpChanges();
-					WindowManager.theManager.customeObserverWindow.hideAll();					
+					WindowManager.theManager.customeObserverDialog.hideAll();					
 					return true;
 		}
 		return false;

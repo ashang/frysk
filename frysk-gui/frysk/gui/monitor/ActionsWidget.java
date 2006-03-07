@@ -86,6 +86,12 @@ public class ActionsWidget extends VBox{
 				}
 			}
 		});
+		
+//		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+//		sizeGroup.addWidget(actionPointListView);
+//		sizeGroup.addWidget(applicableActionsListView);
+//		sizeGroup.addWidget(addedActionsListView);
+
 	}
 
 	public void setObserver(ObserverRoot selectedObserver) {

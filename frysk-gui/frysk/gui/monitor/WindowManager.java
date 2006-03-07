@@ -65,11 +65,13 @@ public class WindowManager implements Saveable{
 	public MainWindow mainWindow;
 	public LogWidget logWindow;
 	public PreferencesWindow prefsWindow;
-	public CustomeObserverWindow customeObserverWindow;
+	public CustomObserverDialog customeObserverDialog;
 	public ProgramAddWindow programAddWindow;
 	public AboutWindow aboutWindow;
 	public SplashScreenWindow splashScreen;
 	public StartDebugSessionDialog startDebugSessionDialog;
+	public ObserversDialog observersDialog;
+	public EditObserverDialog editObserverDialog; 
 	/**}*/
 	
 	public WindowManager(){
@@ -78,35 +80,29 @@ public class WindowManager implements Saveable{
 	
 	public void initWindows(LibGlade glade) throws IOException{
 		this.splashScreen = new SplashScreenWindow();
-		
 		this.mainWindow = new MainWindow(glade);
-		
 		this.aboutWindow = new AboutWindow(glade);
-		
 		this.logWindow = new LogWidget(glade);
-		
 		this.prefsWindow = new PreferencesWindow(glade);
-
-		this.customeObserverWindow = new CustomeObserverWindow(glade);
-		
+		this.customeObserverDialog = new CustomObserverDialog(glade);
 		//this.programAddWindow = new ProgramAddWindow(glade);
-
 		this.startDebugSessionDialog = new StartDebugSessionDialog(glade);
-		
+		this.observersDialog = new ObserversDialog(glade);
+		this.editObserverDialog = new EditObserverDialog(glade);
 		this.menuBar = new MenuBar(glade);
 	}
 
 	public void save(Preferences prefs) {
 		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		customeObserverWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
+		customeObserverDialog.save(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
 		//programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
 
 	public void load(Preferences prefs) {
 		mainWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		customeObserverWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
+		customeObserverDialog.load(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
 		//programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
 }

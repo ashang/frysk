@@ -142,7 +142,7 @@ public class ObserverManager extends  Observable {
 	 * @param prototype a prototype of the observer to be
 	 * instantiate.
 	 * */
-	public ObserverRoot getTaskObserverCopy(TaskObserverRoot prototype){
+	public ObserverRoot getObserverCopy(ObserverRoot prototype){
 		return prototype.getCopy();
 	}
 	

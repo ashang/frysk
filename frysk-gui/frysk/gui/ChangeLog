@@ -1,3 +1,12 @@
+2006-03-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Changed CustomObserver window to a dialog.
+	Added new customObservers dialog.
+	Added new editObserver dialog.
+	Made old customObservers window hidden by default.
+	Removed extranious widgets and did some general clean up and
+	spacing.
+
 2006-03-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DebugHistory.java (DebugHistory): Now takes initial threshold,
