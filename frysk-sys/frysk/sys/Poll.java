@@ -87,6 +87,12 @@ public final class Poll
 	}
     }
 
+    /**
+     * Poll the system for either FD, or signal events.  Block for
+     * timeout milliseconds (if timeout is +ve or zero), or until the
+     * next event (if timeout is -ve).  Return when an event might
+     * have occured.
+     */
     public static native void poll (Fds pollFds,
 				    Observer observer,
 				    long timeout);

@@ -1,5 +1,11 @@
-2006-03-06  Andrew Cagney  <cagney@redhat.com>
+2006-03-07  Andrew Cagney  <cagney@redhat.com>
 
+	* Poll.java (poll): Add description.
+	* SigSet.java, cni/SigSet.cxx: Change all void methods to return
+	this SigSet.
+	
+2006-03-06  Andrew Cagney  <cagney@redhat.com>
+	
 	* SigSet.java (getPending, suspend, blockProcMask)
 	(unblockProcMask, setProcMask, getProcMask): Add.
 	* cni/SigSet.cxx: Ditto.

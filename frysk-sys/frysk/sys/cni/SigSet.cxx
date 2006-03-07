@@ -53,25 +53,28 @@ getSigSet (frysk::sys::SigSet* set)
   return (sigset_t*) set->getSigSet ();
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::fill ()
 {
   sigset_t *sigset = (sigset_t*) sigSet;
   ::sigfillset (sigset);
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::remove (jint sigNum)
 {
   sigset_t *sigset = (sigset_t*) sigSet;
   ::sigdelset (sigset, sigNum);
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::add (jint sigNum)
 {
   sigset_t *sigset = (sigset_t*) sigSet;
   ::sigaddset (sigset, sigNum);
+  return this;
 }
 
 jboolean
@@ -94,23 +97,25 @@ frysk::sys::SigSet::newSigSet (jintArray sigs)
   return (gnu::gcj::RawDataManaged*) sigset;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::empty ()
 {
   sigset_t *sigset = (sigset_t*) sigSet;
   ::sigemptyset (sigset);
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::getPending ()
 {
   sigset_t *sigset = (sigset_t*) sigSet;
   errno = 0;
   if (::sigpending (sigset) < 0)
     throwErrno (errno, "sigpending");
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::suspend()
 {
   sigset_t *sigset = (sigset_t*) sigSet;
@@ -118,11 +123,12 @@ frysk::sys::SigSet::suspend()
   ::sigsuspend (sigset); // always fails with EINTR.
   if (errno != EINTR)
     throwErrno (errno, "sigsuspend");
+  return this;
 }
 
 
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::blockProcMask (frysk::sys::SigSet* oset)
 {
   sigset_t *set = (sigset_t*) sigSet;
@@ -130,9 +136,10 @@ frysk::sys::SigSet::blockProcMask (frysk::sys::SigSet* oset)
   errno = 0;
   if (::sigprocmask (SIG_BLOCK, set, old) < 0)
     throwErrno (errno, "sigprocmask.SIG_BLOCK");
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::unblockProcMask (frysk::sys::SigSet* oset)
 {
   sigset_t *set = (sigset_t*) sigSet;
@@ -140,9 +147,10 @@ frysk::sys::SigSet::unblockProcMask (frysk::sys::SigSet* oset)
   errno = 0;
   if (::sigprocmask (SIG_UNBLOCK, set, old) < 0)
     throwErrno (errno, "sigprocmask.SIG_UNBLOCK");
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::setProcMask (frysk::sys::SigSet* oset)
 {
   sigset_t *set = (sigset_t*) sigSet;
@@ -150,13 +158,15 @@ frysk::sys::SigSet::setProcMask (frysk::sys::SigSet* oset)
   errno = 0;
   if (::sigprocmask (SIG_SETMASK, set, old) < 0)
     throwErrno (errno, "sigprocmask.SIG_SETMASK");
+  return this;
 }
 
-void
+frysk::sys::SigSet*
 frysk::sys::SigSet::getProcMask ()
 {
   sigset_t *set = (sigset_t*) sigSet;
   errno = 0;
   if (::sigprocmask (SIG_SETMASK, NULL, set) < 0)
     throwErrno (errno, "sigprocmask.SIG_SETMASK");
+  return this;
 }

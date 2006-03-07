@@ -68,23 +68,23 @@ public final class SigSet
 	sigSet = newSigSet (sigs);
     }
     /**
-     * Empty the signal set.
+     * Empty the signal set; return this.
      */
-    public native void empty ();
+    public native SigSet empty ();
     /**
-     * Fill the signal set.
+     * Fill the signal set; return this.
      */
-    public native void fill ();
+    public native SigSet fill ();
     /**
-     * Add sigNum to the SigSet.
+     * Add sigNum to the SigSet; return this.
      */
-    public native void add (int sigNum);
+    public native SigSet add (int sigNum);
     /**
      * Remove Sig from the SigSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with
-     * java).
+     * java); return this.
      */
-    public native void remove (int sigNum);
+    public native SigSet remove (int sigNum);
     /**
      * Does this SigSet contain sigNum (the underlying code uses
      * <tt>sigismember</tt>, the name contains is more consistent with
@@ -93,52 +93,53 @@ public final class SigSet
     public native boolean contains (int sigNum);
 
     /**
-     * Get the pending set of signals.
+     * Get the pending set of signals; return this
      */
-    public native void getPending ();
+    public native SigSet getPending ();
     /**
-     * Suspend the thread, unblocking signals in SigSet.
+     * Suspend the thread, unblocking signals in SigSet; return this.
      */
-    public native void suspend ();
+    public native SigSet suspend ();
 
     /**
      * Block this SigSet's signals; if oldSet is non-null, return the
-     * previous signal set.
+     * previous signal set; return this.
      */
-    public native void blockProcMask (SigSet oldSet);
+    public native SigSet blockProcMask (SigSet oldSet);
     /**
-     * Block this SigSet's signals.
+     * Block this SigSet's signals; return this.
      */
-    public void blockProcMask ()
+    public SigSet blockProcMask ()
     {
-	blockProcMask (null);
+	return blockProcMask (null);
     }
     /**
-     * Unblock this SigSet's signals; if oldSet is non-null, return the
-     * previous signal set.
+     * Unblock this SigSet's signals; if oldSet is non-null, return
+     * the previous signal set; return this.
      */
-    public native void unblockProcMask (SigSet oldSet);
+    public native SigSet unblockProcMask (SigSet oldSet);
     /**
-     * Unblock this SigSet's signals.
+     * Unblock this SigSet's signals; return this.
      */
-    public void unblockProcMask ()
+    public SigSet unblockProcMask ()
     {
-	unblockProcMask (null);
+	return unblockProcMask (null);
     }
     /**
      * Set the signal mask to this SigSet's signals; if oldSet is
-     * non-null, return the previous signal set.
+     * non-null, return the previous signal set; return this.
      */
-    public native void setProcMask (SigSet oldSet);
+    public native SigSet setProcMask (SigSet oldSet);
     /**
-     * Set the process signal mask to this SigSet's signals.
+     * Set the process signal mask to this SigSet's signals; return
+     * this.
      */
-    public void setProcMask ()
+    public SigSet setProcMask ()
     {
-	setProcMask (null);
+	return setProcMask (null);
     }
     /**
-     * Get the current process signal mask.
+     * Get the current process signal mask; return this.
      */
-    public native void getProcMask ();
+    public native SigSet getProcMask ();
 }

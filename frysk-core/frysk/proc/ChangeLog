@@ -1,6 +1,11 @@
+2006-03-07  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Check for still pending signals.
+
 2006-02-28  Stan Cox  <scox@redhat.com>
 
-	* TestSyscallInterrupt.java (update): remove unreferenced variable proc.
+	* TestSyscallInterrupt.java (update): remove unreferenced variable
+	proc.
 
 2006-02-27  Stan Cox  <scox@redhat.com>
 

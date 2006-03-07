@@ -39,23 +39,25 @@
 
 package frysk.proc;
 
+import frysk.event.SignalEvent;
 import frysk.junit.Paths;
 import frysk.sys.Errno;
+import frysk.sys.Fork;
+import frysk.sys.Pid;
+import frysk.sys.Poll;
 import frysk.sys.Ptrace;
 import frysk.sys.Sig;
-import frysk.sys.Pid;
-import frysk.sys.Fork;
+import frysk.sys.SigSet;
 import frysk.sys.Signal;
 import frysk.sys.Wait;
-import frysk.event.SignalEvent;
 import java.io.File;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import junit.framework.TestCase;
 
 /**
@@ -1204,7 +1206,30 @@ public class TestLib
         }
 
 	// Remove any stray files.
-
 	deleteTmpFiles ();
+
+
+	// Capture any pending signals; drain them, and then turn
+	// around and assert that there weren't any.
+	SigSet pending = new SigSet ().getPending ();
+	Poll.poll (new Poll.Fds (),
+		   new Poll.Observer ()
+		   {
+		       public void signal (int sig) { }
+		       public void pollIn (int in) { }
+		   },
+		   0);
+	// XXX: This should be an assert; until the bugs are fixed, it
+	// can't be.
+	int[] checkSigs = new int[] { Sig.USR1, Sig.USR2 };
+	for (int i = 0; i < checkSigs.length; i++) {
+	    int sig = checkSigs[i];
+	    // assertFalse ("pending signal", pending.contains (sig));
+	    if (pending.contains (sig)) {
+		System.out.print ("<<XXX: pending signal "
+				  + Sig.toPrintString (sig)
+				  + ">>");
+	    }
+	}
     }
 }
