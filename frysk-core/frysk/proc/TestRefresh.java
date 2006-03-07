@@ -326,14 +326,17 @@ public class TestRefresh
     }
 
     /**
-     * Check that when a process exits, all its children are removed
-     * (and moved to pid 1).
+     * Check that when a process exits, its child is removed (and
+     * moved to pid 1).
+     *
+     * Can only test this with one child - in the case of multiple
+     * children they all try to tell this process that their parent
+     * exted using the same signal, and since the signal isn't
+     * counting, some get lost, and some get missed.
      */
-    public void testExitLoosesAllChildren ()
+    public void testExitLoosesChild ()
     {
 	AckProcess daemon = new AckDaemonProcess ();
-	daemon.addFork ();
-	daemon.addFork ();
 	daemon.addFork ();
 
 	// Find the process and it's children.

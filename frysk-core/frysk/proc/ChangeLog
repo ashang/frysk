@@ -1,5 +1,8 @@
 2006-03-07  Andrew Cagney  <cagney@redhat.com>
 
+	* TestRefresh.java (testExitLoosesChild): Replace
+	testExitLoosesAllChildren, only create one child process.
+
 	* TestLib.java: Check for still pending signals.
 
 2006-02-28  Stan Cox  <scox@redhat.com>
