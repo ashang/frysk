@@ -73,6 +73,14 @@ div.maintextregion td pre
 {	color: #ffffff;
 	font-size: 14px;
 }
+div.maintextregion dd pre
+{       color: #ffffff;
+        font-size: 14px;
+	margin-left: 20px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding: 0 0 0 0;
+}
 div.maintextregion li pre
 {       color: #ffffff;
         font-size: 14px;
