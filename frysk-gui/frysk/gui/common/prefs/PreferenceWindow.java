@@ -28,6 +28,8 @@ import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.IconManager;
+
 /**
  * The PreferenceWindow allows the user to display and edit
  * any of the preferences in any of the groups registered with 
@@ -50,6 +52,10 @@ public class PreferenceWindow extends Window implements TreeSelectionListener, B
 	 */
 	public PreferenceWindow(LibGlade glade){
 		super(((Window) glade.getWidget("prefWin")).getHandle());
+		
+		this.setTitle("Preferences");
+		this.setIcon(IconManager.windowIcon);
+		
 		this.glade = glade;
 		this.prefView = (TreeView) this.glade.getWidget("preferenceTree");
 		this.prefView.getSelection().addListener(this);
