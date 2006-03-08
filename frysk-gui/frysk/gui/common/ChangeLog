@@ -1,3 +1,9 @@
+2006-03-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* prefs/PreferenceEditor.java (setPreference): Now correctly sets
+	the value of the editor (spinner, colorbutton, etc) to reflect the
+	current value of the preference.
+
 2006-03-06  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferenceEditor.java (PreferenceEditor): Added showAll().

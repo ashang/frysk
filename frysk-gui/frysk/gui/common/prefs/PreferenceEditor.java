@@ -64,6 +64,7 @@ public class PreferenceEditor extends HBox {
 		
 		final SpinButton button = new SpinButton(newPref.getMinValue(), newPref.getMaxValue(), 1);
 		button.setValue(newPref.getCurrentValue());
+		button.setValue(newPref.getCurrentValue());
 		button.addListener(new SpinListener() {
 			public void spinEvent(SpinEvent arg0) {
 				((IntPreference) myPref).setCurrentValue((int) button.getValue());
@@ -86,6 +87,7 @@ public class PreferenceEditor extends HBox {
 		this.myPref = newPref;
 		
 		final CheckButton button = new CheckButton("", newPref.getCurrentValue());
+		button.setState(newPref.getCurrentValue());
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent arg0) {
 				if(arg0.isOfType(ButtonEvent.Type.CLICK))
@@ -110,6 +112,7 @@ public class PreferenceEditor extends HBox {
 		this.myPref = newPref;
 		
 		final ColorButton button = new ColorButton(newPref.getCurrentColor());
+		button.setColor(newPref.getCurrentColor());
 		button.addListener(new ColorButtonListener() {
 			public boolean colorButtonEvent(ColorButtonEvent arg0) {
 				((ColorPreference) myPref).setCurrentColor(button.getColor());
@@ -137,6 +140,7 @@ public class PreferenceEditor extends HBox {
 		
 		VBox box = new VBox(false, 6);
 		final ColorButton button = new ColorButton(newPref.getCurrentColor());
+		button.setColor(newPref.getCurrentColor());
 		button.addListener(new ColorButtonListener() {
 			public boolean colorButtonEvent(ColorButtonEvent arg0) {
 				((SyntaxPreference) myPref).setCurrentColor(button.getColor());
@@ -151,6 +155,7 @@ public class PreferenceEditor extends HBox {
 		box.packStart(colorRow);
 		
 		final CheckButton weight = new CheckButton("Bold", newPref.getCurrentWeight().equals(Weight.BOLD));
+		weight.setState(newPref.getCurrentWeight().equals(Weight.BOLD));
 		weight.addListener(new ToggleListener() {
 			public void toggleEvent(ToggleEvent arg0) {
 				((SyntaxPreference) myPref).toggleBold();		
@@ -160,6 +165,7 @@ public class PreferenceEditor extends HBox {
 		box.packStart(weight);
 		
 		final CheckButton style = new CheckButton("Italics", newPref.getCurrentStyle().equals(Style.ITALIC));
+		style.setState(newPref.getCurrentStyle().equals(Style.ITALIC));
 		style.addListener(new ToggleListener() {
 			public void toggleEvent(ToggleEvent arg0) {
 				((SyntaxPreference) myPref).toggleItalics();
