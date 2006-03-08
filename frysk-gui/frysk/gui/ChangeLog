@@ -1,3 +1,12 @@
+2006-03-08  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DebugHistory.java (DebugHistory): Reset event mask to ALL_EVENTS,
+	since we were missing mouse events.
+	(exposeEvent): Now checks to make sure right gdkWindow was exposed,
+	as well as the occurance of a NO_EXPOSE event.
+	* glade/frysk_source.glade: Added tooltip to jump to function box and
+	changed case of mode selector.
+
 2006-03-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Changed CustomObserver window to a dialog.

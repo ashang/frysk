@@ -6,6 +6,7 @@ import org.freedesktop.cairo.Point;
 import org.gnu.gdk.Color;
 import org.gnu.gdk.Cursor;
 import org.gnu.gdk.CursorType;
+import org.gnu.gdk.EventMask;
 import org.gnu.gdk.GdkCairo;
 import org.gnu.gtk.DrawingArea;
 import org.gnu.gtk.Label;
@@ -54,14 +55,15 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 		this.addListener((MouseMotionListener)this);
 		this.addListener((MouseListener) this);
 		
-		
+		this.setEvents(EventMask.ALL_EVENTS_MASK);
 	}
 
 	/**
 	 * Does the actual drawing of the widget.
 	 */
 	public boolean exposeEvent(ExposeEvent arg0) {
-		if(arg0.isOfType(ExposeEvent.Type.NO_EXPOSE))
+		
+		if(arg0.isOfType(ExposeEvent.Type.NO_EXPOSE) || !arg0.getWindow().equals(this.getWindow()))
 			return false;
 		
 		GdkCairo cairo = new GdkCairo(this.getWindow());
@@ -126,7 +128,7 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 	 * with more information about the event.
 	 */
 	public boolean mouseEvent(MouseEvent arg0) {
-	
+		
 		if(isOverEvent && arg0.getButtonPressed() == MouseEvent.BUTTON1){
 			Window win = new Window(WindowType.TOPLEVEL);
 			win.setModal(true);

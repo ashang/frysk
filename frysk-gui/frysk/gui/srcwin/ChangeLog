@@ -1,3 +1,9 @@
+2006-03-08  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* SourceWindow.java (createToolbar): Fixed tooltip for continue execution.
+	(SourceWindowListener::comboEvent): Changed to reflect changes in mode
+	selection box.
+
 2006-03-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineSourceView.java (refresh): Renamed to recalculateVisibleScopes.

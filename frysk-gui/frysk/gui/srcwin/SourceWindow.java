@@ -113,7 +113,7 @@ import frysk.proc.Task;
  * interface to allow to user to query for variable values, set traces on
  * variables, and perform other such traditional debugging tasks.
  */
-public class SourceWindow extends Window {
+public class SourceWindow extends Window{
 	/*
 	 * GLADE CONSTANTS
 	 */
@@ -729,7 +729,7 @@ public class SourceWindow extends Window {
 		item.setToolTip(this.tips, "Next", "");
 		toolbar.insert(item, 3);
 		item = (ToolItem) this.cont.createToolItem();
-		item.setToolTip(this.tips, "Cotinue Execution", "");
+		item.setToolTip(this.tips, "Continue Execution", "");
 		toolbar.insert(item, 4);
 		item = (ToolItem) this.finish.createToolItem();
 		item.setToolTip(this.tips, "Finish Function Call", "");
@@ -1262,13 +1262,13 @@ public class SourceWindow extends Window {
 			else{
 				
 				// Switch to source mode
-				if(text.equals("SOURCE"))
+				if(text.equals("Source"))
 					target.switchToSourceMode();
 				// Switch to Assembly mode
-				else if(text.equals("ASM"))
+				else if(text.equals("Assembly"))
 					target.switchToAsmMode();
 				// Switch to Mixed mode
-				else if(text.equals("MIXED"))
+				else if(text.equals("Mixed"))
 					target.switchToMixedMode();
 				/*
 				 * Switch to Source/Assembly mode - we only need to worry about this
@@ -1276,7 +1276,7 @@ public class SourceWindow extends Window {
 				 * we were previously in Source/Assembly view we don't need to
 				 * do anything
 				 */
-				else if(text.equals("SOURCE/ASM"))
+				else if(text.equals("Source/Assembly"))
 					target.switchToSourceAsmMode();
 				
 			}
