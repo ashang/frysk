@@ -16,7 +16,7 @@ _syscall0(pid_t,gettid)
   char * args [] = {"./multi_parent_exec", NULL, NULL};
 
 void *
-BusyWork (int pthid)
+BusyWork (void *arg)
 {
   struct timeval tv;
 
@@ -72,7 +72,7 @@ main (int argc, char **argv)
   for (t = 0; t < NUM_THREADS; t++)
     {
       printf ("Creating thread %d\n", t);
-      rc = pthread_create (&thread[t], &attr, (void*) BusyWork, (int*)t);
+      rc = pthread_create (&thread[t], &attr, BusyWork, NULL);
       if (rc)
 	{
 	  perror ("pthread_create\n");

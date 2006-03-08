@@ -1,3 +1,11 @@
+2006-03-07  Andrew Cagney  <cagney@redhat.com>
+
+	* process/multi_child_parent_exec.c: Fix 64-bit warnings.
+	* process/multi_parent_exec.c: Fix 64-bit warnings.
+	* process/multi_child_exec.c: Fix 64-bit warnings.
+	* vfork-exec/vfork-exec.c (_GNU_SOURCE): Define, include
+	<string.h>.
+
 2006-02-23  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (vfork_exec_vfork_exec_SOURCES, noinst_PROGRAMS)

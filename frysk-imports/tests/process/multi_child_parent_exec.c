@@ -10,14 +10,14 @@
 #include <pthread.h>
 #include <string.h>
 #include <sys/time.h>
-_syscall0(pid_t,gettid)
+_syscall0(pid_t,gettid);
 
 #define NUM_THREADS 2
 
-  char * args [] = {"./multi_parent_exec", NULL, NULL};
+char * args [] = {"./multi_parent_exec", NULL, NULL};
 
 void *
-BusyWorkExec (int pthid)
+BusyWorkExec (void *arg)
 {
   char * buf;
   char * pe_p;
@@ -53,7 +53,7 @@ BusyWorkExec (int pthid)
 } 
 
 void *
-BusyWork (int pthid)
+BusyWork (void *arg)
 {
   struct timeval tv;
 
@@ -101,9 +101,9 @@ main (int argc, char **argv)
     {
       printf ("Creating thread %d\n", t);
       if (!t)
-	rc = pthread_create (&thread[t], &attr, (void*) BusyWorkExec, (int*)t);
+	rc = pthread_create (&thread[t], &attr, BusyWorkExec, NULL);
       else
-	rc = pthread_create (&thread[t], &attr, (void*) BusyWork, (int*)t);
+	rc = pthread_create (&thread[t], &attr, BusyWork, NULL);
       if (rc)
 	{
 	  perror ("pthread_create\n");

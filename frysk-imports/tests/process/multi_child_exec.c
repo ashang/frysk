@@ -16,7 +16,7 @@ _syscall0(pid_t,gettid)
   char * args [] = {"./multi_child_exec", NULL, NULL};
 
 void *
-BusyWorkExec (int pthid)
+BusyWorkExec (void *arg)
 {
   char *buf ;
   int rc;
@@ -40,11 +40,11 @@ BusyWorkExec (int pthid)
       perror ("execv\n");
       exit (EXIT_FAILURE);
     }
-  pthread_exit ((void *) 0);
+  pthread_exit (NULL);
 } 
 
 void *
-BusyWork (int pthid)
+BusyWork (void *arg)
 {
   struct timeval tv;
 
@@ -59,7 +59,7 @@ BusyWork (int pthid)
   tv.tv_sec = 5;
   tv.tv_usec = 0;
   select (0, NULL, NULL, NULL, &tv);
-  pthread_exit ((void *) 0);
+  pthread_exit (NULL);
 } 
 
 int
@@ -68,7 +68,6 @@ main (int argc, char **argv)
   pthread_t thread[NUM_THREADS];
   pthread_attr_t attr;
   int rc, t;
-  void * status;
 
   args[0] = argv[0];
   if (argc != 1)		/* did we exec from below? */
@@ -103,9 +102,9 @@ main (int argc, char **argv)
     {
       printf ("Creating thread %d\n", t);
       if (!t)
-	rc = pthread_create (&thread[t], &attr, (void*) BusyWorkExec, (int*)t);
+	rc = pthread_create (&thread[t], &attr, BusyWorkExec, NULL);
       else
-	rc = pthread_create (&thread[t], &attr, (void*) BusyWork, (int*)t);
+	rc = pthread_create (&thread[t], &attr, BusyWork, NULL);
       if (rc)
 	{
 	  printf ("pthread_create\n");
@@ -121,13 +120,14 @@ main (int argc, char **argv)
     }
   for (t = 0; t < NUM_THREADS; t++)
     {
+      void *status;
       rc = pthread_join (thread[t], &status);
       if (rc)
         {
           perror ("pthread_join\n");
           exit (EXIT_FAILURE);
         }
-      printf ("Completed join with thread %d status= %d\n", t, (int) status);
+      printf ("Completed join with thread %d\n", t);
     }
   pthread_exit (NULL);
 

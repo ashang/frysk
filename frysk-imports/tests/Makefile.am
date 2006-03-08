@@ -38,6 +38,7 @@
 # exception.
 
 EXTRA_DIST =
+AM_CFLAGS = -Werror -Wall
 # Gag all the output from the failing tests
 noinst_PROGRAMS =
 noinst_SCRIPTS =

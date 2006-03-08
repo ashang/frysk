@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <alloca.h>
 #include <errno.h>
@@ -6,10 +7,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <string.h>
 
 void
 exit_0_handler (int sig)
 {
+  printf ("exit 0: %d\n", sig);
   printf ("exit 0: %s\n", strsignal (sig));
   _exit (0);
 }
@@ -17,6 +20,7 @@ exit_0_handler (int sig)
 void
 exit_1_handler (int sig)
 {
+  printf ("exit 1: %d\n", sig);
   printf ("exit 1: %s\n", strsignal (sig));
   _exit (1);
 }
@@ -112,7 +116,7 @@ main (int argc, char **argv)
       }
       printf ("suspending\n");
       errno = 0;
-      int s = sigsuspend (&umask);
+      sigsuspend (&umask);
       if (errno != EINTR) {
 	perror ("sigsuspend");
 	_exit (1);
