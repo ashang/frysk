@@ -67,7 +67,7 @@ public class DOMFrysk {
 
 	private static final String CCPATH_ATTR = "CCPATH";
 
-	private static final Element pcName = new Element(PC_ATTR);
+	private final Element pcName = new Element(PC_ATTR);
 
 	private Document data;
 

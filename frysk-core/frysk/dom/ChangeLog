@@ -1,3 +1,9 @@
+2006-03-09  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFrysk.java (pcName): No longer is static, since it is
+	being added to every DOM created (leading to only being able
+	to open one source window once).
+
 2006-01-23  Andrew Cagney  <cagney@redhat.com>
 
 	* DOMTestGUIBuilder.java: Delete; not used.

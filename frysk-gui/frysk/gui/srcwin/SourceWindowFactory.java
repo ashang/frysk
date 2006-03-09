@@ -84,7 +84,6 @@ public class SourceWindowFactory {
 
 		if(map.containsKey(task)){
 			// Do something here to revive the existing window
-			System.out.println("Window was already open, refreshing");
 			s = (SourceWindow) map.get(task);
 			s.grabFocus();
 		}
