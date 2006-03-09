@@ -62,7 +62,7 @@ $CC -dD -E /usr/include/signal.h | sed -n '
 	    saved[$1] = value2sig[$2]
     } else {
 	    value2sig[$2] = $1
-	    print
+	    print $1, $2, "SIG" $1
     }
 }
 END {

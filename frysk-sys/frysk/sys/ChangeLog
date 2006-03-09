@@ -1,5 +1,9 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Itimer.java (real (long), real (long, long)): Return a Sig.
+	* cni/Itimer.cxx: Update.
+	* Sig.shenum: Generate the print name.
+
 	* Ptrace.java (detach (int, Sig)): New.
 	* Poll.java (SignalSet.add (Sig)): New.
 	* Signal.java (kill (int, Sig), tkill (int, Sig)): New.

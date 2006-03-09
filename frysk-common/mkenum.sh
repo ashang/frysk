@@ -68,20 +68,15 @@ print_member ()
     # INDENTATION PATH NAME VALUE [print] 
     local sp=$1
     local path=$2
-    local fullname=`echo $2.$3 | sed -e 's,\.,_,g' -e 's,&.*,,'`
     local op=`expr "$3" : '\([\&:]*\).*'`
+    local fullname=$2.$3
     local name=`expr "$3" : '[^a-zA-Z0-9_]*\([a-zA-Z0-9_]*\)[^a-zA-Z0-9_]*'`
     case "$name" in
 	public|private|protected|import|boolean|float) name=_${name} ;;
         [0-9]*) name=_${name} ;;
     esac
     local mask=`expr "$3" : '[^\&]*[\&]*\(.*\)'`
-    local value
-    if expr $4 : '[0-9]' > /dev/null ; then
-	value=$4
-    else
-	value="_$4"
-    fi
+    local value=$4
     local print
     if test -z "$5" ; then
 	print=`echo "${name}" | sed -e 's/_/ /g'`
@@ -89,25 +84,24 @@ print_member ()
 	print="$5"
     fi
     print_comment "${sp}  "
-    echo "${sp}  static public final int _${name} = ${value};"
-    echo "${sp}  static public final $class $name = new $class (${value}, \"${name}\", \"${fullname}\");"
+    if expr $4 : '[0-9]' > /dev/null ; then
+	echo "${sp}  static public final int _${name} = ${value};"
+    else
+	echo "${sp}  static public final int _${name} = _${value};"
+    fi
+
+    if test x"${print}" = x- ; then
+	echo "${sp}  static public final $class $name = ${value};"
+    else
+	echo "${sp}  static public final $class $name = new $class (${value}, \"${fullname}\", \"${print}\", \"${name}\");"
+    fi
 
     if test -z "${op}" ; then
-	if test ! -z "${mask}" ; then
-	    toString="${sp}    if (i != ${name} && (i & ${mask}) == ${name}) return \"${fullname}+\" + (i & ~${mask});
-${toString}"
-	    toShortString="${sp}    if (i != ${name} && (i & ${mask}) == ${name}) return \"${name}+\" + (i & ~${mask});
-${toShortString}"
-	fi
 	if test x"$print" != x- ; then
 	    map="${map}
 ${sp}    map.put (${name}.string, ${name});"
-	    toString="${toString}
-${sp}    case _${name}: return \"${fullname}\";"
-	    toShortString="${toShortString}
-${sp}    case _${name}: return \"${name}\";"
-	    toPrintString="${toPrintString}
-${sp}    case _${name}: return \"${print}\";"
+	    valueOf="${valueOf}
+${sp}    case _${name}: return ${name};"
 	fi
     fi
 }
@@ -122,9 +116,7 @@ parse_class ()
     info "  Class" $path
 
     local map="${sp}    map = new java.util.HashMap ();"
-    local toString="${sp}    switch ((int) i) {"
-    local toShortString="${sp}    switch ((int) i) {"
-    local toPrintString="${sp}    switch ((int) i) {"
+    local valueOf=""
 
     print_comment "${sp}"
     echo "${sp}${scope} class ${class}"
@@ -134,19 +126,28 @@ parse_class ()
 ${sp}  private final String string;
 ${sp}  private final int value;
 ${sp}  private final String print;
-${sp}  private $class (int value, String string, String print)
+${sp}  private final String name;
+${sp}  private $class (int value, String string, String print, String name)
 ${sp}  {
 ${sp}    this.string = string;
 ${sp}    this.value = value;
 ${sp}    this.print = print;
+${sp}    this.name = name;
 ${sp}  }
+${sp}  /** Return the qualified name of the enum.  */
 ${sp}  public String toString ()
 ${sp}  {
 ${sp}    return string;
 ${sp}  }
+${sp}  /** Return a printable version of the enum.  */
 ${sp}  public String toPrint ()
 ${sp}  {
 ${sp}    return print;
+${sp}  }
+${sp}  /** Return the name of just the enum.  */
+${sp}  public String toName ()
+${sp}  {
+${sp}    return name;
 ${sp}  }
 ${sp}  public boolean equals (Object o)
 ${sp}  {
@@ -219,19 +220,27 @@ EOF
     done
     cat <<EOF
 ${sp}
-${sp}  private static java.util.Map map = map ();
 ${sp}  /** Create a HashMap containing all the ${class} elements.  */
-${sp}  private static java.util.Map map ()
+${sp}  private static java.util.Map getMap ()
 ${sp}  {
 ${sp}    java.util.Map map;
 ${map}
 ${sp}    return map;
 ${sp}  }
+${sp}  private static java.util.Map map = getMap ();
 ${sp}
 ${sp}  /** Return the ${class} object that matches the string.  */
 ${sp}  public static $class valueOf (String string)
 ${sp}  {
 ${sp}    return (${class})map.get (string);
+${sp}  }
+${sp}
+${sp}  /** Return the ${class} object that matches the integer.  */
+${sp}  public static $class valueOf (long i)
+${sp}  {
+${sp}    switch ((int)i) {${valueOf}
+${sp}    default: return null;
+${sp}    }
 ${sp}  }
 ${sp}
 ${sp}  /** Return an array of all the ${class} elements.  */
@@ -246,20 +255,11 @@ ${sp}   * field corresponding to the value I.
 ${sp}   */
 ${sp}  static public String toString (long i)
 ${sp}  {
-${toString}
-${sp}    default: return "${_path}_0x" + Long.toHexString (i);
-${sp}    }
-${sp}  }
-${sp}
-${sp}  /**
-${sp}   * Returns the just the final name of the field
-${sp}   * corresponding to the value I.
-${sp}   */
-${sp}  static public String toShortString (long i)
-${sp}  {
-${toShortString}
-${sp}    default: return "${_path}_0x" + Long.toHexString (i);
-${sp}    }
+${sp}    ${class} c = valueOf (i);
+${sp}    if (c == null)
+${sp}      return "${_path}_0x" + Long.toHexString (i);
+${sp}    else
+${sp}      return c.toString ();
 ${sp}  }
 ${sp}
 ${sp}  /**
@@ -268,9 +268,11 @@ ${sp}   * field corresponding to the value I.
 ${sp}   */
 ${sp}  static public String toPrintString (long i)
 ${sp}  {
-${toPrintString}
-${sp}    default: return "${_path}_0x" + Long.toHexString (i);
-${sp}    }
+${sp}    ${class} c = valueOf (i);
+${sp}    if (c == null)
+${sp}      return "${_path}_0x" + Long.toHexString (i);
+${sp}    else
+${sp}      return c.toPrint ();
 ${sp}  }
 ${sp}
 ${sp}  /**
@@ -280,9 +282,11 @@ ${sp}   * is no such field.
 ${sp}   */
 ${sp}  static public String toPrintString (long i, String def)
 ${sp}  {
-${toPrintString}
-${sp}    default: return def;
-${sp}    }
+${sp}    ${class} c = valueOf (i);
+${sp}    if (c == null)
+${sp}      return def;
+${sp}    else
+${sp}      return c.toPrint ();
 ${sp}  }
 ${sp}}
 EOF

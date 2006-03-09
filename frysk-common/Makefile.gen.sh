@@ -337,7 +337,7 @@ for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
 	echo "${nodist_lib_sources} += ${d}/${b}.java"
 	case "${suffix}" in
 	    *java ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
-	    *enum ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
+	    *enum ) echo "${d}/${b}.java: \$(MKENUM)" ;;
 	esac
     done
 done
@@ -410,7 +410,13 @@ done \
     | sort -u \
     | while read c
 do
-  if test -r $c.java ; then
+  if test \
+      -r $c.java -o \
+      -r $c.shenum -o \
+      -r $c.mkenum -o \
+      -r $c.shjava -o \
+      -r $c.mkjava \
+      ; then
       echo "BUILT_SOURCES += ${c}.h"
       # Delete both the main class, and the nested classes.
       echo "CLEANFILES += ${c}.h"

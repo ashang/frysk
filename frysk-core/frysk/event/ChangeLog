@@ -1,5 +1,12 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Signal.java: Delete.
+	* SignalEvent.java (sig, getSig): Add, use Sig instead of int for
+	signal.
+	* EventLoop.java (add SignalEvent, remove SignalEvent)
+	(processSignal SignalEvent): Update.
+	* TestEventLoop.java: Update.
+
 	frysk.sys.Sig.MEMBER renamed to frysk.sys.Sig._MEMBER.
 	* TestEventLoop.java: Update.
 	* TestSigChild.java: Update.

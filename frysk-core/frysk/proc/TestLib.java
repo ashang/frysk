@@ -187,7 +187,8 @@ public class TestLib
 	{
 	    acksRemaining = sigs.length;
 	    for (int i = 0; i < sigs.length; i++) {
-		Manager.eventLoop.add (new SignalEvent (sigs[i]) {
+		Sig sig = Sig.valueOf (sigs[i]);
+		Manager.eventLoop.add (new SignalEvent (sig) {
 			public void execute ()
 			{
 			    Manager.eventLoop.requestStop ();

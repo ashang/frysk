@@ -52,7 +52,6 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.Long;
-import java.lang.Integer;
 import frysk.EventLogger;
 
 /**
@@ -202,23 +201,23 @@ public class EventLoop
      * Add the signal handler, signals are processed and then
      * delivered using the event-loop.
      */
-    public synchronized void add (SignalEvent sig)
+    public synchronized void add (SignalEvent signalEvent)
     {
-	Object old = signalHandlers.put (sig, sig);
-	logger.log (Level.FINE, "add signal handler {0}\n", sig); 
+	Object old = signalHandlers.put (signalEvent.getSig (), signalEvent);
+	logger.log (Level.FINE, "{0] add\n", this); 
 	if (old == null)
 	    // New signal, tell Poll.
-	    Poll.SignalSet.add (sig.getSignal ());
+	    Poll.SignalSet.add (signalEvent.getSig ());
 	wakeupIfBlocked ();
     }
     /**
      * Remove the signal event handler, further occurances of the
      * signal are discarded.
      */
-    public synchronized void remove (SignalEvent sig)
+    public synchronized void remove (SignalEvent signalEvent)
     {
-	logger.log (Level.FINE, "remove signal handler {0}\n", sig); 
-	signalHandlers.remove (sig);
+	logger.log (Level.FINE, "{0} remove\n", this); 
+	signalHandlers.remove (signalEvent.getSig ());
 	// XXX: Poll.SignalSet.remove (sig.signal);
     }
     /**
@@ -229,8 +228,8 @@ public class EventLoop
      */
     private synchronized void processSignal (int signum)
     {
-	logger.log (Level.FINE, "process signal {0}\n", new Integer(signum)); 
-	Signal lookup = new Signal (signum);
+	logger.log (Level.FINE, "{0} process signal\n", this); 
+	Sig lookup = Sig.valueOf (signum);
 	SignalEvent handler = (SignalEvent) signalHandlers.get (lookup);
 	if (handler != null)
 	    pendingEvents.add (handler);

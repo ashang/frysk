@@ -14,7 +14,7 @@ public class TestSigChild
     public void stackDump ()
     {
 	EventLoop eventLoop = new EventLoop ();
-	eventLoop.add (new SignalEvent (Sig._CHLD)
+	eventLoop.add (new SignalEvent (Sig.CHLD)
 	    {
 		public final void execute ()
 		{

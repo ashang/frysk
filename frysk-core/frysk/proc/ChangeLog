@@ -1,5 +1,9 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	frysk.event.SignalEvent's constructor changed to take a Sig.
+	* LinuxHost.java: Update.
+	* TestLib.java: Update.
+
 	frysk.sys.Sig.MEMBER renamed to frysk.sys.Sig._MEMBER.
 	* TestTaskObserverDetach.java: Update.
 	* TestModify.java: Update.

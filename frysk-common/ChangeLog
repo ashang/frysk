@@ -1,5 +1,10 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Make .java files generated from .mkenum and
+	.shenum dependant on $(MKENUM).  Allow .h files to be generated
+	from .mkjava, .shjava, .mkenum, and .shenum files.
+	* mkenum.sh: Import; adds valueOf.
+	
 	* Makefile.gen.sh (TestRunner_LDADD): Handle .mkenum, and .shenum
 	files.
 	* mkenum.sh: Import.

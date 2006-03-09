@@ -50,12 +50,12 @@ public final class Itimer
      * the future with repeats, after that, every INTERVAL
      * mulli-seconds.  Delivers {@link Sig.ALRM} upon expiration.
      */
-    public static native int real (long interval, long value);
+    public static native Sig real (long interval, long value);
     /**
      * Schedule a real-time interval timer VALUE milli-seconds into
      * the future.  Delivers {@link Sig.ALRM} upon expiration.
      */
-    public static int real (long value)
+    public static Sig real (long value)
     {
 	return real (0, value);
     } 

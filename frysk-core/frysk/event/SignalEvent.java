@@ -39,21 +39,29 @@
 
 package frysk.event;
 
+import frysk.sys.Sig;
+
 /**
  * An event due to a signal.
  */
 
 public abstract class SignalEvent
-// XXX: Hack to get around GCJ bogosity; thinks Signal is refering to
-// frysk.model.Signal.
-    extends frysk.event.Signal
     implements Event
 {
+    private Sig sig;
+    /**
+     * Return the corresponding signal; the sig can be used as a
+     * search key.
+     */
+    final Sig getSig ()
+    {
+	return sig;
+    }
     /**
      * Create a Signal based event.
      */
-    public SignalEvent (int signal)
+    public SignalEvent (Sig sig)
     {
-	super (signal);
+	this.sig = sig;
     }
 }
