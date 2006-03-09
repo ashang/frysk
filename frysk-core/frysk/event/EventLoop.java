@@ -226,11 +226,10 @@ public class EventLoop
      * signal delivery un-blocks the poll, the event thread is no
      * longer going to block.
      */
-    private synchronized void processSignal (int signum)
+    private synchronized void processSignal (Sig sig)
     {
 	logger.log (Level.FINE, "{0} process signal\n", this); 
-	Sig lookup = Sig.valueOf (signum);
-	SignalEvent handler = (SignalEvent) signalHandlers.get (lookup);
+	SignalEvent handler = (SignalEvent) signalHandlers.get (sig);
 	if (handler != null)
 	    pendingEvents.add (handler);
 	isGoingToBlock = false;
@@ -280,9 +279,9 @@ public class EventLoop
      * Handle anything that comes back from the poll call.
      */
     private Poll.Observer pollObserver = new Poll.Observer () {
-	    public void signal (int signum) {
-		logger.log (Level.FINE, "poll {0}\n", this); 
-		processSignal (signum);
+	    public void signal (Sig sig) {
+		logger.log (Level.FINE, "{0} Poll.Observer.signal\n", this); 
+		processSignal (sig);
 	    }
 	    // Not yet using file descriptors.
 	    public void pollIn (int fd) {

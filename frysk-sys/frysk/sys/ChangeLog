@@ -1,5 +1,8 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Poll.java (Observer.signal (Sig)): Replace Observer.signal (int).
+	* cni/Poll.cxx (poll): Pass a Sig to Observer.signal.
+	
 	* Poll.java (SignalSet.add (int)): Delete.
 	(SignalSet.add (Sig)): Make native.
 	* cni/Poll.cxx: Update.

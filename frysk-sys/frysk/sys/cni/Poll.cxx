@@ -181,8 +181,10 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
     // doing this allows other signals to get through (otherwize this
     // code could be swamped by a single re-occuring signal).
     sigdelset (&mask, signum);
+    // Find the signal object.
+    frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (signum);
     // Notify the client of the signal.
-    pollObserver->signal (signum);
+    pollObserver->signal (sig);
     // Make the poll non-blocking.  Now that at least one event has
     // been detected, this method should not block.
     timeout = 0;

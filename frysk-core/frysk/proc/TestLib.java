@@ -1216,7 +1216,7 @@ public class TestLib
 	Poll.poll (new Poll.Fds (),
 		   new Poll.Observer ()
 		   {
-		       public void signal (int sig) { }
+		       public void signal (Sig sig) { }
 		       public void pollIn (int in) { }
 		   },
 		   0);

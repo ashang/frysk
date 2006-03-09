@@ -1,5 +1,9 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* EventLoop.java (pollObserver): Update Poll.Observer.signal, now
+	takes a Sig.
+	(processSignal): Simplify.
+	
 	* Signal.java: Delete.
 	* SignalEvent.java (sig, getSig): Add, use Sig instead of int for
 	signal.

@@ -1,5 +1,8 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (tearDown): Update Poll.Oboserver.signal, now takes
+	a Sig parameter.
+	
 	* TestTaskObserver.java (assertTaskGone): Change theSig parameter
 	to a Sig, update calls.
 	* TestLib.java (tearDown): Use Sig as an object.

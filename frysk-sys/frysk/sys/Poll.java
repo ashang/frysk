@@ -53,7 +53,7 @@ public final class Poll
 {
     public static interface Observer
     {
-	void signal (int sig);
+	void signal (Sig sig);
 	void pollIn (int fd);
     }
     Observer observer;
