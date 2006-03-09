@@ -1,5 +1,7 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Sig.shenum: Add SIGNONE - 0 - to list of signals.
+	
 	* Itimer.java (real (long), real (long, long)): Return a Sig.
 	* cni/Itimer.cxx: Update.
 	* Sig.shenum: Generate the print name.

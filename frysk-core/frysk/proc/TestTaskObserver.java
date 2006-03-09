@@ -139,17 +139,17 @@ public class TestTaskObserver
      * Send .theSig to .thePid, and then keep probeing .thePid until
      * it no longer exists.
      */
-    private void assertTaskGone (final int thePid, final int theSig)
+    private void assertTaskGone (final int thePid, final Sig theSig)
     {
 	Manager.eventLoop.add (new TimerEvent (0, 50)
 	    {
 		int pid = thePid;
-		int sig = theSig;
+		Sig sig = theSig;
 		public void execute ()
 		{
 		    try {
 			Signal.tkill (pid, sig);
-			sig = 0;
+			sig = Sig.NONE;
 		    }
 		    catch (Errno.Esrch e) {
 			Manager.eventLoop.requestStop ();
@@ -221,7 +221,7 @@ public class TestTaskObserver
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	assertTaskGone (tasks[0].proc.getPid (), Sig._KILL);
+	assertTaskGone (tasks[0].proc.getPid (), Sig.KILL);
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
@@ -313,7 +313,7 @@ public class TestTaskObserver
 	
 	// Blow away the task; make certain that the Proc's task list
 	// is refreshed so that the task is no longer present.
-	assertTaskGone (task.getTid (), Sig._KILL);
+	assertTaskGone (task.getTid (), Sig.KILL);
 	task.proc.sendRefresh ();
 	assertEquals ("task count", 0, task.proc.getTasks ().size ());
 
@@ -345,10 +345,10 @@ public class TestTaskObserver
 	
 	// Blow away the task.
 	if (main)
-	    assertTaskGone (task.getTid (), Sig._KILL);
+	    assertTaskGone (task.getTid (), Sig.KILL);
 	else {
 	    child.delClone ();
-	    assertTaskGone (task.getTid (), 0);
+	    assertTaskGone (task.getTid (), Sig.NONE);
 	}	    
 
 	// Try to add the observer to the now defunct task.  Should

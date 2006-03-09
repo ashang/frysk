@@ -1,5 +1,9 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java (assertTaskGone): Change theSig parameter
+	to a Sig, update calls.
+	* TestLib.java (tearDown): Use Sig as an object.
+	
 	frysk.event.SignalEvent's constructor changed to take a Sig.
 	* LinuxHost.java: Update.
 	* TestLib.java: Update.

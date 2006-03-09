@@ -1222,13 +1222,13 @@ public class TestLib
 		   0);
 	// XXX: This should be an assert; until the bugs are fixed, it
 	// can't be.
-	int[] checkSigs = new int[] { Sig._USR1, Sig._USR2 };
+	Sig[] checkSigs = new Sig[] { Sig.USR1, Sig.USR2 };
 	for (int i = 0; i < checkSigs.length; i++) {
-	    int sig = checkSigs[i];
+	    Sig sig = checkSigs[i];
 	    // assertFalse ("pending signal", pending.contains (sig));
 	    if (pending.contains (sig)) {
 		System.out.print ("<<XXX: pending signal "
-				  + Sig.toPrintString (sig)
+				  + sig.toPrint ()
 				  + ">>");
 	    }
 	}

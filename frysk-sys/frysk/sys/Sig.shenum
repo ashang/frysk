@@ -52,7 +52,11 @@ $CC -dD -E /usr/include/signal.h | sed -n '
   s,\*/,,
   p
 }
-' | awk '{
+' | awk '
+BEGIN {
+    print "NONE 0 SIGNONE"
+}
+{
     # SIGNAL VALUE
     if ($2 ~ /[A-Z]/) {
 	    # VALUE is ASCII (i.e., another signal), save
