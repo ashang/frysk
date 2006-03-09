@@ -79,7 +79,7 @@ public class TestModify
 	{
 	    public Action updateSignaled (Task task, int sig)
 	    {
-		if (sig == Sig.SEGV) {
+		if (sig == Sig._SEGV) {
 		    ByteBuffer b;
 		    long memAddr;
 		    long addr;

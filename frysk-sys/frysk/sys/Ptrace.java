@@ -54,6 +54,13 @@ public final class Ptrace
      */
     public static native void detach (int pid, int sig);
     /**
+     * Detach from the process specified by PID.
+     */
+    public static void detach (int pid, Sig sig)
+    {
+	detach (pid, sig.hashCode ());
+    }
+    /**
      * Single-step (instruction step) the process specified by PID, if
      * SIG is non-zero, deliver the signal.
      */

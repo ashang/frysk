@@ -69,6 +69,10 @@ public final class Poll
 	protected static gnu.gcj.RawDataManaged signalSet;
 	static native gnu.gcj.RawDataManaged get ();
 	public static native void add (int signum);
+	public static void add (Sig sig)
+	{
+	    add (sig.hashCode ());
+	}
 	public static native void empty ();
     }
 

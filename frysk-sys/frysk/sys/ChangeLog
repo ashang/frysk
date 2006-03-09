@@ -1,3 +1,13 @@
+2006-03-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Ptrace.java (detach (int, Sig)): New.
+	* Poll.java (SignalSet.add (Sig)): New.
+	* Signal.java (kill (int, Sig), tkill (int, Sig)): New.
+	* cni/SigSet.cxx (newSigSet): Drop sigs parameter.
+	* SigSet.java (contains (Sig), add (Sig), remove (Sig))
+	(SigSet(Sig[])): New.
+	* TestSigSet.java: Update.
+
 2006-03-07  Andrew Cagney  <cagney@redhat.com>
 
 	* Poll.java (poll): Add description.

@@ -85,15 +85,10 @@ frysk::sys::SigSet::contains (jint sigNum)
 }
 
 gnu::gcj::RawDataManaged *
-frysk::sys::SigSet::newSigSet (jintArray sigs)
+frysk::sys::SigSet::newSigSet ()
 {
   sigset_t* sigset = (sigset_t*) JvAllocBytes (sizeof (sigset_t));
   ::sigemptyset (sigset);
-  if (sigs != NULL) {
-    for (int i = 0; i < sigs->length; i++) {
-      ::sigaddset (sigset, elements (sigs)[i]);
-    }
-  }
   return (gnu::gcj::RawDataManaged*) sigset;
 }
 

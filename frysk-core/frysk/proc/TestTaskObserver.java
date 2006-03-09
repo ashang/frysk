@@ -221,7 +221,7 @@ public class TestTaskObserver
 	// Finally, prove that the process really is detached - send
 	// it a kill and then probe (using kill) the process until
 	// that fails.
-	assertTaskGone (tasks[0].proc.getPid (), Sig.KILL);
+	assertTaskGone (tasks[0].proc.getPid (), Sig._KILL);
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
@@ -313,7 +313,7 @@ public class TestTaskObserver
 	
 	// Blow away the task; make certain that the Proc's task list
 	// is refreshed so that the task is no longer present.
-	assertTaskGone (task.getTid (), Sig.KILL);
+	assertTaskGone (task.getTid (), Sig._KILL);
 	task.proc.sendRefresh ();
 	assertEquals ("task count", 0, task.proc.getTasks ().size ());
 
@@ -345,7 +345,7 @@ public class TestTaskObserver
 	
 	// Blow away the task.
 	if (main)
-	    assertTaskGone (task.getTid (), Sig.KILL);
+	    assertTaskGone (task.getTid (), Sig._KILL);
 	else {
 	    child.delClone ();
 	    assertTaskGone (task.getTid (), 0);
@@ -385,13 +385,13 @@ public class TestTaskObserver
 	    Child c = child;
 	    public void addedTo (Object o)
 	    {
-		c.signal (Sig.TERM);
+		c.signal (Sig._TERM);
 	    }
 	    public Action updateTerminating (Task task, boolean signal,
 					     int val)
 	    {
 		assertTrue ("signal", signal);
-		assertEquals ("val", Sig.TERM, val);
+		assertEquals ("val", Sig._TERM, val);
 		Manager.eventLoop.requestStop ();
 		return Action.CONTINUE;
 	    }

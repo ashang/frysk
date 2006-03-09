@@ -145,7 +145,7 @@ public class TestSyscallInterrupt
             boolean startedLoop;
             public Action updateSignaled (Task task, int sig)
             {
-		if (sig == Sig.USR1)
+		if (sig == Sig._USR1)
 		    sigusr1Count++;
                 return Action.CONTINUE;
             }

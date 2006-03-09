@@ -260,7 +260,7 @@ public class TestTaskObserverDetach
 	    }
 	    int signal ()
 	    {
-		return Sig.TERM;
+		return Sig._TERM;
 	    }
 	};
     }

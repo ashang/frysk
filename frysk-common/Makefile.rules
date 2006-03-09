@@ -154,18 +154,18 @@ AM_CFLAGS = \
 	$(ZZZ)
 
 
-# Rule for building a .java file from an input .mkclass file.  This
-# lets us specify CLASS.java directly in the BUILT_SOURCES list.
+# Rules for building a .java file from any of a .mkclass file, a
+# .shjava script, a .mkenum file, or a .shenum script.  This lets us
+# specify CLASS.java directly in the BUILT_SOURCES list.
 
 MKJAVA = $(srcdir)/common/mkjava.sh
+
 SUFFIXES += .mkjava
 .mkjava.java:
 	rm -f $*.tmp
 	$(SHELL) $(MKJAVA) < $(srcdir)/$*.mkjava > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
-
-# Rule for building a .java file from a shell|mkjava pipeline.
 
 SUFFIXES += .shjava
 .shjava.java:
@@ -174,6 +174,24 @@ SUFFIXES += .shjava
 	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
+
+MKENUM = $(srcdir)/common/mkenum.sh
+
+SUFFIXES += .mkenum
+.mkenum.java:
+	rm -f $*.tmp
+	$(SHELL) $(MKENUM) < $(srcdir)/$*.mkjava > $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
+
+SUFFIXES += .shenum
+.shenum.java:
+	rm -f $*.tmp
+	export CC=$(CC) ; \
+	$(SHELL) $< | $(SHELL) $(MKENUM) > $*.tmp $@
+	chmod a-w $*.tmp
+	mv -f $*.tmp $@
+
 
 # Similar to autoconf's config.status --file=NEW:OLD but with all
 # variables expanded.

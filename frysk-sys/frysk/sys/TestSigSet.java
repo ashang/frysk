@@ -89,7 +89,7 @@ public class TestSigSet
      */
     public void testList ()
     {
-	SigSet set = new SigSet (new int[] { Sig.HUP, Sig.USR1 });
+	SigSet set = new SigSet (new Sig[] { Sig.HUP, Sig.USR1 });
 	assertTrue ("set contains Sig.HUP", set.contains (Sig.HUP));
 	assertTrue ("set contains Sig.USR1", set.contains (Sig.USR1));
 	assertFalse ("set contains Sig.USR2", set.contains (Sig.USR2));
@@ -98,7 +98,7 @@ public class TestSigSet
 
     public void testProcMask ()
     {
-	SigSet set = new SigSet (new int[] { Sig.WINCH });
+	SigSet set = new SigSet (new Sig[] { Sig.WINCH });
 	SigSet old = new SigSet ();
 	SigSet pending = new SigSet ();
 	set.setProcMask (old);

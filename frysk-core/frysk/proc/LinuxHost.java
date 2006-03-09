@@ -223,7 +223,7 @@ public class LinuxHost
     {
 	PollWaitOnSigChld ()
 	{
-	    super (Sig.CHLD);
+	    super (Sig._CHLD);
 	    logger.log (Level.FINE, "{0} new\n", this); 
 	}
 	Wait.Observer waitObserver = new Wait.Observer ()
@@ -295,10 +295,10 @@ public class LinuxHost
 		{
 		    Task task = getTask (pid, "{0} stopped\n");
 		    switch (sig) {
-		    case Sig.STOP:
+		    case Sig._STOP:
 			task.receiveStoppedEvent ();
 			break;
-		    case Sig.TRAP:
+		    case Sig._TRAP:
 			task.receiveTrappedEvent ();
 			break;
 		    default:

@@ -1,3 +1,11 @@
+2006-03-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (TestRunner_LDADD): Handle .mkenum, and .shenum
+	files.
+	* mkenum.sh: Import.
+	* Makefile.rules (MKENUM): Define.
+	(.mkenum.java, .shenum.java): New rules.
+
 2006-02-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (echo_LDFLAGS): Append $(GEN_GCJ_NO_SIGCHLD_FLAGS).

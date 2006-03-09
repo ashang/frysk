@@ -1,0 +1,307 @@
+#!/bin/sh
+
+# From the VENUS project.  Copyright 2004, 2005, 2006, Andrew Cagney
+# Licenced under the terms of the Eclipse Public Licence.
+# Licenced under the terms of the GNU CLASSPATH Licence.
+
+if test $# -ne 1 ; then
+    echo "Usage: $0 <java/file/name>"
+    exit 1
+fi
+
+# File syntax is:
+
+fatal ()
+{
+    echo 1>&2 "$@"
+    exit 1
+}
+
+info ()
+{
+    echo 1>&2 "$@"
+}
+
+line=dummy
+comment=
+get_token ()
+{
+    # EOF.
+    if test x"${line}" = x ; then
+	false
+	return
+    fi
+    # Break down the previously read token.
+    read token value print <<EOF
+${line}
+EOF
+    # Find the next token.
+    comment=
+    while true ; do
+	if read line ; then
+	    if expr "${line}" : '#' > /dev/null ; then
+		comment="${comment}
+${line}"
+	    elif test x"${line}" = x \
+		|| expr "${line}" : ' *$' > /dev/null ; then
+		:
+	    else
+		break
+	    fi
+	else
+	    break
+	fi
+    done
+}
+
+print_comment ()
+{
+    if test x"${comment}" != x ; then
+	echo "$1/**"
+	echo "${comment}" | sed -e "1 d" -e "s,^#,$1 *,"
+	echo "$1 */"
+    fi
+}
+
+print_member ()
+{
+    # INDENTATION PATH NAME VALUE [print] 
+    local sp=$1
+    local path=$2
+    local fullname=`echo $2.$3 | sed -e 's,\.,_,g' -e 's,&.*,,'`
+    local op=`expr "$3" : '\([\&:]*\).*'`
+    local name=`expr "$3" : '[^a-zA-Z0-9_]*\([a-zA-Z0-9_]*\)[^a-zA-Z0-9_]*'`
+    case "$name" in
+	public|private|protected|import|boolean|float) name=_${name} ;;
+        [0-9]*) name=_${name} ;;
+    esac
+    local mask=`expr "$3" : '[^\&]*[\&]*\(.*\)'`
+    local value
+    if expr $4 : '[0-9]' > /dev/null ; then
+	value=$4
+    else
+	value="_$4"
+    fi
+    local print
+    if test -z "$5" ; then
+	print=`echo "${name}" | sed -e 's/_/ /g'`
+    else
+	print="$5"
+    fi
+    print_comment "${sp}  "
+    echo "${sp}  static public final int _${name} = ${value};"
+    echo "${sp}  static public final $class $name = new $class (${value}, \"${name}\", \"${fullname}\");"
+
+    if test -z "${op}" ; then
+	if test ! -z "${mask}" ; then
+	    toString="${sp}    if (i != ${name} && (i & ${mask}) == ${name}) return \"${fullname}+\" + (i & ~${mask});
+${toString}"
+	    toShortString="${sp}    if (i != ${name} && (i & ${mask}) == ${name}) return \"${name}+\" + (i & ~${mask});
+${toShortString}"
+	fi
+	if test x"$print" != x- ; then
+	    map="${map}
+${sp}    map.put (${name}.string, ${name});"
+	    toString="${toString}
+${sp}    case _${name}: return \"${fullname}\";"
+	    toShortString="${toShortString}
+${sp}    case _${name}: return \"${name}\";"
+	    toPrintString="${toPrintString}
+${sp}    case _${name}: return \"${print}\";"
+	fi
+    fi
+}
+
+parse_class ()
+{
+    local sp=$1
+    local scope=$2
+    local path=$3
+    local class=$4
+
+    info "  Class" $path
+
+    local map="${sp}    map = new java.util.HashMap ();"
+    local toString="${sp}    switch ((int) i) {"
+    local toShortString="${sp}    switch ((int) i) {"
+    local toPrintString="${sp}    switch ((int) i) {"
+
+    print_comment "${sp}"
+    echo "${sp}${scope} class ${class}"
+    echo "  implements Comparable"
+    echo "${sp}{"
+    cat <<EOF
+${sp}  private final String string;
+${sp}  private final int value;
+${sp}  private final String print;
+${sp}  private $class (int value, String string, String print)
+${sp}  {
+${sp}    this.string = string;
+${sp}    this.value = value;
+${sp}    this.print = print;
+${sp}  }
+${sp}  public String toString ()
+${sp}  {
+${sp}    return string;
+${sp}  }
+${sp}  public String toPrint ()
+${sp}  {
+${sp}    return print;
+${sp}  }
+${sp}  public boolean equals (Object o)
+${sp}  {
+${sp}    if (o instanceof ${class})
+${sp}      return ((${class}) o).value == this.value;
+${sp}    else
+${sp}      return false;
+${sp}  }
+${sp}  public int hashCode ()
+${sp}  {
+${sp}    return value;
+${sp}  }
+${sp}  public int compareTo (Object o)
+${sp}  {
+${sp}    ${class} rhs = (${class}) o;
+${sp}    return rhs.value - this.value;
+${sp}  }
+EOF
+    while get_token ; do
+	case "$token" in
+	    @class )
+                parse_class \
+		    "${sp}  " \
+		    "public static" \
+		    ${path}.${value} \
+		    ${value}
+		;;
+	    '.' )
+	        break
+		;;
+	    *\-* )
+		name=`expr "${token}" : '\([^0-9]*\)[0-9]*-[^0-9]*[0-9]*'`
+		base=`expr "${token}" : '[^0-9]*\([0-9]*\)-[^0-9]*[0-9]*'`
+		bound=`expr "${token}" : '[^0-9]*[0-9]*-[^0-9]*\([0-9]*\)'`
+	        lo=`expr "${value}" : '\([0-9x]*\)-[0-9x]*'`
+	        hi=`expr "${value}" : '[0-9x]*-\([0-9x]*\)'`
+		num=${base}
+		# Only generate print for the first name
+		while test ${num} -le ${bound} ; do
+		    print_member \
+			"${sp}" \
+			"${path}" \
+			"${name}${num}" \
+			"${lo} + ${num}" \
+			"${name}${num}"
+		    num=`expr ${num} + 1`
+		done
+	        ;;
+	    *\|*)
+	        for name in `echo "${token}" | sed -e 's/|/ /g'`; do
+		    print_member \
+			"${sp}" \
+			"${path}" \
+			"${name}" \
+			"${value}" \
+			"${print}"
+                    # Only print the first member
+		    print=-
+		done
+	        ;;
+	    * )
+		print_member \
+		    "${sp}" \
+		    "${path}" \
+		    "${token}" \
+		    "${value}" \
+		    "${print}"
+		;;
+	esac
+    done
+    cat <<EOF
+${sp}
+${sp}  private static java.util.Map map = map ();
+${sp}  /** Create a HashMap containing all the ${class} elements.  */
+${sp}  private static java.util.Map map ()
+${sp}  {
+${sp}    java.util.Map map;
+${map}
+${sp}    return map;
+${sp}  }
+${sp}
+${sp}  /** Return the ${class} object that matches the string.  */
+${sp}  public static $class valueOf (String string)
+${sp}  {
+${sp}    return (${class})map.get (string);
+${sp}  }
+${sp}
+${sp}  /** Return an array of all the ${class} elements.  */
+${sp}  public static ${class}[] values ()
+${sp}  {
+${sp}    return (${class}[]) map.values ().toArray (new ${class}[0]);
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Returns the full underscore delimited name of the
+${sp}   * field corresponding to the value I.
+${sp}   */
+${sp}  static public String toString (long i)
+${sp}  {
+${toString}
+${sp}    default: return "${_path}_0x" + Long.toHexString (i);
+${sp}    }
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Returns the just the final name of the field
+${sp}   * corresponding to the value I.
+${sp}   */
+${sp}  static public String toShortString (long i)
+${sp}  {
+${toShortString}
+${sp}    default: return "${_path}_0x" + Long.toHexString (i);
+${sp}    }
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Returns the printable (or user readable) name for the
+${sp}   * field corresponding to the value I.
+${sp}   */
+${sp}  static public String toPrintString (long i)
+${sp}  {
+${toPrintString}
+${sp}    default: return "${_path}_0x" + Long.toHexString (i);
+${sp}    }
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Returns the printable (or user readable) name for the
+${sp}   * field corresponding to the value I, or DEF is there
+${sp}   * is no such field.
+${sp}   */
+${sp}  static public String toPrintString (long i, String def)
+${sp}  {
+${toPrintString}
+${sp}    default: return def;
+${sp}    }
+${sp}  }
+${sp}}
+EOF
+}
+
+# The command line argument is the name of the file to create; but the
+# actual java is written to stdout.
+
+package=`dirname $1 | tr '[/]' '[.]'`
+info Package $package
+echo "package $package;"
+echo ""
+
+# Prime the look-a-head pump.
+get_token
+
+class=`basename $1 .java`
+parse_class "" "public" ${class} ${class}
+
+if get_token ; then
+    fatal "Garbage at end of file"
+fi

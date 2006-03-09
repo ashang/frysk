@@ -50,7 +50,21 @@ public class Signal
      */
     public static native void kill (int pid, int sig);
     /**
+     * Deliver SIG to process PID.
+     */
+    public static void kill (int pid, Sig sig)
+    {
+	kill (pid, sig.hashCode ());
+    }
+    /**
      * Deliver SIG to task (or thread) LWP.
      */
     public static native void tkill (int lwp, int sig);
+    /**
+     * Deliver SIG to task (or thread) LWP.
+     */
+    public static void tkill (int lwp, Sig sig)
+    {
+	tkill (lwp, sig.hashCode ());
+    }
 }

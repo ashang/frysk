@@ -177,7 +177,7 @@ public class TestLib
 	// NOTE: Use a different signal to thread add/del.  Within
 	// this process the signal is masked and Linux appears to
 	// propogate the mask all the way down to the exec'ed child.
-	protected final static int signal = Sig.HUP;
+	protected final static int signal = Sig._HUP;
 	AckHandler ()
 	{
 	    this (signal);
@@ -270,7 +270,7 @@ public class TestLib
 	boolean kill ()
 	{
 	    try {
-		signal (Sig.KILL);
+		signal (Sig._KILL);
 		return true;
 	    }
 	    catch (Errno.Esrch e) {
@@ -326,15 +326,15 @@ public class TestLib
     protected abstract class AckProcess
 	extends Child
     {
-	static final int childAck = Sig.USR1;
-	static final int parentAck = Sig.USR2;
-	static final int addCloneSig = Sig.USR1;
-	static final int delCloneSig = Sig.USR2;
-	static final int addForkSig = Sig.HUP;
-	static final int delForkSig = Sig.INT;
-	static final int zombieForkSig = Sig.URG;
-	static final int execSig = Sig.PWR;
-	static final int execCloneSig = Sig.FPE;
+	static final int childAck = Sig._USR1;
+	static final int parentAck = Sig._USR2;
+	static final int addCloneSig = Sig._USR1;
+	static final int delCloneSig = Sig._USR2;
+	static final int addForkSig = Sig._HUP;
+	static final int delForkSig = Sig._INT;
+	static final int zombieForkSig = Sig._URG;
+	static final int execSig = Sig._PWR;
+	static final int execCloneSig = Sig._FPE;
 	static final String sleepTime = "10";
 
 	private AckProcess (int ack, String[] argv)
@@ -451,7 +451,7 @@ public class TestLib
 	void fryParent ()
 	{
 	    AckHandler ack = new AckHandler (childAck);
-	    signal (Sig.KILL);
+	    signal (Sig._KILL);
 	    ack.await ();
 	}
 	/**
@@ -1221,7 +1221,7 @@ public class TestLib
 		   0);
 	// XXX: This should be an assert; until the bugs are fixed, it
 	// can't be.
-	int[] checkSigs = new int[] { Sig.USR1, Sig.USR2 };
+	int[] checkSigs = new int[] { Sig._USR1, Sig._USR2 };
 	for (int i = 0; i < checkSigs.length; i++) {
 	    int sig = checkSigs[i];
 	    // assertFalse ("pending signal", pending.contains (sig));

@@ -62,7 +62,7 @@ public class TestEventLoop
     public void setUp ()
     {
 	eventLoop = new EventLoop ();
-	eventLoop.add (new SignalEvent (Sig.INT)
+	eventLoop.add (new SignalEvent (Sig._INT)
 	    {
 		public void execute ()
 		{
@@ -296,7 +296,7 @@ public class TestEventLoop
 		eventLoop.requestStop ();		
 	    }
 	}
-	SignalFired handler = new SignalFired (Sig.CHLD);
+	SignalFired handler = new SignalFired (Sig._CHLD);
 
 	// Add a handler for SIGCHILD, shoot the signal (which makes
 	// it pending since there is a handler), and then run the loop
@@ -345,7 +345,7 @@ public class TestEventLoop
 	// Set up a dummy Sig.CHLD handler, this should never occure
 	// as it is overridden by an asynchronous thread before the
 	// signal is delivered.
-	eventLoop.add (new SignalEvent (Sig.CHLD)
+	eventLoop.add (new SignalEvent (Sig._CHLD)
 	    {
 		public void execute ()
 		{
@@ -407,14 +407,14 @@ public class TestEventLoop
     {
 	public void run ()
 	{
-	    eventLoop.add (new SignalEvent (Sig.CHLD)
+	    eventLoop.add (new SignalEvent (Sig._CHLD)
 		{
 		    public void execute ()
 		    {
 			new SleepThread ().start ();
 		    }
 		});
-	    Signal.tkill (eventTid, Sig.CHLD);
+	    Signal.tkill (eventTid, Sig._CHLD);
 	}
     }
     /**

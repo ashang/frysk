@@ -145,19 +145,19 @@ public class TestTaskTerminateObserver
 
     public void testTerminateExit0 () { terminate (0); }
     public void testTerminateExit47 () { terminate (47); }
-    public void testTerminateKillINT () { terminate (-Sig.INT); }
-    public void testTerminateKillKILL () { terminate (-Sig.KILL); }
-    public void testTerminateKillHUP () { terminate (-Sig.HUP); }
+    public void testTerminateKillINT () { terminate (-Sig._INT); }
+    public void testTerminateKillKILL () { terminate (-Sig._KILL); }
+    public void testTerminateKillHUP () { terminate (-Sig._HUP); }
 
     public void testTerminatingExit0 () { terminating (0); }
     public void testTerminatingExit47 () { terminating (47); }
-    public void testTerminatingKillINT () { terminating (-Sig.INT); }
-    public void testTerminatingKillKILL () { terminating (-Sig.KILL); }
-    public void testTerminatingKillHUP () { terminating (-Sig.HUP); }
+    public void testTerminatingKillINT () { terminating (-Sig._INT); }
+    public void testTerminatingKillKILL () { terminating (-Sig._KILL); }
+    public void testTerminatingKillHUP () { terminating (-Sig._HUP); }
 
     public void testTerminatedExit0 () { terminated (0); }
     public void testTerminatedExit47 () { terminated (47); }
-    public void testTerminatedKillINT () { terminated (-Sig.INT); }
-    public void testTerminatedKillKILL () { terminated (-Sig.KILL); }
-    public void testTerminatedKillHUP () { terminated (-Sig.HUP); }
+    public void testTerminatedKillINT () { terminated (-Sig._INT); }
+    public void testTerminatedKillKILL () { terminated (-Sig._KILL); }
+    public void testTerminatedKillHUP () { terminated (-Sig._HUP); }
 }

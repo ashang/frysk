@@ -48,7 +48,7 @@ import gnu.gcj.RawDataManaged;
 public final class SigSet
 {
     private RawDataManaged sigSet;
-    private native RawDataManaged newSigSet (int[] sigs);
+    private native RawDataManaged newSigSet ();
     RawDataManaged getSigSet ()
     {
 	return sigSet;
@@ -58,14 +58,27 @@ public final class SigSet
      */
     public SigSet ()
     {
-	sigSet = newSigSet (null);
+	sigSet = newSigSet ();
     }
     /**
      * Create a SigSet containing the signals in the array.
      */
     public SigSet (int[] sigs)
     {
-	sigSet = newSigSet (sigs);
+	sigSet = newSigSet ();
+	for (int i = 0; i < sigs.length; i++) {
+	    add (sigs[i]);
+	}
+    }
+    /**
+     * Create a SigSet containing the signals in the array.
+     */
+    public SigSet (Sig[] sigs)
+    {
+	sigSet = newSigSet ();
+	for (int i = 0; i < sigs.length; i++) {
+	    add (sigs[i]);
+	}
     }
     /**
      * Empty the signal set; return this.
@@ -80,17 +93,42 @@ public final class SigSet
      */
     public native SigSet add (int sigNum);
     /**
+     * Add sigNum to the SigSet; return this.
+     */
+    public SigSet add (Sig sig)
+    {
+	return add (sig.hashCode ());
+    }
+    /**
      * Remove Sig from the SigSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with
      * java); return this.
      */
     public native SigSet remove (int sigNum);
     /**
+     * Remove Sig from the SigSet (the underlying code uses
+     * <tt>sigdelset</tt>, the name remove is more consistent with
+     * java); return this.
+     */
+    public SigSet remove (Sig sig)
+    {
+	return remove (sig.hashCode ());
+    }
+    /**
      * Does this SigSet contain sigNum (the underlying code uses
      * <tt>sigismember</tt>, the name contains is more consistent with
      * java.
      */
     public native boolean contains (int sigNum);
+    /** 
+     * Does this SigSet contain sigNum (the underlying code uses
+     * <tt>sigismember</tt>, the name contains is more consistent with
+     * java.
+     */
+    public boolean contains (Sig sig)
+    {
+	return contains (sig.hashCode ());
+    }
 
     /**
      * Get the pending set of signals; return this

@@ -44,12 +44,13 @@ Usage: $0 <source-dir>... <.jar-file>... <_JAR-macro>...
 
 <source-dir>:
 
-Search source directory for .java, .mkjava, .shjava, .javain, .c and
-.cxx files.  For each, generate a corresponding automake entry.  If
-the file contains a main program, also generate automake to build the
-corresponding program.  Any program located under a bindir/, sbindir/,
-or libexecdir/ sub-directory, will be installed in the corresponding
-bin/, sbin/, or libexec/ destination directory.
+Search source directory for .java, .mkjava, .shjava, shenum, mkenum,
+.javain, .c and .cxx files.  For each, generate a corresponding
+automake entry.  If the file contains a main program, also generate
+automake to build the corresponding program.  Any program located
+under a bindir/, sbindir/, or libexecdir/ sub-directory, will be
+installed in the corresponding bin/, sbin/, or libexec/ destination
+directory.
 
 <.jar-file> or <_JAR-macro>:
 
@@ -324,7 +325,7 @@ echo_LDFLAGS TestRunner
 
 # Generate SOURCES list for all files.
 
-for suffix in .mkjava .shjava .javain ; do
+for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
     print_header "... ${suffix}"
     SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
     find ${dirs} \
@@ -334,7 +335,10 @@ for suffix in .mkjava .shjava .javain ; do
 	b=`basename ${file} ${suffix}`
 	echo "EXTRA_DIST += ${file}"
 	echo "${nodist_lib_sources} += ${d}/${b}.java"
-	echo "${d}/${b}.java: \$(MKJAVA)"
+	case "${suffix}" in
+	    *java ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
+	    *enum ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
+	esac
     done
 done
 
@@ -348,6 +352,8 @@ for suffix in .java ; do
 	name=${d}/${b}
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
+	test -r "${d}/${b}.mkenum" && continue
+	test -r "${d}/${b}.shenum" && continue
 	test -r "${d}/${b}.javain" && continue
 	test -r "${d}/${b}.g" && continue
 	test -r "${d}/${b}.sed" && continue
