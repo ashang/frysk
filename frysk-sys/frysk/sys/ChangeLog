@@ -1,5 +1,13 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Poll.java (SignalSet.add (int)): Delete.
+	(SignalSet.add (Sig)): Make native.
+	* cni/Poll.cxx: Update.
+	* SigSet.java (SigSet (int[]): Delete.
+	(add (int), remove (int), contains (int)): Delete.
+	(add (Sig), remove (Sig), contains (Sig)): Make native.
+	* cni/SigSet.cxx: Update.
+
 	* Sig.shenum: Add SIGNONE - 0 - to list of signals.
 	
 	* Itimer.java (real (long), real (long, long)): Return a Sig.

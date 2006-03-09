@@ -44,6 +44,7 @@
 #include <gnu/gcj/RawDataManaged.h>
 
 #include "frysk/sys/SigSet.h"
+#include "frysk/sys/Sig.h"
 #include "frysk/sys/cni/SigSet.hxx"
 #include "frysk/sys/cni/Errno.hxx"
 
@@ -62,26 +63,26 @@ frysk::sys::SigSet::fill ()
 }
 
 frysk::sys::SigSet*
-frysk::sys::SigSet::remove (jint sigNum)
+frysk::sys::SigSet::remove (frysk::sys::Sig* sig)
 {
   sigset_t *sigset = (sigset_t*) sigSet;
-  ::sigdelset (sigset, sigNum);
+  ::sigdelset (sigset, sig->hashCode ());
   return this;
 }
 
 frysk::sys::SigSet*
-frysk::sys::SigSet::add (jint sigNum)
+frysk::sys::SigSet::add (frysk::sys::Sig* sig)
 {
   sigset_t *sigset = (sigset_t*) sigSet;
-  ::sigaddset (sigset, sigNum);
+  ::sigaddset (sigset, sig->hashCode ());
   return this;
 }
 
 jboolean
-frysk::sys::SigSet::contains (jint sigNum)
+frysk::sys::SigSet::contains (frysk::sys::Sig* sig)
 {
   sigset_t *sigset = (sigset_t*) sigSet;
-  return ::sigismember (sigset, sigNum);
+  return ::sigismember (sigset, sig->hashCode ());
 }
 
 gnu::gcj::RawDataManaged *

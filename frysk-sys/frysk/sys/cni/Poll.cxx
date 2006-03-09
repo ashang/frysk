@@ -55,6 +55,7 @@ _syscall2(int, tkill, pid_t, tid, int, sig);
 #include "frysk/sys/cni/Errno.hxx"
 #include "frysk/sys/Tid.h"
 #include "frysk/sys/Poll.h"
+#include "frysk/sys/Sig.h"
 #include "frysk/sys/Poll$Fds.h"
 #include "frysk/sys/Poll$SignalSet.h"
 #include "frysk/sys/Poll$Observer.h"
@@ -93,8 +94,9 @@ frysk::sys::Poll$SignalSet::get ()
 }
 
 void
-frysk::sys::Poll$SignalSet::add (jint signum)
+frysk::sys::Poll$SignalSet::add (frysk::sys::Sig* sig)
 {
+  int signum = sig->hashCode ();
   // Make certain that the signal is masked (this is process wide).
   sigset_t mask;
   sigemptyset (&mask);

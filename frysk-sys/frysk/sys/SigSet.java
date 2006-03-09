@@ -63,16 +63,6 @@ public final class SigSet
     /**
      * Create a SigSet containing the signals in the array.
      */
-    public SigSet (int[] sigs)
-    {
-	sigSet = newSigSet ();
-	for (int i = 0; i < sigs.length; i++) {
-	    add (sigs[i]);
-	}
-    }
-    /**
-     * Create a SigSet containing the signals in the array.
-     */
     public SigSet (Sig[] sigs)
     {
 	sigSet = newSigSet ();
@@ -91,44 +81,19 @@ public final class SigSet
     /**
      * Add sigNum to the SigSet; return this.
      */
-    public native SigSet add (int sigNum);
-    /**
-     * Add sigNum to the SigSet; return this.
-     */
-    public SigSet add (Sig sig)
-    {
-	return add (sig.hashCode ());
-    }
+    public native SigSet add (Sig sig);
     /**
      * Remove Sig from the SigSet (the underlying code uses
      * <tt>sigdelset</tt>, the name remove is more consistent with
      * java); return this.
      */
-    public native SigSet remove (int sigNum);
-    /**
-     * Remove Sig from the SigSet (the underlying code uses
-     * <tt>sigdelset</tt>, the name remove is more consistent with
-     * java); return this.
-     */
-    public SigSet remove (Sig sig)
-    {
-	return remove (sig.hashCode ());
-    }
-    /**
-     * Does this SigSet contain sigNum (the underlying code uses
-     * <tt>sigismember</tt>, the name contains is more consistent with
-     * java.
-     */
-    public native boolean contains (int sigNum);
+    public native SigSet remove (Sig sig);
     /** 
      * Does this SigSet contain sigNum (the underlying code uses
      * <tt>sigismember</tt>, the name contains is more consistent with
      * java.
      */
-    public boolean contains (Sig sig)
-    {
-	return contains (sig.hashCode ());
-    }
+    public native boolean contains (Sig sig);
 
     /**
      * Get the pending set of signals; return this
