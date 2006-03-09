@@ -1,5 +1,8 @@
 2006-03-09  Adam Jocksch  <ajocksch@redhat.com>
 
+	* InlineBuffer.java (getVariable): Now adds check for the DOMLine
+	being null since this occurs in corner cases.
+
 	* SourceWindowFactory.java (createSourceWindow): Removed debugging
 	output.
 

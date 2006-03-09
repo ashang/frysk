@@ -133,8 +133,11 @@ public class InlineBuffer extends SourceBuffer {
     public Variable getVariable(TextIter iter){
     	DOMLine line = this.scope.getData().getLine(
     			iter.getLineNumber()+this.declaration.getStartingLine());
+
+    	if(line == null)
+    		return null;
 		DOMTag tag = line.getTag(iter.getLineOffset());
-		
+
 		// No var (or no tag), do nothing
 		if(tag == null || !tag.getType().equals(DOMTagTypes.LOCAL_VAR))
 			return null;

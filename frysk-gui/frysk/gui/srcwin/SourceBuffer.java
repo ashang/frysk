@@ -292,7 +292,7 @@ public class SourceBuffer extends TextBuffer {
 
 		// clear the already found work
 		this.removeTag(FOUND_TEXT, this.getStartIter(), this.getEndIter());
-
+		
 		// Work through the whole buffer from the start
 		for (int i = this.endCurrentFind.getLineNumber(); i < this
 				.getLineCount(); i++) {
