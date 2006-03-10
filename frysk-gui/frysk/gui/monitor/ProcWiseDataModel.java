@@ -116,17 +116,17 @@ public class ProcWiseDataModel {
 				 public void run() {
 					 // get an iterator pointing to the parent
 					TreeIter parent = (TreeIter) iterHash.get(proc.getCommand());
-					System.out.println("ProcCreatedObserver.update() adding " + proc.getCommand() + " " + proc.getPid());
+//					System.out.println("ProcCreatedObserver.update() adding " + proc.getCommand() + " " + proc.getPid());
 					
 					if(parent == null){
-						System.out.println(" ProcCreatedObserver.update() first element");
+//						System.out.println(" ProcCreatedObserver.update() first element");
 						parent = treeStore.appendRow(null);
 						iterHash.put(proc.getCommand(), parent);
 						setRow(parent, proc.getCommand() + "\t" + proc.getPid(), new ProcData(proc));
 					}else{
 						TreeIter iter = treeStore.appendRow(parent);
 						if(((ProcData)treeStore.getValue(parent, objectDC)).getProc() != null){
-							System.out.println(" ProcCreatedObserver.update() second element");
+//							System.out.println(" ProcCreatedObserver.update() second element");
 							Proc oldProc = ((ProcData)treeStore.getValue(parent, objectDC)).getProc();
     						setRow(parent, proc.getCommand(), new ProcData(null));
     						setRow(iter, ""+oldProc.getPid(), new ProcData(oldProc));
@@ -148,8 +148,8 @@ public class ProcWiseDataModel {
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					TreeIter parent = (TreeIter) iterHash.get(proc.getCommand());
-					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid());
-					System.out.println("ProcDestroyedObserver.update() parent " + parent);
+//					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid());
+//					System.out.println("ProcDestroyedObserver.update() parent " + parent);
 					
 					try{
 						if(parent == null){
