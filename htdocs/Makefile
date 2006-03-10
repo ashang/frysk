@@ -1,4 +1,4 @@
-all: \
+HTML = \
 	index.html \
 	build/index.html \
 	documentation/index.html \
@@ -8,41 +8,71 @@ all: \
 	questions/index.html \
 	usecases/index.html \
 	workflow/index.html
+all: $(HTML:.html=.new)
 .PHONY: all
 
 clean:
 	rm -f *.new */*.new
-	rm -f *.old */*.old
 .PHONY: clean
 
-REBUILD = @\
-	test -r $@.old || cp $@ $@.old ; \
-	rm -f $@.new ; \
-	echo "Verfying $@.old:" ; \
+BUILD_NEW = @\
+	h=`dirname $@`/`basename $@ .new`.html ; \
+	rm -f $@.tmp ; \
+	echo "Verfying $$h:" ; \
+	ok=: ; \
 	for b in title logo text ; do \
 	  for a in start end ; do \
-	    if grep -e "-- $$a $$b --" $@.old ; then \
+	    if grep -e "-- $$a $$b --" $$h ; then \
 	      : ; \
 	    else \
-	      echo "$@.old: missing -- $$a $$b --" ; \
-	      exit 1 ; \
+	      echo "$$h: missing -- $$a $$b --" ; \
+	      ok=false ; \
 	    fi ; \
 	  done ; \
 	done ; \
-	echo "Building $@.new:" ; \
+	$$ok ; \
+	case `dirname $@` in \
+	  . ) dots= ;; \
+	  * ) dots=../ ;; \
+	esac ; \
+	echo "Building $@:" ; \
 	( \
-	  sed -n '1,/-- start title --/ p' template.html ; \
-	  sed -e '1,/-- start title --/ d' -e '/-- end title --/,$$ d' $@.old ; \
-	  sed -n '/-- end title --/,/-- start logo --/ p' template.html ; \
-	  sed -e '1,/-- start logo --/ d' -e '/-- end logo --/,$$ d' $@.old ; \
-	  sed -n '/-- end logo --/,/-- start text --/ p' template.html ; \
-	  sed -e '1,/-- start text --/ d' -e '/-- end text --/,$$ d' $@.old ; \
-	  sed -n '/-- end text --/,$$ p' template.html ; \
-	) > $@.new ; \
-	cp $@.new $@ ; \
-	:
+	  dotdot=.. ; \
+	  sed -e '/<title>/,$$ d' template.html ; \
+	  sed -n -e '/<title>/ p' $$h ; \
+	  sed -e '1,/<\/title>/ d' -e '/-- start title --/,$$ d' template.html ; \
+	  sed -n -e '/-- start title --/,/-- end title --/ p' $$h ; \
+	  sed -e '1,/-- end title --/ d' -e '/-- start logo --/,$$ d' template.html ; \
+	  sed -n -e '/-- start logo --/,/-- end logo --/ p' $$h ; \
+	  sed -e '1,/-- end logo --/ d' -e '/-- start text --/,$$ d' template.html ; \
+	  sed -n -e '/-- start text --/,/-- end text --/ p' $$h ; \
+	  sed -e '1,/-- end text --/ d' template.html ; \
+	) | sed -e 's,="./,="'$$dots',' \
+	> $@.tmp ; \
+	mv $@.tmp $@
 
-index.html: template.html Makefile
-	$(REBUILD)
-%/index.html: template.html Makefile
-	$(REBUILD)
+index.new: template.html Makefile
+	$(BUILD_NEW)
+%/index.new: template.html Makefile
+	$(BUILD_NEW)
+
+diff compare: $(HTML:.html=.new)
+	for f in $(HTML) ; do \
+	  new=`dirname $$f`/`basename $$f .html`.new ; \
+	  echo $$f ; \
+	  diff -u $$new $$f || : ; \
+	done
+.PHONY: diff compare
+
+emacs:
+	for f in $(HTML) ; do \
+	  echo $$f ; \
+	  emacs $$f ; \
+	done
+
+install: $(HTML:.html=.new)
+	for f in $(HTML) ; do \
+	  new=`dirname $$f`/`basename $$f .html`.new ; \
+	  cp $$new $$f ; \
+	done
+.PHONY: install
