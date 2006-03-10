@@ -52,7 +52,6 @@ import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
-import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeStore;
 import org.gnu.pango.Weight;
 
@@ -66,28 +65,19 @@ public class ProcDataModel {
 	
 	private TreeStore treeStore;
 	
-	private TreeModelFilter filteredStore;
 	
 	DataColumn[] columns;
 	
 	private DataColumnInt    pidDC;
 	private DataColumnString commandDC;
 	private DataColumnString colorDC;
-	private DataColumnBoolean visibleDC;
 	private DataColumnObject procDataDC;
 	private DataColumnInt weightDC;
 	private DataColumnInt threadParentDC;
-	private DataColumnBoolean hasParentDC;
+	private DataColumnBoolean isThreadDC;
 	
 	private HashMap iterHash;
 	
-	private int currentFilter;
-	
-	/** stores filter argument if it is of type int */ 
-	private int intFilterArgument;
-	/** stores filter argument if it is of type String */
-	private String stringFilterArgument;
-
 	private boolean filterON;
 			
 	private TimerEvent refreshTimer;
@@ -108,34 +98,22 @@ public class ProcDataModel {
 		this.pidDC     = new DataColumnInt();
 		this.commandDC = new DataColumnString();
 		this.colorDC   = new DataColumnString();
-		this.visibleDC = new DataColumnBoolean();
 		this.procDataDC= new DataColumnObject();
 		this.weightDC = new DataColumnInt();
-		this.hasParentDC = new DataColumnBoolean();
+		this.isThreadDC = new DataColumnBoolean();
 		this.threadParentDC = new DataColumnInt();
 		
-		columns = new DataColumn[8];
-		columns[0] = this.getPidDC(); 
-		columns[1] = this.getCommandDC(); 
-		columns[2] = this.getColorDC(); 
-		columns[3] = this.visibleDC;
-		columns[4] = this.procDataDC;
-		columns[5] = this.weightDC;
-		columns[6] = this.threadParentDC;
-		columns[7] = this.hasParentDC;
-		
-		this.treeStore = new TreeStore(columns);
-		
-		this.filteredStore = new TreeModelFilter(this.treeStore);
-		
-		//this.filteredStore.setVisibleMethod(this);
-		this.filteredStore.setVisibleColumn(visibleDC);
+		this.treeStore = new TreeStore(new DataColumn[]{pidDC,
+				commandDC,
+				colorDC,
+				procDataDC,
+				weightDC,
+				threadParentDC,
+				isThreadDC});
 		
 		// Change to HashMap from HashTable
 		this.iterHash = new HashMap();
 	
-		this.currentFilter = FilterType.NONE;
-		
 		this.filterON = true;
 
 		this.refreshTimer = new TimerEvent(0, 5000){
@@ -178,52 +156,10 @@ public class ProcDataModel {
 		Manager.host.requestRefreshXXX (true);
 	}
 
-	/**
-	 * Shows only processes that match the given argument
-	 * @param type the type of the desired filter, must be one 
-	 *        of PsParser.FilterType
-	 * @param argument the criteria that must be matched 	
-	 * */
-	public void setFilter(int type, int argument){
-		try {
-			this.setFilterType(type);
-		} catch (Exception e) {
-			errorLog.log(Level.WARNING,"Cannot set filter",e); //$NON-NLS-1$
-		}
-		this.intFilterArgument = argument;
-	}
-
-	/**
-	 * Shows only processes that match the given argument
-	 * @param type the type of the desired filter, must be one 
-	 *        of PsParser.FilterType
-	 * @param argument the criteria that must be matched 
-	 * */
-	public void setFilter(int type, String argument){
-		try {
-			this.setFilterType(type);
-		} catch (Exception e) {
-			errorLog.log(Level.WARNING,"Cannot set filter",e); //$NON-NLS-1$
-		}
-		this.stringFilterArgument = argument;
-	}
 	
 
-	/**
-	 * check the give type and sets the current filter type to it
-	 * @param type the type of the desired filter, must be one 
-	 *        of PsParser.FilterType
-	 * */
-	private void setFilterType(int type) throws Exception{
-		if( type != FilterType.NONE &&
-			type != FilterType.PID &&
-			type != FilterType.UID &&
-			type != FilterType.COMMAND) {
-				errorLog.log(Level.WARNING,"Thrown exception Invalid FilterType"); //$NON-NLS-1$
-				throw(new Exception("Invalid FilterType argument")); //$NON-NLS-1$
-		}
-		this.currentFilter = type;
-	}
+	
+
 	
 	public DataColumnInt getPidDC() {
 		return this.pidDC;
@@ -250,7 +186,7 @@ public class ProcDataModel {
 	}
 	
 	public DataColumnBoolean getHasParentDC() {
-		return this.hasParentDC;
+		return this.isThreadDC;
 	}
 
 	public TreeModel getModel() {
@@ -258,86 +194,7 @@ public class ProcDataModel {
 		return this.treeStore;
 	}
 	
-	/**
-	 * Called to filter entries in the treeStore
-	 * starts at the parent and goes down to the child
-	 * @see bottomUpFilter
-	 * */
-	public boolean topDownFilter(TreeModel model, TreeIter iter) {
-		if(!this.treeStore.isIterValid(iter)){
-			return false;
-		}
-		
-		if(iter.getHasChild()){
-			boolean parentSafe = false;
-			for(int i =0; i < iter.getChildCount(); i++){
-				if(this.topDownFilter(model, iter.getChild(i))){ 
-					parentSafe = true;
-				}
-			}
-			treeStore.setValue(iter, visibleDC, parentSafe);
-			return parentSafe;
-		}
-		
-		if(!filterON){ 
-			treeStore.setValue(iter, visibleDC, true);
-			return true;
-		}
-		
-		int pid         = model.getValue(iter, this.pidDC);
-		String command  = model.getValue(iter, this.commandDC);
-		
-		if(currentFilter == FilterType.PID && pid != intFilterArgument ){
-			treeStore.setValue(iter, visibleDC, false);
-			return false;
-		}
-		
-		if(currentFilter == FilterType.COMMAND && !command.equals(stringFilterArgument)) {
-			treeStore.setValue(iter, visibleDC, false);
-			return false;
-		}
-		
-		treeStore.setValue(iter, visibleDC, true);
-		return true;
-	}
-	
-	/**
-	 * called to refilter an entry
-	 * if a node is found to be visible it sents the parents to
-	 * be visible as well.
-	 * more efficient than topDownFilter when just one entry has
-	 * been added.
-	 * @see topDownFilter
-	 * */
-	public boolean bottomUpFilter(TreeModel model, TreeIter iter) {
-		boolean result = true;
-		
-		if(filterON){ 
 
-			int pid         = model.getValue(iter, this.pidDC);
-			String command  = model.getValue(iter, this.commandDC);
-			
-			if(currentFilter == FilterType.PID && pid != intFilterArgument ){
-				result = false;
-			}
-
-			if(currentFilter == FilterType.COMMAND && !command.equals(stringFilterArgument)) {
-				result = false;
-			}
-		}
-		
-		treeStore.setValue(iter, visibleDC, result);
-		
-		if(result){
-			TreeIter parent = iter.getParent();
-			while(this.treeStore.isIterValid(parent)){
-				treeStore.setValue(parent, visibleDC, true);
-				parent = parent.getParent();
-			}
-		}
-		return result;
-	}
-	
 	public void setFilterON(boolean filterON) {
 		this.filterON = filterON;
 //		this.refilter();
@@ -385,7 +242,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, pidDC, proc.getPid());
 					treeStore.setValue(iter, procDataDC, (new ProcData(proc)));
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
-					treeStore.setValue(iter, hasParentDC, false);
+					treeStore.setValue(iter, isThreadDC, false);
 						
 					//treeStore.setValue(iter,threadParentDC, -1);
 
@@ -398,30 +255,34 @@ public class ProcDataModel {
 	class ProcDestroyedObserver implements Observer{
 		public void update(Observable o, Object obj) {
 			final Proc proc = (Proc)obj;
+			System.out.println("+ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid());
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
-					//System.out.println(this+": ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
+					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
 					
-					try{
+//					try{
 						if(iter == null){
+							System.out.println("ProcDestroyedObserver.update() iter is null !" );
 							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
 						if(iter != null){
-							int n = iter.getChildCount();
-							for (int i = 0; i < n; i++) {
-								if(treeStore.getValue(iter, hasParentDC) == false){
-									reparent(treeStore.getIter("0"), iter.getChild(i));
-								}
-							}
+//							int n = iter.getChildCount();
+//							System.out.println("ProcDestroyedObserver.update() iter not null checking children" );
+//							for (int i = 0; i < n; i++) {
+//								if(treeStore.getValue(iter, isThreadDC) == false){
+//									System.out.println(" ProcDestroyedObserver.update() found nonthread child" );
+//									reparent(treeStore.getIter("0"), iter.getChild(i));
+//								}
+//							}
 							
 							treeStore.removeRow(iter);
 							iterHash.remove(proc.getId());
 						}
-					}catch (NullPointerException e) {
-						errorLog.log(Level.WARNING,"proc " + proc + "Not found in TreeIter HasTable. Cannot be removed",e); //$NON-NLS-1$ //$NON-NLS-2$
-					}
+//					}catch (NullPointerException e) {
+//						errorLog.log(Level.WARNING,"proc " + proc + "Not found in TreeIter HasTable. Cannot be removed",e); //$NON-NLS-1$ //$NON-NLS-2$
+//					}
 
 				}
 			});
@@ -456,7 +317,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, pidDC, task.getTid());
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
-					treeStore.setValue(iter, hasParentDC, true);
+					treeStore.setValue(iter, isThreadDC, true);
 						
 					treeStore.setValue(iter, procDataDC, (new TaskData(task)));
 					
@@ -471,10 +332,30 @@ public class ProcDataModel {
 				public void run() {
 					final Task task = (Task) obj;
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
-					//System.out.println(this+": TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
+					System.out.println(" TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
 					try{
 						if(iter == null){
 							throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						
+						// check if this is the main task (proc is zombied or killed)
+						if(task.getTid() == task.getProc().getPid()){
+							// reparent children
+							TreeIter procIter = (TreeIter) iterHash.get(task.getProc().getId());
+							System.out.println(" TaskDestroyedObserver.update() task " + task.getTid() + " was found to be the main task so trying to reparent children of proc");
+							System.out.println(" TaskDestroyedObserver.update() iter retrieved for proc is " + procIter);
+							if(procIter == null){
+								throw new RuntimeException("Something strange has happened:\n" +
+										"  proc " + task.getProc() + "is thought to be dead or zombied since\n" +
+												"  its main task is being removed, but the iter retrieved for that\n" +
+												"  proc was null... so i am just a really talkative NullPointException");
+							}
+							int n = procIter.getChildCount();
+							for (int i = 0; i < n; i++) {
+								if(treeStore.getValue(procIter.getChild(i), isThreadDC) == false){
+									reparent(treeStore.getIter("0"), procIter.getChild(i));
+								}
+							}
 						}
 						treeStore.removeRow(iter);
 						iterHash.remove(task.getTaskId());
@@ -487,8 +368,8 @@ public class ProcDataModel {
     }
     
     private void reparent(TreeIter newParent, TreeIter child){
-    		//System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
-    		TreeIter to = this.treeStore.insertRow(newParent, 0);
+    		System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
+    		TreeIter to = this.treeStore.appendRow(newParent);//insertRow(newParent, 0);
     		copyRow(to, child);
     		
     		int n = child.getChildCount();
@@ -501,6 +382,7 @@ public class ProcDataModel {
 
     private void copyRow(TreeIter to, TreeIter from){
     		// switch iters in hash
+    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
     		Object data = treeStore.getValue(from, procDataDC);
     		if(data instanceof ProcData){
     			ProcData procData = (ProcData)data;
@@ -530,11 +412,12 @@ public class ProcDataModel {
     			iterHash.put(taskData.getTask().getTaskId(), to);
     		}
     		
+    		treeStore.setValue(to, pidDC,          treeStore.getValue(from, pidDC));
     		treeStore.setValue(to, commandDC,      treeStore.getValue(from, commandDC));
-		treeStore.setValue(to, pidDC,          treeStore.getValue(from, pidDC));
-		treeStore.setValue(to, procDataDC,     treeStore.getValue(from, procDataDC));
-		treeStore.setValue(to, weightDC,       treeStore.getValue(from, weightDC));
-		treeStore.setValue(to, threadParentDC, treeStore.getValue(from, threadParentDC));
-		treeStore.setValue(to, hasParentDC, treeStore.getValue(from,hasParentDC));
+    		treeStore.setValue(to, procDataDC,     treeStore.getValue(from, procDataDC));
+    		treeStore.setValue(to, weightDC,       treeStore.getValue(from, weightDC));
+    		treeStore.setValue(to, threadParentDC, treeStore.getValue(from, threadParentDC));
+    		treeStore.setValue(to, isThreadDC,    treeStore.getValue(from,isThreadDC));
+    		
     }
 }
