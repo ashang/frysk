@@ -414,7 +414,7 @@ public class TestEventLoop
 			new SleepThread ().start ();
 		    }
 		});
-	    Signal.tkill (eventTid, Sig._CHLD);
+	    Signal.tkill (eventTid, Sig.CHLD);
 	}
     }
     /**

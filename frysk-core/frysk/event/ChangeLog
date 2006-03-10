@@ -1,5 +1,8 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestEventLoop.java: Update calls to Signal.tkill, int signum arg
+	replaced with Sig arg.
+
 	* EventLoop.java (pollObserver): Update Poll.Observer.signal, now
 	takes a Sig.
 	(processSignal): Simplify.

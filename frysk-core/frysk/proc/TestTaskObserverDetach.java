@@ -75,7 +75,7 @@ public class TestTaskObserverDetach
 	}
 	abstract void requestAdd (Task task);
 	abstract void requestDelete (Task task);
-	abstract int signal ();
+	abstract Sig signal ();
 	/**
 	 * Cause an unexpected event to occure while a task is
 	 * detaching.
@@ -162,9 +162,9 @@ public class TestTaskObserverDetach
 		fail ("forked");
 		return null;
 	    }
-	    int signal ()
+	    Sig signal ()
 	    {
-		return AckProcess.addForkSig;
+		return addForkSig;
 	    }
 	}
 	new DetachFork ();
@@ -196,9 +196,9 @@ public class TestTaskObserverDetach
 		fail ("cloned");
 		return null;
 	    }
-	    int signal ()
+	    Sig signal ()
 	    {
-		return AckProcess.addCloneSig;
+		return addCloneSig;
 	    }
 	}
 	new DetachClone ();
@@ -230,9 +230,9 @@ public class TestTaskObserverDetach
 		fail ("execed");
 		return null;
 	    }
-	    int signal ()
+	    Sig signal ()
 	    {
-		return AckProcess.execSig;
+		return execSig;
 	    }
 	}
 	new DetachExec ();
@@ -258,9 +258,9 @@ public class TestTaskObserverDetach
 	    void requestDelete (Task task)
 	    {
 	    }
-	    int signal ()
+	    Sig signal ()
 	    {
-		return Sig._TERM;
+		return Sig.TERM;
 	    }
 	};
     }

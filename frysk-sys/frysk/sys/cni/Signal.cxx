@@ -45,20 +45,23 @@
 #include <gcj/cni.h>
 
 #include "frysk/sys/Signal.h"
+#include "frysk/sys/Sig.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 void
-frysk::sys::Signal::tkill (jint tid, jint sig)
+frysk::sys::Signal::tkill (jint tid, frysk::sys::Sig* sig)
 {
+  int signum = sig->hashCode ();
   errno = 0;
-  if (::syscall (__NR_tkill, tid, sig) < 0)
+  if (::syscall (__NR_tkill, tid, signum) < 0)
     throwErrno (errno, "tkill", "task", tid);
 }
 
 void
-frysk::sys::Signal::kill (jint pid, jint sig)
+frysk::sys::Signal::kill (jint pid, frysk::sys::Sig* sig)
 {
+  int signum = sig->hashCode ();
   errno = 0;
-  if (::kill (pid, sig) < 0)
+  if (::kill (pid, signum) < 0)
     throwErrno (errno, "kill", "process", pid);
 }

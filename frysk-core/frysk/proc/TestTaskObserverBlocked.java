@@ -202,9 +202,9 @@ public class TestTaskObserverBlocked
 	    assertRunUntilStop ("allow child to attach");
 	    assertSame ("observer state", CHILD_ATTACHED, state);
 	    
-	    AckHandler childAck = new AckHandler (AckProcess.childAck);
+	    AckHandler ack = new AckHandler (childAck);
 	    child.requestUnblock (this);
-	    childAck.await ();
+	    ack.await ();
 	}
 	/**
 	 * Unblock the parent, then confirm that it is running
@@ -212,9 +212,9 @@ public class TestTaskObserverBlocked
 	 */
 	public void assertParentUnblocked ()
 	{
-	    AckHandler parentAck = new AckHandler (AckProcess.parentAck);
+	    AckHandler ack = new AckHandler (parentAck);
 	    parent.requestUnblock (this);
-	    parentAck.await ();
+	    ack.await ();
 	}
 	abstract void requestSpawn (AckProcess proc);
 	abstract void requestAddSpawnObserver (Task task);
@@ -228,7 +228,7 @@ public class TestTaskObserverBlocked
     {
 	void requestSpawn (AckProcess child)
 	{
-	    child.signal (AckProcess.addCloneSig);
+	    child.signal (addCloneSig);
 	}
 	void requestAddSpawnObserver (Task task)
 	{
@@ -275,7 +275,7 @@ public class TestTaskObserverBlocked
     {
 	void requestSpawn (AckProcess child)
 	{
-	    child.signal (AckProcess.addForkSig);
+	    child.signal (addForkSig);
 	}
 	void requestAddSpawnObserver (Task task)
 	{

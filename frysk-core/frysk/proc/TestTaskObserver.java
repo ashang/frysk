@@ -385,7 +385,7 @@ public class TestTaskObserver
 	    Child c = child;
 	    public void addedTo (Object o)
 	    {
-		c.signal (Sig._TERM);
+		c.signal (Sig.TERM);
 	    }
 	    public Action updateTerminating (Task task, boolean signal,
 					     int val)
@@ -569,11 +569,11 @@ public class TestTaskObserver
      */
     public void testAttachDetachRapidlyCloningMainTask ()
     {
-	Child child = new AckDaemonProcess (AckHandler.signal, new String[]
+	Child child = new AckDaemonProcess (ackSignal, new String[]
 	    {
 		getExecPrefix () + "funit-threads",
 		Integer.toString (Pid.get ()),
-		Integer.toString (AckHandler.signal),
+		Integer.toString (ackSignal.hashCode ()),
 		"5", // Seconds
 		"100" // Tasks
 	    });

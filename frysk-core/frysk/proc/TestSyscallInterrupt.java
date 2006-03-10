@@ -77,7 +77,7 @@ public class TestSyscallInterrupt
 	    this (new String[] {
 		      getExecPrefix () + "funit-syscallint",
 		      Integer.toString (Pid.get ()),
-		      Integer.toString (AckHandler.signal),
+		      Integer.toString (ackSignal.hashCode ()),
 		      Integer.toString (restart ? 1 : 0)
 		  });
 	}

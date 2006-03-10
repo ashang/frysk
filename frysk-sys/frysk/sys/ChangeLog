@@ -1,5 +1,9 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Signal.java (kill (int, int), tkill (int, int)): Delete.
+	(kill (int, Sig), tkill (int, Sig)): Make native.
+	* cni/Signal.cxx: Update.
+	
 	* Poll.java (Observer.signal (Sig)): Replace Observer.signal (int).
 	* cni/Poll.cxx (poll): Pass a Sig to Observer.signal.
 	

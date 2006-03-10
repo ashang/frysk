@@ -170,24 +170,16 @@ public class TestLib
      */
     protected class AckHandler
     {
-	AckHandler (int sig)
+	AckHandler (Sig sig)
 	{
-	    this (new int[] { sig });
-	}
-	// NOTE: Use a different signal to thread add/del.  Within
-	// this process the signal is masked and Linux appears to
-	// propogate the mask all the way down to the exec'ed child.
-	protected final static int signal = Sig._HUP;
-	AckHandler ()
-	{
-	    this (signal);
+	    this (new Sig[] { sig });
 	}
 	private int acksRemaining;
-	AckHandler (int[] sigs)
+	AckHandler (Sig[] sigs)
 	{
 	    acksRemaining = sigs.length;
 	    for (int i = 0; i < sigs.length; i++) {
-		Sig sig = Sig.valueOf (sigs[i]);
+		Sig sig = sigs[i];
 		Manager.eventLoop.add (new SignalEvent (sig) {
 			public void execute ()
 			{
@@ -205,6 +197,20 @@ public class TestLib
 	    }
 	}
     }
+
+    // NOTE: Use a different signal to thread add/del.  Within this
+    // process the signal is masked and Linux appears to propogate the
+    // mask all the way down to the exec'ed child.
+    protected final Sig ackSignal = Sig.HUP;
+    protected final Sig childAck = Sig.USR1;
+    protected final Sig parentAck = Sig.USR2;
+    protected final Sig addCloneSig = Sig.USR1;
+    protected final Sig delCloneSig = Sig.USR2;
+    protected final Sig addForkSig = Sig.HUP;
+    protected final Sig delForkSig = Sig.INT;
+    protected final Sig zombieForkSig = Sig.URG;
+    protected final Sig execSig = Sig.PWR;
+    protected final Sig execCloneSig = Sig.FPE;
 
     /**
      * Manage a child process.
@@ -235,7 +241,7 @@ public class TestLib
 	/**
 	 * Send the child the sig.
 	 */
-	public void signal (int sig)
+	public void signal (Sig sig)
 	{
 	    Signal.tkill (pid, sig);
 	}
@@ -248,7 +254,7 @@ public class TestLib
 	 * Create a child process (using startChild), return once the
 	 * process is running.  Wait for acknowledge SIG.
 	 */
-	protected Child (int sig, String[] argv)
+	protected Child (Sig sig, String[] argv)
 	{
 	    AckHandler ack = new AckHandler (sig);
 	    this.argv = argv;
@@ -262,7 +268,7 @@ public class TestLib
 	 */
 	protected Child (String[] argv)
 	{
-	    this (AckHandler.signal, argv);
+	    this (ackSignal, argv);
 	}
 	/**
 	 * Attempt to kill the child.  Return false if the child
@@ -271,7 +277,7 @@ public class TestLib
 	boolean kill ()
 	{
 	    try {
-		signal (Sig._KILL);
+		signal (Sig.KILL);
 		return true;
 	    }
 	    catch (Errno.Esrch e) {
@@ -327,18 +333,9 @@ public class TestLib
     protected abstract class AckProcess
 	extends Child
     {
-	static final int childAck = Sig._USR1;
-	static final int parentAck = Sig._USR2;
-	static final int addCloneSig = Sig._USR1;
-	static final int delCloneSig = Sig._USR2;
-	static final int addForkSig = Sig._HUP;
-	static final int delForkSig = Sig._INT;
-	static final int zombieForkSig = Sig._URG;
-	static final int execSig = Sig._PWR;
-	static final int execCloneSig = Sig._FPE;
 	static final String sleepTime = "10";
 
-	private AckProcess (int ack, String[] argv)
+	private AckProcess (Sig ack, String[] argv)
 	{
 	    super (ack, argv);
 	}
@@ -405,9 +402,9 @@ public class TestLib
 		addClone ();
 	}
 	/** . */
-	private void spawn (int sig)
+	private void spawn (Sig sig)
 	{
-	    AckHandler ack = new AckHandler (new int[]
+	    AckHandler ack = new AckHandler (new Sig[]
 		{
 		    childAck, parentAck
 		});
@@ -452,7 +449,7 @@ public class TestLib
 	void fryParent ()
 	{
 	    AckHandler ack = new AckHandler (childAck);
-	    signal (Sig._KILL);
+	    signal (Sig.KILL);
 	    ack.await ();
 	}
 	/**
@@ -481,7 +478,7 @@ public class TestLib
 	{
 	    // First the main thread acks with .parentAck, and then
 	    // the execed process acks with .childAck.
-	    AckHandler ack = new AckHandler (new int[] { parentAck,
+	    AckHandler ack = new AckHandler (new Sig[] { parentAck,
 							 childAck });
 	    signal (execCloneSig);
 	    ack.await ();
@@ -506,7 +503,7 @@ public class TestLib
 	{
 	    return Fork.daemon (stdin, stdout, stderr, argv);
 	}
-	AckDaemonProcess (int ack, String[] argv)
+	AckDaemonProcess (Sig ack, String[] argv)
 	{
 	    super (ack, argv);
 	}

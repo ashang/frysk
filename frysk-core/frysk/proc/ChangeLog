@@ -1,5 +1,14 @@
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java: Use Sig, instead of int for signals.
+	(ackSignal, childAck, parentAck, addCloneSig)
+	(delCloneSig, addForkSig, delForkSig, zombieForkSig, execSig)
+	(execCloneSig): Move to global scope.
+	* TestTaskObserverDetach.java: Update.
+	* TestTaskObserver.java: Update.
+	* TestTaskObserverBlocked.java: Update.
+	* TestSyscallInterrupt.java: Update.
+
 	* TestLib.java (tearDown): Update Poll.Oboserver.signal, now takes
 	a Sig parameter.
 	
