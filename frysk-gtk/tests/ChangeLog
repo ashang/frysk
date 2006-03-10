@@ -1,3 +1,11 @@
+2006-03-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glibtimer/TestGlibTimerGC.java: New. Added XFAIL that tests
+	http://sourceware.org/bugzilla/show_bug.cgi?id=2333
+	as an expected fail on RHEL4-U3	
+	* glibtimer/.cvsignore: New.
+	* Makefile.am: Added glibtimer rules.
+
 2006-02-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (gcjtreeiter/gij.sh): Create gcjtreeiter directory
