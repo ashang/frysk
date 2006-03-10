@@ -1,5 +1,13 @@
 2006-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ProcDataModel.java : added setting of threadParentDC to -1
+	when not applicable, this may have been causing a NPE.
+	Removed all filter related code. 
+	* ProgramAddWindow.java: Removed all filter related code. 
+	* ProcViewPage.java: Ditto.
+
+2006-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* ProcWiseDataModel.java : Corrected proc removal senarios
 	possible fix for frysk bz 2440. 
 	* ProcDataModel.java: Cleaned up reparenting code.

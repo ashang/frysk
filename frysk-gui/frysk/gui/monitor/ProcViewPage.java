@@ -129,7 +129,6 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		
 		this.psDataModel = new ProcDataModel();
-		psDataModel.setFilterON(true);
 		
 		this.mountProcModel(this.psDataModel);
 		this.threadViewInit(psDataModel);

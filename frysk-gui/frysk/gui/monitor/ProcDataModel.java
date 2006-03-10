@@ -78,8 +78,6 @@ public class ProcDataModel {
 	
 	private HashMap iterHash;
 	
-	private boolean filterON;
-			
 	private TimerEvent refreshTimer;
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
@@ -114,8 +112,6 @@ public class ProcDataModel {
 		// Change to HashMap from HashTable
 		this.iterHash = new HashMap();
 	
-		this.filterON = true;
-
 		this.refreshTimer = new TimerEvent(0, 5000){
 			public void execute() {
 				Manager.host.requestRefreshXXX (true);
@@ -190,26 +186,11 @@ public class ProcDataModel {
 	}
 
 	public TreeModel getModel() {
-//		XXX: filtering should be part of the view not model		return this.filteredStore;
 		return this.treeStore;
 	}
 	
 
-	public void setFilterON(boolean filterON) {
-		this.filterON = filterON;
-//		this.refilter();
-	}
 
-	public boolean isFilterON() {
-		return filterON;
-	}
-
-	public class FilterType{
-		public static final int NONE = 0;
-		public static final int UID = 1;
-		public static final int PID = 2;
-		public static final int COMMAND = 3;
-	}
 	
 	class ProcCreatedObserver implements Observer{
     	public void update (Observable o, Object obj){
@@ -244,7 +225,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, isThreadDC, false);
 						
-					//treeStore.setValue(iter,threadParentDC, -1);
+					treeStore.setValue(iter,threadParentDC, -1);
 
 				 }
 			});
@@ -255,24 +236,23 @@ public class ProcDataModel {
 	class ProcDestroyedObserver implements Observer{
 		public void update(Observable o, Object obj) {
 			final Proc proc = (Proc)obj;
-//			System.out.println("+ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid());
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
-//					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
+					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
 					
 //					try{
 						if(iter == null){
-//							System.out.println("ProcDestroyedObserver.update() iter is null !" );
+							System.out.println("ProcDestroyedObserver.update() iter is null !" );
 							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
 						if(iter != null){
 							int n = iter.getChildCount();
-//							System.out.println("ProcDestroyedObserver.update() iter not null checking children" );
+							System.out.println("ProcDestroyedObserver.update() iter not null checking children n: " + n );
 							for (int i = 0; i < n; i++) {
 								if(treeStore.getValue(iter.getChild(i), isThreadDC) == false){
-//									System.out.println(" ProcDestroyedObserver.update() found nonthread child" );
+									System.out.println(" ProcDestroyedObserver.update() found nonthread child" );
 									reparent(treeStore.getIter("0"), iter.getChild(i));
 								}
 							}
@@ -332,7 +312,7 @@ public class ProcDataModel {
 				public void run() {
 					final Task task = (Task) obj;
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
-//					System.out.println(" TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
+					System.out.println(" TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
 					try{
 						if(iter == null){
 							throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -349,7 +329,7 @@ public class ProcDataModel {
     }
     
     private void reparent(TreeIter newParent, TreeIter child){
-//    		System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
+    		System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
     		TreeIter to = this.treeStore.appendRow(newParent);//insertRow(newParent, 0);
     		copyRow(to, child);
     		
@@ -363,7 +343,7 @@ public class ProcDataModel {
 
     private void copyRow(TreeIter to, TreeIter from){
     		// switch iters in hash
-//    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
+    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
     		Object data = treeStore.getValue(from, procDataDC);
     		if(data instanceof ProcData){
     			ProcData procData = (ProcData)data;

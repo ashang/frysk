@@ -360,7 +360,6 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 			errorLog.log(Level.SEVERE,
 					"Error setting data model in program tree view ", e); //$NON-NLS-1$
 		}
-		psDataModel.setFilterON(true);
 	}
 
 	private void setTreeListeners() {
