@@ -16,7 +16,13 @@ clean:
 .PHONY: clean
 
 BUILD_NEW = @\
-	h=`dirname $@`/`basename $@ .new`.html ; \
+	d=`dirname ./$@` ; \
+	case $$d in \
+	  . ) dots= ; ;; \
+	  * ) dots=../ ;; \
+	esac ; \
+	b=`basename $@ .new` ; \
+	h=$$d/$$b.html ; \
 	rm -f $@.tmp ; \
 	echo "Verfying $$h:" ; \
 	ok=: ; \
@@ -31,10 +37,6 @@ BUILD_NEW = @\
 	  done ; \
 	done ; \
 	$$ok ; \
-	case `dirname $@` in \
-	  . ) dots= ;; \
-	  * ) dots=../ ;; \
-	esac ; \
 	echo "Building $@:" ; \
 	( \
 	  dotdot=.. ; \
@@ -47,7 +49,10 @@ BUILD_NEW = @\
 	  sed -e '1,/-- end logo --/ d' -e '/-- start text --/,$$ d' template.html ; \
 	  sed -n -e '/-- start text --/,/-- end text --/ p' $$h ; \
 	  sed -e '1,/-- end text --/ d' template.html ; \
-	) | sed -e 's,="./,="'$$dots',' \
+	) | sed \
+		-e 's,<a.*="'$$d'/index.html">\(.*\)</a>,\1,' \
+		-e 's,="./\(.*\)index.html",="'$$dots'\1",' \
+		-e 's,="./,="'$$dots',' \
 	> $@.tmp ; \
 	mv $@.tmp $@
 
@@ -60,7 +65,7 @@ diff compare: $(HTML:.html=.new)
 	for f in $(HTML) ; do \
 	  new=`dirname $$f`/`basename $$f .html`.new ; \
 	  echo $$f ; \
-	  diff -u $$new $$f || : ; \
+	  diff -u $$f $$new || : ; \
 	done
 .PHONY: diff compare
 
