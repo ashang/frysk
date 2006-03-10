@@ -10,33 +10,50 @@
 <body>
 
 <table cellspacing="2" cellpadding="2" border="0" width="100%">
-<tr>
-    <td valign="bottom" height="80"><img src="../frysklogo.png" alt="Frysk logo"></td>
-    <td valign="bottom" class="topnavright" align="right"><a href="../">Overview</a>&nbsp;|&nbsp;<a href="../usecases/">Use Cases</a>&nbsp;|&nbsp;<a href="../questions/">Questions</a>&nbsp;|&nbsp;<a href="../getinvolved/">Get Involved</a>&nbsp;|&nbsp;<a href="../documentation/">Documentation</a>&nbsp;|&nbsp;<a href="../links/">Links</a></td>
-</tr>
+  <tr>
+    <td valign="bottom" height="80">
+      <img src="../frysklogo.png" alt="Frysk logo">
+    </td>
+    <td valign="bottom" class="topnavright" align="right">
+      <a href="../">Overview</a>
+      &nbsp;|&nbsp;
+      <a href="../usecases/">Use Cases</a>
+      &nbsp;|&nbsp;
+      <a href="../questions/">Questions</a>
+      &nbsp;|&nbsp;
+      <a href="../getinvolved/">Get Involved</a>
+      &nbsp;|&nbsp;
+      <a href="../documentation/">Documentation</a>
+      &nbsp;|&nbsp;
+      <a href="../links/">Links</a>
+    </td>
+  </tr>
 </table>
-<div class="mainbackground">
-<div class="maintextregion"><img src="../fryskcorner.gif">
-<table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17;">
-<tr>
-    <td width="200">&nbsp;</td>
-    <td valign="bottom"><h1>Building <em>frysk</em> From Source</h1></td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td valign="top">
 
-<p>
-This page provides guidelines for building <em>frysk</em>, checked out
-from CVS, on a number of systems.
-</p>
+<div class="mainbackground">
+  <div class="maintextregion"><img src="../fryskcorner.gif">
+    <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17;">
+      <tr>
+        <td width="200">
+          &nbsp;
+        </td>
+      <td valign="bottom">
+        <h1>Building <em>frysk</em> From Source</h1>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        &nbsp;
+      </td>
+      <td valign="top">
+
+<p>This page provides guidelines for building <em>frysk</em>, checked
+out from CVS, on a number of systems.</p>
 
 <h2>Set up your system's build environment</h2>
 
-<p>
-First you will need to set up your system's build environment so that
-all its prerequisites are met.
-</p>
+<p>First you will need to set up your system's build environment so
+that all its prerequisites are met.</p>
 
 <dl>
 
@@ -47,13 +64,12 @@ all its prerequisites are met.
 Red Hat Enterprise Linux 4 Update 3 and later include <tt>gcc4</tt>
 and <tt><em>frysk</em></tt> RPMs that contain everything needed to
 build <em>frysk</em> from CVS; just install RPMs for the following:
+
 <pre>
 transfig xmlto passivetex xmltex \
 gcc4 gcc4 gcc4 libgcj4-devel \
 frysk
 </pre>
-
-<br>
 
 For additional updates, check Red Hat Enterprise Linux 4's tracker
 bug's <a
@@ -71,33 +87,27 @@ run <em>frysk</em> using the distributed RPMs.  Just note:
 
 <ul>
 
-<li>
+<li>Either <tt>selinux</tt> should be disabled, or its database
+updated.  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt> behave weird;
+and <tt>/proc</tt> will not be accessible</li>
 
-Either <tt>selinux</tt> should be disabled, or its database updated.
-Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt> behave weird; and
-<tt>/proc</tt> will not be accessible
+<li>A regression common to both the <tt>2.6.15-1.1826.2.5_FC5</tt>
+kernel and its upstream counterpart prevents the tracking of a
+multi-threaded programs that make execve calls (the kernel
+spontaneously kills the program).</li>
 
-<li>
-
-A regression common to both the <tt>2.6.15-1.1826.2.5_FC5</tt> kernel
-and its upstream counterpart prevents the tracking of a multi-threaded
-programs that make execve calls (the kernel spontaneously kills the
-program).
-
-<li>
-You will need to install a number of packages vis:
+<li>You will need to install a number of packages vis:
 <pre>
 sudo yum install antlr jdom glib-java libgtk-java \
 libvte-java vte-devel libglade-java gcc-java xmlto
 </pre>
+</li>
 
-<li>
-
-The <em>frysk</em> RPM included in FC-5 is very different to that used
-for RHEL-4 (the former is a lot simpler).  The Fedora Core 5 source
-RPM can be found in the <a
+<li>The <em>frysk</em> RPM included in FC-5 is very different to that
+used for RHEL-4 (the former is a lot simpler).  The Fedora Core 5
+source RPM can be found in the <a
 href="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
-development SRPM directory</a>.
+development SRPM directory</a>.</li>
 
 </ul>
 
@@ -116,31 +126,25 @@ to be built and installed:
 
 <ul>
 
-<li>
+<li><tt>gcj 4.0.2-8.fc4</tt> has a number of serious bugs. <br>
+Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
+(found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).</li>
 
-<tt>gcj 4.0.2-8.fc4</tt> has a number of serious bugs. <br> Download,
-build, and install a snapshot of the RHEL-4 gcc4 compiler (found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
-
-<li>
-
-Download, build, and install the RHEL 4 jumbo <em>frysk</em> RPM
-(found <a href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
-You will need to change these two lines in <tt>frysk.spec</tt>: <br>
-
+<li>Download, build, and install the RHEL 4 jumbo <em>frysk</em> RPM
+(found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>). You will
+need to change these two lines in <tt>frysk.spec</tt>:
 <pre>
 #define frysk_gcc_prefix /usr/bin/
 #define frysk_gcc_suffix 4
 </pre>
-
 so that they describe the location of the above installed compiler:
-<br>
-
 <pre>
 %define frysk_gcc_prefix /path/to/up-to-date/gcc/
 %define frysk_gcc_suffix %{nil}
 </pre>
-
+</li>
 </ul>
 
 For additional updates, check Fedora Core 4's tracker bug's <a
@@ -158,25 +162,21 @@ on Ubuntu:
 
 <ul>
 
-<li>
-
-<tt>gcc 4.0.1-4ubuntu9</tt> has a number of serious bugs. <br>
+<li><tt>gcc 4.0.1-4ubuntu9</tt> has a number of serious bugs. <br>
 Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
-(found <a href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).
+(found <a
+href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).</li>
 
-<li>
-
-Make certain that <tt>automake-1.9</tt> is installed and selected as
-the default:
+<li>Make certain that <tt>automake-1.9</tt> is installed and selected
+as the default:
 <pre>
 $ sudo aptitude install automake1.9
 $ sudo update-alternatives --display automake
 $ sudo update-alternatives --set automake /usr/bin/automake-1.9
 </pre>
+</li>
 
-<li>
-
-Per <a
+<li>Per <a
 href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
 Java Gnome</a>, append the line:
 <pre>
@@ -192,17 +192,14 @@ $ sudo aptitude install libglade-java libgtk-java libglade2-dev libvte-dev
 $ pkg-config --modversion gtk2-java
 2.8.1
 </pre>
+</li>
 
-<li>
+<li><tt>jdom</tt> had problems building; there appears to be some
+missing .jar dependencies. <br> Grabbing the jdom out of the RHEL-4
+mega-rpm and building that worked.</li>
 
-<tt>jdom</tt> had problems building; there appears to be some missing
-.jar dependencies. <br> Grabbing the jdom out of the RHEL-4 mega-rpm
-and building that worked.
-
-<li>
-
-The libvte-java bindings are missing. <br> You can hack around this by
-disabling the code using vte (there isn't much)
+<li>The libvte-java bindings are missing. <br> You can hack around
+this by disabling the code using vte (there isn't much)</li>
 
 </ul>
 
@@ -234,8 +231,7 @@ $ ( mkdir build && cd build && ../frysk/configure )
 
 <h2>Verify the build environment (optional)</h2>
 
-<p>
-Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
+<p>Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
 include tests to ensure that the build system (compiler, kernel, and
 libraries) are working correctly.  Any FAILing tests should be
 investigated (XFAIL and XPASS tests are OK).</p>
@@ -268,12 +264,18 @@ $ ( cd build && sudo make install )
 $ frysk
 </pre>
 
-</table>
-</div>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 <table cellspacing="2" cellpadding="2" border="0" width="100%">
-<tr><td align="center" class="footer"><a href="http://sources.redhat.com">sources.redhat.com</a></td></tr>
+  <tr>
+    <td align="center" class="footer">
+      <a href="http://sources.redhat.com">sources.redhat.com</a>
+    </td>
+  </tr>
 </table>
 
 </body>
