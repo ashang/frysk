@@ -181,6 +181,10 @@ public class ProcDataModel {
 		return this.threadParentDC;
 	}
 	
+	public DataColumnBoolean getIsThreadDC() {
+		return this.isThreadDC;
+	}
+	
 	public DataColumnBoolean getHasParentDC() {
 		return this.isThreadDC;
 	}
@@ -214,7 +218,7 @@ public class ProcDataModel {
 					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
 						
 					if(iter == null){ // new process
-						iter = treeStore.insertRow(parent, 0);
+						iter = treeStore.appendRow(parent);//.insertRow(parent, 0);
 					}
 
 					iterHash.put(proc.getId(), iter);
@@ -225,7 +229,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, isThreadDC, false);
 						
-					treeStore.setValue(iter,threadParentDC, -1);
+					treeStore.setValue(iter,threadParentDC, 0);
 
 				 }
 			});
@@ -239,20 +243,20 @@ public class ProcDataModel {
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 				public void run() {
 					TreeIter iter = (TreeIter) iterHash.get(proc.getId());
-					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
+//					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid() + " " + iter );
 					
 //					try{
 						if(iter == null){
-							System.out.println("ProcDestroyedObserver.update() iter is null !" );
+//							System.out.println("ProcDestroyedObserver.update() iter is null !" );
 							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
 						if(iter != null){
 							int n = iter.getChildCount();
-							System.out.println("ProcDestroyedObserver.update() iter not null checking children n: " + n );
+//							System.out.println("ProcDestroyedObserver.update() iter not null checking children n: " + n );
 							for (int i = 0; i < n; i++) {
 								if(treeStore.getValue(iter.getChild(i), isThreadDC) == false){
-									System.out.println(" ProcDestroyedObserver.update() found nonthread child" );
+//									System.out.println(" ProcDestroyedObserver.update() found nonthread child" );
 									reparent(treeStore.getIter("0"), iter.getChild(i));
 								}
 							}
@@ -312,7 +316,7 @@ public class ProcDataModel {
 				public void run() {
 					final Task task = (Task) obj;
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
-					System.out.println(" TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
+//					System.out.println(" TaskDestroyedObserver.update() trying to remove Task " + task.getTid()+ " " + iter );
 					try{
 						if(iter == null){
 							throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -329,7 +333,7 @@ public class ProcDataModel {
     }
     
     private void reparent(TreeIter newParent, TreeIter child){
-    		System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
+//    		System.out.println("ProcDataModel.reparent() " + child + " to " + newParent );
     		TreeIter to = this.treeStore.appendRow(newParent);//insertRow(newParent, 0);
     		copyRow(to, child);
     		
@@ -343,7 +347,7 @@ public class ProcDataModel {
 
     private void copyRow(TreeIter to, TreeIter from){
     		// switch iters in hash
-    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
+//    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
     		Object data = treeStore.getValue(from, procDataDC);
     		if(data instanceof ProcData){
     			ProcData procData = (ProcData)data;

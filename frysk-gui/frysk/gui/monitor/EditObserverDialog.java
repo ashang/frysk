@@ -63,6 +63,8 @@ public class EditObserverDialog extends Dialog {
 	Entry observerNameEntry;
 	SimpleComboBox observerTypeComboBox;
 	
+	FiltersTable filtersTable;
+	
 	EditObserverDialog(LibGlade glade){
 		super(glade.getWidget("editObserverDialog").getHandle());
 		
@@ -112,7 +114,8 @@ public class EditObserverDialog extends Dialog {
 				}
 			}
 		});
-		
+	
+		this.filtersTable = new FiltersTable(glade.getWidget("observerFiltersTable").getHandle());
 	}
 	
 	private void setAll(ObserverRoot myObserver){

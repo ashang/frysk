@@ -1,3 +1,8 @@
+2006-03-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Marked new custom observers menu item
+	as DEMO item.
+
 2006-03-08  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DebugHistory.java (DebugHistory): Reset event mask to ALL_EVENTS,

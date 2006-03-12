@@ -75,7 +75,7 @@
 		      <child>
 			<widget class="GtkMenuItem" id="customObserversMenuItem">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Custom Observers (new)</property>
+			  <property name="label" translatable="yes">Custom Observers (new) DEMO</property>
 			  <property name="use_underline">True</property>
 			</widget>
 		      </child>

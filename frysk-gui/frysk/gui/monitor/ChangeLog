@@ -1,3 +1,10 @@
+2006-03-12  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcDataModel.java: Removed debug output.
+	Replaced treeStore.insertRow(parent, 0) with
+	treeStore.appendRow(parent) (Fix for frysk bz 2440)... hopefully
+	* EditObserverDialog.java: Added Handle for filtersTable.
+
 2006-03-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcDataModel.java : added setting of threadParentDC to -1
