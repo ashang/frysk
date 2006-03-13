@@ -1,3 +1,7 @@
+2006-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* FiltersTable.java: New file.
+
 2006-03-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcDataModel.java: Removed debug output.
