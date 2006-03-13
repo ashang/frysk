@@ -13,15 +13,20 @@ import frysk.gui.monitor.Saveable;
  */
 public class PreferenceGroup implements Saveable{
 	private HashMap prefs;
+	private HashMap subgroups;
+	
 	private String name;
+	private int tabNum;
 	
 	/**
 	 * Create a new Preference Group.
 	 * @param name The name of the group.
 	 */
-	public PreferenceGroup(String name){
+	public PreferenceGroup(String name, int tabNum){
 		this.name = name;
+		this.tabNum = tabNum;
 		this.prefs = new HashMap();
+		this.subgroups = new HashMap();
 	}
 	
 	/**
@@ -92,6 +97,12 @@ public class PreferenceGroup implements Saveable{
 		
 		while(it.hasNext())
 			((FryskPreference) it.next()).save(prefs);
+		
+		// subgroups
+		it = this.subgroups.values().iterator();
+		
+		while(it.hasNext())
+			((PreferenceGroup) it.next()).save(prefs);
 	}
 
 	/**
@@ -103,6 +114,12 @@ public class PreferenceGroup implements Saveable{
 		
 		while(it.hasNext())
 			((FryskPreference) it.next()).load(prefs);
+		
+		// subgroups
+		it = this.subgroups.values().iterator();
+		
+		while(it.hasNext())
+			((PreferenceGroup) it.next()).load(prefs);
 	}
 	
 	/**
@@ -124,5 +141,61 @@ public class PreferenceGroup implements Saveable{
 		
 		while(it.hasNext())
 			((FryskPreference) it.next()).revert();
+		
+		// subgroups
+		it = this.subgroups.values().iterator();
+		
+		while(it.hasNext())
+			((PreferenceGroup) it.next()).revertAll();
+	}
+	
+	/**
+	 * Adds a new subgroup to this group
+	 * @param subgroup The subgroup
+	 */
+	public void addSubgroup(PreferenceGroup subgroup){
+		this.subgroups.put(subgroup.getName(), subgroup);
+	}
+	
+	/**
+	 * 
+	 * @param name The name of the subgroup to fetch
+	 * @return The subgroup, or null if no such subgroup exists
+	 */
+	public PreferenceGroup getSubgroup(String name){
+		return (PreferenceGroup) this.subgroups.get(name);
+	}
+	
+	/**
+	 * 
+	 * @return An iterator to all subgroups
+	 */
+	public Iterator getSubgroups(){
+		return this.subgroups.values().iterator();
+	}
+	
+	/**
+	 * Removes the subgroup with the given name
+	 * @param name
+	 */
+	public void removeSubgroup(String name){
+		if(this.subgroups.containsKey(name))
+			this.subgroups.remove(name);
+	}
+	
+	/**
+	 * Removes the provided subgroup.
+	 * @param group The subgroup to remove
+	 */
+	public void removeSubgroup(PreferenceGroup group){
+		this.removeSubgroup(group.getName());
+	}
+
+	/**
+	 *
+	 * @return The preference window tab number corresponding to this preference
+	 */
+	public int getTabNum() {
+		return tabNum;
 	}
 }

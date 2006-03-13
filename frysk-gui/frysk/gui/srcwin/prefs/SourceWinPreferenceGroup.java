@@ -16,8 +16,8 @@ public class SourceWinPreferenceGroup extends PreferenceGroup {
 	public static final String LINE_NUMS = "Show Line Numbers";
 	public static final String EXEC_MARKS ="Show Executable Marks";
 
-	public SourceWinPreferenceGroup(String name) {
-		super(name);
+	public SourceWinPreferenceGroup(String name, int tabNum) {
+		super(name, tabNum);
 	}
 
 }

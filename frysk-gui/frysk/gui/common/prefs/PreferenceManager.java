@@ -16,8 +16,8 @@ public class PreferenceManager {
 	private static Preferences prefs;
 
 	// Static preference groups
-	public static PreferenceGroup sourceWinGroup = new PreferenceGroup("Source Window");
-	public static PreferenceGroup syntaxHighlightingGroup = new PreferenceGroup("Syntax Highlighting");
+	public static PreferenceGroup sourceWinGroup = new PreferenceGroup("Source Window", 0);
+	public static PreferenceGroup syntaxHighlightingGroup = new PreferenceGroup("Syntax Highlighting", 1);
 	
 	// Initialize the hashmap for groups and the default preferences model
 	static {

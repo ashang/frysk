@@ -1,3 +1,12 @@
+2006-03-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Gui.java (initializePreferences): Now adds Syntax Highlighting
+	preferences as a subgroup of the source window.
+	* DummySourceWindow.java (initializePreferences): Ditto.
+	* glade/frysk_source_prefs.glade: Hardcoded in interface for 
+	editing preferences with each preference group having it's own tab
+	in a notebook.
+
 2006-03-12  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Marked new custom observers menu item

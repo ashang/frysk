@@ -142,7 +142,7 @@ public class DebugHistory extends DrawingArea implements ExposeListener, MouseMo
 	
 	/*
 	 * Private class to represent a time when a observer fired. In the future this
-	 * will probably be replaced by some other, externally visible data structure.
+	 * will be replaced by some other, externally visible data structure.
 	 */
 	private class ObserverEvent{
 		int time;

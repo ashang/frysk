@@ -12,8 +12,8 @@ public class SyntaxPreferenceGroup extends PreferenceGroup {
 	public static final String GLOBALS = "Global Variables";
 	public static final String CLASSES = "Classes";
 
-	public SyntaxPreferenceGroup(String name) {
-		super(name);
+	public SyntaxPreferenceGroup(String name, int tabNum) {
+		super(name, tabNum);
 	}
 
 }

@@ -1,3 +1,26 @@
+2006-03-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* prefs/PreferenceGroup.java (PreferenceGroup): Now takes the
+	number corresponding to the tab number in the glade file.
+	(save): Also saves subgroups.
+	(load): Also loads subgroups.
+	(revertAll): Also reverts subgroups.
+	(addSubgroup): Added.
+	(getSubgroups): Ditto.
+	(removeSubgroup): Ditto.
+	(getTabNum): Ditto.
+	* prefs/PreferenceManager.java: Added tab numbers to preference groups.
+	* prefs/PreferenceWindow.java (attachEvents): Added.
+	(addGroup): Added.
+	(initColorPreference): Added.
+	(initSyntaxPreference): Added.
+	(selectionChangedEvent): Now sets current notebook tab based on
+	selected preference.
+	(BoolListener): Added.
+	(IntListener): Added.
+	(ColorListener): Added.
+	(SynPrefListener): Added.
+
 2006-03-08  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferenceWindow.java (PreferenceWindow): Title of window

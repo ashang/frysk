@@ -842,14 +842,16 @@ public class SourceBuffer extends TextBuffer {
 
 		// Initialize preferences
 		
-		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.CURRENT_LINE)).
+		((ColorPreference) PreferenceManager.sourceWinGroup.
+			getSubgroup("Look and Feel").getPreference(SourceWinPreferenceGroup.CURRENT_LINE)).
 				addListener(new ColorPreferenceListener(){
 			public void preferenceChanged(String prefName, Color newColor){
 				SourceBuffer.this.currentLine.setBackground(ColorConverter.colorToHexString(newColor));
 			}
 		});
 
-		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.SEARCH)).
+		((ColorPreference) PreferenceManager.sourceWinGroup.
+			getSubgroup("Look and Feel").getPreference(SourceWinPreferenceGroup.SEARCH)).
 				addListener(new ColorPreferenceListener(){
 			public void preferenceChanged(String prefName, Color newColor){
 				SourceBuffer.this.foundText.setBackground(ColorConverter.colorToHexString(newColor));

@@ -522,21 +522,24 @@ public class SourceView extends TextView implements View, ExposeListener {
 		this.addListener((MouseMotionListener) listener);
 
 		// PreferenceListeners
-		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TEXT)).
+		((ColorPreference) PreferenceManager.sourceWinGroup.
+			getSubgroup("Look and Feel").getPreference(SourceWinPreferenceGroup.TEXT)).
 				addListener(new ColorPreferenceListener(){
 			public void preferenceChanged(String prefName, Color newColor) {
 				SourceView.this.setTextColor(StateType.NORMAL, newColor);
 			}			
 		});
 
-		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.BACKGROUND)).
+		((ColorPreference) PreferenceManager.sourceWinGroup.
+			getSubgroup("Look and Feel").getPreference(SourceWinPreferenceGroup.BACKGROUND)).
 				addListener(new ColorPreferenceListener(){
 			public void preferenceChanged(String prefName, Color newColor){
 				SourceView.this.setBaseColor(StateType.NORMAL, newColor);
 			}
 		});
 
-		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.MARGIN)).
+		((ColorPreference) PreferenceManager.sourceWinGroup.
+			getSubgroup("Look and Feel").getPreference(SourceWinPreferenceGroup.MARGIN)).
 				addListener(new ColorPreferenceListener(){
 			public void preferenceChanged(String prefName, Color newColor){
 				SourceView.this.marginColor = newColor;
@@ -557,7 +560,8 @@ public class SourceView extends TextView implements View, ExposeListener {
 			}
 		});
 		
-		((ColorPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.CURRENT_LINE)).
+		((ColorPreference) PreferenceManager.sourceWinGroup.
+			getSubgroup("Look and Feel").getPreference(SourceWinPreferenceGroup.CURRENT_LINE)).
 				addListener(new ColorPreferenceListener(){
 			public void preferenceChanged(String prefName, Color newColor){
 				SourceView.this.currentLineColor = newColor;

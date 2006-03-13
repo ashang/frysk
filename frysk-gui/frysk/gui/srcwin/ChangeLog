@@ -1,3 +1,13 @@
+2006-03-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (init): Updated loading of preferences to 
+	reflect making Syntax Highlighting related preferences a
+	subgroup.
+	* SourceView.java (initialize): Ditto.
+	* prefs/SourceWinPreferenceGroup (SourceWinPreferenceGroup):
+	Now takes int for preference tab.
+	* prefs/SyntaxPreferenceGroup (SyntaxPreferenceGroup): Ditto.
+
 2006-03-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (getVariable): Now adds check for the DOMLine
