@@ -133,9 +133,9 @@ abstract class ProcState
 	    }
 	    ProcState processPerformRemoval (Proc proc)
 	    {
+		logger.log (Level.FINE, "{0} processPerformRemoval\n", proc); 
 		// XXX: What about a dieing proc's tasks, have a
 		// dieing state and force a proc refresh?
-		logger.log (Level.FINE, "{0} processPerformRemoval\n", proc); 
 		if (proc.parent != null)
 		    proc.parent.remove (proc);
 		return destroyed;
@@ -269,6 +269,7 @@ abstract class ProcState
 	 */
 	private static ProcState allAttached (Proc proc)
 	{
+	    logger.log (Level.FINE, "{0} allAttached\n", proc); 
 	    for (Iterator i = proc.observations.iterator ();
 		 i.hasNext ();) {
 		Observation observation = (Observation) i.next ();
@@ -299,6 +300,7 @@ abstract class ProcState
 	    }
 	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	    {
+		logger.log (Level.FINE, "{0} processPerformTaskAttachCompleted\n", proc); 
 		// With the main task attached, it is possible to get
 		// an up-to-date list of tasks.  Remove from it the
 		// tasks already being attached.  Ask them to also
@@ -323,12 +325,14 @@ abstract class ProcState
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
+		logger.log (Level.FINE, "{0} processPerformAddObservation\n", proc); 
 		proc.observations.add (observation);
 		return this;
 	    }
 	    ProcState processPerformDeleteObservation (Proc proc,
 						       Observation observation)
 	    {
+		logger.log (Level.FINE, "{0} processPerformDeleteObservation\n", proc); 
 		// If the observation was never added, this will
 		// return false, but that is ok.
 		proc.observations.remove (observation);
@@ -359,6 +363,7 @@ abstract class ProcState
 	    }
 	    ProcState processPerformTaskAttachCompleted (Proc proc, Task task)
 	    {
+		logger.log (Level.FINE, "{0} processPerformTaskAttachCompleted\n", proc); 
 		// As each task reports that it has been attached,
 		// remove it from the pool, wait until there are none
 		// left.
@@ -370,12 +375,14 @@ abstract class ProcState
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
+		logger.log (Level.FINE, "{0} processPerformAddObservation\n", proc); 
 		proc.observations.add (observation);
 		return this;
 	    }
 	    ProcState processPerformDeleteObservation (Proc proc,
 						       Observation observation)
 	    {
+		logger.log (Level.FINE, "{0} processPerformDeleteObservation\n", proc); 
 		proc.observations.remove (observation);
 		observation.fail (new RuntimeException ("canceled"));
 		if (proc.observations.size () > 0)
@@ -422,10 +429,11 @@ abstract class ProcState
 	    }
 	    ProcState processPerformTaskDetachCompleted (Proc proc, Task task)
 	    {
+		logger.log (Level.FINE,
+			    "{0} processPerformTaskDetachCompleted\n",
+			    proc);
 		// As each task reports that it has detached, add it
 		// to the detached list.
-		logger.log (Level.FINE, "{0} processPerformTaskDetachCompleted\n",
-			    proc);
 		attachedTasks.remove (task);
 		if (attachedTasks.size () > 0)
 		    // Still more tasks to detach.
@@ -437,7 +445,8 @@ abstract class ProcState
 	    ProcState processPerformTaskDetachCompleted (Proc proc, Task task,
 							 Task clone)
 	    {
-		logger.log (Level.FINE, "{0} processPerformTaskDetachCompleted\n",
+		logger.log (Level.FINE,
+			    "{0} processPerformTaskDetachCompleted\n",
 			    proc);
 		attachedTasks.remove (task);
 		// Doh, a clone, need to also wait for that to detach.
@@ -447,18 +456,18 @@ abstract class ProcState
 	    ProcState processPerformAddObservation (Proc proc,
 						    Observation observation)
 	    {
-		// Ulgh, detaching and a new observer arrived.
 		logger.log (Level.FINE, "{0} processPerformAddObservation\n",
 			    proc);
+		// Ulgh, detaching and a new observer arrived.
 		return Attaching.state (proc, observation);
 	    }
 	    ProcState processPerformDeleteObservation (Proc proc,
 						       Observation observation)
 	    {
-		// Outch; request to remove what must be an already
-		// removed observation.
 		logger.log (Level.FINE, "{0} processPerformDeleteObservation\n",
 			    proc);
+		// Outch; request to remove what must be an already
+		// removed observation.
 		observation.fail (new RuntimeException ("canceled"));
 		return this;
 	    }
