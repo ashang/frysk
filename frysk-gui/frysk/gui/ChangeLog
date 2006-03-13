@@ -1,3 +1,8 @@
+2006-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Renamed custom observer dialog
+	and menu item.
+
 2006-03-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Gui.java (initializePreferences): Now adds Syntax Highlighting
