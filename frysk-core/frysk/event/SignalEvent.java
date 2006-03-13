@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -63,5 +63,16 @@ public abstract class SignalEvent
     public SignalEvent (Sig sig)
     {
 	this.sig = sig;
+    }
+    /**
+     * Print the signal.
+     */
+    public String toString ()
+    {
+	return ("{"
+		+ super.toString ()
+		+ ",sig="
+		+ sig
+		+ "}");
     }
 }

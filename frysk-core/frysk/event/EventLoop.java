@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.lang.Long;
 import frysk.EventLogger;
 
 /**
@@ -68,14 +67,13 @@ public class EventLoop
     public EventLoop ()
     {
 	logger = EventLogger.get ("logs/", "frysk_core_event.log");
-	logger.log (Level.FINE, "initializing\n", ""); 
 	// Make certain that the global signal set is empty.
 	Poll.SignalSet.empty ();
 	// Sig.IO is used to wake up a blocked event loop when an
 	// asynchronous event arrives.
 	Poll.SignalSet.add (Sig.IO);
+	logger.log (Level.FINE, "{0} new\n", this); 
     }
-    
 
     /**
      * The EventLoop's thread ID.  If a thread, other than the
@@ -100,7 +98,7 @@ public class EventLoop
      */
     private synchronized void wakeupIfBlocked ()
     {
-	logger.log (Level.FINEST, "wake up {0}\n", this); 
+	logger.log (Level.FINE, "{0} wakeupIfBlocked\n", this); 
 	if (isGoingToBlock) {
 	    // Assert: tid > 0
 	    frysk.sys.Signal.tkill (tid, Sig.IO);
@@ -120,7 +118,7 @@ public class EventLoop
      */
     public synchronized void add (TimerEvent t)
     {
-	logger.log (Level.FINE, "add timer event {0}\n", t); 
+	logger.log (Level.FINE, "{0} add TimerEvent\n", this); 
 	timerEvents.put (t, t);
 	wakeupIfBlocked ();
     }
@@ -129,7 +127,7 @@ public class EventLoop
      */
     public synchronized void remove (TimerEvent t)
     {
-	logger.log (Level.FINE, "remove timer event {0}\n", t); 
+	logger.log (Level.FINE, "{0} remove TimerEvent\n", this); 
 	timerEvents.remove (t);
 	pendingEvents.remove (t);
     }
@@ -162,8 +160,8 @@ public class EventLoop
      */
     private synchronized void checkForTimerEvents ()
     {
+	logger.log (Level.FINE, "{0} checkForTimerEvents\n", this); 
 	long time = java.lang.System.currentTimeMillis ();
-	logger.log (Level.FINEST, "move to event queue {0}\n", this); 
 	while (!timerEvents.isEmpty ()) {
 	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
 	    if (timer.getTimeMillis () > time)
@@ -187,7 +185,7 @@ public class EventLoop
      */
     public synchronized void add (PollEvent fd)
     {
-	logger.log (Level.FINE, "add {0}\n", fd); 
+	logger.log (Level.FINE, "{0} add PollEvent\n", this);
 	wakeupIfBlocked ();
     }
 
@@ -203,8 +201,8 @@ public class EventLoop
      */
     public synchronized void add (SignalEvent signalEvent)
     {
+	logger.log (Level.FINE, "{0} add SignalEvent\n", this);
 	Object old = signalHandlers.put (signalEvent.getSig (), signalEvent);
-	logger.log (Level.FINE, "{0] add\n", this); 
 	if (old == null)
 	    // New signal, tell Poll.
 	    Poll.SignalSet.add (signalEvent.getSig ());
@@ -216,7 +214,7 @@ public class EventLoop
      */
     public synchronized void remove (SignalEvent signalEvent)
     {
-	logger.log (Level.FINE, "{0} remove\n", this); 
+	logger.log (Level.FINE, "{0} remove SignalEvent\n", this); 
 	signalHandlers.remove (signalEvent.getSig ());
 	// XXX: Poll.SignalSet.remove (sig.signal);
     }
@@ -228,7 +226,7 @@ public class EventLoop
      */
     private synchronized void processSignal (Sig sig)
     {
-	logger.log (Level.FINE, "{0} process signal\n", this); 
+	logger.log (Level.FINE, "{0} processSignal Sig\n", this); 
 	SignalEvent handler = (SignalEvent) signalHandlers.get (sig);
 	if (handler != null)
 	    pendingEvents.add (handler);
@@ -246,7 +244,7 @@ public class EventLoop
      */
     public synchronized void add (Event e)
     {
-	logger.log (Level.FINEST, "add event {0}\n", e); 
+	logger.log (Level.FINE, "{0} add Event\n", this); 
 	pendingEvents.add (e);
 	wakeupIfBlocked ();
     }
@@ -255,7 +253,7 @@ public class EventLoop
      */
     public synchronized void remove (Event e)
     {
-	logger.log (Level.FINE, "remove event {0}\n", e); 
+	logger.log (Level.FINE, "{0} remove Event\n", this); 
 	pendingEvents.remove (e);
     }
     /**
@@ -265,13 +263,15 @@ public class EventLoop
      */
     private synchronized Event remove ()
     {
+	logger.log (Level.FINE, "{0} remove\n", this); 
 	if (pendingEvents.isEmpty ()) {
 	    isGoingToBlock = true;
 	    return null;
 	}
 	else {
-	    logger.log (Level.FINEST, "remove first pending event {0}\n", pendingEvents.get(0)); 
-	    return (Event) pendingEvents.remove (0);
+	    Event removed = (Event) pendingEvents.remove (0);
+	    logger.log (Level.FINEST, "... return {0}\n", removed); 
+	    return removed;
 	}
     }
 
@@ -279,8 +279,12 @@ public class EventLoop
      * Handle anything that comes back from the poll call.
      */
     private Poll.Observer pollObserver = new Poll.Observer () {
+	    public String toString ()
+	    {
+		return ("{" + super.toString () + "}");
+	    }
 	    public void signal (Sig sig) {
-		logger.log (Level.FINE, "{0} Poll.Observer.signal\n", this); 
+		logger.log (Level.FINE, "{0} Poll.Observer.signal Sig\n", this); 
 		processSignal (sig);
 	    }
 	    // Not yet using file descriptors.
@@ -299,7 +303,7 @@ public class EventLoop
      */
     private void runEventLoop (boolean pendingOnly)
     {
-	logger.log (Level.FINE, "run event loop {0}\n", this); 
+	logger.log (Level.FINE, "{0} runEventLoop\n", this); 
 	try {
 	    // Assert: isGoingToBlock == false
 	    tid = Tid.get ();
@@ -331,7 +335,7 @@ public class EventLoop
      */
     public void requestStop ()
     {
-	logger.log (Level.FINE, "stop event loop {0}\n", this); 
+	logger.log (Level.FINE, "{0} requestStop\n", this); 
 	stop = true;
 	wakeupIfBlocked ();
     }
@@ -350,7 +354,7 @@ public class EventLoop
      */
     public void runPending ()
     {
-	logger.log (Level.FINE, "run event loop until no pending events {0}\n", this); 
+	logger.log (Level.FINE, "{0} runPending\n", this); 
 	runEventLoop (true);
     }
 
@@ -370,23 +374,30 @@ public class EventLoop
      */
     public boolean runPolling (long timeout)
     {
+	logger.log (Level.FINE, "{0} runPolling long\n", this); 
 	class Timeout
 	    extends TimerEvent
 	{
 	    Timeout (long timeout)
 	    {
 		super (timeout);
-		logger.log (Level.FINE, "timeout {0}\n", new Long(timeout)); 
+		logger.log (Level.FINE, "{0} timeout\n", this);
 	    }
 	    boolean expired = false;
 	    public void execute ()
 	    {
-		logger.log (Level.FINE, "execute {0}\n", this); 
+		logger.log (Level.FINE, "{0} execute\n", this); 
 		expired = true;
 		requestStop ();
 	    }
+	    public String toString ()
+	    {
+		return ("{"
+			+ super.toString ()
+			+ ",expired" + expired
+			+ "}");
+	    }
 	}
-	logger.log (Level.FINE, "run polling {0}\n", this); 
 	Timeout timer = new Timeout (timeout);
 	add (timer);
 	runEventLoop (false);
@@ -405,7 +416,7 @@ public class EventLoop
      */
     public void run ()
     {
-	logger.log (Level.FINE, "run {0}\n", this); 
+	logger.log (Level.FINE, "{0} run\n", this); 
 	runEventLoop (false);
     }
 

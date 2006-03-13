@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.event;
 
 import java.util.logging.Level;
@@ -64,8 +63,8 @@ public abstract class TimerEvent
      */
     public TimerEvent (long offsetMillis)
     {
-	logger.log (Level.FINE, "create a timer {0}\n", this); 
 	this.timeMillis = offsetMillis + System.currentTimeMillis ();
+	logger.log (Level.FINE, "{0} new long\n", this); 
     }
 
     /**
@@ -81,6 +80,7 @@ public abstract class TimerEvent
     {
 	this.timeMillis = offsetMillis + System.currentTimeMillis ();
 	this.periodMillis = periodMillis;
+	logger.log (Level.FINE, "{0} new long long\n", this); 
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class TimerEvent
      */
     boolean reSchedule (long currentTimeMillis)
     {
-	logger.log (Level.FINEST, "update expired timer {0}\n", this);
+	logger.log (Level.FINEST, "{0} reSchedule\n", this);
 	if (periodMillis > 0) {
 	    count = (currentTimeMillis - timeMillis) / periodMillis + 1;
 	    timeMillis = timeMillis + periodMillis * count;
@@ -128,9 +128,15 @@ public abstract class TimerEvent
 	    return false;
 	}
     }
+    /**
+     * Return the TimerEvent as a string.
+     */
     public String toString ()
     {
-        return ("{" + super.toString ()
+        return ("{"
+		+ super.toString ()
+		+ ",timeMillis=" + timeMillis
+		+ ",periodMillis=" + periodMillis
                 + "}");
     }
 }

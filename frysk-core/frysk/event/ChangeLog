@@ -1,3 +1,9 @@
+2006-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* SignalEvent.java (toString): Add.
+	* EventLoop.java: Update log messages.
+	* PollEvent.java (toString): Ditto.
+
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestEventLoop.java: Update calls to Signal.tkill, int signum arg

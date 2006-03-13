@@ -71,7 +71,6 @@ public class LinuxHost
      */
     LinuxHost (EventLoop eventLoop)
     {
-	logger.log (Level.FINE, "{0} new\n", this);
 	this.eventLoop = eventLoop;
 	eventLoop.add (new PollWaitOnSigChld ());
     }
@@ -126,7 +125,6 @@ public class LinuxHost
 		}
 		// .. and then add this process.
 		proc = new LinuxProc (LinuxHost.this, parent, procId, stat);
-		logger.log (Level.FINE, "update proc {0}\n", proc); 
 		added.add (proc);
 	    }
 	    else if (removed.get (procId) != null) {
@@ -224,7 +222,7 @@ public class LinuxHost
 	PollWaitOnSigChld ()
 	{
 	    super (Sig.CHLD);
-	    logger.log (Level.FINE, "{0} new\n", this); 
+	    logger.log (Level.FINE, "{0} PollWaitOnSigChld\n", this); 
 	}
 	Wait.Observer waitObserver = new Wait.Observer ()
 	    {
@@ -315,7 +313,7 @@ public class LinuxHost
 	    };
 	public final void execute ()
 	{
-	    logger.log (Level.FINE, "execute\n", ""); 
+	    logger.log (Level.FINE, "{0} execute\n", this); 
 	    Wait.waitAllNoHang (waitObserver);
 	}
     }

@@ -65,6 +65,7 @@ public abstract class Host
     Host ()
     {
 	state = HostState.initial (this);
+	logger.log (Level.FINE, "{0} Host\n", this);
     }
 
     // Maintain a collection of all known Tasks.
@@ -77,22 +78,22 @@ public abstract class Host
     Map taskPool = new HashMap ();
     void add (Task task)
     {
-	logger.log (Level.FINE, "{0} add task\n", task);	
+	logger.log (Level.FINE, "{0} add Task\n", this);
 	taskPool.put (task.id, task);
     }
     void remove (Task task)
     {
-	logger.log (Level.FINE, "{0} remove task\n", task);	
+	logger.log (Level.FINE, "{0} remove Task\n", this);
 	taskPool.remove (task.id);
     }
     void removeTasks (Collection c)
     {
-	logger.log (Level.FINE, "{0} removeTasks tasks\n", c);	
+	logger.log (Level.FINE, "{0} removeTasks Collection\n", this);
 	taskPool.values().removeAll (c);
     }
     Task get (TaskId id)
     {
-	logger.log (Level.FINE, "{0} get task\n", id);	
+	logger.log (Level.FINE, "{0} get TaskId\n", this);	
 	return (Task) taskPool.get (id);
     }
 
@@ -102,13 +103,13 @@ public abstract class Host
     protected Map procPool = new HashMap ();
     void add (Proc proc)
     {
-	logger.log (Level.FINE, "{0} add proc\n", proc);	
+	logger.log (Level.FINE, "{0} add Proc\n", this);
 	observableProcAddedXXX.notify (proc);
 	procPool.put (proc.id, proc);
     }
     void remove (Proc proc)
     {
-	logger.log (Level.FINE, "{0} remove proc\n", proc); 
+	logger.log (Level.FINE, "{0} remove Proc\n", this);
 	procPool.remove (proc.id);
 	observableProcRemovedXXX.notify (proc);
     }
@@ -118,7 +119,7 @@ public abstract class Host
     }
     public Proc getProc (ProcId id)
     {
-	logger.log (Level.FINE, "{0} getProc\n", id); 
+	logger.log (Level.FINE, "{0} getProc ProcId\n", this); 
 	return (Proc) procPool.get (id);
     }
 
@@ -149,13 +150,12 @@ public abstract class Host
      */
     public void requestRefreshXXX (final boolean refreshAllArg)
     {
-	logger.log (Level.FINEST, "requestRefresh\n", ""); 
+	logger.log (Level.FINEST, "{0} requestRefreshXXX boolean\n", this); 
 	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
 	    {
 		boolean refreshAll = refreshAllArg;
 		public void execute ()
 		{
-		    logger.log (Level.FINEST, "requestRefresh execute\n", ""); 
 		    state = state.processRequestRefresh (Host.this,
 							 refreshAll);
 		}
@@ -168,7 +168,8 @@ public abstract class Host
      */
     public final void requestCreateAttachedProcXXX (String[] args)
     {
-	logger.log (Level.FINE, "requestCreateAttachedProcXXX\n", ""); 
+	logger.log (Level.FINE, "{0} requestCreateAttachedProcXXX String[]\n",
+		    this); 
 	requestCreateAttachedProc (null, null, null, args);
     }
     /**
@@ -179,7 +180,7 @@ public abstract class Host
 						 final String stderrArg,
 						 final String[] argsArg)
     {
-	logger.log (Level.FINE, "requestCreateAttachedProc\n", ""); 
+	logger.log (Level.FINE, "{0} requestCreateAttachedProc\n", this); 
 	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
 	    {
 		String stdin = stdinArg;
@@ -188,7 +189,6 @@ public abstract class Host
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    logger.log (Level.FINE, "requestCreateAttachedProc execute\n", ""); 
 		    state = state.processRequestCreateAttachedProc
 			(Host.this, stdin, stdout, stderr, args);
 		}
@@ -276,14 +276,14 @@ public abstract class Host
     }
     
     /**
-     * * Returns the name of the host 
+     * Returns the name of the host 
      */
     public String getName()
     {
-                 try {
-                         return java.net.InetAddress.getLocalHost().getHostName();
-                 } catch (UnknownHostException e) {
-                         return "Unknown Host";
-                 }
+	try {
+	    return java.net.InetAddress.getLocalHost().getHostName();
+	} catch (UnknownHostException e) {
+	    return "Unknown Host";
+	}
     }
 }

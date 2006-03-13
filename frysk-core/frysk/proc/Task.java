@@ -504,6 +504,9 @@ abstract public class Task
 	}
     }
 
+    /**
+     * Return a summary of the task's state.
+     */
     public String toString ()
     {
 	return ("{" + super.toString ()

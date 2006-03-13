@@ -1,3 +1,13 @@
+2006-03-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java: Clean up log messages.
+	* TaskState.java: Ditto.
+	* ProcState.java: Ditto.
+	* LinuxTask.java: Ditto.
+	* LinuxHost.java: Ditto.
+	* LinuxProc.java: Delete redundant log messages.
+	* LinuxTask.java (toString): Delete.
+
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Use Sig, instead of int for signals.

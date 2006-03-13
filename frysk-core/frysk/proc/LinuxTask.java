@@ -103,7 +103,7 @@ public class LinuxTask
 
     protected void sendContinue (int sig)
     {
-	logger.log (Level.FINE, "send continue {0}\n", new Integer(sig)); 
+	logger.log (Level.FINE, "{0} sendContinue\n", this); 
 	try {
 	    if (traceSyscall)
 		Ptrace.sysCall (getTid (), sig);
@@ -116,7 +116,7 @@ public class LinuxTask
     }
     protected void sendStepInstruction (int sig)
     {
-	logger.log (Level.FINE, "send step insn {0}\n", new Integer(sig)); 
+	logger.log (Level.FINE, "{0} sendStepInstruction\n", this);
 	try {
 	    Ptrace.singleStep (getTid (), sig);
 	}
@@ -126,12 +126,12 @@ public class LinuxTask
     }
     protected void sendStop ()
     {
-	logger.log (Level.FINE, "send stop {0}\n", ""); 
+	logger.log (Level.FINE, "{0} sendStop\n", this); 
 	Signal.tkill (id.hashCode (), Sig.STOP);
     }
     protected void sendSetOptions ()
     {
-	logger.log (Level.FINE, "send set options\n", ""); 
+	logger.log (Level.FINE, "{0} sendSetOptions\n", this); 
 	try {
 	    // XXX: Should be selecting the trace flags based on the
 	    // contents of .observers.
@@ -150,7 +150,7 @@ public class LinuxTask
     }
     protected void sendAttach ()
     {
-	logger.log (Level.FINE, "send attach {0}\n", new Integer (getTid ())); 
+	logger.log (Level.FINE, "{0} sendAttach\n", this);
 	try {
 	    Ptrace.attach (getTid ());
 	}
@@ -160,15 +160,12 @@ public class LinuxTask
     }
     protected void sendDetach (int sig)
     {
-	logger.log (Level.FINE, "send detach {0}\n", new Integer (getTid ())); 
+	logger.log (Level.FINE, "{0} sendDetach\n", this);
 	Ptrace.detach (getTid (), sig);
     }
     protected Isa sendrecIsa ()
     {
+	logger.log (Level.FINE, "{0} sendrecIsa\n", this);
 	return LinuxIa32.isaSingleton ();
-    }
-    public String toString ()
-    {
-	return "Linux" + super.toString ();
     }
 }
