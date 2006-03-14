@@ -68,10 +68,10 @@ public class EventLoop
     {
 	logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	// Make certain that the global signal set is empty.
-	Poll.SignalSet.empty ();
+	Poll.empty ();
 	// Sig.IO is used to wake up a blocked event loop when an
 	// asynchronous event arrives.
-	Poll.SignalSet.add (Sig.IO);
+	Poll.add (Sig.IO);
 	logger.log (Level.FINE, "{0} new\n", this); 
     }
 
@@ -175,11 +175,6 @@ public class EventLoop
 	}
     }
 
-
-    /**
-     * Set of FDs that should be polled, not fully implemented.
-     */
-    private Poll.Fds pollFds = new Poll.Fds ();
     /**
      * Add FD to events that should be polled.
      */
@@ -187,8 +182,8 @@ public class EventLoop
     {
 	logger.log (Level.FINE, "{0} add PollEvent\n", this);
 	wakeupIfBlocked ();
+	throw new RuntimeException ("not implemented");
     }
-
 
     /**
      * Collection of signals; assume that very few signals are being
@@ -205,7 +200,7 @@ public class EventLoop
 	Object old = signalHandlers.put (signalEvent.getSig (), signalEvent);
 	if (old == null)
 	    // New signal, tell Poll.
-	    Poll.SignalSet.add (signalEvent.getSig ());
+	    Poll.add (signalEvent.getSig ());
 	wakeupIfBlocked ();
     }
     /**
@@ -318,7 +313,7 @@ public class EventLoop
 		if (stop)
 		    break;
 		long timeout = getTimerEventMillisecondTimeout ();
-		Poll.poll (pollFds, pollObserver, timeout);
+		Poll.poll (pollObserver, timeout);
 		isGoingToBlock = false;
 		checkForTimerEvents ();
 	    }

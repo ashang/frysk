@@ -1206,12 +1206,10 @@ public class TestLib
 	// Remove any stray files.
 	deleteTmpFiles ();
 
-
 	// Capture any pending signals; drain them, and then turn
 	// around and assert that there weren't any.
 	SigSet pending = new SigSet ().getPending ();
-	Poll.poll (new Poll.Fds (),
-		   new Poll.Observer ()
+	Poll.poll (new Poll.Observer ()
 		   {
 		       public void signal (Sig sig) { }
 		       public void pollIn (int in) { }

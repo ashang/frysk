@@ -56,8 +56,9 @@ _syscall2(int, tkill, pid_t, tid, int, sig);
 #include "frysk/sys/Tid.h"
 #include "frysk/sys/Poll.h"
 #include "frysk/sys/Sig.h"
+#include "frysk/sys/SigSet.h"
+#include "frysk/sys/cni/SigSet.hxx"
 #include "frysk/sys/Poll$Fds.h"
-#include "frysk/sys/Poll$SignalSet.h"
 #include "frysk/sys/Poll$Observer.h"
 
 
@@ -82,22 +83,12 @@ handler (int signum)
     tkill (poll_jmpbuf.tid, signum);
 }
 
-gnu::gcj::RawDataManaged*
-frysk::sys::Poll$SignalSet::get ()
-{
-  if (signalSet == NULL) {
-    sigset_t* sigset = (sigset_t*) JvAllocBytes (sizeof (sigset_t));
-    sigemptyset (sigset);
-    signalSet = (gnu::gcj::RawDataManaged*) sigset;
-  }
-  return signalSet;
-}
-
 void
-frysk::sys::Poll$SignalSet::add (frysk::sys::Sig* sig)
+frysk::sys::Poll::addSignalHandler (frysk::sys::Sig* sig)
 {
   int signum = sig->hashCode ();
-  // Make certain that the signal is masked (this is process wide).
+  // Make certain that the signal is masked (this is ment to be
+  // process wide).
   sigset_t mask;
   sigemptyset (&mask);
   sigaddset (&mask, signum);
@@ -110,17 +101,6 @@ frysk::sys::Poll$SignalSet::add (frysk::sys::Sig* sig)
   sa.sa_handler = handler;
   sigfillset (&sa.sa_mask);
   sigaction (signum, &sa, NULL);
-  // Add the signal to the pselect list.
-  sigset_t* sigset = (sigset_t*) get ();
-  sigaddset (sigset, signum);
-}
-
-void
-frysk::sys::Poll$SignalSet::empty ()
-{
-  // Note that this doesn't restore any signal handlers.
-  sigset_t* sigset = (sigset_t*) get ();
-  sigemptyset (sigset);
 }
 
 
@@ -163,8 +143,7 @@ frysk::sys::Poll$Fds::addPollIn (jint fd)
 
 
 void
-frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
-			frysk::sys::Poll$Observer* pollObserver,
+frysk::sys::Poll::poll (frysk::sys::Poll$Observer* pollObserver,
 			jlong timeout)
 {
   // Set up a SIGSETJMP call that jumps back to here when any watched
@@ -174,7 +153,7 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Fds* pollFds,
   // things into a non-blocking poll (this method returns when zero or
   // more events, or a timeout has occured).
 
-  sigset_t mask = *(sigset_t*) frysk::sys::Poll$SignalSet::get ();
+  sigset_t mask = *getRawSet (sigSet);
   int signum = sigsetjmp (poll_jmpbuf.buf, 1);
   if (signum > 0) {
     // Remove the signal from the local copy of the signal-mask set,

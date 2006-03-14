@@ -47,25 +47,29 @@ import gnu.gcj.RawDataManaged;
 
 public final class SigSet
 {
-    private RawDataManaged sigSet;
-    private native RawDataManaged newSigSet ();
-    RawDataManaged getSigSet ()
+    private RawDataManaged rawSet;
+    private native RawDataManaged newRawSet ();
+
+    /**
+     * Return a pointer to the underlying sigset_t buffer.
+     */
+    RawDataManaged getRawSet ()
     {
-	return sigSet;
+	return rawSet;
     }
     /**
      * Create an empty signal set.
      */
     public SigSet ()
     {
-	sigSet = newSigSet ();
+	rawSet = newRawSet ();
     }
     /**
      * Create a SigSet containing the signals in the array.
      */
     public SigSet (Sig[] sigs)
     {
-	sigSet = newSigSet ();
+	this ();
 	for (int i = 0; i < sigs.length; i++) {
 	    add (sigs[i]);
 	}

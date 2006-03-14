@@ -1,3 +1,9 @@
+2006-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: Update; frysk.sys.Poll simplified, member
+	SignalSet deleted, Fds parameter removed.
+
+
 2006-03-13  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskState.java: Add missing log messages.

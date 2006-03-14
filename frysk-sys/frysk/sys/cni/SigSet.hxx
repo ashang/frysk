@@ -37,4 +37,4 @@
 // version and license this file solely under the GPL without
 // exception.
 
-extern sigset_t *getSigSet (frysk::sys::SigSet* sigSet);
+extern sigset_t *getRawSet (frysk::sys::SigSet* sigSet);

@@ -56,20 +56,28 @@ public final class Poll
 	void signal (Sig sig);
 	void pollIn (int fd);
     }
-    Observer observer;
 
     /**
-     * Manage the signal set that can interrupt the poll call.
+     * Set of signals checked during poll.
      */
-    public static final class SignalSet
+    static protected SigSet sigSet = new SigSet ();
+    private static native void addSignalHandler (Sig sig);
+    /**
+     * Add Sig to the set of signals checked during poll.
+     */
+    public static void add (Sig sig)
     {
-	private SignalSet () {} // Disallow construction.
-	// XXX: ECJ 3.1 can't see that the CNI code uses this and,
-	// hence, complains that it is never used.
-	protected static gnu.gcj.RawDataManaged signalSet;
-	static native gnu.gcj.RawDataManaged get ();
-	public native static void add (Sig sig);
-	public static native void empty ();
+	sigSet.add (sig);
+	addSignalHandler (sig);
+    }
+    /**
+     * Empty the set of signals, and file descriptors, checked during
+     * poll.
+     */
+    public static void empty ()
+    {
+	// Note that this doesn't restore any signal handlers.
+	sigSet.empty ();
     }
 
     /**
@@ -86,6 +94,7 @@ public final class Poll
 	    init ();
 	}
     }
+    static protected Fds pollFds = new Fds ();
 
     /**
      * Poll the system for either FD, or signal events.  Block for
@@ -93,7 +102,6 @@ public final class Poll
      * next event (if timeout is -ve).  Return when an event might
      * have occured.
      */
-    public static native void poll (Fds pollFds,
-				    Observer observer,
+    public static native void poll (Observer observer,
 				    long timeout);
 }

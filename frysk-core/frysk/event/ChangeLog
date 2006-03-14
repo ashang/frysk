@@ -1,3 +1,8 @@
+2006-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* EventLoop.java: Update; frysk.sys.Poll simplified, member
+	SignalSet deleted, Fds parameter removed.
+
 2006-03-12  Andrew Cagney  <cagney@redhat.com>
 
 	* SignalEvent.java (toString): Add.

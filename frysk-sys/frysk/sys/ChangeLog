@@ -1,3 +1,14 @@
+2006-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/SigSet.hxx (getRawSet): Rename getSigSet.
+	* SigSet.java: Rename sigSet to rawSet; rename newSigSet to
+	newRawSet.
+	* cni/SigSet.cxx: Update.
+	* Poll.java (SignalSet): Delete.
+	(sigSet, add,(Sig), empty, pollFds): New.
+	(poll): Drop Fds parameter.
+	* cni/Poll.cxx: Update.
+
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Signal.java (kill (int, int), tkill (int, int)): Delete.
