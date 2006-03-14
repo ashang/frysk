@@ -63,6 +63,10 @@ public class DOMSource {
 	 * Name of this node in the DOM tree
 	 */
 	public static final String SOURCE_NODE = "source";
+	/**
+	 * Whether this source file has already been parsed
+	 */
+	public static final String IS_PARSED = "parsed";
 	// program counter attribute
 	public static final String PC_ATTR = "pc";
 	// text of the source line
@@ -274,5 +278,13 @@ public class DOMSource {
 	 */
 	protected Element getElement(){
 		return this.myElement;
+	}
+	
+	public boolean isParsed(){
+		return this.myElement.getAttributeValue(IS_PARSED).equals("true");
+	}
+	
+	public void setParsed(boolean value){
+		this.myElement.setAttribute(IS_PARSED, Boolean.toString(value));
 	}
 }

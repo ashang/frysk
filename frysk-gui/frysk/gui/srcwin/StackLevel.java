@@ -63,9 +63,6 @@ public class StackLevel {
 	
 	// Actual data for this stack
 	private DOMSource data;
-	
-	// Whether or not data has been parsed and has static information added.
-	private boolean parsed = false;
 
 	/**
 	 * Creates a new StackLevel with the given current line. This constructor
@@ -143,7 +140,7 @@ public class StackLevel {
 	 *  @return true iff this scope has been previously parsed for static data
 	 */
 	public boolean isParsed() {
-		return parsed;
+		return this.data.isParsed();
 	}
 
 	/**
@@ -151,7 +148,7 @@ public class StackLevel {
 	 * static data.
 	 */
 	public void setParsed(boolean parsed) {
-		this.parsed = parsed;
+		this.data.setParsed(parsed);
 	}
 
 	public CurrentLineSection getCurrentLine() {

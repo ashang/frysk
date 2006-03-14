@@ -1,3 +1,11 @@
+2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DummySourceWindow.java (initializePreferences): Added Comments
+	preference to sytnax highlighting group.
+	* Gui.java (initializePreferences): Ditto.
+	* glade/frysk_source_prefs.glade: Added comment sytnax highlighting
+	options to the sytnax highlighting page.
+
 2006-03-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Fixed some typos in 

@@ -76,6 +76,7 @@ public class DOMImage {
 		Element sourceNameElement = new Element(DOMSource.SOURCE_NODE);
 		sourceNameElement.setAttribute(DOMSource.FILENAME_ATTR, source_name);
 		sourceNameElement.setAttribute(DOMSource.FILEPATH_ATTR, path);
+		sourceNameElement.setAttribute(DOMSource.IS_PARSED, "false");
 		this.myElement.addContent(sourceNameElement);
 	}
 	

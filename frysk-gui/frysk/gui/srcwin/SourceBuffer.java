@@ -40,6 +40,7 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -110,13 +111,16 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag variableTag;
 	private TextTag globalTag;
 	private TextTag keywordTag;
-//	private TextTag commentTag;
+	private TextTag commentTag;
 	private TextTag classTag;
 	private TextTag optimizedVarTag;
 	private TextTag oosVarTag;
 
 	private StaticParser staticParser;
 
+	// Hashmap of comments for each file
+	protected static HashMap comments = new HashMap();
+	
 	// Since conceptually each sourcebuffer will only be viewing one file, we
 	// don't
 	// need any information higher than this
@@ -601,7 +605,7 @@ public class SourceBuffer extends TextBuffer {
 	 *            The length of the literal
 	 */
 	public void addKeyword(int lineNum, int col, int length) {
-		DOMLine line = this.scope.getData().getLine(lineNum + 1);
+		DOMLine line = this.scope.getData().getLine(lineNum+1);
 		line.addTag(DOMTagTypes.KEYWORD, this.getText(this
 				.getIter(lineNum, col), this.getIter(lineNum, col + length),
 				false), col);
@@ -635,12 +639,20 @@ public class SourceBuffer extends TextBuffer {
 	 *            The line the comment ends on
 	 * @param colEnd
 	 *            the offset from the start of the line that the comment ends on
-	 * 
-	 * TODO: right now nothing calls this, the CDTParser can't find comments
 	 */
 	public void addComment(int lineStart, int colStart, int lineEnd, int colEnd) {
-		// this.applyTag(COMMENT_TAG, this.getIter(lineStart, colStart),
-		// this.getIter(lineEnd, colEnd));
+		CommentList comment = new CommentList(lineStart, colStart, lineEnd, colEnd);
+		
+		CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
+		
+		if(list == null)
+			comments.put(this.scope.getData().getFileName(), comment);
+		else{
+			while(list.getNextComment() != null)
+				list = list.getNextComment();
+			
+			list.setNextComment(comment);
+		}
 	}
 
 	/**
@@ -832,10 +844,12 @@ public class SourceBuffer extends TextBuffer {
 		this.variableTag = this.createTag(ID_TAG);
 		this.keywordTag = this.createTag(KEYWORD_TAG);
 		this.globalTag = this.createTag(MEMBER_TAG);
-//		this.commentTag = this.createTag(COMMENT_TAG);
+		this.commentTag = this.createTag(COMMENT_TAG);
 		this.classTag = this.createTag(CLASS_TAG);
 		this.optimizedVarTag = this.createTag(OPTIMIZED_VAR_TAG);
 		this.oosVarTag = this.createTag(OUT_OF_SCOPE_VAR_TAG);
+		
+		this.commentTag.setForeground(ColorConverter.colorToHexString(Color.GREEN));
 		
 		// We have to set this manually since this isn't controlled by the preferences
 		this.optimizedVarTag.setStrikethrough(true);
@@ -878,6 +892,9 @@ public class SourceBuffer extends TextBuffer {
 		
 		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.OUT_OF_SCOPE)).
 				addListener(new TagPreferenceListener(this.oosVarTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.COMMENTS)).
+				addListener(new TagPreferenceListener(this.commentTag));
 	}
 
 	/**
@@ -1026,6 +1043,15 @@ public class SourceBuffer extends TextBuffer {
 			}
 		}// end lines.hasNext()
 
+		// Now iterate through the comments
+		CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
+		
+		while(list != null){
+			this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine(), list.getStartCol()),
+					this.getIter(list.getEndLine(), list.getEndCol()));			
+			
+			list = list.getNextComment();
+		}
 	}
 	
 	/*
@@ -1059,6 +1085,48 @@ public class SourceBuffer extends TextBuffer {
 			this.myTag.setForeground(ColorConverter.colorToHexString(newColor));
 			this.myTag.setWeight(newWeight);
 			this.myTag.setStyle(newStyle);
+		}
+	}
+	
+
+	
+	static class CommentList{
+		private int startLine;
+		private int endLine;
+		private int startCol;
+		private int endCol;
+		
+		private CommentList nextComment;
+		
+		public CommentList(int startLine, int startCol, int endLine, int endCol){
+			this.startLine = startLine;
+			this.startCol = startCol;
+			this.endLine = endLine;
+			this.endCol = endCol;
+		}
+
+		public CommentList getNextComment() {
+			return nextComment;
+		}
+
+		public void setNextComment(CommentList nextComment) {
+			this.nextComment = nextComment;
+		}
+
+		public int getEndCol() {
+			return endCol;
+		}
+
+		public int getEndLine() {
+			return endLine;
+		}
+
+		public int getStartCol() {
+			return startCol;
+		}
+
+		public int getStartLine() {
+			return startLine;
 		}
 	}
 }

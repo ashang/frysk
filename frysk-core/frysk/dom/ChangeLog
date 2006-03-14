@@ -1,3 +1,10 @@
+2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DomImage.java (addSource): Now sets the 'parsed' attribute of the new
+	node to false.
+	* DomSource.java (isParsed): Added.
+	(setParsed): Added.
+
 2006-03-09  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMFrysk.java (pcName): No longer is static, since it is

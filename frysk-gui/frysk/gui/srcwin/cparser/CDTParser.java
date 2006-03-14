@@ -79,6 +79,39 @@ public class CDTParser implements StaticParser {
 		
 		if(!parser.parse())
 			System.err.println("Some errors found during parse");
+		
+		/*
+		 * The CDT Parser does not parse out comments for some reason,
+		 * do a second parsing run and pick them out
+		 */
+		Tokenizer tokenMaker = new Tokenizer(filename);
+		
+		while(tokenMaker.hasMoreTokens()){
+			Token t = tokenMaker.nextToken();
+			
+			// C++ style comments
+			if(t.text.equals("//")){
+				Token t2 = t;
+				while(tokenMaker.hasMoreTokens() && tokenMaker.peek().lineNum == t.lineNum){
+					t2 = tokenMaker.nextToken();
+				}
+				buffer.addComment(t.lineNum, t.colNum, t.lineNum, t2.colNum+t2.text.length());
+			}
+			// C Style comments
+			else if(t.text.equals("/*")){
+				Token t2 = t;
+				while(tokenMaker.hasMoreTokens() && !tokenMaker.peek().text.equals("*/")){
+					t2 = tokenMaker.nextToken();
+				}
+				t2 = tokenMaker.nextToken();
+				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
+			}
+			// TODO: For some reason this causes the source window to break
+			// For some reason the CDTParser doesn't pick up this keyword either
+//			else if(t.text.equals("return")){
+//				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
+//			}
+		}
 	}
 
 	

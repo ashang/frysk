@@ -168,6 +168,9 @@ public class PreferenceWindow extends Window implements TreeSelectionListener, B
 		
 		sPref = (SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.OPTIMIZED);
 		this.initSyntaxPreference(sPref, "opt");
+		
+		sPref = (SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.COMMENTS);
+		this.initSyntaxPreference(sPref, "comment");
 	}
 	
 	private void initSyntaxPreference(SyntaxPreference sPref, String prefix){

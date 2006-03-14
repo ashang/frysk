@@ -1,3 +1,22 @@
+2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (createTags): Now goes through list of comments
+	and creates tags for them as well.
+	* SourceBuffer.java (createTags): Ditto.
+	(addComment): Now adds a comment into the protected static HashMap,
+	since we want to keep a copy but don't want to burden the DOM.
+	(init): Comment tag now initialized again, and listener is added.
+	(CommentList): Added, data structure to keep track of comments for a file.
+	* StackLevel.java (isParsed): Now passes call on to DOMSource.
+	(setParsed): Ditto.
+	* cparser/CDTParser.java (parse): Now does secondary scan of file 
+	to pick up comments, code copied from SimpleParser.java.
+	* cparser/SimpleParser.java (Tokenizer): Refactored out into it's own class.
+	(Token): Ditto.
+	* cparser/Token.java: Added.
+	* cparser/Tokenizer.java: Added.
+	* prefs/SyntaxPreferenceGroup.java: Added field for Comments.
+
 2006-03-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (init): Updated loading of preferences to 

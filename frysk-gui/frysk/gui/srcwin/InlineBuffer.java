@@ -237,6 +237,27 @@ public class InlineBuffer extends SourceBuffer {
                         this.getIter(line.getLineNum() - this.getFirstLine(), func.getStart() + func.getEnd()));
             }
         }// end lines.hasNext()
+        
+//      Now iterate through the comments
+		CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
+		
+		while(list != null){
+			if(list.getEndLine() < this.declaration.getStartingLine()){
+				list = list.getNextComment();
+				continue;
+			}
+			
+			if(list.getStartLine() >= this.declaration.getStartingLine())
+				this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine() - this.getFirstLine() + 1, list.getStartCol()),
+						this.getIter(list.getEndLine() - this.getFirstLine() + 1, list.getEndCol()));
+			else
+				// We have to get the first iter this way since we may have a header at the beginning of the
+				// file for hidden inlined levels that shouldn't be displayed
+				this.applyTag(COMMENT_TAG, this.getLineIter(this.getFirstLine() - this.declaration.getStartingLine()),
+						this.getIter(list.getEndLine() - this.getFirstLine() + 1, list.getEndCol()));
+			
+			list = list.getNextComment();
+		}
     }
     
     /**
