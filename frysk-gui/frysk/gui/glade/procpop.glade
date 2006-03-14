@@ -2039,7 +2039,7 @@
 		      <child>
 			<widget class="GtkLabel" id="label74">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Processies to watch</property>
+			  <property name="label" translatable="yes">Processes to Watch</property>
 			  <property name="use_underline">False</property>
 			  <property name="use_markup">False</property>
 			  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -2342,7 +2342,7 @@
 			      <child>
 				<widget class="GtkLabel" id="label77">
 				  <property name="visible">True</property>
-				  <property name="label" translatable="yes">All processies</property>
+				  <property name="label" translatable="yes">All Processes</property>
 				  <property name="use_underline">False</property>
 				  <property name="use_markup">False</property>
 				  <property name="justify">GTK_JUSTIFY_LEFT</property>
