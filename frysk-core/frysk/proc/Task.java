@@ -51,7 +51,7 @@ import frysk.Config;
 
 abstract public class Task
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     protected TaskId id;
     protected Proc proc;
 

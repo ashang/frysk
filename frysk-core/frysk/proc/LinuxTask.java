@@ -47,8 +47,6 @@ import inua.eio.PtraceByteBuffer;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * Linux implementation of Task.
@@ -57,7 +55,6 @@ import frysk.Config;
 public class LinuxTask
     extends Task
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     // XXX: For moment wire in standard 32-bit little-endian memory
     // map.  This will be replaced by a memory map created using
     // information from /proc/PID/maps.

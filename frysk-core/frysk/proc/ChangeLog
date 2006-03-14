@@ -1,8 +1,14 @@
 2006-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (logger): Add protected field.
+	* Task.java (logger): Change from private to protected final.
+	* Host.java (logger): Ditto.
+	* Proc.java (logger): Ditto.
+	* LinuxHost.java (logger): Delete.
+	* LinuxTask.java (logger): Delete.
+
 	* TestLib.java: Update; frysk.sys.Poll simplified, member
 	SignalSet deleted, Fds parameter removed.
-
 
 2006-03-13  Andrew Cagney  <cagney@redhat.com>
 

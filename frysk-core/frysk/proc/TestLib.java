@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import frysk.Config;
 import frysk.event.SignalEvent;
 import frysk.junit.Paths;
 import frysk.sys.Errno;
@@ -58,6 +59,8 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import junit.framework.TestCase;
 
 /**
@@ -67,6 +70,8 @@ import junit.framework.TestCase;
 public class TestLib
     extends TestCase
 {
+    protected final static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    
     /**
      * Return the exec prefix that should be prepended to all
      * programs.
@@ -1082,6 +1087,7 @@ public class TestLib
 
     public void setUp ()
     {
+	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< start setUp\n", this);
 	children = new HashSet ();
 	// Extract a fresh new Host and EventLoop from the Manager.
 	host = Manager.resetXXX ();
@@ -1107,10 +1113,12 @@ public class TestLib
 			registerChild (task.getTid ());
 		}
 	    });
+	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
     }
 
     public void tearDown ()
     {
+	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> start tearDown\n", this);
 	// Sig.KILL all the registered children.  Once that signal is
 	// processed the task will die.
 
@@ -1227,5 +1235,7 @@ public class TestLib
 				  + ">>");
 	    }
 	}
+
+	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);
     }
 }

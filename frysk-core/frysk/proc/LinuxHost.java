@@ -53,8 +53,6 @@ import java.util.List;
 import java.util.LinkedList;
 import frysk.sys.proc.IdBuilder;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * A Linux Host.
@@ -63,7 +61,6 @@ import frysk.Config;
 public class LinuxHost
     extends Host
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     EventLoop eventLoop;
     /**
      * Construct an instance of the LinuxHost that uses the specified
