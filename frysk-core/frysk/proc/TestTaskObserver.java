@@ -45,7 +45,6 @@ import frysk.sys.Signal;
 import frysk.sys.Sig;
 import frysk.sys.Errno;
 import frysk.event.TimerEvent;
-import frysk.sys.Pid;
 
 /**
  * Generic observer tests - that the framework functions ok.
@@ -561,46 +560,5 @@ public class TestTaskObserver
     {
 	Child child = new AckDaemonProcess ();
 	deleteUnattachedObserver (child, true);
-    }
-
-    /**
-     * Stress test to confirm that attaching to rapidly cloning tasks
-     * works.
-     */
-    public void testAttachDetachRapidlyCloningMainTask ()
-    {
-	Child child = new AckDaemonProcess (ackSignal, new String[]
-	    {
-		getExecPrefix () + "funit-threads",
-		Integer.toString (Pid.get ()),
-		Integer.toString (ackSignal.hashCode ()),
-		"5", // Seconds
-		"100" // Tasks
-	    });
-	Task task = child.findTaskUsingRefresh (true);
-
-	// Create a list of tasks.  Since the above is constantly
-	// creating new tasks (with the old ones exiting) it is almost
-	// always out-of-date.
-	Task[] tasks = (Task[]) task.proc.getTasks ().toArray (new Task[0]);
-
-	// Failure is an option and will occure when ever an attach to
-	// one of those old tasks is attempted.
-	class CanFailObserver
-	    extends AttachedObserver
-	{
-	    int failedCount;
-	    public void addFailed (Object o, Throwable w)
-	    {
-		failedCount++;
-	    }
-	}
-	CanFailObserver canFailObserver = new CanFailObserver ();
-	attach (tasks, canFailObserver);
-	// The main task never dies so at least it will have been
-	// successfully attached.
-	assertTrue ("successful attach count greater than zero",
-		    canFailObserver.addedCount > 0);
-	detach (tasks, canFailObserver);
     }
 }

@@ -1,5 +1,9 @@
 2006-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserver.java (testAttachDetachRapidlyCloningMainTask):
+	Move to new file.
+	* StressTaskObserver.java: New file.
+
 	* TestLib.java (logger): Add protected field.
 	* Task.java (logger): Change from private to protected final.
 	* Host.java (logger): Ditto.

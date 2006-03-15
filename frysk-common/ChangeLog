@@ -1,3 +1,7 @@
+2006-03-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (JUnitTests.java): Include Stress files in list.
+
 2006-03-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Make .java files generated from .mkenum and
