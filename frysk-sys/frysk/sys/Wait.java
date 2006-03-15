@@ -98,8 +98,8 @@ public final class Wait
 	void disappeared (int pid, Throwable w);
     }
     /**
-     * Wait for any process or task event.  If there is no outstanding
-     * event return immediatly.
+     * Read in all the pending wait events, and then pass them to the
+     * observer.  If there is no outstanding event return immediatly.
      */
     public native static void waitAllNoHang (Observer observer);
     /**

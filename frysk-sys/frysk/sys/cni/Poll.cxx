@@ -80,6 +80,8 @@ handler (int signum)
   if (poll_jmpbuf.tid == frysk::sys::Tid::get ())
     siglongjmp (poll_jmpbuf.buf, signum);
   else
+    // XXX: Want to edit this thread's mask so that from now on it
+    // blocks this signal, don't know a way to do it though.
     tkill (poll_jmpbuf.tid, signum);
 }
 
@@ -92,6 +94,9 @@ frysk::sys::Poll::addSignalHandler (frysk::sys::Sig* sig)
   sigset_t mask;
   sigemptyset (&mask);
   sigaddset (&mask, signum);
+  // XXX: In a multi-threaded environment this call is not well
+  // defined (although it does help reduce the number of signals
+  // directed to the wrong thread).
   sigprocmask (SIG_BLOCK, &mask, NULL);
   // Install the above signal handler (it long jumps back to the code
   // that enabled the signal).  To avoid potential recursion, all
@@ -147,12 +152,12 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Observer* pollObserver,
 			jlong timeout)
 {
   // Set up a SIGSETJMP call that jumps back to here when any watched
-  // signal is delivered.  This code then notifies the client of the
-  // occurance of a signal event, removes the signal from the current
-  // set (so that other potential signals can get through), and forces
-  // things into a non-blocking poll (this method returns when zero or
-  // more events, or a timeout has occured).
+  // signal is delivered.  The signals are accumulated in a sigset,
+  // and removed from the current of signals being unmasked, and the
+  // timer is set to zero forcing a non-blocking poll.
 
+  sigset_t signals;
+  sigemptyset (&signals);
   sigset_t mask = *getRawSet (sigSet);
   int signum = sigsetjmp (poll_jmpbuf.buf, 1);
   if (signum > 0) {
@@ -160,28 +165,31 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Observer* pollObserver,
     // doing this allows other signals to get through (otherwize this
     // code could be swamped by a single re-occuring signal).
     sigdelset (&mask, signum);
-    // Find the signal object.
-    frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (signum);
-    // Notify the client of the signal.
-    pollObserver->signal (sig);
+    // Add it to those that have fired.
+    sigaddset (&signals, signum);
     // Make the poll non-blocking.  Now that at least one event has
-    // been detected, this method should not block.
+    // been detected, this method should not block instead returning
+    // immediatly after the file descriptors have been polled.
     timeout = 0;
   }
 
-  // Unblock signals, and then wait for an event.  During the period
-  // after the unmask, but before the poll call, signals could be
-  // delivered but missed.  Avoid the problem by having the signal
-  // handler longjmp back to above re-starting this code and forcing
-  // the poll (even if it wasn't reached) to be canceled.
+  // Unblock signals, and then wait for an event.  There is a window
+  // between the unmask and poll system calls during which a signal
+  // could be delivered that doesn't interrupt the poll call.  Avoid
+  // this race by having the signal handler longjmp back to the above
+  // setjmp, re-starting this code, forcing the poll (even if it
+  // wasn't reached) to be canceled.
+
   poll_jmpbuf.tid = frysk::sys::Tid::get ();
-  pthread_sigmask (SIG_UNBLOCK, &mask, 0);
-  errno = 0;
+  errno = ::pthread_sigmask (SIG_UNBLOCK, &mask, 0);
+  if (errno != 0)
+    throwErrno (errno, "pthread_sigmask.UNBLOCK");
   int status = ::poll ((struct pollfd*)pollFds->fds, pollFds->numFds, timeout);
   if (status < 0)
-    status = -errno; // Save the errno.
-  pthread_sigmask (SIG_BLOCK, &mask, NULL);
-  // poll_jmpbuf.p = false;
+    status = -errno; // Save the errno across the next system call.
+  errno = ::pthread_sigmask (SIG_BLOCK, &mask, NULL);
+  if (errno != 0)
+    throwErrno (errno, "pthread_sigmask.BLOCK");
 
   // Did something go wrong?
   if (status < 0) {
@@ -193,8 +201,21 @@ frysk::sys::Poll::poll (frysk::sys::Poll$Observer* pollObserver,
     }
   }
 
-  // Did a connection fire, status when +ve, contains the number of
-  // file descriptors that fired one or more events.
+  // Deliver any signals received during the poll; XXX: Is there a
+  // more efficient way of doing this?
+
+  for (int i = 1; i < 32; i++) {
+    if (sigismember (&signals, i)) {
+      // Find the signal object.
+      frysk::sys::Sig* sig = frysk::sys::Sig::valueOf (i);
+      // Notify the client of the signal.
+      pollObserver->signal (sig);
+    }
+  }
+
+  // Did a file descriptor fire, status when +ve, contains the number
+  // of file descriptors that fired one or more events.
+
   struct pollfd* pollfd = (struct pollfd*) pollFds;
   while (status > 0) {
     if (pollfd->revents != 0) {

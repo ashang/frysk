@@ -43,6 +43,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <alloca.h>
 #include "linux.ptrace.h"
 
 #include <gcj/cni.h>
@@ -161,22 +162,44 @@ processStatus (int pid, int status,
 void
 frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
 {
+  struct WaitResult {
+    pid_t pid;
+    int status;
+    WaitResult* next;
+  };
+  WaitResult* head = (WaitResult* ) alloca (sizeof (WaitResult));
+  WaitResult* tail = head;
+  // Drain the waitpid queue of all its events storing each in a list
+  // on the stack.  The queue is fully drained _before_ it is
+  // processed, that way there is no possibility of a continued thread
+  // getting its next event back on the queue resulting in live lock.
+  int i = 0;
   while (true) {
     // Keep fetching the wait status until there are none left.  If
     // there are no children ECHILD is returned which is ok.
-    int status;
     errno = 0;
-    int pid = ::waitpid (-1, &status, WNOHANG | __WALL);
-    if (pid <= 0)
-      switch (errno) {
-      case 0:
-      case ECHILD:
-	return;
-      default:
-	throwErrno (errno, "waitpid", "process", -1);
-      }
+    tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
+    if (tail->pid <= 0)
+      break;
+    tail->next = (WaitResult*) alloca (sizeof (WaitResult));
+    tail = tail->next;
+    i++;
+  }
+  if (i > 2001)
+    printf ("\tYo! There were %d simultaneous pending waitpid's!\n", i);
+  // Check the reason for exiting.
+  switch (errno) {
+  case 0:
+  case ECHILD:
+    break;
+  default:
+    throwErrno (errno, "waitpid", "process", -1);
+  }
+  // Now unpack each, notifying the observer.
+  while (head != tail) {
     // Process the result.
-    processStatus (pid, status, observer);
+    processStatus (head->pid, head->status, observer);
+    head = head->next;
   }
 }
 
