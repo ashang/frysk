@@ -79,18 +79,6 @@ class TaskState
     {
 	super (state);
     }
-    boolean isRunning ()
-    {
-	return false;
-    }
-    boolean isStopped ()
-    {
-	return false;
-    }
-    boolean isDead ()
-    {
-	return false;
-    }
     TaskState processPerformSignaled (Task task, int sig)
     {
 	throw unhandled (task, "PerformSignaled");
@@ -342,10 +330,6 @@ class TaskState
     // Keep the task running.
     private static TaskState running = new TaskState ("running")
 	{
-	    boolean isRunning ()
-	    {
-		return true;
-	    }
 	    TaskState processPerformSignaled (Task task, int sig)
 	    {
 		logger.log (Level.FINE, "{0} processPerformSignaled\n", task); 
@@ -455,10 +439,6 @@ class TaskState
 	    // because an exit syscall will produce these events and
 	    // never produce a syscall-exit event.
 
-	    boolean isRunning ()
-	    {
-		return true;
-	    }
 	    TaskState processSyscalledEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} processSyscalledEvent\n", task); 
@@ -635,10 +615,6 @@ class TaskState
 
     private static TaskState stopped = new TaskState ("stopped")
 	{
-	    boolean isStopped ()
-	    {
-		return true;
-	    }
 	    TaskState processPerformContinue (Task task)
 	    {
 		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
@@ -692,14 +668,6 @@ class TaskState
 
     private static TaskState destroyed = new TaskState ("destroyed") 
 	{
-	    boolean isStopped ()
-	    {
-		return true;
-	    }
-	    boolean isDead ()
-	    {
-		return true;
-	    }
 	    TaskState processPerformAttach (Task task)
 	    {
 		logger.log (Level.FINE, "{0} processPerformAttach\n", task); 

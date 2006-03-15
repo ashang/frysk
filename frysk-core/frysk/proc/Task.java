@@ -434,19 +434,6 @@ abstract public class Task
 	    });
     }
 
-    boolean isStopped ()
-    {
-	return state.isStopped ();
-    }
-    boolean isRunning ()
-    {
-	return state.isRunning ();
-    }
-    boolean isDead ()
-    {
-	return state.isDead ();
-    }
-
     public class TaskEventObservable
 	extends Observable
     {

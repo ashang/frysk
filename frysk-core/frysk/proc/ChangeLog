@@ -1,5 +1,8 @@
 2006-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java (isStopped, isRunning, isDead): Delete.
+	* Task.java (isStopped, isRunning, isDead): Delete.
+	
 	* TaskState.java (processRequestStop): Delete.
 	(processPerformContinue): Rename processRequestContinue.
 	(stopping, stoppingInSyscall, paused, unpaused): Delete states.
