@@ -88,10 +88,22 @@ public class TestLib
      *
      * XXX: Static to avoid gcc bugs.
      */
-    static void assertRunUntilStop (String reason)
+    static void assertRunUntilStop (int timeout, String reason)
     {
 	assertTrue ("event loop run explictly stopped (" + reason + ")",
-		    Manager.eventLoop.runPolling (5000));
+		    Manager.eventLoop.runPolling (timeout * 1000));
+    }
+
+    /**
+     * Run the event loop for a short period of time until it is
+     * explicitly stopped (using EventLoop . requestStop).  During
+     * this period poll for external events.
+     *
+     * XXX: Static to avoid gcc bugs.
+     */
+    static void assertRunUntilStop (String reason)
+    {
+	assertRunUntilStop (5, reason);
     }
 
     /**

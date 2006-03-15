@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -56,12 +56,14 @@ public class StressTaskObserver
      */
     public void testAttachDetachRapidlyCloningMainTask ()
     {
+	final int timeout = 20;
+
 	Child child = new AckDaemonProcess (ackSignal, new String[]
 	    {
 		getExecPrefix () + "funit-threads",
 		Integer.toString (Pid.get ()),
 		Integer.toString (ackSignal.hashCode ()),
-		"5", // Seconds
+		Integer.toString (timeout), // Seconds
 		"1000" // Tasks
 	    });
 	final Proc proc = child.findProcUsingRefresh (true);
@@ -89,6 +91,7 @@ public class StressTaskObserver
 	}
 	CanFailObserver canFailObserver = new CanFailObserver ();
 
+	// Add the observer to all tasks.
 	for (int i = 0; i < tasks.length; i++) {
 	    tasks[i].requestAddAttachedObserver (canFailObserver);
 	}
@@ -101,7 +104,7 @@ public class StressTaskObserver
 		    Manager.eventLoop.requestStop ();
 		}
 	    });
-	assertRunUntilStop ("attaching to task");
+	assertRunUntilStop (timeout, "attaching to task");
 
 	// The main task never dies so at least it will have been
 	// successfully attached.
@@ -119,6 +122,6 @@ public class StressTaskObserver
 		    Manager.eventLoop.requestStop ();
 		}
 	    });
-	assertRunUntilStop ("detaching from task");
+	assertRunUntilStop (timeout, "detaching from task");
     }
 }

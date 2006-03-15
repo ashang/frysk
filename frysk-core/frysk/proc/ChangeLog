@@ -1,5 +1,8 @@
 2006-03-14  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (assertRunUntilStop (int, String): New.
+	* StressTaskObserver.java: Increase timeout to 20 seconds.
+
 	* TestTaskObserver.java (testAttachDetachRapidlyCloningMainTask):
 	Move to new file.
 	* StressTaskObserver.java: New file.
