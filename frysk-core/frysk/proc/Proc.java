@@ -378,24 +378,6 @@ public abstract class Proc
     }
 
     /**
-     * Notify of the addition of a task attached to this process.
-     *
-     * This event indicates the presence of the task, not that it is
-     * attached or detached.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableTaskAddedXXX = new ObservableXXX ();
-    /**
-     * Notify of the removal of a task attached to this process.
-     *
-     * XXX: Should be made private and instead accessor methods added.
-     * Should more formally define the observable and the event.
-     */
-    public ObservableXXX observableTaskRemovedXXX = new ObservableXXX ();
-
-    /**
      * Pool of tasks belonging to this Proc.
      */
     Map taskPool = new HashMap ();
@@ -405,7 +387,6 @@ public abstract class Proc
     void add (Task task)
     {
 	taskPool.put (task.id, task);
-	observableTaskAddedXXX.notify (task);
 	host.observableTaskAddedXXX.notify (task);
     }
     /**
@@ -415,7 +396,6 @@ public abstract class Proc
     {
 	logger.log (Level.FINE, "{0} remove(Task) -- within this Proc\n",
 		    this); 
-	observableTaskRemovedXXX.notify (task);
 	host.observableTaskRemovedXXX.notify (task);
 	taskPool.remove (task.id);
 	host.remove (task);
