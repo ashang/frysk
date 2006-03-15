@@ -189,31 +189,16 @@ abstract public class Task
     }
 
     /**
-     * Event requesting that the task stop.
+     * (Internal) Requesting that the task go (or resume execution).
      */
-    void requestStop ()
-    {
-	logger.log (Level.FINE, "{0} requestStop\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processRequestStop (Task.this);
-		}
-	    });
-    }
-
-    /**
-     * Requesting that the task go (or resume execution).
-     */
-    void requestContinue ()
+    void performContinue ()
     {
 	logger.log (Level.FINE, "{0} requestContinue\n", this); 
 	Manager.eventLoop.add (new TaskEvent ()
 	    {
 		public void execute ()
 		{
-		    state = state.processRequestContinue (Task.this);
+		    state = state.processPerformContinue (Task.this);
 		}
 	    });
     }

@@ -1,5 +1,12 @@
 2006-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java (processRequestStop): Delete.
+	(processPerformContinue): Rename processRequestContinue.
+	(stopping, stoppingInSyscall, paused, unpaused): Delete states.
+	* Task.java (requestStop): Delete.
+	(performContinue): Rename requestContinue.
+	* ProcState.java: Update.
+	
 	* ProcState.java (processPerformTaskContinueCompleted): Delete.
 	* Proc.java (performTaskContinueCompleted): Delete.
 	* Task.java (performContinue): Delete.

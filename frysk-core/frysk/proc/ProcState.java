@@ -272,7 +272,7 @@ abstract class ProcState
 	    for (Iterator i = proc.getTasks ().iterator ();
 		 i.hasNext (); ) {
 		Task t = (Task) i.next ();
-		t.requestContinue ();
+		t.performContinue ();
 	    }
 	    proc.observableAttached.notify (proc);
 	    return running;

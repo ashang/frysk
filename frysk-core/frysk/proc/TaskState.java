@@ -123,11 +123,7 @@ class TaskState
     {
 	throw unhandled (task, "processDisappearedEvent");
     }
-    TaskState processRequestStop (Task task)
-    {
-	throw unhandled (task, "RequestStop");
-    }
-    TaskState processRequestContinue (Task task)
+    TaskState processPerformContinue (Task task)
     {
 	throw unhandled (task, "RequestContinue");
     }
@@ -250,9 +246,9 @@ class TaskState
      */
     private static TaskState attached = new TaskState ("attached")
 	{
-	    TaskState processRequestContinue (Task task)
+	    TaskState processPerformContinue (Task task)
 	    {
-		logger.log (Level.FINE, "{0} processRequestContinue\n", task); 
+		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
 		task.sendSetOptions ();
 		if (task.notifyAttached () > 0)
 		    return blockedContinue;
@@ -343,50 +339,6 @@ class TaskState
 	    };
     }
 
-    // A manually stopped task.
-    private static TaskState stopping = new TaskState ("stopping")
-	{
-	    TaskState processRequestStop (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestStop\n", task); 
-		return stopping;
-	    }
-	    TaskState processSyscalledEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processSyscalledEvent\n", task); 
-		task.notifySyscallEnter ();
-		task.sendContinue (0);
-		return stoppingInSyscall;
-	    }
-	    TaskState processStoppedEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processStoppedEvent\n", task); 
-		return stopped;
-	    }
-	    TaskState processTrappedEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processTrappedEvent\n", task); 
-		return paused;
-	    }
-	};
-
-    // A manually stopped task currently in a syscall.
-    private static TaskState stoppingInSyscall = new TaskState ("stoppingInSyscall")
-	{
-	    TaskState processRequestStop (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestStop\n", task); 
-		return stoppingInSyscall;
-	    }
-	    TaskState processSyscalledEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processSyscalledEvent\n", task); 
-		task.notifySyscallExit ();
-		task.sendContinue (0);
-		return stopping;
-	    }
-	};
-
     // Keep the task running.
     private static TaskState running = new TaskState ("running")
 	{
@@ -450,15 +402,9 @@ class TaskState
 		logger.log (Level.FINE, "{0} processDisappearedEvent\n", task); 
 		return disappeared;
     	    }
-	    TaskState processRequestStop (Task task)
+	    TaskState processPerformContinue (Task task)
 	    {
-		logger.log (Level.FINE, "{0} processRequestStop\n", task); 
-		task.sendStop ();
-		return stopping;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestContinue\n", task); 
+		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
 		return running;
 	    }
 	    TaskState processPerformDetach (Task task)
@@ -539,15 +485,9 @@ class TaskState
 		processAttachedTerminated (task, signal, value);
 		return destroyed;
 	    }
-	    TaskState processRequestStop (Task task)
+	    TaskState processPerformContinue (Task task)
 	    {
-		logger.log (Level.FINE, "{0} processRequestStop\n", task); 
-		task.sendStop ();
-		return stoppingInSyscall;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestContinue\n", task); 
+		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
 		return runningInSyscall;
 	    }
 	    TaskState processPerformDetach (Task task)
@@ -699,14 +639,9 @@ class TaskState
 	    {
 		return true;
 	    }
-	    TaskState processRequestStop (Task task)
+	    TaskState processPerformContinue (Task task)
 	    {
-		logger.log (Level.FINE, "{0} processRequestStop\n", task); 
-		return stopped;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestContinue\n", task); 
+		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
 		task.sendContinue (0);
 		return running;
 	    }
@@ -724,51 +659,6 @@ class TaskState
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
-	    }
-	};
-
-    private static TaskState paused = new TaskState ("paused")
-	{
-	    boolean isStopped ()
-	    {
-		return true;
-	    }
-	    TaskState processRequestStop (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestStop\n", task); 
-		return paused;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestContinue\n", task); 
-		task.sendContinue (0);
-		return unpaused;
-	    }
-	};
-
-    private static TaskState unpaused = new TaskState ("unpaused")
-	{
-	    boolean isRunning ()
-	    {
-		return true;
-	    }
-	    TaskState processRequestContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestContinue\n", task); 
-		return unpaused;
-	    }
-	    TaskState processStoppedEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processStoppedEvent\n", task); 
-		task.sendContinue (0);
-		return running;
-	    }
-	    TaskState processPerformAddObservation (Task task,
-						    Observation observation)
-	    {
-		logger.log (Level.FINE, "{0} processPerformAddObservation\n", task); 
-		observation.add ();
-		return unpaused;
 	    }
 	};
 
