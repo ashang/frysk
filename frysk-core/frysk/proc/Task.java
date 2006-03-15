@@ -287,22 +287,6 @@ abstract public class Task
     }
 
     /**
-     * (Internal) Tell the task to continue itself.  Notify the
-     * containing process once the operation has been processed.
-     */
-    void performContinue ()
-    {
-	logger.log (Level.FINE, "{0} performContinue\n", this);
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processPerformContinue (Task.this);
-		}
-	    });
-    }
-
-    /**
      * (internal) This task cloned creating the new Task cloneArg.
      */
     void receiveClonedEvent (final Task cloneArg)

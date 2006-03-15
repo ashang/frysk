@@ -1,5 +1,10 @@
 2006-03-15  Andrew Cagney  <cagney@redhat.com>
 
+	* ProcState.java (processPerformTaskContinueCompleted): Delete.
+	* Proc.java (performTaskContinueCompleted): Delete.
+	* Task.java (performContinue): Delete.
+	* TaskState.java (processPerformContinue): Delete.
+
 	* TaskState.java (processPerformStop): Delete.
 	(performingStop): Delete state.
 	* ProcState.java (processPerformTaskStopCompleted): Delete.

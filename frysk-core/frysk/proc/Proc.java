@@ -255,24 +255,6 @@ public abstract class Proc
     }
 
     /**
-     * (Internal) Tell the process that the contained task has
-     * completed the continue request.
-     */
-    void performTaskContinueCompleted (final Task theTask)
-    {
-	logger.log (Level.FINE, "{0} performTaskContinueCompleted\n", this); 
-	Manager.eventLoop.add (new ProcEvent ()
-	    {
-		Task task = theTask;
-		public void execute ()
-		{
-		    state = state.processPerformTaskContinueCompleted
-			(Proc.this, task);
-		}
-	    });
-    }
-
-    /**
      * The set of observations that currently apply to this task.
      */
     Set observations = new HashSet ();

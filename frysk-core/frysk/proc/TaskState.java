@@ -147,10 +147,6 @@ class TaskState
     {
 	throw unhandled (task, "PerformDetach");
     }
-    TaskState processPerformContinue (Task task)
-    {
-	throw unhandled (task, "PerformContinue");
-    }
     TaskState processClonedEvent (Task task, Task clone)
     {
 	throw unhandled (task, "processClonedEvent");
@@ -719,15 +715,6 @@ class TaskState
 		logger.log (Level.FINE, "{0} processRequestStepInstruction\n", task); 
 		task.sendStepInstruction (0);
 		return stepping;
-	    }
-	    TaskState processPerformContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
-		// XXX: Need to save the stop signal so that the
-		// continue is correct.
-		task.sendContinue (0);
-		task.proc.performTaskContinueCompleted (task);
-		return running;
 	    }
 	    TaskState processPerformDetach (Task task)
 	    {
