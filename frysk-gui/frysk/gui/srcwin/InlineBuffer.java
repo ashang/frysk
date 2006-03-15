@@ -291,45 +291,4 @@ public class InlineBuffer extends SourceBuffer {
     	}
     	// Same connundrum as above method...
     }
-    
-    /*
-     * Since we have omitted an arbitrary amount of text at the beginning of the file,
-     * we must take that into account when getting text
-     * @see frysk.gui.srcwin.SourceBuffer#getText(int, int, int)
-     */
-    protected String getText(int line, int col, int length){
-    	if(line < this.getFirstLine())
-    		return "";
-    	
-		return this.getText(this.getIter(line - this.getFirstLine() + 1, col), this.getIter(line - this.getFirstLine() + 1, col + length), true);
-	}
-	
-    /*
-     * Since we have omitted an arbitrary amount of text from the start of the file,
-     * we must take that into account, as well as whether or not we are showing the message
-     * concerning hidden inlined scopes.
-     * @see frysk.gui.srcwin.SourceBuffer#getText(int, int)
-     */
-	protected String getText(int offset, int length){
-		if(offset < this.declaration.getStart())
-			return "";
-		
-		// We have to take into account whether there's an ellipsis warning visible
-		int newOffset = offset - this.declaration.getStart() + (this.getFirstLine() - this.declaration.getStartingLine());
-		
-		return this.getText(this.getIter(newOffset), this.getIter(newOffset + length), true);
-	}
-	
-	/*
-	 * Since we're hiding some text from the start of the file, we must make sure we're
-	 * getting the offset from the correct line.
-	 *  (non-Javadoc)
-	 * @see frysk.gui.srcwin.SourceBuffer#getLineOffset(int)
-	 */
-	protected int getLineOffset(int offset){
-		
-		int newOffset = offset - this.declaration.getStart() + (this.getFirstLine() - this.declaration.getStartingLine());
-		
-		return this.getIter(newOffset).getLineOffset();
-	}
 }

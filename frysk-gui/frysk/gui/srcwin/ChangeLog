@@ -1,5 +1,24 @@
 2006-03-15  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (addFunction): Removed since parsers now directly
+	manipulate the DOM.
+	(addVariable): Ditto.
+	(addKeyword): Ditto.
+	(addClass): Ditto.
+	(load): Now passes in DOMSource to parser.
+	(getText): Removed.
+	(getLineOffset): Removed.
+	* InlineBuffer.java (getText): Removed.
+	(getLineOffset): Ditto.
+	* StaticParser.java (parse): Now takes a DOMSource object.
+	* cparser/CDTParser.java (parse): Changed to reflect change to interface.
+	(ParserCallBack): Functions now directly manipulate the DOM, rather than
+	calling methods in SourceBuffer.
+	* cparser/CTagsParser.java (parse): Changed to reflect interface,
+	also commented out areas that add tags since they use the old API. Will
+	update this parser when it becomes needed.
+	* cparser/SimpleParser.java (parse): Ditto.
+
 	* InlineBuffer.java (getText): Added.
 	(getLineOffset): Ditto.
 	* SourceBuffer.java (addFunction): Now uses getLineOffset.

@@ -51,6 +51,9 @@ import org.eclipse.cdt.core.parser.ast.IASTUsingDirective;
 import org.eclipse.cdt.core.parser.ast.IASTVariable;
 import org.eclipse.cdt.core.parser.ast.IASTVariableReference;
 
+import frysk.dom.DOMLine;
+import frysk.dom.DOMSource;
+import frysk.dom.DOMTagTypes;
 import frysk.gui.srcwin.SourceBuffer;
 import frysk.gui.srcwin.StaticParser;
 
@@ -60,17 +63,20 @@ import frysk.gui.srcwin.StaticParser;
  */
 public class CDTParser implements StaticParser {
 
-	private SourceBuffer buffer;
+	private DOMSource source;
 	
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(SourceBuffer buffer, String filename) throws IOException {
-		this.buffer = buffer;
+	public void parse(DOMSource source, SourceBuffer buffer) throws IOException {
+		this.source = source;
+		
+		String filename = source.getFilePath() + "/" + source.getFileName();
 		
 		ParserCallBack callback = new ParserCallBack();
 		IParser parser = ParserFactory.createParser(
-				ParserFactory.createScanner(filename, new ScannerInfo(), ParserMode.COMPLETE_PARSE,
+				ParserFactory.createScanner(filename,
+						new ScannerInfo(), ParserMode.COMPLETE_PARSE,
 						ParserLanguage.CPP, callback, new NullLogService(), null),
 				callback,
 				ParserMode.COMPLETE_PARSE,
@@ -106,10 +112,13 @@ public class CDTParser implements StaticParser {
 				t2 = tokenMaker.nextToken();
 				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
 			}
-			// TODO: For some reason this causes the source window to break
 			// For some reason the CDTParser doesn't pick up this keyword either
 			else if(t.text.equals("return")){
-				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
+				DOMLine line = this.source.getLine(t.lineNum + 1);
+				if(line == null)
+					return;
+				
+				line.addTag(DOMTagTypes.KEYWORD, t.text, t.colNum);
 			}
 		}
 	}
@@ -118,29 +127,51 @@ public class CDTParser implements StaticParser {
 	class ParserCallBack implements ISourceElementRequestor{
 
 		public void acceptVariable(IASTVariable arg0) {
-				buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-				buffer.addVariable(arg0.getNameOffset(), arg0.getName().length());
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
 		}
 
 		public void acceptFunctionDeclaration(IASTFunction arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-				buffer.addVariable(param.getNameOffset(), param.getName().length());
+			
+				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
+				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
 			}
 		}
 		
 		public void enterFunctionBody(IASTFunction arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+			
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-				buffer.addVariable(param.getNameOffset(), param.getName().length());
+				
+				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
+				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
 			}
 		}
 		
@@ -151,49 +182,88 @@ public class CDTParser implements StaticParser {
 		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {}
 
 		public void enterClassSpecifier(IASTClassSpecifier arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addClass(arg0.getNameOffset(), arg0.getName().length());
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.CLASS_DECL, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
 		}	
 
 		public void acceptField(IASTField arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addVariable(arg0.getStartingOffset(), arg0.getName().length());
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
 		}
 
 		public void acceptClassReference(IASTClassReference arg0) {
-			buffer.addClass(arg0.getOffset(), arg0.getName().length());
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+
+			line.addTag(DOMTagTypes.CLASS_DECL, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 
 		public void acceptTypedefReference(IASTTypedefReference arg0) {}
 
 		public void acceptVariableReference(IASTVariableReference arg0) {
-			buffer.addVariable(arg0.getOffset(), arg0.getName().length());
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+
+			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 
 		public void acceptFunctionReference(IASTFunctionReference arg0) {
-			buffer.addFunction(arg0.getName(), arg0.getOffset(), false);
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+
+			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 
 		public void acceptFieldReference(IASTFieldReference arg0) {}
 
 		public void acceptParameterReference(IASTParameterReference arg0) {
-			buffer.addVariable(arg0.getOffset(), arg0.getName().length());			
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+
+			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset() - line.getOffset());			
 		}
 		
 		public void acceptAbstractTypeSpecDeclaration(IASTAbstractTypeSpecifierDeclaration arg0) {
-			buffer.addKeyword(arg0.getNameOffset(), arg0.getName().length());
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+
+			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getStartingOffset() - line.getOffset());
 		}
 
 		public void acceptMethodDeclaration(IASTMethod arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				int nameOffset = param.getNameOffset();
 				if(nameOffset != -1){
-					buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-					buffer.addVariable(param.getNameOffset(), param.getName().length());
+					line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
+					line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
 				}
 				else{
 					// Figure out how to do function declarations of type "foo(int)" here
@@ -202,17 +272,29 @@ public class CDTParser implements StaticParser {
 		}
 
 		public void acceptMethodReference(IASTMethodReference arg0) {
-			buffer.addFunction(arg0.getName(), arg0.getOffset(), false);
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+
+			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 		
 		public void enterMethodBody(IASTMethod arg0) {
-			buffer.addKeyword(arg0.getStartingOffset(), arg0.getNameOffset() - arg0.getStartingOffset());
-			buffer.addFunction(arg0.getName(), arg0.getNameOffset(), true);
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+			
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-				buffer.addKeyword(param.getStartingOffset(), param.getNameOffset() - param.getStartingOffset());
-				buffer.addVariable(param.getNameOffset(), param.getName().length());
+				
+				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
+				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
 			}
 		}
 		

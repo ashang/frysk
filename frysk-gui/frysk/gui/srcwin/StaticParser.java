@@ -44,6 +44,8 @@ package frysk.gui.srcwin;
 
 import java.io.IOException;
 
+import frysk.dom.DOMSource;
+
 
 /**
  * @author ajocksch
@@ -56,5 +58,5 @@ public interface StaticParser {
 	 * @param buffer The source buffer to put the resulting data in
 	 * @param filename TODO
 	 */
-	void parse(SourceBuffer buffer, String filename) throws IOException;
+	void parse(DOMSource source, SourceBuffer buffer) throws IOException;
 }

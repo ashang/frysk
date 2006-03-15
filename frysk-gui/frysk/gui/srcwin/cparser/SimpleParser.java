@@ -43,6 +43,7 @@ package frysk.gui.srcwin.cparser;
 
 import java.io.IOException;
 
+import frysk.dom.DOMSource;
 import frysk.gui.srcwin.SourceBuffer;
 import frysk.gui.srcwin.StaticParser;
 
@@ -58,26 +59,26 @@ public class SimpleParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(SourceBuffer buffer, String filename) throws IOException {
-		this.tokenMaker = new Tokenizer(filename);
+	public void parse(DOMSource source, SourceBuffer buffer) throws IOException {
+		this.tokenMaker = new Tokenizer(source.getFilePath() +"/" +  source.getFileName());
 		
 		while(this.tokenMaker.hasMoreTokens()){
 			Token t = this.tokenMaker.nextToken();
 			
 			if(t.text.equals("//")){
-				Token t2 = t;
-				while(this.tokenMaker.hasMoreTokens() && this.tokenMaker.peek().lineNum == t.lineNum){
-					t2 = this.tokenMaker.nextToken();
-				}
-				buffer.addComment(t.lineNum, t.colNum, t.lineNum, t2.colNum+t2.text.length());
+//				Token t2 = t;
+//				while(this.tokenMaker.hasMoreTokens() && this.tokenMaker.peek().lineNum == t.lineNum){
+//					t2 = this.tokenMaker.nextToken();
+//				}
+//				buffer.addComment(t.lineNum, t.colNum, t.lineNum, t2.colNum+t2.text.length());
 			}
 			else if(t.text.equals("/*")){
-				Token t2 = t;
-				while(this.tokenMaker.hasMoreTokens() && !this.tokenMaker.peek().text.equals("*/")){
-					t2 = this.tokenMaker.nextToken();
-				}
-				t2 = this.tokenMaker.nextToken();
-				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
+//				Token t2 = t;
+//				while(this.tokenMaker.hasMoreTokens() && !this.tokenMaker.peek().text.equals("*/")){
+//					t2 = this.tokenMaker.nextToken();
+//				}
+//				t2 = this.tokenMaker.nextToken();
+//				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
 			}
 			else if(t.text.equals("int") || t.text.equals("float") || t.text.equals("if") ||
 					t.text.equals("for") || t.text.equals("while") || t.text.equals("else") ||
@@ -85,7 +86,7 @@ public class SimpleParser implements StaticParser {
 					t.text.equals("class") || t.text.equals("return") || t.text.equals("struct") ||
 					t.text.equals("public") || t.text.equals("private") ||
 					t.text.equals("protected") || t.text.equals("do")){
-				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
+//				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
 			}
 			else if(t.text.equals("{")){
 				this.scopeDepth++;
@@ -102,13 +103,15 @@ public class SimpleParser implements StaticParser {
 					continue;
 				
 				if(next.text.equals("(")){
-					if(scopeDepth == 0)
-						buffer.addFunction(t.text, t.lineNum, t.colNum, true);
-					else
-						buffer.addFunction(t.text, t.lineNum, t.colNum, false);
+					if(scopeDepth == 0){
+//						buffer.addFunction(t.text, t.lineNum, t.colNum, true);
+					}
+					else{
+//						buffer.addFunction(t.text, t.lineNum, t.colNum, false);
+					}
 				}
 				else if(Character.isLetter(t.text.charAt(0))){
-					buffer.addVariable(t.lineNum, t.colNum, t.text.length());
+//					buffer.addVariable(t.lineNum, t.colNum, t.text.length());
 				}
 			}
 		}

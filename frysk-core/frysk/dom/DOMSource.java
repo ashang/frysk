@@ -240,6 +240,19 @@ public class DOMSource {
 	}
 	
 	
+	public DOMLine getLineSpanningOffset(int offset){
+		Iterator iter = 
+			this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
+		while(iter.hasNext()){
+			DOMLine line = new DOMLine((Element) iter.next());
+			if(line.getOffset() <= offset && line.getOffset() + line.getLength() > offset)
+				return line;
+		}
+		
+		return null;
+	}
+	
+	
 	public void addLine(DOMLine line){
 		this.myElement.addContent(line.getElement());
 	}

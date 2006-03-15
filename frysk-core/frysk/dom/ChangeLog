@@ -1,3 +1,7 @@
+2006-03-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMSource.java (getLineSpanningOffset): Added.
+
 2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DomImage.java (addSource): Now sets the 'parsed' attribute of the new
