@@ -1,3 +1,15 @@
+2006-03-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (getText): Added.
+	(getLineOffset): Ditto.
+	* SourceBuffer.java (addFunction): Now uses getLineOffset.
+	(addVariable): Ditto, also uses getText.
+	(addKeyword): Ditto.
+	(addClass): Ditto.
+	(getText): Added.
+	(getLineOffset): Ditto.
+	* cparser/CDTParser.java (parse): Enabled parsing for return statements.
+
 2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (createTags): Now goes through list of comments

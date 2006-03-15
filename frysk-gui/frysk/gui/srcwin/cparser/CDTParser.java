@@ -108,9 +108,9 @@ public class CDTParser implements StaticParser {
 			}
 			// TODO: For some reason this causes the source window to break
 			// For some reason the CDTParser doesn't pick up this keyword either
-//			else if(t.text.equals("return")){
-//				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
-//			}
+			else if(t.text.equals("return")){
+				buffer.addKeyword(t.lineNum, t.colNum, t.text.length());
+			}
 		}
 	}
 

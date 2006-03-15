@@ -531,7 +531,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addFunction(String name, int lineNum, int col,
 			boolean declaration) {
-		this.addFunction(name, this.getLineIter(lineNum).getOffset() + col,
+		this.addFunction(name, this.scope.getData().getLine(lineNum + 1).getOffset() + col,
 				declaration);
 	}
 
@@ -554,11 +554,9 @@ public class SourceBuffer extends TextBuffer {
 		DOMLine line = this.scope.getData().getLine(
 				this.getIter(offset).getLineNumber() + 1);
 		if (!declaration)
-			line.addTag(DOMTagTypes.FUNCTION, name, this.getIter(offset)
-					.getLineOffset());
+			line.addTag(DOMTagTypes.FUNCTION, name, this.getLineOffset(offset));
 		else
-			line.addTag(DOMTagTypes.FUNCTION_BODY, name, this.getIter(offset)
-					.getLineOffset());
+			line.addTag(DOMTagTypes.FUNCTION_BODY, name, this.getLineOffset(offset));
 
 	}
 
@@ -576,21 +574,19 @@ public class SourceBuffer extends TextBuffer {
 		/* TODO: Don't hardcode this, we need a way to tell what type of
 		 * variable this is */
 		if (line.getLineNum() == 21)
-			line.addTag(DOMTagTypes.LOCAL_VAR, this.getText(this
-					.getIter(offset), this.getIter(offset + length), true),
-					this.getIter(offset).getLineOffset());
+			line.addTag(DOMTagTypes.LOCAL_VAR, this.getText(offset, length),
+					this.getLineOffset(offset));
 		else if (line.getLineNum() < 20)
-			line.addTag(DOMTagTypes.OUT_OF_SCOPE_VAR, this.getText(this
-					.getIter(offset), this.getIter(offset + length), true),
-					this.getIter(offset).getLineOffset());
+			line.addTag(DOMTagTypes.OUT_OF_SCOPE_VAR, this.getText(offset, length),
+					this.getLineOffset(offset));
 		else
-			line.addTag(DOMTagTypes.OPTIMIZED_VAR, this.getText(this
-					.getIter(offset), this.getIter(offset + length), true),
-					this.getIter(offset).getLineOffset());
+			line.addTag(DOMTagTypes.OPTIMIZED_VAR, this.getText(offset, length),
+					this.getLineOffset(offset));
 	}
 
 	public void addVariable(int lineNum, int lineOffset, int length) {
-		this.addVariable(this.getLineIter(lineNum).getOffset() + lineOffset,
+		
+		this.addVariable(this.scope.getData().getLine(lineNum + 1).getOffset() + lineOffset,
 				length);
 	}
 
@@ -606,9 +602,7 @@ public class SourceBuffer extends TextBuffer {
 	 */
 	public void addKeyword(int lineNum, int col, int length) {
 		DOMLine line = this.scope.getData().getLine(lineNum+1);
-		line.addTag(DOMTagTypes.KEYWORD, this.getText(this
-				.getIter(lineNum, col), this.getIter(lineNum, col + length),
-				false), col);
+		line.addTag(DOMTagTypes.KEYWORD, this.getText(lineNum, col, length), col);
 	}
 
 	/**
@@ -622,11 +616,9 @@ public class SourceBuffer extends TextBuffer {
 	public void addKeyword(int offset, int length) {
 		DOMLine line = this.scope.getData().getLine(
 				this.getIter(offset).getLineNumber() + 1);
-		line.addTag(DOMTagTypes.KEYWORD, this.getText(this.getIter(offset),
-				this.getIter(offset + length), true), this.getIter(offset)
-				.getLineOffset());
+		line.addTag(DOMTagTypes.KEYWORD, this.getText(offset, length), this.getLineOffset(offset));
 	}
-
+	
 	/**
 	 * Adds a comment to be highlighted in the text
 	 * 
@@ -666,9 +658,7 @@ public class SourceBuffer extends TextBuffer {
 	public void addClass(int offset, int length) {
 		DOMLine line = this.scope.getData().getLine(
 				this.getIter(offset).getLineNumber() + 1);
-		line.addTag(DOMTagTypes.CLASS_DECL, this.getText(this.getIter(offset),
-				this.getIter(offset + length), true), this.getIter(offset)
-				.getLineOffset());
+		line.addTag(DOMTagTypes.CLASS_DECL, this.getText(offset, length), this.getLineOffset(offset));
 	}
 
 	/**
@@ -1052,6 +1042,41 @@ public class SourceBuffer extends TextBuffer {
 			
 			list = list.getNextComment();
 		}
+	}
+	
+	/**
+	 * This method returns the text on the given line at the given column with the
+	 * given length. This *is* easily enough accomplished using the getText method in
+	 * TextBuffer, but we want to give subclasses the opportunity to override these
+	 * methods in case they've added other things to the buffer.
+	 * @param line The line to get text from
+	 * @param col The starting column
+	 * @param length The length of text to get
+	 * @return
+	 */
+	protected String getText(int line, int col, int length){
+		return this.getText(this.getIter(line, col), this.getIter(line, col + length), true);
+	}
+	
+	/**
+	 * See {@see #getText(int, int, int)}
+	 * @param offset The offset from the start of the file
+	 * @param length The length of text to get
+	 * @return
+	 */
+	protected String getText(int offset, int length){
+		return this.getText(this.getIter(offset), this.getIter(offset + length), true);
+	}
+	
+	/**
+	 * Returns the offset from the start of the line for the provided offset. We have
+	 * this method so that subclasses can overwrite it to account for other things
+	 * they may have included/omitted from the buffer
+	 * @param offset Offset from the start of the file
+	 * @return The offset from the start of the line
+	 */
+	protected int getLineOffset(int offset){
+		return this.getIter(offset).getLineOffset();
 	}
 	
 	/*
