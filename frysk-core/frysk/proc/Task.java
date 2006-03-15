@@ -287,22 +287,6 @@ abstract public class Task
     }
 
     /**
-     * (Internal) Tell the task to stop itself.  Notify the containing
-     * process once the operation has been processed.
-     */
-    void performStop ()
-    {
-	logger.log (Level.FINE, "{0} performStop\n", this);
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processPerformStop (Task.this);
-		}
-	    });
-    }
-
-    /**
      * (Internal) Tell the task to continue itself.  Notify the
      * containing process once the operation has been processed.
      */

@@ -255,24 +255,6 @@ public abstract class Proc
     }
 
     /**
-     * (Internal) Tell the process that the corresponding task has
-     * completed its stop request.
-     */
-    void performTaskStopCompleted (final Task theTask)
-    {
-	logger.log (Level.FINE, "{0} performTaskStopCompleted\n", this); 
-	Manager.eventLoop.add (new ProcEvent ()
-	    {
-		Task task = theTask;
-		public void execute ()
-		{
-		    state = state.processPerformTaskStopCompleted (Proc.this,
-								   task);
-		}
-	    });
-    }
-
-    /**
      * (Internal) Tell the process that the contained task has
      * completed the continue request.
      */

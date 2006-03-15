@@ -147,10 +147,6 @@ class TaskState
     {
 	throw unhandled (task, "PerformDetach");
     }
-    TaskState processPerformStop (Task task)
-    {
-	throw unhandled (task, "PerformStop");
-    }
     TaskState processPerformContinue (Task task)
     {
 	throw unhandled (task, "PerformContinue");
@@ -475,12 +471,6 @@ class TaskState
 		task.sendStop ();
 		return detaching;
 	    }
-	    TaskState processPerformStop (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processPerformStop\n", task); 
-		task.sendStop ();
-		return performingStop;
-	    }
 	    TaskState processClonedEvent (Task task, Task clone)
 	    {
 		logger.log (Level.FINE, "{0} processClonedEvent\n", task); 
@@ -569,16 +559,6 @@ class TaskState
 		logger.log (Level.FINE, "{0} processPerformDetach\n", task); 
 		task.sendStop ();
 		return detachingInSyscall;
-	    }
-	};
-
-    private static TaskState performingStop = new TaskState ("performingStop")
-	{
-	    TaskState processStoppedEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processStoppedEvent\n", task); 
-		task.proc.performTaskStopCompleted (task);
-		return stopped;
 	    }
 	};
 

@@ -94,10 +94,6 @@ abstract class ProcState
     {
 	throw unhandled (proc, "PerformTaskDetachCompleted/clone");
     }
-    ProcState processPerformTaskStopCompleted (Proc proc, Task task)
-    {
-	throw unhandled (proc, "PerformTaskStopCompleted");
-    }
     ProcState processPerformTaskContinueCompleted (Proc proc, Task task)
     {
 	throw unhandled (proc, "PerformTaskContinueCompleted");
