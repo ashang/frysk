@@ -76,10 +76,10 @@ public class CDTParser implements StaticParser {
 		ParserCallBack callback = new ParserCallBack();
 		IParser parser = ParserFactory.createParser(
 				ParserFactory.createScanner(filename,
-						new ScannerInfo(), ParserMode.COMPLETE_PARSE,
+						new ScannerInfo(), ParserMode.QUICK_PARSE,
 						ParserLanguage.CPP, callback, new NullLogService(), null),
 				callback,
-				ParserMode.COMPLETE_PARSE,
+				ParserMode.QUICK_PARSE,
 				ParserLanguage.CPP,
 				new NullLogService());
 		

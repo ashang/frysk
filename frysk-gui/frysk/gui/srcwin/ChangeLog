@@ -1,3 +1,9 @@
+2006-03-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cparser/CDTParser.java (parse): Changed the parsing mode to
+	QUICK_PARSE, as this mode seems to lead to more accurate parsing
+	and syntax highlighting of the code.
+
 2006-03-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (addFunction): Removed since parsers now directly

@@ -265,7 +265,7 @@ public class SourceWindowFactory {
                     reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test6.cpp")));
                     line = 1;
                     offset = 0;
-                    execLines = new int[] {0,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,1,0,1,1,1,1,0};
+                    execLines = new int[100];
                     while(reader.ready()){
                         String text = reader.readLine()+"\n";
                         source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
