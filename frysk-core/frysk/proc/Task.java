@@ -204,21 +204,6 @@ abstract public class Task
     }
 
     /**
-     * Request that the task step a single instruction.
-     */
-    void requestStepInstruction ()
-    {
-	logger.log (Level.FINE, "{0} requestStepInstruction\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    state = state.processRequestStepInstruction (Task.this);
-		}
-	    });
-    }
-
-    /**
      * (Internal) Tell the task to remove itself (it is no longer
      * listed in the system process table and, presumably, has
      * exited).

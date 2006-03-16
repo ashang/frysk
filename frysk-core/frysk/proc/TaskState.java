@@ -115,10 +115,6 @@ class TaskState
     {
 	throw unhandled (task, "RequestContinue");
     }
-    TaskState processRequestStepInstruction (Task task)
-    {
-	throw unhandled (task, "RequestStepInstruction");
-    }
     TaskState processPerformRemoval (Task task)
     {
 	throw unhandled (task, "PerformRemoval");
@@ -564,15 +560,6 @@ class TaskState
 	    }
 	};
 
-    private static TaskState stepping = new TaskState ("stepping")
-	{
-	    TaskState processTrappedEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processTrappedEvent\n", task); 
-		return stopped;
-	    }
-	};
-
     /**
      * The Task is blocked by a set of observers, remain in this state
      * until all the observers have unblocked themselves.  This state
@@ -610,31 +597,6 @@ class TaskState
 	    public String toString ()
 	    {
 		return "blockedContinue";
-	    }
-	};
-
-    private static TaskState stopped = new TaskState ("stopped")
-	{
-	    TaskState processPerformContinue (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processPerformContinue\n", task); 
-		task.sendContinue (0);
-		return running;
-	    }
-	    TaskState processRequestStepInstruction (Task task)
-	    {
-		logger.log (Level.FINE, "{0} processRequestStepInstruction\n", task); 
-		task.sendStepInstruction (0);
-		return stepping;
-	    }
-	    TaskState processPerformDetach (Task task)
-	    {
-		// XXX: Need to hang onto the signal that was about to
-		// be delivered?
-		logger.log (Level.FINE, "{0} processPerformDetach\n", task); 
-		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
-		return unattached;
 	    }
 	};
 
