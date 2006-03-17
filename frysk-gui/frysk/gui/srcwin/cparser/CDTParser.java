@@ -84,6 +84,19 @@ public class CDTParser implements StaticParser {
 				new NullLogService());
 		
 		if(!parser.parse())
+			System.err.println("Some errors were found during parse");
+		
+		ParserCallBack callback2 = new ParserCallBack();
+		IParser parser2 = ParserFactory.createParser(
+				ParserFactory.createScanner(filename,
+						new ScannerInfo(), ParserMode.COMPLETE_PARSE,
+						ParserLanguage.CPP, callback, new NullLogService(), null),
+				callback2,
+				ParserMode.COMPLETE_PARSE,
+				ParserLanguage.CPP,
+				new NullLogService());
+		
+		if(!parser2.parse())
 			System.err.println("Some errors found during parse");
 		
 		/*

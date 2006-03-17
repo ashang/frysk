@@ -1,3 +1,8 @@
+2006-03-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMLine.java (addTag): Now checks for duplicate tags before adding
+	element.
+
 2006-03-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMSource.java (getLineSpanningOffset): Added.

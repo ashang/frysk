@@ -209,6 +209,19 @@ public class DOMLine {
 	 * @param length - the length in characters of this tag
 	 */
 	public void addTag(String type, String token, int start) {
+		// Check for duplicate tags
+		Iterator elements = this.myElement.getChildren().iterator();
+		
+		while(elements.hasNext()){
+			Element element = (Element) elements.next();
+			
+			int elStart = Integer.parseInt(element.getAttributeValue(DOMTag.LENGTH_ATTR));
+			int elLength = Integer.parseInt(element.getAttributeValue(DOMTag.LENGTH_ATTR));
+			
+			if(start == elStart && token.length() == elLength)
+				return;
+		}
+		
 		Element tagElement = new Element(DOMTag.TAG_NODE);
 		tagElement.setAttribute(DOMTag.TYPE_ATTR, type);
 		tagElement.setAttribute(DOMTag.START_ATTR, ""+start);
