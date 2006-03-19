@@ -98,6 +98,25 @@ public class LinuxTask
 	setupMapsXXX ();
     }
 
+    /**
+     * Must inject disappeared events back into the event loop so that
+     * they can be processed in sequence.  Calling
+     * receiveDisappearedEvent directly would cause a recursive state
+     * transition.
+     */
+    private void postDisappearedEvent (final Throwable arg)
+    {
+        logger.log (Level.FINE, "{0} postDisappearedEvent\n", this);
+        Manager.eventLoop.add (new TaskEvent ()
+            {
+                Throwable w = arg;
+                public void execute ()
+                {
+		    receiveDisappearedEvent (w);
+                }
+            });
+    }
+
     protected void sendContinue (int sig)
     {
 	logger.log (Level.FINE, "{0} sendContinue\n", this); 
@@ -108,7 +127,7 @@ public class LinuxTask
 		Ptrace.cont (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    receiveDisappearedEvent (e);
+	    postDisappearedEvent (e);
 	}
     }
     protected void sendStepInstruction (int sig)
@@ -118,7 +137,7 @@ public class LinuxTask
 	    Ptrace.singleStep (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
-	    receiveDisappearedEvent (e);
+	    postDisappearedEvent (e);
 	}
     }
     protected void sendStop ()
@@ -142,7 +161,7 @@ public class LinuxTask
 	    Ptrace.setOptions (getTid (), options);
 	}
 	catch (Errno.Esrch e) {
-	    receiveDisappearedEvent (e);
+	    postDisappearedEvent (e);
 	}
     }
     protected void sendAttach ()
@@ -152,7 +171,7 @@ public class LinuxTask
 	    Ptrace.attach (getTid ());
 	}
 	catch (Errno.Esrch e) {
-	    receiveDisappearedEvent (e);
+	    postDisappearedEvent (e);
 	}
     }
     protected void sendDetach (int sig)

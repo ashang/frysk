@@ -279,49 +279,27 @@ abstract public class Task
     /**
      * (internal) This task cloned creating the new Task cloneArg.
      */
-    void receiveClonedEvent (final Task cloneArg)
+    void receiveClonedEvent (Task clone)
     {
 	logger.log (Level.FINE, "{0} receiveClonedEvent\n", this);
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		Task clone = cloneArg;
-		public void execute ()
-		{
-		    newState = oldState ().processClonedEvent (Task.this, clone);
-		}
-	    });
+	newState = oldState ().processClonedEvent (this, clone);
     }
-
     /**
      * (internal) This Task forked creating an entirely new child
      * process containing one (the fork) task.
      */
-    void receiveForkedEvent (final Task forkArg)
+    void receiveForkedEvent (Task fork)
     {
 	logger.log (Level.FINE, "{0} receiveForkedEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		Task fork = forkArg;
-		public void execute ()
-		{
-		    newState = oldState ().processForkedEvent (Task.this, fork);
-		}
-	    });
+	newState = oldState ().processForkedEvent (this, fork);
     }
-
     /**
      * (internal) This task stopped.
      */
     void receiveStoppedEvent ()
     {
 	logger.log (Level.FINE, "{0} receiveStoppedEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processStoppedEvent (Task.this);
-		}
-	    });
+	newState = oldState ().processStoppedEvent (this);
     }
     /**
      * (internal) This task encountered a trap.
@@ -329,64 +307,35 @@ abstract public class Task
     void receiveTrappedEvent ()
     {
 	logger.log (Level.FINE, "{0} receiveTrappedEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processTrappedEvent (Task.this);
-		}
-	    });
+	newState = oldState ().processTrappedEvent (this);
     }
     /**
      * (internal) This task received a signal.
      */
-    void receiveSignaledEvent (final int sigArg)
+    void receiveSignaledEvent (int sig)
     {
 	logger.log (Level.FINE, "{0} receiveSignaledEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		int sig = sigArg;
-		public void execute ()
-		{
-		    newState = oldState ().processPerformSignaled (Task.this, sig);
-		}
-	    });
+	newState = oldState ().processPerformSignaled (this, sig);
     }
 
     /**
      * (internal) The task is in the process of terminating.  If
      * SIGNAL, VALUE is the signal, otherwize it is the exit status.
      */
-    void receiveTerminatingEvent (final boolean signalArg, final int valueArg)
+    void receiveTerminatingEvent (boolean signal, int value)
     {
 	logger.log (Level.FINE, "{0} receiveTerminatingEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		boolean signal = signalArg;
-		int value = valueArg;
-		public void execute ()
-		{
-		    newState = oldState ().processTerminatingEvent (Task.this, signal,
-							   value);
-		}
-	    });
+	newState = oldState ().processTerminatingEvent (this, signal, value);
     }
 
     /**
      * (internal) The task has disappeared (due to an exit or some
      * other error operation).
      */
-    void receiveDisappearedEvent (final Throwable arg)
+    void receiveDisappearedEvent (Throwable arg)
     {
 	logger.log (Level.FINE, "{0} receiveDisappearedEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		Throwable w = arg;
-		public void execute ()
-		{
-		    newState = oldState ().processDisappearedEvent (Task.this, w);
-		}
-	    });
+	newState = oldState ().processDisappearedEvent (this, arg);
     }
 
     /**
@@ -395,32 +344,17 @@ abstract public class Task
     void receiveSyscalledEvent ()
     {
 	logger.log (Level.FINE, "{0} receiveSyscalledEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processSyscalledEvent (Task.this);
-		}
-	    });
+	newState = oldState ().processSyscalledEvent (this);
     }
 
     /**
      * (internal) The task has terminated; if SIGNAL, VALUE is the
      * signal, otherwize it is the exit status.
      */
-    void receiveTerminatedEvent (final boolean signalArg, final int valueArg)
+    void receiveTerminatedEvent (boolean signal, int value)
     {
 	logger.log (Level.FINE, "{0} receiveTerminatedEvent\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		boolean signal = signalArg;
-		int value = valueArg;
-		public void execute ()
-		{
-		    newState = oldState ().processTerminatedEvent (Task.this, signal,
-							  value);
-		}
-	    });
+	newState = oldState ().processTerminatedEvent (this, signal, value);
     }
 
     /**
@@ -430,13 +364,7 @@ abstract public class Task
     void receiveExecedEvent ()
     {
 	logger.log (Level.FINE, "{0} receiveExecedEvent\n", this);
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processExecedEvent (Task.this);
-		}
-	    });
+	newState = oldState ().processExecedEvent (this);
     }
 
     public class TaskEventObservable

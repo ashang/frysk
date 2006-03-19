@@ -1,5 +1,13 @@
 2006-03-19  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (receiveClonedEvent, receiveForkedEvent)
+	(receiveStoppedEvent, receiveTrappedEvent, receiveSignaledEvent)
+	(receiveTerminatingEvent, receiveDisappearedEvent)
+	(receiveSyscalledEvent, receiveTerminatedEvent)
+	(receiveExecedEvent): Simplify, directly handle the event.
+	* LinuxTask.java (postDisappearedEvent): New; use instead of
+	receiveDsiappearedEvent.
+	
 	* TaskState.java (clonedState): Replace Task parameter with
 	TaskState parameter.
 	* Task.java (newState, oldState): Replace <<state>>.
