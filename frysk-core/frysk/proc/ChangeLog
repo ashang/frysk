@@ -1,4 +1,6 @@
-2006-03-17  Andrew Cagney  <cagney@redhat.com>
+2006-03-19  Andrew Cagney  <cagney@redhat.com>
+
+	* StressAttachDetachManyTasks.java: New file.
 
 	* StressAttachDetachRapidlyCloningMainTask.java: Rename
 	StressTaskObserver.java.

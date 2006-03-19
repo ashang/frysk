@@ -317,8 +317,8 @@ public class SourceWindow extends Window{
 	public void setMyTask(Task myTask) {
 		this.myTask = myTask;
 		this.setTitle(this.getTitle() + " - "
-				+ this.myTask.getProc().getCommand() + " "
-				+ this.myTask.getName() + " - " + this.myTask.getStateString());
+			      + this.myTask.getProc ().getCommand () + " "
+			      + this.myTask.getName ());
 	}
 
 	/***************************************************************************

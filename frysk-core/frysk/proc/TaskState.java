@@ -65,15 +65,15 @@ class TaskState
     /**
      * Return the initial state of a cloned task.
      */
-    static TaskState clonedState (Task parent)
+    static TaskState clonedState (TaskState parentState)
     {
-	if (parent.state == detaching)
+	if (parentState == detaching)
 	    return detaching;
-	else if (parent.state == running)
+	else if (parentState == running)
 	    return Start.waitForStop;
 	else
 	    throw new RuntimeException ("clone's parent in unexpected state "
-					+ parent);
+					+ parentState);
     }
     protected TaskState (String state)
     {

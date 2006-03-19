@@ -144,7 +144,7 @@ abstract public class Task
     protected Task (Proc proc, TaskId id)
     {
 	this (id, proc);
-	state = TaskState.unattachedState ();
+	newState = TaskState.unattachedState ();
 	logger.log (Level.FINE, "{0} new -- create unattached\n", this); 
     }
     /**
@@ -153,7 +153,7 @@ abstract public class Task
     protected Task (Task task, TaskId cloneId)
     {
 	this (cloneId, task.proc);
-	state = TaskState.clonedState (task);
+	newState = TaskState.clonedState (task.getState ());
 	logger.log (Level.FINE, "{0} new -- create attached clone\n", this); 
     }
     /**
@@ -162,7 +162,7 @@ abstract public class Task
     protected Task (Proc proc)
     {
 	this (new TaskId (proc.getPid ()), proc);
-	state = TaskState.mainState ();
+	newState = TaskState.mainState ();
 	logger.log (Level.FINE, "{0} new -- create attached main\n", this); 
     }
 
@@ -177,15 +177,35 @@ abstract public class Task
     protected LinkedList queuedEvents = new LinkedList ();
 
     /**
-     * The current state of this task.
+     * The state of this task.  During a state transition newState is
+     * NULL.
      */
-    /* XXX: private */ TaskState state;
+    private TaskState oldState;
+    private TaskState newState;
     /**
-     * Return the state represented as a simple string.
+     * Return the current state while at the same time marking that
+     * the state is in flux.  If a second attempt to change state
+     * occures before the current state transition has completed,
+     * barf.  XXX: Bit of a hack, but at least this prevents state
+     * transition code attempting a second recursive state transition.
      */
-    public String getStateString ()
+    private TaskState oldState ()
     {
-	return state.toString ();
+	if (newState == null)
+	    throw new RuntimeException ("double state transition");
+	oldState = newState;
+	newState = null;
+	return oldState;
+    }
+    /**
+     * Return the current state.
+     */
+    TaskState getState ()
+    {
+	if (newState != null)
+	    return newState;
+	else
+	    return oldState;
     }
 
     /**
@@ -198,7 +218,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformContinue (Task.this);
+		    newState = oldState ().processPerformContinue (Task.this);
 		}
 	    });
     }
@@ -218,7 +238,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformRemoval (Task.this);
+		    newState = oldState ().processPerformRemoval (Task.this);
 		}
 	    });
     }
@@ -234,7 +254,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformAttach (Task.this);
+		    newState = oldState ().processPerformAttach (Task.this);
 		}
 	    });
     }
@@ -251,7 +271,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformDetach (Task.this);
+		    newState = oldState ().processPerformDetach (Task.this);
 		}
 	    });
     }
@@ -267,7 +287,7 @@ abstract public class Task
 		Task clone = cloneArg;
 		public void execute ()
 		{
-		    state = state.processClonedEvent (Task.this, clone);
+		    newState = oldState ().processClonedEvent (Task.this, clone);
 		}
 	    });
     }
@@ -284,7 +304,7 @@ abstract public class Task
 		Task fork = forkArg;
 		public void execute ()
 		{
-		    state = state.processForkedEvent (Task.this, fork);
+		    newState = oldState ().processForkedEvent (Task.this, fork);
 		}
 	    });
     }
@@ -299,7 +319,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processStoppedEvent (Task.this);
+		    newState = oldState ().processStoppedEvent (Task.this);
 		}
 	    });
     }
@@ -313,7 +333,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processTrappedEvent (Task.this);
+		    newState = oldState ().processTrappedEvent (Task.this);
 		}
 	    });
     }
@@ -328,7 +348,7 @@ abstract public class Task
 		int sig = sigArg;
 		public void execute ()
 		{
-		    state = state.processPerformSignaled (Task.this, sig);
+		    newState = oldState ().processPerformSignaled (Task.this, sig);
 		}
 	    });
     }
@@ -346,7 +366,7 @@ abstract public class Task
 		int value = valueArg;
 		public void execute ()
 		{
-		    state = state.processTerminatingEvent (Task.this, signal,
+		    newState = oldState ().processTerminatingEvent (Task.this, signal,
 							   value);
 		}
 	    });
@@ -364,7 +384,7 @@ abstract public class Task
 		Throwable w = arg;
 		public void execute ()
 		{
-		    state = state.processDisappearedEvent (Task.this, w);
+		    newState = oldState ().processDisappearedEvent (Task.this, w);
 		}
 	    });
     }
@@ -379,7 +399,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processSyscalledEvent (Task.this);
+		    newState = oldState ().processSyscalledEvent (Task.this);
 		}
 	    });
     }
@@ -397,7 +417,7 @@ abstract public class Task
 		int value = valueArg;
 		public void execute ()
 		{
-		    state = state.processTerminatedEvent (Task.this, signal,
+		    newState = oldState ().processTerminatedEvent (Task.this, signal,
 							  value);
 		}
 	    });
@@ -414,7 +434,7 @@ abstract public class Task
 	    {
 		public void execute ()
 		{
-		    state = state.processExecedEvent (Task.this);
+		    newState = oldState ().processExecedEvent (Task.this);
 		}
 	    });
     }
@@ -436,7 +456,8 @@ abstract public class Task
     {
 	return ("{" + super.toString ()
 		+ ",id=" + id
-		+ ",state=" + state
+		+ ",oldState=" + oldState
+		+ ",newState=" + newState
 		+ "}");
     }
 
@@ -476,7 +497,7 @@ abstract public class Task
 		Observation observation = observationArg;
 		public void execute ()
 		{
-		    state = state.processPerformAddObservation (Task.this,
+		    newState = oldState ().processPerformAddObservation (Task.this,
 								observation);
 		}
 	    });
@@ -507,7 +528,7 @@ abstract public class Task
 		TaskObserver observer = observerArg;
 		public void execute ()
 		{
-		    state = state.processRequestUnblock (Task.this, observer);
+		    newState = oldState ().processRequestUnblock (Task.this, observer);
 		}
 	    });
     }
