@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,37 +40,91 @@
 /* Create a multi-threaded program that maintaints a N constantly
    cloning threads.  */
 
+#define _GNU_SOURCE
+
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/select.h>
-#include <linux/unistd.h>
 #include <limits.h>
 #include <pthread.h>
 #include <string.h>
+
+#include "util.h"
+
+
+
+static void
+usage ()
+{
+  printf ("\
+Usage:\n\
+    [ --clone | --block | --loop ] <pid> <signal> <seconds> <nr-threads>\n\
+Where:\n\
+    --clone          Each thread will repeatedly clone itself (default).\n\
+    --block          Each thread will block.\n\
+    --loop           Each thread will execute an infinite loop.\n\
+    <pid> <signal>   Manager process to signal, and signal to use, once\n\
+                     an operation has completed (e.g., running, thread\n\
+                     created, thread exited).\n\
+    <seconds>        Number of seconds that the program should run.\n\
+    <nr-threads>     Number of threads that should be created\n\
+");
+  exit (1);
+}
+
+
 
 pthread_attr_t pthread_attr;
 
 volatile static int halt;
 
 volatile static long long count;
-pthread_mutex_t count_mutex;
+static void
+update_counter ()
+{
+  static pthread_mutex_t count_mutex = PTHREAD_MUTEX_INITIALIZER;
+  OK (pthread_mutex_lock, (&count_mutex));
+  count++;
+  OK (pthread_mutex_unlock, (&count_mutex));
+}
+
+typedef void *(op_t)(void *);
 
 void *
-loop (void *np)
+op_clone (void *np)
 {
   pthread_t tmp;
   pthread_t *thread = (pthread_t*)np;
   if (*thread != 0)
-    pthread_join (*thread, np);
+    OK (pthread_join, (*thread, np));
   *thread = pthread_self ();
-  pthread_mutex_lock (&count_mutex);
-  count++;
-  pthread_mutex_unlock (&count_mutex);
+  update_counter ();
   if (halt)
     return NULL;
-  pthread_create (&tmp, &pthread_attr, loop, np);
+  OK (pthread_create, (&tmp, &pthread_attr, op_clone, np));
+  return NULL;
+}
+
+void *
+op_loop (void *np)
+{
+  pthread_t *thread = (pthread_t*)np;
+  *thread = pthread_self ();
+  while (!halt)
+    update_counter ();
+  return NULL;
+}
+
+void *
+op_block (void *np)
+{
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_t *thread = (pthread_t*)np;
+  *thread = pthread_self ();
+  update_counter ();
+  OK (pthread_detach, (*thread));
+  OK (pthread_mutex_lock, (&lock));
   return NULL;
 }
 
@@ -84,37 +138,37 @@ main (int argc, char *argv[])
   int sec;
   pthread_t *threads;
 
-  if (argc != 5) {
-    printf ("\
-Usage:\n\
-\t<pid> <signal> <seconds> <nr-threads>\n\
-Where:\n\
-        <pid> <signal>   Manager process to signal, and signal to use, once\n\
-                         an operation has completed (e.g., running, thread\n\
-                         created, thread exited).\n\
-        <seconds>        Number of seconds that the program should run.\n\
-        <nr-threads>     Number of threads that should be created\n\
-");
-    exit (1);
+  int argi = 1;
+  op_t *op = op_clone;
+  while (argi < argc) {
+    if (strcmp (argv[argi], "--clone") == 0)
+      op = op_clone;
+    else if (strcmp (argv[argi], "--block") == 0)
+      op = op_block;
+    else if (strcmp (argv[argi], "--loop") == 0)
+      op = op_loop;
+    else
+      break;
+    argi++;
   }
 
-  pid = atol (argv[1]);
-  sig = atol (argv[2]);
-  sec = atol (argv[3]);
-  n = atol (argv[4]);
+  if (argi + 4 > argc)
+    usage ();
 
-  // Count mutex
-  pthread_mutex_init (&count_mutex, NULL);
+  pid = atol (argv[argi++]);
+  sig = atol (argv[argi++]);
+  sec = atol (argv[argi++]);
+  n = atol (argv[argi++]);
 
   // Minimal stack.
-  pthread_attr_init (&pthread_attr);
-  pthread_attr_setstacksize (&pthread_attr, PTHREAD_STACK_MIN);
+  OK (pthread_attr_init, (&pthread_attr));
+  OK (pthread_attr_setstacksize, (&pthread_attr, PTHREAD_STACK_MIN));
 
   printf ("%d lines\n", n);
   threads = calloc (n, sizeof (pthread_t));
   for (i = 0; i < n; i++) {
     pthread_t p;
-    pthread_create (&p, &pthread_attr, loop, &threads[i]);
+    OK (pthread_create, (&p, &pthread_attr, op, &threads[i]));
   }
 
   printf ("kill pid %d sig %d\n", pid, sig);
@@ -123,11 +177,12 @@ Where:\n\
   sleep (sec);
   halt = 1;
   
-  // Might work.
   for (i = 0; i < n; i++) {
-    pthread_join (threads[i], NULL);
+    void *result;
+    // Might work - race between this and clone.
+    pthread_join (threads[i], &result);
   }
 
-  printf ("%lld threads\n", count);
+  printf ("count %lld\n", count);
   return 0;
 }

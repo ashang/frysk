@@ -55,8 +55,7 @@
 #include <sys/prctl.h>
 #include <stdarg.h>
 
-_syscall0(pid_t,gettid);
-_syscall2(int, tkill, pid_t, tid, int, sig);
+#include "util.h"
 
 
 
@@ -95,56 +94,6 @@ Operation:\n\
     SIGCHLD:   (internal) Child exited event.\n\
   For any operation, the parent also acks by sending a SIGUSR2\n\
 ");
-}
-
-
-
-// Like perror() but also abort the program.
-static void pfatal (const char *syscall) __attribute__ ((noreturn));
-static void
-pfatal (const char *syscall)
-{
-  perror (syscall);
-  abort ();
-}
-
-// Wrapper to check that a function's return status is zero; use as
-// OK (func,(arg list)).
-static void
-ok (const char *call, int status)
-{
-  if (status != 0)
-    pfatal (call);
-}
-#define OK(FUNC,ARGS) ok (#FUNC, FUNC ARGS)
-
-// Print a fatal error (and abort).
-static void fatal  (const char *fmt, ...) __attribute__ ((noreturn))  __attribute__ ((format (printf, 1, 2)));
-static void
-fatal (const char *fmt, ...)
-{
-  char *buf;
-  va_list ap;
-  va_start (ap, fmt);
-  if (vasprintf (&buf, fmt, ap) < 0)
-    pfatal ("vasprintf");
-  fprintf (stderr, "%d.%d: %s\n", getpid (), gettid (), buf);
-  abort ();
-}
-
-// Print a trace message.
-static void trace (const char *fmt, ...) __attribute__ ((format (printf, 1, 2)));
-static void
-trace (const char *fmt, ...)
-{
-  char *buf;
-  va_list ap;
-  va_start (ap, fmt);
-  if (vasprintf (&buf, fmt, ap) < 0)
-    pfatal ("vasprintf");
-  va_end (ap);
-  printf ("%d.%d: %s\n", getpid (), gettid (), buf);
-  free (buf);
 }
 
 

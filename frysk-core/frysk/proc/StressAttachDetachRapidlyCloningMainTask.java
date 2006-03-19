@@ -47,14 +47,14 @@ import frysk.sys.Pid;
  * Observer stress test.
  */
 
-public class StressTaskObserver
+public class StressAttachDetachRapidlyCloningMainTask
     extends TestLib
 {
     /**
      * Stress test to confirm that attaching to rapidly cloning tasks
      * works.
      */
-    public void testAttachDetachRapidlyCloningMainTask ()
+    public void test ()
     {
 	final int timeout = 20;
 

@@ -1,3 +1,14 @@
+2006-03-19  Andrew Cagney  <cagney@redhat.com>
+
+	* funit-threads.xml: New file.
+	* funit-child.c (OK, ok, pfatal, fatal, trace): Move to "util.h";
+	#include.
+	* util.h: New file.
+	* funit-threads.c: Include "util.h"; add OK to all pthread calls.
+	(op_clone): Rename loop.
+	(op_loop, op_block, usage): New.
+	(main): Parse --block, --clone and --loop.
+
 2006-02-23  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-child.c (main, server, main_alarm): Add global variable
