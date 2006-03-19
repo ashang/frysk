@@ -1,5 +1,12 @@
 2006-03-19  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java (clonedState): Replace Task parameter with
+	TaskState parameter.
+	* Task.java (newState, oldState): Replace <<state>>.
+	(getState): Replace getStateString.
+	(toString): Update.
+	* TestRefresh.java: Update.
+
 	* StressAttachDetachManyTasks.java: New file.
 
 	* StressAttachDetachRapidlyCloningMainTask.java: Rename
