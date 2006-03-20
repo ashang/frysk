@@ -39,30 +39,51 @@
 
 package frysk.proc;
 
+import junit.framework.TestCase;
+
 /**
- * Light weight identifier for a process.
- *
- * This implements comparable so can be used for searching and the
- * like.  Anything wanting to search for a process should use this.
+ * Test that Id compares actually work as expected.
  */
 
-class ProcId
-    extends Id
+public class TestId
+    extends TestCase
 {
-    ProcId ()
+    Id id1 = new Id (1);
+    Id id2 = new Id (2);
+    Id id3 = new Id (3);
+    TaskId tid1 = new TaskId (1);
+    TaskId tid2 = new TaskId (2);
+    ProcId pid1 = new ProcId (1);
+    ProcId pid2 = new ProcId (2);
+    /**
+     * Equals with base class works.
+     */
+    public void testIdEquals ()
     {
-	super ();
+	assertTrue ("id1.equals (id1)", id1.equals (id1));
+	assertFalse ("id1.equals (id2)", id1.equals (id2));
     }
-    public ProcId (int id)
+    
+    public void testIdCompareTo ()
     {
-	super (id);
+	assertTrue ("id2.compareTo (id1)", id2.compareTo (id1) < 0);
+	assertTrue ("id2.compareTo (id2)", id2.compareTo (id2) == 0);
+	assertTrue ("id2.compareTo (id3)", id2.compareTo (id3) > 0);
     }
-    public String toString ()
+
+    public void testTaskId ()
     {
-	return ("{ProcId," + super.toString () + "}");
+	// An Id works with anything?
+	assertTrue ("tid1.equals (tid1)", tid1.equals (tid1));
+	assertFalse ("tid1.equals (tid2)", tid1.equals (tid2));
+	assertFalse ("tid1.equals (pid2)", tid1.equals (pid2));
+	assertFalse ("tid1.equals (pid1)", tid1.equals (pid1));
     }
-    protected boolean isCompatible (Object o)
+    public void testProcId ()
     {
-	return (o instanceof ProcId);
+	assertTrue ("pid1.equals (pid1)", pid1.equals (pid1));
+	assertFalse ("pid1.equals (pid2)", pid1.equals (pid2));
+	assertFalse ("pid1.equals (tid1)", pid1.equals (tid1));
+	assertFalse ("pid1.equals (tid2)", pid1.equals (tid2));
     }
 }

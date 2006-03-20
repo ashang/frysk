@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -58,25 +58,48 @@ class Id
     {
 	this.id = id;
     }
+    /**
+     * From the point of view of IDs, is THIS class and the Object
+     * compatible?
+     *
+     * For the object hierarchy Task extends TaskId extends Id, Task
+     * and TaskId are considered compatible.
+     */
+    protected boolean isCompatible (Object o)
+    {
+	return (o instanceof Id);
+    }
+    /**
+     * Is the object equals to this one.
+     */
     public boolean equals (Object o)
     {
-	// if (o instanceof Id)
-	if (o.getClass ().isInstance (this))
+	if (isCompatible (o))
 	    return ((Id)o).id == id;
 	else
 	    return false;
     }
+    /**
+     * Return the hash code for this ID (hash on the underlying ID
+     * value).
+     */
     public int hashCode ()
     {
 	return id;
     }
+    /**
+     * Assuming that the two objects are the same, do a relative
+     * comparison.
+     */
     public int compareTo (Object o)
     {
-	if (o.getClass ().isInstance (this))
-	    return ((Id)o).id - id;
-	return
-	    -1;
+	Id rhs = (Id)o;
+	// Should this be calling isCompatible?
+	return rhs.id - this.id;
     }
+    /**
+     * Return a string representation of the object.
+     */
     public String toString ()
     {
 	return "" + id;

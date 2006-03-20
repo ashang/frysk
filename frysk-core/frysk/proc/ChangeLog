@@ -1,3 +1,12 @@
+2006-03-20  Andrew Cagney  <cagney@redhat.com>
+
+	* TestId.java: New.
+	* ProcId.java (isCompatible): New
+	* TaskId.java (isCompatible): New.
+	* Id.java (isCompatible): New.
+	(equals): Use isCompatible instead of isInstance.
+	(compareTo): Simplify.
+
 2006-03-19  Andrew Cagney  <cagney@redhat.com>
 
 	* Task.java (receiveClonedEvent, receiveForkedEvent)
