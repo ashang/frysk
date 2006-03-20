@@ -106,16 +106,17 @@ static void notify_manager (int sig, const char *fmt, ...)  __attribute__ ((form
 static void
 notify_manager (int sig, const char *fmt, ...)
 {
+  // Use tkill, instead of kill so that an exact task is signalled.
+  // Normal kill sends the signal to <<any available task>> which may
+  // not be the intended recepient.
+  char *reason;
+  va_list ap;
+  va_start (ap, fmt);
+  if (vasprintf (&reason, fmt, ap) < 0)
+    pfatal ("vasprintf");
+  va_end (ap);
+  trace ("%s", reason);
   if (manager_tid > 0) {
-    // Use tkill, instead of kill so that an exact task is signalled.
-    // Normal kill can send the signal to "any task" and "any [other]
-    // task" may not be ready.
-    char *reason;
-    va_list ap;
-    va_start (ap, fmt);
-    if (vasprintf (&reason, fmt, ap) < 0)
-      pfatal ("vasprintf");
-    va_end (ap);
     trace ("notify %d with %d (%s) -- %s", manager_tid,
 	   sig, strsignal (sig), reason);
     free (reason);
@@ -337,14 +338,18 @@ server (void *np)
 	trace ("sub-process exited");
 	if (sigchld_pid > 0) {
 	  int status;
+	  trace ("delete fork -- waitpid %d", sigchld_pid);
 	  int pid = waitpid (sigchld_pid, &status, 0);
 	  sigchld_pid = 0;
-	  notify_manager (PARENT_SIG, "%d exited with status 0x%x",
+	  notify_manager (PARENT_SIG,
+			  "delete fork -- %d exited with status 0x%x",
 			  pid, status);
 	}
 	else if (sigchld_pid < 0)
 	  // don't bother waiting.
-	  notify_manager (PARENT_SIG, "discarded SIGCHLD");
+	  notify_manager (PARENT_SIG, "zombie fork - discarding SIGCHLD");
+	else
+	  notify_manager (PARENT_SIG, "ignoring SIGCHLD");
       }
       break;
     case SIGPIPE:
