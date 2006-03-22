@@ -70,20 +70,21 @@ public class DOMTag {
 	public static final String TAG_NODE = "tag";
 	private Element myElement;
 	
-/*	public DOMTag(String type, int start, int end){
+	/**
+	 * Creates a new DOMTag
+	 * @param type
+	 * 		The type of the tag
+	 * @param token
+	 * 		The token
+	 * @param start
+	 * 		The start of the tag on the given line
+	 */
+	public DOMTag(String type, String token, int start){
 		Element tag = new Element(TAG_NODE);
 		tag.setAttribute(TYPE_ATTR, type);
 		tag.setAttribute(START_ATTR, ""+start);
-		tag.setAttribute(END_ATTR, ""+end);
-		this.myElement = tag;
-	}    */
-	
-	public DOMTag(DOMLine parent, String type, int start, int end){
-		Element tag = new Element(TAG_NODE);
-		tag.setAttribute(TYPE_ATTR, type);
-		tag.setAttribute(START_ATTR, ""+start);
-		tag.setAttribute(LENGTH_ATTR, ""+end);
-		parent.getElement().addContent(tag);
+		tag.setAttribute(LENGTH_ATTR, ""+token.length());
+		tag.setAttribute(TOKEN_ATTR, token);
 		this.myElement = tag;
 	}
 	

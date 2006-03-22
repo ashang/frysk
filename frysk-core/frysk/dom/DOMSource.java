@@ -72,22 +72,6 @@ public class DOMSource {
 	// text of the source line
 	public static final String TEXT_ATTR = "text";
 	
-/*
- * public static DOMSource createDOMSource(String filename, String path){
- * Element source = new Element(SOURCE_NODE); source.setAttribute(FILENAME_ATTR,
- * filename); source.setAttribute(FILEPATH_ATTR, path);
- * 
- * return new DOMSource(source); }
- * 
- * public static DOMSource createDOMSource(DOMImage parent, String filename,
- * String path){ Element source = new Element(SOURCE_NODE);
- * source.setAttribute(FILENAME_ATTR, filename);
- * source.setAttribute(FILEPATH_ATTR, path);
- * parent.getElement().addContent(source);
- * 
- * return new DOMSource(source); }
- */
-	
 	private Element myElement;
 	
 	/**
@@ -174,44 +158,6 @@ public class DOMSource {
 			this.myElement.getChildren(DOMLine.LINE_NODE).iterator();
 		return iter;
 	}
-	
-	/**
-	 * Attempts to return the DOMLine corresponding to the given line in the
-	 * file. If no tags exist on that line then null is returned.
-	 * 
-	 * @param num
-	 *            The line number to get
-	 * @return The DOMLine corresponding to the line, or null if no tags exist
-	 *         on that line
-	 */
-	/*public DOMLine getLine(int num){
-		final int lineNum = num;
-		
-		Iterator iter = this.myElement.getContent(new Filter() {
-			static final long serialVersionUID = 1L;			
-			public boolean matches(Object arg0) {
-				Element elem = (Element) arg0;
-				
-				if(elem.getName().equals(DOMLine.LINE_NODE) && 
-						Integer.parseInt(elem.getAttributeValue(DOMLine.NUMBER_ATTR)) == lineNum)
-					return true;
-				
-				return false;
-			}
-		}).iterator();
-		
-		if(!iter.hasNext())
-			return null;
-		
-		DOMLine val = new DOMLine((Element) iter.next());
-		
-		if(iter.hasNext()){
-			// TODO: Throw exception?
-			// This should not be happening: duplicate source lines!
-		}
-		
-		return val;
-	}  */
 	
 	/**
 	 * Attempts to return the DOMLine corresponding to the given line in the

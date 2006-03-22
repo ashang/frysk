@@ -39,8 +39,6 @@
 
 package frysk.dom;
 
-//import java.util.Vector;
-
 import org.jdom.Element;
 
 /**
@@ -59,16 +57,38 @@ public class DOMInlineInstance {
 	
 	public static final String PCLINE_ATTR = "PC_line";
 	
+	public static final String OFFSET_ATTR = "offset";
+	
+	public static final String LENGTH_ATTR = "length";
+	
 	private Element myElement;
 	/**
 	 * name of the inline element
 	 */	
 	public static final String INLINE_NODE = "inline";
 	
-//	public DOMInlineInstance(int start, int end){
-//		this.start = start;
-//		this.end = end;
-//	}
+	/**
+	 * Creates a new DOMInlineInstance
+	 * @param name
+	 * 		The name of the inline instance
+	 * @param offset
+	 * 		The offset of the inline instance from the start of the line
+	 * @param length
+	 * 		The length of the inline instance
+	 * @param PCLine
+	 * 		The program counter line number within the inline block.
+	 */
+	public DOMInlineInstance(String name, int offset, int length, int PCLine){
+		this.myElement = new Element(LINEINST_NODE);
+		myElement.setAttribute(DOMInlineInstance.LINEINST_ATTR,
+				name);
+		myElement.setAttribute(OFFSET_ATTR, Integer
+				.toString(offset));
+		myElement.setAttribute(LENGTH_ATTR, Integer
+				.toString(length));
+		myElement.setAttribute(DOMInlineInstance.PCLINE_ATTR,
+				String.valueOf(PCLine));
+	}
 	
 	/**
 	 * Creates a new DOMLine using the given data as it's element. data must be a node with

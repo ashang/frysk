@@ -146,6 +146,9 @@ public class DOMFrysk {
 	 * 
 	 * @return
 	 */
+	// This function is commented out right now because it is not being used.
+	// Nothing is broken per se, once this functionality is needed it will be
+	// uncommented.
 /*	public Iterator getImages() {
 		Iterator i = this.data.getRootElement().getChildren().iterator();
 		Vector v = new Vector();

@@ -221,13 +221,8 @@ public class DOMLine {
 			if(start == elStart && token.length() == elLength)
 				return;
 		}
-		
-		Element tagElement = new Element(DOMTag.TAG_NODE);
-		tagElement.setAttribute(DOMTag.TYPE_ATTR, type);
-		tagElement.setAttribute(DOMTag.START_ATTR, ""+start);
-		tagElement.setAttribute(DOMTag.LENGTH_ATTR, ""+token.length());
-		tagElement.setAttribute(DOMTag.TOKEN_ATTR, token);
-		this.myElement.addContent(tagElement);
+
+		this.myElement.addContent(new DOMTag(type, token, start).getElement());
 	}
 
 	/**
@@ -270,9 +265,6 @@ public class DOMLine {
 	 * @return The tag (if any) at that position
 	 */
 	public DOMTag getTag(int index) {
-//		int lineStart = this.getOffset();
-//		if (index < lineStart)
-//			index += lineStart;
 
 		Iterator iter = this.myElement.getChildren(DOMTag.TAG_NODE).iterator();
 		
@@ -291,14 +283,6 @@ public class DOMLine {
 		return this.myElement.getChildren(DOMInlineInstance.LINEINST_NODE).
 				iterator();
 	}
-
-	/*
-	 * public boolean hasBreakpoint(){ return this.myElement.getContent(new
-	 * Filter() { private static final long serialVersionUID = 1L; public
-	 * boolean matches(Object arg0) { Element elem = (Element) arg0;
-	 * if(elem.getAttributeValue(DOMTag.TYPE_ATTR).equals("breakpoint")) return
-	 * true; return false; } }).size() != 0; }
-	 */
 
 	/**
 	 * add a tag element to this line
@@ -322,17 +306,7 @@ public class DOMLine {
 	 *            is the ending character of this instance
 	 */
 	public void addInlineInst(String instance, int start_inline, int length, int PCLine) {
-		Element inlineLineInstElement = new Element(
-				DOMInlineInstance.LINEINST_NODE);
-		inlineLineInstElement.setAttribute(DOMInlineInstance.LINEINST_ATTR,
-				instance);
-		inlineLineInstElement.setAttribute(OFFSET_ATTR, Integer
-				.toString(start_inline));
-		inlineLineInstElement.setAttribute(LENGTH_ATTR, Integer
-				.toString(length));
-		inlineLineInstElement.setAttribute(DOMInlineInstance.PCLINE_ATTR,
-				String.valueOf(PCLine));
-		this.myElement.addContent(inlineLineInstElement);
+		this.myElement.addContent(new DOMInlineInstance(instance, start_inline, length, PCLine).getElement());
 	}
 
 	/**
@@ -377,16 +351,6 @@ public class DOMLine {
 		}
 		return null;
 	}
-	/**
-	 * get the inline instance of this line
-	 * 
-	 * @return the JDOM Element of the inline instance
-	 */
-	/*
-	 * public DOMInlineInstance getInstElement() { Element inst =
-	 * this.myElement.getChild(DOMInlineInstance.LINEINST_NODE);
-	 * DOMInlineInstance val = new DOMInlineInstance((Element) inst); }
-	 */
 
 	/**
 	 * get the JDOM Element of this line

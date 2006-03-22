@@ -363,9 +363,9 @@ public class TestDOM extends TestCase {
 				getAttributeValue(DOMInlineInstance.LINEINST_ATTR), test_inline);
 		
 		String tag_type = "inline";
-		DOMTag tag = new DOMTag(testDOMLine, tag_type,
-				main_prog[1].indexOf(test_inline),
-				main_prog[1].indexOf(test_inline) + test_inline.length());
+		DOMTag tag = new DOMTag(tag_type, test_inline,
+				main_prog[1].indexOf(test_inline));
+		testDOMLine.addTag(tag);
 				
 		Iterator iter_gettags = testDOMLine.getTags();
 		while (iter_gettags.hasNext()) {

@@ -1,5 +1,26 @@
 2006-03-22  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DOMFrysk.java (getImages): Added comment explaining why method
+	is commented out.
+	* DOMInlineInstance.java (OFFSET_ATTR): Added.
+	(LENGTH_ATTR): Added.
+	(DOMInlineInstance): Removed commented out constructor, added 
+	constructor that takes name, offset, length, and pc counter for
+	the inlined block.
+	* DOMLine.java (hasBreakpoint): Removed commented out duplicate method.
+	(addInlineInst): Refactored out, now uses new DOMInlineInstance
+	constructor.
+	(getInstElement): Removed, was commented out.
+	(addTag): Now uses DOMTag constructor rather than manually
+	manipulating element.
+	(getTag): Removed commented out code.
+	* DOMSource.java (createDOMSource): Removed, was commented out.
+	(getLine): Removed commented out duplicate method.
+	* DOMTag.java (DOMTag): Removed duplicate commented-out constructor,
+	changed current constructor to also take the token for the tag and
+	no longer assigns the tag to a line or takes the end of the tag.
+	* DOMTest.java (testDOMLine): Changed to use new DOMTag constructor.
+
 	* DOMImage.java (getInlines): Function was never used and broken,
 	removed since functionality should be in DOMLine anyways.
 
