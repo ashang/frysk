@@ -40,7 +40,6 @@
 package frysk.dom;
 
 import java.util.Iterator;
-import java.util.Vector;
 
 import org.jdom.Element;
 
@@ -170,22 +169,7 @@ public class DOMImage {
 		}
 		return null;
 	}
-	
-	/**
-	 * fetches all of the inlined functions for this DOMImage 
-	 * @return an iterator of all of the inlined functions for this DOMImage
-	 */
 
-	public Iterator getInlinedFunctions(){
-		Iterator iter = this.myElement.getChildren(DOMInlineInstance.INLINE_NODE).iterator();
-		Vector v = new Vector();
-		
-		while(iter.hasNext())
-			v.add((Element) iter.next());
-		
-		return v.iterator();
-	}
-	
 	/**
 	 * This function should only be used internally within the frysk source dom
 	 * @return The JDom element at the core of this node

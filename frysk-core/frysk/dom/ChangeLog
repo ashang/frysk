@@ -1,3 +1,8 @@
+2006-03-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMImage.java (getInlines): Function was never used and broken,
+	removed since functionality should be in DOMLine anyways.
+
 2006-03-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMLine.java (addTag): Now checks for duplicate tags before adding
