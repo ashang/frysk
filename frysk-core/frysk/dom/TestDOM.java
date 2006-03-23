@@ -409,8 +409,7 @@ public class TestDOM extends TestCase {
 		
 		assertEquals("testing DOMTag.setStart()", tag.getStart(), new_start);
 		
-		assertEquals("testing DOMTag.getLength()", tag.getLength(), 
-				main_prog[1].indexOf(test_inline) + test_inline.length());
+		assertEquals("testing DOMTag.getLength()", tag.getLength(), test_inline.length());
 		
 		int new_end = 35;
 		tag.setLength(new_end);

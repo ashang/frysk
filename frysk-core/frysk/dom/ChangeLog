@@ -1,3 +1,8 @@
+2006-03-23  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestDOM.java (testDOMLine): No longer treats the return from DOMTag
+	getLength() as the end of the tag.
+
 2006-03-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMFrysk.java (getImages): Added comment explaining why method
@@ -19,7 +24,7 @@
 	* DOMTag.java (DOMTag): Removed duplicate commented-out constructor,
 	changed current constructor to also take the token for the tag and
 	no longer assigns the tag to a line or takes the end of the tag.
-	* DOMTest.java (testDOMLine): Changed to use new DOMTag constructor.
+	* TestDOM.java (testDOMLine): Changed to use new DOMTag constructor.
 
 	* DOMImage.java (getInlines): Function was never used and broken,
 	removed since functionality should be in DOMLine anyways.
