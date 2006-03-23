@@ -1,3 +1,8 @@
+2006-03-22  Andrew Cagney  <cagney@redhat.com>
+
+	* ProcState.java (isStopped): Delete.
+	* Proc.java (isStopped): Delete.
+
 2006-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* TestId.java: New.

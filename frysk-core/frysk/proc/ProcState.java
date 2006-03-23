@@ -68,11 +68,6 @@ abstract class ProcState
     {
 	super (state);
     }
-    boolean isStopped ()
-    {
-	logger.log (Level.FINE, "isStopped\n", (Object[])null); 
-	return false;
-    }
     ProcState processPerformRemoval (Proc proc)
     {
 	throw unhandled (proc, "RequestRemoval");

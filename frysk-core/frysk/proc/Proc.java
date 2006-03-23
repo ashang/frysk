@@ -293,11 +293,6 @@ public abstract class Proc
 	    });
     }
 
-    boolean isStopped ()
-    {
-	return state.isStopped ();
-    }
-
     /**
      * Table of this processes child processes.
      */
