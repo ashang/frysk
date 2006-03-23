@@ -85,6 +85,20 @@ public class DOMSource {
 	}
 	
 	/**
+	 * Creates a new DOMSource
+	 * @param filename
+	 * 		The name of the file
+	 * @param filepath
+	 * 		The absolute path to the file
+	 */
+	public DOMSource(String filename, String filepath){
+		this.myElement = new Element(DOMSource.SOURCE_NODE);
+		myElement.setAttribute(DOMSource.FILENAME_ATTR, filename);
+		myElement.setAttribute(DOMSource.FILEPATH_ATTR, filepath);
+		myElement.setAttribute(DOMSource.IS_PARSED, "false");
+	}
+	
+	/**
 	 * @param name
 	 *            to set the filename to
 	 * @return true = set name worked, false if not
@@ -139,17 +153,12 @@ public class DOMSource {
 	 */
 	public void addLine(int lineno, String text, boolean is_executable, 
 			boolean has_break, int offset_index, BigInteger pc) {
-		
-		Element sourceLineElement = new Element(DOMLine.LINE_NODE);
-		sourceLineElement.setText(text);
-		sourceLineElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineno));
-		sourceLineElement.setAttribute(PC_ATTR, pc.toString());
-		sourceLineElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset_index));
-		sourceLineElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(text.length()));
-		sourceLineElement.setAttribute(DOMLine.EXECUTABLE_ATTR, ""+is_executable);
-		sourceLineElement.setAttribute(DOMLine.HAS_BREAK_ATTR, ""+has_break);
-		this.myElement.addContent(sourceLineElement);
+		this.addLine(
+				new DOMLine(lineno, text, offset_index, 
+						is_executable, has_break, pc)
+					);
 	}
+	
 	/**
 	 * @return An iterator over all of the lines in this file
 	 */

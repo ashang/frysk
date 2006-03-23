@@ -55,6 +55,8 @@ public class DOMImage {
 	public static final String CCPATH_ATTR = "CCPATH";
 	private Element myElement;
 	public static final String IMAGE_NODE = "image";
+	public static final String NAME_ATTR = "filename";
+	public static final String PATH_ATTR = "filepath";
 	
 	/**
 	 * Creates a new DOMImage from the given Element. Data must be of name "image".
@@ -65,18 +67,34 @@ public class DOMImage {
 	}
 	
 	/**
+	 * Creates a new DOMImage
+	 * @param name The name of the image
+	 * @param path the path to the image
+	 * @param ccpath The CCPATH for the image
+	 */
+	public DOMImage(String name, String path, String ccpath){
+		myElement = new Element(DOMImage.IMAGE_NODE);
+		myElement.setAttribute(NAME_ATTR, name);
+		myElement.setAttribute(PATH_ATTR, path);
+		myElement.setAttribute(CCPATH_ATTR, ccpath);
+	}
+	
+	/**
 	 * adds a source element under this image
 	 * @param source_name
 	 * @param path
 	 * @return
 	 */
 	public void addSource(String source_name, String path) {
-		
-		Element sourceNameElement = new Element(DOMSource.SOURCE_NODE);
-		sourceNameElement.setAttribute(DOMSource.FILENAME_ATTR, source_name);
-		sourceNameElement.setAttribute(DOMSource.FILEPATH_ATTR, path);
-		sourceNameElement.setAttribute(DOMSource.IS_PARSED, "false");
-		this.myElement.addContent(sourceNameElement);
+		this.addSource(new DOMSource(source_name, path));
+	}
+	
+	/**
+	 * Adds the given DOMSource as a source in this image
+	 * @param source The source to add
+	 */
+	public void addSource(DOMSource source){
+		this.myElement.addContent(source.getElement());
 	}
 	
 	/**
@@ -99,7 +117,7 @@ public class DOMImage {
 	 * @return The name of the image
 	 */
 	public String getName(){
-		return this.myElement.getAttributeValue(DOMSource.FILENAME_ATTR);
+		return this.myElement.getAttributeValue(NAME_ATTR);
 	}
 	
 	/**

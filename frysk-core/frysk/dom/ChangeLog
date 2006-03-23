@@ -1,5 +1,29 @@
 2006-03-23  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DOMFrysk.java (CCPATH_ATTR): Removed.
+	(addImage): Added version that takes a DOMImage, most of work now
+	moved to DOMImage constructor.
+	* DOMImage.java (NAME_ATTR): Added.
+	(PATH_ATTR): Added.
+	(DOMImage): Added new constructor that takes image attributes and
+	creates a new Element.
+	(addSource): Now uses DOMSource constructor, added second version that
+	takes only a DOMSource.
+	* DOMInlineInstance.java (hasInlineInstance): Added comment.
+	(hasParentInlineInstance): Ditto.
+	(getInlineInstance): Ditto.
+	(getPreviousInstance): Ditto.
+	* DOMLine.java (DOMLine): Added new constructor that takes line
+	attributes.
+	(getInlinedCodeCount): Removed, can get this information from
+	DOMInlineInstance.
+	(getInlineElement): Ditto.
+	* DOMSource.java (DOMSource): Added new constructor that takes source
+	attributes.
+	(addLine): Now uses DOMLine constructor.
+	* TestDOM.java (testDOMLine): Now uses getElement from DOMInlineInstance
+	rather than getInlineElement from DOMLine.
+
 	* TestDOM.java (testDOMLine): No longer treats the return from DOMTag
 	getLength() as the end of the tag.
 

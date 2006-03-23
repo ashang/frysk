@@ -39,6 +39,7 @@
 
 package frysk.dom;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -83,6 +84,33 @@ public class DOMLine {
 
 	private Element myElement;
 
+	/**
+	 * Creates a new DOMLine
+	 * @param lineNo
+	 * 		The line number of this line
+	 * @param lineText
+	 * 		The text on this line
+	 * @param offset
+	 * 		The offset in characters from the start of the file
+	 * @param executable
+	 * 		Whether this line is executable or not
+	 * @param hasBreakpoint
+	 * 		Whether this line has any breakpoints on it or not
+	 * @param pc
+	 * 		The program counter value.
+	 */
+	public DOMLine(int lineNo, String lineText, int offset, 
+			boolean executable, boolean hasBreakpoint, BigInteger pc){
+		this.myElement = new Element(DOMLine.LINE_NODE);
+		myElement.setText(lineText);
+		myElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineNo));
+		myElement.setAttribute(DOMSource.PC_ATTR, pc.toString());
+		myElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset));
+		myElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(lineText.length()));
+		myElement.setAttribute(DOMLine.EXECUTABLE_ATTR, ""+executable);
+		myElement.setAttribute(DOMLine.HAS_BREAK_ATTR, ""+hasBreakpoint);
+	}
+	
 	/**
 	 * Creates a new DOMLine using the given data as it's element. data must be
 	 * a node with name "line".
@@ -170,15 +198,6 @@ public class DOMLine {
 	}
 
 	/**
-	 * @return The number of lines of inlined code contained within this line
-	 */
-	public int getInlinedCodeCount() {
-		// TODO: does this need to be an attribute or refer to the earlier
-		// nodes?
-		return 0;
-	}
-
-	/**
 	 * get the text associated with this line
 	 * 
 	 * @return the text of this line
@@ -222,7 +241,7 @@ public class DOMLine {
 				return;
 		}
 
-		this.myElement.addContent(new DOMTag(type, token, start).getElement());
+		this.addTag(new DOMTag(type, token, start));
 	}
 
 	/**
@@ -326,27 +345,6 @@ public class DOMLine {
 			if (name == inst_name) {
 				DOMInlineInstance val = new DOMInlineInstance((Element) inst);
 				return val;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * get the JDOM Element associated with this instance
-	 * 
-	 * @param inst
-	 *            is the name of the instance to retrieve
-	 * @return the JDOM Element of this instance
-	 */
-	public Element getInlineElement(String inst_name) {
-
-		Iterator iter = this.myElement.getChildren().iterator();
-		while (iter.hasNext()) {
-			Element inst = (Element) iter.next();
-			String name = inst
-					.getAttributeValue(DOMInlineInstance.LINEINST_ATTR);
-			if (name == inst_name) {
-				return inst;
 			}
 		}
 		return null;

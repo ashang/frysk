@@ -170,15 +170,28 @@ public class DOMInlineInstance {
 		this.myElement.addContent(inlineLineInstElement);
 	}
 	
+	/**
+	 * 
+	 * @return True iff this inline instance has an inline instance nested
+	 * within it
+	 */
 	public boolean hasInlineInstance(){
 		return !this.myElement.getChildren(INLINE_NODE).isEmpty();
 	}
 	
+	/**
+	 * 
+	 * @return True iff this inline instance is nested within another inlined instance
+	 */
 	public boolean hasParentInlineInstance(){
 		Element parent = this.myElement.getParentElement();
 		return (parent != null && parent.getName().equals(DOMInlineInstance.INLINE_NODE));
 	}
-	
+
+	/**
+	 * Returns the inline instance nested within this one if one exists
+	 * @return The nested inline instance if it exists, null otherwise
+	 */
 	public DOMInlineInstance getInlineInstance(){
 		Element child = this.myElement.getChild(INLINE_NODE);
 		if(child != null)
@@ -187,6 +200,10 @@ public class DOMInlineInstance {
 		return null;
 	}
 	
+	/**
+	 * Returns the inline instance that this method is nested within, if one exists
+	 * @return the parent instance if it exists, null otherwise.
+	 */
 	public DOMInlineInstance getPreviousInstance(){
 		Element parent = this.myElement.getParentElement();
 		if(parent != null && parent.getName().equals(DOMInlineInstance.INLINE_NODE))

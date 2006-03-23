@@ -65,8 +65,6 @@ public class DOMFrysk {
 
 	private static final String value = "value";
 
-	private static final String CCPATH_ATTR = "CCPATH";
-
 	private final Element pcName = new Element(PC_ATTR);
 
 	private Document data;
@@ -95,14 +93,20 @@ public class DOMFrysk {
 	 * @return
 	 */
 	public boolean addImage(String image_name, String CCPATH, String source_path) {
-		// Make sure this image name is not already there before adding
+		return this.addImage(new DOMImage(image_name, source_path, CCPATH));
+	}
 	
-		if (checkImageDup(image_name))
+	/**
+	 * Adds the given image to the DOM
+	 * @param image The DOMImage to add
+	 * @return
+	 */
+	public boolean addImage(DOMImage image){
+		//	Make sure this image name is not already there before adding
+		if(checkImageDup(image.getName()))
 			return false;
-		Element imageNameElement = new Element(DOMImage.IMAGE_NODE);
-		imageNameElement.setAttribute(DOMSource.FILENAME_ATTR, image_name);
-		imageNameElement.setAttribute(CCPATH_ATTR, CCPATH);
-		this.data.getRootElement().addContent(imageNameElement);
+		
+		this.data.getRootElement().addContent(image.getElement());
 		return true;
 	}
 

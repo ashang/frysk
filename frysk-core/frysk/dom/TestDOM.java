@@ -359,7 +359,7 @@ public class TestDOM extends TestCase {
 		testDOMLine.addInlineInst(test_inline, start_inline, end_inline, 0);
 		
 		assertEquals("testing DOMLine.addInlineInst()", 
-				testDOMLine.getInlineElement(test_inline).
+				testDOMLine.getInlineInst(test_inline).getElement().
 				getAttributeValue(DOMInlineInstance.LINEINST_ATTR), test_inline);
 		
 		String tag_type = "inline";
