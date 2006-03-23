@@ -39,6 +39,10 @@
 
 package frysk.sys;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import frysk.Config;
+
 /**
  * Wait for an event from either a process, task, or all processes and
  * tasks.
@@ -46,6 +50,39 @@ package frysk.sys;
 
 public final class Wait
 {
+    protected static Logger logger;
+    /**
+     * From static methods this isn't initialized; provide an init
+     * method.
+     */
+    protected static void log (int pid, int status, int errno)
+    {
+	// Seems that when calling static methods this isn't
+	// initialized, force it.
+	if (logger == null)
+	    logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+	// Log everything, use isLoggable so as to avoid all the
+	// boxing when it isn't needed.
+	if (logger.isLoggable (Level.FINE)) {
+	    if (pid > 0)
+		logger.log (Level.FINE,
+			    "{0} pid {1,number,integer} status 0x{2}\n",
+			    new Object[] {
+				Wait.class.getName (),
+				new Integer (pid),
+				Integer.toHexString (status)
+			    });
+	    else
+		logger.log (Level.FINE,
+			    "{0} pid {1,number,integer} errno {2}\n",
+			    new Object[] {
+				Wait.class.getName (),
+				new Integer (pid),
+				new Integer (errno)
+			    });
+	}
+    }
+
     /**
      * Handler notifying of each possible wait event.
      */

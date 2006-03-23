@@ -75,7 +75,7 @@
 
 #define WSTOPEVENT(STATUS) (((STATUS) & 0xff0000) >> 16)
 
-void
+static void
 processStatus (int pid, int status,
 	       frysk::sys::Wait$Observer* observer)
 {
@@ -169,16 +169,19 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   };
   WaitResult* head = (WaitResult* ) alloca (sizeof (WaitResult));
   WaitResult* tail = head;
+
   // Drain the waitpid queue of all its events storing each in a list
   // on the stack.  The queue is fully drained _before_ it is
   // processed, that way there is no possibility of a continued thread
   // getting its next event back on the queue resulting in live lock.
+
   int i = 0;
   while (true) {
     // Keep fetching the wait status until there are none left.  If
     // there are no children ECHILD is returned which is ok.
     errno = 0;
     tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
+    log (tail->pid, tail->status, errno);
     if (tail->pid <= 0)
       break;
     tail->next = (WaitResult*) alloca (sizeof (WaitResult));
@@ -195,7 +198,9 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   default:
     throwErrno (errno, "waitpid", "process", -1);
   }
+
   // Now unpack each, notifying the observer.
+
   while (head != tail) {
     // Process the result.
     processStatus (head->pid, head->status, observer);
@@ -210,7 +215,8 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::Wait$Observer* observer)
 {
   int status;
   errno = 0;
-  int pid = ::waitpid (wpid, &status, __WALL);
+  pid_t pid = ::waitpid (wpid, &status, __WALL);
+  log (pid, status, errno);
   if (pid <= 0)
     throwErrno (errno, "waitpid", "process", wpid);
   // Process the result.
