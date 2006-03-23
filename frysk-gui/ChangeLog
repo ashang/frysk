@@ -1,3 +1,8 @@
+2006-03-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* .classpath: Updated to look in /usr/share/java instead of
+	looking in /opt. Update jar list.
+
 2006-02-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* configure.ac: Added cairo paths to classpaths.
