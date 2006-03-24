@@ -644,7 +644,9 @@ class TaskState
 	    {
 		logger.log (Level.FINE, "{0} processPerformAddObservation\n", task); 
 		observation.fail (new RuntimeException ("unattached"));
-		task.proc.performDeleteObservation (observation);
+		task.proc.requestDeleteObserver (task,
+						 (TaskObservable) observation.observable,
+						 (TaskObserver) observation.observer);
 		return destroyed;
 	    }
 	};

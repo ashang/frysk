@@ -381,30 +381,6 @@ abstract public class Task
 
 
     /**
-     * Request that the observer be added to this task.  Pass the
-     * request up to the Proc which may need to first perform an
-     * attach.  Once attached, the Proc will pass the request back
-     * down to .performAddObservation.
-     */
-    private void requestAddObserver (TaskObservable observable,
-				     TaskObserver observer)
-    {
-	logger.log (Level.FINE, "{0} requestAddObserver\n", this);
-	proc.performAddObservation (new TaskObservation (this, observable,
-							 observer));
-    }
-    /**
-     * Delete TaskObserver from this tasks set of observers; also
-     * delete it from the set of blockers.
-     */
-    private void requestDeleteObserver (final TaskObservable observable,
-					final TaskObserver observer)
-    {
-	logger.log (Level.FINE, "{0} requestDeleteObserver\n", this);
-	proc.performDeleteObservation (new TaskObservation (this, observable,
-							    observer));
-    }
-    /**
      * (Internal) Add the specified observation to the observer.
      */
     void performAddObservation (final Observation observationArg)
@@ -461,14 +437,15 @@ abstract public class Task
     public void requestAddClonedObserver (TaskObserver.Cloned o)
     {
 	logger.log (Level.FINE, "{0} requestAddClonedObserver\n", this);
-	requestAddObserver (clonedObservers, o);
+	proc.requestAddObserver (this, clonedObservers, o);
     }
     /**
      * Delete a TaskObserver.Cloned observer.
      */
     public void requestDeleteClonedObserver (TaskObserver.Cloned o)
     {
-	requestDeleteObserver (clonedObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteClonedObserver\n", this);
+	proc.requestDeleteObserver (this, clonedObservers, o);
     }
     /**
      * Notify all cloned observers that this task cloned.  Return the
@@ -497,14 +474,16 @@ abstract public class Task
      */
     public void requestAddAttachedObserver (TaskObserver.Attached o)
     {
-	requestAddObserver (attachedObservers, o);
+	logger.log (Level.FINE, "{0} requestAddAttachedObserver\n", this);
+	proc.requestAddObserver (this, attachedObservers, o);
     }
     /**
      * Delete a TaskObserver.Attached observer.
      */
     public void requestDeleteAttachedObserver (TaskObserver.Attached o)
     {
-	requestDeleteObserver (attachedObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteAttachedObserver\n", this);
+	proc.requestDeleteObserver (this, attachedObservers, o);
     }
     /**
      * Notify all Attached observers that this task attached.  Return
@@ -531,14 +510,16 @@ abstract public class Task
      */
     public void requestAddForkedObserver (TaskObserver.Forked o)
     {
-	requestAddObserver (forkedObservers, o);
+	logger.log (Level.FINE, "{0} requestAddForkedObserver\n", this);
+	proc.requestAddObserver (this, forkedObservers, o);
     }
     /**
      * Delete a TaskObserver.Forked observer.
      */
     public void requestDeleteForkedObserver (TaskObserver.Forked o)
     {
-	requestDeleteObserver (forkedObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteForkedObserver\n", this);
+	proc.requestDeleteObserver (this, forkedObservers, o);
     }
     /**
      * Notify all Forked observers that this task forked.  Return the
@@ -567,7 +548,8 @@ abstract public class Task
      */
     public void requestAddTerminatedObserver (TaskObserver.Terminated o)
     {
-	requestAddObserver (terminatedObservers, o);
+	logger.log (Level.FINE, "{0} requestAddTerminatedObserver\n", this);
+	proc.requestAddObserver (this, terminatedObservers, o);
     }
     /**
      * Delete a TaskObserver.Terminated observer.
@@ -575,7 +557,7 @@ abstract public class Task
     public void requestDeleteTerminatedObserver (TaskObserver.Terminated o)
     {
 	logger.log (Level.FINE, "{0} requestDeleteTerminatedObserver\n", this);
-	requestDeleteObserver (terminatedObservers, o);
+	proc.requestDeleteObserver (this, terminatedObservers, o);
     }
     /**
      * Notify all Terminated observers, of this Task's demise.  Return
@@ -602,14 +584,16 @@ abstract public class Task
      */
     public void requestAddTerminatingObserver (TaskObserver.Terminating o)
     {
-	requestAddObserver (terminatingObservers, o);
+	logger.log (Level.FINE, "{0} requestAddTerminatingObserver\n", this);
+	proc.requestAddObserver (this, terminatingObservers, o);
     }
     /**
      * Delete TaskObserver.Terminating.
      */
     public void requestDeleteTerminatingObserver (TaskObserver.Terminating o)
     {
-	requestDeleteObserver (terminatingObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteTerminatingObserver\n", this);
+	proc.requestDeleteObserver (this, terminatingObservers, o);
     }
     /**
      * Notify all Terminating observers, of this Task's demise.
@@ -636,14 +620,16 @@ abstract public class Task
      */
     public void requestAddExecedObserver (TaskObserver.Execed o)
     {
-	requestAddObserver (execedObservers, o);
+	logger.log (Level.FINE, "{0} requestAddExecedObserver\n", this);
+	proc.requestAddObserver (this, execedObservers, o);
     }
     /**
      * Delete TaskObserver.Execed.
      */
     public void requestDeleteExecedObserver (TaskObserver.Execed o)
     {
-	requestDeleteObserver (execedObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteExecedObserver\n", this);
+	proc.requestDeleteObserver (this, execedObservers, o);
     }
     /**
      * Notify all Execed observers, of this Task's demise.  Return the
@@ -670,14 +656,16 @@ abstract public class Task
      */
     public void requestAddSyscallObserver (TaskObserver.Syscall o)
     {
-	requestAddObserver (syscallObservers, o);
+	logger.log (Level.FINE, "{0} requestAddSyscallObserver\n", this);
+	proc.requestAddObserver (this, syscallObservers, o);
     }
     /**
      * Delete TaskObserver.Syscall.
      */
     public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
     {
-	requestDeleteObserver (syscallObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
+	proc.requestDeleteObserver (this, syscallObservers, o);
     }
     /**
      * Notify all Syscall observers of this Task's entry into a system
@@ -720,14 +708,16 @@ abstract public class Task
      */
     public void requestAddSignaledObserver (TaskObserver.Signaled o)
     {
-	requestAddObserver (signaledObservers, o);
+	logger.log (Level.FINE, "{0} requestAddSignaledObserver\n", this);
+	proc.requestAddObserver (this, signaledObservers, o);
     }
     /**
      * Delete TaskObserver.Signaled.
      */
     public void requestDeleteSignaledObserver (TaskObserver.Signaled o)
     {
-	requestDeleteObserver (signaledObservers, o);
+	logger.log (Level.FINE, "{0} requestDeleteSignaledObserver\n", this);
+	proc.requestDeleteObserver (this, signaledObservers, o);
     }
     /**
      * Notify all Signaled observers of the signal.  Return the number

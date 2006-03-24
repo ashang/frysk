@@ -1,5 +1,14 @@
 2006-03-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (requestDeleteObserver, requestAddObserver): Replace
+	performAddObservation, and performDeleteObservation.
+	* Task.java (requestAddObserver, requestDeleteObserver): Delete,
+	instead directly call Proc .requestDeleteObserver and Proc
+	.requestAddObserver.  Clean up log messages.
+	* Observation.java (observable, observer): Change from private to
+	final.
+	* TaskState.java: Update.
+
 	* TaskState.java (processSignaledEvent): Rename
 	processPerformedSignaled.
 	* Task.java: Update.  Rename received* methods to processed*.
