@@ -1,3 +1,17 @@
+2006-03-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Now creates a VariableWatchView
+	as well as initializing the stack browser before initializing events.
+	(addVariableTrace): Now delegates work to VariableWatchView.
+	(populateStackBrowser): Now creats a CurrentStackView.
+	(addEvents): Adds listener to the CurrentStackView.
+	(updateShownStackFrame): Now gets stackLevel direct from event.
+	(SourceWinListener): Now implements StackViewListener.
+	(SourceWinListener.currentStackChanged): Added.
+	(SourceWinListener.selectionChangedEvent): Removed.
+	* VariableWatchView.java: Added.
+	* CurrentStackView.java: Added.
+
 2006-03-19  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java (setMyTask): Do not append Task.getStateString

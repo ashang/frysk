@@ -51,14 +51,11 @@ import org.gnu.gtk.AccelGroup;
 import org.gnu.gtk.AccelMap;
 import org.gnu.gtk.Action;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.CellRenderer;
-import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.ComboBoxEntry;
 import org.gnu.gtk.Container;
 import org.gnu.gtk.DataColumn;
-import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.GtkStockItem;
@@ -70,7 +67,6 @@ import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
-import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
@@ -79,10 +75,7 @@ import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreeModel;
-import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
-import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
@@ -93,16 +86,14 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
-import org.gnu.gtk.event.TreeSelectionEvent;
-import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.dom.DOMFrysk;
-import frysk.dom.DOMLine;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
+import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
 
@@ -178,12 +169,10 @@ public class SourceWindow extends Window{
 	private Task myTask;
 
 	private StackLevel stack;
+	
+	private CurrentStackView stackView;
 
-	// Data Columns for the stack browser
-	private DataColumn[] stackColumns;
-
-	// Data Columns for the variable trace viewer
-	private DataColumn[] traceColumns;
+	private VariableWatchView watchView;
 	
 	// Due to java-gnome bug #319415
 	private ToolTips tips;
@@ -226,46 +215,23 @@ public class SourceWindow extends Window{
 
 		this.tips = new ToolTips();
 
+		this.populateStackBrowser(this.stack);
+		
 		this.createActions(ag);
 		this.createMenus();
 		this.createToolBar();
 		this.createSearchBar();
 		this.attachEvents();
 
-		this.populateStackBrowser(this.stack);
+		this.watchView = new VariableWatchView();
+		ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
+		sw.add(this.watchView);
 		
-		this.traceColumns = new DataColumn[] {new DataColumnString(), new DataColumnString()};
-		TreeView traceView = (TreeView) this.glade.getWidget("traceBrowser");
-		traceView.setModel(new ListStore(this.traceColumns));
-
-		TreeViewColumn col = new TreeViewColumn();
-		CellRenderer renderer = new CellRendererText();
-		col.packStart(renderer, true);
-		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, this.traceColumns[0]);
-		col.setTitle("Name");
-		traceView.appendColumn(col);
-		
-		col = new TreeViewColumn();
-		renderer = new CellRendererText();
-		col.packStart(renderer, true);
-		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, this.traceColumns[1]);
-		col.setTitle("Value");
-		traceView.appendColumn(col);
-		
-		
-		((Label) this.glade.getWidget("stackFrame"))
-				.setText("<b>Current Stack</b>");
-		((Label) this.glade.getWidget("stackFrame")).setUseMarkup(true);
-
-		((Label) this.glade.getWidget("traceFrame"))
-				.setText("<b>Variable Traces</b>");
-		((Label) this.glade.getWidget("traceFrame")).setUseMarkup(true);
-
 		this.populateFunctionBox();
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX))
-				.setActive(0); //$NON-NLS-1$
+				.setActive(0);
 
-		this.glade.getWidget(SOURCE_WINDOW).showAll();
+		this.showAll();
 		this.glade.getWidget(FIND_BOX).hideAll();
 	}
 
@@ -287,14 +253,7 @@ public class SourceWindow extends Window{
 	 *            The variable to trace
 	 */
 	public void addVariableTrace(Variable var) {
-		TreeView traceView = (TreeView) this.glade.getWidget("traceBrowser");
-		ListStore store = (ListStore) traceView.getModel();
-		
-		TreeIter iter = store.appendRow();
-		store.setValue(iter, (DataColumnString) this.traceColumns[0], var.getName());
-		store.setValue(iter, (DataColumnString) this.traceColumns[1], "0xfeedcalf");
-		
-		traceView.showAll();
+		this.watchView.addTrace(var);
 	}
 
 	/**
@@ -338,67 +297,10 @@ public class SourceWindow extends Window{
 	 * @param top
 	 */
 	private void populateStackBrowser(StackLevel top) {
-		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
+		stackView = new CurrentStackView(top);
+
+		StackLevel lastStack = stackView.getCurrentLevel();
 		
-		stackColumns = new DataColumn[] { new DataColumnString(),
-				new DataColumnObject() };
-		ListStore listModel = new ListStore(stackColumns);
-
-		TreeIter iter = null;
-		TreeIter last = null;
-
-		StackLevel lastStack = null;
-
-		while (top != null) {
-			iter = listModel.appendRow();
-
-			CurrentLineSection current = top.getCurrentLine();
-			boolean hasInlinedCode = false;
-				
-			// Go through each segment of the current line, but once we've found
-			// one stop checking
-			while(current != null && !hasInlinedCode){
-				// Go through each line of the segment
-				for(int i = current.getStartLine(); i < current.getEndLine(); i++){
-					// Check for inlined code
-					DOMLine line = top.getData().getLine(i);
-					if(line != null && line.hasInlinedCode()){
-						hasInlinedCode = true;
-						break;
-					}
-				}
-				
-				current = current.getNextSection();
-			}
-				
-			// If we've found inlined code, update the display
-			if(hasInlinedCode)
-				listModel.setValue(iter, (DataColumnString) stackColumns[0], top
-						.getData().getFileName()
-						+ "  (i)");
-			else
-				listModel.setValue(iter, (DataColumnString) stackColumns[0], top
-						.getData().getFileName());
-				
-			listModel.setValue(iter, (DataColumnObject) stackColumns[1], top);
-
-			// Save the last node so we can select it
-			if (top.getNextScope() == null) {
-				last = iter;
-				lastStack = top;
-			}
-
-			top = top.getNextScope();
-		}
-		stackList.setModel(listModel);
-
-		TreeViewColumn column = new TreeViewColumn();
-		CellRenderer renderer = new CellRendererText();
-		column.packStart(renderer, true);
-		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-				stackColumns[0]);
-		stackList.appendColumn(column);
-
 		if (this.view != null)
 			((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
 		this.view = new SourceView(lastStack, this);
@@ -406,9 +308,10 @@ public class SourceWindow extends Window{
 				.add((Widget) this.view);
 		this.view.showAll();
 
-		stackList.getSelection().setMode(SelectionMode.SINGLE);
-		stackList.getSelection().select(last);
-		stackList.showAll();
+		ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("stackScrolledWindow");
+		sw.add(stackView);
+		
+		stackView.showAll();
 	}
 	
 	/**
@@ -820,9 +723,8 @@ public class SourceWindow extends Window{
 		// Mode box
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
 
-		// // Stack browser
-		((TreeView) this.glade.getWidget("stackBrowser")).getSelection()
-				.addListener(listener);
+		// Stack browser
+		this.stackView.addListener(listener);
 				
 		// Preferences
 		((BooleanPreference) PreferenceManager.sourceWinGroup.getPreference(SourceWinPreferenceGroup.TOOLBAR)).
@@ -1010,17 +912,7 @@ public class SourceWindow extends Window{
 		}
 	}
 	
-	private void updateShownStackFrame(){
-		TreeView view = (TreeView) this.glade.getWidget("stackBrowser");
-		TreeModel model = view.getModel();
-
-		TreePath[] paths = view.getSelection().getSelectedRows();
-		if(paths.length == 0)
-			return;
-		
-		StackLevel selected = (StackLevel) model.getValue(model.getIter(paths[0]),
-				(DataColumnObject) stackColumns[1]);
-
+	private void updateShownStackFrame(StackLevel selected){
 		((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
 				+ selected.getData().getFileName() + "</b>");
 		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
@@ -1215,7 +1107,7 @@ public class SourceWindow extends Window{
 	}
 	
 	private class SourceWindowListener implements ButtonListener, 
-			EntryListener, ComboBoxListener, TreeSelectionListener{
+			EntryListener, ComboBoxListener, StackViewListener{
 
 		private SourceWindow target;
 		
@@ -1282,8 +1174,8 @@ public class SourceWindow extends Window{
 			}
 		}
 
-		public void selectionChangedEvent(TreeSelectionEvent arg0) {
-			target.updateShownStackFrame();
+		public void currentStackChanged(StackLevel newLevel) {
+			target.updateShownStackFrame(newLevel);
 		}
 		
 	}

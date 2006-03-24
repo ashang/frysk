@@ -1,3 +1,8 @@
+2006-03-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Removed widgets for stack and variable watches,
+	also added labels to frames for stakc and variable watches.
+
 2006-03-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DummySourceWindow.java (initializePreferences): Added Comments
