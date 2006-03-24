@@ -247,7 +247,7 @@ public class LinuxHost
 		    Task task = getTask (pid, "{0} cloneEvent\n");
 		    // Create an attached, and running, clone of TASK.
 		    Task clone = new LinuxTask (task, new TaskId (clonePid));
-		    task.receiveClonedEvent (clone);
+		    task.processClonedEvent (clone);
 		}
 		public void forkEvent (int pid, int childPid)
 		{
@@ -263,41 +263,41 @@ public class LinuxHost
 		    Proc forkProc = new LinuxProc (task, forkId);
 		    // The main task.
 		    Task forkTask = new LinuxTask (forkProc);
-		    task.receiveForkedEvent (forkTask);
+		    task.processForkedEvent (forkTask);
 		}
 		public void exitEvent (int pid, boolean signal, int value,
 				       boolean coreDumped)
 		{
 		    Task task = getTask (pid, "{0} exitEvent\n");
-		    task.receiveTerminatingEvent (signal, value);
+		    task.processTerminatingEvent (signal, value);
 		}
 		public void execEvent (int pid)
 		{
 		    Task task = getTask (pid, "{0} execEvent\n");
-		    task.receiveExecedEvent ();
+		    task.processExecedEvent ();
 		}
 		public void disappeared (int pid, Throwable w)
 		{
 		    Task task = getTask (pid, "{0} disappeared\n");
-		    task.receiveDisappearedEvent (w);
+		    task.processDisappearedEvent (w);
 		}
 		public void syscallEvent (int pid)
 		{
 		    Task task = getTask (pid, "{0} syscallEvent\n");
-		    task.receiveSyscalledEvent ();
+		    task.processSyscalledEvent ();
 		}
 		public void stopped (int pid, int sig)
 		{
 		    Task task = getTask (pid, "{0} stopped\n");
 		    switch (sig) {
 		    case Sig._STOP:
-			task.receiveStoppedEvent ();
+			task.processStoppedEvent ();
 			break;
 		    case Sig._TRAP:
-			task.receiveTrappedEvent ();
+			task.processTrappedEvent ();
 			break;
 		    default:
-			task.receiveSignaledEvent (sig);
+			task.processSignaledEvent (sig);
 			break;
 		    }
 		}
@@ -305,7 +305,7 @@ public class LinuxHost
 					boolean coreDumped)
 		{
 		    Task task = getTask (pid, "{0} terminated\n");
-		    task.receiveTerminatedEvent (signal, value);
+		    task.processTerminatedEvent (signal, value);
 		}
 	    };
 	public final void execute ()

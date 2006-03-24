@@ -1,3 +1,10 @@
+2006-03-24  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java (processSignaledEvent): Rename
+	processPerformedSignaled.
+	* Task.java: Update.  Rename received* methods to processed*.
+	* LinuxHost.java: Update.
+	
 2006-03-22  Andrew Cagney  <cagney@redhat.com>
 
 	* ProcState.java (isStopped): Delete.

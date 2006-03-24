@@ -279,52 +279,46 @@ abstract public class Task
     /**
      * (internal) This task cloned creating the new Task cloneArg.
      */
-    void receiveClonedEvent (Task clone)
+    void processClonedEvent (Task clone)
     {
-	logger.log (Level.FINE, "{0} receiveClonedEvent\n", this);
 	newState = oldState ().processClonedEvent (this, clone);
     }
     /**
      * (internal) This Task forked creating an entirely new child
      * process containing one (the fork) task.
      */
-    void receiveForkedEvent (Task fork)
+    void processForkedEvent (Task fork)
     {
-	logger.log (Level.FINE, "{0} receiveForkedEvent\n", this); 
 	newState = oldState ().processForkedEvent (this, fork);
     }
     /**
      * (internal) This task stopped.
      */
-    void receiveStoppedEvent ()
+    void processStoppedEvent ()
     {
-	logger.log (Level.FINE, "{0} receiveStoppedEvent\n", this); 
 	newState = oldState ().processStoppedEvent (this);
     }
     /**
      * (internal) This task encountered a trap.
      */
-    void receiveTrappedEvent ()
+    void processTrappedEvent ()
     {
-	logger.log (Level.FINE, "{0} receiveTrappedEvent\n", this); 
 	newState = oldState ().processTrappedEvent (this);
     }
     /**
      * (internal) This task received a signal.
      */
-    void receiveSignaledEvent (int sig)
+    void processSignaledEvent (int sig)
     {
-	logger.log (Level.FINE, "{0} receiveSignaledEvent\n", this); 
-	newState = oldState ().processPerformSignaled (this, sig);
+	newState = oldState ().processSignaledEvent (this, sig);
     }
 
     /**
      * (internal) The task is in the process of terminating.  If
      * SIGNAL, VALUE is the signal, otherwize it is the exit status.
      */
-    void receiveTerminatingEvent (boolean signal, int value)
+    void processTerminatingEvent (boolean signal, int value)
     {
-	logger.log (Level.FINE, "{0} receiveTerminatingEvent\n", this); 
 	newState = oldState ().processTerminatingEvent (this, signal, value);
     }
 
@@ -332,18 +326,16 @@ abstract public class Task
      * (internal) The task has disappeared (due to an exit or some
      * other error operation).
      */
-    void receiveDisappearedEvent (Throwable arg)
+    void processDisappearedEvent (Throwable arg)
     {
-	logger.log (Level.FINE, "{0} receiveDisappearedEvent\n", this); 
 	newState = oldState ().processDisappearedEvent (this, arg);
     }
 
     /**
      * (internal) The task is performing a system call.
      */
-    void receiveSyscalledEvent ()
+    void processSyscalledEvent ()
     {
-	logger.log (Level.FINE, "{0} receiveSyscalledEvent\n", this); 
 	newState = oldState ().processSyscalledEvent (this);
     }
 
@@ -351,9 +343,8 @@ abstract public class Task
      * (internal) The task has terminated; if SIGNAL, VALUE is the
      * signal, otherwize it is the exit status.
      */
-    void receiveTerminatedEvent (boolean signal, int value)
+    void processTerminatedEvent (boolean signal, int value)
     {
-	logger.log (Level.FINE, "{0} receiveTerminatedEvent\n", this); 
 	newState = oldState ().processTerminatedEvent (this, signal, value);
     }
 
@@ -361,9 +352,8 @@ abstract public class Task
      * (internal) The task has execed, overlaying itself with another
      * program.
      */
-    void receiveExecedEvent ()
+    void processExecedEvent ()
     {
-	logger.log (Level.FINE, "{0} receiveExecedEvent\n", this);
 	newState = oldState ().processExecedEvent (this);
     }
 

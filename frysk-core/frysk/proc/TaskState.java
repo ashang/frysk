@@ -79,7 +79,7 @@ class TaskState
     {
 	super (state);
     }
-    TaskState processPerformSignaled (Task task, int sig)
+    TaskState processSignaledEvent (Task task, int sig)
     {
 	throw unhandled (task, "PerformSignaled");
     }
@@ -326,9 +326,9 @@ class TaskState
     // Keep the task running.
     private static TaskState running = new TaskState ("running")
 	{
-	    TaskState processPerformSignaled (Task task, int sig)
+	    TaskState processSignaledEvent (Task task, int sig)
 	    {
-		logger.log (Level.FINE, "{0} processPerformSignaled\n", task); 
+		logger.log (Level.FINE, "{0} processSignaledEvent\n", task); 
 		if (task.notifySignaled (sig) > 0) {
 		    return new BlockedSignal (sig);
 		}
@@ -522,9 +522,9 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformSignaled (Task task, int signal)
+	    TaskState processSignaledEvent (Task task, int signal)
 	    {
-		logger.log (Level.FINE, "{0} processPerformSignaled\n", task);
+		logger.log (Level.FINE, "{0} processSignaledEvent\n", task);
 		task.sendDetach (signal);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;

@@ -112,7 +112,7 @@ public class LinuxTask
                 Throwable w = arg;
                 public void execute ()
                 {
-		    receiveDisappearedEvent (w);
+		    processDisappearedEvent (w);
                 }
             });
     }
