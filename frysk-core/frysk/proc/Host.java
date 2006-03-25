@@ -64,7 +64,7 @@ public abstract class Host
      */
     Host ()
     {
-	state = HostState.initial (this);
+	newState = HostState.initial (this);
 	logger.log (Level.FINE, "{0} Host\n", this);
     }
 
@@ -134,13 +134,32 @@ public abstract class Host
     /**
      * The current state of this host.
      */
-    private HostState state;
+    private HostState oldState;
+    private HostState newState;
     /**
-     * Return the state represented as a simple string.
+     * Return the current state.
      */
-    public String getStateString ()
+    HostState getState ()
     {
-	return state.toString ();
+	if (newState != null)
+	    return newState;
+	else
+	    return oldState;
+    }
+    /**
+     * Return the current state while at the same time marking that
+     * the state is in flux.  If a second attempt to change state
+     * occures before the current state transition has completed,
+     * barf.  XXX: Bit of a hack, but at least this prevents state
+     * transition code attempting a second recursive state transition.
+     */
+    private HostState oldState ()
+    {
+	if (newState == null)
+	    throw new RuntimeException ("double state transition");
+	oldState = newState;
+	newState = null;
+	return oldState;
     }
 
     /**
@@ -156,7 +175,7 @@ public abstract class Host
 		boolean refreshAll = refreshAllArg;
 		public void execute ()
 		{
-		    state = state.handleRefresh (Host.this, refreshAll);
+		    newState= oldState ().handleRefresh (Host.this, refreshAll);
 		}
 	    });
     }
@@ -188,7 +207,7 @@ public abstract class Host
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    state = state.handleCreateAttachedProc
+		    newState= oldState ().handleCreateAttachedProc
 			(Host.this, stdin, stdout, stderr, args);
 		}
 	    });
@@ -270,7 +289,7 @@ public abstract class Host
     public String toString ()
     {
 	return ("{" + super.toString ()
-		+ ",state=" + state
+		+ ",state=" + getState ()
 		+ "}");
     }
     

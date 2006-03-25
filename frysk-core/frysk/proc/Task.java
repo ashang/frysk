@@ -182,6 +182,16 @@ abstract public class Task
     private TaskState oldState;
     private TaskState newState;
     /**
+     * Return the current state.
+     */
+    TaskState getState ()
+    {
+	if (newState != null)
+	    return newState;
+	else
+	    return oldState;
+    }
+    /**
      * Return the current state while at the same time marking that
      * the state is in flux.  If a second attempt to change state
      * occures before the current state transition has completed,
@@ -195,16 +205,6 @@ abstract public class Task
 	oldState = newState;
 	newState = null;
 	return oldState;
-    }
-    /**
-     * Return the current state.
-     */
-    TaskState getState ()
-    {
-	if (newState != null)
-	    return newState;
-	else
-	    return oldState;
     }
 
     /**
@@ -356,9 +356,9 @@ abstract public class Task
     public String toString ()
     {
 	return ("{" + super.toString ()
-		+ ",id=" + id
-		+ ",oldState=" + oldState
-		+ ",newState=" + newState
+		+ ",pid=" + proc.getPid ()
+		+ ",tid=" + getTid ()
+		+ ",state=" + getState ()
 		+ "}");
     }
 

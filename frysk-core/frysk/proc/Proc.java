@@ -137,7 +137,7 @@ public abstract class Proc
     protected Proc (Host host, Proc parent, ProcId id)
     {
 	this (id, parent, host);
-	state = ProcState.initial (this, false);
+	newState = ProcState.initial (this, false);
 	logger.log (Level.FINE, "{0} new - create unattached running proc\n",
 		    this); 
     }
@@ -147,7 +147,7 @@ public abstract class Proc
     protected Proc (Task task, ProcId forkId)
     {
 	this (forkId, task.proc, task.proc.host);
-	state = ProcState.initial (this, true);
+	newState = ProcState.initial (this, true);
 	logger.log (Level.FINE, "{0} new - create attached running proc\n",
 		    this); 
     }
@@ -155,15 +155,35 @@ public abstract class Proc
     abstract void sendRefresh ();
 
     /**
-     * The current state of this process.
+     * The current state of this Proc, during a state transition
+     * newState is null.
      */
-    /* XXX: private */ ProcState state;
+    private ProcState oldState;
+    private ProcState newState;
     /**
-     * Return the state represented as a simple string.
+     * Return the current state.
      */
-    public String getStateString ()
+    ProcState getState ()
     {
-	return state.toString ();
+	if (newState != null)
+	    return newState;
+	else
+	    return oldState;
+    }
+    /**
+     * Return the current state while at the same time marking that
+     * the state is in flux.  If a second attempt to change state
+     * occures before the current state transition has completed,
+     * barf.  XXX: Bit of a hack, but at least this prevents state
+     * transition code attempting a second recursive state transition.
+     */
+    private ProcState oldState ()
+    {
+	if (newState == null)
+	    throw new RuntimeException ("double state transition");
+	oldState = newState;
+	newState = null;
+	return oldState;
     }
 
     /**
@@ -177,7 +197,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.handleRefresh (Proc.this);
+		    newState = oldState ().handleRefresh (Proc.this);
 		}
 	    });
     }
@@ -193,7 +213,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.handleRemoval (Proc.this);
+		    newState = oldState ().handleRemoval (Proc.this);
 		}
 	    });
     }
@@ -210,8 +230,8 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
-		    state = state.handleTaskAttachCompleted (Proc.this,
-							     task);
+		    newState = oldState ().handleTaskAttachCompleted (Proc.this,
+								      task);
 		}
 	    });
     }
@@ -228,8 +248,8 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
-		    state = state.handleTaskDetachCompleted (Proc.this,
-							     task);
+		    newState = oldState ().handleTaskDetachCompleted (Proc.this,
+								      task);
 		}
 	    });
     }
@@ -248,7 +268,7 @@ public abstract class Proc
 		Task clone = theClone;
 		public void execute ()
 		{
-		    state = state.handleTaskDetachCompleted
+		    newState = oldState ().handleTaskDetachCompleted
 			(Proc.this, task, clone);
 		}
 	    });
@@ -272,7 +292,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.handleAddObservation
+		    newState = oldState ().handleAddObservation
 			(Proc.this, this);
 		}
 	    });
@@ -289,7 +309,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.handleDeleteObservation
+		    newState = oldState ().handleDeleteObservation
 			(Proc.this, this);
 		}
 	    });
@@ -427,8 +447,8 @@ public abstract class Proc
     		ProcObserver.Tasks theObserver = tasksObserver;
 		public void execute ()
 		{
-		    state = state.handleAddTasksObserver(Proc.this,
-							 theObserver);
+		    newState = oldState ().handleAddTasksObserver(Proc.this,
+								  theObserver);
 		}
 	    });
     }
@@ -436,8 +456,8 @@ public abstract class Proc
     public String toString ()
     {
 	return ("{" + super.toString ()
-		+ ",id=" + id
-		+ ",state=" + state
+		+ ",pid=" + getPid ()
+		+ ",state=" + getState ()
 		+ "}");
     }
 }
