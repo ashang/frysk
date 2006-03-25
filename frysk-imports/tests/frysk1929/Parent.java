@@ -1,4 +1,4 @@
-package cniinner;
+package frysk1929;
 
 class Parent
 {

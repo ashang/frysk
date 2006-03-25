@@ -1,3 +1,3 @@
 // Alex Oliva writes:
-package rh174912ice;
+package frysk1986;
 public class U { }

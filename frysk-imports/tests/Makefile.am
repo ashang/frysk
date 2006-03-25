@@ -83,25 +83,25 @@ nestcall_Nest_LDFLAGS = --main=Nest
 XFAIL_TESTS += nestcall/Nest
 noinst_PROGRAMS += nestcall/Nest
 
-TESTS += cniinner/a.out
-cniinner_FILES = \
-	cniinner/native.cxx \
-	cniinner/Parent.java \
-	cniinner/Child.java
-EXTRA_DIST += $(cniinner_FILES)
-CLEANFILES += cniinner/Child.h cniinner/Parent.h
-cniinner/a.out: $(cniinner_FILES)
-	mkdir -p cniinner
-	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/cniinner/Parent.java
-	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/cniinner/Child.java
-	$(GCJH) -I. cniinner.Parent
-	$(GCJH) -I. cniinner.Child
-	$(GCJH) -I. 'cniinner.Child$$Nested'
-	$(GCJ) -g -I. -c -o cniinner/native.o $(srcdir)/cniinner/native.cxx
-	$(GCJ) -g -I. --main=cniinner.Child -o cniinner/a.out \
-		$(srcdir)/cniinner/Parent.java \
-		$(srcdir)/cniinner/Child.java \
-		cniinner/native.o
+TESTS += frysk1929/a.out
+frysk1929_FILES = \
+	frysk1929/native.cxx \
+	frysk1929/Parent.java \
+	frysk1929/Child.java
+EXTRA_DIST += $(frysk1929_FILES)
+CLEANFILES += frysk1929/Child.h frysk1929/Parent.h
+frysk1929/a.out: $(frysk1929_FILES)
+	mkdir -p frysk1929
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk1929/Parent.java
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk1929/Child.java
+	$(GCJH) -I. frysk1929.Parent
+	$(GCJH) -I. frysk1929.Child
+	$(GCJH) -I. 'frysk1929.Child$$Nested'
+	$(GCJ) -g -I. -c -o frysk1929/native.o $(srcdir)/frysk1929/native.cxx
+	$(GCJ) -g -I. --main=frysk1929.Child -o frysk1929/a.out \
+		$(srcdir)/frysk1929/Parent.java \
+		$(srcdir)/frysk1929/Child.java \
+		frysk1929/native.o
 
 XFAIL_TESTS += samename/SameName
 samename_SameName_SOURCES = samename/SameName.java
@@ -151,26 +151,28 @@ werror/cxx.sh: $(werror_FILES)
 		> $@
 	chmod a+x $@
 
-rh174912_FILES = rh174912/rh174912.java
-EXTRA_DIST += $(rh174912_FILES)
-TESTS += rh174912/gcj.sh
-rh174912/gcj.sh: $(werror_FILES)
-	mkdir -p rh174912
+frysk1986_FILES = frysk1986/frysk1986.java
+EXTRA_DIST += $(frysk1986_FILES)
+TESTS += frysk1986/gcj.sh
+frysk1986/gcj.sh: $(werror_FILES)
+	mkdir -p frysk1986
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d . $(srcdir)/rh174912/rh174912.java >> $@.tmp
-	echo $(GCJ) -c -I . -o rh174912/rh174912.o rh174912/rh174912.class >> $@.tmp
-	echo $(GCJ) -c -I . -o \'rh174912/rh174912\$$1.o\' \'rh174912/rh174912\$$1.class\' >> $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/frysk1986/rh174912.java >> $@.tmp
+	echo $(GCJ) -c -I . -o frysk1986/rh174912.o \
+		frysk1986/rh174912.class >> $@.tmp
+	echo $(GCJ) -c -I . -o \'frysk1986/rh174912\$$1.o\' \
+		\'frysk1986/rh174912\$$1.class\' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-rh174912ice_FILES = rh174912ice/U.java rh174912ice/T.java
-EXTRA_DIST += $(rh174912ice_FILES)
-TESTS += rh174912ice/gcj.sh
-rh174912ice/gcj.sh: $(werror_FILES)
-	mkdir -p rh174912ice
+frysk1986ice_FILES = frysk1986ice/U.java frysk1986ice/T.java
+EXTRA_DIST += $(frysk1986ice_FILES)
+TESTS += frysk1986/ice.sh
+frysk1986/ice.sh: $(werror_FILES)
+	mkdir -p frysk1986
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/rh174912ice/T.java >> $@.tmp
-	echo $(GCJ) -c -I $(srcdir) -I . rh174912ice/T.class >> $@.tmp
+	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/frysk1986/T.java >> $@.tmp
+	echo $(GCJ) -c -I $(srcdir) -I . frysk1986/T.class >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
@@ -281,11 +283,11 @@ noinst_PROGRAMS += cmdline/dump cmdline/print
 TESTS += cmdline/print
 
 # Test an strace of a cloned exec.
-EXTRA_DIST += rh177240/strace-clone-exec.shin
-noinst_PROGRAMS += rh177240/threadexec
-noinst_SCRIPTS += rh177240/strace-clone-exec.sh
-rh177240_threadexec_LDFLAGS = -lpthread
-TESTS += rh177240/strace-clone-exec.sh
+EXTRA_DIST += frysk2130/strace-clone-exec.shin
+noinst_PROGRAMS += frysk2130/threadexec
+noinst_SCRIPTS += frysk2130/strace-clone-exec.sh
+frysk2130_threadexec_LDFLAGS = -lpthread
+TESTS += frysk2130/strace-clone-exec.sh
 
 # A garbage collector stress test.
 noinst_PROGRAMS += gctest/GCTest

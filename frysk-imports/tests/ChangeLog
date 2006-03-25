@@ -1,5 +1,9 @@
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk1986/ice.sh, frysk1986/gcj.sh)
+	(frysk2130_threadexec_LDFLAGS, frysk1929/a.out): Rename tests so
+	that they refer to frysk bug numbers.
+
 	* Makefile.am (frysk2488/gcj.sh, frysk2137/gcj.sh) 
 	(frysk1840/gcj.sh): GCC tests to more local frysk tests.
 
