@@ -204,6 +204,17 @@ gcc26042/gcj.sh: $(gcc26042_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
+rh177450_FILES = rh177450/Hello.java
+EXTRA_DIST += $(rh177450_FILES)
+XFAIL_TESTS += rh177450/gcj.sh
+rh177450/gcj.sh: $(rh177450_FILES)
+	mkdir -p rh177450
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo $(GCJ) -fprofile-arcs -ftest-coverage -c -d . \
+		$(srcdir)/rh177450/Hello.java >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
 process_TESTS = \
 	process/single_exec \
 	process/multi_child_exec \

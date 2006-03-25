@@ -1,5 +1,8 @@
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (rh177450/gcj.sh): New.
+	* rh177450/Hello.java: New.
+
 	* gcc26042/Two.java: New file, from Ben Elliston.
 	* Makefile.am (gcc26042/gcj.sh): New target.
 	* gcc8544/gcj.sh: Revert previous move.
