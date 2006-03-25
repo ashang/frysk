@@ -263,19 +263,17 @@ public abstract class Proc
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
      */
-    void requestAddObserver (final Task task,
-			     final TaskObservable observable,
-			     final TaskObserver observer)
+    void requestAddObserver (Task task,
+			     TaskObservable observable,
+			     TaskObserver observer)
     {
 	logger.log (Level.FINE, "{0} requestAddObservation\n", this); 
-	Manager.eventLoop.add (new ProcEvent ()
+	Manager.eventLoop.add (new TaskObservation (task, observable, observer)
 	    {
-		Observation observation
-		    = new TaskObservation (task, observable, observer);
 		public void execute ()
 		{
 		    state = state.processPerformAddObservation
-			(Proc.this, observation);
+			(Proc.this, this);
 		}
 	    });
     }
@@ -283,18 +281,16 @@ public abstract class Proc
      * (Internal) Tell the process to delete the specified
      * Observation, detaching from the process if necessary.
      */
-    void requestDeleteObserver (final Task task,
-				final TaskObservable observable,
-				final TaskObserver observer)
+    void requestDeleteObserver (Task task,
+				TaskObservable observable,
+				TaskObserver observer)
     {
-	Manager.eventLoop.add (new ProcEvent ()
+	Manager.eventLoop.add (new TaskObservation (task, observable, observer)
 	    {
-		Observation observation
-		    = new TaskObservation (task, observable, observer);
 		public void execute ()
 		{
 		    state = state.processPerformDeleteObservation
-			(Proc.this, observation);
+			(Proc.this, this);
 		}
 	    });
     }

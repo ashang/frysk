@@ -39,11 +39,14 @@
 
 package frysk.proc;
 
+import frysk.event.Event;
+
 /**
  * The binding between an Observer and its Observable.
  */
 
 abstract class Observation
+    implements Event
 {
     final Observable observable;
     final Observer observer;

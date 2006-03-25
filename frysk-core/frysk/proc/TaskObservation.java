@@ -43,7 +43,7 @@ package frysk.proc;
  * The binding between an Observer and its Observable.
  */
 
-class TaskObservation
+abstract class TaskObservation
     extends Observation
 {
     private Task task;

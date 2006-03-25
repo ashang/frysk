@@ -1,5 +1,10 @@
 2006-03-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Proc.java (requestAddObserver, requestDeleteObserver): Use
+	TaskObservation as an event.
+	* TaskObservation.java: Make abstract.
+	* Observation.java: Implement Event.
+
 	* Task.java (performContinue, performAttach, performDetach)
 	(performAddObservation): Simplify.
 	
