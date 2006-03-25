@@ -1,5 +1,8 @@
 2006-03-24  Andrew Cagney  <cagney@redhat.com>
 
+	* Task.java (performRemoval): Simplify.
+	(performContinue): Note race condition with performAddObservation.
+	
 	* Proc.java (requestDeleteObserver, requestAddObserver): Replace
 	performAddObservation, and performDeleteObservation.
 	* Task.java (requestAddObserver, requestDeleteObserver): Delete,

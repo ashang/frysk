@@ -210,6 +210,8 @@ abstract public class Task
 
     /**
      * (Internal) Requesting that the task go (or resume execution).
+     *
+     * XXX: Race condition between this and Observation .requestAdd.
      */
     void performContinue ()
     {
@@ -227,20 +229,10 @@ abstract public class Task
      * (Internal) Tell the task to remove itself (it is no longer
      * listed in the system process table and, presumably, has
      * exited).
-     *
-     * This method is package local.  Only proc/ internals should be
-     * making this request.
      */
     void performRemoval ()
     {
-	logger.log (Level.FINE, "{0} performRemoval\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processPerformRemoval (Task.this);
-		}
-	    });
+	newState = oldState ().processPerformRemoval (Task.this);
     }
     /**
      * (Internal) Tell the task to attach itself (if it isn't
