@@ -210,19 +210,10 @@ abstract public class Task
 
     /**
      * (Internal) Requesting that the task go (or resume execution).
-     *
-     * XXX: Race condition between this and Observation .requestAdd.
      */
     void performContinue ()
     {
-	logger.log (Level.FINE, "{0} requestContinue\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processPerformContinue (Task.this);
-		}
-	    });
+	newState = oldState ().processPerformContinue (Task.this);
     }
 
     /**
@@ -241,14 +232,7 @@ abstract public class Task
      */
     void performAttach ()
     {
-	logger.log (Level.FINE, "{0} performAttach\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processPerformAttach (Task.this);
-		}
-	    });
+	newState = oldState ().processPerformAttach (Task.this);
     }
 
     /**
@@ -258,14 +242,7 @@ abstract public class Task
      */
     void performDetach ()
     {
-	logger.log (Level.FINE, "{0} performDetach\n", this); 
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		public void execute ()
-		{
-		    newState = oldState ().processPerformDetach (Task.this);
-		}
-	    });
+	newState = oldState ().processPerformDetach (Task.this);
     }
 
     /**
@@ -375,18 +352,10 @@ abstract public class Task
     /**
      * (Internal) Add the specified observation to the observer.
      */
-    void performAddObservation (final Observation observationArg)
+    void performAddObservation (Observation observation)
     {
-	logger.log (Level.FINE, "{0} performAddObservation\n", this);
-	Manager.eventLoop.add (new TaskEvent ()
-	    {
-		Observation observation = observationArg;
-		public void execute ()
-		{
-		    newState = oldState ().processPerformAddObservation (Task.this,
-								observation);
-		}
-	    });
+	newState = oldState ().processPerformAddObservation (Task.this,
+							     observation);
     }
 
     /**
