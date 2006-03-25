@@ -68,8 +68,6 @@ abstract class TaskObservation
      */
     public void handleDelete ()
     {
-	observable.delete (observer);
-	// XXX: Not yet.
-	// task.handleDeleteObserver (observable, observer);
+	task.handleDeleteObserver (observable, observer);
     }
 }

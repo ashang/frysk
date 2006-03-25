@@ -1,5 +1,8 @@
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java (running, destroyed): Handle handleDelete.
+	* TaskObservation.java (handleDelete): Pass request onto the task.
+
 	* Host.java (oldState, newState, getState): Replace state.
 	* Proc.java (oldState, newState, getState): Replace state.
 	* Task.java (toString): Clean up.

@@ -420,6 +420,13 @@ class TaskState
 		observable.add (observer);
 		return running;
 	    }
+	    TaskState handleDeleteObserver (Task task, Observable observable,
+					    Observer observer)
+	    {
+		logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+		observable.delete (observer);
+		return running;
+	    }
 	    TaskState handleUnblock (Task task,
 				     TaskObserver observer)
 	    {
@@ -652,6 +659,13 @@ class TaskState
 						 (TaskObservable) observable,
 						 (TaskObserver) observer);
 		return destroyed;
+	    }
+	    TaskState handleDeleteObserver (Task task, Observable observable,
+					    Observer observer)
+	    {
+		logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+		observable.delete (observer);
+		return running;
 	    }
 	};
 }
