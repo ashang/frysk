@@ -1,3 +1,17 @@
+2006-03-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java (handleAddObserver): Replace
+	processPerformAddObservation.
+	(handleDeleteObserver): New.
+	* TaskObservation.java (handleDelete): New.
+	(handleAdd): Rename requestAdd.
+	* Task.java (handleAddObserver, handleDeleteObserver): New.
+	(performAddObservation): Delete.
+	* ProcState.java: Update.
+	* Observation.java (handleAdd): Rename requestAdd.
+	(handleDelete): New.
+	(add, delete): Delete.
+	
 2006-03-24  Andrew Cagney  <cagney@redhat.com>
 
 	* Proc.java (requestAddObserver, requestDeleteObserver): Use

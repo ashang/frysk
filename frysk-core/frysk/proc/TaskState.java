@@ -139,10 +139,15 @@ class TaskState
     {
 	throw unhandled (task, "RequestUnblock");
     }
-    TaskState processPerformAddObservation (Task task,
-					    Observation observation)
+    TaskState handleAddObserver (Task task, Observable observable,
+				 Observer observer)
     {
-	throw unhandled (task, "PerformAddObservation");
+	throw unhandled (task, "handleAddObserver");
+    }
+    TaskState handleDeleteObserver (Task task, Observable observable,
+				    Observer observer)
+    {
+	throw unhandled (task, "handleDeleteObserver");
     }
 
     /**
@@ -248,11 +253,11 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
 	    }
-	    TaskState processPerformAddObservation (Task task,
-						    Observation observation)
+	    TaskState handleAddObserver (Task task, Observable observable,
+					 Observer observer)
 	    {
-		logger.log (Level.FINE, "{0} processPerformAddObservation\n", task); 
-		observation.add ();
+		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+		observable.add (observer);
 		return attached;
 	    }
 	};
@@ -281,12 +286,11 @@ class TaskState
 	    task.sendContinue (0);
 	    return running;
 	}
-	TaskState processPerformAddObservation (Task task,
-						Observation observation)
+	TaskState handleAddObserver (Task task, Observable observable,
+				     Observer observer)
 	{
-	    logger.log (Level.FINE, "{0} processPerformAddObservation\n",
-			task); 
-	    observation.add ();
+	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+	    observable.add (observer);
 	    return this;
 	}
 	
@@ -409,11 +413,11 @@ class TaskState
 		task.sendContinue (0);
 		return running;
 	    }
-	    TaskState processPerformAddObservation (Task task,
-						    Observation observation)
+	    TaskState handleAddObserver (Task task, Observable observable,
+					 Observer observer)
 	    {
-		logger.log (Level.FINE, "{0} processPerformAddObservation\n", task); 
-		observation.add ();
+		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+		observable.add (observer);
 		return running;
 	    }
 	    TaskState processRequestUnblock (Task task,
@@ -639,14 +643,14 @@ class TaskState
 		task.proc.performTaskAttachCompleted (task);
 		return destroyed;
 	    }
-	    TaskState processPerformAddObservation (Task task,
-						    Observation observation)
+	    TaskState handleAddObserver (Task task, Observable observable,
+					 Observer observer)
 	    {
-		logger.log (Level.FINE, "{0} processPerformAddObservation\n", task); 
-		observation.fail (new RuntimeException ("unattached"));
+		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+		observer.addFailed (task, new RuntimeException ("unattached"));
 		task.proc.requestDeleteObserver (task,
-						 (TaskObservable) observation.observable,
-						 (TaskObserver) observation.observer);
+						 (TaskObservable) observable,
+						 (TaskObserver) observer);
 		return destroyed;
 	    }
 	};

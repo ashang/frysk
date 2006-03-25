@@ -44,7 +44,6 @@ import inua.eio.ByteBuffer;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.Config;
@@ -209,13 +208,28 @@ abstract public class Task
     }
 
     /**
+     * (Internal) Add the specified observer to the observable.
+     */
+    void handleAddObserver (Observable observable, Observer observer)
+    {
+	newState = oldState ().handleAddObserver (Task.this, observable,
+						  observer);
+    }
+    /**
+     * (Internal) Delete the specified observer from the observable.
+     */
+    void handleDeleteObserver (Observable observable, Observer observer)
+    {
+	newState = oldState ().handleDeleteObserver (Task.this, observable,
+						     observer);
+    }
+    /**
      * (Internal) Requesting that the task go (or resume execution).
      */
     void performContinue ()
     {
 	newState = oldState ().processPerformContinue (Task.this);
     }
-
     /**
      * (Internal) Tell the task to remove itself (it is no longer
      * listed in the system process table and, presumably, has
@@ -327,7 +341,7 @@ abstract public class Task
     }
 
     public class TaskEventObservable
-	extends Observable
+	extends java.util.Observable
     {
 	protected void notify (Object o)
 	{
@@ -346,16 +360,6 @@ abstract public class Task
 		+ ",oldState=" + oldState
 		+ ",newState=" + newState
 		+ "}");
-    }
-
-
-    /**
-     * (Internal) Add the specified observation to the observer.
-     */
-    void performAddObservation (Observation observation)
-    {
-	newState = oldState ().processPerformAddObservation (Task.this,
-							     observation);
     }
 
     /**

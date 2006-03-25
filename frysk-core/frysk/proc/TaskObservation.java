@@ -57,10 +57,19 @@ abstract class TaskObservation
 	this.task = task;
     }
     /**
-     * Request that the Observer be added to the Observable.
+     * Handle adding the Observer to the Observable.
      */
-    public void requestAdd ()
+    public void handleAdd ()
     {
-	task.performAddObservation (this);
+	task.handleAddObserver (observable, observer);
+    }
+    /**
+     * Handle deleting the Observer from the Observable.
+     */
+    public void handleDelete ()
+    {
+	observable.delete (observer);
+	// XXX: Not yet.
+	// task.handleDeleteObserver (observable, observer);
     }
 }

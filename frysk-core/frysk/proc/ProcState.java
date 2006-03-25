@@ -260,7 +260,7 @@ abstract class ProcState
 	    for (Iterator i = proc.observations.iterator ();
 		 i.hasNext ();) {
 		Observation observation = (Observation) i.next ();
-		observation.requestAdd ();
+		observation.handleAdd ();
 	    }
 	    // .., let them go, and mark this as
 	    // attached/running.
@@ -475,7 +475,7 @@ abstract class ProcState
 	    {
 		logger.log (Level.FINE, "{0} processPerformDeleteObservation\n", proc); 
 		proc.observations.add (observation);
-		observation.requestAdd ();
+		observation.handleAdd ();
 		return running;
 	    }
 	    ProcState processPerformDeleteObservation (Proc proc,
@@ -483,7 +483,7 @@ abstract class ProcState
 	    {
 		logger.log (Level.FINE, "{0} processPerformDeleteObservation\n", proc); 
 		if (proc.observations.remove (observation)) {
-		    observation.delete ();
+		    observation.handleDelete ();
 		    if (proc.observations.size () == 0)
 			return Detaching.state (proc);
 		}

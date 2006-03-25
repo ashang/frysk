@@ -80,28 +80,18 @@ abstract class Observation
 	return (observable.hashCode () + observer.hashCode ());
     }
     /**
-     * Apply the add operation to obervable.
-     */
-    void add ()
-    {
-	observable.add (observer);
-    }
-    /**
-     * Delete the Observer from the Observable.
-     */
-    void delete ()
-    {
-	observable.delete (observer);
-    }
-    /**
      * Tell the observer that the add is failing with w.
      */
-    void fail (Throwable w)
+    public void fail (Throwable w)
     {
 	observable.fail (observer, w);
     }
     /**
-     * Request that the Observer be added to the Observable.
+     * Handle the addition of the Observer to the Observable.
      */
-    public abstract void requestAdd ();
+    public abstract void handleAdd ();
+    /**
+     * Handle the deletion of the Observer from the Observable.
+     */
+    public abstract void handleDelete ();
 }
