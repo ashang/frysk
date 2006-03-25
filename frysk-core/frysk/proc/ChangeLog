@@ -1,5 +1,9 @@
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java, ProcState.java, HostState.java: Make "handle"
+	the prefix for all event methods.
+	* Task.java, Host.java, Proc.java: Update.
+	
 	* TaskState.java (handleAddObserver): Replace
 	processPerformAddObservation.
 	(handleDeleteObserver): New.

@@ -228,7 +228,7 @@ abstract public class Task
      */
     void performContinue ()
     {
-	newState = oldState ().processPerformContinue (Task.this);
+	newState = oldState ().handleContinue (Task.this);
     }
     /**
      * (Internal) Tell the task to remove itself (it is no longer
@@ -237,7 +237,7 @@ abstract public class Task
      */
     void performRemoval ()
     {
-	newState = oldState ().processPerformRemoval (Task.this);
+	newState = oldState ().handleRemoval (Task.this);
     }
     /**
      * (Internal) Tell the task to attach itself (if it isn't
@@ -246,7 +246,7 @@ abstract public class Task
      */
     void performAttach ()
     {
-	newState = oldState ().processPerformAttach (Task.this);
+	newState = oldState ().handleAttach (Task.this);
     }
 
     /**
@@ -256,7 +256,7 @@ abstract public class Task
      */
     void performDetach ()
     {
-	newState = oldState ().processPerformDetach (Task.this);
+	newState = oldState ().handleDetach (Task.this);
     }
 
     /**
@@ -264,7 +264,7 @@ abstract public class Task
      */
     void processClonedEvent (Task clone)
     {
-	newState = oldState ().processClonedEvent (this, clone);
+	newState = oldState ().handleClonedEvent (this, clone);
     }
     /**
      * (internal) This Task forked creating an entirely new child
@@ -272,28 +272,28 @@ abstract public class Task
      */
     void processForkedEvent (Task fork)
     {
-	newState = oldState ().processForkedEvent (this, fork);
+	newState = oldState ().handleForkedEvent (this, fork);
     }
     /**
      * (internal) This task stopped.
      */
     void processStoppedEvent ()
     {
-	newState = oldState ().processStoppedEvent (this);
+	newState = oldState ().handleStoppedEvent (this);
     }
     /**
      * (internal) This task encountered a trap.
      */
     void processTrappedEvent ()
     {
-	newState = oldState ().processTrappedEvent (this);
+	newState = oldState ().handleTrappedEvent (this);
     }
     /**
      * (internal) This task received a signal.
      */
     void processSignaledEvent (int sig)
     {
-	newState = oldState ().processSignaledEvent (this, sig);
+	newState = oldState ().handleSignaledEvent (this, sig);
     }
 
     /**
@@ -302,7 +302,7 @@ abstract public class Task
      */
     void processTerminatingEvent (boolean signal, int value)
     {
-	newState = oldState ().processTerminatingEvent (this, signal, value);
+	newState = oldState ().handleTerminatingEvent (this, signal, value);
     }
 
     /**
@@ -311,7 +311,7 @@ abstract public class Task
      */
     void processDisappearedEvent (Throwable arg)
     {
-	newState = oldState ().processDisappearedEvent (this, arg);
+	newState = oldState ().handleDisappearedEvent (this, arg);
     }
 
     /**
@@ -319,7 +319,7 @@ abstract public class Task
      */
     void processSyscalledEvent ()
     {
-	newState = oldState ().processSyscalledEvent (this);
+	newState = oldState ().handleSyscalledEvent (this);
     }
 
     /**
@@ -328,7 +328,7 @@ abstract public class Task
      */
     void processTerminatedEvent (boolean signal, int value)
     {
-	newState = oldState ().processTerminatedEvent (this, signal, value);
+	newState = oldState ().handleTerminatedEvent (this, signal, value);
     }
 
     /**
@@ -337,7 +337,7 @@ abstract public class Task
      */
     void processExecedEvent ()
     {
-	newState = oldState ().processExecedEvent (this);
+	newState = oldState ().handleExecedEvent (this);
     }
 
     public class TaskEventObservable
@@ -387,7 +387,7 @@ abstract public class Task
 		TaskObserver observer = observerArg;
 		public void execute ()
 		{
-		    newState = oldState ().processRequestUnblock (Task.this, observer);
+		    newState = oldState ().handleUnblock (Task.this, observer);
 		}
 	    });
     }

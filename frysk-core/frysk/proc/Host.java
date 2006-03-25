@@ -156,8 +156,7 @@ public abstract class Host
 		boolean refreshAll = refreshAllArg;
 		public void execute ()
 		{
-		    state = state.processRequestRefresh (Host.this,
-							 refreshAll);
+		    state = state.handleRefresh (Host.this, refreshAll);
 		}
 	    });
     }
@@ -189,7 +188,7 @@ public abstract class Host
 		String[] args = argsArg;
 		public void execute ()
 		{
-		    state = state.processRequestCreateAttachedProc
+		    state = state.handleCreateAttachedProc
 			(Host.this, stdin, stdout, stderr, args);
 		}
 	    });

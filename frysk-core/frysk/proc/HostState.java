@@ -59,32 +59,32 @@ class HostState
     {
 	super (state);
     }
-    HostState processRequestRefresh (Host host, boolean refreshAll)
+    HostState handleRefresh (Host host, boolean refreshAll)
     {
-	throw unhandled (host, "RequestRefresh");
+	throw unhandled (host, "handleRefresh");
     }
-    HostState processRequestCreateAttachedProc (Host host,
-						String stdin, String stdout,
-						String stderr, String[] args)
+    HostState handleCreateAttachedProc (Host host,
+					String stdin, String stdout,
+					String stderr, String[] args)
     {
-	throw unhandled (host, "PerformCreateAttachedProc");
+	throw unhandled (host, "handleCreateAttachedProc");
     }
 
     private static HostState running = new HostState ("running")
 	{
-	    HostState processRequestRefresh (Host host, boolean refreshAll)
+	    HostState handleRefresh (Host host, boolean refreshAll)
 	    {
-		logger.log (Level.FINE, "", this); 
+		logger.log (Level.FINE, "{0} handleRefresh\n", this); 
 		host.sendRefresh (refreshAll);
 		return running;
 	    }
-	    HostState processRequestCreateAttachedProc (Host host,
-							String stdin,
-							String stdout,
-							String stderr,
-							String[] args)
+	    HostState handleCreateAttachedProc (Host host,
+						String stdin,
+						String stdout,
+						String stderr,
+						String[] args)
 	    {
-		logger.log (Level.FINE, "", this); 
+		logger.log (Level.FINE, "{0} handleRefresh\n", this); 
 		host.sendCreateAttachedProc (stdin, stdout, stderr, args);
 		return HostState.running;
 	    }

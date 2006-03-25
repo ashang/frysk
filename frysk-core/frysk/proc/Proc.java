@@ -177,7 +177,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.processRequestRefresh (Proc.this);
+		    state = state.handleRefresh (Proc.this);
 		}
 	    });
     }
@@ -193,7 +193,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformRemoval (Proc.this);
+		    state = state.handleRemoval (Proc.this);
 		}
 	    });
     }
@@ -210,8 +210,8 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
-		    state = state.processPerformTaskAttachCompleted (Proc.this,
-								     task);
+		    state = state.handleTaskAttachCompleted (Proc.this,
+							     task);
 		}
 	    });
     }
@@ -228,8 +228,8 @@ public abstract class Proc
 		Task task = theTask;
 		public void execute ()
 		{
-		    state = state.processPerformTaskDetachCompleted (Proc.this,
-								     task);
+		    state = state.handleTaskDetachCompleted (Proc.this,
+							     task);
 		}
 	    });
     }
@@ -248,7 +248,7 @@ public abstract class Proc
 		Task clone = theClone;
 		public void execute ()
 		{
-		    state = state.processPerformTaskDetachCompleted
+		    state = state.handleTaskDetachCompleted
 			(Proc.this, task, clone);
 		}
 	    });
@@ -272,7 +272,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformAddObservation
+		    state = state.handleAddObservation
 			(Proc.this, this);
 		}
 	    });
@@ -289,7 +289,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    state = state.processPerformDeleteObservation
+		    state = state.handleDeleteObservation
 			(Proc.this, this);
 		}
 	    });
@@ -427,8 +427,8 @@ public abstract class Proc
     		ProcObserver.Tasks theObserver = tasksObserver;
 		public void execute ()
 		{
-		    state = state.processRequestAddTasksObserver(Proc.this,
-								 theObserver);
+		    state = state.handleAddTasksObserver(Proc.this,
+							 theObserver);
 		}
 	    });
     }
