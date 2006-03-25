@@ -1,4 +1,4 @@
-package gcc8544;
+package gcc.8544;
 
 import test_pack.StyledText.*;
 

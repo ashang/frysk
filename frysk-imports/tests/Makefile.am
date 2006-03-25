@@ -184,13 +184,13 @@ rh175569/gcj.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-gcc8544_FILES = gcc8544/DisplayRenderer.java gcc8544/StyledText.java
-EXTRA_DIST += $(gcc8544_FILES)
-XFAIL_TESTS += gcc8544/gcj.sh
-gcc8544/gcj.sh: $(gcc8544_FILES)
-	mkdir -p gcc8544
+gcc_8544_FILES = gcc/8544/DisplayRenderer.java gcc/8544/StyledText.java
+EXTRA_DIST += $(gcc_8544_FILES)
+XFAIL_TESTS += gcc/8544/gcj.sh
+gcc/8544/gcj.sh: $(gcc_8544_FILES)
+	mkdir -p gcc/8544
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d . $(srcdir)/gcc8544/DisplayRenderer.java $(srcdir)/gcc8544/StyledText.java >> $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/gcc/8544/DisplayRenderer.java $(srcdir)/gcc/8544/StyledText.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 

@@ -1,3 +1,9 @@
+2006-03-25  Andrew Cagney  <cagney@redhat.com>
+
+	* gcc/8544/DisplayRenderer.java, gcc/8544/StyledText.java: Move
+	from gcc8544 directory.
+	* Makefile.am (gcc/8544/gcj.sh): Replace gcc8544/gcj.sh.
+
 2006-03-07  Andrew Cagney  <cagney@redhat.com>
 
 	* process/multi_child_parent_exec.c: Fix 64-bit warnings.
