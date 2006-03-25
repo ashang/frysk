@@ -1,4 +1,4 @@
-package gcc26042;
+package frysk2488;
 
 /** From GCC bug 26042, written by Ben Elliston.  */
 

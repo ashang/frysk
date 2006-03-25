@@ -1,5 +1,8 @@
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk2488/gcj.sh, frysk2137/gcj.sh) 
+	(frysk1840/gcj.sh): GCC tests to more local frysk tests.
+
 	* Makefile.am (rh177450/gcj.sh): New.
 	* rh177450/Hello.java: New.
 

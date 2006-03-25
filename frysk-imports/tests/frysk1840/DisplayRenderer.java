@@ -1,6 +1,8 @@
-package gcc8544;
+package frysk1840;
 
-import gcc8544.StyledText.*;
+import frysk1840.StyledText.*;
+
+/** From gcc 8544 */
 
 class DisplayRenderer {
     StyledText text;

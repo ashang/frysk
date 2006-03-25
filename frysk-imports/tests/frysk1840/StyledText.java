@@ -1,4 +1,6 @@
-package gcc8544;
+package frysk1840;
+
+/** From gcc 8544 */
 
 public class StyledText {
     LineCache lineCache;

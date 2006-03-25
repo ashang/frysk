@@ -184,34 +184,34 @@ rh175569/gcj.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-gcc8544_FILES = gcc8544/DisplayRenderer.java gcc8544/StyledText.java
-EXTRA_DIST += $(gcc8544_FILES)
-XFAIL_TESTS += gcc8544/gcj.sh
-gcc8544/gcj.sh: $(gcc8544_FILES)
-	mkdir -p gcc8544
+frysk1840_FILES = frysk1840/DisplayRenderer.java frysk1840/StyledText.java
+EXTRA_DIST += $(frysk1840_FILES)
+XFAIL_TESTS += frysk1840/gcj.sh
+frysk1840/gcj.sh: $(frysk1840_FILES)
+	mkdir -p frysk1840
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d . $(srcdir)/gcc8544/DisplayRenderer.java $(srcdir)/gcc8544/StyledText.java >> $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/frysk1840/DisplayRenderer.java $(srcdir)/frysk1840/StyledText.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-gcc26042_FILES = gcc26042/Two.java
-EXTRA_DIST += $(gcc26042_FILES)
-TESTS += gcc26042/gcj.sh
-gcc26042/gcj.sh: $(gcc26042_FILES)
-	mkdir -p gcc26042
+frysk2488_FILES = frysk2488/Two.java
+EXTRA_DIST += $(frysk2488_FILES)
+TESTS += frysk2488/gcj.sh
+frysk2488/gcj.sh: $(frysk2488_FILES)
+	mkdir -p frysk2488
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d . $(srcdir)/gcc26042/Two.java >> $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/frysk2488/Two.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-rh177450_FILES = rh177450/Hello.java
-EXTRA_DIST += $(rh177450_FILES)
-XFAIL_TESTS += rh177450/gcj.sh
-rh177450/gcj.sh: $(rh177450_FILES)
-	mkdir -p rh177450
+frysk2137_FILES = frysk2137/Hello.java
+EXTRA_DIST += $(frysk2137_FILES)
+XFAIL_TESTS += frysk2137/gcj.sh
+frysk2137/gcj.sh: $(frysk2137_FILES)
+	mkdir -p frysk2137
 	echo '#!/bin/sh -xe' > $@.tmp
 	echo $(GCJ) -fprofile-arcs -ftest-coverage -c -d . \
-		$(srcdir)/rh177450/Hello.java >> $@.tmp
+		$(srcdir)/frysk2137/Hello.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
