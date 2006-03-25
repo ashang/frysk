@@ -1,6 +1,6 @@
-package gcc.8544;
+package gcc8544;
 
-import test_pack.StyledText.*;
+import gcc8544.StyledText.*;
 
 class DisplayRenderer {
     StyledText text;

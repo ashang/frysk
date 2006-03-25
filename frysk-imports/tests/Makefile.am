@@ -184,16 +184,25 @@ rh175569/gcj.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-gcc_8544_FILES = gcc/8544/DisplayRenderer.java gcc/8544/StyledText.java
-EXTRA_DIST += $(gcc_8544_FILES)
-XFAIL_TESTS += gcc/8544/gcj.sh
-gcc/8544/gcj.sh: $(gcc_8544_FILES)
-	mkdir -p gcc/8544
+gcc8544_FILES = gcc8544/DisplayRenderer.java gcc8544/StyledText.java
+EXTRA_DIST += $(gcc8544_FILES)
+XFAIL_TESTS += gcc8544/gcj.sh
+gcc8544/gcj.sh: $(gcc8544_FILES)
+	mkdir -p gcc8544
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d . $(srcdir)/gcc/8544/DisplayRenderer.java $(srcdir)/gcc/8544/StyledText.java >> $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/gcc8544/DisplayRenderer.java $(srcdir)/gcc8544/StyledText.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
-
+
+gcc26042_FILES = gcc26042/Two.java
+EXTRA_DIST += $(gcc26042_FILES)
+TESTS += gcc26042/gcj.sh
+gcc26042/gcj.sh: $(gcc26042_FILES)
+	mkdir -p gcc26042
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo $(GCJ) -C -d . $(srcdir)/gcc26042/Two.java >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
 
 process_TESTS = \
 	process/single_exec \
