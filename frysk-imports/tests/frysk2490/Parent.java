@@ -1,4 +1,4 @@
-package frysk1929;
+package frysk2490;
 
 class Parent
 {

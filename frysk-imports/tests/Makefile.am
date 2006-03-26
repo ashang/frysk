@@ -72,36 +72,35 @@ noinst_PROGRAMS += logger/Npe
 TESTS += logger/Npe
 
 # This failed in GCJ 4, but passes in GCJ 4.1.
-anoncall_Anon_SOURCES = anoncall/Anon.java
-anoncall_Anon_LDFLAGS = --main=Anon
-TESTS += anoncall/Anon
-noinst_PROGRAMS += anoncall/Anon
+frysk2491_Anon_SOURCES = frysk2491/Anon.java
+frysk2491_Anon_LDFLAGS = --main=Anon
+TESTS += frysk2491/Anon
+noinst_PROGRAMS += frysk2491/Anon
 
-# This fails on gcj 4, but passes on gcj 4.1.
-nestcall_Nest_SOURCES = nestcall/Nest.java
-nestcall_Nest_LDFLAGS = --main=Nest
-XFAIL_TESTS += nestcall/Nest
-noinst_PROGRAMS += nestcall/Nest
+frysk2491_Nest_SOURCES = frysk2491/Nest.java
+frysk2491_Nest_LDFLAGS = --main=Nest
+XFAIL_TESTS += frysk2491/Nest
+noinst_PROGRAMS += frysk2491/Nest
 
-TESTS += frysk1929/a.out
-frysk1929_FILES = \
-	frysk1929/native.cxx \
-	frysk1929/Parent.java \
-	frysk1929/Child.java
-EXTRA_DIST += $(frysk1929_FILES)
-CLEANFILES += frysk1929/Child.h frysk1929/Parent.h
-frysk1929/a.out: $(frysk1929_FILES)
-	mkdir -p frysk1929
-	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk1929/Parent.java
-	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk1929/Child.java
-	$(GCJH) -I. frysk1929.Parent
-	$(GCJH) -I. frysk1929.Child
-	$(GCJH) -I. 'frysk1929.Child$$Nested'
-	$(GCJ) -g -I. -c -o frysk1929/native.o $(srcdir)/frysk1929/native.cxx
-	$(GCJ) -g -I. --main=frysk1929.Child -o frysk1929/a.out \
-		$(srcdir)/frysk1929/Parent.java \
-		$(srcdir)/frysk1929/Child.java \
-		frysk1929/native.o
+TESTS += frysk2490/a.out
+frysk2490_FILES = \
+	frysk2490/native.cxx \
+	frysk2490/Parent.java \
+	frysk2490/Child.java
+EXTRA_DIST += $(frysk2490_FILES)
+CLEANFILES += frysk2490/Child.h frysk2490/Parent.h
+frysk2490/a.out: $(frysk2490_FILES)
+	mkdir -p frysk2490
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk2490/Parent.java
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk2490/Child.java
+	$(GCJH) -I. frysk2490.Parent
+	$(GCJH) -I. frysk2490.Child
+	$(GCJH) -I. 'frysk2490.Child$$Nested'
+	$(GCJ) -g -I. -c -o frysk2490/native.o $(srcdir)/frysk2490/native.cxx
+	$(GCJ) -g -I. --main=frysk2490.Child -o frysk2490/a.out \
+		$(srcdir)/frysk2490/Parent.java \
+		$(srcdir)/frysk2490/Child.java \
+		frysk2490/native.o
 
 XFAIL_TESTS += frysk2270/SameName
 frysk2270_SameName_SOURCES = frysk2270/SameName.java
@@ -231,24 +230,24 @@ noinst_PROGRAMS += $(process_TESTS)
 
 # GCJ complains that frysk.model.Signal isn't visible from
 # frysk.event.SignalEvent, it should have imported frysk.event.Signal.
-wrongclass_FILES = \
-	wrongclass/frysk/model/Signal.java \
-	wrongclass/frysk/event/Signal.java \
-	wrongclass/frysk/event/SignalEvent.java \
-	wrongclass/frysk/sys/Wait.java \
-	wrongclass/frysk/proc/LinuxHost.java
-EXTRA_DIST += $(wrongclass_FILES)
-TESTS += wrongclass/gcj.sh
-wrongclass/gcj.sh: $(wrongclass_FILES)
-	mkdir -p wrongclass
+frysk1929_FILES = \
+	frysk1929/frysk/model/Signal.java \
+	frysk1929/frysk/event/Signal.java \
+	frysk1929/frysk/event/SignalEvent.java \
+	frysk1929/frysk/sys/Wait.java \
+	frysk1929/frysk/proc/LinuxHost.java
+EXTRA_DIST += $(frysk1929_FILES)
+TESTS += frysk1929/gcj.sh
+frysk1929/gcj.sh: $(frysk1929_FILES)
+	mkdir -p frysk1929
 	echo $(GCJ) -C \
-		-I $(srcdir)/wrongclass \
-		-d `pwd`/wrongclass \
-		$(srcdir)/wrongclass/frysk/sys/Wait.java \
-		$(srcdir)/wrongclass/frysk/model/Signal.java \
-		$(srcdir)/wrongclass/frysk/event/Signal.java \
-		$(srcdir)/wrongclass/frysk/event/SignalEvent.java \
-		$(srcdir)/wrongclass/frysk/proc/LinuxHost.java \
+		-I $(srcdir)/frysk1929 \
+		-d `pwd`/frysk1929 \
+		$(srcdir)/frysk1929/frysk/sys/Wait.java \
+		$(srcdir)/frysk1929/frysk/model/Signal.java \
+		$(srcdir)/frysk1929/frysk/event/Signal.java \
+		$(srcdir)/frysk1929/frysk/event/SignalEvent.java \
+		$(srcdir)/frysk1929/frysk/proc/LinuxHost.java \
 		> $@
 	chmod a+x $@
 

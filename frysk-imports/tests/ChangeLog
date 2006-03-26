@@ -1,3 +1,9 @@
+2006-03-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk1929/gcj.sh, frysk2490/a.out)
+	(frysk2491_Anon_LDFLAGS, frysk2491_Nest_LDFLAGS): Name tests after
+	their frysk bug number.
+
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk2041/gcj.sh, frysk2299_GCTest_LDFLAGS) 
