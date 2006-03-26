@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -103,32 +103,32 @@ frysk1929/a.out: $(frysk1929_FILES)
 		$(srcdir)/frysk1929/Child.java \
 		frysk1929/native.o
 
-XFAIL_TESTS += samename/SameName
-samename_SameName_SOURCES = samename/SameName.java
-samename_SameName_LDFLAGS = --main=SameName
-noinst_PROGRAMS += samename/SameName
+XFAIL_TESTS += frysk2270/SameName
+frysk2270_SameName_SOURCES = frysk2270/SameName.java
+frysk2270_SameName_LDFLAGS = --main=SameName
+noinst_PROGRAMS += frysk2270/SameName
 
-XFAIL_TESTS += samename/WrongVariable
-samename_WrongVariable_SOURCES = samename/WrongVariable.java
-samename_WrongVariable_LDFLAGS = --main=samename.WrongVariable
-noinst_PROGRAMS += samename/WrongVariable
+XFAIL_TESTS += frysk2270/WrongVariable
+frysk2270_WrongVariable_SOURCES = frysk2270/WrongVariable.java
+frysk2270_WrongVariable_LDFLAGS = --main=frysk2270.WrongVariable
+noinst_PROGRAMS += frysk2270/WrongVariable
 
-XFAIL_TESTS += samename/WrongScope.gcj
-EXTRA_DIST += samename/WrongScope.java
-noinst_SCRIPTS += samename/WrongScope.gcj
-samename/WrongScope.gcj:
+XFAIL_TESTS += frysk2270/WrongScope.gcj
+EXTRA_DIST += frysk2270/WrongScope.java
+noinst_SCRIPTS += frysk2270/WrongScope.gcj
+frysk2270/WrongScope.gcj:
 	echo '#!/bin/sh' > $@
-	echo \! $(GCJ) -C -d . $(srcdir)/samename/WrongScope.java >> $@
+	echo \! $(GCJ) -C -d . $(srcdir)/frysk2270/WrongScope.java >> $@
 	chmod a+x $@
 
-XFAIL_TESTS += packagename/O.out
-packagename_O_SOURCES = packagename/O.java
-packagename_O_LDFLAGS = --main=packagename.O
-noinst_PROGRAMS += packagename/O
-TESTS += packagename/C.out
-packagename_C_SOURCES = packagename/C.java
-packagename_C_LDFLAGS = --main=packagename.C
-noinst_PROGRAMS += packagename/C
+XFAIL_TESTS += frysk2105/O.out
+frysk2105_O_SOURCES = frysk2105/O.java
+frysk2105_O_LDFLAGS = --main=frysk2105.O
+noinst_PROGRAMS += frysk2105/O
+TESTS += frysk2105/C.out
+frysk2105_C_SOURCES = frysk2105/C.java
+frysk2105_C_LDFLAGS = --main=frysk2105.C
+noinst_PROGRAMS += frysk2105/C
 
 # Compiling Werror with -Werror -Wall should get a warning and hence
 # abort the compilation.  At least GCC 4.0.1 20050727 (Red Hat
@@ -176,13 +176,13 @@ frysk1986/ice.sh: $(werror_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-rh175569_FILES = rh175569/C.java
-EXTRA_DIST += $(rh175569_FILES)
-TESTS += rh175569/gcj.sh
-rh175569/gcj.sh: $(werror_FILES)
-	mkdir -p rh175569
+frysk2041_FILES = frysk2041/C.java
+EXTRA_DIST += $(frysk2041_FILES)
+TESTS += frysk2041/gcj.sh
+frysk2041/gcj.sh: $(werror_FILES)
+	mkdir -p frysk2041
 	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -C -d rh175569 $(srcdir)/rh175569/C.java >> $@.tmp
+	echo $(GCJ) -C -d frysk2041 $(srcdir)/frysk2041/C.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
@@ -290,10 +290,10 @@ frysk2130_threadexec_LDFLAGS = -lpthread
 TESTS += frysk2130/strace-clone-exec.sh
 
 # A garbage collector stress test.
-noinst_PROGRAMS += gctest/GCTest
-gctest_GCTest_SOURCES = gctest/GCTest.java
-gctest_GCTest_LDFLAGS = --main=GCTest
-TESTS += gctest/GCTest
+noinst_PROGRAMS += frysk2299/GCTest
+frysk2299_GCTest_SOURCES = frysk2299/GCTest.java
+frysk2299_GCTest_LDFLAGS = --main=GCTest
+TESTS += frysk2299/GCTest
 
 # Frysk, when creating test processes uses the sequence vfork -> fork
 # -> exec to create a process of known pid that has process 1 as its

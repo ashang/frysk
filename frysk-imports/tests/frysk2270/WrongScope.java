@@ -1,4 +1,4 @@
-package samename;
+package frysk2270;
 
 public class WrongScope
 {
