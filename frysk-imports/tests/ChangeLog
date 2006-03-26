@@ -1,5 +1,7 @@
 2006-03-26  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk2130/strace-clone-exec.shin: Fix path to threadexec.
+
 	* Makefile.am (frysk1929/gcj.sh, frysk2490/a.out)
 	(frysk2491_Anon_LDFLAGS, frysk2491_Nest_LDFLAGS): Name tests after
 	their frysk bug number.
