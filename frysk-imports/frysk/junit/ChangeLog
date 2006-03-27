@@ -1,3 +1,7 @@
+2006-03-26  Andrew Cagney  <cagney@redhat.com>
+
+	* Runner.java: Log the progress of each test.
+
 2006-02-05  Andrew Cagney  <cagney@redhat.com>
 
 	* Paths.java: New file.

@@ -62,6 +62,7 @@ import junit.textui.TestRunner;
 public class Runner
     extends TestRunner
 {
+    static Logger logger;
     /**
      * Overide JUnit's print methods with a version that displays each
      * test as it is run.  Makes tracking down problems when the run
@@ -74,6 +75,7 @@ public class Runner
 	boolean pass = false;
 	public void startTest (Test test)
 	{
+	    logger.log (Level.FINE, "{0} ---- startTest ----\n", test);
 	    System.out.print ("Running ");
 	    System.out.print (test);
 	    System.out.print (" ...");
@@ -82,27 +84,30 @@ public class Runner
 	}
 	public void endTest (Test test)
 	{
+	    logger.log (Level.FINE, "{0} ---- endTest ----\n", test);
 	    if (pass)
 		System.out.println ("PASS");
 	    else
 		System.out.println ();
 	}
-	private void printProblem (String what, Throwable t)
+	private void printProblem (Test test, String name, String what,
+				   Throwable t)
         {
+	    logger.log (Level.FINE, "{0} --- {1} ---- {2}: {3}\n",
+			new Object[] { test, name, what, t });
 	    System.out.println (what);
 	    System.out.print ("  ");
 	    System.out.print (t);
+	    pass = false;
         }
 
 	public void addError (Test test, java.lang.Throwable t)
 	{
-	    printProblem ("ERROR", t);
-	    pass = false;
+	    printProblem (test, "addError", "ERROR", t);
 	}
 	public void addFailure (Test test, AssertionFailedError t)
 	{
-	    printProblem ("FAIL", t);
-	    pass = false;
+	    printProblem (test, "addFailure", "FAIL", t);
 	}
 	// Constructor.
 	Results (PrintStream stream)
@@ -140,7 +145,7 @@ public class Runner
 
 	// Create the file logger, and then set it's level to that
 	// specified on the command line.
-	Logger logger = EventLogger.get ("logs/", "frysk_core_event.log");
+	logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	String levelValue = (String) parser.getOptionValue (levelOption);
 	if (levelValue != null) {
 	    Level level = null;
