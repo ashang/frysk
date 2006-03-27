@@ -188,11 +188,59 @@ public class CDTParser implements StaticParser {
 			}
 		}
 		
-		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {}
+		public void acceptFunctionReference(IASTFunctionReference arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
 
+			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
+		}
+		
+		public void acceptTypedefDeclaration(IASTTypedefDeclaration arg0) {}
+		public void acceptTypedefReference(IASTTypedefReference arg0) {}
+		
 		public void acceptEnumerationSpecifier(IASTEnumerationSpecifier arg0) {}	
 
-		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {}
+		public void enterNamespaceDefinition(IASTNamespaceDefinition arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.NAMESPACE, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+		}
+		
+		public void acceptNamespaceReference(IASTNamespaceReference arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+			
+			line.addTag(DOMTagTypes.NAMESPACE, arg0.getName(), arg0.getOffset() - line.getOffset());
+		}
+		
+		public void acceptUsingDirective(IASTUsingDirective arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+//			line.addTag(DOMTagTypes.NAMESPACE, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+		}
+		
+		public void acceptUsingDeclaration(IASTUsingDeclaration arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+//			line.addTag(DOMTagTypes.CLASS_DECL, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+		}
 
 		public void enterClassSpecifier(IASTClassSpecifier arg0) {
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
@@ -224,22 +272,12 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.CLASS_DECL, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 
-		public void acceptTypedefReference(IASTTypedefReference arg0) {}
-
 		public void acceptVariableReference(IASTVariableReference arg0) {
 			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
 			if(line == null)
 				return;
 
 			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getOffset() - line.getOffset());
-		}
-
-		public void acceptFunctionReference(IASTFunctionReference arg0) {
-			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
-			if(line == null)
-				return;
-
-			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getOffset() - line.getOffset());
 		}
 
 		public void acceptFieldReference(IASTFieldReference arg0) {}
@@ -260,6 +298,8 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.LOCAL_VAR, arg0.getName(), arg0.getStartingOffset() - line.getOffset());
 		}
 
+		/* METHODS */
+		
 		public void acceptMethodDeclaration(IASTMethod arg0) {
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
 			if(line == null)
@@ -303,6 +343,7 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
 			
 			Iterator iter = arg0.getParameters();
+			
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				
@@ -311,27 +352,39 @@ public class CDTParser implements StaticParser {
 			}
 		}
 		
-		/* UNIMPLEMENTED INTERFACE FUNCTIIONS */
-		public void enterCodeBlock(IASTCodeScope arg0) {}
+		/* TEMPLATES */
+		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {}
+		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {}
+		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {}
+		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {}
+		
+		/* PREPROCESSOR STUFF */
+		public void enterInclusion(IASTInclusion arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(0, arg0.getNameOffset() - line.getOffset()-2), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.INCLUDE, lineText.substring(arg0.getNameOffset()-line.getOffset()-1, arg0.getNameEndOffset()-line.getOffset()+1), arg0.getNameOffset() - line.getOffset()-1);
+		}
 		public void acceptMacro(IASTMacro arg0) {}
-		public void acceptUsingDirective(IASTUsingDirective arg0) {}
-		public void acceptUsingDeclaration(IASTUsingDeclaration arg0) {}
+		
+		/* UNIMPLEMENTED INTERFACE FUNCTIIONS */
+		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {}
+		public void acceptEnumerationReference(IASTEnumerationReference arg0) {}
+		public void acceptFriendDeclaration(IASTDeclaration arg0) {}
 		public void acceptASMDefinition(IASTASMDefinition arg0) {}
+		
+		/* Probably not useful */
+		public void enterCodeBlock(IASTCodeScope arg0) {}
 		public void acceptElaboratedForewardDeclaration(IASTElaboratedTypeSpecifier arg0) {}
 		public void exitFunctionBody(IASTFunction arg0) {}
 		public void exitCodeBlock(IASTCodeScope arg0) {}
 		public void enterCompilationUnit(IASTCompilationUnit arg0) {}
-		public void enterInclusion(IASTInclusion arg0) {}
 		public void enterLinkageSpecification(IASTLinkageSpecification arg0) {}
-		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {}
-		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {}
 		public void exitMethodBody(IASTMethod arg0) {}
-		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {}
-		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {}
-		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {}
-		public void acceptNamespaceReference(IASTNamespaceReference arg0) {}
-		public void acceptEnumerationReference(IASTEnumerationReference arg0) {}
-		public void acceptFriendDeclaration(IASTDeclaration arg0) {}
 		public void exitTemplateDeclaration(IASTTemplateDeclaration arg0) {}
 		public void exitTemplateSpecialization(IASTTemplateSpecialization arg0) {}
 		public void exitTemplateExplicitInstantiation(IASTTemplateInstantiation arg0) {}

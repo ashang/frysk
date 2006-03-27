@@ -1,3 +1,21 @@
+2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (init): Added tags for namespace and include
+	statement syntax highlighting, adds listeners for these tags to the
+	associated preferences.
+	(createTags): Creates tags for namespace and include statement syntax
+	highlighting.
+	* cparser/CDTParser.java
+	(ParserCallBack.enterNamespaceDefinition): Added method body.
+	(ParserCallBack.acceptNamespaceReference): Ditto.
+	(ParserCallBack.acceptUsingDirective): Ditto.
+	(ParserCallBack.acceptUsingDeclaration): Ditto.
+	(ParserCallBack.enterInclusion): Ditto.
+	* prefs/SyntaxPreferenceGroup.java (NAMESPACE): Added.
+	(INCLUDES): Ditto.
+	* testfiles/test6.cpp: Updated to reflect a more complicated code
+	example.
+
 2006-03-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Now creates a VariableWatchView

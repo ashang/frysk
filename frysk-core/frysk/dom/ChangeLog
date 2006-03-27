@@ -1,3 +1,8 @@
+2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMTagTypes.java (INCLUDE): Added.
+	(NAMESPACE): Added.
+
 2006-03-23  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMFrysk.java (CCPATH_ATTR): Removed.

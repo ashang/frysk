@@ -50,4 +50,6 @@ public class DOMTagTypes {
     public static final String FUNCTION_BODY = "function_body";
     public static final String OPTIMIZED_VAR = "optimized_var";
     public static final String OUT_OF_SCOPE_VAR = "oos_var";
+    public static final String NAMESPACE = "namespace";
+    public static final String INCLUDE = "include";
 }

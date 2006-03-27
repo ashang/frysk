@@ -90,7 +90,9 @@ public class SourceBuffer extends TextBuffer {
 	protected static final String ID_TAG = "ID";
 	protected static final String OPTIMIZED_VAR_TAG = "OPTIMIZED_VAR";
 	protected static final String OUT_OF_SCOPE_VAR_TAG = "OOS_VAR";
+	protected static final String NAMESPACE_TAG = "NAMESPACE";
 	protected static final String KEYWORD_TAG = "TYPE";
+	protected static final String INCLUDE_TAG = "INCLUDE";
 	protected static final String CURRENT_LINE = "currentLine";
 	protected static final String FOUND_TEXT = "foundText";
 
@@ -115,6 +117,8 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag classTag;
 	private TextTag optimizedVarTag;
 	private TextTag oosVarTag;
+	private TextTag namespaceTag;
+	private TextTag includeTag;
 
 	private StaticParser staticParser;
 
@@ -718,6 +722,8 @@ public class SourceBuffer extends TextBuffer {
 		this.classTag = this.createTag(CLASS_TAG);
 		this.optimizedVarTag = this.createTag(OPTIMIZED_VAR_TAG);
 		this.oosVarTag = this.createTag(OUT_OF_SCOPE_VAR_TAG);
+		this.namespaceTag = this.createTag(NAMESPACE_TAG);
+		this.includeTag = this.createTag(INCLUDE_TAG);
 		
 		this.commentTag.setForeground(ColorConverter.colorToHexString(Color.GREEN));
 		
@@ -765,6 +771,12 @@ public class SourceBuffer extends TextBuffer {
 		
 		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.COMMENTS)).
 				addListener(new TagPreferenceListener(this.commentTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.NAMESPACE)).
+			addListener(new TagPreferenceListener(this.namespaceTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.INCLUDES)).
+			addListener(new TagPreferenceListener(this.includeTag));
 	}
 
 	/**
@@ -895,6 +907,18 @@ public class SourceBuffer extends TextBuffer {
 					this.applyTag(FUNCTION_TAG, start, end);
 					this.createMark(text + "_FUNC", start, true);
 					this.functions.add(text + "_FUNC");
+				}
+				
+				else if (type.equals(DOMTagTypes.NAMESPACE)) {
+					this.applyTag(NAMESPACE_TAG, this.getIter(lineOffset
+							+ tag.getStart()), this.getIter(lineOffset
+							+ tag.getStart() + tag.getLength()));
+				}
+				
+				else if (type.equals(DOMTagTypes.INCLUDE)) {
+					this.applyTag(INCLUDE_TAG, this.getIter(lineOffset
+							+ tag.getStart()), this.getIter(lineOffset
+							+ tag.getStart() + tag.getLength()));
 				}
 
 			} // end tags.hasNext()

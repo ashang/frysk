@@ -1,3 +1,10 @@
+3006-03-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Gui.java (initializePreferences): Initializes preferences for namespace and
+	include statement syntax highlighting.
+	* glade/frysk_source.glade: Added widgets for namespace and include statment
+	syntax highlighting.
+
 2006-03-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: Removed widgets for stack and variable watches,
