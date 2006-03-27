@@ -1,5 +1,8 @@
 3006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Gui.java (initializePreferences): Initializes macro preference.
+	* glade/frysk_source.glade: Added widgets for macro syntax highlighting.
+
 	* Gui.java (initializePreferences): Initializes preferences for namespace and
 	include statement syntax highlighting.
 	* glade/frysk_source.glade: Added widgets for namespace and include statment

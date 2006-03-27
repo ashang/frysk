@@ -1,5 +1,7 @@
 2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DOMTagTypes.java (MACRO): Added.
+
 	* DOMTagTypes.java (INCLUDE): Added.
 	(NAMESPACE): Added.
 

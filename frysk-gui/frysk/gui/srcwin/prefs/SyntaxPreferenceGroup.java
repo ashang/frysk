@@ -14,6 +14,7 @@ public class SyntaxPreferenceGroup extends PreferenceGroup {
 	public static final String COMMENTS = "Comments";
 	public static final String NAMESPACE = "Namespaces";
 	public static final String INCLUDES = "Includes";
+	public static final String MACRO = "macro";
 
 	public SyntaxPreferenceGroup(String name, int tabNum) {
 		super(name, tabNum);

@@ -1,5 +1,8 @@
 2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* prefs/PreferenceWindow.java (attachEvents): Adds events for macro
+	syntax highlighting.
+
 	* prefs/PreferenceWindow.java (attachEvents): Adds events for namespace
 	and include statement highlighting.
 

@@ -1,5 +1,13 @@
 2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	* sourceBuffer.java (init): Added tags for macro highlighting and
+	attaches a TagListener to the macro sytnax highlighting preference.
+	(createTags): Creates macro tags.
+	* cparser/CDTParser.java 
+	(ParserCallBack.acceptMacro): Added method body.
+	* prefs/SyntaxPreferenceGroup.java (NAMESPACE): Added.
+	* testfiles/test6.cpp (THIS_IS_A_MACRO): Added.
+
 	* SourceBuffer.java (init): Added tags for namespace and include
 	statement syntax highlighting, adds listeners for these tags to the
 	associated preferences.

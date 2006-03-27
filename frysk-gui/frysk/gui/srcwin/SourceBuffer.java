@@ -93,6 +93,7 @@ public class SourceBuffer extends TextBuffer {
 	protected static final String NAMESPACE_TAG = "NAMESPACE";
 	protected static final String KEYWORD_TAG = "TYPE";
 	protected static final String INCLUDE_TAG = "INCLUDE";
+	protected static final String MACRO_TAG = "MACRO";
 	protected static final String CURRENT_LINE = "currentLine";
 	protected static final String FOUND_TEXT = "foundText";
 
@@ -119,6 +120,7 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag oosVarTag;
 	private TextTag namespaceTag;
 	private TextTag includeTag;
+	private TextTag macroTag;
 
 	private StaticParser staticParser;
 
@@ -724,6 +726,7 @@ public class SourceBuffer extends TextBuffer {
 		this.oosVarTag = this.createTag(OUT_OF_SCOPE_VAR_TAG);
 		this.namespaceTag = this.createTag(NAMESPACE_TAG);
 		this.includeTag = this.createTag(INCLUDE_TAG);
+		this.macroTag = this.createTag(MACRO_TAG);
 		
 		this.commentTag.setForeground(ColorConverter.colorToHexString(Color.GREEN));
 		
@@ -773,10 +776,13 @@ public class SourceBuffer extends TextBuffer {
 				addListener(new TagPreferenceListener(this.commentTag));
 		
 		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.NAMESPACE)).
-			addListener(new TagPreferenceListener(this.namespaceTag));
+				addListener(new TagPreferenceListener(this.namespaceTag));
 		
 		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.INCLUDES)).
-			addListener(new TagPreferenceListener(this.includeTag));
+				addListener(new TagPreferenceListener(this.includeTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.MACRO)).
+				addListener(new TagPreferenceListener(this.macroTag));
 	}
 
 	/**
@@ -917,6 +923,12 @@ public class SourceBuffer extends TextBuffer {
 				
 				else if (type.equals(DOMTagTypes.INCLUDE)) {
 					this.applyTag(INCLUDE_TAG, this.getIter(lineOffset
+							+ tag.getStart()), this.getIter(lineOffset
+							+ tag.getStart() + tag.getLength()));
+				}
+				
+				else if (type.equals(DOMTagTypes.MACRO)) {
+					this.applyTag(MACRO_TAG, this.getIter(lineOffset
 							+ tag.getStart()), this.getIter(lineOffset
 							+ tag.getStart() + tag.getLength()));
 				}

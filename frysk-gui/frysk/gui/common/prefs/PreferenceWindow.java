@@ -177,6 +177,9 @@ public class PreferenceWindow extends Window implements TreeSelectionListener, B
 		
 		sPref = (SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.INCLUDES);
 		this.initSyntaxPreference(sPref, "include");
+		
+		sPref = (SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.MACRO);
+		this.initSyntaxPreference(sPref, "macro");
 	}
 	
 	private void initSyntaxPreference(SyntaxPreference sPref, String prefix){

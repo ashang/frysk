@@ -369,7 +369,16 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(0, arg0.getNameOffset() - line.getOffset()-2), arg0.getStartingOffset() - line.getOffset());
 			line.addTag(DOMTagTypes.INCLUDE, lineText.substring(arg0.getNameOffset()-line.getOffset()-1, arg0.getNameEndOffset()-line.getOffset()+1), arg0.getNameOffset() - line.getOffset()-1);
 		}
-		public void acceptMacro(IASTMacro arg0) {}
+		public void acceptMacro(IASTMacro arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
+			if(line == null)
+				return;
+			
+			String lineText = line.getText();
+			
+			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(0, arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.MACRO, lineText.substring(arg0.getNameOffset()-line.getOffset(), arg0.getNameEndOffset()-line.getOffset()), arg0.getNameOffset() - line.getOffset());
+		}
 		
 		/* UNIMPLEMENTED INTERFACE FUNCTIIONS */
 		public void acceptEnumeratorReference(IASTEnumeratorReference arg0) {}

@@ -1,5 +1,7 @@
 #include "iostream.h"
 
+#define THIS_IS_A_MACRO 1
+
 /* class auto_ptr
  * - improved standard conforming implementation
  */
@@ -66,7 +68,7 @@ namespace std {
         // release ownership
         T* release() throw() {
             T* tmp(ap);
-            ap = 0;
+            ap = THIS_IS_A_MACRO;
             return tmp;
         }
 
