@@ -394,6 +394,7 @@ class TaskState
 	    TaskState handleDetach (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 
+		// Can't detach a running task, first need to stop it.
 		task.sendStop ();
 		return detaching;
 	    }
@@ -495,6 +496,8 @@ class TaskState
 	    TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
+		// This is what should happen, the task stops, the
+		// task is detached.
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
 		return unattached;
@@ -503,42 +506,66 @@ class TaskState
 					      int value)
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
+		// Oops, the task is terminating.  Skip over the
+		// termination event allowing the stop or terminated
+		// event behind it to bubble up.  Since nothing is
+		// observing this task, no need to notify anything of
+		// this event.
 		if (signal)
-		    task.sendDetach (value);
+		    task.sendContinue (value);
 		else
-		    task.sendDetach (0);
+		    task.sendContinue (0);
+		return detaching;
+	    }
+	    TaskState handleTerminatedEvent (Task task, boolean signal,
+					     int value)
+	    {
+		logger.log (Level.FINE, "{0} handleTerminatedEvent\n", task); 
+		task.proc.remove (task);
+		// Lie, really just need to tell the proc that the
+		// task is no longer lurking.
 		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		return destroyed;
 	    }
 	    TaskState handleForkedEvent (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "{0} handleForkedEvent\n", task);
-		fork.sendDetach (0);
-		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		logger.log (Level.FINE, "... handleForkedEvent {0}\n", fork);
+		// Oops, the task forked.  Skip that allowing the stop
+		// event behind it to bubble up.  The owning proc will
+		// have been informed of this via a separate code
+		// path.
+		task.sendContinue (0);
+		return detaching;
 	    }
 	    TaskState handleClonedEvent (Task task, Task clone)
 	    {
 		logger.log (Level.FINE, "{0} handleClonedEvent\n", task);
-		task.sendDetach (0);
-		// Let the proc sort out the clone.
-		task.proc.performTaskDetachCompleted (task, clone);
-		return unattached;
+		// Oops, the task cloned.  Skip that event allowing
+		// the stop event behind it to bubble up.  The owning
+		// proc will have been informed of this via a separate
+		// code path.
+		task.sendContinue (0);
+		// XXX: What about telling the proc that the clone now
+		// exists?
+		return detaching;
 	    }
 	    TaskState handleExecedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleExecedEvent\n", task);
-		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		// Oops, the [main] task did an exec.  Skip that event
+		// allowing the stop event behind it to bubble up (I
+		// hope there's a stop event?).
+		task.sendContinue (0);
+		return detaching;
 	    }
 	    TaskState handleSignaledEvent (Task task, int signal)
 	    {
 		logger.log (Level.FINE, "{0} handleSignaledEvent\n", task);
-		task.sendDetach (signal);
-		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		// Oops, the task got the wrong signal.  Just continue
+		// so that the stop event behind it can bubble up.
+		task.sendContinue (signal);
+		return detaching;
 	    }
 	};
 

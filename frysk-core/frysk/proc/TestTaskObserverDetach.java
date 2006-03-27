@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,12 +39,13 @@
 
 package frysk.proc;
 
-import java.lang.Thread;
-import java.util.Observer;
-import java.util.Observable;
 import frysk.event.Event;
 import frysk.sys.Sig;
 import frysk.sys.proc.Stat;
+import java.lang.Thread;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.logging.Level;
 
 /**
  * Check that random events, arriving mid-way through a detach, are
@@ -73,14 +74,26 @@ public class TestTaskObserverDetach
 	    Manager.eventLoop.requestStop ();
 	    return Action.CONTINUE;
 	}
-	abstract void requestAdd (Task task);
-	abstract void requestDelete (Task task);
-	abstract Sig signal ();
+	/** The signal to send to the task so that it will perform an
+	 * additiona request. */
+	abstract Sig eventSignal ();
+	/** The list of ack signals that the task will send back to
+	 * this process indicating that the requested operation has
+	 * been completed.  */
+	abstract Sig[] eventAcks ();
+	/** Ask the derived task to add an observer for the event that
+	 * requestSignal triggers.  */
+	abstract void addEventObserver (Task task);
+	/** Is the event the signal?  If it isn't then the signal
+	 * should be delivered before attempting the detach.  */
+	abstract boolean eventIsSignal ();
+	/** Remove the observer looking for the relevant event.  */
+	abstract void deleteEventObserver (Task task);
 	/**
 	 * Cause an unexpected event to occure while a task is
 	 * detaching.
 	 */
-	Detach (boolean skipSignal)
+	Detach ()
 	{
 	    // Create a process, attach to it.
 	    AckProcess child = new AckDaemonProcess ();
@@ -89,15 +102,21 @@ public class TestTaskObserverDetach
 	    task.requestAddSignaledObserver (this);
 	    assertRunUntilStop ("adding signaled observer");
 
-	    requestAdd (task);
-	    assertRunUntilStop ("adding observer of unexpected event");
+	    addEventObserver (task);
+	    assertRunUntilStop ("adding observer of requested event");
 	    
-	    // Send the signal to the task which will, in response,
-	    // perform a requested operation (fork, clone, exec, ...).
-	    child.signal (signal ());
-
-	    if (skipSignal)
+	    if (eventIsSignal ())
+		// Send the signal to the task making that signal
+		// delivery the pending event.
+		child.signal (eventSignal ());
+	    else {
+		// Send the event's signal to the process, and then
+		// allow the signal to be delivered, this allows the
+		// inferior to run upto the point where the requested
+		// action has been started.
+		child.signal (eventSignal ());
 		assertRunUntilStop ("delivering signal");
+	    }
 	    
 	    // Poll until process goes into T state (indicating
 	    // pending trace event); horrible race condition here.
@@ -118,8 +137,9 @@ public class TestTaskObserverDetach
 	    }
 	    assertEquals ("stat.state", 'T', stat.state);
 	    
-	    // Remove all observers, this will result in a detach.
-	    requestDelete (task);
+	    // Remove all observers, this will cause the process to
+	    // start transitioning to the detached state.
+	    deleteEventObserver (task);
 	    task.requestDeleteSignaledObserver (this);
 
 	    // Run the event-loop out waiting for the final detach.
@@ -132,7 +152,10 @@ public class TestTaskObserverDetach
 			Manager.eventLoop.requestStop ();
 		    }
 		});
-	    assertRunUntilStop ("attempting detach");
+
+	    logger.log (Level.FINE, "{0} waiting for detach\n", this);
+	    AckHandler ackHandler = new AckHandler (eventAcks ());
+	    ackHandler.await ("attempting detach");
 	}
     }
     /**
@@ -145,15 +168,18 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Forked
 	{
+	    Sig eventSignal () { return addForkSig; }
+	    Sig[] eventAcks () { return spawnAck; }
+	    boolean eventIsSignal () { return false; }
 	    DetachFork ()
 	    {
-		super (true);
+		super ();
 	    }
-	    void requestAdd (Task task)
+	    void addEventObserver (Task task)
 	    {
 		task.requestAddForkedObserver (this);
 	    }
-	    void requestDelete (Task task)
+	    void deleteEventObserver (Task task)
 	    {
 		task.requestDeleteForkedObserver (this);
 	    }
@@ -161,10 +187,6 @@ public class TestTaskObserverDetach
 	    {
 		fail ("forked");
 		return null;
-	    }
-	    Sig signal ()
-	    {
-		return addForkSig;
 	    }
 	}
 	new DetachFork ();
@@ -179,15 +201,19 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Cloned
 	{
+	    Sig eventSignal () { return addCloneSig; }
+	    Sig[] eventAcks () { return spawnAck; }
+	    boolean eventIsSignal () { return false; }
 	    DetachClone ()
 	    {
-		super (true);
+		super ();
+		       
 	    }
-	    void requestAdd (Task task)
+	    void addEventObserver (Task task)
 	    {
 		task.requestAddClonedObserver (this);
 	    }
-	    void requestDelete (Task task)
+	    void deleteEventObserver (Task task)
 	    {
 		task.requestDeleteClonedObserver (this);
 	    }
@@ -195,10 +221,6 @@ public class TestTaskObserverDetach
 	    {
 		fail ("cloned");
 		return null;
-	    }
-	    Sig signal ()
-	    {
-		return addCloneSig;
 	    }
 	}
 	new DetachClone ();
@@ -213,15 +235,18 @@ public class TestTaskObserverDetach
 	    extends Detach
 	    implements TaskObserver.Execed
 	{
+	    Sig eventSignal () { return execSig; }
+	    Sig[] eventAcks () { return execAck; }
+	    boolean eventIsSignal () { return false; }
 	    DetachExec ()
 	    {
-		super (true);
+		super ();
 	    }
-	    void requestAdd (Task task)
+	    void addEventObserver (Task task)
 	    {
 		task.requestAddExecedObserver (this);
 	    }
-	    void requestDelete (Task task)
+	    void deleteEventObserver (Task task)
 	    {
 		task.requestDeleteExecedObserver (this);
 	    }
@@ -229,10 +254,6 @@ public class TestTaskObserverDetach
 	    {
 		fail ("execed");
 		return null;
-	    }
-	    Sig signal ()
-	    {
-		return execSig;
 	    }
 	}
 	new DetachExec ();
@@ -243,9 +264,12 @@ public class TestTaskObserverDetach
      */
     public void testDetachSignal ()
     {
-	new Detach (false)
+	new Detach ()
 	{
-	    void requestAdd (Task task)
+	    Sig eventSignal () { return Sig.TERM; }
+	    Sig[] eventAcks () { return new Sig[0]; }
+	    boolean eventIsSignal () { return true; }
+	    void addEventObserver (Task task)
 	    {
 		Manager.eventLoop.add (new Event ()
 		    {
@@ -255,12 +279,8 @@ public class TestTaskObserverDetach
 			}
 		    });
 	    }
-	    void requestDelete (Task task)
+	    void deleteEventObserver (Task task)
 	    {
-	    }
-	    Sig signal ()
-	    {
-		return Sig.TERM;
 	    }
 	};
     }

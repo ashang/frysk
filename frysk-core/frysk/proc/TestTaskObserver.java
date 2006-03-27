@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -196,7 +196,9 @@ public class TestTaskObserver
     /**
      * Detach from the list of tasks.
      */
-    private void detach (final Task[] tasks, AttachedObserver attachedObserver)
+    private void detach (final Task[] tasks,
+			 AttachedObserver attachedObserver,
+			 boolean shouldStillHaveTasks)
     {
 	// Delete the AttachedObserver from the task causing
 	// <em>frysk</em> to detach from the Task's Proc.  Run the
@@ -224,8 +226,9 @@ public class TestTaskObserver
 
 	// Check that while the process has gone, <em>frysk</em>
 	// hasn't noticed.
-	assertTrue ("process still has tasks",
-		    tasks[0].proc.getTasks ().size () > 0);
+	if (shouldStillHaveTasks)
+	    assertTrue ("process still has tasks",
+			tasks[0].proc.getTasks ().size () > 0);
     }
 
     /** 
@@ -234,7 +237,7 @@ public class TestTaskObserver
     private void attachDetach (Task[] tasks)
     {
 	AttachedObserver attachedObserver = attach (tasks);
-	detach (tasks, attachedObserver);
+	detach (tasks, attachedObserver, true);
     }
 
 
@@ -288,7 +291,7 @@ public class TestTaskObserver
 	// the more typical stopped.
 	Signal.kill (task.getTid (), Sig.KILL);
 
-	detach (new Task[] { task }, attachedObserver);
+	detach (new Task[] { task }, attachedObserver, false);
     }
     /** {@link #detachExitingTask} */
     public void testDetachExitingMainTask ()
@@ -427,7 +430,7 @@ public class TestTaskObserver
 	
 	// .detach does a few deletes, delete a few more.
 	task.requestDeleteAttachedObserver (extra);
-	detach (new Task[] { task }, attached);
+	detach (new Task[] { task }, attached, true);
     }
     /** {@link #backToBackAttachAttachTask} */
     public void testBackToBackAttachAttachMainTask ()
@@ -466,7 +469,7 @@ public class TestTaskObserver
 	AttachedObserver attached = attach (new Task[] { task });
 	
 	// .detach does a few deletes, delete a few more.
-	detach (new Task[] { task }, attached);
+	detach (new Task[] { task }, attached, true);
     }
     /** {@link #backToBackAttachDetachTask} */
     public void testBackToBackAttachDetachMainTask ()
@@ -506,7 +509,7 @@ public class TestTaskObserver
 		}
 	    };
 	task.requestAddAttachedObserver (extra);
-	detach (new Task[] { task }, extra);
+	detach (new Task[] { task }, extra, true);
     }
     /** {@link #deletedAttachTask} */
     public void testDeletedAttachMainTask ()

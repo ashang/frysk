@@ -71,7 +71,7 @@ public class TestLib
     extends TestCase
 {
     protected final static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
-    
+
     /**
      * Return the exec prefix that should be prepended to all
      * programs.
@@ -196,10 +196,13 @@ public class TestLib
 	{
 	    acksRemaining = sigs.length;
 	    for (int i = 0; i < sigs.length; i++) {
-		Sig sig = sigs[i];
-		Manager.eventLoop.add (new SignalEvent (sig) {
+		final Sig theSig = sigs[i];
+		Manager.eventLoop.add (new SignalEvent (theSig) {
+			Sig sig = theSig;
 			public void execute ()
 			{
+			    logger.log (Level.FINE, "{0} received {1}\n",
+					new Object[] { this, sig.toPrint () });
 			    Manager.eventLoop.requestStop ();
 			    Manager.eventLoop.remove (this);
 			    acksRemaining--;
@@ -207,11 +210,15 @@ public class TestLib
 		    });
 	    }
 	}
-	void await ()
+	void await (String why)
 	{
 	    while (acksRemaining > 0) {
-		assertRunUntilStop ("waiting for ack");
+		assertRunUntilStop (why);
 	    }
+	}
+	void await ()
+	{
+	    await ("waiting for ack");
 	}
     }
 
@@ -228,6 +235,8 @@ public class TestLib
     protected final Sig zombieForkSig = Sig.URG;
     protected final Sig execSig = Sig.PWR;
     protected final Sig execCloneSig = Sig.FPE;
+    protected final Sig[] spawnAck = new Sig[] { childAck, parentAck };
+    protected final Sig[] execAck = new Sig[] { childAck };
 
     /**
      * Manage a child process.
@@ -421,10 +430,7 @@ public class TestLib
 	/** . */
 	private void spawn (Sig sig)
 	{
-	    AckHandler ack = new AckHandler (new Sig[]
-		{
-		    childAck, parentAck
-		});
+	    AckHandler ack = new AckHandler (spawnAck);
 	    signal (sig);
 	    ack.await ();
 	}
@@ -475,7 +481,7 @@ public class TestLib
 	 */
 	void exec (int tid)
 	{
-	    AckHandler ack = new AckHandler (childAck);
+	    AckHandler ack = new AckHandler (execAck);
 	    Signal.tkill (tid, execSig);
 	    ack.await ();
 	}
@@ -484,7 +490,7 @@ public class TestLib
 	 */
 	void exec ()
 	{
-	    AckHandler ack = new AckHandler (childAck);
+	    AckHandler ack = new AckHandler (execAck);
 	    signal (execSig);
 	    ack.await ();
 	}
@@ -1226,26 +1232,26 @@ public class TestLib
 	// Remove any stray files.
 	deleteTmpFiles ();
 
-	// Capture any pending signals; drain them, and then turn
-	// around and assert that there weren't any.
-	SigSet pending = new SigSet ().getPending ();
-	Poll.poll (new Poll.Observer ()
-		   {
-		       public void signal (Sig sig) { }
-		       public void pollIn (int in) { }
-		   },
-		   0);
-	// XXX: This should be an assert; until the bugs are fixed, it
-	// can't be.
+	// Drain the set of pending signals ensuring that the next
+	// test run doesn't have to contend with any of these signals;
+	// save any drained signals.
+	class SignalDrain
+	    implements Poll.Observer
+	{
+	    SigSet pending = new SigSet ();
+	    public void signal (Sig sig) { pending.add (sig); }
+	    public void pollIn (int in) { }
+
+	}
+	SignalDrain signalDrain = new SignalDrain ();
+	Poll.poll (signalDrain, 0);
+	// Check that the drained signals did not include signals that
+	// should not be left pending after the test.
 	Sig[] checkSigs = new Sig[] { Sig.USR1, Sig.USR2 };
 	for (int i = 0; i < checkSigs.length; i++) {
 	    Sig sig = checkSigs[i];
-	    // assertFalse ("pending signal", pending.contains (sig));
-	    if (pending.contains (sig)) {
-		System.out.print ("<<XXX: pending signal "
-				  + sig.toPrint ()
-				  + ">>");
-	    }
+	    assertFalse ("pending signal " + sig,
+			 signalDrain.pending.contains (sig));
 	}
 
 	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);

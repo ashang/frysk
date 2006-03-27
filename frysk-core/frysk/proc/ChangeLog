@@ -1,3 +1,17 @@
+2006-03-26  Andrew Cagney  <cagney@redhat.com>
+
+	* TestTaskObserverDetach.java: Check that the ack signal, after a
+	fork, clone, or exec, is received.
+	* TestTaskObserver.java (detach): Add boolean shouldStillHaveTasks
+	making the check for tasks conditional.
+	(detachExitingTask): Do not expect any tasks after the detach.
+	* TestLib.java (await): Add String, aka reason, parameter.
+	(execAck, spawnAck): New.
+	(tearDown): Re-implement pehding signal code, to assert that tere
+	are no bad pending signals.
+	* TaskState.java: When in detaching state, skip terminating,
+	terminated, fork, exec, and clone events.
+
 2006-03-25  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskState.java (running, destroyed): Handle handleDelete.
