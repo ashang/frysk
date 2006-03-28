@@ -68,7 +68,7 @@ public abstract class ActionPoint extends GuiObject implements SaveableXXX {
 	
 	public ActionPoint(ActionPoint other){
 		super(other);
-		this.actions = new ObservableLinkedList(); // Dont copy Actions
+		this.actions = new ObservableLinkedList(other.actions); // Do copy Actions
 	}
 	
 	/**

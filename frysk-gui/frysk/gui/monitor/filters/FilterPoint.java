@@ -73,7 +73,7 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 	
 	public FilterPoint(FilterPoint other){
 		super(other);
-		this.filters = new ObservableLinkedList(); // Dont copy filters
+		this.filters = new ObservableLinkedList(other.filters); // Do copy filters
 	}
 	
 	/**

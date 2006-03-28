@@ -37,32 +37,48 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
-import java.util.logging.Level;
+import frysk.gui.monitor.GuiObject;
 
-import frysk.gui.monitor.EventLogger;
-import frysk.gui.monitor.WindowManager;
-import frysk.gui.monitor.observers.ObserverRoot;
+/**
+ * 
+ * @author swagiaal
+ *
+ * An object representing a combination of a @link frysk.gui.monitor.filters.Filter
+ * and a @link frysk.gui.monitor.filters.FilterPoint 
+ */
+public class FilterCombo extends GuiObject {
 
-public class LogAction extends GenericAction {
-
-	public LogAction() {
-		super("Logger", "logs what is going on with this "); //$NON-NLS-1$ //$NON-NLS-2$
+	private FilterPoint filterPoint;
+	private Filter filter;
+	private boolean applied = false;
+	
+	public FilterCombo(FilterPoint filterPoint, Filter filter){
+		super();
+		this.filterPoint = filterPoint;
+		this.filter = filter;
+		this.setName(filter.getName() + " [of] " + filterPoint.getName() );
+		this.setToolTip("");
+		this.applied = filterPoint.getFilters().contains(filter);
 	}
-
-	public LogAction(LogAction other) {
-		super(other);
+	
+	public void apply(){
+		if(applied){
+			throw new RuntimeException("You are trying to apply a FilterCombo that is already applied");
+		}
+		this.filter = FilterManager.theManager.getFilterCopy(filter);
+		this.filterPoint.addFilter(filter);
+		this.applied = true;
 	}
-
-	public Action getCopy() {
-		return new LogAction(this);
+	
+	public void unApply(){
+		System.out.println("FilterCombo.unApply()");
+		this.filterPoint.removeFilter(filter);
+		this.applied = false;
 	}
-
-	public void execute(ObserverRoot observer) {
-		//System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
-		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getInfo());
-		WindowManager.theManager.logWindow.print(observer.getInfo());
+	
+	public boolean isApplied(){
+		return this.applied;
 	}
-
 }

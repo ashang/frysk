@@ -45,10 +45,15 @@ import junit.framework.TestCase;
 
 import org.gnu.gtk.Gtk;
 
+import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.actions.LogAction;
+import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
+import frysk.gui.monitor.filters.ProcNameFilter;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskForkedObserver;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
 public class TestPrototypeCopying extends TestCase{
@@ -59,7 +64,11 @@ public class TestPrototypeCopying extends TestCase{
 		Iterator iter = observerManager.getTaskObservers().iterator();
 		while (iter.hasNext()) {
 			TaskObserverRoot a = (TaskObserverRoot) iter.next();
-			System.out.println("Testing copy of :" + a.getName());
+			a.genericActionPoint.addAction(new LogAction());
+//			System.out.println("Testing copy of :" + a.getName());
+			if(a instanceof TaskForkedObserver){
+				((TaskForkedObserver)a).forkedTaskFilterPoint.addFilter(new ProcNameFilter("1"));
+			}
 			ObserverRoot b = observerManager.getObserverCopy(a);
 			assertCorrectCopy(a, b);
 		}
@@ -78,16 +87,16 @@ public class TestPrototypeCopying extends TestCase{
 			FilterPoint bFilterPoint = (FilterPoint) bIter.next();
 			assertFalse("FilterPoints are not the same object ", aFilterPoint == bFilterPoint);
 			assertEquals("FilterPoint type", aFilterPoint.getClass(), bFilterPoint.getClass());
-			assertEquals("Number of filters ", 0, bFilterPoint.getFilters().size());
-			//XXX: should filters be copied ?
-//			assertEquals("Number of filters ", aFilterPoint.getFilters().size(), bFilterPoint.getFilters().size());
-//			Iterator aFilterIter = aFilterPoint.getFilters().iterator();
-//			Iterator bFilterIter = bFilterPoint.getFilters().iterator();
-//			while(aFilterIter.hasNext()){
-//				Filter aFilter = (Filter) aFilterIter.next();
-//				Filter bFilter = (Filter) bFilterIter.next();
-//				assertFalse("Filters are not the same object ", aFilter == bFilter);
-//			}
+		//	assertEquals("Number of filters ", 0, bFilterPoint.getFilters().size());
+		//	XXX: should filters be copied ?
+			assertEquals("Number of filters ", aFilterPoint.getFilters().size(), bFilterPoint.getFilters().size());
+			Iterator aFilterIter = aFilterPoint.getFilters().iterator();
+			Iterator bFilterIter = bFilterPoint.getFilters().iterator();
+			while(aFilterIter.hasNext()){
+				Filter aFilter = (Filter) aFilterIter.next();
+				Filter bFilter = (Filter) bFilterIter.next();
+				assertFalse("Filters are not the same object ", aFilter == bFilter);
+			}
 		}
 
 		
@@ -102,16 +111,16 @@ public class TestPrototypeCopying extends TestCase{
 			ActionPoint bActionPoint = (ActionPoint) bIter.next();
 			assertFalse("ActionPoints are not the same object ", aActionPoint == bActionPoint);
 			assertEquals("ActionPoint type", aActionPoint.getClass(), bActionPoint.getClass());
-			assertEquals("Number of actions ", 0, bActionPoint.getActions().size());
+			//assertEquals("Number of actions ", 0, bActionPoint.getActions().size());
 			//XXX: should actions be copied ?
-//			assertEquals("Number of actions ", aActionPoint.getActions().size(), bActionPoint.getActions().size());
-//			Iterator aActionIter = aActionPoint.getActions().iterator();
-//			Iterator bActionIter = bActionPoint.getActions().iterator();
-//			while(aActionIter.hasNext()){
-//				Action aAction = (Action) aActionIter.next();
-//				Action bAction = (Action) bActionIter.next();
-//				assertFalse("Actions are not the same object ", aAction == bAction);
-//			}
+			assertEquals("Number of actions ", aActionPoint.getActions().size(), bActionPoint.getActions().size());
+			Iterator aActionIter = aActionPoint.getActions().iterator();
+			Iterator bActionIter = bActionPoint.getActions().iterator();
+			while(aActionIter.hasNext()){
+				Action aAction = (Action) aActionIter.next();
+				Action bAction = (Action) bActionIter.next();
+				assertFalse("Actions are not the same object ", aAction == bAction);
+			}
 		}
 
 	}

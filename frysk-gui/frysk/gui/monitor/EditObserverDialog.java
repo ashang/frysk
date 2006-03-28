@@ -41,9 +41,12 @@ package frysk.gui.monitor;
 
 import java.util.Iterator;
 
+import org.gnu.gdk.Color;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.Frame;
+import org.gnu.gtk.StateType;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
@@ -68,7 +71,6 @@ public class EditObserverDialog extends Dialog {
 	EditObserverDialog(LibGlade glade){
 		super(glade.getWidget("editObserverDialog").getHandle());
 		
-		
 		Button button = (Button) glade.getWidget("editObserverCancelButton");
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
@@ -83,6 +85,7 @@ public class EditObserverDialog extends Dialog {
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
+					System.out.println("EditObserverDialog.EditObserverDialog() " + observer);
 					EditObserverDialog.this.hideAll();
 				}
 			}
@@ -100,10 +103,11 @@ public class EditObserverDialog extends Dialog {
 		
 		observerTypeComboBox = new SimpleComboBox((glade.getWidget("observerTypeComboBox")).getHandle());
 		observerTypeComboBox.watchLinkedList(ObserverManager.theManager.getBaseObservers());
+		System.out.println("EditObserverDialog.EditObserverDialog() size " + ObserverManager.theManager.getBaseObservers().size());
 		observerTypeComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
 				ObserverRoot selected = (ObserverRoot) observerTypeComboBox.getSelectedObject();
-				if(selected != null){
+				if(selected != null && !selected.getClass().equals(observer.getClass())){
 					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy((TaskObserverRoot) selected);
 					newObserver.setName(observerNameEntry.getText());
 					if(observerNameEntry.getText().length() == 0){
@@ -111,17 +115,32 @@ public class EditObserverDialog extends Dialog {
 					}
 					setObserver(newObserver);
 					setName(newObserver);
+					System.out.println(".comboBoxEvent() swapped. NewObserver: " + newObserver );
 				}
 			}
 		});
 	
 		this.filtersTable = new FiltersTable(glade.getWidget("observerFiltersTable").getHandle());
+		Frame frame = (Frame) glade.getWidget("observerFiltersFrame");
+		frame.setBackgroundColor(StateType.NORMAL, Color.WHITE);
+		frame.setBackgroundColor(StateType.ACTIVE, Color.WHITE);
+		frame.setBackgroundColor(StateType.INSENSITIVE, Color.WHITE);
+		frame.setBackgroundColor(StateType.SELECTED, Color.WHITE);
+		frame.setBackgroundColor(StateType.NORMAL, Color.WHITE);
+
+		frame.setBaseColor(StateType.NORMAL, Color.WHITE);
+		frame.setBaseColor(StateType.ACTIVE, Color.WHITE);
+		frame.setBaseColor(StateType.INSENSITIVE, Color.WHITE);
+		frame.setBaseColor(StateType.SELECTED, Color.WHITE);
+		frame.setBaseColor(StateType.NORMAL, Color.WHITE);
+		frame.showAll();
 	}
 	
 	private void setAll(ObserverRoot myObserver){
 		this.setObserver(myObserver);
 		this.setName(myObserver);
 		this.setType(myObserver);
+		this.filtersTable.setObserver(myObserver);
 	}
 
 	/**
@@ -135,6 +154,7 @@ public class EditObserverDialog extends Dialog {
 	}
 	
 	public void editObserver(ObserverRoot observer){
+		System.out.println("EditObserverDialog.editObserver() " + observer);
 		this.setAll(observer);
 		
 		this.observerTypeComboBox.setSensitive(false);
@@ -157,7 +177,7 @@ public class EditObserverDialog extends Dialog {
 	}
 	
 	private void setType(ObserverRoot myObserver){
-		this.observerTypeComboBox.setSelectedObject(null);
+		//this.observerTypeComboBox.setSelectedObject(null);
 		Iterator iter = ObserverManager.theManager.getBaseObservers().iterator();
 		while (iter.hasNext()) {
 			GuiObject obj = (GuiObject) iter.next();

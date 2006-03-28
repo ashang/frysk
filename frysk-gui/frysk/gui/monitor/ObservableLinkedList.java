@@ -82,7 +82,6 @@ public class ObservableLinkedList extends LinkedList{
 		while (iterator.hasNext()) {
 			Object original = iterator.next() ;
 			Object copy;
-//			System.out.println("ObservableLinkedList.ObservableLinkedList() original " + original.getClass());
 			Class cls;
 			try {
 				cls = Class.forName(original.getClass().getName());
@@ -90,6 +89,7 @@ public class ObservableLinkedList extends LinkedList{
 				copy =  constr.newInstance(new Object[] {original});
 				this.add(copy);
 			} catch (Exception e) {
+				System.out.println("ObservableLinkedList.ObservableLinkedList() original " + original.getClass());
 				e.printStackTrace();
 			}
 		}

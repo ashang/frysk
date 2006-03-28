@@ -41,13 +41,14 @@ package frysk.gui.monitor.observers;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.Observable;
 
 import org.jdom.Element;
 
 import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.actions.StickyObserverAction;
+import frysk.gui.monitor.filters.TaskProcNameFilter;
 
 /**
  * Only once instance.
@@ -58,7 +59,7 @@ import frysk.gui.monitor.ObservableLinkedList;
  * For known static observers the ObserverManager is responsible
  * for instantiating and adding their prototypes. 
  * */
-public class ObserverManager extends  Observable {
+public class ObserverManager {
 
 	public static ObserverManager theManager = new ObserverManager();
 	
@@ -121,19 +122,32 @@ public class ObserverManager extends  Observable {
 		customObserver.setName("Custom 'ls' Watcher");
 		
 		
-//		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
-//		forkedObserver.setName("ProgramWatcher");
-//		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-//		//final TaskExecObserver   execObserver = new TaskExecObserver();
-//		
-//		StickyObserverAction stickyObserverAction = new StickyObserverAction();
-//		stickyObserverAction.setObserver(forkedObserver);
-//		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
-//		
-//		//forkedObserver.apply(proc);
-//		//execObserver.apply(proc);
-//		forkedObserver.dontSaveObject();
-//		this.addTaskObserverPrototype(forkedObserver);
+		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
+		forkedObserver.setName("XProgramWatcherX");
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		//final TaskExecObserver   execObserver = new TaskExecObserver();
+		
+		StickyObserverAction stickyObserverAction = new StickyObserverAction();
+		stickyObserverAction.setObserver(forkedObserver);
+		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
+		
+		//forkedObserver.apply(proc);
+		//execObserver.apply(proc);
+		forkedObserver.dontSaveObject();
+		this.addTaskObserverPrototype(forkedObserver);
 	} 
 
 	/**
@@ -179,11 +193,11 @@ public class ObserverManager extends  Observable {
 	 * */
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.add(observer);
-		Element node = new Element("observer");
-		if(observer.shouldSaveObject()){
-			ObjectFactory.theFactory.saveObject(observer, node);
-			ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
-		}
+//		Element node = new Element("observer");
+//		if(observer.shouldSaveObject()){
+//			ObjectFactory.theFactory.saveObject(observer, node);
+//			ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
+//		}
 	}
 	
 	public void addBaseObserverPrototype(ObserverRoot observer){
@@ -197,7 +211,7 @@ public class ObserverManager extends  Observable {
 	public void removeTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.remove(observer);
 		if(!ObjectFactory.theFactory.deleteNode( OBSERVERS_DIR + observer.getName())){
-			System.out.println("ObserverManager.removeTaskObserverPrototype() Failed to delete" + observer.getName() );
+			throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete" + observer.getName());
 		}
 	}
 	

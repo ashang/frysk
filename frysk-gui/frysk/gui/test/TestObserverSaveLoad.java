@@ -177,12 +177,14 @@ public class TestObserverSaveLoad extends TestCase{
 		//customize taskForkedObserver
 		LogAction logAction = new LogAction();
 		taskForkedObserver.genericActionPoint.addAction(logAction);
-		taskForkedObserver.setName("MyCustomObserverXXX");
+		taskForkedObserver.setName("MyCustomObserverXXX_this_should_have_been_deleted_after_test");
 		observerManager.addTaskObserverPrototype(taskForkedObserver);
 		observerManager.save();
 		
 		ObserverManager anotherObserverManager = new ObserverManager();
 		assertEquals("Number of Observers", observerManager.getTaskObservers().size(), anotherObserverManager.getTaskObservers().size());
+		
+	//	observerManager.removeTaskObserverPrototype(taskForkedObserver);
 		
 		//get custom observer
 		Iterator i = anotherObserverManager.getTaskObservers().iterator();

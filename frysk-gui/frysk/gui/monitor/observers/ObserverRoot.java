@@ -15,6 +15,8 @@ import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
+import frysk.gui.monitor.filters.Filter;
+import frysk.gui.monitor.filters.FilterCombo;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
 
@@ -231,28 +233,45 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			}
 		}
 		
-		public String toString(){
-			String myString = "";
-			myString+= "Name: " + this.getName() + "\n";
-			myString+= "Base Name: " + this.getBaseName() + "\n";
-			myString+= "FilterPoints:" + "\n";
-			Iterator iter = this.filterPoints.iterator();
-			while (iter.hasNext()) {
-				FilterPoint filterPoint = (FilterPoint) iter.next();
-				myString+=  filterPoint + "\n";
-			}
-			
-			myString += "ActionPoints: \n";
-			iter = this.actionPoints.iterator();
-			while (iter.hasNext()) {
-				ActionPoint actionPoint = (ActionPoint) iter.next();
-				myString += actionPoint + "\n";
-			}
-			
-			return myString;
-		}
+//		public String toString(){
+//			String myString = "";
+//			myString+= "Name: " + this.getName() + "\n";
+//			myString+= "Base Name: " + this.getBaseName() + "\n";
+//			myString+= "FilterPoints:" + "\n";
+//			Iterator iter = this.filterPoints.iterator();
+//			while (iter.hasNext()) {
+//				FilterPoint filterPoint = (FilterPoint) iter.next();
+//				myString+=  filterPoint + "\n";
+//			}
+//			
+//			myString += "ActionPoints: \n";
+//			iter = this.actionPoints.iterator();
+//			while (iter.hasNext()) {
+//				ActionPoint actionPoint = (ActionPoint) iter.next();
+//				myString += actionPoint + "\n";
+//			}
+//			
+//			return myString;
+//		}
 
 		public ObserverRoot getCopy() {
 			return new ObserverRoot(this);
 		}
+		
+		public ObservableLinkedList getCurrentFilterCombos(){
+			ObservableLinkedList combos = new ObservableLinkedList();
+			
+			Iterator i = this.getFilterPoints().iterator();
+			while (i.hasNext()) {
+				FilterPoint filterPoint = (FilterPoint) i.next();
+				Iterator j = filterPoint.getFilters().iterator();
+				while (j.hasNext()) {
+					Filter filter = (Filter) j.next();
+//					System.out.println(" ObserverRoot.getCurrentFilterCombos() filter: " + filter.getName());
+					combos.add(new FilterCombo(filterPoint, filter));
+				}
+			}
+			return combos;
+		}
+
 	}

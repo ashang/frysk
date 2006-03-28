@@ -37,32 +37,42 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
-import java.util.logging.Level;
+import java.util.Iterator;
 
-import frysk.gui.monitor.EventLogger;
-import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public class LogAction extends GenericAction {
+/**
+ * 
+ * @author swagiaal
+ *
+ * takes a @link frysk.gui.monitor.observers.ObserverRoot and
+ * returns all possible combinations of its FilterPoints and
+ * their applicable filters.
+ */
 
-	public LogAction() {
-		super("Logger", "logs what is going on with this "); //$NON-NLS-1$ //$NON-NLS-2$
+public class FilterComboFactory {
+	public static FilterComboFactory theFactory = new FilterComboFactory();
+	
+	public FilterComboFactory(){
+		
 	}
-
-	public LogAction(LogAction other) {
-		super(other);
+	
+	public ObservableLinkedList getFilterCombos(ObserverRoot observer){
+		ObservableLinkedList combos = new ObservableLinkedList();
+		
+		Iterator i = observer.getFilterPoints().iterator();
+		while (i.hasNext()) {
+			FilterPoint filterPoint = (FilterPoint) i.next();
+			Iterator j = filterPoint.getApplicableFilters().iterator();
+			while (j.hasNext()) {
+				Filter filter = (Filter) j.next();
+				combos.add(new FilterCombo(filterPoint, filter));
+			}
+		}
+		return combos;
 	}
-
-	public Action getCopy() {
-		return new LogAction(this);
-	}
-
-	public void execute(ObserverRoot observer) {
-		//System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
-		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getInfo());
-		WindowManager.theManager.logWindow.print(observer.getInfo());
-	}
-
+	
 }

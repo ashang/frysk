@@ -116,6 +116,7 @@ public class ObjectFactory {
 		path = path.replace(' ', '_');
 		
 //		System.out.println("\n==============saved node==========");
+		Thread.dumpStack();
 //		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 //		try {
 //			outputter.output(node, System.out);
@@ -136,6 +137,8 @@ public class ObjectFactory {
 	
 	public Element importNode(String path){
 
+		path = path.replace(' ', '_');
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         org.w3c.dom.Document doc = null; 
         try {
@@ -152,9 +155,14 @@ public class ObjectFactory {
 		return document.getRootElement();
 	}
 	
-	
 	public boolean deleteNode(String path){
+		path = path.replace(' ', '_');
+
 		File file = new File(path);
+
+		System.out.println("ObjectFactory.deleteNode() " + path);
+		System.out.println("ObjectFactory.deleteNode() " + file.exists());
+		
 		return file.delete();
 	}
 	

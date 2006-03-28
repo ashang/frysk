@@ -106,11 +106,12 @@ public class ObserversDialog extends Dialog {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
 					WindowManager.theManager.editObserverDialog.editObserver(selected);
-					showEditObserverDialog();
-				
-					ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
-					scratchList.swap(selected,newObserver);
-					observersListView.setSelectedObject(newObserver);
+					int response = showEditObserverDialog();
+					if(response == ResponseType.OK.getValue()){
+						ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
+						scratchList.swap(selected,newObserver);
+						observersListView.setSelectedObject(newObserver);
+					}
 				}
 			}
 		});

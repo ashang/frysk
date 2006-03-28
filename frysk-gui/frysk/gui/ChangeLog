@@ -1,3 +1,12 @@
+2006-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestObserverSaveLoad.java: Added test of copying filters
+	and actions inside of {action/filter}Points.
+
+2006-03-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Added spacing to filtersTable.
+
 3006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Gui.java (initializePreferences): Initializes macro preference.

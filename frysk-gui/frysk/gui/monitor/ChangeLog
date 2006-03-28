@@ -1,3 +1,26 @@
+2006-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java: Added a function to return
+	applied filter combos.
+	* observers/ObserverManager.java: Removed saving of observers
+	when the are added to the manager. Saving is now delay until
+	save is called.
+	* actions/LogAction.java: Fixed copy constructor.
+	* ObserversDialog.java: Now checks that ok was click in
+	EditObserverDialog before it replaces old Obsever with
+	the edited Observer.
+	* ObjectFactory.java: Replacement of spaces
+	with '_' was missing from a few functions.
+	* FiltersTable.java: Added support for:
+	- Adding filters to observer.
+	- Showing added fitlers of observers.
+	- Removing filters from observers.
+	* EditObserverDialog.java: Added support for:
+	- Setting observer name.
+	- Showing event type (aka base observer) 
+	  for existing observers.
+	- Setting event type for new observers.
+	
 2006-03-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* FiltersTable.java: New file.

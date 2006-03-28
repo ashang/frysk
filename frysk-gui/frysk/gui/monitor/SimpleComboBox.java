@@ -96,7 +96,8 @@ public class SimpleComboBox extends ComboBox implements Observer{
 //		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
 		this.packStart(cellRendererText, false);
 		this.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-
+		
+//this.showAll();
 	}
 	
 	public GuiObject getSelectedObject(){
