@@ -133,27 +133,27 @@ noinst_PROGRAMS += frysk2105/C
 # abort the compilation.  At least GCC 4.0.1 20050727 (Red Hat
 # 4.0.1-5) does not abort, and consequently this test is marked as a
 # FAIL.  The build system contains hacks to get around this.
-werror_FILES = werror/Werror.java werror/Werror.cxx
-EXTRA_DIST += $(werror_FILES)
-XFAIL_TESTS += werror/java.sh
-werror/java.sh: $(werror_FILES)
-	mkdir -p werror
+frysk2492_FILES = frysk2492/Werror.java frysk2492/Werror.cxx
+EXTRA_DIST += $(frysk2492_FILES)
+XFAIL_TESTS += frysk2492/java.sh
+frysk2492/java.sh:
+	mkdir -p frysk2492
 	echo \! $(GCJ) -Werror -Wall -c -o /dev/null \
-		$(srcdir)/werror/Werror.java \
+		$(srcdir)/frysk2492/Werror.java \
 		> $@
 	chmod a+x $@
-TESTS += werror/cxx.sh
-werror/cxx.sh: $(werror_FILES)
-	mkdir -p werror
+TESTS += frysk2492/cxx.sh
+frysk2492/cxx.sh:
+	mkdir -p frysk2492
 	echo \! g++ -Werror -Wall -c -o /dev/null \
-		$(srcdir)/werror/Werror.cxx \
+		$(srcdir)/frysk2492/Werror.cxx \
 		> $@
 	chmod a+x $@
 
-frysk1986_FILES = frysk1986/frysk1986.java
+frysk1986_FILES = frysk1986/rh174912.java
 EXTRA_DIST += $(frysk1986_FILES)
 TESTS += frysk1986/gcj.sh
-frysk1986/gcj.sh: $(werror_FILES)
+frysk1986/gcj.sh:
 	mkdir -p frysk1986
 	echo '#!/bin/sh -xe' > $@.tmp
 	echo $(GCJ) -C -d . $(srcdir)/frysk1986/rh174912.java >> $@.tmp
@@ -167,7 +167,7 @@ frysk1986/gcj.sh: $(werror_FILES)
 frysk1986ice_FILES = frysk1986ice/U.java frysk1986ice/T.java
 EXTRA_DIST += $(frysk1986ice_FILES)
 TESTS += frysk1986/ice.sh
-frysk1986/ice.sh: $(werror_FILES)
+frysk1986/ice.sh:
 	mkdir -p frysk1986
 	echo '#!/bin/sh -xe' > $@.tmp
 	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/frysk1986/T.java >> $@.tmp
@@ -178,7 +178,7 @@ frysk1986/ice.sh: $(werror_FILES)
 frysk2041_FILES = frysk2041/C.java
 EXTRA_DIST += $(frysk2041_FILES)
 TESTS += frysk2041/gcj.sh
-frysk2041/gcj.sh: $(werror_FILES)
+frysk2041/gcj.sh:
 	mkdir -p frysk2041
 	echo '#!/bin/sh -xe' > $@.tmp
 	echo $(GCJ) -C -d frysk2041 $(srcdir)/frysk2041/C.java >> $@.tmp
