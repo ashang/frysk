@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui;
+package frysk.gui.druid;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -51,7 +51,7 @@ import org.gnu.gtk.event.ButtonListener;
 
 import frysk.gui.monitor.ProcWiseTreeView;
 
-public class StartDebugSessionDialog extends Dialog {
+public class CreateFryskSessionDruid extends Dialog {
 	
 	Notebook notebook;
 	
@@ -61,7 +61,7 @@ public class StartDebugSessionDialog extends Dialog {
 	Button backButton;
 	Button finishButton;
 	
-	public StartDebugSessionDialog(LibGlade glade){
+	public CreateFryskSessionDruid(LibGlade glade){
 		super(glade.getWidget("StartDebugSessionDialog").getHandle());
 		
 		this.notebook = (Notebook) glade.getWidget("startDebugSessionNoteBook");

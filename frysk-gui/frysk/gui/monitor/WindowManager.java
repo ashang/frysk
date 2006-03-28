@@ -43,7 +43,7 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 
-import frysk.gui.StartDebugSessionDialog;
+import frysk.gui.druid.CreateFryskSessionDruid;
 
 
 /**
@@ -69,7 +69,7 @@ public class WindowManager implements Saveable{
 	public ProgramAddWindow programAddWindow;
 	public AboutWindow aboutWindow;
 	public SplashScreenWindow splashScreen;
-	public StartDebugSessionDialog startDebugSessionDialog;
+	public CreateFryskSessionDruid createFryskSessionDruid;
 	public ObserversDialog observersDialog;
 	public EditObserverDialog editObserverDialog; 
 	/**}*/
@@ -86,7 +86,7 @@ public class WindowManager implements Saveable{
 		this.prefsWindow = new PreferencesWindow(glade);
 		this.customeObserverDialog = new CustomObserverDialog(glade);
 		//this.programAddWindow = new ProgramAddWindow(glade);
-		this.startDebugSessionDialog = new StartDebugSessionDialog(glade);
+		this.createFryskSessionDruid = new CreateFryskSessionDruid(glade);
 		this.observersDialog = new ObserversDialog(glade);
 		this.editObserverDialog = new EditObserverDialog(glade);
 		this.menuBar = new MenuBar(glade);

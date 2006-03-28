@@ -1,3 +1,7 @@
+2006-03-28  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WindowManager.java: Find new CreateSession druid.
+
 2006-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Added a function to return
