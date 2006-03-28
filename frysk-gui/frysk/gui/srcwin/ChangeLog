@@ -1,4 +1,12 @@
 2006-03-28  Rick Moseley  <rmoseley@redhat.com>
+	* cparser/CDTparser.java: Added Frysk comment header.
+	* cparser/Token.java: Ditto.
+	* cparser/Tokenizer.java: Ditto.
+	* prefs/SourceWinPreferenceGroup.java: Ditto.
+	* prefs/SyntaxPreference.java: Ditto.
+	* prefs/SyntaxPreferenceGroup.java: Ditto.
+
+2006-03-28  Rick Moseley  <rmoseley@redhat.com>
 	* CurrentLineSection.java: Added Frysk comment header.
 	* CurrentStackView.java:  Ditto.
 	* InlineBuffer.java: Ditto.
