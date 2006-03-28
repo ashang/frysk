@@ -220,6 +220,16 @@ class TaskState
 		task.proc.remove (task);
 		return destroyed;
     	    }
+   	    TaskState handleTerminatedEvent (Task task, Throwable w)
+    	    {
+		logger.log (Level.FINE, "{0} processTerminatedEvent\n", task); 
+		// Outch, the task terminated before the attach
+		// reached it, just abandon this one (but ack the
+		// operation regardless).
+		task.proc.performTaskAttachCompleted (task);
+		task.proc.remove (task);
+		return destroyed;
+    	    }
 	    TaskState handleDetach (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 

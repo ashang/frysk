@@ -1,3 +1,7 @@
+2006-03-28  Stan Cox  <scox@redhat.com>
+
+	* TaskState.java (attaching): Handle handleTerminatedEvent.
+
 2006-03-26  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverDetach.java: Check that the ack signal, after a
