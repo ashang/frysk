@@ -1,3 +1,12 @@
+2006-03-28  Rick Moseley  <rmoseley@redhat.com>
+	* CurrentLineSection.java: Added Frysk comment header.
+	* CurrentStackView.java:  Ditto.
+	* InlineBuffer.java: Ditto.
+	* MixedView.java: Ditto.
+	* SourceWindowFactory.java: Ditto.
+	* VariableWatchView.java: Ditto.
+	* View.java: Ditto.
+
 2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* sourceBuffer.java (init): Added tags for macro highlighting and
