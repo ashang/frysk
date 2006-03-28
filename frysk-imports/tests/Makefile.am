@@ -66,10 +66,10 @@ check-local:
 	@echo ''
 
 # This failed in GCC 4.0 beta
-logger_Npe_SOURCES = logger/Npe.java
-logger_Npe_LDFLAGS = --main=Npe
-noinst_PROGRAMS += logger/Npe
-TESTS += logger/Npe
+frysk2493_Npe_SOURCES = frysk2493/Npe.java
+frysk2493_Npe_LDFLAGS = --main=Npe
+noinst_PROGRAMS += frysk2493/Npe
+TESTS += frysk2493/Npe
 
 # This failed in GCJ 4, but passes in GCJ 4.1.
 frysk2491_Anon_SOURCES = frysk2491/Anon.java

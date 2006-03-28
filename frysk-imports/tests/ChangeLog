@@ -1,3 +1,8 @@
+2006-03-28  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2493_Npe_LDFLAGS): Rename logger to match
+	frysk bug number.
+
 2006-03-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk2492/java.sh, frysk2492/cxx.sh): Rename werror
