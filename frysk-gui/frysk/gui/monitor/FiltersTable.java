@@ -56,6 +56,8 @@ import org.gnu.gtk.StateType;
 import org.gnu.gtk.Table;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.FocusEvent;
+import org.gnu.gtk.event.FocusListener;
 
 import frysk.gui.monitor.filters.FilterCombo;
 import frysk.gui.monitor.filters.FilterComboFactory;
@@ -182,7 +184,20 @@ public class FiltersTable extends Table {
 			booleanComboBox.watchLinkedList(FiltersTable.this.booleanList);
 
 			argumentEntry = new Entry();
-			
+			if(combo != null){
+				argumentEntry.setText(combo.getFilter().getArgument());
+			}else{
+				argumentEntry.setText("");
+			}
+			argumentEntry.addListener(new FocusListener() {
+				public boolean focusEvent(FocusEvent event) {
+					if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
+						apply();
+					}
+					return false;
+				}
+			});
+
 			addButton = new Button("");
 			addButton.setImage(new Image(GtkStockItem.ADD, IconSize.BUTTON));
 			addButton.addListener(new ButtonListener() {
@@ -218,7 +233,19 @@ public class FiltersTable extends Table {
 		}
 		
 		public void apply() {
-			this.combo.apply();
+			if(combo == null){
+				// this FilterRow represents and unapplied filter
+				combo = (FilterCombo) filtersComboBox.getSelectedObject();
+			}
+
+			if(combo == null){// nothing was selected by user
+				return;
+			}
+			if(!combo.isApplied()){
+				combo.apply();
+			}
+			
+			combo.getFilter().setArgument(argumentEntry.getText());
 		}
 
 		public void removeFromTable(){

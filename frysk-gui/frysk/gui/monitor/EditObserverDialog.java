@@ -86,6 +86,7 @@ public class EditObserverDialog extends Dialog {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					System.out.println("EditObserverDialog.EditObserverDialog() " + observer);
+					filtersTable.apply();
 					EditObserverDialog.this.hideAll();
 				}
 			}
@@ -177,7 +178,7 @@ public class EditObserverDialog extends Dialog {
 	}
 	
 	private void setType(ObserverRoot myObserver){
-		//this.observerTypeComboBox.setSelectedObject(null);
+		this.observerTypeComboBox.setSelectedObject(null);
 		Iterator iter = ObserverManager.theManager.getBaseObservers().iterator();
 		while (iter.hasNext()) {
 			GuiObject obj = (GuiObject) iter.next();

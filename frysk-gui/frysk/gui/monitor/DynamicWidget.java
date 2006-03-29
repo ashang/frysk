@@ -98,7 +98,6 @@ public class DynamicWidget extends Table {
 			public void entryEvent(EntryEvent event) {
 				if(event.isOfType(EntryEvent.Type.CHANGED)){
 					thisStringCallback.stringChanged(entry.getText());
-					//System.out.println(".entryEvent() " + entry.getText());
 				}
 			}
 		});

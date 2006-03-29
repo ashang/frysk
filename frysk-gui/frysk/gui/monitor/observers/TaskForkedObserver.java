@@ -27,14 +27,14 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	public TaskForkedObserver() {
 		super("Fork Observer", "Fires when a proc forks");
 		
-		this.forkingTaskFilterPoint = new TaskFilterPoint("Forking Thread", "Thread that performed the fork");
-		this.forkedTaskFilterPoint = new TaskFilterPoint("Forked Thread","Main thread of newly forked process");
+		this.forkingTaskFilterPoint = new TaskFilterPoint("forking thread", "Thread that performed the fork");
+		this.forkedTaskFilterPoint = new TaskFilterPoint("forked thread","Main thread of newly forked process");
 		
 		this.addFilterPoint(this.forkingTaskFilterPoint);
 		this.addFilterPoint(this.forkedTaskFilterPoint);
 		
-		this.forkingTaskActionPoint = new TaskActionPoint("Forking Thread", "Thread that performed the fork");
-		this.forkedTaskActionPoint = new TaskActionPoint("Forked Thread","Main thread of newly forked process");
+		this.forkingTaskActionPoint = new TaskActionPoint("forking thread", "Thread that performed the fork");
+		this.forkedTaskActionPoint = new TaskActionPoint("forked thread","Main thread of newly forked process");
 		
 		this.addActionPoint(this.forkingTaskActionPoint);
 		this.addActionPoint(this.forkedTaskActionPoint);

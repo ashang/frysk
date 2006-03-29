@@ -1,3 +1,17 @@
+2006-03-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/ProcNameFilter.java: Changed names so they match
+	well when combined with FilterPoint names see FilterCombo
+	for more info.
+	* filters/FilterCombo.java: Added getters for Filter and 
+	FilterPoint.
+	* filters/Filter.java: Added the (set/get)Argument abstract
+	functions.
+	* FiltersTable.java (FilterRow): added support for showing
+	and retrieving filter arguments.
+	Added support for applying filters. 
+	* observers/TaskForkedObserver.java: Ditto.
+
 2006-03-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* WindowManager.java: Find new CreateSession druid.

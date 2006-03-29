@@ -87,4 +87,9 @@ public abstract class Filter extends GuiObject implements SaveableXXX {
 	public void load(Element node){
 		super.load(node);
 	}
+	
+	public abstract boolean setArgument(String argument);
+
+	public abstract String getArgument();
+	
 }

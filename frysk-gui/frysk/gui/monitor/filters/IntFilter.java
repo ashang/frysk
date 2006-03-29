@@ -96,4 +96,17 @@ public class IntFilter extends Filter implements SaveableXXX{
 		this.value = Integer.parseInt(node.getAttribute("value").getValue());
 	}
 
+	public boolean setArgument(String argument) {
+		try {
+			this.value = Integer.parseInt(argument);
+		} catch (Exception e) {
+			return true;
+		}
+		return true;
+	}
+
+	public String getArgument() {
+		return ""+this.value;
+	}
+
 }

@@ -58,7 +58,7 @@ public class FilterCombo extends GuiObject {
 		super();
 		this.filterPoint = filterPoint;
 		this.filter = filter;
-		this.setName(filter.getName() + " [of] " + filterPoint.getName() );
+		this.setName(filter.getName() + " of " + filterPoint.getName() );
 		this.setToolTip("");
 		this.applied = filterPoint.getFilters().contains(filter);
 	}
@@ -80,5 +80,13 @@ public class FilterCombo extends GuiObject {
 	
 	public boolean isApplied(){
 		return this.applied;
+	}
+	
+	public FilterPoint getFilterPoint(){
+		return this.filterPoint;
+	}
+	
+	public Filter getFilter(){
+		return this.filter;
 	}
 }

@@ -60,7 +60,7 @@ public class TaskProcNameFilter extends TaskFilter {
 	}
 	
 	public TaskProcNameFilter(String procName){
-		super("Name Filter", "Checks the process name of the parent of the given task");
+		super("Name", "Checks the process name of the parent of the given task");
 		this.procNamefilter = new ProcNameFilter(procName);
 		
 		this.initWidget();
@@ -104,5 +104,13 @@ public class TaskProcNameFilter extends TaskFilter {
 	 */
 	public String getProcName() {
 		return this.procNamefilter.getProcName();
+	}
+
+	public boolean setArgument(String argument) {
+		return this.procNamefilter.setArgument(argument);
+	}
+
+	public String getArgument() {
+		return this.procNamefilter.getArgument();
 	}
 }

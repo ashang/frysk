@@ -74,6 +74,14 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	SimpleComboBox(Handle handle){
 		super(handle);
 		this.init();
+		
+		CellRendererText cellRendererText = new CellRendererText();
+//		TreeViewColumn nameCol = new TreeViewColumn();
+//		nameCol.packStart(cellRendererText, false);
+//		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		this.packStart(cellRendererText, false);
+		this.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+
 	}
 	
 	SimpleComboBox(){
@@ -90,14 +98,7 @@ public class SimpleComboBox extends ComboBox implements Observer{
 		
 		this.setModel(listStore);
 		
-		CellRendererText cellRendererText = new CellRendererText();
-//		TreeViewColumn nameCol = new TreeViewColumn();
-//		nameCol.packStart(cellRendererText, false);
-//		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		this.packStart(cellRendererText, false);
-		this.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		
-//this.showAll();
+		this.showAll();
 	}
 	
 	public GuiObject getSelectedObject(){

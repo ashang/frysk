@@ -58,14 +58,14 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 	private String procName;
 
 	public ProcNameFilter(){
-		super("Name Filter", "Filters for the proc with the given name ");
+		super("Name", "Filters for the proc with the given name ");
 	//	this.procName = procName;
 		
 		this.initWidget();
 	}
 	
 	public ProcNameFilter(String procName){
-		super("Name Filter", "Filters for the proc with the name " + procName);
+		super("Name", "Filters for the proc with the name " + procName);
 		this.procName = procName;
 		
 		this.initWidget();
@@ -115,4 +115,15 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 		super.load(node);
 		this.setName(node.getAttribute("procName").getValue());
 	}
+
+	public boolean setArgument(String argument) {
+		this.procName = argument;
+		return true;
+	}
+
+	public String getArgument() {
+		return this.procName;
+	}
+	
+	
 }
