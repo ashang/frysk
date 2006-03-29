@@ -1,3 +1,9 @@
+2005-03-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Gui.java (initializePreferences): Added template preference.
+	* glade/frysk_source_prefs.glade: Added template syntax highlighting
+	widgets.
+
 2006-03-29  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java: Update glade

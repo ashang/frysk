@@ -216,7 +216,9 @@ public class CDTParser implements StaticParser {
 			String lineText = line.getText();
 			
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getNameOffset() - line.getOffset());
+			
+			String functionName = arg0.getName() + "(";
 			
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
@@ -224,7 +226,16 @@ public class CDTParser implements StaticParser {
 				
 				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
 				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
+				
+				functionName += lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()) + ", ";
 			}
+			
+			if(functionName.indexOf(",") != -1)
+				functionName = functionName.substring(0, functionName.length() - 2);
+			
+			functionName += ")";
+			
+			line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
 		}
 		
 		public void acceptFunctionReference(IASTFunctionReference arg0) {
@@ -381,6 +392,8 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
 			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
 			
+			String functionName = arg0.getName() + "(";
+			
 			Iterator iter = arg0.getParameters();
 			
 			while(iter.hasNext()){
@@ -388,14 +401,35 @@ public class CDTParser implements StaticParser {
 				
 				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
 				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
+				
+				functionName += lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()) + ", ";
 			}
+			
+			if(functionName.indexOf(",") != -1)
+				functionName = functionName.substring(0, functionName.length() - 2);
+			
+			functionName += ")";
+			
+			line.addTag(DOMTagTypes.FUNCTION_BODY, functionName, 0);
 		}
 		
 		/* TEMPLATES */
-		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {}
-		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {}
-		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {}
-		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {}
+		public void enterTemplateDeclaration(IASTTemplateDeclaration arg0) {
+			
+		}
+		public void enterTemplateInstantiation(IASTTemplateInstantiation arg0) {
+			
+		}
+		public void enterTemplateSpecialization(IASTTemplateSpecialization arg0) {
+			
+		}
+		public void acceptTemplateParameterReference(IASTTemplateParameterReference arg0) {
+			DOMLine line = source.getLineSpanningOffset(arg0.getOffset());
+			if(line == null)
+				return;
+			
+			line.addTag(DOMTagTypes.TEMPLATE, arg0.getName(), arg0.getOffset() - line.getOffset());
+		}
 		
 		/* PREPROCESSOR STUFF */
 		public void enterInclusion(IASTInclusion arg0) {

@@ -180,6 +180,9 @@ public class PreferenceWindow extends Window implements TreeSelectionListener, B
 		
 		sPref = (SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.MACRO);
 		this.initSyntaxPreference(sPref, "macro");
+		
+		sPref = (SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.TEMPLATE);
+		this.initSyntaxPreference(sPref, "template");
 	}
 	
 	private void initSyntaxPreference(SyntaxPreference sPref, String prefix){

@@ -230,14 +230,20 @@ public class DOMLine {
 	public void addTag(String type, String token, int start) {
 		// Check for duplicate tags
 		Iterator elements = this.myElement.getChildren().iterator();
-		
 		while(elements.hasNext()){
 			Element element = (Element) elements.next();
 			
 			int elStart = Integer.parseInt(element.getAttributeValue(DOMTag.LENGTH_ATTR));
 			int elLength = Integer.parseInt(element.getAttributeValue(DOMTag.LENGTH_ATTR));
+			String elType = element.getAttributeValue(DOMTag.TYPE_ATTR);
 			
-			if(start == elStart && token.length() == elLength)
+			// only one function body per line
+			if(type.equals(DOMTagTypes.FUNCTION_BODY) && elType.equals(DOMTagTypes.FUNCTION_BODY))
+				return;
+			
+			// we're more particular with the other tags, only one of each tag
+			// at a given point on the line.
+			if(start == elStart && token.length() == elLength && type.equals(elType))
 				return;
 		}
 
@@ -269,8 +275,10 @@ public class DOMLine {
 		}).iterator();
 		Vector v = new Vector();
 
-		while (iter.hasNext())
-			v.add(new DOMTag((Element) iter.next()));
+		while (iter.hasNext()){
+			Element e = (Element) iter.next();
+			v.add(new DOMTag(e));
+		}
 
 		return v.iterator();
 	}
@@ -307,11 +315,7 @@ public class DOMLine {
 	 * add a tag element to this line
 	 */
 	public void addTag(DOMTag tag) {
-		Element line_tag = new Element(DOMTag.TAG_NODE);
-		line_tag.setAttribute(DOMTag.TYPE_ATTR, tag.getType());
-		line_tag.setAttribute(DOMTag.START_ATTR, ""+tag.getStart());
-		line_tag.setAttribute(DOMTag.LENGTH_ATTR, ""+tag.getLength());
-		this.myElement.addContent(line_tag);
+		this.myElement.addContent(tag.getElement());
 	}
 
 	/**

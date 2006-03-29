@@ -86,14 +86,7 @@ public class SourceBuffer extends TextBuffer {
 	protected static final String INLINE_TAG = "INLINE";
 	protected static final String COMMENT_TAG = "COMMENT";
 	protected static final String MEMBER_TAG = "MEMBER";
-	protected static final String FUNCTION_TAG = "FUNCTION";
-	protected static final String ID_TAG = "ID";
-	protected static final String OPTIMIZED_VAR_TAG = "OPTIMIZED_VAR";
-	protected static final String OUT_OF_SCOPE_VAR_TAG = "OOS_VAR";
-	protected static final String NAMESPACE_TAG = "NAMESPACE";
-	protected static final String KEYWORD_TAG = "TYPE";
-	protected static final String INCLUDE_TAG = "INCLUDE";
-	protected static final String MACRO_TAG = "MACRO";
+
 	protected static final String CURRENT_LINE = "currentLine";
 	protected static final String FOUND_TEXT = "foundText";
 
@@ -121,6 +114,7 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag namespaceTag;
 	private TextTag includeTag;
 	private TextTag macroTag;
+	private TextTag templateTag;
 
 	private StaticParser staticParser;
 
@@ -716,17 +710,21 @@ public class SourceBuffer extends TextBuffer {
 		functions = new Vector();
 		this.currentLine = this.createTag(CURRENT_LINE);
 		this.foundText = this.createTag(FOUND_TEXT);
-		this.functionTag = this.createTag(FUNCTION_TAG);
-		this.variableTag = this.createTag(ID_TAG);
-		this.keywordTag = this.createTag(KEYWORD_TAG);
-		this.globalTag = this.createTag(MEMBER_TAG);
 		this.commentTag = this.createTag(COMMENT_TAG);
-		this.classTag = this.createTag(CLASS_TAG);
-		this.optimizedVarTag = this.createTag(OPTIMIZED_VAR_TAG);
-		this.oosVarTag = this.createTag(OUT_OF_SCOPE_VAR_TAG);
-		this.namespaceTag = this.createTag(NAMESPACE_TAG);
-		this.includeTag = this.createTag(INCLUDE_TAG);
-		this.macroTag = this.createTag(MACRO_TAG);
+		
+		this.functionTag = this.createTag(DOMTagTypes.FUNCTION);
+		this.variableTag = this.createTag(DOMTagTypes.LOCAL_VAR);
+		this.keywordTag = this.createTag(DOMTagTypes.KEYWORD);
+		this.classTag = this.createTag(DOMTagTypes.CLASS_DECL);
+		this.optimizedVarTag = this.createTag(DOMTagTypes.OPTIMIZED_VAR);
+		this.oosVarTag = this.createTag(DOMTagTypes.OUT_OF_SCOPE_VAR);
+		this.namespaceTag = this.createTag(DOMTagTypes.NAMESPACE);
+		this.includeTag = this.createTag(DOMTagTypes.INCLUDE);
+		this.macroTag = this.createTag(DOMTagTypes.MACRO);
+		this.templateTag = this.createTag(DOMTagTypes.TEMPLATE);
+		
+		// TODO: This tag has no corresponding DOM tag
+		this.globalTag = this.createTag(MEMBER_TAG);
 		
 		this.commentTag.setForeground(ColorConverter.colorToHexString(Color.GREEN));
 		
@@ -783,6 +781,9 @@ public class SourceBuffer extends TextBuffer {
 		
 		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.MACRO)).
 				addListener(new TagPreferenceListener(this.macroTag));
+		
+		((SyntaxPreference) PreferenceManager.syntaxHighlightingGroup.getPreference(SyntaxPreferenceGroup.TEMPLATE)).
+				addListener(new TagPreferenceListener(this.templateTag));
 	}
 
 	/**
@@ -861,79 +862,26 @@ public class SourceBuffer extends TextBuffer {
 			
 			Iterator tags = line.getTags();
 			int lineOffset = line.getOffset();
-
+			
 			// Iterator though all the tags on the line
 			while (tags.hasNext()) {
-				DOMTag tag = new DOMTag((Element) tags.next());
+				Element e = (Element) tags.next();
+				DOMTag tag = new DOMTag(e);
 
 				String type = tag.getType();
-
-				if (type.equals(DOMTagTypes.KEYWORD)) {
-					this.applyTag(KEYWORD_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-
-				else if (type.equals(DOMTagTypes.LOCAL_VAR)) {
-					this.applyTag(ID_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-
-				else if (type.equals(DOMTagTypes.OPTIMIZED_VAR)) {
-					this.applyTag(OPTIMIZED_VAR_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-
-				else if (type.equals(DOMTagTypes.OUT_OF_SCOPE_VAR)) {
-					this.applyTag(OUT_OF_SCOPE_VAR_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-
-				else if (type.equals(DOMTagTypes.CLASS_DECL)) {
-					this.applyTag(SourceBuffer.CLASS_TAG, this
-							.getIter(lineOffset + tag.getStart()), this
-							.getIter(lineOffset + tag.getStart()
-									+ tag.getLength()));
-				}
-
-				else if (type.equals(DOMTagTypes.FUNCTION)) {
-					this.applyTag(FUNCTION_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-
-				else if (type.equals(DOMTagTypes.FUNCTION_BODY)) {
-					TextIter start = this.getIter(lineOffset + tag.getStart());
-					TextIter end = this.getIter(lineOffset + tag.getStart()
-							+ tag.getLength());
-					String text = this.getText(start, end, false);
-					this.applyTag(FUNCTION_TAG, start, end);
-					this.createMark(text + "_FUNC", start, true);
-					this.functions.add(text + "_FUNC");
-				}
 				
-				else if (type.equals(DOMTagTypes.NAMESPACE)) {
-					this.applyTag(NAMESPACE_TAG, this.getIter(lineOffset
+				if (type.equals(DOMTagTypes.FUNCTION_BODY)) {
+					String funcName = tag.getToken();
+					this.functions.add(funcName);
+					this.createMark(funcName, this.getLineIter(line.getLineNum()), true);
+				}
+				else{
+					this.applyTag(type, this.getIter(lineOffset
 							+ tag.getStart()), this.getIter(lineOffset
 							+ tag.getStart() + tag.getLength()));
 				}
 				
-				else if (type.equals(DOMTagTypes.INCLUDE)) {
-					this.applyTag(INCLUDE_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-				
-				else if (type.equals(DOMTagTypes.MACRO)) {
-					this.applyTag(MACRO_TAG, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
-				}
-
-			} // end tags.hasNext()
+			}
 
 			Iterator inlines = line.getInlines();
 
@@ -941,7 +889,7 @@ public class SourceBuffer extends TextBuffer {
 				DOMInlineInstance func = new DOMInlineInstance(
 						(Element) inlines.next());
 
-				this.applyTag(FUNCTION_TAG, this.getIter(lineOffset
+				this.applyTag(DOMTagTypes.FUNCTION, this.getIter(lineOffset
 						+ func.getStart()), this.getIter(lineOffset
 						+ func.getStart() + func.getEnd()));
 			}

@@ -1,3 +1,24 @@
+2006-03-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* InlineBuffer.java (createTags): Now uses DOMTagTypes as tag names,
+	skips of FUNCTION_BODY tags.
+	* SourceBuffer.java (init): Now initializes tags using DOMTagTypes,
+	also added listener for template syntax highlighting.
+	(createTags): Now uses type of tag to create TextTag, FUNCTION_BODY
+	tags no longer trigger syntax highlighting, rather they add the
+	function to the interal vector of funcions.
+	* SourceWindow.java (SourceWindow): Reordered initialization steps
+	so that events are the last thing to be initialized.
+	(doScrollToFunction): Removed "_FUNC" postfix.
+	(populateFunctionBox): No longer tries to remove "_FUNC" postfix.
+	* cparser/CDTParser.java 
+	(ParserCallBack.enterFuncitonBody): Now adds a FUNCTION tag
+	for syntax highlighting and a FUNCTION_BODY tag containing the
+	complete parameter list for jump-to-function purposes.
+	(ParserCallBack.enterMethodBody): Ditto.
+	(ParserCallBack.acceptTemplateParameterReference): Implemented.
+	* prefs/SyntaxPreferenceGroup.java (TEMPLATE): Added.
+
 2006-03-28  Rick Moseley  <rmoseley@redhat.com>
 	* cparser/CDTparser.java: Added Frysk comment header.
 	* cparser/Token.java: Ditto.

@@ -239,31 +239,16 @@ public class InlineBuffer extends SourceBuffer {
                 DOMTag tag = new DOMTag((Element) tags.next());
                 
                 String type = tag.getType();
-                
-                if(type.equals(DOMTagTypes.KEYWORD)){
-                    this.applyTag(KEYWORD_TAG, 
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
+
+                if(type.equals(DOMTagTypes.FUNCTION_BODY)){
+                	// do nothing
                 }
-                
-                else if(type.equals(DOMTagTypes.LOCAL_VAR)){
-                    this.applyTag(ID_TAG, 
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
+                else{
+					this.applyTag(type, 
+							this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
+							this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
                 }
-                
-                else if(type.equals(DOMTagTypes.CLASS_DECL)){
-                    this.applyTag(SourceBuffer.CLASS_TAG, 
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
-                }
-                
-                else if(type.equals(DOMTagTypes.FUNCTION)){
-                    this.applyTag(FUNCTION_TAG, 
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart()),
-                            this.getIter(line.getLineNum() - this.getFirstLine(), tag.getStart() + tag.getLength()));
-                }
-                
+               
             } // end tags.hasNext()
             
             Iterator inlines = line.getInlines();
@@ -271,7 +256,7 @@ public class InlineBuffer extends SourceBuffer {
             while(inlines.hasNext()){
                 DOMInlineInstance func = new DOMInlineInstance((Element) inlines.next());
                 
-                this.applyTag(FUNCTION_TAG,
+                this.applyTag(DOMTagTypes.FUNCTION,
                         this.getIter(line.getLineNum() - this.getFirstLine(), func.getStart()),
                         this.getIter(line.getLineNum() - this.getFirstLine(), func.getStart() + func.getEnd()));
             }

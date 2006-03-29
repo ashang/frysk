@@ -1,3 +1,13 @@
+2006-03-29  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMLine.java (addTag): Now checks for multiple occurances of
+	FUNCTION_BODY on the same line, allows two tags of different types
+	to exist at the same spot on a line.
+	(addTag): Now adds the element from the DOMTag, rather than copying
+	the attributes one by one.
+	* DOMTag.java (getToken): Added.
+	* DOMTagTypes.java (TEMPLATE): Added.
+
 2006-03-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMTagTypes.java (MACRO): Added.

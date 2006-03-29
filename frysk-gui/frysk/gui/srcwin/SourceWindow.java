@@ -214,22 +214,23 @@ public class SourceWindow extends Window{
 				.addAccelGroup(ag);
 
 		this.tips = new ToolTips();
-
+		
 		this.populateStackBrowser(this.stack);
+		this.populateFunctionBox();
 		
 		this.createActions(ag);
 		this.createMenus();
 		this.createToolBar();
 		this.createSearchBar();
+		
+		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX))
+				.setActive(0);
+		
 		this.attachEvents();
 
 		this.watchView = new VariableWatchView();
 		ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
 		sw.add(this.watchView);
-		
-		this.populateFunctionBox();
-		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX))
-				.setActive(0);
 
 		this.showAll();
 		this.glade.getWidget(FIND_BOX).hideAll();
@@ -827,7 +828,7 @@ public class SourceWindow extends Window{
 	}
 
 	private void doScrollTofunction(String text){
-		this.view.scrollToFunction(text + "_FUNC");
+		this.view.scrollToFunction(text);
 	}
 	
 	private void switchToSourceMode(){
@@ -1098,7 +1099,7 @@ public class SourceWindow extends Window{
 		Vector funcs = this.view.getFunctions();
 		TreeIter iter = newModel.appendRow();
 		for (int i = 0; i < funcs.size(); i++) {
-			newModel.setValue(iter, col, ((String) funcs.get(i)).split("_")[0]);
+			newModel.setValue(iter, col, (String) funcs.get(i));
 			if (i != funcs.size() - 1)
 				iter = newModel.appendRow();
 		}

@@ -149,6 +149,13 @@ public class DOMTag {
 		return false;
 	}
 	
+	/**
+	 * @return The token for this tag
+	 */
+	public String getToken(){
+		return this.myElement.getAttributeValue(TOKEN_ATTR);
+	}
+	
 	protected Element getElement(){
 		return this.myElement;
 	}
