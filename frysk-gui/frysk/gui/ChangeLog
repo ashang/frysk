@@ -1,5 +1,9 @@
 2006-03-28  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/frysk_create_session_druid.glade: Added as an
+	extraction from procpop.glade
+	* glade/procpop.glade: Removed Session Druid.
+
 	* Gui.java (Gui): Added source lookup for 
 	seperate session glade. Need to refactor this
 	into a seperate glade manager.
