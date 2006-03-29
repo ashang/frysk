@@ -2,7 +2,8 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
-<widget class="GtkDialog" id="StartDebugSessionDialog">
+
+<widget class="GtkDialog" id="SessionDruid">
   <property name="border_width">6</property>
   <property name="width_request">600</property>
   <property name="height_request">480</property>
@@ -33,7 +34,7 @@
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
 
 	  <child>
-	    <widget class="GtkButton" id="startDebugSessionDialogBackButton">
+	    <widget class="GtkButton" id="sessionDruid_backButton">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -46,7 +47,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkButton" id="startDebugSessionDialogNextButton">
+	    <widget class="GtkButton" id="sessionDruid_nextButton">
 	      <property name="visible">True</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
@@ -59,7 +60,7 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkButton" id="startDebugSessionFinishButton">
+	    <widget class="GtkButton" id="sessionDruid_finishButton">
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -141,7 +142,7 @@
       </child>
 
       <child>
-	<widget class="GtkNotebook" id="startDebugSessionNoteBook">
+	<widget class="GtkNotebook" id="sessionDruid_sessionNoteBook">
 	  <property name="border_width">6</property>
 	  <property name="visible">True</property>
 	  <property name="show_tabs">False</property>
@@ -157,7 +158,7 @@
 	      <property name="spacing">6</property>
 
 	      <child>
-		<widget class="GtkRadioButton" id="radiobutton1">
+		<widget class="GtkRadioButton" id="sessionDruid_newSessionButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="label" translatable="yes">_New debug Session</property>
@@ -182,10 +183,10 @@
 		  <property name="spacing">12</property>
 
 		  <child>
-		    <widget class="GtkRadioButton" id="radiobutton3">
+		    <widget class="GtkRadioButton" id="sessionDruid_debugExecutableButton">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">_Debug executable</property>
+		      <property name="label" translatable="yes">_Debug Executable</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -201,7 +202,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkFileChooserButton" id="filechooserbutton1">
+		    <widget class="GtkFileChooserButton" id="sessionDruid_execChooser">
 		      <property name="visible">True</property>
 		      <property name="title" translatable="yes">Select A File</property>
 		      <property name="action">GTK_FILE_CHOOSER_ACTION_OPEN</property>
@@ -225,7 +226,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkRadioButton" id="radiobutton2">
+		<widget class="GtkRadioButton" id="sessionDruid_previousDebugButton">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="label" translatable="yes">_Previous debug session</property>
@@ -235,7 +236,7 @@
 		  <property name="active">False</property>
 		  <property name="inconsistent">False</property>
 		  <property name="draw_indicator">True</property>
-		  <property name="group">radiobutton1</property>
+		  <property name="group">sessionDruid_newSessionButton</property>
 		</widget>
 		<packing>
 		  <property name="padding">0</property>
@@ -273,7 +274,7 @@
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTreeView" id="treeview1">
+			    <widget class="GtkTreeView" id="sessionDruid_previousSessionsListView">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="headers_visible">False</property>
@@ -304,9 +305,9 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label68">
+	    <widget class="GtkLabel" id="label91">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">label68</property>
+	      <property name="label" translatable="yes"></property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -382,7 +383,7 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkComboBox" id="combobox1">
+			    <widget class="GtkComboBox" id="sessionDruid_hostComboBox">
 			      <property name="visible">True</property>
 			      <property name="items" translatable="yes">localhost</property>
 			      <property name="add_tearoffs">False</property>
@@ -481,7 +482,7 @@
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTreeView" id="addedProcsTreeView">
+			    <widget class="GtkTreeView" id="sessionDruid_addedProcsTreeView">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="headers_visible">False</property>
@@ -538,7 +539,7 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkButton" id="button6">
+			<widget class="GtkButton" id="sessionDruid_addProcessGroupButton">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -617,7 +618,7 @@
 		      </child>
 
 		      <child>
-			<widget class="GtkButton" id="button5">
+			<widget class="GtkButton" id="sessionDruid_removeProcessGroupButton">
 			  <property name="visible">True</property>
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -793,7 +794,7 @@
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTreeView" id="procWiseTreeView">
+			    <widget class="GtkTreeView" id="sessionDruid_procWiseTreeView">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="headers_visible">False</property>
@@ -834,9 +835,9 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label69">
+	    <widget class="GtkLabel" id="label95">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">label69</property>
+	      <property name="label" translatable="yes"></property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -897,7 +898,7 @@
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkTreeView" id="treeview5">
+		    <widget class="GtkTreeView" id="sessionDruid_unexpectedExitTreeView">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="headers_visible">False</property>
@@ -924,9 +925,9 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label70">
+	    <widget class="GtkLabel" id="label97">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">label70</property>
+	      <property name="label" translatable="yes"></property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -987,7 +988,7 @@
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkTreeView" id="treeview6">
+		    <widget class="GtkTreeView" id="sessionDruid_tagSetsTreeView">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="headers_visible">False</property>
@@ -1014,9 +1015,9 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkLabel" id="label71">
+	    <widget class="GtkLabel" id="label99">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">label71</property>
+	      <property name="label" translatable="yes"></property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">False</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -1045,4 +1046,5 @@
     </widget>
   </child>
 </widget>
+
 </glade-interface>

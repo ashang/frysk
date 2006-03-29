@@ -62,11 +62,11 @@ public class CreateFryskSessionDruid extends Dialog {
 	Button finishButton;
 	
 	public CreateFryskSessionDruid(LibGlade glade){
-		super(glade.getWidget("StartDebugSessionDialog").getHandle());
+		super(glade.getWidget("SessionDruid").getHandle());
 		
-		this.notebook = (Notebook) glade.getWidget("startDebugSessionNoteBook");
+		this.notebook = (Notebook) glade.getWidget("sessionDruid_sessionNoteBook");
 	
-		this.nextButton = (Button) glade.getWidget("startDebugSessionDialogNextButton");
+		this.nextButton = (Button) glade.getWidget("sessionDruid_nextButton");
 		this.nextButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
@@ -75,7 +75,7 @@ public class CreateFryskSessionDruid extends Dialog {
 			}
 		});
 
-		this.backButton = (Button) glade.getWidget("startDebugSessionDialogBackButton");
+		this.backButton = (Button) glade.getWidget("sessionDruid_backButton");
 		this.backButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
@@ -84,12 +84,12 @@ public class CreateFryskSessionDruid extends Dialog {
 			}
 		});
 		
-		this.finishButton = (Button) glade.getWidget("startDebugSessionFinishButton");
+		this.finishButton = (Button) glade.getWidget("sessionDruid_finishButton");
 		
-		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("procWiseTreeView").getHandle());
+		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle());
 		this.setUpCurrentPage();
 		
-		this.addedProcsTreeView = (TreeView) glade.getWidget("addedProcsTreeView");
+		this.addedProcsTreeView = (TreeView) glade.getWidget("sessionDruid_addedProcsTreeView");
 		
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(procWiseTreeView);
