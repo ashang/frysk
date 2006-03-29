@@ -78,7 +78,10 @@ public class WindowManager implements Saveable{
 		
 	}
 	
-	public void initWindows(LibGlade glade) throws IOException{
+	// Eventually we want to move away from one big glade file
+	// Renamed initWindows to below, as we migrate each window
+	// from the massive glade file
+	public void initLegacyProcpopWindows(LibGlade glade) throws IOException{
 		this.splashScreen = new SplashScreenWindow();
 		this.mainWindow = new MainWindow(glade);
 		this.aboutWindow = new AboutWindow(glade);
@@ -86,11 +89,16 @@ public class WindowManager implements Saveable{
 		this.prefsWindow = new PreferencesWindow(glade);
 		this.customeObserverDialog = new CustomObserverDialog(glade);
 		//this.programAddWindow = new ProgramAddWindow(glade);
-		this.createFryskSessionDruid = new CreateFryskSessionDruid(glade);
 		this.observersDialog = new ObserversDialog(glade);
 		this.editObserverDialog = new EditObserverDialog(glade);
 		this.menuBar = new MenuBar(glade);
 	}
+	
+
+	public void initSessionDruidWindow(LibGlade session) throws IOException{
+		this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
+	}
+
 
 	public void save(Preferences prefs) {
 		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));

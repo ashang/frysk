@@ -2,6 +2,11 @@
 
 	* WindowManager.java: Find new CreateSession druid.
 
+	(initSessionDruidWindow): New.
+	(initLegacyProcpopWindows): Rename from initWindow. Temporary
+	until we can refactor WindowManager to properly handle
+	multiple glade file sources.
+
 2006-03-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Added a function to return
