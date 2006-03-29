@@ -118,6 +118,11 @@ public class ProcWiseDataModel {
 		return selectedDC;
 	}
 	
+	public void setSelected(TreeIter iter, boolean type)
+	{
+		treeStore.setValue(iter,getSelectedDC(), type);
+	}
+	
 	class ProcCreatedObserver implements Observer{
     	public void update (Observable o, Object obj){
     		final Proc proc = (Proc) obj;

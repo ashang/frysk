@@ -50,9 +50,10 @@ public class ProcWiseTreeView extends TreeView {
 
 	public ProcWiseDataModel psDataModel = new ProcWiseDataModel();
 	
-	public ProcWiseTreeView(Handle handle){
+	public ProcWiseTreeView(Handle handle, ProcWiseDataModel model){
 		super(handle);
-		this.mountDataModel(psDataModel);
+		this.mountDataModel(model);
+		psDataModel = model;
 	}
 	
 	
