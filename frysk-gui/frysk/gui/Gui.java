@@ -92,10 +92,12 @@ public class Gui
     implements LifeCycleListener, Saveable
 {
     LibGlade glade;
+    LibGlade create_session_glade;
     
     private static Logger errorLogFile = null;
     private static final String SETTINGSFILE = ".settings";
     private static final String GLADE_FILE = "procpop.glade";
+    private static final String CREATE_SESSION_GLADE = "frysk_create_session_druid.glade";
 
     public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
@@ -145,21 +147,23 @@ public class Gui
 	String searchPath = new String();
 	for (int i = 0; i < glade_dirs.length; i++) {
 	    try {// command line glade_dir
-		glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
+	    	glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
+	    	create_session_glade = new LibGlade (glade_dirs[i] + CREATE_SESSION_GLADE, this);
 	    }
 	    catch (FileNotFoundException missingFile) {
-		searchPath += glade_dirs[i] + "\n";
-		if(i == glade_dirs.length -1){
-		    throw new FileNotFoundException ("Glade file not found in path " + searchPath); //$NON-NLS-1$
-		}else{
-		    continue;
-		}
+	    	searchPath += glade_dirs[i] + "\n";
+	    	if(i == glade_dirs.length -1){
+	    		throw new FileNotFoundException ("Glade file not found in path " + searchPath); //$NON-NLS-1$
+	    	}else{
+	    		continue;
+	    	}
 	    }
 	    break;
 	}
 
 	try {
-	    WindowManager.theManager.initWindows (glade);
+	    WindowManager.theManager.initLegacyProcpopWindows(glade);
+	    WindowManager.theManager.initSessionDruidWindow(create_session_glade);
 	} catch (IOException e) {
 	    throw e;
 	}

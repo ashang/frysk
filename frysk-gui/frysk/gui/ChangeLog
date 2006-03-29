@@ -1,5 +1,9 @@
 2006-03-28  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* Gui.java (Gui): Added source lookup for 
+	seperate session glade. Need to refactor this
+	into a seperate glade manager.
+	
 	* druid: Added namespace
 	* StartDebugSession.java: Deleted.
 	* druid/CreateFryskSessionDruid.java: Added and
