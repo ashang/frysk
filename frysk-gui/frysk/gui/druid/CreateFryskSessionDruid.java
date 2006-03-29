@@ -45,7 +45,9 @@ import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
-import org.gnu.gtk.TreeView;
+import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 
@@ -56,16 +58,80 @@ public class CreateFryskSessionDruid extends Dialog {
 	Notebook notebook;
 	
 	ProcWiseTreeView procWiseTreeView;
-	TreeView addedProcsTreeView;
+	AddedProcTreeView addedProcsTreeView;
 	Button nextButton;
 	Button backButton;
 	Button finishButton;
 	
+	Button addProcessGroupButton;
+	Button removeProcessGroupButton;
+	
 	public CreateFryskSessionDruid(LibGlade glade){
 		super(glade.getWidget("SessionDruid").getHandle());
 		
-		this.notebook = (Notebook) glade.getWidget("sessionDruid_sessionNoteBook");
+		getDruidStructureControls(glade);
+		getProcessSelectionControls(glade);
+		
+
+    }
 	
+	private void getProcessSelectionControls(LibGlade glade) {
+		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle());
+		this.addedProcsTreeView = new AddedProcTreeView(glade.getWidget("sessionDruid_addedProcsTreeView").getHandle());
+		this.setUpCurrentPage();
+		
+		//this.addedProcsTreeView = (TreeView) glade.getWidget("sessionDruid_addedProcsTreeView");
+		
+		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+		sizeGroup.addWidget(procWiseTreeView);
+		sizeGroup.addWidget(addedProcsTreeView);
+		
+		this.addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
+		this.removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
+		
+		this.addProcessGroupButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					TreePath[] tp = procWiseTreeView.getSelection().getSelectedRows();
+					TreeStore ts = (TreeStore) procWiseTreeView.getModel();
+					if (tp.length > 0)
+					{
+						for(int i=0; i<tp.length;i++)
+						{
+							TreeIter item = ts.getIter(tp[i].toString());
+							System.out.println("Selected: " + ts.getValue(item, procWiseTreeView.psDataModel.getNameDC())+
+									" current selectedDC too: " + ts.getValue(item, procWiseTreeView.psDataModel.getSelectedDC()));
+														ts.setValue(item, procWiseTreeView.psDataModel.getSelectedDC(), true);
+							System.out.println("Selected: " + ts.getValue(item, procWiseTreeView.psDataModel.getNameDC())+
+									" now modified selectedDC too: " + ts.getValue(item, procWiseTreeView.psDataModel.getSelectedDC()));
+							
+							
+						}
+					}
+					
+				}
+				
+			}
+			
+		});
+		
+		this.removeProcessGroupButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					System.out.println("Got a remove process group Event");
+				}
+				
+			}
+			
+		});
+
+	}
+	
+	private void getDruidStructureControls(LibGlade glade)
+	{
+		
+		this.notebook = (Notebook) glade.getWidget("sessionDruid_sessionNoteBook");
+		
 		this.nextButton = (Button) glade.getWidget("sessionDruid_nextButton");
 		this.nextButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
@@ -86,15 +152,8 @@ public class CreateFryskSessionDruid extends Dialog {
 		
 		this.finishButton = (Button) glade.getWidget("sessionDruid_finishButton");
 		
-		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle());
-		this.setUpCurrentPage();
-		
-		this.addedProcsTreeView = (TreeView) glade.getWidget("sessionDruid_addedProcsTreeView");
-		
-		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
-		sizeGroup.addWidget(procWiseTreeView);
-		sizeGroup.addWidget(addedProcsTreeView);
-    }
+	}
+	
 	
 	private void nextPage(){
 		this.notebook.setCurrentPage(this.notebook.getCurrentPage()+1);

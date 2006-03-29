@@ -6,6 +6,10 @@
 
 2006-03-29  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java: Added listeners for
+	process selection. 
+	* druid/AddedProcTreeView.java: Added.
+
 	* druid/CreateFryskSessionDruid.java: Update glade
 	widget handles to reflect session glade refactor.
 	* glade/frysk_create_sesison_druid.glade: Refactor
