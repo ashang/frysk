@@ -47,9 +47,12 @@ import org.gnu.gtk.TreeViewColumn;
 
 public class ProcWiseTreeView extends TreeView {
 	
+
+	public ProcWiseDataModel psDataModel = new ProcWiseDataModel();
+	
 	public ProcWiseTreeView(Handle handle){
 		super(handle);
-		this.mountDataModel(new ProcWiseDataModel());
+		this.mountDataModel(psDataModel);
 	}
 	
 	

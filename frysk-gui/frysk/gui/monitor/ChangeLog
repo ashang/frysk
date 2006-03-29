@@ -1,3 +1,10 @@
+2006-03-29  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProcWiseDataModel.java: Added selectedDC to enable
+	Druid inspection of what processes are selected.
+	* ProcWiseTreeView.java: Added psDataModel declaration.
+	
+
 2006-03-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/ProcNameFilter.java: Changed names so they match

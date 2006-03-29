@@ -44,6 +44,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
@@ -54,10 +55,11 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 
 /**
- * @author swagiaal
+ * @author swagiaal, pmuldoon
  *
  * A data model that groups PID's by executable
- * name
+ * name. Also has a selected component that allows
+ * the druid to define whether a process is selected
  */
 public class ProcWiseDataModel {
 
@@ -65,6 +67,7 @@ public class ProcWiseDataModel {
 
 	private DataColumnString nameDC;
 	private DataColumnObject objectDC;
+	private DataColumnBoolean selectedDC;
 	
 	private ProcCreatedObserver procCreatedObserver;
 	private ProcDestroyedObserver procDestroyedObserver;
@@ -73,13 +76,14 @@ public class ProcWiseDataModel {
 	
 	private Hashtable iterHash;
 	
-	ProcWiseDataModel(){
+	public ProcWiseDataModel(){
 		this.iterHash = new Hashtable();
 		
 		this.nameDC = new DataColumnString();
 		this.objectDC = new DataColumnObject();
+		this.selectedDC = new DataColumnBoolean();
 		
-		this.treeStore = new TreeStore(new DataColumn[] {this.nameDC, this.objectDC});
+		this.treeStore = new TreeStore(new DataColumn[] {this.nameDC, this.objectDC, this.selectedDC});
 
 		this.refreshTimer = new TimerEvent(0, 5000){
 			public void execute() {
@@ -96,9 +100,10 @@ public class ProcWiseDataModel {
 		Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
 	}
 
-	private void setRow(TreeIter row, String name, ProcData data){
+	private void setRow(TreeIter row, String name, ProcData data, boolean selected){
 		treeStore.setValue(row, nameDC, name);
 		treeStore.setValue(row, objectDC, data);
+		treeStore.setValue(row, selectedDC, selected);
 	}
 
 	public DataColumnString getNameDC() {
@@ -107,6 +112,10 @@ public class ProcWiseDataModel {
 
 	public DataColumnObject getPathDC() {
 		return objectDC;
+	}
+	
+	public DataColumnBoolean getSelectedDC() {
+		return selectedDC;
 	}
 	
 	class ProcCreatedObserver implements Observer{
@@ -122,18 +131,18 @@ public class ProcWiseDataModel {
 //						System.out.println(" ProcCreatedObserver.update() first element");
 						parent = treeStore.appendRow(null);
 						iterHash.put(proc.getCommand(), parent);
-						setRow(parent, proc.getCommand() + "\t" + proc.getPid(), new ProcData(proc));
+						setRow(parent, proc.getCommand() + "\t" + proc.getPid(), new ProcData(proc),false);
 					}else{
 						TreeIter iter = treeStore.appendRow(parent);
 						if(((ProcData)treeStore.getValue(parent, objectDC)).getProc() != null){
 //							System.out.println(" ProcCreatedObserver.update() second element");
 							Proc oldProc = ((ProcData)treeStore.getValue(parent, objectDC)).getProc();
-    						setRow(parent, proc.getCommand(), new ProcData(null));
-    						setRow(iter, ""+oldProc.getPid(), new ProcData(oldProc));
+    						setRow(parent, proc.getCommand(), new ProcData(null),false);
+    						setRow(iter, ""+oldProc.getPid(), new ProcData(oldProc),false);
     						iter = treeStore.appendRow(parent);
     					}
 						//setRow(iter, "", ""+proc.getPid(), proc.getExe());
-						setRow(iter, ""+proc.getPid(), new ProcData(proc));
+						setRow(iter, ""+proc.getPid(), new ProcData(proc),false);
 					}
 				 }
 			});
@@ -177,7 +186,7 @@ public class ProcWiseDataModel {
 						if(n == 1){
 							TreeIter iter = parent.getChild(0);
 							Proc oldProc = ((ProcData)treeStore.getValue(iter, objectDC)).getProc();
-    						setRow(parent, oldProc.getCommand() + "\t" + oldProc.getPid(), new ProcData(oldProc));
+    						setRow(parent, oldProc.getCommand() + "\t" + oldProc.getPid(), new ProcData(oldProc),treeStore.getValue(iter, selectedDC));
     						
 							treeStore.removeRow(iter);
 						}
