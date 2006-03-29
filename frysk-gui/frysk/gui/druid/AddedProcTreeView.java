@@ -8,17 +8,20 @@ import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
-
 import frysk.gui.monitor.ProcWiseDataModel;
 
 public class AddedProcTreeView extends TreeView {
 	
-	public ProcWiseDataModel psDataModel = new ProcWiseDataModel();
+	public ProcWiseDataModel psDataModel = null; 
 	private TreeModelFilter procFilter;
-	public AddedProcTreeView(Handle handle){
+	
+	public AddedProcTreeView(Handle handle, ProcWiseDataModel model){
 		super(handle);
-		this.mountDataModel(psDataModel);
+		this.mountDataModel(model);
+		this.psDataModel = model;
 	}
+	
+	
 	
 	
 	private void mountDataModel(ProcWiseDataModel dataModel){
@@ -30,7 +33,7 @@ public class AddedProcTreeView extends TreeView {
 		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , dataModel.getNameDC());
 		this.appendColumn(nameCol);
 		
-		this.procFilter = new TreeModelFilter(psDataModel.getModel());
+		this.procFilter = new TreeModelFilter(dataModel.getModel());
 		
 		procFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
 
@@ -44,10 +47,11 @@ public class AddedProcTreeView extends TreeView {
 			}
 			
 		});
+
 		
 		this.setModel(procFilter);
 	}
 	
-	
+
 		
 }

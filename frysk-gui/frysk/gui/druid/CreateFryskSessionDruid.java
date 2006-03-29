@@ -51,6 +51,7 @@ import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 
+import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
 
 public class CreateFryskSessionDruid extends Dialog {
@@ -58,7 +59,9 @@ public class CreateFryskSessionDruid extends Dialog {
 	Notebook notebook;
 	
 	ProcWiseTreeView procWiseTreeView;
+	ProcWiseDataModel dataModel;
 	AddedProcTreeView addedProcsTreeView;
+	
 	Button nextButton;
 	Button backButton;
 	Button finishButton;
@@ -76,8 +79,9 @@ public class CreateFryskSessionDruid extends Dialog {
     }
 	
 	private void getProcessSelectionControls(LibGlade glade) {
-		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle());
-		this.addedProcsTreeView = new AddedProcTreeView(glade.getWidget("sessionDruid_addedProcsTreeView").getHandle());
+		this.dataModel = new ProcWiseDataModel();
+		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle(),this.dataModel);
+		this.addedProcsTreeView = new AddedProcTreeView(glade.getWidget("sessionDruid_addedProcsTreeView").getHandle(),this.dataModel);
 		this.setUpCurrentPage();
 		
 		//this.addedProcsTreeView = (TreeView) glade.getWidget("sessionDruid_addedProcsTreeView");
@@ -85,6 +89,7 @@ public class CreateFryskSessionDruid extends Dialog {
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(procWiseTreeView);
 		sizeGroup.addWidget(addedProcsTreeView);
+		
 		
 		this.addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
 		this.removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
@@ -99,12 +104,7 @@ public class CreateFryskSessionDruid extends Dialog {
 						for(int i=0; i<tp.length;i++)
 						{
 							TreeIter item = ts.getIter(tp[i].toString());
-							System.out.println("Selected: " + ts.getValue(item, procWiseTreeView.psDataModel.getNameDC())+
-									" current selectedDC too: " + ts.getValue(item, procWiseTreeView.psDataModel.getSelectedDC()));
-														ts.setValue(item, procWiseTreeView.psDataModel.getSelectedDC(), true);
-							System.out.println("Selected: " + ts.getValue(item, procWiseTreeView.psDataModel.getNameDC())+
-									" now modified selectedDC too: " + ts.getValue(item, procWiseTreeView.psDataModel.getSelectedDC()));
-							
+							procWiseTreeView.psDataModel.setSelected(item,true);
 							
 						}
 					}

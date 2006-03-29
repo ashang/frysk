@@ -1,3 +1,13 @@
+2006-03-29  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (buttonEvent): On button add
+	event, change the select component of the tree.
+	* druid/AddedProcTreeView.java (AddedProcTreeView): Change to accept
+	an external model and mount that.
+	(mountDataModel): Add filter listener for DataModel row change events.
+	Refilter on change event.
+
+
 2005-03-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Gui.java (initializePreferences): Added template preference.
