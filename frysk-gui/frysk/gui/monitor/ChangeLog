@@ -10,6 +10,7 @@
 	* FiltersTable.java (FilterRow): added support for showing
 	and retrieving filter arguments.
 	Added support for applying filters. 
+	(part of fix for bz 2455).
 	* observers/TaskForkedObserver.java: Ditto.
 
 2006-03-28  Phil Muldoon  <pmuldoon@redhat.com>
