@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.monitor.LiaisonItem;
 import frysk.proc.Task;
 
 public class PrintTask extends TaskAction {
@@ -55,7 +56,7 @@ public class PrintTask extends TaskAction {
 		System.out.println("Task State : " + task); //$NON-NLS-1$
 	}
 
-	public Action getCopy() {
+	public LiaisonItem getCopy() {
 		return new PrintTask(this);
 	}
 	

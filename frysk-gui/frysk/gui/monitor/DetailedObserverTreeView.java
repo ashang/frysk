@@ -148,7 +148,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		while (iterator.hasNext()) {
 			FilterPoint filterPoint = (FilterPoint) iterator.next();
 //			System.out.println("DetailedObserverTreeView.removeObserverRoot() FilterPoint " + filterPoint.getName());
-			this.removeList(filterPoint.getFilters());
+			this.removeList(filterPoint.getItems());
 		}
 		removeList(observer.getFilterPoints());
 		
@@ -184,7 +184,7 @@ public class DetailedObserverTreeView extends TreeView implements Observer {
 		Iterator iterator = observer.getFilterPoints().iterator();
 		while (iterator.hasNext()) {
 			FilterPoint filterPoint = (FilterPoint) iterator.next();
-			this.addList(filterPoint, filterPoint.getFilters());
+			this.addList(filterPoint, filterPoint.getItems());
 		}
 
 		//actionPoints

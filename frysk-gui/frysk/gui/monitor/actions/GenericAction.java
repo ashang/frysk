@@ -55,8 +55,6 @@ public abstract class GenericAction extends Action {
 		super(other);
 	}
 	
-	public abstract Action getCopy();
-
 	public abstract void execute(ObserverRoot observer);
 	
 

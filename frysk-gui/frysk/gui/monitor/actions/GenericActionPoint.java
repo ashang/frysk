@@ -63,11 +63,15 @@ public class GenericActionPoint extends ActionPoint {
 	}
 
 	public void runActions(ObserverRoot observer){
-		Iterator iterator = this.actions.iterator();
+		Iterator iterator = this.items.iterator();
 		while (iterator.hasNext()) {
 			GenericAction action = (GenericAction) iterator.next();
 			action.execute(observer);
 		}
+	}
+
+	public ObservableLinkedList getApplicableItems() {
+		return ActionManager.theManager.getGenericActions();
 	}
 	
 	

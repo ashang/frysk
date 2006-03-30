@@ -71,7 +71,7 @@ public class ActionsWidget extends VBox{
 		this.addActionButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					Action action = ((Action)applicableActionsListView.getSelectedObject()).getCopy();
+					Action action = (Action) ((Action)applicableActionsListView.getSelectedObject()).getCopy();
 					((ActionPoint)actionPointListView.getSelectedObject()).addAction(action);
 				}
 			}
@@ -81,7 +81,7 @@ public class ActionsWidget extends VBox{
 		this.removeActionButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					Action action = ((Action)addedActionsListView.getSelectedObject()).getCopy();
+					Action action = (Action) ((Action)addedActionsListView.getSelectedObject()).getCopy();
 					((ActionPoint)actionPointListView.getSelectedObject()).removeAction(action);
 				}
 			}

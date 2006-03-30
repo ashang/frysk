@@ -44,10 +44,9 @@ import java.util.List;
 
 import org.jdom.Element;
 
-import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.LiaisonPoint;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.SaveableXXX;
 
 /**
  * FilterPoints provide a flexible interface between Observers
@@ -58,7 +57,7 @@ import frysk.gui.monitor.SaveableXXX;
  * Clients of observers add desired Filters to the correct
  * filter points.
  * */
-public abstract class FilterPoint extends GuiObject implements SaveableXXX {
+public abstract class FilterPoint extends LiaisonPoint {
 	protected ObservableLinkedList filters;
 	
 	public FilterPoint(){
@@ -76,11 +75,6 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 		this.filters = new ObservableLinkedList(other.filters); // Do copy filters
 	}
 	
-	/**
-	 * Retrieves a list of applicable filters from the FilterManager.
-	 * */
-	public abstract ObservableLinkedList getApplicableFilters();
-	
 	public void addFilter(Filter filter){
 		this.filters.add(filter);
 	}
@@ -91,7 +85,7 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 		}
 	}
 	
-	public ObservableLinkedList getFilters(){
+	public ObservableLinkedList getItems(){
 		return this.filters;
 	}
 	
@@ -101,7 +95,7 @@ public abstract class FilterPoint extends GuiObject implements SaveableXXX {
 		//filters
 		Element filtersXML = new Element("filters");
 		
-		Iterator iterator = this.getFilters().iterator();
+		Iterator iterator = this.getItems().iterator();
 		while (iterator.hasNext()) {
 			Filter filter = (Filter) iterator.next();
 			if(filter.shouldSaveObject()){

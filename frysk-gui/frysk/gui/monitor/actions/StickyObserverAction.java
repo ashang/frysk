@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
@@ -67,7 +68,7 @@ public class StickyObserverAction extends TaskAction {
 		observer.apply(task.getProc());
 	}
 
-	public Action getCopy() {
+	public LiaisonItem getCopy() {
 		return new StickyObserverAction(this);
 	}
 

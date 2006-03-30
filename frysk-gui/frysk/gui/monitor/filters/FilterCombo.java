@@ -60,7 +60,7 @@ public class FilterCombo extends GuiObject {
 		this.filter = filter;
 		this.setName(filter.getName() + " of " + filterPoint.getName() );
 		this.setToolTip("");
-		this.applied = filterPoint.getFilters().contains(filter);
+		this.applied = filterPoint.getItems().contains(filter);
 	}
 	
 	public void apply(){

@@ -3,7 +3,6 @@ package frysk.gui.monitor;
 import java.util.ArrayList;
 
 import frysk.gui.common.dialogs.WarnDialog;
-import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.observers.TaskExecObserver;
 import frysk.gui.monitor.observers.TaskForkedObserver;
@@ -39,7 +38,7 @@ public class ProgramObserver {
 				newExecObserver.apply(newProc);
 			}
 
-			public Action getCopy() {
+			public LiaisonItem getCopy() {
 				return null;
 			}
 		};

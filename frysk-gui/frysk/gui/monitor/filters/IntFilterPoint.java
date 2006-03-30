@@ -71,4 +71,8 @@ public class IntFilterPoint extends FilterPoint {
 	public ObservableLinkedList getApplicableFilters() {
 		return FilterManager.theManager.getProcFilters();
 	}
+
+	public ObservableLinkedList getApplicableItems() {
+		return FilterManager.theManager.getIntFilters();
+	}
 }

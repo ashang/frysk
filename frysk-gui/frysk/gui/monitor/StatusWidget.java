@@ -66,7 +66,6 @@ import org.gnu.gtk.event.MouseListener;
 
 import com.redhat.ftk.Stripchart;
 
-import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.GenericAction;
 import frysk.gui.monitor.observers.ObserverRoot;
 
@@ -278,7 +277,7 @@ public class StatusWidget extends VBox{
 			area.appendEvent (eventId);
 		}
 		
-		public Action getCopy() {
+		public LiaisonItem getCopy() {
 			return null;
 		}
 	}

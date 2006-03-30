@@ -37,28 +37,24 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor;
 
-import frysk.gui.monitor.LiaisonItem;
-import frysk.gui.srcwin.SourceWindowFactory;
-import frysk.proc.Task;
 
-public class ShowSourceWin extends TaskAction {
+public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
+	protected Runnable runnable;
 	
-	public ShowSourceWin() {
-		super("Source (EXAMPLE ONLY)", "Show a source window.\n This is an example only and does not reflect the state of your program"); //$NON-NLS-1$ //$NON-NLS-2$
+	public LiaisonItem() {
+		super();
 	}
-	
-	public ShowSourceWin(ShowSourceWin other) {
+
+	public LiaisonItem(LiaisonItem other) {
 		super(other);
 	}
 
-	public void execute(Task task) {
-		SourceWindowFactory.createSourceWindow(task);
+	public LiaisonItem(String name, String toolTip) {
+		super(name, toolTip);
 	}
-
-	public LiaisonItem getCopy() {
-		return new ShowSourceWin(this);
-	}
+	
+	public abstract LiaisonItem getCopy();
 	
 }

@@ -42,6 +42,7 @@ package frysk.gui.monitor.actions;
 import java.util.logging.Level;
 
 import frysk.gui.monitor.EventLogger;
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
@@ -55,7 +56,7 @@ public class LogAction extends GenericAction {
 		super(other);
 	}
 
-	public Action getCopy() {
+	public LiaisonItem getCopy() {
 		return new LogAction(this);
 	}
 

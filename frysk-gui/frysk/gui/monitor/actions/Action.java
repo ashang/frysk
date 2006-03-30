@@ -39,10 +39,10 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.LiaisonItem;
 
 
-public abstract class Action extends GuiObject {
+public abstract class Action extends LiaisonItem {
 	protected Runnable runnable;
 	
 	public Action() {
@@ -56,7 +56,5 @@ public abstract class Action extends GuiObject {
 	public Action(String name, String toolTip) {
 		super(name, toolTip);
 	}
-	
-	public abstract Action getCopy();
-	
+		
 }

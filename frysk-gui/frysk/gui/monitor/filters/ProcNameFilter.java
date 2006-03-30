@@ -43,6 +43,7 @@ import org.jdom.Element;
 
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.proc.Proc;
 
@@ -94,7 +95,7 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 		return false;
 	}
 	
-	public Filter getCopy() {
+	public LiaisonItem getCopy() {
 		return new ProcNameFilter(this);
 	}
 

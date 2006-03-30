@@ -89,9 +89,9 @@ public class TestPrototypeCopying extends TestCase{
 			assertEquals("FilterPoint type", aFilterPoint.getClass(), bFilterPoint.getClass());
 		//	assertEquals("Number of filters ", 0, bFilterPoint.getFilters().size());
 		//	XXX: should filters be copied ?
-			assertEquals("Number of filters ", aFilterPoint.getFilters().size(), bFilterPoint.getFilters().size());
-			Iterator aFilterIter = aFilterPoint.getFilters().iterator();
-			Iterator bFilterIter = bFilterPoint.getFilters().iterator();
+			assertEquals("Number of filters ", aFilterPoint.getItems().size(), bFilterPoint.getItems().size());
+			Iterator aFilterIter = aFilterPoint.getItems().iterator();
+			Iterator bFilterIter = bFilterPoint.getItems().iterator();
 			while(aFilterIter.hasNext()){
 				Filter aFilter = (Filter) aFilterIter.next();
 				Filter bFilter = (Filter) bFilterIter.next();

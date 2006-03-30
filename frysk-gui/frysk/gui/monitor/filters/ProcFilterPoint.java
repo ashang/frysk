@@ -69,7 +69,7 @@ public class ProcFilterPoint extends FilterPoint {
 		return true;
 	}
 
-	public ObservableLinkedList getApplicableFilters() {
+	public ObservableLinkedList getApplicableItems() {
 		return FilterManager.theManager.getProcFilters();
 	}
 }

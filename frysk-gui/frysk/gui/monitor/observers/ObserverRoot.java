@@ -264,7 +264,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			Iterator i = this.getFilterPoints().iterator();
 			while (i.hasNext()) {
 				FilterPoint filterPoint = (FilterPoint) i.next();
-				Iterator j = filterPoint.getFilters().iterator();
+				Iterator j = filterPoint.getItems().iterator();
 				while (j.hasNext()) {
 					Filter filter = (Filter) j.next();
 //					System.out.println(" ObserverRoot.getCurrentFilterCombos() filter: " + filter.getName());

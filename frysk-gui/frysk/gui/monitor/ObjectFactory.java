@@ -83,7 +83,7 @@ public class ObjectFactory {
 			java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
 			loadedObject =  constr.newInstance(new Object[] {});
 		} catch (Exception e) {
-			//System.out.println("ObjectFactory.getObject() " + type);
+			System.out.println("ObjectFactory.getObject() " + type);
 			e.printStackTrace();
 		}
 
@@ -116,7 +116,7 @@ public class ObjectFactory {
 		path = path.replace(' ', '_');
 		
 //		System.out.println("\n==============saved node==========");
-		Thread.dumpStack();
+//		Thread.dumpStack();
 //		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 //		try {
 //			outputter.output(node, System.out);

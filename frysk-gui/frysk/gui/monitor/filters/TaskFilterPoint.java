@@ -69,7 +69,8 @@ public class TaskFilterPoint extends FilterPoint {
 		return true;
 	}
 
-	public ObservableLinkedList getApplicableFilters() {
+	public ObservableLinkedList getApplicableItems() {
 		return FilterManager.theManager.getTaskFilters();
 	}
+
 }

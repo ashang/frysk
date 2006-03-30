@@ -42,6 +42,7 @@ package frysk.gui.monitor.filters;
 import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.DynamicWidget.IntCallback;
 
@@ -78,7 +79,7 @@ public class IntFilter extends Filter implements SaveableXXX{
 		});
 	}
 	
-	public Filter getCopy() {
+	public LiaisonItem getCopy() {
 		return new IntFilter(this);
 	}
 

@@ -111,7 +111,7 @@ public class FilterWidget extends VBox{
 		Iterator i = this.currentObserver.getFilterPoints().iterator();
 		while(i.hasNext()){
 			FilterPoint filterPoint = (FilterPoint)i.next();
-			Iterator j = filterPoint.getFilters().iterator();
+			Iterator j = filterPoint.getItems().iterator();
 			while (j.hasNext()) {
 				Filter filter = (Filter) j.next();
 				FilterLineWidget filterLine = new FilterLineWidget(currentObserver);

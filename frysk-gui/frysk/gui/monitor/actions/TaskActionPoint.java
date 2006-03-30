@@ -67,11 +67,15 @@ public class TaskActionPoint extends ActionPoint{
 	 * @param task the task to perform the actions on.
 	 * */
 	public void runActions(Task task){
-		Iterator iter = this.actions.iterator();
+		Iterator iter = this.items.iterator();
 		while(iter.hasNext()){
 			TaskAction action = (TaskAction) iter.next();
 			action.execute(task);
 		}
+	}
+
+	public ObservableLinkedList getApplicableItems() {
+		return ActionManager.theManager.getTaskActions();
 	}
 
 }

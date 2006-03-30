@@ -1,3 +1,35 @@
+2006-03-30  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/FilterManager.java: Added getIntFilters(), and a
+	list of intFilters.
+	* actions/GenericAction.java: removed abstract getCopy().
+	* filters/FilterPoint.java: Changed to inheret from
+	LiaisonPoint, and removed redundent code.
+	* actions/ActionPoint.java: Ditto.
+	* actions/Action.java: Refactored to inheret form
+	LiaisonItem, and removed redundent code.
+	* filters/Filter.java: Ditto.
+	* ObjectFactory.java: Removed debugoutput.
+	* actions/GenericActionPoint.java: implemented getApplicableItems 
+	* actions/TaskActionPoint.java: Ditto.
+	* ActionsWidget.java: Changed to work with refactored
+	actions.
+	* actions/PrintTask.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/Stop.java: Ditto.
+	* filters/FilterCombo.java: Ditto.
+	* filters/IntFilter.java: Ditto.
+	* filters/ProcNameFilter.java: Ditto.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* observers/ObserverRoot.java: Ditto.
+	* FilterWidget.java: Ditto.
+	* FilterLineWidget.java: Ditto.
+	* DetailedObserverTreeView.java: Ditto.
+	* StatusWidget.java: Ditto.
+	* ProgramObserver.java: Ditto.
+
 2006-03-29  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseTreeView.java (ProcWiseTreeView): Change to

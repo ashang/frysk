@@ -124,7 +124,7 @@ public class FilterLineWidget extends HBox{
 	private void privateSetFilterPoint(FilterPoint filterPoint){
 		this.filterPoint = filterPoint;
 		this.filtersComboBox.clear();
-		this.filtersComboBox.watchLinkedList(filterPoint.getApplicableFilters());
+		this.filtersComboBox.watchLinkedList(filterPoint.getApplicableItems());
 		this.filtersComboBox.add(this.spaceHolder, 0);
 	}
 	

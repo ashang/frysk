@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.monitor.LiaisonItem;
 import frysk.proc.Proc;
 
 public class Resume extends ProcAction {
@@ -58,7 +59,7 @@ public class Resume extends ProcAction {
 	    throw new RuntimeException ("not applicable"); //$NON-NLS-1$
 	}
 
-	public Action getCopy() {
+	public LiaisonItem getCopy() {
 		return new Resume(this);
 	}
 

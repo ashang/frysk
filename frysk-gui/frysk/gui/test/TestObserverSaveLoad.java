@@ -134,7 +134,7 @@ public class TestObserverSaveLoad extends TestCase{
 		ObjectFactory.theFactory.saveObject(taskFilterPoint, node);
 		
 		FilterPoint filterPoint = (FilterPoint) ObjectFactory.theFactory.loadObject(node);
-		Iterator i = filterPoint.getFilters().iterator();
+		Iterator i = filterPoint.getItems().iterator();
 		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"1");
 		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"2");
 		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"3");

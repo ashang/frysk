@@ -66,7 +66,7 @@ public class FilterComboFactory {
 		Iterator i = observer.getFilterPoints().iterator();
 		while (i.hasNext()) {
 			FilterPoint filterPoint = (FilterPoint) i.next();
-			Iterator j = filterPoint.getApplicableFilters().iterator();
+			Iterator j = filterPoint.getApplicableItems().iterator();
 			while (j.hasNext()) {
 				Filter filter = (Filter) j.next();
 				combos.add(new FilterCombo(filterPoint, filter));

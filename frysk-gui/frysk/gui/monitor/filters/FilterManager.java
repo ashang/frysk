@@ -54,18 +54,25 @@ public class FilterManager extends Observable {
 	
 	private ObservableLinkedList procFilters;
 	private ObservableLinkedList taskFilters;
+	private ObservableLinkedList intFilters;
 	
 	public FilterManager(){
 		this.taskFilters = new ObservableLinkedList();
 		this.procFilters = new ObservableLinkedList();
+		this.intFilters = new ObservableLinkedList();
 		this.initFilterList();
 	}
 	
 	private void initFilterList() {
 		this.addProcFilterPrototype(new ProcNameFilter(""));
 		this.addTaskFilterPrototype(new TaskProcNameFilter(""));
+		this.addIntFilterPrototype(new IntFilter());
 	}
 	
+	private void addIntFilterPrototype(IntFilter filter) {
+		this.intFilters.add(filter);
+	}
+
 	/**
 	 * Returns a copy of the prototype given.
 	 * A list of available prototypes can be 
@@ -73,7 +80,7 @@ public class FilterManager extends Observable {
 	 * instantiated.
 	 * */
 	public Filter getFilterCopy(Filter prototype){
-		return prototype.getCopy();
+		return (Filter) prototype.getCopy();
 	}
 	
 
@@ -94,6 +101,10 @@ public class FilterManager extends Observable {
 
 	public ObservableLinkedList getProcFilters() {
 		return this.procFilters;
+	}
+
+	public ObservableLinkedList getIntFilters() {
+		return this.intFilters;
 	}
 
 	public ObservableLinkedList getTaskFilters() {

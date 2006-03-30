@@ -40,6 +40,7 @@
 package frysk.gui.monitor.actions;
 
 // import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.LiaisonItem;
 import frysk.proc.Proc;
 
 public class Stop extends ProcAction {
@@ -58,7 +59,7 @@ public class Stop extends ProcAction {
 	throw new RuntimeException ("XXX: mechanism for stopping a process/task."); //$NON-NLS-1$
     }
 
-	public Action getCopy() {
+	public LiaisonItem getCopy() {
 		return new Stop(this);
 	}
 }

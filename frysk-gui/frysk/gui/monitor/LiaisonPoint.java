@@ -37,28 +37,92 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor;
 
-import frysk.gui.monitor.LiaisonItem;
-import frysk.gui.srcwin.SourceWindowFactory;
-import frysk.proc.Task;
+import java.util.Iterator;
+import java.util.List;
 
-public class ShowSourceWin extends TaskAction {
+import org.jdom.Element;
+
+public abstract class LiaisonPoint extends GuiObject implements SaveableXXX {
+protected ObservableLinkedList items;
 	
-	public ShowSourceWin() {
-		super("Source (EXAMPLE ONLY)", "Show a source window.\n This is an example only and does not reflect the state of your program"); //$NON-NLS-1$ //$NON-NLS-2$
+	public LiaisonPoint(){
+		super();
+		this.items = new ObservableLinkedList();
 	}
 	
-	public ShowSourceWin(ShowSourceWin other) {
+	public LiaisonPoint(String name, String toolTip){
+		super(name, toolTip);
+		this.items = new ObservableLinkedList();
+	}
+	
+	public LiaisonPoint(LiaisonPoint other){
 		super(other);
-	}
-
-	public void execute(Task task) {
-		SourceWindowFactory.createSourceWindow(task);
-	}
-
-	public LiaisonItem getCopy() {
-		return new ShowSourceWin(this);
+		this.items = new ObservableLinkedList(other.items); // Do copy items
 	}
 	
+	/**
+	 * Retrieves a list of applicable items from the apporpriet Manager.
+	 * */
+	public abstract ObservableLinkedList getApplicableItems();
+	
+	public void addItem(LiaisonItem item){
+		this.items.add(item);
+	}
+	
+	public void removeItem(LiaisonItem item){
+		if(!this.items.remove(item)){
+			throw new IllegalArgumentException("the passed item ["+ item +"] is not a member of this Liason point");
+		}
+	}
+	
+	public ObservableLinkedList getItems(){
+		return this.items;
+	}
+	
+	public void save(Element node) {
+		super.save(node);
+		
+		//items
+		Element itemsXML = new Element("items");
+		
+		Iterator iterator = this.getItems().iterator();
+		while (iterator.hasNext()) {
+			LiaisonItem item = (LiaisonItem) iterator.next();
+			if(item.shouldSaveObject()){
+				Element itemXML = new Element("item");
+				ObjectFactory.theFactory.saveObject(item, itemXML);
+				itemsXML.addContent(itemXML);	
+			}
+		}
+		node.addContent(itemsXML);
+	}
+	
+	public void load(Element node) {
+		super.load(node);
+		
+		//items
+		Element itemsXML = node.getChild("items");
+		List list = (List) itemsXML.getChildren("item");
+		Iterator i = list.iterator();
+		
+		LiaisonItem item;
+		while (i.hasNext()){
+			item = (LiaisonItem) ObjectFactory.theFactory.loadObject((Element) i.next());
+			this.addItem(item);
+		}
+	}
+	
+	public String toString(){
+		String string = "";
+		
+		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
+		Iterator iterator = this.items.iterator();
+		while (iterator.hasNext()) {
+			LiaisonItem item = (LiaisonItem) iterator.next();
+			string += "    " + item + "\n";
+		}
+		return string;
+	}
 }

@@ -43,10 +43,9 @@ import org.gnu.gtk.Widget;
 import org.jdom.Element;
 
 import frysk.gui.monitor.DynamicWidget;
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.SaveableXXX;
+import frysk.gui.monitor.LiaisonItem;
 
-public abstract class Filter extends GuiObject implements SaveableXXX {
+public abstract class Filter extends LiaisonItem {
 	
 	/**
 	 * The widget that is used to edit the parameters of this
@@ -78,8 +77,6 @@ public abstract class Filter extends GuiObject implements SaveableXXX {
 		return this.widget;
 	}
 
-	public abstract Filter getCopy();
-	
 	public void save(Element node){
 		super.save(node);
 	}
