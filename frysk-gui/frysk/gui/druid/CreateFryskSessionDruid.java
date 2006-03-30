@@ -46,8 +46,8 @@ import org.gnu.gtk.Notebook;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreePath;
-import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 
@@ -97,14 +97,61 @@ public class CreateFryskSessionDruid extends Dialog {
 		this.addProcessGroupButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
+
 					TreePath[] tp = procWiseTreeView.getSelection().getSelectedRows();
-					TreeStore ts = (TreeStore) procWiseTreeView.getModel();
+					TreeModelFilter ts = (TreeModelFilter) procWiseTreeView.getModel();
+
 					if (tp.length > 0)
 					{
 						for(int i=0; i<tp.length;i++)
 						{
-							TreeIter item = ts.getIter(tp[i].toString());
-							procWiseTreeView.psDataModel.setSelected(item,true);
+							TreePath unfiltered = ts.convertPathToChildPath(tp[i]);
+							TreeIter item2 = procWiseTreeView.psDataModel.getModel().getIter(unfiltered);
+							
+							// Check if he clicks on a process with children. If so, move the children over
+							if (item2.getChildCount() > 0)
+							{
+								procWiseTreeView.psDataModel.setSelected(item2,true);
+								System.out.println("This one has children");
+								int children = item2.getChildCount();
+								for (int z=0; z<children;z++)
+									procWiseTreeView.psDataModel.setSelected(item2.getChild(z),true);
+								return;
+							}
+							else
+							{
+								// Check if the node has a parent. 
+								// TreePath.up() seems to have some usses
+								// iter.hasParent() seems to have some issues
+								// Check Path directly.
+								TreePath parent_path = item2.getPath();
+								if (parent_path.toString().split(":").length > 1)
+								{
+									// we are a child that has a parent
+									// move sibilings and parent
+	
+									parent_path.up();
+									
+									// Save parent iter
+									TreeIter parent_iter = procWiseTreeView.psDataModel.getModel().getIter(parent_path);
+
+									// Check if he clicks on a process with children. If so, move the children over
+									if (parent_iter.getChildCount() > 0)
+									{
+										procWiseTreeView.psDataModel.setSelected(parent_iter,true);
+										System.out.println("This one has children");
+										int children = parent_iter.getChildCount();
+										for (int z=0; z<children;z++)
+											procWiseTreeView.psDataModel.setSelected(parent_iter.getChild(z),true);
+										return;
+									}
+								}
+								else
+								{
+									
+									procWiseTreeView.psDataModel.setSelected(item2,true);
+								}
+							}
 							
 						}
 					}

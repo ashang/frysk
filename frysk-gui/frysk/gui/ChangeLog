@@ -1,3 +1,9 @@
+2006-03-30  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java: Cast to 	TreeModelFilter, 
+	not TreeStore. Convert to unfiltered TreePath.	Add in corner cases 
+	for druid process selection.
+
 2006-03-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestPrototypeCopying.java: Changed to follow
