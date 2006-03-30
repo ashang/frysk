@@ -3,7 +3,6 @@ HTML = \
 	build/index.html \
 	documentation/index.html \
 	getinvolved/index.html \
-	links/index.html \
 	people/index.html \
 	questions/index.html \
 	usecases/index.html \
