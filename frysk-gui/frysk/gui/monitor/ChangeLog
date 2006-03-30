@@ -1,3 +1,8 @@
+2006-03-30  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProcWiseTreeView.java (mountDataModel): Added a filter
+	to hide any selected items (so they cannot be selected again).
+
 2006-03-30  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/FilterManager.java: Added getIntFilters(), and a
