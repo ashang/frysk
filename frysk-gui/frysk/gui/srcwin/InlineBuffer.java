@@ -271,14 +271,16 @@ public class InlineBuffer extends SourceBuffer {
 				continue;
 			}
 			
-			if(list.getStartLine() >= this.declaration.getStartingLine())
-				this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine() - this.getFirstLine() + 1, list.getStartCol()),
-						this.getIter(list.getEndLine() - this.getFirstLine() + 1, list.getEndCol()));
-			else
+			if(list.getStartLine() >= this.declaration.getStartingLine()){
+//				this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine() - this.getFirstLine() + 1, list.getStartCol()),
+//						this.getIter(list.getEndLine() - this.getFirstLine() + 1, list.getEndCol()));
+			}
+			else{
 				// We have to get the first iter this way since we may have a header at the beginning of the
 				// file for hidden inlined levels that shouldn't be displayed
-				this.applyTag(COMMENT_TAG, this.getLineIter(this.getFirstLine() - this.declaration.getStartingLine()),
-						this.getIter(list.getEndLine() - this.getFirstLine() + 1, list.getEndCol()));
+//				this.applyTag(COMMENT_TAG, this.getLineIter(this.getFirstLine() - this.declaration.getStartingLine()),
+//						this.getIter(list.getEndLine() - this.getFirstLine() + 1, list.getEndCol()));
+			}
 			
 			list = list.getNextComment();
 		}

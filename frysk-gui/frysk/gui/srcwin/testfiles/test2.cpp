@@ -2,6 +2,9 @@
 
 using namespace std;
 
+int
+n;
+
 /*
  * This function just prints stuff from another function
  */

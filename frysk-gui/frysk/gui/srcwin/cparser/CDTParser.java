@@ -123,7 +123,7 @@ public class CDTParser implements StaticParser {
 				new NullLogService());
 		
 		if(!parser.parse())
-			System.err.println("Some errors were found during parse");
+			System.err.println("Quick Parse: Error found on line " + parser.getLastErrorLine());
 		
 		ParserCallBack callback2 = new ParserCallBack();
 		IParser parser2 = ParserFactory.createParser(
@@ -136,7 +136,7 @@ public class CDTParser implements StaticParser {
 				new NullLogService());
 		
 		if(!parser2.parse())
-			System.err.println("Some errors found during parse");
+			System.err.println("Complete Parse: Error found on line " + parser2.getLastErrorLine());
 		
 		/*
 		 * The CDT Parser does not parse out comments for some reason,
@@ -179,57 +179,149 @@ public class CDTParser implements StaticParser {
 	class ParserCallBack implements ISourceElementRequestor{
 
 		public void acceptVariable(IASTVariable arg0) {
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
+			// Don't assume the type is on the same line as the name
+			DOMLine typeLine = source.getLineSpanningOffset(arg0.getStartingOffset());
+			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+			if(typeLine == null || nameLine == null)
 				return;
 			
-			String lineText = line.getText();
+			String typeText = typeLine.getText();
+			String nameText = nameLine.getText();
 			
-			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
+			typeLine.addTag(DOMTagTypes.KEYWORD, typeText.substring(arg0.getStartingOffset() - typeLine.getOffset(), arg0.getNameOffset() - typeLine.getOffset()), arg0.getStartingOffset() - typeLine.getOffset());
+			nameLine.addTag(DOMTagTypes.LOCAL_VAR, nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length()), arg0.getNameOffset() - nameLine.getOffset());
 		}
 
 		public void acceptFunctionDeclaration(IASTFunction arg0) {
-			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
+			// The return type of the function may not be on the same line as the name
+			DOMLine line = source.getLine(arg0.getStartingLine());
+			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+			if(line == null || nameLine == null)
 				return;
 			
 			String lineText = line.getText();
+			String nameText = nameLine.getText();
 			
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.FUNCTION, lineText.substring(arg0.getNameOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset() + arg0.getName().length()), arg0.getNameOffset() - line.getOffset());
-
+			nameLine.addTag(DOMTagTypes.FUNCTION, nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length()), arg0.getNameOffset() - nameLine.getOffset());
+			
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
-			
-				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
-				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
+				
+				DOMLine typeLine = null, paramLine = null;
+				String typeText = "";
+				
+				/*
+				 * Just like we didn't assume that the return type and name were on the
+				 * same line, we don't assume that the param types and names are on the
+				 * same line or that all the parameters are on the same line.
+				 * 
+				 * At the same time though we want to be reasonably efficient if they are.
+				 */
+				if(param.getStartingLine() != nameLine.getLineNum()){
+					typeLine = source.getLine(param.getStartingLine());
+					typeText = typeLine.getText();
+				}
+				else{
+					typeLine = nameLine;
+					typeText = nameText;
+				}
+	
+				// There may not be a parameter name in a function delcaration
+				if(param.getNameOffset() != -1){
+					System.out.println("Making type and name tag");
+					/*
+					 * Perform compairasons relative to the parameter type line, so that 
+					 * if the parameters are both on the same line we still get a little
+					 * better performance.
+					 */
+					if(param.getNameLineNumber() != typeLine.getLineNum()){
+						paramLine = source.getLine(param.getNameLineNumber());
+					}
+					else{
+						paramLine = typeLine;
+					}
+					
+					typeLine.addTag(DOMTagTypes.KEYWORD, typeText.substring(param.getStartingOffset() - typeLine.getOffset(), param.getNameOffset() - typeLine.getOffset()), param.getStartingOffset() - typeLine.getOffset());
+					paramLine.addTag(DOMTagTypes.LOCAL_VAR, param.getName(), param.getNameOffset() - paramLine.getOffset());
+				}
+				// There is no parameter name, so only make a tag for the keyword
+				else{
+					System.out.println("Only making type tag");
+					/*
+					 * TODO: As of right now, it seems that whenever the parameter
+					 * name doesn't exist, param.getEndingOffset() is 0, which makes
+					 * it impossible to determine the end of this tag. When this is 
+					 * fixed uncommment this line
+					 */
+//					typeLine.addTag(DOMTagTypes.KEYWORD, typeText.substring(param.getStartingOffset() - typeLine.getOffset(), param.getEndingOffset() - typeLine.getOffset()), param.getStartingOffset() - typeLine.getOffset());
+				}
 			}
 		}
 		
 		public void enterFunctionBody(IASTFunction arg0) {
+			// The return type of the function may not be on the same line as the name
 			DOMLine line = source.getLineSpanningOffset(arg0.getStartingOffset());
-			if(line == null)
+			DOMLine nameLine = source.getLineSpanningOffset(arg0.getNameOffset());
+			if(line == null || nameLine == null){
 				return;
+			}
 			
 			String lineText = line.getText();
+			String nameText = nameLine.getText();
 			
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			line.addTag(DOMTagTypes.FUNCTION, arg0.getName(), arg0.getNameOffset() - line.getOffset());
+			nameLine.addTag(DOMTagTypes.FUNCTION, nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length()), arg0.getNameOffset() - nameLine.getOffset());
 			
+			// start building the full name of the function for jump-to purposes
 			String functionName = arg0.getName() + "(";
 			
 			Iterator iter = arg0.getParameters();
 			while(iter.hasNext()){
 				IASTParameterDeclaration param = (IASTParameterDeclaration) iter.next();
 				
-				line.addTag(DOMTagTypes.KEYWORD, lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset()), param.getStartingOffset() - line.getOffset());
-				line.addTag(DOMTagTypes.LOCAL_VAR, lineText.substring(param.getNameOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()), param.getNameOffset() - line.getOffset());
+				DOMLine typeLine = null, paramLine = null;
+				String typeText = "";
 				
-				functionName += lineText.substring(param.getStartingOffset() - line.getOffset(), param.getNameOffset() - line.getOffset() + param.getName().length()) + ", ";
+				/*
+				 * Just like we didn't assume that the return type and name were on the
+				 * same line, we don't assume that the param types and names are on the
+				 * same line or that all the parameters are on the same line.
+				 * 
+				 * At the same time though we want to be reasonably efficient if they are.
+				 */
+				if(param.getStartingLine() != nameLine.getLineNum()){
+					typeLine = source.getLineSpanningOffset(param.getStartingOffset());
+					typeText = typeLine.getText();
+				}
+				else{
+					typeLine = nameLine;
+					typeText = nameText;
+				}
+				
+				/*
+				 * Perform compairasons relative to the parameter type line, so that 
+				 * if the parameters are both on the same line we still get a little
+				 * better performance.
+				 */
+				if(param.getEndingLine() != typeLine.getLineNum()){
+					paramLine = source.getLineSpanningOffset(param.getEndingOffset());
+				}
+				else{
+					paramLine = typeLine;
+				}
+				
+				String type = typeText.substring(param.getStartingOffset() - typeLine.getOffset(), param.getNameOffset() - typeLine.getOffset());
+				String name = param.getName();
+				
+				typeLine.addTag(DOMTagTypes.KEYWORD, type, param.getStartingOffset() - typeLine.getOffset());
+				paramLine.addTag(DOMTagTypes.LOCAL_VAR, name, param.getNameOffset() - paramLine.getOffset());
+				
+				functionName += type + " " + name + ", ";
 			}
 			
+			// Trim the trailing ',' off the function name if it's there
 			if(functionName.indexOf(",") != -1)
 				functionName = functionName.substring(0, functionName.length() - 2);
 			

@@ -1,3 +1,19 @@
+2006-03-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (createTags): Commented out section for adding
+	comment texttags, is still broken in some corner cases. Will leave
+	disabled until fix is in place.
+	* InlineBuffer.java (createTags): Ditto.
+	* SourceWindowFactory.java (createSourceWindow): Changed executable
+	lines for file test2.cpp due to edits.
+	* cparser/CDTParser.java (ParserCallBack.acceptVariable):
+	No longer assumes that the variable name and it's type are on the 
+	same line.
+	(ParserCallBack.acceptFunctionDeclaration): Ditto, also assumes
+	that not all parameters are on the same line.
+	(enterFunctionBody): Ditto.
+	* testfiles/test2.cpp: Added varaible declaration that spans two lines.
+
 2006-03-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* InlineBuffer.java (createTags): Now uses DOMTagTypes as tag names,

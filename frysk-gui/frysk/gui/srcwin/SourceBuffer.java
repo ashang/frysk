@@ -877,8 +877,8 @@ public class SourceBuffer extends TextBuffer {
 				}
 				else{
 					this.applyTag(type, this.getIter(lineOffset
-							+ tag.getStart()), this.getIter(lineOffset
-							+ tag.getStart() + tag.getLength()));
+						+ tag.getStart()), this.getIter(lineOffset
+						+ tag.getStart() + tag.getLength()));
 				}
 				
 			}
@@ -899,8 +899,8 @@ public class SourceBuffer extends TextBuffer {
 		CommentList list = (CommentList) comments.get(this.scope.getData().getFileName());
 		
 		while(list != null){
-			this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine(), list.getStartCol()),
-					this.getIter(list.getEndLine(), list.getEndCol()));			
+//			this.applyTag(COMMENT_TAG, this.getIter(list.getStartLine(), list.getStartCol()),
+//					this.getIter(list.getEndLine(), list.getEndCol()));			
 			
 			list = list.getNextComment();
 		}

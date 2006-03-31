@@ -153,7 +153,7 @@ public class SourceWindowFactory {
                 BufferedReader reader = null;
 				int line = 1;
 				int offset = 0;
-				int[] execLines = new int[] {0,0,0,0,0,0,0,1,0,0,0,1,0,0};
+				int[] execLines = new int[] {0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0};
 					try {
 						reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test2.cpp")));
 					} catch (FileNotFoundException e2) {
@@ -301,7 +301,7 @@ public class SourceWindowFactory {
                     reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test6.cpp")));
                     line = 1;
                     offset = 0;
-                    execLines = new int[100];
+                    execLines = new int[1000];
                     while(reader.ready()){
                         String text = reader.readLine()+"\n";
                         source.addLine(line, text, !text.startsWith("//"), false, offset, BigInteger.valueOf(255));
