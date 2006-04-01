@@ -88,33 +88,40 @@ tree</a>.
 <dd>
 
 With the release of Fedora Core 5 it is largely possible to build and
-run <em>frysk</em> using the distributed RPMs.  Just note:
+run <em>frysk</em> using the distributed RPMs.  Just note the
+following:
 
 <ul>
 
 <li>The distributed kernel and its upstream counterpart both have a
-bug where ptracing of a multi-threaded programs that make execve calls
-will result in that program being killed.<br> The test
-<tt>frysk2130/strace-clone-exec.sh</tt> checks for this.  To fix:
+bug where ptracing a multi-threaded program that make execve calls
+causes that program to be killed.  The test
+<tt>frysk2130/strace-clone-exec.sh</tt> is checking for this.  To fix:
+
 <ul>
 <li>Download and unpack the kernel
 <pre>
-$ wget http://download.fedora.redhat.com/pub/fedora/linux/core/updates/5/SRPMS/kernel-`uname -r`.src.rpm
+$ wget http://download.fedora.redhat.com/pub/fedora/linux\
+/core/updates/5/SRPMS/kernel-`uname -r`.src.rpm
 $ rpm -ivh kernel-`uname -r`.src.rpm
 </pre>
-
+</li>
 <li>Add the patch <a
  href="linux-2.6-strace-clone-exec.patch">linux-2.6-strace-clone-exec.patch</a>
  to the SOURCES directory; and apply the patch <a
  href="fc5-kernel-spec.patch">fc5-kernel-spec.patch</a> to
  <tt>SPECS/kernel-2.6.spec</tt>.
-
+</li>
 <li>Build and install a new kernel:
 <pre>
 $ rpmbuild -ba kernel-2.6.spec
-$ rpm -ivh ../blah/blah </pre>
+$ rpm -ivh ../blah/blah
+</pre>
+</li>
 </ul>
-Thanks to Wu Zhou for these notes.</li>
+
+Thanks to Wu Zhou for these notes.
+</li>
 
 <li>Either <tt>selinux</tt> should be disabled, or its database
 updated.  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt> behave weird;
