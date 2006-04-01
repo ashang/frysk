@@ -112,9 +112,9 @@ $ rpm -ivh kernel-`uname -r`.src.rpm
  href="fc5-kernel-spec.patch">fc5-kernel-spec.patch</a> to
  <tt>SPECS/kernel-2.6.spec</tt>.
 </li>
-<li>Build and install a new kernel:
+<li>Build and install a new kernel with something like:
 <pre>
-$ rpmbuild -ba kernel-2.6.spec
+$ rpmbuild -ba --target=i686 kernel-2.6.spec
 $ rpm -ivh ../blah/blah
 </pre>
 </li>
