@@ -1,0 +1,50 @@
+diff -Nru -p linux-2.6.15.ppc64/kernel/ptrace.c linux-2.6.15.wz/kernel/ptrace.c
+--- linux-2.6.15.ppc64/kernel/ptrace.c	2006-03-30 06:38:38.000000000 +0800
++++ linux-2.6.15.wz/kernel/ptrace.c	2006-03-30 06:46:36.000000000 +0800
+@@ -57,10 +57,6 @@ void ptrace_untrace(task_t *child)
+ 			signal_wake_up(child, 1);
+ 		}
+ 	}
+-	if (child->signal->flags & SIGNAL_GROUP_EXIT) {
+-		sigaddset(&child->pending.signal, SIGKILL);
+-		signal_wake_up(child, 1);
+-	}
+ 	spin_unlock(&child->sighand->siglock);
+ }
+ 
+@@ -82,7 +78,8 @@ void __ptrace_unlink(task_t *child)
+ 		SET_LINKS(child);
+ 	}
+ 
+-	ptrace_untrace(child);
++	if (child->state == TASK_TRACED)
++		ptrace_untrace(child);
+ }
+ 
+ /*
+diff -Nru -p linux-2.6.15.ppc64/kernel/signal.c linux-2.6.15.wz/kernel/signal.c
+--- linux-2.6.15.ppc64/kernel/signal.c	2006-03-30 06:38:44.000000000 +0800
++++ linux-2.6.15.wz/kernel/signal.c	2006-03-30 06:48:59.000000000 +0800
+@@ -1143,8 +1143,8 @@ void zap_other_threads(struct task_struc
+ 		if (t != p->group_leader)
+ 			t->exit_signal = -1;
+ 
+-		/* SIGKILL will be handled before any pending SIGSTOP */
+ 		sigaddset(&t->pending.signal, SIGKILL);
++		rm_from_queue(SIG_KERNEL_STOP_MASK, &t->pending);
+ 		signal_wake_up(t, 1);
+ 	}
+ }
+@@ -1979,9 +1979,9 @@ relock:
+ 			/* Let the debugger run.  */
+ 			ptrace_stop(signr, signr, info);
+ 
+-			/* We're back.  Did the debugger cancel the sig or group_exit? */
++			/* We're back.  Did the debugger cancel the sig?  */
+ 			signr = current->exit_code;
+-			if (signr == 0 || current->signal->flags & SIGNAL_GROUP_EXIT)
++			if (signr == 0)
+ 				continue;
+ 
+ 			current->exit_code = 0;
+

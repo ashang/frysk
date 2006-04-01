@@ -1,0 +1,23 @@
+cat spec.patch
+--- ./kernel-2.6.spec	2006-03-15 04:41:50.000000000 +0800
++++ ./kernel-2.6-wz.spec	2006-03-30 15:58:40.000000000 +0800
+@@ -292,6 +292,9 @@ Patch905: linux-2.6-modsign-include.patc
+ # Tux http accelerator.
+ Patch910: linux-2.6-tux.patch
+ 
++# A temporary patch for Frysk project
++Patch920: linux-2.6-strace-clone-exec.patch
++
+ #
+ # Patches 1000 to 5000 are reserved for bugfixes to drivers and filesystems
+ #
+@@ -868,6 +871,9 @@ find -name "*.p.xen" | xargs rm -f
+ # Tux
+ %patch910 -p1
+ 
++# Frysk
++%patch920 -p1
++
+ # SATA Patches
+ # Enable PATA ports on Promise.
+ %patch2200 -p1
