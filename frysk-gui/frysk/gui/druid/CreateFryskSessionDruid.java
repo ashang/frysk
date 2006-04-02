@@ -39,8 +39,12 @@
 
 package frysk.gui.druid;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.SizeGroup;
@@ -48,6 +52,7 @@ import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 
@@ -57,121 +62,166 @@ import frysk.gui.monitor.ProcWiseTreeView;
 public class CreateFryskSessionDruid extends Dialog {
 	
 	Notebook notebook;
-	
-	ProcWiseTreeView procWiseTreeView;
+
 	ProcWiseDataModel dataModel;
-	AddedProcTreeView addedProcsTreeView;
-	
+
 	Button nextButton;
 	Button backButton;
 	Button finishButton;
 	
-	Button addProcessGroupButton;
-	Button removeProcessGroupButton;
+	ArrayList processGroupSelection;
+	
+	int processSelected = 0;
+	
+
 	
 	public CreateFryskSessionDruid(LibGlade glade){
-		super(glade.getWidget("SessionDruid").getHandle());
-		
+		super(glade.getWidget("SessionDruid").getHandle());		
 		getDruidStructureControls(glade);
 		getProcessSelectionControls(glade);
-		
-
+		getProcessExitControls(glade);
     }
 	
+	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
+	{
+		this.dataModel.setSelected(selected,setSelected,setChildren);
+	}
+	
+	
+	private boolean isChild(TreePath pathTest)
+	{
+		// Minor hack. Sometimes path.up() returns a boolean
+		// that indicates it has a parent and the up() changed the 
+		// state of the Path. However all operations on that then
+		// return NP which indicates a false positive. Fix locally, 
+		// and file upstream bug.
+		
+		if (pathTest.toString().split(":").length > 1)
+			return true;
+		else
+			return false;
+	}
+	
+	private TreePath deFilterPath(TreeView tree, TreePath filter)
+	{
+	
+		TreeModelFilter ts = (TreeModelFilter) tree.getModel();
+		return ts.convertPathToChildPath(filter);
+	}
+	
+		
+	private void changeGroupState(TreeView tree, TreePath[] selectedProcs, boolean state)
+	{
+		if (selectedProcs.length > 0)
+		{
+			for(int i=0; i<selectedProcs.length;i++)
+			{
+				// Convert a filetered iterator to a non filtered iterator.
+				TreeIter unfilteredProcessIter = this.dataModel.getModel().getIter(deFilterPath(tree,selectedProcs[i]));
+				
+				// Scenario 1: Tree iter has children (a process group)
+				if (unfilteredProcessIter.getChildCount() > 0)
+				{
+					if (state)
+						processSelected += unfilteredProcessIter.getChildCount() +1;
+					else
+						processSelected -= unfilteredProcessIter.getChildCount() +1;
+					setTreeSelected(unfilteredProcessIter,state,true);
+				}
+				else {
+					// Scenario 2: A child in the process group has been selected, also select
+				    // the parent and siblings.
+					TreePath parent_path = unfilteredProcessIter.getPath();
+					if (isChild(parent_path))
+					{
+						// we are a child that has a parent; sibilings and parent
+						parent_path.up();						
+						// Save parent iter
+						TreeIter parent_iter = this.dataModel.getModel().getIter(parent_path);
+						// Move the parent and children.
+						if (parent_iter.getChildCount() > 0)
+						{
+							if (state)
+								processSelected += unfilteredProcessIter.getChildCount() +1;
+							else
+								processSelected -= unfilteredProcessIter.getChildCount() +1;
+							setTreeSelected(parent_iter,state,true);
+						}
+					}
+					else
+					{
+						// Scenario 3: No children, or siblings
+						setTreeSelected(unfilteredProcessIter,state,false);
+						if (state)
+							processSelected++;
+						else
+							processSelected--;
+						
+					}
+				}
+				
+			}
+		}
+		
+		setProcessNext(processSelected);
+	}
+	
+	private void setProcessNext(int processCount)
+	{
+		if (processCount > 0)
+			this.nextButton.setSensitive(true);
+		else
+			this.nextButton.setSensitive(false);
+	}
+	
 	private void getProcessSelectionControls(LibGlade glade) {
+		
+		Button addProcessGroupButton;
+		Button removeProcessGroupButton;
+		ComboBox hostSelection;
+		
+		final ProcWiseTreeView procWiseTreeView;
+		final AddedProcTreeView addedProcsTreeView;
+
+		// Page 1 of the Druid. Initial Process Selection.
+		
 		this.dataModel = new ProcWiseDataModel();
-		this.procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle(),this.dataModel);
-		this.addedProcsTreeView = new AddedProcTreeView(glade.getWidget("sessionDruid_addedProcsTreeView").getHandle(),this.dataModel);
+		procWiseTreeView = new ProcWiseTreeView(glade.getWidget("sessionDruid_procWiseTreeView").getHandle(),this.dataModel);
+		addedProcsTreeView = new AddedProcTreeView(glade.getWidget("sessionDruid_addedProcsTreeView").getHandle(),this.dataModel);
+		hostSelection = (ComboBox) glade.getWidget("sessionDruid_hostComboBox");
 		this.setUpCurrentPage();
-		
-		//this.addedProcsTreeView = (TreeView) glade.getWidget("sessionDruid_addedProcsTreeView");
-		
+			
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(procWiseTreeView);
 		sizeGroup.addWidget(addedProcsTreeView);
+			
+		addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
+		removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
 		
-		
-		this.addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
-		this.removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
-		
-		this.addProcessGroupButton.addListener(new ButtonListener(){
+		addProcessGroupButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-
-					TreePath[] tp = procWiseTreeView.getSelection().getSelectedRows();
-					TreeModelFilter ts = (TreeModelFilter) procWiseTreeView.getModel();
-
-					if (tp.length > 0)
-					{
-						for(int i=0; i<tp.length;i++)
-						{
-							TreePath unfiltered = ts.convertPathToChildPath(tp[i]);
-							TreeIter item2 = procWiseTreeView.psDataModel.getModel().getIter(unfiltered);
-							
-							// Check if he clicks on a process with children. If so, move the children over
-							if (item2.getChildCount() > 0)
-							{
-								procWiseTreeView.psDataModel.setSelected(item2,true);
-								System.out.println("This one has children");
-								int children = item2.getChildCount();
-								for (int z=0; z<children;z++)
-									procWiseTreeView.psDataModel.setSelected(item2.getChild(z),true);
-								return;
-							}
-							else
-							{
-								// Check if the node has a parent. 
-								// TreePath.up() seems to have some usses
-								// iter.hasParent() seems to have some issues
-								// Check Path directly.
-								TreePath parent_path = item2.getPath();
-								if (parent_path.toString().split(":").length > 1)
-								{
-									// we are a child that has a parent
-									// move sibilings and parent
+					changeGroupState(procWiseTreeView,procWiseTreeView.getSelection().getSelectedRows(),true);
+				}
+			}
+			
+		});
+		
+		removeProcessGroupButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					changeGroupState(addedProcsTreeView,addedProcsTreeView.getSelection().getSelectedRows(),false);
+				}
+			}
+		});
+		
+		hostSelection.setActive(0);
+		
+	}
 	
-									parent_path.up();
-									
-									// Save parent iter
-									TreeIter parent_iter = procWiseTreeView.psDataModel.getModel().getIter(parent_path);
-
-									// Check if he clicks on a process with children. If so, move the children over
-									if (parent_iter.getChildCount() > 0)
-									{
-										procWiseTreeView.psDataModel.setSelected(parent_iter,true);
-										System.out.println("This one has children");
-										int children = parent_iter.getChildCount();
-										for (int z=0; z<children;z++)
-											procWiseTreeView.psDataModel.setSelected(parent_iter.getChild(z),true);
-										return;
-									}
-								}
-								else
-								{
-									
-									procWiseTreeView.psDataModel.setSelected(item2,true);
-								}
-							}
-							
-						}
-					}
-					
-				}
-				
-			}
-			
-		});
-		
-		this.removeProcessGroupButton.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					System.out.println("Got a remove process group Event");
-				}
-				
-			}
-			
-		});
-
+	private void getProcessExitControls(LibGlade glade)
+	{
+		System.out.println("Fill in here");
 	}
 	
 	private void getDruidStructureControls(LibGlade glade)
@@ -203,10 +253,17 @@ public class CreateFryskSessionDruid extends Dialog {
 	
 	
 	private void nextPage(){
+		
+		// Process previous page data
+		int page = this.notebook.getCurrentPage();
+		if (page == 1)
+			processGroupSelection = this.dataModel.dumpSelectedProcesses();
+		
 		this.notebook.setCurrentPage(this.notebook.getCurrentPage()+1);
 		this.setUpCurrentPage();
 	}
 	
+
 	private void previousPage(){
 		this.notebook.setCurrentPage(this.notebook.getCurrentPage()-1);
 		this.setUpCurrentPage();
@@ -228,6 +285,9 @@ public class CreateFryskSessionDruid extends Dialog {
 			this.nextButton.showAll();
 			this.finishButton.hideAll();
 		}
+		
+		if (page == 1)
+			setProcessNext(processSelected);
 	}
 	
 	public void showAll(){

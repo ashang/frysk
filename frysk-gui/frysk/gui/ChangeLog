@@ -1,3 +1,17 @@
+2006-04-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (setProcWiseTreeSelected): Added 
+	convienience method to set selected state.
+	(changeGroupState): Refactored and rewrote tree based process group addition
+	and deletion.
+	(getProcessSelectionControls): Refactored to use changeGroupState.
+	(isChild): Added TreePath test.
+	(deFilterPath): Added
+	(setProcessNext): Simple validator to check for selected processes.
+	(nextPage): Modified to dump Page 1 dateon foward button.
+	(getProcessExitControls): Added population stub for process group
+	exit selection.
+
 2006-03-30  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java: Cast to 	TreeModelFilter, 
