@@ -1,3 +1,9 @@
+2006-04-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProcWiseDataModel.java (setSelected): Added conditional
+	to set store's children.
+	(dumpSelectedProcesses): Added.
+
 2006-03-30  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseTreeView.java (mountDataModel): Added a filter

@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
@@ -118,9 +119,44 @@ public class ProcWiseDataModel {
 		return selectedDC;
 	}
 	
-	public void setSelected(TreeIter iter, boolean type)
+	public void setSelected(TreeIter iter, boolean type, boolean setChildren)
 	{
-		treeStore.setValue(iter,getSelectedDC(), type);
+		if (treeStore.isIterValid(iter))
+		{
+			treeStore.setValue(iter,getSelectedDC(), type);
+			if (setChildren)
+			{
+				int children = iter.getChildCount();
+				for (int count=0; count<children; count++)
+					if (treeStore.isIterValid(iter.getChild(count)))
+						treeStore.setValue(iter.getChild(count),getSelectedDC(), type);
+			}
+		}
+	}
+	
+	public ArrayList dumpSelectedProcesses()
+	{
+		
+		ArrayList processData = new ArrayList();
+		// TODO: Very unsafe (process might be deleted by observers
+		// behind the scenes. Rewrite
+		for(int i=0;true;i++)
+		{
+			TreeIter item = treeStore.getIter(new Integer(i).toString());
+			if (item == null) break;
+			
+			if (treeStore.isIterValid(item))
+			{
+				// We only care about process groups, so top level run only.
+				if (treeStore.getValue(item,selectedDC) == true)
+				{
+					System.out.println("Processing" +treeStore.getValue(item,nameDC));
+					processData.add(treeStore.getValue(item,nameDC));
+				}
+			}
+		}
+		
+		return  processData;
 	}
 	
 	class ProcCreatedObserver implements Observer{
