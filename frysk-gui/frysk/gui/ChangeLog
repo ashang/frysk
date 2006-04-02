@@ -1,5 +1,14 @@
 2006-04-02  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/ProcessObserverDataModel.java: Added New File.
+	* druid/ProcessObserverSelectionTreeView.java: Added New File.
+	* druid/ObserverSelectionTreeView.java (ObserverSelectionTreeView): 
+	Added New File.
+	* druid/ObserverDataModel.java: Added new file.
+	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): Added.
+	observer selection stub. Built in observer addition/removal logic. Populated
+	Treeview from previous process selection, and observers from ObserverManager.
+
 	* glade/frysk_create_session_druid: Added observer apply page.
 	* druid/CreateFryskSessionDruid.java (getProcessExitControls): Added logic
 	for populating ExitProcessSelection.

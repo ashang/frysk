@@ -63,7 +63,9 @@ public class CreateFryskSessionDruid extends Dialog {
 
 	ProcWiseDataModel dataModel;
 	ExitProcessGroupsDataModel processExitListStore;
-
+	ObserverDataModel observerDataModel;
+	ProcessObserverDataModel processObserverDataModel;
+	
 	Button nextButton;
 	Button backButton;
 	Button finishButton;
@@ -79,8 +81,10 @@ public class CreateFryskSessionDruid extends Dialog {
 		getDruidStructureControls(glade);
 		getProcessSelectionControls(glade);
 		getProcessExitControls(glade);
+		getProcessObserverControls(glade);
     }
 	
+
 	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
 	{
 		this.dataModel.setSelected(selected,setSelected,setChildren);
@@ -107,6 +111,8 @@ public class CreateFryskSessionDruid extends Dialog {
 		TreeModelFilter ts = (TreeModelFilter) tree.getModel();
 		return ts.convertPathToChildPath(filter);
 	}
+	
+
 	
 		
 	private void changeGroupState(TreeView tree, TreePath[] selectedProcs, boolean state)
@@ -229,6 +235,64 @@ public class CreateFryskSessionDruid extends Dialog {
 		processExitSelectionTreeView.expandAll();
 		setUpCurrentPage();
 	}
+
+	private void getProcessObserverControls(LibGlade glade) {
+		final ObserverSelectionTreeView observerSelectionTreeView;
+		final ProcessObserverSelectionTreeView processObserverSelectionTreeView;
+
+		
+		Button addObservertoGroup;
+		Button removeObserverfromGroup;
+		
+		this.observerDataModel = new ObserverDataModel();
+		observerSelectionTreeView = new ObserverSelectionTreeView(
+				glade.getWidget("SessionDruid_observerTreeView").getHandle(),this.observerDataModel);
+		
+		observerSelectionTreeView.expandAll();
+		
+		this.processObserverDataModel = new ProcessObserverDataModel();		
+		processObserverSelectionTreeView = new ProcessObserverSelectionTreeView(
+				glade.getWidget("SessionDruid_processObserverTreeView").getHandle(),
+				this.processObserverDataModel);
+		
+		processObserverSelectionTreeView.expandAll();
+		
+		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+		sizeGroup.addWidget(observerSelectionTreeView);
+		sizeGroup.addWidget(processObserverSelectionTreeView);
+		
+		addObservertoGroup = (Button) glade.getWidget("SessionDruid_addSelectedObserversButton");
+		removeObserverfromGroup = (Button) glade.getWidget("SessionDriud_removeSelectedObserversButton");
+		
+		addObservertoGroup.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					TreePath[] selectedObservers = observerSelectionTreeView.getSelection().getSelectedRows();
+					TreePath[] selectedProcs = processObserverSelectionTreeView.getSelection().getSelectedRows();
+					for (int i=0; i<selectedObservers.length; i++)
+					{
+						for (int x=0; x<selectedProcs.length; x++)
+						{
+							processObserverDataModel.addObserver(selectedProcs[x],observerDataModel.nameFromPath(selectedObservers[i]));
+						}
+					}
+					//System.out.println("Add Observers");
+				}
+			}
+			
+		});
+		
+		removeObserverfromGroup.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					System.out.println("Remove Observers");
+				}
+			}
+		});
+		
+		setUpCurrentPage();	
+	}
+
 	
 	private void getDruidStructureControls(LibGlade glade)
 	{
@@ -266,9 +330,9 @@ public class CreateFryskSessionDruid extends Dialog {
 			processGroupSelection = this.dataModel.dumpSelectedProcesses();
 			this.processExitListStore.populateData(processGroupSelection);
 		}
-		if (page == 2)
+		if (page == 3)
 		{
-			
+			this.processObserverDataModel.populateInitialData(processGroupSelection);
 		}
 
 		
