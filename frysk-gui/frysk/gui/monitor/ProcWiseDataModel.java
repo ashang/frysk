@@ -149,10 +149,7 @@ public class ProcWiseDataModel {
 			{
 				// We only care about process groups, so top level run only.
 				if (treeStore.getValue(item,selectedDC) == true)
-				{
-					System.out.println("Processing" +treeStore.getValue(item,nameDC));
 					processData.add(treeStore.getValue(item,nameDC));
-				}
 			}
 		}
 		
