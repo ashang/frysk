@@ -40,8 +40,6 @@
 package frysk.gui.druid;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.ComboBox;
@@ -64,6 +62,7 @@ public class CreateFryskSessionDruid extends Dialog {
 	Notebook notebook;
 
 	ProcWiseDataModel dataModel;
+	ExitProcessGroupsDataModel processExitListStore;
 
 	Button nextButton;
 	Button backButton;
@@ -221,7 +220,14 @@ public class CreateFryskSessionDruid extends Dialog {
 	
 	private void getProcessExitControls(LibGlade glade)
 	{
-		System.out.println("Fill in here");
+	
+		ProcessExitSelectionTreeView processExitSelectionTreeView;
+		this.processExitListStore = new ExitProcessGroupsDataModel();
+		processExitSelectionTreeView = new ProcessExitSelectionTreeView(
+				glade.getWidget("sessionDruid_unexpectedExitTreeView").getHandle(),this.processExitListStore);	
+		
+		processExitSelectionTreeView.expandAll();
+		setUpCurrentPage();
 	}
 	
 	private void getDruidStructureControls(LibGlade glade)
@@ -256,8 +262,15 @@ public class CreateFryskSessionDruid extends Dialog {
 		
 		// Process previous page data
 		int page = this.notebook.getCurrentPage();
-		if (page == 1)
+		if (page == 1){
 			processGroupSelection = this.dataModel.dumpSelectedProcesses();
+			this.processExitListStore.populateData(processGroupSelection);
+		}
+		if (page == 2)
+		{
+			
+		}
+
 		
 		this.notebook.setCurrentPage(this.notebook.getCurrentPage()+1);
 		this.setUpCurrentPage();

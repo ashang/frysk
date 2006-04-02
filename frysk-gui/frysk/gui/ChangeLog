@@ -1,3 +1,13 @@
+2006-04-02  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/frysk_create_session_druid: Added observer apply page.
+	* druid/CreateFryskSessionDruid.java (getProcessExitControls): Added logic
+	for populating ExitProcessSelection.
+	(nextPage): Add in population from page 1 -> page 2 (more formal method)
+	needed.
+	* druid/ProcessExitSelectionTreeView.java: Added.
+	* druid/ExitProcessGroupsDataModel.java: Added.
+
 2006-04-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (setProcWiseTreeSelected): Added 
