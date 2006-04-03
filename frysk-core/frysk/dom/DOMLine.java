@@ -115,13 +115,15 @@ public class DOMLine {
 	 * Creates a new DOMLine using the given data as it's element. data must be
 	 * a node with name "line".
 	 * 
-	 * @param data
+	 * @param data is a JDOM element named "line"
 	 */
 	public DOMLine(Element data) {
 		this.myElement = data;
 	}
 
 	/**
+	 * gets the lines niumber within the source file of this line
+	 * 
 	 * @return The number of this line
 	 */
 	public int getLineNum() {
@@ -129,6 +131,8 @@ public class DOMLine {
 	}
 
 	/**
+	 * gets the length of this line in characters
+	 * 
 	 * @return The length of this line in characters
 	 */
 	public int getLength() {
@@ -136,6 +140,8 @@ public class DOMLine {
 	}
 
 	/**
+	 * gets the offset in characters of this line from the start of the source file
+	 * 
 	 * @return The offset of this line from the start of the file in characters
 	 */
 	public int getOffset() {
@@ -144,12 +150,16 @@ public class DOMLine {
 
 	/**
 	 * sets the offset of the line from the beginning of the file
+	 * 
+	 * @param character offset from the beginning of the file
 	 */
 	public void setOffset(int offset) {
 		this.myElement.setAttribute(OFFSET_ATTR, ""+offset);
 	}
 	
 	/**
+	 * return a boolean indicating whether or not this line contains an inline function
+	 * 
 	 * @return Whether or not this line contains inlined code
 	 */
 	public boolean hasInlinedCode() {
@@ -157,6 +167,8 @@ public class DOMLine {
 	}
 
 	/**
+	 * return a boolean indicating whether or not this line is executable
+	 * 
 	 * @return whether or not this line is executable
 	 */
 	public boolean isExecutable() {
@@ -169,6 +181,8 @@ public class DOMLine {
 
 	/**
 	 * sets the executable attribute for this line
+	 * 
+	 * @param executable is the boolean value to set the executable attribute to
 	 */
 	public void setExecutable(boolean executable) {
 		
@@ -190,7 +204,9 @@ public class DOMLine {
 	}
 
 	/**
-	 * Set the hasBreak attribute
+	 * Set the hasBreak attribute(indicates that this line has a breakpoint set)
+	 * 
+	 * @param hasbreak is the boolean value to set the hasbreak value to 
 	 */
 	public void setBreakPoint(boolean hasbreak) {
 		
@@ -208,6 +224,8 @@ public class DOMLine {
 
 	/**
 	 * set the text for this line to the incoming string
+	 * 
+	 * @param text is the text of the source line
 	 */
 	public void setText(String text) {
 		this.myElement.setText(text);
@@ -215,6 +233,8 @@ public class DOMLine {
 	}
 
 	/**
+	 * get an iterator to all of the tags contained on this line of code
+	 * 
 	 * @return An iterator to all the of tags contained on this line of code
 	 */
 	public Iterator getTags() {
@@ -223,9 +243,10 @@ public class DOMLine {
 
 	/**
 	 * adds a new tag to a source line
+	 * 
 	 * @param type - the type of tag(keyword, variable, function)
+	 * @param token - token associated with this tag
 	 * @param start - the starting character within the line
-	 * @param length - the length in characters of this tag
 	 */
 	public void addTag(String type, String token, int start) {
 		// Check for duplicate tags
@@ -305,6 +326,12 @@ public class DOMLine {
 
 		return null;
 	}
+	
+	/**
+	 * gets all of the inline instances attached with is line
+	 * 
+	 * @return an iterator pointing to all inline instances on this line
+	 */
 
 	public Iterator getInlines() {
 		return this.myElement.getChildren(DOMInlineInstance.LINEINST_NODE).
@@ -313,6 +340,8 @@ public class DOMLine {
 
 	/**
 	 * add a tag element to this line
+	 * 
+	 * @param tag is the element to add to this line
 	 */
 	public void addTag(DOMTag tag) {
 		this.myElement.addContent(tag.getElement());
@@ -324,9 +353,9 @@ public class DOMLine {
 	 * @param instance
 	 *            is the name of the instance to add
 	 * @param start_inline
-	 *            is the starting character of this instance
+	 *            is the starting character of this instance in this line
 	 * @param end_line
-	 *            is the ending character of this instance
+	 *            is the ending character of this instance in this line
 	 */
 	public void addInlineInst(String instance, int start_inline, int length, int PCLine) {
 		this.myElement.addContent(new DOMInlineInstance(instance, start_inline, length, PCLine).getElement());
@@ -335,8 +364,8 @@ public class DOMLine {
 	/**
 	 * get the DOMInlineInstance associated with this instance
 	 * 
-	 * @param inst
-	 *            is the name of the instance to retrieve
+	 * @param inst is the name of the instance to retrieve
+	 * 
 	 * @return the DOMInlineInstance of this instance
 	 */
 	public DOMInlineInstance getInlineInst(String inst_name) {

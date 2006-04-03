@@ -105,6 +105,8 @@ public class DOMInlineInstance {
 	
 	/**
 	 * set the starting character of the inlined code
+	 * 
+	 * @param set the starting character offset of the inlined code from the start of the file
 	 */
 	public void setStart(int start) {
 			this.myElement.setAttribute(DOMFunction.START_ATTR, 
@@ -112,6 +114,8 @@ public class DOMInlineInstance {
 			this.start = start;
 	}
 	/**
+	 * get the starting character offset from the beginning of the file
+	 * 
 	 * @return The start of the inlined instance as a character offset from the start of the file
 	 */
 	public int getStart(){
@@ -119,7 +123,9 @@ public class DOMInlineInstance {
 	}
 	
 	/**
-	 * set the ending character of the inlined code
+	 * set the ending character of the inlined code from the beginning of the file
+	 * 
+	 * @param int is the character offset from the beginning of the file
 	 */
 	public void setEnd(int end) {
 			this.myElement.setAttribute(DOMFunction.END_ATTR, 
@@ -127,6 +133,8 @@ public class DOMInlineInstance {
 			this.end = end;
 	}
 	/**
+	 * get the end of the instance as a character offset from the start of the file
+	 * 
 	 * @return The end of the instance as a character offset from the start of the file
 	 */
 	public int getEnd(){
@@ -134,6 +142,8 @@ public class DOMInlineInstance {
 	}
 	
 	/** 
+	 * provides the original declaration of this inlined code
+	 * 
 	 * @return The original declaration of this inlined code
 	 */
 	public DOMFunction getDeclaration(){
@@ -152,9 +162,24 @@ public class DOMInlineInstance {
 		return null;
 	}
 	
+	/**
+	 * gets the program counter line number within the inline block
+	 * 
+	 * @return the program counter line number within the inline block
+	 */
+	
 	public int getPCLine(){
 		return Integer.parseInt(this.myElement.getAttributeValue(PCLINE_ATTR));
 	}
+	
+	/**
+	 * adds an inline instance to a source element
+	 * 
+	 * @param instance is the name of the instance
+	 * @param start_inline is the starting line number of the inline instance
+	 * @param length is the number of lines in the inline instance
+	 * @param PCLine is the program counter of this inline instance
+	 */
 	
 	public void addInlineInst(String instance, int start_inline, int length, int PCLine) {
 		Element inlineLineInstElement = new Element(
@@ -171,6 +196,7 @@ public class DOMInlineInstance {
 	}
 	
 	/**
+	 * checks to see if this inline instance contains an inline instance
 	 * 
 	 * @return True iff this inline instance has an inline instance nested
 	 * within it
@@ -180,6 +206,7 @@ public class DOMInlineInstance {
 	}
 	
 	/**
+	 * checks to see if this inline instance is contained within another inline instance
 	 * 
 	 * @return True iff this inline instance is nested within another inlined instance
 	 */
@@ -190,6 +217,7 @@ public class DOMInlineInstance {
 
 	/**
 	 * Returns the inline instance nested within this one if one exists
+	 * 
 	 * @return The nested inline instance if it exists, null otherwise
 	 */
 	public DOMInlineInstance getInlineInstance(){
@@ -202,6 +230,7 @@ public class DOMInlineInstance {
 	
 	/**
 	 * Returns the inline instance that this method is nested within, if one exists
+	 * 
 	 * @return the parent instance if it exists, null otherwise.
 	 */
 	public DOMInlineInstance getPreviousInstance(){

@@ -89,8 +89,11 @@ public class DOMTag {
 	}
 	
 	/**
-	 * Creates a new DOMTag using the given data as it's Element. data much be of name "tag"
-	 * @param data
+	 * Creates a new DOMTag using the given data as it's Element. Data must be of name "tag"
+	 * 
+	 * @param data is the JDOM element
+	 * 
+	 * @return returns an instance of this DOMTag
 	 */
 	public DOMTag(Element data){
 		this.myElement = data;
@@ -98,12 +101,16 @@ public class DOMTag {
 	
 	/**
 	 * change the type attribue of this tag
+	 * 
+	 * @param type is the tag type to set 
 	 */
 	public void setType(String type) {
 		this.myElement.setAttribute(TYPE_ATTR, type);
 	}
 	
 	/**
+	 * get the type attribute for this tag instance
+	 * 
 	 * @return The type of the tag
 	 */
 	public String getType(){
@@ -112,12 +119,16 @@ public class DOMTag {
 	
 	/**
 	 * set the starting character offset of this tag
+	 * 
+	 * @param start is the character offset for this tag
 	 */
 	public void setStart(int start) {
 		this.myElement.setAttribute(START_ATTR, ""+start);
 	}
 	
 	/**
+	 * get the character offset from the start of the file
+	 * 
 	 * @return The starting offset of the tag from the start of the file
 	 */
 	public int getStart(){
@@ -125,13 +136,17 @@ public class DOMTag {
 	}
 	
 	/**
-	 * set the ending character offset for this tag
+	 * set the length of this tag on this line
+	 * 
+	 * @param the ending character of this tag
 	 */
 	public void setLength(int end) {
 		this.myElement.setAttribute(LENGTH_ATTR, ""+end);
 	}
 	/**
-	 * @return The ending offset of the tag from the start of the file
+	 * gets the length of the tag
+	 * 
+	 * @return The length of the tag
 	 */
 	public int getLength(){
 		return Integer.parseInt(this.myElement.getAttributeValue(LENGTH_ATTR));
@@ -150,11 +165,18 @@ public class DOMTag {
 	}
 	
 	/**
+	 * get the token attribute for this tag
+	 * 
 	 * @return The token for this tag
 	 */
 	public String getToken(){
 		return this.myElement.getAttributeValue(TOKEN_ATTR);
 	}
+	
+	/**
+	 * 
+	 * @return the JDOM element for this tag
+	 */
 	
 	protected Element getElement(){
 		return this.myElement;

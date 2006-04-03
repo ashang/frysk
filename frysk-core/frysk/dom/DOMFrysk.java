@@ -47,7 +47,88 @@ import org.jdom.Element;
 
 /**
  * DOMFrysk serves as an access point to the document object model for the frysk
- * source window.
+ * source window.  The Frysk DOM(Document Object Model) is used to model the 
+ * underlying source code being debugged so that the GUI can accurately display
+ * information about it in the source window.  The DOM is a dynamic model that 
+ * can change depending on user actions.  A tree-based API for processing XML 
+ * documents, JDOM, was chosen to implement the Frysk DOM for it was found to 
+ * be far easier and more intuitive to use than other open source XML 
+ * manipulation APIs.  Since both the Frysk GUI and  JDOM are written in Java, 
+ * using it just made sense from that standpoint too.  For more information 
+ * regarding JDOM, see http://www.jdom.org.
+ * 
+ * The DOM is under constant construction during this phase of development. 
+ * As more features are added to Frysk, more items will be added to the DOM. 
+ * This is just a snapshot of the DOM as it exists now (03/24/06), although 
+ * we will endeavor to keep it as current as possible.
+ *
+ * Class Structure
+ * The following diagram is the current “class” structure of the Frysk DOM.  
+ * As can be seen from the tree below, the top class is the executable image 
+ * itself and below it are the subclasses hanging off of it.
+ * 
+ * DOMFrysk – the overall DOM
+ * 	DOMImage – the source images associated with this DOM
+ * 		DOMFunction – all functions defined for this source image
+ * 		DOMSource – a particular source image
+ * 			DOMLine – contains the info associated with each line within the source
+ * 				DOMInlineInstance – contains info about inline functions on this line
+ * 
+ * Each one of these classes/subclasses has a set of methods to 
+ * create/modify/access the information in the DOM.  Here is a more detailed 
+ * version of the above diagram with the methods associated with each class. 
+ * In the following class/method listing, the backend code would mainly be 
+ * using the setXxxx methods and the GUI part would be using the getXxxx methods.
+ * 
+ * DOM Structure
+ * The following is a mock-up of what a DOM looks like with all of its nodes/elements.
+ * 
+ * DOM
+ *    |--PC – current program counter
+ *    |--PID – Process ID of debugged process
+ *       |-- attr: value – the process ID number
+ *    |--Image – element: image
+ *       |--attr: name – name associated with this image
+ *       |--attr: filename – name of the executable
+ *       |--attr: CCPATH – path to the executable
+ *      |--Source – element: source
+ *         |--attr: filename – name of the source file
+ *         |--attr: filepath – path to the source file
+ *         |--attr: parsed – boolean to indicate if the GUI has parsed this source
+ *       |--Line – element: line
+ *          |--attr: number – line number to be added
+ *          |--attr: pc – address where this line's executable code begins
+ *          |--attr: offset – offset in characters from the beginning of the file
+ *          |--attr: length – number of characters in this line
+ *          |--attr: executable – boolean indicating if this line is executable
+ *          |--attr: has_break – boolean indicating if this line is a breakpoint
+ *        |--Tag – element: tag
+ *           |--attr: type – type of tag this is(variable, keyword, etc.)
+ *           |--attr: start – starting character from beginning of the file for tag
+ *           |--attr: length – no. of characters the tag will encompass
+ *           |--attr: token -
+ *      |--Inline - element: function
+ *         |--attr: function_name – name of the inline function
+ *         |--attr: source – source where this function came from
+ *         |--attr: start – starting character this inline function begins at from the beginning of the file
+ *         |--attr: end – ending character this inline function ends at
+ *         |--attr: line_start – line no. where this function begins in the source file
+ *         |--attr: line_end – line no. where this function ends in the source file
+ *         
+ * Debugging Scenario
+ * 
+ * When a processed is debugged, no matter how activated, here are the steps that need to happen:
+ *   Frysk backend identifies the PID or the executable that is to be debugged
+ *   Frysk backend grabs the source code and creates a DOM
+ *   adds the image
+ *   adds a source file
+ *   adds all functions found
+ *   adds each line of the source file
+ *   sends DOM to GUI
+ *   sends pointer to source code to GUI
+ *   GUI parses source and marks up the DOM with code highlighting information
+ *   GUI brings up the source window
+ *   GUI and backend communicate so GUI can update affected windows
  * 
  * @author ajocksch
  */
@@ -90,7 +171,7 @@ public class DOMFrysk {
 	 *            the CCPATH associated with this image
 	 * @param source_path =
 	 *            the path to the source of this image
-	 * @return
+	 * @return true if able to add the image, false if not
 	 */
 	public boolean addImage(String image_name, String CCPATH, String source_path) {
 		return this.addImage(new DOMImage(image_name, source_path, CCPATH));
@@ -99,7 +180,7 @@ public class DOMFrysk {
 	/**
 	 * Adds the given image to the DOM
 	 * @param image The DOMImage to add
-	 * @return
+	 * @return true if able to add the image, false if not
 	 */
 	public boolean addImage(DOMImage image){
 		//	Make sure this image name is not already there before adding
@@ -114,6 +195,7 @@ public class DOMFrysk {
 	 * Add the PID to the DOM
 	 * 
 	 * @param an int containing the PID
+	 * @return true if able to add PID, false if not
 	 */
 	
 	public boolean addPID(int pid) {
@@ -128,11 +210,11 @@ public class DOMFrysk {
 	/**
 	 * checkImageDup - check to see if there is a duplicate image name
 	 * 
-	 * @param String image_name =
-	 *            name of the image to check for
+	 * @param image is name of the image to check for
+	 * @return true if there already an image of the same name, false if not
 	 */
 	
-	public boolean checkImageDup(String image) {
+	private boolean checkImageDup(String image) {
 		Iterator i = this.data.getRootElement().getChildren().iterator();
 		while (i.hasNext()) {
 			Element elem = (Element) i.next(); 
@@ -190,6 +272,7 @@ public class DOMFrysk {
 	}
 
 	/**
+	 * get the PID associated with this DOMFrysk
 	 * @return The PID of the process that this DOM represents
 	 */
 	public int getPID() {
@@ -198,6 +281,7 @@ public class DOMFrysk {
 	}
 
 	/**
+	 * get the root element of the DOM
 	 * @return The root element of the DOM
 	 */
 	protected Element getElement() {
@@ -205,7 +289,7 @@ public class DOMFrysk {
 	}
 
 	/**
-	 * 
+	 * get the PC(program counter)
 	 * @return BigInteger program counter
 	 */
 	public BigInteger getPC() {
@@ -216,6 +300,7 @@ public class DOMFrysk {
 
 	/**
 	 * Set the PC counter value in the DOM
+	 * @param pc is what the PC should be set to 
 	 */
 	public void setPC(BigInteger pc) {
 		this.data.getRootElement().getChild(PC_ATTR).setAttribute(value,
@@ -223,7 +308,8 @@ public class DOMFrysk {
 	}
 
 	/**
-	 * Return the DOMFrysk document
+	 * returns the DOMFrysk document
+	 * @return  the DOMFrysk document
 	 */
 	public Document getDOMFrysk() {
 		return this.data;

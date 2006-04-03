@@ -78,7 +78,7 @@ public class DOMSource {
 	 * Creates a new DOMSource object with the given data as it's Element. data
 	 * must be a node with name "source"
 	 * 
-	 * @param data
+	 * @param JDOM element data
 	 */
 	public DOMSource(Element data){
 		this.myElement = data;
@@ -99,8 +99,9 @@ public class DOMSource {
 	}
 	
 	/**
-	 * @param name
-	 *            to set the filename to
+	 * sets the name of the file containing the source
+	 * 
+	 * @param name to set the filename to
 	 * @return true = set name worked, false if not
 	 */
 	
@@ -109,7 +110,9 @@ public class DOMSource {
 	}
 	
 	/**
-	 * get the line count for this Source node
+	 * get the line count for this Source element
+	 * 
+	 * @return the line count for this source element
 	 */
 	public int getLineCount() {
 
@@ -117,23 +120,27 @@ public class DOMSource {
 	}
 	
 	/**
-	 * @return The name of the file
+	 * get the name of the source file where this source resides
+	 * 
+	 * @return the name of the file
 	 */
 	public String getFileName(){
 		return this.myElement.getAttributeValue(FILENAME_ATTR);
 	}
 	
 	/**
-	 * @param new
-	 *            path to set the FILEPATH_ATTR to
-	 * @return true if successful, false if not
+	 * set the path to the source file for this source element
+	 * 
+	 * @param new path to set the FILEPATH_ATTR to
 	 */
 	public void setFilePath(String path) {
 		this.myElement.setAttribute(FILEPATH_ATTR, path);
 	}
 	
 	/**
-	 * @return The path to the file
+	 * get the path to the source file
+	 * 
+	 * @return the path to the file
 	 */
 	public String getFilePath(){
 		return this.myElement.getAttributeValue(FILEPATH_ATTR);
@@ -148,8 +155,7 @@ public class DOMSource {
 	 * @param has_break - does this line have a breakpoint
 	 * @param offset_index - character offset of this line from the start
 	 * 				of the file 
-	 * @param pc
-	 * @param is_inline - does this line contain an inline function
+	 * @param pc(program counter) for this line
 	 */
 	public void addLine(int lineno, String text, boolean is_executable, 
 			boolean has_break, int offset_index, BigInteger pc) {
@@ -160,6 +166,8 @@ public class DOMSource {
 	}
 	
 	/**
+	 * gets all of the lines in this source file
+	 * 
 	 * @return An iterator over all of the lines in this file
 	 */
 	public Iterator getLines(){
@@ -194,6 +202,13 @@ public class DOMSource {
 		return null;
 	}
 	
+	/**
+	 * find out which line a given character offset resides is
+	 * 
+	 * @param offset is the character position from the start of the file
+	 * 
+	 * @return if found return the DOMLine element, else return null
+	 */
 	
 	public DOMLine getLineSpanningOffset(int offset){
 		Iterator iter = 
@@ -207,12 +222,19 @@ public class DOMSource {
 		return null;
 	}
 	
+	/**
+	 * add a DOMLine element
+	 * 
+	 * @param line is the DOMLine element to add
+	 */
 	
 	public void addLine(DOMLine line){
 		this.myElement.addContent(line.getElement());
 	}
 	
 	/**
+	 * get all of the inlined function declarations in this source file
+	 * 
 	 * @return An iterator to all the inlined function declarations in this
 	 *         source file
 	 */
@@ -248,9 +270,22 @@ public class DOMSource {
 		return this.myElement;
 	}
 	
+	/**
+	 * return a boolean indicating whether or not this source has been parsed
+	 * for marking up
+	 * 
+	 * @return boolean indicating the parsing status
+	 */
+	
 	public boolean isParsed(){
 		return this.myElement.getAttributeValue(IS_PARSED).equals("true");
 	}
+	
+	/**
+	 * set the isParsed boolean value for this source
+	 * 
+	 * @param value is the boolean value to set the isParsed attribute to
+	 */
 	
 	public void setParsed(boolean value){
 		this.myElement.setAttribute(IS_PARSED, Boolean.toString(value));

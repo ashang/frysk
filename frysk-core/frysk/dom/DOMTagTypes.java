@@ -39,6 +39,9 @@
 package frysk.dom;
 
 /**
+ * This class contains the static definitions of the types of
+ * tags that can be associated with a DOMTag.
+ * 
  * @author ajocksch
  *
  */

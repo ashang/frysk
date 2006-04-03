@@ -45,7 +45,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import junit.framework.*;
 
-/*
+/**
  * This is a test for the DOM implementation in Frysk.
  * A dummy DOM is built with this test suite and results
  * checked.
@@ -64,21 +64,6 @@ public class TestDOM extends TestCase {
 			"}\n" };
 
 	private static int[] offset_index = { 1, 12, 28 };
-	
-//	private static int[] inline_start = { 12, 33, 66 };
-//	
-//	private static int[] inline_end = { 20, 45, 78 };
-//
-//	private static String[] inline_funcs = { "do_something", "b", "f" };
-//
-//	private static boolean[] is_inline = { false, true, false };
-//
-//	private static String[] do_something = { "void do_something(){", "   b();",
-//			"}" };
-//
-//	private static String[] b = { "void b() {", "f();", "}" };
-//
-//	private static String[] f = { "void f(){", "syscall_here();", "}" };
 
 	/**************************************************************************
 	 * tests the DOMFrysk Class methods
@@ -157,22 +142,12 @@ public class TestDOM extends TestCase {
 						inlinename, "test_source1");
 				continue;
 			}
-//			if (ctr == 1 && (inlinename == "test_source1")) {
-//				System.out.println("passed...DOMImage.getSources..."
-//						+ inlinename);
-//				continue;
-//			}
+			
 			if (ctr == 2) {
 				assertEquals("testing DOMImage.getSources - ctr = 2",
 						inlinename, "test_source2");
 				continue;
 			}
-//			if (ctr == 2 && (inlinename == "test_source2")) {
-//				System.out.println("passed...DOMImage.getSources..."
-//						+ inlinename);
-//				continue;
-//			}
-//			System.out.println("failed...DOMImage.getSources..." + inlinename);
 		}
 	}
 	
@@ -373,26 +348,7 @@ public class TestDOM extends TestCase {
 			assertEquals("testing DOMTag.getTags()", 
 					gettags.getAttributeValue(DOMTag.TYPE_ATTR), tag_type);
 		}
-		
-//		Iterator iter_getinlines = testDOMLine.getInlines();
-//		while (iter_getinlines.hasNext()) {
-//			Element getinlines = (Element) iter_getinlines.next();
-//			String inline_name = getinlines.getAttributeValue
-//				(DOMInlineInstance.LINEINST_ATTR);
-//			if (inline_name
-//					== test_inline) {
-//				System.out.println("passed...DOMLine.getInlines");
-//			} else {
-//				System.out.println("failed...DOMLine.getInlines");
-//			}
-//			DOMFunction test_func = testDOMImage.getFunction(inline_name);
-//			if (test_func.getName() == test_inline) {
-//				System.out.println("passed...DOMFunction.getFunction");
-//			} else {
-//				System.out.println("failed...DOMFunction.getFunction");
-//			}
-//		}
-		
+				
 		assertEquals("testing DOMTag.getType()", tag.getType(), tag_type);
 		
 		String new_tag_type = "keyword";

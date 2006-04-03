@@ -60,7 +60,7 @@ public class DOMImage {
 	
 	/**
 	 * Creates a new DOMImage from the given Element. Data must be of name "image".
-	 * @param data An Element of name "image"
+	 * @param data A JDOM Element of name "image"
 	 */
 	public DOMImage(Element data){
 		this.myElement = data;
@@ -100,7 +100,9 @@ public class DOMImage {
 	/**
 	 * adds an inline function to an image
 	 * @param inline_name is the name of the inline function
-	 * @param lines is an array of Strings containing the lines in the function
+	 * @param source is the name of the source this function came from
+	 * @param startLine is the starting line number of this function in the source
+	 * @param endLine is the ending line number of this function in the source
 	 * @param start_offset is the starting character offset from the beginning
 	 * 					of the file of the first character of the function
 	 * @param end_offset is the ending character offset from the beginning
@@ -114,6 +116,7 @@ public class DOMImage {
 	}
 	
 	/**
+	 * gets the name of the image
 	 * @return The name of the image
 	 */
 	public String getName(){
@@ -122,20 +125,21 @@ public class DOMImage {
 	
 	/**
 	 * Sets the CCPATH of the current image
-	 * @param image_name
+	 * @param image_name is the image for which this CCPATH is intended
 	 */
 	public void setCCPath(String image_name) {
 		this.myElement.setAttribute(CCPATH_ATTR, image_name);
 		return;
 	}
 	/**
-	 * 
+	 * sets the name of the image
 	 * @param name what the name of the image will be
 	 */
 	public void setName(String name) {
 		
 	}
 	/**
+	 * returns the name of the image
 	 * @return The CCPATH of the image
 	 */
 	public String getCCPath(){
@@ -143,6 +147,7 @@ public class DOMImage {
 	}
 	
 	/**
+	 * gets an iterator pointing to all of the sources belonging to this image
 	 * @return an iterator to all the source files contained in this image.
 	 */
 	public Iterator getSources(){
@@ -153,8 +158,7 @@ public class DOMImage {
 	 * Attempts to fetch an image of the given name from the DOM. If no image is
 	 * found returns null
 	 * 
-	 * @param name
-	 *            The name of the image to look for
+	 * @param name is the name of the image to look for
 	 * @return The DOMSource corresponding to the element, or null if no such
 	 *         element exists
 	 */

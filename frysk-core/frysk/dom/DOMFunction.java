@@ -42,6 +42,9 @@ package frysk.dom;
 import org.jdom.Element;
 
 /**
+ * DOMFunction represents a function element to the DOM for any functions
+ * found within an image.
+ * 
  * @author ajocksch
  *
  */
@@ -56,6 +59,18 @@ public class DOMFunction {
 	public static final String LINE_START_ATTR = "line_start";
 	public static final String LINE_END_ATTR = "line_end";
 	
+	/**
+	 * creates a DOMFunction
+	 * 
+	 * @param name is the name of this DOMFunction
+	 * @param source is the source this function was found in
+	 * @param lineStart is the starting line number in the source file of this function
+	 * @param lineEnd is the ending line number in the source file of this function
+	 * @param start is the starting character of the function from the start of the file
+	 * @param end is the ending character of the function from the start of the file
+	 * @return the created DOMFunction
+	 */
+	
 	public static DOMFunction createDOMFunction(String name, String source,
 			int lineStart, int lineEnd, int start, int end){
 		Element func = new Element(FUNCTION_NODE);
@@ -69,6 +84,18 @@ public class DOMFunction {
 		return new DOMFunction(func);
 	}
 	
+	/**
+	 * creates a DOMFunction element to an image in the DOM
+	 * 
+	 * @param parent is the image element to attach this DOMFunction to
+	 * @param name is the name of this DOMFunction
+	 * @param source is the source this function was found in
+	 * @param lineStart is the starting line number in the source file of this function
+	 * @param lineEnd is the ending line number in the source file of this function
+	 * @param start is the starting character of the function from the start of the file
+	 * @param end is the ending character of the function from the start of the file
+	 * @return the created DOMFunction
+	 */
 	public static DOMFunction createDOMFunction(DOMImage parent, 
 			String name, String source, 
 			int lineStart, int lineEnd, int start, int end){
@@ -82,11 +109,18 @@ public class DOMFunction {
 	
 	private Element myElement;
 	
+	/**
+	 * assign a JDOM element to this function name
+	 * 
+	 * @param data is a JDOM element
+	 */
 	public DOMFunction(Element data){
 		this.myElement = data;
 	}
 	
 	/**
+	 * gets the name of the inlined code
+	 * 
 	 * @return The name of the inlined code
 	 */
 	public String getName(){
@@ -94,6 +128,8 @@ public class DOMFunction {
 	}
 	
 	/**
+	 * gets the length in lines of the code block that will be inlined
+	 * 
 	 * @return The length in lines of the code block that will be inlined
 	 */
 	public int getLineCount(){
@@ -101,6 +137,8 @@ public class DOMFunction {
 	}
 	
 	/**
+	 * gets the char offset from the start of the file of the first char of the function
+	 * 
 	 * @return The start of the inlined code as a char offset from the start of the file
 	 */
 	public int getStart(){
@@ -108,12 +146,19 @@ public class DOMFunction {
 	}
 	
 	/**
+	 * gets the char offset from the start of the file of the last char of the function
+	 * 
 	 * @return The end of the inlined code as a char offset from the start of the file
 	 */
 	public int getEnd(){
 		return Integer.parseInt(this.myElement.getAttributeValue(END_ATTR));
 	}
 	
+	/**
+	 * gets the name of the source that this function came from
+	 * 
+	 * @return the source that this function came from, null if cannot find
+	 */
 	public DOMSource getSource(){
 		String sourceName = this.myElement.getAttributeValue(SOURCE_NAME_ATTR);
 		
@@ -129,14 +174,29 @@ public class DOMFunction {
 		return null;
 	}
 	
+	/**
+	 * gets the starting line number in the source file for this function
+	 * 
+	 * @return the starting line number in the source file
+	 */
 	public int getStartingLine(){
 		return Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
 	}
 	
+	/**
+	 * gets the ending line number in the source file for this function
+	 * 
+	 * @return the ending line number in the source file
+	 */
 	public int getEndingLine(){
 		return Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
 	}
 	
+	/**
+	 * gets the lines associated with this function
+	 * 
+	 * @return a String array containing the source lines for this function
+	 */
 	public String[] getLines(){
 		int start = Integer.parseInt(this.myElement.getAttributeValue(LINE_START_ATTR));
 		int end = Integer.parseInt(this.myElement.getAttributeValue(LINE_END_ATTR));
