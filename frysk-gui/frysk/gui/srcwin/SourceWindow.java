@@ -40,7 +40,6 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Vector;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -53,16 +52,12 @@ import org.gnu.gtk.Action;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
-import org.gnu.gtk.ComboBoxEntry;
 import org.gnu.gtk.Container;
-import org.gnu.gtk.DataColumn;
-import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
-import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
@@ -116,14 +111,12 @@ public class SourceWindow extends Window{
 	public static final String PREV_FIND = "prevFind"; //$NON-NLS-1$
 	public static final String HIGHLIGHT_FIND = "highlightFind"; //$NON-NLS-1$
 	public static final String CASE_FIND = "caseFind"; //$NON-NLS-1$
-	public static final String GOTO_BUTTON = "gotoButton"; //$NON-NLS-1$
 	public static final String CLOSE_FIND = "closeFind"; //$NON-NLS-1$
 
 	// Widget names - toolbar
 	public static final String GLADE_TOOLBAR_NAME = "toolbar"; //$NON-NLS-1$
 	public static final String FILE_SELECTOR = "fileSelector";
 	public static final String VIEW_COMBO_BOX = "viewComboBox";
-	public static final String FUNC_SELECTOR = "funcSelector";
 
 	// Widget that the SourceViewWidget will be placed in
 	public static final String TEXT_WINDOW = "textWindow";
@@ -214,7 +207,6 @@ public class SourceWindow extends Window{
 		this.tips = new ToolTips();
 		
 		this.populateStackBrowser(this.stack);
-		this.populateFunctionBox();
 		
 		this.createActions(ag);
 		this.createMenus();
@@ -702,8 +694,7 @@ public class SourceWindow extends Window{
 				.addListener(listener);
 
 		// function jump box
-		((ComboBoxEntry) this.glade.getWidget(SourceWindow.FUNC_SELECTOR))
-				.addListener(listener);
+		((Entry) this.glade.getWidget("toolbarGotoBox")).addListener(listener);
 		
 		// Mode box
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
@@ -747,17 +738,8 @@ public class SourceWindow extends Window{
 		this.glade.getWidget(SourceWindow.FIND_BOX).hideAll();
 	}
 	
-	private void gotoLine(){
-		String text = ((Entry) this.glade
-				.getWidget(SourceWindow.LINE_ENTRY)).getText();
-		try {
-			int gotoLine = Integer.parseInt(text);
-			this.view.scrollToLine(gotoLine);
-		}
-		// If it's not a number in the box (or if it's nothing), return
-		catch (NumberFormatException e) {
-			return;
-		}
+	private void gotoLine(int line){
+		this.view.scrollToLine(line);
 	}
 	
 	private void doFindNext(){
@@ -809,10 +791,6 @@ public class SourceWindow extends Window{
 		if (!this.view.highlightAll(text, caseSensitive))
 			this.glade.getWidget(SourceWindow.FIND_TEXT).setBaseColor(
 					StateType.NORMAL, Color.RED);
-	}
-
-	private void doScrollTofunction(String text){
-		this.view.scrollToFunction(text);
 	}
 	
 	private void switchToSourceMode(){
@@ -903,7 +881,6 @@ public class SourceWindow extends Window{
 		((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
 		this.view.load(selected);
 		this.view.showAll();
-		this.populateFunctionBox();
 	}
 	
 	/**
@@ -911,7 +888,7 @@ public class SourceWindow extends Window{
 	 */
 	private void doRun() {
 		// Set status of toolbar buttons
-		this.glade.getWidget(SourceWindow.FUNC_SELECTOR).setSensitive(false);
+		this.glade.getWidget("toolbarGotoBox").setSensitive(false);
 		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 
 		// Set status of actions
@@ -935,7 +912,7 @@ public class SourceWindow extends Window{
 
 	private void doStop() {
 		// Set status of toolbar buttons
-		this.glade.getWidget(SourceWindow.FUNC_SELECTOR).setSensitive(true);
+		this.glade.getWidget("toolbarGotoBox").setSensitive(true);
 		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
 
 		// Set status of actions
@@ -1070,29 +1047,9 @@ public class SourceWindow extends Window{
 		stackList.getSelection().select(
 				stackList.getModel().getIter("" + (max - 2)));
 	}
-
-	/*
-	 * Populates the "goto function" pull-down menu with the names of all the
-	 * functions in the current scope
-	 */
-	private void populateFunctionBox() {
-		ComboBoxEntry box = (ComboBoxEntry) this.glade
-				.getWidget(SourceWindow.FUNC_SELECTOR);
-		DataColumnString col = new DataColumnString();
-		ListStore newModel = new ListStore(new DataColumn[] { col });
-		Vector funcs = this.view.getFunctions();
-		TreeIter iter = newModel.appendRow();
-		for (int i = 0; i < funcs.size(); i++) {
-			newModel.setValue(iter, col, (String) funcs.get(i));
-			if (i != funcs.size() - 1)
-				iter = newModel.appendRow();
-		}
-
-		box.setModel(newModel);
-	}
 	
 	private class SourceWindowListener implements ButtonListener, 
-			EntryListener, ComboBoxListener, StackViewListener{
+			EntryListener, ComboBoxListener, StackViewListener {
 
 		private SourceWindow target;
 		
@@ -1107,8 +1064,6 @@ public class SourceWindow extends Window{
 			String buttonName = ((Button) event.getSource()).getName();
 			if (buttonName.equals(SourceWindow.CLOSE_FIND))
 				target.hideFindBox();
-			else if(buttonName.equals(SourceWindow.GOTO_BUTTON))
-				target.gotoLine();
 			else if(buttonName.equals(SourceWindow.NEXT_FIND))
 				target.doFindNext();
 			else if(buttonName.equals(SourceWindow.PREV_FIND))
@@ -1118,45 +1073,53 @@ public class SourceWindow extends Window{
 		}
 
 		public void entryEvent(EntryEvent event) {
-			if (event.isOfType(EntryEvent.Type.DELETE_TEXT))
-				target.resetSearchBox();
-			else if (event.isOfType(EntryEvent.Type.CHANGED))
-				target.doFindNext();
+			// Search box in the find bar
+			if(((Widget) event.getSource()).getName().equals("findText")){
+				if (event.isOfType(EntryEvent.Type.DELETE_TEXT))
+					target.resetSearchBox();
+				else if (event.isOfType(EntryEvent.Type.CHANGED))
+					target.doFindNext();
+			}
+			// Magic goto box in the toolbar
+			else{
+				// user had to hit enter to do anything
+				if(!event.isOfType(EntryEvent.Type.ACTIVATE))
+					return;
+				
+				String text = ((Entry) event.getSource()).getText();
+				
+				// goto line
+				if(text.indexOf("line ") == 0){
+					int line = Integer.parseInt(text.split("line ")[1]);
+					target.gotoLine(line);
+				}
+				
+				// clear the widget when we're done
+				((Entry) event.getSource()).deleteText(0, text.length());
+			}
 		}
 
 		public void comboBoxEvent(ComboBoxEvent event) {
 			String text = ((ComboBox) event.getSource()).getActiveText();
-			
-			// The only ComboBoxEntry is the function goto box
-			if(event.getSource() instanceof ComboBoxEntry){
-				target.doScrollTofunction(text);
-			}
+
+			// Switch to source mode
+			if(text.equals("Source"))
+				target.switchToSourceMode();
+			// Switch to Assembly mode
+			else if(text.equals("Assembly"))
+				target.switchToAsmMode();
+			// Switch to Mixed mode
+			else if(text.equals("Mixed"))
+				target.switchToMixedMode();
 			/*
-			 * The only widget other than the function goto box that this listener is
-			 * added to is the mode selector: so we know by know that it must have come
-			 * from this widget
+			 * Switch to Source/Assembly mode - we only need to worry about this
+			 * case if we're switching from Source, Assembly, or Mixed view. If 
+			 * we were previously in Source/Assembly view we don't need to
+			 * do anything
 			 */
-			else{
+			else if(text.equals("Source/Assembly"))
+				target.switchToSourceAsmMode();
 				
-				// Switch to source mode
-				if(text.equals("Source"))
-					target.switchToSourceMode();
-				// Switch to Assembly mode
-				else if(text.equals("Assembly"))
-					target.switchToAsmMode();
-				// Switch to Mixed mode
-				else if(text.equals("Mixed"))
-					target.switchToMixedMode();
-				/*
-				 * Switch to Source/Assembly mode - we only need to worry about this
-				 * case if we're switching from Source, Assembly, or Mixed view. If 
-				 * we were previously in Source/Assembly view we don't need to
-				 * do anything
-				 */
-				else if(text.equals("Source/Assembly"))
-					target.switchToSourceAsmMode();
-				
-			}
 		}
 
 		public void currentStackChanged(StackLevel newLevel) {

@@ -1,5 +1,8 @@
 2006-04-03  Adam Jocksch  <ajocksch@redhat.com>
 
+	* glade/frysk_source.glade: Changed function dropdown menu to an
+	Entry.
+
 	* DummySourceWindow.java (initializePreferences): updated to match 
 	Gui.java's version.
 	* glade/debugresultswindow.java: Changed label for Level of Detail to 

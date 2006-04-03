@@ -1,5 +1,19 @@
 2006-04-03  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (SourceWindow): Removed call to populateFunctionBox.
+	(addEvents): Now adds an EntryListener to the toolbar entry.
+	(gotoLine): Now takes a line to jump to, passes that line to source view.
+	(doScrollToFunction): Removed.
+	(updateShownStackFrame): Removed call to populateFunctionBox.
+	(doStop): Sets the sensitivity of the toolbar goto box.
+	(doRun): Ditto.
+	(populateFunctionBox): Removed.
+	(SourceWindowListener.buttonEvent): No longer checks for goto button.
+	(EntryEvent): If the event came from the toolbar, try to parse it to
+	jump to a line.
+	(comboBoxEvent): Now is only responsible for switching the mode of the
+	source window.
+
 	* CurrentStackView.java (CurrentStackView): No longer shows headers,
 	also added function names to the information displayed.
 	* InlineBuffer.java (InlineBuffer): No longer takes a DOMSource.
