@@ -38,6 +38,7 @@
 // exception.
 package frysk.gui.srcwin;
 
+import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
 
 /**
@@ -62,8 +63,9 @@ public class StackLevel {
 	protected StackLevel prevScope;
 	
 	// Actual data for this stack
+	private DOMFunction func;
 	private DOMSource data;
-
+	
 	/**
 	 * Creates a new StackLevel with the given current line. This constructor
 	 * allows the 'current line' to be a statement within a line. Eg:
@@ -74,11 +76,12 @@ public class StackLevel {
 	 * @param colStart The column of the current instruction
 	 * @param colEnd The column of the end of the current instruction
 	 */
-	public StackLevel(DOMSource data, CurrentLineSection currentLine){
+	public StackLevel(DOMFunction func, CurrentLineSection currentLine){
 		this.currentLine = currentLine;
 		
 		this.depth = 0;
-		this.data = data;
+		this.func = func;
+		this.data = func.getSource();
 	}
 
 	/**
@@ -87,8 +90,8 @@ public class StackLevel {
 	 * @param data
 	 * @param line
 	 */
-	public StackLevel(DOMSource data, int line){
-		this(data, new CurrentLineSection(line, line, 0, StackLevel.EOL));
+	public StackLevel(DOMFunction func, int line){
+		this(func, new CurrentLineSection(line, line, 0, StackLevel.EOL));
 	}
 	
 	/**
@@ -157,5 +160,9 @@ public class StackLevel {
 
 	public void setCurrentLine(CurrentLineSection currentLine) {
 		this.currentLine = currentLine;
+	}
+
+	public DOMFunction getFunc() {
+		return func;
 	}
 }

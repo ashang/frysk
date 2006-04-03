@@ -68,8 +68,6 @@ import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SeparatorToolItem;
-import org.gnu.gtk.SizeGroup;
-import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
@@ -669,19 +667,9 @@ public class SourceWindow extends Window{
 				.setImage(new Image(GtkStockItem.GO_FORWARD, IconSize.BUTTON));
 		((Button) this.glade.getWidget(SourceWindow.PREV_FIND))
 				.setImage(new Image(GtkStockItem.GO_BACK, IconSize.BUTTON));
-		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON))
-				.setImage(new Image(GtkStockItem.JUMP_TO, IconSize.BUTTON));
 		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND))
 				.setImage(new Image(new GtkStockItem("frysk-highlight"),
 						IconSize.BUTTON));
-
-		SizeGroup group1 = new SizeGroup(SizeGroupMode.HORIZONTAL);
-		group1.addWidget(this.glade.getWidget(CLOSE_FIND));
-		group1.addWidget(this.glade.getWidget("gotoPadding"));
-		
-		SizeGroup group2 = new SizeGroup(SizeGroupMode.HORIZONTAL);
-		group2.addWidget(this.glade.getWidget(FIND_LABEL));
-		group2.addWidget(this.glade.getWidget(LINE_LABEL));
 		
 		// add Tooltips
 		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND),
@@ -690,8 +678,6 @@ public class SourceWindow extends Window{
 						"Find Previous Match", "Locate the previous occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
 		tips.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND),
 						"Highlight All Matches", "Locate all occurances in the file"); //$NON-NLS-1$ //$NON-NLS-2$
-		tips.setTip(this.glade.getWidget(SourceWindow.GOTO_BUTTON),
-						"Go to Entered Line Number", "Jump to the line number that was entered"); //$NON-NLS-1$ //$NON-NLS-2$
 		tips.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND),
 						"Hide Find Window", "Close the find window"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
@@ -709,8 +695,6 @@ public class SourceWindow extends Window{
 		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
 				.addListener(listener);
 		((Button) this.glade.getWidget(SourceWindow.CLOSE_FIND))
-				.addListener(listener);
-		((Button) this.glade.getWidget(SourceWindow.GOTO_BUTTON))
 				.addListener(listener);
 
 		// Text field in search bar

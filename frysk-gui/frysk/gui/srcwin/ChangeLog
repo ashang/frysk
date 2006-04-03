@@ -1,3 +1,23 @@
+2006-04-03  Adam Jocksch  <ajocksch@redhat.com>
+
+	* CurrentStackView.java (CurrentStackView): No longer shows headers,
+	also added function names to the information displayed.
+	* InlineBuffer.java (InlineBuffer): No longer takes a DOMSource.
+	(moveDown): refactored to reflect changes to StackLevel.
+	* InlineSourceView.java (InlineSourceView): No longer takes a
+	DOMSource.
+	* SourceView.java (toggleChild): Refactored to reflect new 
+	InlineSourceView constructor.
+	* SourceWindow.java (addEvents): Removed events for goto line.
+	(createSearchBar): Removed initializations for goto line.
+	* SourceWindowFactory.java (createSourceWindow): Now adds functions
+	to the StackLevels.
+	* StackLevel.java (StackLevel): Now takes a DOMFunction instead of
+	a DOMSource.
+	(getFunc): Added.
+	* cparser/CDTParser.java (ParserCallBack.acceptFunctionDeclaration):
+	removed debugging output.
+
 2006-03-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (createTags): Commented out section for adding

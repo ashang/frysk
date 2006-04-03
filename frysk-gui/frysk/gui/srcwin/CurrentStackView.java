@@ -74,6 +74,8 @@ public class CurrentStackView extends TreeView implements TreeSelectionListener 
 	public CurrentStackView(StackLevel topLevel) {
 		super();
 
+		this.setHeadersVisible(false);
+		
 		this.observers = new Vector();
 		
 		stackColumns = new DataColumn[] { new DataColumnString(),
@@ -108,11 +110,11 @@ public class CurrentStackView extends TreeView implements TreeSelectionListener 
 			// If we've found inlined code, update the display
 			if(hasInlinedCode)
 				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel
-						.getData().getFileName()
+						.getData().getFileName()+ ": " + topLevel.getFunc().getName()
 						+ "  (i)");
 			else
 				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel
-						.getData().getFileName());
+						.getData().getFileName()+ ": " + topLevel.getFunc().getName());
 				
 			listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
 

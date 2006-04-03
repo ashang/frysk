@@ -136,7 +136,7 @@ public class CDTParser implements StaticParser {
 				new NullLogService());
 		
 		if(!parser2.parse())
-			System.err.println("Complete Parse: Error found on line " + parser2.getLastErrorLine());
+		    System.err.println("Complete Parse: Error found on line " + parser2.getLastErrorLine());
 		
 		/*
 		 * The CDT Parser does not parse out comments for some reason,
@@ -230,7 +230,6 @@ public class CDTParser implements StaticParser {
 	
 				// There may not be a parameter name in a function delcaration
 				if(param.getNameOffset() != -1){
-					System.out.println("Making type and name tag");
 					/*
 					 * Perform compairasons relative to the parameter type line, so that 
 					 * if the parameters are both on the same line we still get a little
@@ -248,7 +247,6 @@ public class CDTParser implements StaticParser {
 				}
 				// There is no parameter name, so only make a tag for the keyword
 				else{
-					System.out.println("Only making type tag");
 					/*
 					 * TODO: As of right now, it seems that whenever the parameter
 					 * name doesn't exist, param.getEndingOffset() is 0, which makes

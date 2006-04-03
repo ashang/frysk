@@ -48,7 +48,6 @@ import org.jdom.Element;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMInlineInstance;
 import frysk.dom.DOMLine;
-import frysk.dom.DOMSource;
 import frysk.dom.DOMTag;
 import frysk.dom.DOMTagTypes;
 
@@ -72,11 +71,11 @@ public class InlineBuffer extends SourceBuffer {
 	 * @param scope The file that the declaration is in
 	 * @param instance The inlined instance to display
 	 */
-	public InlineBuffer(DOMSource scope, DOMInlineInstance instance) {
+	public InlineBuffer(DOMInlineInstance instance) {
 		super();
 		this.instance = instance;
 		this.declaration = this.instance.getDeclaration();
-		StackLevel myScope = new StackLevel(scope, instance.getPCLine());
+		StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
 		this.setScope(myScope);
 	}
 	
@@ -296,7 +295,7 @@ public class InlineBuffer extends SourceBuffer {
     	if(this.instance.hasInlineInstance()){
     		this.instance = instance.getInlineInstance();
     		this.declaration = this.instance.getDeclaration(); 
-    		StackLevel myScope = new StackLevel(this.declaration.getSource(), instance.getPCLine());
+    		StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
     		this.setScope(myScope);
     	}
     	// Can we even get a case where there is no next inline instance and this method
@@ -312,7 +311,7 @@ public class InlineBuffer extends SourceBuffer {
     	if(this.instance.hasParentInlineInstance()){
     		this.instance = instance.getPreviousInstance();
     		this.declaration = this.instance.getDeclaration();
-    		StackLevel myScope = new StackLevel(this.declaration.getSource(), instance.getPCLine());
+    		StackLevel myScope = new StackLevel(this.declaration, instance.getPCLine());
     		this.setScope(myScope);
     	}
     	// Same connundrum as above method...

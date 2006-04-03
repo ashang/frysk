@@ -56,7 +56,6 @@ import org.gnu.pango.Alignment;
 import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
-import frysk.dom.DOMSource;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
@@ -89,9 +88,8 @@ public class InlineSourceView extends SourceView{
 	 *     InlineViewer will be displaying
 	 * @param instance The inline instance to display
 	 */
-	public InlineSourceView(SourceWindow top, 
-			DOMSource scope, DOMInlineInstance instance) {
-		super(new InlineBuffer(scope, instance), top);
+	public InlineSourceView(SourceWindow top, DOMInlineInstance instance) {
+		super(new InlineBuffer(instance), top);
 		this.setBorderWidth(1);
 		this.depth = 1;
 		this.tips = new ToolTips();

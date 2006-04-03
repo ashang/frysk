@@ -100,6 +100,10 @@ public class DummySourceWindow {
     	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OUT_OF_SCOPE, new Color(38293, 38293, 38293), Weight.NORMAL, Style.NORMAL));
     	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.VARIABLES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
     	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.COMMENTS, new Color(47031, 40606, 32125), Weight.NORMAL, Style.ITALIC));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.NAMESPACE, Color.RED, Weight.BOLD, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.INCLUDES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.MACRO, Color.BLACK, Weight.BOLD, Style.NORMAL));
+    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.TEMPLATE, new Color(42102, 24112, 51868), Weight.BOLD, Style.NORMAL));
     	
     	PreferenceManager.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
     }

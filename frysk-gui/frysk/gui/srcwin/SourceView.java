@@ -72,7 +72,6 @@ import org.gnu.pango.FontDescription;
 import org.gnu.pango.Layout;
 
 import frysk.dom.DOMInlineInstance;
-import frysk.dom.DOMSource;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
@@ -299,9 +298,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 			DOMInlineInstance instance = this.buf.getInlineInstance(this.buf
 					.getCurrentLine());
 
-			DOMSource scope = instance.getDeclaration().getSource();
-			InlineSourceView nested = new InlineSourceView(this.parent,
-					scope, instance);
+			InlineSourceView nested = new InlineSourceView(this.parent, instance);
 			this.setSubscopeAtCurrentLine(nested);
 		} else {
 			expanded = false;
