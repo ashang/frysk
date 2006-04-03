@@ -1087,9 +1087,22 @@ public class SourceWindow extends Window{
 					return;
 				
 				String text = ((Entry) event.getSource()).getText();
+				boolean isNum = true;
+				int value = -1;
+				
+				try{
+					value = Integer.parseInt(text);
+				}
+				// didn't work, we have to try to parse the text
+				catch (NumberFormatException ex){
+					isNum = false;
+				}
 				
 				// goto line
-				if(text.indexOf("line ") == 0){
+				if(isNum){
+					target.gotoLine(value);
+				}
+				else if(text.indexOf("line ") == 0){
 					int line = Integer.parseInt(text.split("line ")[1]);
 					target.gotoLine(line);
 				}

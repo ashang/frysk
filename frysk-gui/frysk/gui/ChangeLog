@@ -1,5 +1,8 @@
 2006-04-03  Adam Jocksch  <ajocksch@redhat.com>
 
+	* glade/frysk_source.glade: Added "Goto:" label next to toolbar
+	goto entry.
+
 	* glade/frysk_source.glade: Changed function dropdown menu to an
 	Entry.
 

@@ -1,5 +1,12 @@
 2006-04-03  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (scrollToLine): Now uses a value of 0.35 as the
+	second parameter, so the line the user wanted to scroll to appears
+	closer to the top of the widget.
+	* SourceWindow.java (SourceWindowListener.entryEvent): Now also jumps
+	to a line number when the user enters that number; no longer needs to
+	be prefixed by "line ".
+
 	* SourceWindow.java (SourceWindow): Removed call to populateFunctionBox.
 	(addEvents): Now adds an EntryListener to the toolbar entry.
 	(gotoLine): Now takes a line to jump to, passes that line to source view.

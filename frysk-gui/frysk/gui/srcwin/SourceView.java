@@ -187,7 +187,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	 *            The line to scroll to
 	 */
 	public void scrollToLine(int lineNum) {
-		this.scrollToIter(this.buf.getLineIter(lineNum - 1), 0);
+		this.scrollToIter(this.buf.getLineIter(lineNum - 1), 0.35);
 	}
 
 	/**
