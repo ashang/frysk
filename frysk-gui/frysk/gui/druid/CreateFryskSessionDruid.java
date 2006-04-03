@@ -270,13 +270,9 @@ public class CreateFryskSessionDruid extends Dialog {
 					TreePath[] selectedObservers = observerSelectionTreeView.getSelection().getSelectedRows();
 					TreePath[] selectedProcs = processObserverSelectionTreeView.getSelection().getSelectedRows();
 					for (int i=0; i<selectedObservers.length; i++)
-					{
 						for (int x=0; x<selectedProcs.length; x++)
-						{
-							processObserverDataModel.addObserver(selectedProcs[x],observerDataModel.nameFromPath(selectedObservers[i]));
-						}
-					}
-					//System.out.println("Add Observers");
+							processObserverDataModel.addObserver(selectedProcs[x],
+									observerDataModel.nameFromPath(selectedObservers[i]));
 				}
 			}
 			
@@ -286,6 +282,8 @@ public class CreateFryskSessionDruid extends Dialog {
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
 					System.out.println("Remove Observers");
+					TreePath[] selectedProcs = processObserverSelectionTreeView.getSelection().getSelectedRows();
+					processObserverDataModel.removeObservers(selectedProcs);
 				}
 			}
 		});

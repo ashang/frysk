@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
@@ -59,20 +60,27 @@ public class ProcessObserverDataModel {
 	private TreeStore treeStore;
 
 	private DataColumnString nameDC;
+	private DataColumnBoolean processType;
 	private boolean initialDataPopulation = false;
 	
 	
 	public ProcessObserverDataModel(){
-		this.nameDC = new DataColumnString();		
-		this.treeStore = new TreeStore(new DataColumn[] {this.nameDC});
+		this.nameDC = new DataColumnString();
+		this.processType = new DataColumnBoolean();
+		this.treeStore = new TreeStore(new DataColumn[] {this.nameDC, this.processType});
 	}
 
-	private void setRow(TreeIter row, String name){
+	private void setRow(TreeIter row, String name, boolean process){
 		treeStore.setValue(row, nameDC, name);
+		treeStore.setValue(row, processType, process);
 	}
 
 	public DataColumnString getNameDC() {
 		return nameDC;
+	}
+	
+	public DataColumnBoolean getProcessTypeDC() {
+		return processType;
 	}
 
 	
@@ -87,17 +95,44 @@ public class ProcessObserverDataModel {
 		{
 			nameData = (String) i.next();
 			iter = this.treeStore.appendRow(null);
-			setRow(iter,nameData);
+			setRow(iter,nameData,true);
 		}
 		this.initialDataPopulation = true;
 	}
 	
 	public void addObserver(TreePath row, String ObserverName)
 	{
-		TreeIter childIter = treeStore.appendRow(treeStore.getIter(row));
-		setRow(childIter,ObserverName);
+		TreeIter checkObserver = treeStore.getIter(row); 
+
+		if (!treeStore.isIterValid(checkObserver))
+			return;
+		
+		if (treeStore.getValue(checkObserver,this.processType) == false)
+				return;
+		
+		for (int i=0; i<checkObserver.getChildCount(); i++)
+			if ( treeStore.getValue(checkObserver.getChild(i),this.nameDC).equals(ObserverName))
+				return;
+
+		TreeIter ZchildIter = treeStore.appendRow(checkObserver);
+		setRow(ZchildIter,ObserverName,false);
+	}
+	
+	public void removeObservers(TreePath[] rows)
+	{
+		
+		for (int x=0; x<rows.length; x++) 
+		{
+			TreeIter checkObserver = treeStore.getIter(rows[x]);
+			System.out.println("Selection is: " + treeStore.getValue(checkObserver,nameDC));
+			if (treeStore.isIterValid(checkObserver))
+				if (treeStore.getValue(checkObserver,this.processType) == false)
+					treeStore.removeRow(checkObserver);
+
+		}
 		
 	}
+	
 	public TreeStore getModel() {
 		return this.treeStore;
 	}
