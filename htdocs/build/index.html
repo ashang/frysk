@@ -120,7 +120,11 @@ $ rpm -ivh ../blah/blah
 </li>
 </ul>
 
-Thanks to Wu Zhou for these notes.
+Thanks to Wu Zhou for both tracking this down and providing the
+patch.<br> A pre-built kernel <strong>snapshot</strong> with the patch
+applied can be found <a
+href="http://people.redhat.com/cagney/frysk">here</a>
+
 </li>
 
 <li>Either <tt>selinux</tt> should be disabled, or its database
@@ -145,42 +149,6 @@ development SRPM directory</a>.</li>
 For additional updates, check Fedora Core 5's tracker bug's <a
 href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=2104">dependency
 tree</a>
-
-</dd>
-
-<dt><a name="fc4">Fedora Core 4</a></dt>
-
-<dd>
-
-Both the compiler needs to be updated, and additional libraries need
-to be built and installed:
-
-<ul>
-
-<li><tt>gcj 4.0.2-8.fc4</tt> has a number of serious bugs. <br>
-Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
-(found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).</li>
-
-<li>Download, build, and install the RHEL 4 jumbo <em>frysk</em> RPM
-(found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>). You will
-need to change these two lines in <tt>frysk.spec</tt>:
-<pre>
-#define frysk_gcc_prefix /usr/bin/
-#define frysk_gcc_suffix 4
-</pre>
-so that they describe the location of the above installed compiler:
-<pre>
-%define frysk_gcc_prefix /path/to/up-to-date/gcc/
-%define frysk_gcc_suffix %{nil}
-</pre>
-</li>
-</ul>
-
-For additional updates, check Fedora Core 4's tracker bug's <a
-href="http://sourceware.org/bugzilla/showdependencytree.cgi?id=1975">dependency
-tree</a>.
 
 </dd>
 
