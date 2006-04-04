@@ -40,6 +40,7 @@ package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Vector;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -53,11 +54,15 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.CheckButton;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Container;
+import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.EntryCompletion;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
+import org.gnu.gtk.ListStore;
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuBar;
 import org.gnu.gtk.MenuItem;
@@ -695,6 +700,21 @@ public class SourceWindow extends Window{
 
 		// function jump box
 		((Entry) this.glade.getWidget("toolbarGotoBox")).addListener(listener);
+		EntryCompletion completion = new EntryCompletion();
+		completion.setInlineCompletion(false);
+		completion.setPopupCompletion(true);
+		DataColumn[] cols = {new DataColumnString()};
+		ListStore store = new ListStore(cols);
+		
+		Vector funcs = this.view.getFunctions();
+		for(int i = 0; i < funcs.size(); i++){
+			TreeIter iter = store.appendRow();
+			store.setValue(iter, (DataColumnString)cols[0], (String) funcs.get(i));
+		}
+		
+		completion.setModel(store);
+		completion.setTextColumn(cols[0].getColumn());
+		((Entry) this.glade.getWidget("toolbarGotoBox")).setCompletion(completion);
 		
 		// Mode box
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
@@ -1048,6 +1068,10 @@ public class SourceWindow extends Window{
 				stackList.getModel().getIter("" + (max - 2)));
 	}
 	
+	private void doJumpToFunction(String name){
+		this.view.scrollToFunction(name);
+	}
+	
 	private class SourceWindowListener implements ButtonListener, 
 			EntryListener, ComboBoxListener, StackViewListener {
 
@@ -1086,29 +1110,32 @@ public class SourceWindow extends Window{
 				if(!event.isOfType(EntryEvent.Type.ACTIVATE))
 					return;
 				
-				String text = ((Entry) event.getSource()).getText();
+				Entry source = (Entry) event.getSource();
+				
+				String text = source.getText();
 				boolean isNum = true;
 				int value = -1;
 				
 				try{
+					if(text.indexOf("line ") == 0){
+						text = text.split("line ")[1];
+					}
 					value = Integer.parseInt(text);
 				}
 				// didn't work, we have to try to parse the text
 				catch (NumberFormatException ex){
 					isNum = false;
+					// Since we might have screwed around with this, reset it
+					text = source.getText();
 				}
 				
 				// goto line
 				if(isNum){
 					target.gotoLine(value);
 				}
-				else if(text.indexOf("line ") == 0){
-					int line = Integer.parseInt(text.split("line ")[1]);
-					target.gotoLine(line);
+				else {
+					target.doJumpToFunction(text);
 				}
-				
-				// clear the widget when we're done
-				((Entry) event.getSource()).deleteText(0, text.length());
 			}
 		}
 

@@ -310,7 +310,7 @@ public class SourceView extends TextView implements View, ExposeListener {
 	public void scrollToFunction(String markName) {
 		if (this.buf.getFunctions().contains(markName)) {
 			TextMark mark = this.buf.getMark(markName);
-			this.scrollToMark(mark, 0);
+			this.scrollToMark(mark, 0.35);
 		}
 	}
 

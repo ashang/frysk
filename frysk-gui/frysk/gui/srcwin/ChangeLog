@@ -1,3 +1,13 @@
+2006-04-04  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceView.java (scrollToFunction): Now scrolls so the function is
+	near the top of the window.
+	* SourceWindow.java (addEvents): Now adds completion to the goto box,
+	for jump to function purposes.
+	(doJumpToFunction): Added.
+	(SourceWinListener.entryEvent): If parse for line number fails, now
+	jumps to function, also removed clearing of text.
+
 2006-04-03  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (scrollToLine): Now uses a value of 0.35 as the
