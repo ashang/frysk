@@ -120,7 +120,7 @@ frysk2270/WrongScope.gcj:
 	echo \! $(GCJ) -C -d . $(srcdir)/frysk2270/WrongScope.java >> $@
 	chmod a+x $@
 
-XFAIL_TESTS += frysk2105/O.out
+TESTS += frysk2105/O.out
 frysk2105_O_SOURCES = frysk2105/O.java
 frysk2105_O_LDFLAGS = --main=frysk2105.O
 noinst_PROGRAMS += frysk2105/O
