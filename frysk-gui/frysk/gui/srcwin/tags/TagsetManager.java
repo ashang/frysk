@@ -37,8 +37,10 @@ public class TagsetManager {
 	 */
 	public void addTagset(Tagset toAdd){
 		if(tagsets.contains(toAdd)){
-			
+			throw new IllegalArgumentException("Tagset " + toAdd.getName() + " was already in manager");
 		}
+		
+		this.tagsets.add(toAdd);
 	}
 	
 	/**

@@ -1,5 +1,8 @@
 2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tags/TagsetManager.java: (addTagset): Now properly adds tag to
+	tagset.
+
 	* tags: Added.
 	* tags/TagsetManager.java: Added.
 	* tags/Tagset.java: Added.
