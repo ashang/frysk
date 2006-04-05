@@ -1,5 +1,8 @@
 2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Gui.java (createDummyTagsets): Now adds version strings to
+	each tag.
+
 	* Gui.java (createDummyTagsets): Created, to be used until real
 	tagsets are available.
 

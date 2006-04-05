@@ -1,5 +1,15 @@
 2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tags/Tagset.java (Tagset): Now takes a version string of the command
+	this tagset applies to.
+	(getVersion): Added.
+	(addTag): Added.
+	(getTags): Added.
+	(containsTag): Added.
+	(equals): Added.
+	* tags/TagsetManager.java (containsTagset): Added.
+	* tags/Tag.java: Added.
+
 	* tags/TagsetManager.java: (addTagset): Now properly adds tag to
 	tagset.
 
