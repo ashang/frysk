@@ -86,6 +86,8 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
+import frysk.gui.srcwin.tags.Tagset;
+import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Manager;
 
 public class Gui
@@ -136,6 +138,22 @@ public class Gui
     	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.TEMPLATE, new Color(42102, 24112, 51868), Weight.BOLD, Style.NORMAL));
     	
     	PreferenceManager.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
+    }
+    
+    private static void createDummyTagsets(){
+    	Tagset ts = new Tagset("httpd network layer", "For debugging aspects of httpd relating to the low level network layer", "httpd");
+    	TagsetManager.manager.addTagset(ts);
+    	
+    	ts = new Tagset("httpd error messages", "Tags for dealing with httpd errors before they're sent to the client", "httpd");
+    	TagsetManager.manager.addTagset(ts);
+    	
+    	ts = new Tagset("eclipse Copy and Pase bug finder", "Attaches hooks into eclipse's copy and paste mechnaism", "eclipse");
+    	TagsetManager.manager.addTagset(ts);
+    	
+    	ts = new Tagset("Firefox plugin loader", "Aids in debugging plugin loading in firefox", "firefox");
+    	TagsetManager.manager.addTagset(ts);
+    	
+    	ts = new Tagset("Firefox network layer", "Tags for debugging the low level network code in firefox", "firefox");
     }
     
     Gui (String[] glade_dirs)
@@ -247,6 +265,9 @@ public class Gui
     {
 	Gtk.init(args);
 
+	// Creates example tagsets until we can have real ones.
+	createDummyTagsets();
+	
 	//-------------------GUInea pigs-------------------
 	// System.out.println("infLoop PID : " + SysUtils.infLoop ());
 	// System.out.println("infThreadLoop PID : " + SysUtils.infThreadLoop (2));

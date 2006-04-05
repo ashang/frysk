@@ -1,5 +1,9 @@
 2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tags: Added.
+	* tags/TagsetManager.java: Added.
+	* tags/Tagset.java: Added.
+
 	* SourceWindow.java (attachEvents): Now adds mouse listener to the
 	toolbar goto box that selects the text in the box when the mouse is
 	clicked on it.
