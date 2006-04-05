@@ -1,8 +1,14 @@
+2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (attachEvents): Now adds mouse listener to the
+	toolbar goto box that selects the text in the box when the mouse is
+	clicked on it.
+
 2006-04-04  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceView.java (scrollToFunction): Now scrolls so the function is
 	near the top of the window.
-	* SourceWindow.java (addEvents): Now adds completion to the goto box,
+	* SourceWindow.java (attachEvents): Now adds completion to the goto box,
 	for jump to function purposes.
 	(doJumpToFunction): Added.
 	(SourceWinListener.entryEvent): If parse for line number fails, now

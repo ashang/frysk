@@ -84,6 +84,8 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.MouseEvent;
+import org.gnu.gtk.event.MouseListener;
 
 import frysk.dom.DOMFrysk;
 import frysk.gui.common.IconManager;
@@ -715,6 +717,22 @@ public class SourceWindow extends Window{
 		completion.setModel(store);
 		completion.setTextColumn(cols[0].getColumn());
 		((Entry) this.glade.getWidget("toolbarGotoBox")).setCompletion(completion);
+		
+		((Entry) this.glade.getWidget("toolbarGotoBox")).addListener(new MouseListener() {
+		
+			public boolean mouseEvent(MouseEvent arg0) {
+				if(arg0.isOfType(MouseEvent.Type.BUTTON_PRESS) ||
+						arg0.getButtonPressed() == MouseEvent.BUTTON1){
+					
+					Entry source = (Entry) arg0.getSource();
+					source.selectRegion(0, source.getText().length());
+					
+					return false;
+				}
+				return false;
+			}
+		
+		});
 		
 		// Mode box
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
