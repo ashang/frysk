@@ -1,5 +1,10 @@
 2006-04-06  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (noinst_PROGRAMS): Define.
+	(frysk1497_JNICrash_LDFLAGS, frysk1497_IterTest_LDFLAGS)
+	(frysk2333_TestGlibTimerGC_LDFLAGS): Define along with _SOURCES.
+	* frysk14797/IterTest.java: rename gtktreeiter/IterTest.java.
+	
 	* Makefile.am (frysk1497/a.out): Rename from textiter/.
 	
 	* Makefile.am (frysk2333/a.out): Renamed from glibtimer/.

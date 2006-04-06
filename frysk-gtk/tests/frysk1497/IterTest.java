@@ -1,4 +1,5 @@
-package gcjtreeiter;
+package frysk1497;
+
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Gtk;

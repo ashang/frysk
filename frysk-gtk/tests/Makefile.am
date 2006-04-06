@@ -37,6 +37,7 @@
 # version and license this file solely under the GPL without
 # exception.
 
+noinst_PROGRAMS =
 EXTRA_DIST =
 # If there's no display, exit with code 77 (SKIP); otherwize gag all
 # the output from the failing tests
@@ -48,59 +49,38 @@ TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
 $(TESTS) $(XFAIL_TESTS): Makefile
 CLEANFILES = $(TESTS)
+AM_GCJFLAGS = -classpath $(FRYSK_GTK_CLASSPATH)
+AM_LDFLAGS = $(FRYSK_GTK_LIBS) \
+	-Wl,-rpath,/usr/lib/frysk \
+	-Djava.library.path=/usr/lib/frysk
 
-TESTS += frysk1497/a.out
-frysk1497_FILES = frysk1497/JNICrash.java
-EXTRA_DIST += $(frysk1497_FILES)
-frysk1497/a.out: $(frysk1497_FILES)
+TESTS += frysk1497/JNICrash
+noinst_PROGRAMS += frysk1497/JNICrash
+frysk1497_JNICrash_SOURCES = frysk1497/JNICrash.java
+frysk1497_JNICrash_LDFLAGS = --main=frysk1497.JNICrash
+
+TESTS += frysk1497/IterTest
+noinst_PROGRAMS += frysk1497/IterTest
+frysk1497_IterTest_SOURCES = frysk1497/IterTest.java
+frysk1497_IterTest_LDFLAGS = --main=frysk1497.IterTest
+
+TESTS += frysk1497/IterTest.gij
+CLEANFILES += frysk1497/IterTest.class frysk1497/IterTest.gij
+all-local: frysk1497/IterTest.class
+frysk1497/IterTest.class: $(frysk1497_FILES)
 	mkdir -p frysk1497
-	$(GCJ) -g \
-		-classpath $(FRYSK_GTK_CLASSPATH) \
-		$(FRYSK_GTK_LIBS) \
-		-Wl,-rpath,/usr/lib/frysk \
-		-Djava.library.path=/usr/lib/frysk \
-		--main=frysk1497.JNICrash \
-		-o frysk1497/a.out \
-		$(srcdir)/frysk1497/JNICrash.java
-
-gcjtreeiter_FILES = gcjtreeiter/IterTest.java
-EXTRA_DIST += $(gcjtreeiter_FILES)
-XFAIL_TESTS += gcjtreeiter/a.out
-gcjtreeiter/a.out: $(gcjtreeiter_FILES)
-	mkdir -p gcjtreeiter
-	$(GCJ) -g \
-		-classpath $(FRYSK_GTK_CLASSPATH) \
-		$(FRYSK_GTK_LIBS) \
-		-Wl,-rpath,/usr/lib/frysk \
-		-Djava.library.path=/usr/lib/frysk \
-		--main=gcjtreeiter.IterTest \
-		$(srcdir)/gcjtreeiter/IterTest.java \
-		-o gcjtreeiter/a.out
-XFAIL_TESTS += gcjtreeiter/gij.sh
-CLEANFILES += gcjtreeiter/IterTest.class
-gcjtreeiter/IterTest.class: $(gcjtreeiter_FILES)
-	mkdir -p gcjtreeiter
 	$(GCJ) -g -C -d . -I$(srcdir) \
 		-classpath $(FRYSK_GTK_CLASSPATH) \
-		$(srcdir)/gcjtreeiter/IterTest.java
-gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
-	mkdir -p gcjtreeiter
+		$(srcdir)/frysk1497/IterTest.java
+frysk1497/IterTest.gij:
+	mkdir -p frysk1497
 	echo $(GIJ) -classpath .:$(FRYSK_GTK_CLASSPATH) \
 		-Djava.library.path=/usr/lib/frysk \
-		gcjtreeiter.IterTest \
-		> gcjtreeiter/gij.sh
-	chmod a+x gcjtreeiter/gij.sh
-
-frysk2333_FILES = frysk2333/TestGlibTimerGC.java
-EXTRA_DIST += $(frysk2333_FILES)
-TESTS += frysk2333/a.out
-frysk2333/a.out: $(frysk2333_FILES)
-	mkdir -p frysk2333
-	$(GCJ) -g \
-		-classpath $(FRYSK_GTK_CLASSPATH) \
-		$(FRYSK_GTK_LIBS) \
-		-Wl,-rpath,/usr/lib/frysk \
-		-Djava.library.path=/usr/lib/frysk \
-		--main=frysk2333.TestGlibTimerGC \
-		$(srcdir)/frysk2333/TestGlibTimerGC.java \
-		-o frysk2333/a.out
+		frysk1497.IterTest \
+		> frysk1497/IterTest.gij
+	chmod a+x frysk1497/IterTest.gij
+
+TESTS += frysk2333/TestGlibTimerGC
+noinst_PROGRAMS += frysk2333/TestGlibTimerGC
+frysk2333_TestGlibTimerGC_SOURCES = frysk2333/TestGlibTimerGC.java
+frysk2333_TestGlibTimerGC_LDFLAGS = --main=frysk2333.TestGlibTimerGC
