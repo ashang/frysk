@@ -49,19 +49,19 @@ all-local: $(TESTS)
 $(TESTS) $(XFAIL_TESTS): Makefile
 CLEANFILES = $(TESTS)
 
-TESTS += textiter/a.out
-textiter_FILES = textiter/JNICrash.java
-EXTRA_DIST += $(textiter_FILES)
-textiter/a.out: $(textiter_FILES)
-	mkdir -p textiter
+TESTS += frysk1497/a.out
+frysk1497_FILES = frysk1497/JNICrash.java
+EXTRA_DIST += $(frysk1497_FILES)
+frysk1497/a.out: $(frysk1497_FILES)
+	mkdir -p frysk1497
 	$(GCJ) -g \
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(FRYSK_GTK_LIBS) \
 		-Wl,-rpath,/usr/lib/frysk \
 		-Djava.library.path=/usr/lib/frysk \
-		--main=textiter.JNICrash \
-		-o textiter/a.out \
-		$(srcdir)/textiter/JNICrash.java
+		--main=frysk1497.JNICrash \
+		-o frysk1497/a.out \
+		$(srcdir)/frysk1497/JNICrash.java
 
 gcjtreeiter_FILES = gcjtreeiter/IterTest.java
 EXTRA_DIST += $(gcjtreeiter_FILES)

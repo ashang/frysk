@@ -1,4 +1,4 @@
-package textiter;
+package frysk1497;
 import org.gnu.gtk.Gtk;
 import org.gnu.gtk.TextBuffer;
 
