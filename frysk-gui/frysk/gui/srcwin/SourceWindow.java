@@ -93,6 +93,7 @@ import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
+import frysk.gui.register.RegisterWindow;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
@@ -177,6 +178,9 @@ public class SourceWindow extends Window{
 
 	// Private inner class to take care of the event handling
 	private SourceWindowListener listener;
+	
+	// Register window
+	private RegisterWindow regWindow;
 	
 	/**
 	 * Creates a new source window with the given properties. This constructor
@@ -276,6 +280,18 @@ public class SourceWindow extends Window{
 		this.setTitle(this.getTitle() + " - "
 			      + this.myTask.getProc ().getCommand () + " "
 			      + this.myTask.getName ());
+		
+		// Remove this once we have a way of launching the register window
+		LibGlade regWindow = null;
+		try{
+			regWindow = new LibGlade(this.gladePath + "/registerwindow.glade", null);
+		}
+		catch (Exception e){
+			return;
+		}
+		
+		this.regWindow = new RegisterWindow(myTask, regWindow);
+		this.regWindow.show();
 	}
 
 	/***************************************************************************
@@ -929,6 +945,8 @@ public class SourceWindow extends Window{
 		this.glade.getWidget("toolbarGotoBox").setSensitive(false);
 		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 
+		this.regWindow.setIsRunning(true);
+		
 		// Set status of actions
 		this.run.setSensitive(false);
 		this.stop.setSensitive(true);
@@ -953,6 +971,8 @@ public class SourceWindow extends Window{
 		this.glade.getWidget("toolbarGotoBox").setSensitive(true);
 		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
 
+		this.regWindow.setIsRunning(false);
+		
 		// Set status of actions
 		this.run.setSensitive(true);
 		this.stop.setSensitive(false);

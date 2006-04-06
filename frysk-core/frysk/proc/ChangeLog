@@ -1,3 +1,9 @@
+2006-04-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Isa.java: Made public.
+	(RegisterIterator): Ditto.
+	(getRegisterByName): Ditto.
+
 2006-04-05  Andrew Cagney  <cagney@redhat.com>
 
 	* TestSyscallOpen.java: Skip.

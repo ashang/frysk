@@ -1,3 +1,9 @@
+2006-04-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (setMyTask): Now creates a register window for the task.
+	(doRun): Sets the register window to be insensitive.
+	(doStop): Sets the register window to be sensitive.
+
 2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tags/Tagset.java (Tagset): Now takes a version string of the command

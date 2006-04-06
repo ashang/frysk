@@ -1,3 +1,10 @@
+2006-04-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* register: Added.
+	* register/RegisterWindow.java: Added.
+	* glade/registerwindow.glade: Added.
+	* glade/registerwindow.gladep: Added.
+
 2006-04-05  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Gui.java (createDummyTagsets): Now adds version strings to

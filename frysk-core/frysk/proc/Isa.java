@@ -51,15 +51,15 @@ import inua.eio.ByteOrder;
  * object with nested members for the ISA, the OS, et.al.
  */
 
-class Isa
+public class Isa
 {
     List registers = new ArrayList ();
-    Iterator RegisterIterator ()
+    public Iterator RegisterIterator ()
     {
 	return registers.iterator ();
     }
 
-    Register getRegisterByName (String name)
+    public Register getRegisterByName (String name)
     {
 	throw new RuntimeException ("not implemented");
     }
