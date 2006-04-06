@@ -1,9 +1,23 @@
+2006-04-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* register/RegisterWindow.java (cellRendererTextEvent): Added.
+	(setFormatToDecimal): Now sets the current format.
+	(setFormatToHex): Ditto.
+	(setFormatToOctal): Ditto.
+	(setFormatToBinary): Ditto.
+
 2006-04-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (setupErrorLogging): Set error echo to console
 	back on.
 
 2006-04-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* register/RegisterWindow.java (cellRendererTextEvent): Added.
+	(setFormatToDecimal): Now sets the current format.
+	(setFormatToHex): Ditto.
+	(setFormatToOctal): Ditto.
+	(setFormatToBinary): Ditto.
 
 	* register: Added.
 	* register/RegisterWindow.java: Added.

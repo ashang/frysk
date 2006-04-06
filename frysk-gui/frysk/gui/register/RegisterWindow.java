@@ -13,6 +13,8 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.CellRendererTextEvent;
+import org.gnu.gtk.event.CellRendererTextListener;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 
@@ -20,13 +22,20 @@ import frysk.proc.Isa;
 import frysk.proc.Register;
 import frysk.proc.Task;
 
-public class RegisterWindow extends Window implements ComboBoxListener{
+public class RegisterWindow extends Window implements ComboBoxListener, CellRendererTextListener{
 	
 	private Task myTask;
 	
 	private LibGlade glade;
 	
 	private DataColumn[] cols = {new DataColumnString(), new DataColumnString(), new DataColumnString()};
+	
+	private static final int DECIMAL = 0;
+	private static final int HEX = 1;
+	private static final int OCTAL = 2;
+	private static final int BINARY = 3;
+	
+	private int mode = DECIMAL;
 	
 	public RegisterWindow(Task task, LibGlade glade){
 		super(glade.getWidget("registerWindow").getHandle());
@@ -60,6 +69,8 @@ public class RegisterWindow extends Window implements ComboBoxListener{
 		col = new TreeViewColumn();
 		col.setTitle("Value");
 		renderer = new CellRendererText();
+		((CellRendererText) renderer).setEditable(true);
+		((CellRendererText) renderer).addListener(this);
 		col.packStart(renderer, false);
 		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[1]);
 		registerView.appendColumn(col);
@@ -105,6 +116,7 @@ public class RegisterWindow extends Window implements ComboBoxListener{
 			iter = iter.getNextIter();
 		}
 		
+		this.mode = DECIMAL;
 		view.showAll();
 	}
 	
@@ -121,6 +133,7 @@ public class RegisterWindow extends Window implements ComboBoxListener{
 			iter = iter.getNextIter();
 		}
 		
+		this.mode = HEX;
 		view.showAll();
 	}
 	
@@ -137,6 +150,7 @@ public class RegisterWindow extends Window implements ComboBoxListener{
 			iter = iter.getNextIter();
 		}
 		
+		this.mode = OCTAL;
 		view.showAll();
 	}
 	
@@ -153,6 +167,7 @@ public class RegisterWindow extends Window implements ComboBoxListener{
 			iter = iter.getNextIter();
 		}
 		
+		this.mode = BINARY;
 		view.showAll();
 	}
 	
@@ -165,5 +180,77 @@ public class RegisterWindow extends Window implements ComboBoxListener{
 			this.glade.getWidget("registerView").setSensitive(true);
 			this.glade.getWidget("formatSelector").setSensitive(true);
 		}
+	}
+
+	public void cellRendererTextEvent(CellRendererTextEvent arg0) {
+		TreeView view = (TreeView) this.glade.getWidget("registerView");
+		
+		ListStore model = (ListStore) view.getModel();
+		
+		TreeIter edited = model.getIter(arg0.getIndex());
+		
+		String newText = arg0.getText();
+		long actualValue = 0;
+		
+		// perform input validation
+		if(this.mode == DECIMAL){
+			long value = 0;
+			try{
+				value = Long.parseLong(newText);
+			}
+			catch (Exception e){
+				// invalid entry, do nothing
+				return;
+			}
+			
+			model.setValue(edited, (DataColumnString) cols[1], ""+value);
+			actualValue = value;
+		}
+		else if(this.mode == HEX){
+			long value = 0;
+			try{
+				if(newText.indexOf("0x") == 0)
+					value = Long.parseLong(newText.substring(2), 16);
+				else
+					value = Long.parseLong(newText, 16);
+			}
+			catch (Exception e){
+				// bad input, do nothing
+				return;
+			}
+			
+			model.setValue(edited, (DataColumnString) cols[1], "0x"+Long.toHexString(value));
+			actualValue = value;
+		}
+		else if(this.mode == OCTAL){
+			long value = 0;
+			
+			try{
+				value = Long.parseLong(newText, 8);
+			}
+			catch (Exception e){
+				// bad input, do nothing
+				return;
+			}
+			
+			model.setValue(edited, (DataColumnString) cols[1], Long.toOctalString(value));
+			actualValue = value;
+		}
+		else if(this.mode == BINARY){
+			long value = 0;
+			
+			try{
+				value = Long.parseLong(newText, 2);
+			}
+			catch (Exception e){
+				// bad input, do nothing
+				return;
+			}
+			
+			model.setValue(edited, (DataColumnString) cols[1], Long.toBinaryString(value));
+			actualValue = value;
+		}
+		
+		model.setValue(edited, (DataColumnString) cols[2], ""+actualValue);
 	}
 }
