@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package glibtimer;
+package frysk2333;
 
 import org.gnu.glib.Fireable;
 import org.gnu.glib.Timer;

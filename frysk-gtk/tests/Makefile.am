@@ -91,31 +91,16 @@ gcjtreeiter/gij.sh: $(gcjtreeiter_FILES)
 		> gcjtreeiter/gij.sh
 	chmod a+x gcjtreeiter/gij.sh
 
-glibtimer_FILES = glibtimer/TestGlibTimerGC.java
-EXTRA_DIST += $(glibtimer_FILES)
-XFAIL_TESTS += glibtimer/a.out
-glibtimer/a.out: $(glibtimer_FILES)
-	mkdir -p glibtimer
+frysk2333_FILES = frysk2333/TestGlibTimerGC.java
+EXTRA_DIST += $(frysk2333_FILES)
+TESTS += frysk2333/a.out
+frysk2333/a.out: $(frysk2333_FILES)
+	mkdir -p frysk2333
 	$(GCJ) -g \
 		-classpath $(FRYSK_GTK_CLASSPATH) \
 		$(FRYSK_GTK_LIBS) \
 		-Wl,-rpath,/usr/lib/frysk \
 		-Djava.library.path=/usr/lib/frysk \
-		--main=glibtimer.TestGlibTimerGC \
-		$(srcdir)/glibtimer/TestGlibTimerGC.java \
-		-o glibtimer/a.out
-XFAIL_TESTS += glibtimer/gij.sh
-CLEANFILES += glibtimer/TestGlibTimerGC.class
-glibtimer/TestGlibTimerGC.class: $(glibtimer_FILES)
-	mkdir -p glibtimer
-	$(GCJ) -g -C -d . -I$(srcdir) \
-		-classpath $(FRYSK_GTK_CLASSPATH) \
-		$(srcdir)/glibtimer/TestGlibTimerGC.java
-glibtimer/gij.sh: $(glibtimer_FILES)
-	mkdir -p glibtimer
-	echo $(GIJ) -classpath .:$(FRYSK_GTK_CLASSPATH) \
-		-Djava.library.path=/usr/lib/frysk \
-		glibtimer.TestGlibTimerGC \
-		> glibtimer/gij.sh
-	chmod a+x glibtimer/gij.sh
-
+		--main=frysk2333.TestGlibTimerGC \
+		$(srcdir)/frysk2333/TestGlibTimerGC.java \
+		-o frysk2333/a.out
