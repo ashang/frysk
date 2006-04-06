@@ -1,3 +1,10 @@
+2006-04-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProcWiseDataModel.java (ProcCreatedObserver): Add data TreeIter checks
+	to ensure data validity on process addition. 
+	(ProcDestroyedObserver): Add data TreeIter checks
+	to ensure data validity on Process removal. 
+
 2006-04-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseDataModel.java (dumpSelectedProcesses): Removed

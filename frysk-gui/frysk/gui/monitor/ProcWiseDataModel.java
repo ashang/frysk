@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
@@ -52,6 +54,7 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeStore;
 
 import frysk.event.TimerEvent;
+import frysk.gui.Gui;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -76,6 +79,8 @@ public class ProcWiseDataModel {
 	private TimerEvent refreshTimer;
 	
 	private Hashtable iterHash;
+	
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	public ProcWiseDataModel(){
 		this.iterHash = new Hashtable();
@@ -156,82 +161,137 @@ public class ProcWiseDataModel {
 		return  processData;
 	}
 	
-	class ProcCreatedObserver implements Observer{
-    	public void update (Observable o, Object obj){
-    		final Proc proc = (Proc) obj;
-    		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
-				 public void run() {
-					 // get an iterator pointing to the parent
-					TreeIter parent = (TreeIter) iterHash.get(proc.getCommand());
-//					System.out.println("ProcCreatedObserver.update() adding " + proc.getCommand() + " " + proc.getPid());
-					
-					if(parent == null){
-//						System.out.println(" ProcCreatedObserver.update() first element");
-						parent = treeStore.appendRow(null);
-						iterHash.put(proc.getCommand(), parent);
-						setRow(parent, proc.getCommand() + "\t" + proc.getPid(), new ProcData(proc),false);
-					}else{
-						TreeIter iter = treeStore.appendRow(parent);
-						if(((ProcData)treeStore.getValue(parent, objectDC)).getProc() != null){
-//							System.out.println(" ProcCreatedObserver.update() second element");
-							Proc oldProc = ((ProcData)treeStore.getValue(parent, objectDC)).getProc();
-    						setRow(parent, proc.getCommand(), new ProcData(null),false);
-    						setRow(iter, ""+oldProc.getPid(), new ProcData(oldProc),false);
-    						iter = treeStore.appendRow(parent);
-    					}
-						//setRow(iter, "", ""+proc.getPid(), proc.getExe());
-						setRow(iter, ""+proc.getPid(), new ProcData(proc),false);
+	class ProcCreatedObserver implements Observer {
+		public void update(Observable o, Object obj) {
+			final Proc proc = (Proc) obj;
+			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
+				public void run() {
+					// get an iterator pointing to the parent
+					try {
+						TreeIter parent = (TreeIter) iterHash.get(proc
+								.getCommand());
+						if (parent != null)
+							if (!treeStore.isIterValid(parent))
+								throw new RuntimeException(
+										"TreeIter has parent, but isIterValid returns false."); //$NON-NLS-1$
+
+						if (parent == null) {
+							parent = treeStore.appendRow(null);
+							if (parent == null)
+								throw new RuntimeException(
+										"parent = treeStore.appendRow(null) returns a null."); //$NON-NLS-1$
+							if (!treeStore.isIterValid(parent))
+								throw new RuntimeException(
+										"parent = treeStore.appendRow(null) fails isIterValid test."); //$NON-NLS-1$
+							iterHash.put(proc.getCommand(), parent);
+							setRow(parent, proc.getCommand() + "\t"
+									+ proc.getPid(), new ProcData(proc), false);
+						} else {
+							TreeIter iter = treeStore.appendRow(parent);
+							if (iter == null)
+								throw new RuntimeException(
+										"iter = treeStore.appendRow(null) returns a null."); //$NON-NLS-1$
+							if (!treeStore.isIterValid(iter))
+								throw new RuntimeException(
+										"iter = treeStore.appendRow(parent) fails isIterValid test."); //$NON-NLS-1$
+
+							if (((ProcData) treeStore
+									.getValue(parent, objectDC)).getProc() != null) {
+								Proc oldProc = ((ProcData) treeStore.getValue(
+										parent, objectDC)).getProc();
+								setRow(parent, proc.getCommand(), new ProcData(
+										null), false);
+								setRow(iter, "" + oldProc.getPid(),
+										new ProcData(oldProc), false);
+								iter = treeStore.appendRow(parent);
+								if (iter == null)
+									throw new RuntimeException(
+											"iter = treeStore.appendRow(null) returns a null."); //$NON-NLS-1$
+								if (!treeStore.isIterValid(iter))
+									throw new RuntimeException(
+											"iter = treeStore.appendRow(parent) fails isIterValid test."); //$NON-NLS-1$
+							}
+
+							// setRow(iter, "", ""+proc.getPid(),
+							// proc.getExe());
+							setRow(iter, "" + proc.getPid(),
+									new ProcData(proc), false);
+						}
+					} catch (Exception e) {
+						errorLog.log(Level.WARNING,
+						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e);
 					}
-				 }
+				}
+
 			});
-        }
-    }
+		}
+	}
     
 
-	class ProcDestroyedObserver implements Observer{
+	class ProcDestroyedObserver implements Observer {
 		public void update(Observable o, Object obj) {
-			final Proc proc = (Proc)obj;
+			final Proc proc = (Proc) obj;
 
-			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
+			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
 				public void run() {
-					TreeIter parent = (TreeIter) iterHash.get(proc.getCommand());
-//					System.out.println("ProcDestroyedObserver.update() trying to remove " + proc.getCommand() + " " + proc.getPid());
-//					System.out.println("ProcDestroyedObserver.update() parent " + parent);
-					
-					try{
-						if(parent == null){
-							throw new NullPointerException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
-						}
+					TreeIter parent = (TreeIter) iterHash
+							.get(proc.getCommand());
+					try {
+
+						if (parent == null)
+							throw new NullPointerException("proc "	+ proc + 
+								"Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
+						else if (!treeStore.isIterValid(parent))
+							throw new RuntimeException(
+									"TreeIter has parent, but isIterValid returns false.");
+
 						int n = parent.getChildCount();
 
-						if(n == 0){
+						if (n == 0) {
 							treeStore.removeRow(parent);
 							iterHash.remove(proc.getCommand());
 							return;
 						}
 
-						if(n > 1){
-							for(int i = 0; i < n; i++){
+						if (n > 1) {
+							for (int i = 0; i < n; i++) {
 								TreeIter iter = parent.getChild(i);
-								if(((ProcData)treeStore.getValue(iter, objectDC)).getProc().getPid() == proc.getPid()){
+								if (!treeStore.isIterValid(iter))
+									throw new RuntimeException(
+											"TreeIter child of parent "
+													+ proc.getCommand()
+													+ " isIterValid reports false");
+
+								if (((ProcData) treeStore.getValue(iter,
+										objectDC)).getProc().getPid() == proc
+										.getPid()) {
 									treeStore.removeRow(iter);
 									break;
 								}
 							}
 						}
-						
+
 						n = parent.getChildCount();
-						if(n == 1){
+						if (n == 1) {
 							TreeIter iter = parent.getChild(0);
-							Proc oldProc = ((ProcData)treeStore.getValue(iter, objectDC)).getProc();
-    						setRow(parent, oldProc.getCommand() + "\t" + oldProc.getPid(), new ProcData(oldProc),treeStore.getValue(iter, selectedDC));
-    						
+							if (!treeStore.isIterValid(iter))
+								throw new RuntimeException(
+										"TreeIter child of parent "
+												+ proc.getCommand()
+												+ " isIterValid reports false");
+
+							Proc oldProc = ((ProcData) treeStore.getValue(iter,
+									objectDC)).getProc();
+							setRow(parent, oldProc.getCommand() + "\t"
+									+ oldProc.getPid(), new ProcData(oldProc),
+									treeStore.getValue(iter, selectedDC));
+
 							treeStore.removeRow(iter);
 						}
-						
-					}catch (NullPointerException e) {
-	//					errorLog.log(Level.WARNING,"proc " + proc + "Not found in TreeIter HasTable. Cannot be removed",e); //$NON-NLS-1$ //$NON-NLS-2$
-						e.printStackTrace();
+
+					} catch (Exception e) {
+						errorLog.log(Level.WARNING,
+										"ProcWiseDataModel.ProcDestroyedObserver reported this error", e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			});
