@@ -55,7 +55,7 @@
 <p>This page provides guidelines for building <em>frysk</em>, checked
 out from CVS, on a number of systems.</p>
 
-<h2>Set up your system's build environment</h2>
+<h3>Set up your system's build environment</h3>
 
 <p>First you will need to set up your system's build environment so
 that all its prerequisites are met.</p>
@@ -210,25 +210,25 @@ tree</a>.
 
 </dl>
 
-<h2>Check out <em>frysk</em> from CVS</h2>
+<h3>Check out <em>frysk</em> from CVS</h3>
 
 <pre>
 $ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk
 </pre>
 
-<h2>Create the configuration files</h2>
+<h3>Create the configuration files</h3>
 
 <pre>
 $ ( cd frysk && ./autogen.sh )
 </pre>
 
-<h2>Create and configure the build directory</h2>
+<h3>Create and configure the build directory</h3>
 
 <pre>
 $ ( mkdir build && cd build && ../frysk/configure )
 </pre>
 
-<h2>Verify the build environment (optional)</h2>
+<h3>Verify the build environment (optional)</h3>
 
 <p>Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
 include tests to ensure that the build system (compiler, kernel, and
@@ -240,15 +240,19 @@ $ ( cd build/frysk-imports/tests && make check )
 $ ( cd build/frysk-gtk/tests && make check )
 </pre>
 
-<h2>Build</h2>
+<h3>Build</h3>
 
 <dd><tt>$ ( cd build && make -j2 )</tt></dd>
 
-<h2>Test</h2>
+<h3>Test</h3>
 
-<dd><tt>$ ( cd build && make check )</tt></dd>
+<p>On Fedora Core 5, there should be no failures.</p>
 
-<h2>Run</h2>
+<pre>
+$ ( cd build && make check )
+</pre>
+
+<h3>Run</h3>
 
 <p><em>frysk</em> can then either be run from the build tree ...</p>
 
