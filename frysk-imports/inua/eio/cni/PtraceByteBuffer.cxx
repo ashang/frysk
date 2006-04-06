@@ -45,10 +45,24 @@
 
 #include <gcj/cni.h>
 
+#include <java/lang/RuntimeException.h>
+
 #include "inua/eio/Buffer.h"
 #include "inua/eio/ByteBuffer.h"
 #include "inua/eio/PtraceByteBuffer.h"
 #include "inua/eio/PtraceByteBuffer$Area.h"
+
+static java::lang::RuntimeException *
+newPerror (const char *syscall, int nr)
+{
+  const char *error = strerror (nr);
+  const int len = strlen (error) + strlen (syscall) + strlen (": ") + 1;
+  char *message = (char*) alloca (len);
+  if (snprintf (message, len, "%s: %s", syscall, error) >= len)
+    throw new java::lang::RuntimeException (JvNewStringLatin1 ("oops"));
+  return new java::lang::RuntimeException (JvNewStringLatin1 (message));
+}
+
 
 inua::eio::PtraceByteBuffer$Area*
 inua::eio::PtraceByteBuffer$Area::textArea ()
@@ -96,10 +110,8 @@ inua::eio::PtraceByteBuffer::peek (jlong addr)
 
   errno = 0;
   tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
-  if (errno != 0) {
-    ::perror ("ptrace");
-    ::exit (errno);
-  }
+  if (errno != 0)
+    throw newPerror ("ptrace", errno);
 
   return tmp.byte[addr & (sizeof (int) - 1)];
 }
@@ -126,10 +138,8 @@ inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
   // Read an entire word.
   errno = 0;
   tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
-  if (errno != 0) {
-    ::perror ("ptrace");
-    ::exit (errno);
-  }
+  if (errno != 0)
+    throw newPerror ("ptrace", errno);
 
   /* Adjust the xfer size to ensure that it doesn't exceed the size of
      the single word being transfered.  */
@@ -161,10 +171,8 @@ inua::eio::PtraceByteBuffer::poke (jlong addr, jint byte)
   // Perform a read ...
   errno = 0;
   tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
-  if (errno != 0) {
-    ::perror ("ptrace");
-    ::exit (errno);
-  }
+  if (errno != 0)
+    throw newPerror ("ptrace", errno);
 
   // ... modify ...
   tmp.byte[addr & (sizeof (int) - 1)] = byte;
@@ -172,9 +180,6 @@ inua::eio::PtraceByteBuffer::poke (jlong addr, jint byte)
   // ... write.
   errno = 0;
   ::ptrace (pt_poke, pid, (char *) paddr, tmp.word);
-  if (errno != 0) {
-    ::perror ("ptrace");
-    ::exit (errno);
-  }
-
+  if (errno != 0)
+    throw newPerror ("ptrace", errno);
 }
