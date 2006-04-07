@@ -37,35 +37,56 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor;
 
-import frysk.gui.monitor.LiaisonItem;
-import frysk.proc.Task;
+import org.gnu.gtk.AttachOptions;
 
-public class PrintTask extends TaskAction {
+import frysk.gui.monitor.filters.ComboFactory;
+import frysk.gui.monitor.observers.ObserverRoot;
+
+public class FilterRow extends ObserverItemRow{
+
+	private static ObservableLinkedList booleanList;
 	
-	public PrintTask() {
-		super("Print State", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
-
-	public PrintTask(PrintTask other){
-		super(other);
-	}
-	
-	public void execute(Task task) {
-		System.out.println("Task State : " + task); //$NON-NLS-1$
-	}
-
-	public LiaisonItem getCopy() {
-		return new PrintTask(this);
-	}
-
-	public boolean setArgument(String argument) {
-		return false;
-	}
-
-	public String getArgument() {
-		return null;
+	static{
+		booleanList = new ObservableLinkedList();
+		
+		booleanList.add(new GuiObject("is", ""));
+		booleanList.add(new GuiObject("is not", ""));
 	}
 	
+	SimpleComboBox booleanComboBox;
+
+	
+	FilterRow(ObserverItemsTable table, ObserverRoot observer, Combo myCombo) {
+		super(table, observer, myCombo);
+		
+		ObservableLinkedList comboList = ComboFactory.theFactory.getFilterCombos(observer);
+		itemsComboBox.watchLinkedList(comboList);
+		
+		if(combo != null){
+			itemsComboBox.setSelectedText(combo.getName());
+			comboList.swap(itemsComboBox.getSelectedObject(), combo);
+			itemsComboBox.setSelectedObject(combo);
+		}
+		
+		booleanComboBox = new SimpleComboBox();
+		booleanComboBox.watchLinkedList(booleanList);	
+	}	
+	
+	public void removeFromTable(){
+		super.removeFromTable();
+		this.table.remove(booleanComboBox);
+	}
+	
+	public void addToTable(){
+		AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
+		
+		int count = 0;
+		table.attach(itemsComboBox,   count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(booleanComboBox, count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(argumentEntry,   count,++count,table.getRow(),table.getRow()+1, EXPAND_AND_FILL, AttachOptions.SHRINK, 0, 0);
+		table.attach(addButton,       count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(removeButton,    count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+	}
 }

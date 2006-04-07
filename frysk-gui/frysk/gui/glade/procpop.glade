@@ -1592,8 +1592,6 @@
   <property name="translator_credits" translatable="yes" comments="TRANSLATORS: Replace this string with your names, one name per line.">translator-credits</property>
 </widget>
 
-
-
 <widget class="GtkDialog" id="customObserverDialog">
   <property name="border_width">6</property>
   <property name="title" translatable="yes">Custom Observer</property>
@@ -3173,28 +3171,11 @@
 	  </child>
 
 	  <child>
-	    <widget class="GtkTable" id="observerActionsTable">
-	      <property name="visible">True</property>
-	      <property name="n_rows">1</property>
-	      <property name="n_columns">5</property>
-	      <property name="homogeneous">False</property>
-	      <property name="row_spacing">0</property>
-	      <property name="column_spacing">0</property>
-	    </widget>
-	    <packing>
-	      <property name="left_attach">1</property>
-	      <property name="right_attach">2</property>
-	      <property name="top_attach">3</property>
-	      <property name="bottom_attach">4</property>
-	    </packing>
-	  </child>
-
-	  <child>
 	    <widget class="GtkFrame" id="observerFiltersFrame">
 	      <property name="visible">True</property>
 	      <property name="label_xalign">0</property>
 	      <property name="label_yalign">0.5</property>
-	      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
+	      <property name="shadow_type">GTK_SHADOW_IN</property>
 
 	      <child>
 		<widget class="GtkTable" id="observerFiltersTable">
@@ -3215,6 +3196,35 @@
 	      <property name="bottom_attach">3</property>
 	      <property name="x_options">shrink|fill</property>
 	      <property name="y_options">shrink|fill</property>
+	    </packing>
+	  </child>
+
+	  <child>
+	    <widget class="GtkFrame" id="frame7">
+	      <property name="visible">True</property>
+	      <property name="label_xalign">0</property>
+	      <property name="label_yalign">0.5</property>
+	      <property name="shadow_type">GTK_SHADOW_IN</property>
+
+	      <child>
+		<widget class="GtkTable" id="observerActionsTable">
+		  <property name="border_width">12</property>
+		  <property name="visible">True</property>
+		  <property name="n_rows">1</property>
+		  <property name="n_columns">5</property>
+		  <property name="homogeneous">False</property>
+		  <property name="row_spacing">6</property>
+		  <property name="column_spacing">6</property>
+		</widget>
+	      </child>
+	    </widget>
+	    <packing>
+	      <property name="left_attach">1</property>
+	      <property name="right_attach">2</property>
+	      <property name="top_attach">3</property>
+	      <property name="bottom_attach">4</property>
+	      <property name="x_options">fill</property>
+	      <property name="y_options">fill</property>
 	    </packing>
 	  </child>
 	</widget>

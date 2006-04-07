@@ -63,4 +63,12 @@ public class Resume extends ProcAction {
 		return new Resume(this);
 	}
 
+	public boolean setArgument(String argument) {
+		return false;
+	}
+
+	public String getArgument() {
+		return null;
+	}
+
 }

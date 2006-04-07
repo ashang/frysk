@@ -1,3 +1,50 @@
+2006-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java: Added getCurrentActionCombos
+	* observers/ObserverManager.java: Added getObserverByName, to
+	retrieve observer prototypes by name.
+	* filters/Filter.java: Added filterBooleans, setter and getter
+	fucntions.
+	* filters/ComboFactory.java: Added support for calculation
+	actionCombos.
+	* actions/PrintTask.java: Implemented (set/get)Argument.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Stop.java: Ditto
+	* actions/Resume.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/LogAction.java: Added implementation of set, and get 
+	Argument; a user can now add a comment to be logged with the
+	observer information.
+	* actions/GenericAction.java: Added implementation of getCopy, 
+	setArgument, and setArgumentto reliefe children of implementing 
+	this if they do not need to.
+	* actions/AddTaskObserverAction.java: Renamed StickyTaskObserver
+	to this.. much better name ay?!.
+	* actions/ActionManager.java: Added a LogAction prototype to
+	GenericActions, and an AddTaskObserver prototype to TaskActions
+	* StatusWidget.java: removed getCopy implenentation from TimeLineAction
+	* ProgramObserver.java: Implemented (get/set)Argument.
+	* LiaisonItem.java: Added abstract functioins for getting and
+	setting item arguments, so that it is now common to both filters
+	and actions.
+	* EditObserverDialog.java: Added instanciation for ActionsTable,
+	and setting of current observer for ActioinsTable.
+	* Combo.java: Renamed FilterCombo to this. This can now be used
+	for both FilterCombos, and ActionCombos.
+	* ObserverItemRow.java: New file. Common root of FilterRow, and
+	ActionRow.
+	* ActionRow.java: New file. Handles ActionRows, inherits from
+	ObserverItemRow.
+	* FilterRow.java: Moved common code to ObserverItemRow.
+	* ObserverItemsTable.java: New file. This is a result of a refactor
+	to group the common code between FiltersTable, and ActionsTable into
+	a common root.
+	* FiltersTable.java: Moved common code up to ObserverItemsTable.
+	Added getCombos which retrieves filter combos from current
+	Observer.
+	* ActionsTable.java: New file. Inherits common code from new 
+	ObserverItemsTable, handles ActionRows. 
+
 2006-04-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseDataModel.java (ProcCreatedObserver): Add data TreeIter checks

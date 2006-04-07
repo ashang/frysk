@@ -53,14 +53,18 @@ public abstract class Filter extends LiaisonItem {
 	 */
 	protected DynamicWidget widget;
 	
+	boolean filterBoolean;
+	
 	public Filter(){
 		super();
 		this.widget = new DynamicWidget();
+		this.filterBoolean = true;
 	}
 	
 	public Filter(String name, String toolTip){
 		super(name, toolTip);
 		this.widget = new DynamicWidget();
+		this.filterBoolean = true;
 	}
 	
 	public Filter(Filter other){
@@ -85,8 +89,7 @@ public abstract class Filter extends LiaisonItem {
 		super.load(node);
 	}
 	
-	public abstract boolean setArgument(String argument);
-
-	public abstract String getArgument();
-	
+	public void setFilterBoolean(boolean filterBoolean){
+		this.filterBoolean = filterBoolean;
+	}
 }

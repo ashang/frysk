@@ -40,32 +40,53 @@
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
-public class PrintTask extends TaskAction {
+/**
+ * 
+ * @author swagiaal
+ *
+ * When executed this action adds the given observer
+ * to the given task. 
+ */
+public class AddTaskObserverAction extends TaskAction {
+
+	TaskObserverRoot observer;
 	
-	public PrintTask() {
-		super("Print State", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
+	public AddTaskObserverAction() {
+		super("Add observer to", "Add given observer to the given task"); //$NON-NLS-1$ //$NON-NLS-2$
+		this.observer = null;
 	}
 
-	public PrintTask(PrintTask other){
+	public AddTaskObserverAction(AddTaskObserverAction other) {
 		super(other);
+		this.observer = other.observer;
 	}
-	
+
 	public void execute(Task task) {
-		System.out.println("Task State : " + task); //$NON-NLS-1$
+		observer.apply(task.getProc());
 	}
 
 	public LiaisonItem getCopy() {
-		return new PrintTask(this);
+		return new AddTaskObserverAction(this);
+	}
+
+	public void setObserver(TaskObserverRoot taskObserver){
+		this.observer = taskObserver;
 	}
 
 	public boolean setArgument(String argument) {
+		TaskObserverRoot observer = ObserverManager.theManager.getObserverByName(argument);
+		if(observer != null){
+			this.observer = observer;
+			return true;
+		}
 		return false;
 	}
 
 	public String getArgument() {
 		return null;
 	}
-	
 }

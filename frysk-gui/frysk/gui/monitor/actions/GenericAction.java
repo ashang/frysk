@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public abstract class GenericAction extends Action {
@@ -57,5 +58,19 @@ public abstract class GenericAction extends Action {
 	
 	public abstract void execute(ObserverRoot observer);
 	
+	public LiaisonItem getCopy() {
+		return null;
+	}
+	
 
+
+	public boolean setArgument(String argument) {
+		return false;
+	}
+
+
+	public String getArgument() {
+		return null;
+	}
+	
 }

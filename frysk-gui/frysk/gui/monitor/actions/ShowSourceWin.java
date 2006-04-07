@@ -60,5 +60,13 @@ public class ShowSourceWin extends TaskAction {
 	public LiaisonItem getCopy() {
 		return new ShowSourceWin(this);
 	}
+
+	public boolean setArgument(String argument) {
+		return false;
+	}
+
+	public String getArgument() {
+		return null;
+	}
 	
 }

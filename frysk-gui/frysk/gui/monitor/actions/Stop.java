@@ -62,5 +62,13 @@ public class Stop extends ProcAction {
 	public LiaisonItem getCopy() {
 		return new Stop(this);
 	}
+
+	public boolean setArgument(String argument) {
+		return false;
+	}
+
+	public String getArgument() {
+		return null;
+	}
 }
 

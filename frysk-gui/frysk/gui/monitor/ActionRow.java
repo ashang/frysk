@@ -37,42 +37,38 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
 
-import java.util.Iterator;
+package frysk.gui.monitor;
 
-import frysk.gui.monitor.ObservableLinkedList;
+import org.gnu.gtk.AttachOptions;
+
+import frysk.gui.monitor.filters.ComboFactory;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-/**
- * 
- * @author swagiaal
- *
- * takes a @link frysk.gui.monitor.observers.ObserverRoot and
- * returns all possible combinations of its FilterPoints and
- * their applicable filters.
- */
+public class ActionRow extends ObserverItemRow{
 
-public class FilterComboFactory {
-	public static FilterComboFactory theFactory = new FilterComboFactory();
-	
-	public FilterComboFactory(){
+	ActionRow(ObserverItemsTable table, ObserverRoot observer, Combo myCombo) {
+		super(table, observer, myCombo);
+		
+		ObservableLinkedList comboList = ComboFactory.theFactory.getActionCombos(observer);
+		itemsComboBox.watchLinkedList(comboList);
+		
+		if(combo != null){
+			itemsComboBox.setSelectedText(combo.getName());
+			comboList.swap(itemsComboBox.getSelectedObject(), combo);
+			itemsComboBox.setSelectedObject(combo);
+		}
 		
 	}
 	
-	public ObservableLinkedList getFilterCombos(ObserverRoot observer){
-		ObservableLinkedList combos = new ObservableLinkedList();
+	public void addToTable(){
+		AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
 		
-		Iterator i = observer.getFilterPoints().iterator();
-		while (i.hasNext()) {
-			FilterPoint filterPoint = (FilterPoint) i.next();
-			Iterator j = filterPoint.getApplicableItems().iterator();
-			while (j.hasNext()) {
-				Filter filter = (Filter) j.next();
-				combos.add(new FilterCombo(filterPoint, filter));
-			}
-		}
-		return combos;
+		int count = 0;
+		table.attach(itemsComboBox,   count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(argumentEntry,   count,++count,table.getRow(),table.getRow()+1, EXPAND_AND_FILL, AttachOptions.SHRINK, 0, 0);
+		table.attach(addButton,       count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(removeButton,    count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
 	}
 	
 }

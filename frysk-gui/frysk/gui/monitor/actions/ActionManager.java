@@ -70,9 +70,11 @@ public class ActionManager extends Observable {
 	private void initActionList() {
 		this.addGenericActionPrototype(new Stop());
 		this.addGenericActionPrototype(new Resume());
+		this.addGenericActionPrototype(new LogAction());
 		
 		this.addTaskActionPrototype(new ShowSourceWin());
 		this.addTaskActionPrototype(new PrintTask());
+		this.addTaskActionPrototype(new AddTaskObserverAction());
 
 		this.addProcActionPrototype(new PrintProc());
 	}

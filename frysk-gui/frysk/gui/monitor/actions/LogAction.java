@@ -48,12 +48,16 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 public class LogAction extends GenericAction {
 
+	String argument;
+	
 	public LogAction() {
-		super("Logger", "logs what is going on with this "); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Log", "logs what is going on with this observer plus a user set comment"); //$NON-NLS-1$ //$NON-NLS-2$
+		this.argument = new String();
 	}
 
 	public LogAction(LogAction other) {
 		super(other);
+		this.argument = other.argument;
 	}
 
 	public LiaisonItem getCopy() {
@@ -63,7 +67,16 @@ public class LogAction extends GenericAction {
 	public void execute(ObserverRoot observer) {
 		//System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
 		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getInfo());
-		WindowManager.theManager.logWindow.print(observer.getInfo());
+		WindowManager.theManager.logWindow.print(this.argument +"\n[" + observer.getInfo() + "]");
+	}
+
+	public boolean setArgument(String comment) {
+		this.argument = comment;
+		return true;
+	}
+
+	public String getArgument() {
+		return this.argument;
 	}
 
 }

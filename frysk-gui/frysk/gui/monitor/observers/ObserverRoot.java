@@ -9,14 +9,15 @@ import java.util.Observer;
 import org.gnu.glib.CustomEvents;
 import org.jdom.Element;
 
+import frysk.gui.monitor.Combo;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
+import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.Filter;
-import frysk.gui.monitor.filters.FilterCombo;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
 
@@ -267,8 +268,22 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 				Iterator j = filterPoint.getItems().iterator();
 				while (j.hasNext()) {
 					Filter filter = (Filter) j.next();
-//					System.out.println(" ObserverRoot.getCurrentFilterCombos() filter: " + filter.getName());
-					combos.add(new FilterCombo(filterPoint, filter));
+					combos.add(new Combo(filterPoint, filter));
+				}
+			}
+			return combos;
+		}
+
+		public ObservableLinkedList getCurrentActionCombos() {
+			ObservableLinkedList combos = new ObservableLinkedList();
+			
+			Iterator i = this.getActionPoints().iterator();
+			while (i.hasNext()) {
+				ActionPoint actionPoint = (ActionPoint) i.next();
+				Iterator j = actionPoint.getItems().iterator();
+				while (j.hasNext()) {
+					Action action = (Action) j.next();
+					combos.add(new Combo(actionPoint, action));
 				}
 			}
 			return combos;

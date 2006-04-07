@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.filters;
+package frysk.gui.monitor;
 
 import frysk.gui.monitor.GuiObject;
 
@@ -45,36 +45,38 @@ import frysk.gui.monitor.GuiObject;
  * 
  * @author swagiaal
  *
- * An object representing a combination of a @link frysk.gui.monitor.filters.Filter
- * and a @link frysk.gui.monitor.filters.FilterPoint 
+ * An object representing a combination of a @link frysk.gui.monitor.LiaisonItem
+ * and a @link frysk.gui.monitor.LiaisonPoint 
  */
-public class FilterCombo extends GuiObject {
+public class Combo extends GuiObject {
 
-	private FilterPoint filterPoint;
-	private Filter filter;
+	private LiaisonPoint filterPoint;
+	private LiaisonItem filter;
 	private boolean applied = false;
 	
-	public FilterCombo(FilterPoint filterPoint, Filter filter){
+	public Combo(LiaisonPoint filterPoint, LiaisonItem filter){
 		super();
 		this.filterPoint = filterPoint;
 		this.filter = filter;
-		this.setName(filter.getName() + " of " + filterPoint.getName() );
+		
+		this.setName(filter.getName() + " " + filterPoint.getName() );
 		this.setToolTip("");
+		
 		this.applied = filterPoint.getItems().contains(filter);
 	}
 	
 	public void apply(){
 		if(applied){
-			throw new RuntimeException("You are trying to apply a FilterCombo that is already applied");
+			throw new RuntimeException("You are trying to apply a Combo that is already applied");
 		}
-		this.filter = FilterManager.theManager.getFilterCopy(filter);
-		this.filterPoint.addFilter(filter);
+		this.filter = this.filter.getCopy();
+		this.filterPoint.addItem(filter);
 		this.applied = true;
 	}
 	
 	public void unApply(){
-		System.out.println("FilterCombo.unApply()");
-		this.filterPoint.removeFilter(filter);
+		System.out.println("LiaisonItemCombo.unApply()");
+		this.filterPoint.removeItem(filter);
 		this.applied = false;
 	}
 	
@@ -82,11 +84,11 @@ public class FilterCombo extends GuiObject {
 		return this.applied;
 	}
 	
-	public FilterPoint getFilterPoint(){
+	public LiaisonPoint getLiaisonPoint(){
 		return this.filterPoint;
 	}
 	
-	public Filter getFilter(){
+	public LiaisonItem getFilter(){
 		return this.filter;
 	}
 }

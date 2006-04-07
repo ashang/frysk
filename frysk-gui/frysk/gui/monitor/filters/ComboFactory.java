@@ -37,42 +37,60 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.monitor.actions;
+package frysk.gui.monitor.filters;
 
-import frysk.gui.monitor.LiaisonItem;
-import frysk.gui.monitor.observers.TaskObserverRoot;
-import frysk.proc.Task;
+import java.util.Iterator;
+
+import frysk.gui.monitor.Combo;
+import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.actions.Action;
+import frysk.gui.monitor.actions.ActionPoint;
+import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
  * 
  * @author swagiaal
  *
- * When executed this action adds the given observer
- * to the given task. 
+ * takes a @link frysk.gui.monitor.observers.ObserverRoot and
+ * returns all possible combinations of its FilterPoints and
+ * their applicable filters.
  */
-public class StickyObserverAction extends TaskAction {
 
-	TaskObserverRoot observer;
+public class ComboFactory {
+	public static ComboFactory theFactory = new ComboFactory();
 	
-	public StickyObserverAction() {
-		super("Add Observer Action", "Add given observer to the given task"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.observer = null;
+	public ComboFactory(){
+		
 	}
-
-	public StickyObserverAction(StickyObserverAction other) {
-		super(other);
-		this.observer = other.observer;
+	
+	public ObservableLinkedList getFilterCombos(ObserverRoot observer){
+		ObservableLinkedList combos = new ObservableLinkedList();
+		
+		Iterator i = observer.getFilterPoints().iterator();
+		while (i.hasNext()) {
+			FilterPoint filterPoint = (FilterPoint) i.next();
+			Iterator j = filterPoint.getApplicableItems().iterator();
+			while (j.hasNext()) {
+				Filter filter = (Filter) j.next();
+				combos.add(new Combo(filterPoint, filter));
+			}
+		}
+		return combos;
 	}
-
-	public void execute(Task task) {
-		observer.apply(task.getProc());
+	
+	public ObservableLinkedList getActionCombos(ObserverRoot observer){
+		ObservableLinkedList combos = new ObservableLinkedList();
+		
+		Iterator i = observer.getActionPoints().iterator();
+		while (i.hasNext()) {
+			ActionPoint actionPoint = (ActionPoint) i.next();
+			Iterator j = actionPoint.getApplicableItems().iterator();
+			while (j.hasNext()) {
+				Action action = (Action) j.next();
+				combos.add(new Combo(actionPoint, action));
+			}
+		}
+		return combos;
 	}
-
-	public LiaisonItem getCopy() {
-		return new StickyObserverAction(this);
-	}
-
-	public void setObserver(TaskObserverRoot taskObserver){
-		this.observer = taskObserver;
-	}
+	
 }

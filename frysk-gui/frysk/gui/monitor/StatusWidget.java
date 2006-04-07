@@ -276,9 +276,6 @@ public class StatusWidget extends VBox{
 		public void execute(ObserverRoot observer) {
 			area.appendEvent (eventId);
 		}
-		
-		public LiaisonItem getCopy() {
-			return null;
-		}
+
 	}
 }

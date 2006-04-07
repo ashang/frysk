@@ -67,6 +67,7 @@ public class EditObserverDialog extends Dialog {
 	SimpleComboBox observerTypeComboBox;
 	
 	FiltersTable filtersTable;
+	ActionsTable actionsTable;
 	
 	EditObserverDialog(LibGlade glade){
 		super(glade.getWidget("editObserverDialog").getHandle());
@@ -87,6 +88,7 @@ public class EditObserverDialog extends Dialog {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					System.out.println("EditObserverDialog.EditObserverDialog() " + observer);
 					filtersTable.apply();
+					actionsTable.apply();
 					EditObserverDialog.this.hideAll();
 				}
 			}
@@ -122,6 +124,8 @@ public class EditObserverDialog extends Dialog {
 		});
 	
 		this.filtersTable = new FiltersTable(glade.getWidget("observerFiltersTable").getHandle());
+		this.actionsTable = new ActionsTable(glade.getWidget("observerActionsTable").getHandle());
+		
 		Frame frame = (Frame) glade.getWidget("observerFiltersFrame");
 		frame.setBackgroundColor(StateType.NORMAL, Color.WHITE);
 		frame.setBackgroundColor(StateType.ACTIVE, Color.WHITE);
@@ -142,6 +146,7 @@ public class EditObserverDialog extends Dialog {
 		this.setName(myObserver);
 		this.setType(myObserver);
 		this.filtersTable.setObserver(myObserver);
+		this.actionsTable.setObserver(myObserver);
 	}
 
 	/**

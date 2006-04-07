@@ -57,4 +57,13 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 	
 	public abstract LiaisonItem getCopy();
 	
+	public abstract boolean setArgument(String argument);
+
+	/**
+	 * uset to get the item's argument
+	 * @return the argument, null if the object takes no
+	 * argument
+	 */
+	public abstract String getArgument();
+	
 }

@@ -41,6 +41,14 @@ public class ProgramObserver {
 			public LiaisonItem getCopy() {
 				return null;
 			}
+
+			public boolean setArgument(String argument) {
+				return false;
+			}
+
+			public String getArgument() {
+				return null;
+			}
 		};
 		
 		forkedObserver.forkedTaskActionPoint.addAction(myTaskAction);

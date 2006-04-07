@@ -47,7 +47,8 @@ import org.jdom.Element;
 import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.StickyObserverAction;
+import frysk.gui.monitor.actions.LogAction;
+import frysk.gui.monitor.actions.AddTaskObserverAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
 
 /**
@@ -128,19 +129,17 @@ public class ObserverManager {
 		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
 		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
 		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		
+		forkedObserver.genericActionPoint.addAction(new LogAction());
+		forkedObserver.genericActionPoint.addAction(new LogAction());
+		forkedObserver.genericActionPoint.addAction(new LogAction());
+		forkedObserver.genericActionPoint.addAction(new LogAction());
+		forkedObserver.genericActionPoint.addAction(new LogAction());
+		forkedObserver.genericActionPoint.addAction(new LogAction());
+		
 		//final TaskExecObserver   execObserver = new TaskExecObserver();
 		
-		StickyObserverAction stickyObserverAction = new StickyObserverAction();
+		AddTaskObserverAction stickyObserverAction = new AddTaskObserverAction();
 		stickyObserverAction.setObserver(forkedObserver);
 		forkedObserver.forkedTaskActionPoint.addAction(stickyObserverAction);
 		
@@ -185,6 +184,17 @@ public class ObserverManager {
 		}
 		this.taskObservers.remove(index);
 		this.taskObservers.add(index, toBeAdded);
+	}
+	
+	public TaskObserverRoot getObserverByName(String argument) {
+		Iterator iterator = this.taskObservers.iterator();
+		while (iterator.hasNext()) {
+			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+			if(observer.getName().equals(argument)){
+				return observer;
+			}
+		}
+		return null;
 	}
 	
 	/**

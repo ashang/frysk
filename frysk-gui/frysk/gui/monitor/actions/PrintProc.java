@@ -59,4 +59,12 @@ public class PrintProc extends ProcAction {
 	public LiaisonItem getCopy() {
 		return new PrintProc(this);
 	}
+
+	public boolean setArgument(String argument) {
+		return false;
+	}
+
+	public String getArgument() {
+		return null;
+	}
 }
