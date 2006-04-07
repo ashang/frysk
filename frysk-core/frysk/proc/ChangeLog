@@ -1,3 +1,7 @@
+2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Register.java (getLength): Added.
+
 2006-04-07  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (killDuringTearDown): Rename registerChild.

@@ -7,6 +7,7 @@ import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
@@ -36,7 +37,7 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 	
 	private LibGlade glade;
 	
-	private DataColumn[] cols = {new DataColumnString(), new DataColumnString(), new DataColumnString()};
+	private DataColumn[] cols = {new DataColumnString(), new DataColumnString(), new DataColumnString(), new DataColumnObject()};
 	
 	private static final int DECIMAL = 0;
 	private static final int HEX = 1;
@@ -68,8 +69,9 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 			TreeIter iter = model.appendRow();
 			
 			model.setValue(iter, (DataColumnString) cols[0], register.getName());
-			model.setValue(iter, (DataColumnString) cols[1], ""+1234567);
-			model.setValue(iter, (DataColumnString) cols[2], ""+1234567);
+			model.setValue(iter, (DataColumnString) cols[1], ""+0);
+			model.setValue(iter, (DataColumnString) cols[2], ""+0);
+			model.setValue(iter, (DataColumnObject) cols[3], register);
 		}
 		
 		registerView.setModel(model);
@@ -224,9 +226,9 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 	 * 
 	 * TODO: Make this generic, so it no longer assumes 32 bit little-endian
 	 */
-	private String signExtend(String unextended, int bitsPerChar){
-		int fullDigits = (32 / bitsPerChar);
-		int digitsToAdd = fullDigits + (32 - fullDigits*bitsPerChar) - unextended.length();
+	private String signExtend(String unextended, int bitlength, int bitsPerChar){
+		int fullDigits = (bitlength / bitsPerChar);
+		int digitsToAdd = fullDigits + (bitlength - fullDigits*bitsPerChar) - unextended.length();
 		
 		for(int i = 0; i < digitsToAdd; i++)
 			unextended = '0' + unextended;
@@ -246,16 +248,20 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 		while(iter != null){
 			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
 		
+			Register register = (Register) model.getValue(iter, (DataColumnObject) cols[3]);
+			
+			int bitlength = register.getLength()*4;
+			
 			String text = "";
 			switch(this.mode){
 			case BINARY:
-				text = signExtend(Long.toBinaryString(value), 1);
+				text = signExtend(Long.toBinaryString(value), bitlength, 1);
 				break;
 			case HEX:
-				text = signExtend(Long.toHexString(value), 4);
+				text = signExtend(Long.toHexString(value), bitlength, 4);
 				break;
 			case OCTAL:
-				text = signExtend(Long.toOctalString(value), 3);
+				text = signExtend(Long.toOctalString(value), bitlength, 3);
 				break;
 			case DECIMAL:
 				text = "" + value;

@@ -1,5 +1,10 @@
 2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
 
+	* register/RegisterWindow.java (signExtend): Now takes the length
+	to extend to in bits as well.
+	(refreshList): Now gets the length of the register from the core
+	and passes that through to signExtend.
+
 	* glade/registerwindow.glade: Added combobox for setting register
 	endianess.
 	* register/RegisterWindow.java (RegisterWindow): Now sets the mode

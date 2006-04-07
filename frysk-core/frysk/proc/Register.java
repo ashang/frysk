@@ -98,6 +98,10 @@ public class Register
     {
 	return name;
     }
+    
+    public int getLength(){
+    	return length;
+    }
 
     // void get (proc.Task task, byte[] bytes, int off, int len);
     // void get (Task task, byte[] array);
