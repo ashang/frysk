@@ -285,7 +285,7 @@ public class TestLib
 	    AckHandler ack = new AckHandler (sig);
 	    this.argv = argv;
 	    this.pid = startChild (null, "/dev/null", null, argv);
-	    registerChild (pid);
+	    killDuringTearDown (pid);
 	    ack.await ();
 	}
 	/**
@@ -1089,13 +1089,16 @@ public class TestLib
     private Set children;
     /**
      * Add the pid to the set of children that should be killed off
-     * after the test has run.
+     * during tearDown.
      */
-    protected final void registerChild (int child)
+    protected final void killDuringTearDown (int pid)
     {
 	// Had better not try to register process one.
-	assertFalse ("child is process one", child == 1);
-	children.add (new Integer (child));
+	assertFalse ("child is process one", pid == 1);
+	Integer i = new Integer (pid);
+	children.add (i);
+	logger.log (Level.FINE, "{0} killDuringTearDown {1}\n",
+		    new Object[] { this, i });
     }
 
     /**
@@ -1117,9 +1120,8 @@ public class TestLib
 		public void update (Observable o, Object obj)
 		{
 		    Proc proc = (Proc) obj;
-		    if (isDescendantOfMine (proc)) {
-			registerChild (proc.getPid ());
-		    }
+		    if (isDescendantOfMine (proc))
+			killDuringTearDown (proc.getPid ());
 		}
 	    });
 	host.observableTaskAddedXXX.addObserver (new Observer ()
@@ -1128,7 +1130,7 @@ public class TestLib
 		{
 		    Task task = (Task) obj;
 		    if (isDescendantOfMine (task.proc))
-			registerChild (task.getTid ());
+			killDuringTearDown (task.getTid ());
 		}
 	    });
 	logger.log (Level.FINE, "{0} <<<<<<<<<<<<<<<< end setUp\n", this);
@@ -1145,9 +1147,13 @@ public class TestLib
 	    int pid = child.intValue ();
 	    try {
 		Signal.kill (pid, Sig.KILL);
+		logger.log (Level.FINE, "{0} kill -KILL {1}\n",
+			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it.
+		logger.log (Level.FINE, "{0} kill -KILL {1} (failed)\n",
+			    new Object[] { this, child });
 	    }
 	    // Note that there's a problem here with both stopped and
 	    // attached tasks.  The Sig.KILL won't be delivered, and
@@ -1156,16 +1162,24 @@ public class TestLib
 	    // task a continue ...
 	    try {
 		Signal.kill (pid, Sig.CONT);
+		logger.log (Level.FINE, "{0} kill -CONT {1}\n",
+			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it.
+		logger.log (Level.FINE, "{0} kill -CONT {1} (failed)\n",
+			    new Object[] { this, child });
 	    }
 	    // ... and a detach.
 	    try {
 		Ptrace.detach (pid, Sig.KILL);
+		logger.log (Level.FINE, "{0} detach -KILL {1}\n",
+			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it.
+		logger.log (Level.FINE, "{0} detach -KILL {1} (failed)\n",
+			    new Object[] { this, child });
 	    }
 	}
 
@@ -1185,9 +1199,25 @@ public class TestLib
 		    {
 			private void detach (int pid)
 			{
-			    // Detach with a KILL signal which will
-			    // force the task to exit.
-			    Ptrace.detach (pid, Sig.KILL);
+			    try {
+				// Detach with a KILL signal which
+				// will force the task to exit.
+				Ptrace.detach (pid, Sig.KILL);
+				logger.log (Level.FINE,
+					    "{0} detach -KILL {1}\n",
+					    new Object[] {
+						TestLib.this,
+						new Integer (pid)
+					    });
+			    }
+			    catch (Errno.Esrch e) {
+				logger.log (Level.FINE,
+					    "{0} detach -KILL {1} (fail)\n",
+					    new Object[] {
+						TestLib.this,
+						new Integer (pid)
+					    });
+			    }
 			}
 			public void cloneEvent (int pid, int clone)
 			{

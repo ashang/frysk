@@ -109,7 +109,7 @@ public class TestSyscall2
 			Task task = (Task) obj;
 			if (!isChildOfMine (task.proc))
 			    return;
-			registerChild (task.getTid ());
+			killDuringTearDown (task.getTid ());
 			task.traceSyscall = true;
 			task.requestAddSyscallObserver (taskEventObserver);
 		    }
