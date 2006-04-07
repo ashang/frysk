@@ -61,7 +61,7 @@ abstract class ProcState
 	if (attached)
 	    return running;
 	else
-	    return unattached;
+	    return detached;
     }
 
     protected ProcState (String state)
@@ -110,13 +110,13 @@ abstract class ProcState
      * The process is running free (or at least was the last time its
      * status was checked).
      */
-    private static ProcState unattached = new ProcState ("unattached")
+    private static final ProcState detached = new ProcState ("detached")
 	{
 	    ProcState handleRefresh (Proc proc)
 	    {
 		logger.log (Level.FINE, "{0} handleRefresh\n", proc); 
 		proc.sendRefresh ();
-		return unattached;
+		return detached;
 	    }
 	    ProcState handleRemoval (Proc proc)
 	    {
@@ -141,7 +141,7 @@ abstract class ProcState
 		// Must be bogus; if there were observations then the
 		// Proc wouldn't be in this state.
 		observation.fail (new RuntimeException ("not attached"));
-		return unattached;
+		return detached;
 	    }
 
 	    ProcState handleAddTasksObserver (final Proc proc,
@@ -181,7 +181,7 @@ abstract class ProcState
 	    	final Task mainTask = Manager.host.get (new TaskId (proc.getPid ()));
 		if (mainTask == null) {
 		    tasksObserver.addFailed(proc, new RuntimeException("Process lost"));
-		    return unattached;
+		    return detached;
 		}
 
 	    	final ClonedObserver clonedObserver = new ClonedObserver();
@@ -216,7 +216,7 @@ abstract class ProcState
 			}
 		    });
 		tasksObserver.addedTo(proc);
-	    	return unattached;
+	    	return detached;
 	    }
 
 	};
@@ -245,7 +245,7 @@ abstract class ProcState
 		// The main task exited and a refresh managed to
 		// update Proc removing it.
 		observation.fail (new RuntimeException ("main task exited"));
-		return unattached;
+		return detached;
 	    }
 	    mainTask.performAttach ();
 	    return new Attaching.ToMainTask (mainTask);
@@ -427,7 +427,7 @@ abstract class ProcState
 		    return this;
 		// All done, notify.
 		proc.observableDetached.notify (proc);
-		return unattached;
+		return detached;
 	    }
 	    ProcState handleTaskDetachCompleted (Proc proc, Task task,
 						 Task clone)
@@ -464,11 +464,11 @@ abstract class ProcState
     /**
      * The process has been destroyed.
      */
-    private static ProcState destroyed = new ProcState ("destroyed")
+    private static final ProcState destroyed = new ProcState ("destroyed")
 	{
 	};
 
-    private static ProcState running = new ProcState ("running")
+    private static final ProcState running = new ProcState ("running")
 	{
 	    ProcState handleAddObservation (Proc proc,
 					    Observation observation)

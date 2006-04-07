@@ -82,7 +82,7 @@ public class TestRefresh
 	    assertEquals (reason + ", child removed nunce",
 			  0, removed.count);
 	    assertEquals (reason + ", child state",
-			  "unattached", proc.getState ().toString ());
+			  "detached", proc.getState ().toString ());
 	}
 	void verifyRemove (String reason)
 	{
@@ -199,7 +199,7 @@ public class TestRefresh
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
- 	    assertEquals ("task " + task + " state", "unattached",
+ 	    assertEquals ("task " + task + " state", "detached",
 			  task.getState ().toString ());
  	}
 
@@ -217,7 +217,7 @@ public class TestRefresh
  	for (Iterator i = tracker.proc.taskPool.values ().iterator ();
 	     i.hasNext ();) {
  	    Task task = (Task) i.next ();
-	    assertEquals ("task " + task + " state", "unattached",
+	    assertEquals ("task " + task + " state", "detached",
 			  task.getState ().toString ());
  	}
 	assertEquals ("tasks removed by refresh after kills",

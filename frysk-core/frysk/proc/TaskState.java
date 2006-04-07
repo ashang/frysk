@@ -51,9 +51,9 @@ class TaskState
     /**
      * Return the initial state of a detached task.
      */
-    static TaskState unattachedState ()
+    static TaskState detachedState ()
     {
-	return unattached;
+	return detached;
     }
     /**
      * Return the initial state of the Main task.
@@ -178,7 +178,7 @@ class TaskState
      * The task isn't attached (it was presumably detected using a
      * probe of the system process list).
      */
-    private static TaskState unattached = new TaskState ("unattached")
+    private static final TaskState detached = new TaskState ("detached")
 	{
 	    TaskState handleRemoval (Task task)
 	    {
@@ -196,7 +196,7 @@ class TaskState
     /**
      * The task is in the process of being attached.
      */
-    private static TaskState attaching = new TaskState ("attaching")
+    private static final TaskState attaching = new TaskState ("attaching")
 	{
 	    TaskState handleStoppedEvent (Task task)
 	    {
@@ -244,7 +244,7 @@ class TaskState
      * get notified that the task has transitioned into the attached
      * state.
      */
-    private static TaskState attached = new TaskState ("attached")
+    private static final TaskState attached = new TaskState ("attached")
 	{
 	    TaskState handleContinue (Task task)
 	    {
@@ -262,7 +262,7 @@ class TaskState
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		return detached;
 	    }
 	    TaskState handleAddObserver (Task task, Observable observable,
 					 Observer observer)
@@ -305,7 +305,7 @@ class TaskState
 	    return this;
 	}
 	
-	private static TaskState waitForStop = new Start ("waitForStop")
+	private static final TaskState waitForStop = new Start ("waitForStop")
 	    {
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
@@ -326,7 +326,7 @@ class TaskState
 		}
 	    };
 	
-	private static TaskState blocked = new Start ("blocked")
+	private static final TaskState blocked = new Start ("blocked")
 	    {
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
@@ -339,7 +339,7 @@ class TaskState
     }
 
     // Keep the task running.
-    private static TaskState running = new TaskState ("running")
+    private static final TaskState running = new TaskState ("running")
 	{
 	    TaskState handleSignaledEvent (Task task, int sig)
 	    {
@@ -450,7 +450,8 @@ class TaskState
 	};
 
     // Task is running inside a syscall.
-    private static TaskState runningInSyscall = new TaskState ("runningInSyscall")
+    private static final TaskState runningInSyscall =
+	new TaskState ("runningInSyscall")
 	{
 	    // XXX: We needn't look for signal events because the
 	    // syscall will exit before we get the signal, however, we still.
@@ -497,7 +498,7 @@ class TaskState
 	    }
 	};
 
-    private static TaskState detaching = new TaskState ("detaching")
+    private static final TaskState detaching = new TaskState ("detaching")
 	{
 	    TaskState handleAttach (Task task)
 	    {
@@ -511,7 +512,7 @@ class TaskState
 		// task is detached.
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		return detached;
 	    }
 	    TaskState handleTerminatingEvent (Task task, boolean signal,
 					      int value)
@@ -580,14 +581,15 @@ class TaskState
 	    }
 	};
 
-    private static TaskState detachingInSyscall = new TaskState ("detachingInSyscall")
+    private static final TaskState detachingInSyscall =
+	new TaskState ("detachingInSyscall")
 	{
 	    TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
 		task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		return detached;
 	    }
 	    TaskState handleSyscalledEvent (Task task)
 	    {
@@ -605,7 +607,7 @@ class TaskState
 		else
 		    task.sendDetach (0);
 		task.proc.performTaskDetachCompleted (task);
-		return unattached;
+		return detached;
 	    }
 	};
 
@@ -641,7 +643,7 @@ class TaskState
     /**
      * The task is in the blocked state with no pending signal.
      */
-    private static TaskState blockedContinue = new BlockedSignal (0)
+    private static final TaskState blockedContinue = new BlockedSignal (0)
 	{
 	    public String toString ()
 	    {
@@ -649,7 +651,7 @@ class TaskState
 	    }
 	};
 
-    private static TaskState disappeared = new TaskState ("disappeared")
+    private static final TaskState disappeared = new TaskState ("disappeared")
 	{
 	    TaskState handleTerminatedEvent (Task task, boolean signal,
 					     int value)
@@ -677,7 +679,7 @@ class TaskState
     	    }
 	};
 
-    private static TaskState destroyed = new TaskState ("destroyed") 
+    private static final TaskState destroyed = new TaskState ("destroyed") 
 	{
 	    TaskState handleAttach (Task task)
 	    {
@@ -692,7 +694,7 @@ class TaskState
 					 Observer observer)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
-		observer.addFailed (task, new RuntimeException ("unattached"));
+		observer.addFailed (task, new RuntimeException ("detached"));
 		task.proc.requestDeleteObserver (task,
 						 (TaskObservable) observable,
 						 (TaskObserver) observer);

@@ -143,7 +143,7 @@ abstract public class Task
     protected Task (Proc proc, TaskId id)
     {
 	this (id, proc);
-	newState = TaskState.unattachedState ();
+	newState = TaskState.detachedState ();
 	logger.log (Level.FINE, "{0} new -- create unattached\n", this); 
     }
     /**

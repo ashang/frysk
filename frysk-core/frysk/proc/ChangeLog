@@ -1,3 +1,10 @@
+2006-04-06  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java, ProcState.java: Rename "unattached" to
+	"detached". Make states final.
+	* TestRefresh.java: Update.
+	* Task.java: Update.
+
 2006-04-06  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Isa.java: Made public.
