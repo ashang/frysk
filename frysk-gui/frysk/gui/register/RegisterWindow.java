@@ -22,7 +22,15 @@ import frysk.proc.Isa;
 import frysk.proc.Register;
 import frysk.proc.Task;
 
-public class RegisterWindow extends Window implements ComboBoxListener, CellRendererTextListener{
+/**
+ * The RegisterWindow allows the display and editing of the names and values
+ * of system registers. The values of the registers can be displayed in decimal,
+ * hexadecimal, octal, or binary. Manipulating the registers is only possible
+ * when the task is stopped, otherwise all functionality is disabled 
+ * @author ajocksch
+ *
+ */
+public class RegisterWindow extends Window implements CellRendererTextListener{
 	
 	private Task myTask;
 	
@@ -37,6 +45,13 @@ public class RegisterWindow extends Window implements ComboBoxListener, CellRend
 	
 	private int mode = DECIMAL;
 	
+	private boolean littleEndian = true;
+	
+	/**
+	 * Creates a new RegistryWindow
+	 * @param task The Task for which to display the registers
+	 * @param glade The glade file for the register window
+	 */
 	public RegisterWindow(Task task, LibGlade glade){
 		super(glade.getWidget("registerWindow").getHandle());
 		this.glade = glade;
@@ -81,96 +96,49 @@ public class RegisterWindow extends Window implements ComboBoxListener, CellRend
 		
 		ComboBox formatSelector = (ComboBox) this.glade.getWidget("formatSelector");
 		formatSelector.setActive(0);
-		formatSelector.addListener(this);
-	}
-
-	public void comboBoxEvent(ComboBoxEvent arg0) {
-		ComboBox formatSelector = (ComboBox) this.glade.getWidget("formatSelector");
+		formatSelector.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent arg0) {
+				switch(((ComboBox) arg0.getSource()).getActive()){
+				case 0:
+					mode = DECIMAL;
+					break;
+				case 1:
+					mode = HEX;
+					break;
+				case 2: 
+					mode = OCTAL;
+					break;
+				case 3:
+					mode = BINARY;
+					break;
+				// do nothing on the default case
+				default:
+					return;
+				}
+				
+				RegisterWindow.this.glade.getWidget("endianSelector").setSensitive(mode != DECIMAL);
+				
+				refreshList();
+			}
+		});
 		
-		switch(formatSelector.getActive()){
-		case 0:
-			setFormatToDecimal();
-			break;
-		case 1:
-			setFormatToHex();
-			break;
-		case 2: 
-			setFormatToOctal();
-			break;
-		case 3:
-			setFormatToBinary();
-			break;
-		}
-	}
-	
-	private void setFormatToDecimal(){
-		TreeView view = (TreeView) this.glade.getWidget("registerView");
-		
-		ListStore model = (ListStore) view.getModel();
-
-		TreeIter iter = model.getFirstIter();
-		while(iter != null){
-			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
-			
-			model.setValue(iter, (DataColumnString) cols[1], ""+value);
-			iter = iter.getNextIter();
-		}
-		
-		this.mode = DECIMAL;
-		view.showAll();
+		ComboBox endianSelector = (ComboBox) this.glade.getWidget("endianSelector");
+		endianSelector.setActive(0);
+		endianSelector.setSensitive(false);
+		endianSelector.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent arg0) {
+				littleEndian = (((ComboBox) arg0.getSource()).getActive() == 0);
+				refreshList();
+			}
+		});
 	}
 	
-	private void setFormatToHex(){
-		TreeView view = (TreeView) this.glade.getWidget("registerView");
-		
-		ListStore model = (ListStore) view.getModel();
-
-		TreeIter iter = model.getFirstIter();
-		while(iter != null){
-			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
-			
-			model.setValue(iter, (DataColumnString) cols[1], "0x"+Long.toHexString(value));
-			iter = iter.getNextIter();
-		}
-		
-		this.mode = HEX;
-		view.showAll();
-	}
-	
-	private void setFormatToOctal(){
-		TreeView view = (TreeView) this.glade.getWidget("registerView");
-		
-		ListStore model = (ListStore) view.getModel();
-
-		TreeIter iter = model.getFirstIter();
-		while(iter != null){
-			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
-			
-			model.setValue(iter, (DataColumnString) cols[1], Long.toOctalString(value));
-			iter = iter.getNextIter();
-		}
-		
-		this.mode = OCTAL;
-		view.showAll();
-	}
-	
-	private void setFormatToBinary(){
-		TreeView view = (TreeView) this.glade.getWidget("registerView");
-		
-		ListStore model = (ListStore) view.getModel();
-
-		TreeIter iter = model.getFirstIter();
-		while(iter != null){
-			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
-			
-			model.setValue(iter, (DataColumnString) cols[1], Long.toBinaryString(value));
-			iter = iter.getNextIter();
-		}
-		
-		this.mode = BINARY;
-		view.showAll();
-	}
-	
+	/**
+	 * Sets whether the task is running or not, and if it is diable the
+	 * widgets in the window
+	 * @param running Whether the task is running
+	 * TODO: Should we be listening to the Task for some sort of an event in this regard?
+	 */
 	public void setIsRunning(boolean running){
 		if(running){
 			this.glade.getWidget("registerView").setSensitive(false);
@@ -182,6 +150,9 @@ public class RegisterWindow extends Window implements ComboBoxListener, CellRend
 		}
 	}
 
+	/**
+	 * When the value of a register is done being edited, save the value in the model
+	 */
 	public void cellRendererTextEvent(CellRendererTextEvent arg0) {
 		TreeView view = (TreeView) this.glade.getWidget("registerView");
 		
@@ -192,65 +163,121 @@ public class RegisterWindow extends Window implements ComboBoxListener, CellRend
 		String newText = arg0.getText();
 		long actualValue = 0;
 		
+		if(mode != DECIMAL && !littleEndian){
+			char[] tmp = new char[newText.length()];
+			for(int i = 0; i < newText.length(); i++)
+				tmp[newText.length() - i - 1] = newText.charAt(i);
+			newText = new String(tmp);
+		}
+		
 		// perform input validation
 		if(this.mode == DECIMAL){
-			long value = 0;
 			try{
-				value = Long.parseLong(newText);
+				actualValue = Long.parseLong(newText);
 			}
 			catch (Exception e){
 				// invalid entry, do nothing
 				return;
 			}
-			
-			model.setValue(edited, (DataColumnString) cols[1], ""+value);
-			actualValue = value;
 		}
 		else if(this.mode == HEX){
-			long value = 0;
 			try{
 				if(newText.indexOf("0x") == 0)
-					value = Long.parseLong(newText.substring(2), 16);
+					actualValue = Long.parseLong(newText.substring(2), 16);
 				else
-					value = Long.parseLong(newText, 16);
+					actualValue = Long.parseLong(newText, 16);
 			}
 			catch (Exception e){
 				// bad input, do nothing
 				return;
 			}
-			
-			model.setValue(edited, (DataColumnString) cols[1], "0x"+Long.toHexString(value));
-			actualValue = value;
 		}
 		else if(this.mode == OCTAL){
-			long value = 0;
-			
 			try{
-				value = Long.parseLong(newText, 8);
+				actualValue = Long.parseLong(newText, 8);
 			}
 			catch (Exception e){
 				// bad input, do nothing
 				return;
 			}
-			
-			model.setValue(edited, (DataColumnString) cols[1], Long.toOctalString(value));
-			actualValue = value;
 		}
 		else if(this.mode == BINARY){
-			long value = 0;
-			
 			try{
-				value = Long.parseLong(newText, 2);
+				actualValue = Long.parseLong(newText, 2);
 			}
 			catch (Exception e){
 				// bad input, do nothing
 				return;
 			}
-			
-			model.setValue(edited, (DataColumnString) cols[1], Long.toBinaryString(value));
-			actualValue = value;
 		}
 		
+		// update the hidden column with the real value, then update the display
 		model.setValue(edited, (DataColumnString) cols[2], ""+actualValue);
+		this.refreshList();
+	}
+	
+	/**
+	 * Sign extends the given string to 32 bits. 
+	 * @param unextended The unextended string
+	 * @param bitsPerChar The number of bits per character (i.e. for hex this is 4, for binary it is 1)
+	 * @return The extended string
+	 * 
+	 * TODO: Make this generic, so it no longer assumes 32 bit little-endian
+	 */
+	private String signExtend(String unextended, int bitsPerChar){
+		int fullDigits = (32 / bitsPerChar);
+		int digitsToAdd = fullDigits + (32 - fullDigits*bitsPerChar) - unextended.length();
+		
+		for(int i = 0; i < digitsToAdd; i++)
+			unextended = '0' + unextended;
+		
+		return unextended;
+	}
+	
+	/*
+	 * Refreshes the view of the items in the list
+	 */
+	private void refreshList(){
+		TreeView view = (TreeView) this.glade.getWidget("registerView");
+		
+		ListStore model = (ListStore) view.getModel();
+
+		TreeIter iter = model.getFirstIter();
+		while(iter != null){
+			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
+		
+			String text = "";
+			switch(this.mode){
+			case BINARY:
+				text = signExtend(Long.toBinaryString(value), 1);
+				break;
+			case HEX:
+				text = signExtend(Long.toHexString(value), 4);
+				break;
+			case OCTAL:
+				text = signExtend(Long.toOctalString(value), 3);
+				break;
+			case DECIMAL:
+				text = "" + value;
+				break;
+			}
+			
+			// flip the bits if we have to, but not in decimal mode
+			if(!this.littleEndian && mode != DECIMAL){
+				char[] tmp = new char[text.length()];
+				for(int i = 0; i < text.length(); i++)
+					tmp[tmp.length - i - 1] = text.charAt(i);
+				text = new String(tmp);
+			}
+			
+			if(this.mode == HEX)
+				text = "0x" + text;
+				
+			
+			model.setValue(iter, (DataColumnString) cols[1], text);
+			iter = iter.getNextIter();
+		}
+		
+		this.showAll();
 	}
 }

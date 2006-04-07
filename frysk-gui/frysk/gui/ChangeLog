@@ -1,3 +1,19 @@
+2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/registerwindow.glade: Added combobox for setting register
+	endianess.
+	* register/RegisterWindow.java (RegisterWindow): Now sets the mode
+	and endianess within the anonymous inner classes.
+	(comboBoxEvent): Removed.
+	(setFormatToHext): Ditto.
+	(setFormatToDecimal): Ditto.
+	(setFormatToOctal): Ditto.
+	(setFormatToBinary): Ditto.
+	(refreshList): Added.
+	(cellRendererTextEvent): Now takes into account the endianness being
+	displayed and uses refreshList to redraw the display.
+	(signExtend): Added.
+
 2006-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Added frame to observerActionsTable. Set up its
