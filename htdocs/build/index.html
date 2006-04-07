@@ -101,8 +101,8 @@ causes that program to be killed.  The test
 <ul>
 <li>Download and unpack the kernel
 <pre>
-$ wget http://download.fedora.redhat.com/pub/fedora/linux\
-/core/updates/5/SRPMS/kernel-`uname -r`.src.rpm
+$ wget http://download.fedora.redhat.com/pub/fedora\
+/linux/core/updates/5/SRPMS/kernel-`uname -r`.src.rpm
 $ rpm -ivh kernel-`uname -r`.src.rpm
 </pre>
 </li>
@@ -187,7 +187,8 @@ to the file:
 </pre>
 and then install the java-gnome stuff vis:
 <pre>
-$ sudo aptitude install libglade-java libgtk-java libglade2-dev libvte-dev
+$ sudo aptitude install libglade-java \
+libgtk-java libglade2-dev libvte-dev
 $ pkg-config --modversion gtk2-java
 2.8.1
 </pre>
