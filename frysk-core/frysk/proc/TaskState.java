@@ -60,7 +60,7 @@ class TaskState
      */
     static TaskState mainState ()
     {
-	return Start.waitForStop;
+	return StartMainTask.waitForStop;
     }
     /**
      * Return the initial state of a cloned task.
@@ -70,7 +70,7 @@ class TaskState
 	if (parentState == detaching)
 	    return detaching;
 	else if (parentState == running)
-	    return Start.waitForStop;
+	    return StartMainTask.waitForStop;
 	else
 	    throw new RuntimeException ("clone's parent in unexpected state "
 					+ parentState);
@@ -335,19 +335,19 @@ class TaskState
      * Task just starting out, wait for it to both become ready, and
      * to be unblocked, before continuing.
      */
-    static class Start
+    static class StartMainTask
 	extends TaskState
     {
-	Start (String name)
+	StartMainTask (String name)
 	{
-	    super ("Start." + name);
+	    super ("StartMainTask." + name);
 	}
 	private static TaskState attemptAttach (Task task)
 	{
 	    logger.log (Level.FINE, "{0} attemptAttach\n", task); 
 	    task.sendSetOptions ();
 	    if (task.blockers.size () > 0) {
-		return Start.blocked;
+		return StartMainTask.blocked;
 	    }
 	    if (task.notifyAttached () > 0) {
 		return blockedContinue;
@@ -363,14 +363,15 @@ class TaskState
 	    return this;
 	}
 	
-	private static final TaskState waitForStop = new Start ("waitForStop")
+	private static final TaskState waitForStop =
+	    new StartMainTask ("waitForStop")
 	    {
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    return Start.waitForStop;
+		    return StartMainTask.waitForStop;
 		}
 		TaskState handleTrappedEvent (Task task)
 		{
@@ -384,7 +385,7 @@ class TaskState
 		}
 	    };
 	
-	private static final TaskState blocked = new Start ("blocked")
+	private static final TaskState blocked = new StartMainTask ("blocked")
 	    {
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)

@@ -1,5 +1,7 @@
 2006-04-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Rename .Start to .StartMainTask.
+
 	* TaskState.java: Replace "attached" with Attached class
 	containing sub-states to handle combinations of waiting for
 	unblock and continue.
