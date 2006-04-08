@@ -1,5 +1,12 @@
 2006-04-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverBlocked.java: Add killDuringTearDown calls.
+	* TestTaskForkedObserver.java: Block the forked process.
+	* TestRun.java (testCreateAttachedStoppedProc): Re-order test to
+	ensure that task observers are always added early.
+	* TestLib.java (assertRunUntilStop): Add logging.
+	(AutoAddTaskObserverBase): Add logging.
+
 	* TaskState.java (StartClonedTask): New sub-state machine, for
 	moment duplicate of .StartMainTask.
 

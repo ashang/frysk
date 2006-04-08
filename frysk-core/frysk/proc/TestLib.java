@@ -90,8 +90,12 @@ public class TestLib
      */
     static void assertRunUntilStop (int timeout, String reason)
     {
+	logger.log (Level.FINE, "{0} assertRunUntilStop start: {1}\n",
+		    new Object[] { TestLib.class, reason });
 	assertTrue ("event loop run explictly stopped (" + reason + ")",
 		    Manager.eventLoop.runPolling (timeout * 1000));
+	logger.log (Level.FINE, "{0} assertRunUntilStop stop: {1}\n",
+		    new Object[] { TestLib.class, reason });
     }
 
     /**
@@ -759,8 +763,11 @@ public class TestLib
 		    public void update (Observable obj, Object o)
 		    {
 			Task task = (Task) o;
-			if (isDescendantOfMine (task.proc))
+			if (isDescendantOfMine (task.proc)) {
+			    logger.log (Level.FINE, "{0} updateTaskAdded\n",
+					this);
 			    updateTaskAdded (task);
+			}
 		    }
 		});
 	}

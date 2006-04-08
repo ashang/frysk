@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -64,6 +64,26 @@ public class TestRun
 	// Once a proc destroyed has been seen stop the event loop.
 	new StopEventLoopWhenChildProcRemoved ();
 
+	// Observe TaskObserver.Attached events; when any occure
+	// indicate that the curresponding task should continue.
+	class TaskAttachContinuedObserver
+	    extends AutoAddTaskObserverBase
+	    implements TaskObserver.Attached
+	{
+	    TaskSet attachedTasks = new TaskSet ();
+	    void updateTaskAdded (Task task)
+	    {
+		task.requestAddAttachedObserver (this);
+	    }
+	    public Action updateAttached (Task task)
+	    {
+		attachedTasks.add (task);
+		return Action.CONTINUE;
+	    }
+	}
+	TaskAttachContinuedObserver taskAttachContinuedObserver
+	    = new TaskAttachContinuedObserver ();
+
 	// Create a program that removes the above tempoary file, when
 	// it exits the event loop will be shutdown.
 	String[] command = new String[] {"rm", "-f", tmpFile.toString () };
@@ -92,22 +112,10 @@ public class TestRun
 	TmpFile tmpFile = new TmpFile ();
 	assertNotNull ("temporary file", tmpFile);
 
-	// Create a program that removes the above temporary file, when
-	// it exits the event loop will be shutdown.
-	host.requestCreateAttachedProcXXX (new String[]
-	    {
-		"rm",
-		"-f",
-		tmpFile.toString ()
-	    });
-
-	// Once a proc destroyed has been seen stop the event loop.
-	new StopEventLoopWhenChildProcRemoved ();
-
 	// Observe TaskObserver.Attached events; when any occure
 	// indicate that the curresponding task should block, and then
 	// request that the event-loop stop.
-	class TaskAttachedObserver
+	class TaskAttachedStoppedObserver
 	    extends AutoAddTaskObserverBase
 	    implements TaskObserver.Attached
 	{
@@ -123,21 +131,33 @@ public class TestRun
 		return Action.BLOCK;
 	    }
 	}
-	TaskAttachedObserver taskAttachedObserver
-	    = new TaskAttachedObserver ();
+	TaskAttachedStoppedObserver taskAttachedStoppedObserver
+	    = new TaskAttachedStoppedObserver ();
 
-	// Run the event loop.  TaskAttachedObserver will halt the
-	// process at the entry point.
+	// Create a program that removes the above temporary file, when
+	// it exits the event loop will be shutdown.
+	host.requestCreateAttachedProcXXX (new String[]
+	    {
+		"rm",
+		"-f",
+		tmpFile.toString ()
+	    });
+
+	// Once a proc destroyed has been seen stop the event loop.
+	new StopEventLoopWhenChildProcRemoved ();
+
+	// Run the event loop.  TaskAttachedStoppedObserver will BLOCK
+	// the process at the entry point.
 	assertRunUntilStop ("run \"rm\" to entry");
 
 	// A single task should be blocked at its entry point.
 	assertEquals ("attached task count", 1,
-		      taskAttachedObserver.attachedTasks.size ());
+		      taskAttachedStoppedObserver.attachedTasks.size ());
 	assertTrue ("tmp file exists", tmpFile.stillExists ());
 
 	// Unblock the attached task and resume the event loop.  This
 	// will allow the "rm" command to run to completion.
-	taskAttachedObserver.attachedTasks.unblock (taskAttachedObserver);
+	taskAttachedStoppedObserver.attachedTasks.unblock (taskAttachedStoppedObserver);
 	assertRunUntilStop ("run \"rm\" to exit");
 
 	assertFalse ("tmp file exists", tmpFile.stillExists ());

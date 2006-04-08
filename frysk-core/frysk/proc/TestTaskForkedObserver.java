@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -67,11 +67,16 @@ public class TestTaskForkedObserver
 	    public Action updateForked (Task task, Task fork)
 	    {
 		count++;
-		return Action.CONTINUE;
+		// XXX: Is this legit?  Like knowing that the request
+		// won't be processed until the event loop is run
+		// again so that there's no race condition.
+		task.requestUnblock (this);
+		return Action.BLOCK;
 	    }
 	    void updateTaskAdded (Task task)
 	    {
 		task.requestAddForkedObserver (this);
+		task.requestUnblock (this);
 	    }
 	}
 	ForkObserver forkObserver = new ForkObserver ();

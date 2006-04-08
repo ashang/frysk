@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@
 // exception.
 
 package frysk.proc;
+
+import java.util.logging.Level;
 
 /**
  * Check the behavior of an observer that blocks a Task's progress.
@@ -151,6 +153,7 @@ public class TestTaskObserverBlocked
 	private Task child;
 	protected Action spawned (Task task, Task spawn)
 	{
+	    killDuringTearDown (spawn.getTid ());
 	    assertSame ("state", OBSERVER_ADDED_TO_PARENT, state);
 	    state = PARENT_SPAWNED;
 	    Manager.eventLoop.requestStop ();
@@ -176,6 +179,7 @@ public class TestTaskObserverBlocked
 	 */
 	public void assertRunToSpawn ()
 	{
+	    logger.log (Level.FINE, "{0} assertRunToSpawn\n", this);
 	    AckProcess proc = new AckDaemonProcess ();
 	    Task main = proc.findTaskUsingRefresh (true);
 	    requestAddSpawnObserver (main);
@@ -194,6 +198,7 @@ public class TestTaskObserverBlocked
 	 */
 	public void assertChildUnblocked ()
 	{
+	    logger.log (Level.FINE, "{0} assertChildUnblocked\n", this);
 	    child.requestAddAttachedObserver (this);
 	    assertRunUntilStop ("add observer to child");
 	    assertSame ("observer state", OBSERVER_ADDED_TO_CHILD, state);
@@ -212,6 +217,7 @@ public class TestTaskObserverBlocked
 	 */
 	public void assertParentUnblocked ()
 	{
+	    logger.log (Level.FINE, "{0} assertParentUnblocked\n", this);
 	    AckHandler ack = new AckHandler (parentAck);
 	    parent.requestUnblock (this);
 	    ack.await ();
@@ -387,6 +393,7 @@ public class TestTaskObserverBlocked
 	{
 	    public Action updateCloned (Task task, Task clone)
 	    {
+		killDuringTearDown (clone.getTid ());
 		parentTasks.add (task);
 		childTasks.add (clone);
 		Manager.eventLoop.requestStop ();
@@ -414,6 +421,7 @@ public class TestTaskObserverBlocked
 	{
 	    public Action updateForked (Task task, Task fork)
 	    {
+		killDuringTearDown (fork.getTid ());
 		parentTasks.add (task);
 		childTasks.add (fork);
 		Manager.eventLoop.requestStop ();
