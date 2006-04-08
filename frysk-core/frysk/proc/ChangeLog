@@ -1,5 +1,8 @@
 2006-04-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java (StartClonedTask): New sub-state machine, for
+	moment duplicate of .StartMainTask.
+
 	* TaskState.java: Rename .Start to .StartMainTask.
 
 	* TaskState.java: Replace "attached" with Attached class
