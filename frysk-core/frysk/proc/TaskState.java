@@ -113,7 +113,7 @@ class TaskState
     }
     TaskState handleContinue (Task task)
     {
-	throw unhandled (task, "RequestContinue");
+	throw unhandled (task, "handleContinue");
     }
     TaskState handleRemoval (Task task)
     {

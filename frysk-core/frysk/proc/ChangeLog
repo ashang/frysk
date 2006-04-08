@@ -1,5 +1,7 @@
 2006-04-08  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskState.java: Fix tipo, "PerformContinue" to "handleContinue".
+
 	* TestTaskObserverBlocked.java: Add killDuringTearDown calls.
 	* TestTaskForkedObserver.java: Block the forked process.
 	* TestRun.java (testCreateAttachedStoppedProc): Re-order test to
