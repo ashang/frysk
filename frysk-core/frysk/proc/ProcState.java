@@ -54,12 +54,17 @@ abstract class ProcState
 {
     /**
      * Return the Proc's initial state.
+     *
+     * A new detached process materializes out of no where by
+     * magically appearing in <tt>/proc</tt>; a new attached process
+     * is always created via fork.  The latter, until an observer is
+     * added is assumed to be about to detach.
      */
-    static ProcState initial (Proc proc, boolean attached)
+    static ProcState initial (Proc proc, boolean starting)
     {
 	logger.log (Level.FINE, "{0} initial\n", proc); 
-	if (attached)
-	    return running;
+	if (starting)
+	    return new Detaching (proc);
 	else
 	    return detached;
     }
@@ -131,7 +136,7 @@ abstract class ProcState
 					    Observation observation)
 	    {
 	    	logger.log (Level.FINE, "{0} handleAddObserver \n", proc); 
-	    	return Attaching.state (proc, observation);
+	    	return Attaching.initialState (proc, observation);
 	    }
 
 	    ProcState handleDeleteObservation (Proc proc,
@@ -228,13 +233,13 @@ abstract class ProcState
     private static class Attaching
     {
 	/**
-	 * The initial attaching state.
+	 * The initial attaching state, find the main task and tell it
+	 * to attach.
 	 */
-	static ProcState state (Proc proc, Observation observation)
+	static ProcState initialState (Proc proc, Observation observation)
 	{
 	    logger.log (Level.FINE, "{0} state\n", proc); 
-	    if (observation != null)
-		proc.observations.add (observation);
+	    proc.observations.add (observation);
 	    // Grab the main task; only bother with the refresh if the
 	    // Proc has no clue as to its task list.
 	    if (proc.taskPool.size () == 0)
@@ -247,6 +252,7 @@ abstract class ProcState
 		observation.fail (new RuntimeException ("main task exited"));
 		return detached;
 	    }
+	    // Tell the main task to get things started.
 	    mainTask.performAttach ();
 	    return new Attaching.ToMainTask (mainTask);
 	}
@@ -274,7 +280,9 @@ abstract class ProcState
 	}
 	/**
 	 * In the process of attaching, the main task has been sent an
-	 * attach request, waiting for it to finish.
+	 * attach request.  That task stopping indicates that the
+	 * entire process is stopped and hence all the other tasks can
+	 * be attached.
 	 */
 	private static class ToMainTask
 	    extends ProcState
@@ -306,13 +314,14 @@ abstract class ProcState
 		if (attachingTasks.size () == 0)
 		    return allAttached (proc);
 		else
-		    return new ToOtherTasks (attachingTasks);
+		    return new Attaching.ToOtherTasks (attachingTasks);
 		
 	    }
 	    ProcState handleAddObservation (Proc proc,
 					    Observation observation)
 	    {
 		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
+		// An extra observation, just add it to the list.
 		proc.observations.add (observation);
 		return this;
 	    }
@@ -325,15 +334,14 @@ abstract class ProcState
 		proc.observations.remove (observation);
 		observation.fail (new RuntimeException ("canceled"));
 		if (proc.observations.size () == 0) {
-		    Collection attachedTasks = new HashSet ();
-		    attachedTasks.add (mainTask);
-		    return Detaching.state (proc, attachedTasks);
+		    // None of the other tasks are attached, just need
+		    // to detach the main one.
+		    mainTask.performDetach ();
+		    return new Detaching (proc, mainTask);
 		}
-		else
-		    return this;
+		return this;
 	    }
 	}
-
 	/**
 	 * In the process of attaching, the main task is attached, now
 	 * waiting for the remaining tasks to indicate they, too, have
@@ -355,9 +363,9 @@ abstract class ProcState
 		// remove it from the pool, wait until there are none
 		// left.
 		attachingTasks.remove (task);
-		if (attachingTasks.size () > 0)
-		    return this;
-		return allAttached (proc);
+		if (attachingTasks.size () == 0)
+		    return allAttached (proc);
+		return this;
 	    }
 	    ProcState handleAddObservation (Proc proc,
 					    Observation observation)
@@ -372,9 +380,9 @@ abstract class ProcState
 		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
 		proc.observations.remove (observation);
 		observation.fail (new RuntimeException ("canceled"));
-		if (proc.observations.size () > 0)
-		    return this;
-		return Detaching.state (proc);
+		if (proc.observations.size () == 0)
+		    return new Detaching (proc);
+		return this;
 	    }
 	}
     }
@@ -384,80 +392,73 @@ abstract class ProcState
      * back that they have successfully detached.
      */
     private static class Detaching
+	extends ProcState
     {
+	private Collection attachedTasks;
 	/**
-	 * Start detaching from the process, only need to detach the
-	 * subset of tasks.
+	 * Start detaching the entire process.
 	 */
-	static private ProcState state (Proc proc, Collection attachedTasks)
+	Detaching (Proc proc)
 	{
+	    super ("Detaching");
+	    attachedTasks = proc.getTasks ();
 	    for (Iterator i = attachedTasks.iterator ();
 		 i.hasNext (); ) {
 		Task t = (Task) i.next ();
 		t.performDetach ();
 	    }
-	    return new Detaching.AllTasks (attachedTasks);
 	}
 	/**
-	 * Start detaching the process.
+	 * Either just starting up and assumed to be detaching or just
+	 * attached to the main task.
 	 */
-	static private ProcState state (Proc proc)
+	Detaching (Proc proc, Task mainTask)
 	{
-	    return state (proc, proc.getTasks ());
+	    super ("Detaching");
+	    attachedTasks = new HashSet ();
+	    attachedTasks.add (mainTask);
 	}
-	private static class AllTasks
-	    extends ProcState
+	ProcState handleTaskDetachCompleted (Proc proc, Task task)
 	{
-	    private Collection attachedTasks;
-	    AllTasks (Collection attachedTasks)
-	    {
-		super ("DetachingAllTasks");
-		this.attachedTasks = attachedTasks;
-	    }
-	    ProcState handleTaskDetachCompleted (Proc proc, Task task)
-	    {
-		logger.log (Level.FINE,
-			    "{0} handleTaskDetachCompleted\n",
-			    proc);
-		// As each task reports that it has detached, add it
-		// to the detached list.
-		attachedTasks.remove (task);
-		if (attachedTasks.size () > 0)
-		    // Still more tasks to detach.
-		    return this;
-		// All done, notify.
-		proc.observableDetached.notify (proc);
-		return detached;
-	    }
-	    ProcState handleTaskDetachCompleted (Proc proc, Task task,
-						 Task clone)
-	    {
-		logger.log (Level.FINE,
-			    "{0} handleTaskDetachCompleted\n",
-			    proc);
-		attachedTasks.remove (task);
-		// Doh, a clone, need to also wait for that to detach.
-		attachedTasks.add (clone);
+	    logger.log (Level.FINE, "{0} handleTaskDetachCompleted\n", proc);
+	    // As each task reports that it has detached, add it
+	    // to the detached list.
+	    attachedTasks.remove (task);
+	    if (attachedTasks.size () > 0)
+		// Still more tasks to detach.
 		return this;
-	    }
-	    ProcState handleAddObservation (Proc proc,
-					    Observation observation)
-	    {
-		logger.log (Level.FINE, "{0} handleAddObservation\n",
-			    proc);
-		// Ulgh, detaching and a new observer arrived.
-		return Attaching.state (proc, observation);
-	    }
-	    ProcState handleDeleteObservation (Proc proc,
-					       Observation observation)
-	    {
-		logger.log (Level.FINE, "{0} handleDeleteObservation\n",
-			    proc);
-		// Outch; request to remove what must be an already
-		// removed observation.
-		observation.fail (new RuntimeException ("canceled"));
-		return this;
-	    }
+	    // All done, notify.
+	    proc.observableDetached.notify (proc);
+	    return detached;
+	}
+	ProcState handleTaskDetachCompleted (Proc proc, Task task,
+					     Task clone)
+	{
+	    logger.log (Level.FINE,
+			"{0} handleTaskDetachCompleted\n",
+			proc);
+	    attachedTasks.remove (task);
+	    // Doh, a clone, need to also wait for that to detach.
+	    attachedTasks.add (clone);
+	    return this;
+	}
+	ProcState handleAddObservation (Proc proc,
+					Observation observation)
+	{
+	    logger.log (Level.FINE, "{0} handleAddObservation\n",
+			proc);
+	    // Ulgh, detaching and a new observer arrived.
+	    return Attaching.initialState (proc, observation);
+	}
+	ProcState handleDeleteObservation (Proc proc,
+					   Observation observation)
+	{
+	    logger.log (Level.FINE, "{0} handleDeleteObservation\n",
+			proc);
+	    // Outch; request to remove what must be an already
+	    // removed observation.
+	    observation.fail (new RuntimeException ("canceled"));
+	    return this;
 	}
     }
 
@@ -468,12 +469,16 @@ abstract class ProcState
 	{
 	};
 
+    /**
+     * The process is running, add and remove observers.  If the
+     * number of observers ever reaches zero, start detaching.
+     */
     private static final ProcState running = new ProcState ("running")
 	{
 	    ProcState handleAddObservation (Proc proc,
 					    Observation observation)
 	    {
-		logger.log (Level.FINE, "{0} handleDeleteObservation\n", proc); 
+		logger.log (Level.FINE, "{0} handleAddObservation\n", proc); 
 		proc.observations.add (observation);
 		observation.handleAdd ();
 		return running;
@@ -485,7 +490,7 @@ abstract class ProcState
 		if (proc.observations.remove (observation)) {
 		    observation.handleDelete ();
 		    if (proc.observations.size () == 0)
-			return Detaching.state (proc);
+			return new Detaching (proc);
 		}
 		else
 		    observation.fail (new RuntimeException ("not added"));

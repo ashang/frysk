@@ -1,5 +1,11 @@
 2006-04-08  Andrew Cagney  <cagney@redhat.com>
 
+	Implement auto-matic detach of new processes with no observers.
+	* ProcState.java: Start a new process, created via fork, in the
+	Detaching state.
+	* TaskState.java (StartMainTask): Re-implement so that, unless
+	told otherwize, the task is detached.
+	
 	* TaskState.java: Fix tipo, "PerformContinue" to "handleContinue".
 
 	* TestTaskObserverBlocked.java: Add killDuringTearDown calls.

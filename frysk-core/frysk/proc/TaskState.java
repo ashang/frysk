@@ -60,7 +60,7 @@ class TaskState
      */
     static TaskState mainState ()
     {
-	return StartMainTask.waitForStop;
+	return StartMainTask.wantToDetach;
     }
     /**
      * Return the initial state of a cloned task.
@@ -332,8 +332,9 @@ class TaskState
     }
 
     /**
-     * Task just starting out, wait for it to both become ready, and
-     * to be unblocked, before continuing.
+     * Task just starting out.  Three possible events can occure: an
+     * unblock; the task stops; and get told to actually do the
+     * attach.
      */
     static class StartMainTask
 	extends TaskState
@@ -342,57 +343,94 @@ class TaskState
 	{
 	    super ("StartMainTask." + name);
 	}
-	private static TaskState attemptAttach (Task task)
-	{
-	    logger.log (Level.FINE, "{0} attemptAttach\n", task); 
-	    task.sendSetOptions ();
-	    if (task.blockers.size () > 0) {
-		return StartMainTask.blocked;
-	    }
-	    if (task.notifyAttached () > 0) {
-		return blockedContinue;
-	    }
-	    task.sendContinue (0);
-	    return running;
-	}
-	TaskState handleAddObserver (Task task, Observable observable,
-				     Observer observer)
-	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
-	    observable.add (observer);
-	    return this;
-	}
-	
-	private static final TaskState waitForStop =
-	    new StartMainTask ("waitForStop")
+	/**
+	 * StartMainTask out assuming that, once things have been unblocked, a
+	 * detach should occure.
+	 */
+	private static TaskState wantToDetach = new StartMainTask ("wantToDetach")
 	    {
+		TaskState handleAttach (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
+		    return StartMainTask.wantToAttach;
+		}
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    return StartMainTask.waitForStop;
+		    return StartMainTask.wantToDetach;
+		}
+		private TaskState blockOrDetach (Task task)
+		{
+		    if (task.blockers.size () > 0)
+			return StartMainTask.detachBlocked;
+		    task.sendDetach (0);
+		    task.proc.performTaskDetachCompleted (task);
+		    return detached;
 		}
 		TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return attemptAttach (task);
+		    return blockOrDetach (task);
 		}
 		TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
-		    return attemptAttach (task);
+		    return blockOrDetach (task);
 		}
 	    };
-	
-	private static final TaskState blocked = new StartMainTask ("blocked")
+	/**
+	 * The task has stopped; just waiting for all the blockers to
+	 * be removed before detaching.
+	 */
+	private static TaskState detachBlocked =
+	    new StartMainTask ("detachBlocked")
 	    {
+		TaskState handleAttach (Task task)
+		{
+		    // Process got around to telling us to be
+		    // attached, since already stopped that operation
+		    // has completed, jump to the attached state.
+		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
+		    return Attached.transitionTo (task);
+		}
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    return attemptAttach (task);
+		    if (task.blockers.size () == 0) {
+			// Ya! All the blockers have been removed.
+			task.sendDetach (0);
+			task.proc.performTaskDetachCompleted (task);
+		    }
+		    return StartMainTask.detachBlocked;
+		}
+	    };
+	/**
+	 * The process has told this task that it must attach, need to
+	 * first wait for the task to stop.
+	 */
+	private static TaskState wantToAttach =
+	    new StartMainTask ("wantToAttach")
+	    {
+		TaskState handleTrappedEvent (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
+		    return Attached.transitionTo (task);
+		}
+		TaskState handleStoppedEvent (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
+		    return Attached.transitionTo (task);
+		}
+		TaskState handleUnblock (Task task,
+					 TaskObserver observer)
+		{
+		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove (observer);
+		    return StartMainTask.wantToAttach;
 		}
 	    };
     }
