@@ -1,3 +1,9 @@
+2006-04-08  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: Replace "attached" with Attached class
+	containing sub-states to handle combinations of waiting for
+	unblock and continue.
+
 2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Register.java (getLength): Added.

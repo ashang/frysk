@@ -201,14 +201,12 @@ class TaskState
 	    TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-		task.proc.performTaskAttachCompleted (task);
-		return attached;
+		return Attached.transitionTo (task);
 	    }
 	    TaskState handleTrappedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
-		task.proc.performTaskAttachCompleted (task);
-		return attached;
+		return Attached.transitionTo (task);
 	    }
     	    TaskState handleDisappearedEvent (Task task, Throwable w)
     	    {
@@ -239,39 +237,99 @@ class TaskState
 	};
 
     /**
-     * The task is attached, and waiting to be continued.  This first
-     * continue is special, it is also the moment that any observers
-     * get notified that the task has transitioned into the attached
-     * state.
+     * The task is attached, and waiting to be either continued, or
+     * unblocked.  This first continue is special, it is also the
+     * moment that any observers get notified that the task has
+     * transitioned into the attached state.
      */
-    private static final TaskState attached = new TaskState ("attached")
+    private static class Attached
+	extends TaskState
+    {
+	private Attached (String name)
 	{
-	    TaskState handleContinue (Task task)
+	    super ("Attached." + name);
+	}
+	/**
+	 * Transition to the initial attached sub-state.
+	 */
+	static TaskState transitionTo (Task task)
+	{
+	    logger.log (Level.FINE, "{0} Attached.transitionTo\n", task);
+	    task.proc.performTaskAttachCompleted (task);
+	    return Attached.waitForContinueOrUnblock;
+	}
+	/**
+	 * In all Attached states, addObservation is allowed.
+	 */
+	TaskState handleAddObserver (Task task, Observable observable,
+				     Observer observer)
+	{
+	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+	    observable.add (observer);
+	    return this;
+	}
+	/**
+	 * In all Attached states, deleteObservation is allowed.
+	 */
+	TaskState handleDeleteObserver (Task task, Observable observable,
+					Observer observer)
+	{
+	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
+	    observable.delete (observer);
+	    return this;
+	}
+	/**
+	 * Once the task is both unblocked and continued, should
+	 * transition to the running state.
+	 */
+	TaskState transitionToRunningState (Task task)
+	{
+	    task.sendSetOptions ();
+	    if (task.notifyAttached () > 0)
+		return blockedContinue;
+	    else {
+		task.sendContinue (0);
+		return running;
+	    }
+	}
+	/**
+	 * Need either a continue or an unblock.
+	 */
+	private static final TaskState waitForContinueOrUnblock =
+	    new Attached ("waitForContinueOrUnblock")
 	    {
-		logger.log (Level.FINE, "{0} handleContinue\n", task); 
-		task.sendSetOptions ();
-		if (task.notifyAttached () > 0)
-		    return blockedContinue;
-		else {
-		    task.sendContinue (0);
-		    return running;
+		TaskState handleUnblock (Task task,
+					 TaskObserver observer)
+		{
+		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove (observer);
+		    return Attached.waitForContinueOrUnblock;
 		}
-	    }
-	    TaskState handleDetach (Task task)
+		TaskState handleContinue (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleContinue\n", task); 
+		    if (task.blockers.size () == 0)
+			return transitionToRunningState (task);
+		    return Attached.waitForUnblock;
+		}
+	    };
+	/**
+	 * Got continue, just need to clear the blocks.
+	 */
+	private static final TaskState waitForUnblock =
+	    new Attached ("waitForUnblock")
 	    {
-		logger.log (Level.FINE, "{0} handleDetach\n", task); 
-		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
-		return detached;
-	    }
-	    TaskState handleAddObserver (Task task, Observable observable,
-					 Observer observer)
-	    {
-		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
-		observable.add (observer);
-		return attached;
-	    }
-	};
+		TaskState handleUnblock (Task task,
+					 TaskObserver observer)
+		{
+		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		    task.blockers.remove (observer);
+		    if (task.blockers.size () == 0)
+			return transitionToRunningState (task);
+		    return Attached.waitForUnblock;
+		}
+	    };
+    }
 
     /**
      * Task just starting out, wait for it to both become ready, and
@@ -338,7 +396,9 @@ class TaskState
 	    };
     }
 
-    // Keep the task running.
+    /**
+     * Keep the task running.
+     */
     private static final TaskState running = new TaskState ("running")
 	{
 	    TaskState handleSignaledEvent (Task task, int sig)
