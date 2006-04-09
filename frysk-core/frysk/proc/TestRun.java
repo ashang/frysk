@@ -81,8 +81,7 @@ public class TestRun
 		return Action.CONTINUE;
 	    }
 	}
-	TaskAttachContinuedObserver taskAttachContinuedObserver
-	    = new TaskAttachContinuedObserver ();
+	new TaskAttachContinuedObserver ();
 
 	// Create a program that removes the above tempoary file, when
 	// it exits the event loop will be shutdown.
