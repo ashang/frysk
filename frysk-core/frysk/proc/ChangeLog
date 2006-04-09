@@ -1,5 +1,12 @@
 2006-04-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AckHandler): Re-implement so that it provides
+	better logging.  Update calls.
+	(tearDown): Move check for pending signals to start.
+	* TestTaskObserverBlocked.java: Update.
+	* TestTaskObserverDetach.java (Detach): Split constructor adding
+	assertDetach method.
+	
 	* TestRun.java: Delete variable taskAttachContinuedObserver,
 	unused.
 

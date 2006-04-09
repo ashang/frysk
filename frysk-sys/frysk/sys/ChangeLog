@@ -1,3 +1,9 @@
+2006-04-09  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/Poll.cxx (handler): Change function signature to match
+	sa_sigaction.
+	(addSignalHandler): Instead of sa_handler, set sa_sigaction.
+
 2006-03-23  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Wait.cxx (waitAllNoHang, waitAll): Call <<log>>.

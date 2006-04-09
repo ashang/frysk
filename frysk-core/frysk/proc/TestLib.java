@@ -185,36 +185,55 @@ public class TestLib
     }
 
     /**
-     * Set up a handler that stops the event loop when the child sends
-     * this process an ack (indicating that it has completed a
-     * requested operation).
+     * Sets up a set of signal handlers that stop the event loop when
+     * the child sends this process the required set of ack signals
+     * (indicating that it has completed a requested operation).
      */
     protected class AckHandler
     {
-	AckHandler (Sig sig)
-	{
-	    this (new Sig[] { sig });
-	}
 	private int acksRemaining;
-	AckHandler (Sig[] sigs)
+	private String reason;
+	private class AckSignal
+	    extends SignalEvent
 	{
-	    acksRemaining = sigs.length;
-	    for (int i = 0; i < sigs.length; i++) {
-		final Sig theSig = sigs[i];
-		Manager.eventLoop.add (new SignalEvent (theSig) {
-			Sig sig = theSig;
-			public void execute ()
-			{
-			    logger.log (Level.FINE, "{0} received {1}\n",
-					new Object[] { this, sig.toPrint () });
-			    Manager.eventLoop.requestStop ();
-			    Manager.eventLoop.remove (this);
-			    acksRemaining--;
-			}
-		    });
+	    AckSignal (Sig sig)
+	    {
+		super (sig);
+	    }
+	    public void execute ()
+	    {
+		logger.log (Level.FINE, "{0} execute ({1})\n",
+			    new Object[] { this, reason });
+		Manager.eventLoop.requestStop ();
+		Manager.eventLoop.remove (this);
+		acksRemaining--;
 	    }
 	}
-	void await (String why)
+
+	AckHandler (Sig[] sigs, String why)
+	{
+	    StringBuffer reason = new StringBuffer (why);
+	    reason.append (" (");
+	    acksRemaining = sigs.length;
+	    for (int i = 0; i < sigs.length; i++) {
+		Sig sig = sigs[i];
+		if (i > 0)
+		    reason.append (",");
+		reason.append (sig);
+		Manager.eventLoop.add (new AckSignal (sig));
+	    }
+	    reason.append (")");
+	    this.reason = reason.toString ();
+	}
+	AckHandler (Sig sig, String why)
+	{
+	    this (new Sig[] { sig }, why);
+	}
+	public String toString ()
+	{
+	    return super.toString () + "," + reason;
+	}
+	private void assertAwait (String why)
 	{
 	    while (acksRemaining > 0) {
 		assertRunUntilStop (why);
@@ -222,7 +241,11 @@ public class TestLib
 	}
 	void await ()
 	{
-	    await ("waiting for ack");
+	    assertAwait (reason);
+	}
+	void await (String why)
+	{
+	    assertAwait (why + " (" + reason + ")");
 	}
     }
 
@@ -286,9 +309,13 @@ public class TestLib
 	 */
 	protected Child (Sig sig, String[] argv)
 	{
-	    AckHandler ack = new AckHandler (sig);
+	    AckHandler ack = new AckHandler (sig, "startChild");
 	    this.argv = argv;
-	    this.pid = startChild (null, "/dev/null", null, argv);
+	    this.pid = startChild (null,
+				   (logger.isLoggable (Level.FINE)
+				    ? null
+				    : "/dev/null"),
+				   null, argv);
 	    killDuringTearDown (pid);
 	    ack.await ();
 	}
@@ -432,40 +459,40 @@ public class TestLib
 		addClone ();
 	}
 	/** . */
-	private void spawn (Sig sig)
+	private void spawn (Sig sig, String why)
 	{
-	    AckHandler ack = new AckHandler (spawnAck);
+	    AckHandler ack = new AckHandler (spawnAck, why);
 	    signal (sig);
 	    ack.await ();
 	}
 	/** Add a Task.  */
 	public void addClone ()
 	{
-	    spawn (addCloneSig);
+	    spawn (addCloneSig, "addClone");
 	}
 	/** Delete a Task.  */
 	public void delClone ()
 	{
-	    AckHandler ack = new AckHandler (parentAck);
+	    AckHandler ack = new AckHandler (parentAck, "delClone");
 	    signal (delCloneSig);
 	    ack.await ();
 	}
 	/** Add a child Proc.  */
 	public void addFork ()
 	{
-	    spawn (addForkSig);
+	    spawn (addForkSig, "addFork");
 	}
 	/** Delete a child Proc.  */
 	public void delFork ()
 	{
-	    AckHandler ack = new AckHandler (parentAck);
+	    AckHandler ack = new AckHandler (parentAck, "delFork");
 	    signal (delForkSig);
 	    ack.await ();
 	}
 	/** Terminate a fork Proc (creates zombie).  */
 	public void zombieFork ()
 	{
-	    AckHandler ack = new AckHandler (parentAck);
+	    AckHandler ack = new AckHandler (parentAck, "zombieFork");
 	    signal (zombieForkSig);
 	    ack.await ();
 	}
@@ -475,7 +502,7 @@ public class TestLib
 	 */
 	void fryParent ()
 	{
-	    AckHandler ack = new AckHandler (childAck);
+	    AckHandler ack = new AckHandler (childAck, "fryParent");
 	    signal (Sig.KILL);
 	    ack.await ();
 	}
@@ -485,7 +512,7 @@ public class TestLib
 	 */
 	void exec (int tid)
 	{
-	    AckHandler ack = new AckHandler (execAck);
+	    AckHandler ack = new AckHandler (execAck, "exec:" + tid);
 	    Signal.tkill (tid, execSig);
 	    ack.await ();
 	}
@@ -494,7 +521,7 @@ public class TestLib
 	 */
 	void exec ()
 	{
-	    AckHandler ack = new AckHandler (execAck);
+	    AckHandler ack = new AckHandler (execAck, "exec");
 	    signal (execSig);
 	    ack.await ();
 	}
@@ -505,8 +532,10 @@ public class TestLib
 	{
 	    // First the main thread acks with .parentAck, and then
 	    // the execed process acks with .childAck.
-	    AckHandler ack = new AckHandler (new Sig[] { parentAck,
-							 childAck });
+	    AckHandler ack = new AckHandler (new Sig[] {
+						 parentAck,
+						 childAck
+					     }, "execClone");
 	    signal (execCloneSig);
 	    ack.await ();
 	}
@@ -1146,60 +1175,72 @@ public class TestLib
     public void tearDown ()
     {
 	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> start tearDown\n", this);
-	// Sig.KILL all the registered children.  Once that signal is
-	// processed the task will die.
 
+	// Check that there are no pending signals that should have
+	// been drained as part of testing.  Do this <em>before</em>
+	// any tasks are killed off so that the check isn't confused
+	// by additional signals generated by the dieing tasks.
+	Sig[] checkSigs = new Sig[] { Sig.USR1, Sig.USR2 };
+	SigSet pendingSignals = new SigSet ().getPending ();
+	for (int i = 0; i < checkSigs.length; i++) {
+	    Sig sig = checkSigs[i];
+	    assertFalse ("pending signal " + sig,
+			 pendingSignals.contains (sig));
+	}
+
+	// Kill off all the registered children.  Once that signal is
+	// processed the task will die.
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
 	    int pid = child.intValue ();
+	    // Start with a basic kill.
 	    try {
 		Signal.kill (pid, Sig.KILL);
-		logger.log (Level.FINE, "{0} kill -KILL {1}\n",
+		logger.log (Level.FINE, "{0} kill -KILL {1,number,integer}\n",
 			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it.
-		logger.log (Level.FINE, "{0} kill -KILL {1} (failed)\n",
+		logger.log (Level.FINE, "{0} kill -KILL {1,number,integer} (failed)\n",
 			    new Object[] { this, child });
 	    }
-	    // Note that there's a problem here with both stopped and
-	    // attached tasks.  The Sig.KILL won't be delivered, and
+	    // There's a problem here with both stopped and attached
+	    // tasks.  The Sig.KILL won't be delivered, and
 	    // consequently the task won't exit, until that task has
-	    // been continued.  Work around this by also sending each
-	    // task a continue ...
+	    // been continued.  Work around this by first sending all
+	    // tasks a continue ...
 	    try {
 		Signal.kill (pid, Sig.CONT);
-		logger.log (Level.FINE, "{0} kill -CONT {1}\n",
+		logger.log (Level.FINE, "{0} kill -CONT {1,number,integer}\n",
 			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it.
-		logger.log (Level.FINE, "{0} kill -CONT {1} (failed)\n",
+		logger.log (Level.FINE, "{0} kill -CONT {1,number,integer} (failed)\n",
 			    new Object[] { this, child });
 	    }
-	    // ... and a detach.
+	    // ... and then a detach.
 	    try {
 		Ptrace.detach (pid, Sig.KILL);
-		logger.log (Level.FINE, "{0} detach -KILL {1}\n",
+		logger.log (Level.FINE, "{0} detach -KILL {1,number,integer}\n",
 			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
 		// Toss it.
-		logger.log (Level.FINE, "{0} detach -KILL {1} (failed)\n",
+		logger.log (Level.FINE, "{0} detach -KILL {1,number,integer} (failed)\n",
 			    new Object[] { this, child });
 	    }
 	}
 
-	// Completely drain the wait event queue.  Doing this firstly
-	// ensures that there are no oustanding events to confuse the
-	// next test run; secondly reaps any exited childrean
-	// eliminating zombies; and finally makes certain that all
-	// attached tasks have been terminated.
+	// Drain the wait event queue.  This ensures that: there are
+	// no oustanding events to confuse the next test run; all
+	// child zombies have been reaped (and eliminated); and
+	// finally makes certain that all attached tasks have been
+	// terminated.
 	//
 	// For attached tasks, which will generate non-exit wait
 	// events (clone et.al.), the task is detached / killed.
 	// Doing that frees up the task so that it can run to exit.
-
 	try {
 	    while (true) {
 	    	Wait.waitAll (-1, new Wait.Observer ()
@@ -1211,7 +1252,7 @@ public class TestLib
 				// will force the task to exit.
 				Ptrace.detach (pid, Sig.KILL);
 				logger.log (Level.FINE,
-					    "{0} detach -KILL {1}\n",
+					    "{0} detach -KILL {1,number,integer}\n",
 					    new Object[] {
 						TestLib.this,
 						new Integer (pid)
@@ -1219,7 +1260,7 @@ public class TestLib
 			    }
 			    catch (Errno.Esrch e) {
 				logger.log (Level.FINE,
-					    "{0} detach -KILL {1} (fail)\n",
+					    "{0} detach -KILL {1,number,integer} (fail)\n",
 					    new Object[] {
 						TestLib.this,
 						new Integer (pid)
@@ -1269,9 +1310,10 @@ public class TestLib
 	// Remove any stray files.
 	deleteTmpFiles ();
 
-	// Drain the set of pending signals ensuring that the next
-	// test run doesn't have to contend with any of these signals;
-	// save any drained signals.
+	// Drain the set of pending signals.  Note that the process of
+	// killing off the processes used in the test can generate
+	// extra signals - for instance a SIGUSR1 from a detached
+	// child that notices that it's parent just exited.
 	class SignalDrain
 	    implements Poll.Observer
 	{
@@ -1282,14 +1324,6 @@ public class TestLib
 	}
 	SignalDrain signalDrain = new SignalDrain ();
 	Poll.poll (signalDrain, 0);
-	// Check that the drained signals did not include signals that
-	// should not be left pending after the test.
-	Sig[] checkSigs = new Sig[] { Sig.USR1, Sig.USR2 };
-	for (int i = 0; i < checkSigs.length; i++) {
-	    Sig sig = checkSigs[i];
-	    assertFalse ("pending signal " + sig,
-			 signalDrain.pending.contains (sig));
-	}
 
 	logger.log (Level.FINE, "{0} >>>>>>>>>>>>>>>> end tearDown\n", this);
     }

@@ -72,13 +72,20 @@ struct poll_jmpbuf {
 struct poll_jmpbuf poll_jmpbuf;
 
 static void
-handler (int signum)
+handler (int signum, siginfo_t *siginfo, void *context)
 {
   // For what ever reason, the signal can come in on the wrong thread.
   // When that occures, re-direct it (explicitly) to the thread that
   // can handle the signal.
-  if (poll_jmpbuf.tid == frysk::sys::Tid::get ())
+  pid_t me = frysk::sys::Tid::get ();
+  if (poll_jmpbuf.tid == me) {
+#if 0
+    fprintf (stderr, "pid %d got signal %d (%s) from %d\n",
+	     me, siginfo->si_signo, strsignal (siginfo->si_signo),
+	     siginfo->si_pid);
+#endif
     siglongjmp (poll_jmpbuf.buf, signum);
+  }
   else
     // XXX: Want to edit this thread's mask so that from now on it
     // blocks this signal, don't know a way to do it though.
@@ -103,7 +110,8 @@ frysk::sys::Poll::addSignalHandler (frysk::sys::Sig* sig)
   // signals are masked while the handler is running.
   struct sigaction sa;
   memset (&sa, 0, sizeof (sa));
-  sa.sa_handler = handler;
+  sa.sa_sigaction = handler;
+  sa.sa_flags = SA_SIGINFO;
   sigfillset (&sa.sa_mask);
   sigaction (signum, &sa, NULL);
 }

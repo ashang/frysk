@@ -207,7 +207,7 @@ public class TestTaskObserverBlocked
 	    assertRunUntilStop ("allow child to attach");
 	    assertSame ("observer state", CHILD_ATTACHED, state);
 	    
-	    AckHandler ack = new AckHandler (childAck);
+	    AckHandler ack = new AckHandler (childAck, "childAck");
 	    child.requestUnblock (this);
 	    ack.await ();
 	}
@@ -218,7 +218,7 @@ public class TestTaskObserverBlocked
 	public void assertParentUnblocked ()
 	{
 	    logger.log (Level.FINE, "{0} assertParentUnblocked\n", this);
-	    AckHandler ack = new AckHandler (parentAck);
+	    AckHandler ack = new AckHandler (parentAck, "parentAck");
 	    parent.requestUnblock (this);
 	    ack.await ();
 	}
