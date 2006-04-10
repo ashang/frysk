@@ -1,5 +1,8 @@
 2006-04-10  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tags/TagsetManager.java (getTagsets): Added overloaded version
+	that returns all tagsets registered with manager.
+
 	* SourceWindow.java (setMyTask): Refactored out Register window
 	creation code.
 	(createActions): Created action for toggling register window.

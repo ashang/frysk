@@ -63,6 +63,14 @@ public class TagsetManager {
 	}
 	
 	/**
+	 * 
+	 * @return An iterator to all tagsets in the manager
+	 */
+	public Iterator getTagsets(){
+		return tagsets.iterator();
+	}
+	
+	/**
 	 * Checks for the presence of the given tagset in the TagsetManager
 	 * @param set The Tagset to look for
 	 * @return True iff the tagset is registered with the manager
