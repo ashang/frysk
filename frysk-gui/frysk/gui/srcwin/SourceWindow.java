@@ -69,6 +69,7 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
+import org.gnu.gtk.ToggleAction;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
@@ -163,6 +164,8 @@ public class SourceWindow extends Window{
 	private Action stackUp;
 	private Action stackDown;
 	private Action stackBottom;
+	private Action toggleRegisterWindow;
+	
 	private DOMFrysk dom;
 
 	private Task myTask;
@@ -280,18 +283,6 @@ public class SourceWindow extends Window{
 		this.setTitle(this.getTitle() + " - "
 			      + this.myTask.getProc ().getCommand () + " "
 			      + this.myTask.getName ());
-		
-		// Remove this once we have a way of launching the register window
-		LibGlade regWindow = null;
-		try{
-			regWindow = new LibGlade(this.gladePath + "/registerwindow.glade", null);
-		}
-		catch (Exception e){
-			return;
-		}
-		
-		this.regWindow = new RegisterWindow(myTask, regWindow);
-		this.regWindow.show();
 	}
 
 	/***************************************************************************
@@ -532,7 +523,7 @@ public class SourceWindow extends Window{
 		this.stackDown.connectAccelerator();
 
 		// Stack up action
-		this.stackUp = new Action("stack Up", "Up One Stack Frame", 
+		this.stackUp = new Action("stackUp", "Up One Stack Frame", 
 			"Up One Stack Frame", "frysk-up");
 		this.stackUp.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
@@ -544,6 +535,14 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Stack/Up", KeyValue.Up,
 				ModifierType.MOD1_MASK, true);
 		this.stackUp.connectAccelerator();
+		
+		// Toggle view source window
+		this.toggleRegisterWindow = new ToggleAction("toggleRegWindow", "Register Window", "Toggle the Register Window", "");
+		this.toggleRegisterWindow.addListener(new ActionListener() {
+			public void actionEvent(ActionEvent arg0) {
+				SourceWindow.this.toggleRegisterWindow();
+			}
+		});
 	}
 
 	/*
@@ -579,6 +578,16 @@ public class SourceWindow extends Window{
 		menu.setSubmenu(tmp);
 		((MenuBar) this.glade.getWidget("menubar")).append(menu);
 
+		// View Menu
+		menu = new MenuItem("View", false);
+		tmp = new Menu();
+		
+		mi = (MenuItem) this.toggleRegisterWindow.createMenuItem();
+		tmp.append(mi);
+		
+		menu.setSubmenu(tmp);
+		((MenuBar) this.glade.getWidget("menubar")).append(menu);
+		
 		// Program Menu
 		menu = new MenuItem("Program", false);
 		tmp = new Menu();
@@ -1108,6 +1117,25 @@ public class SourceWindow extends Window{
 	
 	private void doJumpToFunction(String name){
 		this.view.scrollToFunction(name);
+	}
+	
+	private void toggleRegisterWindow(){
+		if(this.regWindow == null){
+			LibGlade regWindow = null;
+			try{
+				regWindow = new LibGlade(this.gladePath + "/registerwindow.glade", null);
+			}
+			catch (Exception e){
+				return;
+			}
+			
+			this.regWindow = new RegisterWindow(myTask, regWindow);
+		}
+		
+		if(((ToggleAction) this.toggleRegisterWindow).getActive())
+			this.regWindow.showAll();
+		else
+			this.regWindow.hideAll();
 	}
 	
 	private class SourceWindowListener implements ButtonListener, 
