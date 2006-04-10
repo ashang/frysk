@@ -1,4 +1,7 @@
-all: cagney-k-startterminal.jpg
+all: \
+	cagney-k-startterminal.jpg \
+	cagney-k-runsbuild.jpg \
+	cagney-k-alert.jpg
 
 FIG2DEV = fig2dev
 .SUFFIXES: .fig .jpg
