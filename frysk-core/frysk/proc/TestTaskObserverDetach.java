@@ -55,7 +55,6 @@ import java.util.logging.Level;
 public class TestTaskObserverDetach
     extends TestLib
 {
-    boolean skip = true;
     /**
      * Co-ordinates a detach in the middle of some over random event.
      */
@@ -206,7 +205,6 @@ public class TestTaskObserverDetach
      */
     public void testDetachClone ()
     {
-	if (skip) return;
 	class DetachClone
 	    extends Detach
 	    implements TaskObserver.Cloned
@@ -241,7 +239,6 @@ public class TestTaskObserverDetach
      */
     public void testDetachExec ()
     {
-	if (skip) return;
 	class DetachExec
 	    extends Detach
 	    implements TaskObserver.Execed
@@ -275,7 +272,6 @@ public class TestTaskObserverDetach
      */
     public void testDetachSignal ()
     {
-	if (skip) return;
 	class DetachSignal
 	    extends Detach
 	{

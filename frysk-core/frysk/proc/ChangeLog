@@ -1,5 +1,7 @@
 2006-04-09  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverDetach.java: Enable accidentally disabled tests.
+	
 	* TestLib.java (AckHandler): Re-implement so that it provides
 	better logging.  Update calls.
 	(tearDown): Move check for pending signals to start.
