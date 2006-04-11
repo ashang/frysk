@@ -58,7 +58,7 @@ public class IntFilterPoint extends FilterPoint {
 	}
 	
 	public boolean filter(int value){
-		Iterator iter = this.filters.iterator();
+		Iterator iter = this.getItems().iterator();
 		while(iter.hasNext()){
 			IntFilter filter = (IntFilter) iter.next();
 			if(!filter.filter(value)){

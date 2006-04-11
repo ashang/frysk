@@ -42,6 +42,7 @@ package frysk.gui.monitor.filters;
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
 /**
@@ -113,5 +114,9 @@ public class TaskProcNameFilter extends TaskFilter {
 
 	public String getArgument() {
 		return this.procNamefilter.getArgument();
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
+		return null;
 	}
 }

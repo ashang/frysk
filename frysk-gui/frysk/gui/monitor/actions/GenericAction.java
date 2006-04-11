@@ -40,6 +40,7 @@
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public abstract class GenericAction extends Action {
@@ -73,4 +74,7 @@ public abstract class GenericAction extends Action {
 		return null;
 	}
 	
+	public ObservableLinkedList getArgumentCompletionList(){
+		return null;
+	}
 }

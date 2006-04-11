@@ -66,4 +66,11 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 	 */
 	public abstract String getArgument();
 	
+	/**
+	 * If the item whishes to have a completion list for its arguments
+	 * then it can return an observable linked list describing the list
+	 * of possible arguments. Otherwise just return null.
+	 * @return
+	 */
+	public abstract ObservableLinkedList getArgumentCompletionList();
 }

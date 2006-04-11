@@ -116,8 +116,12 @@ public class EditObserverDialog extends Dialog {
 					if(observerNameEntry.getText().length() == 0){
 						newObserver.setName("NewObserver");
 					}
+					
 					setObserver(newObserver);
 					setName(newObserver);
+					filtersTable.setObserver(newObserver);
+					actionsTable.setObserver(newObserver);
+				
 					System.out.println(".comboBoxEvent() swapped. NewObserver: " + newObserver );
 				}
 			}

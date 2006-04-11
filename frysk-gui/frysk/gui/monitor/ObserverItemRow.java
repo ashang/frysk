@@ -40,12 +40,13 @@
 package frysk.gui.monitor;
 
 import org.gnu.gtk.Button;
-import org.gnu.gtk.Entry;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
+import org.gnu.gtk.event.ComboBoxEvent;
+import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.FocusEvent;
 import org.gnu.gtk.event.FocusListener;
 
@@ -57,7 +58,7 @@ public abstract class ObserverItemRow {
 		
 		SimpleComboBox itemsComboBox;
 
-		Entry argumentEntry;
+		CompletingEntry argumentEntry;
 		Button addButton;
 		Button removeButton;
 
@@ -71,10 +72,7 @@ public abstract class ObserverItemRow {
 			this.combo = myCombo;
 			this.observer = observer;
 			
-			itemsComboBox = new SimpleComboBox();
-			
-			
-			argumentEntry = new Entry();
+			argumentEntry = new CompletingEntry();
 			if(combo != null){
 				String argument = ((LiaisonItem)combo.getFilter()).getArgument();
 				if(argument == null){
@@ -85,7 +83,7 @@ public abstract class ObserverItemRow {
 			}else{
 				argumentEntry.setText("");
 			}
-			
+
 			argumentEntry.addListener(new FocusListener() {
 				public boolean focusEvent(FocusEvent event) {
 					if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
@@ -95,6 +93,23 @@ public abstract class ObserverItemRow {
 				}
 			});
 
+			itemsComboBox = new SimpleComboBox();
+			itemsComboBox.addListener(new ComboBoxListener() {
+				public void comboBoxEvent(ComboBoxEvent event) {
+					if(event.isOfType(ComboBoxEvent.Type.CHANGED)){
+						if(combo != null && combo.isApplied()){
+							combo.unApply();
+							combo = (Combo) itemsComboBox.getSelectedObject();
+							ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
+							if(list!= null){
+								argumentEntry.watchList(list);
+							}
+							combo.apply();
+						}
+					}
+				}
+			});
+			
 			addButton = new Button("");
 			addButton.setImage(new Image(GtkStockItem.ADD, IconSize.BUTTON));
 			addButton.addListener(new ButtonListener() {

@@ -46,7 +46,6 @@ import org.jdom.Element;
 
 import frysk.gui.monitor.LiaisonPoint;
 import frysk.gui.monitor.ObjectFactory;
-import frysk.gui.monitor.ObservableLinkedList;
 
 /**
  * FilterPoints provide a flexible interface between Observers
@@ -58,35 +57,25 @@ import frysk.gui.monitor.ObservableLinkedList;
  * filter points.
  * */
 public abstract class FilterPoint extends LiaisonPoint {
-	protected ObservableLinkedList filters;
 	
 	public FilterPoint(){
 		super();
-		this.filters = new ObservableLinkedList();
 	}
 	
 	public FilterPoint(String name, String toolTip){
 		super(name, toolTip);
-		this.filters = new ObservableLinkedList();
 	}
 	
 	public FilterPoint(FilterPoint other){
 		super(other);
-		this.filters = new ObservableLinkedList(other.filters); // Do copy filters
 	}
 	
 	public void addFilter(Filter filter){
-		this.filters.add(filter);
+		super.addItem(filter);
 	}
 	
 	public void removeFilter(Filter filter){
-		if(!this.filters.remove(filter)){
-			throw new IllegalArgumentException("the passed filter ["+ filter +"] is not a member of this filter point");
-		}
-	}
-	
-	public ObservableLinkedList getItems(){
-		return this.filters;
+		super.removeItem(filter);
 	}
 	
 	public void save(Element node) {
@@ -126,7 +115,7 @@ public abstract class FilterPoint extends LiaisonPoint {
 		String string = "";
 		
 		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
-		Iterator iterator = this.filters.iterator();
+		Iterator iterator = this.items.iterator();
 		while (iterator.hasNext()) {
 			Filter filter = (Filter) iterator.next();
 			string += "    " + filter + "\n";

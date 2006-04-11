@@ -70,6 +70,7 @@ public class FilterRow extends ObserverItemRow{
 			itemsComboBox.setSelectedObject(combo);
 		}
 		
+		
 		booleanComboBox = new SimpleComboBox();
 		booleanComboBox.watchLinkedList(booleanList);	
 	}	

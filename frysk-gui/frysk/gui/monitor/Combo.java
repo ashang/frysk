@@ -39,7 +39,6 @@
 
 package frysk.gui.monitor;
 
-import frysk.gui.monitor.GuiObject;
 
 /**
  * 
@@ -50,14 +49,14 @@ import frysk.gui.monitor.GuiObject;
  */
 public class Combo extends GuiObject {
 
-	private LiaisonPoint filterPoint;
-	private LiaisonItem filter;
+	private LiaisonPoint liaisonPoint;
+	private LiaisonItem liaisonItem;
 	private boolean applied = false;
 	
 	public Combo(LiaisonPoint filterPoint, LiaisonItem filter){
 		super();
-		this.filterPoint = filterPoint;
-		this.filter = filter;
+		this.liaisonPoint = filterPoint;
+		this.liaisonItem = filter;
 		
 		this.setName(filter.getName() + " " + filterPoint.getName() );
 		this.setToolTip("");
@@ -69,26 +68,27 @@ public class Combo extends GuiObject {
 		if(applied){
 			throw new RuntimeException("You are trying to apply a Combo that is already applied");
 		}
-		this.filter = this.filter.getCopy();
-		this.filterPoint.addItem(filter);
+		this.liaisonItem = this.liaisonItem.getCopy();
+		this.liaisonPoint.addItem(liaisonItem);
 		this.applied = true;
 	}
 	
 	public void unApply(){
-		System.out.println("LiaisonItemCombo.unApply()");
-		this.filterPoint.removeItem(filter);
+		//System.out.println(this+": LiaisonItemCombo.unApply()");
+		this.liaisonPoint.removeItem(liaisonItem);
 		this.applied = false;
 	}
 	
 	public boolean isApplied(){
+		//System.out.println(this + ": Combo.isApplied() " + this.applied);
 		return this.applied;
 	}
 	
 	public LiaisonPoint getLiaisonPoint(){
-		return this.filterPoint;
+		return this.liaisonPoint;
 	}
 	
 	public LiaisonItem getFilter(){
-		return this.filter;
+		return this.liaisonItem;
 	}
 }

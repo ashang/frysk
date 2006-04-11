@@ -1,9 +1,17 @@
+2006-04-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/frysk_create_session_druid.glade: Made druid hidden by
+	default.
+	* glade/procpop.glade: Reduce number of columns for
+	action table to 4.
+
 2006-04-11  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: Reduced padding on find bar to 6, increased
 	window width so mode combo box isn't obscured.
 	* register/Register.java (cellRendererTextEvent): Added comment.
 
+>>>>>>> 1.168
 2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterWindow.java (signExtend): Now takes the length

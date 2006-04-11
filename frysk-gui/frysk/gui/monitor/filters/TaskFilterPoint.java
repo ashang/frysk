@@ -59,7 +59,7 @@ public class TaskFilterPoint extends FilterPoint {
 	}
 	
 	public boolean filter(Task task){
-		Iterator iter = this.filters.iterator();
+		Iterator iter = this.getItems().iterator();
 		while(iter.hasNext()){
 			TaskFilter filter = (TaskFilter) iter.next();
 			if(!filter.filter(task)){

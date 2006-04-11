@@ -125,8 +125,8 @@ public class ObserversDialog extends Dialog {
 					if(selected != null){
 						int index = scratchList.indexOf(selected);
 						scratchList.remove(selected);
-						if(scratchList.size() > index){
-							observersListView.setSelectedObject((GuiObject) scratchList.get(index));
+						if(scratchList.size() == index){
+							observersListView.setSelectedObject((GuiObject) scratchList.get(index-1));
 						}
 					}
 				}

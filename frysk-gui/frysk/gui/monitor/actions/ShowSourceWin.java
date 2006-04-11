@@ -40,6 +40,7 @@
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Task;
 
@@ -66,6 +67,10 @@ public class ShowSourceWin extends TaskAction {
 	}
 
 	public String getArgument() {
+		return null;
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
 		return null;
 	}
 	

@@ -43,6 +43,7 @@ import java.util.logging.Level;
 
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
@@ -77,6 +78,10 @@ public class LogAction extends GenericAction {
 
 	public String getArgument() {
 		return this.argument;
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
+		return null;
 	}
 
 }

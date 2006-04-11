@@ -59,7 +59,7 @@ public class ProcFilterPoint extends FilterPoint {
 	}
 	
 	public boolean filter(Proc proc){
-		Iterator iter = this.filters.iterator();
+		Iterator iter = this.getItems().iterator();
 		while(iter.hasNext()){
 			ProcFilter filter = (ProcFilter) iter.next();
 			if(!filter.filter(proc)){

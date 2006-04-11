@@ -141,10 +141,11 @@ public abstract class ObserverItemsTable extends Table {
 	}
 	
 	public void removeRow(ObserverItemRow itemRow){
-		this.allList.remove(row);
-		this.applyList.remove(row);
+		this.allList.remove(itemRow);
+		this.applyList.remove(itemRow);
 		itemRow.removeFromTable();
 		row--;
+		System.out.println(this + ": ObserverItemsTable.removeRow() " + row);
 	}
 	
 }

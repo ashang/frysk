@@ -44,6 +44,7 @@ import org.jdom.Element;
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.proc.Proc;
 
@@ -124,6 +125,10 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 
 	public String getArgument() {
 		return this.procName;
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
+		return null;
 	}
 	
 	

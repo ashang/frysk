@@ -40,6 +40,7 @@
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
@@ -87,6 +88,16 @@ public class AddTaskObserverAction extends TaskAction {
 	}
 
 	public String getArgument() {
-		return null;
+		if(this.observer != null){
+			return this.observer.getName();
+		}else{
+			return "";
+		}
+	
 	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
+		return ObserverManager.theManager.getTaskObservers();
+	}
+	
 }

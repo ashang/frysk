@@ -41,6 +41,7 @@ package frysk.gui.monitor.actions;
 
 // import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
 public class Stop extends ProcAction {
@@ -68,6 +69,10 @@ public class Stop extends ProcAction {
 	}
 
 	public String getArgument() {
+		return null;
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
 		return null;
 	}
 }

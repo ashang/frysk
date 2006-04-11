@@ -49,6 +49,10 @@ public class ProgramObserver {
 			public String getArgument() {
 				return null;
 			}
+
+			public ObservableLinkedList getArgumentCompletionList() {
+				return null;
+			}
 		};
 		
 		forkedObserver.forkedTaskActionPoint.addAction(myTaskAction);

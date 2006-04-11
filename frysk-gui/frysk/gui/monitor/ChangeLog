@@ -1,3 +1,39 @@
+2006-04-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/TaskProcNameFilter.java: Implemented
+	getArgumentCompletion. It returns null ATM since there is no 
+	list of possible arguments.
+	* filters/ProcNameFilter.java: Ditto.
+	* filters/IntFilter.java: Ditto.
+	* actions/Stop.java: Ditto.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* actions/GenericAction.java: Ditto.
+	* filters/FilterPoint.java: Removed filterList; used itemList
+	from Parent.
+	* filters/TaskFilterPoint.java: Ditto.
+	* filters/IntFilterPoint.java: Ditto.
+	* filters/ProcFilterPoint.java: Ditto.
+	* actions/AddTaskObserverAction.java: Added implementation for
+	return a completionsList of a list of Observers from the 
+	ObserverManager.
+	* ObserversDialog.java: Added support to move selection to the 
+	second last element when the last element is deleted.
+	* ObserverItemsTable.java (removeRow): renamed row into itemRow.
+	* ObserverItemRow.java: Added support for retriving and setting
+	completion list for the argumentEntry.
+	* LiaisonItem.java: Added abstract getArgumentCompletionsList().
+	* EditObserverDialog.java (comboBoxEvent): Added calls to set
+	observer for filtersTable, and ActionsTable.
+	* ProgramObserver.java: Implemented getArgumentCompletionList().
+	* CompletingEntry.java: New file. A child of gnu.gtk.Entry wich
+	supports autocompletion from an ObservableLinkedList.
+	* Combo.java: Renamed filterPoint, and filter to liaisonPoint,
+	and item repectively.
+
 2006-04-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Added getCurrentActionCombos

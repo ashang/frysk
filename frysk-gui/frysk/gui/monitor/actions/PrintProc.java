@@ -40,6 +40,7 @@
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
 public class PrintProc extends ProcAction {
@@ -65,6 +66,10 @@ public class PrintProc extends ProcAction {
 	}
 
 	public String getArgument() {
+		return null;
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
 		return null;
 	}
 }
