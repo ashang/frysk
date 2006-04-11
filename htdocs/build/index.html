@@ -53,7 +53,7 @@
 	      <!-- start text -->
 
 <p>This page provides guidelines for building <em>frysk</em>, checked
-out from CVS, on a number of systems.</p>
+out from <tt>CVS</tt>, on a number of systems.</p>
 
 <h3>Set up your system's build environment</h3>
 
@@ -68,7 +68,7 @@ that all its prerequisites are met.</p>
 
 Red Hat Enterprise Linux 4 Update 3 and later include <tt>gcc4</tt>
 and <tt><em>frysk</em></tt> RPMs that contain everything needed to
-build <em>frysk</em> from CVS; just install RPMs for the following:
+build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
 
 <pre>
 transfig xmlto passivetex xmltex \
@@ -217,10 +217,26 @@ tree</a>.
 
 </dl>
 
-<h3>Check out <em>frysk</em> from CVS</h3>
+<h3>Check out <em>frysk</em> from <tt>CVS</tt></h3>
+
+<p>Normally you would use:</p>
 
 <pre>
-$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk
+$ cvs -d :pserver:anoncvs@sourceware.com:/cvs/frysk co frysk
+</pre>
+
+<p>If you have <tt>CVS</tt> write access using account USER then:</p>
+
+<pre>
+$ export CVS_RSH=ssh
+$ cvs -d :ext:USER@sourceware.org:/cvs/frysk co frysk
+</pre>
+
+<p>To update an existing <em>frysk</em> <tt>CVS</tt> check-out
+use:</p>
+
+<pre>
+$ ( cd frysk && cvs update -d )
 </pre>
 
 <h3>Create the configuration files</h3>
