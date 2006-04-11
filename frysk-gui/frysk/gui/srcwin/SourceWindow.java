@@ -150,7 +150,7 @@ public class SourceWindow extends Window{
 	// ACTIONS
 	private Action close;
 	private Action copy;
-	private Action find;
+	private ToggleAction find;
 	private Action prefsLaunch;
 	private Action run;
 	private Action stop;
@@ -164,7 +164,7 @@ public class SourceWindow extends Window{
 	private Action stackUp;
 	private Action stackDown;
 	private Action stackBottom;
-	private Action toggleRegisterWindow;
+	private ToggleAction toggleRegisterWindow;
 	
 	private DOMFrysk dom;
 
@@ -354,13 +354,15 @@ public class SourceWindow extends Window{
 		this.copy.connectAccelerator();
 
 		// Find action
-		this.find = new Action("find", "Find",
+		this.find = new ToggleAction("find", "Find",
 				"Find Text in the Current Buffer", GtkStockItem.FIND
 						.getString());
 		this.find.addListener(new ActionListener() {
 			public void actionEvent(ActionEvent action) {
-				SourceWindow.this.glade.getWidget(SourceWindow.FIND_BOX)
-						.showAll();
+				if(SourceWindow.this.find.getActive())
+					SourceWindow.this.showFindBox();
+				else
+					SourceWindow.this.hideFindBox();
 			}
 		});
 		this.find.setAccelGroup(ag);
@@ -686,14 +688,11 @@ public class SourceWindow extends Window{
 	 * Adds icons, text, and tooltips to the widgets in the search bar
 	 */
 	private void createSearchBar() {
-
-		((Button) this.glade.getWidget(SourceWindow.NEXT_FIND))
-				.setImage(new Image(GtkStockItem.GO_FORWARD, IconSize.BUTTON));
-		((Button) this.glade.getWidget(SourceWindow.PREV_FIND))
-				.setImage(new Image(GtkStockItem.GO_BACK, IconSize.BUTTON));
+		// we do this to ovewrite a bug (?) where when we set the label of the button, the text disappears too 
 		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND))
 				.setImage(new Image(new GtkStockItem("frysk-highlight"),
 						IconSize.BUTTON));
+		((Button) this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND)).setLabel("Highlight All");
 		
 		// add Tooltips
 		tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND),
@@ -797,6 +796,10 @@ public class SourceWindow extends Window{
 		prefWin.showAll();
 	}
 
+	private void showFindBox(){
+		this.glade.getWidget(SourceWindow.FIND_BOX).showAll();
+	}
+	
 	private void hideFindBox(){
 		this.glade.getWidget(SourceWindow.FIND_BOX).hideAll();
 	}
@@ -1132,7 +1135,7 @@ public class SourceWindow extends Window{
 			this.regWindow = new RegisterWindow(myTask, regWindow);
 		}
 		
-		if(((ToggleAction) this.toggleRegisterWindow).getActive())
+		if(this.toggleRegisterWindow.getActive())
 			this.regWindow.showAll();
 		else
 			this.regWindow.hideAll();

@@ -4,7 +4,7 @@
 <glade-interface>
 
 <widget class="GtkWindow" id="sourceWindow">
-  <property name="width_request">730</property>
+  <property name="width_request">800</property>
   <property name="visible">True</property>
   <property name="title" translatable="yes">Source</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -399,7 +399,7 @@ Mixed</property>
 	    <widget class="GtkHBox" id="searchBox">
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
-	      <property name="spacing">12</property>
+	      <property name="spacing">6</property>
 
 	      <child>
 		<widget class="GtkButton" id="closeFind">

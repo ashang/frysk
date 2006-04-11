@@ -184,6 +184,7 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 		}
 		else if(this.mode == HEX){
 			try{
+				// Hex may or may not be prefixed with "Ox"
 				if(newText.indexOf("0x") == 0)
 					actualValue = Long.parseLong(newText.substring(2), 16);
 				else

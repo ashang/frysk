@@ -1,5 +1,14 @@
 2006-04-10  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SoureWindow.java (createActions): Changed type of find and
+	toggleRegisterWindow actions to ToggleAction, made it so a
+	repeated triggering of the find event will show/hide the bar.
+	(createSearchBar): No longer sets icons for next/prev buttons,
+	resets the text for highlight all after setting icon.
+	(showFindBox): Added.
+
+2006-04-10  Adam Jocksch  <ajocksch@redhat.com>
+
 	* tags/TagsetManager.java (getTagsets): Added overloaded version
 	that returns all tagsets registered with manager.
 

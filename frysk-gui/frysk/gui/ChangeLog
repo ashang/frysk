@@ -1,3 +1,9 @@
+2006-04-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Reduced padding on find bar to 6, increased
+	window width so mode combo box isn't obscured.
+	* register/Register.java (cellRendererTextEvent): Added comment.
+
 2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterWindow.java (signExtend): Now takes the length
