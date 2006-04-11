@@ -95,8 +95,16 @@ following:
 
 <li>The distributed kernel and its upstream counterpart both have a
 bug where ptracing a multi-threaded program that make execve calls
-causes that program to be killed.  The test
-<tt>frysk2130/strace-clone-exec.sh</tt> is checking for this.  To fix:
+causes that program to be killed.  The test <tt><a
+href="http://sourceware.org/bugzilla/show_bug.cgi?id=2130">frysk2130</a>/strace-clone-exec.sh</tt>
+is checking for this.<br> Either grab a pre-built kernel snapshot with
+a workaround applied from:
+
+<pre>
+<a href="http://people.redhat.com/cagney/frysk">http://people.redhat.com/cagney/frysk</a>
+</pre>
+
+or build your own kernel vis:
 
 <ul>
 <li>Download and unpack the kernel
@@ -120,10 +128,8 @@ $ rpm -ivh ../blah/blah
 </li>
 </ul>
 
-Thanks to Wu Zhou for both tracking this down and providing the
-patch.<br> A pre-built kernel <strong>snapshot</strong> with the patch
-applied can be found <a
-href="http://people.redhat.com/cagney/frysk">here</a>
+Thanks to Wu Zhou for both tracking this down problem and providing
+the necessary patches.
 
 </li>
 
