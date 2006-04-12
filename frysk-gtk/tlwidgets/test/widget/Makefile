@@ -38,16 +38,21 @@ tstripchart: tstripchart.o
 
 tstripchart.o: tstripchart.c
 
+tstripchartx: tstripchartx.o
+	$(CC) $(LDFLAGS) -o $@ $(LIBS) $^
+
+tstripchartx.o: tstripchartx.c
+
 tconsole: tconsole.o
 	$(CC) $(LDFLAGS) -o $@ $(LIBS) $^
 
 tconsole.o: tconsole.c
 
-run: tstripchart
+run: tstripchartx
 	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) ./tstripchart
 
 clean:
-	rm -f *.o ttimeline tstripchart
+	rm -f *.o ttimeline tstripchart tstripchartx
 
 veryclean: clean
 	rm -f *~

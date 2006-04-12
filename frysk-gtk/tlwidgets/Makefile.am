@@ -50,10 +50,12 @@ java_DATA = ftk.jar
 EXTRA_DIST = $(SRC) \
 	src/widgets/ftkconsole.h \
 	src/widgets/ftkstripchart.h \
+	src/widgets/ftkstripchartx.h \
 	src/widgets/ftktimeline.h
 
 CLEANFILES = *.so *.jar
-SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java \
+     $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
 AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	-Wall -Werror \
 	-I$(srcdir)/src/widgets \
@@ -67,28 +69,38 @@ AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	if readelf -d $@.tmp | fgrep -q TEXTREL; then exit 1; fi
 	mv $@.tmp $@
 
-CLEANFILES += com/redhat/ftk/Stripchart.class
-com/redhat/ftk/Stripchart.class: $(SRC) 
+CLEANFILES += com/redhat/ftk/Stripchart.class \
+              com/redhat/ftk/StripchartX.class
+com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
+	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
+com/redhat/ftk/StripchartX.class: $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 
-ftk.jar: com/redhat/ftk/Stripchart.class
-	$(JAR) cf ftk.jar -C . com/redhat/ftk/Stripchart.class
+ftk.jar: com/redhat/ftk/Stripchart.class com/redhat/ftk/StripchartX.class
+	$(JAR) cf ftk.jar -C . com/redhat/ftk/Stripchart.class \
+	                  -C . com/redhat/ftk/StripchartX.class
 
 Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
             -g -O2 -fPIC -c $< -o $@
 
-libftkjava.so: Stripchart.o
+StripchartX.o: $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
+	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
+            -g -O2 -fPIC -c $< -o $@
+
+libftkjava.so: Stripchart.o StripchartX.o
 	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
 		-Wl,-soname -Wl,libftkjava.so -o $@
 
-libftkjni_a_SOURCES = src/jni/com_redhat_ftk_Stripchart.c
+libftkjni_a_SOURCES = src/jni/com_redhat_ftk_Stripchart.c \
+                      src/jni/com_redhat_ftk_StripchartX.c
 noinst_LIBRARIES += libftkjni.a
 libftkjni_so_SOURCES =
 solib_PROGRAMS += libftkjni.so
 libftkjni.so: libftkjni.a
 
-libftk_a_SOURCES = src/widgets/ftkstripchart.c src/widgets/ftkconsole.c
+libftk_a_SOURCES = src/widgets/ftkstripchart.c src/widgets/ftkconsole.c \
+                   src/widgets/ftkstripchartx.c
 noinst_LIBRARIES += libftk.a
 solib_PROGRAMS += libftk.so
 libftk_so_SOURCES =

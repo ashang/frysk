@@ -15,8 +15,11 @@ all::run
 StripchartTest.class: StripchartTest.java
 	CLASSPATH=$(CLASSPATH) gcj -C $<
 
-run: StripchartTest.class
-	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) gij -cp $(CLASSPATH) StripchartTest
+StripchartXTest.class: StripchartXTest.java
+	CLASSPATH=$(CLASSPATH) gcj -C $<
+
+run: StripchartXTest.class
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) gij -cp $(CLASSPATH) StripchartXTest
 
 clean:
 	rm -f *.class

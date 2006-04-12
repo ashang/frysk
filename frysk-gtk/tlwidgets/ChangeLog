@@ -1,3 +1,16 @@
+2006-04-11  Chris Moller  <moller@mollerware.com>
+
+	* src/jni/com_redhat_ftk_StripchartX.c:
+	* src/java/com/redhat/ftk/StripchartX.java:
+	* src/widgets/ftkstripchartx.c:
+	* src/widgets/ftkstripchartx.h:
+	* test/widget/tstripchartx.c:
+	* test/wrapper/StripchartXTest.java: Added new files to implement and
+	test the extended stripchart widget.
+	* test/widget/Makefile:
+	* test/wrapper/Makefile:
+	* Makefile.am: Added builds for the new widget tests.
+
 2006-02-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Makefile.am: Removed fix commited on 2006-02-18 as it is no
