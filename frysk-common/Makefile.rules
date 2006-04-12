@@ -523,7 +523,10 @@ ecj/checked: files.list
 	rm -rf ecj
 	mkdir -p ecj
 if HAVE_ECJ
-	$(ECJ) \
+	$(GIJ) \
+		--classpath $(ECJ_JAR):$(CLASSPATH) \
+		org.eclipse.jdt.internal.compiler.batch.Main \
+		\
 		-d ecj \
 		-warn:+semicolon \
 		-sourcepath $(SOURCEPATH) \

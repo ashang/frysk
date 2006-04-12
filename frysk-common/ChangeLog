@@ -1,3 +1,8 @@
+2006-04-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (ecj/checked): Use GIJ to run ECJ via it's
+	ECJ_JAR file.
+
 2006-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (JUnitTests.java): Include Stress files in list.
