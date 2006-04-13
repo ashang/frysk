@@ -1,5 +1,9 @@
 2006-04-13  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (.cxx=.h): For generated header files included
+	by .cxx files, output explicit list of dependencies.  Do not
+	include generated header files in BUILT_SOURCES.
+
 	* Makefile.rules (.java.h): Check $(GCJCOMPILE) exit status.
 
 2006-04-12  Andrew Cagney  <cagney@redhat.com>

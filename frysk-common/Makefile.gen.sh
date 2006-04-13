@@ -395,7 +395,7 @@ for suffix in .cxx .c .hxx ; do
 done
 
 
-# Grep the cni/*.cxx files forming a list of includeed files.  Assume
+# Grep the cni/*.cxx files forming a list of included files.  Assume
 # these are all generated from .class files.  The list can be pruned a
 # little since, given Class$Nested and Class, generating Class.h will
 # automatically generate the inner Class$Nested class.
@@ -406,23 +406,21 @@ do
     find $d -name '*.cxx' -print
 done \
     | xargs grep '#include ".*.h"' \
-    | sed -e 's/^.*#include "//' -e 's/.h".*$//' -e 's/$.*//' \
-    | sort -u \
-    | while read c
+    | sed -e 's/\.cxx:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
+    | while read o h
 do
   if test \
-      -r $c.java -o \
-      -r $c.shenum -o \
-      -r $c.mkenum -o \
-      -r $c.shjava -o \
-      -r $c.mkjava \
+      -r ${h}.java -o \
+      -r ${h}.shenum -o \
+      -r ${h}.mkenum -o \
+      -r ${h}.shjava -o \
+      -r ${h}.mkjava \
       ; then
-      echo "BUILT_SOURCES += ${c}.h"
-      # Delete both the main class, and the nested classes.
-      echo "CLEANFILES += ${c}.h"
-      echo "CLEANFILES += ${c}\\\$\$*.h"
+      echo ${o}: ${h}.h
+      echo "CLEANFILES += ${h}.h"
+      echo "CLEANFILES += ${h}\\\$\$*.h"
   fi
-done
+done | sort -u
 
 
 # Form a list of all the .glade files, these are installed in
