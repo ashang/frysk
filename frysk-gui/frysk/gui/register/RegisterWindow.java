@@ -115,9 +115,7 @@ public class RegisterWindow extends Window implements Saveable{
 		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[0]);
 		registerView.appendColumn(col);
 		
-		/*
-		 * Insert loading preference values here
-		 */
+		
 		
 		for(int i = 0; i < colNames.length; i++){
 			col = new TreeViewColumn();
@@ -151,7 +149,7 @@ public class RegisterWindow extends Window implements Saveable{
 			col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[i+1]);
 			registerView.appendColumn(col);
 			
-			col.setVisible(colVisible[i]);
+			col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
 			
 			columns[i] = col;
 		}
@@ -340,7 +338,7 @@ public class RegisterWindow extends Window implements Saveable{
 		public void cellRendererTextEvent(CellRendererTextEvent arg0) {
 			String text = arg0.getText();
 			
-			if(text.indexOf("0x") != 0)
+			if(text.indexOf("0x") != -1)
 				text = text.substring(2);
 			RegisterWindow.this.saveBinaryValue(text, 16, littleEndian, new TreePath(arg0.getIndex()));
 		}

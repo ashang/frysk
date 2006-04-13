@@ -1,5 +1,10 @@
 2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* RegisterWindow.java (setTask): Now sets column visibility based
+	on the preference model.
+	(HexCellListener): Fixed bug that wouldn't allow correct parsing of
+	hex values.
+
 	* Gui.java (Gui): Now creates register window from glade file.
 	* glade/registerWindow.glade: No longer visible by default, canged
 	format of window to have a close and format button at the bottom.
