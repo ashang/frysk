@@ -1,3 +1,22 @@
+2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Gui.java (Gui): Now creates register window from glade file.
+	* glade/registerWindow.glade: No longer visible by default, canged
+	format of window to have a close and format button at the bottom.
+	* register/RegisterWindow.java (RegisterWindow): Now only takes a
+	LibGlade object.
+	(setTask): Added, does task-specific instantiation.
+	(save): Added.
+	(load): Added.
+	(cellRendererTextEvent): Removed.
+	(reverse): Added.
+	(saveBinaryValue): Added.
+	(DecCellListener): Added.
+	(HexCellListener): Added.
+	(OctCellListener): Added.
+	(BinCellListener): Added.
+	* register/RegisterFormatDialog.java: Added.
+
 2006-04-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/frysk_create_session_druid.glade: Made druid hidden by
@@ -11,7 +30,6 @@
 	window width so mode combo box isn't obscured.
 	* register/Register.java (cellRendererTextEvent): Added comment.
 
->>>>>>> 1.168
 2006-04-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterWindow.java (signExtend): Now takes the length

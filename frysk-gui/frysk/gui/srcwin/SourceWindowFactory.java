@@ -85,6 +85,7 @@ public class SourceWindowFactory {
 	 */
 	public static void setTestFilesPath(String[] path){
 		testFilesPath = path;
+
 	}
 	
 	/**
@@ -118,6 +119,28 @@ public class SourceWindowFactory {
 	public static void createSourceWindow(Task task){
 		SourceWindow s = null;
 
+//		task.requestAddAttachedObserver(new TaskObserver.Attached() {
+//			
+//			public void deletedFrom(Object observable) {
+//				// TODO Auto-generated method stub
+//			}
+//		
+//			public void addFailed(Object observable, Throwable w) {
+//				// TODO Auto-generated method stub
+//			}
+//		
+//			public void addedTo(Object observable) {
+//				// TODO Auto-generated method stub
+//			}
+//		
+//			public Action updateAttached(Task task) {
+//				// TODO Auto-generated method stub
+//				System.out.println("Blocking");
+//				return Action.BLOCK;
+//			}
+//		
+//		});
+		
 		if(map.containsKey(task)){
 			// Do something here to revive the existing window
 			s = (SourceWindow) map.get(task);

@@ -44,6 +44,7 @@ import java.util.prefs.Preferences;
 import org.gnu.glade.LibGlade;
 
 import frysk.gui.druid.CreateFryskSessionDruid;
+import frysk.gui.register.RegisterWindow;
 
 
 /**
@@ -72,6 +73,7 @@ public class WindowManager implements Saveable{
 	public CreateFryskSessionDruid createFryskSessionDruid;
 	public ObserversDialog observersDialog;
 	public EditObserverDialog editObserverDialog; 
+	public RegisterWindow registerWindow;
 	/**}*/
 	
 	public WindowManager(){
@@ -99,11 +101,15 @@ public class WindowManager implements Saveable{
 		this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
 	}
 
+	public void initRegisterWindow(LibGlade gladeFile){
+		this.registerWindow = new RegisterWindow(gladeFile);
+	}
 
 	public void save(Preferences prefs) {
 		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
 		customeObserverDialog.save(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
+		registerWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/registers"));
 		//programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
 
@@ -111,6 +117,7 @@ public class WindowManager implements Saveable{
 		mainWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
 		customeObserverDialog.load(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
+		registerWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/registers"));
 		//programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
 }

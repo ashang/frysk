@@ -85,6 +85,8 @@ import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
@@ -94,7 +96,7 @@ import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
-import frysk.gui.register.RegisterWindow;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
@@ -181,9 +183,6 @@ public class SourceWindow extends Window{
 
 	// Private inner class to take care of the event handling
 	private SourceWindowListener listener;
-	
-	// Register window
-	private RegisterWindow regWindow;
 	
 	/**
 	 * Creates a new source window with the given properties. This constructor
@@ -758,6 +757,25 @@ public class SourceWindow extends Window{
 		
 		});
 		
+		// Register Window
+		WindowManager.theManager.registerWindow.addListener(new LifeCycleListener() {
+			public boolean lifeCycleQuery(LifeCycleEvent arg0) {
+				// clicked on the 'x' - hide it and toggle the event
+				if(arg0.isOfType(LifeCycleEvent.Type.DELETE)){
+					((Window) arg0.getSource()).hideAll();
+					SourceWindow.this.toggleRegisterWindow.setActive(false);
+					return true;
+				}
+				
+				return false;
+			}
+		
+			public void lifeCycleEvent(LifeCycleEvent arg0) {
+				if(arg0.isOfType(LifeCycleEvent.Type.HIDE))
+					SourceWindow.this.toggleRegisterWindow.setActive(false);
+			}
+		});
+		
 		// Mode box
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
 
@@ -957,7 +975,7 @@ public class SourceWindow extends Window{
 		this.glade.getWidget("toolbarGotoBox").setSensitive(false);
 		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 
-		this.regWindow.setIsRunning(true);
+		WindowManager.theManager.registerWindow.setIsRunning(true);
 		
 		// Set status of actions
 		this.run.setSensitive(false);
@@ -983,7 +1001,7 @@ public class SourceWindow extends Window{
 		this.glade.getWidget("toolbarGotoBox").setSensitive(true);
 		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
 
-		this.regWindow.setIsRunning(false);
+		WindowManager.theManager.registerWindow.setIsRunning(false);
 		
 		// Set status of actions
 		this.run.setSensitive(true);
@@ -1123,22 +1141,14 @@ public class SourceWindow extends Window{
 	}
 	
 	private void toggleRegisterWindow(){
-		if(this.regWindow == null){
-			LibGlade regWindow = null;
-			try{
-				regWindow = new LibGlade(this.gladePath + "/registerwindow.glade", null);
-			}
-			catch (Exception e){
-				return;
-			}
-			
-			this.regWindow = new RegisterWindow(myTask, regWindow);
+		if(this.toggleRegisterWindow.getActive()){
+			if(!WindowManager.theManager.registerWindow.hasTaskSet())
+				WindowManager.theManager.registerWindow.setTask(this.myTask);
+			else
+				WindowManager.theManager.registerWindow.showAll();
 		}
-		
-		if(this.toggleRegisterWindow.getActive())
-			this.regWindow.showAll();
 		else
-			this.regWindow.hideAll();
+			WindowManager.theManager.registerWindow.hideAll();
 	}
 	
 	private class SourceWindowListener implements ButtonListener, 

@@ -1,24 +1,29 @@
 package frysk.gui.register;
 
 import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.CellRendererTextEvent;
 import org.gnu.gtk.event.CellRendererTextListener;
-import org.gnu.gtk.event.ComboBoxEvent;
-import org.gnu.gtk.event.ComboBoxListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 
+import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
 import frysk.proc.Register;
 import frysk.proc.Task;
@@ -31,34 +36,55 @@ import frysk.proc.Task;
  * @author ajocksch
  *
  */
-public class RegisterWindow extends Window implements CellRendererTextListener{
+public class RegisterWindow extends Window implements Saveable{
 	
 	private Task myTask;
 	
 	private LibGlade glade;
 	
-	private DataColumn[] cols = {new DataColumnString(), new DataColumnString(), new DataColumnString(), new DataColumnObject()};
+	private Preferences prefs; 
 	
-	private static final int DECIMAL = 0;
-	private static final int HEX = 1;
-	private static final int OCTAL = 2;
-	private static final int BINARY = 3;
+	private DataColumn[] cols = {new DataColumnString(), // name 
+			new DataColumnString(), // decimal le
+			new DataColumnString(), // decimal be
+			new DataColumnString(), // hex le
+			new DataColumnString(), // hex be
+			new DataColumnString(), // octal le
+			new DataColumnString(), // octal be
+			new DataColumnString(), // binary le
+			new DataColumnString(), // binary be
+			new DataColumnObject()}; // the Register object
 	
-	private int mode = DECIMAL;
+	protected static String[] colNames = {"Decimal (LE)", "Decimal (BE)", "Hexadecimal (LE)",
+			"Hexadecimal (BE)", "Octal (LE)", "Octal (BE)", "Binary (LE)", "Binary (BE)"};
 	
-	private boolean littleEndian = true;
+	protected boolean[] colVisible = {true, false, false, false, false, false, false, false};
+	
+	private TreeViewColumn[] columns = new TreeViewColumn[8];
+	
+	private RegisterFormatDialog formatDialog;
+	
+	private TreeView registerView;
 	
 	/**
 	 * Creates a new RegistryWindow
 	 * @param task The Task for which to display the registers
 	 * @param glade The glade file for the register window
 	 */
-	public RegisterWindow(Task task, LibGlade glade){
+	public RegisterWindow(LibGlade glade){
 		super(glade.getWidget("registerWindow").getHandle());
 		this.glade = glade;
-		this.myTask = task;
+		this.formatDialog = new RegisterFormatDialog(this.glade);
+	}
+	
+	public boolean hasTaskSet(){
+		return myTask != null;
+	}
+	
+	public void setTask(Task myTask){
+		this.myTask = myTask;
 		
-		TreeView registerView = (TreeView) this.glade.getWidget("registerView");
+		this.registerView = (TreeView) this.glade.getWidget("registerView");
 		
 		ListStore model = new ListStore(cols);
 		
@@ -71,7 +97,13 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 			model.setValue(iter, (DataColumnString) cols[0], register.getName());
 			model.setValue(iter, (DataColumnString) cols[1], ""+0);
 			model.setValue(iter, (DataColumnString) cols[2], ""+0);
-			model.setValue(iter, (DataColumnObject) cols[3], register);
+			model.setValue(iter, (DataColumnString) cols[3], "0x" + signExtend(""+0, register.getLength()*4, 4));
+			model.setValue(iter, (DataColumnString) cols[4], "0x" + signExtend(""+0, register.getLength()*4, 4));
+			model.setValue(iter, (DataColumnString) cols[5], signExtend(""+0, register.getLength()*4, 3));
+			model.setValue(iter, (DataColumnString) cols[6], signExtend(""+0, register.getLength()*4, 3));
+			model.setValue(iter, (DataColumnString) cols[7], signExtend(""+0, register.getLength()*4, 1));
+			model.setValue(iter, (DataColumnString) cols[8], signExtend(""+0, register.getLength()*4, 1));
+			model.setValue(iter, (DataColumnObject) cols[9], register);
 		}
 		
 		registerView.setModel(model);
@@ -83,56 +115,77 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[0]);
 		registerView.appendColumn(col);
 		
-		col = new TreeViewColumn();
-		col.setTitle("Value");
-		renderer = new CellRendererText();
-		((CellRendererText) renderer).setEditable(true);
-		((CellRendererText) renderer).addListener(this);
-		col.packStart(renderer, false);
-		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[1]);
-		registerView.appendColumn(col);
+		/*
+		 * Insert loading preference values here
+		 */
+		
+		for(int i = 0; i < colNames.length; i++){
+			col = new TreeViewColumn();
+			col.setTitle(colNames[i]);
+			renderer = new CellRendererText();
+			((CellRendererText) renderer).setEditable(true);
+			boolean littleEndian = false;
+			switch(i){
+			case 0:
+				littleEndian = true; // fall through
+			case 1:
+				((CellRendererText) renderer).addListener(new DecCellListener(littleEndian));
+				break;
+			case 2:
+				littleEndian = true; // fall through
+			case 3:
+				((CellRendererText) renderer).addListener(new HexCellListener(littleEndian));
+				break;
+			case 4:
+				littleEndian = true; // fall through
+			case 5:
+				((CellRendererText) renderer).addListener(new OctCellListener(littleEndian));
+				break;
+			case 6:
+				littleEndian = true; // fall through
+			case 7:
+				((CellRendererText) renderer).addListener(new BinCellListener(littleEndian));
+				break;
+			}
+			col.packStart(renderer, false);
+			col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[i+1]);
+			registerView.appendColumn(col);
+			
+			col.setVisible(colVisible[i]);
+			
+			columns[i] = col;
+		}
 		
 		registerView.setAlternateRowColor(true);
+
+		this.formatDialog.addListener(new LifeCycleListener() {
+		
+			public boolean lifeCycleQuery(LifeCycleEvent arg0) {
+				return false;
+			}
+		
+			public void lifeCycleEvent(LifeCycleEvent arg0) {
+				if(arg0.isOfType(LifeCycleEvent.Type.HIDE))
+					RegisterWindow.this.refreshList();
+			}
+		
+		});
+		
+		((Button) this.glade.getWidget("closeButton")).addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if(arg0.isOfType(ButtonEvent.Type.CLICK))
+					RegisterWindow.this.hideAll();
+			}
+		});
+		
+		((Button) this.glade.getWidget("formatButton")).addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if(arg0.isOfType(ButtonEvent.Type.CLICK))
+					RegisterWindow.this.formatDialog.showAll();
+			}
+		});
 		
 		this.showAll();
-		
-		ComboBox formatSelector = (ComboBox) this.glade.getWidget("formatSelector");
-		formatSelector.setActive(0);
-		formatSelector.addListener(new ComboBoxListener() {
-			public void comboBoxEvent(ComboBoxEvent arg0) {
-				switch(((ComboBox) arg0.getSource()).getActive()){
-				case 0:
-					mode = DECIMAL;
-					break;
-				case 1:
-					mode = HEX;
-					break;
-				case 2: 
-					mode = OCTAL;
-					break;
-				case 3:
-					mode = BINARY;
-					break;
-				// do nothing on the default case
-				default:
-					return;
-				}
-				
-				RegisterWindow.this.glade.getWidget("endianSelector").setSensitive(mode != DECIMAL);
-				
-				refreshList();
-			}
-		});
-		
-		ComboBox endianSelector = (ComboBox) this.glade.getWidget("endianSelector");
-		endianSelector.setActive(0);
-		endianSelector.setSensitive(false);
-		endianSelector.addListener(new ComboBoxListener() {
-			public void comboBoxEvent(ComboBoxEvent arg0) {
-				littleEndian = (((ComboBox) arg0.getSource()).getActive() == 0);
-				refreshList();
-			}
-		});
 	}
 	
 	/**
@@ -151,72 +204,15 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 			this.glade.getWidget("formatSelector").setSensitive(true);
 		}
 	}
+	
+	public void save(Preferences prefs) {
+		this.formatDialog.save(prefs);
+	}
 
-	/**
-	 * When the value of a register is done being edited, save the value in the model
-	 */
-	public void cellRendererTextEvent(CellRendererTextEvent arg0) {
-		TreeView view = (TreeView) this.glade.getWidget("registerView");
-		
-		ListStore model = (ListStore) view.getModel();
-		
-		TreeIter edited = model.getIter(arg0.getIndex());
-		
-		String newText = arg0.getText();
-		long actualValue = 0;
-		
-		if(mode != DECIMAL && !littleEndian){
-			char[] tmp = new char[newText.length()];
-			for(int i = 0; i < newText.length(); i++)
-				tmp[newText.length() - i - 1] = newText.charAt(i);
-			newText = new String(tmp);
-		}
-		
-		// perform input validation
-		if(this.mode == DECIMAL){
-			try{
-				actualValue = Long.parseLong(newText);
-			}
-			catch (Exception e){
-				// invalid entry, do nothing
-				return;
-			}
-		}
-		else if(this.mode == HEX){
-			try{
-				// Hex may or may not be prefixed with "Ox"
-				if(newText.indexOf("0x") == 0)
-					actualValue = Long.parseLong(newText.substring(2), 16);
-				else
-					actualValue = Long.parseLong(newText, 16);
-			}
-			catch (Exception e){
-				// bad input, do nothing
-				return;
-			}
-		}
-		else if(this.mode == OCTAL){
-			try{
-				actualValue = Long.parseLong(newText, 8);
-			}
-			catch (Exception e){
-				// bad input, do nothing
-				return;
-			}
-		}
-		else if(this.mode == BINARY){
-			try{
-				actualValue = Long.parseLong(newText, 2);
-			}
-			catch (Exception e){
-				// bad input, do nothing
-				return;
-			}
-		}
-		
-		// update the hidden column with the real value, then update the display
-		model.setValue(edited, (DataColumnString) cols[2], ""+actualValue);
+	public void load(Preferences prefs) {
+		this.prefs = prefs;
 		this.refreshList();
+		this.formatDialog.load(prefs);
 	}
 	
 	/**
@@ -241,50 +237,145 @@ public class RegisterWindow extends Window implements CellRendererTextListener{
 	 * Refreshes the view of the items in the list
 	 */
 	private void refreshList(){
-		TreeView view = (TreeView) this.glade.getWidget("registerView");
+		// If there's no task, no point in refreshing
+		if(this.myTask == null)
+			return;
 		
-		ListStore model = (ListStore) view.getModel();
-
+		// update values in the columns if one of them has been edited
+		ListStore model = (ListStore) this.registerView.getModel();
 		TreeIter iter = model.getFirstIter();
-		while(iter != null){
-			long value = Long.parseLong(model.getValue(iter, (DataColumnString) cols[2]));
 		
-			Register register = (Register) model.getValue(iter, (DataColumnObject) cols[3]);
+		while(iter != null){
+			// get the register
+			Register register = (Register) model.getValue(iter, (DataColumnObject) cols[9]);
 			
-			int bitlength = register.getLength()*4;
+			// reference everything from the little endian binary value
+			String value = model.getValue(iter, (DataColumnString) cols[7]);
+			long parsedValue = Long.parseLong(value, 2);
 			
-			String text = "";
-			switch(this.mode){
-			case BINARY:
-				text = signExtend(Long.toBinaryString(value), bitlength, 1);
-				break;
-			case HEX:
-				text = signExtend(Long.toHexString(value), bitlength, 4);
-				break;
-			case OCTAL:
-				text = signExtend(Long.toOctalString(value), bitlength, 3);
-				break;
-			case DECIMAL:
-				text = "" + value;
-				break;
-			}
+			// Decimal little endian
+			model.setValue(iter, (DataColumnString) cols[1], ""+parsedValue);
 			
-			// flip the bits if we have to, but not in decimal mode
-			if(!this.littleEndian && mode != DECIMAL){
-				char[] tmp = new char[text.length()];
-				for(int i = 0; i < text.length(); i++)
-					tmp[tmp.length - i - 1] = text.charAt(i);
-				text = new String(tmp);
-			}
+			// Hex little endian
+			model.setValue(iter, (DataColumnString) cols[3], "0x"+ signExtend(Long.toHexString(parsedValue), register.getLength()*4, 4));
 			
-			if(this.mode == HEX)
-				text = "0x" + text;
-				
+			// Octal little endian
+			model.setValue(iter, (DataColumnString) cols[5], signExtend(Long.toOctalString(parsedValue), register.getLength()*4, 3));
 			
-			model.setValue(iter, (DataColumnString) cols[1], text);
+			// flip the binary string to do big-endian
+			value = reverse(value);
+			parsedValue = Long.parseLong(value, 2);
+			
+			// Binary big endian
+			model.setValue(iter, (DataColumnString) cols[8], signExtend(value, register.getLength()*4, 1));
+			
+			// Decimal big-endian
+			model.setValue(iter, (DataColumnString) cols[2], ""+parsedValue);
+			
+			// Hex big-endian
+			model.setValue(iter, (DataColumnString) cols[4], "0x" + signExtend(Long.toHexString(parsedValue), register.getLength()*4, 4));
+			
+			// Octal big-endian
+			model.setValue(iter, (DataColumnString) cols[6], signExtend(Long.toOctalString(parsedValue), register.getLength()*4, 3));
+			
 			iter = iter.getNextIter();
 		}
 		
+		// update which columns are shown
+		for(int i = 0; i < RegisterWindow.colNames.length; i++)
+			this.columns[i].setVisible(this.prefs.getBoolean(RegisterWindow.colNames[i], this.colVisible[i]));
+		
 		this.showAll();
+	}
+	
+	private String reverse(String toReverse){
+		char[] tmp = new char[toReverse.length()];
+		for(int i = 0; i < tmp.length; i++)
+			tmp[i] = toReverse.charAt(toReverse.length() - i - 1);
+		return new String(tmp);
+	}
+	
+	private void saveBinaryValue(String rawString, int raadix, boolean littleEndian, TreePath path){
+//		 convert the data to little endian binary
+		String binaryString = Long.toBinaryString(Long.parseLong(rawString, raadix));
+		if(!littleEndian)
+			binaryString = reverse(binaryString);
+		
+		ListStore model = (ListStore) this.registerView.getModel();
+		
+		TreeIter iter = model.getIter(path);
+		
+		String prevVal = model.getValue(iter, (DataColumnString) cols[7]);
+		
+		binaryString = signExtend(binaryString, prevVal.length(), 1);
+		
+		model.setValue(iter, (DataColumnString) cols[7], binaryString);
+		this.refreshList();
+	}
+	
+	class DecCellListener implements CellRendererTextListener{
+
+		boolean littleEndian;
+		
+		public DecCellListener(boolean littleEndian){
+			this.littleEndian = littleEndian;
+		}
+		
+		public void cellRendererTextEvent(CellRendererTextEvent arg0) {
+			String text = arg0.getText();
+
+			RegisterWindow.this.saveBinaryValue(text, 10, littleEndian, new TreePath(arg0.getIndex()));
+		}
+		
+	}
+	
+	class HexCellListener implements CellRendererTextListener{
+
+		boolean littleEndian;
+		
+		public HexCellListener(boolean littleEndian){
+			this.littleEndian = littleEndian;
+		}
+		
+		public void cellRendererTextEvent(CellRendererTextEvent arg0) {
+			String text = arg0.getText();
+			
+			if(text.indexOf("0x") != 0)
+				text = text.substring(2);
+			RegisterWindow.this.saveBinaryValue(text, 16, littleEndian, new TreePath(arg0.getIndex()));
+		}
+		
+	}
+	
+	class OctCellListener implements CellRendererTextListener{
+
+		boolean littleEndian;
+		
+		public OctCellListener(boolean littleEndian){
+			this.littleEndian = littleEndian;
+		}
+		
+		public void cellRendererTextEvent(CellRendererTextEvent arg0) {
+			String text = arg0.getText();
+
+			RegisterWindow.this.saveBinaryValue(text, 8, littleEndian, new TreePath(arg0.getIndex()));
+		}
+		
+	}
+	
+	class BinCellListener implements CellRendererTextListener{
+
+		boolean littleEndian;
+		
+		public BinCellListener(boolean littleEndian){
+			this.littleEndian = littleEndian;
+		}
+		
+		public void cellRendererTextEvent(CellRendererTextEvent arg0) {
+			String text = arg0.getText();
+			
+			RegisterWindow.this.saveBinaryValue(text, 2, littleEndian, new TreePath(arg0.getIndex()));
+		}
+		
 	}
 }

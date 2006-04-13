@@ -1,3 +1,9 @@
+2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* WindowManager.java (initRegisterWindow): Added.
+	(save): Now saves register window as well.
+	(load): Now loads register window as well.
+
 2006-04-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/TaskProcNameFilter.java: Implemented

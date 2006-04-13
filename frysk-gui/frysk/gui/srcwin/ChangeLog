@@ -1,3 +1,11 @@
+2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (toggleRegisterWindow): Now uses WindowManager
+	to launch the register window.
+	* SourceWindowFactory.java (createSourceWindow): Added commented out
+	observer that stops the current task, this will evetually need to be
+	replaced with a less hackish API.
+
 2006-04-10  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SoureWindow.java (createActions): Changed type of find and
