@@ -289,17 +289,18 @@ $(GEN_SOURCENAME)/JUnitTests.java: Makefile
 
 .java.h:
 	classes=`$(JV_SCAN) --list-class '$<'` ; \
+	echo "$$classes" ; \
 	tmpdir=`echo $$classes | ( read a b ; echo $$a )`.tmp ; \
 	rm -rf $$tmpdir ; \
 	mkdir -p $$tmpdir ; \
-	$(GCJCOMPILE) -C -d $$tmpdir '$<' ; \
+	$(GCJCOMPILE) -C -d $$tmpdir '$<' || exit 1 ; \
 	for class in $$classes ; do \
+		echo $$class ; \
 		file=`echo $${class} | tr '[.]' '[/]'`.class ; \
 		if test -r $$tmpdir/$${file} ; then \
 			$(GCJH) -I $$tmpdir -d . $(GCJHFLAGS) $$class ; \
 		fi ; \
-	done ; \
-	rm -rf $$tmpdir
+	done
 
 # Shared library rule (for moment assume that .a contains PIC code).
 SUFFIXES += .so
