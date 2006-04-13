@@ -25,6 +25,7 @@ import org.gnu.gtk.event.CellRendererToggleListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.Saveable;
 
 public class RegisterFormatDialog extends Dialog implements Saveable{
@@ -41,6 +42,8 @@ public class RegisterFormatDialog extends Dialog implements Saveable{
 		super(glade.getWidget("formatDialog").getHandle());
 		
 		this.glade = glade;
+		
+		this.setIcon(IconManager.windowIcon);
 		
 		SizeGroup group = new SizeGroup(SizeGroupMode.HORIZONTAL);
 		group.addWidget(this.glade.getWidget("formatUpButton"));
@@ -106,6 +109,20 @@ public class RegisterFormatDialog extends Dialog implements Saveable{
 		
 			public void lifeCycleEvent(LifeCycleEvent arg0) {}
 		});
+		
+		((Button) this.glade.getWidget("formatUpButton")).addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if(arg0.isOfType(ButtonEvent.Type.CLICK))
+					RegisterFormatDialog.this.moveColumnUp();
+			}
+		});
+		
+		((Button) this.glade.getWidget("formatDownButton")).addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if(arg0.isOfType(ButtonEvent.Type.CLICK))
+					RegisterFormatDialog.this.moveColumnDown();
+			}
+		});
 	}
 
 	public void save(Preferences prefs) {
@@ -135,4 +152,12 @@ public class RegisterFormatDialog extends Dialog implements Saveable{
 		}
 	}
 
+	
+	private void moveColumnUp(){
+		
+	}
+	
+	private void moveColumnDown(){
+		
+	}
 }

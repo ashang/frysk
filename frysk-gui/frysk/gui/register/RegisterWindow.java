@@ -23,6 +23,7 @@ import org.gnu.gtk.event.CellRendererTextListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
 import frysk.proc.Register;
@@ -75,6 +76,8 @@ public class RegisterWindow extends Window implements Saveable{
 		super(glade.getWidget("registerWindow").getHandle());
 		this.glade = glade;
 		this.formatDialog = new RegisterFormatDialog(this.glade);
+		
+		this.setIcon(IconManager.windowIcon);
 	}
 	
 	public boolean hasTaskSet(){

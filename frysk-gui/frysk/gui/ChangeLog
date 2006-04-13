@@ -1,11 +1,21 @@
+2006-04-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* register/RegisterFormatDialog.java (RegisterFormatDialog): Now adds
+	listeners to the up and down buttons for moving columns, also sets
+	frysk icon as the window icon.
+	(moveColumnUp): Added.
+	(moveColumnDown): Added.
+	* register/RegisterWindow.java (RegisterWindow): Sets the window icon
+	to be the frysk icon.
+
 2006-04-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: Removed old custom observer menu
 	Item.
 
-2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
+2006-04-13  Adam Jocksch  <ajocksch@redhat.com>
 
-	* RegisterWindow.java (setTask): Now sets column visibility based
+	* register/RegisterWindow.java (setTask): Now sets column visibility based
 	on the preference model.
 	(HexCellListener): Fixed bug that wouldn't allow correct parsing of
 	hex values.
