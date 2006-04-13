@@ -46,7 +46,7 @@ import frysk.proc.Proc;
 public class PrintProc extends ProcAction {
 	
 	public PrintProc() {
-		super("Print State", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Print state of", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public PrintProc(PrintProc other){

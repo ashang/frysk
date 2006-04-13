@@ -1,3 +1,8 @@
+2006-04-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Removed old custom observer menu
+	Item.
+
 2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* RegisterWindow.java (setTask): Now sets column visibility based

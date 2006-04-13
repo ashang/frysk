@@ -1,3 +1,17 @@
+2006-04-13  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverRoot.java: Fixed copy constructor, it
+	used to add a logging action event thought it is copied
+	resulting in tow logging actions in a loaded observer.
+	* actions/PrintTask.java: Fixed action name.
+	* actions/PrintProc.java: ditto.
+	* ObserversDialog.java: Changed the way undo is implemented.
+	Fixed some problems with saving user changes.
+	* MenuBar.java: Removed handling for old Custom Observers
+	MenuItem.
+	* EditObserverDialog.java: Removed some debug output.
+	* ObserverItemsTable.java: Ditto.
+
 2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* WindowManager.java (initRegisterWindow): Added.

@@ -46,7 +46,7 @@ import frysk.proc.Task;
 public class PrintTask extends TaskAction {
 	
 	public PrintTask() {
-		super("Print State", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Print state of", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public PrintTask(PrintTask other){

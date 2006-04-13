@@ -65,15 +65,17 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 //				WindowManager.theManager.prefsWindow.present();
 //			}
 //		});
+
+		MenuItem item;
 		
-		MenuItem item = (MenuItem) glade.getWidget("editCustomObserversMenuItem");
-		item.addListener(new MenuItemListener(){
-			public void menuItemEvent(MenuItemEvent arg0) {
-				WindowManager.theManager.customeObserverDialog.showAll();
-				WindowManager.theManager.customeObserverDialog.present();
-				WindowManager.theManager.customeObserverDialog.run();
-			}
-		});
+//		item = (MenuItem) glade.getWidget("editCustomObserversMenuItem");
+//		item.addListener(new MenuItemListener(){
+//			public void menuItemEvent(MenuItemEvent arg0) {
+//				WindowManager.theManager.customeObserverDialog.showAll();
+//				WindowManager.theManager.customeObserverDialog.present();
+//				WindowManager.theManager.customeObserverDialog.run();
+//			}
+//		});
 		
 		item = (MenuItem) glade.getWidget("customObserversMenuItem");
 		item.addListener(new MenuItemListener(){

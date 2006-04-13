@@ -221,7 +221,7 @@ public class ObserverManager {
 	public void removeTaskObserverPrototype(ObserverRoot observer){
 		this.taskObservers.remove(observer);
 		if(!ObjectFactory.theFactory.deleteNode( OBSERVERS_DIR + observer.getName())){
-			throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete" + observer.getName());
+			//throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete " + observer.getName());
 		}
 	}
 	
@@ -232,12 +232,10 @@ public class ObserverManager {
 		String[] array = observerDir.list();
 		ObserverRoot loadedObserver = null;
 		for (int i = 0; i < array.length; i++) {
-			//System.out.println(			array[i]);
 			try{
 				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
 				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
 			}catch(Exception e){
-				//System.out.println("Could not load " + array[i]);
 				continue;
 			}
 			this.addTaskObserverPrototype(loadedObserver);
@@ -246,11 +244,11 @@ public class ObserverManager {
 	}
 	
 	public void save(){
-
 		Iterator iterator = this.getTaskObservers().iterator();
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
 			if(observer.shouldSaveObject()){
+				System.out.println(this + ": ObserverManager.save() saving: " + observer);
 				Element node = new Element("Observer");
 				ObjectFactory.theFactory.saveObject(observer, node);
 				ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);

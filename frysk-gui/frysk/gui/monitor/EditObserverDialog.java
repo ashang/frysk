@@ -86,7 +86,6 @@ public class EditObserverDialog extends Dialog {
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					System.out.println("EditObserverDialog.EditObserverDialog() " + observer);
 					filtersTable.apply();
 					actionsTable.apply();
 					EditObserverDialog.this.hideAll();
@@ -106,7 +105,6 @@ public class EditObserverDialog extends Dialog {
 		
 		observerTypeComboBox = new SimpleComboBox((glade.getWidget("observerTypeComboBox")).getHandle());
 		observerTypeComboBox.watchLinkedList(ObserverManager.theManager.getBaseObservers());
-		System.out.println("EditObserverDialog.EditObserverDialog() size " + ObserverManager.theManager.getBaseObservers().size());
 		observerTypeComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
 				ObserverRoot selected = (ObserverRoot) observerTypeComboBox.getSelectedObject();
@@ -121,8 +119,6 @@ public class EditObserverDialog extends Dialog {
 					setName(newObserver);
 					filtersTable.setObserver(newObserver);
 					actionsTable.setObserver(newObserver);
-				
-					System.out.println(".comboBoxEvent() swapped. NewObserver: " + newObserver );
 				}
 			}
 		});
@@ -164,7 +160,6 @@ public class EditObserverDialog extends Dialog {
 	}
 	
 	public void editObserver(ObserverRoot observer){
-		System.out.println("EditObserverDialog.editObserver() " + observer);
 		this.setAll(observer);
 		
 		this.observerTypeComboBox.setSensitive(false);

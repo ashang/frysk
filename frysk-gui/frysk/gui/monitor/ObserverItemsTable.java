@@ -145,7 +145,6 @@ public abstract class ObserverItemsTable extends Table {
 		this.applyList.remove(itemRow);
 		itemRow.removeFromTable();
 		row--;
-		System.out.println(this + ": ObserverItemsTable.removeRow() " + row);
 	}
 	
 }

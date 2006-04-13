@@ -40,6 +40,7 @@
 package frysk.gui.monitor;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -66,13 +67,35 @@ public class ObserversDialog extends Dialog {
 	Button applyButton;
 	Button cancelButton;
 	
+	/**
+	 * the old and new scratch lists keep
+	 * a list of what changes the user made so that
+	 * these can be committed to ObserverManager when
+	 * the ok is clicked
+	 * this is what is store in the lists
+	 *                                  old    |  new
+	 *                                -------------------
+	 * user deletes an observer:   oldObserver | null  
+	 * user edits an observer  :   oldObserver | newObserver
+	 * user adds an observer   :   null        | newObserver
+	 {*/
+	LinkedList scratchOld;
+	LinkedList scratchNew;
+	/**
+	 * }
+	 */
+	
 	private ObservableLinkedList scratchList;
 	
 	ObserversDialog(LibGlade glade){
 		super(glade.getWidget("observersDialog").getHandle());
 	
-		this.scratchList = new ObservableLinkedList();
-		this.retrieveList();
+		scratchOld = new LinkedList();
+		scratchNew = new LinkedList();
+		
+	//	this.scratchList = new ObservableLinkedList();
+		this.scratchList = ObserverManager.theManager.getTaskObservers();
+		//this.retrieveList();
 		
 		this.observersListView = new ListView(glade.getWidget("observersTreeView").getHandle());
 		this.observersListView.watchLinkedList(scratchList);
@@ -91,8 +114,13 @@ public class ObserversDialog extends Dialog {
 					int response = showEditObserverDialog();
 					if(response == ResponseType.OK.getValue()){
 						ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
+						newObserver.doSaveObject();
 						scratchList.add(newObserver);
 						observersListView.setSelectedObject(newObserver);
+
+						scratchOld.add(null);
+						scratchNew.add(newObserver);
+						
 					}
 
 				}
@@ -105,12 +133,18 @@ public class ObserversDialog extends Dialog {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
-					WindowManager.theManager.editObserverDialog.editObserver(selected);
+					ObserverRoot scratchCopy = selected.getCopy();
+					WindowManager.theManager.editObserverDialog.editObserver(scratchCopy);
 					int response = showEditObserverDialog();
 					if(response == ResponseType.OK.getValue()){
 						ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
+						newObserver.doSaveObject();
 						scratchList.swap(selected,newObserver);
 						observersListView.setSelectedObject(newObserver);
+						System.out.println(this + ": .buttonEvent() swapped");
+
+						scratchOld.add(selected);
+						scratchNew.add(newObserver);
 					}
 				}
 			}
@@ -128,6 +162,9 @@ public class ObserversDialog extends Dialog {
 						if(scratchList.size() == index){
 							observersListView.setSelectedObject((GuiObject) scratchList.get(index-1));
 						}
+						
+						scratchOld.add(selected);
+						scratchNew.add(null);	
 					}
 				}
 			}
@@ -139,9 +176,13 @@ public class ObserversDialog extends Dialog {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
-					ObserverRoot copy = ObserverManager.theManager.getObserverCopy(selected);
-					copy.setName("CopyOf_" + selected.getName());
-					scratchList.add(scratchList.indexOf(selected)+1, copy);
+					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy(selected);
+					newObserver.setName("CopyOf_" + selected.getName());
+					scratchList.add(scratchList.indexOf(selected)+1, newObserver);
+					scratchList.add(newObserver);
+					
+					scratchOld.add(null);
+					scratchNew.add(newObserver);
 				}
 			}
 		});
@@ -163,7 +204,7 @@ public class ObserversDialog extends Dialog {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserversDialog.this.hideAll();
-					dumpChanges();
+					undoChanges();
 				}
 			}
 		});
@@ -193,27 +234,82 @@ public class ObserversDialog extends Dialog {
 	}
 	
 	
-	private void retrieveList(){
-		scratchList.clear();
-		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
-	}
+//	private void retrieveList(){
+//		scratchList.clear();
+//		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+//	}
 	
 	private void commitChanges(){
-		ObserverManager.theManager.getTaskObservers().clear();
-		Iterator iterator = scratchList.iterator();
-		while (iterator.hasNext()) {
-			ObserverRoot observer = (ObserverRoot) iterator.next();
-			ObserverManager.theManager.addTaskObserverPrototype(observer);
-		}
+//		ObserverManager.theManager.getTaskObservers().clear();
+//		Iterator iterator = scratchList.iterator();
+//		while (iterator.hasNext()) {
+//			ObserverRoot observer = (ObserverRoot) iterator.next();
+//			ObserverManager.theManager.addTaskObserverPrototype(observer);
+//		}
+		
+
+		scratchOld.clear();
+		scratchNew.clear();
+		
+		ObserverManager.theManager.save();
 	}
 	
-	private void dumpChanges(){
-		scratchList.clear();
-		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+	private void undoChanges(){
+		System.out.println(this + ": ObserversDialog.undoChanges()");
+//		scratchList.clear();
+//		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
+//		
+//		this.scratchNew.clear();
+//		this.scratchOld.clear();
+//		ObserverManager.theManager.getTaskObservers().clear();
+//		Iterator iterator = scratchList.iterator();
+//		while (iterator.hasNext()) {
+//			ObserverRoot observer = (ObserverRoot) iterator.next();
+//			ObserverManager.theManager.addTaskObserverPrototype(observer);
+//		}
+		
+		Iterator a = scratchOld.iterator();
+		Iterator b = scratchNew.iterator();
+		
+		ObserverRoot oldObserver;
+		ObserverRoot newObserver;
+		
+		while(a.hasNext()){
+			oldObserver = (ObserverRoot) a.next();
+			newObserver = (ObserverRoot) b.next();
+
+			if(oldObserver != null && newObserver == null){
+				//Observer was removed
+//				ObserverManager.theManager.removeTaskObserverPrototype(oldObserver);
+				ObserverManager.theManager.addTaskObserverPrototype(oldObserver);
+				continue;
+			}
+			
+			if(oldObserver == null && newObserver != null){
+				//Observer was added
+//				ObserverManager.theManager.addTaskObserverPrototype(newObserver);
+				ObserverManager.theManager.removeTaskObserverPrototype(newObserver);
+				continue;
+			}
+			
+			if(oldObserver != null && newObserver != null){
+				//Observer was edited
+//				ObserverManager.theManager.swapTaskObserverPrototype(oldObserver, newObserver);
+				ObserverManager.theManager.swapTaskObserverPrototype(newObserver, oldObserver);
+				continue;
+			}
+			
+			throw new RuntimeException("invalid combination\noldObserver = " + oldObserver + "\nnewObserver = " + newObserver);
+		}
+				
+		scratchOld.clear();
+		scratchNew.clear();
+
 	}
 
-	public int run(){
-		this.retrieveList();
-		return super.run();
-	}
+//	public int run(){
+//		this.retrieveList();
+//		return super.run();
+//	}
+
 }
