@@ -677,6 +677,55 @@ public class TestLib
     }
 
     /**
+     * Creates an attached process halted at it's first instruction
+     * (just after the exec call to start it running).
+     */
+    protected class AttachedDaemonProcess
+    {
+	final Task mainTask;
+	TaskObserver.Execed execBlockingObserver;
+	/**
+	 * Create an attached process blocked at it's entry-point
+	 * (i.e., just after the exec).
+	 */
+	AttachedDaemonProcess (String[] argv)
+	{
+	    // Create the child.
+	    AckProcess child = new DetachedAckProcess (null, argv);
+	    this.mainTask = child.findTaskUsingRefresh (true);
+	    // Create and add an exec observer that blocks the task.
+	    class ExecBlockingObserver
+		extends TaskObserverBase
+		implements TaskObserver.Execed
+	    {
+		public void addedTo (Object o)
+		{
+		    super.addedTo (o);
+		    Manager.eventLoop.requestStop ();
+		}
+		public Action updateExeced (Task task)
+		{
+		    Manager.eventLoop.requestStop ();
+		    return Action.BLOCK;
+		}
+	    }
+	    execBlockingObserver = new ExecBlockingObserver ();
+	    mainTask.requestAddExecedObserver (execBlockingObserver);
+	    assertRunUntilStop ("add exec observer to AttachedDaemonProcess");
+	    // Run to the exec call.
+	    Signal.tkill (mainTask.getTid (), execSig);
+	    assertRunUntilStop ("run to exec");
+	}
+	/**
+	 * Resume the attached process.
+	 */
+	void resume ()
+	{
+	    mainTask.requestUnblock (execBlockingObserver);
+	}
+    }
+
+    /**
      * A Task set.
      *
      * In addition to methods for managing the set, there is a method

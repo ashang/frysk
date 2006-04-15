@@ -107,11 +107,11 @@ public class TestTaskTerminateObserver
 	new StopEventLoopWhenChildProcRemoved ();
 
 	// Start the program.
-	host.requestCreateAttachedProcXXX
-	    (new String[] {
+	new AttachedDaemonProcess (new String[]
+	    {
 		getExecPrefix () + "funit-exit",
 		Integer.toString (expected)
-	    });
+	    }).resume ();
 
 	assertRunUntilStop ("run \"exit\" to exit");
 

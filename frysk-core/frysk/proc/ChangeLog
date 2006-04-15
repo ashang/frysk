@@ -1,5 +1,14 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AttachedDaemonProcess): New class.
+	* TestTaskObserverBlocked.java: Simplify, explicitly attach the
+	blocked observer.
+	* TestTaskObserver.java: Use AttachedDaemonProcess.
+	* TestModify.java: Use AttachedDaemonProcess.
+	* TestI386Regs.java: Use AttachedDaemonProcess.
+	* TestI386Modify.java: Use AttachedDaemonProcess.
+	* TestTaskTerminateObserver.java: Use AttachedDaemonProcess.
+
 	* TestExec.java (ExecBlockCounter): Based on ExecCounter.
 	(testProcBlockExec, testTaskBlockExec): Replace testProcExec, and
 	testTaskExec.

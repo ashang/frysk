@@ -197,10 +197,10 @@ public class TestModify
 	}
 	TestModifyInternals t = new TestModifyInternals ();
 	// Create program making syscalls
-	host.requestCreateAttachedProcXXX ( new String[]
+	new AttachedDaemonProcess (new String[]
 	    {
 		getExecPrefix () + "funit-modify"
-	    });
+	    }).resume ();
 
 	assertRunUntilStop ("run \"modify\" to exit");
 

@@ -87,11 +87,11 @@ public class TestTaskObserver
 	}
 	AddToAttached addToAttached = new AddToAttached ();
 
-	host.requestCreateAttachedProcXXX
-	    (new String[] {
+	new AttachedDaemonProcess (new String[]
+	    {
 		getExecPrefix () + "funit-exit",
 		"0"
-	    });
+	    }).resume ();
 	assertRunUntilStop ("run \"exit\" to exit");
 
 	assertEquals ("number of times attached", 1,

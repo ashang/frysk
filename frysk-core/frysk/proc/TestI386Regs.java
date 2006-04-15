@@ -171,11 +171,10 @@ public class TestI386Regs
 	}
 	TestI386RegsInternals t = new TestI386RegsInternals ();
  	// Create program making an exit syscall");
-	host.requestCreateAttachedProcXXX
-	    (new String[] {
+	new AttachedDaemonProcess (new String[]
+	    {
 		getExecPrefix () + "funit-ia32-regs"
-	    });
-
+	    }).resume ();
  	assertRunUntilStop ("run \"x86regs\" until exit");
 
 	if (t.ia32Isa) {

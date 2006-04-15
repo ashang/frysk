@@ -61,14 +61,10 @@ public class TestTaskObserverBlocked
 	// shut down the event loop.  Accumulate all blocked tasks in
 	// the TaskObserverBase's task set.
 	class BlockAttached
-	    extends AutoAddTaskObserverBase
+	    extends TaskObserverBase
 	    implements TaskObserver.Attached
 	{
 	    TaskSet attachedTasks = new TaskSet ();
-	    void updateTaskAdded (Task task)
-	    {
-		task.requestAddAttachedObserver (this);
-	    }
 	    public Action updateAttached (Task task)
 	    {
 		attachedTasks.add (task);
@@ -80,11 +76,9 @@ public class TestTaskObserverBlocked
 
 	// Run a program, any program so that blockedAttached has
 	// something to block.
-	host.requestCreateAttachedProcXXX
-	    (new String[] {
-		getExecPrefix () + "funit-exit",
-		"0"
-	    });
+	AckProcess child = new DetachedAckProcess ();
+	Task mainTask = child.findTaskUsingRefresh (true);
+	mainTask.requestAddAttachedObserver (blockAttached);
 	assertRunUntilStop ("run \"exit\" to exit");
 
 	// That one task was blocked.

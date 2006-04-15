@@ -201,11 +201,10 @@ public class TestI386Modify
 	}
 	TestI386ModifyInternals t = new TestI386ModifyInternals ();
 	// Create program making syscalls
-	host.requestCreateAttachedProcXXX ( new String[]
+	new AttachedDaemonProcess (new String[]
 	    {
 		getExecPrefix () + "funit-ia32-modify"
-	    });
-
+	    }).resume ();
 	assertRunUntilStop ("run \"x86modify\" to exit");
 
 	if (t.ia32Isa) {
