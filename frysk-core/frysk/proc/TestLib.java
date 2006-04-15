@@ -968,25 +968,6 @@ public class TestLib
     }
 
     /**
-     * Count the number of task exec calls.
-     */
-    protected class ExecCounter
-	extends AutoAddTaskObserverBase
-	implements TaskObserver.Execed
-    {
-	int numberExecs;
-	public Action updateExeced (Task task)
-	{
-	    numberExecs++;
-	    return Action.CONTINUE;
-	}
-	void updateTaskAdded (Task task)
-	{
-	    task.requestAddExecedObserver (ExecCounter.this);
-	}
-    }
-
-    /**
      * Compute the Fibonacci number of N.  The class contains both the
      * computed value, and the number of resursive calls required to
      * compute that value.

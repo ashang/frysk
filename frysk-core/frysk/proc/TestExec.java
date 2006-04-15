@@ -39,6 +39,8 @@
 
 package frysk.proc;
 
+import frysk.sys.Signal;
+
 /**
  * Test the exec event.
  *
@@ -50,27 +52,59 @@ public class TestExec
     extends TestLib
 {
     /**
-     * A simple (single threaded) program performs an exec, check it
-     * is correctly tracked.
+     * Count the number of task exec calls.
      */
-    public void testProcExec ()
+    protected class ExecBlockCounter
+	extends TaskObserverBase
+	implements TaskObserver.Execed
     {
-	ExecCounter execCounter = new ExecCounter ();
-	new StopEventLoopWhenChildProcRemoved ();
+	int numberExecs;
+	public Action updateExeced (Task task)
+	{
+	    numberExecs++;
+	    Manager.eventLoop.requestStop ();
+	    return Action.BLOCK;
+	}
+	public void addedTo (Object obj)
+	{
+	    super.addedTo (obj);
+	    Manager.eventLoop.requestStop ();
+	}
+	ExecBlockCounter (Task task)
+	{
+	    task.requestAddExecedObserver (this);
+	}
+    }
 
-	// Create a temp file, the exec will remove.  That way it's
-	// possible to confirm that the exec did work.
+    /**
+     * A simple (single threaded) program performs an exec, check that
+     * the exec blocks and resumes the process.
+     */
+    public void testProcBlockExec ()
+    {
+	// Create a temp file that the exec'd program will remove.
+	// That way it's possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
-	host.requestCreateAttachedProc
-	    (null, "/dev/null", null,
-	     new String[] {
-		getExecPrefix () + "funit-syscall-exec",
-		"/bin/rm", tmpFile.toString (),
-	    });
+	AckProcess child = new DetachedAckProcess
+	    (null, new String[] { "/bin/rm", tmpFile.toString (), });
+	Task task = child.findTaskUsingRefresh (true);
 
-	assertRunUntilStop ("run \"exec\" until exit");
+	// Create an exec observer attatched to Task, forcing an
+	// attach.
+	ExecBlockCounter execBlockCounter = new ExecBlockCounter (task);
+	assertRunUntilStop ("add execBlockCounter");
 
-	assertEquals ("number of execs", 1, execCounter.numberExecs);
+	// Trigger the exec, when it occures the task will be blocked.
+	Signal.tkill (task.getTid (), execSig);
+	assertRunUntilStop ("wait for exec");
+	assertTrue ("tmp file exists", tmpFile.stillExists ());
+
+	// Unblock the process, let it exit.
+	new StopEventLoopWhenChildProcRemoved ();
+	task.requestUnblock (execBlockCounter);
+	assertRunUntilStop ("wait for exec program exit");
+
+	assertEquals ("number of execs", 1, execBlockCounter.numberExecs);
 	assertFalse ("tmp file exists", tmpFile.stillExists ());
     }
 
@@ -81,25 +115,34 @@ public class TestExec
      * This case is messy, the exec blows away all but the exec task,
      * making the exec task the new main task.
      */
-    public void testTaskExec ()
+    public void testTaskBlockExec ()
     {
 	TaskCounter taskCounter = new TaskCounter (true);
-	ExecCounter execCounter = new ExecCounter ();
-	new StopEventLoopWhenChildProcRemoved ();
 
 	// Create a temp file, the exec will remove.  That way it's
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
-	host.requestCreateAttachedProc
-	    (null, "/dev/null", null,
-	     new String[] {
-		getExecPrefix () + "funit-syscall-threadexec",
-		"/bin/rm", tmpFile.toString (),
-	    });
+	AckProcess child = new DetachedAckProcess
+	    (null, new String[] { "/bin/rm", tmpFile.toString (), });
+	child.addClone ();
+	Task mainTask = child.findTaskUsingRefresh (true);
+	Task clone = child.findTaskUsingRefresh (false);
 
-	assertRunUntilStop ("run \"threadexec\" to exit");
+	// Add an exec observer causing the task to be attached.
+	ExecBlockCounter execBlockCounter = new ExecBlockCounter (mainTask);
+	assertRunUntilStop ("add exec observer to mainTask");
 
-	assertEquals ("number of child exec's", 1, execCounter.numberExecs);
+	// Trigger the exec
+	Signal.tkill (clone.getTid (), execSig);
+	assertRunUntilStop ("wait for exec");
+
+	// Set things up to stop once the exec task exits.
+	new StopEventLoopWhenChildProcRemoved ();
+	mainTask.requestUnblock (execBlockCounter);
+	assertRunUntilStop ("wait for exec program exit");
+
+	assertEquals ("number of child exec's", 1,
+		      execBlockCounter.numberExecs);
 	assertEquals ("number of child tasks created", 2,
 		      taskCounter.added.size ());
 	// The exec makes one task disappear.
