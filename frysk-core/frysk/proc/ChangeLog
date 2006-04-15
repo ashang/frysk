@@ -1,5 +1,10 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java: New, not enabled.
+	* TestSyscall.java: Delete.
+	* TestSyscallOpen.java: Delete.
+	* TestSyscall2.java: Delete.
+
 	* TestLib.java (AttachedDaemonProcess): New class.
 	* TestTaskObserverBlocked.java: Simplify, explicitly attach the
 	blocked observer.
