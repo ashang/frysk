@@ -43,6 +43,7 @@ SUFFIXES =
 BUILT_SOURCES = 
 CLEANFILES = $(BUILT_SOURCES)
 noinst_PROGRAMS =
+noinst_DATA =
 bin_PROGRAMS =
 sbin_PROGRAMS =
 libexec_PROGRAMS =
@@ -434,7 +435,6 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 .fig.txt:
 	mkdir -p `dirname $@`
 	echo "@center See the @sc{pdf} or @sc{html} documentation." > $@
-BUILT_SOURCES += $(GEN_FIG:.fig=.jpg)
 
 
 # Add some needed files to the distribution, include $(srcdir) so that

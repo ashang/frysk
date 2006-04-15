@@ -515,15 +515,18 @@ do
   echo EXTRA_DIST += ${file}
 done
 
-# Form a list of all the .fig files, they need to be compiled into
-# .jpg.
+# For all .fig files, add the corresponding .jpg file to what needs to
+# be built as DATA.
 
-print_header "... GEN_FIG = .fig"
-echo GEN_FIG =
+print_header "... .fig.jpg:"
 find ${dirs} -type f -name '*.fig' | while read f
 do
-  echo GEN_FIG += $f
+  d=`dirname ${f}`
+  b=`basename ${f} .fig`
+  jpg=$d/$b.jpg
   echo EXTRA_DIST += $f
+  echo CLEANFILES += $jpg
+  echo noinst_DATA += $jpg
 done
 
 # Form a list of all the antlr generated files.

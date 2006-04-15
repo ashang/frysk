@@ -1,5 +1,10 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh (.fig.jpg): Append .jpg files to CLEANFILES, and
+	noinst_DATA.
+	* Makefile.rules (BUILT_SOURCES): Do not append $(GEN_FIG) files.
+	(noinst_DATA): Define.
+	
 	* Makefile.gen.sh (BUILT_SOURCES): Instead of adding
 	nodist_lib_sources, explicitly add generated .java files.
 
