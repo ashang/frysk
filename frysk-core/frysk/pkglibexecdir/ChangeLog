@@ -1,3 +1,11 @@
+2006-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* funit.xml: Add reference to funit-exec, and funit-child.
+	* util.h: #include <stdlib.h>.
+	* funit-child.c: Re-implement exec, so that it can exec a program
+	specified as an argument.
+	* funit-exec.c, funit-exec.xml: New files.
+
 2006-03-20  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-child.c (notify_manager): Always print the trace message.

@@ -243,7 +243,7 @@ public class TestExec
 	}
 
 	// Create an unattached child process.
-	AckProcess child = new DetachedAckProcess("funit-child-alias");
+	AckProcess child = new DetachedAckProcess ("funit-child-alias", null);
 
 	Proc proc = child.findProcUsingRefresh (true);
 	ExecChildObserver execObserverParent = new ExecChildObserver ();
@@ -268,7 +268,7 @@ public class TestExec
 	child.addClone ();
 	child.addClone ();
 
-	String beforeCmdLine = proc.getCmdLine ()[1];
+	String[] beforeCmdLine = proc.getCmdLine ();
 	String beforeCommand = proc.getCommand ();
 	
 	Task childtask = child.findTaskUsingRefresh (false);
@@ -276,7 +276,7 @@ public class TestExec
 	child.exec (childtask.getTid ());
 
 	assertEquals ("task after attached multiple clone exec", proc,
-		    task.getProc()); // parent/child relationship
+		      task.getProc()); // parent/child relationship
 	assertTrue ("task after attached multiple clone exec",
 		    proc.getPid () == task.getTid ());
 	
@@ -290,9 +290,9 @@ public class TestExec
 
 	assertEquals ("number of children", proc.getChildren ().size (), 0);
 	assertEquals ("proc's getCommand after exec", proc.getCommand (), "funit-child-ali");
-	assertTrue ("proc's getCommand before/after exec",
-		    beforeCommand.compareTo (proc.getCommand ()) != 0);
-	assertTrue ("proc's getCmdLine before/after exec",
-		    beforeCmdLine.compareTo (proc.getCmdLine ()[1]) != 0);
+	assertFalse ("proc's getCommand before/after exec equals",
+		     beforeCommand.equals (proc.getCommand ()));
+	assertFalse ("proc's getCmdLine[0] before/after exec equals",
+		     beforeCmdLine[0].equals (proc.getCmdLine ()[0]));
     }
 }

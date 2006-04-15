@@ -63,11 +63,14 @@ static void usage ()
 {
   printf ("\
 Usage:\n\
-  child [ <options> ] <sleep> [ <pid> ]\n\
+  child [ <options> ] <timeout> <manager-tid> [ <exec-argv> ...]\n\
 Where:\n\
-  <sleep>      Number of seconds that the program should sleep\n\
-               before exiting.\n\
-  <pid>        Manager process to send task acknowledgments to.\n\
+  <timeout>        Number of seconds that the program should sleep\n\
+                   before exiting.\n\
+  <manager-tid>    Manager thread to send task acknowledgments to,\n\
+                   or 0 indicating send no acknowledgments.\n\
+  <exec-argv>      Optional program and arguments to exec, by default\n\
+                   this program, with identical aguments, will be execed.\n\
 And valid options are:\n\
   --wait=busy-loop\n\
                Use a busy-loop loop, instead of sigsuspend when\n\
@@ -195,11 +198,11 @@ handler (int sig)
 
 int use_busy_wait = 0;
 int main_pid;
-char *main_filename;
-char **main_argv;
-char **main_envp;
-int main_alarm;
+int timeout;
 sigset_t sigmask;
+char *exec_program;
+char **exec_argv;
+char **exec_envp;
 
 void *
 server (void *np)
@@ -215,10 +218,10 @@ server (void *np)
   // Find THIS tasks tiddle entry.
   tiddle = new_tiddle ();
 
-  // If the main thread, set up a timer so that in MAIN_ALARM seconds,
+  // If the main thread, set up a timer so that in TIMEOUT seconds,
   // the program receives a SIGALARM causing the program to exit.
   if (tiddle->pid == tiddle->tid)
-    alarm (main_alarm);
+    alarm (timeout);
 
   // If a child processes' main thread finds that it's parent exits,
   // get a SIGPIPE.
@@ -396,20 +399,25 @@ server (void *np)
 	// after the SIGFPE code has notified the manager that it's
 	// part is finished.
 	OK (pthread_mutex_lock, (&tids_mutex));
-	const int ARGN = 7;
-	char **argv = calloc (ARGN, sizeof (const char *));
-	asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
-	asprintf (&argv[1], "--wait=%s", use_busy_wait ? "busy-loop" : "suspend");
-	asprintf (&argv[2], "--filename=%s", main_filename);
-	int argi;
-	for (argi = 0; main_argv[argi] != NULL; argi++)
-	  argv[3 + argi] = main_argv[argi];
-	argv[3 + argi] = NULL;
-	if (ARGN <= 3 + argi)
-	  fatal ("argument overflow");
-	trace ("exec from %d:%d, argv[0]=%s argv[1]=%s argv[2]=%s",
-		getpid (), gettid (), argv[0], argv[1], argv[2]); 
-	execve (main_filename, argv, main_envp);
+	char **argv;
+	if (exec_argv != NULL) {
+	  argv = exec_argv;
+	  trace ("execing %s argv[0]=%s ...", exec_program, argv[0]);
+	}
+	else {
+	  const int ARGN = 6;
+	  argv = calloc (ARGN, sizeof (const char *));
+	  asprintf (&argv[0], "%d:%d", tiddle->pid, tiddle->tid);
+	  asprintf (&argv[1], "--wait=%s", use_busy_wait ? "busy-loop" : "suspend");
+	  asprintf (&argv[2], "--filename=%s", exec_program);
+	  asprintf (&argv[3], "%d", timeout);
+	  asprintf (&argv[4], "%d", manager_tid);
+	  argv[5] = NULL;
+	  trace ("execing %s argv[0]=%s argv[1]=%s argv[2]=%s argv[3]=%s argv[4]=%s",
+		 exec_program,
+		 argv[0], argv[1], argv[2], argv[3], argv[4]);
+	}
+	execve (exec_program, argv, exec_envp);
 	// Any execve return is an error.
 	pfatal ("execve");
       }
@@ -424,38 +432,46 @@ int
 main (int argc, char *argv[], char *envp[])
 {
   int argi;
-  const char FILENAME_OPT[] = "--filename=";
-
-  main_filename = argv[0];
-  main_pid = getpid ();
-  main_argv = argv;
-  main_envp = envp;
-
   for (argi = 0; argi < argc; argi++)
     trace ("argv[%d]=%s", argi, argv[argi]);
 
+  main_pid = getpid ();
+  exec_program = NULL;
+  exec_argv = NULL;
+  exec_envp = envp;
+
   // Parse any arguments; do it on the cheap.
-  for (main_argv++; *main_argv != NULL; main_argv++) {
-    if (strcmp (*main_argv, "--wait=busy-loop") == 0)
+  for (argi = 1; argi < argc; argi++) {
+    static const char FILENAME_OPT[] = "--filename=";
+    char *arg = argv[argi];
+    if (strcmp (arg, "--wait=busy-loop") == 0)
       use_busy_wait = 1;
-    else if (strcmp (*main_argv, "--wait=suspend") == 0)
+    else if (strcmp (arg, "--wait=suspend") == 0)
       use_busy_wait = 0;
-    else if (strncmp (*main_argv, FILENAME_OPT, strlen (FILENAME_OPT)) == 0)
-      main_filename = *main_argv + strlen (FILENAME_OPT);
+    else if (strncmp (arg, FILENAME_OPT, strlen (FILENAME_OPT)) == 0)
+      exec_program = arg + strlen (FILENAME_OPT);
     else
       break;
   }
 
-  // Too few, too many, parameters?
-  if (argv + argc <= main_argv
-      || argv + argc > main_argv + 2) {
+  // Grab the required timeout and pid.
+  if (argi + 2 > argc) {
     usage ();
     exit (1);
   }
-  main_alarm = atol (main_argv[0]);
+  timeout = atol (argv[argi++]);
+  manager_tid = atoi (argv[argi++]);
 
-  if (main_argv[1] != NULL)
-    manager_tid = atol (main_argv[1]);
+  // Grab the exec-argv.
+  if (argi < argc)
+    exec_argv = argv + argi;
+  // Give the exec-program a value, if not explicitly specified.
+  if (exec_program == NULL) {
+    if (exec_argv != NULL)
+      exec_program = exec_argv[0];
+    else
+      exec_program = argv[0];
+  }  
 
   // Disable buffering; tell the world the pid.
   setbuf (stdout, NULL);

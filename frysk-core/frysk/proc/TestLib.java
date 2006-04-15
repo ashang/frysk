@@ -384,14 +384,35 @@ public class TestLib
     }
 
     /**
+     * Build an funit-child command to run.
+     */
+    private static String[] funitChildCommand (boolean busy,
+					       String filename,
+					       String[] argv)
+    {
+	List command = new LinkedList ();
+	final String sleepTime = "10";
+	command.add (getExecPrefix () + "funit-child");
+	command.add (busy ? "--wait=busy-loop" : "--wait=suspend");
+	if (filename != null)
+	    command.add ("--filename=" + getExecPrefix () + filename);
+	command.add (sleepTime);
+	// Use getpid as this testsuite always runs the event loop
+	// from the main thread (which has tid==pid).
+	command.add (Integer.toString (Pid.get ()));
+	// Append any arguments.
+	if (argv != null)
+	    for (int n = 0; n < argv.length; n++)
+		command.add (argv[n]);
+	return (String[]) command.toArray (new String[0]);
+    }
+    /**
      * Create an ack-process that can be manipulated using various
      * signals (see below).
      */
     protected abstract class AckProcess
 	extends Child
     {
-	static final String sleepTime = "10";
-
 	private AckProcess (Sig ack, String[] argv)
 	{
 	    super (ack, argv);
@@ -399,15 +420,7 @@ public class TestLib
 	/** Create an ack process.  */
 	AckProcess ()
 	{
-	    this (childAck, new String[]
-		{
-		    getExecPrefix () + "funit-child",
-		    sleepTime,
-		    // Use getpid as this testsuite always runs the
-		    // event loop from the main thread (which has
-		    // tid==pid).
-		    Integer.toString (Pid.get ()),
-		});
+	    this (childAck, funitChildCommand (false, null, null));
 	}
 	/**
 	 * Create an AckProcess; if BUSY, the process will use a
@@ -416,33 +429,15 @@ public class TestLib
 	 */
 	AckProcess (boolean busy)
 	{
-	    this (childAck, new String[]
-		{
-		    getExecPrefix () + "funit-child",
-		    busy ? "--wait=busy-loop" : "--wait=suspend",
-		    sleepTime,
-		    // Use getpid as this testsuite always runs the
-		    // event loop from the main thread (which has
-		    // tid==pid).
-		    Integer.toString (Pid.get ()),
-		});
+	    this (childAck, funitChildCommand (busy, null, null));
 	}
 	/**
-	 * Create an AckProcess; the process will use FILENAME as the
-	 * program to exec.
+	 * Create an AckProcess; the process will use FILENAME and
+	 * ARGV as the program to exec.
 	 */
-	AckProcess (String filename)
+	AckProcess (String filename, String[] argv)
 	{
-	    this (childAck, new String[]
-		{
-		    getExecPrefix () + "funit-child",
-		    "--filename=" + getExecPrefix () + filename,
-		    sleepTime,
-		    // Use getpid as this testsuite always runs the
-		    // event loop from the main thread (which has
-		    // tid==pid).
-		    Integer.toString (Pid.get ()),
-		});
+	    this (childAck, funitChildCommand (false, filename, argv));
 	}
 	/** Create an AckProcess, and then add COUNT threads.  */
 	AckProcess (int count)
@@ -592,9 +587,9 @@ public class TestLib
 	{
 	    super ();
 	}
-	DetachedAckProcess (String filename)
+	DetachedAckProcess (String filename, String[] argv)
 	{
-	    super (filename);
+	    super (filename, argv);
 	}
 	/**
 	 * Create a detached process that is a child of this one.

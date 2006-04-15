@@ -51,34 +51,37 @@
 <refentry id="funit">
 
   <refentryinfo>
-    <title>funit</title>
-    <date>5 February 2006</date>
+    <title>funit-exec</title>
+    <date>14 April 2006</date>
   </refentryinfo>
   
   <refmeta>
-    <refentrytitle>funit</refentrytitle>
+    <refentrytitle>funit-exec</refentrytitle>
     <manvolnum>8</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>funit</refname>
-    <refpurpose>runs frysk's JUnit testsuite</refpurpose>
+    <refname>funit-exec</refname>
+    <refpurpose>Slave program for frysk's JUnit tests</refpurpose>
   </refnamediv>
   
   <refsynopsisdiv>
     <cmdsynopsis>
-      <command>funit</command>
+      <command>@pkglibexecdir@/funit-exec</command>
       <arg choice="opt">
-        <option>-r <replaceable>repeat-count</replaceable></option>
+        <option>-<replaceable>N</replaceable></option>
       </arg>
-      <arg choice="opt">
-        <option>-c <replaceable>console-log-level</replaceable></option>
+      <arg choice="req">
+        <replaceable>tid</replaceable>
       </arg>
-      <arg choice="opt">
-        <option>-l <replaceable>log-level</replaceable></option>
+      <arg choice="req">
+        <replaceable>signal</replaceable>
       </arg>
-      <arg choice="opt">
-        <option><replaceable>test-class</replaceable> ...</option>
+      <arg choice="req">
+        <replaceable>seconds</replaceable>
+      </arg>
+      <arg choice="req">
+        <replaceable>program ...</replaceable>
       </arg>
     </cmdsynopsis>
   </refsynopsisdiv>
@@ -86,35 +89,53 @@
   <refsect1>
     <title>DESCRIPTION</title>
 
-    <para> <function>funit</function> runs frysk's entire JUnit
-    testsuite, or just the specified
-    <replaceable>test-class</replaceable>s. </para>
+    <para>Creates the specified number of threads, sends the
+    <replaceable>signal</replaceable> to thread
+    <replaceable>tid</replaceable>, and then sleeps for
+    <replaceable>seconds</replaceable>.  Sending the signal SIGUSR1 to
+    a thread will cause that thread to execute
+    <replaceable>program</replaceable> using exec.  Sending the signal
+    SIGUSR2 will cause a random non-main thread to exec
+    <replaceable>program</replaceable></para>
 
-    <para> Frysk's JUnit testsuite, in addition to testing frysk's
-    internals, tests the stability of the underlying kernel. </para>
+    <para>This program is used by <function>funit</function>, as part
+    of frysk's JUnit testsuite.</para>
 
     <variablelist>
       <varlistentry>
-	<term>-r <replaceable>repeat-count</replaceable></term>
-	<listitem>
-          <para> Run the JUnit tests
-          <replaceable>repeat-count</replaceable> times. </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-	<term>-c <replaceable>console-log-level</replaceable></term>
-	<listitem>
-          <para> Enable logging to the console and at the specified
-          log level.  </para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-	<term>-l <replaceable>log-level</replaceable></term>
-	<listitem>
-          <para> Specify the file logging level. </para>
-        </listitem>
+	<term><option>-<replaceable>N</replaceable></option></term>
+	<listitem><para>Number of threads to create (default none).</para></listitem>
       </varlistentry>
     </variablelist>
+
+    <variablelist>
+      <varlistentry>
+	<term><replaceable>tid</replaceable></term>
+	<listitem><para>Thread ID to send <replaceable>signal</replaceable> to once all threads have been created.</para></listitem>
+      </varlistentry>
+    </variablelist>
+
+    <variablelist>
+      <varlistentry>
+	<term><replaceable>signal</replaceable></term>
+	<listitem><para>The signal to send to <replaceable>tid</replaceable> once all threads have been started.</para></listitem>
+      </varlistentry>
+    </variablelist>
+
+    <variablelist>
+      <varlistentry>
+	<term><replaceable>seconds</replaceable></term>
+	<listitem><para>Number of seconds to wait before the program exits.</para></listitem>
+      </varlistentry>
+    </variablelist>
+
+    <variablelist>
+      <varlistentry>
+	<term><replaceable>program ...</replaceable></term>
+	<listitem><para>Program to execute on receipt of SIGUSR1.</para></listitem>
+      </varlistentry>
+    </variablelist>
+
   </refsect1>
   
   <!-- refsect1>
@@ -139,7 +160,9 @@
   
   <refsect1>
     <title>EXAMPLE</title>
-    <screen>@pkglibexecdir@/funit</screen>
+    <para>Create a process that, on receipt of SIGUSR1, will exec
+    <function>/bin/echo</function>.</para>
+    <screen>@pkglibexecdir@/funit-child $$ 0 100 /bin/echo hello</screen>
   </refsect1>
    
   <!-- refsect1>

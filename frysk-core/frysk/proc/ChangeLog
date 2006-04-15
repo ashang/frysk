@@ -1,3 +1,10 @@
+2006-04-15  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (funitChildCommand): New function.
+	(AckProcess): Use funitChildCommand to construct program to run.
+	* TestExec.java (testAttachedMultipleChildExec): Check that the
+	first command line argument changes, not the second.
+
 2006-04-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestTaskObserverDetach.java: Enable accidentally disabled tests.
