@@ -1,7 +1,7 @@
 #!/bin/sh -eu
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -273,8 +273,6 @@ cat <<EOF
 noinst_LIBRARIES += lib${GEN_DIRNAME}.a
 ${sources} =
 ${nodist_lib_sources} =
-# Ensure generated files are all built early.
-BUILT_SOURCES += \${${nodist_lib_sources}}
 GEN_GCJ_LDADD += lib${GEN_DIRNAME}.a
 
 # Compile the .a into a .so; Makefile.rules contains the rule and does
@@ -307,6 +305,7 @@ EOF
 cat <<EOF
 EXTRA_DIST += common/Build.javain
 ${nodist_lib_sources} += ${GEN_SOURCENAME}/Build.java
+BUILT_SOURCES += ${GEN_SOURCENAME}/Build.java
 EOF
 
 
@@ -317,6 +316,7 @@ EXTRA_DIST += common/TestRunner.javain
 nodist_TestRunner_SOURCES = TestRunner.java
 CLEANFILES += TestRunner.java
 ${nodist_lib_sources} += ${GEN_SOURCENAME}/JUnitTests.java
+BUILT_SOURCES += ${GEN_SOURCENAME}/JUnitTests.java
 TestRunner_LDADD = \${LIBJUNIT} \${GEN_GCJ_LDADD}
 TESTS += TestRunner
 noinst_PROGRAMS += TestRunner
@@ -335,6 +335,7 @@ for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
 	b=`basename ${file} ${suffix}`
 	echo "EXTRA_DIST += ${file}"
 	echo "${nodist_lib_sources} += ${d}/${b}.java"
+	echo "BUILT_SOURCES += ${d}/${b}.java"
 	case "${suffix}" in
 	    *java ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
 	    *enum ) echo "${d}/${b}.java: \$(MKENUM)" ;;
@@ -538,6 +539,7 @@ do
   ) | while read c
   do
     echo "${nodist_lib_sources} += $d/$c.java"
+    echo "BUILT_SOURCES += $d/$c.java"
     echo "EXTRA_DIST += $d/$c.sed"
     t=$d/$c.tmp
     echo "CLEANFILES += $t"
