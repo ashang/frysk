@@ -802,6 +802,13 @@ class TaskState
 	{
 	    return "BlockedSignal,sig=" + sig;
 	}
+	TaskState handleAddObserver (Task task, Observable observable,
+				     Observer observer)
+	{
+	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+	    observable.add (observer);
+	    return this;
+	}
 	TaskState handleUnblock (Task task, TaskObserver observer)
 	{
 	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 

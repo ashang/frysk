@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -59,29 +59,30 @@ public class TestTaskClonedObserver
     public void testTaskCloneObserver ()
     {
 	new StopEventLoopWhenChildProcRemoved ();
+
 	class CloneCounter
-	    extends AutoAddTaskObserverBase
+	    extends TaskObserverBase
 	    implements TaskObserver.Cloned
 	{
 	    int count;
 	    public Action updateCloned (Task task, Task clone)
 	    {
 		count++;
-		return Action.CONTINUE;
-	    }
-	    void updateTaskAdded (Task task)
-	    {
-		task.requestAddClonedObserver (this);
+		clone.requestAddClonedObserver (this);
+		task.requestUnblock (this);
+		clone.requestUnblock (this);
+		return Action.BLOCK;
 	    }
 	}
 	CloneCounter cloneCounter = new CloneCounter ();
 
-	host.requestCreateAttachedProc
-	    (null, "/dev/null", null, new String[] {
+	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
+	    {
 		getExecPrefix () + "funit-fib-clone",
 		Integer.toString (fibCount)
 	    });
-	
+	child.mainTask.requestAddClonedObserver (cloneCounter);
+	child.resume ();
 	assertRunUntilStop ("run \"clone\" to exit");
 
  	Fibonacci fib = new Fibonacci (fibCount);

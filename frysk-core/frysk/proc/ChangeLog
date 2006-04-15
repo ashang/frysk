@@ -1,5 +1,10 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskForkedObserver.java, TestTaskClonedObserver.java:
+	Replace requestCreateAttachedProc with AttachedDaemonProcess.
+	Correctly propogate the observer to offspring.
+	* TaskState (BlockedSignal): Add handleAddObserver. 
+
 	* TestTaskSyscallObserver.java: New, not enabled.
 	* TestSyscall.java: Delete.
 	* TestSyscallOpen.java: Delete.

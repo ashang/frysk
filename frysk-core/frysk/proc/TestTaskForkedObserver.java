@@ -60,7 +60,7 @@ public class TestTaskForkedObserver
 	// Watch for any Task fork events, accumulating them as they
 	// arrive.
 	class ForkObserver
-	    extends AutoAddTaskObserverBase
+	    extends TaskObserverBase
 	    implements TaskObserver.Forked
 	{
 	    int count;
@@ -70,24 +70,22 @@ public class TestTaskForkedObserver
 		// XXX: Is this legit?  Like knowing that the request
 		// won't be processed until the event loop is run
 		// again so that there's no race condition.
+		fork.requestAddForkedObserver (this);
+		fork.requestUnblock (this);
 		task.requestUnblock (this);
 		return Action.BLOCK;
-	    }
-	    void updateTaskAdded (Task task)
-	    {
-		task.requestAddForkedObserver (this);
-		task.requestUnblock (this);
 	    }
 	}
 	ForkObserver forkObserver = new ForkObserver ();
 
 	// Run a program that forks wildly.
-	host.requestCreateAttachedProc
-	    (null, "/dev/null", null, new String[] {
+	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
+	    {
 		getExecPrefix () + "funit-fib-fork",
 		Integer.toString (n)
 	    });
-
+	child.mainTask.requestAddForkedObserver (forkObserver);
+	child.resume ();
 	assertRunUntilStop ("run \"fork\" until exit");
 
 	Fibonacci fib = new Fibonacci (n);
