@@ -324,12 +324,15 @@ public class TestTaskObserverBlocked
      * delete events matches the expected.
      */
     abstract class BlockingFibonacci
-	extends AutoAddTaskObserverBase
+	extends TaskObserverBase
     {
 	static final int fibCount = 10;
 	TaskSet parentTasks = new TaskSet ();
 	TaskSet childTasks = new TaskSet ();
+	/** Program to run.  */
 	abstract String fibonacciProgram ();
+	/** Seed the observer.  */
+	abstract void addFirstObserver (Task task);
 	BlockingFibonacci ()
 	{
 	    // An object that, when the child process exits, both sets
@@ -342,11 +345,14 @@ public class TestTaskObserverBlocked
 	    // main task).
 	    Fibonacci fib = new Fibonacci (fibCount);
 	    
-	    host.requestCreateAttachedProc
-		(null, "/dev/null", null, new String[] {
-		    fibonacciProgram (),
-		    Integer.toString (fibCount)
-		});
+	    AttachedDaemonProcess child = new AttachedDaemonProcess
+		(new String[]
+		    {
+			fibonacciProgram (),
+			Integer.toString (fibCount)
+		    });
+	    addFirstObserver (child.mainTask);
+	    child.resume ();
 	    
 	    // Repeatedly run the event loop until the child exits
 	    // (every time there is a spawn the event loop will stop).
@@ -357,10 +363,8 @@ public class TestTaskObserverBlocked
 		assertRunUntilStop ("run \"fibonacci\" until stop, number "
 				    + spawnCount + " of " + fib.callCount);
 		spawnCount += parentTasks.size ();
-		parentTasks.unblock (this);
-		parentTasks.clear ();
-		childTasks.unblock (this);
-		childTasks.clear ();
+		parentTasks.unblock (this).clear ();
+		childTasks.unblock (this).clear ();
 	    }
 	    
 	    // The first task, included in fib.callCount isn't
@@ -390,10 +394,11 @@ public class TestTaskObserverBlocked
 		killDuringTearDown (clone.getTid ());
 		parentTasks.add (task);
 		childTasks.add (clone);
+		clone.requestAddClonedObserver (this);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
-	    void updateTaskAdded (Task task)
+	    void addFirstObserver (Task task)
 	    {
 		task.requestAddClonedObserver (this);
 	    }
@@ -402,6 +407,7 @@ public class TestTaskObserverBlocked
 		return getExecPrefix () + "funit-fib-clone";
 	    }
 	}
+	new CloneFibonacci ();
     }
     /**
      * Check that a program rapidly cloning can be stopped and started
@@ -418,10 +424,11 @@ public class TestTaskObserverBlocked
 		killDuringTearDown (fork.getTid ());
 		parentTasks.add (task);
 		childTasks.add (fork);
+		fork.requestAddForkedObserver (this);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
-	    void updateTaskAdded (Task task)
+	    void addFirstObserver (Task task)
 	    {
 		task.requestAddForkedObserver (this);
 	    }
@@ -430,6 +437,7 @@ public class TestTaskObserverBlocked
 		return getExecPrefix () + "funit-fib-fork";
 	    }
 	}
+	new ForkFibonacci ();
     }
 
     /**

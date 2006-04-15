@@ -747,16 +747,18 @@ public class TestLib
 	/**
 	 * Add the Task to the Set of Task's.
 	 */
-	void add (Task task)
+	TaskSet add (Task task)
 	{
 	    tasks.add (task);
+	    return this;
 	}
 	/**
 	 * Clear the Task Set.
 	 */
-	void clear ()
+	TaskSet clear ()
 	{
 	    tasks.clear ();
+	    return this;
 	}
 	/**
 	 * Return the number of Task's currently in the Task Set.
@@ -768,12 +770,13 @@ public class TestLib
 	/**
 	 * Unblock all members of the Task Set.
 	 */
-	void unblock (TaskObserver observer)
+	TaskSet unblock (TaskObserver observer)
 	{
 	    for (Iterator i = tasks.iterator (); i.hasNext(); ) {
 		Task task = (Task) i.next ();
 		task.requestUnblock (observer);
 	    }
+	    return this;
 	}
 
     }

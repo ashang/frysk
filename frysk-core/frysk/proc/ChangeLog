@@ -1,5 +1,11 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskObserverBlocked.java (BlockingFibonacci): Replace
+	requestCreateAttachedProc with AttachedDaemonProcess.
+	(testBlockingFibonacciClone, testBlockingFibonacciFork): Update.
+	* TestLib.java (TaskSet): For clear, add, and unblock, return the
+	TaskSet.
+
 	* TestTaskForkedObserver.java, TestTaskClonedObserver.java:
 	Replace requestCreateAttachedProc with AttachedDaemonProcess.
 	Correctly propogate the observer to offspring.
