@@ -53,53 +53,6 @@ import frysk.event.TimerEvent;
 public class TestTaskObserver
     extends TestLib
 {
-    /**
-     * Test that Task observers can be added when the task is in the
-     * running state.
-     */
-    public void testAddObserverToRunning ()
-    {
-	new StopEventLoopWhenChildProcRemoved ();
-	class AddToAttached
-	    extends AutoAddTaskObserverBase
-	    implements TaskObserver.Attached, TaskObserver.Terminated
-	{
-	    void updateTaskAdded (Task task)
-	    {
-		task.requestAddAttachedObserver (this);
-	    }
-	    int attachedCount;
-	    public Action updateAttached (Task task)
-	    {
-		task.requestAddTerminatedObserver (this);
-		attachedCount++;
-		return Action.CONTINUE;
-	    }
-	    int terminatedCount;
-	    public Action updateTerminated (Task task, boolean signal,
-					    int value)
-	    {
-		terminatedCount++;
-		assertEquals ("signal", false, signal);
-		assertEquals ("value", 0, value);
-		return Action.CONTINUE;
-	    }
-	}
-	AddToAttached addToAttached = new AddToAttached ();
-
-	new AttachedDaemonProcess (new String[]
-	    {
-		getExecPrefix () + "funit-exit",
-		"0"
-	    }).resume ();
-	assertRunUntilStop ("run \"exit\" to exit");
-
-	assertEquals ("number of times attached", 1,
-		      addToAttached.attachedCount);
-	assertEquals ("number of times terminated", 1,
-		      addToAttached.terminatedCount);
-    }
-
     /*
      * Create an observer that records when it is attached or
      * detached.

@@ -820,40 +820,6 @@ public class TestLib
     }
 
     /**
-     * A TaskObserver base class that, in addition, tracks descendant
-     * processes and tasks as they are added.  The sub-class is
-     * notified of each new Task as it arrives.
-     */
-    abstract class AutoAddTaskObserverBase
-	extends TaskObserverBase
-    {
-	/**
-	 * Create a TaskObserver, that in addition, registers itself
-	 * with the TaskAdded observable so that added tasks can be
-	 * tracked.
-	 */
-	AutoAddTaskObserverBase ()
-	{
-	    Manager.host.observableTaskAddedXXX.addObserver (new Observer ()
-		{
-		    public void update (Observable obj, Object o)
-		    {
-			Task task = (Task) o;
-			if (isDescendantOfMine (task.proc)) {
-			    logger.log (Level.FINE, "{0} updateTaskAdded\n",
-					this);
-			    updateTaskAdded (task);
-			}
-		    }
-		});
-	}
-	/**
-	 * A new task appeared, notify the sub-class of the update.
-	 */
-	abstract void updateTaskAdded (Task task);
-    }
-
-    /**
      * Manipulate a temporary file..
      *
      * Creates a temporary file that is automatically removed on test

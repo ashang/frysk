@@ -1,5 +1,10 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (AutoAddTaskObserver): Move from here ...
+	* TestRun.java (AutoAddTaskObserver): ... to here.
+	* TestTaskObserver.java (testAddObserverToRunning): Delete,
+	redundant.
+
 	* TestTaskSyscallObserver.java: Delete unused imports.
 
 	* TestTaskTerminateObserver.java: Eliminate use of
