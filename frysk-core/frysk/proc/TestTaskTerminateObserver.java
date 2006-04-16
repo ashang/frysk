@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -54,23 +54,9 @@ public class TestTaskTerminateObserver
      * Save the Terminating, and Terminated values as they pass by.
      */
     class Terminate
-	extends AutoAddTaskObserverBase
+	extends TaskObserverBase
 	implements TaskObserver.Terminating, TaskObserver.Terminated
     {
-	boolean terminatingP;
-	boolean terminatedP;
-	Terminate (int terminating, int terminated)
-	{
-	    terminatingP = (terminating != INVALID);
-	    terminatedP = (terminated != INVALID);
-	}
-	void updateTaskAdded (Task task)
-	{
-	    if (terminatedP)
-		task.requestAddTerminatedObserver (this);
-	    if (terminatingP)
-		task.requestAddTerminatingObserver (this);
-	}
 	int terminating = INVALID;
 	int terminated = INVALID;
 	public Action updateTerminating (Task task, boolean signal,
@@ -99,20 +85,23 @@ public class TestTaskTerminateObserver
      */
     public void check (int expected, int terminating, int terminated)
     {
-	// Set up an observer that watches for both Terminating and
-	// Terminated events.
-	final Terminate terminate = new Terminate (terminating, terminated);
-	
 	// Bail once it has exited.
 	new StopEventLoopWhenChildProcRemoved ();
 
 	// Start the program.
-	new AttachedDaemonProcess (new String[]
+	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
 	    {
 		getExecPrefix () + "funit-exit",
 		Integer.toString (expected)
-	    }).resume ();
-
+	    });
+	// Set up an observer that watches for both Terminating and
+	// Terminated events.
+	Terminate terminate = new Terminate ();
+	if (terminated != INVALID)
+	    child.mainTask.requestAddTerminatedObserver (terminate);
+	if (terminating != INVALID)
+	    child.mainTask.requestAddTerminatingObserver (terminate);
+	child.resume ();
 	assertRunUntilStop ("run \"exit\" to exit");
 
 	assertEquals ("terminating value", terminating, terminate.terminating);
