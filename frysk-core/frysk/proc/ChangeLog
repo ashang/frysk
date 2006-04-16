@@ -1,5 +1,7 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* TestTaskSyscallObserver.java: Delete unused imports.
+
 	* TestTaskTerminateObserver.java: Eliminate use of
 	AutoAddTaskObserverBase.
 

@@ -41,8 +41,6 @@ package frysk.proc;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observer;
-import java.util.Observable;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
 import frysk.sys.SyscallNum;
