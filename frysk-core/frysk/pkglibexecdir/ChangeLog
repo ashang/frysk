@@ -1,5 +1,8 @@
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
+	* funit-print-auxv.c (main): Assume the optional argument is the
+	output file name.
+
 	* funit.xml: Add reference to funit-exec, and funit-child.
 	* util.h: #include <stdlib.h>.
 	* funit-child.c: Re-implement exec, so that it can exec a program

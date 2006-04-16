@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -59,35 +59,19 @@ public class TestProcGet
      */
     public void testGetAuxv ()
     {
-	class CaptureAuxv
-	    extends AutoAddTaskObserverBase
-	    implements TaskObserver.Attached
-	{
-	    // Store the extracted auxv here.
-	    Auxv[] auxv;
-	    void updateTaskAdded (Task task)
-	    {
-		task.requestAddAttachedObserver (this);
-	    }
-	    public Action updateAttached (Task task)
-	    {
-		auxv = task.proc.getAuxv ();
-		return Action.CONTINUE;
-	    }
-	}
-	CaptureAuxv captureAuxv = new CaptureAuxv ();
-
 	TmpFile tmpFile = new TmpFile ();
 	new StopEventLoopWhenChildProcRemoved ();
-	host.requestCreateAttachedProc
-	    (null, tmpFile.toString (), "/dev/null", new String[] {
-		getExecPrefix () + "funit-print-auxv"
+	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
+	    {
+		getExecPrefix () + "funit-print-auxv",
+		tmpFile.toString (),
+		"/dev/null"
 	    });
-
+	// Grab the AUXV from the process sitting at its entry point.
+	Auxv[] auxv = child.mainTask.proc.getAuxv ();
+	assertNotNull ("captured AUXV", auxv);
+	child.resume ();
 	assertRunUntilStop ("run \"auxv\" to completion");
-
-	assertNotNull ("captured AUXV", captureAuxv.auxv);
-	Auxv[] auxv = captureAuxv.auxv;
 
 	// Compare the AUXV as printed against that extracted using
 	// Proc.getAuxv.

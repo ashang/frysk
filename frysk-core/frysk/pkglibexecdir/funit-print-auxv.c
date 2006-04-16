@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,6 +48,11 @@ main (int argc, char **argv, char **envp)
 {
   struct auxv *auxp;
   int i;
+
+  if (argc > 1)
+    freopen (argv[1], "w", stdout);
+  if (argc > 2)
+    freopen (argv[2], "w", stderr);
 
   // Auxv array starts after the terminal entry in envp
   while (*envp != NULL)
