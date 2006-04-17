@@ -7,8 +7,10 @@ public class DummyHost extends Host {
 
 	}
 
-	void sendCreateAttachedProc(String stdin, String stdout, String stderr,
-			String[] args) {
+	void sendCreateAttachedProc(String stdin, String stdout,
+				    String stderr, String[] args,
+				    TaskObserver.Attached attached)
+    {
 		// TODO Auto-generated method stub
 
 	}

@@ -65,7 +65,8 @@ class HostState
     }
     HostState handleCreateAttachedProc (Host host,
 					String stdin, String stdout,
-					String stderr, String[] args)
+					String stderr, String[] args,
+					TaskObserver.Attached attached)
     {
 	throw unhandled (host, "handleCreateAttachedProc");
     }
@@ -82,10 +83,12 @@ class HostState
 						String stdin,
 						String stdout,
 						String stderr,
-						String[] args)
+						String[] args,
+						TaskObserver.Attached attached)
 	    {
 		logger.log (Level.FINE, "{0} handleRefresh\n", this); 
-		host.sendCreateAttachedProc (stdin, stdout, stderr, args);
+		host.sendCreateAttachedProc (stdin, stdout, stderr, args,
+					     attached);
 		return HostState.running;
 	    }
 	};

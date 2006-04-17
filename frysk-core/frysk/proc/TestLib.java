@@ -650,29 +650,26 @@ public class TestLib
 				  String[] argv)
 	{
 	    // Capture the child process id as it flys past.
-	    class PidObserver
-		implements Observer
+	    class TidObserver
+		extends TaskObserverBase
+		implements TaskObserver.Attached
 	    {
-		int pid;
-		public void update (Observable o, Object obj)
+		int tid;
+		public Action updateAttached (Task task)
 		{
-		    Proc proc = (Proc) obj;
-		    if (!isChildOfMine (proc))
-			return;
-		    pid = proc.getPid ();
+		    tid = task.getTid ();
 		    Manager.eventLoop.requestStop ();
-		    Manager.host.observableProcAddedXXX.deleteObserver (this);
+		    return Action.CONTINUE;
 		}
 	    }
-	    PidObserver pidObserver = new PidObserver ();
-	    Manager.host.observableProcAddedXXX.addObserver (pidObserver);
+	    TidObserver tidObserver = new TidObserver ();
 	    // Start the child process, run the event loop until the
-	    // pid is known.
-	    Manager.host.requestCreateAttachedProc (stdin, stdout,
-						    stderr, argv);
+	    // tid is known.
+	    Manager.host.requestCreateAttachedProc (stdin, stdout, stderr,
+						    argv, tidObserver);
 	    assertRunUntilStop ("starting attached child");
-	    // Return that captured PID.
-	    return pidObserver.pid;
+	    // Return that captured TID.
+	    return tidObserver.tid;
 	}
     }
 

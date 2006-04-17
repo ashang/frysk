@@ -188,7 +188,7 @@ public class LinuxHost
      * this task).
      */
     void sendCreateAttachedProc (String in, String out, String err,
-				 String[] args)
+				 String[] args, TaskObserver.Attached attached)
     {
 	logger.log (Level.FINE, "{0} sendCreateAttachedProc\n", this);	
 	int pid = Ptrace.child (in, out, err, args);
@@ -201,8 +201,7 @@ public class LinuxHost
 	    myTask = new LinuxTask (myProc, myTaskId);
 	}
 	Proc proc = new LinuxProc (myTask, new ProcId (pid));
-	// XXX: Notify host observers that a child was forked.
-	new LinuxTask (proc);
+	new LinuxTask (proc, attached);
     }
 
     // When there's a SIGCHLD, poll the kernel's waitpid() queue
@@ -262,7 +261,8 @@ public class LinuxHost
 		    ProcId forkId = new ProcId (childPid);
 		    Proc forkProc = new LinuxProc (task, forkId);
 		    // The main task.
-		    Task forkTask = new LinuxTask (forkProc);
+		    Task forkTask = new LinuxTask
+			(forkProc, (TaskObserver.Attached) null);
 		    task.processForkedEvent (forkTask);
 		}
 		public void exitEvent (int pid, boolean signal, int value,

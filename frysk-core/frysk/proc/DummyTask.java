@@ -2,9 +2,10 @@ package frysk.proc;
 
 public class DummyTask extends Task {
 
-	public DummyTask(Proc parent){
-		super(parent);
-	}
+    public DummyTask (Proc parent)
+    {
+	super (parent, (TaskObserver.Attached) null);
+    }
 	
 	public String getStateString(){
 		return "Attached";

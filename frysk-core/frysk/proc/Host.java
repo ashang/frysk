@@ -127,9 +127,19 @@ public abstract class Host
     abstract void sendRefresh (boolean refreshAll);
     /**
      * Tell the host to create a running child process.
+     *
+     * Unlike other requests, this operation is bound to an explicit
+     * call-back.  Doing this means that the requestor has a robust
+     * way of receiving an acknolwedge of the operation.  Without this
+     * there would be no reliable way to bind to the newly created
+     * process - frysk's state machine could easily detach before the
+     * requestor had an oportunity to add an attached observer.
+     *
+     * XXX: Is this the best thing?
      */
     abstract void sendCreateAttachedProc (String stdin, String stdout,
-					  String stderr, String[] args);
+					  String stderr, String[] args,
+					  TaskObserver.Attached attached);
 
     /**
      * The current state of this host.
@@ -179,24 +189,14 @@ public abstract class Host
 		}
 	    });
     }
-
-    /**
-     * Request that a new attached and running process (with stdin,
-     * stdout, and stderr are shared with this process) be created.
-     */
-    public final void requestCreateAttachedProcXXX (String[] args)
-    {
-	logger.log (Level.FINE, "{0} requestCreateAttachedProcXXX String[]\n",
-		    this); 
-	requestCreateAttachedProc (null, null, null, args);
-    }
     /**
      * Request that a new attached and running process be created.
      */
     public final void requestCreateAttachedProc (final String stdinArg,
 						 final String stdoutArg,
 						 final String stderrArg,
-						 final String[] argsArg)
+						 final String[] argsArg,
+						 final TaskObserver.Attached attachedArg)
     {
 	logger.log (Level.FINE, "{0} requestCreateAttachedProc\n", this); 
 	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
@@ -205,12 +205,23 @@ public abstract class Host
 		String stdout = stdoutArg;
 		String stderr = stderrArg;
 		String[] args = argsArg;
+		TaskObserver.Attached attached = attachedArg;
 		public void execute ()
 		{
 		    newState= oldState ().handleCreateAttachedProc
-			(Host.this, stdin, stdout, stderr, args);
+			(Host.this, stdin, stdout, stderr, args, attached);
 		}
 	    });
+    }
+    /**
+     * Request that a new attached and running process (with stdin,
+     * stdout, and stderr are shared with this process) be created.
+     */
+    public final void requestCreateAttachedProc (String[] args,
+						 TaskObserver.Attached attached)
+    {
+	logger.log (Level.FINE, "{0} requestCreateAttachedProc String[] TaskObserver.Attached\n", this); 
+	requestCreateAttachedProc (null, null, null, args, attached);
     }
 
     /**

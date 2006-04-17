@@ -92,9 +92,9 @@ public class LinuxTask
     /**
      * Create a new attached main Task of Proc.
      */
-    LinuxTask (Proc proc)
+    LinuxTask (Proc proc, TaskObserver.Attached attached)
     {
-	super (proc);
+	super (proc, attached);
 	setupMapsXXX ();
     }
 

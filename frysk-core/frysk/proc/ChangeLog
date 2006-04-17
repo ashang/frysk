@@ -1,3 +1,24 @@
+2006-04-17  Andrew Cagney  <cagney@redhat.com>
+
+	* Host.java (requestCreateAttachedProcXXX): Rename to
+	requestCreateAttachedProc.
+	(requestCreateAttachedProc, sendCreateAttachedProc): Add
+	TaskObserver .Attached parameter.
+	* LinuxHost.java : Update.
+	* HostState.java (handleCreateAttachedProc): Update.
+	* Proc.java (handleAddObservation): Factor out of
+	requestAddObserver.
+	* Task.java (Task (Proc, TaskObserver.Attached)): Replace Task
+	(Proc); send the attached observer to the proc for processing
+	using handleAddObservation.
+	* LinuxTask.java: Update.
+	* TestLib.java (AttachedAckObserver): Pass an Attached observer to
+	requestCreateAttachedProc.
+	* TestRun.java (testCreateAttachedContinuedProc)
+	(testCreateAttachedStoppedProc): Pass a attached observer to
+	requestCreateAttachedProc.
+	(AutoAddTaskObserver): Delete.
+
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (AutoAddTaskObserver): Move from here ...

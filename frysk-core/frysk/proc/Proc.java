@@ -142,7 +142,15 @@ public abstract class Proc
 		    this); 
     }
     /**
-     * Create a new, attached, running, process forked by Task.
+     * Create a new, attached, running, process forked by Task.  For
+     * the moment assume that the process will be immediatly detached;
+     * if this isn't the case the task, once it has been created, will
+     * ram through an attached observer.
+     *
+     * Note the chicken-egg problem here: to add the initial
+     * observation the Proc needs the Task (which has the Observable).
+     * Conversely, for a Task, while it has the Observable, it doesn't
+     * have the containing proc.
      */
     protected Proc (Task task, ProcId forkId)
     {
@@ -180,7 +188,7 @@ public abstract class Proc
     private ProcState oldState ()
     {
 	if (newState == null)
-	    throw new RuntimeException ("double state transition");
+	    throw new RuntimeException (this + " double state transition");
 	oldState = newState;
 	newState = null;
 	return oldState;
@@ -280,6 +288,15 @@ public abstract class Proc
     Set observations = new HashSet ();
 
     /**
+     * (internal) Tell the process to add the specified Observation,
+     * attaching the process if necessary.
+     */
+    void handleAddObservation (TaskObservation observation)
+    {
+	newState = oldState ().handleAddObservation (this, observation);
+    }
+
+    /**
      * (Internal) Tell the process to add the specified Observation,
      * attaching to the process if necessary.
      */
@@ -292,8 +309,7 @@ public abstract class Proc
 	    {
 		public void execute ()
 		{
-		    newState = oldState ().handleAddObservation
-			(Proc.this, this);
+		    handleAddObservation (this);
 		}
 	    });
     }

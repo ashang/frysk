@@ -156,13 +156,30 @@ abstract public class Task
 	logger.log (Level.FINE, "{0} new -- create attached clone\n", this); 
     }
     /**
-     * Create a new attached main Task of Proc.
+     * Create a new attached main Task of Proc.  If Attached observer
+     * is specified assume it should be attached, otherwize, assume
+     * that, as soon as the task stops, it should be detached.
+     *
+     * Note the chicken-egg problem here: to add the initial
+     * observation the Proc needs the Task (which has the Observable).
+     * Conversely, for a Task, while it has the Observable, it doesn't
+     * have the containing proc.
      */
-    protected Task (Proc proc)
+    protected Task (Proc proc, TaskObserver.Attached attached)
     {
 	this (new TaskId (proc.getPid ()), proc);
 	newState = TaskState.mainState ();
-	logger.log (Level.FINE, "{0} new -- create attached main\n", this); 
+	if (attached != null) {
+	    TaskObservation ob = new TaskObservation (this, attachedObservers,
+						      attached)
+		{
+		    public void execute ()
+		    {
+			throw new RuntimeException ("oops!");
+		    }
+		};
+	    proc.handleAddObservation (ob);
+	}
     }
 
     // Send operation to corresponding underlying [kernel] task.
@@ -201,7 +218,7 @@ abstract public class Task
     private TaskState oldState ()
     {
 	if (newState == null)
-	    throw new RuntimeException ("double state transition");
+	    throw new RuntimeException (this + " double state transition");
 	oldState = newState;
 	newState = null;
 	return oldState;
