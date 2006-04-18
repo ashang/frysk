@@ -482,7 +482,7 @@
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTreeView" id="sessionDruid_addedProcsTreeView">
+			    <widget class="GtkTreeView" id="sessionDruid_procWiseTreeView">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="headers_visible">False</property>
@@ -546,7 +546,7 @@
 			  <property name="focus_on_click">True</property>
 
 			  <child>
-			    <widget class="GtkAlignment" id="alignment63">
+			    <widget class="GtkAlignment" id="alignment82">
 			      <property name="visible">True</property>
 			      <property name="xalign">0.5</property>
 			      <property name="yalign">0.5</property>
@@ -558,15 +558,15 @@
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox67">
+				<widget class="GtkHBox" id="hbox81">
 				  <property name="visible">True</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
 				  <child>
-				    <widget class="GtkImage" id="image4">
+				    <widget class="GtkImage" id="image14">
 				      <property name="visible">True</property>
-				      <property name="stock">gtk-go-back</property>
+				      <property name="stock">gtk-go-forward</property>
 				      <property name="icon_size">4</property>
 				      <property name="xalign">0.5</property>
 				      <property name="yalign">0.5</property>
@@ -581,7 +581,7 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkLabel" id="label79">
+				    <widget class="GtkLabel" id="label106">
 				      <property name="visible">True</property>
 				      <property name="label" translatable="yes">
 </property>
@@ -625,7 +625,7 @@
 			  <property name="focus_on_click">True</property>
 
 			  <child>
-			    <widget class="GtkAlignment" id="alignment64">
+			    <widget class="GtkAlignment" id="alignment83">
 			      <property name="visible">True</property>
 			      <property name="xalign">0.5</property>
 			      <property name="yalign">0.5</property>
@@ -637,15 +637,15 @@
 			      <property name="right_padding">0</property>
 
 			      <child>
-				<widget class="GtkHBox" id="hbox68">
+				<widget class="GtkHBox" id="hbox82">
 				  <property name="visible">True</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">2</property>
 
 				  <child>
-				    <widget class="GtkImage" id="image5">
+				    <widget class="GtkImage" id="image15">
 				      <property name="visible">True</property>
-				      <property name="stock">gtk-go-forward</property>
+				      <property name="stock">gtk-go-back</property>
 				      <property name="icon_size">4</property>
 				      <property name="xalign">0.5</property>
 				      <property name="yalign">0.5</property>
@@ -660,7 +660,7 @@
 				  </child>
 
 				  <child>
-				    <widget class="GtkLabel" id="label80">
+				    <widget class="GtkLabel" id="label107">
 				      <property name="visible">True</property>
 				      <property name="label" translatable="yes">
 </property>
@@ -794,7 +794,7 @@
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 			  <child>
-			    <widget class="GtkTreeView" id="sessionDruid_procWiseTreeView">
+			    <widget class="GtkTreeView" id="sessionDruid_addedProcsTreeView">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
 			      <property name="headers_visible">False</property>

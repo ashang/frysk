@@ -44,6 +44,7 @@ import java.util.Iterator;
 
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnString;
+import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
 
@@ -57,12 +58,15 @@ public class ExitProcessGroupsDataModel {
 
 	private ListStore listStore;
 
+	private DataColumnBoolean selectedDC;
 	private DataColumnString nameDC;
 	
 	
+	
 	public ExitProcessGroupsDataModel(){
-		this.nameDC = new DataColumnString();		
-		this.listStore = new ListStore(new DataColumn[] {this.nameDC});
+		this.selectedDC = new DataColumnBoolean();
+		this.nameDC = new DataColumnString();	
+		this.listStore = new ListStore(new DataColumn[] {this.selectedDC, this.nameDC});
 	}
 
 	private void setRow(TreeIter row, String name){
@@ -73,6 +77,9 @@ public class ExitProcessGroupsDataModel {
 		return nameDC;
 	}
 
+	public DataColumnBoolean getSelectedDC() {
+		return selectedDC;
+	}
 	
 
 	public ListStore getModel() {

@@ -1,3 +1,18 @@
+2006-04-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/frysk_create_session_druid.glade: Moved process group selection
+	order from left to right.
+	* druid/ExitProcessGroupsDataModel.java: Add new (DataColumnBoolean) column 
+	to treeview.
+	(getSelectedDC): Added getter for Boolean DataColumn.
+	(ExitProcessGroupsDataModel): Update the listStore to store the boolean data
+	column.
+	* druid/ProcessExitSelectionTreeView.java (treeViewEvent): Added double click
+	listener to set toggle value. Added CellRendererState listener.
+	(mountDataModel): Add a new treeview column CellRendererToggle to hold
+	selected state.
+
+
 2006-04-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterFormatDialog.java (RegisterFormatDialog): Now adds
