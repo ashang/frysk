@@ -3,6 +3,7 @@
 	* observers/ObserverManager.java : Added a hash table that
 	enables ObserverManager to ensure that observers added
 	have unique names. 
+	(loadObservers): ignores hidden files starting with .* .
 
 2006-04-13  Sami Wagiaalla  <swagiaal@redhat.com>
 

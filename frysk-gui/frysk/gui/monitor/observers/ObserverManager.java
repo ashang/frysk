@@ -254,6 +254,9 @@ public class ObserverManager {
 		String[] array = observerDir.list();
 		ObserverRoot loadedObserver = null;
 		for (int i = 0; i < array.length; i++) {
+			if(array[i].startsWith(".")){
+				continue;
+			}
 			try{
 				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
 				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
