@@ -174,10 +174,11 @@ public class TestObserverSaveLoad extends TestCase{
 		ObserverManager observerManager = new ObserverManager();
 		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
 		
+		String testObserverName = "MyCustomObserverXXX_this_should_have_been_deleted_after_test";
 		//customize taskForkedObserver
 		LogAction logAction = new LogAction();
 		taskForkedObserver.genericActionPoint.addAction(logAction);
-		taskForkedObserver.setName("MyCustomObserverXXX_this_should_have_been_deleted_after_test");
+		taskForkedObserver.setName(testObserverName);
 		observerManager.addTaskObserverPrototype(taskForkedObserver);
 		observerManager.save();
 		
@@ -187,11 +188,11 @@ public class TestObserverSaveLoad extends TestCase{
 	//	observerManager.removeTaskObserverPrototype(taskForkedObserver);
 		
 		//get custom observer
-		Iterator i = anotherObserverManager.getTaskObservers().iterator();
-		ObserverRoot myLoadedObserver = null;
-		while (i.hasNext()) {
-			myLoadedObserver = (ObserverRoot) i.next();
-		}
+		//Iterator i = anotherObserverManager.getTaskObservers().iterator();
+		ObserverRoot myLoadedObserver = anotherObserverManager.getObserverByName(testObserverName);
+//		while (i.hasNext()) {
+//			myLoadedObserver = (ObserverRoot) i.next();
+//		}
 		
 		// check that they are the same
 		assertNotNull("Loaded Observer", myLoadedObserver);
