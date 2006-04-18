@@ -1,3 +1,9 @@
+2006-04-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java : Added a hash table that
+	enables ObserverManager to ensure that observers added
+	have unique names. 
+
 2006-04-13  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java: Fixed copy constructor, it

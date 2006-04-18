@@ -40,6 +40,7 @@
 package frysk.gui.monitor.observers;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jdom.Element;
@@ -47,8 +48,8 @@ import org.jdom.Element;
 import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.actions.AddTaskObserverAction;
+import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
 
 /**
@@ -64,6 +65,13 @@ public class ObserverManager {
 
 	public static ObserverManager theManager = new ObserverManager();
 	
+	/**
+	 * A table that hashes observer names to
+	 * their prototypes. Also used to make sure
+	 * observer names are uniqu.
+	 */
+	private HashMap nameHash;
+	
 	private final String OBSERVERS_DIR = Config.FRYSK_DIR + "Observers" + "/";
 	
 	/**
@@ -77,9 +85,12 @@ public class ObserverManager {
 	public ObserverManager(){
 		this.baseObservers = new ObservableLinkedList();
 		this.taskObservers = new ObservableLinkedList();
-		this.initTaskObservers();
+		
+		this.nameHash = new HashMap();
+		
 		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
 		this.loadObservers();
+		this.initTaskObservers();
 	}
 	
 	/**
@@ -90,32 +101,36 @@ public class ObserverManager {
 		//============================================
 		ObserverRoot observer = new TaskExecObserver();
 		observer.dontSaveObject();
-		this.addTaskObserverPrototype(observer);
+		try { this.addTaskObserverPrototype(observer);
+		} catch (Exception e) {}
 		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
-		this.addTaskObserverPrototype(observer);
+		try { this.addTaskObserverPrototype(observer);
+		} catch (Exception e) {}
 		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
-		this.addTaskObserverPrototype(observer);
+		try { this.addTaskObserverPrototype(observer);
+		} catch (Exception e) {}
 		this.addBaseObserverPrototype(observer.getCopy());
-		
 		
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
-		this.addTaskObserverPrototype(observer);
+		try { this.addTaskObserverPrototype(observer);
+		} catch (Exception e) {}
 		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
 		observer = new TaskSyscallObserver();
 		observer.dontSaveObject();
-		this.addTaskObserverPrototype(observer);
+		try { this.addTaskObserverPrototype(observer);
+		} catch (Exception e) {}
 		this.addBaseObserverPrototype(observer.getCopy());
 		
 		//============================================
@@ -178,23 +193,21 @@ public class ObserverManager {
 	 * of the removed observer
 	 * */
 	public void swapTaskObserverPrototype(ObserverRoot toBeRemoved, ObserverRoot toBeAdded){
+
 		int index = this.taskObservers.indexOf(toBeRemoved);
 		if(index < 0){
 			throw new IllegalArgumentException("The passes toBeRemoved Observer ["+ toBeRemoved+"] is not a member of taskObservers");
 		}
 		this.taskObservers.remove(index);
+		try { this.addToHash(toBeAdded);
+		} catch (Exception e) {
+			throw new RuntimeException("");
+		}
 		this.taskObservers.add(index, toBeAdded);
 	}
 	
 	public TaskObserverRoot getObserverByName(String argument) {
-		Iterator iterator = this.taskObservers.iterator();
-		while (iterator.hasNext()) {
-			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
-			if(observer.getName().equals(argument)){
-				return observer;
-			}
-		}
-		return null;
+		return (TaskObserverRoot) this.nameHash.get(argument);
 	}
 	
 	/**
@@ -202,12 +215,8 @@ public class ObserverManager {
 	 * @param observer the observer prototype to be added.
 	 * */
 	public void addTaskObserverPrototype(ObserverRoot observer){
+		this.addToHash(observer);
 		this.taskObservers.add(observer);
-//		Element node = new Element("observer");
-//		if(observer.shouldSaveObject()){
-//			ObjectFactory.theFactory.saveObject(observer, node);
-//			ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
-//		}
 	}
 	
 	public void addBaseObserverPrototype(ObserverRoot observer){
@@ -223,6 +232,19 @@ public class ObserverManager {
 		if(!ObjectFactory.theFactory.deleteNode( OBSERVERS_DIR + observer.getName())){
 			//throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete " + observer.getName());
 		}
+		this.removeForomHash(observer);
+	}
+	
+	private void addToHash(ObserverRoot observer){
+		if(this.nameHash.containsKey(observer.getName())){
+			throw new RuntimeException("The given observer name is already used");
+		}else{
+			this.nameHash.put(observer.getName(), observer);
+		}
+	}
+	
+	private void removeForomHash(ObserverRoot observer){
+		this.nameHash.remove(observer);
 	}
 	
 	private void loadObservers(){

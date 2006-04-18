@@ -54,7 +54,7 @@ public class PrintTask extends TaskAction {
 	}
 	
 	public void execute(Task task) {
-		System.out.println("Task State : " + task); //$NON-NLS-1$
+		System.out.println("Task State : " + task);
 	}
 
 	public LiaisonItem getCopy() {

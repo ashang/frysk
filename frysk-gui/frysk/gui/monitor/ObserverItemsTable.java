@@ -97,6 +97,7 @@ public abstract class ObserverItemsTable extends Table {
 		this.allList.add(itemRow);
 		
 		this.row++;
+		System.out.println(this + ": ObserverItemsTable.addRow() row: " + row);
 		this.showAll();
 	}
 
@@ -110,6 +111,8 @@ public abstract class ObserverItemsTable extends Table {
 			Combo combo = (Combo) iterator.next();
 			this.addRow(combo);
 		}
+		
+		System.out.println(this + ": ObserverItemsTable.setObserver() row: " + row);
 		
 		if(this.row == 0){
 			this.addRow(null);
@@ -131,9 +134,11 @@ public abstract class ObserverItemsTable extends Table {
 	
 	public void clear(){
 		Iterator iterator = this.allList.iterator();
+
 		while (iterator.hasNext()) {
 			ObserverItemRow itemRow = (ObserverItemRow) iterator.next();
 			itemRow.removeFromTable();
+			row--;
 		}
 		
 		this.allList.clear();
@@ -144,7 +149,6 @@ public abstract class ObserverItemsTable extends Table {
 		this.allList.remove(itemRow);
 		this.applyList.remove(itemRow);
 		itemRow.removeFromTable();
-		row--;
 	}
 	
 }
