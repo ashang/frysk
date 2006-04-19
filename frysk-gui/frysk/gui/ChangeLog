@@ -1,3 +1,9 @@
+2006-04-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/DebugProcess.java: New file.
+	* sessions/Session.java: New file.
+	* sessions/SessionManager.java: New file.
+
 2006-04-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/ObserverDataModel.java (ObserverDataModel): Added boolean to the data
