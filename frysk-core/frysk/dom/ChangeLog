@@ -1,3 +1,8 @@
+2006-04-19  Stan Cox  <scox@redhat.com>
+
+	Fix from Wu Zhou <woodzltc@cn.ibm.com>:
+	* DOMFrysk.java: Use ASCII quote instead of multibyte quotes.
+
 2006-04-03  Rick Moseley  <rmoseley@redhat.com>
 
 	*DOMFrysk.java: Added additional documentation explaining JDOM structure.

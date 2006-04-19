@@ -63,7 +63,7 @@ import org.jdom.Element;
  * we will endeavor to keep it as current as possible.
  *
  * Class Structure
- * The following diagram is the current “class” structure of the Frysk DOM.  
+ * The following diagram is the current "class" structure of the Frysk DOM.  
  * As can be seen from the tree below, the top class is the executable image 
  * itself and below it are the subclasses hanging off of it.
  * 
