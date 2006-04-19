@@ -42,6 +42,7 @@ package frysk.gui.druid;
 import java.util.ListIterator;
 
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
@@ -62,11 +63,13 @@ public class ObserverDataModel {
 	private ListStore listStore;
 
 	private DataColumnString nameDC;
-	
+	private DataColumnBoolean selectedDC;
 	
 	public ObserverDataModel(){
 		this.nameDC = new DataColumnString();		
-		this.listStore = new ListStore(new DataColumn[] {this.nameDC});
+		this.selectedDC = new DataColumnBoolean();
+		
+		this.listStore = new ListStore(new DataColumn[] {this.selectedDC, this.nameDC});
 		populateData();
 	}
 
@@ -78,6 +81,9 @@ public class ObserverDataModel {
 		return nameDC;
 	}
 
+	public DataColumnBoolean getSelectedDC() {
+		return selectedDC;
+	}
 	
 
 	public ListStore getModel() {

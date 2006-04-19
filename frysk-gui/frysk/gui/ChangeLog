@@ -1,3 +1,14 @@
+2006-04-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/ObserverDataModel.java (ObserverDataModel): Added boolean to the data
+	store to indicate if selected observer has been selected.
+	* druid/ObserverSelectionTreeView.java (mountDataModel): Added boolean column
+	(CellRendererToggle) to indicate selected observer status.
+	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): Removed
+	observer add/remove buttons code logic.
+	* glade/frysk_create_session_druid.glade: Removed
+	observer add/remove buttons.
+
 2006-04-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestObserverSaveLoad.java (testExport): Fixed text

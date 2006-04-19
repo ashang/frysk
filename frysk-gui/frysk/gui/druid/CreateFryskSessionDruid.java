@@ -241,8 +241,6 @@ public class CreateFryskSessionDruid extends Dialog {
 		final ProcessObserverSelectionTreeView processObserverSelectionTreeView;
 
 		
-		Button addObservertoGroup;
-		Button removeObserverfromGroup;
 		
 		this.observerDataModel = new ObserverDataModel();
 		observerSelectionTreeView = new ObserverSelectionTreeView(
@@ -261,32 +259,7 @@ public class CreateFryskSessionDruid extends Dialog {
 		sizeGroup.addWidget(observerSelectionTreeView);
 		sizeGroup.addWidget(processObserverSelectionTreeView);
 		
-		addObservertoGroup = (Button) glade.getWidget("SessionDruid_addSelectedObserversButton");
-		removeObserverfromGroup = (Button) glade.getWidget("SessionDriud_removeSelectedObserversButton");
-		
-		addObservertoGroup.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					TreePath[] selectedObservers = observerSelectionTreeView.getSelection().getSelectedRows();
-					TreePath[] selectedProcs = processObserverSelectionTreeView.getSelection().getSelectedRows();
-					for (int i=0; i<selectedObservers.length; i++)
-						for (int x=0; x<selectedProcs.length; x++)
-							processObserverDataModel.addObserver(selectedProcs[x],
-									observerDataModel.nameFromPath(selectedObservers[i]));
-				}
-			}
-			
-		});
-		
-		removeObserverfromGroup.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					System.out.println("Remove Observers");
-					TreePath[] selectedProcs = processObserverSelectionTreeView.getSelection().getSelectedRows();
-					processObserverDataModel.removeObservers(selectedProcs);
-				}
-			}
-		});
+
 		
 		setUpCurrentPage();	
 	}
