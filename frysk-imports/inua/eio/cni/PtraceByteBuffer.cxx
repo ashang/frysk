@@ -56,12 +56,14 @@ static java::lang::RuntimeException *
 newPerror (const char *syscall, pid_t pid, jlong addr, int nr)
 {
   const char *error = strerror (nr);
-  const int len = strlen (error) + strlen (syscall) + strlen (": ") + 1;
-  char *message = (char*) alloca (len);
-  if (snprintf (message, len, "%s: %s (pid %d addr 0x%llx)",
-		syscall, error, pid, (long long unsigned) addr) >= len)
+  char *message;
+  if (asprintf (&message, "%s: %s (pid %d addr 0x%llx)",
+		syscall, error, pid, (long long unsigned) addr)
+      <= 0)
     throw new java::lang::RuntimeException (JvNewStringLatin1 ("oops"));
-  return new java::lang::RuntimeException (JvNewStringLatin1 (message));
+  jstring jmessage = JvNewStringLatin1 (message);
+  free (message);
+  return new java::lang::RuntimeException (jmessage);
 }
 
 
