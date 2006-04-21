@@ -1,5 +1,7 @@
 2006-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* ListView.java (getSelectedObjects): Fixed a small bug, and 
+	made the function return an iterator instead of array.
 	* observers/ObserverManager.java: Refactored code for insuring
 	unique elements to UniqueHashMap.
 	* filters/FilterPoint.java: Removing saving/loading, it is 

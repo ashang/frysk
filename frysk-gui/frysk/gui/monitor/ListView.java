@@ -41,6 +41,7 @@ package frysk.gui.monitor;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -104,14 +105,14 @@ public class ListView extends TreeView implements Observer {
 		this.appendColumn(nameCol);
 	}
 	
-	public GuiObject[] getSelectedObjects(){
-		GuiObject[] selecteds = new GuiObject[this.getSelection().getSelectedRows().length]; //selecteds is a word... ask Gollum :)
-		
-		for (int i = 0; i < selecteds.length; i++) {
-			selecteds[i] = (GuiObject) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), objectDC);
+	public Iterator getSelectedObjects(){
+		LinkedList selecteds = new LinkedList();
+		TreePath[] selectedPaths = this.getSelection().getSelectedRows();
+		for (int i = 0; i < selectedPaths.length; i++) {
+			selecteds.add((GuiObject) this.listStore.getValue(this.listStore.getIter(selectedPaths[i]), objectDC));
 		}
 		
-		return selecteds;
+		return selecteds.iterator();
 	}
 		
 	public GuiObject getSelectedObject(){
