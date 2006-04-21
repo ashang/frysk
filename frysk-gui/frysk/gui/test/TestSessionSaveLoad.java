@@ -37,86 +37,63 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.sessions;
+package frysk.gui.test;
 
-import java.io.File;
 import java.util.Iterator;
 
-import org.jdom.Element;
+import org.gnu.gtk.Gtk;
 
-import frysk.Config;
-import frysk.gui.monitor.ObjectFactory;
-import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.UniqueHashMap;
+import junit.framework.TestCase;
 
-public class SessionManager {
+import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.sessions.DebugProcess;
+import frysk.gui.sessions.Session;
+import frysk.gui.sessions.SessionManager;
+
+public class TestSessionSaveLoad extends TestCase {
 	
-	public static SessionManager theManager = new SessionManager();
-	
-	ObservableLinkedList sessions;
-	
-	private UniqueHashMap nameHash;
-	
-	private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
-	
-	public SessionManager(){
-		this.sessions = new ObservableLinkedList();
-		this.nameHash = new UniqueHashMap();
+	public void testSaveLoad(){
+		Gtk.init(new String[]{});
 		
-		ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
+		SessionManager sessionManager = new SessionManager();
+		Session mySavedSession = new Session("1", "2");
+		DebugProcess debugProcess = new DebugProcess("3");
 		
-		this.load();
-	}
-	
-	public ObservableLinkedList getSessions(){
-		return this.sessions;
-	}
-	
-	public void addSession(Session session){
-		this.nameHash.add(session);
-		this.sessions.add(session);
-	}
-	
-	public void removeSession(Session session){
-		ObjectFactory.theFactory.deleteNode( SESSIONS_DIR + session.getName());
-		this.nameHash.remove(session);
-		this.sessions.remove(session);
-	}
-	
-	public void save(){
-		Iterator iterator = this.getSessions().iterator();
+		Iterator iterator = ObserverManager.theManager.getTaskObservers().iterator();
 		while (iterator.hasNext()) {
-			Session session = (Session) iterator.next();
-			if(session.shouldSaveObject()){
-				Element node = new Element("Session");
-				ObjectFactory.theFactory.saveObject(session, node);
-				ObjectFactory.theFactory.exportNode( SESSIONS_DIR + session.getName(), node);
-			}
+			ObserverRoot observer = (ObserverRoot) iterator.next();
+			debugProcess.addObserver(observer);
 		}
-	}
-	
-	public void load(){
-		Element node = new Element("Session");
-		File sessionsDir = new File(this.SESSIONS_DIR);
+		mySavedSession.addProcess(debugProcess);
+		sessionManager.addSession(mySavedSession);
+		sessionManager.save();
 		
-		String[] array = sessionsDir.list();
-		Session loadedSession = null;
-		for (int i = 0; i < array.length; i++) {
-			if(array[i].startsWith(".")){
-				continue;
-			}
-			try{
-				node = ObjectFactory.theFactory.importNode(SESSIONS_DIR+array[i]);
-				loadedSession = (Session)ObjectFactory.theFactory.loadObject(node);
-			}catch(Exception e){
-				continue;
-			}
-			this.addSession(loadedSession);
+		
+		SessionManager loadedSessionManager = new SessionManager();
+		Session myLoadedSession = loadedSessionManager.getSessionByName(mySavedSession.getName());
+		
+		assertNotNull("loaded session", myLoadedSession);
+		assertEquals("session name", myLoadedSession.getName(), mySavedSession.getName());
+		assertEquals("session tooltip", myLoadedSession.getToolTip(), mySavedSession.getToolTip());
+		assertEquals("number of DebugProcessies", mySavedSession.getProcesses().size(), myLoadedSession.getProcesses().size());
+		
+		DebugProcess savedProc = (DebugProcess) mySavedSession.getProcesses().getFirst();
+		DebugProcess loadedProc = (DebugProcess) myLoadedSession.getProcesses().getFirst();
+		
+		
+		Iterator savedIter = savedProc.getObservers().iterator();
+		Iterator loadedIter = loadedProc.getObservers().iterator();
+		
+		assertEquals("number of observers", loadedProc.getObservers().size(), savedProc.getObservers().size());
+		
+		while(savedIter.hasNext()){
+			ObserverRoot savedObserver = (ObserverRoot) savedIter.next();
+			ObserverRoot loadedObserver = (ObserverRoot) loadedIter.next();
+			
+			assertEquals("name of observer", savedObserver.getName(), loadedObserver.getName());
 		}
 		
-	}
-
-	public Session getSessionByName(String name) {
-		return (Session) this.nameHash.get(name);
+		sessionManager.removeSession(mySavedSession);
 	}
 }

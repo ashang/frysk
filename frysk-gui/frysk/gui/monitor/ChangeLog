@@ -1,3 +1,18 @@
+2006-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: Refactored code for insuring
+	unique elements to UniqueHashMap.
+	* filters/FilterPoint.java: Removing saving/loading, it is 
+	handled by parent.
+	* actions/ActionPoint.java: Ditto
+	* UniqueHashMap.java: New file. Special kind of hashtable for
+	ensuring that each key is only used once.
+	* ObservableLinkedList.java: Added saveing/loading handling.
+	* LiaisonPoint.java: Moved saving/loading code to 
+	ObservableLinkedList.
+	* GuiObject.java: Set the save boolean to true by default.
+	
+
 2006-04-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverManager.java : Added a hash table that

@@ -40,7 +40,6 @@
 package frysk.gui.monitor.observers;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jdom.Element;
@@ -48,6 +47,7 @@ import org.jdom.Element;
 import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.UniqueHashMap;
 import frysk.gui.monitor.actions.AddTaskObserverAction;
 import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
@@ -68,9 +68,9 @@ public class ObserverManager {
 	/**
 	 * A table that hashes observer names to
 	 * their prototypes. Also used to make sure
-	 * observer names are uniqu.
+	 * observer names are unique.
 	 */
-	private HashMap nameHash;
+	private UniqueHashMap nameHash;
 	
 	private final String OBSERVERS_DIR = Config.FRYSK_DIR + "Observers" + "/";
 	
@@ -86,7 +86,7 @@ public class ObserverManager {
 		this.baseObservers = new ObservableLinkedList();
 		this.taskObservers = new ObservableLinkedList();
 		
-		this.nameHash = new HashMap();
+		this.nameHash = new UniqueHashMap();
 		
 		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
 		this.loadObservers();
@@ -199,7 +199,7 @@ public class ObserverManager {
 			throw new IllegalArgumentException("The passes toBeRemoved Observer ["+ toBeRemoved+"] is not a member of taskObservers");
 		}
 		this.taskObservers.remove(index);
-		try { this.addToHash(toBeAdded);
+		try { nameHash.add(toBeAdded);
 		} catch (Exception e) {
 			throw new RuntimeException("");
 		}
@@ -215,7 +215,7 @@ public class ObserverManager {
 	 * @param observer the observer prototype to be added.
 	 * */
 	public void addTaskObserverPrototype(ObserverRoot observer){
-		this.addToHash(observer);
+		this.nameHash.add(observer);
 		this.taskObservers.add(observer);
 	}
 	
@@ -232,18 +232,6 @@ public class ObserverManager {
 		if(!ObjectFactory.theFactory.deleteNode( OBSERVERS_DIR + observer.getName())){
 			//throw new RuntimeException("ObserverManager.removeTaskObserverPrototype() Failed to delete " + observer.getName());
 		}
-		this.removeForomHash(observer);
-	}
-	
-	private void addToHash(ObserverRoot observer){
-		if(this.nameHash.containsKey(observer.getName())){
-			throw new RuntimeException("The given observer name is already used");
-		}else{
-			this.nameHash.put(observer.getName(), observer);
-		}
-	}
-	
-	private void removeForomHash(ObserverRoot observer){
 		this.nameHash.remove(observer);
 	}
 	

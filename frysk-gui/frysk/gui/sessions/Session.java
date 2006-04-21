@@ -39,6 +39,9 @@
 
 package frysk.gui.sessions;
 
+import org.jdom.Element;
+
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
@@ -48,11 +51,17 @@ import frysk.gui.monitor.ObservableLinkedList;
  * A Session object is used to hold and save user
  * preferences with respect to a debug session.
  */
-public class Session {
+public class Session extends GuiObject{
 	
 	private ObservableLinkedList procs;
 	
 	public Session(){
+		super();
+		this.procs = new ObservableLinkedList();
+	}
+	
+	public Session(String name, String toolTip){
+		super(name, toolTip);
 		this.procs = new ObservableLinkedList();
 	}
 	
@@ -62,6 +71,21 @@ public class Session {
 	
 	public ObservableLinkedList getProcesses(){
 		return this.procs;
+	}
+	
+	public void save(Element node){
+		super.save(node);
+		Element procsXML = new Element("procs");
+		System.out.println(this + ": Session.save()");
+		this.procs.save(procsXML);
+		node.addContent(procsXML);
+	}
+	
+	public void load(Element node){
+		super.load(node);
+		
+		Element procsXML = node.getChild("procs");
+		this.procs.load(procsXML);
 	}
 	
 }

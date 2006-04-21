@@ -41,6 +41,9 @@ package frysk.gui.monitor;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+
+import org.jdom.Element;
 
 /**
  * Extends LinkedList but accepts observers that will 
@@ -52,8 +55,12 @@ import java.util.LinkedList;
  * Overwrites the copy constructor to dynamically call
  * copy constructor of all elements and add them to the
  * new list.
+ * 
+ * Knows how to save its elements and load them.
+ * 
+ * should really be called ObservableSavableCopyiableLinkedList
  * */
-public class ObservableLinkedList extends LinkedList{
+public class ObservableLinkedList extends LinkedList implements SaveableXXX {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -141,4 +148,40 @@ public class ObservableLinkedList extends LinkedList{
 		this.remove(index);
 		this.add(index, newObject);
 	}
+
+	public void save(Element node) {
+		Element filtersXML = new Element("elements");
+
+		Iterator iterator = this.iterator();
+		while (iterator.hasNext()) {
+			GuiObject object = (GuiObject) iterator.next();
+			if(object.shouldSaveObject()){
+				Element filterXML = new Element("element");
+				ObjectFactory.theFactory.saveObject(object, filterXML);
+				filtersXML.addContent(filterXML);	
+			}
+		}
+		node.addContent(filtersXML);
+	}
+
+	public void load(Element node) {
+		Element filtersXML = node.getChild("elements");
+		List list = (List) filtersXML.getChildren("element");
+		Iterator i = list.iterator();
+		
+		GuiObject  object;
+		while (i.hasNext()){
+			object = (GuiObject) ObjectFactory.theFactory.loadObject((Element) i.next());
+			this.add(object);
+		}
+	}
+
+	public boolean shouldSaveObject() {
+		return true;
+	}
+
+	public void doSaveObject() {}
+
+	public void dontSaveObject() {}
+	
 }

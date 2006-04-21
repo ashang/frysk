@@ -1,3 +1,12 @@
+2006-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestSessionSaveLoad.java: New testcase to text session
+	saving and loading.
+	* sessions/SessionManager.java: Added saving/loading.
+	* sessions/DebugProcess.java: Added saving/loading code.
+	made DebugProcess a child of GuiObject.
+	* sessions/Session.java: Ditto.
+
 2006-04-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/DebugProcess.java: New file.

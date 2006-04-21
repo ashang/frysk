@@ -40,12 +40,8 @@
 package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
-import java.util.List;
-
-import org.jdom.Element;
 
 import frysk.gui.monitor.LiaisonPoint;
-import frysk.gui.monitor.ObjectFactory;
 
 /**
  * FilterPoints provide a flexible interface between Observers
@@ -76,39 +72,6 @@ public abstract class FilterPoint extends LiaisonPoint {
 	
 	public void removeFilter(Filter filter){
 		super.removeItem(filter);
-	}
-	
-	public void save(Element node) {
-		super.save(node);
-		
-		//filters
-		Element filtersXML = new Element("filters");
-		
-		Iterator iterator = this.getItems().iterator();
-		while (iterator.hasNext()) {
-			Filter filter = (Filter) iterator.next();
-			if(filter.shouldSaveObject()){
-				Element filterXML = new Element("filter");
-				ObjectFactory.theFactory.saveObject(filter, filterXML);
-				filtersXML.addContent(filterXML);	
-			}
-		}
-		node.addContent(filtersXML);
-	}
-	
-	public void load(Element node) {
-		super.load(node);
-		
-		//filters
-		Element filtersXML = node.getChild("filters");
-		List list = (List) filtersXML.getChildren("filter");
-		Iterator i = list.iterator();
-		
-		Filter filter;
-		while (i.hasNext()){
-			filter = (Filter) ObjectFactory.theFactory.loadObject((Element) i.next());
-			this.addFilter(filter);
-		}
 	}
 	
 	public String toString(){

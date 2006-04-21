@@ -78,39 +78,6 @@ public abstract class ActionPoint extends LiaisonPoint {
 	public void addAction(Action action) {
 		super.addItem(action);		
 	}
-	
-//	public void save(Element node) {
-//		super.save(node);
-//		
-//		//actions
-//		Element actionsXML = new Element("actions"); //$NON-NLS-1$
-//		
-//		Iterator iterator = this.getActions().iterator();
-//		while (iterator.hasNext()) {
-//			Action action = (Action) iterator.next();
-//			if(action.shouldSaveObject()){
-//				Element actionXML = new Element("action"); //$NON-NLS-1$
-//				ObjectFactory.theFactory.saveObject(action, actionXML);
-//				actionsXML.addContent(actionXML);
-//			}
-//		}
-//		node.addContent(actionsXML);
-//	}
-//	
-//	public void load(Element node) {
-//		super.load(node);
-//		
-//		//actions
-//		Element actionsXML = node.getChild("actions"); //$NON-NLS-1$
-//		List list = (List) actionsXML.getChildren("action"); //$NON-NLS-1$
-//		Iterator i = list.iterator();
-//		
-//		Action action;
-//		while (i.hasNext()){
-//			action = (Action) ObjectFactory.theFactory.loadObject((Element) i.next());
-//			this.addAction(action);
-//		}
-//	}
 
 	public String toString(){
 		String string = "";

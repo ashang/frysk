@@ -39,77 +39,38 @@
 
 package frysk.gui.monitor;
 
-import org.jdom.Element;
-
+import java.util.HashMap;
 
 /**
- * A GuiObject is one that has a name and a tooltip.
- * */
-public class GuiObject extends GuiObservable implements SaveableXXX{
+ * 
+ * @author swagiaal
+ *
+ * A HashMap of GuiObjects. Makes sure that
+ * the objects added to it are unique, and throws
+ * and exception if that is violated.
+ */
+
+public class UniqueHashMap{
 	
-	private boolean saveObject = true;
+	private HashMap nameHash;
 	
-	private String name;
-	private String toolTip;
-	
-	public GuiObject(String name, String toolTip){
-		this.name = name;
-		this.toolTip = toolTip;
-		this.saveObject = true;
-	}
-
-	public GuiObject(GuiObject other) {
-		this.name = other.name;
-		this.toolTip = other.toolTip;
-		this.saveObject = other.saveObject;
-	}
-
-	public GuiObject() {
-		this.setName("NoName");
-		this.setToolTip("NoTootip");
-		this.saveObject = true;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-		
-		this.notifyObservers();
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-		
-		this.notifyObservers();
-	}
-
-	public String getToolTip() {
-		return toolTip;
-	}
-
-	public void save(Element node) {
-		node.setAttribute("name", this.getName());
-		node.setAttribute("tooltip", this.getToolTip());
-	}
-
-	public void load(Element node) {
-		this.setName(node.getAttribute("name").getValue());
-		this.setToolTip(node.getAttribute("tooltip").getValue());
+	public UniqueHashMap(){
+		this.nameHash = new HashMap();
 	}
 	
-	public boolean shouldSaveObject(){
-		return this.saveObject;
-	}
-
-	public void doSaveObject() {
-		this.saveObject = true;
-	}
-
-	public void dontSaveObject() {
-		this.saveObject = false;
+	public void add(GuiObject object){
+		if(this.nameHash.containsKey(object.getName())){
+			throw new RuntimeException("The given observer name is already used");
+		}else{
+			this.nameHash.put(object.getName(), object);
+		}
 	}
 	
+	public void remove(GuiObject object){
+		this.nameHash.remove(object);
+	}
+	
+	public GuiObject get(String name){
+		return (GuiObject) this.nameHash.get(name);
+	}
 }

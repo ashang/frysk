@@ -40,7 +40,6 @@
 package frysk.gui.monitor;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.jdom.Element;
 
@@ -84,36 +83,18 @@ protected ObservableLinkedList items;
 	public void save(Element node) {
 		super.save(node);
 		
-		//items
-		Element itemsXML = new Element("items");
-		
-		Iterator iterator = this.getItems().iterator();
-		while (iterator.hasNext()) {
-			LiaisonItem item = (LiaisonItem) iterator.next();
-			if(item.shouldSaveObject()){
-				Element itemXML = new Element("item");
-				ObjectFactory.theFactory.saveObject(item, itemXML);
-				itemsXML.addContent(itemXML);	
-			}
-		}
-		node.addContent(itemsXML);
+		Element filtersXML = new Element("items");
+		this.items.save(filtersXML);
+		node.addContent(filtersXML);
 	}
 	
 	public void load(Element node) {
 		super.load(node);
 		
-		//items
-		Element itemsXML = node.getChild("items");
-		List list = (List) itemsXML.getChildren("item");
-		Iterator i = list.iterator();
-		
-		LiaisonItem item;
-		while (i.hasNext()){
-			item = (LiaisonItem) ObjectFactory.theFactory.loadObject((Element) i.next());
-			this.addItem(item);
-		}
+		Element elemetnsXML = node.getChild("items");
+		this.items.load(elemetnsXML);
 	}
-	
+
 	public String toString(){
 		String string = "";
 		

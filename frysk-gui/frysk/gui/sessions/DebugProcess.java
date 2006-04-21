@@ -39,10 +39,17 @@
 
 package frysk.gui.sessions;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.jdom.Element;
+
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
-import frysk.proc.Proc;
 import frysk.gui.srcwin.tags.Tagset;
+import frysk.proc.Proc;
 
 /**
  * 
@@ -52,7 +59,7 @@ import frysk.gui.srcwin.tags.Tagset;
  * in a debug session
  */
 
-public class DebugProcess {
+public class DebugProcess extends GuiObject {
  
 	String executablePath;
 	Proc proc;
@@ -60,8 +67,18 @@ public class DebugProcess {
 	ObservableLinkedList observers;
 	ObservableLinkedList tagsets;
 	
+	public DebugProcess(){
+		super();
+		
+		this.observers = new ObservableLinkedList();
+		this.tagsets = new ObservableLinkedList();
+	}
+	
 	public DebugProcess(String executablePath){
 		this.executablePath = executablePath;
+		
+		this.observers = new ObservableLinkedList();
+		this.tagsets = new ObservableLinkedList();
 	}
 	
 	/**
@@ -116,5 +133,41 @@ public class DebugProcess {
 		return this.tagsets;
 	}
 	
+
+	public void save(Element node) {
+		super.save(node);
+		
+		node.setAttribute("executablePath", this.executablePath);
+		Element observersXML= new Element("observers");
+		
+		Iterator iterator = observers.iterator();
+		while (iterator.hasNext()) {
+			GuiObject object = (GuiObject) iterator.next();
+			Element elementXML = new Element("element");
+			elementXML.setAttribute("name", object.getName());
+			observersXML.addContent(elementXML);	
+		}
+		
+		node.addContent(observersXML);
+		
+		//save tagsets
+	}
+
+	public void load(Element node) {
+		super.load(node);
+		
+		this.executablePath = node.getAttribute("executablePath").getValue();
+		Element observersXML = node.getChild("observers");
+		List list = (List) observersXML.getChildren("element");
+		Iterator i = list.iterator();
+		
+		while (i.hasNext()){
+			Element elementXML = (Element) i.next();
+			ObserverRoot observer = ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name"));
+			observers.add(observer);
+		}
+				
+		// load tagsets
+	}
 
 }

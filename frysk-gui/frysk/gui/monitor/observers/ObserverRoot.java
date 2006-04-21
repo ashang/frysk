@@ -26,7 +26,7 @@ import frysk.proc.TaskObserver;
  * provides name and tool tip strings for GUI display purposes.
  * Takes Action objects that can be used by clients to customize
  * behaviour. 
- * */
+ */
 public class ObserverRoot extends GuiObject implements TaskObserver, Observer, SaveableXXX{
 
 		private ObservableLinkedList actions;
