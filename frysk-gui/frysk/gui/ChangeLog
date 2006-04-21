@@ -6,6 +6,7 @@
 	* sessions/DebugProcess.java: Added saving/loading code.
 	made DebugProcess a child of GuiObject.
 	* sessions/Session.java: Ditto.
+	Added removeProcess method.
 
 2006-04-19  Sami Wagiaalla  <swagiaal@redhat.com>
 

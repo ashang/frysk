@@ -69,6 +69,10 @@ public class Session extends GuiObject{
 		this.procs.add(process);
 	}
 	
+	public void removeProcess(DebugProcess process){
+		this.procs.remove(process);
+	}
+	
 	public ObservableLinkedList getProcesses(){
 		return this.procs;
 	}
