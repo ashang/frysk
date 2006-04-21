@@ -215,6 +215,13 @@ frysk2137/gcj.sh: $(frysk2137_FILES)
 		$(srcdir)/frysk2137/Hello.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
+	
+# test for kernel ptrace (nota)bug
+noinst_PROGRAMS += frysk2595/ptrace_peek_wrong_thread
+frysk2595_ptrace_peek_wrong_thread_LDFLAGS = -lpthread
+XFAIL_TESTS += frysk2595/ptrace_peek_wrong_thread
+frysk2595_ptrace_peek_wrong_thread_SOURCES = frysk2595/ptrace_peek_wrong_thread.c
+
 
 process_TESTS = \
 	process/single_exec \
