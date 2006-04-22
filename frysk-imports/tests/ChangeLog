@@ -1,5 +1,11 @@
 2006-04-22  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk2595/ptrace_after_exec.c: Add Copyright.
+	* frysk2595/ptrace_after_exec_of_thread.c: Add Copyright.
+	* frysk2595/ptrace_after_forked_thread_exits.c: Add Copyright.
+	* frysk2595/ptrace_before_forked_thread_exits.c: Add Copyright.
+	* frysk2595/ptrace_peek_wrong_thread.c: Add Copyright.
+	
 	* frysk2595/ptrace_after_exec_of_thread.c: New.
 	* frysk2595/ptrace_after_exec.c: New.
 	* Makefile.am: Add to TESTS.
