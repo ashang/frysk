@@ -215,13 +215,17 @@ frysk2137/gcj.sh: $(frysk2137_FILES)
 		$(srcdir)/frysk2137/Hello.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
-	
-# test for kernel ptrace (nota)bug
+
+# test for kernel ptrace - from a thread other than the attacher
 noinst_PROGRAMS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_LDFLAGS = -lpthread
 XFAIL_TESTS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_SOURCES = frysk2595/ptrace_peek_wrong_thread.c
-
+# test for kernel ptrace - fork from thread, and ptrace after thread exit
+noinst_PROGRAMS += frysk2595/ptrace_after_forked_thread_exits
+frysk2595_ptrace_after_forked_thread_exits_LDFLAGS = -lpthread
+XFAIL_TESTS += frysk2595/ptrace_after_forked_thread_exits
+frysk2595_ptrace_after_forked_thread_exits_SOURCES = frysk2595/ptrace_after_forked_thread_exits.c
 
 process_TESTS = \
 	process/single_exec \
