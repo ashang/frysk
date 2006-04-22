@@ -226,6 +226,22 @@ noinst_PROGRAMS += frysk2595/ptrace_after_forked_thread_exits
 frysk2595_ptrace_after_forked_thread_exits_LDFLAGS = -lpthread
 XFAIL_TESTS += frysk2595/ptrace_after_forked_thread_exits
 frysk2595_ptrace_after_forked_thread_exits_SOURCES = frysk2595/ptrace_after_forked_thread_exits.c
+# test for kernel ptrace - fork from thread, and ptrace before thread exit
+noinst_PROGRAMS += frysk2595/ptrace_before_forked_thread_exits
+frysk2595_ptrace_before_forked_thread_exits_LDFLAGS = -lpthread
+XFAIL_TESTS += frysk2595/ptrace_before_forked_thread_exits
+frysk2595_ptrace_before_forked_thread_exits_SOURCES = frysk2595/ptrace_before_forked_thread_exits.c
+# test for kernel ptrace - ptrace after main thread execs - YES
+# THIS REALLY DOES WORK.
+noinst_PROGRAMS += frysk2595/ptrace_after_exec
+frysk2595_ptrace_after_exec_LDFLAGS = -lpthread
+TESTS += frysk2595/ptrace_after_exec
+frysk2595_ptrace_after_exec_SOURCES = frysk2595/ptrace_after_exec.c
+# test for kernel ptrace - ptrace after exec, child of other thread
+noinst_PROGRAMS += frysk2595/ptrace_after_exec_of_thread
+frysk2595_ptrace_after_exec_of_thread_LDFLAGS = -lpthread
+TESTS += frysk2595/ptrace_after_exec_of_thread
+frysk2595_ptrace_after_exec_of_thread_SOURCES = frysk2595/ptrace_after_exec_of_thread.c
 
 process_TESTS = \
 	process/single_exec \
