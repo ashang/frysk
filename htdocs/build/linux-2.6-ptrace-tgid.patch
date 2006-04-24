@@ -1,0 +1,15 @@
+--- kernel/ptrace.c.dist	2006-04-21 21:24:13.000000000 -0400
++++ kernel/ptrace.c	2006-04-21 21:59:55.000000000 -0400
+@@ -100,8 +100,10 @@
+ 	 * be changed by us so it's not changing right after this.
+ 	 */
+ 	read_lock(&tasklist_lock);
+-	if ((child->ptrace & PT_PTRACED) && child->parent == current &&
+-	    (!(child->ptrace & PT_ATTACHED) || child->real_parent != current)
++	if (((child->ptrace & PT_PTRACED)
++	     && child->parent->tgid == current->tgid)
++	    && (!(child->ptrace & PT_ATTACHED)
++		|| child->real_parent != current)
+ 	    && child->signal != NULL) {
+ 		ret = 0;
+ 		spin_lock_irq(&child->sighand->siglock);

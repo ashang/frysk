@@ -93,49 +93,29 @@ following:
 
 <ul>
 
-<li>The distributed kernel and its upstream counterpart both have a
-bug where ptracing a multi-threaded program that make execve calls
-causes that program to be killed.  The test <tt><a
-href="http://sourceware.org/bugzilla/show_bug.cgi?id=2130">frysk2130</a>/strace-clone-exec.sh</tt>
-is checking for this.<br> Either grab a pre-built kernel snapshot with
+<li><a
+href="http://sourceware.org/bugzilla/show_bug.cgi?id=2130"><tt>PASS:
+frysk2130/strace-clone-exec.sh</tt></a> A ptraced multi-threaded
+program that does an execve call from a non-main thread is
+spontaneously killed.<br> Fixed in <tt>kernel-2.6.16-1.2096_FC5</tt>.
+
+<li><a
+href="http://sourceware.org/bugzilla/show_bug.cgi?id=2595"><tt>PASS:
+frysk2595/ptrace_peek_wrong_thread</tt></a>: Only the attaching thread
+can peek and poke a process.<br> Grab a pre-built kernel snapshot with
 a workaround applied from:
 
 <pre>
 <a href="http://people.redhat.com/cagney/frysk">http://people.redhat.com/cagney/frysk</a>
 </pre>
 
-or build your own kernel vis:
-
-<ul>
-<li>Download and unpack the kernel
-<pre>
-$ wget http://download.fedora.redhat.com/pub/fedora\
-/linux/core/updates/5/SRPMS/kernel-`uname -r`.src.rpm
-$ rpm -ivh kernel-`uname -r`.src.rpm
-</pre>
-</li>
-<li>Add the patch <a
- href="linux-2.6-strace-clone-exec.patch">linux-2.6-strace-clone-exec.patch</a>
- to the SOURCES directory; and apply the patch <a
- href="fc5-kernel-spec.patch">fc5-kernel-spec.patch</a> to
- <tt>SPECS/kernel-2.6.spec</tt>.
-</li>
-<li>Build and install a new kernel with something like:
-<pre>
-$ rpmbuild -ba --target=i686 kernel-2.6.spec
-$ rpm -ivh ../blah/blah
-</pre>
-</li>
-</ul>
-
-Thanks to Wu Zhou for both tracking this down problem and providing
-the necessary patches.
+the patch can be found <a href="linux-2.6-ptrace-tgid.patch">here</a>.
 
 </li>
 
-<li>Either <tt>selinux</tt> should be disabled, or its database
-updated.  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt> behave weird;
-and <tt>/proc</tt> will not be accessible</li>
+<li>Check that the <tt>selinux</tt> security database is up-to-date
+(or disable SE Linux).  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt>
+behave weird; and <tt>/proc</tt> is not accessible</li>
 
 <li>You will need to install a number of packages vis:
 <pre>
