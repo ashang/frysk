@@ -1,3 +1,10 @@
+2006-04-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* register/RegisterWindow.java (setTask): Now uses saveBinaryValue
+	to do the brunt of the work.
+	(saveBinaryValue): No longer refreshes list, explicit call is
+	required, also propery sign-extends the LE binary string.	
+
 2006-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestSessionSaveLoad.java: New testcase to text session

@@ -90,26 +90,19 @@ public class RegisterWindow extends Window implements Saveable{
 		this.registerView = (TreeView) this.glade.getWidget("registerView");
 		
 		ListStore model = new ListStore(cols);
+		registerView.setModel(model);
 		
 		Isa isa = this.myTask.getIsa();
 		Iterator registers = isa.RegisterIterator();
+		
 		while(registers.hasNext()){
 			Register register = (Register) registers.next();
 			TreeIter iter = model.appendRow();
 			
 			model.setValue(iter, (DataColumnString) cols[0], register.getName());
-			model.setValue(iter, (DataColumnString) cols[1], ""+0);
-			model.setValue(iter, (DataColumnString) cols[2], ""+0);
-			model.setValue(iter, (DataColumnString) cols[3], "0x" + signExtend(""+0, register.getLength()*4, 4));
-			model.setValue(iter, (DataColumnString) cols[4], "0x" + signExtend(""+0, register.getLength()*4, 4));
-			model.setValue(iter, (DataColumnString) cols[5], signExtend(""+0, register.getLength()*4, 3));
-			model.setValue(iter, (DataColumnString) cols[6], signExtend(""+0, register.getLength()*4, 3));
-			model.setValue(iter, (DataColumnString) cols[7], signExtend(""+0, register.getLength()*4, 1));
-			model.setValue(iter, (DataColumnString) cols[8], signExtend(""+0, register.getLength()*4, 1));
 			model.setValue(iter, (DataColumnObject) cols[9], register);
+			saveBinaryValue(""+register.get(this.myTask), 10, true, iter.getPath());
 		}
-		
-		registerView.setModel(model);
 		
 		TreeViewColumn col = new TreeViewColumn();
 		col.setTitle("Name");
@@ -186,7 +179,7 @@ public class RegisterWindow extends Window implements Saveable{
 			}
 		});
 		
-		this.showAll();
+		this.refreshList();
 	}
 	
 	/**
@@ -297,8 +290,15 @@ public class RegisterWindow extends Window implements Saveable{
 	}
 	
 	private void saveBinaryValue(String rawString, int raadix, boolean littleEndian, TreePath path){
+		String binaryString = "";
 //		 convert the data to little endian binary
-		String binaryString = Long.toBinaryString(Long.parseLong(rawString, raadix));
+		try{
+			binaryString = Long.toBinaryString(Long.parseLong(rawString, raadix));
+		}
+		// Invalid format, do nothing
+		catch(NumberFormatException e){
+			return;
+		}
 		if(!littleEndian)
 			binaryString = reverse(binaryString);
 		
@@ -306,12 +306,11 @@ public class RegisterWindow extends Window implements Saveable{
 		
 		TreeIter iter = model.getIter(path);
 		
-		String prevVal = model.getValue(iter, (DataColumnString) cols[7]);
-		
-		binaryString = signExtend(binaryString, prevVal.length(), 1);
+		Register register = (Register) model.getValue(iter, (DataColumnObject) cols[9]);
+	
+		binaryString = signExtend(binaryString, register.getLength()*4, 1);
 		
 		model.setValue(iter, (DataColumnString) cols[7], binaryString);
-		this.refreshList();
 	}
 	
 	class DecCellListener implements CellRendererTextListener{
@@ -326,6 +325,7 @@ public class RegisterWindow extends Window implements Saveable{
 			String text = arg0.getText();
 
 			RegisterWindow.this.saveBinaryValue(text, 10, littleEndian, new TreePath(arg0.getIndex()));
+			RegisterWindow.this.refreshList();
 		}
 		
 	}
@@ -344,6 +344,7 @@ public class RegisterWindow extends Window implements Saveable{
 			if(text.indexOf("0x") != -1)
 				text = text.substring(2);
 			RegisterWindow.this.saveBinaryValue(text, 16, littleEndian, new TreePath(arg0.getIndex()));
+			RegisterWindow.this.refreshList();
 		}
 		
 	}
@@ -360,6 +361,7 @@ public class RegisterWindow extends Window implements Saveable{
 			String text = arg0.getText();
 
 			RegisterWindow.this.saveBinaryValue(text, 8, littleEndian, new TreePath(arg0.getIndex()));
+			RegisterWindow.this.refreshList();
 		}
 		
 	}
@@ -376,6 +378,7 @@ public class RegisterWindow extends Window implements Saveable{
 			String text = arg0.getText();
 			
 			RegisterWindow.this.saveBinaryValue(text, 2, littleEndian, new TreePath(arg0.getIndex()));
+			RegisterWindow.this.refreshList();
 		}
 		
 	}

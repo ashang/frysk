@@ -1,3 +1,9 @@
+2006-04-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactor.java (createSourceWindow): Uncommented
+	hack to stop process since register get works with modified kernel,
+	this will need to be replaced by a proper start/stop method.
+
 2006-04-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (toggleRegisterWindow): Now uses WindowManager
