@@ -59,7 +59,6 @@ public class CheckedListView extends ListView {
 	
 	public CheckedListView(Handle handle){
 		super(handle);
-
 	}
 	
 	protected void initListStore() {
@@ -91,5 +90,10 @@ public class CheckedListView extends ListView {
 	
 	public DataColumnBoolean getToggleDC(){
 		return this.toggleDC;
+	}
+	
+	public boolean isChecked(GuiObject object){
+		Iter iter = this.map.get(object);
+		return listStore.getValue(iter, toggleDC);
 	}
 }
