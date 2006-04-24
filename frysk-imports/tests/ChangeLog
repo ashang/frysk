@@ -1,3 +1,10 @@
+2006-04-24  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2595/ptrace_after_forked_thread_exits.c: Return skip status.
+	* Makefile.am (XFAIL_TESTS): Move ptrace_peek_wrong_thread,
+	ptrace_after_forked_thread_exits, and
+	ptrace_before_forked_thread_exits to TESTS.
+
 2006-04-22  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk2595/ptrace_after_exec.c: Add Copyright.

@@ -219,17 +219,17 @@ frysk2137/gcj.sh: $(frysk2137_FILES)
 # test for kernel ptrace - from a thread other than the attacher
 noinst_PROGRAMS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_LDFLAGS = -lpthread
-XFAIL_TESTS += frysk2595/ptrace_peek_wrong_thread
+TESTS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_SOURCES = frysk2595/ptrace_peek_wrong_thread.c
 # test for kernel ptrace - fork from thread, and ptrace after thread exit
 noinst_PROGRAMS += frysk2595/ptrace_after_forked_thread_exits
 frysk2595_ptrace_after_forked_thread_exits_LDFLAGS = -lpthread
-XFAIL_TESTS += frysk2595/ptrace_after_forked_thread_exits
+TESTS += frysk2595/ptrace_after_forked_thread_exits
 frysk2595_ptrace_after_forked_thread_exits_SOURCES = frysk2595/ptrace_after_forked_thread_exits.c
 # test for kernel ptrace - fork from thread, and ptrace before thread exit
 noinst_PROGRAMS += frysk2595/ptrace_before_forked_thread_exits
 frysk2595_ptrace_before_forked_thread_exits_LDFLAGS = -lpthread
-XFAIL_TESTS += frysk2595/ptrace_before_forked_thread_exits
+TESTS += frysk2595/ptrace_before_forked_thread_exits
 frysk2595_ptrace_before_forked_thread_exits_SOURCES = frysk2595/ptrace_before_forked_thread_exits.c
 # test for kernel ptrace - ptrace after main thread execs - YES
 # THIS REALLY DOES WORK.
