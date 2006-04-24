@@ -40,12 +40,12 @@
 
 AC_PROG_RANLIB
 
-# Use AC_CHECK_PROGS, and not AC_PATH_PROGS and AC_PATH_PROG.
-
-# AC_PATH_PROGS, as when given an environment containing the variable
-# <<JAVAC=/path/to/gcj -C>> it looses the <<-C>>.  AC_PATH_PROG, when
-# given an environment containing a variable like <<JAVAC=gcj>> it
-# ignores it (which is contrary behavior to AC_PATH_PROGS).
+# Use AC_CHECK_PROGS, and not AC_PATH_PROGS and AC_PATH_PROG:
+# AC_PATH_PROGS, when given an environment containing a variable like
+# <<JAVAC=/path/to/gcj -C>> looses the <<-C>>: AC_PATH_PROG, when
+# given an environment containing a variable like <<JAVAC=gcj>> (i.e.,
+# path not absolute) ignores it (which is contrary behavior to
+# AC_PATH_PROGS).
 
 AC_PROG_CXX([g++4 g++ c++])
 test x"$CXXFLAGS" = "x-g -O2" && CXXFLAGS="-g -O"
@@ -121,3 +121,9 @@ test "x${XMLTO}" = xno && AC_MSG_ERROR([no xmlto binary found in \${PATH)])
 
 lib=`pkg-config --debug 2>&1 |awk -F '/' '/^Scanning.*pkgconfig.$/ { print $(NF - 1); exit; }'`
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/$lib/frysk/pkgconfig
+
+# Check for XMLLINT
+AC_CHECK_PROGS([XMLLINT], [xmllint], [no])
+test $XMLLINT = no && AC_ERROR([no xmllint program found])
+AC_CHECK_PROGS([XMLCATALOG], [xmlcatalog], [no])
+test $XMLCATALOG = no && AC_ERROR([no xmlcatalog program found])

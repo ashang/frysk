@@ -1,3 +1,11 @@
+2006-04-24  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (glade.catalog): New rule.
+	(glade.checked): Point SGML_CATALOG_FILES at glade.catalog, add
+	--nonet and --catalogs parameters.
+	(GLADE_DTD_FILE): Define.
+	* acinclude.m4 (lib): Check for XMLLINT.
+
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh (.fig.jpg): Append .jpg files to CLEANFILES, and
