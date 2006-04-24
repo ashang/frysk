@@ -93,7 +93,7 @@ public class CheckedListView extends ListView {
 	}
 	
 	public boolean isChecked(GuiObject object){
-		Iter iter = this.map.get(object);
+		TreeIter iter = (TreeIter) this.map.get(object);
 		return listStore.getValue(iter, toggleDC);
 	}
 }
