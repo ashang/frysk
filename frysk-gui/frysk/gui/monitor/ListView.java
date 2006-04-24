@@ -85,6 +85,18 @@ public class ListView extends TreeView implements Observer {
 		this.init();
 	}
 	
+	protected void initListStore(){
+		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
+	}
+	
+	protected void initTreeView() {
+		CellRendererText cellRendererText = new CellRendererText();
+		TreeViewColumn nameCol = new TreeViewColumn();
+		nameCol.packStart(cellRendererText, false);
+		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		this.appendColumn(nameCol);
+	}
+	
 	private void init(){
 		this.setHeadersVisible(false);
 	
@@ -95,14 +107,10 @@ public class ListView extends TreeView implements Observer {
 		
 		this.nameDC = new DataColumnString();
 		this.objectDC = new DataColumnObject();
-		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
-		this.setModel(listStore);
 		
-		CellRendererText cellRendererText = new CellRendererText();
-		TreeViewColumn nameCol = new TreeViewColumn();
-		nameCol.packStart(cellRendererText, false);
-		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		this.appendColumn(nameCol);
+		this.initListStore();
+		this.setModel(listStore);
+		this.initTreeView();
 	}
 	
 	public Iterator getSelectedObjects(){

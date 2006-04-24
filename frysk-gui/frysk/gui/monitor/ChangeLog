@@ -1,3 +1,9 @@
+2006-04-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CheckedListView.java : New file. A ListView with checkboxes.
+	* ListView.java : Changed constructor to allow children to
+	extend functionality of this widget.
+	
 2006-04-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ListView.java (getSelectedObjects): Fixed a small bug, and 
