@@ -1,3 +1,22 @@
+2006-04-25  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/AddedProcTreeView.java: Removed. Simplify with CheckedListView.
+	* druid/ExitProcessGroupsDataModel.java: Ditto.
+	* druid/ProcessExitSelectionTreeView.java: Ditto.
+
+	* druid/CreateFryskSessionDruid.java: Added new Session instance.
+	(addProcessParent): Add routine to add new process types to live session
+	data model.
+	(changeGroupState): Modify and simply the 3 corner cases for adding a process
+	group to a live sesssion object (no parent, parent only, parent and children).
+	(getProcessSelectionControls): Mount the addedProcTreeView using Listview. Link
+	datamodel to session object. Rework state changes to follow simplified states.
+	(getProcessExitControls): Mount the processExitSelectionTreeView using the
+	CheckedListView. Link datamodel to session object. Add TaskTerminatingObserver
+	on selection of CellRendererToggle.
+	(nextPage): Simply, and removing data model swapping. New Session model 
+	does not need this (model is now unified).
+
 2006-04-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterWindow.java (setTask): Now uses saveBinaryValue
