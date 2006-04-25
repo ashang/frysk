@@ -1,3 +1,9 @@
+2006-04-25  Rick Moseley  <rmoseley@redhat.com>
+
+        * frysk2595/ptrace_peek_wrong_thread.c: Add #define _GNU_SOURCE.
+        * frysk2595/ptrace_before_forked_thread.c: Add #define _GNU_SOURCE.
+        * frysk2595/ptrace_after_forked_thread_exits.c: Add #define _GNU_SOURCE.
+
 2006-04-24  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk2595/ptrace_after_forked_thread_exits.c: Return skip status.

@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define _GNU_SOURCE
+
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdlib.h>
