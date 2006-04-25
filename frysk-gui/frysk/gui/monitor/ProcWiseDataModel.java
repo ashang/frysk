@@ -51,6 +51,7 @@ import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 
 import frysk.event.TimerEvent;
@@ -112,6 +113,23 @@ public class ProcWiseDataModel {
 		treeStore.setValue(row, selectedDC, selected);
 	}
 
+	public TreePath searchName(String name)
+	{
+		TreeIter iter = treeStore.getFirstIter();		
+		while (iter != null)
+		{
+			String split[] = treeStore.getValue(iter,getNameDC()).split("\t");
+			
+			split[0] = split[0].trim();
+			if (split.length > 0)
+				if (split[0].equalsIgnoreCase(name))
+					return iter.getPath();
+				
+			iter = iter.getNextIter();
+		}
+		return null;	
+	}
+	
 	public DataColumnString getNameDC() {
 		return nameDC;
 	}
@@ -168,6 +186,8 @@ public class ProcWiseDataModel {
 				public void run() {
 					// get an iterator pointing to the parent
 					try {
+						
+	
 						TreeIter parent = (TreeIter) iterHash.get(proc
 								.getCommand());
 						if (parent != null)
@@ -219,7 +239,7 @@ public class ProcWiseDataModel {
 						}
 					} catch (Exception e) {
 						errorLog.log(Level.WARNING,
-						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e);
+						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e.getMessage());
 					}
 				}
 
