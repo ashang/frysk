@@ -1,5 +1,7 @@
 2006-04-25  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* sessions/DebugProcess.java: Add in super(name,tooltip) call.
+
 	* druid/AddedProcTreeView.java: Removed. Simplify with CheckedListView.
 	* druid/ExitProcessGroupsDataModel.java: Ditto.
 	* druid/ProcessExitSelectionTreeView.java: Ditto.
