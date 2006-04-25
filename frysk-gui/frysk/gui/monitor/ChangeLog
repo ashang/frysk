@@ -7,6 +7,8 @@
 
 2006-04-25  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ListView.java:  Add public to constructors.
+	
 	* CheckedListView.java (addToggleListener):  Added. Temporarily
 	allow listener injection.
 

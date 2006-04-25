@@ -75,12 +75,12 @@ public class ListView extends TreeView implements Observer {
 	private ItemAddedObserver itemAddedObserver;
 	private ItemRemvoedObserver itemRemvoedObserver;
 	
-	ListView(){
+	public ListView(){
 		super();
 		this.init();
 	}
 	
-	ListView(Handle handle){
+	public ListView(Handle handle){
 		super(handle);
 		this.init();
 	}
