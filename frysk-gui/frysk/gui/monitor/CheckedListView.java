@@ -97,8 +97,8 @@ public class CheckedListView extends ListView {
 		super.add(object, treeIter);
 	}
 	
-	public DataColumnBoolean getToggleDC(){
-		return this.toggleDC;
+	public CellRendererToggle getCellRendererToggle(){
+		return this.cellRendererToggle;
 	}
 	
 	public boolean isChecked(GuiObject object){

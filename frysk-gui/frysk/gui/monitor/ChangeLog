@@ -1,3 +1,9 @@
+2006-04-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CheckedListView.java (getCellRendererToggle): New function to
+	expose the local CellRendererToggle.
+	Removed getToggleDC.
+
 2006-04-25  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CheckedListView.java (addToggleListener):  Added. Temporarily
