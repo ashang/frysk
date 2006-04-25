@@ -3,6 +3,7 @@
 	* CheckedListView.java (getCellRendererToggle): New function to
 	expose the local CellRendererToggle.
 	Removed getToggleDC.
+	Changed default to unchecked boxes.
 
 2006-04-25  Phil Muldoon  <pmuldoon@redhat.com>
 
