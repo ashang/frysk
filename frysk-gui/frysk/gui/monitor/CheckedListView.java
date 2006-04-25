@@ -52,6 +52,7 @@ import org.gnu.gtk.event.CellRendererToggleListener;
 public class CheckedListView extends ListView {
 
 	protected DataColumnBoolean toggleDC;
+	private CellRendererToggle cellRendererToggle;
 	
 	public CheckedListView(){
 		super();
@@ -65,11 +66,19 @@ public class CheckedListView extends ListView {
 		this.toggleDC = new DataColumnBoolean();
 		this.listStore = new ListStore(new DataColumn[]{nameDC, toggleDC, objectDC});
 	}
+
+	
+	// Temporarily allow Listener injection until a more robust method
+	// can be implemented.
+	public void addToggleListener(CellRendererToggleListener listener)
+	{
+		cellRendererToggle.addListener(listener);
+	}
 	
 	protected void initTreeView() {
 		super.initTreeView();
 		
-		CellRendererToggle cellRendererToggle = new CellRendererToggle();
+		cellRendererToggle = new CellRendererToggle();
 		cellRendererToggle.setUserEditable(true);
 		cellRendererToggle.addListener(new CellRendererToggleListener() {
 			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
