@@ -93,7 +93,7 @@ public class CheckedListView extends ListView {
 	}
 	
 	public void add(GuiObject object, TreeIter treeIter){
-		listStore.setValue(treeIter, toggleDC, false;
+	    listStore.setValue(treeIter, toggleDC, false);
 		super.add(object, treeIter);
 	}
 	
