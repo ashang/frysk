@@ -67,6 +67,10 @@ public class CheckedListView extends ListView {
 		this.listStore = new ListStore(new DataColumn[]{nameDC, toggleDC, objectDC});
 	}
 
+	public DataColumnBoolean getToggleDC()
+	{
+		return this.toggleDC;
+	}
 	
 	// Temporarily allow Listener injection until a more robust method
 	// can be implemented.

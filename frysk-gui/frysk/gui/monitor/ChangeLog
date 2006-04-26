@@ -1,3 +1,8 @@
+2006-04-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CheckedListView.java (getToggleDC): Added getToggleDC
+	for injected listener querying.
+
 2006-04-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* CheckedListView.java (getCellRendererToggle): New function to
