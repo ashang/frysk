@@ -1,3 +1,8 @@
+2006-04-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* CheckedListView.java (cellRendererToggleEvent): Added a call
+	to update the currently selected object upon a toggle event.
+
 2006-04-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CheckedListView.java (getToggleDC): Added getToggleDC

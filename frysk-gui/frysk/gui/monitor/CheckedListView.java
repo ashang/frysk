@@ -66,11 +66,6 @@ public class CheckedListView extends ListView {
 		this.toggleDC = new DataColumnBoolean();
 		this.listStore = new ListStore(new DataColumn[]{nameDC, toggleDC, objectDC});
 	}
-
-	public DataColumnBoolean getToggleDC()
-	{
-		return this.toggleDC;
-	}
 	
 	// Temporarily allow Listener injection until a more robust method
 	// can be implemented.
@@ -78,15 +73,21 @@ public class CheckedListView extends ListView {
 	{
 		cellRendererToggle.addListener(listener);
 	}
-	
+
+	public DataColumnBoolean getToggleDC()
+	{
+		return this.toggleDC;
+	}
+		
 	protected void initTreeView() {
 		super.initTreeView();
 		
 		cellRendererToggle = new CellRendererToggle();
 		cellRendererToggle.setUserEditable(true);
 		cellRendererToggle.addListener(new CellRendererToggleListener() {
-			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
-				listStore.setValue(listStore.getIter(arg0.getPath()), toggleDC, !(listStore.getValue(listStore.getIter(arg0.getPath()), toggleDC)));
+			public void cellRendererToggleEvent(CellRendererToggleEvent event) {
+				listStore.setValue(listStore.getIter(event.getPath()), toggleDC, !(listStore.getValue(listStore.getIter(event.getPath()), toggleDC)));
+				setSelectedObject( (GuiObject) listStore.getValue(listStore.getIter(event.getPath()), objectDC));
 			}
 		});
 		
