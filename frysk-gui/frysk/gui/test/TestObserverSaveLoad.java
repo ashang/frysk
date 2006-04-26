@@ -126,19 +126,27 @@ public class TestObserverSaveLoad extends TestCase{
 	
 	public void testFilterPointSaveLoad(){
 		Element node = new Element("testNode");
-		TaskFilterPoint taskFilterPoint = new TaskFilterPoint("","");
-		taskFilterPoint.addFilter(new ProcNameFilter("1"));
-		taskFilterPoint.addFilter(new ProcNameFilter("2"));
-		taskFilterPoint.addFilter(new ProcNameFilter("3"));
-		taskFilterPoint.addFilter(new ProcNameFilter("4"));
-		ObjectFactory.theFactory.saveObject(taskFilterPoint, node);
+		TaskFilterPoint savedFilterPoint = new TaskFilterPoint("","");
+
+		ProcNameFilter savedFilter = new ProcNameFilter();
+		savedFilter.setName("1");
+		savedFilterPoint.addFilter(savedFilter);
+
+		savedFilter = new ProcNameFilter();
+		savedFilter.setArgument("1");
+		savedFilterPoint.addFilter(savedFilter);
+
+		ObjectFactory.theFactory.saveObject(savedFilterPoint, node);
+
+		FilterPoint loadedFilterPoint = (FilterPoint) ObjectFactory.theFactory.loadObject(node);
+		Iterator i = loadedFilterPoint.getItems().iterator();
 		
-		FilterPoint filterPoint = (FilterPoint) ObjectFactory.theFactory.loadObject(node);
-		Iterator i = filterPoint.getItems().iterator();
-		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"1");
-		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"2");
-		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"3");
-		assertEquals("FilterName", ((ProcNameFilter)i.next()).getName(),"4");
+		ProcNameFilter loadedFilter = (ProcNameFilter)i.next(); 
+		assertEquals("FilterName", "1", loadedFilter.getName());
+
+		loadedFilter = (ProcNameFilter)i.next(); 
+		assertEquals("FilterName", "1", loadedFilter.getArgument());
+
 	}
 	
 	public void testActionPointSaveLoad(){

@@ -39,8 +39,6 @@
 
 package frysk.gui.monitor.filters;
 
-import org.jdom.Element;
-
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.LiaisonItem;
@@ -61,18 +59,18 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 
 	public ProcNameFilter(){
 		super("Name", "Filters for the proc with the given name ");
-	//	this.procName = procName;
+		this.procName = new String();
 		
 		this.initWidget();
 	}
 	
-	public ProcNameFilter(String procName){
-		super("Name", "Filters for the proc with the name " + procName);
-		this.procName = procName;
-		
-		this.initWidget();
-	}
-	
+//	public ProcNameFilter(String procName){
+//		super("Name", "Filters for the proc with the name " + procName);
+//		this.procName = procName;
+//		
+//		this.initWidget();
+//	}
+//	
 	public ProcNameFilter(ProcNameFilter other){
 		super(other);
 		this.procName = other.procName;
@@ -108,15 +106,15 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 		return procName;
 	}
 	
-	public void save(Element node){
-		super.save(node);
-		node.setAttribute("procName", this.procName);
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		this.setName(node.getAttribute("procName").getValue());
-	}
+//	public void save(Element node){
+//		super.save(node);
+//		node.setAttribute("procName", this.procName);
+//	}
+//	
+//	public void load(Element node){
+//		super.load(node);
+//		this.setName(node.getAttribute("procName").getValue());
+//	}
 
 	public boolean setArgument(String argument) {
 		this.procName = argument;

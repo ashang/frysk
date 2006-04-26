@@ -39,6 +39,8 @@
 
 package frysk.gui.monitor;
 
+import org.jdom.Element;
+
 
 public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 	protected Runnable runnable;
@@ -73,4 +75,28 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 	 * @return
 	 */
 	public abstract ObservableLinkedList getArgumentCompletionList();
+	
+	public void save(Element node){
+		super.save(node);
+		String argument = this.getArgument();
+		if(argument ==  null){
+			node.setAttribute("argument", "null");
+		}else{
+			node.setAttribute("argument", this.getArgument());
+		}
+		System.out.println(this + ": LiaisonItem.save() saving " + this.getName() + "["+ this.getArgument() +"]");
+	}
+	
+	public void load(Element node){
+		super.load(node);
+		String argument = node.getAttributeValue("argument"); 
+		if(argument.equals("null")){
+			this.setArgument(null);
+		}else{
+			this.setArgument(argument);
+		}
+		System.out.println(this + ": LiaisonItem.load() loading " + this.getName() + "["+ this.getArgument() +"]");
+	}
+	
+	
 }

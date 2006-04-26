@@ -42,7 +42,44 @@ package frysk.gui.monitor;
 import org.jdom.Element;
 
 public interface SaveableXXX {
+	
+	
+	/**
+	 * Save object to the given node
+	 * Saving Conventions:
+	 * If this object has a property such as a
+	 * String, char, int, etc, that is saved by
+	 * using node.setAttribute("someProperty", someProperty);
+	 * If this object contains composing @link frysk.gui.monitor.SaveableXXX
+	 * then a node is created for that and that object is told to save itself
+	 * to that node. Example:
+	 *      
+	 *      Element filtersNode = new Element("filtersList");
+	 *      this.filtersList.save(filtersNode);
+	 *      node.addContent(filtersNode);
+	 *      
+	 * Be careful some times one wants to save the objects name rather
+	 * than the object itself, and then use the name to later recreate
+	 * that object via a managers. Like observers for instance. Perhaps
+	 * objects such as these should be smart enough to use a manager to
+	 * save/load themselfs, that way an api client doesnt have to worry
+	 * ... one day :).
+	 * @param node
+	 */
 	void save(Element node);
+	
+	/**
+	 * To load a stored property one does this:
+	 * 		String someString = node.getAttributeValue("someString");
+	 * To load @link frysk.gui.monitor.SaveableXXX one gets the appropriet
+	 * node and tells that object to load itself from that node.
+	 * Example:
+	 *      
+	 *      Element filtersNode = node.getChild("filtersList");
+	 *		this.filtersList.load(filtersNode);
+	 *      
+	 * @param node
+	 */
 	void load(Element node);
 	
 	/**

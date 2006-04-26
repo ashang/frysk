@@ -61,6 +61,9 @@ public class CompletingEntry extends Entry implements Observer {
 	
 	private ObservableLinkedList watchedList;
 	
+	private ItemAddedObserver itemAddedObserver;
+	private ItemRemovedObserver itemRemovedObserver;
+	
 	CompletingEntry(Handle handle){
 		super(handle);
 		init();
@@ -74,6 +77,9 @@ public class CompletingEntry extends Entry implements Observer {
 	private void init(){
 		this.hash = new HashMap();
 		
+		this.itemAddedObserver = new ItemAddedObserver();
+		this.itemRemovedObserver = new ItemRemovedObserver();
+		
 		this.entryCompletion = new EntryCompletion();
 		entryCompletion.setInlineCompletion(true);
 		//entryCompletion.setPopupCompletion(true);
@@ -85,25 +91,20 @@ public class CompletingEntry extends Entry implements Observer {
 		entryCompletion.setModel(listStore);
 		this.setCompletion(entryCompletion);
 		entryCompletion.setTextColumn(dataColumnString.getColumn());
+	
+	
 	}
 	
 	public void watchList(ObservableLinkedList linkedList){
+		if(this.watchedList != null){
+			this.unWatchList();
+		}
+		
 		this.watchedList = linkedList;
 		Iterator iterator = linkedList.iterator();
 		
-		linkedList.itemAdded.addObserver(new Observer() {
-			public void update(Observable observable, Object object) {
-				GuiObject guiObject = (GuiObject) object;
-				int index = watchedList.indexOf(guiObject);
-				add(guiObject, index);
-			}
-		});
-		
-		linkedList.itemRemoved.addObserver(new Observer() {
-			public void update(Observable arg0, Object object) {
-				remove((GuiObject) object);
-			}
-		});
+		watchedList.itemAdded.addObserver(this.itemAddedObserver);
+		watchedList.itemRemoved.addObserver(this.itemRemovedObserver);
 		
 		while (iterator.hasNext()) {
 			GuiObject object = (GuiObject) iterator.next();
@@ -111,6 +112,24 @@ public class CompletingEntry extends Entry implements Observer {
 		}
 	}
 
+	
+	public void unWatchList(){
+		if(this.watchedList == null){
+			throw new RuntimeException("No list is being watched");
+		}
+		
+		Iterator iterator = this.watchedList.iterator();
+		while (iterator.hasNext()) {
+			GuiObject element = (GuiObject) iterator.next();
+			this.remove(element);
+		}
+		
+		watchedList.itemAdded.deleteObserver(itemAddedObserver);
+		watchedList.itemRemoved.deleteObserver(itemAddedObserver);
+		
+		this.watchedList = null;
+	}
+	
 	private void add(GuiObject object) {
 		TreeIter iter = this.listStore.appendRow();
 		this.add(object, iter);
@@ -129,7 +148,6 @@ public class CompletingEntry extends Entry implements Observer {
 	}
 
 	protected void add(GuiObject object, TreeIter iter){
-		System.out.println(this + ": CompletingEntry.add() adding: " + object.getName());
 		this.listStore.setValue(iter, dataColumnString, object.getName());
 		this.hash.put(object, iter);
 		object.addObserver(this);
@@ -140,5 +158,18 @@ public class CompletingEntry extends Entry implements Observer {
 		this.listStore.setValue(iter, dataColumnString, ((GuiObject)object).getName());
 	}
 	
-	
+	private class ItemAddedObserver implements Observer{
+		public void update(Observable observable, Object object) {
+			GuiObject guiObject = (GuiObject) object;
+			int index = watchedList.indexOf(guiObject);
+			add(guiObject, index);
+		}
+	}
+
+	private class ItemRemovedObserver implements Observer{
+		public void update(Observable arg0, Object object) {
+			remove((GuiObject) object);
+		}
+	}
+
 }

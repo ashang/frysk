@@ -55,18 +55,18 @@ public class TaskProcNameFilter extends TaskFilter {
 	private ProcNameFilter procNamefilter;
 	
 	public TaskProcNameFilter(){
-		super();
+		super("Name", "name of the process");
 		this.procNamefilter = new ProcNameFilter();
 		
 		this.initWidget();
 	}
 	
-	public TaskProcNameFilter(String procName){
-		super("Name", "Checks the process name of the parent of the given task");
-		this.procNamefilter = new ProcNameFilter(procName);
-		
-		this.initWidget();
-	}
+//	public TaskProcNameFilter(String procName){
+//		super("Name", "Checks the process name of the parent of the given task");
+//		this.procNamefilter = new ProcNameFilter(procName);
+//		
+//		this.initWidget();
+//	}
 	
 	public TaskProcNameFilter(TaskProcNameFilter other){
 		super(other);
@@ -76,10 +76,10 @@ public class TaskProcNameFilter extends TaskFilter {
 	}
 	
 	private void initWidget(){
-		this.widget.addString(new GuiObject("Name", "name of the process"), this.getProcName(),
+		this.widget.addString(new GuiObject("Name", "name of the process"), this.getArgument(),
 				new DynamicWidget.StringCallback() {
 			public void stringChanged(String string) {
-				setProcName(string);
+				setArgument(string);
 			}
 		});
 	}
@@ -92,21 +92,21 @@ public class TaskProcNameFilter extends TaskFilter {
 		return new TaskProcNameFilter(this);
 	}
 
-	/**
-	 * Set the name of the process to be filtered for.
-	 * @param procName the name of the process to be filtered for.
-	 */
-	public void setProcName(String procName) {
-		this.procNamefilter.setName(procName);
-	}
-
-	/**
-	 * Get the name of the process that is being filtered for.
-	 * @return the name of the process that is being filtered for.
-	 */
-	public String getProcName() {
-		return this.procNamefilter.getProcName();
-	}
+////	/**
+////	 * Set the name of the process to be filtered for.
+////	 * @param procName the name of the process to be filtered for.
+////	 */
+////	public void setProcName(String procName) {
+////		this.procNamefilter.setName(procName);
+////	}
+//
+//	/**
+//	 * Get the name of the process that is being filtered for.
+//	 * @return the name of the process that is being filtered for.
+//	 */
+//	public String getProcName() {
+//		return this.procNamefilter.getProcName();
+//	}
 
 	public boolean setArgument(String argument) {
 		return this.procNamefilter.setArgument(argument);

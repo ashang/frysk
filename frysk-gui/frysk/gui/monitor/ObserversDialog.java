@@ -141,7 +141,6 @@ public class ObserversDialog extends Dialog {
 						newObserver.doSaveObject();
 						scratchList.swap(selected,newObserver);
 						observersListView.setSelectedObject(newObserver);
-						System.out.println(this + ": .buttonEvent() swapped");
 
 						scratchOld.add(selected);
 						scratchNew.add(newObserver);
@@ -255,7 +254,6 @@ public class ObserversDialog extends Dialog {
 	}
 	
 	private void undoChanges(){
-		System.out.println(this + ": ObserversDialog.undoChanges()");
 //		scratchList.clear();
 //		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
 //		

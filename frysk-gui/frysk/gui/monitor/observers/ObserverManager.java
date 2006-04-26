@@ -140,10 +140,10 @@ public class ObserverManager {
 		
 		final TaskForkedObserver forkedObserver = new TaskForkedObserver();
 		forkedObserver.setName("XProgramWatcherX");
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
-		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter("1"));
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter());
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter());
+		forkedObserver.forkedTaskFilterPoint.addFilter(new TaskProcNameFilter());
+		forkedObserver.forkingTaskFilterPoint.addFilter(new TaskProcNameFilter());
 		
 		forkedObserver.genericActionPoint.addAction(new LogAction());
 		forkedObserver.genericActionPoint.addAction(new LogAction());
@@ -161,7 +161,10 @@ public class ObserverManager {
 		//forkedObserver.apply(proc);
 		//execObserver.apply(proc);
 		forkedObserver.dontSaveObject();
-		this.addTaskObserverPrototype(forkedObserver);
+
+		try { this.addTaskObserverPrototype(forkedObserver);
+		} catch (Exception e) {}
+
 	} 
 
 	/**
@@ -261,7 +264,7 @@ public class ObserverManager {
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
 			if(observer.shouldSaveObject()){
-				System.out.println(this + ": ObserverManager.save() saving: " + observer);
+				System.out.println(this + ": ObserverManager.save() saving " + observer.getName());
 				Element node = new Element("Observer");
 				ObjectFactory.theFactory.saveObject(observer, node);
 				ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);

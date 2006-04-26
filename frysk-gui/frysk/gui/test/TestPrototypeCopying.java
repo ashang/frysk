@@ -67,7 +67,7 @@ public class TestPrototypeCopying extends TestCase{
 			a.genericActionPoint.addAction(new LogAction());
 //			System.out.println("Testing copy of :" + a.getName());
 			if(a instanceof TaskForkedObserver){
-				((TaskForkedObserver)a).forkedTaskFilterPoint.addFilter(new ProcNameFilter("1"));
+				((TaskForkedObserver)a).forkedTaskFilterPoint.addFilter(new ProcNameFilter());
 			}
 			ObserverRoot b = observerManager.getObserverCopy(a);
 			assertCorrectCopy(a, b);

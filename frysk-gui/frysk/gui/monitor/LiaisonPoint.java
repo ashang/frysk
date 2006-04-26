@@ -62,7 +62,7 @@ protected ObservableLinkedList items;
 	}
 	
 	/**
-	 * Retrieves a list of applicable items from the apporpriet Manager.
+	 * Retrieves a list of applicable items from the appropriate Manager.
 	 * */
 	public abstract ObservableLinkedList getApplicableItems();
 	
@@ -90,7 +90,6 @@ protected ObservableLinkedList items;
 	
 	public void load(Element node) {
 		super.load(node);
-		
 		Element elemetnsXML = node.getChild("items");
 		this.items.load(elemetnsXML);
 	}

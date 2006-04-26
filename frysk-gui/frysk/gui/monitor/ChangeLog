@@ -1,5 +1,18 @@
 2006-04-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/TaskForkedObserver.java: Now uses the new interface for
+	return action (only observer using that for now).
+	* observers/ObserverRoot.java: Added code to handle set/get/query user
+	for return action.
+	* filters/ProcNameFilter.java: Removed constructor with name
+	argument. set/getArguement should be used instead.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* SaveableXXX.java: Added javadocs about saving/loading conventions.
+	* LiaisonItem.java: Added saving/loading of item arguments.
+	* EditObserverDialog.java: Added handling for resume,block, and
+	askMe radio buttons.
+	* CompletingEntry.java: Fixed bug related correctly removing
+	observers when Entry is recycled.
 	* CheckedListView.java (cellRendererToggleEvent): Added a call
 	to update the currently selected object upon a toggle event.
 

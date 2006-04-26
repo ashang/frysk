@@ -79,7 +79,7 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 
 	private boolean runFilters(Task task, boolean signal, int value) {
 		if(!this.taskFilterPoint.filter(task)) return false;
-		//Todo add boolean filterPoint
+		//To do add boolean filterPoint
 		if(!this.intFilterPoint.filter(value)) return false;
 		return true;
 	}

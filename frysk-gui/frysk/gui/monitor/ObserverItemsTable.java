@@ -97,7 +97,6 @@ public abstract class ObserverItemsTable extends Table {
 		this.allList.add(itemRow);
 		
 		this.row++;
-		System.out.println(this + ": ObserverItemsTable.addRow() row: " + row);
 		this.showAll();
 	}
 
@@ -111,8 +110,6 @@ public abstract class ObserverItemsTable extends Table {
 			Combo combo = (Combo) iterator.next();
 			this.addRow(combo);
 		}
-		
-		System.out.println(this + ": ObserverItemsTable.setObserver() row: " + row);
 		
 		if(this.row == 0){
 			this.addRow(null);

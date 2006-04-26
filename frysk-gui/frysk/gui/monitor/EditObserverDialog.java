@@ -46,6 +46,7 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Frame;
+import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -58,6 +59,7 @@ import frysk.gui.common.dialogs.Dialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.proc.Action;
 
 public class EditObserverDialog extends Dialog {
 
@@ -68,6 +70,10 @@ public class EditObserverDialog extends Dialog {
 	
 	FiltersTable filtersTable;
 	ActionsTable actionsTable;
+	
+	RadioButton resumeRadioButton;
+	RadioButton stopRadioButton;
+	RadioButton askMeRadioButton;
 	
 	EditObserverDialog(LibGlade glade){
 		super(glade.getWidget("editObserverDialog").getHandle());
@@ -80,7 +86,6 @@ public class EditObserverDialog extends Dialog {
 				}
 			}
 		});
-		
 		
 		button = (Button) glade.getWidget("editObserverOkButton");
 		button.addListener(new ButtonListener() {
@@ -123,6 +128,36 @@ public class EditObserverDialog extends Dialog {
 			}
 		});
 	
+		resumeRadioButton = (RadioButton) glade.getWidget("resumeRadioButton");
+		resumeRadioButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					System.out.println(this + ": .buttonEvent() resumeRadioButton");
+					observer.setReturnAction(Action.CONTINUE);
+				}
+			}
+		});
+		
+		stopRadioButton = (RadioButton) glade.getWidget("stopRadioButton");
+		stopRadioButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					System.out.println(this + ": .buttonEvent() stopRadioButton");
+					observer.setReturnAction(Action.BLOCK);
+				}
+			}
+		});
+		
+		askMeRadioButton = (RadioButton) glade.getWidget("askMeRadioButton");
+		askMeRadioButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					System.out.println(this + ": .buttonEvent() askMeRadioButton");
+					observer.setReturnAction(null);
+				}
+			}
+		});
+		
 		this.filtersTable = new FiltersTable(glade.getWidget("observerFiltersTable").getHandle());
 		this.actionsTable = new ActionsTable(glade.getWidget("observerActionsTable").getHandle());
 		
@@ -141,12 +176,13 @@ public class EditObserverDialog extends Dialog {
 		frame.showAll();
 	}
 	
-	private void setAll(ObserverRoot myObserver){
-		this.setObserver(myObserver);
-		this.setName(myObserver);
-		this.setType(myObserver);
-		this.filtersTable.setObserver(myObserver);
-		this.actionsTable.setObserver(myObserver);
+	private void setAll(ObserverRoot observer){
+		this.setObserver(observer);
+		this.setName(observer);
+		this.setType(observer);
+		setReturnAction(observer);
+		this.filtersTable.setObserver(observer);
+		this.actionsTable.setObserver(observer);
 	}
 
 	/**
@@ -181,14 +217,34 @@ public class EditObserverDialog extends Dialog {
 		this.observerNameEntry.setText(observer.getName());
 	}
 	
-	private void setType(ObserverRoot myObserver){
+	private void setType(ObserverRoot oserver){
 		this.observerTypeComboBox.setSelectedObject(null);
 		Iterator iter = ObserverManager.theManager.getBaseObservers().iterator();
 		while (iter.hasNext()) {
 			GuiObject obj = (GuiObject) iter.next();
-			if((obj.getClass().toString()).equals(myObserver.getClass().toString())){
+			if((obj.getClass().toString()).equals(oserver.getClass().toString())){
 				this.observerTypeComboBox.setSelectedObject(obj);
 			}
 		}
+	}
+	
+	private void setReturnAction(ObserverRoot observer){
+		Action returnAction = observer.getCurrentAction();
+		
+		if(returnAction == null){
+			this.askMeRadioButton.activate();
+			return;
+		}
+		
+		if(returnAction == Action.BLOCK){
+			this.stopRadioButton.activate();
+			return;
+		}
+		
+		if(returnAction == Action.CONTINUE){
+			this.resumeRadioButton.activate();
+			return;
+		}
+		
 	}
 }

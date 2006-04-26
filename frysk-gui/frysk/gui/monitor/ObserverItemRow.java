@@ -88,6 +88,7 @@ public abstract class ObserverItemRow {
 				public boolean focusEvent(FocusEvent event) {
 					if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
 						apply();
+						System.out.println(this + ": .focusEvent() applying: " + combo.getFilter().getName() + " ["+ combo.getFilter().getArgument()+"]");
 					}
 					return false;
 				}

@@ -73,7 +73,9 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 				bottomHalf(myTask, myChild);
 			}
 		});
-		return Action.BLOCK;
+		
+		return this.getReturnAction();
+		//return Action.BLOCK;
 	}
 	
 	private void bottomHalf(Task task, Task child){

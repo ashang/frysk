@@ -9,17 +9,18 @@ import java.util.Observer;
 import org.gnu.glib.CustomEvents;
 import org.jdom.Element;
 
+import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.Combo;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
-import frysk.gui.monitor.actions.Action;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
 import frysk.proc.TaskObserver;
+import frysk.proc.Action;
 
 /**
  * A more sophisticated implementer of Observer.
@@ -44,6 +45,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		
 		public GenericActionPoint genericActionPoint;
 		
+		private frysk.proc.Action returnAction;
+		
 		public ObserverRoot(){
 			super();
 			
@@ -52,6 +55,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.filterPoints = new ObservableLinkedList();			
 			this.actionPoints = new ObservableLinkedList();			
 			this.baseName     = "";			
+		
+			this.returnAction = null;
 			
 			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
@@ -70,6 +75,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.actionPoints = new ObservableLinkedList();			
 			this.baseName     = name;			
 			
+			this.returnAction = null;
+			
 			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
 
@@ -83,6 +90,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.filterPoints = new ObservableLinkedList(other.filterPoints);			
 			this.actionPoints = new ObservableLinkedList(other.actionPoints);			
 			this.baseName     = other.baseName;
+			
+			this.returnAction = other.returnAction;
 			
 			this.genericActionPoint = new GenericActionPoint(other.genericActionPoint);
 //			this.addActionPoint(genericActionPoint);
@@ -279,11 +288,48 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 				ActionPoint actionPoint = (ActionPoint) i.next();
 				Iterator j = actionPoint.getItems().iterator();
 				while (j.hasNext()) {
-					Action action = (Action) j.next();
+					frysk.gui.monitor.actions.Action action = (frysk.gui.monitor.actions.Action) j.next();
 					combos.add(new Combo(actionPoint, action));
 				}
 			}
 			return combos;
 		}
 
+		/**
+		 * Used to set which action is taken by the observer
+		 * with respect to resuming execution of the observed
+		 * thread after all the actions are executed.
+		 * acceptable values are
+		 * Action.BLOCK to block the process.
+		 * Action.CONTINUE to continue the process.
+		 * and null to pop-up a dialog and ask the user
+		 * for action.
+		 */
+		public void setReturnAction(frysk.proc.Action action){
+			this.returnAction = action;
+		}
+		
+		/**
+		 * Should be used by inheriting observers to get the
+		 * desired Action with respect to stoping/resumeing
+		 * execution of the observed thread.
+		 * @return
+		 */
+		protected frysk.proc.Action getReturnAction(){
+			
+			if(this.returnAction != null){
+				return this.returnAction;
+			}else{
+				if(DialogManager.showQueryDialog(this.getName() + ": would you like to resume thread execution ?")){
+					return Action.CONTINUE;
+				}else{
+					return Action.BLOCK;
+				}
+			}
+		}
+		
+		public frysk.proc.Action getCurrentAction(){
+			return this.returnAction;
+		}
+		
 	}
