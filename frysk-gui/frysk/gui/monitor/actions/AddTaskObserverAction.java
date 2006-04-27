@@ -57,7 +57,7 @@ public class AddTaskObserverAction extends TaskAction {
 	TaskObserverRoot observer;
 	
 	public AddTaskObserverAction() {
-		super("Add observer to", "Add given observer to the given task"); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Add observer to", "Add given observer to the given task"); 
 		this.observer = null;
 	}
 

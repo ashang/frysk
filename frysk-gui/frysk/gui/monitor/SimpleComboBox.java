@@ -71,6 +71,9 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	protected DataColumnObject objectDC;
 	private ObservableLinkedList watchedList;
 	
+	private ItemAddedObserver itemAddedObserver;
+	private ItemRemovedObserver itemRemovedObserver;
+	
 	SimpleComboBox(Handle handle){
 		super(handle);
 		this.init();
@@ -91,6 +94,9 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	
 	void init(){
 		this.map = new HashMap();
+		
+		this.itemAddedObserver = new ItemAddedObserver();
+		this.itemRemovedObserver = new ItemRemovedObserver();
 		
 		this.nameDC = new DataColumnString();
 		this.objectDC = new DataColumnObject();
@@ -130,10 +136,10 @@ public class SimpleComboBox extends ComboBox implements Observer{
 		}
 		this.listStore.clear();
 		this.map.clear();
-		if(this.watchedList!=null){
-			this.watchedList.itemAdded.deleteObserver(this);
-			this.watchedList.itemRemoved.deleteObserver(this);
-		}
+//		if(this.watchedList!=null){
+//			this.watchedList.itemAdded.deleteObserver(this);
+//			this.watchedList.itemRemoved.deleteObserver(this);
+//		}
 	}
 	
 	public void update(Observable guiObject, Object object) {
@@ -217,26 +223,47 @@ public class SimpleComboBox extends ComboBox implements Observer{
 	 * @param linkedList the list to be watched.
 	 * */
 	public void watchLinkedList(ObservableLinkedList linkedList){
+
+		if(this.watchedList != null){
+			this.unwatchList();
+		}
+		
 		this.watchedList = linkedList;
 		Iterator iterator = linkedList.iterator();
 		
-		linkedList.itemAdded.addObserver(new Observer() {
-			public void update(Observable observable, Object object) {
-				GuiObject guiObject = (GuiObject) object;
-				int index = watchedList.indexOf(guiObject);
-				add(guiObject, index);
-			}
-		});
-		
-		linkedList.itemRemoved.addObserver(new Observer() {
-			public void update(Observable arg0, Object object) {
-				remove((GuiObject) object);
-			}
-		});
+		watchedList.itemAdded.addObserver(this.itemAddedObserver);
+		watchedList.itemRemoved.addObserver(this.itemRemovedObserver);
 		
 		while (iterator.hasNext()) {
 			GuiObject object = (GuiObject) iterator.next();
 			this.add(object);
+		}
+	}
+
+	public void unwatchList(){
+		if(this.watchedList == null){
+			throw new RuntimeException("No list is being watched");
+		}
+		
+		this.clear();
+		
+		watchedList.itemAdded.deleteObserver(itemAddedObserver);
+		watchedList.itemRemoved.deleteObserver(itemAddedObserver);
+		
+		this.watchedList = null;
+	}
+	
+	private class ItemAddedObserver implements Observer{
+		public void update(Observable observable, Object object) {
+			GuiObject guiObject = (GuiObject) object;
+			int index = watchedList.indexOf(guiObject);
+			add(guiObject, index);
+		}
+	}
+
+	private class ItemRemovedObserver implements Observer{
+		public void update(Observable arg0, Object object) {
+			remove((GuiObject) object);
 		}
 	}
 }

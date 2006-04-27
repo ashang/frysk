@@ -125,7 +125,7 @@ public class CompletingEntry extends Entry implements Observer {
 		}
 		
 		watchedList.itemAdded.deleteObserver(itemAddedObserver);
-		watchedList.itemRemoved.deleteObserver(itemAddedObserver);
+		watchedList.itemRemoved.deleteObserver(itemRemovedObserver);
 		
 		this.watchedList = null;
 	}

@@ -43,6 +43,7 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
+import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
@@ -65,6 +66,8 @@ public abstract class ObserverItemRow {
 		ObserverRoot observer;
 
 		protected ObserverItemsTable table;
+		
+		ToolTips toolTips = new ToolTips();
 		
 		ObserverItemRow(ObserverItemsTable table, ObserverRoot observer, Combo myCombo){
 		
@@ -101,6 +104,9 @@ public abstract class ObserverItemRow {
 						if(combo != null && combo.isApplied()){
 							combo.unApply();
 							combo = (Combo) itemsComboBox.getSelectedObject();
+							
+							toolTips.setTip(argumentEntry, combo.getToolTip(), "");
+							
 							ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
 							if(list!= null){
 								argumentEntry.watchList(list);

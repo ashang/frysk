@@ -1,5 +1,15 @@
 2006-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* SimpleComboBox.java: Added unwatchList().
+	* ObserverItemRow.java: Added tooltips to entry fields.
+	fix for 2601.
+	* CompletingEntry.java (unwatchList): wrong observer was
+	being removed from itemRemovedObservable... fixed
+	* Combo.java (Combo): the tooltip of the combo is now
+	set to the tooltip of the item that is passed to it.
+
+2006-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* ObserversDialog.java: Removed duplicate addition of Observer.
 	fix for (bz 2602).
 	* ListView.java: Added unwatchList().

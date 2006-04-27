@@ -71,4 +71,11 @@ public class GuiObservable extends Observable {
 		this.list.add(observer);
 		super.addObserver(observer);
 	}
+	
+	 public synchronized void deleteObserver(Observer victim){
+		 if(!this.list.remove(victim)){
+			 throw new IllegalArgumentException("the passed item ["+ victim +"] is not a member of this Liason point");
+		 }
+		 super.deleteObserver(victim);
+	 }
 }

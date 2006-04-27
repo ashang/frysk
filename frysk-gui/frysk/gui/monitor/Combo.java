@@ -53,15 +53,15 @@ public class Combo extends GuiObject {
 	private LiaisonItem liaisonItem;
 	private boolean applied = false;
 	
-	public Combo(LiaisonPoint filterPoint, LiaisonItem filter){
+	public Combo(LiaisonPoint filterPoint, LiaisonItem item){
 		super();
 		this.liaisonPoint = filterPoint;
-		this.liaisonItem = filter;
+		this.liaisonItem = item;
 		
-		this.setName(filter.getName() + " " + filterPoint.getName() );
-		this.setToolTip("");
+		this.setName(item.getName() + " " + filterPoint.getName() );
+		this.setToolTip(item.getToolTip());
 		
-		this.applied = filterPoint.getItems().contains(filter);
+		this.applied = filterPoint.getItems().contains(item);
 	}
 	
 	public void apply(){
