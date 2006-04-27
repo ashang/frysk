@@ -38,20 +38,21 @@
 # version and license this file solely under the GPL without
 # exception.
 
-# Find the source directory as an absolute path ...
-path=`dirname $0`
-srcdir=`cd $path && /bin/pwd`
+# Update any bootstraped sub directories.
 
-# Don't allow configure in the source directory
-if test `/bin/pwd` = $srcdir ; then
-    cat <<EOF
+for s in */bootstrap.sh
+do
+  d=`dirname $s`
+  ( test -d $d && cd $d && ./bootstrap.sh )
+done
 
-    Please autogen.sh from a directory other than source.
-    To just generate the config files run ./bootstrap.sh .
+# Generate everything (always run with --add-missing).
 
-EOF
-    exit 1
-fi
+echo "Running aclocal ..."
+aclocal -I common/m4
 
-( cd $srcdir && ./bootstrap.sh )
-$path/configure "$@"
+echo "Running autoconf ..."
+autoconf -f
+
+echo "Running automake ..."
+automake --add-missing

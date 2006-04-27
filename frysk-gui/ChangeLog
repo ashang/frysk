@@ -1,3 +1,8 @@
+2006-04-27  Andrew Cagney  <cagney@redhat.com>
+
+	* bootstrap.sh: Copy autogen.sh.
+	* autogen.sh: Delete.
+
 2006-03-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* .classpath: Updated to look in /usr/share/java instead of
