@@ -169,7 +169,6 @@ public class ListView extends TreeView implements Observer {
 	public void add(GuiObject object, TreeIter treeIter){
 		listStore.setValue(treeIter, nameDC, object.getName());
 		listStore.setValue(treeIter, objectDC, object);
-		
 		this.map.put(object, treeIter);
 		object.addObserver(this);	
 	}
@@ -179,6 +178,13 @@ public class ListView extends TreeView implements Observer {
 		listStore.removeRow(treeIter);
 		this.map.remove(object);
 		object.deleteObserver(this);
+	}
+	
+	public void unwatchList(){
+		this.clear();
+		this.watchedList.itemAdded.deleteObserver(itemAddedObserver);
+		this.watchedList.itemRemoved.deleteObserver(itemRemvoedObserver);
+		this.watchedList = null;
 	}
 	
 	public void clear(){
@@ -209,6 +215,10 @@ public class ListView extends TreeView implements Observer {
 	 * @param linkedList the list to be watched.
 	 * */
 	public void watchLinkedList(ObservableLinkedList linkedList){
+		if(this.watchedList != null){
+			this.unwatchList();
+		}
+		
 		this.watchedList = linkedList;
 		Iterator iterator = linkedList.iterator();
 		

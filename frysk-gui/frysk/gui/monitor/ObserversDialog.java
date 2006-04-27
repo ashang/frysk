@@ -178,7 +178,7 @@ public class ObserversDialog extends Dialog {
 					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy(selected);
 					newObserver.setName("CopyOf_" + selected.getName());
 					scratchList.add(scratchList.indexOf(selected)+1, newObserver);
-					scratchList.add(newObserver);
+					//scratchList.add(newObserver);
 					
 					scratchOld.add(null);
 					scratchNew.add(newObserver);

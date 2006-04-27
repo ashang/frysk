@@ -1,3 +1,11 @@
+2006-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ObserversDialog.java: Removed duplicate addition of Observer.
+	fix for (bz 2602).
+	* ListView.java: Added unwatchList().
+	* GuiObservable.java: Added check for reduntant addition
+	of observers (this is a source of alot of bugs).
+
 2006-04-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskForkedObserver.java: Now uses the new interface for

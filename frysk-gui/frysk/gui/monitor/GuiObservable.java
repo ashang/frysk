@@ -39,7 +39,9 @@
 
 package frysk.gui.monitor;
 
+import java.util.LinkedList;
 import java.util.Observable;
+import java.util.Observer;
 
 /**
  * A simple class that sets hasChanged automatically when
@@ -54,5 +56,19 @@ public class GuiObservable extends Observable {
 	public void notifyObservers(){
 		this.setChanged();
 		super.notifyObservers();
+	}
+
+	/**
+	 * A lot of bugs turn up from objects forgetting
+	 * to remove them selfs as observers or adding
+	 * them selfs as observers more than one time.
+	 */
+	LinkedList list = new LinkedList();
+	public synchronized void addObserver(Observer observer){
+		if(list.contains(observer)){
+			throw new RuntimeException("Observer " + "["+observer+"] is trying to add itself twice");
+		}
+		this.list.add(observer);
+		super.addObserver(observer);
 	}
 }

@@ -97,7 +97,7 @@ public class CompletingEntry extends Entry implements Observer {
 	
 	public void watchList(ObservableLinkedList linkedList){
 		if(this.watchedList != null){
-			this.unWatchList();
+			this.unwatchList();
 		}
 		
 		this.watchedList = linkedList;
@@ -113,7 +113,7 @@ public class CompletingEntry extends Entry implements Observer {
 	}
 
 	
-	public void unWatchList(){
+	public void unwatchList(){
 		if(this.watchedList == null){
 			throw new RuntimeException("No list is being watched");
 		}
