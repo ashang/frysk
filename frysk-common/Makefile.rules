@@ -341,7 +341,7 @@ $(srcdir)/Makefile.gen: $(srcdir)/common/Makefile.gen.sh
 	cd $(srcdir) && ./common/Makefile.gen.sh $(GEN_ARGS)
 .PHONY: autogen
 autogen: clean
-	cd $(srcdir) && ./autogen.sh
+	$(SHELL) $(srcdir)/autogen.sh
 
 # Given a .jar, just convert it into a .o, and a .db
 
