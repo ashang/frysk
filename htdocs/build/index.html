@@ -220,16 +220,10 @@ use:</p>
 $ ( cd frysk && cvs update -d )
 </pre>
 
-<h3>Create the configuration files</h3>
+<h3>Configure and Build</h3>
 
 <pre>
-$ ( cd frysk && ./autogen.sh )
-</pre>
-
-<h3>Create and configure the build directory</h3>
-
-<pre>
-$ ( mkdir build && cd build && ../frysk/configure )
+$ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
 </pre>
 
 <h3>Verify the build environment (optional)</h3>
