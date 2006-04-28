@@ -3,6 +3,8 @@ package frysk.gui.srcwin.tags;
 import java.util.Iterator;
 import java.util.Vector;
 
+import frysk.gui.monitor.ObservableLinkedList;
+
 /**
  * The TagsetManager keeps track of the tagsets available for frysk,
  * as well as maintaining the association between tagsets and what
@@ -20,14 +22,14 @@ public class TagsetManager {
 		manager = new TagsetManager();
 	}
 	
-	private Vector tagsets;
+	private ObservableLinkedList tagsets;
 	
 	/**
 	 * Create a new TagsetManager
 	 *
 	 */
 	public TagsetManager(){
-		tagsets = new Vector();
+		tagsets = new ObservableLinkedList();
 	}
 	
 	/**
@@ -69,6 +71,15 @@ public class TagsetManager {
 	public Iterator getTagsets(){
 		return tagsets.iterator();
 	}
+	
+	/**
+	 * 
+	 * @return ObserverableLinkedList with all tagsets in the manager
+	 */
+ 	public ObservableLinkedList getListTagsets()
+ 	{
+ 		return tagsets;
+ 	}
 	
 	/**
 	 * Checks for the presence of the given tagset in the TagsetManager

@@ -2,6 +2,8 @@ package frysk.gui.srcwin.tags;
 import java.util.Iterator;
 import java.util.Vector;
 
+import frysk.gui.monitor.GuiObject;
+
 /**
  * A Tagset contains a collection of tags that are applicable to a process.
  * 
@@ -10,7 +12,7 @@ import java.util.Vector;
  * @author ajocksch
  *
  */
-public class Tagset {
+public class Tagset  extends GuiObject {
 
 	private String name;
 	private String desc;
@@ -25,6 +27,7 @@ public class Tagset {
 	 * @param desc A brief description of the tagset
 	 */
 	public Tagset(String name, String desc, String command, String version){
+		super(name,desc);
 		this.name = name;
 		this.desc = desc;
 		this.command = command;
