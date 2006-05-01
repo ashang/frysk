@@ -86,8 +86,6 @@ public class CreateFryskSessionDruid extends Dialog {
 	ProcWiseDataModel dataModel;
 	ProcWiseTreeView procWiseTreeView;
 	ListView addedProcsTreeView;
-	ObserverDataModel observerDataModel;
-	ProcessObserverDataModel processObserverDataModel;
 	Session currentSession = new Session();
 
 	
