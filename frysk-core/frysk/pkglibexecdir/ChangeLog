@@ -1,3 +1,7 @@
+2006-05-01  Stan Cox  <scox@redhat.com>
+
+	* funit-threadexit.c (main): New file.
+
 2006-04-15  Andrew Cagney  <cagney@redhat.com>
 
 	* funit-print-auxv.c (main): Assume the optional argument is the

@@ -86,7 +86,7 @@ public class TestExec
 	// That way it's possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
 	AckProcess child = new DetachedAckProcess
-	    (null, new String[] { "/bin/rm", tmpFile.toString (), });
+	    ((String)null, new String[] { "/bin/rm", tmpFile.toString (), });
 	Task task = child.findTaskUsingRefresh (true);
 
 	// Create an exec observer attatched to Task, forcing an
@@ -123,7 +123,7 @@ public class TestExec
 	// possible to confirm that the exec did work.
 	TmpFile tmpFile = new TmpFile ();
 	AckProcess child = new DetachedAckProcess
-	    (null, new String[] { "/bin/rm", tmpFile.toString (), });
+	    ((String)null, new String[] { "/bin/rm", tmpFile.toString (), });
 	child.addClone ();
 	Task mainTask = child.findTaskUsingRefresh (true);
 	Task clone = child.findTaskUsingRefresh (false);

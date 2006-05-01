@@ -587,6 +587,10 @@ public class TestLib
 	{
 	    super ();
 	}
+	DetachedAckProcess (Sig ack, String[] argv)
+	{
+	    super (ack, argv);
+	}
 	DetachedAckProcess (String filename, String[] argv)
 	{
 	    super (filename, argv);
@@ -688,7 +692,7 @@ public class TestLib
 	AttachedDaemonProcess (String[] argv)
 	{
 	    // Create the child.
-	    AckProcess child = new DetachedAckProcess (null, argv);
+	    AckProcess child = new DetachedAckProcess ((String)null, argv);
 	    this.mainTask = child.findTaskUsingRefresh (true);
 	    // Create and add an exec observer that blocks the task.
 	    class ExecBlockingObserver

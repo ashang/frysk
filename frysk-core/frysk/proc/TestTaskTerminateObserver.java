@@ -39,6 +39,11 @@
 
 package frysk.proc;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Observable;
+import java.util.Observer;
+import frysk.sys.Pid;
 import frysk.sys.Sig;
 
 /**
@@ -149,4 +154,69 @@ public class TestTaskTerminateObserver
     public void testTerminatedKillINT () { terminated (-Sig._INT); }
     public void testTerminatedKillKILL () { terminated (-Sig._KILL); }
     public void testTerminatedKillHUP () { terminated (-Sig._HUP); }
+
+    class AttachCounter
+    extends TaskObserverBase
+    implements TaskObserver.Attached
+{
+    int count;
+    public Action updateAttached (Task task)
+    {
+        count++;
+        task.requestAddAttachedObserver (this);
+        task.requestUnblock (this);
+        return Action.BLOCK;
+    }
+}
+    class TerminatingCounter
+    extends TaskObserverBase
+    implements TaskObserver.Terminating
+{
+    int count;
+    public Action updateTerminating (Task task, boolean signal, int value)
+    {
+        count++;
+        task.requestAddTerminatingObserver (this);
+        task.requestUnblock (this);
+        return Action.BLOCK;
+    }
+}
+
+    
+    /**
+     * Check that a terminating thread T is tracked properly.
+     */
+   public void testTerm ()
+    {
+	final int timeout = 3;
+
+	AttachCounter attachCounter = new AttachCounter ();
+	TerminatingCounter terminatingCounter = new TerminatingCounter ();
+	
+	AckProcess childTerm = new DetachedAckProcess (ackSignal, new String[]
+	    {
+		getExecPrefix () + "funit-threadexit",
+		Integer.toString (Pid.get ()),
+		Integer.toString (ackSignal.hashCode ()),
+		Integer.toString (timeout), // Seconds
+	    });
+	
+	Proc proc = childTerm.findProcUsingRefresh (true);
+ 	assertNotNull ("Finding funit-threadexit", proc);
+		
+ 	Task task = null;
+        for (Iterator i = proc.getTasks ().iterator (); i.hasNext (); ) {
+            task = (Task) i.next ();
+            assertNotNull ("Finding funit-threadexit threads",
+        	    task);
+            if (task.getTid () == proc.getPid ()) {
+		task.requestAddAttachedObserver (attachCounter);
+		task.requestAddTerminatingObserver (terminatingCounter);
+        	break;
+	    }
+        }
+        Manager.eventLoop.runPolling (timeout * 2 * 1000);
+ 	assertTrue ("Number attached processes", attachCounter.count != 0);
+	assertTrue ("Number terminating processes", terminatingCounter.count != 0);
+    }
 }
