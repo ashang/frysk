@@ -1,3 +1,10 @@
+2006-05-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* tags/Tagset.java (save): Implement from SaveableXXX interface.
+	(load): Ditto. 
+	* tags/Tag.java (save): Implement from SaveableXXX interface.
+	(load): Ditto. 
+
 2006-04-28  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* tags/TagsetManager.java (TagsetManager): Use ObservableLinkedList

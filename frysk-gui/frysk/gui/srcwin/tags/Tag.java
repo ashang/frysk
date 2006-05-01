@@ -1,6 +1,12 @@
 package frysk.gui.srcwin.tags;
 
-public class Tag {
+import org.jdom.DataConversionException;
+import org.jdom.Element;
+
+import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.SaveableXXX;
+
+public class Tag extends GuiObject implements SaveableXXX {
 	
 	private String fileName;
 	private String filePath;
@@ -16,10 +22,12 @@ public class Tag {
 	 * @param lineText The text of the line, for error-checking purposes
 	 */
 	public Tag(String fileName, String filePath, int lineNum, String lineText){
+		super(fileName,null);
 		this.fileName = fileName;
 		this.filePath = filePath;
 		this.lineNum = lineNum;
 		this.lineText = lineText;
+		doSaveObject();
 	}
 
 	/**
@@ -77,4 +85,28 @@ public class Tag {
 		 	tag2.lineNum == this.lineNum &&
 		 	tag2.lineText.equals(this.lineText);
 	}
+
+	public void save(Element node) {
+		super.save(node);
+		// Tag
+		this.fileName = super.getName();
+		node.setAttribute("filepath", this.filePath);
+		node.setAttribute("linenum", ""+this.lineNum);
+		node.setAttribute("linetext", this.lineText);
+	}
+
+	public void load(Element node) {
+		super.load(node);
+		//actions
+		this.fileName = super.getName();
+		this.filePath = node.getAttribute("filepath").getValue();
+		try {
+			this.lineNum = node.getAttribute("linenum").getIntValue();
+		} catch (DataConversionException e) {
+			e.printStackTrace();
+		}
+		this.lineText = node.getAttribute("linetext").getValue();
+	}
+
+
 }

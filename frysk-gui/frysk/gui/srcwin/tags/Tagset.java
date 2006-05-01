@@ -1,8 +1,12 @@
 package frysk.gui.srcwin.tags;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
+import org.jdom.Element;
+
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.SaveableXXX;
 
 /**
  * A Tagset contains a collection of tags that are applicable to a process.
@@ -12,7 +16,7 @@ import frysk.gui.monitor.GuiObject;
  * @author ajocksch
  *
  */
-public class Tagset  extends GuiObject {
+public class Tagset  extends GuiObject implements SaveableXXX{
 
 	private String name;
 	private String desc;
@@ -32,8 +36,44 @@ public class Tagset  extends GuiObject {
 		this.desc = desc;
 		this.command = command;
 		this.version = version;
-		
 		this.tags = new Vector();
+		doSaveObject();
+	}
+	
+	public void save(Element node) {
+		super.save(node);
+		// Tag Sets
+		node.setAttribute("command", this.command);
+		node.setAttribute("version", this.version);
+		Element tagsXML = new Element("tags");
+		Iterator iterator = this.getTags();
+		while (iterator.hasNext()) {
+			Tag tag = (Tag) iterator.next();
+			Element tagXML = new Element("tag");
+			tag.save(tagXML);
+			tagsXML.addContent(tagXML);
+		}
+		node.addContent(tagsXML);
+	}
+	
+	public void load(Element node) {			
+		super.load(node);
+		
+		//actions
+		this.command = node.getAttribute("command").getValue();
+		this.version = node.getAttribute("version").getValue();
+		this.name = super.getName();
+		this.desc = super.getToolTip();
+	
+		Element tagsXML = node.getChild("tags");
+		List list = (List) (tagsXML.getChildren("tag"));
+		Iterator i = list.iterator();
+		Iterator j = this.getTags();
+		
+		while (i.hasNext()){
+			((Tag)j.next()).load(((Element) i.next()));
+		}
+
 	}
 
 	/**
@@ -79,6 +119,7 @@ public class Tagset  extends GuiObject {
 			throw new IllegalArgumentException("Attempting to add a tag to a tagset it already belongs to");
 		
 		this.tags.add(newTag);
+		doSaveObject();
 	}
 	
 	/**
