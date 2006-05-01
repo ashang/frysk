@@ -1,6 +1,27 @@
+2006-05-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* sessions/DebugProcess.java (save): Added TagSets to save logic.
+	(load): Added TagSets to load logic.
+	
+	* druid/CreateFryskSessionDruid.java (getTagsetObserverControls): Implement tagSetSelection 
+	GUI controls. Use tagSet manager data-model. Define relationship between tagSets and 
+	session process.	
+	(getProcessObserverControls): Implement observerSelection GUI controls. Use ObserverManager 
+	data-model. Define relationship between selected Observer and session process.
+	(getEntryNameControls): New. Setup Session Name controls. Add listener to set Finish button
+	validation.
+	(getDruidStructureControls): Added Finish button logic. Add session to SessionManager.
+	Save SessionManager.
+	* glade/frysk_create_session_druid.glade: Renamed some labels to flow better.
+	Added session name screen.	
+	* druid/ObserverDataModel.java: removed
+	* druid/ProcessObserverDataModel.java: removed
+	* druid/ObserverSelectionTreeView.java: removed
+	* druid/ProcessObserverSelectionTreeView.java: removed
+	
 2006-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* glade/frysk_create_session_druid.glade: Maded druid hidden.
+	* glade/frysk_create_session_druid.glade: Made druid hidden.
 
 2006-04-26  Sami Wagiaalla  <swagiaal@redhat.com>
 

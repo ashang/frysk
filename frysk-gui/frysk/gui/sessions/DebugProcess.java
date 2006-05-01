@@ -47,6 +47,7 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
+import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Proc;
 
 /**
@@ -150,6 +151,18 @@ public class DebugProcess extends GuiObject {
 		node.addContent(observersXML);
 		
 		//save tagsets
+		Element tagSetsXML= new Element("tagsets");
+		
+		Iterator i = tagsets.iterator();
+		while (i.hasNext()) {
+			GuiObject object = (GuiObject) i.next();
+			Element elementXML = new Element("element");
+			elementXML.setAttribute("name", object.getName());
+			tagSetsXML.addContent(elementXML);	
+		}
+		
+		node.addContent(tagSetsXML);
+
 	}
 
 	public void load(Element node) {
@@ -167,6 +180,17 @@ public class DebugProcess extends GuiObject {
 		}
 				
 		// load tagsets
+		
+		Element tagSetsXML = node.getChild("tagsets");
+		List tagList = (List) tagSetsXML.getChildren("element");
+		Iterator iterator = tagList.iterator();
+		
+		while (iterator.hasNext()){
+			Element elementXML = (Element) iterator.next();
+			Iterator tagSetIterator = TagsetManager.manager.getTagsets(elementXML.getAttributeValue("name"));
+			while (tagSetIterator.hasNext())
+			tagsets.add((Tagset)tagSetIterator.next());
+		}
 	}
 
 }
