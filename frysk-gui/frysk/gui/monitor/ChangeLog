@@ -1,3 +1,13 @@
+2006-05-01  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* CheckedListView.java (setChecked): Added. Set toggle state from
+	GuiObject parameter.
+	(setChecked(GuiObject[]): As above. Take GuiObject[] instead.
+	(clearChecked): Clear all selections.
+	(initListStore): Changed toggle to first column.
+	* ListView.java: Make watchedList protected from private
+	(for subclass CheckedListView access).
+
 2006-04-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SimpleComboBox.java: Added unwatchList().

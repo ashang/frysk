@@ -39,6 +39,8 @@
 
 package frysk.gui.monitor;
 
+import java.util.Iterator;
+
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererToggle;
 import org.gnu.gtk.DataColumn;
@@ -64,7 +66,7 @@ public class CheckedListView extends ListView {
 	
 	protected void initListStore() {
 		this.toggleDC = new DataColumnBoolean();
-		this.listStore = new ListStore(new DataColumn[]{nameDC, toggleDC, objectDC});
+		this.listStore = new ListStore(new DataColumn[]{toggleDC, nameDC, objectDC});
 	}
 	
 	// Temporarily allow Listener injection until a more robust method
@@ -109,5 +111,40 @@ public class CheckedListView extends ListView {
 	public boolean isChecked(GuiObject object){
 		TreeIter iter = (TreeIter) this.map.get(object);
 		return listStore.getValue(iter, toggleDC);
+	}
+	
+	private boolean testIter(TreeIter iter)
+	{
+		if (iter == null)
+			return false;
+		if (!listStore.isIterValid(iter))
+			return false;
+		return true;
+	}
+	public void setChecked(GuiObject object, boolean state){
+		TreeIter iter = (TreeIter) this.map.get(object);
+
+		if(testIter(iter))
+			listStore.setValue(iter, toggleDC, state);		
+	}
+	
+	public void setChecked(GuiObject[] objects, boolean state){
+		for (int i=0; i<objects.length; i++)
+		{
+			TreeIter iter = (TreeIter) this.map.get(objects[i]);
+			if(testIter(iter))
+				listStore.setValue(iter, toggleDC, state);		
+		}
+	}
+	
+	public void clearChecked()
+	{
+		Iterator i = super.watchedList.iterator();
+		while (i.hasNext())
+		{
+			TreeIter iter = (TreeIter) this.map.get(((GuiObject)i.next()));
+			if(testIter(iter))
+				listStore.setValue(iter, toggleDC, false);
+		}
 	}
 }

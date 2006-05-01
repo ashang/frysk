@@ -70,7 +70,7 @@ public class ListView extends TreeView implements Observer {
 	
 	protected DataColumnString nameDC;
 	protected DataColumnObject objectDC;
-	private ObservableLinkedList watchedList;
+	protected ObservableLinkedList watchedList;
 	
 	private ItemAddedObserver itemAddedObserver;
 	private ItemRemvoedObserver itemRemvoedObserver;
