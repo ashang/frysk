@@ -2,6 +2,9 @@
 
 	* druid/CreateFryskSessionDruid.java (getDruidManagerControls): Added
 	first page sessions manager.
+	(buttonEvent): Set the druid to close on Finish.
+	(getDruidManagerControls): Set current session equal
+	to selected session in Session tree view.
 
 2006-05-02  Sami Wagiaalla  <swagiaal@redhat.com>
 

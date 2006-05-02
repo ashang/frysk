@@ -291,7 +291,10 @@ public class CreateFryskSessionDruid extends Dialog {
 				if (selected != null)
 					finishButton.setSensitive(true);
 				else
+				{
 					finishButton.setSensitive(false);
+					currentSession = (Session) previousSessions.getSelectedObject();
+				}
 				
 			}});
 		
@@ -525,6 +528,7 @@ public class CreateFryskSessionDruid extends Dialog {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
 					SessionManager.theManager.addSession(currentSession);
 					SessionManager.theManager.save();
+					hideAll();
 				}
 			}
 		});
