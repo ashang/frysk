@@ -168,7 +168,7 @@ frysk1986ice_FILES = frysk1986ice/U.java frysk1986ice/T.java
 EXTRA_DIST += $(frysk1986ice_FILES)
 TESTS += frysk1986/ice.sh
 frysk1986/ice.sh:
-	mkdir -p frysk1986
+	mkdir -p `dirname $@`
 	echo '#!/bin/sh -xe' > $@.tmp
 	echo $(GCJ) -C -I $(srcdir) -d . $(srcdir)/frysk1986/T.java >> $@.tmp
 	echo $(GCJ) -c -I $(srcdir) -I . frysk1986/T.class >> $@.tmp
@@ -327,3 +327,22 @@ TESTS += frysk2299/GCTest
 TESTS += vfork-exec/vfork-exec
 vfork_exec_vfork_exec_SOURCES = vfork-exec/vfork-exec.c
 noinst_PROGRAMS += vfork-exec/vfork-exec
+
+# Indexing an array with a class pointer makes no sense but it compiles.
+EXTRA_DIST += frysk2630/ClassIndex.java
+XFAIL_TESTS += frysk2630/noerror.sh
+frysk2630/noerror.sh:
+	mkdir -p `dirname $@`
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo '!'$(GCJ) -C -I $(srcdir) -d . $(srcdir)/frysk2630/ClassIndex.java >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@
+
+EXTRA_DIST += frysk2631/EnumClass.java frysk2631/ClassSwitch.java
+XFAIL_TESTS += frysk2631/ice.sh
+frysk2631/ice.sh:
+	mkdir -p `dirname $@`
+	echo '#!/bin/sh -xe' > $@.tmp
+	echo $(GCJ) -I $(srcdir)/frysk2631 -d . $(srcdir)/frysk2631/ClassSwitch.java >> $@.tmp
+	chmod a+x $@.tmp
+	mv $@.tmp $@

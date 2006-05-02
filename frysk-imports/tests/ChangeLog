@@ -1,3 +1,10 @@
+2006-05-02  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2630/noerror.sh, frysk2631/ice.sh): Add rules.
+	* frysk2630/ClassIndex.java: New.
+	* frysk2631/EnumClass.java: New.
+	* frysk2631/ClassSwitch.java: New.
+
 2006-04-25  Rick Moseley  <rmoseley@redhat.com>
 
         * frysk2595/ptrace_peek_wrong_thread.c: Add #define _GNU_SOURCE.
