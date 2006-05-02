@@ -47,7 +47,9 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.FileChooserButton;
 import org.gnu.gtk.Notebook;
+import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TreeIter;
@@ -60,6 +62,8 @@ import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.ToggleEvent;
+import org.gnu.gtk.event.ToggleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
@@ -69,8 +73,8 @@ import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.ProcData;
 import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
-import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.ObserverManager;
+import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskTerminatingObserver;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
@@ -101,6 +105,7 @@ public class CreateFryskSessionDruid extends Dialog {
 	public CreateFryskSessionDruid(LibGlade glade){
 		super(glade.getWidget("SessionDruid").getHandle());		
 		getDruidStructureControls(glade);
+		getDruidManagerControls(glade);
 		getProcessSelectionControls(glade);
 		getProcessExitControls(glade);
 		getTagsetObserverControls(glade);
@@ -109,6 +114,9 @@ public class CreateFryskSessionDruid extends Dialog {
 		
     }
 	
+
+
+
 
 	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
 	{
@@ -236,6 +244,59 @@ public class CreateFryskSessionDruid extends Dialog {
 			this.nextButton.setSensitive(true);
 		else
 			this.nextButton.setSensitive(false);
+	}
+	
+	private void getDruidManagerControls(LibGlade glade) {
+		
+		RadioButton debugExecutable = (RadioButton) glade.getWidget("sessionDruid_debugExecutableButton");
+		debugExecutable.setState(false);
+		debugExecutable.setSensitive(false);
+	
+		FileChooserButton executableChooser = (FileChooserButton) glade.getWidget("sessionDruid_execChooser");
+		executableChooser.setSensitive(false);
+	
+		final ListView previousSessions = new ListView( glade.getWidget("sessionDruid_previousSessionsListView").getHandle());
+		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());
+		
+		previousSessions.setSensitive(false);
+		final RadioButton newSession = (RadioButton) glade.getWidget("sessionDruid_newSessionButton");
+		newSession.setState(true);
+		
+		final RadioButton previousSession = (RadioButton) glade.getWidget("sessionDruid_previousDebugButton");
+		previousSession.setState(false);
+
+		previousSession.addListener(new ToggleListener(){
+
+			public void toggleEvent(ToggleEvent arg0) {
+				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
+					previousSessions.setSensitive(!previousSessions.getSensitive());
+					if (previousSession.getState())
+					{
+						nextButton.hideAll();
+						finishButton.showAll();
+					}
+					else
+					{
+						nextButton.showAll();
+						finishButton.hideAll();
+					}
+			}});
+		
+
+		previousSessions.getSelection().addListener(new TreeSelectionListener(){
+
+			public void selectionChangedEvent(TreeSelectionEvent arg0) {
+
+				Session selected = (Session)previousSessions.getSelectedObject();		
+				if (selected != null)
+					finishButton.setSensitive(true);
+				else
+					finishButton.setSensitive(false);
+				
+			}});
+		
+
+		
 	}
 	
 	private void getProcessSelectionControls(LibGlade glade) {
@@ -433,6 +494,7 @@ public class CreateFryskSessionDruid extends Dialog {
 					finishButton.setSensitive(false);
 			}});
 	}
+	
 	private void getDruidStructureControls(LibGlade glade)
 	{
 		
