@@ -19,8 +19,8 @@ import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
-import frysk.proc.TaskObserver;
 import frysk.proc.Action;
+import frysk.proc.TaskObserver;
 
 /**
  * A more sophisticated implementer of Observer.
@@ -87,18 +87,18 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 
 			this.actions      = new ObservableLinkedList(other.actions);
 			this.info         = new String(other.info);
-			this.filterPoints = new ObservableLinkedList(other.filterPoints);			
-			this.actionPoints = new ObservableLinkedList(other.actionPoints);			
+			this.filterPoints = new ObservableLinkedList(); // do not copy..			
+			this.actionPoints = new ObservableLinkedList();	// ... because children will readd items
 			this.baseName     = other.baseName;
 			
 			this.returnAction = other.returnAction;
 			
 			this.genericActionPoint = new GenericActionPoint(other.genericActionPoint);
-//			this.addActionPoint(genericActionPoint);
+			this.addActionPoint(genericActionPoint);
 
-			LogAction logAction = new LogAction();
-			logAction.dontSaveObject();
-			this.genericActionPoint.addAction(logAction);
+//			LogAction logAction = new LogAction();
+//			logAction.dontSaveObject();
+//			this.genericActionPoint.addAction(logAction);
 		}
 
 		public void update(Observable o, Object obj) {
@@ -261,7 +261,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 //			return myString;
 //		}
 
-		public ObserverRoot getCopy() {
+		public GuiObject getCopy() {
 			return new ObserverRoot(this);
 		}
 		

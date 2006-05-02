@@ -41,7 +41,6 @@ package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
@@ -88,7 +87,7 @@ public class TaskProcNameFilter extends TaskFilter {
 		return this.procNamefilter.filter(task.getProc());
 	}
 	
-	public LiaisonItem getCopy() {
+	public GuiObject getCopy() {
 		return new TaskProcNameFilter(this);
 	}
 

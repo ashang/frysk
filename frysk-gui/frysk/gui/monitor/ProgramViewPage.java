@@ -46,6 +46,7 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;

@@ -41,6 +41,7 @@ package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
 public class IntFilterPoint extends FilterPoint {
@@ -74,5 +75,9 @@ public class IntFilterPoint extends FilterPoint {
 
 	public ObservableLinkedList getApplicableItems() {
 		return FilterManager.theManager.getIntFilters();
+	}
+
+	public GuiObject getCopy() {
+		return new IntFilterPoint(this);
 	}
 }

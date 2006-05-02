@@ -57,7 +57,7 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 		super(name, toolTip);
 	}
 	
-	public abstract LiaisonItem getCopy();
+	public abstract GuiObject getCopy();
 	
 	public abstract boolean setArgument(String argument);
 
@@ -84,7 +84,6 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 		}else{
 			node.setAttribute("argument", this.getArgument());
 		}
-		System.out.println(this + ": LiaisonItem.save() saving " + this.getName() + "["+ this.getArgument() +"]");
 	}
 	
 	public void load(Element node){
@@ -95,7 +94,6 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 		}else{
 			this.setArgument(argument);
 		}
-		System.out.println(this + ": LiaisonItem.load() loading " + this.getName() + "["+ this.getArgument() +"]");
 	}
 	
 	

@@ -39,7 +39,6 @@
 
 package frysk.gui.monitor;
 
-import org.gnu.gtk.frysk.EggTrayIcon;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -55,6 +54,7 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
+import org.gnu.gtk.frysk.EggTrayIcon;
 
 import frysk.gui.common.IconManager;
 

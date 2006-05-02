@@ -41,7 +41,6 @@ package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.proc.Proc;
@@ -94,7 +93,7 @@ public class ProcNameFilter extends ProcFilter implements SaveableXXX {
 		return false;
 	}
 	
-	public LiaisonItem getCopy() {
+	public GuiObject getCopy() {
 		return new ProcNameFilter(this);
 	}
 

@@ -1,5 +1,6 @@
 package frysk.gui.monitor.observers;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
@@ -29,11 +30,11 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	public TaskExecObserver(TaskExecObserver other){
 		super(other);
 		
-//		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
-		// this.addFilterPoint(taskFilterPoint); not needed done by parent constructor
+		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
+		this.addFilterPoint(taskFilterPoint);
 		
 		this.taskActionPoint = new TaskActionPoint(other.taskActionPoint);
-		// this.addActionPoint(taskActionPoint); not needed done by parent constructor
+		this.addActionPoint(taskActionPoint);
 	}
 
 	public Action updateExeced(Task task) {
@@ -68,7 +69,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 		task.requestAddExecedObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public GuiObject getCopy(){
 		return new TaskExecObserver(this);
 	}
 	

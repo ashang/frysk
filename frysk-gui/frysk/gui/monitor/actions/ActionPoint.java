@@ -39,8 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.Iterator;
-
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.LiaisonPoint;
 import frysk.gui.monitor.ObservableLinkedList;
 
@@ -79,15 +78,5 @@ public abstract class ActionPoint extends LiaisonPoint {
 		super.addItem(action);		
 	}
 
-	public String toString(){
-		String string = "";
-		
-		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
-		Iterator iterator = this.items.iterator();
-		while (iterator.hasNext()) {
-			Action action = (Action) iterator.next();
-			string += "    " + action + "\n";
-		}
-		return string;
-	}
+	public abstract GuiObject getCopy();
 }

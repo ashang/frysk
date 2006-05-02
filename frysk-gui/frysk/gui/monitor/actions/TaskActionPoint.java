@@ -41,6 +41,7 @@ package frysk.gui.monitor.actions;
 
 import java.util.Iterator;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
@@ -76,6 +77,10 @@ public class TaskActionPoint extends ActionPoint{
 
 	public ObservableLinkedList getApplicableItems() {
 		return ActionManager.theManager.getTaskActions();
+	}
+
+	public GuiObject getCopy() {
+		return new TaskActionPoint(this);
 	}
 
 }

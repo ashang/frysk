@@ -38,7 +38,7 @@ public class ProgramObserver {
 				newExecObserver.apply(newProc);
 			}
 
-			public LiaisonItem getCopy() {
+			public GuiObject getCopy() {
 				return null;
 			}
 

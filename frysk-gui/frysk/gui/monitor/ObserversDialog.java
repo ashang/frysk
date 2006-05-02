@@ -115,7 +115,8 @@ public class ObserversDialog extends Dialog {
 					if(response == ResponseType.OK.getValue()){
 						ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
 						newObserver.doSaveObject();
-						scratchList.add(newObserver);
+						//scratchList.add(newObserver);
+						ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 						observersListView.setSelectedObject(newObserver);
 
 						scratchOld.add(null);
@@ -133,13 +134,14 @@ public class ObserversDialog extends Dialog {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
-					ObserverRoot scratchCopy = selected.getCopy();
+					ObserverRoot scratchCopy = (ObserverRoot) selected.getCopy();
 					WindowManager.theManager.editObserverDialog.editObserver(scratchCopy);
 					int response = showEditObserverDialog();
 					if(response == ResponseType.OK.getValue()){
 						ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
 						newObserver.doSaveObject();
-						scratchList.swap(selected,newObserver);
+						//scratchList.swap(selected,newObserver);
+						ObserverManager.theManager.swapTaskObserverPrototype(selected, newObserver);
 						observersListView.setSelectedObject(newObserver);
 
 						scratchOld.add(selected);
@@ -157,7 +159,8 @@ public class ObserversDialog extends Dialog {
 					ObserverRoot selected = (ObserverRoot) observersListView.getSelectedObject();
 					if(selected != null){
 						int index = scratchList.indexOf(selected);
-						scratchList.remove(selected);
+						//scratchList.remove(selected);
+						ObserverManager.theManager.removeTaskObserverPrototype(selected);
 						if(scratchList.size() == index){
 							observersListView.setSelectedObject((GuiObject) scratchList.get(index-1));
 						}
@@ -177,9 +180,9 @@ public class ObserversDialog extends Dialog {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
 					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy(selected);
 					newObserver.setName("CopyOf_" + selected.getName());
-					scratchList.add(scratchList.indexOf(selected)+1, newObserver);
+					//scratchList.add(scratchList.indexOf(selected)+1, newObserver);
 					//scratchList.add(newObserver);
-					
+					ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 					scratchOld.add(null);
 					scratchNew.add(newObserver);
 				}

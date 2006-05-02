@@ -39,10 +39,12 @@
 
 package frysk.gui.sessions;
 
-import frysk.gui.monitor.GuiObject;
 import java.util.Iterator;
 import java.util.List;
+
 import org.jdom.Element;
+
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;

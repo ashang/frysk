@@ -6,6 +6,7 @@
  */
 package frysk.gui.monitor.observers;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
@@ -44,14 +45,14 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		this.cloningTaskFilterPoint = new TaskFilterPoint(other.cloningTaskFilterPoint);
 		this.clonedTaskFilterPoint = new TaskFilterPoint(other.clonedTaskFilterPoint);
 		
-//		this.addFilterPoint(cloningTaskFilterPoint);
-//		this.addFilterPoint(clonedTaskFilterPoint);
+		this.addFilterPoint(cloningTaskFilterPoint);
+		this.addFilterPoint(clonedTaskFilterPoint);
 		
 		this.cloningTaskActionPoint = new TaskActionPoint(other.cloningTaskActionPoint);
 		this.clonedTaskActionPoint = new TaskActionPoint(other.cloningTaskActionPoint);
 		
-//		this.addActionPoint(cloningTaskActionPoint);
-//		this.addActionPoint(clonedTaskActionPoint);
+		this.addActionPoint(cloningTaskActionPoint);
+		this.addActionPoint(clonedTaskActionPoint);
 
 	}
 
@@ -95,7 +96,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 		task.requestAddClonedObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public GuiObject getCopy(){
 		return new TaskCloneObserver(this);
 	}
 	

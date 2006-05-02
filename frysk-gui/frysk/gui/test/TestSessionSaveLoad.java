@@ -41,9 +41,9 @@ package frysk.gui.test;
 
 import java.util.Iterator;
 
-import org.gnu.gtk.Gtk;
-
 import junit.framework.TestCase;
+
+import org.gnu.gtk.Gtk;
 
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;

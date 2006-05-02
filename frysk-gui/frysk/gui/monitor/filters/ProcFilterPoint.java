@@ -41,6 +41,7 @@ package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
@@ -71,5 +72,9 @@ public class ProcFilterPoint extends FilterPoint {
 
 	public ObservableLinkedList getApplicableItems() {
 		return FilterManager.theManager.getProcFilters();
+	}
+
+	public GuiObject getCopy() {
+		return new ProcFilterPoint(this);
 	}
 }

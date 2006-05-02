@@ -6,6 +6,7 @@
  */
 package frysk.gui.monitor.observers;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
@@ -47,14 +48,14 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		this.forkingTaskFilterPoint = new TaskFilterPoint(other.forkingTaskFilterPoint);
 		this.forkedTaskFilterPoint = new TaskFilterPoint(other.forkedTaskFilterPoint);
 
-//		this.addFilterPoint(this.forkingTaskFilterPoint); not needed done by parent const.
-//		this.addFilterPoint(this.forkedTaskFilterPoint);
+		this.addFilterPoint(this.forkingTaskFilterPoint);
+		this.addFilterPoint(this.forkedTaskFilterPoint);
 
 		this.forkingTaskActionPoint = new TaskActionPoint(other.forkingTaskActionPoint);
 		this.forkedTaskActionPoint  = new TaskActionPoint(other.forkedTaskActionPoint);
 		
-//		this.addActionPoint(this.forkingTaskActionPoint); not needed done by parent const.
-//		this.addActionPoint(this.forkedTaskActionPoint);
+		this.addActionPoint(this.forkingTaskActionPoint);
+		this.addActionPoint(this.forkedTaskActionPoint);
 
 	}
 
@@ -94,7 +95,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		task.requestAddForkedObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public GuiObject getCopy(){
 		return new TaskForkedObserver(this);
 	}
 	

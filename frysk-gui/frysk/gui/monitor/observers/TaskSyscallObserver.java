@@ -6,6 +6,7 @@
  */
 package frysk.gui.monitor.observers;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
@@ -35,8 +36,8 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.addFilterPoint(enteringTaskFilterPoint);
 		this.addFilterPoint(exitingTaskFilterPoint);
 		
-		this.enteringTaskActionPoint = new TaskActionPoint("Task exiting syscall","the Task when it is exiting the syscall");
-		this.exitingTaskActionPoint = new TaskActionPoint("Task entering syscall","the Task when it is entering the syscall");
+		this.enteringTaskActionPoint = new TaskActionPoint("Task entering syscall","the Task when it is entering the syscall");
+		this.exitingTaskActionPoint =  new TaskActionPoint("Task exiting syscall","the Task when it is exiting the syscall");
 		
 		this.addActionPoint(enteringTaskActionPoint);
 		this.addActionPoint(exitingTaskActionPoint);
@@ -54,20 +55,20 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.enteringTaskFilterPoint = new TaskFilterPoint(other.enteringTaskFilterPoint);
 		this.exitingTaskFilterPoint  = new TaskFilterPoint(other.exitingTaskFilterPoint);
 		
-//		this.addFilterPoint(enteringTaskFilterPoint);
-//		this.addFilterPoint(exitingTaskFilterPoint);
+		this.addFilterPoint(enteringTaskFilterPoint);
+		this.addFilterPoint(exitingTaskFilterPoint);
 		
 		this.enteringTaskActionPoint = new TaskActionPoint(other.enteringTaskActionPoint);
-		this.enteringTaskActionPoint = new TaskActionPoint(other.enteringTaskActionPoint);
+		this.exitingTaskActionPoint = new TaskActionPoint(other.exitingTaskActionPoint);
 		
-//		this.addActionPoint(enteringTaskActionPoint);
-//		this.addActionPoint(exitingTaskActionPoint);
+		this.addActionPoint(enteringTaskActionPoint);
+		this.addActionPoint(exitingTaskActionPoint);
 		
 		this.enteringGenericActionPoint = new GenericActionPoint(other.enteringGenericActionPoint);
 		this.exitingGenericActionPoint  = new GenericActionPoint(other.exitingGenericActionPoint);
 		
-//		this.addActionPoint(enteringGenericActionPoint);
-//		this.addActionPoint(exitingGenericActionPoint);
+		this.addActionPoint(enteringGenericActionPoint);
+		this.addActionPoint(exitingGenericActionPoint);
 	}
 
 	public Action updateSyscallEnter(Task task) {
@@ -130,7 +131,7 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		task.requestAddSyscallObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public GuiObject getCopy(){
 		return new TaskSyscallObserver(this);
 	}
 	

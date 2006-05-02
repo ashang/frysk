@@ -103,36 +103,38 @@ public class ObserverManager {
 		observer.dontSaveObject();
 		try { this.addTaskObserverPrototype(observer);
 		} catch (Exception e) {}
-		this.addBaseObserverPrototype(observer.getCopy());
+		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
 		try { this.addTaskObserverPrototype(observer);
 		} catch (Exception e) {}
-		this.addBaseObserverPrototype(observer.getCopy());
+		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
 		try { this.addTaskObserverPrototype(observer);
 		} catch (Exception e) {}
-		this.addBaseObserverPrototype(observer.getCopy());
+		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
 		try { this.addTaskObserverPrototype(observer);
 		} catch (Exception e) {}
-		this.addBaseObserverPrototype(observer.getCopy());
+		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskSyscallObserver();
 		observer.dontSaveObject();
 		try { this.addTaskObserverPrototype(observer);
 		} catch (Exception e) {}
-		this.addBaseObserverPrototype(observer.getCopy());
+		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
+		observer = new ExitNotificationObserver();
+		tryAddTaskObserverPrototype(observer);	
 		//============================================
 		final TaskForkedObserver customObserver = new TaskForkedObserver();
 		customObserver.setName("Custom 'ls' Watcher");
@@ -174,7 +176,7 @@ public class ObserverManager {
 	 * instantiate.
 	 * */
 	public ObserverRoot getObserverCopy(ObserverRoot prototype){
-		return prototype.getCopy();
+		return (ObserverRoot) prototype.getCopy();
 	}
 	
 	/**
@@ -201,11 +203,10 @@ public class ObserverManager {
 		if(index < 0){
 			throw new IllegalArgumentException("The passes toBeRemoved Observer ["+ toBeRemoved+"] is not a member of taskObservers");
 		}
-		this.taskObservers.remove(index);
-		try { nameHash.add(toBeAdded);
-		} catch (Exception e) {
-			throw new RuntimeException("");
-		}
+		
+		this.removeTaskObserverPrototype(toBeRemoved);
+
+		nameHash.add(toBeAdded);
 		this.taskObservers.add(index, toBeAdded);
 	}
 	
@@ -220,6 +221,17 @@ public class ObserverManager {
 	public void addTaskObserverPrototype(ObserverRoot observer){
 		this.nameHash.add(observer);
 		this.taskObservers.add(observer);
+	}
+	
+	/**
+	 * Tries to add an observer. If there is another version
+	 * with the same name it assumes the other version is
+	 * more up to date and doesnt add.
+	 * @param observer
+	 */
+	public void tryAddTaskObserverPrototype(ObserverRoot observer){
+		try { this.addTaskObserverPrototype(observer);
+		} catch (Exception e) {}
 	}
 	
 	public void addBaseObserverPrototype(ObserverRoot observer){
@@ -264,7 +276,6 @@ public class ObserverManager {
 		while (iterator.hasNext()) {
 			ObserverRoot observer = (ObserverRoot) iterator.next();
 			if(observer.shouldSaveObject()){
-				System.out.println(this + ": ObserverManager.save() saving " + observer.getName());
 				Element node = new Element("Observer");
 				ObjectFactory.theFactory.saveObject(observer, node);
 				ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);

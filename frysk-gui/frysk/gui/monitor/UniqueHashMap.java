@@ -60,14 +60,17 @@ public class UniqueHashMap{
 	
 	public void add(GuiObject object){
 		if(this.nameHash.containsKey(object.getName())){
-			throw new RuntimeException("The given observer name is already used");
+			throw new RuntimeException("The given observer name"+"["+ object.getName()+"]"+" is already used");
 		}else{
 			this.nameHash.put(object.getName(), object);
 		}
 	}
 	
 	public void remove(GuiObject object){
-		this.nameHash.remove(object);
+		System.out.println(this + ": UniqueHashMap.remove() " + object.getName());
+		if(this.nameHash.remove(object.getName()) == null){
+			throw new RuntimeException("Object ["+object+"] is not in the hashMap");
+		}
 	}
 	
 	public GuiObject get(String name){

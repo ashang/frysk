@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
@@ -57,7 +57,7 @@ public class PrintProc extends ProcAction {
 		System.out.println("Proc State : " + proc); //$NON-NLS-1$
 	}
 
-	public LiaisonItem getCopy() {
+	public GuiObject getCopy() {
 		return new PrintProc(this);
 	}
 

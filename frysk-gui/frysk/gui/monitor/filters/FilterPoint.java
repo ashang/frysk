@@ -39,8 +39,7 @@
 
 package frysk.gui.monitor.filters;
 
-import java.util.Iterator;
-
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.LiaisonPoint;
 
 /**
@@ -74,15 +73,5 @@ public abstract class FilterPoint extends LiaisonPoint {
 		super.removeItem(filter);
 	}
 	
-	public String toString(){
-		String string = "";
-		
-		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
-		Iterator iterator = this.items.iterator();
-		while (iterator.hasNext()) {
-			Filter filter = (Filter) iterator.next();
-			string += "    " + filter + "\n";
-		}
-		return string;
-	}
+	abstract public GuiObject getCopy();
 }

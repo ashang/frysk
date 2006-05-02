@@ -68,7 +68,7 @@ public class Combo extends GuiObject {
 		if(applied){
 			throw new RuntimeException("You are trying to apply a Combo that is already applied");
 		}
-		this.liaisonItem = this.liaisonItem.getCopy();
+		this.liaisonItem = (LiaisonItem) this.liaisonItem.getCopy();
 		this.liaisonPoint.addItem(liaisonItem);
 		this.applied = true;
 	}

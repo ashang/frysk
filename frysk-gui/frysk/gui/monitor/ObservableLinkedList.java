@@ -84,20 +84,29 @@ public class ObservableLinkedList extends LinkedList implements SaveableXXX {
 		
 	}
 	
-	public void copyFromList(ObservableLinkedList other){
+	public void copyFromList(ObservableLinkedList other) {
 		Iterator iterator = other.iterator();
 		while (iterator.hasNext()) {
-			Object original = iterator.next() ;
-			Object copy;
-			Class cls;
-			try {
-				cls = Class.forName(original.getClass().getName());
-				java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{original.getClass()});
-				copy =  constr.newInstance(new Object[] {original});
+			GuiObject original = (GuiObject) iterator.next() ;
+			GuiObject copy;
+			
+//			Class cls;
+//			try {
+//				cls = Class.forName(original.getClass().getName());
+//				java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{original.getClass()});
+//				copy =  constr.newInstance(new Object[] {original});
+//				this.add(copy);
+//			} catch (Exception e) {
+//				System.out.println("ObservableLinkedList.ObservableLinkedList() original " + original.getClass());
+//				System.out.println("ObservableLinkedList.copyFromList() could not find constructor " + original.getClass() +"("+ original.getClass() +")");
+//				e.printStackTrace();
+//			}
+			
+			copy =  original.getCopy();
+			if(copy == null){
+				//should not copy
+			}else{
 				this.add(copy);
-			} catch (Exception e) {
-				System.out.println("ObservableLinkedList.ObservableLinkedList() original " + original.getClass());
-				e.printStackTrace();
 			}
 		}
 	}

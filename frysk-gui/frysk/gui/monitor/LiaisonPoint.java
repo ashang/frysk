@@ -97,11 +97,12 @@ protected ObservableLinkedList items;
 	public String toString(){
 		String string = "";
 		
-		string += "  Name: " + this.getName() + "["+ super.toString() + "]"+"\n";
+		string += "  Name: " + this.getName() + "["+ super.toString() + "] size: " +this.items.size() +"\n";
 		Iterator iterator = this.items.iterator();
+		int i = 0;
 		while (iterator.hasNext()) {
 			LiaisonItem item = (LiaisonItem) iterator.next();
-			string += "    " + item + "\n";
+			string += "    ["+i+++"] " + item + "\n";
 		}
 		return string;
 	}

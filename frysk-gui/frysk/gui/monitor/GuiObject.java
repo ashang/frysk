@@ -70,6 +70,10 @@ public class GuiObject extends GuiObservable implements SaveableXXX{
 		this.saveObject = true;
 	}
 
+	public GuiObject getCopy(){
+		return new GuiObject(this);
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 		

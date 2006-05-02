@@ -1,3 +1,49 @@
+2006-05-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskSyscallObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskCloneObserver.java: Ditto.
+	* observers/ObserverRoot.java: Filter/Action Points are
+	added in copy constructor because copying the list of
+	task/action Points in the ObserverRoot constructor
+	intorduces bugs.
+	* observers/ObserverManager.java: Added tryAddTaskObserverPrototype.
+	* filters/ProcFilterPoint.java: Added implementation of getCopy().
+	* filters/IntFilterPoint.java: Added implementation of getCopy().
+	* filters/TaskFilterPoint.java: Ditto.
+	* actions/TaskActionPoint.java: Added implementation of getCopy().
+	* actions/ActionPoint.java: Removed toString (done by parent).
+	* filters/FilterPoint.java: Ditto.
+	Added abstract getCopy.
+	* ObserversDialog.java: Added casts to the return types
+	of getCopy().
+	* TrayIcon.java: "Organized imports".
+	* ProgramViewPage.java: "Organized imports".
+	* ProgramObserver.java (getCopy): Changed return type of
+	get copy.
+	* actions/AddTaskObserverAction.java: Ditto.
+	* actions/GenericAction.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* actions/Stop.java: Ditto.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* filters/IntFilter.java: Ditto.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* EditObserverDialog.java: Added casts to the return types
+	of getCopy().
+	* ObservableLinkedList.java: Changed copying code to use
+	getCopy if items instead of using copy constructor since
+	some anonymous innter class do not have one.
+	* MainWindow.java: Removed commented out import.
+	* LiaisonPoint.java: Fixed toString.
+	* LiaisonItem.java: Added abstract implimentation
+	of getCopy.
+	Removed debug output.
+	* GuiObject.java: Added implementation of getCopy.
+
 2006-05-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CheckedListView.java (setChecked): Added. Set toggle state from

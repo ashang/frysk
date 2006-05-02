@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Task;
@@ -58,7 +58,7 @@ public class ShowSourceWin extends TaskAction {
 		SourceWindowFactory.createSourceWindow(task);
 	}
 
-	public LiaisonItem getCopy() {
+	public GuiObject getCopy() {
 		return new ShowSourceWin(this);
 	}
 

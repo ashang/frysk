@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
@@ -57,7 +57,7 @@ public class PrintTask extends TaskAction {
 		System.out.println("Task State : " + task);
 	}
 
-	public LiaisonItem getCopy() {
+	public GuiObject getCopy() {
 		return new PrintTask(this);
 	}
 

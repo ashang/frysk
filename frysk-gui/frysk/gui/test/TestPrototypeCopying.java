@@ -61,17 +61,30 @@ public class TestPrototypeCopying extends TestCase{
 	public void testPrototypeCopying(){
 		Gtk.init(new String[]{});
 		ObserverManager observerManager = new ObserverManager();
+
 		Iterator iter = observerManager.getTaskObservers().iterator();
 		while (iter.hasNext()) {
 			TaskObserverRoot a = (TaskObserverRoot) iter.next();
 			a.genericActionPoint.addAction(new LogAction());
-//			System.out.println("Testing copy of :" + a.getName());
+			System.out.println("\n===========================================");
+			System.out.println("Testing copy of :" + a.getName());
 			if(a instanceof TaskForkedObserver){
 				((TaskForkedObserver)a).forkedTaskFilterPoint.addFilter(new ProcNameFilter());
 			}
-			ObserverRoot b = observerManager.getObserverCopy(a);
+			ObserverRoot b = (ObserverRoot) a.getCopy();
+			
 			assertCorrectCopy(a, b);
 		}
+		
+//		ObserverRoot a = observerManager.getObserverByName("Exit Notifaction Observer");
+//		a.genericActionPoint.addAction(new LogAction());
+//		ObserverRoot b = (ObserverRoot) a.getCopy();
+//
+//		System.out.println("TestPrototypeCopying.testPrototypeCopying() a:" + a);
+//		System.out.println("TestPrototypeCopying.testPrototypeCopying() b:" + b);
+//			
+//		assertCorrectCopy(a, b);
+		
 	}
 	
 	private void assertCorrectCopy(ObserverRoot a, ObserverRoot b){
@@ -88,7 +101,7 @@ public class TestPrototypeCopying extends TestCase{
 			assertFalse("FilterPoints are not the same object ", aFilterPoint == bFilterPoint);
 			assertEquals("FilterPoint type", aFilterPoint.getClass(), bFilterPoint.getClass());
 		//	assertEquals("Number of filters ", 0, bFilterPoint.getFilters().size());
-		//	XXX: should filters be copied ?
+		//	XXX: should filters be copied ?... yes
 			assertEquals("Number of filters ", aFilterPoint.getItems().size(), bFilterPoint.getItems().size());
 			Iterator aFilterIter = aFilterPoint.getItems().iterator();
 			Iterator bFilterIter = bFilterPoint.getItems().iterator();
@@ -99,8 +112,6 @@ public class TestPrototypeCopying extends TestCase{
 			}
 		}
 
-		
-		
 		assertEquals("Number of actionPoints ", a.getActionPoints().size(), b.getActionPoints().size());
 
 		aIter = a.getActionPoints().iterator();
@@ -109,10 +120,18 @@ public class TestPrototypeCopying extends TestCase{
 		while (aIter.hasNext()) {
 			ActionPoint aActionPoint = (ActionPoint) aIter.next();
 			ActionPoint bActionPoint = (ActionPoint) bIter.next();
+			
+			System.out.println("\nA==========================================");
+			System.out.println(aActionPoint);
+
+			System.out.println("\nB==========================================");
+			System.out.println(bActionPoint);
+			
+			
 			assertFalse("ActionPoints are not the same object ", aActionPoint == bActionPoint);
 			assertEquals("ActionPoint type", aActionPoint.getClass(), bActionPoint.getClass());
 			//assertEquals("Number of actions ", 0, bActionPoint.getActions().size());
-			//XXX: should actions be copied ?
+			//XXX: should actions be copied ?... yes
 			assertEquals("Number of actions ", aActionPoint.getActions().size(), bActionPoint.getActions().size());
 			Iterator aActionIter = aActionPoint.getActions().iterator();
 			Iterator bActionIter = bActionPoint.getActions().iterator();

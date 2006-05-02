@@ -6,6 +6,7 @@
  */
 package frysk.gui.monitor.observers;
 
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.IntFilterPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
@@ -41,12 +42,12 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 		this.taskFilterPoint = new TaskFilterPoint(other.taskFilterPoint);
 		this.intFilterPoint  = new IntFilterPoint(other.intFilterPoint);
 
-//		this.addFilterPoint(taskFilterPoint);
-//		this.addFilterPoint(intFilterPoint);
+		this.addFilterPoint(taskFilterPoint);
+		this.addFilterPoint(intFilterPoint);
 		
 		this.taskActionPoint = new TaskActionPoint(other.taskActionPoint);
 		
-//		this.addActionPoint(taskActionPoint);
+		this.addActionPoint(taskActionPoint);
 		
 	}
 
@@ -88,7 +89,7 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 		task.requestAddTerminatingObserver(this);
 	}
 	
-	public ObserverRoot getCopy(){
+	public GuiObject getCopy(){
 		return new TaskTerminatingObserver(this);
 	}
 

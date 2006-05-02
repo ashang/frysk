@@ -39,8 +39,8 @@
 
 package frysk.gui.monitor;
 
-import java.util.logging.LogRecord;
 import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
 public class EventFormatter extends Formatter  {
 

@@ -44,7 +44,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
-// import org.gnu.gtk.Notebook;
 import org.gnu.gtk.Window;
 
 import frysk.gui.Gui;

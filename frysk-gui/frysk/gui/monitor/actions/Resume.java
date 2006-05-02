@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.LiaisonItem;
+import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
@@ -60,7 +60,7 @@ public class Resume extends ProcAction {
 	    throw new RuntimeException ("not applicable"); //$NON-NLS-1$
 	}
 
-	public LiaisonItem getCopy() {
+	public GuiObject getCopy() {
 		return new Resume(this);
 	}
 

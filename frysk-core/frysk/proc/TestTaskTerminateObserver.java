@@ -39,10 +39,8 @@
 
 package frysk.proc;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
+
 import frysk.sys.Pid;
 import frysk.sys.Sig;
 

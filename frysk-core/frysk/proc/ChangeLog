@@ -1,3 +1,7 @@
+2006-05-02  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTaskTerminateObserver.java: Removed unused imports.
+
 2006-05-01  Stan Cox  <scox@redhat.com>
 
 	* TestTaskTerminateObserver.java (AttachCounter): New class.
