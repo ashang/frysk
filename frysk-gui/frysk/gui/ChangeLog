@@ -1,3 +1,9 @@
+2006-05-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* test/TestTagsetSaveLoad.java (testSaveLoad): New. Test
+	Save/Load functionality of TagsetManager (and also,
+	Tagset.java and Tag.java).
+
 2006-05-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (getDruidManagerControls): Added
