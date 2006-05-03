@@ -89,12 +89,12 @@ public class TestExec
 	    ((String)null, new String[] { "/bin/rm", tmpFile.toString (), });
 	Task task = child.findTaskUsingRefresh (true);
 
-	// Create an exec observer attatched to Task, forcing an
+	// Create an exec observer attached to Task, forcing an
 	// attach.
 	ExecBlockCounter execBlockCounter = new ExecBlockCounter (task);
 	assertRunUntilStop ("add execBlockCounter");
 
-	// Trigger the exec, when it occures the task will be blocked.
+	// Trigger the exec, when it occurs the task will be blocked.
 	Signal.tkill (task.getTid (), execSig);
 	assertRunUntilStop ("wait for exec");
 	assertTrue ("tmp file exists", tmpFile.stillExists ());

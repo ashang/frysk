@@ -73,7 +73,7 @@ public class StressAttachDetachRapidlyCloningMainTask
 	// always out-of-date.
 	Task[] tasks = (Task[]) proc.getTasks ().toArray (new Task[0]);
 
-	// Failure is an option and will occure when ever an attach to
+	// Failure is an option and will occur when ever an attach to
 	// one of those old tasks is attempted.
 	class CanFailObserver
 	    extends TaskObserverBase

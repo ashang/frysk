@@ -83,7 +83,7 @@
 	    System.out.println(expressionTest[i].sOperation + 
 		": " + ((expressionTest[i].sResult.equals(result.toString()))?"PASS":"FAIL"));
 	  }	catch (ArithmeticException ae)  {
-	    System.err.println("Arithematic Exception occured:  " + ae);
+	    System.err.println("Arithmetic Exception occurred:  " + ae);
 	  }
 	}
       } catch (Exception e) {

@@ -64,7 +64,7 @@ public class TestRun
 	// Once a proc destroyed has been seen stop the event loop.
 	new StopEventLoopWhenChildProcRemoved ();
 
-	// Observe TaskObserver.Attached events; when any occure
+	// Observe TaskObserver.Attached events; when any occur
 	// indicate that the curresponding task should continue.
 	class TaskCreatedContinuedObserver
 	    extends TaskObserverBase
@@ -107,7 +107,7 @@ public class TestRun
 	TmpFile tmpFile = new TmpFile ();
 	assertNotNull ("temporary file", tmpFile);
 
-	// Observe TaskObserver.Attached events; when any occure
+	// Observe TaskObserver.Attached events; when any occur
 	// indicate that the curresponding task should block, and then
 	// request that the event-loop stop.
 	class TaskCreatedStoppedObserver

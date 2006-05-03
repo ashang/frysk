@@ -1228,7 +1228,7 @@ public class TestLib
 	}
 
 	// Drain the wait event queue.  This ensures that: there are
-	// no oustanding events to confuse the next test run; all
+	// no outstanding events to confuse the next test run; all
 	// child zombies have been reaped (and eliminated); and
 	// finally makes certain that all attached tasks have been
 	// terminated.

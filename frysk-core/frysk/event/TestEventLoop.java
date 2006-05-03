@@ -194,7 +194,7 @@ public class TestEventLoop
 	// Create two timers scheduled to run in sequence. The first
 	// ("timerRemover"), when executes, removes the second
 	// ("timerToRemove").  The removeTimer must be created before
-	// "timerToRemove" to guarentee that its scheduled run-time is
+	// "timerToRemove" to guarantee that its scheduled run-time is
 	// earlier.
 	TimerRemover timerRemover = new TimerRemover (1);
 	TimerEvent timerToRemove = new FailTimer (2);
@@ -277,7 +277,7 @@ public class TestEventLoop
      *
      * This adds / removes / adds a SIGCHLD handler (by default
      * SIGCHLD signals are ignored).and then checks that when it is
-     * installed the event occures, but when it is un-installed, the
+     * installed the event occurs, but when it is un-installed, the
      * event is lost.
      */
     public void testSignalHandler ()
@@ -342,7 +342,7 @@ public class TestEventLoop
      */
     public void testAsync ()
     {
-	// Set up a dummy Sig.CHLD handler, this should never occure
+	// Set up a dummy Sig.CHLD handler, this should never occur
 	// as it is overridden by an asynchronous thread before the
 	// signal is delivered.
 	eventLoop.add (new SignalEvent (Sig.CHLD)

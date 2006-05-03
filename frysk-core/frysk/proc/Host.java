@@ -159,7 +159,7 @@ public abstract class Host
     /**
      * Return the current state while at the same time marking that
      * the state is in flux.  If a second attempt to change state
-     * occures before the current state transition has completed,
+     * occurs before the current state transition has completed,
      * barf.  XXX: Bit of a hack, but at least this prevents state
      * transition code attempting a second recursive state transition.
      */

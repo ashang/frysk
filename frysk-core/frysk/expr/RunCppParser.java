@@ -270,7 +270,7 @@ public class RunCppParser
 		result = treeParser.expr(t);
 		consReader.printString(String.valueOf(result.getInt()));
 	      }	catch (ArithmeticException ae)  {
-		System.err.println("Arithematic Exception occured:  " + ae);
+		System.err.println("Arithmetic Exception occurred:  " + ae);
 	      }
 	    }
 	  } catch (IOException ioe) {

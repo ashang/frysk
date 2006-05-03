@@ -125,7 +125,7 @@ public class TestTaskObserverBlocked
 	private State CHILD_ATTACHED = new State ("CHILD_ATTACHED");
 	/**
 	 * State of the Spawned observer, tracks the sequencing that
-	 * occures.
+	 * occurs.
 	 */
 	public State state = UNATTACHED;
 

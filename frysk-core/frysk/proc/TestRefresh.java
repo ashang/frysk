@@ -139,7 +139,7 @@ public class TestRefresh
 	ChildTracker tracker = new ChildTracker (child);
 
 	// Do a refresh, check that the process was added and
-	// corresponding observable events occured.
+	// corresponding observable events occurred.
 	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	tracker.verifyAdd ("first add", 0);

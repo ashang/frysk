@@ -118,7 +118,7 @@ public class TestTaskObserver
     {
 	// Add the AttachedObserver to the task causing <em>frysk</em>
 	// to attach to the Task's Proc..  Run the event loop until
-	// the process reports back that the attach occured.
+	// the process reports back that the attach occurred.
 	for (int i = 0; i < tasks.length; i++)
 	    tasks[i].requestAddAttachedObserver (attachedObserver);
 	tasks[0].proc.observableAttached.addObserver (new Observer ()

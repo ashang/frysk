@@ -44,7 +44,7 @@ import java.lang.IllegalStateException;
 
 /**
  * TaskSet represents a set of processes and their tasks. 
- * Tasks are stored in "two-dimentional" Vector [process][task].
+ * Tasks are stored in "two-dimensional" Vector [process][task].
  * The class makes some assumptions about when and how it's useful, and about
  * the engine, so review it for possible changes.
  */
