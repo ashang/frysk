@@ -22,12 +22,17 @@ public class Tag extends GuiObject implements SaveableXXX {
 	 * @param lineText The text of the line, for error-checking purposes
 	 */
 	public Tag(String fileName, String filePath, int lineNum, String lineText){
-		super(fileName,null);
+		super(fileName,filePath);
 		this.fileName = fileName;
 		this.filePath = filePath;
 		this.lineNum = lineNum;
 		this.lineText = lineText;
 		doSaveObject();
+	}
+	
+	public Tag()
+	{
+		super();
 	}
 
 	/**
@@ -86,19 +91,29 @@ public class Tag extends GuiObject implements SaveableXXX {
 		 	tag2.lineText.equals(this.lineText);
 	}
 
+	/**
+	 * Saves the tagset to a given element.
+	 * @param Element XML node from manager
+	 */
 	public void save(Element node) {
 		super.save(node);
 		// Tag
-		this.fileName = super.getName();
+		//this.fileName = super.getName();
+		node.setAttribute("filename", this.fileName);
 		node.setAttribute("filepath", this.filePath);
 		node.setAttribute("linenum", ""+this.lineNum);
 		node.setAttribute("linetext", this.lineText);
 	}
 
+	/**
+	 * Loads the tag from a given element.
+	 * @param Element XML node from manager
+	 */
 	public void load(Element node) {
 		super.load(node);
 		//actions
-		this.fileName = super.getName();
+		
+		this.fileName = node.getAttribute("filename").getValue();
 		this.filePath = node.getAttribute("filepath").getValue();
 		try {
 			this.lineNum = node.getAttribute("linenum").getIntValue();

@@ -1,3 +1,15 @@
+2006-05-03  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* tags/Tagset.java (Tagset): Add a no parameter constructor
+	to satisfy ObjectFactory.load() reflection class loading.
+	* tags/Tag.java (Tag): Ditto. 
+	* tags/TagsetManager.java (removeTagset): Added. Remove tag set 
+	from storage and manager.
+	(save): Added. Save all tag sets registered with the manager.
+	(load): Added. Load all tag sets in Tagsets directory.
+	(TagsetManager): Added lookup UniqueHashMap.
+	(getTagsetByName): Added. Allow Tagset name lookup.
+
 2006-05-01  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* tags/Tagset.java (save): Implement from SaveableXXX interface.

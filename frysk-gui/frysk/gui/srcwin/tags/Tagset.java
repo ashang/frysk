@@ -40,6 +40,15 @@ public class Tagset  extends GuiObject implements SaveableXXX{
 		doSaveObject();
 	}
 	
+	public Tagset(){
+		super();
+		this.tags = new Vector();
+	}
+	
+	/**
+	 * Saves the tagset to a given element.
+	 * @param Element XML node from manager
+	 */
 	public void save(Element node) {
 		super.save(node);
 		// Tag Sets
@@ -56,6 +65,10 @@ public class Tagset  extends GuiObject implements SaveableXXX{
 		node.addContent(tagsXML);
 	}
 	
+	/**
+	 * Loads the tagset from a given element.
+	 * @param Element XML node from manager
+	 */
 	public void load(Element node) {			
 		super.load(node);
 		
@@ -67,11 +80,11 @@ public class Tagset  extends GuiObject implements SaveableXXX{
 	
 		Element tagsXML = node.getChild("tags");
 		List list = (List) (tagsXML.getChildren("tag"));
-		Iterator i = list.iterator();
-		Iterator j = this.getTags();
-		
-		while (i.hasNext()){
-			((Tag)j.next()).load(((Element) i.next()));
+		Iterator iterator = list.iterator();
+		while (iterator.hasNext()){
+			Tag add = new Tag();
+			add.load((Element)iterator.next());
+			this.addTag(add);
 		}
 
 	}
