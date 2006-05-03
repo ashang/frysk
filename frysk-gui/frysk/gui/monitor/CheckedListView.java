@@ -82,7 +82,7 @@ public class CheckedListView extends ListView {
 	}
 		
 	protected void initTreeView() {
-		super.initTreeView();
+		
 		
 		cellRendererToggle = new CellRendererToggle();
 		cellRendererToggle.setUserEditable(true);
@@ -97,6 +97,8 @@ public class CheckedListView extends ListView {
 		col.packStart(cellRendererToggle, false);
 		col.addAttributeMapping(cellRendererToggle, CellRendererToggle.Attribute.ACTIVE, this.toggleDC);
 		this.appendColumn(col);
+		
+		super.initTreeView();
 	}
 	
 	public void add(GuiObject object, TreeIter treeIter){
