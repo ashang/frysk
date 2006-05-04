@@ -1,3 +1,7 @@
+2006-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ExitNotificationObserver.java: Removed debug output.
+
 2006-05-02  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* CheckedListView.java (initTreeView): Alter column

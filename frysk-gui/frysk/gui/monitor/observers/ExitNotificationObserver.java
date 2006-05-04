@@ -83,9 +83,6 @@ public class ExitNotificationObserver extends TaskTerminatingObserver {
 		};
 		myAction.dontSaveObject();
 		
-		System.out.println(this
-				+ ": ExitNotificationObserver.ExitNotificationObserver() adding action" + this.taskActionPoint);
-		
 		this.taskActionPoint.addAction(myAction);
 	}
 	

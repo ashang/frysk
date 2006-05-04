@@ -66,8 +66,8 @@ public class TestPrototypeCopying extends TestCase{
 		while (iter.hasNext()) {
 			TaskObserverRoot a = (TaskObserverRoot) iter.next();
 			a.genericActionPoint.addAction(new LogAction());
-			System.out.println("\n===========================================");
-			System.out.println("Testing copy of :" + a.getName());
+//			System.out.println("\n===========================================");
+//			System.out.println("Testing copy of :" + a.getName());
 			if(a instanceof TaskForkedObserver){
 				((TaskForkedObserver)a).forkedTaskFilterPoint.addFilter(new ProcNameFilter());
 			}
@@ -121,11 +121,11 @@ public class TestPrototypeCopying extends TestCase{
 			ActionPoint aActionPoint = (ActionPoint) aIter.next();
 			ActionPoint bActionPoint = (ActionPoint) bIter.next();
 			
-			System.out.println("\nA==========================================");
-			System.out.println(aActionPoint);
-
-			System.out.println("\nB==========================================");
-			System.out.println(bActionPoint);
+//			System.out.println("\nA==========================================");
+//			System.out.println(aActionPoint);
+//
+//			System.out.println("\nB==========================================");
+//			System.out.println(bActionPoint);
 			
 			
 			assertFalse("ActionPoints are not the same object ", aActionPoint == bActionPoint);
