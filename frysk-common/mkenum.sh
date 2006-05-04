@@ -5,7 +5,7 @@
 # Licenced under the terms of the GNU CLASSPATH Licence.
 
 if test $# -ne 1 ; then
-    echo "Usage: $0 <java/file/name>"
+    echo "Usage: $0 <java/file/name>" 1>&2
     exit 1
 fi
 
@@ -69,11 +69,12 @@ print_member ()
     local sp=$1
     local path=$2
     local op=`expr "$3" : '\([\&:]*\).*'`
-    local fullname=$2.$3
+    local fullname=`echo $2.$3 | sed -e 's,\.,_,g' -e 's,&.*,,'`
     local name=`expr "$3" : '[^a-zA-Z0-9_]*\([a-zA-Z0-9_]*\)[^a-zA-Z0-9_]*'`
     case "$name" in
-	public|private|protected|import|boolean|float) name=_${name} ;;
-        [0-9]*) name=_${name} ;;
+	public|private|protected|import|boolean|float) _name=_${name} ;;
+        [0-9]*) _name=_${name} ;;
+	*) _name=$name ;;
     esac
     local mask=`expr "$3" : '[^\&]*[\&]*\(.*\)'`
     local value=$4
@@ -84,24 +85,24 @@ print_member ()
 	print="$5"
     fi
     print_comment "${sp}  "
-    if expr $4 : '[0-9]' > /dev/null ; then
-	echo "${sp}  static public final int _${name} = ${value};"
+    if expr "$value" : "[0-9']" > /dev/null ; then
+	echo "${sp}  static public final int ${_name}_ = ${value};"
     else
-	echo "${sp}  static public final int _${name} = _${value};"
+	echo "${sp}  static public final int ${_name}_ = ${value}_;"
     fi
 
     if test x"${print}" = x- ; then
-	echo "${sp}  static public final $class $name = ${value};"
+	echo "${sp}  static public final $class ${_name} = ${value};"
     else
-	echo "${sp}  static public final $class $name = new $class (${value}, \"${fullname}\", \"${print}\", \"${name}\");"
+	echo "${sp}  static public final $class ${_name} = new $class (${value}, \"${fullname}\", \"${print}\", \"${name}\");"
     fi
 
     if test -z "${op}" ; then
 	if test x"$print" != x- ; then
 	    map="${map}
-${sp}    map.put (${name}.string, ${name});"
+${sp}    map.put (${_name}.enumString, ${_name});"
 	    valueOf="${valueOf}
-${sp}    case _${name}: return ${name};"
+${sp}    case ${_name}_: return ${_name};"
 	fi
     fi
 }
@@ -120,50 +121,50 @@ parse_class ()
 
     print_comment "${sp}"
     echo "${sp}${scope} class ${class}"
-    echo "  implements Comparable"
+    echo "${sp}  implements Comparable"
     echo "${sp}{"
     cat <<EOF
-${sp}  private final String string;
-${sp}  private final int value;
-${sp}  private final String print;
-${sp}  private final String name;
+${sp}  private final String enumString;
+${sp}  private final int enumValue;
+${sp}  private final String enumPrint;
+${sp}  private final String enumName;
 ${sp}  private $class (int value, String string, String print, String name)
 ${sp}  {
-${sp}    this.string = string;
-${sp}    this.value = value;
-${sp}    this.print = print;
-${sp}    this.name = name;
+${sp}    enumString = string;
+${sp}    enumValue = value;
+${sp}    enumPrint = print;
+${sp}    enumName = name;
 ${sp}  }
 ${sp}  /** Return the qualified name of the enum.  */
 ${sp}  public String toString ()
 ${sp}  {
-${sp}    return string;
+${sp}    return enumString;
 ${sp}  }
 ${sp}  /** Return a printable version of the enum.  */
 ${sp}  public String toPrint ()
 ${sp}  {
-${sp}    return print;
+${sp}    return enumPrint;
 ${sp}  }
 ${sp}  /** Return the name of just the enum.  */
 ${sp}  public String toName ()
 ${sp}  {
-${sp}    return name;
+${sp}    return enumName;
 ${sp}  }
 ${sp}  public boolean equals (Object o)
 ${sp}  {
 ${sp}    if (o instanceof ${class})
-${sp}      return ((${class}) o).value == this.value;
+${sp}      return ((${class}) o).enumValue == this.enumValue;
 ${sp}    else
 ${sp}      return false;
 ${sp}  }
 ${sp}  public int hashCode ()
 ${sp}  {
-${sp}    return value;
+${sp}    return enumValue;
 ${sp}  }
 ${sp}  public int compareTo (Object o)
 ${sp}  {
-${sp}    ${class} rhs = (${class}) o;
-${sp}    return rhs.value - this.value;
+${sp}    ${class} rhs = (${class}) o; // Can throw - ok.
+${sp}    return rhs.enumValue - this.enumValue;
 ${sp}  }
 EOF
     while get_token ; do
@@ -204,8 +205,12 @@ EOF
 			"${name}" \
 			"${value}" \
 			"${print}"
-                    # Only print the first member
-		    print=-
+                    # Only print the first member, succeeding values
+                    # reference the first value.
+		    if test "x${print}" != "x-" ; then
+			value="${name}"
+			print=-
+		    fi
 		done
 	        ;;
 	    * )
@@ -227,12 +232,12 @@ ${sp}    java.util.Map map;
 ${map}
 ${sp}    return map;
 ${sp}  }
-${sp}  private static java.util.Map map = getMap ();
+${sp}  private static java.util.Map enumMap = getMap ();
 ${sp}
 ${sp}  /** Return the ${class} object that matches the string.  */
 ${sp}  public static $class valueOf (String string)
 ${sp}  {
-${sp}    return (${class})map.get (string);
+${sp}    return (${class})enumMap.get (string);
 ${sp}  }
 ${sp}
 ${sp}  /** Return the ${class} object that matches the integer.  */
@@ -246,7 +251,7 @@ ${sp}
 ${sp}  /** Return an array of all the ${class} elements.  */
 ${sp}  public static ${class}[] values ()
 ${sp}  {
-${sp}    return (${class}[]) map.values ().toArray (new ${class}[0]);
+${sp}    return (${class}[]) enumMap.values ().toArray (new ${class}[0]);
 ${sp}  }
 ${sp}
 ${sp}  /**
@@ -287,6 +292,31 @@ ${sp}    if (c == null)
 ${sp}      return def;
 ${sp}    else
 ${sp}      return c.toPrint ();
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Returns just the name part of the num corresponding to I.
+${sp}   */
+${sp}  static public String toName (long i)
+${sp}  {
+${sp}    ${class} c = valueOf (i);
+${sp}    if (c == null)
+${sp}      return "${_path}_0x" + Long.toHexString (i);
+${sp}    else
+${sp}      return c.toName ();
+${sp}  }
+${sp}
+${sp}  /**
+${sp}   * Returns just the name part of the num corresponding to I,
+${sp}   * or DEF is there is no such field.
+${sp}   */
+${sp}  static public String toName (long i, String def)
+${sp}  {
+${sp}    ${class} c = valueOf (i);
+${sp}    if (c == null)
+${sp}      return def;
+${sp}    else
+${sp}      return c.toName ();
 ${sp}  }
 ${sp}}
 EOF

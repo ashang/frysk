@@ -1,3 +1,8 @@
+2006-05-04  Andrew Cagney  <cagney@redhat.com>
+
+	* mkenum.sh: Import.  Better handle ranges.  Make names more
+	consistent.
+
 2006-04-27  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (autogen): Run autogen.sh from build tree.

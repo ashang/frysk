@@ -316,7 +316,7 @@ public class TestTaskSyscallObserver
 	    }
             public Action updateSignaled (Task task, int sig)
             {
-		if (sig == Sig._USR1)
+		if (sig == Sig.USR1_)
 		    sigusr1Count++;
                 return Action.CONTINUE;
             }

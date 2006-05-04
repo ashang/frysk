@@ -290,10 +290,10 @@ public class LinuxHost
 		{
 		    Task task = getTask (pid, "{0} stopped\n");
 		    switch (sig) {
-		    case Sig._STOP:
+		    case Sig.STOP_:
 			task.processStoppedEvent ();
 			break;
-		    case Sig._TRAP:
+		    case Sig.TRAP_:
 			task.processTrappedEvent ();
 			break;
 		    default:

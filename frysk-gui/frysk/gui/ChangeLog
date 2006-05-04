@@ -1,3 +1,8 @@
+2006-05-04  Andrew Cagney  <cagney@redhat.com>
+
+	mkenum.sh changed to generate different constant names.
+	* test/GuiTestLib.java: Update.
+
 2006-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestPrototypeCopying.java: Removed debug output.

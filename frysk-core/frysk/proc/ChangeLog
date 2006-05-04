@@ -1,3 +1,12 @@
+2006-05-04  Andrew Cagney  <cagney@redhat.com>
+
+	mkenum.sh changed to generate different constant names.
+	* TestTaskTerminateObserver.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+	* TestTaskObserver.java: Update.
+	* TestModify.java: Update.
+	* LinuxHost.java: Update.
+
 2006-05-02  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTaskTerminateObserver.java: Removed unused imports.

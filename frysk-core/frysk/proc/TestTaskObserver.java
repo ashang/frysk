@@ -346,7 +346,7 @@ public class TestTaskObserver
 					     int val)
 	    {
 		assertTrue ("signal", signal);
-		assertEquals ("val", Sig._TERM, val);
+		assertEquals ("val", Sig.TERM_, val);
 		Manager.eventLoop.requestStop ();
 		return Action.CONTINUE;
 	    }
