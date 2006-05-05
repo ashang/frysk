@@ -89,7 +89,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 	private TreeView procTreeView;
 	private TreeView threadTreeView;
 		
-	private ProcDataModel psDataModel;
+	private ProcDataModel procDataModel;
 	private VPaned vPane;
 	private TreeModelFilter procFilter;
 	private TreeModelFilter threadFilter;
@@ -122,23 +122,23 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		this.refreshSpinButton.addListener(new SpinListener(){
 			public void spinEvent(SpinEvent event) {
 				if(event.getType() == SpinEvent.Type.VALUE_CHANGED){
-					psDataModel.setRefreshTime(refreshSpinButton.getIntValue());
+					procDataModel.setRefreshTime(refreshSpinButton.getIntValue());
 				}
 			}			
 		});
 		
 		
-		this.psDataModel = new ProcDataModel();
+		this.procDataModel = new ProcDataModel();
 		
-		this.mountProcModel(this.psDataModel);
-		this.threadViewInit(psDataModel);
+		this.mountProcModel(this.procDataModel);
+		this.threadViewInit(procDataModel);
 		
 		this.procTreeView.getSelection().addListener(new TreeSelectionListener(){
 			public void selectionChangedEvent(TreeSelectionEvent event) {
 				if(procTreeView.getSelection().getSelectedRows().length > 0){
 					TreePath selected = procTreeView.getSelection().getSelectedRows()[0];
-					mountThreadModel(psDataModel, selected);
-					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), psDataModel.getProcDataDC());
+					mountThreadModel(procDataModel, selected);
+					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), procDataModel.getProcDataDC());
 					if(!data.hasWidget()){
 						data.setWidget(new ProcStatusWidget(data));
 					}
@@ -160,7 +160,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				if(procTreeView.getSelection().getSelectedRows().length > 0 &&
 						threadTreeView.getSelection().getSelectedRows().length > 0	){
 					TreePath selected = threadTreeView.getSelection().getSelectedRows()[0];
-					TaskData data = (TaskData) threadFilter.getValue(threadFilter.getIter(selected), psDataModel.getProcDataDC());
+					TaskData data = (TaskData) threadFilter.getValue(threadFilter.getIter(selected), procDataModel.getProcDataDC());
 					if(!data.hasWidget()){
 						data.setWidget(new TaskStatusWidget(data));
 					}
@@ -221,6 +221,10 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 
 			public boolean filter(TreeModel model, TreeIter iter) {
 
+				if(model.getValue(iter, psDataModel.getSensitiveDC()) == false){
+					return false;
+				}
+				
 				if(model.getValue(iter, psDataModel.getHasParentDC()) == false){
 					return true;
 				}else{
@@ -238,15 +242,18 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		CellRendererText cellRendererText3 = new CellRendererText();
 		pidCol.packStart(cellRendererText3, false);
+		
 		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.TEXT ,psDataModel.getPidDC());
 		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());		
 		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());		
+//		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.STRIKETHROUGH,psDataModel.getSensitiveDC());		
 
 		CellRendererText cellRendererText4 = new CellRendererText();
 		commandCol.packStart(cellRendererText4, false);
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.TEXT ,psDataModel.getCommandDC());
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
 		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
+//		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.STRIKETHROUGH ,psDataModel.getSensitiveDC());		
 
 		pidCol.setTitle("PID"); //$NON-NLS-1$
 		pidCol.addListener(new TreeViewColumnListener(){
@@ -293,6 +300,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		threadFilter.setVisibleMethod(new TreeModelFilterVisibleMethod(){
 
 			public boolean filter(TreeModel model, TreeIter iter) {
+				
 				if(relativeRoot == null ) {
 					return false;
 				}
@@ -301,6 +309,10 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				}else{
 					return false;
 				}
+				
+//				if(model.getValue(iter, psDataModel.getSensitiveDC()) == false){
+//					return false;
+//				}
 				
 			}
 		});
@@ -314,15 +326,15 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		
 		CellRendererText cellRendererText3 = new CellRendererText();
 		pidCol.packStart(cellRendererText3, false);
-		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.TEXT ,psDataModel.getPidDC());
-		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());		
-		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());		
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.TEXT ,procDataModel.getPidDC());
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.FOREGROUND ,procDataModel.getColorDC());		
+		pidCol.addAttributeMapping(cellRendererText3, CellRendererText.Attribute.WEIGHT ,procDataModel.getWeightDC());		
 
 		CellRendererText cellRendererText4 = new CellRendererText();
 		commandCol.packStart(cellRendererText4, false);
-		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.TEXT ,psDataModel.getCommandDC());
-		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,psDataModel.getColorDC());
-		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,psDataModel.getWeightDC());				
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.TEXT ,procDataModel.getCommandDC());
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.FOREGROUND ,procDataModel.getColorDC());
+		commandCol.addAttributeMapping(cellRendererText4, CellRendererText.Attribute.WEIGHT ,procDataModel.getWeightDC());				
 
 		pidCol.setTitle("PID"); //$NON-NLS-1$
 		commandCol.setTitle("Entry Functions"); //$NON-NLS-1$
@@ -333,7 +345,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		this.threadTreeView.appendColumn(pidCol);
 		this.threadTreeView.appendColumn(commandCol);
 		
-		psDataModel.getModel().addListener(new TreeModelListener(){
+		procDataModel.getModel().addListener(new TreeModelListener(){
 
 			public void treeModelEvent(TreeModelEvent event) {
 				threadTreeView.expandAll();
@@ -354,7 +366,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 	
 	private void refresh(){
 		try {
-			this.psDataModel.refresh();
+			this.procDataModel.refresh();
 		} catch (IOException e) {
 			errorLog.log(Level.SEVERE,"Cannot refresh",e); //$NON-NLS-1$
 		}
@@ -369,8 +381,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		}
 		
 		TreeModel model = this.procFilter;
-		ProcData data   = (ProcData)model.getValue(model.getIter(tp[0]), this.psDataModel.getProcDataDC());
-		model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+		ProcData data   = (ProcData)model.getValue(model.getIter(tp[0]), this.procDataModel.getProcDataDC());
+		model.getValue(model.getIter(tp[0]), this.procDataModel.getPidDC());
 
 		return data;
 	}
@@ -384,8 +396,8 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		}
 		
 		TreeModel model = this.threadFilter;
-		TaskData data   = (TaskData)model.getValue(model.getIter(tp[0]), this.psDataModel.getProcDataDC());
-		model.getValue(model.getIter(tp[0]), this.psDataModel.getPidDC());
+		TaskData data   = (TaskData)model.getValue(model.getIter(tp[0]), this.procDataModel.getProcDataDC());
+		model.getValue(model.getIter(tp[0]), this.procDataModel.getPidDC());
 
 		return data;
 	}

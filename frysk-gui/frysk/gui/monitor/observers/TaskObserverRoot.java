@@ -23,8 +23,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 			}
 			
 			public void addFailed(Object observable, Throwable w) {
-				// TODO Auto-generated method stub
-				throw new RuntimeException("You fogot to implement this method :D ");
+				throw new RuntimeException("Error occurred while adding observer");
 			}
 		
 			public void existingTask(Task task) {

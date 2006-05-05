@@ -1,3 +1,13 @@
+2006-05-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskObserverRoot.java (addFailed): Added a
+	proper error message.
+	* SaveableXXX.java: Improved javadoc.
+	* ProcViewPage.java: Added filters for filtering out
+	insensitive processies.
+	* ProcDataModel.java: Added check for defunct proccesses.
+	added sensitiveDC for hiding away invalid proccesses.
+
 2006-05-04  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ExitNotificationObserver.java: Removed debug output.

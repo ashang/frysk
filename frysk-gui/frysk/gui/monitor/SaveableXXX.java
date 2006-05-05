@@ -41,6 +41,18 @@ package frysk.gui.monitor;
 
 import org.jdom.Element;
 
+/**
+ * 
+ * @author swagiaal
+ *
+ * An iterface for objects that can be save/loaded
+ * from XML.
+ * 
+ * Implementors of this object need to have a no argument
+ * constuctor to be used when it is being reconstructed from
+ * disk. The heavy lifting that would normally be in the constructor
+ * should then me moved to load().
+ */
 public interface SaveableXXX {
 	
 	

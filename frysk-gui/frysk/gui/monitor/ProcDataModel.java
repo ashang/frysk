@@ -75,6 +75,7 @@ public class ProcDataModel {
 	private DataColumnInt weightDC;
 	private DataColumnInt threadParentDC;
 	private DataColumnBoolean isThreadDC;
+	private DataColumnBoolean sensitiveDC; 
 	
 	private HashMap iterHash;
 	
@@ -100,6 +101,7 @@ public class ProcDataModel {
 		this.weightDC = new DataColumnInt();
 		this.isThreadDC = new DataColumnBoolean();
 		this.threadParentDC = new DataColumnInt();
+		this.sensitiveDC = new DataColumnBoolean();
 		
 		this.treeStore = new TreeStore(new DataColumn[]{pidDC,
 				commandDC,
@@ -107,7 +109,8 @@ public class ProcDataModel {
 				procDataDC,
 				weightDC,
 				threadParentDC,
-				isThreadDC});
+				isThreadDC,
+				sensitiveDC});
 		
 		// Change to HashMap from HashTable
 		this.iterHash = new HashMap();
@@ -151,11 +154,9 @@ public class ProcDataModel {
 	public void refresh() throws IOException{
 		Manager.host.requestRefreshXXX (true);
 	}
-
 	
-
 	
-
+	
 	
 	public DataColumnInt getPidDC() {
 		return this.pidDC;
@@ -187,6 +188,10 @@ public class ProcDataModel {
 	
 	public DataColumnBoolean getHasParentDC() {
 		return this.isThreadDC;
+	}
+
+	public DataColumnBoolean getSensitiveDC() {
+		return this.sensitiveDC;
 	}
 
 	public TreeModel getModel() {
@@ -230,6 +235,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, isThreadDC, false);
 						
 					treeStore.setValue(iter,threadParentDC, 0);
+					treeStore.setValue(iter,sensitiveDC, false);
 
 				 }
 			});
@@ -287,7 +293,7 @@ public class ProcDataModel {
 					}else{
 						parent = (TreeIter) iterHash.get(task.getProc().getId());
 					}
-					
+				
 					// get an iterator pointing to a previous entry of the process
 					TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
 						
@@ -304,6 +310,15 @@ public class ProcDataModel {
 					treeStore.setValue(iter, isThreadDC, true);
 						
 					treeStore.setValue(iter, procDataDC, (new TaskData(task)));
+					treeStore.setValue(iter,sensitiveDC, false);
+				
+					if(getThreadCount(parent) == 0 ){
+//						treeStore.setValue(parent, sensitiveDC, true);
+						treeStore.setValue(parent, sensitiveDC, false);
+					}else{
+//						treeStore.setValue(parent, sensitiveDC, false);
+						treeStore.setValue(parent, sensitiveDC, true);
+					}
 					
 				}
 			});
@@ -322,8 +337,25 @@ public class ProcDataModel {
 							throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
+						// get an iterator pointing to the parent
+						TreeIter parent;
+						if(task.getProc() == null){
+							parent = null;
+						}else{
+							parent = (TreeIter) iterHash.get(task.getProc().getId());
+						}
+					
+						if(getThreadCount(parent) == 1 ){
+//							treeStore.setValue(parent, sensitiveDC, true);
+							treeStore.setValue(parent, sensitiveDC, false);
+						}else{
+//							treeStore.setValue(parent, sensitiveDC, false);
+							treeStore.setValue(parent, sensitiveDC, true);
+						}
+						
 						treeStore.removeRow(iter);
 						iterHash.remove(task.getTaskId());
+				
 					}catch (NullPointerException e) {
 						errorLog.log(Level.WARNING,"trying to remove task " + task + "before it is added",e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
@@ -345,6 +377,20 @@ public class ProcDataModel {
     		treeStore.removeRow(child);
     }
 
+    private int getThreadCount(TreeIter iter){
+	    int n = iter.getChildCount();
+	    int threadCount = 0;
+	    //		System.out.println("ProcDestroyedObserver.update() iter not null checking children n: " + n );
+	    for (int i = 0; i < n; i++) {
+		    if(treeStore.getValue(iter.getChild(i), isThreadDC) == true){
+			    threadCount++;
+		    }
+	    }
+	    System.out.println(this + ": ProcDataModel.getThreadCount() " + treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter, pidDC) + " "+ threadCount); 
+	    return threadCount;
+	    
+    }
+    
     private void copyRow(TreeIter to, TreeIter from){
     		// switch iters in hash
 //    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
@@ -383,6 +429,7 @@ public class ProcDataModel {
     		treeStore.setValue(to, weightDC,       treeStore.getValue(from, weightDC));
     		treeStore.setValue(to, threadParentDC, treeStore.getValue(from, threadParentDC));
     		treeStore.setValue(to, isThreadDC,    treeStore.getValue(from,isThreadDC));
+		treeStore.setValue(to, sensitiveDC, treeStore.getValue(from,sensitiveDC));
     		
     }
 }
