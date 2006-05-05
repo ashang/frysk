@@ -103,7 +103,7 @@ GEN_GCJ_RPATH_FLAGS = \
 	-Djava.library.path=$(GEN_GCJ_RPATH) \
 	-Wl,-rpath,$(GEN_GCJ_RPATH)
 
-# Prevent GCJ from creating child processses (or at least a feable
+# Prevent GCJ from creating child processes (or at least a feeble
 # attempt) -- children are created for both demangling and for
 # addr2line lookups.  Without this FRYSK and GCJ end up fighting over
 # who owns SIGCHLD.
@@ -279,12 +279,12 @@ $(GEN_SOURCENAME)/JUnitTests.java: Makefile
 # filling in the others as a side-effect.
 
 # Need to store the intermediate .class files in a separate directory
-# as otherwize GCJ will include a possibly out-dated .class file
+# as otherwise GCJ will include a possibly out-dated .class file
 # instead of the latest .java file leading to screwed up in
 # dependencies.
 
 # jv-scan occasionally gets it wrong generating extra classes
-# (actually it is that jv-scan's output doesn't necessarially agree
+# (actually it is that jv-scan's output doesn't necessarily agree
 # with that of JAVAC), work around this by checking that each class
 # really exists.
 
@@ -316,7 +316,7 @@ SUFFIXES += .so
 # Clueless automake: Use a phony DATA entry to convince AUTOMAKE that
 # it really should install a .so file into LIBDIR.  The obvious
 # choice, lib_LIBRARIES, attracts an error because .so isn't a valid
-# extention (serious!); mean while LTLIBRARIES insists that the world
+# extension (serious!); mean while LTLIBRARIES insists that the world
 # should use LIBTOOL.
 
 solibdir = $(libdir)
@@ -438,7 +438,7 @@ SUFFIXES += .fig .jpg .pdf .eps .gif .txt
 
 
 # Add some needed files to the distribution, include $(srcdir) so that
-# the reg-ex expansion occures there.
+# the reg-ex expansion occurs there.
 
 EXTRA_DIST += \
 	$(srcdir)/common/ChangeLog \
@@ -461,7 +461,7 @@ clean-local: clean-local-po
 clean-local-po:
 	find $(GEN_DIRS) -name '*.Po' -exec cp /dev/null \{\} \;
 
-# For distclean, which is ment to leave a 100% pristine source tree,
+# For distclean, which is meant to leave a 100% pristine source tree,
 # remove everything listed in .cvsignore.
 
 distclean-local: distclean-cvsignored
@@ -477,8 +477,8 @@ distclean-cvsignored:
 # that it is faster to just feed all the files en-mass to the compiler
 # (then compile each individually).  Put the list into a file to avoid
 # having too-long an argument list.  Remember to filter out duplicate
-# directories (as occures when building in the source tree).  An
-# explict clean rule is needed as CLEANFILES can't handle directories.
+# directories (as occurs when building in the source tree).  An
+# explicit clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files.list
 files.list: lib${GEN_DIRNAME}.a
@@ -517,7 +517,7 @@ clean-classes-dir:
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
 # habit of silently compiling invalid Java code (garbage in, garbage out),
-# fortunatly ECJ rejects it.
+# fortunately ECJ rejects it.
 
 all-local: ecj/checked
 ecj/checked: files.list
