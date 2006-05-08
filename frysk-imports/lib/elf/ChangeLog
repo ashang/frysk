@@ -1,7 +1,33 @@
-
-Local Variables:
-mode: change-log
-left-margin: 8
-fill-column: 74
-version-control: never
-End:
+2006-05-08  Adam Jocksch  <ajocksch@redhat.com>
+	* ChangeLog: Created.
+	* Elf.java: Added.
+	* ElfEHeader.java: Ditto.
+	* ElfEHeader32.java: Ditto.
+	* ElfEHeader64.java: Ditto.
+	* ElfPHeader.java: Ditto.
+	* ElfPHeader32.java: Ditto.
+	* ElfPHeader64.java: Ditto.
+	* ElfArchiveHeader.java: Ditto.
+	* ElfArchiveSymbol.java: Ditto.
+	* ElfCommand.java: Ditto.
+	* ElfData.java: Ditto.
+	* ElfError.java: Ditto.
+	* ElfException.java: Ditto.
+	* ElfKind.java: Ditto.
+	* ElfSectionHeader.java: Ditto.
+	* ElfSectionHeader32.java: Ditto.
+	* ElfSectionHeader64.java: Ditto.
+	* ElfSection.java: Ditto.
+	* ElfType.java: Ditto.
+	* cni: Ditto.
+	* cni/ElfArchiveHeader.cxx: Ditto.
+	* cni/ElfArchiveSymbol.cxx: Ditto.
+	* cni/ElfData.cxx: Ditto.
+	* cni/ElfEHeader32.cxx: Ditto.
+	* cni/ElfEHeader64.cxx: Ditto.
+	* cni/ElfPHeader32.cxx: Ditto.
+	* cni/ElfPHeader64.cxx: Ditto.
+	* cni/ElfSectionHeader32.cxx: Ditto.
+	* cni/ElfSectionHeader64.cxx: Ditto.
+	* cni/ElfSection.cxx: Ditto.
+	* cni/Elf.cxx: Ditto.
