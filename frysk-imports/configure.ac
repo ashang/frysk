@@ -43,7 +43,9 @@ sinclude(common/version.ac)
 AC_INIT(frysk, [FRYSK_VERSION])
 
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile cdtparser/Makefile junit/Makefile])
+AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile
+cdtparser/Makefile junit/Makefile])
+AC_CONFIG_SUBDIRS([elfutils])
 
 sinclude(common/acinclude.m4)
 

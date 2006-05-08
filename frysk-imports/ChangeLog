@@ -1,3 +1,10 @@
+2006-05-08  Rick Moseley  <rmoseley@redhat.com>
+
+	* bootstrap.sh: Added elfutils.
+	* Makefile.am: Ditto.
+	* configure.ac" Ditto.
+	* elfutils: Added this directory from the elfutils-0.120 source.
+
 2006-04-27  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Copy autogen.sh.

@@ -45,7 +45,8 @@ SUBDIRS = \
 	jargs \
 	tests \
 	cdtparser \
-	junit
+	junit \
+	elfutils
 
 GEN_CLASSPATH += jargs.jar
 GEN_CLASSPATH += junit.jar

@@ -51,11 +51,27 @@
 
 # Generate everything (always run with --add-missing).
 
-echo "Running aclocal ..."
+echo "Running aclocal ... for frysk-imports"
 aclocal -I common/m4
 
-echo "Running autoconf ..."
+echo "Running autoconf ... for frysk-imports"
 autoconf -f
 
-echo "Running automake ..."
+echo "Running automake ... for frysk-imports"
 automake --add-missing
+
+# Now run a separate aclocal/autoconf/automake for elfutils
+
+cd elfutils
+
+echo "Running aclocal ... for elfutils"
+
+aclocal -I m4
+
+echo "Running autoconf ... for elfutils"
+
+autoconf -f
+
+echo "Running automake ... for elfutils"
+
+automake --add-missing 
