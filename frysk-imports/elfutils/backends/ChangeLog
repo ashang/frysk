@@ -1,0 +1,77 @@
+2006-02-22  Roland McGrath  <roland@redhat.com>
+
+	* ppc64_retval.c (SVR4_STRUCT_RETURN): New macro.
+	(ppc64_return_value_location): Use registers for aggregate conditional
+	on that.
+	* ppc_retval.c (SVR4_STRUCT_RETURN): New macro.
+	(ppc_return_value_location): Use registers for aggregate conditional
+	on that.
+
+2006-01-12  Roland McGrath  <roland@redhat.com>
+
+	* s390_retval.c: New file.
+	* Makefile.am (s390_SRCS): Add it.
+	* s390_init.c (s390_init): Install return_value_location hook.
+
+2006-01-11  Roland McGrath  <roland@redhat.com>
+
+	* s390_regs.c: New file.
+	* Makefile.am (s390_SRCS): Add it.
+	* s390_init.c (s390_init): Install register_name hook.
+
+	* s390_reloc.def: Update bits per
+	Martin Schwidefsky <schwidefsky@de.ibm.com>.
+
+2005-12-10  Ulrich Drepper
+
+	* common-reloc.c (R_NAME): Generate string correctly.
+
+2005-12-05  Roland McGrath  <roland@redhat.com>
+
+	* i386_regs.c (i386_register_name): Use a table for the first 8 regs.
+	* x86_64_regs.c (x86_64_register_name): Likewise.
+
+2005-11-25  Roland McGrath  <roland@redhat.com>
+
+	* i386_regs.c (i386_register_name): Return 0, not 1, for gaps.
+
+	* i386_regs.c: New file.
+	* ppc_regs.c: New file.
+	* sparc_regs.c: New file.
+	* x86_64_regs.c: New file.
+	* Makefile.am
+	(i386_SRCS, x86_64_SRCS, ppc_SRCS, ppc64_SRCS, sparc_SRCS): Add them.
+	* i386_init.c: Initialize register_name hook.
+	* ppc_init.c: Likewise.
+	* ppc64_init.c: Likewise.
+	* sparc_init.c: Likewise.
+	* x86_64_init.c: Likewise.
+
+2005-11-19  Roland McGrath  <roland@redhat.com>
+
+	* ppc64_reloc.def: REL30 -> ADDR30.
+
+2005-11-18  Roland McGrath  <roland@redhat.com>
+
+	* alpha_init.c: Use HOOK macro.
+	* arm_init.c: Likewise.
+	* i386_init.c: Likewise.
+	* ia64_init.c: Likewise.
+	* ppc64_init.c: Likewise.
+	* ppc_init.c: Likewise.
+	* s390_init.c: Likewise.
+	* sh_init.c: Likewise.
+	* sparc_init.c: Likewise.
+	* x86_64_init.c: Likewise.
+
+2005-11-17  Roland McGrath  <roland@redhat.com>
+
+	* Makefile.am (uninstall): Don't try to remove $(pkgincludedir).
+	(CLEANFILES): Add libebl_$(m).so.
+
+	* ppc_reloc.def: Update bits per Alan Modra <amodra@bigpond.net.au>.
+	* ppc64_reloc.def: Likewise.
+
+2005-11-15  Roland McGrath  <roland@redhat.com>
+
+	* Contents moved here from ../libebl.
