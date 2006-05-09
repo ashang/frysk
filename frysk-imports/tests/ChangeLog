@@ -1,3 +1,7 @@
+2006-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (CLEANFILES): Delete *.gcno files created by gcc.
+
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk1986_FILES): Fix paths to U.java and T.java.

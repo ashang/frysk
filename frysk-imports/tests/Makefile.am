@@ -47,7 +47,10 @@ XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
 $(TESTS) $(XFAIL_TESTS): Makefile
-CLEANFILES = $(TESTS) $(noinst_SCRIPTS)
+CLEANFILES = \
+	$(TESTS) \
+	$(noinst_SCRIPTS) \
+	*.gcno
 .shin.sh:
 	cp $< $@.tmp
 	chmod a+x $@.tmp
