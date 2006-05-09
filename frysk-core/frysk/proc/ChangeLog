@@ -1,3 +1,15 @@
+2006-05-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Proc.java (getUID): Added - Return UID of Proc object.
+	(getGID): Added - Return GID of Proc object.
+	* LinuxProc.java (sendrecUID): Added - Send UID request
+	to static Status object in frysk-sys.
+	(sendrecGID): Added - Send GID request to static Status 
+	object in frysk-sys.
+	* DummyProc.java (sendrecUID): Added skeleton function
+	call.
+	(sendrecGID): Ditto.
+
 2006-05-04  Andrew Cagney  <cagney@redhat.com>
 
 	mkenum.sh changed to generate different constant names.

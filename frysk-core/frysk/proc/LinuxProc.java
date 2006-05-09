@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
 import frysk.sys.proc.Stat;
+import frysk.sys.proc.Status;
 import frysk.sys.proc.IdBuilder;
 import frysk.sys.proc.AuxvBuilder;
 import frysk.sys.proc.CmdLineBuilder;
@@ -172,6 +173,16 @@ public class LinuxProc
 	BuildCmdLine cmdLine = new BuildCmdLine ();
 	cmdLine.construct (getPid ());
 	return cmdLine.argv;
+    }
+
+    protected int sendrecGID()
+    {
+	return Status.getGID (getPid ());
+    }
+
+    protected int sendrecUID ()
+    {
+	return Status.getUID (getPid ());
     }
 
     protected String sendrecExe ()

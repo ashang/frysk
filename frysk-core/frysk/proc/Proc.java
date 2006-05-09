@@ -105,6 +105,28 @@ public abstract class Proc
     protected abstract String sendrecExe ();
 
     /**
+     * Return the UID of the Proc.
+     */
+    public int  getUID()
+    {
+	uid = sendrecUID ();
+	return uid;
+    }
+    protected abstract int sendrecUID ();
+    private int uid;
+
+    /**
+     * Return the GID of the Proc.
+     */
+     public int getGID()
+     {
+        gid = sendrecGID();
+        return gid;
+     }
+     protected abstract int sendrecGID ();
+     private int gid;
+
+    /**
      * Return the Proc's command line argument list
      */
     public String[] getCmdLine ()

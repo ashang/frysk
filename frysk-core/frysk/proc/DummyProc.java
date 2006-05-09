@@ -20,6 +20,14 @@ public class DummyProc extends Proc {
 		return null;
 	}
 
+	protected int sendrecUID() {
+		return 0;
+	}
+
+        protected int sendrecGID() {
+		return 0;
+        }
+
 	protected String[] sendrecCmdLine() {
 		// TODO Auto-generated method stub
 		return null;
