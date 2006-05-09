@@ -301,7 +301,8 @@ $(GEN_SOURCENAME)/JUnitTests.java: Makefile
 		if test -r $$tmpdir/$${file} ; then \
 			$(GCJH) -I $$tmpdir -d . $(GCJHFLAGS) $$class ; \
 		fi ; \
-	done
+	done ; \
+	rm -rf $$tmpdir
 
 # Shared library rule (for moment assume that .a contains PIC code).
 SUFFIXES += .so

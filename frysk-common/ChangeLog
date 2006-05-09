@@ -1,3 +1,7 @@
+2006-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (.java.h): Delete tmpdir.
+
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.rules (EXTRA_DIST): Replace autogen.sh with
