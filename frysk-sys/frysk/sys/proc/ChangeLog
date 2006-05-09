@@ -1,3 +1,9 @@
+2006-05-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* cni/Status.cxx: New File.
+	* Status.java: New File.
+	* TestStatus.java: New File.
+
 2006-01-07  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Exe.cxx: New.
