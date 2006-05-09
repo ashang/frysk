@@ -60,18 +60,13 @@ autoconf -f
 echo "Running automake ... for frysk-imports"
 automake --add-missing
 
+exit 0
+
 # Now run a separate aclocal/autoconf/automake for elfutils
-
 cd elfutils
-
 echo "Running aclocal ... for elfutils"
-
 aclocal -I m4
-
 echo "Running autoconf ... for elfutils"
-
 autoconf -f
-
 echo "Running automake ... for elfutils"
-
 automake --add-missing 

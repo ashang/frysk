@@ -150,7 +150,9 @@ frysk2492/cxx.sh:
 		> $@
 	chmod a+x $@
 
-frysk1986_FILES = frysk1986/rh174912.java
+frysk1986_FILES = \
+	frysk1986/rh174912.java \
+	frysk1986/U.java frysk1986/T.java
 EXTRA_DIST += $(frysk1986_FILES)
 TESTS += frysk1986/gcj.sh
 frysk1986/gcj.sh:
@@ -163,9 +165,6 @@ frysk1986/gcj.sh:
 		\'frysk1986/rh174912\$$1.class\' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
-
-frysk1986ice_FILES = frysk1986ice/U.java frysk1986ice/T.java
-EXTRA_DIST += $(frysk1986ice_FILES)
 TESTS += frysk1986/ice.sh
 frysk1986/ice.sh:
 	mkdir -p `dirname $@`

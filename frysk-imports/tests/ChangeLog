@@ -1,3 +1,7 @@
+2006-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk1986_FILES): Fix paths to U.java and T.java.
+
 2006-05-02  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk2630/noerror.sh, frysk2631/ice.sh): Add rules.

@@ -81,6 +81,7 @@ frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_chi
 
 MOSTLYCLEANFILES = frysk/pkglibexecdir/funit-child-alias.$(OBJEXT)
 EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
+EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/util.h
 
 # Try running funit from the install directory; ignore things like
 # program transform name for the moment.

@@ -1,5 +1,7 @@
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
 
+	* bootstrap.sh: Do not yet configure elfutils.
+
 	* configure.ac, Makefile.am: Disable elfutils until FC update cut.
 
 2006-05-08  Rick Moseley  <rmoseley@redhat.com>

@@ -1,3 +1,8 @@
+2006-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (EXTRA_DIST): Add src/widgets/ll.xpm and
+	src/widgets/ll.xpm.
+
 2006-04-11  Chris Moller  <moller@mollerware.com>
 
 	* src/jni/com_redhat_ftk_StripchartX.c:
