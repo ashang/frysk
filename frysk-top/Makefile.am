@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -131,4 +131,5 @@ EXTRA_DIST += \
 	$(srcdir)/common/*.m4 \
 	$(srcdir)/common/version.in \
 	$(srcdir)/common/m4/*.m4 \
+	$(srcdir)/bootstrap.sh \
 	$(srcdir)/autogen.sh

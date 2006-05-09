@@ -1,3 +1,8 @@
+2006-05-08  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (EXTRA_DIST): Replace autogen.sh with
+	bootstrap.sh.
+
 2006-05-04  Andrew Cagney  <cagney@redhat.com>
 
 	* mkenum.sh: Import.  Better handle ranges.  Make names more

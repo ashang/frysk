@@ -447,7 +447,7 @@ EXTRA_DIST += \
 	$(srcdir)/common/*.m4 \
 	$(srcdir)/common/version.in \
 	$(srcdir)/common/m4/*.m4 \
-	$(srcdir)/autogen.sh
+	$(srcdir)/bootstrap.sh
 
 # .Po files contain generated build dependencies.  Automake has no way
 # to efficiently detect a file rename or remove, and consequently, the
