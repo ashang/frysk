@@ -28,11 +28,17 @@
       <property name="visible">True</property>
       <property name="homogeneous">False</property>
       <property name="spacing">12</property>
+      <accessibility>
+	<atkproperty name="AtkObject::accessible_name" translatable="yes">dialog-vbox1</atkproperty>
+      </accessibility>
 
       <child internal-child="action_area">
 	<widget class="GtkHButtonBox" id="dialog-action_area1">
 	  <property name="visible">True</property>
 	  <property name="layout_style">GTK_BUTTONBOX_END</property>
+	  <accessibility>
+	    <atkproperty name="AtkObject::accessible_name" translatable="yes">dialog-action_area1</atkproperty>
+	  </accessibility>
 
 	  <child>
 	    <widget class="GtkButton" id="sessionDruid_backButton">
@@ -79,12 +85,18 @@
 		  <property name="bottom_padding">0</property>
 		  <property name="left_padding">0</property>
 		  <property name="right_padding">0</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">alignment76</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkHBox" id="hbox76">
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">2</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">hbox76</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkImage" id="image11">
@@ -151,12 +163,19 @@
 	  <property name="tab_pos">GTK_POS_TOP</property>
 	  <property name="scrollable">False</property>
 	  <property name="enable_popup">False</property>
+	  <accessibility>
+	    <atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_sessionNoteBook</atkproperty>
+	    <atkproperty name="AtkObject::accessible_description" translatable="yes">sessionDruid_sessionNoteBook</atkproperty>
+	  </accessibility>
 
 	  <child>
 	    <widget class="GtkVBox" id="vbox42">
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">6</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox42_tab1_session</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkRadioButton" id="sessionDruid_newSessionButton">
@@ -182,6 +201,9 @@
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">12</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox60_tab1_debugger</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkRadioButton" id="sessionDruid_debugExecutableButton">
@@ -211,6 +233,9 @@
 		      <property name="show_hidden">False</property>
 		      <property name="do_overwrite_confirmation">False</property>
 		      <property name="width_chars">-1</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_execChooser</atkproperty>
+		      </accessibility>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -252,6 +277,9 @@
 		  <property name="label_xalign">0</property>
 		  <property name="label_yalign">0.5</property>
 		  <property name="shadow_type">GTK_SHADOW_NONE</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">frame5</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkAlignment" id="alignment54">
@@ -264,6 +292,9 @@
 		      <property name="bottom_padding">0</property>
 		      <property name="left_padding">12</property>
 		      <property name="right_padding">0</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">alignment54</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkScrolledWindow" id="scrolledwindow32">
@@ -273,6 +304,9 @@
 			  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 			  <property name="shadow_type">GTK_SHADOW_IN</property>
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">scrolledwindow32</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkTreeView" id="sessionDruid_previousSessionsListView">
@@ -285,6 +319,9 @@
 			      <property name="fixed_height_mode">False</property>
 			      <property name="hover_selection">False</property>
 			      <property name="hover_expand">False</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_previousSessionsListView</atkproperty>
+			      </accessibility>
 			    </widget>
 			  </child>
 			</widget>
@@ -322,6 +359,9 @@
 	      <property name="width_chars">-1</property>
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label91</atkproperty>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -333,12 +373,18 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">6</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox43_tab2_processGroups</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkHBox" id="hbox61">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">12</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox61_tab2_host</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkAlignment" id="alignment56">
@@ -351,12 +397,18 @@
 		      <property name="bottom_padding">0</property>
 		      <property name="left_padding">0</property>
 		      <property name="right_padding">0</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">alignment56</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkHBox" id="hbox66">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">12</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox66_tab2_hostLabelAndComboBox</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkLabel" id="label78">
@@ -389,6 +441,10 @@
 			      <property name="items" translatable="yes">localhost</property>
 			      <property name="add_tearoffs">False</property>
 			      <property name="focus_on_click">True</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_hostComboBox</atkproperty>
+				<atkproperty name="AtkObject::accessible_description" translatable="yes">sessionDruid_hostComboBox</atkproperty>
+			      </accessibility>
 			    </widget>
 			    <packing>
 			      <property name="padding">0</property>
@@ -417,6 +473,9 @@
 		      <property name="bottom_padding">0</property>
 		      <property name="left_padding">0</property>
 		      <property name="right_padding">0</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">alignment62</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<placeholder/>
@@ -441,12 +500,18 @@
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">12</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox62_tab2_groupLists</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkVBox" id="vbox45">
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">6</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox45_tab2_fromGroupList</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkLabel" id="label74">
@@ -481,6 +546,9 @@
 			  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 			  <property name="shadow_type">GTK_SHADOW_IN</property>
 			  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">scrolledwindow33</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkTreeView" id="sessionDruid_procWiseTreeView">
@@ -493,6 +561,10 @@
 			      <property name="fixed_height_mode">False</property>
 			      <property name="hover_selection">False</property>
 			      <property name="hover_expand">False</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_procWiseTreeView</atkproperty>
+				<atkproperty name="AtkObject::accessible_description" translatable="yes">sessionDruid_procWiseTreeView</atkproperty>
+			      </accessibility>
 			    </widget>
 			  </child>
 			</widget>
@@ -515,6 +587,9 @@
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">6</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox44_tab2_groupListButtons</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkAlignment" id="alignment59">
@@ -527,6 +602,9 @@
 			  <property name="bottom_padding">0</property>
 			  <property name="left_padding">0</property>
 			  <property name="right_padding">0</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">alignment59</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <placeholder/>
@@ -545,6 +623,9 @@
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_addProcessGroupButton</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkAlignment" id="alignment82">
@@ -624,6 +705,9 @@
 			  <property name="can_focus">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_removeProcessGroupButton</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkAlignment" id="alignment83">
@@ -732,12 +816,18 @@
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">6</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox46_tab2_toList</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkHBox" id="hbox63">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">12</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox63_tab2_includesProcessGroupLabel</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkAlignment" id="alignment61">
@@ -805,6 +895,10 @@
 			      <property name="fixed_height_mode">False</property>
 			      <property name="hover_selection">False</property>
 			      <property name="hover_expand">False</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_addedProcsTreeView</atkproperty>
+				<atkproperty name="AtkObject::accessible_description" translatable="yes">sessionDruid_addedProcsTreeView</atkproperty>
+			      </accessibility>
 			    </widget>
 			  </child>
 			</widget>
@@ -852,6 +946,9 @@
 	      <property name="width_chars">-1</property>
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label95</atkproperty>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -863,6 +960,9 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">6</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox50_tab3_termMonitor</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkLabel" id="label87">
@@ -912,6 +1012,10 @@
 		      <property name="fixed_height_mode">False</property>
 		      <property name="hover_selection">False</property>
 		      <property name="hover_expand">False</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">sessionDruid_unexpectedExitTreeView</atkproperty>
+			<atkproperty name="AtkObject::accessible_description" translatable="yes">sessionDruid_unexpectedExitTreeView</atkproperty>
+		      </accessibility>
 		    </widget>
 		  </child>
 		</widget>
@@ -945,6 +1049,9 @@
 	      <property name="width_chars">-1</property>
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label97</atkproperty>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -956,6 +1063,9 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">12</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">hbox83_tab4_tagSets</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkVBox" id="vbox55">
@@ -1008,6 +1118,10 @@
 			  <property name="fixed_height_mode">False</property>
 			  <property name="hover_selection">False</property>
 			  <property name="hover_expand">False</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_processTagSetTreeView</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">SessionDruid_processTagSetTreeView</atkproperty>
+			  </accessibility>
 			</widget>
 		      </child>
 		    </widget>
@@ -1170,6 +1284,10 @@
 			  <property name="fixed_height_mode">False</property>
 			  <property name="hover_selection">False</property>
 			  <property name="hover_expand">False</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_tagSetTreeView</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">SessionDruid_tagSetTreeView</atkproperty>
+			  </accessibility>
 			</widget>
 		      </child>
 		    </widget>
@@ -1210,6 +1328,9 @@
 	      <property name="width_chars">-1</property>
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label100</atkproperty>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -1221,12 +1342,18 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">12</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">hbox77_tab5_observers</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkVBox" id="vbox52">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">6</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">vbox52_tab5_processGroups</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkLabel" id="label102">
@@ -1261,6 +1388,9 @@
 		      <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 		      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">scrolledwindow38</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkTreeView" id="SessionDruid_processObserverTreeView">
@@ -1273,6 +1403,10 @@
 			  <property name="fixed_height_mode">False</property>
 			  <property name="hover_selection">False</property>
 			  <property name="hover_expand">False</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_processObserverTreeView</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">SessionDruid_processObserverTreeView</atkproperty>
+			  </accessibility>
 			</widget>
 		      </child>
 		    </widget>
@@ -1295,6 +1429,9 @@
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">6</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">vbox53_tab5_separator</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkAlignment" id="alignment77">
@@ -1307,6 +1444,9 @@
 		      <property name="bottom_padding">0</property>
 		      <property name="left_padding">0</property>
 		      <property name="right_padding">0</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">alignment77</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<placeholder/>
@@ -1338,6 +1478,9 @@
 		      <property name="bottom_padding">0</property>
 		      <property name="left_padding">0</property>
 		      <property name="right_padding">0</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">alignment80</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<placeholder/>
@@ -1362,12 +1505,18 @@
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">6</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">vbox54_tab5_observers</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkHBox" id="hbox80">
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">12</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">hbox80_tab5_observerLabel</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkAlignment" id="alignment81">
@@ -1380,6 +1529,9 @@
 			  <property name="bottom_padding">0</property>
 			  <property name="left_padding">0</property>
 			  <property name="right_padding">0</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">alignment81</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkLabel" id="label105">
@@ -1423,6 +1575,9 @@
 		      <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 		      <property name="shadow_type">GTK_SHADOW_IN</property>
 		      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">scrolledwindow39</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkTreeView" id="SessionDruid_observerTreeView">
@@ -1435,6 +1590,10 @@
 			  <property name="fixed_height_mode">False</property>
 			  <property name="hover_selection">False</property>
 			  <property name="hover_expand">False</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_observerTreeView</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">SessionDruid_observerTreeView</atkproperty>
+			  </accessibility>
 			</widget>
 		      </child>
 		    </widget>
@@ -1475,6 +1634,9 @@
 	      <property name="width_chars">-1</property>
 	      <property name="single_line_mode">False</property>
 	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label101</atkproperty>
+	      </accessibility>
 	    </widget>
 	    <packing>
 	      <property name="type">tab</property>
@@ -1486,6 +1648,9 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox58_tab6_setSessionName</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<placeholder/>
@@ -1533,6 +1698,10 @@
 		      <property name="has_frame">True</property>
 		      <property name="invisible_char">•</property>
 		      <property name="activates_default">False</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_sessionName</atkproperty>
+			<atkproperty name="AtkObject::accessible_description" translatable="yes">SessionDruid_sessionName</atkproperty>
+		      </accessibility>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -1559,7 +1728,59 @@
 	  </child>
 
 	  <child>
+	    <widget class="GtkLabel" id="label111">
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes"></property>
+	      <property name="use_underline">False</property>
+	      <property name="use_markup">False</property>
+	      <property name="justify">GTK_JUSTIFY_LEFT</property>
+	      <property name="wrap">False</property>
+	      <property name="selectable">False</property>
+	      <property name="xalign">0.5</property>
+	      <property name="yalign">0.5</property>
+	      <property name="xpad">0</property>
+	      <property name="ypad">0</property>
+	      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	      <property name="width_chars">-1</property>
+	      <property name="single_line_mode">False</property>
+	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label111</atkproperty>
+	      </accessibility>
+	    </widget>
+	    <packing>
+	      <property name="type">tab</property>
+	    </packing>
+	  </child>
+
+	  <child>
 	    <placeholder/>
+	  </child>
+
+	  <child>
+	    <widget class="GtkLabel" id="label112">
+	      <property name="visible">True</property>
+	      <property name="label" translatable="yes"></property>
+	      <property name="use_underline">False</property>
+	      <property name="use_markup">False</property>
+	      <property name="justify">GTK_JUSTIFY_LEFT</property>
+	      <property name="wrap">False</property>
+	      <property name="selectable">False</property>
+	      <property name="xalign">0.5</property>
+	      <property name="yalign">0.5</property>
+	      <property name="xpad">0</property>
+	      <property name="ypad">0</property>
+	      <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
+	      <property name="width_chars">-1</property>
+	      <property name="single_line_mode">False</property>
+	      <property name="angle">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">label112</atkproperty>
+	      </accessibility>
+	    </widget>
+	    <packing>
+	      <property name="type">tab</property>
+	    </packing>
 	  </child>
 	</widget>
 	<packing>

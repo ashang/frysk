@@ -1,3 +1,10 @@
+2006-05-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (setUpCurrentPage): Fix
+	http://sourceware.org/bugzilla/show_bug.cgi?id=2640.
+	* glade/frysk_create_session_druid.glade: Added ldimaggi@redhat.com
+	patches.
+
 2006-05-04  Andrew Cagney  <cagney@redhat.com>
 
 	mkenum.sh changed to generate different constant names.

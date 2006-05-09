@@ -556,6 +556,7 @@ public class CreateFryskSessionDruid extends Dialog {
 
 		if(page == 0){
 			this.backButton.setSensitive(false);
+			this.nextButton.setSensitive(true);
 		}else{
 			this.backButton.setSensitive(true);
 		}
