@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,87 +42,62 @@ package frysk.sys.proc;
 import junit.framework.TestCase;
 
 /**
- * Test the Status getUID() and getGID() a predefined set of /proc$$/status</tt>
- * buffer.
+ * Test the Status getUID() and getGID() a predefined set of
+ * <tt>/proc$$/status</tt> buffer.
  */
-
 public class TestStatus
     extends TestCase
 {
-    /**
-     * Convert an array of strings into a NUL terminated, UNIX like,
-     * byte array.
-     */
-    private byte[] stringsToBytes (String[] strings)
-    {
-	int length = 0;
-	for (int i = 0; i < strings.length; i++) {
-	    length += strings[i].length ();
-	}
-	byte[] bytes = new byte[length + 1];
-	int n = 0;
-	for (int i = 0; i < strings.length; i++) {
-	    char[] chars = strings[i].toCharArray ();
-	    for (int j = 0; j < chars.length; j++) {
-		bytes[n++] = (byte) chars[j];
-	    }
-	}
-	bytes[length] = 0;
-	return bytes;
-    }
-
-	
-   
     public void testParseStatusGetID()
     {
 
 	// Construct valid status buffer
 	String[] status = new String[] {
-		"Name:\tgaim\n",
-		"State:\tS (sleeping)\n",
-		"SleepAVG:\t88%\n",
-		"Tgid:\t2765\n",
-		"Pid:\t2765\n",
-		"PPid:\t1\n",
-		"TracerPid:\t0\n",
-		"Uid:\t500\t500\t500\t500\n",
-		"Gid:\t500\t500\t500\t500\n",
-		"FDSize:\t256\n",
-		"Groups:\t500\n",
-		"VmPeak:\t99180 kB\n",
-		"VmSize:\t99084 kB\n",
-		"VmLck:\t0 kB\n",
-		"VmHWM:\t22392 kB\n",
-		"VmRSS:\t20604 kB\n",
-		"VmData:\t7468 kB\n",
-		"VmStk:\t104 kB\n",
-		"VmExe:\t1004 kB\n",
-		"VmLib:\t25380 kB\n",
-		"VmPTE:\t148 kB\n",
-		"StaBrk:\t00a6b000 kB\n",
-		"Brk:\t0911b000 kB\n",
-		"StaStk:\tbf8199b0 kB\n",
-		"ExecLim:\t07f2f000\n",
-		"Threads:\t1\n",
-		"SigQ:\t0/16374\n",
-		"SigPnd:\t0000000000000000\n",
-		"ShdPnd:\t0000000000000000\n",
-		"SigBlk:\t0000000000000000\n",
-		"SigIgn:\t0000000020001000\n",
-		"SigCgt:\t0000000180014407\n",
-		"CapInh:\t0000000000000000\n",
-		"CapPrm:\t0000000000000000\n",
-		"CapEff:\t0000000000000000"};
+	    "Name:\tgaim\n",
+	    "State:\tS (sleeping)\n",
+	    "SleepAVG:\t88%\n",
+	    "Tgid:\t2765\n",
+	    "Pid:\t2765\n",
+	    "PPid:\t1\n",
+	    "TracerPid:\t0\n",
+	    "Uid:\t500\t500\t500\t500\n",
+	    "Gid:\t500\t500\t500\t500\n",
+	    "FDSize:\t256\n",
+	    "Groups:\t500\n",
+	    "VmPeak:\t99180 kB\n",
+	    "VmSize:\t99084 kB\n",
+	    "VmLck:\t0 kB\n",
+	    "VmHWM:\t22392 kB\n",
+	    "VmRSS:\t20604 kB\n",
+	    "VmData:\t7468 kB\n",
+	    "VmStk:\t104 kB\n",
+	    "VmExe:\t1004 kB\n",
+	    "VmLib:\t25380 kB\n",
+	    "VmPTE:\t148 kB\n",
+	    "StaBrk:\t00a6b000 kB\n",
+	    "Brk:\t0911b000 kB\n",
+	    "StaStk:\tbf8199b0 kB\n",
+	    "ExecLim:\t07f2f000\n",
+	    "Threads:\t1\n",
+	    "SigQ:\t0/16374\n",
+	    "SigPnd:\t0000000000000000\n",
+	    "ShdPnd:\t0000000000000000\n",
+	    "SigBlk:\t0000000000000000\n",
+	    "SigIgn:\t0000000020001000\n",
+	    "SigCgt:\t0000000180014407\n",
+	    "CapInh:\t0000000000000000\n",
+	    "CapPrm:\t0000000000000000\n",
+	    "CapEff:\t0000000000000000"};
 
-	byte[] buf = stringsToBytes (status);
+	byte[] buf = TestLib.stringsToBytes (status);
 
     	// Test normal-expected results from a valid status buffer
 	assertEquals ("Normal Process UID", 500, Status.getUID(buf));
 	assertEquals ("Normal Process GID", 500, Status.getGID(buf));
-   }
+    }
 
-   public void testParseStatusNullBufferGetID()
-   {
+    public void testParseStatusNullBufferGetID()
+    {
 	// Test abnormal-expected results from invald status buffers
 
 	// Test null buffer
@@ -130,22 +105,22 @@ public class TestStatus
 	assertEquals ("Null Buffer Process UID", -1, Status.getUID(null));
 	assertEquals ("Null Buffer Process GID", -1, Status.getGID(null));
 
-   }	
+    }	
     
 
-   public void testParseStatusInvalidBufferGetID()
-   {
+    public void testParseStatusInvalidBufferGetID()
+    {
 	// Test abnormal-expected results from invald status buffers
 
 	// Test non-null but invalid buffer
 	
 	String[] randomText = new String[] {
-		"Day after day, day after day,\n",
-		"We stuck, nor breath nor motion;\n",
-		"As idle as a painted ship\n",
-		"Upon a painted ocean."};
+	    "Day after day, day after day,\n",
+	    "We stuck, nor breath nor motion;\n",
+	    "As idle as a painted ship\n",
+	    "Upon a painted ocean."};
 
-	byte[] buf = stringsToBytes(randomText);
+	byte[] buf = TestLib.stringsToBytes(randomText);
 
 	assertEquals("Non null Buffer, invalid text Process UID", -1, Status.getUID(buf));
 	assertEquals("Non null Buffer, invalid text Process GID", -1, Status.getGID(buf));

@@ -1,3 +1,9 @@
+2006-05-09  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java: New file.  Move stringsToBytes to here.
+	* TestMaps.java: Update, use TestLib .stringsToBytes.
+	* TestStatus.java: Ditto.
+
 2006-05-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* cni/Status.cxx: New File.

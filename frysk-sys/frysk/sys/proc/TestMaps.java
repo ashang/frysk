@@ -51,27 +51,6 @@ public class TestMaps
     static final boolean T = true;
     static final boolean F = false;
     /**
-     * Convert an array of strings into a NUL terminated, UNIX like,
-     * byte array.
-     */
-    private byte[] stringsToBytes (String[] strings)
-    {
-	int length = 0;
-	for (int i = 0; i < strings.length; i++) {
-	    length += strings[i].length ();
-	}
-	byte[] bytes = new byte[length + 1];
-	int n = 0;
-	for (int i = 0; i < strings.length; i++) {
-	    char[] chars = strings[i].toCharArray ();
-	    for (int j = 0; j < chars.length; j++) {
-		bytes[n++] = (byte) chars[j];
-	    }
-	}
-	bytes[length] = 0;
-	return bytes;
-    }
-    /**
      * An unpacked map.
      */
     private class Map
@@ -153,7 +132,7 @@ public class TestMaps
 		index++;
 	    }
 	}
-	byte[] buf = stringsToBytes (strings);
+	byte[] buf = TestLib.stringsToBytes (strings);
 	Verify verify = new Verify (buf, map);
 	assertTrue ("construct's return value", verify.construct (buf));
 	assertEquals ("number of entries", verify.index, map.length);
