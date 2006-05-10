@@ -1236,7 +1236,7 @@ ftk_eventviewer_append_event   (FtkEventViewer * eventviewer,
 }
 
 gint
-ftk_marker_new_e (FtkEventViewer * eventviewer,
+ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
 		  FtkGlyph glyph,
 		  char * label,
 		  GError ** err)
@@ -1284,11 +1284,11 @@ ftk_marker_new_e (FtkEventViewer * eventviewer,
 }
 
 gint
-ftk_marker_new (FtkEventViewer * eventviewer,
+ftk_eventviewer_marker_new (FtkEventViewer * eventviewer,
 		FtkGlyph glyph,
 		char * label)
 {
-  return ftk_marker_new_e (eventviewer, glyph, label, NULL);
+  return ftk_eventviewer_marker_new_e (eventviewer, glyph, label, NULL);
 }
 
 /*

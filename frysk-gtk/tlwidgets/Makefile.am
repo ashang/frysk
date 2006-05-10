@@ -50,15 +50,14 @@ java_DATA = ftk.jar
 EXTRA_DIST = $(SRC) \
 	src/widgets/ll.xpm \
 	src/widgets/rr.xpm \
-	src/widgets/ftkconsole.h \
 	src/widgets/ftkstripchart.h \
 	src/widgets/ftkstripchartx.h \
-	src/widgets/ftkeventviewer.h \
-	src/widgets/ftktimeline.h
+	src/widgets/ftkeventviewer.h
 
 CLEANFILES = *.so *.jar
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java \
-     $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
+     $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java \
+     $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
 AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	-Wall -Werror \
 	-I$(srcdir)/src/widgets \
@@ -73,15 +72,21 @@ AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	mv $@.tmp $@
 
 CLEANFILES += com/redhat/ftk/Stripchart.class \
-              com/redhat/ftk/StripchartX.class
+              com/redhat/ftk/StripchartX.class \
+              com/redhat/ftk/EventViewer.class
 com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 com/redhat/ftk/StripchartX.class: $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
+com/redhat/ftk/EventViewer.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
+	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 
-ftk.jar: com/redhat/ftk/Stripchart.class com/redhat/ftk/StripchartX.class
+ftk.jar: com/redhat/ftk/Stripchart.class \
+         com/redhat/ftk/StripchartX.class \
+         com/redhat/ftk/EventViewer.class
 	$(JAR) cf ftk.jar -C . com/redhat/ftk/Stripchart.class \
-	                  -C . com/redhat/ftk/StripchartX.class
+	                  -C . com/redhat/ftk/StripchartX.class \
+	                  -C . com/redhat/ftk/EventViewer.class
 
 Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
@@ -91,18 +96,23 @@ StripchartX.o: $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
             -g -O2 -fPIC -c $< -o $@
 
-libftkjava.so: Stripchart.o StripchartX.o
+EventViewer.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
+	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
+            -g -O2 -fPIC -c $< -o $@
+
+libftkjava.so: Stripchart.o StripchartX.o EventViewer.o
 	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
 		-Wl,-soname -Wl,libftkjava.so -o $@
 
 libftkjni_a_SOURCES = src/jni/com_redhat_ftk_Stripchart.c \
-                      src/jni/com_redhat_ftk_StripchartX.c
+                      src/jni/com_redhat_ftk_StripchartX.c \
+                      src/jni/com_redhat_ftk_EventViewer.c
 noinst_LIBRARIES += libftkjni.a
 libftkjni_so_SOURCES =
 solib_PROGRAMS += libftkjni.so
 libftkjni.so: libftkjni.a
 
-libftk_a_SOURCES = src/widgets/ftkstripchart.c src/widgets/ftkconsole.c \
+libftk_a_SOURCES = src/widgets/ftkstripchart.c \
                    src/widgets/ftkstripchartx.c \
                    src/widgets/ftkeventviewer.c
 noinst_LIBRARIES += libftk.a
