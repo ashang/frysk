@@ -1,3 +1,17 @@
+2006-05-10  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskObserver.java (Forked .updateForkedParent): Rename
+	.updateForked.
+	(Cloned .updateClonedParent): Rename .updateCloned.
+	* Task.java (notifyForkedParent): Rename notifyForked.
+	(notifyClonedParent): Rename notifyCloned.
+	* ProcState.java: Update.
+	* TaskState.java: Update.
+	* TestTaskClonedObserver.java: Update.
+	* TestTaskForkedObserver.java: Update.
+	* TestTaskObserverBlocked.java: Update.
+	* TestTaskObserverDetach.java: Update.
+
 2006-05-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Proc.java (getUID): Added - Return UID of Proc object.

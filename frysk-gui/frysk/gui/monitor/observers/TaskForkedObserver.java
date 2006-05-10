@@ -59,7 +59,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 
 	}
 
-	public Action updateForked(Task task, Task child) {
+	public Action updateForkedParent (Task task, Task child) {
 //		WarnDialog dialog = new WarnDialog("Fork ya'll");
 //		dialog.showAll();
 //		dialog.run();

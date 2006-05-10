@@ -197,13 +197,13 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return Action.CONTINUE;
 	}
 
-	public Action updateCloned(Task task, Task clone) {
+	public Action updateClonedParent (Task task, Task clone) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
 				+ " Host XXX cloned new task: " + clone); //$NON-NLS-1$
 		return Action.CONTINUE;
 	}
 
-	public Action updateForked(Task task, Task child) {
+	public Action updateForkedParent(Task task, Task child) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
 				+ " Host XXX Forked a new proccess: " //$NON-NLS-1$
 				 + child.getProc ());

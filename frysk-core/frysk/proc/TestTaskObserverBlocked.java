@@ -144,15 +144,15 @@ public class TestTaskObserverBlocked
 	    Manager.eventLoop.requestStop ();
 	}
 	private Task parent;
-	private Task child;
-	protected Action spawned (Task task, Task spawn)
+	private Task offspring;
+	protected Action spawnedParent (Task parent, Task offspring)
 	{
-	    killDuringTearDown (spawn.getTid ());
+	    killDuringTearDown (offspring.getTid ());
 	    assertSame ("state", OBSERVER_ADDED_TO_PARENT, state);
 	    state = PARENT_SPAWNED;
 	    Manager.eventLoop.requestStop ();
-	    parent = task;
-	    child = spawn;
+	    this.parent = parent;
+	    this.offspring = offspring;
 	    return Action.BLOCK;
 	}
 	/**
@@ -190,28 +190,28 @@ public class TestTaskObserverBlocked
 	 * Unblock the child, then confirm that it is running (running
 	 * child will signal this process).
 	 */
-	public void assertChildUnblocked ()
+	public void assertUnblockOffspring ()
 	{
-	    logger.log (Level.FINE, "{0} assertChildUnblocked\n", this);
-	    child.requestAddAttachedObserver (this);
+	    logger.log (Level.FINE, "{0} assertUnblockOffspring\n", this);
+	    offspring.requestAddAttachedObserver (this);
 	    assertRunUntilStop ("add observer to child");
 	    assertSame ("observer state", OBSERVER_ADDED_TO_CHILD, state);
 	    
-	    child.requestUnblock (this);
+	    offspring.requestUnblock (this);
 	    assertRunUntilStop ("allow child to attach");
 	    assertSame ("observer state", CHILD_ATTACHED, state);
 	    
 	    AckHandler ack = new AckHandler (childAck, "childAck");
-	    child.requestUnblock (this);
+	    offspring.requestUnblock (this);
 	    ack.await ();
 	}
 	/**
 	 * Unblock the parent, then confirm that it is running
 	 * (running parent will signal this process).
 	 */
-	public void assertParentUnblocked ()
+	public void assertUnblockParent ()
 	{
-	    logger.log (Level.FINE, "{0} assertParentUnblocked\n", this);
+	    logger.log (Level.FINE, "{0} assertUnblockParent\n", this);
 	    AckHandler ack = new AckHandler (parentAck, "parentAck");
 	    parent.requestUnblock (this);
 	    ack.await ();
@@ -237,9 +237,9 @@ public class TestTaskObserverBlocked
 	/**
 	 * The parent Task cloned.
 	 */
-	public Action updateCloned (Task task, Task clone)
+	public Action updateClonedParent (Task parent, Task offspring)
 	{
-	    return spawned (task, clone);
+	    return spawnedParent (parent, offspring);
 	}
     }
     /**
@@ -251,8 +251,8 @@ public class TestTaskObserverBlocked
     {
 	CloneObserver clone = new CloneObserver ();
 	clone.assertRunToSpawn ();
-	clone.assertChildUnblocked ();
-	clone.assertParentUnblocked ();
+	clone.assertUnblockOffspring ();
+	clone.assertUnblockParent ();
     }
     /*
      * Check that a clone observer can block both the parent and
@@ -263,8 +263,8 @@ public class TestTaskObserverBlocked
     {
 	CloneObserver clone = new CloneObserver ();
 	clone.assertRunToSpawn ();
-	clone.assertParentUnblocked ();
-	clone.assertChildUnblocked ();
+	clone.assertUnblockParent ();
+	clone.assertUnblockOffspring ();
     }
     /**
      * Implementation of SpawnObserver that monitors a fork.
@@ -284,9 +284,9 @@ public class TestTaskObserverBlocked
 	/**
 	 * The parent Task forked.
 	 */
-	public Action updateForked (Task task, Task fork)
+	public Action updateForkedParent (Task parent, Task offspring)
 	{
-	    return spawned (task, fork);
+	    return spawnedParent (parent, offspring);
 	}
     }
     /**
@@ -298,8 +298,8 @@ public class TestTaskObserverBlocked
     {
 	ForkObserver fork = new ForkObserver ();
 	fork.assertRunToSpawn ();
-	fork.assertChildUnblocked ();
-	fork.assertParentUnblocked ();
+	fork.assertUnblockOffspring ();
+	fork.assertUnblockParent ();
     }
     /*
      * Check that a fork observer can block both the parent and
@@ -310,8 +310,8 @@ public class TestTaskObserverBlocked
     {
 	ForkObserver fork = new ForkObserver ();
 	fork.assertRunToSpawn ();
-	fork.assertParentUnblocked ();
-	fork.assertChildUnblocked ();
+	fork.assertUnblockParent ();
+	fork.assertUnblockOffspring ();
     }
 
 
@@ -389,12 +389,12 @@ public class TestTaskObserverBlocked
 	    extends BlockingFibonacci
 	    implements TaskObserver.Cloned
 	{
-	    public Action updateCloned (Task task, Task clone)
+	    public Action updateClonedParent (Task parent, Task offspring)
 	    {
-		killDuringTearDown (clone.getTid ());
-		parentTasks.add (task);
-		childTasks.add (clone);
-		clone.requestAddClonedObserver (this);
+		killDuringTearDown (offspring.getTid ());
+		parentTasks.add (parent);
+		childTasks.add (offspring);
+		offspring.requestAddClonedObserver (this);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -419,12 +419,12 @@ public class TestTaskObserverBlocked
 	    extends BlockingFibonacci
 	    implements TaskObserver.Forked
 	{
-	    public Action updateForked (Task task, Task fork)
+	    public Action updateForkedParent (Task parent, Task offspring)
 	    {
-		killDuringTearDown (fork.getTid ());
-		parentTasks.add (task);
-		childTasks.add (fork);
-		fork.requestAddForkedObserver (this);
+		killDuringTearDown (offspring.getTid ());
+		parentTasks.add (parent);
+		childTasks.add (offspring);
+		offspring.requestAddForkedObserver (this);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }

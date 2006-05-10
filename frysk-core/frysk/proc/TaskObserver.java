@@ -53,11 +53,15 @@ public interface TaskObserver
 	extends TaskObserver
     {
 	/**
-	 * Called when this TASK has cloned, creating CLONE.  Return
-	 * Action.BLOCK if this observer wants both this task and it's
-	 * clone to be blocked (each must be separatly unblocked).
+	 * Called when the Task (the parent) has cloned, creating a
+	 * clone Task (the offspring).  Return Action.BLOCK if this
+	 * observer wants the parent Task to block.
+	 *
+	 * XXX: At present returning Action.BLOCK also blocks the
+	 * offspring.
 	 */
-	Action updateCloned (Task task, Task clone);
+	Action updateClonedParent (Task task, Task clone);
+	// Action updateClonedOffspring
     }
 
     /**
@@ -68,12 +72,16 @@ public interface TaskObserver
 	extends TaskObserver
     {
 	/**
-	 * Called when the Task has forked, creating a child Proc
-	 * containing a single Task.  Return Action.BLOCK if the
-	 * observer wants this task and it's fork to be blocked (each
-	 * must be separatly unblocked).
+	 * Called when the Task (the parent) has forked, creating a
+	 * child Proc containing a single Task (the offspring).
+	 * Return Action.BLOCK if the observer wants the parent task
+	 * to block.
+	 *
+	 * XXX: At present returning Action.BLOCK also blocks the
+	 * offspring.
 	 */
-	Action updateForked (Task task, Task fork);
+	Action updateForkedParent (Task parent, Task offspring);
+	// Action updateClonedOffspring
     }
 
     /**

@@ -191,7 +191,7 @@ public class TestTaskObserverDetach
 	    {
 		task.requestDeleteForkedObserver (this);
 	    }
-	    public Action updateForked (Task task, Task fork)
+	    public Action updateForkedParent (Task parent, Task offspring)
 	    {
 		fail ("forked");
 		return null;
@@ -225,7 +225,7 @@ public class TestTaskObserverDetach
 	    {
 		task.requestDeleteClonedObserver (this);
 	    }
-	    public Action updateCloned (Task task, Task fork)
+	    public Action updateClonedParent (Task parent, Task offspring)
 	    {
 		fail ("cloned");
 		return null;

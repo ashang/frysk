@@ -64,15 +64,15 @@ public class TestTaskForkedObserver
 	    implements TaskObserver.Forked
 	{
 	    int count;
-	    public Action updateForked (Task task, Task fork)
+	    public Action updateForkedParent (Task parent, Task offspring)
 	    {
 		count++;
 		// XXX: Is this legit?  Like knowing that the request
 		// won't be processed until the event loop is run
 		// again so that there's no race condition.
-		fork.requestAddForkedObserver (this);
-		fork.requestUnblock (this);
-		task.requestUnblock (this);
+		offspring.requestAddForkedObserver (this);
+		offspring.requestUnblock (this);
+		parent.requestUnblock (this);
 		return Action.BLOCK;
 	    }
 	}

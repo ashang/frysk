@@ -162,9 +162,11 @@ abstract class ProcState
 			this.theObserver = tasksObserver;
 		    }
 	    		
-		    public Action updateCloned(Task task, Task clone) {
-			theObserver.taskAdded(clone);
-			clone.requestAddClonedObserver(this);
+		    public Action updateClonedParent (Task parent,
+						      Task offspring)
+		    {
+			theObserver.taskAdded (offspring);
+			offspring.requestAddClonedObserver (this);
 			return Action.CONTINUE;
 		    }
 

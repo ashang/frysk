@@ -584,7 +584,7 @@ class TaskState
 	    TaskState handleClonedEvent (Task task, Task clone)
 	    {
 		logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
-		if (task.notifyCloned (clone) > 0)
+		if (task.notifyClonedParent (clone) > 0)
 		    return blockedContinue;
 		task.sendContinue (0);
 		return running;
@@ -592,7 +592,7 @@ class TaskState
 	    TaskState handleForkedEvent (Task task, Task fork)
 	    {
 		logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
-		if (task.notifyForked (fork) > 0)
+		if (task.notifyForkedParent (fork) > 0)
 		    return blockedContinue;
 		task.sendContinue (0);
 		return running;

@@ -65,12 +65,12 @@ public class TestTaskClonedObserver
 	    implements TaskObserver.Cloned
 	{
 	    int count;
-	    public Action updateCloned (Task task, Task clone)
+	    public Action updateClonedParent (Task parent, Task offspring)
 	    {
 		count++;
-		clone.requestAddClonedObserver (this);
-		task.requestUnblock (this);
-		clone.requestUnblock (this);
+		offspring.requestAddClonedObserver (this);
+		parent.requestUnblock (this);
+		offspring.requestUnblock (this);
 		return Action.BLOCK;
 	    }
 	}

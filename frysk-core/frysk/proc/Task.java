@@ -433,15 +433,16 @@ abstract public class Task
      * Notify all cloned observers that this task cloned.  Return the
      * number of blocking observers.
      */
-    int notifyCloned (Task clone)
+    int notifyClonedParent (Task offspring)
     {
 	for (Iterator i = clonedObservers.iterator ();
 	     i.hasNext (); ) {
 	    TaskObserver.Cloned observer
 		= (TaskObserver.Cloned) i.next ();
-	    if (observer.updateCloned (this, clone) == Action.BLOCK) {
+	    if (observer.updateClonedParent (this, offspring)
+		== Action.BLOCK) {
 		blockers.add (observer);
-		clone.blockers.add (observer);
+		offspring.blockers.add (observer);
 	    }
 	}
 	return blockers.size ();
@@ -507,15 +508,16 @@ abstract public class Task
      * Notify all Forked observers that this task forked.  Return the
      * number of blocking observers.
      */
-    int notifyForked (Task fork)
+    int notifyForkedParent (Task offspring)
     {
 	for (Iterator i = forkedObservers.iterator ();
 	     i.hasNext (); ) {
 	    TaskObserver.Forked observer
 		= (TaskObserver.Forked) i.next ();
-	    if (observer.updateForked (this, fork) == Action.BLOCK) {
+	    if (observer.updateForkedParent (this, offspring)
+		== Action.BLOCK) {
 		blockers.add (observer);
-		fork.blockers.add (observer);
+		offspring.blockers.add (observer);
 	    }
 	}
 	return blockers.size ();
