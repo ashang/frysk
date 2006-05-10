@@ -68,6 +68,10 @@ public class VariableWatchView extends TreeView implements TreeSelectionListener
 	public VariableWatchView(){
 		super();
 		
+		this.setName("varWatchView");
+		this.getAccessible().setName("varWatchView_variableWatchList");
+		this.getAccessible().setDescription("A list of all the variables that are being watched");
+		
 		this.observers = new Vector();
 		
 		traceColumns = new DataColumn[] {new DataColumnString(), new DataColumnString(), new DataColumnObject()};

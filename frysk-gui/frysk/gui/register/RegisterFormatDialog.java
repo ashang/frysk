@@ -12,8 +12,6 @@ import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.ListStore;
-import org.gnu.gtk.SizeGroup;
-import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
@@ -44,10 +42,6 @@ public class RegisterFormatDialog extends Dialog implements Saveable{
 		this.glade = glade;
 		
 		this.setIcon(IconManager.windowIcon);
-		
-		SizeGroup group = new SizeGroup(SizeGroupMode.HORIZONTAL);
-		group.addWidget(this.glade.getWidget("formatUpButton"));
-		group.addWidget(this.glade.getWidget("formatDownButton"));
 		
 		this.formatList = (TreeView) this.glade.getWidget("formatSelector");
 		formatList.setHeadersVisible(false);
@@ -109,20 +103,6 @@ public class RegisterFormatDialog extends Dialog implements Saveable{
 		
 			public void lifeCycleEvent(LifeCycleEvent arg0) {}
 		});
-		
-		((Button) this.glade.getWidget("formatUpButton")).addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if(arg0.isOfType(ButtonEvent.Type.CLICK))
-					RegisterFormatDialog.this.moveColumnUp();
-			}
-		});
-		
-		((Button) this.glade.getWidget("formatDownButton")).addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if(arg0.isOfType(ButtonEvent.Type.CLICK))
-					RegisterFormatDialog.this.moveColumnDown();
-			}
-		});
 	}
 
 	public void save(Preferences prefs) {
@@ -150,14 +130,5 @@ public class RegisterFormatDialog extends Dialog implements Saveable{
 			model.setValue(iter, (DataColumnBoolean) cols[0], val);
 			iter = iter.getNextIter();
 		}
-	}
-
-	
-	private void moveColumnUp(){
-		
-	}
-	
-	private void moveColumnDown(){
-		
 	}
 }

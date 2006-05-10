@@ -194,13 +194,13 @@ public class SourceWindowFactory {
 						    else
 						        source.getLine(line).setExecutable(false);
 							
-							if(line++ == 12){
-								String lineText = source.getLine(12).getText();
-						    	source.getLine(12).addInlineInst("bar", lineText.indexOf("bar"), 3, 9);
-						    	DOMInlineInstance instance = source.getLine(12).getInlineInst("bar");
+							if(line++ == 15){
+								String lineText = source.getLine(15).getText();
+						    	source.getLine(15).addInlineInst("bar", lineText.indexOf("bar"), 3, 9);
+						    	DOMInlineInstance instance = source.getLine(15).getInlineInst("bar");
 						    	instance.addInlineInst("baz",10,3,22);
-						    	instance = instance.getInlineInstance();
-						    	instance.addInlineInst("foobar",10,6,4);
+//						    	instance = instance.getInlineInstance();
+//						    	instance.addInlineInst("foobar",10,6,4);
 							}
 							
 							offset += text.length();
@@ -221,7 +221,7 @@ public class SourceWindowFactory {
                 		source.getLine(8).getOffset(), 
                 		source.getLine(13).getOffset()+source.getLine(13).getLength());
 			
-                StackLevel stack1 = new StackLevel(image.getFunction("foo"), 12);
+                StackLevel stack1 = new StackLevel(image.getFunction("foo"), 15);
                 
                 
 				source = image.getSource("test3.cpp");
@@ -311,8 +311,6 @@ public class SourceWindowFactory {
 				catch (Exception e){
 					
 				}
-//				StackLevel stack3 = new StackLevel(source, 3);
-//				stack1.addNextScope(stack3);
 				
 				funcLines = new String[3];
                 for(int i = 0; i < funcLines.length; i++)
@@ -323,6 +321,9 @@ public class SourceWindowFactory {
                 		source.getLine(3).getOffset(), 
                 		source.getLine(5).getOffset()+source.getLine(5).getLength());
 				
+                StackLevel stack3 = new StackLevel(image.getFunction("foobar"), 3);
+				stack1.addNextScope(stack3);
+                
 				source = image.getSource("test6.cpp");
                 try{
                     reader = new BufferedReader(new FileReader(new File(finalTestPath + "/test6.cpp")));
@@ -354,7 +355,7 @@ public class SourceWindowFactory {
                 		source.getLine(10 + funcLines.length).getOffset()+source.getLine(10 + funcLines.length).getLength());
                 
 				StackLevel stack4 = new StackLevel(image.getFunction("min"), 21);
-				stack1.addNextScope(stack4);
+				stack3.addNextScope(stack4);
 				
 				LibGlade glade = null;
                 

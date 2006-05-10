@@ -20,6 +20,10 @@
   <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
   <property name="focus_on_map">True</property>
   <property name="urgency_hint">False</property>
+  <accessibility>
+    <atkproperty name="AtkObject::accessible_name" translatable="yes">prefWin_preferencesWindow</atkproperty>
+    <atkproperty name="AtkObject::accessible_description" translatable="yes">Displays and lets you edit the preferences for the source window</atkproperty>
+  </accessibility>
 
   <child>
     <widget class="GtkVBox" id="vbox1">
@@ -54,6 +58,10 @@
 		  <property name="fixed_height_mode">False</property>
 		  <property name="hover_selection">False</property>
 		  <property name="hover_expand">False</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">preferenceTree_listOfPreferenceGroups</atkproperty>
+		    <atkproperty name="AtkObject::accessible_description" translatable="yes">Displays a list of preference groups/subgroups</atkproperty>
+		  </accessibility>
 		</widget>
 	      </child>
 	    </widget>
@@ -91,6 +99,10 @@
 		      <property name="active">False</property>
 		      <property name="inconsistent">False</property>
 		      <property name="draw_indicator">True</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">toolbarCheck_isToolbarVisible</atkproperty>
+			<atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, the toolbar will be displayed on the source window</atkproperty>
+		      </accessibility>
 		    </widget>
 		    <packing>
 		      <property name="padding">0</property>
@@ -116,6 +128,10 @@
 			  <property name="active">False</property>
 			  <property name="inconsistent">False</property>
 			  <property name="draw_indicator">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">lineNumCheck_lineNumbersVisible</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, line numbers will be displayed next to the source</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -155,6 +171,10 @@
 				      <property name="can_focus">True</property>
 				      <property name="use_alpha">False</property>
 				      <property name="focus_on_click">True</property>
+				      <accessibility>
+					<atkproperty name="AtkObject::accessible_name" translatable="yes">linenumColor_colorOfLineNumbers</atkproperty>
+					<atkproperty name="AtkObject::accessible_description" translatable="yes">If line numbers are being displayed, they will be displayed in this color</atkproperty>
+				      </accessibility>
 				    </widget>
 				    <packing>
 				      <property name="padding">0</property>
@@ -223,6 +243,10 @@
 			  <property name="active">False</property>
 			  <property name="inconsistent">False</property>
 			  <property name="draw_indicator">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">execCheck_showExecutableLineMarkers</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, markers will be placed next to the executable lines of code in the source</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -262,6 +286,10 @@
 				      <property name="can_focus">True</property>
 				      <property name="use_alpha">False</property>
 				      <property name="focus_on_click">True</property>
+				      <accessibility>
+					<atkproperty name="AtkObject::accessible_name" translatable="yes">execColor_executableMarkColor</atkproperty>
+					<atkproperty name="AtkObject::accessible_description" translatable="yes">If executable line markers are being displayed, they will be displayed in this color</atkproperty>
+				      </accessibility>
 				    </widget>
 				    <packing>
 				      <property name="padding">0</property>
@@ -355,6 +383,10 @@
 			  <property name="snap_to_ticks">False</property>
 			  <property name="wrap">False</property>
 			  <property name="adjustment">0 0 100 1 10 10</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">inlineSpin_numberOfInlineLevels</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">Enter the maximum number of inline levels of code to display before hiding levels</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -456,6 +488,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">classColor_classSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Sets the color that class names will be highlighted in</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -507,6 +543,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">classBold_classNameBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If checked class names will be displaed in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -526,6 +566,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">classItal_classNamesItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If checked class names will be displayed in Italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -605,6 +649,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">funcColor_FunctionSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Functions in the source code will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -656,6 +704,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">funcBold_functionNamesBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If selected, function names will be in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -675,6 +727,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">funcItal_functionNamesItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If selected, function names will be Italicized</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -754,6 +810,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">keyColor_syntaxKeywordColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Language specific keywords will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -805,6 +865,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">keyBold_keywordBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, language specific keywords will be in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -824,6 +888,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">keyItal_keywordItalicize</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, keywords will be italicized</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -903,6 +971,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">localColor_localVariableSytnaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Local variables in the source file will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -954,6 +1026,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">localBold_localVariablesBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, local variables will be in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -973,6 +1049,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">localItal_localVariablesItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, local variables will be in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1052,6 +1132,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">globalColor_globalVariabelsSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Global variables in the source window will be highlighted in this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1103,6 +1187,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">globalBold_globalVariablesBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, global variables will be displayed in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1122,6 +1210,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">globalItal_globalVariablesItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, global variables will be displayed in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1201,6 +1293,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">oosColor_OutOfScopeVariablesSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Out of scope variables in the source window will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1252,6 +1348,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">oosBold_outOfScopeBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, out of scope variables will be displayed in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1271,6 +1371,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">oosItal_outOfScopeVariablesItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, out of scope variables will be displayed in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1350,6 +1454,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">optColor_optimizedVariablesSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Variables that have been optimized out by the compiler will be highlighted in this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1401,6 +1509,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">optBol_optimizedVariablesBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked variables that have been optimized out by the compiler will be in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1420,6 +1532,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">optItal_optimizedVariablesItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, variables that have been optimized out by the compiler will be in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1499,6 +1615,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">commentColor_commentSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Comments in the source window will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1550,6 +1670,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">commentBold_commentBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, comments will be displayed in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1569,6 +1693,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">commentItal_commentsItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, comments will be displayed in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1648,6 +1776,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">namespaceColor_namespaceNameSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Namespace names in the source window will be highlighted in this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1699,6 +1831,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">namespaceBold_namespaceNameBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, namespace names will be in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1718,6 +1854,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">namespaceItal_namespaceNameItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, namespace names will appear in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1797,6 +1937,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">includeColor_preprocessorIncludeSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Preprocessor include directives in the source window will be highlighted by this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1848,6 +1992,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">includeBold_preprocessorIncludeBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, preprocessor include directives will be in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1867,6 +2015,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">includeItal_preprocessorIncludeItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, preprocessor include directives will be in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -1946,6 +2098,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">macorColor_preprocessorMacroSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Preprocessor macros in the source window will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -1997,6 +2153,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">macroBold_preprocessorMacroBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, preprocessor macros will be displayed in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -2016,6 +2176,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">macroItal_preprocessorMacroItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, preprocessor macros will be displayed in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -2095,6 +2259,10 @@
 					      <property name="can_focus">True</property>
 					      <property name="use_alpha">False</property>
 					      <property name="focus_on_click">True</property>
+					      <accessibility>
+						<atkproperty name="AtkObject::accessible_name" translatable="yes">templateColor_templateSyntaxHighlightingColor</atkproperty>
+						<atkproperty name="AtkObject::accessible_description" translatable="yes">Template declarations in the source window will be highlighted with this color</atkproperty>
+					      </accessibility>
 					    </widget>
 					    <packing>
 					      <property name="padding">0</property>
@@ -2146,6 +2314,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">templateBold_templateBold</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, template declarations will appear in bold</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -2165,6 +2337,10 @@
 					  <property name="active">False</property>
 					  <property name="inconsistent">False</property>
 					  <property name="draw_indicator">True</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">templateItal_templateItalicized</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">If this is checked, template declarations will appear in italics</atkproperty>
+					  </accessibility>
 					</widget>
 					<packing>
 					  <property name="padding">0</property>
@@ -2259,6 +2435,10 @@
 			  <property name="can_focus">True</property>
 			  <property name="use_alpha">False</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">textColor_textForegroundColor</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">The foreground color of the text in the source window will be set to this color</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -2311,6 +2491,10 @@
 			  <property name="can_focus">True</property>
 			  <property name="use_alpha">False</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">backgroundColor_textBackgroundColor</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">The text background color in the source window will be set to this color</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -2363,6 +2547,10 @@
 			  <property name="can_focus">True</property>
 			  <property name="use_alpha">False</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">marginColor_sideMarginColor</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">The left margin of the source window will be set to this color</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -2415,6 +2603,10 @@
 			  <property name="can_focus">True</property>
 			  <property name="use_alpha">False</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">searchColor_searchResultsColor</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">The search results in the source window will be highlighted using this color</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>
@@ -2467,6 +2659,10 @@
 			  <property name="can_focus">True</property>
 			  <property name="use_alpha">False</property>
 			  <property name="focus_on_click">True</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">currentlineColor_currentlineColor</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">The current line of code in the source window will be highlighted using this color</atkproperty>
+			  </accessibility>
 			</widget>
 			<packing>
 			  <property name="padding">0</property>

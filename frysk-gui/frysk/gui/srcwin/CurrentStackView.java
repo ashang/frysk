@@ -74,6 +74,10 @@ public class CurrentStackView extends TreeView implements TreeSelectionListener 
 	public CurrentStackView(StackLevel topLevel) {
 		super();
 
+		this.setName("currentStackView");
+		this.getAccessible().setName("currentStackView_showsCurrentStack");
+		this.getAccessible().setDescription("Displays the current stack frame as well as the current stack");
+		
 		this.setHeadersVisible(false);
 		
 		this.observers = new Vector();

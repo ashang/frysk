@@ -148,6 +148,11 @@ public class SourceView extends TextView implements View, ExposeListener {
 	 */
 	public SourceView(SourceBuffer buffer, SourceWindow parent) {
 		super(gtk_text_view_new());
+		
+		this.setName("sourceView");
+		this.getAccessible().setName("sourceView_showsSourceCode");
+		this.getAccessible().setDescription("Displays the source code for the currently selected stack level");
+		
 		this.parent = parent;
 		this.buf = buffer;
 		this.listener = new SourceViewListener(this);

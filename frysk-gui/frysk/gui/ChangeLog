@@ -1,3 +1,17 @@
+2006-05-10  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/frysk_source.glade: Added accesibility information.
+	* glade/frysk_source_prefs.glade: Ditto.
+	* glade/registerwindow.glade: Ditto, also removed Up/down buttons
+	from register formats window.
+	* register/RegisterFormatDialog.java: (RegisterFormatDialog): Removed
+	code for up/down buttons, as these have been removed.
+	(moveColumnUp): Removed.
+	(moveColumnDown): Ditto.
+	* register/RegisterWindow.java (setTask): Now sets columns to be
+	reorderable.
+	(refreshList): Made slight modifications to register formatting.
+
 2006-05-09  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (setUpCurrentPage): Fix

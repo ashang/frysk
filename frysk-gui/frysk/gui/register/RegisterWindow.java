@@ -101,13 +101,14 @@ public class RegisterWindow extends Window implements Saveable{
 			
 			model.setValue(iter, (DataColumnString) cols[0], register.getName());
 			model.setValue(iter, (DataColumnObject) cols[9], register);
-			saveBinaryValue(""+register.get(this.myTask), 10, true, iter.getPath());
+			saveBinaryValue(""+0, 10, true, iter.getPath());
 		}
 		
 		TreeViewColumn col = new TreeViewColumn();
 		col.setTitle("Name");
 		CellRenderer renderer = new CellRendererText();
 		col.packStart(renderer, true);
+		col.setReorderable(false);
 		col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[0]);
 		registerView.appendColumn(col);
 		
@@ -116,6 +117,7 @@ public class RegisterWindow extends Window implements Saveable{
 		for(int i = 0; i < colNames.length; i++){
 			col = new TreeViewColumn();
 			col.setTitle(colNames[i]);
+			col.setReorderable(true);
 			renderer = new CellRendererText();
 			((CellRendererText) renderer).setEditable(true);
 			boolean littleEndian = false;
@@ -290,10 +292,12 @@ public class RegisterWindow extends Window implements Saveable{
 	}
 	
 	private void saveBinaryValue(String rawString, int raadix, boolean littleEndian, TreePath path){
+		long value = 0;
 		String binaryString = "";
 //		 convert the data to little endian binary
 		try{
-			binaryString = Long.toBinaryString(Long.parseLong(rawString, raadix));
+			value = Long.parseLong(rawString, raadix);
+			binaryString = Long.toBinaryString(value);
 		}
 		// Invalid format, do nothing
 		catch(NumberFormatException e){
@@ -303,13 +307,12 @@ public class RegisterWindow extends Window implements Saveable{
 			binaryString = reverse(binaryString);
 		
 		ListStore model = (ListStore) this.registerView.getModel();
-		
 		TreeIter iter = model.getIter(path);
-		
 		Register register = (Register) model.getValue(iter, (DataColumnObject) cols[9]);
-	
-		binaryString = signExtend(binaryString, register.getLength()*4, 1);
+
+		// TODO: Set the value of the register here
 		
+		binaryString = signExtend(binaryString, register.getLength()*4, 1);
 		model.setValue(iter, (DataColumnString) cols[7], binaryString);
 	}
 	
