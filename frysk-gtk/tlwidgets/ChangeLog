@@ -1,3 +1,11 @@
+2006-05-09  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkstripchartx.c:
+	* src/widgets/ftkstripchartx.h:
+	* test/widget/uev.c: Added new files to implement and test the
+	eventviewer widget.
+	* Makefile.am: Added builds for the new widget.
+
 2006-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add src/widgets/ll.xpm and
@@ -14,7 +22,7 @@
 	test the extended stripchart widget.
 	* test/widget/Makefile:
 	* test/wrapper/Makefile:
-	* Makefile.am: Added builds for the new widget tests.
+	* Makefile.am: Added builds for the new widget.
 
 2006-02-23  Sami Wagiaalla  <swagiaal@redhat.com>
 

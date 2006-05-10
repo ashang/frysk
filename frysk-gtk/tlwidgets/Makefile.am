@@ -53,6 +53,7 @@ EXTRA_DIST = $(SRC) \
 	src/widgets/ftkconsole.h \
 	src/widgets/ftkstripchart.h \
 	src/widgets/ftkstripchartx.h \
+	src/widgets/ftkeventviewer.h \
 	src/widgets/ftktimeline.h
 
 CLEANFILES = *.so *.jar
@@ -102,7 +103,8 @@ solib_PROGRAMS += libftkjni.so
 libftkjni.so: libftkjni.a
 
 libftk_a_SOURCES = src/widgets/ftkstripchart.c src/widgets/ftkconsole.c \
-                   src/widgets/ftkstripchartx.c
+                   src/widgets/ftkstripchartx.c \
+                   src/widgets/ftkeventviewer.c
 noinst_LIBRARIES += libftk.a
 solib_PROGRAMS += libftk.so
 libftk_so_SOURCES =
