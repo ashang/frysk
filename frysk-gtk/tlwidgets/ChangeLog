@@ -1,3 +1,10 @@
+2006-05-10  Chris Moller  <moller@mollerware.com>
+
+	* src/jni/com_redhat_ftk_EventViewer.c:
+	* src/java/com/redhat/ftk/EventViewer.java: Added new files to
+	implement and test the EventViewer wrapper.
+	* Makefile.am: Added builds for the new widget.
+
 2006-05-09  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkstripchartx.c:
