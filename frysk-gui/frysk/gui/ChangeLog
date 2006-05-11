@@ -1,3 +1,8 @@
+2006-05-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (addProcessParent): Save
+	the Proc.getCmdLine()[0] as name, instead of Proc.getCommand().
+
 2006-05-10  Adam Jocksch  <ajocksch@redhat.com>
 
 	* glade/frysk_source.glade: Added accesibility information.

@@ -140,7 +140,7 @@ public class CreateFryskSessionDruid extends Dialog {
 					TreeIter childIter = unfilteredProcessIter.getChild(0);
 					coreProc = ((ProcData)this.dataModel.getModel().getValue(childIter,this.dataModel.getPathDC())).getProc();
 				}
-			DebugProcess debugProcess = new DebugProcess(coreProc.getCommand());
+			DebugProcess debugProcess = new DebugProcess(coreProc.getCmdLine()[0]);
 			debugProcess.setProc(coreProc);
 			currentSession.addProcess(debugProcess);
 		}
