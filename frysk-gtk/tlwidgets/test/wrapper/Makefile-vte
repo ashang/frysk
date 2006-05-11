@@ -1,4 +1,4 @@
-   CLASSPATH=.:.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar
+   CLASSPATH=.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar:/usr/share/frysk/java/gtk2.8.jar:/usr/share/frysk/java/glib0.2.jar:/usr/share/frysk/java/vte0.11.jar
 
    LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib
 

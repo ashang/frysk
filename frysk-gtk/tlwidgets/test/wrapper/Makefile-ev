@@ -1,0 +1,18 @@
+   JRE = /usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar
+   GTK = /usr/share/frysk/java/gtk2.8.jar
+  GLIB = /usr/share/frysk/java/glib0.2.jar
+   FTK = ../../../../../frysk-build/frysk-gtk/ftk.jar
+   CLASSPATH=.:$(JRE):$(GTK):$(GLIB):$(FTK)
+
+   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib
+
+all::run
+
+EVTest.class: EVTest.java
+	CLASSPATH=$(CLASSPATH) gcj -C $<
+
+run: EVTest.class
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) gij -cp $(CLASSPATH) EVTest
+
+clean:
+	rm -f *.class

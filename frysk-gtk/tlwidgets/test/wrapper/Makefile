@@ -5,10 +5,10 @@
 
 #local
 #   CLASSPATH=.:.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar:/usr/local/share/java/gtk2.8-2.8.0.jar:../../ftk.jar
-   CLASSPATH=.:.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar::../../../../../frysk-build/frysk-gtk/ftk.jar
+   CLASSPATH=.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar:/usr/share/frysk/java/gtk2.8.jar:/usr/share/frysk/java/glib0.2.jar:../../../../../frysk-build/frysk-gtk/ftk.jar
 
 #   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:../..
-   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib:../../../../../frysk-build/frysk-gtk/tlwidgets
+   LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib
 
 all::run
 
