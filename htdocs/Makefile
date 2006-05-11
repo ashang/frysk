@@ -6,7 +6,9 @@ HTML = \
 	people/index.html \
 	questions/index.html \
 	usecases/index.html \
-	workflow/index.html
+	workflow/index.html \
+	zilla/index.html \
+	$(ZZZ)
 all: $(HTML:.html=.new)
 .PHONY: all
 
