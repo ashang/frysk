@@ -1,3 +1,8 @@
+2006-05-12  Andrew Cagney  <cagney@redhat.com>
+
+	* configure.ac: Delete stray AC_CONFIG_SUBDIRS([frysk-sys
+	frysk-core]) line.
+
 2006-04-27  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Copy autogen.sh.

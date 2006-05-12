@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, Red Hat Inc.
+# Copyright 2005, 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -68,5 +68,4 @@ RPATH=${libdir}:`$PKG_CONFIG --libs-only-L gtk+-2.0 gtk2-java glade-java cairo-j
 AC_SUBST(RPATH)
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([frysk-sys frysk-core])
 AC_OUTPUT
