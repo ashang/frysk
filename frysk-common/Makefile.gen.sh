@@ -340,6 +340,7 @@ for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
 	    *java ) echo "${d}/${b}.java: \$(MKJAVA)" ;;
 	    *enum ) echo "${d}/${b}.java: \$(MKENUM)" ;;
 	esac
+	echo "${GEN_DIRNAME}.jar: ${d}/${b}.java"
     done
 done
 
@@ -351,6 +352,8 @@ for suffix in .java ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
+	# Skip when a generated file, happens when configured in
+	# source tree.
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	test -r "${d}/${b}.mkenum" && continue
@@ -358,6 +361,7 @@ for suffix in .java ; do
 	test -r "${d}/${b}.javain" && continue
 	test -r "${d}/${b}.g" && continue
 	test -r "${d}/${b}.sed" && continue
+	echo "\$(GEN_DIRNAME).jar: ${d}/${b}.java"
 	if has_main ${file} ; then
 	    name_=`echo_name_ ${name}`
 	    echo_PROGRAMS ${name}

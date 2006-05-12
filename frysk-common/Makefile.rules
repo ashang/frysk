@@ -232,13 +232,13 @@ SUBST = \
 	mv -f $@.tmp $@
 
 SUFFIXES += .javain
-.javain.java: Makefile
+.javain.java:
 	$(SUBST)
-$(GEN_SOURCENAME)/Build.java: common/Build.javain Makefile
+$(GEN_SOURCENAME)/Build.java: common/Build.javain
 	$(SUBST)
-TestRunner.java: common/TestRunner.javain Makefile
+TestRunner.java: common/TestRunner.javain
 	$(SUBST)
-$(GEN_SOURCENAME)/JUnitTests.java: Makefile
+$(GEN_SOURCENAME)/JUnitTests.java:
 	mkdir -p $(GEN_SOURCENAME)
 	rm -f $@.tmp
 	touch $@.tmp
@@ -482,7 +482,7 @@ distclean-cvsignored:
 # explicit clean rule is needed as CLEANFILES can't handle directories.
 
 CLEANFILES += files.list
-files.list: lib${GEN_DIRNAME}.a
+files.list:
 	topdirs= ; \
 	for d in $(top_builddir) $(top_srcdir) ; do \
 	    p=`cd $$d && pwd` ; \
@@ -496,7 +496,7 @@ files.list: lib${GEN_DIRNAME}.a
 		    -name '[A-Za-z]*.java' -print ; \
 	    done \
 	done > $@.tmp
-	sort $@.tmp >| $@
+	mv $@.tmp $@
 ${GEN_DIRNAME}.jar: files.list
 	rm -rf $(GEN_CLASSDIR)
 	mkdir -p $(GEN_CLASSDIR)
@@ -521,7 +521,7 @@ clean-classes-dir:
 # fortunately ECJ rejects it.
 
 all-local: ecj/checked
-ecj/checked: files.list
+ecj/checked: files.list $(GEN_DIRNAME).jar
 	rm -rf ecj
 	mkdir -p ecj
 if HAVE_ECJ

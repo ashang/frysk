@@ -1,3 +1,13 @@
+2006-05-12  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (files.list): Remove dependency on
+	lib${GEN_DIRNAME}.a.
+	(.javain.java): Remove dependency on Makefile.
+	($(GEN_SOURCENAME)/Build.java): Ditto.
+	(TestRunner.java): Ditto.
+	($(GEN_SOURCENAME)/JUnitTests.java): Ditto.
+	(ecj/checked): Add $(GEN_DIRNAME).jar.
+
 2006-05-09  Stan Cox  <scox@redhat.com>
 
 	* Makefile.rules (files.list): Sort the list.
