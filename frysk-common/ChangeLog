@@ -1,5 +1,7 @@
 2006-05-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.rules (MOSTLYCLEANFILES): Add core.[1-9]*.
+	
 	* Makefile.rules (files.list): Remove dependency on
 	lib${GEN_DIRNAME}.a.
 	(.javain.java): Remove dependency on Makefile.
