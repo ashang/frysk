@@ -58,9 +58,6 @@
 action="/bugzilla/show_bug.cgi"
 > <input name="id" size="5"> </form>
 
-<a href="/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&priority=P2&order=bugs.priority,bugs.bug_id"
-> In Queue</a>
-
 <table cellpadding="0">
 
 <tr>
@@ -171,6 +168,15 @@ tracked using bugzilla.  They each hang off of one or more of the
 below trackers:</p>
 
 <table border="0" cellpadding="4" cellspacing="0">
+  <tr valign="top" class="odd">
+    <td>  
+      <a href="/bugzilla/buglist.cgi?product=frysk&bug_status=UNCONFIRMED&bug_status=NEW&priority=P2&order=bugs.priority,bugs.bug_id">New</a>
+    </td>
+    <td colspan=2>
+      Bugs that have not yet been given an initial assignment.<br>
+      (These are priority 2, and block nothing).
+    </td>
+  </tr>
   <tr valign="top" class="odd">
     <td>  
       <a href="/bugzilla/showdependencytree.cgi?id=2236">2236</a>
