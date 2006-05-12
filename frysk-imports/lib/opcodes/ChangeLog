@@ -1,0 +1,8 @@
+2006-05-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ChangeLog: Created.
+	* Disassembler.java: Added.
+	* Instruction.java: Ditto.
+	* OpcodesException.java: Ditto.
+	* cni: Ditto.
+	* cni/Disassembler.cxx: Ditto.
