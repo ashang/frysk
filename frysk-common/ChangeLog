@@ -1,5 +1,8 @@
 2006-05-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Filter out any file names that do not start
+	with an alphabetic character.
+
 	* Makefile.rules (MOSTLYCLEANFILES): Add core.[1-9]*.
 	
 	* Makefile.rules (files.list): Remove dependency on

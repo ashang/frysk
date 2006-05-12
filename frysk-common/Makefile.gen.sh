@@ -328,8 +328,7 @@ echo_LDFLAGS TestRunner
 for suffix in .mkjava .shjava .mkenum .shenum .javain ; do
     print_header "... ${suffix}"
     SUFFIX=`echo ${suffix} | tr '[a-z.]' '[A-Z_]'`
-    find ${dirs} \
-	-name "*${suffix}" -print \
+    find ${dirs} -name "[A-Za-z]*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
@@ -346,8 +345,7 @@ done
 
 for suffix in .java ; do
     print_header "... ${suffix}"
-    find ${dirs} \
-	-name "*${suffix}" -print \
+    find ${dirs} -name "[A-Za-z]*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
@@ -379,7 +377,7 @@ done
 for suffix in .cxx .c .hxx ; do
     print_header "... ${suffix}"
     find ${dirs} \
-	-name "*${suffix}" -print \
+	-name "[A-Za-z]*${suffix}" -print \
 	| sort -f | while read file ; do
 	d=`dirname ${file}`
 	b=`basename ${file} ${suffix}`
@@ -408,7 +406,7 @@ done
 print_header "... *.cxx=.h"
 find ${dirs} -name 'cni' -print | while read d
 do
-    find $d -name '*.cxx' -print
+    find $d -name "[A-Za-z]*.cxx" -print
 done \
     | xargs grep '#include ".*.h"' \
     | sed -e 's/\.cxx:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
@@ -434,7 +432,7 @@ done | sort -u
 print_header "... glade_DATA"
 echo "gladedir = \$(pkgdatadir)/glade"
 echo "glade_DATA ="
-find ${dirs} -type f -name '*.glade' | while read file
+find ${dirs} -type f -name "[A-Za-z]*.glade" | while read file
 do
   echo glade_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -481,7 +479,7 @@ find_images "imageMACOSX32" "images/__MACOSX/32"
 print_header "... desktop_DATA"
 echo "desktopdir = \${prefix}/share/applications"
 echo "desktop_DATA ="
-find ${dirs} -type f -name '*.desktop' | while read file
+find ${dirs} -type f -name "[A-Za-z]*.desktop" | while read file
 do
   echo desktop_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -502,7 +500,7 @@ done
 print_header "... properties_DATA"
 echo "propertydir = \$(pkgdatadir)"
 echo "property_DATA ="
-find ${dirs} -type f -name '*.properties' | while read file
+find ${dirs} -type f -name "[A-Za-z]*.properties" | while read file
 do
   echo property_DATA += ${file}
   echo EXTRA_DIST += ${file}
@@ -523,7 +521,7 @@ done
 # be built as DATA.
 
 print_header "... .fig.jpg:"
-find ${dirs} -type f -name '*.fig' | while read f
+find ${dirs} -type f -name "[A-Za-z]*.fig" | while read f
 do
   d=`dirname ${f}`
   b=`basename ${f} .fig`
@@ -536,7 +534,7 @@ done
 # Form a list of all the antlr generated files.
 
 print_header "... GEN_G = .g"
-find ${dirs} -type f -name '*.g' | while read g
+find ${dirs} -type f -name "[A-Za-z]*.g" | while read g
 do
   echo "EXTRA_DIST += $g"
   d=`dirname $g`
@@ -565,6 +563,7 @@ done
 
 print_header "... TESTS += Test*.java"
 find ${dirs} \
+    -name "[^A-Za-z]*" -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read file ; do
     if has_main ${file} ; then
