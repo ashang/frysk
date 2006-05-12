@@ -1,5 +1,8 @@
 2006-05-12  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.gen.sh: Exclude files generated from common/ from list
+	of source java files.
+
 	* Makefile.gen.sh: Filter out any file names that do not start
 	with an alphabetic character.
 

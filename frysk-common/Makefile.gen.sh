@@ -305,6 +305,7 @@ EOF
 cat <<EOF
 EXTRA_DIST += common/Build.javain
 ${nodist_lib_sources} += ${GEN_SOURCENAME}/Build.java
+${GEN_DIRNAME}.jar: ${GEN_SOURCENAME}/Build.java
 BUILT_SOURCES += ${GEN_SOURCENAME}/Build.java
 EOF
 
@@ -351,15 +352,17 @@ for suffix in .java ; do
 	b=`basename ${file} ${suffix}`
 	name=${d}/${b}
 	# Skip when a generated file, happens when configured in
-	# source tree.
+	# source tree - handled earlier.
 	test -r "${d}/${b}.mkjava" && continue
 	test -r "${d}/${b}.shjava" && continue
 	test -r "${d}/${b}.mkenum" && continue
 	test -r "${d}/${b}.shenum" && continue
 	test -r "${d}/${b}.javain" && continue
+	test -r "common/${b}.javain" && continue # too strong?
+	test "${b}" = JUnitTests && continue # hack
 	test -r "${d}/${b}.g" && continue
 	test -r "${d}/${b}.sed" && continue
-	echo "\$(GEN_DIRNAME).jar: ${d}/${b}.java"
+	echo "${GEN_DIRNAME}.jar: ${d}/${b}.java"
 	if has_main ${file} ; then
 	    name_=`echo_name_ ${name}`
 	    echo_PROGRAMS ${name}
