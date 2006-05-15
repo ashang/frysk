@@ -1,3 +1,7 @@
+2006-05-15  Stepan Kasal  <skasal@redhat.com>
+
+	* DOMFrysk.java: ... and use ASCII minus instead of multibyte dashes.
+
 2006-04-19  Stan Cox  <scox@redhat.com>
 
 	Fix from Wu Zhou <woodzltc@cn.ibm.com>:

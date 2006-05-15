@@ -67,12 +67,12 @@ import org.jdom.Element;
  * As can be seen from the tree below, the top class is the executable image 
  * itself and below it are the subclasses hanging off of it.
  * 
- * DOMFrysk – the overall DOM
- * 	DOMImage – the source images associated with this DOM
- * 		DOMFunction – all functions defined for this source image
- * 		DOMSource – a particular source image
- * 			DOMLine – contains the info associated with each line within the source
- * 				DOMInlineInstance – contains info about inline functions on this line
+ * DOMFrysk - the overall DOM
+ * 	DOMImage - the source images associated with this DOM
+ * 		DOMFunction - all functions defined for this source image
+ * 		DOMSource - a particular source image
+ * 			DOMLine - contains the info associated with each line within the source
+ * 				DOMInlineInstance - contains info about inline functions on this line
  * 
  * Each one of these classes/subclasses has a set of methods to 
  * create/modify/access the information in the DOM.  Here is a more detailed 
@@ -84,36 +84,36 @@ import org.jdom.Element;
  * The following is a mock-up of what a DOM looks like with all of its nodes/elements.
  * 
  * DOM
- *    |--PC – current program counter
- *    |--PID – Process ID of debugged process
- *       |-- attr: value – the process ID number
- *    |--Image – element: image
- *       |--attr: name – name associated with this image
- *       |--attr: filename – name of the executable
- *       |--attr: CCPATH – path to the executable
- *      |--Source – element: source
- *         |--attr: filename – name of the source file
- *         |--attr: filepath – path to the source file
- *         |--attr: parsed – boolean to indicate if the GUI has parsed this source
- *       |--Line – element: line
- *          |--attr: number – line number to be added
- *          |--attr: pc – address where this line's executable code begins
- *          |--attr: offset – offset in characters from the beginning of the file
- *          |--attr: length – number of characters in this line
- *          |--attr: executable – boolean indicating if this line is executable
- *          |--attr: has_break – boolean indicating if this line is a breakpoint
- *        |--Tag – element: tag
- *           |--attr: type – type of tag this is(variable, keyword, etc.)
- *           |--attr: start – starting character from beginning of the file for tag
- *           |--attr: length – no. of characters the tag will encompass
+ *    |--PC - current program counter
+ *    |--PID - Process ID of debugged process
+ *       |-- attr: value - the process ID number
+ *    |--Image - element: image
+ *       |--attr: name - name associated with this image
+ *       |--attr: filename - name of the executable
+ *       |--attr: CCPATH - path to the executable
+ *      |--Source - element: source
+ *         |--attr: filename - name of the source file
+ *         |--attr: filepath - path to the source file
+ *         |--attr: parsed - boolean to indicate if the GUI has parsed this source
+ *       |--Line - element: line
+ *          |--attr: number - line number to be added
+ *          |--attr: pc - address where this line's executable code begins
+ *          |--attr: offset - offset in characters from the beginning of the file
+ *          |--attr: length - number of characters in this line
+ *          |--attr: executable - boolean indicating if this line is executable
+ *          |--attr: has_break - boolean indicating if this line is a breakpoint
+ *        |--Tag - element: tag
+ *           |--attr: type - type of tag this is(variable, keyword, etc.)
+ *           |--attr: start - starting character from beginning of the file for tag
+ *           |--attr: length - no. of characters the tag will encompass
  *           |--attr: token -
  *      |--Inline - element: function
- *         |--attr: function_name – name of the inline function
- *         |--attr: source – source where this function came from
- *         |--attr: start – starting character this inline function begins at from the beginning of the file
- *         |--attr: end – ending character this inline function ends at
- *         |--attr: line_start – line no. where this function begins in the source file
- *         |--attr: line_end – line no. where this function ends in the source file
+ *         |--attr: function_name - name of the inline function
+ *         |--attr: source - source where this function came from
+ *         |--attr: start - starting character this inline function begins at from the beginning of the file
+ *         |--attr: end - ending character this inline function ends at
+ *         |--attr: line_start - line no. where this function begins in the source file
+ *         |--attr: line_end - line no. where this function ends in the source file
  *         
  * Debugging Scenario
  * 
