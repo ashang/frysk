@@ -1,3 +1,8 @@
+2006-05-15  Stepan Kasal  <skasal@redhat.com>
+
+	* Makefile.am (MOSTLYCLEANFILES): Use += because the variable is
+	defined in common/Makefile.common.
+
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (EXTRA_DIST): Add frysk/pkglibexecdir/util.h.
