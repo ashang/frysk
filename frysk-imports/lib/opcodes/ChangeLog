@@ -1,3 +1,13 @@
+2006-05-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Disassembler.java: Added Frysk header.
+	* OpcodesException.java: Ditto.
+	* Instruction.java: Ditto.
+	(toString): Overwritten.
+	* cni/Disassembler.cxx: Added frysk header and comments.
+	(my_read_func): Renamed to read_from_byte_buffer.
+	(my_print): Renamed to save_instruction.
+
 2006-05-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ChangeLog: Created.

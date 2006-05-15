@@ -1,3 +1,41 @@
+// This file is part of the program FRYSK.
+//
+// Copyright 2005, Red Hat Inc.
+//
+// FRYSK is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by
+// the Free Software Foundation; version 2 of the License.
+//
+// FRYSK is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with FRYSK; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+// 
+// In addition, as a special exception, Red Hat, Inc. gives You the
+// additional right to link the code of FRYSK with code not covered
+// under the GNU General Public License ("Non-GPL Code") and to
+// distribute linked combinations including the two, subject to the
+// limitations in this paragraph. Non-GPL Code permitted under this
+// exception must only link to the code of FRYSK through those well
+// defined interfaces identified in the file named EXCEPTION found in
+// the source code files (the "Approved Interfaces"). The files of
+// Non-GPL Code may instantiate templates or use macros or inline
+// functions from the Approved Interfaces without causing the
+// resulting work to be covered by the GNU General Public
+// License. Only Red Hat, Inc. may make changes or additions to the
+// list of Approved Interfaces. You must obey the GNU General Public
+// License in all respects for all of the FRYSK code and other code
+// used in conjunction with FRYSK except the Non-GPL Code covered by
+// this exception. If you modify this file, you may extend this
+// exception to your version of the file, but you are not obligated to
+// do so. If you do not wish to provide this exception without
+// modification, you must delete this exception statement from your
+// version and license this file solely under the GPL without
+// exception.
 #include <stdio.h>
 #include <stdlib.h>
 #include <bfd.h>
@@ -20,41 +58,47 @@
 #include "lib/opcodes/OpcodesException.h"
 #include "inua/eio/ByteBuffer.h"
 
-int my_read_mem_func(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
+// reads number of bytes from the byte buffer
+int read_from_byte_buffer(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
 		     struct disassemble_info *info);
 
+// throws an OpcodesException
 void error_func(int status, bfd_vma memaddr, struct disassemble_info *info);
 
+// Prints the address when errors occur
 void print_addr(bfd_vma addr, struct disassemble_info *info);
 
-int my_print(void* data, const char *str, ...);
+// saves the instruction to the java class
+int save_instruction(void* data, const char *str, ...);
 
 void
 lib::opcodes::Disassembler::disassemble(jlong address, jlong instructions){
 
 	disassemble_info disasm_info;
 
-	::init_disassemble_info(&disasm_info, (void*) this, my_print);
+	::init_disassemble_info(&disasm_info, (void*) this, save_instruction);
 
 	disasm_info.flavour = bfd_target_unknown_flavour;
 	disasm_info.arch = bfd_arch_i386;
 	disasm_info.mach = bfd_mach_i386_i386;
  
-	disasm_info.read_memory_func = my_read_mem_func;
+	disasm_info.read_memory_func = read_from_byte_buffer;
 	disasm_info.memory_error_func = error_func;
 	disasm_info.print_address_func = print_addr;
 
-	int i;
-	// Replace this with getting the information from the ByteBuffer
 	bfd_vma current_address = (bfd_vma) address;
-	for(i = 0; i < instructions; i++){
+	for(int i = 0; i < instructions; i++){
 		this->setCurrentAddress(current_address);
 		current_address += ::print_insn_i386_intel(current_address, &disasm_info);
 		this->moveToNext();
 	}
 }
 
-int my_read_mem_func(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
+/*
+ * Instead of copying memory from memaddr to myadd, we get the section
+ * starting at memaddr in the ByteBuffer.
+ */
+int read_from_byte_buffer(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
 		     struct disassemble_info *info){
 	lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
 	inua::eio::ByteBuffer *buffer = obj->buffer;
@@ -71,7 +115,9 @@ int my_read_mem_func(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
 	return 0;
 }
 
-
+/*
+ * If something breaks, throw an exception
+ */
 void error_func(int status, bfd_vma memaddr, struct disassemble_info *info){
 	throw new lib::opcodes::OpcodesException(
 		JvNewString((const jchar*) "Error occured while disassembling.", 
@@ -79,11 +125,12 @@ void error_func(int status, bfd_vma memaddr, struct disassemble_info *info){
 		);
 }
 
-void print_addr(bfd_vma addr, struct disassemble_info *info){
-	
-}
+void print_addr(bfd_vma addr, struct disassemble_info *info){}
 
-int my_print(void* disassembler, const char *args, ...){
+/*
+ * When we're asked to print a statement, store it on the java side instead
+ */
+int save_instruction(void* disassembler, const char *args, ...){
 	lib::opcodes::Disassembler* obj = (lib::opcodes::Disassembler*) disassembler;
 	
 	va_list ap;
