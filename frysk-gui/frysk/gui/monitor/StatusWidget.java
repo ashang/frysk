@@ -64,7 +64,7 @@ import org.gnu.gtk.event.MenuItemListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
-import com.redhat.ftk.Stripchart;
+import com.redhat.ftk.EventViewer;
 
 import frysk.gui.monitor.actions.GenericAction;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -74,7 +74,8 @@ public class StatusWidget extends VBox{
 	Label nameLabel;
 	private GuiData data;
 	private Frame frame;
-	private Stripchart area;
+	private EventViewer viewer;
+        private int trace0;
 	
 	public  Observable notifyUser;
 //    private int e2;
@@ -104,16 +105,18 @@ public class StatusWidget extends VBox{
 		//========================================
 		
 		//========================================
-		this.area = new Stripchart();
-		this.area.resize (1, 1);
-		this.area.setBackgroundRGB (65536, 28000, 28000);
-		this.area.setUpdate (1111);
-		this.area.setRange (60000);
+		this.viewer = new EventViewer();
+		// resize not implemented yet
+		//		this.viewer.resize (1, 1);
+		this.viewer.setBackgroundRGB (65536, 28000, 28000);
+		this.viewer.setTimebase (10.0);
+		trace0 = this.viewer.addTrace ("Trace");
+		this.viewer.setTraceRGB (trace0, 65535, 0, 0);
 
 		initLogTextView();
 
 		mainVbox.setBorderWidth(5);
-		mainVbox.packStart(area, true, true, 0);
+		mainVbox.packStart(viewer, true, true, 0);
 		//========================================
 		
 		//========================================
@@ -249,7 +252,7 @@ public class StatusWidget extends VBox{
 	
 	class TimelineAction extends GenericAction{
 		
-		int eventId;
+		int markerId;
 		private ObserverRoot observer;
 		
 		public TimelineAction(ObserverRoot observer) {
@@ -262,19 +265,25 @@ public class StatusWidget extends VBox{
 		private void createEvent() {
 			count++;
 			if(count%3 == 0){
-				this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0); /* red + green = yellow */
+			    //  this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0); /* red + green = yellow */
+			    this.markerId = viewer.addMarker(0, observer.getName());
+			    viewer.setMarkerRGB (this.markerId, 65535, 65535, 0);
 			}
 			
 			if(count%3 == 1){
-				this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535); /* red + green = yellow */
+			    //   this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535); /* red + green = yellow */
+			    this.markerId = viewer.addMarker(1, observer.getName());
+			    viewer.setMarkerRGB (this.markerId, 65535, 0, 65535);
 			}
 			if(count%3 == 2){
-				this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535); /* red + green = yellow */
+			    //   this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535); /* red + green = yellow */
+			    this.markerId = viewer.addMarker(2, observer.getName());
+			    viewer.setMarkerRGB (this.markerId, 0, 65535, 65535);
 			}
 		}
 
 		public void execute(ObserverRoot observer) {
-			area.appendEvent (eventId);
+		    viewer.appendEvent (trace0, markerId);
 		}
 
 	}

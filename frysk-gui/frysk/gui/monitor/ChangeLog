@@ -1,3 +1,7 @@
+2006-05-15  Chris Moller  <moller@mollerware.com>
+
+	* StatusWidget.java: Replaced Stripchart with simple EventViewer.
+
 2006-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLogger.java: Rename .updateCloned to .updateClonedParent,
