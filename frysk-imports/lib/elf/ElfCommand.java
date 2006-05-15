@@ -38,6 +38,12 @@
 // exception.
 package lib.elf;
 
+/**
+ * And ElfCommand is a Command 
+ * @author ajocksch
+ *
+ * TODO: Something more desctiptive please?!?!?
+ */
 public class ElfCommand {
 
 	public static ElfCommand ELF_C_NULL = new ElfCommand(0);

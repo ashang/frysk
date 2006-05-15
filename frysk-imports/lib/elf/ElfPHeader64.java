@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * A 64 bit Elf program segment header
+ * @author ajocksch
+ *
+ */
 public class ElfPHeader64 extends ElfPHeader {
 
 	public ElfPHeader64(long ptr) {

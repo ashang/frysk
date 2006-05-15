@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * Header for an {@see ElfSection}
+ * @author ajocksch
+ *
+ */
 public abstract class ElfSectionHeader {
 
 	long pointer;
@@ -50,43 +55,82 @@ public abstract class ElfSectionHeader {
 		return this.pointer;
 	}
 	
+	/**
+	 * 
+	 * @return The index of the section's name in the string table
+	 */
 	public long getNameIndex(){
 		return get_sh_name();
 	}
 	
+	/**
+	 * 
+	 * @return The type of the header
+	 */
 	public long getType(){
 		return get_sh_type();
 	}
 	
+	/**
+	 * 
+	 * @return The section flags
+	 */
 	public long getFlags(){
 		return get_sh_flags();
 	}
 	
+	/**
+	 * 
+	 * @return The section's virtual address at execution
+	 */
 	public long getAddress(){
 		return get_sh_addr();
 	}
 	
+	/**
+	 * 
+	 * @return The section file offset
+	 */
 	public long getOffset(){
 		return get_sh_offset();
 	}
 	
+	/**
+	 * 
+	 * @return Size of the section in bytes
+	 */
 	public long getSize(){
 		return get_sh_size();
 	}
 	
 	// TODO: does this point to another Section Header?
+	/**
+	 * @return Link to another section
+	 */
 	public long getLink(){
 		return get_sh_link();
 	}
 	
+	/**
+	 * 
+	 * @return Any additional section information
+	 */
 	public long getAdditionalInfo(){
 		return get_sh_info();
 	}
 	
+	/**
+	 * 
+	 * @return The section alignment
+	 */
 	public long getAlignment(){
 		return get_sh_addralign();
 	}
 	
+	/**
+	 * 
+	 * @return The entry size if this section holds a table
+	 */
 	public long getEntrySize(){
 		return get_sh_entsize();
 	}

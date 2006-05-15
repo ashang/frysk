@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * A 32 bit ElfSectionHeader
+ * @author ajocksch
+ *
+ */
 public class ElfSectionHeader32 extends ElfSectionHeader {
 
 	public ElfSectionHeader32(long ptr) {

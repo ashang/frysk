@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * An ElfArchiveSymbol is an entry in the Archive symbol table
+ * @author ajocksch
+ *
+ */
 public class ElfArchiveSymbol {
 
 	private long pointer;
@@ -50,14 +55,26 @@ public class ElfArchiveSymbol {
 		this.pointer = pointer;
 	}
 	
+	/**
+	 * 
+	 * @return The symbol name
+	 */
 	public String getName(){
 		return elf_as_get_name();
 	}
 	
+	/**
+	 * 
+	 * @return The offset for this file in the archive
+	 */
 	public int getOffset(){
 		return elf_as_get_offset();
 	}
 	
+	/**
+	 * 
+	 * @return The hash value of the name
+	 */
 	public long getHash(){
 		return elf_as_get_hash();
 	}

@@ -38,6 +38,12 @@
 // exception.
 package lib.elf;
 
+/**
+ * An ElfHeader is a header for and Elf file. This appears at the start of
+ * every Elf file.
+ * @author ajocksch
+ *
+ */
 public abstract class ElfEHeader {
 	
 	private long pointer;
@@ -50,58 +56,113 @@ public abstract class ElfEHeader {
 		return this.pointer;
 	}
 	
+	/**
+	 * 
+	 * @return The magic identifier and other information
+	 */
 	public String getItentifier(){
 		return get_e_ident();
 	}
 	
+	/**
+	 * 
+	 * @return The object file type
+	 */
 	public int getType(){
 		return get_e_type();
 	}
 	
+	/**
+	 * 
+	 * @return The architechture
+	 */
 	public int getArchitecture(){
 		return get_e_machine();
 	}
 	
+	/**
+	 * 
+	 * @return The object file version
+	 */
 	public long getVersion(){
 		return get_e_version();
 	}
 	
+	/**
+	 * 
+	 * @return The virtual address of the entry point
+	 */
 	public long getEntryPoint(){
 		return get_e_entry();
 	}
 	
+	/**
+	 * 
+	 * @return The program header table file offset
+	 */
 	public long getProgramHeaderOffset(){
 		return get_e_phoff();
 	}
 	
+	/**
+	 *  
+	 * @return The section header table file offset
+	 */
 	public long getSectionHeaderOffset(){
 		return get_e_shoff();
 	}
 	
+	/**
+	 * 
+	 * @return The processor specific flags
+	 */
 	public long getFlags(){
 		return get_e_flags();
 	}
 	
+	/**
+	 * The size of the Elf header in bytes
+	 * @return
+	 */
 	public int getELFHeaderSize(){
 		return get_e_ehsize();
 	}
 	
+	/**
+	 * 
+	 * @return The program header table entry size
+	 */
 	public int getProgramHeaderEntrySize(){
 		return get_e_phentsize();
 	}
 	
+	/**
+	 * 
+	 * @return The number of program header entries
+	 */
 	public int getProgramHeaderEntryCount(){
 		return get_e_phnum();
 	}
 	
+	/**
+	 * 
+	 * @return The section header table entry size
+	 */
 	public int getSectionHeaderEntrySize(){
 		return get_e_shentsize();
 	}
 	
+	/**
+	 * 
+	 * @return The number of section header table entries
+	 */
 	public int getSectionHeaderEntryCount(){
 		return get_e_shnum();
 	}
-	
+	/**
+	 * 
+	 * @return The section header string table index
+	 */
 	public int getSectionHeaderStringTableIndex(){
 		return get_e_shstrndx();
 	}

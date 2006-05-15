@@ -38,6 +38,10 @@
 // exception.
 package lib.elf;
 
+/**
+ * This class represents an Elf object.
+ *
+ */
 public class Elf {
 
 	private long pointer;
@@ -47,34 +51,70 @@ public class Elf {
 		this.pointer = ptr;
 	}
 	
+	/**
+	 * Creates a new elf object
+	 * @param file The file to create the object from
+	 * @param command The appropriate {@see ElfCommand}
+	 */
 	public Elf(String file, ElfCommand command){
 		elf_begin(file, command.getValue());
 	}
 	
+	/**
+	 * Creates a new Elf object.
+	 * @param image The name of the image in memory to use
+	 * @param size The size of the image
+	 */
 	public Elf(String image, long size){
 		elf_memory(image, size);
 	}
 	
+	/**
+	 * 
+	 * @return The next elf command
+	 */
 	public ElfCommand next(){
 		return ElfCommand.intern(elf_next());
 	}
 	
+	/**
+	 * Update the Elf descriptor and write the file to disk
+	 * @param command The {@see ElfCommand}
+	 * @return The amount written
+	 */
 	public long update(ElfCommand command){
 		return elf_update(command.getValue());
 	}
 	
+	/**
+	 * 
+	 * @return The type of file associated with this Elf object.
+	 */
 	public ElfKind getKind(){
 		return ElfKind.intern(elf_kind());
 	}
 	
+	/**
+	 * 
+	 * @return The base offset for the Elf object
+	 */
 	public long getBase(){
 		return elf_getbase();
 	}
 	
+	/**
+	 * 
+	 * @param ptr 
+	 * @return The file identification data
+	 */
 	public String getIdentification(long ptr){
 		return elf_getident(ptr);
 	}
 	
+	/**
+	 * 
+	 * @return The object file header
+	 */
 	public ElfEHeader getEHeader(){
 		if(is32bit)
 			return new ElfEHeader32(elf_getehdr());
@@ -82,6 +122,10 @@ public class Elf {
 			return new ElfEHeader64(elf_getehdr());
 	}
 	
+	/**
+	 * Creates a new Elf Header if none exists
+	 * @return A new ElfHeader
+	 */
 	public ElfEHeader createNewEHeader(){
 		if(is32bit)
 			return new ElfEHeader32(elf_newehdr());
@@ -89,6 +133,10 @@ public class Elf {
 			return new ElfEHeader64(elf_newehdr());
 	}
 	
+	/**
+	 * 
+	 * @return The program header table
+	 */
 	public ElfPHeader getPHeader(){
 		if(is32bit)
 			return new ElfPHeader32(elf_getphdr());
@@ -96,6 +144,11 @@ public class Elf {
 			return new ElfPHeader64(elf_getphdr());
 	}
 	
+	/**
+	 * Creates a new program header table if none exists
+	 * @param count 
+	 * @return The program header table
+	 */
 	public ElfPHeader createNewPHeader(long count){
 		if(is32bit)
 			return new ElfPHeader32(elf_newphdr(count));
@@ -103,70 +156,155 @@ public class Elf {
 			return new ElfPHeader64(elf_newphdr(count));
 	}
 	
+	/**
+	 * Returns the {@see ElfSection} at the given offset
+	 * @param offset The offset to get the header at
+	 * @return The ElfSection
+	 */
 	public ElfSection getSectionByOffset(int offset){
 		return new ElfSection(elf_getscn(offset), is32bit);
 	}
 	
+	/**
+	 * Returns the {@see ElfSection} at the provided index
+	 * @param index The index
+	 * @return The ElfSection at that index
+	 */
 	public ElfSection getSection(long index){
 		return new ElfSection(elf_getscn(index), is32bit);
 	}
 	
+	/**
+	 * 
+	 * @param previous The current ElfSection
+	 * @return The ElfSection that immediately follows it
+	 */
 	public ElfSection getNextSection(ElfSection previous){
 		return new ElfSection(elf_nextscn(previous.getPointer()), is32bit);
 	}
 	
+	/**
+	 * Creates a new ElfSection at the end of the table and returns it
+	 * @return The new ElfSection
+	 */
 	public ElfSection createNewSection(){
 		return new ElfSection(elf_newscn(), is32bit);
 	}
 	
+	/**
+	 * 
+	 * @param dst
+	 * @return The number of sections in the Elf file.
+	 */
 	public int getSectionNumber(long dst){
 		return elf_getshnum(dst);
 	}
 	
+	/**
+	 * 
+	 * @param dst
+	 * @return The section index of the section header string table in the Elf file.
+	 */
 	public int getSectionIndex(long dst){
 		return elf_getshstrndx(dst);
 	}
 	
+	/**
+	 * Sets or clears flags in the Elf file
+	 * @param command An {@see ElfCommand}
+	 * @param flags The flags to set/clear
+	 * @return the current flags
+	 */
 	public int flag(ElfCommand command, int flags){
 		return elf_flagelf(command.getValue(), flags);
 	}
 	
+	/**
+	 * Sets or clears flags in the Elf header
+	 * @param command An {@see ElfCommand}
+	 * @param flags The flags to set/clear
+	 * @return the current flags
+	 */
 	public int flagEHeader(ElfCommand command, int flags){
 		return elf_flagehdr(command.getValue(), flags);
 	}
 	
+	/**
+	 * Sets or clears flags in the Elf program header
+	 * @param command An {@see ElfCommand}
+	 * @param flags The flags to set/clear
+	 * @return the current flags
+	 */
 	public int flagPHeader(ElfCommand command, int flags){
 		return elf_flagphdr(command.getValue(), flags);
 	}
 	
+	/**
+	 * Returns the string at the provided offset from the provided index
+	 * @param index The index
+	 * @param offset The offset from index
+	 * @return The string at index + offset
+	 */
 	public String getStringAtOffset(long index, long offset){
 		return elf_strptr(index, offset);
 	}
 	
+	/**
+	 * 
+	 * @return The Elf archive header
+	 */
 	public ElfArchiveHeader getArchiveHeader(){
 		return new ElfArchiveHeader(elf_getarhdr());
 	}
 	
+	/**
+	 * 
+	 * @return The offset in the archive of the current elf file.
+	 */
 	public long getArchiveOffset(){
 		return elf_getaroff();
 	}
 	
+	/**
+	 * 
+	 * @param offset The offset to get the archive element from
+	 * @return The archive element at the provided offset
+	 */
 	public long getArchiveElement(int offset){
 		return elf_rand(offset);
 	}
 	
+	/**
+	 * 
+	 * @param ptr
+	 * @return The symbol table of the archive
+	 */
 	public ElfArchiveSymbol getArchiveSymbol(long ptr){
 		return new ElfArchiveSymbol(elf_getarsym(ptr));
 	}
 	
+	/**
+	 * 
+	 * @param command An {@see ElfCommand}
+	 * @return The control Elf descriptor.
+	 */
 	public int getControlDescriptor(ElfCommand command){
 		return elf_cntl(command.getValue());
 	}
 	
+	/**
+	 * 
+	 * @param ptr
+	 * @return The uninterpreted file conents
+	 */
 	public String getRawFileContents(long ptr){
 		return elf_rawfile(ptr);
 	}
 	
+	/**
+	 * 
+	 * @return true iff this is a 32 bit elf object
+	 */
 	public boolean is32Bits(){
 		return this.is32bit;
 	}

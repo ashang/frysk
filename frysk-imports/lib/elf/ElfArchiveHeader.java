@@ -41,6 +41,11 @@ package lib.elf;
 
 import java.util.Date;
 
+/**
+ * An ElfArchiveHeader is a header for an archive member
+ * @author ajocksch
+ *
+ */
 public class ElfArchiveHeader {
 
 	private long pointer;
@@ -53,30 +58,58 @@ public class ElfArchiveHeader {
 		this.pointer = ptr;
 	}
 	
+	/**
+	 * 
+	 * @return The name of the archive member
+	 */
 	public String getName(){
 		return elf_ar_get_name();
 	}
 	
+	/**
+	 * 
+	 * @return The file date
+	 */
 	public Date getDate(){
 		return new Date(elf_ar_get_date());
 	}
 	
+	/**
+	 * 
+	 * @return The user id of the file
+	 */
 	public int getUid(){
 		return elf_ar_get_uid();
 	}
 	
+	/**
+	 * 
+	 * @return The group id of the file 
+	 */
 	public int getGid(){
 		return elf_ar_get_gid();
 	}
 	
+	/**
+	 * 
+	 * @return The file mode
+	 */
 	public int getMode(){
 		return elf_ar_get_mode();
 	}
 	
+	/**
+	 * 
+	 * @return The file size
+	 */
 	public int getSize(){
 		return elf_ar_get_size();
 	}
 	
+	/**
+	 * 
+	 * @return The original name of the archive member
+	 */
 	public String getRawName(){
 		return elf_ar_get_raw_name();
 	}

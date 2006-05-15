@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * A 64 bit ElfSection header
+ * @author ajocksch
+ *
+ */
 public class ElfSectionHeader64 extends ElfSectionHeader {
 
 	public ElfSectionHeader64(long ptr) {

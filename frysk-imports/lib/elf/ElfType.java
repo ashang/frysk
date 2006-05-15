@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * An ElfType is a known Elf translation type
+ * @author ajocksch
+ *
+ */
 public class ElfType {
 	
 	public static ElfType ELF_T_BYTE = new ElfType(0);
@@ -77,6 +82,9 @@ public class ElfType {
 		this.value = val;
 	}
 	
+	/**
+	 * @return true iff the object is an ElfType and equal to this object
+	 */
 	public boolean equals(Object obj){
 		if(!(obj instanceof ElfType))
 			return false;

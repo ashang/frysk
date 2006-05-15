@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * An ElfSection is a descriptor o an Elf file section
+ * @author ajocksch
+ *
+ */
 public class ElfSection {
 
 	private long pointer;
@@ -52,10 +57,17 @@ public class ElfSection {
 		return this.pointer;
 	}
 	
+	/**
+	 * @return The index of this section.
+	 */
 	public long getIndex(){
 		return elf_ndxscn();
 	}
 	
+	/**
+	 * 
+	 * @return The header for this ElfSection
+	 */
 	public ElfSectionHeader getSectionHeader(){
 		if(is32bit)
 			return new ElfSectionHeader32(elf_getshdr());
@@ -63,22 +75,46 @@ public class ElfSection {
 			return new ElfSectionHeader64(elf_getshdr());
 	}
 	
+	/**
+	 * Flags the section with the provided flags
+	 * @param command An {@see ElfCommand}
+	 * @param flags The flag to use
+	 * @return The new flag value
+	 */
 	public int flag(ElfCommand command, int flags){
 		return elf_flagscn(command.getValue(),flags);
 	}
 	
+	/**
+	 * Flags the section header with the provided flags
+	 * @param command An {@see ElfCommand}
+	 * @param flags The flags to use
+	 * @return The new flag value
+	 */
 	public int flagHeader(ElfCommand command, int flags){
 		return elf_flagshdr(command.getValue(), flags);
 	}
 	
+	/**
+	 * 
+	 *  @return The ElfData contained in this section
+	 */
 	public ElfData getData(){
 		return new ElfData(elf_getdata(), is32bit);
 	}
 	
+	/**
+	 * 
+	 * @return The uninterpreted ElfData in this section
+	 */
 	public ElfData getRawData(){
 		return new ElfData(elf_rawdata(), is32bit);
 	}
 	
+	/**
+	 * 
+	 * @return Creates a new ElfData for this section
+	 */
 	public ElfData createNewElfData(){
 		return new ElfData(elf_newdata(), is32bit);
 	}

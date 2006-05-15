@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * A 32 bit Elf Program segment header
+ * @author ajocksch
+ *
+ */
 public class ElfPHeader32 extends ElfPHeader {
 
 	protected ElfPHeader32(long ptr) {

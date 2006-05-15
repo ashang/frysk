@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * An ElfData is a descriptor of data that will be converted to or from memory format
+ * @author ajocksch
+ *
+ */
 public class ElfData {
 
 	private long pointer;
@@ -48,34 +53,73 @@ public class ElfData {
 		this.is32bit = is32bit;
 	}
 	
+	/**
+	 * Returns tghe byte at the provided offset into the data
+	 * @param offset The offset from which to get the byte
+	 * @return The data at offset
+	 */
 	public byte getByte(long offset){
 		return elf_data_get_byte(offset);
 	}
 	
+	/**
+	 * 
+	 * @return The type of the data
+	 */
 	public ElfType getType(){
 		return ElfType.intern(elf_data_get_type());
 	}
 	
+	/**
+	 * 
+	 * @return The size of the data in bytes
+	 */
 	public long getSize(){
 		return elf_data_get_size();
 	}
 	
+	/**
+	 * 
+	 * @return The offset into the section of the data
+	 */
 	public int getOffset(){
 		return elf_data_get_off();
 	}
 	
+	/**
+	 * 
+	 * @return The alignment of the data in the section
+	 */
 	public long getAlignment(){
 		return elf_data_get_align();
 	}
 	
+	/**
+	 * Translates the information into memory format using the
+	 * provided encoding 
+	 * @param encoding The encoding to use
+	 * @return The data in memory format
+	 */
 	public ElfData translateToMemoryRepresentation(int encoding){
 		return new ElfData(elf_xlatetom(encoding), is32bit);
 	}
 	
+	/**
+	 * Translates the information into Elf format using the
+	 * provided encoding
+	 * @param encoding The encoding to use
+	 * @return The data in Elf format
+	 */
 	public ElfData translateToELFRepresentation(int encoding){
 		return new ElfData(elf_xlatetof(encoding), is32bit);
 	}
 	
+	/**
+	 * Flags the data with the provided flag
+	 * @param command An {@see ElfCommand}
+	 * @param flags The flags to apply
+	 * @return The new flag value
+	 */
 	public int flag(ElfCommand command, int flags){
 		return elf_flagdata(command.getValue(), flags);
 	}

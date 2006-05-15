@@ -38,6 +38,11 @@
 // exception.
 package lib.elf;
 
+/**
+ * And ElfKind is an identification value for a recognized object file
+ * @author ajocksch
+ *
+ */
 public class ElfKind {
 
 	public static ElfKind ELF_K_NONE = new ElfKind(0);
