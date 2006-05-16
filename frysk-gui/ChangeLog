@@ -1,6 +1,7 @@
 2006-05-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am:  Add frysk-imports/elfutils/libelf/libelf.a.
+	Add -lopcodes for linking.
 
 2006-05-12  Andrew Cagney  <cagney@redhat.com>
 
