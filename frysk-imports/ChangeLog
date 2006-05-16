@@ -1,14 +1,20 @@
+2006-05-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* bootstrap.sh: Configure elfutils.
+	* configure.ac: Add in processing of elfutils.
+	* Makefile.am:  Add in processing of elfutils.
+
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: Do not yet configure elfutils.
 
-	* configure.ac, Makefile.am: Disable elfutils until FC update cut.
+	* configure.ac: Makefile.am: Disable elfutils until FC update cut.
 
 2006-05-08  Rick Moseley  <rmoseley@redhat.com>
 
 	* bootstrap.sh: Added elfutils.
 	* Makefile.am: Ditto.
-	* configure.ac" Ditto.
+	* configure.ac: Ditto.
 	* elfutils: Added this directory from the elfutils-0.120 source.
 
 2006-04-27  Andrew Cagney  <cagney@redhat.com>
