@@ -1,5 +1,9 @@
 2006-05-16  Rick Moseley  <rmoseley@redhat.com>
 
+	* Makefile.am: Add libopcodes.a for linking.
+
+2006-05-16  Rick Moseley  <rmoseley@redhat.com>
+
 	* Makefile.am: Add frysk-imports/elfutils/libelf/libelf.a.
 
 2006-05-15  Stepan Kasal  <skasal@redhat.com>
