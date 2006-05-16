@@ -51,7 +51,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a 
 GEN_GCJ_LDADD += $(FRYSK_GTK_LIBS)
-GEN_GCJ_LDADD += /usr/lib/libopcodes.a
+GEN_GCJ_LDADD += -lopcodes
 
 # Hack, need to compile this entire sub-tree with JNI.
 AM_GCJFLAGS += -fjni 

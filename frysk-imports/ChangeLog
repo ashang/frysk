@@ -1,12 +1,9 @@
 2006-05-16  Rick Moseley  <rmoseley@redhat.com>
 
-	* Makefile.am: Add in libopcodes.a library.
-
-2006-05-16  Rick Moseley  <rmoseley@redhat.com>
-
 	* bootstrap.sh: Configure elfutils.
 	* configure.ac: Add in processing of elfutils.
 	* Makefile.am:  Add in processing of elfutils.
+	Add -lopcodes for linking.
 
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
 
