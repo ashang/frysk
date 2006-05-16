@@ -52,10 +52,22 @@ extern "C"
 {
 #endif
 
-jstring
-lib::elf::ElfEHeader64::get_e_ident (){
+jbyte
+lib::elf::ElfEHeader64::get_e_fileclass (){
 	char* ident = (char*) ((Elf64_Ehdr*) this->getPointer())->e_ident;
-	return JvNewString((const jchar*) ident, strlen(ident));
+	return (jbyte) ident[EI_CLASS];
+}
+
+jbyte
+lib::elf::ElfEHeader64::get_e_dataencoding (){
+	char* ident = (char*) ((Elf64_Ehdr*) this->getPointer())->e_ident;
+	return (jbyte) ident[EI_DATA];
+}
+
+jbyte
+lib::elf::ElfEHeader64::get_e_fileversion (){
+	char* ident = (char*) ((Elf64_Ehdr*) this->getPointer())->e_ident;
+	return (jbyte) ident[EI_VERSION];
 }
 
 jint

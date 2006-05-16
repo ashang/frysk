@@ -1,5 +1,22 @@
 2006-05-16  Adam Jocksch  <ajocksch@redhat.com>
 
+	* ElfEHeader.java (get_e_ident): Removed.
+	(get_e_fileclass): Added.
+	(get_e_dataencoding): Added.
+	(get_e_fileversion): Added.
+	(getIdentifier): Removed.
+	(getFileClass): Added.
+	(getDataEncoding): Added.
+	(getFileVersion): Added.
+	* ElfHeader32.java: Updated native methods to reflect change in
+	superclass.
+	* ElfHeader64.java: Ditto.
+	* cni/ElfEHeader32.cxx: (get_e_ident): Removed.
+	(get_e_fileclass): Added.
+	(get_e_dataencoding): Added.
+	(get_e_fileversion): Added.
+	* cni/ElfEHeader64.cxx: Ditto.
+
 	* ChangeLog: Fixed formatting of previous entries.
 	* Elf.java (flag): Now takes an ElfFlags and returns the same.
 	(flagEHeader): Ditto.

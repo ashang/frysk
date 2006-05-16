@@ -49,7 +49,9 @@ public class ElfEHeader64 extends ElfEHeader {
 		super(ptr);
 	}
 
-	protected native String get_e_ident();
+	protected native byte get_e_fileclass();
+	protected native byte get_e_dataencoding();
+	protected native byte get_e_fileversion();
 	protected native int get_e_type();
 	protected native int get_e_machine();
 	protected native long get_e_version();

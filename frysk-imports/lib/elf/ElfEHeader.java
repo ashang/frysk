@@ -56,12 +56,16 @@ public abstract class ElfEHeader {
 		return this.pointer;
 	}
 	
-	/**
-	 * 
-	 * @return The magic identifier and other information
-	 */
-	public String getItentifier(){
-		return get_e_ident();
+	public int getFileClass(){
+		return (int) get_e_fileclass();
+	}
+	
+	public int getDataEncoding(){
+		return (int) get_e_dataencoding();
+	}
+	
+	public int getFileVersion(){
+		return (int) get_e_fileversion();
 	}
 	
 	/**
@@ -167,7 +171,9 @@ public abstract class ElfEHeader {
 		return get_e_shstrndx();
 	}
 
-	protected abstract String get_e_ident();
+	protected abstract byte get_e_fileclass();
+	protected abstract byte get_e_dataencoding();
+	protected abstract byte get_e_fileversion();
 	protected abstract int get_e_type();
 	protected abstract int get_e_machine();
 	protected abstract long get_e_version();
