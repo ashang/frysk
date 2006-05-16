@@ -120,8 +120,8 @@ public class ElfData {
 	 * @param flags The flags to apply
 	 * @return The new flag value
 	 */
-	public int flag(ElfCommand command, int flags){
-		return elf_flagdata(command.getValue(), flags);
+	public ElfFlags flag(ElfCommand command, ElfFlags flags){
+		return ElfFlags.intern(elf_flagdata(command.getValue(), flags.getValue()));
 	}
 	
 	protected long getPointer(){

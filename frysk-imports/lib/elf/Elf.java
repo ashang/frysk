@@ -215,8 +215,8 @@ public class Elf {
 	 * @param flags The flags to set/clear
 	 * @return the current flags
 	 */
-	public int flag(ElfCommand command, int flags){
-		return elf_flagelf(command.getValue(), flags);
+	public ElfFlags flag(ElfCommand command, ElfFlags flags){
+		return ElfFlags.intern(elf_flagelf(command.getValue(), flags.getValue()));
 	}
 	
 	/**
@@ -225,8 +225,8 @@ public class Elf {
 	 * @param flags The flags to set/clear
 	 * @return the current flags
 	 */
-	public int flagEHeader(ElfCommand command, int flags){
-		return elf_flagehdr(command.getValue(), flags);
+	public ElfFlags flagEHeader(ElfCommand command, ElfFlags flags){
+		return ElfFlags.intern(elf_flagehdr(command.getValue(), flags.getValue()));
 	}
 	
 	/**
@@ -235,8 +235,8 @@ public class Elf {
 	 * @param flags The flags to set/clear
 	 * @return the current flags
 	 */
-	public int flagPHeader(ElfCommand command, int flags){
-		return elf_flagphdr(command.getValue(), flags);
+	public ElfFlags flagPHeader(ElfCommand command, ElfFlags flags){
+		return ElfFlags.intern(elf_flagphdr(command.getValue(), flags.getValue()));
 	}
 	
 	/**

@@ -1,4 +1,19 @@
+2006-05-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ChangeLog: Fixed formatting of previous entries.
+	* Elf.java (flag): Now takes an ElfFlags and returns the same.
+	(flagEHeader): Ditto.
+	(flagPHeader): Ditto.
+	* ElfData.java (flag): Ditto.
+	* ElfSection.java (flag): Ditto.
+	(flagHeader): Ditto.
+	* ElfFlags.java: Added.
+	* ElfKind.java: Made constants final.
+	* ElfType.java: Ditto.
+	* ElfCommand.java: Ditto.
+
 2006-05-15  Adam Jocksch  <ajocksch@redhat.com>
+
 	* Elf.java: Added javadoc comments to classes and all public methods.
 	* ElfArchiveHeader.java: Ditto.
 	* ElfArchiveSymbol.java: Ditto.
@@ -20,6 +35,7 @@
 	* ElfType.java: Ditto.
 
 2006-05-11  Adam Jocksch  <ajocksch@redhat.com>
+
 	* Elf.java: Added frysk header.
 	* ElfArchiveHeader.java: Ditto.
 	* ElfArchiveSymbol.java: Ditto.

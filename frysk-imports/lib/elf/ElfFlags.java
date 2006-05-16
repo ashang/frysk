@@ -39,91 +39,49 @@
 package lib.elf;
 
 /**
- * An ElfSection is a descriptor o an Elf file section
+ * An ElfFlag is a flag that is applicable to Elf structures
  * @author ajocksch
  *
  */
-public class ElfSection {
+public class ElfFlags {
 
-	private long pointer;
-	private boolean is32bit;
+	public static final ElfFlags DIRTY = new ElfFlags(0x1);
+	public static final ElfFlags LAYOUT = new ElfFlags(0x4);
+	public static final ElfFlags PERMISSIVE = new ElfFlags(0x8);
 	
-	protected ElfSection(long ptr, boolean is32bit){
-		this.pointer = ptr;
-		this.is32bit = is32bit;
+	private int value;
+	
+	protected static ElfFlags intern(int value){
+		switch(value){
+		case 0x1:
+			return DIRTY;
+		case 0x4:
+			return LAYOUT;
+		case 0x8:
+			return PERMISSIVE;
+		default:
+			return new ElfFlags(value);
+		}
 	}
 	
-	protected long getPointer(){
-		return this.pointer;
+	private ElfFlags(int value){
+		this.value = value;
 	}
 	
-	/**
-	 * @return The index of this section.
-	 */
-	public long getIndex(){
-		return elf_ndxscn();
+	public ElfFlags or(ElfFlags other){
+		return new ElfFlags(value | other.value);
 	}
 	
-	/**
-	 * 
-	 * @return The header for this ElfSection
-	 */
-	public ElfSectionHeader getSectionHeader(){
-		if(is32bit)
-			return new ElfSectionHeader32(elf_getshdr());
-		else
-			return new ElfSectionHeader64(elf_getshdr());
+	public ElfFlags and(ElfFlags other){
+		return new ElfFlags(value & other.value);
 	}
 	
-	/**
-	 * Flags the section with the provided flags
-	 * @param command An {@see ElfCommand}
-	 * @param flags The flag to use
-	 * @return The new flag value
-	 */
-	public ElfFlags flag(ElfCommand command, ElfFlags flags){
-		return ElfFlags.intern(elf_flagscn(command.getValue(), flags.getValue()));
+	public boolean equals(Object obj){
+		return ((obj instanceof ElfFlags) && ((ElfFlags) obj).value == value);
 	}
 	
-	/**
-	 * Flags the section header with the provided flags
-	 * @param command An {@see ElfCommand}
-	 * @param flags The flags to use
-	 * @return The new flag value
-	 */
-	public ElfFlags flagHeader(ElfCommand command, ElfFlags flags){
-		return ElfFlags.intern(elf_flagshdr(command.getValue(), flags.getValue()));
+	protected int getValue(){
+		return value;
 	}
 	
-	/**
-	 * 
-	 *  @return The ElfData contained in this section
-	 */
-	public ElfData getData(){
-		return new ElfData(elf_getdata(), is32bit);
-	}
-	
-	/**
-	 * 
-	 * @return The uninterpreted ElfData in this section
-	 */
-	public ElfData getRawData(){
-		return new ElfData(elf_rawdata(), is32bit);
-	}
-	
-	/**
-	 * 
-	 * @return Creates a new ElfData for this section
-	 */
-	public ElfData createNewElfData(){
-		return new ElfData(elf_newdata(), is32bit);
-	}
-	
-	protected native long elf_ndxscn();
-	protected native long elf_getshdr();
-	protected native int elf_flagscn(int __cmd, int __flags);
-	protected native int elf_flagshdr(int __cmd, int __flags);
-	protected native long elf_getdata();
-	protected native long elf_rawdata();
-	protected native long elf_newdata();
 }
