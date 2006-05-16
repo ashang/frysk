@@ -53,6 +53,7 @@ GEN_CLASSPATH += junit.jar
 GEN_GCJ_LDADD += libfrysk-jargs.a
 GEN_GCJ_LDADD += libfrysk-junit.a
 GEN_GCJ_LDADD += elfutils/libelf/libelf.a
+GEN_GCJ_LDADD += /usr/lib/libopcodes.a
 
 # we need to get this into the distribution
 noinstdir = $(srcdir)
