@@ -46,7 +46,8 @@
     cdtparser/cdtparser.jar \
     JDOM_JAR \
     jline/jline.jar \
-    jargs/jargs.jar
+    jargs/jargs.jar \
+    lib
     
 
 # Generate everything (always run with --add-missing).
@@ -59,8 +60,6 @@ autoconf -f
 
 echo "Running automake ... for frysk-imports"
 automake --add-missing
-
-exit 0
 
 # Now run a separate aclocal/autoconf/automake for elfutils
 cd elfutils
