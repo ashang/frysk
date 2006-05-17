@@ -1,3 +1,8 @@
+2006-05-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ListView.java (clear): Remove deleteObservers.
+	Already deleted in unWatchList.
+	
 2006-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* UniqueHashMap.java: Comment out println calls.

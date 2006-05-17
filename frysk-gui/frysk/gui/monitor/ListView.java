@@ -200,6 +200,7 @@ public class ListView extends TreeView implements Observer {
 		this.watchedList.itemAdded.deleteObserver(itemAddedObserver);
 		this.watchedList.itemRemoved.deleteObserver(itemRemvoedObserver);
 		this.watchedList = null;
+		
 	}
 	
 	public void clear(){
@@ -211,10 +212,6 @@ public class ListView extends TreeView implements Observer {
 		}
 		this.listStore.clear();
 		this.map.clear();
-		if(this.watchedList!=null){
-			this.watchedList.itemAdded.deleteObserver(this.itemAddedObserver);
-			this.watchedList.itemRemoved.deleteObserver(this.itemRemvoedObserver);
-		}
 	}
 	
 	public void update(Observable guiObject, Object object) {
