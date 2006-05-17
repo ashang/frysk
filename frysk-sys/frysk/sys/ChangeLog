@@ -1,3 +1,9 @@
+2006-05-17  Chris Moller  <moller@mollerware.com>
+
+	* Pty.java:
+	* cni/Pty.cxx: New files to provide a means of opening a pty and
+	identifying the corresponding pty path.
+
 2006-04-09  Andrew Cagney  <cagney@redhat.com>
 
 	* cni/Poll.cxx (handler): Change function signature to match
