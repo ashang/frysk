@@ -9,17 +9,17 @@
 
 2006-04-03  Rick Moseley  <rmoseley@redhat.com>
 
-	*DOMFrysk.java: Added additional documentation explaining JDOM structure.
-					Updated Javadoc information.
-	*DOMFunction.java:  Updated Javadoc information.
-	*DOMImage.java: Ditto.
-	*DOMInlineInstance.java: Ditto.
-	*DOMLine.java: Ditto.
-	*DOMSource.java: Ditto.
-	*DOMTag.java: Ditto.
-	*DOMTagTypes.java: Ditto.
-	*TestDOM.java: Ditto.
-					Removed old commented out code.
+	* DOMFrysk.java: Added additional documentation explaining JDOM structure.
+	Updated Javadoc information.
+	* DOMFunction.java:  Updated Javadoc information.
+	* DOMImage.java: Ditto.
+	* DOMInlineInstance.java: Ditto.
+	* DOMLine.java: Ditto.
+	* DOMSource.java: Ditto.
+	* DOMTag.java: Ditto.
+	* DOMTagTypes.java: Ditto.
+	* TestDOM.java: Ditto.
+	Removed old commented out code.
 
 2006-03-29  Adam Jocksch  <ajocksch@redhat.com>
 
