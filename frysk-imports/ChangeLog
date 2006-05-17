@@ -1,3 +1,8 @@
+2006-05-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.am (all-local): Added rule to deencode and unpack test 
+	core file.
+
 2006-05-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* bootstrap.sh: Configure elfutils.

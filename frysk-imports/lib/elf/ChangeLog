@@ -1,5 +1,8 @@
 2006-05-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tests/test-core.tgz: Removed.
+	* tests/test-core.bz2.uu: Added, replaces test-core.tgz.
+
 	* tests: Added.
 	* tests/test-core.tgz: Added, test core dump (uuencoded and zipped)
 	to be used as a basis for libelf wrapper tests.
