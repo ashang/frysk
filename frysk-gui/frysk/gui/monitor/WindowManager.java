@@ -74,7 +74,7 @@ public class WindowManager implements Saveable{
 	public ObserversDialog observersDialog;
 	public EditObserverDialog editObserverDialog; 
 	public RegisterWindow registerWindow;
-	public PickProcsDialog pickProcsDialog;
+//	public PickProcsDialog pickProcsDialog;
 	/**}*/
 	
 	public WindowManager(){
@@ -96,7 +96,7 @@ public class WindowManager implements Saveable{
 		this.editObserverDialog = new EditObserverDialog(glade);
 		this.menuBar = new MenuBar(glade);
 		
-		this.pickProcsDialog = new PickProcsDialog(null);
+//		this.pickProcsDialog = new PickProcsDialog(null);
 	}
 	
 

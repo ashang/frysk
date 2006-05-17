@@ -1,8 +1,3 @@
-2006-05-17  Sami Wagiaalla  <swagiaal@redhat.com>
-
-	* dialogs/Dialog.java: Added code to hide the dialog
-	once the user has reponded.
-	
 2006-03-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferencWindow.java (attachEvents): Added events for template
