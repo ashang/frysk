@@ -56,6 +56,7 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
+import org.gnu.gtk.event.CellRendererTextListener;
 
 /**
  * A widget that combines the TreeView and DataModel and displays
@@ -75,6 +76,8 @@ public class ListView extends TreeView implements Observer {
 	private ItemAddedObserver itemAddedObserver;
 	private ItemRemvoedObserver itemRemvoedObserver;
 	
+	private CellRendererText cellRendererText;
+	
 	public ListView(){
 		super();
 		this.init();
@@ -85,16 +88,28 @@ public class ListView extends TreeView implements Observer {
 		this.init();
 	}
 	
+
+	public void addEditListener(CellRendererTextListener listener)
+	{
+		if ((cellRendererText != null) && (listener != null) &&
+			(listener instanceof CellRendererTextListener))
+		{
+			cellRendererText.setBooleanProperty("editable",true);
+			cellRendererText.addListener((CellRendererTextListener)listener);
+		}
+
+	}
+	
 	protected void initListStore(){
 		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
 	}
 	
 	protected void initTreeView() {
-		CellRendererText cellRendererText = new CellRendererText();
+		cellRendererText = new CellRendererText();
 		TreeViewColumn nameCol = new TreeViewColumn();
 		nameCol.packStart(cellRendererText, false);
 		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
-		this.appendColumn(nameCol);
+		this.appendColumn(nameCol);	
 	}
 	
 	private void init(){
