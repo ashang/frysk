@@ -1,3 +1,7 @@
+2006-05-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.rules: Added elfutils/libelf for g++ compiling.
+
 2006-05-12  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.gen.sh: Exclude files generated from common/ from list

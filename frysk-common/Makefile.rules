@@ -142,6 +142,7 @@ AM_GCJFLAGS = \
 AM_CXXFLAGS = \
 	-I$(srcdir) \
 	-I$(top_builddir) \
+	-I$(srcdir)/elfutils/libelf \
 	-Werror \
 	-Wall \
 	-fPIC \
