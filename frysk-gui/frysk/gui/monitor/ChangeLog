@@ -1,3 +1,25 @@
+2006-05-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* datamodels/FlatProcObservableLinkedList.java: a flat linked
+	list of all processes in system to be shared by interested
+	views.
+	* datamodels/DataModelManager.java: New class.
+	* datamodels/DataModel.java: New class.
+	* WindowManager.java: Added handle for a PickProcDialog.
+	* UniqueHashMap.java (nameIsUsed): new futions.
+	* TaskData.java: Made constructor public.
+	* SessionProcDataModel.java: Data model of keeping track of
+	procs belonging to "current session".
+	* SessionProcTreeView.java: Displays SessionProcDataModel.
+	* ProcWiseTreeView.java: Filtered out unowned procs.
+	* ProcWiseDataModel.java: Added labels to unowned procs.
+	* ProcDataModel.java: Removed debug output.
+	* ProcData.java: Added an isOwned function.
+	* PickProcsListView.java: New file.
+	* PickProcsDialog.java: New file.
+	* MainWindow.java: Replaced ProcViewPage with SessionViewPage.
+	* GuiData.java: Made it extend GuiObject.
+
 2006-05-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ListView.java (addEditListener): Allow injection of a

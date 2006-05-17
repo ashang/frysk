@@ -77,6 +77,13 @@ public class ProcWiseTreeView extends TreeView {
 
 			public boolean filter(TreeModel model, TreeIter iter) {
 
+				//FIXME: this should be changed to set the row to insensitive
+				// instead of completely filtering it out. Once the java-gnome
+				// patch for doing so is in FC
+				if(model.getValue(iter, psDataModel.getSensitiveDC()) == false){
+					return false;	
+				}
+				
 				if(model.getValue(iter, psDataModel.getSelectedDC()) == false){
 					return true;
 				}else{

@@ -58,9 +58,18 @@ public class UniqueHashMap{
 		this.nameHash = new HashMap();
 	}
 	
+	/**
+	 * Checks of the given key is used already or not
+	 * @param key
+	 * @return true of the key isn ot used false if it is
+	 */
+	public boolean nameIsUsed(String key){
+		return this.nameHash.containsKey(key);
+	}
+	
 	public void add(GuiObject object){
 		if(this.nameHash.containsKey(object.getName())){
-			throw new RuntimeException("The given observer name"+"["+ object.getName()+"]"+" is already used");
+			throw new RuntimeException("The given item name"+"["+ object.getName()+"]"+" is already used");
 		}else{
 			this.nameHash.put(object.getName(), object);
 		}

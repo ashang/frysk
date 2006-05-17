@@ -50,7 +50,7 @@ public class TaskData extends GuiData{
 
 	private Task task;
 	
-	TaskData(Task task) {
+	public TaskData(Task task) {
 		this.task = task;
 	}
 

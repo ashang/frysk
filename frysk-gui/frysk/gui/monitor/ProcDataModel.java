@@ -205,7 +205,7 @@ public class ProcDataModel {
     	public void update (Observable o, Object obj){
     		final Proc proc = (Proc) obj;
 
-//    		proc.observableTaskAddedXXX.addObserver (taskCreatedObserver);
+//            proc.observableTaskAddedXXX.addObserver (taskCreatedObserver);
 //            proc.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
             
             org.gnu.glib.CustomEvents.addEvent(new Runnable(){
@@ -386,7 +386,7 @@ public class ProcDataModel {
 			    threadCount++;
 		    }
 	    }
-	    System.out.println(this + ": ProcDataModel.getThreadCount() " + treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter, pidDC) + " "+ threadCount); 
+//	    System.out.println(this + ": ProcDataModel.getThreadCount() " + treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter, pidDC) + " "+ threadCount); 
 	    return threadCount;
 	    
     }

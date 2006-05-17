@@ -1,3 +1,17 @@
+2006-05-17  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestSessionSaveLoad.java (testSaveLoad): updated constructor
+	of debugProcess.
+	* sessions/SessionManager.java: Added a fuction to check if a
+	new session name is already in use or not.
+	* sessions/DebugProcess.java: Added code to add selected session
+	Observers to the current proc.
+	Changed constructor to ask for executbalePath as well as name.
+	* druid/CreateFryskSessionDruid.java (buttonEvent): Added a command
+	to set the currently active session.
+	(addProcessParent): Changed instanication of debug process to pass
+	both name, and executable path.
+
 2006-05-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (getProcessExitControls): Removed.

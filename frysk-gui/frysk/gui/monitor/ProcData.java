@@ -49,12 +49,13 @@
 package frysk.gui.monitor;
 
 import frysk.gui.monitor.observers.TaskObserverRoot;
+import frysk.proc.Manager;
 import frysk.proc.Proc;
 
-public class ProcData  extends GuiData{
+public class ProcData extends GuiData{
 	private Proc proc;
 	
-	ProcData(Proc proc){
+	public ProcData(Proc proc){
 		this.proc = proc;
 	}
 
@@ -73,6 +74,7 @@ public class ProcData  extends GuiData{
 				//XXX: this will result in the Observer being
 				// added too many times this is solved by a 
 				// hack right now. better model should be found
+	
 				//observers.add(observer);
 			}
 		});
@@ -85,4 +87,25 @@ public class ProcData  extends GuiData{
 		observer.apply(this.proc);
 		observers.add(observer);
 	}
+	
+	/**
+	 * Returns wether this user owns this process
+	 * or not.
+	 * @return boolean; true of the user owns this
+	 * process false otherwise;
+	 */
+	public boolean isOwned(){
+		return (this.proc.getUID() == Manager.host.getSelf().getUID() ||
+			this.proc.getGID() == Manager.host.getSelf().getGID() );
+	}
+	
+	public String getFullExecutablePath(){
+		String execPath = proc.getCommand() + " * path could not be retrieved *";
+		try{
+			execPath = proc.getExe();
+		}catch (Exception e) {}
+
+		return execPath;
+	}
+	
 }

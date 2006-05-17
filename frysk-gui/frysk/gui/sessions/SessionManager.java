@@ -72,6 +72,10 @@ public class SessionManager {
 		return this.sessions;
 	}
 	
+	public boolean nameIsUsed(String name){
+		return this.nameHash.nameIsUsed(name);
+	}
+	
 	public void addSession(Session session){
 		this.nameHash.add(session);
 		this.sessions.add(session);

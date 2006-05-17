@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
@@ -55,7 +53,6 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 
 import frysk.event.TimerEvent;
-import frysk.gui.Gui;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -73,6 +70,7 @@ public class ProcWiseDataModel {
 	private DataColumnString nameDC;
 	private DataColumnObject objectDC;
 	private DataColumnBoolean selectedDC;
+	private DataColumnBoolean sensitiveDC;
 	
 	private ProcCreatedObserver procCreatedObserver;
 	private ProcDestroyedObserver procDestroyedObserver;
@@ -81,7 +79,7 @@ public class ProcWiseDataModel {
 	
 	private Hashtable iterHash;
 	
-	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+//	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	public ProcWiseDataModel(){
 		this.iterHash = new Hashtable();
@@ -89,8 +87,13 @@ public class ProcWiseDataModel {
 		this.nameDC = new DataColumnString();
 		this.objectDC = new DataColumnObject();
 		this.selectedDC = new DataColumnBoolean();
+		this.sensitiveDC = new DataColumnBoolean();
 		
-		this.treeStore = new TreeStore(new DataColumn[] {this.nameDC, this.objectDC, this.selectedDC});
+		this.treeStore = new TreeStore(new DataColumn[] {
+				this.nameDC,
+				this.objectDC,
+				this.selectedDC,
+				this.sensitiveDC});
 
 		this.refreshTimer = new TimerEvent(0, 5000){
 			public void execute() {
@@ -105,12 +108,39 @@ public class ProcWiseDataModel {
 		
 		Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
 		Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
+		
 	}
 
 	private void setRow(TreeIter row, String name, ProcData data, boolean selected){
 		treeStore.setValue(row, nameDC, name);
 		treeStore.setValue(row, objectDC, data);
 		treeStore.setValue(row, selectedDC, selected);
+		treeStore.setValue(row, sensitiveDC, false);
+		if(data != null && data.isOwned()){
+			treeStore.setValue(row, sensitiveDC, true);
+			TreePath path = row.getPath();
+//			if(path.up()){
+//				TreeIter parent = null;
+//				parent = treeStore.getIter(path);
+//				System.out.println(this	+ ": ProcWiseDataModel.setRow() EXCEPTIONs path: " + path + " name: " + name);
+//				System.out.println(this	+ ": ProcWiseDataModel.setRow() parent: " + parent);
+//				
+//				if(parent != null){
+//					treeStore.setValue(parent, sensitiveDC, true);
+//				}
+//			}
+			
+			String pathString = path.toString();
+			if(pathString.contains(":")){
+				String parentString = pathString.substring(0, pathString.lastIndexOf(":"));
+				TreeIter parent = null;
+				parent = treeStore.getIter(parentString);
+				
+				if(parent != null){
+					treeStore.setValue(parent, sensitiveDC, true);
+				}
+			}
+		}
 	}
 
 	public TreePath searchName(String name)
@@ -140,6 +170,10 @@ public class ProcWiseDataModel {
 	
 	public DataColumnBoolean getSelectedDC() {
 		return selectedDC;
+	}
+	
+	public DataColumnBoolean getSensitiveDC() {
+		return sensitiveDC;
 	}
 	
 	public void setSelected(TreeIter iter, boolean type, boolean setChildren)
@@ -203,9 +237,11 @@ public class ProcWiseDataModel {
 							if (!treeStore.isIterValid(parent))
 								throw new RuntimeException(
 										"parent = treeStore.appendRow(null) fails isIterValid test."); //$NON-NLS-1$
+							ProcData procData = new ProcData(proc);
 							iterHash.put(proc.getCommand(), parent);
+							
 							setRow(parent, proc.getCommand() + "\t"
-									+ proc.getPid(), new ProcData(proc), false);
+									+ proc.getPid(), procData, false);
 						} else {
 							TreeIter iter = treeStore.appendRow(parent);
 							if (iter == null)
@@ -217,12 +253,11 @@ public class ProcWiseDataModel {
 
 							if (((ProcData) treeStore
 									.getValue(parent, objectDC)).getProc() != null) {
-								Proc oldProc = ((ProcData) treeStore.getValue(
-										parent, objectDC)).getProc();
-								setRow(parent, proc.getCommand(), new ProcData(
-										null), false);
+								ProcData procData = ((ProcData) treeStore.getValue(parent, objectDC));
+								Proc oldProc = procData.getProc();
+								setRow(parent, proc.getCommand(), null, false);
 								setRow(iter, "" + oldProc.getPid(),
-										new ProcData(oldProc), false);
+										procData, false);
 								iter = treeStore.appendRow(parent);
 								if (iter == null)
 									throw new RuntimeException(
@@ -238,8 +273,8 @@ public class ProcWiseDataModel {
 									new ProcData(proc), false);
 						}
 					} catch (Exception e) {
-						errorLog.log(Level.WARNING,
-						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e.getMessage());
+//						errorLog.log(Level.WARNING,
+//						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e.getMessage());
 					}
 				}
 
@@ -300,24 +335,24 @@ public class ProcWiseDataModel {
 												+ proc.getCommand()
 												+ " isIterValid reports false");
 
-							Proc oldProc = ((ProcData) treeStore.getValue(iter,
-									objectDC)).getProc();
-							setRow(parent, oldProc.getCommand() + "\t"
-									+ oldProc.getPid(), new ProcData(oldProc),
+							ProcData procData = ((ProcData) treeStore.getValue(iter,objectDC));
+							Proc oldProc = procData.getProc();
+							
+							setRow(parent, proc.getCommand() + "\t"
+									+ oldProc.getPid(), procData,
 									treeStore.getValue(iter, selectedDC));
 
 							treeStore.removeRow(iter);
 						}
 
 					} catch (Exception e) {
-						errorLog.log(Level.WARNING,
-										"ProcWiseDataModel.ProcDestroyedObserver reported this error", e); //$NON-NLS-1$ //$NON-NLS-2$
+//						errorLog.log(Level.WARNING,
+//										"ProcWiseDataModel.ProcDestroyedObserver reported this error", e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			});
 		}
 	}
-
 
 	public TreeStore getModel() {
 		return this.treeStore;

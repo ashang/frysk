@@ -47,19 +47,24 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Window;
 
 import frysk.gui.Gui;
+import frysk.gui.sessions.Session;
 
 public class MainWindow extends Window implements Saveable{
 	
-	private ProcViewPage procViewPage;
+	//private ProcViewPage procViewPage;
+	private SessionProcTreeView sessionProcTreeView;
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	public MainWindow(LibGlade glade) throws IOException {
 		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		
 		try {
-			this.procViewPage = new ProcViewPage(glade);
+	//		this.procViewPage = new ProcViewPage(glade);
+			this.sessionProcTreeView = new SessionProcTreeView(glade);
+			
 			ProgramViewPage programViewPage = new ProgramViewPage(glade);
-			procViewPage.getClass();
+			//procViewPage.getClass();
+			this.sessionProcTreeView.getClass();
 			programViewPage.getClass();
 		} catch (IOException e){
 			errorLog.log(Level.SEVERE,"IOException from Proc Widget",e); //$NON-NLS-1$
@@ -72,6 +77,10 @@ public class MainWindow extends Window implements Saveable{
 		this.showAll();
 	}
 
+	public void setSession(Session session){
+		this.sessionProcTreeView.setSession(session);
+	}
+	
 	public void save(Preferences prefs) {
 		prefs.putInt("position.x", this.getPosition().getX()); //$NON-NLS-1$
 		prefs.putInt("position.y", this.getPosition().getY()); //$NON-NLS-1$
@@ -79,7 +88,8 @@ public class MainWindow extends Window implements Saveable{
 		prefs.putInt("size.height", this.getSize().getHeight()); //$NON-NLS-1$
 		prefs.putInt("size.width", this.getSize().getWidth()); //$NON-NLS-1$
 		
-		procViewPage.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
+//		procViewPage.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
+		sessionProcTreeView.save(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 
 	public void load(Preferences prefs) {
@@ -94,7 +104,8 @@ public class MainWindow extends Window implements Saveable{
 		if ((width > 0) && (height > 0))
 			this.resize(width, height);
 		
-		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
+//		procViewPage.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
+		sessionProcTreeView.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 	
 }

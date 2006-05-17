@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+// type filter text
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -37,60 +37,21 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.gui.monitor.datamodels;
 
+import java.util.HashMap;
 
-/*
- * Created on Sep 26, 2005
+/**
+ * @author swagiaal
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Base class for sharing code between DataModels.
  */
-package frysk.gui.common.dialogs;
+public class DataModel {
 
-import org.gnu.glib.Handle;
-import org.gnu.gtk.event.DialogEvent;
-import org.gnu.gtk.event.DialogListener;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
+	protected HashMap iterHash;
 
-import frysk.gui.common.IconManager;
-
-
-public class Dialog extends org.gnu.gtk.Dialog {
-
-	//private String message;
-	
-	public Dialog(){
-		super();
-		this.init();
-	}
-	
-	public Dialog(Handle handle){
-		super(handle);
-		this.init();
-	}
-	
-	private void init(){
-		this.addListener(new LifeCycleListener() {
-			public void lifeCycleEvent(LifeCycleEvent event) {}
-	         public boolean lifeCycleQuery(LifeCycleEvent event) {
-	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
-	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
-	            	 Dialog.this.hideAll();
-	             }	
-	             return true;
-	         }
-		});
+	DataModel(){
+		this.iterHash = new HashMap();
 		
-		this.addListener(new DialogListener() {
-		
-			public boolean dialogEvent(DialogEvent arg0) {
-				Dialog.this.hideAll();
-				return false;
-			}
-		
-		});
-		this.setIcon(IconManager.windowIcon);
 	}
-	
 }

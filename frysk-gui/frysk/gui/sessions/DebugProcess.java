@@ -48,6 +48,7 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Proc;
@@ -75,8 +76,9 @@ public class DebugProcess extends GuiObject {
 		this.tagsets = new ObservableLinkedList();
 	}
 	
-	public DebugProcess(String executablePath){
-		super(executablePath, executablePath);
+	public DebugProcess(String name, String executablePath){
+		super(name, name);
+		
 		this.executablePath = executablePath;
 		
 		this.observers = new ObservableLinkedList();
@@ -85,7 +87,9 @@ public class DebugProcess extends GuiObject {
 	
 	public DebugProcess(DebugProcess other) {
 		super(other);
+		
 		this.executablePath = other.executablePath;
+		
 		this.observers = new ObservableLinkedList(other.observers);
 		this.tagsets = new ObservableLinkedList(other.tagsets);
 	}
@@ -116,6 +120,13 @@ public class DebugProcess extends GuiObject {
 	
 	public void setProc(Proc proc){
 		this.proc = proc;
+		if(proc  != null){
+			Iterator iterator = this.observers.iterator();
+			while (iterator.hasNext()) {
+				TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+				observer.apply(proc);
+			}
+		}
 	}
 	
 	public void addObserver(ObserverRoot observer){

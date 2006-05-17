@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+// type filter text
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -37,60 +37,49 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.gui.monitor;
 
+import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.HBox;
+import org.gnu.gtk.PolicyType;
+import org.gnu.gtk.ResponseType;
+import org.gnu.gtk.ScrolledWindow;
 
-/*
- * Created on Sep 26, 2005
+import frysk.gui.common.dialogs.Dialog;
+import frysk.gui.monitor.datamodels.DataModelManager;
+
+/**
+ * 
+ * @author swagiaal
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * A Dialog that displays a list of procs matching
+ * the given path.
  */
-package frysk.gui.common.dialogs;
-
-import org.gnu.glib.Handle;
-import org.gnu.gtk.event.DialogEvent;
-import org.gnu.gtk.event.DialogListener;
-import org.gnu.gtk.event.LifeCycleEvent;
-import org.gnu.gtk.event.LifeCycleListener;
-
-import frysk.gui.common.IconManager;
-
-
-public class Dialog extends org.gnu.gtk.Dialog {
-
-	//private String message;
+public class PickProcsDialog extends Dialog {
 	
-	public Dialog(){
-		super();
-		this.init();
+	PickProcsListView checkedListView;
+	
+	public PickProcsDialog(String path){
+		
+		this.checkedListView = new PickProcsListView(path);
+		
+		this.checkedListView.watchLinkedList(DataModelManager.theManager.flatProcObservableLinkedList);
+		
+		HBox mainBox = new HBox(false,0);
+		this.getDialogLayout().add(mainBox);
+		
+		ScrolledWindow sWindow = new ScrolledWindow(null,null);
+		sWindow.setMinimumSize(500, 500);
+		sWindow.setBorderWidth(10);
+		sWindow.setPolicy(PolicyType.NEVER,PolicyType.AUTOMATIC);
+		
+		sWindow.addWithViewport(checkedListView);
+		mainBox.packEnd(sWindow);
+		
+		this.addButton(GtkStockItem.OK, ResponseType.OK.getValue());
+
+		this.showAll();
 	}
 	
-	public Dialog(Handle handle){
-		super(handle);
-		this.init();
-	}
-	
-	private void init(){
-		this.addListener(new LifeCycleListener() {
-			public void lifeCycleEvent(LifeCycleEvent event) {}
-	         public boolean lifeCycleQuery(LifeCycleEvent event) {
-	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
-	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
-	            	 Dialog.this.hideAll();
-	             }	
-	             return true;
-	         }
-		});
-		
-		this.addListener(new DialogListener() {
-		
-			public boolean dialogEvent(DialogEvent arg0) {
-				Dialog.this.hideAll();
-				return false;
-			}
-		
-		});
-		this.setIcon(IconManager.windowIcon);
-	}
 	
 }

@@ -77,6 +77,7 @@ import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.ProcData;
 import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.sessions.DebugProcess;
@@ -142,7 +143,7 @@ public class CreateFryskSessionDruid extends Dialog {
 					TreeIter childIter = unfilteredProcessIter.getChild(0);
 					coreProc = ((ProcData)this.dataModel.getModel().getValue(childIter,this.dataModel.getPathDC())).getProc();
 				}
-			DebugProcess debugProcess = new DebugProcess(coreProc.getCmdLine()[0]);
+			DebugProcess debugProcess = new DebugProcess(coreProc.getCommand(), proc.getFullExecutablePath());
 			debugProcess.setProc(coreProc);
 			currentSession.addProcess(debugProcess);
 		}
@@ -588,7 +589,10 @@ public class CreateFryskSessionDruid extends Dialog {
 					
 					if (newSessionSelected)
 						SessionManager.theManager.addSession(currentSession);
+
 					SessionManager.theManager.save();
+//					WindowManager.theManager.pickProcsDialog.run();
+					WindowManager.theManager.mainWindow.setSession(currentSession);
 					hideAll();
 				}
 			}
