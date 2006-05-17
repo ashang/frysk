@@ -1,3 +1,9 @@
+2006-05-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests: Added.
+	* tests/test-core.tgz: Added, test core dump (uuencoded and zipped)
+	to be used as a basis for libelf wrapper tests.
+
 2006-05-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ElfEHeader.java (get_e_ident): Removed.
