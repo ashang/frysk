@@ -54,7 +54,7 @@ public class PrintProc extends ProcAction {
 	}
 	
 	public void execute(Proc proc) {
-		System.out.println("Proc State : " + proc); //$NON-NLS-1$
+	    //System.out.println("Proc State : " + proc); //$NON-NLS-1$
 	}
 
 	public GuiObject getCopy() {

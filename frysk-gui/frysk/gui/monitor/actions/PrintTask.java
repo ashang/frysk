@@ -54,7 +54,7 @@ public class PrintTask extends TaskAction {
 	}
 	
 	public void execute(Task task) {
-		System.out.println("Task State : " + task);
+	    //System.out.println("Task State : " + task);
 	}
 
 	public GuiObject getCopy() {

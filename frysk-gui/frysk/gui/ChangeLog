@@ -1,3 +1,7 @@
+2006-05-17  Andrew Cagney  <cagney@redhat.com>
+
+	* test/GuiTestLib.java: Comment out println calls.
+
 2006-05-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestSessionSaveLoad.java (testSaveLoad): updated constructor

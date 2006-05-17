@@ -147,7 +147,7 @@ public class SessionProcDataModel {
 				.println(this
 						+ ": SessionProcDataModel.setSession() " + this.currentSession.getProcesses().size());
 		while(iterator.hasNext()){
-			System.out.println(this + ": SessionProcDataModel.setSession()");
+		    //System.out.println(this + ": SessionProcDataModel.setSession()");
 			this.addProc(((DebugProcess)iterator.next()).getProc());
 		}
 	}
@@ -342,7 +342,7 @@ public class SessionProcDataModel {
 			    threadCount++;
 		    }
 	    }
-	    System.out.println(this + ": ProcDataModel.getThreadCount() " + treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter, pidDC) + " "+ threadCount); 
+	    // System.out.println(this + ": ProcDataModel.getThreadCount() " + treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter, pidDC) + " "+ threadCount); 
 	    return threadCount;
 	    
     }

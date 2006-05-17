@@ -132,7 +132,7 @@ public class EditObserverDialog extends Dialog {
 		resumeRadioButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					System.out.println(this + ": .buttonEvent() resumeRadioButton");
+				    //System.out.println(this + ": .buttonEvent() resumeRadioButton");
 					observer.setReturnAction(Action.CONTINUE);
 				}
 			}
@@ -142,7 +142,7 @@ public class EditObserverDialog extends Dialog {
 		stopRadioButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					System.out.println(this + ": .buttonEvent() stopRadioButton");
+				    //System.out.println(this + ": .buttonEvent() stopRadioButton");
 					observer.setReturnAction(Action.BLOCK);
 				}
 			}
@@ -152,7 +152,7 @@ public class EditObserverDialog extends Dialog {
 		askMeRadioButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					System.out.println(this + ": .buttonEvent() askMeRadioButton");
+				    //System.out.println(this + ": .buttonEvent() askMeRadioButton");
 					observer.setReturnAction(null);
 				}
 			}

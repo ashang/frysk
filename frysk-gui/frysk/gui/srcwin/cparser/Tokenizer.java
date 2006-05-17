@@ -67,7 +67,7 @@ class Tokenizer{
 				this.buffer += reader.readLine()+"\n";
 		}
 		catch(FileNotFoundException e){
-			System.out.println("Could not load file "+filename);
+		    //System.out.println("Could not load file "+filename);
 			e.printStackTrace();
 		}
 		catch(IOException e){

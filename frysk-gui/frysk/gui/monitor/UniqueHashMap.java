@@ -76,7 +76,7 @@ public class UniqueHashMap{
 	}
 	
 	public void remove(GuiObject object){
-		System.out.println(this + ": UniqueHashMap.remove() " + object.getName());
+	    //System.out.println(this + ": UniqueHashMap.remove() " + object.getName());
 		if(this.nameHash.remove(object.getName()) == null){
 			throw new RuntimeException("Object ["+object+"] is not in the hashMap");
 		}

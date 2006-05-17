@@ -1,3 +1,14 @@
+2006-05-17  Andrew Cagney  <cagney@redhat.com>
+
+	* UniqueHashMap.java: Comment out println calls.
+	* EditObserverDialog.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* ObserverItemRow.java: Ditto.
+	* ObjectFactory.java: Ditto.
+	* SessionProcDataModel.java: Ditto.
+
 2006-05-17  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* datamodels/FlatProcObservableLinkedList.java: a flat linked

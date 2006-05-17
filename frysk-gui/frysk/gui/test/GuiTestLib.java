@@ -167,8 +167,8 @@ public class GuiTestLib extends TestCase{
 		}
 
 		public Action updateSignaled(Task task, int signal) {
-			System.out.println("TestProc.updateSignaled()");
-			System.out.println("\n===========================================");
+// 			System.out.println("TestProc.updateSignaled()");
+// 			System.out.println("\n===========================================");
 			if(signal == Sig.USR2_){
 				notifyAll();
 			}

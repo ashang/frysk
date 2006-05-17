@@ -83,7 +83,7 @@ public class ObjectFactory {
 			java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
 			loadedObject =  constr.newInstance(new Object[] {});
 		} catch (Exception e) {
-			System.out.println("ObjectFactory.getObject() " + type);
+		    //System.out.println("ObjectFactory.getObject() " + type);
 			e.printStackTrace();
 		}
 
@@ -160,8 +160,8 @@ public class ObjectFactory {
 
 		File file = new File(path);
 
-		System.out.println("ObjectFactory.deleteNode() " + path);
-		System.out.println("ObjectFactory.deleteNode() " + file.exists());
+		//System.out.println("ObjectFactory.deleteNode() " + path);
+		//System.out.println("ObjectFactory.deleteNode() " + file.exists());
 		
 		return file.delete();
 	}
