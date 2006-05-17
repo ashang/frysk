@@ -46,7 +46,7 @@ import frysk.gui.monitor.ObservableLinkedList;
 
 /**
  * 
- * @author swagiaal
+ * @author swagiaal, pmuldoon
  *
  * A Session object is used to hold and save user
  * preferences with respect to a debug session.
@@ -54,6 +54,10 @@ import frysk.gui.monitor.ObservableLinkedList;
 public class Session extends GuiObject{
 	
 	private ObservableLinkedList procs;
+	
+	public void setName(String name) {
+		super.setName(name);
+	}
 	
 	public Session(){
 		super();
@@ -63,6 +67,12 @@ public class Session extends GuiObject{
 	public Session(String name, String toolTip){
 		super(name, toolTip);
 		this.procs = new ObservableLinkedList();
+	}
+	
+	public Session(Session other) {
+		super(other);
+
+		this.procs = new ObservableLinkedList(other.procs);
 	}
 	
 	public void addProcess(DebugProcess process){
@@ -80,9 +90,12 @@ public class Session extends GuiObject{
 	public void save(Element node){
 		super.save(node);
 		Element procsXML = new Element("procs");
-		System.out.println(this + ": Session.save()");
 		this.procs.save(procsXML);
 		node.addContent(procsXML);
+	}
+	
+	public GuiObject getCopy() {
+		return new Session(this);
 	}
 	
 	public void load(Element node){
@@ -91,5 +104,6 @@ public class Session extends GuiObject{
 		Element procsXML = node.getChild("procs");
 		this.procs.load(procsXML);
 	}
+
 	
 }

@@ -54,7 +54,7 @@ import frysk.proc.Proc;
 
 /**
  * 
- * @author swagiaal
+ * @author swagiaal, pmuldoon
  *
  * A container class representing a process
  * in a debug session
@@ -81,6 +81,13 @@ public class DebugProcess extends GuiObject {
 		
 		this.observers = new ObservableLinkedList();
 		this.tagsets = new ObservableLinkedList();
+	}
+	
+	public DebugProcess(DebugProcess other) {
+		super(other);
+		this.executablePath = other.executablePath;
+		this.observers = new ObservableLinkedList(other.observers);
+		this.tagsets = new ObservableLinkedList(other.tagsets);
 	}
 	
 	/**
@@ -136,6 +143,9 @@ public class DebugProcess extends GuiObject {
 	}
 	
 
+	public GuiObject getCopy() {
+		return new DebugProcess(this);
+	}
 	public void save(Element node) {
 		super.save(node);
 		

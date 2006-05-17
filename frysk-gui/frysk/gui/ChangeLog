@@ -1,3 +1,31 @@
+2006-05-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (getProcessExitControls): Removed.
+	(getEntryNameControls): Removed.
+	(getNumberSuffix): Added. Provide correct st,nd,rd or th suffix.
+	(copySession): Added. Given a source session, copy it and name it 
+	accordingly.
+	(getDruidManagerControls): Inject edit listener into PreviousSessions
+	Listview. On Edited event, delete old and create new Session. Added
+	SizeGroups to manage line-ups.
+	(newSession.newSession):  Fix bz 2661. Check if new session exists.
+	(nameEntry.entryEvent): Set state of Next button on name.
+	(CopySession.buttonEvent): On click, copy session.
+	(DeleteSession.buttonEvent): On Click, delete session.
+	
+	* glade/frysk_create_session_druid.glade: Removed process exit
+	selection selection screen. Added Copy, Edit and Delete buttons.
+	Gave tags names, and spaced them accordingly. Added a 6 point 
+	border so that tags	and notebook content don't overlap. Moved
+	Session Name to front page, and remove last page.
+	
+	* sessions/Session.java (Session): Added constructor
+	that takes a copy of the passed Session argument.
+	(getCopy): Added. Create copy of Session.
+	* sessions/DebugProcess.java (DebugProcess): Added constructor
+	that takes a copy of the passed DebugProcess argument.
+	(getCopy): Added. Create copy of DebugProcess.
+
 2006-05-11  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (addProcessParent): Save
