@@ -52,10 +52,9 @@ public class TestPty extends TestCase
      */
     public void testAll ()
     {
-	Pty pty = new Pty ();
-	int master = pty.openPty ();
+	int master = Pty.openPty ();
 	assertFalse ("master is valid", master == -1);
-	String name = pty.getPtyName (master);
+	String name = Pty.getPtyName (master);
 	assertNotNull ("name is non-null", name);
     }
 }
