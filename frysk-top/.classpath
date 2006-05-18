@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="frysk-core"/>
+	<classpathentry kind="src" path="frysk-gui"/>
+	<classpathentry kind="src" path="frysk-imports"/>
+	<classpathentry kind="src" path="frysk-sys"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<accessrules>
+			<accessrule pattern="**/awt/**" kind="nonaccessible"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/swagiaal/install/share/java/gtk2.8.jar"/>
+	<classpathentry kind="var" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/antlr.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/frysk-gtk.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/glade2.12.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/glib0.2.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/gnome2.12.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/jdom.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
