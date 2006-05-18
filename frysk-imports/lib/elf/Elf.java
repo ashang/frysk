@@ -47,8 +47,9 @@ public class Elf {
 	private long pointer;
 	private boolean is32bit;	
 	
-	protected Elf(long ptr){
+	protected Elf(long ptr, boolean is32bit){
 		this.pointer = ptr;
+		this.is32bit = is32bit;
 	}
 	
 	/**
@@ -70,7 +71,7 @@ public class Elf {
 	}
 	
 	public Elf clone(ElfCommand command){
-		return new Elf(elf_clone(command.getValue()));
+		return new Elf(elf_clone(command.getValue()), this.is32bit);
 	}
 	
 	/**

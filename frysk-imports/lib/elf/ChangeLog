@@ -1,5 +1,10 @@
 2006-05-18  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Elf.java (Elf): Now takes a boolean indicating whether the
+	file is 32 or 64 bit.
+	(clone): The new Elf object now has the same 32/64 bitness as
+	the original.
+
 	* Elf.java (clone): Added.
 	(elf_clone): Now returns long and now only takes an int.
 	* cni/Elf.cxx (clone): Now takes only an int and returns a long.
