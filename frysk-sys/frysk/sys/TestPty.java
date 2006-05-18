@@ -56,6 +56,6 @@ public class TestPty extends TestCase
 	int master = pty.openPty ();
 	assertFalse ("master is valid", master == -1);
 	String name = pty.getPtyName (master);
-	assertFalse ("name is non-null", name == null);
+	assertNotNull ("name is non-null", name);
     }
 }
