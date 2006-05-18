@@ -1,3 +1,8 @@
+2006-05-18  Chris Moller  <moller@mollerware.com>
+
+	* TestPty.java: New file to test functionality of Pty.java and
+	cni/Pty.cxx under Junit.
+
 2006-05-17  Chris Moller  <moller@mollerware.com>
 
 	* Pty.java:
