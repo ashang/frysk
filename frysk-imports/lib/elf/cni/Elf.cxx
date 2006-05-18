@@ -43,7 +43,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <errno.h>
 
+#include "lib/elf/ElfException.h"
 #include "lib/elf/Elf.h"
 
 #ifdef __cplusplus
@@ -53,12 +56,21 @@ extern "C"
 
 void
 lib::elf::Elf::elf_begin (jstring file, jint command){
-	int len = JvGetStringUTFLength (file);
-	char *fileName = (char *) malloc (len + 1);
+	char *fileName = (char *) malloc (file->length() + 1);
 	JvGetStringUTFRegion (file, 0, file->length (), fileName);
-
+	errno = 0;
 	int fd = open (fileName, O_RDONLY);
+	if(errno != 0)
+		throw new lib::elf::ElfException(JvNewStringUTF("Could not open file for reading"));
+	
+	if(::elf_version(EV_CURRENT) == EV_NONE)
+		throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));
+	
+	errno = 0;	
 	::Elf* new_elf = ::elf_begin (fd, (Elf_Cmd) command, (::Elf*) 0);
+	
+	if(errno != 0 || !new_elf)
+		throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
 	
 	// Do a quick check for 32/64 bitness
 	if(elf32_getehdr(new_elf) != 0)

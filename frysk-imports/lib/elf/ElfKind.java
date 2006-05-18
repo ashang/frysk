@@ -72,4 +72,19 @@ public class ElfKind {
 	protected static ElfKind intern(int kind){
 		return kinds[kind];
 	}
+	
+	public String toString(){
+		switch(value){
+		case 0:
+			return "ELF_K_NONE";
+		case 1:
+			return "ELF_K_AR";
+		case 2:
+			return "ELF_K_COFF";
+		case 3:
+			return "ELF_K_ELF";
+		}
+		
+		return "";
+	}
 }

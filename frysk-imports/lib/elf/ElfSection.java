@@ -69,6 +69,11 @@ public class ElfSection {
 	 * @return The header for this ElfSection
 	 */
 	public ElfSectionHeader getSectionHeader(){
+		long val = elf_getshdr();
+		
+		if(val == 0)
+			return null;
+		
 		if(is32bit)
 			return new ElfSectionHeader32(elf_getshdr());
 		else

@@ -176,6 +176,9 @@ public class Elf {
 	 * @return The ElfSection at that index
 	 */
 	public ElfSection getSection(long index){
+		long val = elf_getscn(index);
+		if(val == 0)
+			return null;
 		return new ElfSection(elf_getscn(index), is32bit);
 	}
 	
@@ -185,7 +188,11 @@ public class Elf {
 	 * @return The ElfSection that immediately follows it
 	 */
 	public ElfSection getNextSection(ElfSection previous){
-		return new ElfSection(elf_nextscn(previous.getPointer()), is32bit);
+		long val = elf_nextscn(previous.getPointer());
+		if(val != 0)
+			return new ElfSection(val, is32bit);
+		else
+			return null;
 	}
 	
 	/**

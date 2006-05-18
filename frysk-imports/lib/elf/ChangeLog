@@ -1,5 +1,15 @@
 2006-05-18  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Elf.java (getSection): Now returns null if index was invalid.
+	(getNextSection): Now returns null if there is no next section.
+	* ElfException.java (ElfException): Added, takes a string.
+	* ElfKind.java (toString): Added.
+	* ElfSection.java (getSectionHeader): Now returns null if no header
+	found.
+	* cni/Elf.cxx: (elf_begin): Now calls elf_version before calling
+	elf_begin, also throws ElfExceptions in case of errors.
+	* tests/TestElf.java: Added.
+
 	* Elf.java (Elf): Now takes a boolean indicating whether the
 	file is 32 or 64 bit.
 	(clone): The new Elf object now has the same 32/64 bitness as
