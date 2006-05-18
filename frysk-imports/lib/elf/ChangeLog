@@ -1,3 +1,9 @@
+2006-05-18  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Elf.java (clone): Added.
+	(elf_clone): Now returns long and now only takes an int.
+	* cni/Elf.cxx (clone): Now takes only an int and returns a long.
+
 2006-05-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/test-core.tgz: Removed.

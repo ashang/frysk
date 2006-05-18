@@ -69,9 +69,9 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 	this->pointer = (jlong) new_elf;
 }
 
-void
-lib::elf::Elf::elf_clone (jlong pointer2, jint command){
-	this->pointer = (jlong) ::elf_clone((::Elf*) pointer2, (Elf_Cmd) command);
+jlong
+lib::elf::Elf::elf_clone (jint command){
+	return (jlong) ::elf_clone((::Elf*) this->pointer, (Elf_Cmd) command);
 }
 
 void

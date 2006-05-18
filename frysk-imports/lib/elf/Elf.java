@@ -69,6 +69,10 @@ public class Elf {
 		elf_memory(image, size);
 	}
 	
+	public Elf clone(ElfCommand command){
+		return new Elf(elf_clone(command.getValue()));
+	}
+	
 	/**
 	 * 
 	 * @return The next elf command
@@ -318,7 +322,7 @@ public class Elf {
 	}
 	
 	protected native void elf_begin(String file, int __cmd);
-	protected native void elf_clone(long __elf, int __cmd);
+	protected native long elf_clone(int __cmd);
 	protected native void elf_memory(String __image, long __size);
 	protected native int elf_next();
 	protected native int elf_end();
