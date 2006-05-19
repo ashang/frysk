@@ -1,3 +1,7 @@
+2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* UniqueHashMap.java (clear): Added clear() api.
+
 2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* InfoWidget.java: ProcData to GuiProc refactor.

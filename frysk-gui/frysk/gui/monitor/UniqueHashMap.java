@@ -56,6 +56,7 @@ public class UniqueHashMap{
 	
 	public UniqueHashMap(){
 		this.nameHash = new HashMap();
+		this.nameHash.clear();
 	}
 	
 	/**
@@ -65,6 +66,11 @@ public class UniqueHashMap{
 	 */
 	public boolean nameIsUsed(String key){
 		return this.nameHash.containsKey(key);
+	}
+	
+	public void clear()
+	{
+		this.nameHash.clear();
 	}
 	
 	public void add(GuiObject object){
