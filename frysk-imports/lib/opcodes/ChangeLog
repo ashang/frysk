@@ -1,3 +1,7 @@
+2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cni/Disassembler.cxx (disassemble): No longer assumes i386_intel.
+
 2006-05-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Disassembler.java: Added Frysk header.

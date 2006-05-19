@@ -89,7 +89,11 @@ lib::opcodes::Disassembler::disassemble(jlong address, jlong instructions){
 	bfd_vma current_address = (bfd_vma) address;
 	for(int i = 0; i < instructions; i++){
 		this->setCurrentAddress(current_address);
+#ifdef I386
 		current_address += ::print_insn_i386_intel(current_address, &disasm_info);
+#else
+		current_address += 1; // Fix me, properly handle other archs
+#endif
 		this->moveToNext();
 	}
 }
