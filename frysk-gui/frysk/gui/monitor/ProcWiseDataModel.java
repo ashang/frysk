@@ -111,7 +111,7 @@ public class ProcWiseDataModel {
 		
 	}
 
-	private void setRow(TreeIter row, String name, ProcData data, boolean selected){
+	private void setRow(TreeIter row, String name, GuiProc data, boolean selected){
 		treeStore.setValue(row, nameDC, name);
 		treeStore.setValue(row, objectDC, data);
 		treeStore.setValue(row, selectedDC, selected);
@@ -237,7 +237,7 @@ public class ProcWiseDataModel {
 							if (!treeStore.isIterValid(parent))
 								throw new RuntimeException(
 										"parent = treeStore.appendRow(null) fails isIterValid test."); //$NON-NLS-1$
-							ProcData procData = new ProcData(proc);
+							GuiProc procData = GuiProc.GuiProcFactory.getGuiProc(proc);
 							iterHash.put(proc.getCommand(), parent);
 							
 							setRow(parent, proc.getCommand() + "\t"
@@ -251,9 +251,9 @@ public class ProcWiseDataModel {
 								throw new RuntimeException(
 										"iter = treeStore.appendRow(parent) fails isIterValid test."); //$NON-NLS-1$
 
-							if (((ProcData) treeStore
+							if (((GuiProc) treeStore
 									.getValue(parent, objectDC)).getProc() != null) {
-								ProcData procData = ((ProcData) treeStore.getValue(parent, objectDC));
+								GuiProc procData = ((GuiProc) treeStore.getValue(parent, objectDC));
 								Proc oldProc = procData.getProc();
 								setRow(parent, proc.getCommand(), null, false);
 								setRow(iter, "" + oldProc.getPid(),
@@ -270,7 +270,7 @@ public class ProcWiseDataModel {
 							// setRow(iter, "", ""+proc.getPid(),
 							// proc.getExe());
 							setRow(iter, "" + proc.getPid(),
-									new ProcData(proc), false);
+									GuiProc.GuiProcFactory.getGuiProc(proc), false);
 						}
 					} catch (Exception e) {
 //						errorLog.log(Level.WARNING,
@@ -317,7 +317,7 @@ public class ProcWiseDataModel {
 													+ proc.getCommand()
 													+ " isIterValid reports false");
 
-								if (((ProcData) treeStore.getValue(iter,
+								if (((GuiProc) treeStore.getValue(iter,
 										objectDC)).getProc().getPid() == proc
 										.getPid()) {
 									treeStore.removeRow(iter);
@@ -335,7 +335,7 @@ public class ProcWiseDataModel {
 												+ proc.getCommand()
 												+ " isIterValid reports false");
 
-							ProcData procData = ((ProcData) treeStore.getValue(iter,objectDC));
+							GuiProc procData = ((GuiProc) treeStore.getValue(iter,objectDC));
 							Proc oldProc = procData.getProc();
 							
 							setRow(parent, proc.getCommand() + "\t"

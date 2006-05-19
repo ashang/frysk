@@ -147,19 +147,22 @@ public class SessionProcDataModel {
 				.println(this
 						+ ": SessionProcDataModel.setSession() " + this.currentSession.getProcesses().size());
 		while(iterator.hasNext()){
-		    //System.out.println(this + ": SessionProcDataModel.setSession()");
-			this.addProc(((DebugProcess)iterator.next()).getProc());
+			Iterator j = (((DebugProcess)iterator.next()).getProcs()).iterator();
+			while(j.hasNext()){
+				this.addProc((GuiProc)j.next());
+			}
 		}
 	}
 	
-	public void addProc(Proc proc){
+	public void addProc(GuiProc guiProc){
+		Proc proc = guiProc.getProc();
 		TreeIter iter = treeStore.appendRow(null);
 
 		iterHash.put(proc.getId(), iter);
 		
 		treeStore.setValue(iter, commandDC, proc.getCommand());
 		treeStore.setValue(iter, pidDC, proc.getPid());
-		treeStore.setValue(iter, procDataDC, (new ProcData(proc)));
+		treeStore.setValue(iter, procDataDC, (GuiProc.GuiProcFactory.getGuiProc(proc)));
 		treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 		treeStore.setValue(iter, isThreadDC, false);
 			
@@ -208,7 +211,7 @@ public class SessionProcDataModel {
 		treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
 		treeStore.setValue(iter, isThreadDC, true);
 			
-		treeStore.setValue(iter, procDataDC, (new TaskData(task)));
+		treeStore.setValue(iter, procDataDC, GuiTask.GuiTaskFactory.getGuiTask(task));
 		treeStore.setValue(iter,sensitiveDC, true);
 	}
 	

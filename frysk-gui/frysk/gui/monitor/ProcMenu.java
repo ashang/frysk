@@ -69,7 +69,7 @@ public class ProcMenu extends Menu{
 	private static ProcMenu menu = new ProcMenu();
 	
 	/** the ProcData of the currently selected process */
-	private ProcData current;
+	private GuiProc current;
 	
 	ProcMenu(){
 		super();
@@ -126,7 +126,7 @@ public class ProcMenu extends Menu{
 	 * Show the popup menu. selected operation is to be 
 	 * applied to process with id pid
 	 * */
-	public void popup(ProcData selected){
+	public void popup(GuiProc selected){
 		this.popup();
 		this.current = selected;
 		//System.out.println("-- PID: " + current.getProc().getPid()); //$NON-NLS-1$

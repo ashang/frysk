@@ -138,7 +138,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				if(procTreeView.getSelection().getSelectedRows().length > 0){
 					TreePath selected = procTreeView.getSelection().getSelectedRows()[0];
 					mountThreadModel(procDataModel, selected);
-					ProcData data = (ProcData) procFilter.getValue(procFilter.getIter(selected), procDataModel.getProcDataDC());
+					GuiProc data = (GuiProc) procFilter.getValue(procFilter.getIter(selected), procDataModel.getProcDataDC());
 					if(!data.hasWidget()){
 						data.setWidget(new ProcStatusWidget(data));
 					}
@@ -160,7 +160,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				if(procTreeView.getSelection().getSelectedRows().length > 0 &&
 						threadTreeView.getSelection().getSelectedRows().length > 0	){
 					TreePath selected = threadTreeView.getSelection().getSelectedRows()[0];
-					TaskData data = (TaskData) threadFilter.getValue(threadFilter.getIter(selected), procDataModel.getProcDataDC());
+					GuiTask data = (GuiTask) threadFilter.getValue(threadFilter.getIter(selected), procDataModel.getProcDataDC());
 					if(!data.hasWidget()){
 						data.setWidget(new TaskStatusWidget(data));
 					}
@@ -182,7 +182,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
 						& event.getButtonPressed() == MouseEvent.BUTTON3){
 					
-					ProcData data = getSelectedProc();
+					GuiProc data = getSelectedProc();
 					if(data != null) ProcMenu.getMenu().popup(data);
 					
                     //System.out.println("click : " + data); //$NON-NLS-1$
@@ -198,7 +198,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
 						& event.getButtonPressed() == MouseEvent.BUTTON3){
 					
-					TaskData data = getSelectedThread();
+					GuiTask data = getSelectedThread();
 					if(data != null) ThreadMenu.getMenu().popup(data);
 					
                     //System.out.println("click : " + data); //$NON-NLS-1$
@@ -372,7 +372,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		}
 	}
 
-	private ProcData getSelectedProc(){
+	private GuiProc getSelectedProc(){
 		TreeSelection ts = this.procTreeView.getSelection();
 		TreePath[] tp = ts.getSelectedRows();
 
@@ -381,13 +381,13 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		}
 		
 		TreeModel model = this.procFilter;
-		ProcData data   = (ProcData)model.getValue(model.getIter(tp[0]), this.procDataModel.getProcDataDC());
+		GuiProc data   = (GuiProc)model.getValue(model.getIter(tp[0]), this.procDataModel.getProcDataDC());
 		model.getValue(model.getIter(tp[0]), this.procDataModel.getPidDC());
 
 		return data;
 	}
 
-	private TaskData getSelectedThread(){
+	private GuiTask getSelectedThread(){
 		TreeSelection ts = this.threadTreeView.getSelection();
 		TreePath[] tp = ts.getSelectedRows();
 
@@ -396,7 +396,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		}
 		
 		TreeModel model = this.threadFilter;
-		TaskData data   = (TaskData)model.getValue(model.getIter(tp[0]), this.procDataModel.getProcDataDC());
+		GuiTask data   = (GuiTask)model.getValue(model.getIter(tp[0]), this.procDataModel.getProcDataDC());
 		model.getValue(model.getIter(tp[0]), this.procDataModel.getPidDC());
 
 		return data;

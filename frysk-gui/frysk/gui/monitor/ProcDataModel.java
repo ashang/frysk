@@ -230,7 +230,7 @@ public class ProcDataModel {
 					
 					treeStore.setValue(iter, commandDC, proc.getCommand());
 					treeStore.setValue(iter, pidDC, proc.getPid());
-					treeStore.setValue(iter, procDataDC, (new ProcData(proc)));
+					treeStore.setValue(iter, procDataDC, (GuiProc.GuiProcFactory.getGuiProc(proc)));
 					treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
 					treeStore.setValue(iter, isThreadDC, false);
 						
@@ -309,7 +309,7 @@ public class ProcDataModel {
 					treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
 					treeStore.setValue(iter, isThreadDC, true);
 						
-					treeStore.setValue(iter, procDataDC, (new TaskData(task)));
+					treeStore.setValue(iter, procDataDC, GuiTask.GuiTaskFactory.getGuiTask(task));
 					treeStore.setValue(iter,sensitiveDC, false);
 				
 					if(getThreadCount(parent) == 0 ){
@@ -395,8 +395,8 @@ public class ProcDataModel {
     		// switch iters in hash
 //    		System.out.println("ProcDataModel.copyRow() " + from + " to " + to);
     		Object data = treeStore.getValue(from, procDataDC);
-    		if(data instanceof ProcData){
-    			ProcData procData = (ProcData)data;
+    		if(data instanceof GuiProc){
+    			GuiProc procData = (GuiProc)data;
     			TreeIter iter = (TreeIter) iterHash.get(procData.getProc().getId());
     			if(!iter.toString().equals(from.toString())){
     				try {
@@ -409,7 +409,7 @@ public class ProcDataModel {
   //  			iterHash.remove(procData.getProc().getId());
     			iterHash.put(procData.getProc().getId(), to);
     		}else{
-    			TaskData taskData = (TaskData)data;
+    			GuiTask taskData = (GuiTask)data;
     			TreeIter iter = (TreeIter) iterHash.get(taskData.getTask().getTaskId());
     			if(!iter.toString().equals(from.toString())){
     				try {

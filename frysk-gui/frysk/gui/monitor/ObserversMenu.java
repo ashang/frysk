@@ -62,10 +62,10 @@ import frysk.gui.monitor.observers.TaskObserverRoot;
 public class ObserversMenu extends Menu{
 	
 	/** the TaskData of the currently selected task */
-	private TaskData currentTask;
+	private GuiTask currentTask;
 	
 	/** the ProcData of the currently selected process */
-	private ProcData currentProc;
+	private GuiProc currentProc;
 	
 	private HashMap map;
 	
@@ -128,23 +128,23 @@ public class ObserversMenu extends Menu{
 	 * Show the pop-up menu. selected operation is to be 
 	 * applied to process with id pid
 	 * */
-	public void popup(ProcData selected){
+	public void popup(GuiProc selected){
 		this.popup();
 		this.currentProc = selected;
 		this.currentTask = null;
 	}
 	
-	public void popup(TaskData selected){
+	public void popup(GuiTask selected){
 		this.popup();
 		this.currentTask = selected;
 		this.currentProc = null;
 	}
 	
-	public void setCurrentProc(ProcData current){
+	public void setCurrentProc(GuiProc current){
 		this.currentProc = current;
 	}
 	
-	public void setCurrentTask(TaskData current){
+	public void setCurrentTask(GuiTask current){
 		this.currentTask = current;
 	}
 }

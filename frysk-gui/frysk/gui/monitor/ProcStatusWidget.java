@@ -46,7 +46,7 @@ package frysk.gui.monitor;
 
 public class ProcStatusWidget extends StatusWidget {
 
-	public ProcStatusWidget(ProcData data) {
+	public ProcStatusWidget(GuiProc data) {
 		super(data);
 		this.setName(data.getProc().getCommand());
 	}

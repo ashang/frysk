@@ -62,7 +62,7 @@ public class ThreadMenu extends Menu {
 	private static ThreadMenu menu = new ThreadMenu();
 	
 	/** the TaskData of the currently selected task */
-	private TaskData current;
+	private GuiTask current;
 	
 	ThreadMenu(){
 		super();
@@ -115,7 +115,7 @@ public class ThreadMenu extends Menu {
 	 * Show the popup menu. selected operation is to be 
 	 * applied to process with id pid
 	 * */
-	public void popup(TaskData selected){
+	public void popup(GuiTask selected){
 		this.popup();
 		this.current = selected;
 		//System.out.println("-- PID: " + current.getTask().getTid()); //$NON-NLS-1$

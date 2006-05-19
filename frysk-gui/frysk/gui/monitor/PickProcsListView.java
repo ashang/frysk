@@ -59,7 +59,7 @@ public class PickProcsListView extends CheckedListView {
 	}
 	
 	public void add(GuiObject object, TreeIter treeIter){
-		Proc proc = ((ProcData)object).getProc();
+		Proc proc = ((GuiProc)object).getProc();
 		String myPath = "";
 		try{
 			myPath = proc.getExe();

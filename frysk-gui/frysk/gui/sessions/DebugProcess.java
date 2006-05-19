@@ -41,36 +41,42 @@ package frysk.gui.sessions;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
-import frysk.proc.Proc;
 
 /**
  * 
  * @author swagiaal, pmuldoon
  *
- * A container class representing a process
- * in a debug session
+ * A container that refers to an executable
+ * there could be zero or many instances of these
+ * executable. This keeps track of those too. 
  */
 
 public class DebugProcess extends GuiObject {
  
 	String executablePath;
-	Proc proc;
+	ObservableLinkedList procs;
 	
 	ObservableLinkedList observers;
 	ObservableLinkedList tagsets;
 	
 	public DebugProcess(){
 		super();
+		
+		this.procs = new ObservableLinkedList();
 		
 		this.observers = new ObservableLinkedList();
 		this.tagsets = new ObservableLinkedList();
@@ -81,8 +87,12 @@ public class DebugProcess extends GuiObject {
 		
 		this.executablePath = executablePath;
 		
+		this.procs = new ObservableLinkedList();
+		
 		this.observers = new ObservableLinkedList();
 		this.tagsets = new ObservableLinkedList();
+
+		this.populateProcs();
 	}
 	
 	public DebugProcess(DebugProcess other) {
@@ -90,45 +100,76 @@ public class DebugProcess extends GuiObject {
 		
 		this.executablePath = other.executablePath;
 		
+		this.procs = new ObservableLinkedList();
+		
 		this.observers = new ObservableLinkedList(other.observers);
 		this.tagsets = new ObservableLinkedList(other.tagsets);
+
+		this.populateProcs();
 	}
 	
-	/**
-	 * Serves a Proc object when required to
-	 * do so. There are several possible sources:
-	 * 
-	 * o User chooses to debug and executable setProc
-	 *   is never called this.proc is null. An instance
-	 *   of the process is run using Frysk back-end and
-	 *   returned.
-	 *   
-	 * o User chooses a process from a list when creating
-	 *   a Session, setProc is called and that instance is
-	 *   returned.
-	 *   frysk.gui.srcwin.tags
-	 * o User loads a session, is presented with a list of
-	 *   possible candidates, they pick one, setProc is called
-	 *   and that instance is returned.
-	 * 
-	 * @return a proc object corresponding to the
-	 * executable of this DebugProcess.
-	 */
-	public Proc getProc(){
-		return this.proc;
-	}
+	private void populateProcs() {
+		
+		ObservableLinkedList list = DataModelManager.theManager.flatProcObservableLinkedList;
+		
+		list.itemAdded.addObserver(new Observer() {
+			public void update(Observable observable, Object arg) {
+				GuiProc guiProc = (GuiProc) arg;
+				if((guiProc.getFullExecutablePath()).equals(executablePath)){
+					addProc(guiProc);
+				}
+			}
+		});
+		
+		list.itemRemoved.addObserver(new Observer() {
+			public void update(Observable observable, Object arg) {
+				GuiProc guiProc = (GuiProc) arg;
+				if(guiProc.getFullExecutablePath().equals(executablePath)){
+					removeProc(guiProc);
+				}
+			}
+		});
 	
-	public void setProc(Proc proc){
-		this.proc = proc;
-		if(proc  != null){
-			Iterator iterator = this.observers.iterator();
-			while (iterator.hasNext()) {
-				TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
-				observer.apply(proc);
+		Iterator iterator = list.iterator();
+		while (iterator.hasNext()) {
+			GuiProc guiProc = (GuiProc) iterator.next();
+			if((guiProc.getFullExecutablePath()).equals(this.executablePath)){
+				this.addProc(guiProc);
 			}
 		}
 	}
+
+
+	public void addProc(GuiProc guiProc){
+		Iterator iterator = this.observers.iterator();
+		while (iterator.hasNext()) {
+			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+			guiProc.add(observer);
+		}
+		
+		this.procs.add(guiProc);
+	}
 	
+	public void removeProc(GuiProc guiProc){
+	
+		Iterator iterator = this.observers.iterator();
+		while (iterator.hasNext()) {
+			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
+			guiProc.add(observer);
+		}
+		
+		this.procs.remove(guiProc);
+	}
+
+	public ObservableLinkedList getProcs(){
+		return this.procs;
+	}
+	
+	/**
+	 * Adds an obsever to the list of observers
+	 * to be added to composing procs
+	 * @param observer
+	 */
 	public void addObserver(ObserverRoot observer){
 		this.observers.add(observer);
 	}
@@ -157,6 +198,7 @@ public class DebugProcess extends GuiObject {
 	public GuiObject getCopy() {
 		return new DebugProcess(this);
 	}
+	
 	public void save(Element node) {
 		super.save(node);
 		
@@ -190,7 +232,7 @@ public class DebugProcess extends GuiObject {
 
 	public void load(Element node) {
 		super.load(node);
-		
+
 		this.executablePath = node.getAttribute("executablePath").getValue();
 		Element observersXML = node.getChild("observers");
 		List list = (List) observersXML.getChildren("element");
@@ -210,10 +252,14 @@ public class DebugProcess extends GuiObject {
 		
 		while (iterator.hasNext()){
 			Element elementXML = (Element) iterator.next();
+
 			Tagset tag = TagsetManager.manager.getTagsetByName(elementXML.getAttributeValue("name"));
 			if (tag != null)
 				tagsets.add(tag);
-		}
-	}
 
+		}
+		
+		this.populateProcs();
+	}
+	
 }

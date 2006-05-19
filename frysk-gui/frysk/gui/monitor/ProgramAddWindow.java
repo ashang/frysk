@@ -173,7 +173,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 		
 		for (int i=0; i<pProcesses.length;i++)
 		{
-			ProcData data = (ProcData) pModel.getValue(pModel.getIter(pProcesses[i]),
+			GuiProc data = (GuiProc) pModel.getValue(pModel.getIter(pProcesses[i]),
 					this.psDataModel.getProcDataDC());
 			processes.add(data.getProc().getCommand());
 		}
@@ -372,7 +372,7 @@ public class ProgramAddWindow extends Window implements LifeCycleListener, Savea
 						if (programTreeView.getSelection().getSelectedRows().length > 0) {
 							TreePath selected = programTreeView.getSelection()
 									.getSelectedRows()[0];
-							ProcData data = (ProcData) procFilter.getValue(
+							GuiProc data = (GuiProc) procFilter.getValue(
 									procFilter.getIter(selected), psDataModel
 											.getProcDataDC());
 							if (!data.hasWidget()) {

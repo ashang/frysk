@@ -75,7 +75,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.gui.monitor.CheckedListView;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ListView;
-import frysk.gui.monitor.ProcData;
+import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
 import frysk.gui.monitor.WindowManager;
@@ -140,7 +140,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		if (!this.dataModel.getModel().isIterValid(unfilteredProcessIter))
 			return;
 			
-		ProcData proc = (ProcData) this.dataModel.getModel().getValue(unfilteredProcessIter,this.dataModel.getPathDC());
+		GuiProc proc = (GuiProc) this.dataModel.getModel().getValue(unfilteredProcessIter,this.dataModel.getPathDC());
 		if (proc != null)
 		{
 			Proc coreProc = proc.getProc();
@@ -148,10 +148,10 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				if (unfilteredProcessIter.getChildCount() > 0)
 				{
 					TreeIter childIter = unfilteredProcessIter.getChild(0);
-					coreProc = ((ProcData)this.dataModel.getModel().getValue(childIter,this.dataModel.getPathDC())).getProc();
+					coreProc = ((GuiProc)this.dataModel.getModel().getValue(childIter,this.dataModel.getPathDC())).getProc();
 				}
 			DebugProcess debugProcess = new DebugProcess(coreProc.getCommand(), proc.getFullExecutablePath());
-			debugProcess.setProc(coreProc);
+//			debugProcess.addProc(proc);
 			currentSession.addProcess(debugProcess);
 		}
 	}
@@ -365,12 +365,13 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		previousSessions.getSelection().addListener(new TreeSelectionListener(){
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
 				Session selected = (Session)previousSessions.getSelectedObject();		
-				if (selected != null)
+				if (selected != null){
 					finishButton.setSensitive(true);
+					currentSession = (Session) previousSessions.getSelectedObject();
+				}
 				else
 				{
 					finishButton.setSensitive(false);
-					currentSession = (Session) previousSessions.getSelectedObject();
 				}
 				
 			}});

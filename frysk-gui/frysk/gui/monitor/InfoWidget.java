@@ -84,7 +84,7 @@ public class InfoWidget extends Notebook {
 	 * ProcData.
 	 * @param selected ProcData, null if no ProcData is selected
 	 * */
-	public void setSelectedProc(ProcData data){
+	public void setSelectedProc(GuiProc data){
 		Widget[] widgets = this.procStatusVbox.getChildren();
 		if(widgets.length > 0){
 			this.procStatusVbox.remove(widgets[0]);
@@ -97,7 +97,7 @@ public class InfoWidget extends Notebook {
 	 * TaskData.
 	 * @param selected TaskData, null if no ProcData is selected
 	 * */
-	public void setSelectedTask(TaskData data){
+	public void setSelectedTask(GuiTask data){
 		Widget[] widgets = this.taskStatusVbox.getChildren();
 		if(widgets.length > 0){
 			this.taskStatusVbox.remove(widgets[0]);

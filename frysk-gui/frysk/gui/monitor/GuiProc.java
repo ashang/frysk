@@ -36,36 +36,54 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+/**
+ * Used to store a pointer to the Proc object
+ * and any data that is relates to the process but is gui specific.
+ * Used to pass data to ActionPool Actions.
+ * Actions also manipulate data stored in here
+ * to keep it up to date.
+ * for example the Attach action will set proc from null
+ * to point to the Proc object returned by the backend
+ * attach function.
+ */
 package frysk.gui.monitor;
 
+import java.util.HashMap;
+
 import frysk.gui.monitor.observers.TaskObserverRoot;
-import frysk.proc.Task;
+import frysk.proc.Manager;
+import frysk.proc.Proc;
 
 /**
- * Used to store a pointer to the Task object, and and any data that is relates
- * to the process but is GUI specific. Used to pass data to ActionPool Actions.
- * Actions also manipulate data stored in here to keep it up to date.
+ * @author swagiaal
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
-public class TaskData extends GuiData{
-
-	private Task task;
+public class GuiProc extends GuiData{
+	private Proc proc;
 	
-	public TaskData(Task task) {
-		this.task = task;
+	private GuiProc(Proc proc){
+		this.proc = proc;
 	}
 
-	public void setTask(Task task) {
-		this.task = task;
+	public void setProc(Proc proc) {
+		this.proc = proc;
 	}
 
-	public Task getTask() {
-		return task;
+	public Proc getProc() {
+		return proc;
 	}
-
+	
 	public void add(final TaskObserverRoot observer){
-		observer.onAdded(new Runnable() {
+		
+		observer.onAdded(new Runnable() { 
 			public void run() {
-				observers.add(observer);
+				//XXX: this will result in the Observer being
+				// added too many times this is solved by a 
+				// hack right now. better model should be found
+	
+				//observers.add(observer);
 			}
 		});
 		
@@ -74,8 +92,45 @@ public class TaskData extends GuiData{
 				observers.remove(observer);
 			}
 		});
-		//System.out.println("TaskData.add()");
-		observer.apply(this.task);
+		observer.apply(this.proc);
+		observers.add(observer);
+	}
+	
+	/**
+	 * Returns wether this user owns this process
+	 * or not.
+	 * @return boolean; true of the user owns this
+	 * process false otherwise;
+	 */
+	public boolean isOwned(){
+		return (this.proc.getUID() == Manager.host.getSelf().getUID() ||
+			this.proc.getGID() == Manager.host.getSelf().getGID() );
+	}
+	
+	public String getFullExecutablePath(){
+		String execPath = proc.getCommand() + " * path could not be retrieved *";
+		try{
+			execPath = proc.getExe();
+		}catch (Exception e) {}
+
+		return execPath;
+	}
+	
+	public static class GuiProcFactory{
+		static HashMap map = new HashMap();
+		
+		public static GuiProc getGuiProc(Proc proc){
+			GuiProc guiProc;
+			
+			guiProc = (GuiProc)map.get(proc);
+			
+			if(guiProc == null){
+				guiProc = new GuiProc(proc);
+				map.put(proc, guiProc);
+			}
+			
+			return guiProc;
+		}
 	}
 	
 }

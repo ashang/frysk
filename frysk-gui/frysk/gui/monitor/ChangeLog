@@ -1,3 +1,17 @@
+2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* InfoWidget.java: ProcData to GuiProc refactor.
+	* datamodels/FlatProcObservableLinkedList.java: Ditto.
+	* TaskStatusWidget.java: Ditto.
+	* SessionProcTreeView.java: Ditto.
+	* ChangeLog: Ditto.
+	* ProgramAddWindow.java: 
+	* ProcWiseDataModel.java: Ditto.
+	* ProcMenu.java: Ditto.
+	* ProcDataModel.java: Ditto.
+	* PickProcsListView.java: Ditto.
+	* ObserversMenu.java: Ditto.
+
 2006-05-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ListView.java (clear): Remove deleteObservers.

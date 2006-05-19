@@ -45,7 +45,7 @@ import java.util.Observer;
 
 import frysk.event.TimerEvent;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.gui.monitor.ProcData;
+import frysk.gui.monitor.GuiProc;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -97,7 +97,7 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    					
 	    				}
 	    				
-	    				ProcData procData = new ProcData(proc);
+	    				GuiProc procData = GuiProc.GuiProcFactory.getGuiProc(proc);
 	    				procData.setName(proc.getPid() + " " + execPath);
 	    				procData.setToolTip(execPath);
 	    				
