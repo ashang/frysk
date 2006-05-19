@@ -42,41 +42,98 @@
 Script name:    Observer.py
 Creation date:  April 2006
 Purpose:        Support datamodel of Frysk Observer objects
-Summary:        Simple, demo/prototype dogtail test script for Fryske
+Summary:        Simple, demo/prototype dogtail test script for Frysk
 """
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 class Observer:
-  #
-  # for now, we only have access to the observer name and
-  # one of the GUI's combo boxes
-  #
+  
+  # Set up some default values
   name = 'defaultName'
   loggingAction = 'Log Generic Actions'
-  #
-  #
+  event = 'Exec Observer'
+  filterName = "Name Exec'ing Thread"
+  filterQualifier = 'is not'
+  filterParameter = 'null'
+  actionsName = 'Log Generic Actions'
+  actionsNameParameter = 'null'
+  afterAction = 'Resume thread'
+
   # constructor - not sure if we want this
   # def __init__(self, value):
   #   self.name = value
-  #
+  
   # getters and setters methods
   def setName(self, value):
     self.name = value
-  #
-  #
+
   def setLoggingAction (self, value):
     self.loggingAction = value
-  #
-  #
+    
+  def setEvent (self, value):
+    self.event = value
+     
+  def setFilterName (self, value):
+    self.filterName = value 
+     
+  def setFilterQualifier (self, value):
+    self.filterQualifier = value
+       
+  def setFilterParameter (self, value):
+    self.filterParameter = value
+
+  def setActionsName (self, value):
+    self.actionsName = value 
+        
+  def setActionsParameter (self, value):
+    self.actionsParameter = value 
+    
+  def setAfterAction (self, value):
+    self.afterActions = value 
+  
   def getName(self):
     return self.name
-  #
-  #
+  
   def getLoggingAction(self):
     return self.loggingAction
-  #
-  #
-  def dump(self):
-    print 'name=' + self.name + ' ' + 'loggingAction=' + self.loggingAction
 
+  def getEvent (self):
+    return self.event
+     
+  def getFilterName (self):
+    return self.filterName
+     
+  def getFilterQualifier (self):
+    return self.filterQualifier
+       
+  def getFilterParameter (self):
+    return self.filterParameter
+
+  def getActionsName (self):
+    return self.actionsName
+        
+  def getActionsParameter (self):
+    return self.actionsParameter
     
+  def getAfterAction (self):
+    return self.afterActions
+  
+  def dump(self):
+    print 'name=' + self.name
+    print 'loggingAction=' + self.loggingAction
+    print 'event=' + self.event
+    print 'filterName=' + self.filterName
+    print 'filterQualifier=' + self.filterQualifier
+    print 'filterParameter=' + self.filterParameter
+    print 'actionsName=' + self.actionsName
+    print 'actionsNameParameter=' + self.actionsNameParameter
+    print 'afterAction=' + self.afterAction
+    
+  # -------------------------------------
+  # Compare two Observer objects
+  
+  def isequal(self, theOtherObserver):
+    returnFlag = True
+    return returnFlag
+
+

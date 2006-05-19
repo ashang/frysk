@@ -68,9 +68,7 @@ class TestCreateObservers (unittest.TestCase):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
    
-        # Start up Frysk - comment this out for now - closing Frysk generates 
-        # LOTS of exceptions if it's opened this way - and Frsk cannot be closed
-        # in the Gnome panel
+        # Start up Frysk 
         run ('/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui')
    
         # Locate the Frysk application - note the application name of 

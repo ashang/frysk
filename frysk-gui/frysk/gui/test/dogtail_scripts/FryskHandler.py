@@ -123,8 +123,8 @@ class FryskHandler(xml.sax.handler.ContentHandler):
           self.tempDebugProcess.setName(attributes["name"])          
       except:
         self.observerFlag = True
-        self.theObservers.append(attributes["name"])      
-      
+        self.theObservers.append(attributes["name"]) 
+       
     elif self.currentTag == "observers":
       self.theObservers = []
     
