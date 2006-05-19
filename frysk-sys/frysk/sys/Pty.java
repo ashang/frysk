@@ -45,12 +45,42 @@ package frysk.sys;
 
 public final class Pty
 {
+    private int master;
+    private String name;
+
+    public Pty()
+    {
+	master = openPty();
+	name = getPtyName (master);
+    }
+
+    public int getFd()
+    {
+	return master;
+    }
+
+    public String getName()
+    {
+	return name;
+    }
+
+    public int ptyWrite(String str)
+    {
+	return writeString (master, str);
+    }
+    
     /**
      * Returns an open master fd
      */
-    public static native int openPty ();
+    private static native int openPty ();
+    
     /**
      * Returns the pathname of corrsponding to the fd
      */
-    public static native String getPtyName (int fd);
+    private static native String getPtyName (int fd);
+
+    /**
+     * Write a string to the pty
+     */
+    private static native int writeString (int fd, String str);
 }

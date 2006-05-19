@@ -52,9 +52,19 @@ public class TestPty extends TestCase
      */
     public void testAll ()
     {
-	int master = Pty.openPty ();
-	assertFalse ("master is valid", master == -1);
-	String name = Pty.getPtyName (master);
-	assertNotNull ("name is non-null", name);
+	Pty pty = new Pty();
+	final String ostr = "out string";
+	
+	int master = pty.getFd ();
+	assertFalse ("master is invalid", master == -1);
+	String name = pty.getName ();
+	assertNotNull ("name is null", name);
+	//	System.out.println ("master = " + master);
+	//	System.out.println ("  name = " + name);
+
+	int rlen = pty.ptyWrite (ostr);
+	//	System.out.println ("rlen = " + rlen);
+	//	System.out.println ("olen = " + ostr.length());
+	assertTrue ("wrong write length", rlen == ostr.length());
     }
 }

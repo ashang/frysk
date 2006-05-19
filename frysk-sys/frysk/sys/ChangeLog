@@ -1,3 +1,12 @@
+2006-05-19  Chris Moller  <moller@mollerware.com>
+
+	* Pty.java:
+	* TestPty.java:
+	* cni/Pty.cxx: Added a constructor to open the pty, added an access
+	method to retrieve the fd, added a "write()" method mostly to test
+	that writing to the pty worked, modified the testcase to check the
+	new stuff.
+
 2006-05-18  Chris Moller  <moller@mollerware.com>
 
 	* TestPty.java: New file to test functionality of Pty.java and

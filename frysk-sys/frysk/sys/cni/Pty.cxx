@@ -44,6 +44,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+#include <alloca.h>
 
 #include <gcj/cni.h>
 
@@ -81,4 +82,20 @@ frysk::sys::Pty::getPtyName (jint master)
   else throwErrno (errno, "ptsname");
 
   return name;
+}
+
+jint
+frysk::sys::Pty::writeString (jint fd, jstring str)
+{
+  int rc;
+  if (NULL == str) return 0;
+
+  int len = JvGetStringUTFLength (str);
+  char * obfr = (char *) alloca (len + 1);
+  JvGetStringUTFRegion (str, 0, str->length (), obfr);
+  obfr[len] = '\0';
+  rc = write ((int)fd, obfr, len);
+  if (-1 == rc) throwErrno (errno, "write");
+
+  return rc;
 }
