@@ -42,7 +42,7 @@
 Script name:    TestLicense.py
 Creation date:  April 2006
 Purpose:        Verify correct license text is displayed by Frysk gui
-Summary:        Simple, demo/prototype dogtail test script for Fryske
+Summary:        Simple, demo/prototype dogtail test script for Frysk
 """
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
@@ -72,8 +72,8 @@ class TestLicense (unittest.TestCase):
 
     def tearDown(self):    
        # Exit Frysk
-       closeItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Close'))
-       closeItem.actions['click'].do()
+       closeItem = self.frysk.menuItem('Close')
+       closeItem.click()
 
     def testLicense(self):      
         """Check that the license text is correct"""   
@@ -82,38 +82,35 @@ class TestLicense (unittest.TestCase):
         expectedLicenseString = 'http://www.gnu.org/copyleft/gpl.html\n'
     
         # Select the 'Help' menu item
-        helpItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Help'))
-        helpItem.actions['click'].do()    
+        helpItem = self.frysk.menuItem('Help')
+        helpItem.click()
     
         # Select the 'About Frysk' Help menu item
-        aboutItem = helpItem.findChild(predicate.IsAMenuItemNamed('About'))
-        aboutItem.actions['click'].do()    
+        aboutItem = helpItem.menuItem('About')
+        aboutItem.click()    
     
         # Open the 'About' dialog and its child filler dialog
         aboutFrame = self.frysk.dialog('About Frysk - Technology Preview')
-        aboutFiller = aboutFrame.child(roleName='filler')
-    
+            
         # Select the 'License' menu pick and click the button to open the license frame
-        licenseButton = aboutFiller.button('License')
-        licenseButton.actions['click'].do()
+        licenseButton = aboutFrame.button('License')
+        licenseButton.click()
     
         # In the license frame, select the license text
         licenseFrame = self.frysk.dialog('License')
-        licenseFiller = licenseFrame.child(roleName='filler')
-        licenseScroll = licenseFiller.child(roleName='scroll pane')
-        licenseText = licenseScroll.child(roleName='text')
+        licenseText = licenseFrame.child(roleName='text')
     
         # Compare the expected license string with the actual string, log the results
-        self.TestString.compare('test_license.py', licenseText.__getattr__('text'), expectedLicenseString)
-        self.assertEqual(licenseText.__getattr__('text'), expectedLicenseString)
+        self.TestString.compare('TestLicense.py', licenseText.text, expectedLicenseString)
+        self.assertEqual(licenseText.text, expectedLicenseString)
     
         # Close the license text frame
-        closebutton = licenseFiller.button('Close')
+        closebutton = licenseFrame.button('Close')
         closebutton.actions['press'].do()
     
         # Close the 'about Frysk' filler dialog
-        closebutton = aboutFiller.button('Close')
-        closebutton.actions['click'].do()
+        closebutton = aboutFrame.button('Close')
+        closebutton.click()
  
 def suite():
     suite = unittest.TestSuite()
