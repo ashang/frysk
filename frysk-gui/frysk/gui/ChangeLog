@@ -1,3 +1,15 @@
+2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* sessions/SessionManager.java (clear): Rewrite. Move new to
+	class init.
+	* druid/CreateFryskSessionDruid.java (copySession.buttonEven): 
+	Added null selection test.
+	(toggleWarning): New.
+	* druid/CreateFryskSessionDruid.java (editSession.buttonEven): 
+	Ditto.
+	* glade/frysk_create_session_druid.glade: Added warning label
+	text.
+
 2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/Session.java: Added populateProcs wich calls
@@ -12,8 +24,7 @@
 	* sessions/DebugProcess.java: Added code for making the session
 	live by searching the proc list for matching procs. 
 	* druid/CreateFryskSessionDruid.java: Refactored ProcData to
-	GuiData.
-	Fixed bug with updating current observer when a loaded observer
+	GuiData. Fixed bug with updating current observer when a loaded observer
 	is selected.
 
 2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
@@ -22,7 +33,7 @@
 	listener.
 	(CopyButton.buttonEvent): Save after copy.
 	(SaveButton.buttonEvent): Added save button listener.
-	(CancelButton. buttonEvent): Addec cancel button listener.
+	(CancelButton. buttonEvent): Added cancel button listener.
 	(lifeCycleQuery): Added. Hide on Close.
 	(Previousessions.toggleEvent): Added in Edit/Delete/Close sensitivity events.
 	
@@ -33,7 +44,7 @@
 
 	* sessions/SessionManager.java (SessionManager): Moved data structure
 	initialization to load().
-	(load): Initialize data structures hashmap and linkedlist;
+	(load): Initialize data structures hashmap and linkedlist.
 	(clear): Clean data structures.
 
 2006-05-17  Phil Muldoon  <pmuldoon@redhat.com>

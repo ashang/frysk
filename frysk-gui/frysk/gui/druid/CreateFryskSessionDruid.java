@@ -49,6 +49,8 @@ import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.FileChooserButton;
+import org.gnu.gtk.Image;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.SizeGroup;
@@ -98,7 +100,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private CheckedListView  observerSelectionTreeView;
 	private ListView processObserverSelectionTreeView;	
 	
-	
+	private Image warningImage;
+	private Label warningLabel;
 	private Button copySession;
 	private Button editSession;
 	private Button deleteSession;
@@ -293,6 +296,22 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		return dest;
 	}
 	
+	private void toggleWarning(String warning, boolean show)
+	{
+		if (warning != null) 
+				warningLabel.setText(warning);
+		if (show)
+		{
+			warningImage.showAll();
+			warningLabel.showAll();
+		}
+		else
+		{
+			warningImage.hideAll();
+			warningLabel.hideAll();	
+		}
+		
+	}
 	private void getDruidManagerControls(LibGlade glade) {
 		
 		RadioButton debugExecutable = (RadioButton) glade.getWidget("sessionDruid_debugExecutableButton");
@@ -302,6 +321,9 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		FileChooserButton executableChooser = (FileChooserButton) glade.getWidget("sessionDruid_execChooser");
 		executableChooser.setSensitive(false);
 	
+		warningImage = (Image) glade.getWidget("sessionDruid_warningIcon");
+		warningLabel = (Label) glade.getWidget("sessionDruid_warningLabel");
+
 		final ListView previousSessions = new ListView( glade.getWidget("sessionDruid_previousSessionsListView").getHandle());
 		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());		
 		previousSessions.setSensitive(false);
@@ -329,12 +351,25 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 						newSessionSelected = false;
 			}});
 					
+
+		
 		final Entry nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
 		nameEntry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent arg0) {
 				currentSession.setName(nameEntry.getText());
 				if (nameEntry.getText().length() > 0)
-					nextButton.setSensitive(true);
+				{
+					if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
+					{
+						toggleWarning("This session name is already being used.",true);
+						nextButton.setSensitive(false);
+					}
+					else
+					{
+						toggleWarning("",false);
+						nextButton.setSensitive(true);
+					}
+				}
 				else
 					nextButton.setSensitive(false);
 			}});		
@@ -384,12 +419,14 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				{
 					editSessionSelected= true;
 					currentSession = (Session)previousSessions.getSelectedObject();
-					attachLinkedListsToWidgets();
-					notebook.setShowTabs(true);
-					notebook.setCurrentPage(1);
-					finishButton.hideAll();
-					cancelButton.showAll();
-					saveButton.showAll();
+					if (currentSession != null) {
+						attachLinkedListsToWidgets();
+						notebook.setShowTabs(true);
+						notebook.setCurrentPage(1);
+						finishButton.hideAll();
+						cancelButton.showAll();
+						saveButton.showAll();
+					}
 	
 				}
 				
@@ -402,8 +439,10 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				if (arg0.isOfType(ButtonEvent.Type.CLICK))
 				{
 					Session selected = (Session)previousSessions.getSelectedObject();
-					SessionManager.theManager.addSession(copySession(selected));
-					SessionManager.theManager.save();
+					if (selected != null) {
+						SessionManager.theManager.addSession(copySession(selected));
+						SessionManager.theManager.save();
+					}
 				}
 			}});
 		

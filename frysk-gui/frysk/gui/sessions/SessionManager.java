@@ -52,10 +52,10 @@ import frysk.gui.monitor.UniqueHashMap;
 public class SessionManager {
 	
 	public static SessionManager theManager = new SessionManager();
+
+	ObservableLinkedList sessions = new ObservableLinkedList();
 	
-	ObservableLinkedList sessions;
-	
-	private UniqueHashMap nameHash;
+	private UniqueHashMap nameHash = new UniqueHashMap();
 	
 	private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
 	
@@ -97,11 +97,8 @@ public class SessionManager {
 	
 	public void clear()
 	{
-		if (this.sessions != null)
-			this.sessions.clear();
-		this.nameHash = null;
-		this.sessions = new ObservableLinkedList();
-		this.nameHash = new UniqueHashMap();		
+		this.nameHash.clear();
+		this.sessions.clear();
 	}
 	
 	public void load(){
