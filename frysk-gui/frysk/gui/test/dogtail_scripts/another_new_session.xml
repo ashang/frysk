@@ -1,0 +1,29 @@
+<Session type="frysk.gui.sessions.Session" name="aanother new session" tooltip="NoTootip">
+  <procs>
+    <elements>
+      <element type="frysk.gui.sessions.DebugProcess" name="init" tooltip="init" executablePath="init">
+        <observers>
+          <element name="Task Terminating Observer" />
+          <element name="Exit Notifiction Observer" />
+          <element name="Exec Observer" />
+        </observers>
+        <tagsets />
+      </element>
+      <element type="frysk.gui.sessions.DebugProcess" name="xterm" tooltip="xterm" executablePath="xterm">
+        <observers>
+          <element name="Task Terminating Observer" />
+          <element name="Fork Observer" />
+        </observers>
+        <tagsets />
+      </element>
+      <element type="frysk.gui.sessions.DebugProcess" name="FryskGui" tooltip="FryskGui" executablePath="FryskGui">
+        <observers>
+          <element name="Task Terminating Observer" />
+          <element name="TaskCloneObserver" />
+          <element name="Syscall Observer" />
+        </observers>
+        <tagsets />
+      </element>
+    </elements>
+  </procs>
+</Session>
