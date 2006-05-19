@@ -99,4 +99,8 @@ public class ElfType {
 	protected static ElfType intern(int type){
 		return types[type];
 	}
+	
+	public String toString(){
+		return ""+value;
+	}
 }

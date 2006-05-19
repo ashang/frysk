@@ -142,12 +142,26 @@ lib::elf::Elf::elf_newehdr (){
 		return (jlong) ::elf64_newehdr((::Elf*) this->pointer);
 }
 
-jlong
-lib::elf::Elf::elf_getphdr (){
-	if(this->is32bit)
-		return (jlong) ::elf32_getphdr((::Elf*) this->pointer);
-	else
-		return (jlong) ::elf64_getphdr((::Elf*) this->pointer);
+jlongArray
+lib::elf::Elf::elf_getphdrs (){
+	if(this->is32bit){
+//		::Elf32_Phdr* headers =  ::elf32_getphdr((::Elf*) this->pointer);
+		int count = ::elf32_getehdr((::Elf*) this->pointer)->e_phnum;
+		jlongArray array = JvNewLongArray((jint) count);
+//		for(int i = 0; i < count; i++)
+//			array[i] = (jlong) &(headers[i]);
+			
+		return array;
+	}
+	else{
+//		::Elf64_Phdr* headers =  ::elf64_getphdr((::Elf*) this->pointer);
+		int count = ::elf64_getehdr((::Elf*) this->pointer)->e_phnum;
+		jlongArray array = JvNewLongArray((jint) count);
+//		for(int i = 0; i < count; i++)
+//			array[i] = (jlong) &(headers[i]);
+			
+		return array;
+	}
 }
 
 jlong

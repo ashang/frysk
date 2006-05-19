@@ -55,14 +55,20 @@ GEN_GCJ_LDADD += libfrysk-junit.a
 GEN_GCJ_LDADD += elfutils/libelf/libelf.a
 GEN_GCJ_LDADD += -lopcodes
 
-all-local: lib/elf/tests/test-core
+all-local: lib/elf/tests/test-core lib/elf/tests/helloworld.o
 
 lib/elf/tests/test-core: $(srcdir)/lib/elf/tests/test-core.bz2.uu
 	mkdir -p lib/elf/tests
 	gmime-uudecode -o lib/elf/tests/test-core.bz2 $(srcdir)/lib/elf/tests/test-core.bz2.uu
 	bzip2 -d < lib/elf/tests/test-core.bz2 > lib/elf/tests/test-core
 
+lib/elf/tests/helloworld.o: $(srcdir)/lib/elf/tests/helloworld.o.bz2.uu
+	mkdir -p lib/elf/tests
+	gmime-uudecode -o lib/elf/tests/helloworld.o.bz2 $(srcdir)/lib/elf/tests/helloworld.o.bz2.uu
+	bzip2 -d < lib/elf/tests/helloworld.o.bz2 > lib/elf/tests/helloworld.o
+
 CLEANFILES += lib/elf/tests/test-core.bz2 lib/elf/tests/test-core
+CLEANFILES += lib/elf/tests/helloworld.o.bz2 lib/elf/tests/helloworld.o
 
 
 # we need to get this into the distribution

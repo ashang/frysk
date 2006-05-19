@@ -142,11 +142,27 @@ public class Elf {
 	 * 
 	 * @return The program header table
 	 */
-	public ElfPHeader getPHeader(){
-		if(is32bit)
-			return new ElfPHeader32(elf_getphdr());
-		else
-			return new ElfPHeader64(elf_getphdr());
+	public ElfPHeader[] getPHeaders(){
+		long[] vals = elf_getphdrs();
+		if(vals == null)
+			return null;
+		
+		ElfPHeader[] headers = new ElfPHeader[vals.length];
+		
+		for(int i = 0; i < vals.length; i++){
+			long val = vals[i];
+			if(val == 0)
+				headers[i] = null;
+			else{
+				if(this.is32bit)
+					headers[i] = new ElfPHeader32(val);
+				else
+					headers[i] = new ElfPHeader64(val);
+			}
+		}
+		
+		return headers;
+			
 	}
 	
 	/**
@@ -340,7 +356,7 @@ public class Elf {
 	protected native String elf_getident(long ptr);
 	protected native long elf_getehdr();
 	protected native long elf_newehdr();
-	protected native long elf_getphdr();
+	protected native long[] elf_getphdrs();
 	protected native long elf_newphdr(long __cnt);
 	protected native long elf_offscn(long offset);
 	protected native long elf_getscn(long __index);

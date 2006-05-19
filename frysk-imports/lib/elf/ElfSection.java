@@ -105,7 +105,10 @@ public class ElfSection {
 	 *  @return The ElfData contained in this section
 	 */
 	public ElfData getData(){
-		return new ElfData(elf_getdata(), is32bit);
+		long val = elf_getdata();
+		if(val != 0)
+			return new ElfData(elf_getdata(), is32bit);
+		else return null;
 	}
 	
 	/**

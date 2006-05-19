@@ -1,3 +1,14 @@
+2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Elf.java (getPHeader): Renamed to getPHeaders, now returns an array of
+	ElfPHeaders.
+	(elf_getphdr): Renamed to elf_getphdrs.
+	* ElfSection.java (getData): Now returns null if C function returns 0.
+	* cni/Elf.cxx (elf_getphdr): Renamed to elf_getphdrs, returns an array
+	of longs.
+	* tests/TestElf.java (testOFile): Added, tests a provided .o file.
+	* tests/helloworld.o.bz2.uu: Added.
+
 2006-05-18  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Elf.java (getSection): Now returns null if index was invalid.
