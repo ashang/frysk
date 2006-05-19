@@ -1,3 +1,12 @@
+2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/DebugProcess.java: Added code for making the session
+	live by searching the proc list for matching procs.
+	* druid/CreateFryskSessionDruid.java: Refactored ProcData to
+	GuiData.
+	Fixed bug with updating current observer when a loaded observer
+	is selected.
+
 2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (EditButton.buttonEvent): Added edit button
