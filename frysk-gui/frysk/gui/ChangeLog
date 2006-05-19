@@ -1,10 +1,14 @@
 2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (getDruidStructureControls):
+	Add support for launching old sessions.
+	
 	* sessions/SessionManager.java (clear): Rewrite. Move new to
 	class init.
 	* druid/CreateFryskSessionDruid.java (copySession.buttonEven): 
 	Added null selection test.
 	(toggleWarning): New.
+	(buttonEvent): 
 	* druid/CreateFryskSessionDruid.java (editSession.buttonEven): 
 	Ditto.
 	* glade/frysk_create_session_druid.glade: Added warning label

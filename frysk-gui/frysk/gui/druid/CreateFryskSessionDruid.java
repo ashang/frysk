@@ -98,6 +98,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private ListView addedProcsTreeView;
 	private CheckedListView tagSetSelectionTreeView;
 	private CheckedListView  observerSelectionTreeView;
+	private ListView previousSessions;
 	private ListView processObserverSelectionTreeView;	
 	
 	private Image warningImage;
@@ -118,6 +119,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	
 	private boolean newSessionSelected = true;
 	private boolean editSessionSelected = false;
+	private boolean previousSessionSelected = false;
+	
 	private int processSelected = 0;
 
 	public CreateFryskSessionDruid(LibGlade glade) {
@@ -324,7 +327,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		warningImage = (Image) glade.getWidget("sessionDruid_warningIcon");
 		warningLabel = (Label) glade.getWidget("sessionDruid_warningLabel");
 
-		final ListView previousSessions = new ListView( glade.getWidget("sessionDruid_previousSessionsListView").getHandle());
+		previousSessions = new ListView( glade.getWidget("sessionDruid_previousSessionsListView").getHandle());
 		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());		
 		previousSessions.setSensitive(false);
 		previousSessions.addEditListener(new CellRendererTextListener() {
@@ -346,7 +349,10 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 			public void toggleEvent(ToggleEvent arg0) {
 				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
 					if (newSession.getState())
+					{
 						newSessionSelected = true;
+						previousSessionSelected = false;
+					}
 					else
 						newSessionSelected = false;
 			}});
@@ -384,6 +390,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					editSession.setSensitive(!editSession.getSensitive());
 					copySession.setSensitive(!copySession.getSensitive());
 					deleteSession.setSensitive(!deleteSession.getSensitive());
+					previousSessionSelected = true;
 					if (previousSession.getState())
 					{
 						nextButton.hideAll();
@@ -648,9 +655,21 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					}
 					
 					if (newSessionSelected)
+					{
 						SessionManager.theManager.addSession(currentSession);
-					SessionManager.theManager.save();
-					WindowManager.theManager.mainWindow.setSession(currentSession);
+						SessionManager.theManager.save();
+						WindowManager.theManager.mainWindow.setSession(currentSession);
+						hideAll();
+						return;
+					}
+					if (previousSessionSelected)
+					{
+						if (previousSessions.getSelectedObject() == null)
+							return;
+						WindowManager.theManager.mainWindow.setSession(
+								(Session)previousSessions.getSelectedObject());
+					}
+					
 					hideAll();
 				}
 			}
