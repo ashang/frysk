@@ -210,9 +210,9 @@ public class DebugProcess extends GuiObject {
 		
 		while (iterator.hasNext()){
 			Element elementXML = (Element) iterator.next();
-			Iterator tagSetIterator = TagsetManager.manager.getTagsets(elementXML.getAttributeValue("name"));
-			while (tagSetIterator.hasNext())
-			tagsets.add((Tagset)tagSetIterator.next());
+			Tagset tag = TagsetManager.manager.getTagsetByName(elementXML.getAttributeValue("name"));
+			if (tag != null)
+				tagsets.add(tag);
 		}
 	}
 

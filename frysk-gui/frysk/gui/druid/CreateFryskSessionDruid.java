@@ -41,7 +41,6 @@ package frysk.gui.druid;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
@@ -66,6 +65,8 @@ import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.ToggleEvent;
 import org.gnu.gtk.event.ToggleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -87,29 +88,38 @@ import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Proc;
 
-public class CreateFryskSessionDruid extends Dialog {
-	
-	Notebook notebook;
+public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener {
 
-	ProcWiseDataModel dataModel;
-	ProcWiseTreeView procWiseTreeView;
-	ListView addedProcsTreeView;
-	Session currentSession = new Session();
-
+	private ProcWiseDataModel dataModel;
+	private ProcWiseTreeView procWiseTreeView;
+	private ListView processTagSetSelectionTreeView;
+	private ListView addedProcsTreeView;
+	private CheckedListView tagSetSelectionTreeView;
+	private CheckedListView  observerSelectionTreeView;
+	private ListView processObserverSelectionTreeView;	
 	
-	Button nextButton;
-	Button backButton;
-	Button finishButton;
-	Entry nameEntry;
+	
+	private Button copySession;
+	private Button editSession;
+	private Button deleteSession;
+	
+	private Session currentSession = new Session();
+
+	private Notebook notebook;
+	private Button nextButton;
+	private Button backButton;
+	private Button finishButton;
+	private Button saveButton;
+	private Button cancelButton;
+
 	
 	private boolean newSessionSelected = true;
-	
-	ArrayList processGroupSelection;
-	
-	int processSelected = 0;
+	private boolean editSessionSelected = false;
+	private int processSelected = 0;
 
-	public CreateFryskSessionDruid(LibGlade glade){
-		super(glade.getWidget("SessionDruid").getHandle());		
+	public CreateFryskSessionDruid(LibGlade glade) {
+		super(glade.getWidget("SessionDruid").getHandle());	
+		this.addListener(this);
 		getDruidStructureControls(glade);
 		getDruidManagerControls(glade);
 		getProcessSelectionControls(glade);
@@ -117,16 +127,13 @@ public class CreateFryskSessionDruid extends Dialog {
 		getProcessObserverControls(glade);
     }
 	
-
-
-
-
 	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
 	{
 		this.dataModel.setSelected(selected,setSelected,setChildren);
 	}
 	
 	private void addProcessParent(TreeIter unfilteredProcessIter) {
+		
 		if (unfilteredProcessIter == null)
 			return;
 		
@@ -165,13 +172,9 @@ public class CreateFryskSessionDruid extends Dialog {
 	
 	private TreePath deFilterPath(TreeView tree, TreePath filter)
 	{
-	
 		TreeModelFilter ts = (TreeModelFilter) tree.getModel();
 		return ts.convertPathToChildPath(filter);
 	}
-	
-
-	
 		
 	private void changeGroupState(TreeView tree, TreePath[] selectedProcs, boolean filtered, boolean state)
 	{
@@ -236,7 +239,6 @@ public class CreateFryskSessionDruid extends Dialog {
 				}
 			}
 		}
-		
 		setProcessNext(processSelected);
 	}
 	
@@ -249,7 +251,6 @@ public class CreateFryskSessionDruid extends Dialog {
 			this.nextButton.setSensitive(false);
 	}
 	
-
 	private String getNumberSuffix(int i)
 	{
 		String iString = ""+i;
@@ -265,30 +266,33 @@ public class CreateFryskSessionDruid extends Dialog {
 		return "";
 	}
 
-	private Session copySession(Session source)
-	{
+	private Session copySession(Session source) {
 		String session_name = source.getName();
-		String name[] =  {session_name+" (copy)",
-				session_name+" (another copy)"}; 
-	
-		Session dest =  (Session) source.getCopy();
-		for(int i=0; i<name.length; i++)
-			if (SessionManager.theManager.getSessionByName(name[i]) == null)
-			{
-				dest.setName(name[i]); return dest;
-			}
-		for (int i=3; i<Integer.MAX_VALUE-1; i++)
-			if (SessionManager.theManager.getSessionByName(session_name+" ("+i+getNumberSuffix(i)+" copy)") == null)
-			{
-				dest.setName(session_name+" ("+i+getNumberSuffix(i)+" copy)"); return dest;	
-			}		
+		String name[] = { session_name + " (copy)",
+				session_name + " (another copy)" };
+		Session dest = (Session) source.getCopy();
 		
+		for (int i = 0; i < name.length; i++)
+			if (SessionManager.theManager.getSessionByName(name[i]) == null) {
+				dest.setName(name[i]);
+				return dest;
+			}
+		for (int i = 3; i < Integer.MAX_VALUE - 1; i++)
+			if (SessionManager.theManager.getSessionByName(session_name + " ("
+				+ i + getNumberSuffix(i) + " copy)") == null) {
+				
+				dest.setName(session_name + " (" + i + getNumberSuffix(i) + " copy)");
+				return dest;
+			}
+
 		try {
-			dest.setName(session_name+"_"+File.createTempFile("zxc","dfg").getName());
+			dest.setName(session_name + "_"
+					+ File.createTempFile("zxc", "dfg").getName());
 		} catch (IOException e) {
 		}
-		return dest; 
+		return dest;
 	}
+	
 	private void getDruidManagerControls(LibGlade glade) {
 		
 		RadioButton debugExecutable = (RadioButton) glade.getWidget("sessionDruid_debugExecutableButton");
@@ -310,13 +314,12 @@ public class CreateFryskSessionDruid extends Dialog {
 						selected.setName(arg0.getText());
 						SessionManager.theManager.addSession(selected);
 						SessionManager.theManager.save();
-						}
 					}
-				});
+				}
+		});
 
 		final RadioButton newSession = (RadioButton) glade.getWidget("sessionDruid_newSessionButton");
 		newSession.setState(true);
-		
 		newSession.addListener(new ToggleListener(){
 			public void toggleEvent(ToggleEvent arg0) {
 				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
@@ -326,9 +329,8 @@ public class CreateFryskSessionDruid extends Dialog {
 						newSessionSelected = false;
 			}});
 					
-		nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
+		final Entry nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
 		nameEntry.addListener(new EntryListener() {
-
 			public void entryEvent(EntryEvent arg0) {
 				currentSession.setName(nameEntry.getText());
 				if (nameEntry.getText().length() > 0)
@@ -342,7 +344,11 @@ public class CreateFryskSessionDruid extends Dialog {
 		previousSession.addListener(new ToggleListener(){
 			public void toggleEvent(ToggleEvent arg0) {
 				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
+				{
 					previousSessions.setSensitive(!previousSessions.getSensitive());
+					editSession.setSensitive(!editSession.getSensitive());
+					copySession.setSensitive(!copySession.getSensitive());
+					deleteSession.setSensitive(!deleteSession.getSensitive());
 					if (previousSession.getState())
 					{
 						nextButton.hideAll();
@@ -353,8 +359,8 @@ public class CreateFryskSessionDruid extends Dialog {
 						nextButton.showAll();
 						finishButton.hideAll();
 					}
+				}
 			}});
-		
 
 		previousSessions.getSelection().addListener(new TreeSelectionListener(){
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
@@ -369,19 +375,39 @@ public class CreateFryskSessionDruid extends Dialog {
 				
 			}});
 		
+		editSession = (Button) glade.getWidget("sessionDruid_editSessionButton");
+		editSession.setSensitive(false);
+		editSession.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK))
+				{
+					editSessionSelected= true;
+					currentSession = (Session)previousSessions.getSelectedObject();
+					attachLinkedListsToWidgets();
+					notebook.setShowTabs(true);
+					notebook.setCurrentPage(1);
+					finishButton.hideAll();
+					cancelButton.showAll();
+					saveButton.showAll();
+	
+				}
+				
+			}});
 		
-		//Button editSession = (Button) glade.getWidget("sessionDruid_editSessionButton");
-		Button copySession = (Button) glade.getWidget("sessionDruid_copySessionButton");
+		copySession = (Button) glade.getWidget("sessionDruid_copySessionButton");
+		copySession.setSensitive(false);
 		copySession.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent arg0) {
 				if (arg0.isOfType(ButtonEvent.Type.CLICK))
 				{
 					Session selected = (Session)previousSessions.getSelectedObject();
 					SessionManager.theManager.addSession(copySession(selected));
+					SessionManager.theManager.save();
 				}
 			}});
 		
-		Button deleteSession = (Button) glade.getWidget("sessionDruid_deleteSessionButton");
+		deleteSession = (Button) glade.getWidget("sessionDruid_deleteSessionButton");
+		deleteSession.setSensitive(false);
 		deleteSession.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent arg0) {
 				if (arg0.isOfType(ButtonEvent.Type.CLICK))
@@ -400,8 +426,6 @@ public class CreateFryskSessionDruid extends Dialog {
 		buttonSizeGroup.addWidget(newSession);
 		buttonSizeGroup.addWidget(debugExecutable);
 		buttonSizeGroup.addWidget(previousSession);
-		
-
 	}
 	
 	private void getProcessSelectionControls(LibGlade glade) {
@@ -409,7 +433,7 @@ public class CreateFryskSessionDruid extends Dialog {
 		Button addProcessGroupButton;
 		Button removeProcessGroupButton;
 		ComboBox hostSelection;
-
+		
 		// Page 1 of the Druid. Initial Process Selection.
 		
 		// Create New Live Data Model and mount on the TreeView
@@ -432,12 +456,9 @@ public class CreateFryskSessionDruid extends Dialog {
 		
 		addProcessGroupButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
+				if(event.isOfType(ButtonEvent.Type.CLICK))
 					changeGroupState(procWiseTreeView,procWiseTreeView.getSelection().getSelectedRows(),true,true);
-					
-				}
-			}
-			
+			}	
 		});
 		
 		removeProcessGroupButton.addListener(new ButtonListener(){
@@ -454,17 +475,15 @@ public class CreateFryskSessionDruid extends Dialog {
 				}
 			}
 		});
-		
-		hostSelection.setActive(0);
-		
+		hostSelection.setActive(0);	
 	}
 	
 	private void getTagsetObserverControls(LibGlade glade)
 	{
-		final ListView processTagSetSelectionTreeView = new ListView(
+		processTagSetSelectionTreeView = new ListView(
 				glade.getWidget("SessionDruid_processTagSetTreeView").getHandle());
 		
-		final CheckedListView tagSetSelectionTreeView = new CheckedListView(
+		tagSetSelectionTreeView = new CheckedListView(
 				glade.getWidget("SessionDruid_tagSetTreeView").getHandle());
 		
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
@@ -473,19 +492,18 @@ public class CreateFryskSessionDruid extends Dialog {
 		
 		processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
 		processTagSetSelectionTreeView.getSelection().addListener(new TreeSelectionListener(){
-
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
-
-				DebugProcess selected = (DebugProcess)processTagSetSelectionTreeView.getSelectedObject();		
-				Iterator i = selected.getTagsets().iterator();
-				tagSetSelectionTreeView.clearChecked();
-				while (i.hasNext())
-					tagSetSelectionTreeView.setChecked(((Tagset)i.next()),true);
+				DebugProcess selected = (DebugProcess)processTagSetSelectionTreeView.getSelectedObject();	
+				if (selected != null)
+				{
+					Iterator i = selected.getTagsets().iterator();
+					tagSetSelectionTreeView.clearChecked();
+					while (i.hasNext())
+						tagSetSelectionTreeView.setChecked(((Tagset)i.next()),true);
+				}
 			}});
-		
 			
 		tagSetSelectionTreeView.watchLinkedList(TagsetManager.manager.getListTagsets());
-		
 		tagSetSelectionTreeView.getCellRendererToggle().addListener(new CellRendererToggleListener() { 
 			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
 				GuiObject selected = (GuiObject) tagSetSelectionTreeView.getSelectedObject();
@@ -494,18 +512,16 @@ public class CreateFryskSessionDruid extends Dialog {
 				{
 					if (!tagProcessSelected.getTagsets().contains(selected))
 						tagProcessSelected.addTagset((Tagset)selected);
-					else
-						System.out.println("Already contains tagset");
-
-				}
+				}	
 				else
+				{
 					tagProcessSelected.removeTagset((Tagset)selected);
+				}
 			}});
 	}
 	
 	private void getProcessObserverControls(LibGlade glade) {
-		final CheckedListView  observerSelectionTreeView;
-		final ListView processObserverSelectionTreeView;		
+	
 		
 		observerSelectionTreeView = new CheckedListView(
 				glade.getWidget("SessionDruid_observerTreeView").getHandle());
@@ -519,22 +535,19 @@ public class CreateFryskSessionDruid extends Dialog {
 		
 		processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
 		processObserverSelectionTreeView.getSelection().addListener(new TreeSelectionListener(){
-
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
-
-				DebugProcess selected = (DebugProcess)processObserverSelectionTreeView.getSelectedObject();		
-				Iterator i = selected.getObservers().iterator();
-				observerSelectionTreeView.clearChecked();
-				while (i.hasNext())
+				DebugProcess selected = (DebugProcess)processObserverSelectionTreeView.getSelectedObject();
+				if (selected != null)
 				{
-					ObserverRoot foo = (ObserverRoot) i.next();
-					observerSelectionTreeView.setChecked((foo),true);
+					Iterator i = selected.getObservers().iterator();
+					observerSelectionTreeView.clearChecked();
+					while (i.hasNext())
+						observerSelectionTreeView.setChecked((ObserverRoot) i.next(),true);
 				}
 			}});
 		
 		
 		observerSelectionTreeView.watchLinkedList(ObserverManager.theManager.getTaskObservers());
-		
 		observerSelectionTreeView.getCellRendererToggle().addListener(new CellRendererToggleListener() { 
 			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
 				GuiObject selected = (GuiObject) observerSelectionTreeView.getSelectedObject();
@@ -543,13 +556,13 @@ public class CreateFryskSessionDruid extends Dialog {
 				{
 					if (!observerProcessSelected.getObservers().contains(selected))
 						observerProcessSelected.addObserver((ObserverRoot)selected);
-					else
-						System.out.println("Already contains observer");
-
 				}
 				else
+				{
 					observerProcessSelected.removeObserver((ObserverRoot)selected);
+				}
 			}});
+		
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(observerSelectionTreeView);
 		sizeGroup.addWidget(processObserverSelectionTreeView);
@@ -586,21 +599,67 @@ public class CreateFryskSessionDruid extends Dialog {
 		this.finishButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
+					if (editSessionSelected) {
+						editSessionSelected = false;
+						notebook.setShowTabs(false);
+						notebook.setCurrentPage(0);
+						SessionManager.theManager.save();
+						return;
+					}
 					
 					if (newSessionSelected)
 						SessionManager.theManager.addSession(currentSession);
-
 					SessionManager.theManager.save();
-//					WindowManager.theManager.pickProcsDialog.run();
 					WindowManager.theManager.mainWindow.setSession(currentSession);
 					hideAll();
 				}
 			}
 		});
+		
+		this.saveButton = (Button) glade.getWidget("sessionDruid_saveEditSessionButton");
+		this.saveButton.hideAll();
+		this.saveButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+						editSessionSelected = false;
+						notebook.setShowTabs(false);
+						notebook.setCurrentPage(0);
+						SessionManager.theManager.save();
+						saveButton.hideAll();
+						cancelButton.hideAll();
+						finishButton.showAll();
+						currentSession = new Session();
+					}
+				}});
+		
+		this.cancelButton = (Button) glade.getWidget("sessionDruid_cancelButton");
+		this.cancelButton.addListener(new ButtonListener(){
+			public void buttonEvent(ButtonEvent event) {
+				if(event.isOfType(ButtonEvent.Type.CLICK)){
+						editSessionSelected = false;
+						notebook.setShowTabs(false);
+						notebook.setCurrentPage(0);
+						SessionManager.theManager.load();
+						saveButton.hideAll();
+						cancelButton.hideAll();
+						finishButton.showAll();
+						currentSession = new Session();
+					}
+				}});
 	}
 	
-	
-	private void nextPage(){
+	private void attachLinkedListsToWidgets()
+	{
+		addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
+		//tagSetSelectionTreeView;
+		processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+		//observerSelectionTreeView;
+		processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+		
+		
+	}
+
+	private void nextPage() {
 		
 		// Process previous page data
 		int page = this.notebook.getCurrentPage();
@@ -609,26 +668,24 @@ public class CreateFryskSessionDruid extends Dialog {
 		this.setUpCurrentPage();
 	}
 	
-
 	private void previousPage(){
 		this.notebook.setCurrentPage(this.notebook.getCurrentPage()-1);
 		this.setUpCurrentPage();
 	}
 
-	private void setUpCurrentPage(){
-		
+	private void setUpCurrentPage() {	
 		int page = this.notebook.getCurrentPage();
 
-		if(page == 0){
+		if(page == 0)
 			this.backButton.setSensitive(false);
-		}else{
+		else
 			this.backButton.setSensitive(true);
-		}
-		
-		if(page == this.notebook.getNumPages()-1){
+	
+		if(page == this.notebook.getNumPages()-1) {
 			this.nextButton.hideAll();
 			this.finishButton.showAll();
-		}else{
+		} 
+		else {
 			this.nextButton.showAll();
 			this.finishButton.hideAll();
 		}
@@ -637,8 +694,22 @@ public class CreateFryskSessionDruid extends Dialog {
 			setProcessNext(processSelected);
 	}
 	
-	public void showAll(){
+	public void showAll() {
 		super.showAll();
 		this.setUpCurrentPage();
 	}
+
+	public void lifeCycleEvent(LifeCycleEvent event) {
+		
+	}
+
+	public boolean lifeCycleQuery(LifeCycleEvent event) {
+		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+                event.isOfType(LifeCycleEvent.Type.DELETE)) {
+					this.hideAll();
+					return true;
+		}
+		return false;
+	}
+	
 }

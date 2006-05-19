@@ -60,11 +60,7 @@ public class SessionManager {
 	private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
 	
 	public SessionManager(){
-		this.sessions = new ObservableLinkedList();
-		this.nameHash = new UniqueHashMap();
-		
 		ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
-		
 		this.load();
 	}
 	
@@ -99,10 +95,19 @@ public class SessionManager {
 		}
 	}
 	
+	public void clear()
+	{
+		if (this.sessions != null)
+			this.sessions.clear();
+		this.nameHash = null;
+		this.sessions = new ObservableLinkedList();
+		this.nameHash = new UniqueHashMap();		
+	}
+	
 	public void load(){
+		clear();
 		Element node = new Element("Session");
 		File sessionsDir = new File(this.SESSIONS_DIR);
-		
 		String[] array = sessionsDir.list();
 		Session loadedSession = null;
 		for (int i = 0; i < array.length; i++) {

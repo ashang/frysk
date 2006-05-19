@@ -1,3 +1,30 @@
+2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (EditButton.buttonEvent): Added edit button
+	listener.
+	(CopyButton.buttonEvent): Save after copy.
+	(SaveButton.buttonEvent): Added save button listener.
+	(CancelButton. buttonEvent): Addec cancel button listener.
+	(lifeCycleQuery): Added. Hide on Close.
+	(Previousessions.toggleEvent): Added in Edit/Delete/Close sensitivity events.
+	
+	* glade/frysk_create_session_druid.glade: Added Edit, Delete and Save functionality.
+	Added Cancel and Save for Edit.
+
+2006-05-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* sessions/SessionManager.java (SessionManager): Moved data structure
+	initialization to load().
+	(load): Initialize data structures hashmap and linkedlist;
+	(clear): Clean data structures.
+
+2006-05-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (attachLinkedListsToWidgets): 
+	Added method to re-attach linkedlist on current session object change.
+	* sessions/DebugProcess.java (load): Fixed tagset loading
+	to correctly load tagset by name.
+
 2006-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* test/GuiTestLib.java: Comment out println calls.
