@@ -1,3 +1,9 @@
+2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcWiseDataModel.java: replace getCommand with
+	getExecutableName wich "does the right thing".
+	* GuiProc.java (getExecutableName): New function.
+
 2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* UniqueHashMap.java (clear): Added clear() api.

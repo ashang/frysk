@@ -216,14 +216,16 @@ public class ProcWiseDataModel {
 	class ProcCreatedObserver implements Observer {
 		public void update(Observable o, Object obj) {
 			final Proc proc = (Proc) obj;
+			
 			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
 				public void run() {
+					GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+
 					// get an iterator pointing to the parent
 					try {
 						
 	
-						TreeIter parent = (TreeIter) iterHash.get(proc
-								.getCommand());
+						TreeIter parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
 						if (parent != null)
 							if (!treeStore.isIterValid(parent))
 								throw new RuntimeException(
@@ -237,11 +239,10 @@ public class ProcWiseDataModel {
 							if (!treeStore.isIterValid(parent))
 								throw new RuntimeException(
 										"parent = treeStore.appendRow(null) fails isIterValid test."); //$NON-NLS-1$
-							GuiProc procData = GuiProc.GuiProcFactory.getGuiProc(proc);
-							iterHash.put(proc.getCommand(), parent);
+							iterHash.put(guiProc.getExecutableName(), parent);
 							
-							setRow(parent, proc.getCommand() + "\t"
-									+ proc.getPid(), procData, false);
+							setRow(parent, guiProc.getExecutableName() + "\t"
+									+ proc.getPid(), guiProc, false);
 						} else {
 							TreeIter iter = treeStore.appendRow(parent);
 							if (iter == null)
@@ -255,7 +256,7 @@ public class ProcWiseDataModel {
 									.getValue(parent, objectDC)).getProc() != null) {
 								GuiProc procData = ((GuiProc) treeStore.getValue(parent, objectDC));
 								Proc oldProc = procData.getProc();
-								setRow(parent, proc.getCommand(), null, false);
+								setRow(parent, procData.getExecutableName(), null, false);
 								setRow(iter, "" + oldProc.getPid(),
 										procData, false);
 								iter = treeStore.appendRow(parent);
@@ -286,11 +287,13 @@ public class ProcWiseDataModel {
 	class ProcDestroyedObserver implements Observer {
 		public void update(Observable o, Object obj) {
 			final Proc proc = (Proc) obj;
-
+			
 			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
 				public void run() {
+					GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+					
 					TreeIter parent = (TreeIter) iterHash
-							.get(proc.getCommand());
+							.get(guiProc.getExecutableName());
 					try {
 
 						if (parent == null)
@@ -304,7 +307,7 @@ public class ProcWiseDataModel {
 
 						if (n == 0) {
 							treeStore.removeRow(parent);
-							iterHash.remove(proc.getCommand());
+							iterHash.remove(guiProc.getExecutableName());
 							return;
 						}
 
@@ -314,7 +317,7 @@ public class ProcWiseDataModel {
 								if (!treeStore.isIterValid(iter))
 									throw new RuntimeException(
 											"TreeIter child of parent "
-													+ proc.getCommand()
+													+ guiProc.getExecutableName()
 													+ " isIterValid reports false");
 
 								if (((GuiProc) treeStore.getValue(iter,
@@ -332,13 +335,13 @@ public class ProcWiseDataModel {
 							if (!treeStore.isIterValid(iter))
 								throw new RuntimeException(
 										"TreeIter child of parent "
-												+ proc.getCommand()
+												+ guiProc.getExecutableName()
 												+ " isIterValid reports false");
 
 							GuiProc procData = ((GuiProc) treeStore.getValue(iter,objectDC));
 							Proc oldProc = procData.getProc();
 							
-							setRow(parent, proc.getCommand() + "\t"
+							setRow(parent, procData.getExecutableName() + "\t"
 									+ oldProc.getPid(), procData,
 									treeStore.getValue(iter, selectedDC));
 

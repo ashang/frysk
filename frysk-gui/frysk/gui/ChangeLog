@@ -1,3 +1,8 @@
+2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java: replace getCommand with
+	getExecutableName wich "does the right thing".
+
 2006-05-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (getDruidStructureControls):

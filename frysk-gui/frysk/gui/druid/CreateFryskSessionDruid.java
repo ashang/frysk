@@ -156,7 +156,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					TreeIter childIter = unfilteredProcessIter.getChild(0);
 					coreProc = ((GuiProc)this.dataModel.getModel().getValue(childIter,this.dataModel.getPathDC())).getProc();
 				}
-			DebugProcess debugProcess = new DebugProcess(coreProc.getCommand(), proc.getFullExecutablePath());
+			DebugProcess debugProcess = new DebugProcess(proc.getExecutableName(), proc.getFullExecutablePath());
 //			debugProcess.addProc(proc);
 			currentSession.addProcess(debugProcess);
 		}

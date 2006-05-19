@@ -48,6 +48,7 @@
  */
 package frysk.gui.monitor;
 
+import java.io.File;
 import java.util.HashMap;
 
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -133,4 +134,21 @@ public class GuiProc extends GuiData{
 		}
 	}
 	
+	/**
+	 * Tries to call getExe() on the proc. If that 
+	 * fails, then getCmmd[0] is used.
+	 */
+	public String getExecutableName(){
+		String command = null;
+		String path = "";
+		try{
+			path = proc.getExe();
+			File file = new File(path);
+			command = file.getName();
+		}catch (Exception e) {
+			command = proc.getCmdLine()[0];
+		}
+		
+		return command;
+	}
 }
