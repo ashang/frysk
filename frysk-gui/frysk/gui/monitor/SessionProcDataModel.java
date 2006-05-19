@@ -142,12 +142,11 @@ public class SessionProcDataModel {
 	
 	public void setSession(Session session){
 		this.currentSession = session;
-		Iterator iterator = this.currentSession.getProcesses().iterator();
-		System.out
-				.println(this
-						+ ": SessionProcDataModel.setSession() " + this.currentSession.getProcesses().size());
-		while(iterator.hasNext()){
-			Iterator j = (((DebugProcess)iterator.next()).getProcs()).iterator();
+		this.currentSession.populateProcs();
+		
+		Iterator i = this.currentSession.getProcesses().iterator();
+		while(i.hasNext()){
+			Iterator j = (((DebugProcess)i.next()).getProcs()).iterator();
 			while(j.hasNext()){
 				this.addProc((GuiProc)j.next());
 			}

@@ -1,7 +1,16 @@
 2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* sessions/Session.java: Added populateProcs wich calls
+	populateProcs on all of its DebugProcesses.
+	* sessions/DebugProcess.java (populateProcs): Made populateProcs
+	public so it can be called when a session is needed to be brought
+	alive.
+	Removed calls to populateProcs on load left it to clients.
+	
+2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* sessions/DebugProcess.java: Added code for making the session
-	live by searching the proc list for matching procs.
+	live by searching the proc list for matching procs. 
 	* druid/CreateFryskSessionDruid.java: Refactored ProcData to
 	GuiData.
 	Fixed bug with updating current observer when a loaded observer

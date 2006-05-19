@@ -73,6 +73,8 @@ public class DebugProcess extends GuiObject {
 	ObservableLinkedList observers;
 	ObservableLinkedList tagsets;
 	
+	ObservableLinkedList allProcsList;
+	
 	public DebugProcess(){
 		super();
 		
@@ -80,6 +82,8 @@ public class DebugProcess extends GuiObject {
 		
 		this.observers = new ObservableLinkedList();
 		this.tagsets = new ObservableLinkedList();
+		
+		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 	}
 	
 	public DebugProcess(String name, String executablePath){
@@ -92,7 +96,7 @@ public class DebugProcess extends GuiObject {
 		this.observers = new ObservableLinkedList();
 		this.tagsets = new ObservableLinkedList();
 
-		this.populateProcs();
+		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 	}
 	
 	public DebugProcess(DebugProcess other) {
@@ -105,14 +109,13 @@ public class DebugProcess extends GuiObject {
 		this.observers = new ObservableLinkedList(other.observers);
 		this.tagsets = new ObservableLinkedList(other.tagsets);
 
-		this.populateProcs();
+		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 	}
 	
-	private void populateProcs() {
+	public void populateProcs() {
 		
-		ObservableLinkedList list = DataModelManager.theManager.flatProcObservableLinkedList;
 		
-		list.itemAdded.addObserver(new Observer() {
+		allProcsList.itemAdded.addObserver(new Observer() {
 			public void update(Observable observable, Object arg) {
 				GuiProc guiProc = (GuiProc) arg;
 				if((guiProc.getFullExecutablePath()).equals(executablePath)){
@@ -121,7 +124,7 @@ public class DebugProcess extends GuiObject {
 			}
 		});
 		
-		list.itemRemoved.addObserver(new Observer() {
+		allProcsList.itemRemoved.addObserver(new Observer() {
 			public void update(Observable observable, Object arg) {
 				GuiProc guiProc = (GuiProc) arg;
 				if(guiProc.getFullExecutablePath().equals(executablePath)){
@@ -130,7 +133,7 @@ public class DebugProcess extends GuiObject {
 			}
 		});
 	
-		Iterator iterator = list.iterator();
+		Iterator iterator = allProcsList.iterator();
 		while (iterator.hasNext()) {
 			GuiProc guiProc = (GuiProc) iterator.next();
 			if((guiProc.getFullExecutablePath()).equals(this.executablePath)){
@@ -259,7 +262,6 @@ public class DebugProcess extends GuiObject {
 
 		}
 		
-		this.populateProcs();
 	}
 	
 }

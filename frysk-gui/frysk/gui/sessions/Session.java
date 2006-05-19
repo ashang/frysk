@@ -39,6 +39,8 @@
 
 package frysk.gui.sessions;
 
+import java.util.Iterator;
+
 import org.jdom.Element;
 
 import frysk.gui.monitor.GuiObject;
@@ -85,6 +87,14 @@ public class Session extends GuiObject{
 	
 	public ObservableLinkedList getProcesses(){
 		return this.procs;
+	}
+	
+	public void populateProcs(){
+		Iterator iterator = this.procs.iterator();
+		while (iterator.hasNext()) {
+			DebugProcess debugProcess = (DebugProcess) iterator.next();
+			debugProcess.populateProcs();
+		}
 	}
 	
 	public void save(Element node){
