@@ -1,5 +1,7 @@
 2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* cni/Elf.cxx (elf_getphdrs): Now uses elements to assign the items.
+
 	* Elf.java (getPHeader): Renamed to getPHeaders, now returns an array of
 	ElfPHeaders.
 	(elf_getphdr): Renamed to elf_getphdrs.

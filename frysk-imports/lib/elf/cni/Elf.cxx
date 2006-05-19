@@ -145,20 +145,22 @@ lib::elf::Elf::elf_newehdr (){
 jlongArray
 lib::elf::Elf::elf_getphdrs (){
 	if(this->is32bit){
-//		::Elf32_Phdr* headers =  ::elf32_getphdr((::Elf*) this->pointer);
+		::Elf32_Phdr* headers =  ::elf32_getphdr((::Elf*) this->pointer);
 		int count = ::elf32_getehdr((::Elf*) this->pointer)->e_phnum;
 		jlongArray array = JvNewLongArray((jint) count);
-//		for(int i = 0; i < count; i++)
-//			array[i] = (jlong) &(headers[i]);
+		jlong*  jlp = elements(array);
+		for(int i = 0; i < count; i++)
+			jlp[i] = (jlong) &(headers[i]);
 			
 		return array;
 	}
 	else{
-//		::Elf64_Phdr* headers =  ::elf64_getphdr((::Elf*) this->pointer);
+		::Elf64_Phdr* headers =  ::elf64_getphdr((::Elf*) this->pointer);
 		int count = ::elf64_getehdr((::Elf*) this->pointer)->e_phnum;
 		jlongArray array = JvNewLongArray((jint) count);
-//		for(int i = 0; i < count; i++)
-//			array[i] = (jlong) &(headers[i]);
+		jlong*  jlp = elements(array);
+		for(int i = 0; i < count; i++)
+			jlp[i] = (jlong) &(headers[i]);
 			
 		return array;
 	}
