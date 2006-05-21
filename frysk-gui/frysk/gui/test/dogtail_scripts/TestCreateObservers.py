@@ -49,7 +49,6 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
 from dogtail import tree
-from dogtail.utils import run
 from dogtail import predicate
 
 # Set up for logging
@@ -57,6 +56,10 @@ import dogtail.tc
 
 # Set up for unit test framework
 import unittest
+
+# Test support functions
+from FryskHelpers import startFrysk
+from FryskHelpers import endFrysk
 
 # The Observer class defines our Frysk Observer objects
 from Observer import Observer
@@ -67,13 +70,8 @@ class TestCreateObservers (unittest.TestCase):
 
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-   
         # Start up Frysk 
-        run ('/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui')
-   
-        # Locate the Frysk application - note the application name of 
-        # 'java-gnome' (sourceware.org/bugzilla #2591)
-        self.frysk = tree.root.application ('java-gnome')
+        self.frysk = startFrysk()
 
         # Load up some sample Observer objects - at some point, we'll
         # do this data loading from an XML file
@@ -93,17 +91,13 @@ class TestCreateObservers (unittest.TestCase):
         self.theMatrix = [x,y,z]
         self.matrixLength = len(self.theMatrix)
 
-        # Locate the Frysk application - note the application name of 
-        # 'java-gnome' (sourceware.org/bugzilla #2591)
-        self.frysk = tree.root.application ('java-gnome')
-
         # Select the 'Observers' menu item
-        observersItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Observers'))
-        observersItem.actions['click'].do()
+        observersItem = self.frysk.menuItem('Observers')
+        observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.findChild(predicate.IsAMenuItemNamed('Custom Observers... (DEMO)'))
-        observersSelection.actions['click'].do()
+        observersSelection = observersItem.menuItem('Custom Observers... (DEMO)')
+        observersSelection.click()
 
         # Create a new custom observer
         customObservers = self.frysk.dialog('Custom Observers')
@@ -113,7 +107,7 @@ class TestCreateObservers (unittest.TestCase):
         # Until we can get the accessibility problem
         # (http://sourceware.org/bugzilla/show_bug.cgi?id=2614) resolved,
         # we'll just create a new Exec Observers
-        execObserver = customTable.child(name = 'Exec Observer', roleName='table cell')
+        execObserver = customObservers.child(name = 'Exec Observer', roleName='table cell')
         execObserver.actions['activate'].do()
 
         # Start loop to create the new Observers (CRUD test)
@@ -124,28 +118,28 @@ class TestCreateObservers (unittest.TestCase):
   
             # Press 'New'
             newObserverButton = customObservers.button('New')
-            newObserverButton.actions['click'].do()
+            newObserverButton.click()
             observerDetails = self.frysk.dialog('Observer Details')
   
             # Find the panel on the frame
             observerPanel = observerDetails.child(roleName='panel')
             combo =  observerPanel.child(roleName='combo box')
             comboMenu = combo.child(roleName='menu')
-  
+
             # Find and set the logging action combo box - again - this is the only combo
             # box that we can access until Frysk displays more accessibility infomation
             newLoggingAction = observerToCreate.getLoggingAction()
             selectedItem=comboMenu.child(name=newLoggingAction)
-            selectedItem.actions['click'].do()
+            selectedItem.click()
   
             try:
                 # Set the new observer name
                 newObserverName = observerToCreate.getName()
                 observerName = observerPanel.child(roleName='text', description='Enter a name for the observer')
                 observerName.actions['activate'].do()
-                observerName.__setattr__('text', newObserverName)
+                observerName.text = newObserverName
                 okButton = observerDetails.button('OK')
-                okButton.actions['click'].do()
+                okButton.click()
             except Error:
                 fail ('Error - unable to create new Observer with name = ' + newObserverName)
             else:
@@ -156,23 +150,22 @@ class TestCreateObservers (unittest.TestCase):
 
         # Return to the Frysk main menu
         okButton = customObservers.button('OK')
-        okButton.actions['click'].do()
+        okButton.click()
 
     def tearDown(self):    
         # Exit Frysk
-        closeItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Close'))
-        closeItem.actions['click'].do()
-
+        endFrysk(self.frysk)
+ 
     def testReadObservers(self):      
         """Check that the newly created Observers can be read"""   
     
         # Select the 'Observers' menu item
-        observersItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Observers'))
-        observersItem.actions['click'].do()
+        observersItem = self.frysk.menuItem('Observers')
+        observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.findChild(predicate.IsAMenuItemNamed('Custom Observers... (DEMO)'))
-        observersSelection.actions['click'].do()
+        observersSelection = observersItem.menuItem('Custom Observers... (DEMO)')
+        observersSelection.click()
 
         customObservers = self.frysk.dialog('Custom Observers')
         customScrollPane = customObservers.child(roleName='scroll pane')
@@ -199,7 +192,7 @@ class TestCreateObservers (unittest.TestCase):
 
         # Resturn to the Frysk main menu
         okButton = customObservers.button('OK')
-        okButton.actions['click'].do()
+        okButton.click()
 
     def NOT_testDeleteObservers(self):
         """Check that the newly created Observers can be deleted"""
@@ -208,12 +201,12 @@ class TestCreateObservers (unittest.TestCase):
         # in the same window - need a fix to sourceware.org/bugzilla #2614
 
         # Select the 'Observers' menu item
-        observersItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Observers'))
-        observersItem.actions['click'].do()
+        observersItem = self.frysk.menuItem('Observers')
+        observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.findChild(predicate.IsAMenuItemNamed('Custom Observers... (DEMO)'))
-        observersSelection.actions['click'].do()
+        observersSelection = observersItem.menuItem('Custom Observers... (DEMO)')
+        observersSelection.click()
 
         customObservers = self.frysk.dialog('Custom Observers')
         customScrollPane = customObservers.child(roleName='scroll pane')
@@ -240,8 +233,7 @@ class TestCreateObservers (unittest.TestCase):
 
         # Resturn to the Frysk main menu
         okButton = customObservers.button('OK')
-        okButton.actions['click'].do()
-
+        okButton.click()
 
 def suite():
         suite = unittest.TestSuite()
@@ -251,3 +243,4 @@ def suite():
 if __name__ == '__main__':
   #unittest.main()
   unittest.TextTestRunner(verbosity=2).run(suite())
+

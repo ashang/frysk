@@ -48,7 +48,6 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
 from dogtail import tree
-from dogtail.utils import run
 from dogtail import predicate
 
 # Set up for logging
@@ -57,23 +56,21 @@ import dogtail.tc
 # Set up for unit test framework
 import unittest
 
+# Test support functions
+from FryskHelpers import startFrysk
+from FryskHelpers import endFrysk
+
 class TestLicense (unittest.TestCase):
 
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-
         # Start up Frysk 
-        run ('/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui')
-
-        # Locate the Frysk application - note the application name of 
-        # 'java-gnome' (sourceware.org/bugzilla #2591)
-        self.frysk = tree.root.application ('java-gnome')
+        self.frysk = startFrysk()
 
     def tearDown(self):    
-       # Exit Frysk
-       closeItem = self.frysk.menuItem('Close')
-       closeItem.click()
+        # Exit Frysk
+        endFrysk(self.frysk)
 
     def testLicense(self):      
         """Check that the license text is correct"""   

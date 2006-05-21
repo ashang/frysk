@@ -50,7 +50,6 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Imports
 from dogtail import tree
-from dogtail.utils import run
 from dogtail import predicate
 
 # Set up for logging
@@ -59,23 +58,21 @@ import dogtail.tc
 # Set up for unit test framework
 import unittest
 
+# Test support functions
+from FryskHelpers import startFrysk
+from FryskHelpers import endFrysk
+
 class TestCredits (unittest.TestCase):
 
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-   
         # Start up Frysk 
-        run ('/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui')
-   
-        # Locate the Frysk application - note the application name of 
-        # 'java-gnome' (sourceware.org/bugzilla #2591)
-        self.frysk = tree.root.application ('java-gnome')
+        self.frysk = startFrysk()
 
     def tearDown(self):    
         # Exit Frysk
-        closeItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Close'))
-        closeItem.actions['click'].do()
+        endFrysk(self.frysk)
 
     def testCredits(self):      
         """Check that the credits text is correct"""   
@@ -84,33 +81,31 @@ class TestCredits (unittest.TestCase):
         expectedCreditsString = 'TBD\n'
 
         # Select the 'Help' menu item
-        helpItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Help'))
-        helpItem.actions['click'].do()
+        helpItem = self.frysk.menuItem('Help')
+        helpItem.click()
    
         # Select the 'About Frysk' Help menu item
-        aboutItem = helpItem.findChild(predicate.IsAMenuItemNamed('About'))
-        aboutItem.actions['click'].do()
+        aboutItem = helpItem.menuItem('About')
+        aboutItem.click.do()
    
         # Open the 'About' dialog and its child filler dialog
         aboutFrame = self.frysk.dialog('About Frysk - Technology Preview')
-        aboutFiller = aboutFrame.child(roleName='filler')
    
         # Open the 'Credits' dialog
-        creditsButton = aboutFiller.button('Credits')
-        creditsButton.actions['click'].do()
+        creditsButton = aboutFrame.button('Credits')
+        creditsButton.click.do()
    
         # Select the 'Credits' menu pick to view the credit text
         creditsFrame = self.frysk.dialog('Credits')
-        creditsFiller = creditsFrame.child(roleName='filler')
    
         # As of 2006/04/26, the text is blank - so just exit for now
         pass
-        closeButton = creditsFiller.button('Close')
+        closeButton = creditsFrame.button('Close')
         closeButton.actions['press'].do()
    
         # Close the 'about Frysk' filler dialog
-        closebutton = aboutFiller.button('Close')
-        closebutton.actions['click'].do()
+        closebutton = aboutFrame.button('Close')
+        closebutton.click()
 
 def suite():
     suite = unittest.TestSuite()

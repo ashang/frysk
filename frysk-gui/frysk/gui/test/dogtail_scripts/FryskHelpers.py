@@ -40,13 +40,20 @@
 
 '''
 Script name:    FryskHelpers.py
-Script author:  ldimaggi
 Creation date:  April 2006
-Purpose:        Verify creation of Frysk Debug Session Druid
+Purpose:        Frysk GUI Tests
 Summary:        Support routines used by tests for Frysk SessionDebug GUI
 '''
 
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
+
+# To support starting Frysk tests
+from dogtail import tree
+from dogtail.utils import run
+from dogtail import predicate
+
+# Needed to remove Frysk from Gnome Panel
+import subprocess
 
 # ---------------------
 def extractString (rawInput, assignedTo):
@@ -133,3 +140,31 @@ def createProcessDict (inputList):
     theDictionary = dict(zip(thekeys, thevalues))
     return theDictionary
 
+# ---------------------
+def startFrysk ():
+    """ Start up the Frysk GUI
+        Function returns an object that points to the Frysk GUI
+    """
+    # Frysk binary and app name - note the application name of
+    # 'java-gnome' (sourceware.org/bugzilla #2591)
+    fryskBinary = '/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui'
+    fryskAppName = 'java-gnome'
+
+    # Start up Frysk 
+    run (fryskBinary)
+    fryskObject = tree.root.application (fryskAppName)
+    return fryskObject
+
+# ---------------------
+def endFrysk(fryskObject):
+    """ Close the Frysk GUI and kill the process
+    """
+    fryskProcessName = 'FryskGui'
+
+    # Exit Frysk GUI
+    closeItem = fryskObject.menuItem('Close')
+    closeItem.click()
+    
+    # The Frysk object in the panel cannot be accessed as it does not have any
+    # AT/SPI information - just kill the process instead
+    subprocess.Popen([r'killall', '-KILL', fryskProcessName]).wait()
