@@ -147,7 +147,7 @@ def startFrysk ():
     """
     # Frysk binary and app name - note the application name of
     # 'java-gnome' (sourceware.org/bugzilla #2591)
-    fryskBinary = '/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui'
+    fryskBinary = '/opt/new_Frysk/build/frysk-gui/frysk/gui/FryskGui'
     fryskAppName = 'java-gnome'
 
     # Start up Frysk 
@@ -168,3 +168,30 @@ def endFrysk(fryskObject):
     # The Frysk object in the panel cannot be accessed as it does not have any
     # AT/SPI information - just kill the process instead
     subprocess.Popen([r'killall', '-KILL', fryskProcessName]).wait()
+    
+    # Cleanup all frysk config files created during the test
+    subprocess.Popen([r'rm', '-Rf', '$HOME/.frysk']).wait()
+    
+ # ---------------------
+def skipDruid(fryskObject):
+    """ Skip the intial session setup Druid - this function is probably 
+        temporary and will be used only during test development
+    """
+    # ---------------------
+    # Access the Druid GUI
+    theDruid = fryskObject.dialog('Debug Session Druid')
+
+    # And the GUI's 'notebook' of (6) pages
+    vbox1 = theDruid.child('dialog-vbox1')
+        
+    # ---------------------
+    # The action buttons are displayed on the bottom of all pages - the
+    # specific buttons (Back, Forward, Finish) that are visible or enabled
+    # varies with the page - and the current state of the page
+    dialogActionArea1 = vbox1.child('dialog-action_area1')
+    finishButton = dialogActionArea1.button('Finish')
+    cancelButton = dialogActionArea1.button('Cancel')
+        
+    cancelButton.click()
+    finishButton.click()
+        

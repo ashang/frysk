@@ -86,14 +86,14 @@ class TestCredits (unittest.TestCase):
    
         # Select the 'About Frysk' Help menu item
         aboutItem = helpItem.menuItem('About')
-        aboutItem.click.do()
+        aboutItem.click()
    
         # Open the 'About' dialog and its child filler dialog
         aboutFrame = self.frysk.dialog('About Frysk - Technology Preview')
    
         # Open the 'Credits' dialog
         creditsButton = aboutFrame.button('Credits')
-        creditsButton.click.do()
+        creditsButton.click()
    
         # Select the 'Credits' menu pick to view the credit text
         creditsFrame = self.frysk.dialog('Credits')

@@ -112,6 +112,8 @@ dialogActionArea1 = vbox1.child('dialog-action_area1')
 forwardButton = dialogActionArea1.button('Forward')
 backButton = dialogActionArea1.button('Back')
 finishButton = dialogActionArea1.button('Finish')
+saveButton = dialogActionArea1.button('Save')
+cancelButton = dialogActionArea1.button('Cancel')
 
 # ---------------------
 # page #1 - vbox42_tab1_session - Select new/old session, specify
