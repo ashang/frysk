@@ -1,3 +1,17 @@
+2006-05-22  Chris Moller  <moller@mollerware.com>
+
+	* Makefile.am: Took the stripchart widgets and their wrappers out
+	of the build by commenting out references to the following:
+	  src/widgets/ftkstripchart.c
+	  src/widgets/ftkstripchart.h
+	  src/widgets/ftkstripchartx.c
+	  src/widgets/ftkstripchartx.h
+	  src/java/com/redhat/ftk/Stripchart.java
+	  src/java/com/redhat/ftk/StripchartX.java
+	  src/jni/com_redhat_ftk_Stripchart.c
+	  src/jni/com_redhat_ftk_StripchartX.c
+	A GPOINTER_TO_INT() cast was causing problems under ppc64.
+
 2006-05-10  Chris Moller  <moller@mollerware.com>
 
 	* src/jni/com_redhat_ftk_EventViewer.c:
