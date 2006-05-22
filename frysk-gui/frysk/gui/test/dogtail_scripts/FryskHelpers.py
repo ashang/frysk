@@ -55,6 +55,10 @@ from dogtail import predicate
 # Needed to remove Frysk from Gnome Panel
 import subprocess
 
+# Other imports
+import os
+import time
+
 # ---------------------
 def extractString (rawInput, assignedTo):
     """ Function to extract value of string in param #1 assigned            
@@ -169,8 +173,14 @@ def endFrysk(fryskObject):
     # AT/SPI information - just kill the process instead
     subprocess.Popen([r'killall', '-KILL', fryskProcessName]).wait()
     
-    # Cleanup all frysk config files created during the test
-    subprocess.Popen([r'rm', '-Rf', '$HOME/.frysk']).wait()
+    # Cleanup all frysk config files created during the test - save them for test
+    # failure analysis - need to add a means to tie test run info to dir name
+    strTime = str(time.time())
+    newDir = '/tmp/.frysk/' + strTime
+    os.mkdir(strTime)
+    homeDir = os.getenv('HOME') + '/.frysk'
+    os.rename(homeDir, newDir)
+    
     
  # ---------------------
 def skipDruid(fryskObject):
@@ -190,8 +200,7 @@ def skipDruid(fryskObject):
     # varies with the page - and the current state of the page
     dialogActionArea1 = vbox1.child('dialog-action_area1')
     finishButton = dialogActionArea1.button('Finish')
-    cancelButton = dialogActionArea1.button('Cancel')
-        
+    cancelButton = dialogActionArea1.button('Cancel') 
     cancelButton.click()
     finishButton.click()
         

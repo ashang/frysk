@@ -60,6 +60,7 @@ import unittest
 # Test support functions
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
+from FryskHelpers import skipDruid
 
 # The Observer class defines our Frysk Observer objects
 from Observer import Observer
@@ -72,6 +73,9 @@ class TestCreateObservers (unittest.TestCase):
         self.TestString=dogtail.tc.TCString()
         # Start up Frysk 
         self.frysk = startFrysk()
+
+        # Probably temporary - during test development
+        skipDruid(self.frysk)
 
         # Load up some sample Observer objects - at some point, we'll
         # do this data loading from an XML file

@@ -61,6 +61,7 @@ import unittest
 # Test support functions
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
+from FryskHelpers import skipDruid
 
 class TestCredits (unittest.TestCase):
 
@@ -69,6 +70,9 @@ class TestCredits (unittest.TestCase):
         self.TestString=dogtail.tc.TCString()
         # Start up Frysk 
         self.frysk = startFrysk()
+        
+        # Probably temporary - during test development
+        skipDruid(self.frysk)
 
     def tearDown(self):    
         # Exit Frysk
