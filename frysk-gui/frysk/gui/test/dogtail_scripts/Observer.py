@@ -123,5 +123,14 @@ class Observer:
 
     if self.getType() != theOtherObserver.getType():
       returnFlag = False    
-    
+ 
+    if self.getFilterPoints() != theOtherObserver.getFilterPoints():
+      returnFlag = False    
+
+    if self.getFilterPoints() != theOtherObserver.getFilterPoints():
+      returnFlag = False    
+      
+    if self.getAfterAction() != theOtherObserver.getAfterAction():
+      returnFlag = False    
+     
     return returnFlag
