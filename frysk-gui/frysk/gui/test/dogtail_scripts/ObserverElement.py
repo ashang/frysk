@@ -39,89 +39,69 @@
 # exception.
 
 """
-Script name:    Observer.py
-Creation date:  April 2006
-Purpose:        Support datamodel of Frysk Observer objects
-Summary:        Simple, demo/prototype dogtail test script for Frysk
+Script name:    ObserverElement.py
+Creation date:  May 2006
+Purpose:        Support datamodel of Frysk custom observer objects
+Summary:        Simple, demo/prototype dogtail test script for Fryske
 """
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
-from ObserverElement import ObserverElement
-from ObserverPoints import ObserverPoints
+class ObserverElement:
+    type = 'default type'
+    name = 'default name'
+    operand = 'default operand'
+    argument = 'default argument'
 
-class Observer:
-  
-  # Set up some default values
-  name = 'default Name'
-  type = 'default type'
-  loggingAction = 'Log Generic Actions'
-  afterAction = 'Resume thread'
-  filterPoints = ObserverPoints()
-  actionPoints = ObserverPoints()
-  
-  # constructor - not sure if we want this
-  # def __init__(self, value):
-  #   self.name = value
-  
-  # getters and setters methods
-  def setName(self, value):
-    self.name = value
+    # constructor - not sure if we want this
+    # def __init__(self, value):
+    #   self.name = value
 
-  def setType(self, value):
-    self.type = value
+    # getters and setters methods
+    def setName( self, value ):
+        self.name = value
+  
+    def setType ( self, value ):
+        self.type = value
 
-  def setLoggingAction (self, value):
-    self.loggingAction = value
-    
-  def setFilterPoints(self, value):
-      self.filterPoints = value
-      
-  def setActionPoints (self, value):    
-      self.actionPoints = value
-    
-  def setAfterAction (self, value):
-    self.afterActions = value 
-  
-  def getName(self):
-    return self.name
-   
-  def getType(self):
-    return self.type
-  
-  def getLoggingAction(self):
-    return self.loggingAction
+    def setOperand ( self, value ):
+        self.operand = value
 
-  def getFilterPoints(self):
-      return self.filterPoints
-      
-  def getActionPoints (self):    
-      return self.actionPoints
-    
-  def getAfterAction (self):
-    return self.afterActions
-  
-  def dump(self):
-    print 'name=' + self.name
-    print 'type=' + self.type
-    print 'loggingAction=' + self.loggingAction
-    print 'afterAction=' + self.afterAction
-    for x in self.filterPoints:
-        x.dump()        
-    for x in self.actionPoints:
-        x.dump()
+    def setArgument ( self, value ):
+        self.argument = value
         
-  # -------------------------------------
-  # Compare two Observer objects
+    def getName( self ):
+        return self.name
   
-  def isequal(self, theOtherObserver):
-    returnFlag = True
- 
-    print self.getName() + theOtherObserver.getName()
+    def getType( self ):
+        return self.type
 
-    if self.getName() != theOtherObserver.getName():
-      returnFlag = False
-
-    if self.getType() != theOtherObserver.getType():
-      returnFlag = False    
+    def getOperand( self ):
+        return self.operand
     
-    return returnFlag
+    def getArgument( self ):
+        return self.Argument    
+
+    def dump( self ):
+        print 'name=' + self.name
+        print 'type=' + self.type
+        print 'operand=' + self.operand
+        print 'argument=' + self.argument
+ 
+    # ------------------------
+    # Function to determine if two ObserverElement objects are equal
+    def isequal ( self, theOtherElement ):
+      returnFlag = True
+
+      if self.getName() != theOtherElement.getName():
+          returnFlag = False
+          
+      if self.getType() != theOtherElement.getType():
+          returnFlag = False
+          
+      if self.getOperand() != theOtherElement.getOperand():
+          returnFlag = False 
+          
+      if self.getArgument() != theOtherElement.getArgument():
+          returnFlag = False 
+      
+      return returnFlag

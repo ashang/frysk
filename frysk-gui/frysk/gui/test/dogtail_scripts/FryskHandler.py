@@ -41,7 +41,7 @@
 '''
 Script name:    FryskHandler.py
 Creation date:  April 2006
-Purpose:        Verify creation of Frysk Debug Session Druid
+Purpose:        To support tests of Frysk Debug Session Druid
 Summary:        Simple parser for Frysk Druid/Assistant debug session data
 '''
 
