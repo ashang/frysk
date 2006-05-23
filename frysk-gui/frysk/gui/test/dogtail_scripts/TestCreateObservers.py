@@ -75,7 +75,7 @@ class TestCreateObservers (unittest.TestCase):
         self.frysk = startFrysk()
 
         # Probably temporary - during test development
-        skipDruid(self.frysk)
+        #skipDruid(self.frysk)
 
         # Load up some sample Observer objects - at some point, we'll
         # do this data loading from an XML file

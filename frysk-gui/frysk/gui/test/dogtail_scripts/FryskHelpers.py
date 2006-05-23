@@ -59,6 +59,12 @@ import subprocess
 import os
 import time
 
+# Constants
+FRYSK_PROCESS_NAME = 'FryskGui'
+FRYSK_BINARY_NAME = '/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui'
+# Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
+FRYSK_APP_NAME = 'java-gnome'
+
 # ---------------------
 def extractString (rawInput, assignedTo):
     """ Function to extract value of string in param #1 assigned            
@@ -149,37 +155,30 @@ def startFrysk ():
     """ Start up the Frysk GUI
         Function returns an object that points to the Frysk GUI
     """
-    # Frysk binary and app name - note the application name of
-    # 'java-gnome' (sourceware.org/bugzilla #2591)
-    fryskBinary = '/opt/new_Frysk/build/frysk-gui/frysk/gui/FryskGui'
-    fryskAppName = 'java-gnome'
-
     # Start up Frysk 
-    run (fryskBinary)
-    fryskObject = tree.root.application (fryskAppName)
+    run (FRYSK_BINARY_NAME)
+    fryskObject = tree.root.application (FRYSK_APP_NAME)
     return fryskObject
 
 # ---------------------
 def endFrysk(fryskObject):
     """ Close the Frysk GUI and kill the process
     """
-    fryskProcessName = 'FryskGui'
-
     # Exit Frysk GUI
     closeItem = fryskObject.menuItem('Close')
     closeItem.click()
     
     # The Frysk object in the panel cannot be accessed as it does not have any
     # AT/SPI information - just kill the process instead
-    subprocess.Popen([r'killall', '-KILL', fryskProcessName]).wait()
+    subprocess.Popen([r'killall', '-KILL', FRYSK_PROCESS_NAME]).wait()
     
     # Cleanup all frysk config files created during the test - save them for test
     # failure analysis - need to add a means to tie test run info to dir name
     strTime = str(time.time())
-    newDir = '/tmp/.frysk/' + strTime
-    os.mkdir(strTime)
-    homeDir = os.getenv('HOME') + '/.frysk'
-    os.rename(homeDir, newDir)
+    newDir = '/tmp/' + strTime
+    os.mkdir(newDir)
+    oldDir = os.getenv('HOME') + '/.frysk'
+    os.rename(oldDir, newDir)
     
     
  # ---------------------

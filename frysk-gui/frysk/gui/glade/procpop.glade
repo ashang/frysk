@@ -3086,6 +3086,9 @@
 		  <property name="has_frame">True</property>
 		  <property name="invisible_char">•</property>
 		  <property name="activates_default">False</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">observerNameEntry</atkproperty>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -3101,6 +3104,9 @@
 		  <property name="visible">True</property>
 		  <property name="add_tearoffs">False</property>
 		  <property name="focus_on_click">True</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">observerTypeComboBox</atkproperty>
+		  </accessibility>
 		</widget>
 		<packing>
 		  <property name="left_attach">1</property>
@@ -3184,6 +3190,9 @@
 		      <property name="homogeneous">False</property>
 		      <property name="row_spacing">6</property>
 		      <property name="column_spacing">6</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">observerFiltersTable</atkproperty>
+		      </accessibility>
 		    </widget>
 		  </child>
 		</widget>
@@ -3213,6 +3222,9 @@
 		      <property name="homogeneous">False</property>
 		      <property name="row_spacing">6</property>
 		      <property name="column_spacing">6</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">observerActionsTable</atkproperty>
+		      </accessibility>
 		    </widget>
 		  </child>
 		</widget>

@@ -70,7 +70,7 @@ class TestLicense (unittest.TestCase):
         self.frysk = startFrysk()
         
         # Probably temporary - during test development
-        skipDruid(self.frysk)
+        #skipDruid(self.frysk)
 
     def tearDown(self):    
         # Exit Frysk
