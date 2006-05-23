@@ -41,8 +41,9 @@
 '''
 Script name:    TestCreateObservers.py
 Creation date:  April 2006
-Purpose:        Verify creation of Frysk Observer objects
+Purpose:        Verify creation/reading/updating/deleting (CRUD) of Frysk Observer objects
 Summary:        Simple, demo/prototype dogtail test script for Frysk
+                At this point - GUI elements are 'blinked' multiple times for demo purposes
 '''
 
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
@@ -65,9 +66,9 @@ from FryskHelpers import skipDruid
 # The Observer class defines our Frysk Observer objects
 from Observer import Observer
 
-class TestCreateObservers (unittest.TestCase):
+class TestCreateObservers ( unittest.TestCase ):
 
-    def setUp(self):
+    def setUp( self ):
 
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
@@ -80,72 +81,72 @@ class TestCreateObservers (unittest.TestCase):
         # Load up some sample Observer objects - at some point, we'll
         # do this data loading from an XML file
         x = Observer()
-        x.setName ('test observer x')
-        x.setLoggingAction ('Log Generic Actions')
+        x.setName ( 'test observer x' )
+        x.setLoggingAction ( 'Log Generic Actions' )
 
         y = Observer()
-        y.setName ('test observer y')
-        y.setLoggingAction ('Stop Generic Actions')
+        y.setName ( 'test observer y' )
+        y.setLoggingAction ( 'Stop Generic Actions' )
 
         z = Observer()
-        z.setName ('test observer z')
-        z.setLoggingAction ('Resume Generic Actions')
+        z.setName ( 'test observer z' )
+        z.setLoggingAction ( 'Resume Generic Actions' )
 
         # Create a List object to hold the Observer objects
-        self.theMatrix = [x,y,z]
-        self.matrixLength = len(self.theMatrix)
+        self.theMatrix = [x, y, z]
+        self.matrixLength = len( self.theMatrix )
 
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem('Observers')
+        observersItem = self.frysk.menuItem( 'Observers' )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem('Custom Observers... (DEMO)')
+        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
         observersSelection.click()
 
         # Create a new custom observer
-        customObservers = self.frysk.dialog('Custom Observers')
-        customScrollPane = customObservers.child(roleName='scroll pane')
-        customTable = customScrollPane.child(roleName = 'table')
+        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
 
         # Until we can get the accessibility problem
         # (http://sourceware.org/bugzilla/show_bug.cgi?id=2614) resolved,
         # we'll just create a new Exec Observers
-        execObserver = customObservers.child(name = 'Exec Observer', roleName='table cell')
+        execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
         execObserver.actions['activate'].do()
 
-        # Start loop to create the new Observers (CRUD test)
+        # Start loop to create the new Observers
 
-        for i in range(self.matrixLength):
+        for i in range( self.matrixLength ):
   
             observerToCreate = self.theMatrix[i]
   
             # Press 'New'
-            newObserverButton = customObservers.button('New')
+            newObserverButton = customObservers.button( 'New' )
             newObserverButton.click()
-            observerDetails = self.frysk.dialog('Observer Details')
+            observerDetails = self.frysk.dialog( 'Observer Details' )
   
             # Find the panel on the frame
-            observerPanel = observerDetails.child(roleName='panel')
-            combo =  observerPanel.child(roleName='combo box')
-            comboMenu = combo.child(roleName='menu')
+            observerPanel = observerDetails.child( roleName='panel' )
+            combo =  observerPanel.child( roleName='combo box' )
+            comboMenu = combo.child( roleName='menu' )
 
             # Find and set the logging action combo box - again - this is the only combo
             # box that we can access until Frysk displays more accessibility infomation
             newLoggingAction = observerToCreate.getLoggingAction()
-            selectedItem=comboMenu.child(name=newLoggingAction)
+            selectedItem=comboMenu.child( name=newLoggingAction )
             selectedItem.click()
   
             try:
                 # Set the new observer name
                 newObserverName = observerToCreate.getName()
-                observerName = observerPanel.child(roleName='text', description='Enter a name for the observer')
+                observerName = observerPanel.child( roleName='text', description='Enter a name for the observer' )
                 observerName.actions['activate'].do()
                 observerName.text = newObserverName
-                okButton = observerDetails.button('OK')
+                okButton = observerDetails.button( 'OK' )
                 okButton.click()
             except Error:
-                fail ('Error - unable to create new Observer with name = ' + newObserverName)
+                self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )
             else:
                 pass
                 print 'Successfully created new Observer with name = ' + newObserverName
@@ -153,98 +154,116 @@ class TestCreateObservers (unittest.TestCase):
         # end loop ---------
 
         # Return to the Frysk main menu
-        okButton = customObservers.button('OK')
+        okButton = customObservers.button( 'OK' )
         okButton.click()
 
-    def tearDown(self):    
-        # Exit Frysk
-        endFrysk(self.frysk)
+    def tearDown( self ):    
  
-    def testReadObservers(self):      
-        """Check that the newly created Observers can be read"""   
+        # Add test to delete the observers
+        
+        """Check that the newly created Observers can be queried and deleted"""   
     
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem('Observers')
+        observersItem = self.frysk.menuItem( 'Observers' )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem('Custom Observers... (DEMO)')
+        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
         observersSelection.click()
 
-        customObservers = self.frysk.dialog('Custom Observers')
-        customScrollPane = customObservers.child(roleName='scroll pane')
-        customTable = customScrollPane.child(roleName = 'table')
+        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
 
-        for i in range(self.matrixLength):
+        for i in range( self.matrixLength ):
             observerToVerify = self.theMatrix[i]
             observerNameToVerify = observerToVerify.getName()
   
             try:
-                observerInGui = customTable.child(name = observerNameToVerify, roleName='table cell')
+                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 observerInGui.actions['activate'].do()
                 observerInGui.blink()
                 observerInGui.blink()
                 observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
+                observerInGui.grabFocus()
+                deleteButton = customObservers.button( 'Delete' )
+                deleteButton.blink()
+                deleteButton.blink()
+                deleteButton.blink()
+                deleteButton.click()
             except dogtail.tree.SearchError:
-                fail ('Error - unable to locate Observer with name = ' + observerNameToVerify)
+                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
                 pass        
                 print 'No error - successfully found ' + observerNameToVerify
 
         # Resturn to the Frysk main menu
-        okButton = customObservers.button('OK')
+        okButton = customObservers.button( 'OK' )
         okButton.click()
-
-    def NOT_testDeleteObservers(self):
-        """Check that the newly created Observers can be deleted"""
-
-        # Can't do this - there are (2) elements with 'filler' as role name
-        # in the same window - need a fix to sourceware.org/bugzilla #2614
-
+       
+        # Exit Frysk
+        endFrysk( self.frysk )
+ 
+    def testUpdateObservers( self ):      
+        """Check that the newly created Observers can be queried and updated"""   
+    
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem('Observers')
+        observersItem = self.frysk.menuItem( 'Observers' )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem('Custom Observers... (DEMO)')
+        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
         observersSelection.click()
 
-        customObservers = self.frysk.dialog('Custom Observers')
-        customScrollPane = customObservers.child(roleName='scroll pane')
-        customTable = customScrollPane.child(roleName = 'table')
+        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
 
-        for i in range(self.matrixLength):
+        for i in range( self.matrixLength ):
             observerToVerify = self.theMatrix[i]
             observerNameToVerify = observerToVerify.getName()
-
+  
             try:
-                observerInGui = customTable.child(name = observerNameToVerify, roleName='table cell')
+                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 observerInGui.actions['activate'].do()
                 observerInGui.blink()
                 observerInGui.blink()
                 observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
+                observerInGui.grabFocus()
             except dogtail.tree.SearchError:
-                fail ('Error - unable to locate Observer with name = ' + observerNameToVerify)
+                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
-                pass
+                pass        
                 print 'No error - successfully found ' + observerNameToVerify
-
+                
+            editButton = customObservers.button( 'Edit' )
+            editButton.blink()
+            editButton.blink()
+            editButton.blink()
+            editButton.click()
+            
+            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
+            observerName.blink()
+            observerName.blink()
+            observerName.blink()
+            
+            observerToVerify.setName( observerToVerify.getName() + ' updated' )
+            self.theMatrix[i] = observerToVerify
+            
+            observerName.text = observerToVerify.getName()
+            okButton = observerDetails.button( 'OK' )
+            okButton.click()
+ 
         # Resturn to the Frysk main menu
-        okButton = customObservers.button('OK')
+        okButton = customObservers.button( 'OK' )
         okButton.click()
 
 def suite():
         suite = unittest.TestSuite()
-        suite.addTest(unittest.makeSuite(TestCreateObservers))
+        suite.addTest( unittest.makeSuite( TestCreateObservers ) )
         return suite
 
 if __name__ == '__main__':
   #unittest.main()
-  unittest.TextTestRunner(verbosity=2).run(suite())
-
+  unittest.TextTestRunner( verbosity=2 ).run( suite() )
