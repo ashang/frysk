@@ -1,3 +1,11 @@
+2006-05-23  Stan Cox <scox@redhat.com>
+
+	* Makefile.am (frysk2670/gcj.sh): Add rules.
+	* frysk2670/AddTaskObserverAction.java: New.
+	* frysk2670/ExitNotificationObserver.java: New.
+	* frysk2670/TaskAction.java: New.
+	* frysk2670/frysk.jar: New.
+
 2006-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (CLEANFILES): Delete *.gcno files created by gcc.

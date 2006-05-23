@@ -323,6 +323,20 @@ frysk2299_GCTest_SOURCES = frysk2299/GCTest.java
 frysk2299_GCTest_LDFLAGS = --main=GCTest
 TESTS += frysk2299/GCTest
 
+frysk2670_TESTS = \
+	frysk2670/AddTaskObserverAction.java \
+	frysk2670/ExitNotificationObserver.java \
+	frysk2670/TaskAction.java
+EXTRA_DIST += $(frysk2670_FILES)
+TESTS += frysk2670/gcj.sh
+frysk2670/gcj.sh: $(frysk2670_FILES)
+	mkdir -p frysk2670
+	cp $(srcdir)/frysk2670/* frysk2670
+	echo cd frysk2670 > $@
+	echo gcj -C -classpath frysk.jar @./files0.list >> $@
+	echo gcj -C -classpath frysk.jar @./files.list >> $@
+	chmod a+x $@
+
 # Frysk, when creating test processes uses the sequence vfork -> fork
 # -> exec to create a process of known pid that has process 1 as its
 # parent.
