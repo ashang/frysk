@@ -1,0 +1,38 @@
+<Observer type="frysk.gui.monitor.observers.TaskForkedObserver" name="NewForkingCustomObserver" tooltip="Fires when a proc forks">
+  <actionPoints>
+    <actionPoint name="Generic Actions" tooltip="Actions that dont take any arguments">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log" tooltip="logs what is going on with this observer plus a user set comment" argument="bedrock" />
+          <element type="frysk.gui.monitor.actions.Resume" name="Resume" tooltip="Resume execution of the current process" argument="null" />
+        </elements>
+      </items>
+    </actionPoint>
+    <actionPoint name="forking thread" tooltip="Thread that performed the fork">
+      <items>
+        <elements />
+      </items>
+    </actionPoint>
+    <actionPoint name="forked thread" tooltip="Main thread of newly forked process">
+      <items>
+        <elements />
+      </items>
+    </actionPoint>
+  </actionPoints>
+  <filterPoints>
+    <filterPoint name="forking thread" tooltip="Thread that performed the fork">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="fred" />
+        </elements>
+      </items>
+    </filterPoint>
+    <filterPoint name="forked thread" tooltip="Main thread of newly forked process">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="barney" />
+        </elements>
+      </items>
+    </filterPoint>
+  </filterPoints>
+</Observer>
