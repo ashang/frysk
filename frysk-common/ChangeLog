@@ -1,3 +1,7 @@
+2006-05-22  Rick Moseley  <rmoseley@redhat.com>
+
+	* acinclude.m4: Added check for gmime-uudecode program.
+
 2006-05-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.rules: Added elfutils/libelf for g++ compiling.

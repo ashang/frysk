@@ -127,3 +127,7 @@ AC_CHECK_PROGS([XMLLINT], [xmllint], [no])
 test $XMLLINT = no && AC_ERROR([no xmllint program found])
 AC_CHECK_PROGS([XMLCATALOG], [xmlcatalog], [no])
 test $XMLCATALOG = no && AC_ERROR([no xmlcatalog program found])
+
+# Check for gmime-uudecode
+AC_CHECK_PROGS([GMIME_UUDECODE], [gmime-uudecode], [no])
+test $GMIME_UUDECODE = no && AC_ERROR([no gmime-uudecode program found, please install gmime package])
