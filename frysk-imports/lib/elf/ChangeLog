@@ -1,3 +1,8 @@
+2006-05-22  Andrew Cagney  <cagney@redhat.com>
+
+	* cni/ElfData.cxx (elf_data_get_byte): Check offset non negative.
+	Cast to size_t when comparing to size.
+
 2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cni/Elf.cxx (elf_getphdrs): Now uses elements to assign the items.

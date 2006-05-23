@@ -54,13 +54,15 @@ lib::elf::ElfData::elf_data_finalize (){
 }
 
 jbyte
-lib::elf::ElfData::elf_data_get_byte (jlong offset){
-	uint8_t* data = (uint8_t*) ((Elf_Data*) this->pointer)->d_buf;	
-	size_t size = ((Elf_Data*) this->pointer)->d_size;
-	if(offset > size)
-		return -1;
-	
-	return (jbyte) data[offset];
+lib::elf::ElfData::elf_data_get_byte (jlong offset)
+{
+  uint8_t* data = (uint8_t*) ((Elf_Data*) this->pointer)->d_buf;	
+  size_t size = ((Elf_Data*) this->pointer)->d_size;
+  if (offset < 0)
+    return -1;
+  if ((size_t) offset > size)
+    return -1;
+  return (jbyte) data[offset];
 }
 
 jint
