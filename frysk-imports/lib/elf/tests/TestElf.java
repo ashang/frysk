@@ -1,6 +1,7 @@
 package lib.elf.tests;
 
 import java.io.File;
+import java.math.BigInteger;
 
 import junit.framework.TestCase;
 import lib.elf.Elf;
@@ -14,7 +15,7 @@ import lib.elf.ElfSectionHeader;
 import lib.elf.ElfType;
 
 public class TestElf extends TestCase {
-
+	
 	public void testCore(){
 		File f = new File((String) null, "tmp");
 		String dir = f.getAbsolutePath();
@@ -34,24 +35,51 @@ public class TestElf extends TestCase {
 		assertEquals(0, header.getFlags());
 		assertEquals(4, header.getType());
 		assertEquals(0, header.getSectionHeaderEntryCount());
+		assertEquals(14, header.getProgramHeaderEntryCount());
+		assertEquals(32, header.getProgramHeaderEntrySize());
+		assertEquals(52, header.getProgramHeaderOffset());
 		
-		for(int i = 0; i < header.getSectionHeaderEntryCount(); i++){
-			ElfSection section = testElf.getSection(i);
-			assertNotNull(section);
-			assertEquals(section.getIndex(), i);
-
-			ElfSectionHeader sheader = section.getSectionHeader();
-			assertNotNull(sheader);
-
-			System.err.println("    Header\n    ========");
-			System.err.println("      Address: "+sheader.getAddress());
-			System.err.println("      Index: "+sheader.getOffset());
-			System.err.println("      Offset: "+sheader.getOffset());
+		ElfPHeader[] pheaders = testElf.getPHeaders();
+		assertNotNull(pheaders);
+		assertEquals(pheaders.length, header.getProgramHeaderEntryCount());
+		
+		int[] pheaderFlags = {0, 5, 5, 4, 6, 5, 4, 6, 6, 5, 6, 6, 6, 6};
+		int[] pheaderOffsets = {500, 4096, 8192, 8192, 12288, 16384, 16384, 24576,
+				28672, 40960, 40960, 45056, 49152, 53248};
+		int[] pheaderSegSizeFile = {472, 4096, 0, 4096, 4096, 0, 8192, 4096, 12288, 0,
+				4096, 4096, 4096, 90112};
+		int[] pheaderSegSizeMem = {0, 4096, 102400, 4096, 4096, 1232896, 8192, 4096, 
+				12288, 4096, 4096, 4096, 4096, 90112};
+		BigInteger[] pheaderAddr = {new BigInteger("0", 10), new BigInteger("1507328", 10),
+				new BigInteger("1511424", 10), new BigInteger("1613824", 10),
+				new BigInteger("1617920", 10), new BigInteger("10477568", 10), 
+				new BigInteger("11710464", 10), new BigInteger("11718656", 10),
+				new BigInteger("11722752", 10), new BigInteger("134512640", 10),
+				new BigInteger("134516736", 10), new BigInteger("3085901824", 10),
+				new BigInteger("3085983744", 10), new BigInteger("3220111360", 10)};
+		
+		for(int i = 0; i < pheaders.length; i++){
+			ElfPHeader pheader = pheaders[i];
+			assertNotNull(pheader);
+			
+			if(i == 0)
+				assertEquals(0, pheader.getAlignment());
+			else
+				assertEquals(4096, pheader.getAlignment());
+			assertEquals(pheaderFlags[i], pheader.getFlags());
+			assertEquals(pheaderOffsets[i], pheader.getOffset());
+			assertEquals(0, pheader.getPhysicalAddress());
+			assertEquals(pheaderSegSizeFile[i], pheader.getSegmentSizeInFile());
+			assertEquals(pheaderSegSizeMem[i], pheader.getSegmentSizeInMem());
+			if(i == 0)
+				assertEquals(4, pheader.getType());
+			else
+				assertEquals(1, pheader.getType());
+			assertEquals(pheaderAddr[i], new BigInteger(""+pheader.getVirtualAddress(), 10));
 		}
-		
 	}
 	
-	public void testOFile(){
+	public void testObjectFile(){
 		File f = new File("lib/elf/tests/helloworld.o");
 		Elf testElf = new Elf(f.getAbsolutePath(), ElfCommand.ELF_C_READ);
 		
@@ -68,6 +96,9 @@ public class TestElf extends TestCase {
 		assertEquals(0, header.getFlags());
 		assertEquals(1, header.getType());
 		assertEquals(11, header.getSectionHeaderEntryCount());
+		assertEquals(0, header.getProgramHeaderEntryCount());
+		assertEquals(0, header.getProgramHeaderEntrySize());
+		assertEquals(0, header.getProgramHeaderOffset());
 		
 		int[] expectedIndices = {0, 52, 864, 96, 96, 96, 110, 155, 155, 676, 836};
 		int[] expectedInfo = {0, 0, 1, 0, 0, 0, 0, 0, 0, 8, 0};
@@ -115,7 +146,8 @@ public class TestElf extends TestCase {
 		}
 		
 		ElfPHeader[] pheaders = testElf.getPHeaders();
-		pheaders.toString();
+		assertNotNull(pheaders);
+		assertEquals(pheaders.length, header.getProgramHeaderEntryCount());
 		
 	}
 	
