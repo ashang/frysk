@@ -1,3 +1,14 @@
+2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* hpd/Command.java: New
+	* hpd/CLI.java: Changed to use Command class instead of ParserHelper
+	* hpd/CommandHandler.java: Changed to use Command class instead of ParserHelper
+	* hpd/Preprocessor.java: Made to handle quote-bound compound commands
+
+2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/ParserHelper.java: Removed
+
 2005-10-03  Andrew Cagney  <cagney@redhat.com>
 
 	* hpd/CLI.java: Delete unused private member aliases.
