@@ -143,6 +143,7 @@ AM_CXXFLAGS = \
 	-I$(srcdir) \
 	-I$(top_builddir) \
 	-I$(srcdir)/elfutils/libelf \
+	-I$(srcdir)/elfutils/libdw \
 	-Werror \
 	-Wall \
 	-fPIC \
@@ -498,7 +499,7 @@ files.list:
 		    -name '[A-Za-z]*.java' -print ; \
 	    done \
 	done > $@.tmp
-	mv $@.tmp $@
+	sort $@.tmp >| $@
 ${GEN_DIRNAME}.jar: files.list
 	rm -rf $(GEN_CLASSDIR)
 	mkdir -p $(GEN_CLASSDIR)

@@ -1,3 +1,7 @@
+2006-05-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.rules: Added frysk-imports/elfutils/libdw for compiling.
+
 2006-05-22  Rick Moseley  <rmoseley@redhat.com>
 
 	* acinclude.m4: Added check for gmime-uudecode program.
