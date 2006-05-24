@@ -337,7 +337,7 @@ public class Elf {
 		return this.is32bit;
 	}
 	
-	protected long getPointer(){
+	public long getPointer(){
 		return this.pointer;
 	}
 	

@@ -53,7 +53,7 @@ public class ElfSection {
 		this.is32bit = is32bit;
 	}
 	
-	protected long getPointer(){
+	public long getPointer(){
 		return this.pointer;
 	}
 	

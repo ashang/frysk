@@ -1,3 +1,10 @@
+2006-05-24  Adam Jocksch  <ajocksch@redhat.com>
+	
+	* tests/TestElf.java: Added Frysk header.
+	* Elf.java (getPointer): Made public, will need to be accessed from
+	libdw wrapper.
+	* ElfSection.java (getPointer): Ditto.
+
 2006-05-23  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestElf.java (testCore): Added tests for ElfPHeader.
