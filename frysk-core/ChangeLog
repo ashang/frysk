@@ -1,3 +1,7 @@
+2006-05-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Add frysk-imports/elfutils/libdw/libdw.a.
+
 2006-05-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Add frysk-imports/elfutils/libelf/libelf.a.

@@ -65,6 +65,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jdom.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += -lopcodes
 
 # XXX: This needs to be make less-architecture independant.
