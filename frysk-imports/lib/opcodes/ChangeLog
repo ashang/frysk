@@ -1,5 +1,8 @@
 2006-05-24  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tests/TestOpcodes.java: Added Frysk header.
+	* tests/DummyByteBuffer.java: Ditto.
+
 	* cni/Disassembler.cxx (save_instruction): Fixed bug where one string
 	wasn't being created with JvNewStringUTF.
 	* tests/TestOpcodes.java (testDisassembler): Now checks disassembler
