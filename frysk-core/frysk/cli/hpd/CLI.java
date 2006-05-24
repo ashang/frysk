@@ -51,39 +51,38 @@ public class CLI
 
 	class LoadHandler implements CommandHandler
 	{
-		public void handle(String cmd) throws ParseException {
+		public void handle(Command cmd) throws ParseException {
 			out.println("Executing load: " + cmd);
 		}
 	}
 	class RunHandler implements CommandHandler
 	{
-		public void handle(String cmd) throws ParseException {
+		public void handle(Command cmd) throws ParseException {
 			out.println("Executing run: " + cmd);
 		}
 	}
 	class AliasHandler implements CommandHandler 
 	{
-		public void handle(String cmd) throws ParseException {
-			String arguments = ParserHelper.extractArguments(cmd);
-			Vector tokens = ParserHelper.tokenize(arguments); 
-			out.println(tokens);
+		public void handle(Command cmd) throws ParseException {
+			Vector param = cmd.getParameters();
+			out.println(param);
 		}
 	}
 	class UnaliasHandler implements CommandHandler
 	{
-		public void handle(String cmd)  throws ParseException {
+		public void handle(Command cmd)  throws ParseException {
 			out.println("Executing unalias: " + cmd);
 		}
 	}
 	class SetHandler implements CommandHandler
 	{
-		public void handle(String cmd) throws ParseException {
+		public void handle(Command cmd) throws ParseException {
 			out.println("Executing set: " + cmd);
 		}
 	}
 	class UnsetHandler implements CommandHandler
 	{
-		public void handle(String cmd) throws ParseException {
+		public void handle(Command cmd) throws ParseException {
 			out.println("Executing unset: " + cmd);
 		}
 	}
@@ -127,30 +126,35 @@ public class CLI
 	public String execCommand(String cmd)
 	{
 		String pcmd = ""; //preprocessed command
+		Command command;
 		CommandHandler handler = null;
 
 		if (cmd != null)
 		{
-			for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();)
+			for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) //preprocess and iterate
 			{
  				pcmd = (String)iter.next();
-				
-				handler = (CommandHandler)handlers.get(ParserHelper.extractAction(pcmd));
 
-				if (handler != null)
-				{
-					try	{
-						handler.handle(pcmd);
+				try {
+					command = new Command(pcmd);
+
+					if (command.getAction() != null)
+					{
+						handler = (CommandHandler)handlers.get(command.getAction());
+						if (handler != null)
+								handler.handle(command);
+						else
+							out.println("ERROR: Unrecognized command \"" +
+									command.getAction() + "\"");
 					}
-					catch (ParseException e) {
-						System.out.println("Parse Exception: " + e.getMessage());
+					else
+					{
+						out.println("ERROR: No action specified");
 					}
 				}
-				else
+				catch (ParseException e)
 				{
-					// SHOULD DO SOMETHING ELSE HERE
-					out.println("ERROR: Unrecognized command \"" +
-							ParserHelper.extractAction(pcmd) + "\"");
+					out.println(e.getMessage());
 				}
 			}
 		}

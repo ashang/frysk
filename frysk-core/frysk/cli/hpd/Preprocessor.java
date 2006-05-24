@@ -40,8 +40,6 @@ package frysk.cli.hpd;
 
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.StringTokenizer;
-import java.util.Enumeration;
 
 /**
  * Preprocessor handles constructs like linebreaks and compound statements, also provides a couple of
@@ -105,21 +103,30 @@ public class Preprocessor
 	 */
 	public Iterator preprocess(String cmd)
 	{
+		// we do three things:
+		// *get rid of comments
+		// *combine multilines
+		// *split the resulting string into compounds
+		
 		cmd = cmd.trim();
 		Vector cmdQueue = new Vector();
 
-		buffer.append(stripLineBreak(cmd));
+		buffer.append( stripLineBreak( stripComment(cmd))); // appends the command to the buffer
 
-		if (!isMultiline(cmd))
-			cmdQueue = breakCompound(buffer.flush());
+		if (!isMultiline(cmd)) // if the last command was not a multiline we can start using it.
+			cmdQueue = breakCompound(buffer.flush()); // break compound command into separate ones
 
 		return cmdQueue.iterator();
 	}
 	
+	/*
+	 * Private Method.
+	 */
+
 	/**
 	 * Remove the backslash from multiline command
 	 */
-	public static String stripLineBreak(String cmd)
+	private static String stripLineBreak(String cmd)
 	{
 		String result = cmd;
 		int i = cmd.indexOf('\\');
@@ -131,25 +138,52 @@ public class Preprocessor
 	}
 
 	/**
-	 * Break a compound command into subcommands
+	 * Break a compound command into subcommands.
 	 */
-	public static Vector breakCompound(String cmd)
+	private static Vector breakCompound(String cmd)
 	{
 		Vector result = new Vector();
-		Enumeration enumer = new StringTokenizer(cmd.trim(), ";");
+		cmd = cmd.trim();
 
-		while(enumer.hasMoreElements())
+		int scindex = 0; // index of last usable semicolon
+		int numquotes = 0;
+
+		for (int i = 0; i < cmd.length(); i++)
 		{
-			result.add(enumer.nextElement());
+			if (cmd.charAt(i) == '"')
+				numquotes++;
+
+			// if this colon has been precided by an even ammount of quotes - break
+			if ((cmd.charAt(i) == ';' && (numquotes % 2) == 0))  
+			{
+				result.add(cmd.substring(scindex, i));
+				scindex = i+1;
+			}
+			else if (i == cmd.length()-1)
+				result.add(cmd.substring(scindex));
 		}
-		
+
 		return result;
 	}
 
+	private static String stripComment(String cmd)
+	{
+		int pos = cmd.indexOf('#');
+		String result = "";
+
+		if (pos != -1)
+			result = cmd.substring(0,pos);
+		else
+			result = cmd;
+
+		return result;
+	}
+	
 	/**
 	 * Check if this command is more than one command separated with a ;
 	 */
-	public static boolean isCompound(String cmd)
+	/*
+	private static boolean isCompound(String cmd)
 	{
 		boolean result = false;
 
@@ -158,28 +192,16 @@ public class Preprocessor
 
 		return result;
 	}
+	*/
 
 	/**
 	 * Check if this command spans multiple lines, that is ends with a '\'
 	 */
-	public static boolean isMultiline(String cmd)
+	private static boolean isMultiline(String cmd)
 	{
 		boolean result = false;
 
 		if (cmd.trim().indexOf('\\') == cmd.length()-1)
-			result = true;
-
-		return result;
-	}
-	
-	/**
-	 * Check if this command is a comment
-	 */
-	public static boolean isComment(String cmd)
-	{
-		boolean result = false;
-
-		if (!cmd.equals("") && cmd.trim().charAt(0) == '#')
 			result = true;
 
 		return result;

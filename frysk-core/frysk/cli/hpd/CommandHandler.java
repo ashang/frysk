@@ -42,5 +42,5 @@ import java.text.ParseException;
 
 public interface CommandHandler 
 {
-	void handle(String cmd) throws ParseException;
+	void handle(Command cmd) throws ParseException;
 }
