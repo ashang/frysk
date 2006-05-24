@@ -1,3 +1,18 @@
+2006-05-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Disassembler.java (disassembleWords): Renamed to 
+	disassembleInstructions.
+	* Disassembler.cxx (disassemble): Now checks for architecture and sets
+	up the disassembly struct appropriately, disassembly function is now
+	referred to by pointer.
+	(read_from_byte_buffer): Now properly copies memory in to myadd, rather
+	than memaddr.
+	(error_func): Now uses JvNewStringUTF.
+	(save_instruction): Ditto, fixed double free bug.
+	* tests: Added.
+	* tests/DummyByteBuffer.java: Added.
+	* tests/TestOpcodes.java: Added.
+
 2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cni/Disassembler.cxx (disassemble): No longer assumes i386_intel.

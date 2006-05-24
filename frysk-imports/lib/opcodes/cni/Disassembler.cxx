@@ -43,6 +43,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdarg.h>
+#include <alloca.h>
 /*
  * This is an ugly hack. In /usr/lib/ansidecl.h (included by bfd.h) we have
  *       #define VOLATILE        volatile
@@ -75,12 +76,43 @@ void
 lib::opcodes::Disassembler::disassemble(jlong address, jlong instructions){
 
 	disassemble_info disasm_info;
+	int (*disasm_func) (bfd_vma, disassemble_info*);
 
 	::init_disassemble_info(&disasm_info, (void*) this, save_instruction);
 
 	disasm_info.flavour = bfd_target_unknown_flavour;
+#ifdef __x86_64__
+	disasm_info.arch = bfd_arch_i386;
+	disasm_info.mach = bfd_mach_x86_64;
+	disasm_func = &(::print_insn_i386_intel);
+#elif defined(__i386__)
 	disasm_info.arch = bfd_arch_i386;
 	disasm_info.mach = bfd_mach_i386_i386;
+	disasm_func = &(::print_insn_i386_intel);
+#elif defined(__powerpc64__)
+	disasm_info.arch = bfd_arch_powerpc;
+	disasm_info.mach = bfd_mach_ppc64;
+	disasm_func = &(::print_insn_big_powerpc);
+#elif defined(__powerpc__)
+	disasm_info.arch = bfd_arch_powerpc;
+	disasm_info.mach = bfd_mach_ppc;
+	disasm_func = &(::print_insn_big_powerpc);
+#elif defined(__ia64__)
+	disasm_info.arch = bfd_arch_ia64;
+	disasm_info.mach = bfd_mach_ia64_elf64; // TODO: which mach? elf32 or elf64?
+	disasm_func =&(::print_insn_ia64);
+#elif defined(__s390__)
+	disasm_info.arch = bfd_arch_s390;
+	disasm_info.mach = bfd_mach_s390_31;
+	disasm_func = &(::print_insn_s390);
+#elif defined(__s390x__)
+	disasm_info.arch = bfd_arch_s390;
+	disasm_info.mach = bfd_mach_s390_64;
+	disasm_func = &(::print_insn_s390);
+#endif
+ 
+	if(!disasm_func)
+		throw new lib::opcodes::OpcodesException(JvNewStringUTF("Error: Unsupported architechture"));
  
 	disasm_info.read_memory_func = read_from_byte_buffer;
 	disasm_info.memory_error_func = error_func;
@@ -89,11 +121,7 @@ lib::opcodes::Disassembler::disassemble(jlong address, jlong instructions){
 	bfd_vma current_address = (bfd_vma) address;
 	for(int i = 0; i < instructions; i++){
 		this->setCurrentAddress(current_address);
-#ifdef I386
-		current_address += ::print_insn_i386_intel(current_address, &disasm_info);
-#else
-		current_address += 1; // Fix me, properly handle other archs
-#endif
+		current_address += disasm_func(current_address, &disasm_info);
 		this->moveToNext();
 	}
 }
@@ -107,14 +135,13 @@ int read_from_byte_buffer(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
 	lib::opcodes::Disassembler *obj = (lib::opcodes::Disassembler*) info->stream;
 	inua::eio::ByteBuffer *buffer = obj->buffer;
 	
-	char* tmp = (char*) malloc(length);
+	char tmp[length];
 	for(unsigned int i = 0; i < length; i++){
 		long offset = ((long) memaddr) + i;
 		tmp[i] = (char) buffer->getByte(offset);
 	}
 	
-	memcpy((void*) memaddr, (void*) tmp, length);
-	free(tmp);
+	memcpy((void*) myadd, (void*) tmp, length);
 	
 	return 0;
 }
@@ -124,9 +151,8 @@ int read_from_byte_buffer(bfd_vma memaddr, bfd_byte* myadd, unsigned int length,
  */
 void error_func(int status, bfd_vma memaddr, struct disassemble_info *info){
 	throw new lib::opcodes::OpcodesException(
-		JvNewString((const jchar*) "Error occured while disassembling.", 
-					strlen("Error occured while disassembling.")), (jint) status, (jlong) memaddr
-		);
+		JvNewStringUTF("Error occured while disassembling."), (jint) status, (jlong) memaddr
+	);
 }
 
 void print_addr(bfd_vma addr, struct disassemble_info *info){}
@@ -146,14 +172,12 @@ int save_instruction(void* disassembler, const char *args, ...){
 	}
 	else{
   		throw new lib::opcodes::OpcodesException(
-  			JvNewString((const jchar*) "Could not parse variable argument list",
-  						strlen("Could not parse variable argument list"))
-  			);
+  			JvNewStringUTF("Could not parse variable argument list")
+		);
 	}
 	::va_end(ap);
 	
 	int len = strlen(mystr);
-	free(mystr);
 	
 	return len;
 }

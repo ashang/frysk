@@ -53,10 +53,11 @@ public final class Disassembler {
 		this.buffer = buffer;
 	}
 	
-	public LinkedList disassembleWords(long address, long words) throws OpcodesException{
+	public LinkedList disassembleInstructions(long address, long count) throws OpcodesException{
 		this.isnList = new LinkedList();
+		current = new Instruction();
 		// This function will call the below java methods to update the linked list
-		disassemble(address, words);
+		disassemble(address, count);
 		return isnList;
 	}
 	
