@@ -1,3 +1,7 @@
+2006-05-24  Stan Cox  <scox@redhat.com>
+
+	* Makefile.am (frysk2670/gcj.sh): Copy files explicitly.
+
 2006-05-23  Stan Cox <scox@redhat.com>
 
 	* Makefile.am (frysk2670/gcj.sh): Add rules.

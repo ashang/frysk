@@ -331,7 +331,7 @@ EXTRA_DIST += $(frysk2670_FILES)
 TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh: $(frysk2670_FILES)
 	mkdir -p frysk2670
-	cp $(srcdir)/frysk2670/* frysk2670
+	cp $(srcdir)/frysk2670/{*.java,*.list,*.jar} frysk2670
 	echo cd frysk2670 > $@
 	echo gcj -C -classpath frysk.jar @./files0.list >> $@
 	echo gcj -C -classpath frysk.jar @./files.list >> $@
