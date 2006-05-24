@@ -1,3 +1,7 @@
+2006-05-24  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Added libdw.a.
+
 2006-05-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.am (all-local): Added rule to de-encode and unpack test
