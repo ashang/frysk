@@ -167,7 +167,7 @@ int save_instruction(void* disassembler, const char *args, ...){
 	::va_start(ap, args);
 	char * mystr;
 	if(::vasprintf(&mystr, args, ap) > 0){
-		obj->setCurrentInstruction(JvNewString((const jchar*) mystr, strlen(mystr)));
+		obj->setCurrentInstruction(JvNewStringUTF(mystr));
 		::free(mystr);
 	}
 	else{
