@@ -62,6 +62,7 @@ import unittest
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
+from FryskHelpers import getEventType
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -99,14 +100,17 @@ class TestCreateObservers ( unittest.TestCase ):
         theObserver = handler.theObserver
         #theObserver.dump()
         theName = theObserver.getName()
+        theType = theObserver.getType()
 
         theActions = theObserver.getActionPoints()
         for tempAction in theActions:
           theActionName = tempAction.getName()
   
-        print 'DEBUG - name=' + theName + ' name = ' + theActionName
+#        print 'DEBUG - name=' + theName + ' name = ' + theActionName
         x.setName ( theName )
         x.setLoggingAction ( theActionName )
+        x.setType (theType)
+        
 
 #        y = Observer()
 #        y.setName ( 'test observer y' )
@@ -144,6 +148,7 @@ class TestCreateObservers ( unittest.TestCase ):
         for i in range( self.matrixLength ):
   
             observerToCreate = self.theMatrix[i]
+            #observerToCreate.dump()
   
             # Press 'New'
             newObserverButton = customObservers.button( 'New' )
@@ -160,13 +165,28 @@ class TestCreateObservers ( unittest.TestCase ):
             newLoggingAction = observerToCreate.getLoggingAction()
             selectedItem=comboMenu.child( name=newLoggingAction )
             selectedItem.click()
+            
+            print 'DEBUG - ' + observerToCreate.getType()
+            tempString = getEventType (observerToCreate.getType())           
+            print 'DEBUG - tempString = ' + tempString + '     ' + observerToCreate.getType()
   
             try:
                 # Set the new observer name
                 newObserverName = observerToCreate.getName()
-                observerName = observerPanel.child( roleName='text', description='Enter a name for the observer' )
+                observerName = observerPanel.child( roleName='text', name = 'observerNameEntry')   #description='Enter a name for the observer' )
                 observerName.actions['activate'].do()
                 observerName.text = newObserverName
+                
+                observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
+                observerTypeComboBox.blink()
+                observerTypeComboBox.blink()
+                observerTypeComboBox.blink()
+                observerTypeComboBox.blink()
+                observerTypeComboBox.blink()
+                comboMenu = observerTypeComboBox.child( roleName='menu' )    
+                tempString = getEventType (observerToCreate.getType())
+                selectedItem=comboMenu.child( name = tempString )
+                selectedItem.click()                      
                 okButton = observerDetails.button( 'OK' )
                 okButton.click()
             except Error:
