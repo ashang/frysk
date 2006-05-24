@@ -50,4 +50,5 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-junit.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += -lopcodes
