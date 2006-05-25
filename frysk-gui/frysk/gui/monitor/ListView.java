@@ -126,6 +126,7 @@ public class ListView extends TreeView implements Observer {
 		this.initListStore();
 		this.setModel(listStore);
 		this.initTreeView();
+		
 	}
 	
 	public Iterator getSelectedObjects(){

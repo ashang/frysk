@@ -1,3 +1,11 @@
+2006-05-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* GuiTask.java: Added null check when constructing an new
+	GuiTask (fix for 2698).
+	* GuiProc.java (GuiProc): Moved executable and proc name
+	retrieval to the constructor instead of getters
+	(fix for 2698).
+
 2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcWiseDataModel.java: replace getCommand with

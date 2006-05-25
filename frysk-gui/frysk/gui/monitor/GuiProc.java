@@ -64,12 +64,33 @@ import frysk.proc.Proc;
 public class GuiProc extends GuiData{
 	private Proc proc;
 	
+	private String executableName;
+	private String executablePath;
+	
 	private GuiProc(Proc proc){
+		if(proc == null){
+			throw new IllegalArgumentException("proc cannot be null");
+		}
 		this.proc = proc;
-	}
+		
+		this.executableName = "";
+		
+		try{
+			this.executablePath = proc.getExe();
+			File file = new File(this.executablePath);
+			this.executableName = file.getName();
 
-	public void setProc(Proc proc) {
-		this.proc = proc;
+		}catch (Exception e) {
+			try {
+				this.executablePath = proc.getCmdLine()[0];
+			} catch (Exception e2) {
+				this.executablePath = "*Could not retrieve path*";
+				this.executableName = proc.getCommand();
+			}
+			File file = new File(this.executablePath);
+			this.executableName = file.getName();
+		}
+				
 	}
 
 	public Proc getProc() {
@@ -109,13 +130,24 @@ public class GuiProc extends GuiData{
 	}
 	
 	public String getFullExecutablePath(){
-		String execPath = proc.getCommand() + " * path could not be retrieved *";
-		try{
-			execPath = proc.getExe();
-		}catch (Exception e) {}
-
-		return execPath;
+//		String execPath = proc.getCommand() + " * path could not be retrieved *";
+//		try{
+//			execPath = proc.getExe();
+//		}catch (Exception e) {}
+//
+//		return execPath;
+		
+		return this.executablePath;
 	}
+	
+	/**
+	 * Tries to call getExe() on the proc. If that 
+	 * fails, then getCmmd[0] is used.
+	 */
+	public String getExecutableName(){
+		return this.executableName;
+	}
+	
 	
 	public static class GuiProcFactory{
 		static HashMap map = new HashMap();
@@ -134,21 +166,4 @@ public class GuiProc extends GuiData{
 		}
 	}
 	
-	/**
-	 * Tries to call getExe() on the proc. If that 
-	 * fails, then getCmmd[0] is used.
-	 */
-	public String getExecutableName(){
-		String command = null;
-		String path = "";
-		try{
-			path = proc.getExe();
-			File file = new File(path);
-			command = file.getName();
-		}catch (Exception e) {
-			command = proc.getCmdLine()[0];
-		}
-		
-		return command;
-	}
 }

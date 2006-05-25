@@ -53,10 +53,10 @@ public class GuiTask extends GuiData{
 	private Task task;
 	
 	private GuiTask(Task task) {
-		this.task = task;
-	}
-
-	public void setTask(Task task) {
+		if(task == null){
+			throw new IllegalArgumentException("task cannot be null");
+		}
+		
 		this.task = task;
 	}
 
