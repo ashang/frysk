@@ -43,7 +43,6 @@ Script name:    TestCreateObservers.py
 Creation date:  April 2006
 Purpose:        Verify creation/reading/updating/deleting (CRUD) of Frysk Observer objects
 Summary:        Simple, demo/prototype dogtail test script for Frysk
-                At this point - GUI elements are 'blinked' multiple times for demo purposes
 '''
 
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
@@ -77,7 +76,19 @@ class TestCreateObservers ( unittest.TestCase ):
 
         # Probably temporary - during test development
         #skipDruid(self.frysk)
-
+        
+        # Temporary - for demo only
+        #dialogToKill = self.frysk.child(roleName = 'dialog')
+        #okButton = dialogToKill.button( 'OK' )
+        #okButton.click()
+        theDruid = self.frysk.dialog('Debug Session Druid')
+        cancelButton = theDruid.button( 'Cancel' )
+        cancelButton.click()
+        finishButton = theDruid.button( 'Finish' )
+        finishButton.click()
+        
+        
+        
         # Load up some sample Observer objects - at some point, we'll
         # do this data loading from an XML file
         x = Observer()
@@ -182,14 +193,8 @@ class TestCreateObservers ( unittest.TestCase ):
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 observerInGui.actions['activate'].do()
-                observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
                 observerInGui.grabFocus()
                 deleteButton = customObservers.button( 'Delete' )
-                deleteButton.blink()
-                deleteButton.blink()
-                deleteButton.blink()
                 deleteButton.click()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
@@ -226,9 +231,6 @@ class TestCreateObservers ( unittest.TestCase ):
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 observerInGui.actions['activate'].do()
-                observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
                 observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
@@ -237,16 +239,10 @@ class TestCreateObservers ( unittest.TestCase ):
                 print 'No error - successfully found ' + observerNameToVerify
                 
             editButton = customObservers.button( 'Edit' )
-            editButton.blink()
-            editButton.blink()
-            editButton.blink()
             editButton.click()
             
             observerDetails = self.frysk.dialog( 'Observer Details' )
             observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
-            observerName.blink()
-            observerName.blink()
-            observerName.blink()
             
             observerToVerify.setName( observerToVerify.getName() + ' updated' )
             self.theMatrix[i] = observerToVerify

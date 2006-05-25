@@ -71,6 +71,16 @@ class TestCredits (unittest.TestCase):
         # Start up Frysk 
         self.frysk = startFrysk()
         
+        # Temporary - for demo only
+        #dialogToKill = self.frysk.child(roleName = 'dialog')
+        #okButton = dialogToKill.button( 'OK' )
+        #okButton.click()
+        theDruid = self.frysk.dialog('Debug Session Druid')
+        cancelButton = theDruid.button( 'Cancel' )
+        cancelButton.click()
+        finishButton = theDruid.button( 'Finish' )
+        finishButton.click()
+        
         # Probably temporary - during test development
         #skipDruid(self.frysk)
 

@@ -71,6 +71,16 @@ class TestLicense (unittest.TestCase):
         
         # Probably temporary - during test development
         #skipDruid(self.frysk)
+        
+        # Temporary - for demo only
+        #dialogToKill = self.frysk.child(roleName = 'dialog')
+        #okButton = dialogToKill.button( 'OK' )
+        #okButton.click()
+        theDruid = self.frysk.dialog('Debug Session Druid')
+        cancelButton = theDruid.button( 'Cancel' )
+        cancelButton.click()
+        finishButton = theDruid.button( 'Finish' )
+        finishButton.click()
 
     def tearDown(self):    
         # Exit Frysk

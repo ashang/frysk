@@ -61,8 +61,8 @@ createSuite  = TestCreateObservers.suite()
 
 suite = unittest.TestSuite()
 suite.addTest(licenseSuite)
-suite.addTest(creditsSuite)
 suite.addTest(createSuite)
+suite.addTest(creditsSuite)
 
 unittest.TextTestRunner(verbosity=2).run(suite)
 

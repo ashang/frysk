@@ -87,18 +87,12 @@ class TestCreateObservers ( unittest.TestCase ):
         # Probably temporary - during test development
         #skipDruid(self.frysk)
 
-        # Load up some sample Observer objects - at some point, we'll
-        # do this data loading from an XML file
-        x = Observer()
-#        x.setName ( 'test observer x' )
-#        x.setLoggingAction ( 'Log Generic Actions' )
-        
+        # Load up some sample Observer objects         
         parser = xml.sax.make_parser(  )
         handler = ObserverHandler.ObserverHandler(  )
         parser.setContentHandler(handler)
         parser.parse('temp.xml')
         theObserver = handler.theObserver
-        #theObserver.dump()
         theName = theObserver.getName()
         theType = theObserver.getType()
 
@@ -106,22 +100,13 @@ class TestCreateObservers ( unittest.TestCase ):
         for tempAction in theActions:
           theActionName = tempAction.getName()
   
-#        print 'DEBUG - name=' + theName + ' name = ' + theActionName
+        x = Observer()
         x.setName ( theName )
         x.setLoggingAction ( theActionName )
         x.setType (theType)
         
-
-#        y = Observer()
-#        y.setName ( 'test observer y' )
-#        y.setLoggingAction ( 'Stop Generic Actions' )
-#
-#        z = Observer()
-#        z.setName ( 'test observer z' )
-#        z.setLoggingAction ( 'Resume Generic Actions' )
-
         # Create a List object to hold the Observer objects
-        self.theMatrix = [x]   #, y, z]
+        self.theMatrix = [x]
         self.matrixLength = len( self.theMatrix )
 
         # Select the 'Observers' menu item
@@ -166,10 +151,8 @@ class TestCreateObservers ( unittest.TestCase ):
             selectedItem=comboMenu.child( name=newLoggingAction )
             selectedItem.click()
             
-            print 'DEBUG - ' + observerToCreate.getType()
             tempString = getEventType (observerToCreate.getType())           
-            print 'DEBUG - tempString = ' + tempString + '     ' + observerToCreate.getType()
-  
+              
             try:
                 # Set the new observer name
                 newObserverName = observerToCreate.getName()
@@ -178,11 +161,6 @@ class TestCreateObservers ( unittest.TestCase ):
                 observerName.text = newObserverName
                 
                 observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
-                observerTypeComboBox.blink()
-                observerTypeComboBox.blink()
-                observerTypeComboBox.blink()
-                observerTypeComboBox.blink()
-                observerTypeComboBox.blink()
                 comboMenu = observerTypeComboBox.child( roleName='menu' )    
                 tempString = getEventType (observerToCreate.getType())
                 selectedItem=comboMenu.child( name = tempString )
@@ -226,14 +204,8 @@ class TestCreateObservers ( unittest.TestCase ):
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 observerInGui.actions['activate'].do()
-                observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
                 observerInGui.grabFocus()
                 deleteButton = customObservers.button( 'Delete' )
-                deleteButton.blink()
-                deleteButton.blink()
-                deleteButton.blink()
                 deleteButton.click()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
@@ -270,9 +242,6 @@ class TestCreateObservers ( unittest.TestCase ):
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 observerInGui.actions['activate'].do()
-                observerInGui.blink()
-                observerInGui.blink()
-                observerInGui.blink()
                 observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
@@ -281,17 +250,11 @@ class TestCreateObservers ( unittest.TestCase ):
                 print 'No error - successfully found ' + observerNameToVerify
                 
             editButton = customObservers.button( 'Edit' )
-            editButton.blink()
-            editButton.blink()
-            editButton.blink()
             editButton.click()
             
             observerDetails = self.frysk.dialog( 'Observer Details' )
             observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
-            observerName.blink()
-            observerName.blink()
-            observerName.blink()
-            
+                       
             observerToVerify.setName( observerToVerify.getName() + ' updated' )
             self.theMatrix[i] = observerToVerify
             
