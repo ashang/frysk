@@ -61,7 +61,7 @@ import time
 
 # Constants
 FRYSK_PROCESS_NAME = 'FryskGui'
-FRYSK_BINARY_NAME = '/opt/Frysk/build/frysk-gui/frysk/gui/FryskGui'
+FRYSK_BINARY_NAME = '/opt/new_Frysk/build/frysk-gui/frysk/gui/FryskGui'
 
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
 FRYSK_APP_NAME = 'java-gnome'
