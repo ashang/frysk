@@ -160,7 +160,7 @@ public abstract class Proc
     {
 	this (id, parent, host);
 	newState = ProcState.initial (this, false);
-	logger.log (Level.FINE, "{0} new - create unattached running proc\n",
+	logger.log (Level.FINEST, "{0} new - create unattached running proc\n",
 		    this); 
     }
     /**
@@ -203,7 +203,7 @@ public abstract class Proc
     /**
      * Return the current state while at the same time marking that
      * the state is in flux.  If a second attempt to change state
-     * occures before the current state transition has completed,
+     * occurs before the current state transition has completed,
      * barf.  XXX: Bit of a hack, but at least this prevents state
      * transition code attempting a second recursive state transition.
      */
@@ -237,7 +237,7 @@ public abstract class Proc
      */
     void performRemoval ()
     {
-	logger.log (Level.FINE, "{0} performRemoval -- no longer in /proc\n",
+	logger.log (Level.FINEST, "{0} performRemoval -- no longer in /proc\n",
 		    this); 
 	Manager.eventLoop.add (new ProcEvent ()
 	    {
@@ -362,7 +362,7 @@ public abstract class Proc
      */
     void add (Proc child)
     {
-	logger.log (Level.FINE, "{0} add(Proc) -- a child process\n", this); 
+	logger.log (Level.FINEST, "{0} add(Proc) -- a child process\n", this); 
 	childPool.add (child);
     }
     /**
@@ -370,7 +370,7 @@ public abstract class Proc
      */
     void remove (Proc child)
     {
-	logger.log (Level.FINE, "{0} remove(Proc) -- a child proces\n", this); 
+	logger.log (Level.FINEST, "{0} remove(Proc) -- a child process\n", this); 
 	childPool.remove (child);
     }
     /**
@@ -413,7 +413,7 @@ public abstract class Proc
      */
     void remove (Task task)
     {
-	logger.log (Level.FINE, "{0} remove(Task) -- within this Proc\n",
+	logger.log (Level.FINEST, "{0} remove(Task) -- within this Proc\n",
 		    this); 
 	host.observableTaskRemovedXXX.notify (task);
 	taskPool.remove (task.id);
@@ -495,6 +495,7 @@ public abstract class Proc
     {
 	return ("{" + super.toString ()
 		+ ",pid=" + getPid ()
+		+ ",command=" + getCommand ()
 		+ ",state=" + getState ()
 		+ "}");
     }

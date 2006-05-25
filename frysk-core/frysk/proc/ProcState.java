@@ -62,7 +62,7 @@ abstract class ProcState
      */
     static ProcState initial (Proc proc, boolean starting)
     {
-	logger.log (Level.FINE, "{0} initial\n", proc); 
+	logger.log (Level.FINEST, "{0} initial\n", proc); 
 	if (starting)
 	    return new Detaching (proc);
 	else
@@ -125,7 +125,7 @@ abstract class ProcState
 	    }
 	    ProcState handleRemoval (Proc proc)
 	    {
-		logger.log (Level.FINE, "{0} handleRemoval\n", proc); 
+		logger.log (Level.FINEST, "{0} handleRemoval\n", proc); 
 		// XXX: What about a dieing proc's tasks, have a
 		// dieing state and force a proc refresh?
 		if (proc.parent != null)
@@ -204,7 +204,7 @@ abstract class ProcState
 			public void addFailed(Object observable, Throwable w)
 			{
 			    // TODO Auto-generated method stub
-			    throw new RuntimeException("You fogot to implement this method :D ");
+			    throw new RuntimeException("You forgot to implement this method :D ");
 			}
 			
 			public void addedTo(Object observable) {
@@ -457,7 +457,7 @@ abstract class ProcState
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObservation\n",
 			proc);
-	    // Outch; request to remove what must be an already
+	    // Ouch; request to remove what must be an already
 	    // removed observation.
 	    observation.fail (new RuntimeException ("canceled"));
 	    return this;

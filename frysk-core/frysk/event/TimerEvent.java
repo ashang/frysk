@@ -80,7 +80,7 @@ public abstract class TimerEvent
     {
 	this.timeMillis = offsetMillis + System.currentTimeMillis ();
 	this.periodMillis = periodMillis;
-	logger.log (Level.FINE, "{0} new long long\n", this); 
+	logger.log (Level.FINEST, "{0} new long long\n", this); 
     }
 
     /**

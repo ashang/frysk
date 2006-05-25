@@ -1,3 +1,14 @@
+2006-05-25  Stan Cox  <scox@redhat.com>
+
+	* EventLoop.java (wakeupIfBlocked): Change to FINEST.
+	(add): Change to FINEST.
+	(remove): Change to FINEST.
+	(checkForTimerEvents): Change to FINEST.
+	(processSignal): Change to FINEST.
+	* TimerEvent.java: Change to FINEST.
+	(reSchedule): Change to FINEST.
+
+
 2006-03-14  Andrew Cagney  <cagney@redhat.com>
 
 	* EventLoop.java: Update; frysk.sys.Poll simplified, member

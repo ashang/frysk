@@ -144,7 +144,7 @@ abstract public class Task
     {
 	this (id, proc);
 	newState = TaskState.detachedState ();
-	logger.log (Level.FINE, "{0} new -- create unattached\n", this); 
+	logger.log (Level.FINEST, "{0} new -- create unattached\n", this); 
     }
     /**
      * Create a new attached clone of Task.
@@ -211,7 +211,7 @@ abstract public class Task
     /**
      * Return the current state while at the same time marking that
      * the state is in flux.  If a second attempt to change state
-     * occures before the current state transition has completed,
+     * occurs before the current state transition has completed,
      * barf.  XXX: Bit of a hack, but at least this prevents state
      * transition code attempting a second recursive state transition.
      */
@@ -392,7 +392,7 @@ abstract public class Task
 	return (TaskObserver[]) blockers.toArray (new TaskObserver[0]);
     }
     /**
-     * Request that the observer be removed fro this tasks set of
+     * Request that the observer be removed from this tasks set of
      * blockers; once there are no blocking observers, this task
      * resumes.
      */

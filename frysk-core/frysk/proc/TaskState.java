@@ -211,7 +211,7 @@ class TaskState
     	    TaskState handleDisappearedEvent (Task task, Throwable w)
     	    {
 		logger.log (Level.FINE, "{0} handleDisappearedEvent\n", task); 
-		// Outch, the task disappeared before the attach
+		// Ouch, the task disappeared before the attach
 		// reached it, just abandon this one (but ack the
 		// operation regardless).
 		task.proc.performTaskAttachCompleted (task);
@@ -222,7 +222,7 @@ class TaskState
 					     int value)
     	    {
 		logger.log (Level.FINE, "{0} processTerminatedEvent\n", task); 
-		// Outch, the task terminated before the attach
+		// Ouch, the task terminated before the attach
 		// reached it, just abandon this one (but ack the
 		// operation regardless).
 		task.proc.performTaskAttachCompleted (task);
@@ -332,7 +332,7 @@ class TaskState
     }
 
     /**
-     * Task just starting out.  Three possible events can occure: an
+     * Task just starting out.  Three possible events can occur: an
      * unblock; the task stops; and get told to actually do the
      * attach.
      */
@@ -345,7 +345,7 @@ class TaskState
 	}
 	/**
 	 * StartMainTask out assuming that, once things have been unblocked, a
-	 * detach should occure.
+	 * detach should occur.
 	 */
 	private static TaskState wantToDetach = new StartMainTask ("wantToDetach")
 	    {

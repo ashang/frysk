@@ -78,12 +78,12 @@ public abstract class Host
     Map taskPool = new HashMap ();
     void add (Task task)
     {
-	logger.log (Level.FINE, "{0} add Task\n", this);
+	logger.log (Level.FINEST, "{0} add Task\n", this);
 	taskPool.put (task.id, task);
     }
     void remove (Task task)
     {
-	logger.log (Level.FINE, "{0} remove Task\n", this);
+	logger.log (Level.FINEST, "{0} remove Task\n", this);
 	taskPool.remove (task.id);
     }
     void removeTasks (Collection c)
@@ -103,13 +103,13 @@ public abstract class Host
     protected Map procPool = new HashMap ();
     void add (Proc proc)
     {
-	logger.log (Level.FINE, "{0} add Proc\n", this);
+	logger.log (Level.FINEST, "{0} add Proc\n", this);
 	observableProcAddedXXX.notify (proc);
 	procPool.put (proc.id, proc);
     }
     void remove (Proc proc)
     {
-	logger.log (Level.FINE, "{0} remove Proc\n", this);
+	logger.log (Level.FINEST, "{0} remove Proc\n", this);
 	procPool.remove (proc.id);
 	observableProcRemovedXXX.notify (proc);
     }

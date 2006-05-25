@@ -98,7 +98,7 @@ public class EventLoop
      */
     private synchronized void wakeupIfBlocked ()
     {
-	logger.log (Level.FINE, "{0} wakeupIfBlocked\n", this); 
+	logger.log (Level.FINEST, "{0} wakeupIfBlocked\n", this); 
 	if (isGoingToBlock) {
 	    // Assert: tid > 0
 	    frysk.sys.Signal.tkill (tid, Sig.IO);
@@ -118,7 +118,7 @@ public class EventLoop
      */
     public synchronized void add (TimerEvent t)
     {
-	logger.log (Level.FINE, "{0} add TimerEvent\n", this); 
+	logger.log (Level.FINEST, "{0} add TimerEvent\n", this); 
 	timerEvents.put (t, t);
 	wakeupIfBlocked ();
     }
@@ -127,7 +127,7 @@ public class EventLoop
      */
     public synchronized void remove (TimerEvent t)
     {
-	logger.log (Level.FINE, "{0} remove TimerEvent\n", this); 
+	logger.log (Level.FINEST, "{0} remove TimerEvent\n", this); 
 	timerEvents.remove (t);
 	pendingEvents.remove (t);
     }
@@ -160,7 +160,7 @@ public class EventLoop
      */
     private synchronized void checkForTimerEvents ()
     {
-	logger.log (Level.FINE, "{0} checkForTimerEvents\n", this); 
+	logger.log (Level.FINEST, "{0} checkForTimerEvents\n", this); 
 	long time = java.lang.System.currentTimeMillis ();
 	while (!timerEvents.isEmpty ()) {
 	    TimerEvent timer = (TimerEvent) timerEvents.firstKey ();
@@ -196,7 +196,7 @@ public class EventLoop
      */
     public synchronized void add (SignalEvent signalEvent)
     {
-	logger.log (Level.FINE, "{0} add SignalEvent\n", this);
+	logger.log (Level.FINEST, "{0} add SignalEvent\n", this);
 	Object old = signalHandlers.put (signalEvent.getSig (), signalEvent);
 	if (old == null)
 	    // New signal, tell Poll.
@@ -221,7 +221,7 @@ public class EventLoop
      */
     private synchronized void processSignal (Sig sig)
     {
-	logger.log (Level.FINE, "{0} processSignal Sig\n", this); 
+	logger.log (Level.FINEST, "{0} processSignal Sig\n", this); 
 	SignalEvent handler = (SignalEvent) signalHandlers.get (sig);
 	if (handler != null)
 	    pendingEvents.add (handler);
@@ -239,7 +239,7 @@ public class EventLoop
      */
     public synchronized void add (Event e)
     {
-	logger.log (Level.FINE, "{0} add Event\n", this); 
+	logger.log (Level.FINEST, "{0} add Event\n", this); 
 	pendingEvents.add (e);
 	wakeupIfBlocked ();
     }
@@ -258,7 +258,7 @@ public class EventLoop
      */
     private synchronized Event remove ()
     {
-	logger.log (Level.FINE, "{0} remove\n", this); 
+	logger.log (Level.FINEST, "{0} remove\n", this); 
 	if (pendingEvents.isEmpty ()) {
 	    isGoingToBlock = true;
 	    return null;
@@ -279,7 +279,7 @@ public class EventLoop
 		return ("{" + super.toString () + "}");
 	    }
 	    public void signal (Sig sig) {
-		logger.log (Level.FINE, "{0} Poll.Observer.signal Sig\n", this); 
+		logger.log (Level.FINEST, "{0} Poll.Observer.signal Sig\n", this); 
 		processSignal (sig);
 	    }
 	    // Not yet using file descriptors.
@@ -298,7 +298,7 @@ public class EventLoop
      */
     private void runEventLoop (boolean pendingOnly)
     {
-	logger.log (Level.FINE, "{0} runEventLoop\n", this); 
+	logger.log (Level.FINEST, "{0} runEventLoop\n", this); 
 	try {
 	    // Assert: isGoingToBlock == false
 	    tid = Tid.get ();
@@ -330,7 +330,7 @@ public class EventLoop
      */
     public void requestStop ()
     {
-	logger.log (Level.FINE, "{0} requestStop\n", this); 
+	logger.log (Level.FINEST, "{0} requestStop\n", this); 
 	stop = true;
 	wakeupIfBlocked ();
     }

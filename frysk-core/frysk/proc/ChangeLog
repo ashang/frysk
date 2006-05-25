@@ -1,3 +1,16 @@
+2006-05-25  Stan Cox  <scox@redhat.com>
+
+	* Task.java: Change to FINEST.
+	* ProcState.java (initial): Change to FINEST.
+	(handleRemoval): Change to FINEST.
+	* Proc.java: Change to FINEST.
+	(performRemoval): Change to FINEST.
+	(add): Change to FINEST.
+	(remove): Change to FINEST.
+	* HostState.java (running): Change to FINEST.
+	* Host.java (add): Change to FINEST.
+	(remove): Change to FINEST.
+
 2006-05-10  Andrew Cagney  <cagney@redhat.com>
 
 	* TaskObserver.java (Forked .updateForkedParent): Rename

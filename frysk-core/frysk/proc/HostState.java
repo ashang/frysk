@@ -75,7 +75,7 @@ class HostState
 	{
 	    HostState handleRefresh (Host host, boolean refreshAll)
 	    {
-		logger.log (Level.FINE, "{0} handleRefresh\n", this); 
+		logger.log (Level.FINEST, "{0} handleRefresh\n", this); 
 		host.sendRefresh (refreshAll);
 		return running;
 	    }
@@ -86,7 +86,7 @@ class HostState
 						String[] args,
 						TaskObserver.Attached attached)
 	    {
-		logger.log (Level.FINE, "{0} handleRefresh\n", this); 
+		logger.log (Level.FINE, "{0} handleCreateAttachedProc\n", this); 
 		host.sendCreateAttachedProc (stdin, stdout, stderr, args,
 					     attached);
 		return HostState.running;
