@@ -90,16 +90,9 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    					return;
 	    				}
 	    				
-	    				String execPath = proc.getCommand() + " *path could not be retrieved*";
-	    				try{
-	    					execPath = proc.getExe();
-	    				}catch (Exception e) {
-	    					
-	    				}
-	    				
 	    				GuiProc procData = GuiProc.GuiProcFactory.getGuiProc(proc);
-	    				procData.setName(proc.getPid() + " " + execPath);
-	    				procData.setToolTip(execPath);
+	    				procData.setName(proc.getPid() + " " + procData.getNiceExecutablePath());
+	    				procData.setToolTip(procData.getNiceExecutablePath());
 	    				
 	    				add(procData);
 	    				hashMap.put(proc, procData);

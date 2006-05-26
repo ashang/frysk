@@ -66,6 +66,7 @@ public class GuiProc extends GuiData{
 	
 	private String executableName;
 	private String executablePath;
+	private String niceExecutbalePath;
 	
 	private GuiProc(Proc proc){
 		if(proc == null){
@@ -74,10 +75,37 @@ public class GuiProc extends GuiData{
 		this.proc = proc;
 		
 		this.executableName = "";
+
+		this.setExecutablePath();
+		this.setNiceExecutablePath();
+	}
+
+	public Proc getProc() {
+		return proc;
+	}
+	
+	private void setNiceExecutablePath(){
 		
+		this.niceExecutbalePath = this.getFullExecutablePath();
+
+		if(niceExecutbalePath.endsWith(" (deleted)")){
+			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf(" (deleted)"));
+		}
+		
+		if(niceExecutbalePath.contains(".#prelink#")){
+			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf(".#prelink#"));
+		}
+	}
+
+	public String getNiceExecutablePath(){
+		return this.niceExecutbalePath;
+	}
+	
+	private void setExecutablePath(){
 		try{
 			this.executablePath = proc.getExe();
-			File file = new File(this.executablePath);
+			
+			File file = new File(this.getNiceExecutablePath());
 			this.executableName = file.getName();
 
 		}catch (Exception e) {
@@ -90,11 +118,6 @@ public class GuiProc extends GuiData{
 			File file = new File(this.executablePath);
 			this.executableName = file.getName();
 		}
-				
-	}
-
-	public Proc getProc() {
-		return proc;
 	}
 	
 	public void add(final TaskObserverRoot observer){
@@ -130,13 +153,6 @@ public class GuiProc extends GuiData{
 	}
 	
 	public String getFullExecutablePath(){
-//		String execPath = proc.getCommand() + " * path could not be retrieved *";
-//		try{
-//			execPath = proc.getExe();
-//		}catch (Exception e) {}
-//
-//		return execPath;
-		
 		return this.executablePath;
 	}
 	

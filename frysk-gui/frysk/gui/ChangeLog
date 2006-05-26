@@ -1,3 +1,11 @@
+2006-05-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/DebugProcess.java: using getNiceExecutablePath
+	instead of getFullExecutablePath.
+	* glade/procpop.glade: Added a status bar.
+	* druid/CreateFryskSessionDruid.java: using getNiceExecutablePath
+	instead of getFullExecutablePath.
+
 2006-05-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java: replace getCommand with

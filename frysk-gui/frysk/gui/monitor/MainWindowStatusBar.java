@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -36,67 +36,26 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+/*
+ * Created on Oct 6, 2005
+ *
+ * TODO To change the template for this generated file go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+package frysk.gui.monitor;
 
-package frysk.gui.monitor.filters;
+import org.gnu.glade.LibGlade;
 
-import org.gnu.gtk.Widget;
-import org.jdom.Element;
-
-import frysk.gui.monitor.DynamicWidget;
-import frysk.gui.monitor.LiaisonItem;
-
-public abstract class Filter extends LiaisonItem {
+/**
+ * provides a handle for the windows menu bar.
+ * Extending the meunu bar and attaching listiners to 
+ * MenuItems will be done through here.
+ * */
+public class MainWindowStatusBar extends org.gnu.gtk.StatusBar {
 	
-	/**
-	 * The widget that is used to edit the parameters of this
-	 * filter.
-	 */
-	protected DynamicWidget widget;
-	
-	boolean filterBoolean;
-	
-	public Filter(){
-		super();
-		this.widget = new DynamicWidget();
-		this.filterBoolean = true;
+	public MainWindowStatusBar(LibGlade glade){
+		super((glade.getWidget("mainWindowStatusBar")).getHandle());		
+		
 	}
 	
-	public Filter(String name, String toolTip){
-		super(name, toolTip);
-		this.widget = new DynamicWidget();
-		this.filterBoolean = true;
-	}
-	
-	public Filter(Filter other){
-		super(other);
-		this.widget = new DynamicWidget(other.widget);
-	}
-	
-	/**
-	 * return the widget used to edit the parameters of this
-	 * filter.
-	 */
-	public Widget getWidget() {
-		//System.out.println("Filter.getWidget() Filter: " + this);
-		return this.widget;
-	}
-
-	public void save(Element node){
-		super.save(node);
-		node.setAttribute("filterBoolean", this.filterBoolean+"");
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
-		System.out.println(this + ": Filter.load() loading boolean " + node.getAttributeValue("filterBoolean"));
-	}
-	
-	public void setFilterBoolean(boolean filterBoolean){
-		this.filterBoolean = filterBoolean;
-	}
-	
-	public boolean getFilterBoolean(){
-		return this.filterBoolean;
-	}
 }

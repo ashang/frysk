@@ -1,3 +1,18 @@
+2006-05-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/Filter.java: Added saving/loading of filters
+	boolean value.
+	* datamodels/FlatProcObservableLinkedList.java: now using
+	getNiceExecutablePath instead of getFullExecutablePath.
+	* SessionProcTreeView.java: Added displaying of executable
+	path of selected proc in the status bar.
+	* FilterRow.java: Added setting and getting of filter
+	boolean value (IS/ISNOT).
+	* MainWindowStatusBar.java: New file. Handle for the
+	statusbar.
+	* GuiProc.java: Added getNiceExecutablePath which filters
+	out all strange output of getExe() (part of fix for 2663).
+
 2006-05-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* GuiTask.java: Added null check when constructing an new

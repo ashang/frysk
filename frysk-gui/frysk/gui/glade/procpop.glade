@@ -851,6 +851,22 @@
 	  <property name="fill">True</property>
 	</packing>
       </child>
+
+      <child>
+	<widget class="GtkStatusbar" id="mainWindowStatusBar">
+	  <property name="visible">True</property>
+	  <property name="has_resize_grip">True</property>
+	  <accessibility>
+	    <atkproperty name="AtkObject::accessible_name" translatable="yes">mainWindowStatusBar</atkproperty>
+	    <atkproperty name="AtkObject::accessible_description" translatable="yes">mainWindowStatusBar</atkproperty>
+	  </accessibility>
+	</widget>
+	<packing>
+	  <property name="padding">0</property>
+	  <property name="expand">False</property>
+	  <property name="fill">False</property>
+	</packing>
+      </child>
     </widget>
   </child>
 </widget>

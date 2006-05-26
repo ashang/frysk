@@ -146,6 +146,7 @@ public class SessionProcTreeView extends Widget implements ButtonListener, Savea
 						data.setWidget(new ProcStatusWidget(data));
 					}
 					
+					WindowManager.theManager.mainWindowStatusBar.push(0, data.getFullExecutablePath());
 					infoWidget.setSelectedProc(data);
 					
 					if(threadTreeView.getModel().getFirstIter() != null){

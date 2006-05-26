@@ -118,7 +118,7 @@ public class DebugProcess extends GuiObject {
 		allProcsList.itemAdded.addObserver(new Observer() {
 			public void update(Observable observable, Object arg) {
 				GuiProc guiProc = (GuiProc) arg;
-				if((guiProc.getFullExecutablePath()).equals(executablePath)){
+				if((guiProc.getNiceExecutablePath()).equals(executablePath)){
 					addProc(guiProc);
 				}
 			}
@@ -127,7 +127,7 @@ public class DebugProcess extends GuiObject {
 		allProcsList.itemRemoved.addObserver(new Observer() {
 			public void update(Observable observable, Object arg) {
 				GuiProc guiProc = (GuiProc) arg;
-				if(guiProc.getFullExecutablePath().equals(executablePath)){
+				if(guiProc.getNiceExecutablePath().equals(executablePath)){
 					removeProc(guiProc);
 				}
 			}
@@ -136,7 +136,7 @@ public class DebugProcess extends GuiObject {
 		Iterator iterator = allProcsList.iterator();
 		while (iterator.hasNext()) {
 			GuiProc guiProc = (GuiProc) iterator.next();
-			if((guiProc.getFullExecutablePath()).equals(this.executablePath)){
+			if((guiProc.getNiceExecutablePath()).equals(this.executablePath)){
 				this.addProc(guiProc);
 			}
 		}

@@ -40,19 +40,24 @@
 package frysk.gui.monitor;
 
 import org.gnu.gtk.AttachOptions;
+import org.gnu.gtk.event.ComboBoxEvent;
+import org.gnu.gtk.event.ComboBoxListener;
 
 import frysk.gui.monitor.filters.ComboFactory;
+import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class FilterRow extends ObserverItemRow{
 
 	private static ObservableLinkedList booleanList;
+	private static final GuiObject  IS = new GuiObject("is", "");
+	private static final GuiObject  ISNOT = new GuiObject("is not", "");
 	
+
 	static{
 		booleanList = new ObservableLinkedList();
-		
-		booleanList.add(new GuiObject("is", ""));
-		booleanList.add(new GuiObject("is not", ""));
+		booleanList.add(IS);
+		booleanList.add(ISNOT);
 	}
 	
 	SimpleComboBox booleanComboBox;
@@ -70,9 +75,34 @@ public class FilterRow extends ObserverItemRow{
 			itemsComboBox.setSelectedObject(combo);
 		}
 		
+		final Filter filter = (Filter) combo.getFilter();
 		
 		booleanComboBox = new SimpleComboBox();
-		booleanComboBox.watchLinkedList(booleanList);	
+		booleanComboBox.watchLinkedList(booleanList);
+		
+		boolean currentBoolean = filter.getFilterBoolean();
+		if(currentBoolean){
+			booleanComboBox.setSelectedObject(IS);
+			System.out.println(this + ": FilterRow.FilterRow() setting selected to: IS" );
+		}else{
+			booleanComboBox.setSelectedObject(ISNOT);			
+			System.out.println(this + ": FilterRow.FilterRow() setting selected to: ISNOT" );
+		}
+		
+		booleanComboBox.addListener(new ComboBoxListener() {
+			public void comboBoxEvent(ComboBoxEvent event) {
+				GuiObject object = booleanComboBox.getSelectedObject();
+				if(object == IS){
+					System.out.println(this
+							+ ": .comboBoxEvent() setting boolean to " + true);
+					filter.setFilterBoolean(true);
+				}else{
+					System.out.println(this
+							+ ": .comboBoxEvent() setting boolean to " + false);				
+					filter.setFilterBoolean(false);
+				}
+			}
+		});
 	}	
 	
 	public void removeFromTable(){
