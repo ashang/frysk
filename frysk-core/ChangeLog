@@ -1,3 +1,7 @@
+2006-05-26  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Applied Yao Qi patch to add libiberty & libbfd.
+
 2006-05-24  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Add frysk-imports/elfutils/libdw/libdw.a.
