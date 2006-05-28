@@ -115,39 +115,12 @@ class Observer:
   
   def isequal(self, theOtherObserver):
     returnFlag = True
-<<<<<<< Observer.py
-=======
  
     print self.getName() + theOtherObserver.getName()
->>>>>>> 1.3
 
-<<<<<<< Observer.py
-    if self.getName() != theOtherObserver.getName():
-        returnFlag = False
-    if self.getLoggingAction() != theOtherObserver.getLoggingAction():
-        returnFlag = False
-    if self.getEvent() != theOtherObserver.getEvent():
-        returnFlag = False
-    if self.getFilterName != theOtherObserver.getFilterName():
-        returnFlag = False
-    if self.getFilterQualifier() != theOtherObserver.getFilterQualifier():
-        returnFlag = False
-    if self.getFilterParameter() != theOtherObserver.getFilterParameter():
-        returnFlag = False
-    if self.getActionsName() != theOtherObserver.getActionsName():
-        returnFlag = False
-    if self.getActionsNameParameter() != theOtherObserver.getActionsNameParameter():
-        returnFlag = False
-    if self.getAfterAction() != theOtherObserver.getAfterAction():
-        returnFlag = False
-=======
     if self.getName() != theOtherObserver.getName():
       returnFlag = False
->>>>>>> 1.3
 
-<<<<<<< Observer.py
-    return returnFlag
-=======
     if self.getType() != theOtherObserver.getType():
       returnFlag = False    
  
@@ -161,4 +134,3 @@ class Observer:
       returnFlag = False    
      
     return returnFlag
->>>>>>> 1.3
