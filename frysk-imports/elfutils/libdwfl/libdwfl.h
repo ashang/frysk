@@ -53,6 +53,11 @@
 #include "libdw.h"
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /* Handle for a session using the library.  */
 typedef struct Dwfl Dwfl;
 
@@ -402,5 +407,9 @@ extern int dwfl_module_register_names (Dwfl_Module *mod,
 							const char *regname),
 				       void *arg);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* libdwfl.h */

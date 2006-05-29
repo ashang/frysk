@@ -62,6 +62,10 @@
 # define __nonnull_attribute__(args...)
 #endif
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 /* Mode for the session.  */
 typedef enum
@@ -624,5 +628,9 @@ dwarf_whatform (Dwarf_Attribute *attr)
   return attr == NULL ? 0 : attr->form;
 }
 #endif	/* Optimize.  */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* libdw.h */

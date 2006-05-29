@@ -1,7 +1,13 @@
-
-Local Variables:
-mode: change-log
-left-margin: 8
-fill-column: 74
-version-control: never
-End:
+2005-05-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwarf.java: Created.
+	* DwarfCommand.java: Ditto.
+	* DwarfDie.java: Ditto.
+	* Dwfl.java: Ditto.
+	* DwflLine.java: Ditto.
+	* DwflModule.java: Ditto.
+	* cni: Added.
+	* cni/Dwarf.cxx: Created.
+	* cni/Dwfl.cxx: Ditto.
+	* cni/DwflLine.cxx: Ditto.
+	

@@ -144,6 +144,7 @@ AM_CXXFLAGS = \
 	-I$(top_builddir) \
 	-I$(srcdir)/elfutils/libelf \
 	-I$(srcdir)/elfutils/libdw \
+	-I$(srcdir)/elfutils/libdwfl \
 	-Werror \
 	-Wall \
 	-fPIC \
