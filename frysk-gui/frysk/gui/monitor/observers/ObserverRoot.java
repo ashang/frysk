@@ -216,9 +216,9 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 		}
 
-		public void load(Element node) {			
+		public void load(Element node) {	
 			super.load(node);
-			
+
 			//actions
 			Element actionPointsXML = node.getChild("actionPoints");
 			List list = (List) (actionPointsXML.getChildren("actionPoint"));

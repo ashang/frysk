@@ -90,6 +90,14 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    					return;
 	    				}
 	    				
+//	    				String path = "nopath";
+//	    				try{
+//	    					proc.getExe();
+//	    				}catch(Exception e){
+//	    					
+//	    				}
+//	    				System.out.println(this + ": ProcCreatedObserver.update() " + path);
+	    				
 	    				GuiProc procData = GuiProc.GuiProcFactory.getGuiProc(proc);
 	    				procData.setName(proc.getPid() + " " + procData.getNiceExecutablePath());
 	    				procData.setToolTip(procData.getNiceExecutablePath());

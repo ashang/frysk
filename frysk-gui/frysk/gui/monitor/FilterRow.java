@@ -53,7 +53,6 @@ public class FilterRow extends ObserverItemRow{
 	private static final GuiObject  IS = new GuiObject("is", "");
 	private static final GuiObject  ISNOT = new GuiObject("is not", "");
 	
-
 	static{
 		booleanList = new ObservableLinkedList();
 		booleanList.add(IS);
@@ -81,12 +80,11 @@ public class FilterRow extends ObserverItemRow{
 		booleanComboBox.watchLinkedList(booleanList);
 		
 		boolean currentBoolean = filter.getFilterBoolean();
+//		System.out.println(this + ": FilterRow.FilterRow() currentBoolean " + currentBoolean );
 		if(currentBoolean){
 			booleanComboBox.setSelectedObject(IS);
-			System.out.println(this + ": FilterRow.FilterRow() setting selected to: IS" );
 		}else{
 			booleanComboBox.setSelectedObject(ISNOT);			
-			System.out.println(this + ": FilterRow.FilterRow() setting selected to: ISNOT" );
 		}
 		
 		booleanComboBox.addListener(new ComboBoxListener() {

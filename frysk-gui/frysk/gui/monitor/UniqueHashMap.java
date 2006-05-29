@@ -75,7 +75,7 @@ public class UniqueHashMap{
 	
 	public void add(GuiObject object){
 		if(this.nameHash.containsKey(object.getName())){
-			throw new RuntimeException("The given item name"+"["+ object.getName()+"]"+" is already used");
+			throw new IllegalArgumentException("The given item name"+"["+ object.getName()+"]"+" is already used");
 		}else{
 			this.nameHash.put(object.getName(), object);
 		}

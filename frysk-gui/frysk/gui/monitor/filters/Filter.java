@@ -70,6 +70,8 @@ public abstract class Filter extends LiaisonItem {
 	public Filter(Filter other){
 		super(other);
 		this.widget = new DynamicWidget(other.widget);
+		this.filterBoolean = other.filterBoolean;
+//		System.out.println(this + ": Filter.Filter() copying");
 	}
 	
 	/**
@@ -89,11 +91,11 @@ public abstract class Filter extends LiaisonItem {
 	public void load(Element node){
 		super.load(node);
 		this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
-		System.out.println(this + ": Filter.load() loading boolean " + node.getAttributeValue("filterBoolean"));
 	}
 	
 	public void setFilterBoolean(boolean filterBoolean){
 		this.filterBoolean = filterBoolean;
+//		System.out.println(this + ": Filter.setFilterBoolean() boolean set to " + this.filterBoolean );
 	}
 	
 	public boolean getFilterBoolean(){

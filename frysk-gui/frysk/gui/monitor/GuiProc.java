@@ -62,6 +62,9 @@ import frysk.proc.Proc;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class GuiProc extends GuiData{
+	
+	private static final String PATH_NOT_FOUND = "*Could not retrieve path*";
+
 	private Proc proc;
 	
 	private String executableName;
@@ -88,12 +91,23 @@ public class GuiProc extends GuiData{
 		
 		this.niceExecutbalePath = this.getFullExecutablePath();
 
+		if(niceExecutbalePath.contains("\0")){
+			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf("\0"));
+		}
+
 		if(niceExecutbalePath.endsWith(" (deleted)")){
 			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf(" (deleted)"));
 		}
 		
 		if(niceExecutbalePath.contains(".#prelink#")){
 			niceExecutbalePath = niceExecutbalePath.substring(0,niceExecutbalePath.indexOf(".#prelink#"));
+		}
+		
+		if(this.executablePath == PATH_NOT_FOUND){
+			this.executableName = proc.getCommand();
+		}else{
+			File file = new File(this.getNiceExecutablePath());		
+			this.executableName = file.getName();
 		}
 	}
 
@@ -105,18 +119,18 @@ public class GuiProc extends GuiData{
 		try{
 			this.executablePath = proc.getExe();
 			
-			File file = new File(this.getNiceExecutablePath());
-			this.executableName = file.getName();
+//			File file = new File(this.getNiceExecutablePath());
+//			this.executableName = file.getName();
 
 		}catch (Exception e) {
 			try {
 				this.executablePath = proc.getCmdLine()[0];
 			} catch (Exception e2) {
-				this.executablePath = "*Could not retrieve path*";
-				this.executableName = proc.getCommand();
+				this.executablePath = PATH_NOT_FOUND;
+//				this.executableName = proc.getCommand();
 			}
-			File file = new File(this.executablePath);
-			this.executableName = file.getName();
+//			File file = new File(this.executablePath);
+//			this.executableName = file.getName();
 		}
 	}
 	

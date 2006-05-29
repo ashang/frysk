@@ -64,7 +64,12 @@ import frysk.gui.monitor.filters.TaskProcNameFilter;
 public class ObserverManager {
 
 	public static ObserverManager theManager = new ObserverManager();
-	
+
+	static{
+		theManager.loadObservers();
+		theManager.initTaskObservers();
+
+	}
 	/**
 	 * A table that hashes observer names to
 	 * their prototypes. Also used to make sure
@@ -89,8 +94,6 @@ public class ObserverManager {
 		this.nameHash = new UniqueHashMap();
 		
 		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
-		this.loadObservers();
-		this.initTaskObservers();
 	}
 	
 	/**
@@ -101,36 +104,31 @@ public class ObserverManager {
 		//============================================
 		ObserverRoot observer = new TaskExecObserver();
 		observer.dontSaveObject();
-		try { this.addTaskObserverPrototype(observer);
-		} catch (Exception e) {}
+		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskForkedObserver();
 		observer.dontSaveObject();
-		try { this.addTaskObserverPrototype(observer);
-		} catch (Exception e) {}
+		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskTerminatingObserver();
 		observer.dontSaveObject();
-		try { this.addTaskObserverPrototype(observer);
-		} catch (Exception e) {}
+		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskCloneObserver();
 		observer.dontSaveObject();
-		try { this.addTaskObserverPrototype(observer);
-		} catch (Exception e) {}
+		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		//============================================
 		observer = new TaskSyscallObserver();
 		observer.dontSaveObject();
-		try { this.addTaskObserverPrototype(observer);
-		} catch (Exception e) {}
+		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
 		observer = new ExitNotificationObserver();
@@ -164,9 +162,7 @@ public class ObserverManager {
 		//execObserver.apply(proc);
 		forkedObserver.dontSaveObject();
 
-		try { this.addTaskObserverPrototype(forkedObserver);
-		} catch (Exception e) {}
-
+		tryAddTaskObserverPrototype(forkedObserver);	
 	} 
 
 	/**
@@ -230,8 +226,9 @@ public class ObserverManager {
 	 * @param observer
 	 */
 	public void tryAddTaskObserverPrototype(ObserverRoot observer){
-		try { this.addTaskObserverPrototype(observer);
-		} catch (Exception e) {}
+		if(!this.nameHash.nameIsUsed(observer.getName())){
+			this.addTaskObserverPrototype(observer);
+		}
 	}
 	
 	public void addBaseObserverPrototype(ObserverRoot observer){
@@ -263,9 +260,11 @@ public class ObserverManager {
 			try{
 				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
 				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
-			}catch(Exception e){
-				continue;
+			}catch (Exception e) {
+				System.out.println(this	+ ": ObserverManager.loadObservers() Exception while loading " + array[i]);
+				e.printStackTrace();
 			}
+			
 			this.addTaskObserverPrototype(loadedObserver);
 		}
 		

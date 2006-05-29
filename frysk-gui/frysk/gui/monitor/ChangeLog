@@ -1,3 +1,15 @@
+2006-05-29  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* GuiProc.java: Added null termination check to 
+	getNiceExecutablePath  (work around for 2663).
+	* observers/ObserverManager.java: Removed all empty exception
+	catches. NEVER agian :).
+	* ObservableLinkedList.java: Commented out debug output.
+	* filters/Filter.java: Ditto.
+	* UniqueHashMap.java (add): Changed type of exception
+	thrown.
+	* FilterRow.java: Removed some debug output.
+
 2006-05-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/Filter.java: Added saving/loading of filters
