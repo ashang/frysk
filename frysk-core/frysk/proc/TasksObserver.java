@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,78 +39,79 @@
 
 package frysk.proc;
 
-import java.util.Observable;
-import java.util.Observer;
-
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.Config;
 
 /**
- * Test that the Proc's Tasks Observer correctly reports the tasks
- * belonging to a process.
+ * Provides a mechanism for tracing all clone events within a process.
  */
 
-public class TestTasksObserver extends TestLib {
-
-    /**
-     * Check that adding ProcObserver.Tasks to a running process
-     * correctly adds it's self to the correct number of tasks.
-     */
-    public void testTasksObserver()
+public class TasksObserver
+    implements TaskObserver.Cloned
+{
+    protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    final Proc proc;
+    final ProcObserver.Tasks tasksObserver;
+    final Task mainTask;
+    public TasksObserver (Proc proc, ProcObserver.Tasks tasksObserver)
     {
-	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess(3);
-	Proc proc = ackDaemonProcess.findProcUsingRefresh();
-		
-	TasksObserverTester observerTester = new TasksObserverTester();
-	new TasksObserver (proc, observerTester);
-		
-	proc.observableAttached.addObserver(new Observer() {
-		public void update(Observable arg0, Object arg1) {
-		    Manager.eventLoop.requestStop();
-		}
-	    });
+	logger.log (Level.FINE, "{0} new\n", this); 
+	this.proc = proc;
+	this.tasksObserver = tasksObserver;
+	// Get a preliminary list of tasks - XXX: hack really.
+	proc.sendRefresh ();
 
-	assertRunUntilStop ("running to attach");
-	assertEquals ("taskAddedCount", 0, observerTester.taskAddedCount);
-	assertEquals ("taskRemovedCount", 0, observerTester.taskRemovedCount);
-	assertEquals ("existingTaskCount", 4, observerTester.existingTaskCount);
+	mainTask = Manager.host.get (new TaskId (proc.getPid ()));
+	if (mainTask == null) {
+	    tasksObserver.addFailed(proc, new RuntimeException("Process lost"));
+	    return;
+	}
+	mainTask.requestAddClonedObserver (this);
     }
-	
-    class TasksObserverTester
-	implements ProcObserver.Tasks
+
+    // Never block the parent.
+    public Action updateClonedParent (Task parent,
+				      Task offspring)
     {
-	
-	int taskAddedCount; 
-	int taskRemovedCount; 
-	int existingTaskCount;
-		
-	public void taskAdded(Task task)
-	{
-	    this.taskAddedCount++;
+	return Action.CONTINUE;
+    }
+    
+    public Action updateClonedOffspring (Task parent,
+					 Task offspring)
+    {
+	tasksObserver.taskAdded (offspring);
+	offspring.requestAddClonedObserver (this);
+	// Need to BLOCK and UNBLOCK so that the
+	// request to add an observer has enough time
+	// to be processed before the task continues.
+	offspring.requestUnblock (this);
+	return Action.BLOCK;
+    }
+    
+    public void addedTo(Object observable)
+    {
+	Task addedTask = (Task) observable;
+	if (addedTask == mainTask) {
+	    // XXX: Is there a race here with a rapidly cloning task?
+	    for (Iterator iterator = proc.getTasks().iterator();
+		 iterator.hasNext(); ) {
+		Task task = (Task) iterator.next();
+		tasksObserver.existingTask (addedTask);
+		if (task != mainTask)
+		    task.requestAddClonedObserver (this);
+	    }
 	}
+    }
 
-	public void taskRemoved(Task task)
-	{
-	    this.taskRemovedCount++;
-	}
+    public void addFailed(Object observable, Throwable w)
+    {
+	throw new RuntimeException("How did this happen ?!");
+    }
 
-	public void existingTask(Task task)
-	{
-	    this.existingTaskCount++;
-	}
-
-	public void addedTo(Object observable)
-	{
-	}
-
-	public void addFailed(Object observable, Throwable w)
-	{
-	    // TODO Auto-generated method stub
-	    throw new RuntimeException("You forgot to implement this method :D ");
-	}
-
-	public void deletedFrom(Object observable)
-	{
-	    // TODO Auto-generated method stub
-	    throw new RuntimeException("You forgot to implement this method :D ");
-	}
+    public void deletedFrom(Object observable)
+    {
+	tasksObserver.taskRemoved ((Task)observable);
     }
 }

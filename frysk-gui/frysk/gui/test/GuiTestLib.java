@@ -48,6 +48,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
+import frysk.proc.TasksObserver;
 import frysk.proc.ProcObserver.Tasks;
 import frysk.sys.Fork;
 import frysk.sys.Sig;
@@ -142,23 +143,23 @@ public class GuiTestLib extends TestCase{
 		
 		private void listenForSignals(){
 			
-			proc.requestAddTasksObserver(new Tasks() {
-			
-				public void deletedFrom(Object observable){}
-				public void addFailed(Object observable, Throwable w){}
-				public void addedTo(Object observable){}
+		    new TasksObserver (proc, new Tasks()
+			{
+			    public void deletedFrom(Object observable){}
+			    public void addFailed(Object observable, Throwable w){}
+			    public void addedTo(Object observable){}
 
-				public void existingTask(Task task) {
-					task.requestDeleteSignaledObserver(TestProc.this);
-				}
+			    public void existingTask(Task task) {
+				task.requestDeleteSignaledObserver(TestProc.this);
+			    }
 			
-				public void taskRemoved(Task task) {
-					task.requestAddSignaledObserver(TestProc.this);
-				}
+			    public void taskRemoved(Task task) {
+				task.requestAddSignaledObserver(TestProc.this);
+			    }
 			
-				public void taskAdded(Task task) {
-					task.requestAddSignaledObserver(TestProc.this);
-				}
+			    public void taskAdded(Task task) {
+				task.requestAddSignaledObserver(TestProc.this);
+			    }
 			});
 		}
 		

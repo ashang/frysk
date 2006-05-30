@@ -104,12 +104,6 @@ abstract class ProcState
     {
 	throw unhandled (proc, "handleDeleteObservation");
     }
-    ProcState handleAddTasksObserver(Proc proc,
-				     ProcObserver.Tasks tasksObserver)
-    {
-	throw unhandled (proc, "handleAddTasksObserver");
-    }
-
 
     /**
      * The process is running free (or at least was the last time its
@@ -148,94 +142,6 @@ abstract class ProcState
 		observation.fail (new RuntimeException ("not attached"));
 		return detached;
 	    }
-
-	    ProcState handleAddTasksObserver (final Proc proc,
-					      final ProcObserver.Tasks tasksObserver)
-	    { 
-	    	logger.log (Level.FINE, "{0} handleAddTasksObserver \n", proc); 
-	    	proc.sendRefresh();
-	    	class ClonedObserver
-		    implements TaskObserver.Cloned
-		{
-		    ProcObserver.Tasks theObserver;
-		    ClonedObserver(){
-			this.theObserver = tasksObserver;
-		    }
-	    		
-		    public Action updateClonedParent (Task parent,
-						      Task offspring)
-		    {
-			return Action.CONTINUE;
-		    }
-
-		    public Action updateClonedOffspring (Task parent,
-							 Task offspring)
-		    {
-			theObserver.taskAdded (offspring);
-			offspring.requestAddClonedObserver (this);
-			// Need to BLOCK and UNBLOCK so that the
-			// request to add an observer has enough time
-			// to be processed before the task continues.
-			offspring.requestUnblock (this);
-			return Action.BLOCK;
-                    }
-		    
-		    public void addedTo(Object observable) {
-		    }
-
-		    public void addFailed(Object observable, Throwable w)
-		    {
-			throw new RuntimeException("How did this happen ?!");
-		    }
-
-		    public void deletedFrom(Object observable)
-		    {
-			theObserver.taskRemoved((Task)observable);
-		    }
-	    	}
-	    	
-	    	
-	    	final Task mainTask = Manager.host.get (new TaskId (proc.getPid ()));
-		if (mainTask == null) {
-		    tasksObserver.addFailed(proc, new RuntimeException("Process lost"));
-		    return detached;
-		}
-
-	    	final ClonedObserver clonedObserver = new ClonedObserver();
-		mainTask.requestAddAttachedObserver(new TaskObserver.Attached()
-		    {
-		    	Proc theProc = proc;
-		    	Task theMainTask = mainTask;
-		    	ClonedObserver theClonedObserver = clonedObserver;
-		    	
-			public void deletedFrom(Object observable) {
-			}
-			
-			public void addFailed(Object observable, Throwable w)
-			{
-			    // TODO Auto-generated method stub
-			    throw new RuntimeException("You forgot to implement this method :D ");
-			}
-			
-			public void addedTo(Object observable) {
-			}
-			
-			public Action updateAttached(Task task)
-			{
-			    Iterator iterator = theProc.getTasks().iterator();
-			    while (iterator.hasNext()) {
-				Task myTask = (Task) iterator.next();
-				task.requestAddClonedObserver(theClonedObserver);
-				tasksObserver.existingTask(myTask);
-			    }
-			    theMainTask.requestDeleteAttachedObserver(this);
-			    return Action.CONTINUE;
-			}
-		    });
-		tasksObserver.addedTo(proc);
-	    	return detached;
-	    }
-
 	};
 
     /**

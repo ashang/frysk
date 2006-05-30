@@ -1,5 +1,10 @@
 2006-05-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TasksObserver.java: New file.
+	* TestTasksObserver.java: Update.
+	* Proc.java (requestAddTasksObserver): Delete.
+	* ProcState.java (handleAddTasksObserver): Delete.
+	
 	* TaskObserver.java (Forked): Add method updateForkedOffspring.
 	(Cloned): Add method updateClonedOffspring.
 	* TestTaskObserverBlocked.java: Handle updateForkedOffspring, and

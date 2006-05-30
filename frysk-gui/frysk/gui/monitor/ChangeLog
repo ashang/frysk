@@ -1,5 +1,8 @@
 2006-05-30  Andrew Cagney  <cagney@redhat.com>
 
+	* observers/TaskObserverRoot.java: Use frysk.proc.TasksObserver.
+	* SessionProcDataModel.java: Ditto.
+
 	* observers/TaskForkedObserver.java: Handle updateForkedOffspring.
 	Always block both the parent and offspring (the bottomHalf always
 	unblocks).

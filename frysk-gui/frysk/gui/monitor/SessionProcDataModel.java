@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.gui.monitor;
 
 import java.io.IOException;
@@ -63,6 +64,7 @@ import frysk.gui.sessions.Session;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TasksObserver;
 import frysk.proc.ProcObserver.Tasks;
 
 public class SessionProcDataModel {
@@ -168,30 +170,30 @@ public class SessionProcDataModel {
 		treeStore.setValue(iter,threadParentDC, 0);
 		treeStore.setValue(iter,sensitiveDC, true);		
 	
-		proc.requestAddTasksObserver(new Tasks() {
-		
+		new TasksObserver (proc, new Tasks()
+		    {
 			public void deletedFrom(Object observable) {
 			}
 		
 			public void addFailed(Object observable, Throwable w) {
-				throw new RuntimeException("Failed to add tasks observer");
+			    throw new RuntimeException("Failed to add tasks observer");
 			}
 		
 			public void addedTo(Object observable) {
 			}
 		
 			public void existingTask(Task task) {
-				addTask(task);
+			    addTask(task);
 			}
 		
 			public void taskRemoved(Task task) {
-				removeTask(task);
+			    removeTask(task);
 			}
 		
 			public void taskAdded(Task task) {
-				addTask(task);
+			    addTask(task);
 			}
-		});
+		    });
 	}
 	
 	public void addTask(Task task){
