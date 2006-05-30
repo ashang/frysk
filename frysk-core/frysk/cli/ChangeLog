@@ -1,3 +1,8 @@
+2006-05-30  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/TaskSet.java: Renamed to AllPTSet.java
+	* hpd/AllPTSet.java: New
+
 2006-05-24  Ivan Pantuyev  <ipantuye@redhat.com>
 	
 	* hpd/Command.java: New
