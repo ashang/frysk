@@ -56,12 +56,18 @@ import frysk.Config;
 public abstract class Proc
 {
     protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
-    protected ProcId id;
+    final ProcId id;
     public ProcId getId ()
     {
 	return id;
     }
     
+    /**
+     * If known, due to the tracing of a fork, the Task that created
+     * this process.
+     */
+    final Task creator;
+
     Proc parent;
     public Proc getParent ()
     {
@@ -69,7 +75,7 @@ public abstract class Proc
     	return this.parent;
     }
 
-    Host host;
+    final Host host;
     public Host getHost ()
     {
 	return host;
@@ -141,11 +147,12 @@ public abstract class Proc
      * Create a new Proc skeleton.  Since PARENT could be NULL,
      * explicitly specify the HOST.
      */
-    private Proc (ProcId id, Proc parent, Host host)
+    private Proc (ProcId id, Proc parent, Host host, Task creator)
     {
 	this.host = host;
 	this.id = id;
 	this.parent = parent;
+	this.creator = creator;
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add (this);
@@ -158,7 +165,7 @@ public abstract class Proc
      */
     protected Proc (Host host, Proc parent, ProcId id)
     {
-	this (id, parent, host);
+	this (id, parent, host, null);
 	newState = ProcState.initial (this, false);
 	logger.log (Level.FINEST, "{0} new - create unattached running proc\n",
 		    this); 
@@ -176,7 +183,7 @@ public abstract class Proc
      */
     protected Proc (Task task, ProcId forkId)
     {
-	this (forkId, task.proc, task.proc.host);
+	this (forkId, task.proc, task.proc.host, task);
 	newState = ProcState.initial (this, true);
 	logger.log (Level.FINE, "{0} new - create attached running proc\n",
 		    this); 
@@ -495,7 +502,6 @@ public abstract class Proc
     {
 	return ("{" + super.toString ()
 		+ ",pid=" + getPid ()
-		+ ",command=" + getCommand ()
 		+ ",state=" + getState ()
 		+ "}");
     }

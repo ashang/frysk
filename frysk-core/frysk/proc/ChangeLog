@@ -1,3 +1,11 @@
+2006-05-30  Andrew Cagney  <cagney@redhat.com>
+
+	* Proc.java: Make members final.
+	(creator): New member.
+	(host, id): Make final.
+	(Proc): Initialize the creator.
+	(toString): Do not print the command.
+	
 2006-05-29  Andrew Cagney  <cagney@redhat.com>
 
 	* HostState.java: In log, print the Host.  Trace all state
