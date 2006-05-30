@@ -43,20 +43,23 @@
 
 void
 lib::dw::Dwfl::dwfl_begin(jint pid){
+	
+	char * flags = "-:.debug:/usr/bin/debug";
+	
 	const ::Dwfl_Callbacks callbacks = {
 		::dwfl_linux_proc_find_elf,
 		::dwfl_standard_find_debuginfo,
 		NULL,
-		"-:.debug:/usr/bin/debug"
+		&flags
 	};
 	
 	::Dwfl* dwfl = ::dwfl_begin(&callbacks);
 	
 	::dwfl_report_begin(dwfl);
-	::dwfl_linux_proc_report((pid_t) pid);
+	::dwfl_linux_proc_report(dwfl, (pid_t) pid);
 	::dwfl_report_end(dwfl, NULL, NULL);
 	
-	this->pointer = (jlong) dwfl
+	this->pointer = (jlong) dwfl;
 }
 
 void

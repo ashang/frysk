@@ -1,5 +1,7 @@
 2005-05-30  Adam Jocksch  <ajocksch@redhat.com>
 
+	* cni/Dwfl.cxx (dwfl_begin): Fixed errors.
+
 	* Dwfl.java (Dwfl): Now takes a pid.
 	* cni/Dwfl.cxx (dwfl_begin): Now takes a pid, and calls
 	dwfl_linux_proc_report for that process.
