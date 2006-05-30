@@ -1,3 +1,8 @@
+2006-05-29  Andrew Cagney  <cagney@redhat.com>
+
+	* HostState.java: In log, print the Host.  Trace all state
+	transitions at level FINE.
+
 2006-05-25  Stan Cox  <scox@redhat.com>
 
 	* Task.java: Change to FINEST.
