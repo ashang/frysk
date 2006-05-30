@@ -68,8 +68,13 @@ public class TestTaskClonedObserver
 	    public Action updateClonedParent (Task parent, Task offspring)
 	    {
 		count++;
-		offspring.requestAddClonedObserver (this);
 		parent.requestUnblock (this);
+		return Action.BLOCK;
+	    }
+	    public Action updateClonedOffspring (Task parent,
+						 Task offspring)
+	    {
+		offspring.requestAddClonedObserver (this);
 		offspring.requestUnblock (this);
 		return Action.BLOCK;
 	    }

@@ -58,6 +58,15 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 
 	
 	public Action updateClonedParent(Task task, Task clone) {
+		return Action.BLOCK;
+	}
+	
+    // XXX: Sami, take a look at frysk.proc.TestTaskObserverBlocked,
+    // in particular how it has generic "spawnParent" and
+    // "spawnOffspring" methods called by sub-classes that implement
+    // TaskObserver.Forked and TaskObserver.Cloned.
+
+	public Action updateClonedOffspring (Task task, Task clone) {
 		// TODO Auto-generated method stub
 		//System.out.println("TaskCloneObserver.updateCloned()");
 		final Task myTask = task;

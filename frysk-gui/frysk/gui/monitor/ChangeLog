@@ -1,3 +1,12 @@
+2006-05-30  Andrew Cagney  <cagney@redhat.com>
+
+	* observers/TaskForkedObserver.java: Handle updateForkedOffspring.
+	Always block both the parent and offspring (the bottomHalf always
+	unblocks).
+	* observers/TaskCloneObserver.java: Handle updateClonedOffspring.
+	* EventLogger.java: Handle updateForkedOffspring, and
+	updateClonedOffspring.
+
 2006-05-29  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* GuiProc.java: Added null termination check to 

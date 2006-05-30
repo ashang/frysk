@@ -67,12 +67,16 @@ public class TestTaskForkedObserver
 	    public Action updateForkedParent (Task parent, Task offspring)
 	    {
 		count++;
+		parent.requestUnblock (this);
+		return Action.BLOCK;
+	    }
+	    public Action updateForkedOffspring (Task parent, Task offspring)
+	    {
 		// XXX: Is this legit?  Like knowing that the request
 		// won't be processed until the event loop is run
 		// again so that there's no race condition.
 		offspring.requestAddForkedObserver (this);
 		offspring.requestUnblock (this);
-		parent.requestUnblock (this);
 		return Action.BLOCK;
 	    }
 	}

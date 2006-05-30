@@ -60,6 +60,10 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 
 	public Action updateForkedParent (Task task, Task child) {
+	    return Action.BLOCK;
+	}
+	
+	public Action updateForkedOffspring (Task task, Task child) {
 //		WarnDialog dialog = new WarnDialog("Fork ya'll");
 //		dialog.showAll();
 //		dialog.run();
@@ -71,14 +75,15 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {
 			    //System.out.println(this + ": .run() running runnable");
+			    // This does the unblock.
 				bottomHalf(myTask, myChild);
 			}
 		});
 		
-		return this.getReturnAction();
-		//return Action.BLOCK;
+		//return this.getReturnAction();
+		return Action.BLOCK;
 	}
-	
+
 	private void bottomHalf(Task task, Task child){
 		this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: forked new child PID: "+ child.getProc().getPid() + " Host: " + Manager.host.getName());
 		if(this.runFilters(task, child)){

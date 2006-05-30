@@ -68,6 +68,8 @@ class TaskState
     static TaskState clonedState (TaskState parentState)
     {
 	if (parentState == detaching)
+	    // XXX: Is this needed?  Surely the infant can detect that
+	    // it should detach, and the parent handle that.
 	    return detaching;
 	else if (parentState == running)
 	    return StartClonedTask.waitForStop;
@@ -198,15 +200,20 @@ class TaskState
      */
     private static final TaskState attaching = new TaskState ("attaching")
 	{
+	    private TaskState transitionToAttached (Task task)
+	    {
+		task.proc.performTaskAttachCompleted (task);
+		return Attached.waitForContinueOrUnblock;
+	    }
 	    TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-		return Attached.transitionTo (task);
+		return transitionToAttached (task);
 	    }
 	    TaskState handleTrappedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
-		return Attached.transitionTo (task);
+		return transitionToAttached (task);
 	    }
     	    TaskState handleDisappearedEvent (Task task, Throwable w)
     	    {
@@ -250,21 +257,12 @@ class TaskState
 	    super ("Attached." + name);
 	}
 	/**
-	 * Transition to the initial attached sub-state.
-	 */
-	static TaskState transitionTo (Task task)
-	{
-	    logger.log (Level.FINE, "{0} Attached.transitionTo\n", task);
-	    task.proc.performTaskAttachCompleted (task);
-	    return Attached.waitForContinueOrUnblock;
-	}
-	/**
 	 * In all Attached states, addObservation is allowed.
 	 */
 	TaskState handleAddObserver (Task task, Observable observable,
 				     Observer observer)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 	    observable.add (observer);
 	    return this;
 	}
@@ -282,15 +280,13 @@ class TaskState
 	 * Once the task is both unblocked and continued, should
 	 * transition to the running state.
 	 */
-	TaskState transitionToRunningState (Task task)
+	static TaskState transitionToRunningState (Task task)
 	{
 	    task.sendSetOptions ();
 	    if (task.notifyAttached () > 0)
 		return blockedContinue;
-	    else {
-		task.sendContinue (0);
-		return running;
-	    }
+	    task.sendContinue (0);
+	    return running;
 	}
 	/**
 	 * Need either a continue or an unblock.
@@ -332,9 +328,18 @@ class TaskState
     }
 
     /**
-     * Task just starting out.  Three possible events can occur: an
-     * unblock; the task stops; and get told to actually do the
-     * attach.
+     * A new main Task, created via fork, just starting.  Go with the
+     * assumption that it should detach.  Two events exist that
+     * influence this assumption: the task stops; and the controlling
+     * proc orders an attach.
+     *
+     * If the Task stops then, once the ForkedOffspring observers have
+     * stopped blocking this, do the detach.  * ForkOffspring
+     * observers of this).
+     *
+     * If, on the other hand, an attach order is received, change the
+     * assumption to that the task should be attached and proceed on
+     * that basis.
      */
     static class StartMainTask
 	extends TaskState
@@ -344,26 +349,22 @@ class TaskState
 	    super ("StartMainTask." + name);
 	}
 	/**
-	 * StartMainTask out assuming that, once things have been unblocked, a
-	 * detach should occur.
+	 * StartMainTask out assuming that, once the process has
+	 * stopped, ForkedOffspring observers have been notified, and
+	 * all blocks have been removed, a detach should occure.
 	 */
-	private static TaskState wantToDetach = new StartMainTask ("wantToDetach")
+	private static TaskState wantToDetach =
+	    new StartMainTask ("wantToDetach")
 	    {
 		TaskState handleAttach (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
+		    task.proc.performTaskAttachCompleted (task);
 		    return StartMainTask.wantToAttach;
-		}
-		TaskState handleUnblock (Task task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    return StartMainTask.wantToDetach;
 		}
 		private TaskState blockOrDetach (Task task)
 		{
-		    if (task.blockers.size () > 0)
+		    if (task.notifyForkedOffspring () > 0)
 			return StartMainTask.detachBlocked;
 		    task.sendDetach (0);
 		    task.proc.performTaskDetachCompleted (task);
@@ -381,19 +382,24 @@ class TaskState
 		}
 	    };
 	/**
-	 * The task has stopped; just waiting for all the blockers to
-	 * be removed before detaching.
+	 * The detaching Task has stopped and the ForkedOffspring
+	 * observers have been notified; just waiting for all the
+	 * ForkedOffspring blockers to be removed before finishing the
+	 * detach.
 	 */
 	private static TaskState detachBlocked =
 	    new StartMainTask ("detachBlocked")
 	    {
 		TaskState handleAttach (Task task)
 		{
-		    // Process got around to telling us to be
-		    // attached, since already stopped that operation
-		    // has completed, jump to the attached state.
+		    // Proc got around to telling us to be attached,
+		    // since the task has already stopped, immediatly
+		    // jump across to the blocked attached state
+		    // (waiting for ForkedOffspring observers to
+		    // unblock before finishing the attach).
 		    logger.log (Level.FINE, "{0} handleAttach\n", task); 
-		    return Attached.transitionTo (task);
+		    task.proc.performTaskAttachCompleted (task);
+		    return StartMainTask.attachBlocked;
 		}
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
@@ -409,28 +415,121 @@ class TaskState
 		}
 	    };
 	/**
-	 * The process has told this task that it must attach, need to
-	 * first wait for the task to stop.
+	 * The process has told this task that it must attach; before
+	 * advancing need to wait for the task to stop; once that
+	 * occures any ForkedOffspring observers can be notififed and
+	 * the task progress to being attached.
 	 */
 	private static TaskState wantToAttach =
 	    new StartMainTask ("wantToAttach")
 	    {
+		TaskState handleAddObserver (Task task, Observable observable,
+					     Observer observer)
+		{
+		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		    observable.add (observer);
+		    return this;
+		}
+		TaskState blockOrAttach (Task task)
+		{
+		    if (task.notifyForkedOffspring () > 0)
+			return StartMainTask.attachBlocked;
+		    return Attached.waitForContinueOrUnblock;
+		}
 		TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return Attached.transitionTo (task);
+		    return blockOrAttach (task);
 		}
 		TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
-		    return Attached.transitionTo (task);
+		    return blockOrAttach (task);
 		}
+		TaskState handleContinue (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleContinue\n", task);
+		    return StartMainTask.wantToAttachContinue;
+		}
+	    };
+	/**
+	 * The task is all ready to run, but still waiting for it to
+	 * stop so that it can be properly attached.
+	 */
+	private static TaskState wantToAttachContinue =
+	    new StartMainTask ("wantToAttachContinue")
+	    {
+		TaskState blockOrAttachContinue (Task task)
+		{
+		    if (task.notifyForkedOffspring () > 0)
+			return StartMainTask.attachContinueBlocked;
+		    return Attached.transitionToRunningState (task);
+		}
+		TaskState handleTrappedEvent (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
+		    return blockOrAttachContinue (task);
+		}
+		TaskState handleStoppedEvent (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
+		    return blockOrAttachContinue (task);
+		}
+	    };
+	/**
+	 * The task has stopped; just waiting for all the blockers to
+	 * be removed before detaching.
+	 */
+	private static TaskState attachBlocked =
+	    new StartMainTask ("attachBlocked")
+	    {
+		TaskState handleAddObserver (Task task, Observable observable,
+					     Observer observer)
+		{
+		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		    observable.add (observer);
+		    return this;
+                }
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    return StartMainTask.wantToAttach;
+		    if (task.blockers.size () > 0)
+			return StartMainTask.attachBlocked;
+		    return Attached.waitForContinueOrUnblock;
+		}
+		TaskState handleContinue (Task task)
+		{
+		    logger.log (Level.FINE, "{0} handleContinue\n", task);
+		    return StartMainTask.attachContinueBlocked;
+		}
+	    };
+	/**
+	 * The task has stopped; all ready to get the task running
+	 * only the ForkedOffspring observer blocked it.  Need to wait
+	 * for that to clear before continuing on to the properly
+	 * attached state.
+	 */
+	private static TaskState attachContinueBlocked =
+	    new StartMainTask ("attachContinueBlocked")
+	    {
+		TaskState handleAddObserver (Task task, Observable observable,
+					     Observer observer)
+		{
+		    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+		    observable.add (observer);
+		    return this;
+		}
+		TaskState handleUnblock (Task task,
+					 TaskObserver observer)
+		{
+		    logger.log (Level.FINE, "{0} handleUnblock\n", task);
+		    task.blockers.remove (observer);
+		    if (task.blockers.size () > 0)
+			return StartMainTask.attachContinueBlocked;
+		    return Attached.transitionToRunningState (task);
+
 		}
 	    };
     }
@@ -450,19 +549,18 @@ class TaskState
 	{
 	    logger.log (Level.FINE, "{0} attemptContinue\n", task); 
 	    task.sendSetOptions ();
-	    if (task.blockers.size () > 0) {
-		return StartClonedTask.blocked;
-	    }
-	    if (task.notifyAttached () > 0) {
-		return blockedContinue;
-	    }
+	    if (task.notifyClonedOffspring () > 0)
+		return StartClonedTask.blockedOffspring;
+	    // XXX: Really notify attached here?
+	    if (task.notifyAttached () > 0)
+                return blockedContinue;
 	    task.sendContinue (0);
 	    return running;
 	}
 	TaskState handleAddObserver (Task task, Observable observable,
 				     Observer observer)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 	    observable.add (observer);
 	    return this;
 	}
@@ -480,6 +578,7 @@ class TaskState
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		    // XXX: Should instead fail?
 		    task.blockers.remove (observer);
 		    return StartClonedTask.waitForStop;
 		}
@@ -495,15 +594,21 @@ class TaskState
 		}
 	    };
 	
-	private static final TaskState blocked =
-	    new StartClonedTask ("blocked")
+	private static final TaskState blockedOffspring =
+	    new StartClonedTask ("blockedOffspring")
 	    {
 		TaskState handleUnblock (Task task,
 					 TaskObserver observer)
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    return attemptContinue (task);
+		    if (task.blockers.size () > 0)
+			return StartClonedTask.blockedOffspring;
+		    // XXX: Really notify attached here?
+		    if (task.notifyAttached () > 0)
+			return blockedContinue;
+		    task.sendContinue (0);
+		    return running;
 		}
 	    };
     }
@@ -600,7 +705,7 @@ class TaskState
 	    TaskState handleAddObserver (Task task, Observable observable,
 					 Observer observer)
 	    {
-		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+		logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 		observable.add (observer);
 		return running;
 	    }
@@ -805,7 +910,7 @@ class TaskState
 	TaskState handleAddObserver (Task task, Observable observable,
 				     Observer observer)
 	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 	    observable.add (observer);
 	    return this;
 	}
@@ -872,7 +977,7 @@ class TaskState
 	    TaskState handleAddObserver (Task task, Observable observable,
 					 Observer observer)
 	    {
-		logger.log (Level.FINE, "{0} handleAddObserver\n", task); 
+		logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 		observer.addFailed (task, new RuntimeException ("detached"));
 		task.proc.requestDeleteObserver (task,
 						 (TaskObservable) observable,

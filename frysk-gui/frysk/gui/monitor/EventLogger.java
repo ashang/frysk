@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -203,7 +203,20 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		return Action.CONTINUE;
 	}
 
+	public Action updateClonedOffspring (Task task, Task clone) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
+				+ " Host XXX cloned new task: " + clone); //$NON-NLS-1$
+		return Action.CONTINUE;
+	}
+
 	public Action updateForkedParent(Task task, Task child) {
+		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
+				+ " Host XXX Forked a new proccess: " //$NON-NLS-1$
+				 + child.getProc ());
+		return Action.CONTINUE;
+	}
+
+	public Action updateForkedOffspring(Task task, Task child) {
 		eventLogFile.log(Level.INFO, "PID " + task.getTid() //$NON-NLS-1$
 				+ " Host XXX Forked a new proccess: " //$NON-NLS-1$
 				 + child.getProc ());

@@ -1,5 +1,21 @@
 2006-05-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TaskObserver.java (Forked): Add method updateForkedOffspring.
+	(Cloned): Add method updateClonedOffspring.
+	* TestTaskObserverBlocked.java: Handle updateForkedOffspring, and
+	updateClonedOffspring.
+	* TestTaskObserverDetach.java: Ditto.
+	* TestTaskForkedObserver.java: Handle updateForkedOffspring.
+	* TestTaskClonedObserver.java: Handle updateClonedOffspring.
+	* TaskState.java: Generate notifyForkedOffspring, and
+	notifyClonedOffspring events.
+	* Task.java (id, proc): Make final.
+	(creator): New member.
+	(Task): Initialize creator.
+	(notifyClonedOffspring, notifyForkedOffspring): New.
+	* ProcState.java ("detached" .handleAddTasksObserver): Add
+	updateClonedOffspring to local class, block the offspring.
+
 	* Proc.java: Make members final.
 	(creator): New member.
 	(host, id): Make final.

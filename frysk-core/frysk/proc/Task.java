@@ -51,8 +51,12 @@ import frysk.Config;
 abstract public class Task
 {
     protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
-    protected TaskId id;
-    protected Proc proc;
+
+    /**
+     * If known, as a result of tracing clone or fork, the task that
+     * created this task.
+     */
+    final Task creator;
 
     /**
      * Return the task's corresponding TaskId.
@@ -61,6 +65,7 @@ abstract public class Task
     {
 	return id;
     }
+    final TaskId id;
 
     /**
      * Return the task's process id.
@@ -116,6 +121,7 @@ abstract public class Task
     {
 	return proc;
     }
+    final Proc proc;
 
     // Contents of a task.
     ByteBuffer memory;
@@ -130,10 +136,11 @@ abstract public class Task
     /**
      * Create a new Task skeleton.
      */
-    private Task (TaskId id, Proc proc)
+    private Task (TaskId id, Proc proc, Task creator)
     {
 	this.proc = proc;
 	this.id = id;
+	this.creator = creator;
 	proc.add (this);
 	proc.host.add (this);
     }
@@ -142,7 +149,7 @@ abstract public class Task
      */
     protected Task (Proc proc, TaskId id)
     {
-	this (id, proc);
+	this (id, proc, null);
 	newState = TaskState.detachedState ();
 	logger.log (Level.FINEST, "{0} new -- create unattached\n", this); 
     }
@@ -151,7 +158,7 @@ abstract public class Task
      */
     protected Task (Task task, TaskId cloneId)
     {
-	this (cloneId, task.proc);
+	this (cloneId, task.proc, task);
 	newState = TaskState.clonedState (task.getState ());
 	logger.log (Level.FINE, "{0} new -- create attached clone\n", this); 
     }
@@ -167,7 +174,7 @@ abstract public class Task
      */
     protected Task (Proc proc, TaskObserver.Attached attached)
     {
-	this (new TaskId (proc.getPid ()), proc);
+	this (new TaskId (proc.getPid ()), proc, proc.creator);
 	newState = TaskState.mainState ();
 	if (attached != null) {
 	    TaskObservation ob = new TaskObservation (this, attachedObservers,
@@ -442,12 +449,28 @@ abstract public class Task
 	    if (observer.updateClonedParent (this, offspring)
 		== Action.BLOCK) {
 		blockers.add (observer);
-		offspring.blockers.add (observer);
 	    }
 	}
 	return blockers.size ();
     }
-
+    /**
+     * Notify all cloned observers that this task cloned.  Return the
+     * number of blocking observers.
+     */
+    int notifyClonedOffspring ()
+    {
+	for (Iterator i = creator.clonedObservers.iterator ();
+	     i.hasNext (); ) {
+	    TaskObserver.Cloned observer
+		= (TaskObserver.Cloned) i.next ();
+	    if (observer.updateClonedOffspring (creator, this)
+		== Action.BLOCK) {
+		blockers.add (observer);
+	    }
+	}
+	return blockers.size ();
+    }
+    
     /**
      * Set of Attached observers.
      */
@@ -517,12 +540,28 @@ abstract public class Task
 	    if (observer.updateForkedParent (this, offspring)
 		== Action.BLOCK) {
 		blockers.add (observer);
-		offspring.blockers.add (observer);
 	    }
 	}
 	return blockers.size ();
     }
-
+    /**
+     * Notify all Forked observers that this task's new offspring,
+     * created using fork, is sitting at the first instruction.
+     */
+    int notifyForkedOffspring ()
+    {
+	for (Iterator i = creator.forkedObservers.iterator ();
+	     i.hasNext (); ) {
+	    TaskObserver.Forked observer
+		= (TaskObserver.Forked) i.next ();
+	    if (observer.updateForkedOffspring (creator, this)
+		== Action.BLOCK) {
+		blockers.add (observer);
+	    }
+	}
+	return blockers.size ();
+    }
+    
     /**
      * Set of Terminated observers.
      */

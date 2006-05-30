@@ -120,26 +120,38 @@ public class TestTaskObserverBlocked
 	}
 	private State UNATTACHED = new State ("UNATTACHED");
 	private State OBSERVER_ADDED_TO_PARENT = new State ("OBSERVER_ADDED_TO_PARENT");
-	private State PARENT_SPAWNED = new State ("PARENT_SPAWNED");
+	private State SPAWN_PARENT = new State ("SPAWN_PARENT");
+	private State SPAWN_OFFSPRING = new State ("SPAWN_OFFSPRING");
 	private State OBSERVER_ADDED_TO_CHILD = new State ("OBSERVER_ADDED_TO_CHILD");
 	private State CHILD_ATTACHED = new State ("CHILD_ATTACHED");
 	/**
 	 * State of the Spawned observer, tracks the sequencing that
 	 * occurs.
 	 */
-	public State state = UNATTACHED;
+	private State currentState = UNATTACHED;
+	void assertInState (State state)
+	{
+	    assertSame ("state", state, currentState);
+	}
+	void nextState (State state)
+	{
+	    currentState = state;
+	    logger.log (Level.FINE, "{0} nextState {1}\n",
+			new Object[] { this, state });
+	}
 
 	/**
 	 * This observer has been added to Object.
 	 */
 	public void addedTo (final Object o)
 	{
-	    if (state == UNATTACHED)
-		state = OBSERVER_ADDED_TO_PARENT;
-	    else if (state == PARENT_SPAWNED)
-		state = OBSERVER_ADDED_TO_CHILD;
+	    if (currentState == UNATTACHED)
+		nextState (OBSERVER_ADDED_TO_PARENT);
+	    else if (currentState == SPAWN_OFFSPRING)
+		nextState (OBSERVER_ADDED_TO_CHILD);
 	    else
-		fail ("in wrong state " + state);
+		fail ("in wrong state <" + currentState + "> when adding to "
+		      + o);
 	    super.addedTo (o);
 	    Manager.eventLoop.requestStop ();
 	}
@@ -147,12 +159,22 @@ public class TestTaskObserverBlocked
 	private Task offspring;
 	protected Action spawnedParent (Task parent, Task offspring)
 	{
+	    logger.log (Level.FINE, "{0} spawnedParent\n", this);
 	    killDuringTearDown (offspring.getTid ());
-	    assertSame ("state", OBSERVER_ADDED_TO_PARENT, state);
-	    state = PARENT_SPAWNED;
-	    Manager.eventLoop.requestStop ();
+	    assertInState (OBSERVER_ADDED_TO_PARENT);
+	    nextState (SPAWN_PARENT);
 	    this.parent = parent;
+	    // Can't stop the event loop at this point as, more often
+	    // than not, it has a back-to-back offspring event.
+	    return Action.BLOCK;
+	}
+	protected Action spawnedOffspring (Task parent, Task offspring)
+	{
+	    logger.log (Level.FINE, "{0} spawnedOffspring\n", this);
+	    assertInState (SPAWN_PARENT);
+	    nextState (SPAWN_OFFSPRING);
 	    this.offspring = offspring;
+	    Manager.eventLoop.requestStop ();
 	    return Action.BLOCK;
 	}
 	/**
@@ -160,8 +182,8 @@ public class TestTaskObserverBlocked
 	 */
 	public Action updateAttached (Task task)
 	{
-	    assertSame ("state", OBSERVER_ADDED_TO_CHILD, state);
-	    state = CHILD_ATTACHED;
+	    assertInState (OBSERVER_ADDED_TO_CHILD);
+	    nextState (CHILD_ATTACHED);
 	    Manager.eventLoop.requestStop ();
 	    return Action.BLOCK;
 	}
@@ -176,14 +198,14 @@ public class TestTaskObserverBlocked
 	    logger.log (Level.FINE, "{0} assertRunToSpawn\n", this);
 	    AckProcess proc = new AckDaemonProcess ();
 	    Task main = proc.findTaskUsingRefresh (true);
+
 	    requestAddSpawnObserver (main);
-	    
-	    assertRunUntilStop ("adding clone observer");
-	    assertSame ("observer state", OBSERVER_ADDED_TO_PARENT, state);
+	    assertRunUntilStop ("adding spawn observer");
+	    assertInState (OBSERVER_ADDED_TO_PARENT);
 	    
 	    requestSpawn (proc);
 	    assertRunUntilStop ("run to spawn");
-	    assertSame ("observer state", PARENT_SPAWNED, state);
+	    assertInState (SPAWN_OFFSPRING);
 	}
 
 	/**
@@ -193,14 +215,20 @@ public class TestTaskObserverBlocked
 	public void assertUnblockOffspring ()
 	{
 	    logger.log (Level.FINE, "{0} assertUnblockOffspring\n", this);
+
 	    offspring.requestAddAttachedObserver (this);
 	    assertRunUntilStop ("add observer to child");
-	    assertSame ("observer state", OBSERVER_ADDED_TO_CHILD, state);
+	    assertInState (OBSERVER_ADDED_TO_CHILD);
 	    
+	    // Remove this from the blockers list, is preventing the
+	    // spawned offspring from running.  The child will then
+	    // notify any attached observers.
 	    offspring.requestUnblock (this);
 	    assertRunUntilStop ("allow child to attach");
-	    assertSame ("observer state", CHILD_ATTACHED, state);
+	    assertInState (CHILD_ATTACHED);
 	    
+	    // Remove this from the blockers list as an attached
+	    // observer.
 	    AckHandler ack = new AckHandler (childAck, "childAck");
 	    offspring.requestUnblock (this);
 	    ack.await ();
@@ -240,6 +268,13 @@ public class TestTaskObserverBlocked
 	public Action updateClonedParent (Task parent, Task offspring)
 	{
 	    return spawnedParent (parent, offspring);
+	}
+	/**
+	 * The parent Task cloned.
+	 */
+	public Action updateClonedOffspring (Task parent, Task offspring)
+	{
+	    return spawnedOffspring (parent, offspring);
 	}
     }
     /**
@@ -287,6 +322,10 @@ public class TestTaskObserverBlocked
 	public Action updateForkedParent (Task parent, Task offspring)
 	{
 	    return spawnedParent (parent, offspring);
+	}
+	public Action updateForkedOffspring (Task parent, Task offspring)
+	{
+	    return spawnedOffspring (parent, offspring);
 	}
     }
     /**
@@ -391,10 +430,14 @@ public class TestTaskObserverBlocked
 	{
 	    public Action updateClonedParent (Task parent, Task offspring)
 	    {
-		killDuringTearDown (offspring.getTid ());
 		parentTasks.add (parent);
-		childTasks.add (offspring);
+		return Action.BLOCK;
+	    }
+	    public Action updateClonedOffspring (Task parent, Task offspring)
+	    {
+		killDuringTearDown (offspring.getTid ());
 		offspring.requestAddClonedObserver (this);
+		childTasks.add (offspring);
 		Manager.eventLoop.requestStop ();
 		return Action.BLOCK;
 	    }
@@ -421,8 +464,12 @@ public class TestTaskObserverBlocked
 	{
 	    public Action updateForkedParent (Task parent, Task offspring)
 	    {
-		killDuringTearDown (offspring.getTid ());
 		parentTasks.add (parent);
+		return Action.BLOCK;
+	    }
+	    public Action updateForkedOffspring (Task parent, Task offspring)
+	    {
+		killDuringTearDown (offspring.getTid ());
 		childTasks.add (offspring);
 		offspring.requestAddForkedObserver (this);
 		Manager.eventLoop.requestStop ();

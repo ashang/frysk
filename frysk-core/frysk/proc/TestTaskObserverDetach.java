@@ -193,7 +193,12 @@ public class TestTaskObserverDetach
 	    }
 	    public Action updateForkedParent (Task parent, Task offspring)
 	    {
-		fail ("forked");
+		fail ("updateForkedParent");
+		return null;
+	    }
+	    public Action updateForkedOffspring (Task parent, Task offspring)
+	    {
+		fail ("updateForkedOffspring");
 		return null;
 	    }
 	}
@@ -227,7 +232,12 @@ public class TestTaskObserverDetach
 	    }
 	    public Action updateClonedParent (Task parent, Task offspring)
 	    {
-		fail ("cloned");
+		fail ("cloned parent");
+		return null;
+	    }
+	    public Action updateClonedOffspring (Task parent, Task offspring)
+	    {
+		fail ("cloned offspring");
 		return null;
 	    }
 	}

@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -56,12 +56,13 @@ public interface TaskObserver
 	 * Called when the Task (the parent) has cloned, creating a
 	 * clone Task (the offspring).  Return Action.BLOCK if this
 	 * observer wants the parent Task to block.
-	 *
-	 * XXX: At present returning Action.BLOCK also blocks the
-	 * offspring.
 	 */
 	Action updateClonedParent (Task task, Task clone);
-	// Action updateClonedOffspring
+	/**
+	 * Called when the Task (the offspring) that was created by a
+	 * fork has stopped at its first instruction.
+	 */
+	Action updateClonedOffspring (Task parent, Task offspring);
     }
 
     /**
@@ -76,12 +77,13 @@ public interface TaskObserver
 	 * child Proc containing a single Task (the offspring).
 	 * Return Action.BLOCK if the observer wants the parent task
 	 * to block.
-	 *
-	 * XXX: At present returning Action.BLOCK also blocks the
-	 * offspring.
 	 */
 	Action updateForkedParent (Task parent, Task offspring);
-	// Action updateClonedOffspring
+	/**
+	 * Called when the Task (the offspring) that was created by a
+	 * fork has stopped at its first instruction.
+	 */
+	Action updateForkedOffspring (Task parent, Task offspring);
     }
 
     /**

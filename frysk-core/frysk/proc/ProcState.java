@@ -165,11 +165,21 @@ abstract class ProcState
 		    public Action updateClonedParent (Task parent,
 						      Task offspring)
 		    {
-			theObserver.taskAdded (offspring);
-			offspring.requestAddClonedObserver (this);
 			return Action.CONTINUE;
 		    }
 
+		    public Action updateClonedOffspring (Task parent,
+							 Task offspring)
+		    {
+			theObserver.taskAdded (offspring);
+			offspring.requestAddClonedObserver (this);
+			// Need to BLOCK and UNBLOCK so that the
+			// request to add an observer has enough time
+			// to be processed before the task continues.
+			offspring.requestUnblock (this);
+			return Action.BLOCK;
+                    }
+		    
 		    public void addedTo(Object observable) {
 		    }
 
