@@ -1,3 +1,9 @@
+2005-05-30  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java (Dwfl): Now takes a pid.
+	* cni/Dwfl.cxx (dwfl_begin): Now takes a pid, and calls
+	dwfl_linux_proc_report for that process.
+
 2005-05-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Dwarf.java: Created.

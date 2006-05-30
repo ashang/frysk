@@ -4,8 +4,8 @@ public class Dwfl {
 	
 	private long pointer;
 	
-	public Dwfl(){
-		dwfl_begin();
+	public Dwfl(int pid){
+		dwfl_begin(pid);
 	}
 	
 	protected Dwfl(long pointer){
@@ -60,7 +60,7 @@ public class Dwfl {
 		dwfl_end();
 	}
 	
-	protected native void dwfl_begin();
+	protected native void dwfl_begin(int pid);
 	protected native void dwfl_end();
 //	protected native long[] dwfl_get_modules();
 //	protected native long[] dwfl_getdwarf();
