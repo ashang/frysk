@@ -1,5 +1,8 @@
 2006-05-30  Andrew Cagney  <cagney@redhat.com>
 
+	* TasksObserver.java: Add the observer when running within the
+	event loop.
+	
 	* TasksObserver.java: New file.
 	* TestTasksObserver.java: Update.
 	* Proc.java (requestAddTasksObserver): Delete.

@@ -43,32 +43,47 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import frysk.Config;
+import frysk.event.Event;
 
 /**
  * Provides a mechanism for tracing all clone events within a process.
  */
 
-public class TasksObserver
+public final class TasksObserver
     implements TaskObserver.Cloned
 {
     protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
-    final Proc proc;
-    final ProcObserver.Tasks tasksObserver;
-    final Task mainTask;
-    public TasksObserver (Proc proc, ProcObserver.Tasks tasksObserver)
+    private final Proc proc;
+    private final ProcObserver.Tasks tasksObserver;
+    private Task mainTask;
+    /**
+     * An observer that monitors all Task-s of a process notifying the
+     * caller of each new Task as it is added.
+     */
+    public TasksObserver (Proc theProc, ProcObserver.Tasks theTasksObserver)
     {
 	logger.log (Level.FINE, "{0} new\n", this); 
-	this.proc = proc;
-	this.tasksObserver = tasksObserver;
-	// Get a preliminary list of tasks - XXX: hack really.
-	proc.sendRefresh ();
+	proc = theProc;
+	tasksObserver = theTasksObserver;
 
-	mainTask = Manager.host.get (new TaskId (proc.getPid ()));
-	if (mainTask == null) {
-	    tasksObserver.addFailed(proc, new RuntimeException("Process lost"));
-	    return;
-	}
-	mainTask.requestAddClonedObserver (this);
+	// The rest of the construction must be done synchronous to
+	// the EventLoop, schedule it.
+	Manager.eventLoop.add (new Event ()
+	    {
+		public void execute ()
+		{
+		    // Get a preliminary list of tasks - XXX: hack really.
+		    proc.sendRefresh ();
+		    
+		    mainTask = Manager.host.get (new TaskId (proc.getPid ()));
+		    if (mainTask == null) {
+			tasksObserver.addFailed (proc,
+						 new RuntimeException ("Process lost"));
+			return;
+		    }
+		    mainTask.requestAddClonedObserver (TasksObserver.this);
+		}
+	    });
     }
 
     // Never block the parent.
@@ -78,6 +93,10 @@ public class TasksObserver
 	return Action.CONTINUE;
     }
     
+    /**
+     * When ever a new cloned offspring appears notify the observer,
+     * and add a cloned observer to it.
+     */
     public Action updateClonedOffspring (Task parent,
 					 Task offspring)
     {
@@ -107,11 +126,11 @@ public class TasksObserver
 
     public void addFailed(Object observable, Throwable w)
     {
-	throw new RuntimeException("How did this happen ?!");
+	throw new RuntimeException("How did this (addFailed) happen ?!");
     }
 
     public void deletedFrom(Object observable)
     {
-	tasksObserver.taskRemoved ((Task)observable);
+	tasksObserver.taskRemoved ((Task) observable);
     }
 }
