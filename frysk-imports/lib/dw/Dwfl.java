@@ -49,7 +49,7 @@ public class Dwfl {
 		if(val == 0)
 			return null;
 		
-		return new DwflLine(val);
+		return new DwflLine(val, this);
 	}
 	
 	protected long getPointer(){

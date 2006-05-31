@@ -41,9 +41,11 @@ package lib.dw;
 public class DwflLine {
 
 	private long pointer;
+	private Dwfl parent;
 	
-	protected DwflLine(long pointer){
+	protected DwflLine(long pointer, Dwfl parent){
 		this.pointer = pointer;
+		this.parent = parent;
 	}
 	
 	public String getSourceFile(){
@@ -64,6 +66,10 @@ public class DwflLine {
 	
 	protected long getPointer(){
 		return pointer;
+	}
+	
+	protected Dwfl getParent(){
+		return this.parent;
 	}
 	
 	protected native String dwfl_lineinfo_source();

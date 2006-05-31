@@ -1,3 +1,10 @@
+2005-05-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwflLine.java (DwflLine): Now takes a pointer to the parent Dwfl.
+	(getParent): Added.
+	* DwflModule.java (DwflModule): Now takes a pointer to the parent Dwfl.
+	(getParent): Added.
+
 2005-05-30  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cni/Dwfl.cxx (dwfl_begin): Fixed errors.
