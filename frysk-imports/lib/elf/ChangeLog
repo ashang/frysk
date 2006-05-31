@@ -1,5 +1,8 @@
 2006-05-31  Adam Jocksch  <ajocksch@redhat.com>
 
+	* ElfArchiveHeader.java (elf_ar_new): Removed.
+	(elf_ar_finalize): Removed.
+
 	* ElfArchiveHeader.java (ElfArchiveHeader): Now takes a reference to the
 	parent Elf object to keep it from being garbage collected, also removed
 	default constructor.

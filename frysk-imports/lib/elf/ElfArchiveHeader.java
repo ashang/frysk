@@ -120,8 +120,6 @@ public class ElfArchiveHeader {
 		return this.parent;
 	}
 	
-	protected native void elf_ar_new();
-	protected native void elf_ar_finalize();
 	protected native String elf_ar_get_name();
 	protected native long elf_ar_get_date();
 	protected native int elf_ar_get_uid();
