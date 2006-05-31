@@ -61,7 +61,7 @@ import time
 
 # Constants
 FRYSK_PROCESS_NAME = 'FryskGui'
-FRYSK_BINARY_NAME = '/opt/new_Frysk/build/frysk-gui/frysk/gui/FryskGui'
+FRYSK_BINARY_NAME = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
 
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
 FRYSK_APP_NAME = 'java-gnome'
@@ -140,9 +140,9 @@ def createProcessDict ( inputList ):
     """
     thekeys = []
     thevalues = []
-    toggleFlag=False
+    toggleFlag=True
 
-    # set the toggleFlag for odd numbered items (values)
+    # set the toggleFlag for odd numbered items (even = check boxes, odd = values)
     for i in range( len( inputList ) ):
         if ( toggleFlag == True ):
             toggleFlag = False

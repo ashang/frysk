@@ -73,9 +73,13 @@ from FryskHelpers import extractString
 from FryskHelpers import removeAfterTab
 from FryskHelpers import findProcessNames
 from FryskHelpers import createProcessDict
+from FryskHelpers import startFrysk
+from FryskHelpers import endFrysk
+from FryskHelpers import skipDruid
 
 # Locate the application
-frysk = tree.root.application ('java-gnome')
+#frysk = tree.root.application ('java-gnome')
+frysk = startFrysk()
 
 # ---------------------
 # Read the test input - need to make the file name a CLI arg for program
@@ -92,10 +96,9 @@ for x in theProcessGroups:
 
 userSelectedObserverDict = {}
 for x in theProcessGroups:
-    tempProcess = x.getName()
+    tempProcess = x.getName().encode('ascii')
     userSelectedObserverDict[x.getName()] = x.getObservers()
-    print x.getObservers()
-
+    
 # ---------------------
 # Access the Druid GUI
 theDruid = frysk.dialog('Debug Session Druid')
@@ -122,40 +125,10 @@ cancelButton = dialogActionArea1.button('Cancel')
 # always create a new session
 
 vbox42_tab1_session = sessionDruid_sessionNoteBook.child('vbox42_tab1_session')
-NewDebugSession = vbox42_tab1_session.child('New debug Session')
-NewDebugSession.click()
-
-# Select a debugger - for now, let's use /usr/bin/gdb - this needs to be 
-# modified to support specifying other debugger
-hbox60_tab1_debugger = sessionDruid_sessionNoteBook.child('hbox60_tab1_debugger')
-sessionDruid_execChooser= hbox60_tab1_debugger.child('sessionDruid_execChooser')
-debugSelectorButton = sessionDruid_execChooser.child(roleName = 'push button')
-#debugSelectorButton.click()
-
-# Use the file selector dialog to select /usr/bin/gdb
-#fileSelectDialog = frysk.dialog('Select A File')
-#shortCuts = fileSelectDialog.child('Shortcuts', roleName = 'table')
-#fileSystem = shortCuts.child('File System', roleName = 'table cell')
-#fileSystem.actions['activate'].do()
-#fileTable = fileSelectDialog.child('Files', roleName = 'table')
-#usr = fileTable.child('usr')
-#usr.actions['activate'].do()
-#bin = fileTable.child('bin')
-#bin.actions['activate'].do()
-
-# The following search is proving problematic - the time that it takes to 
-# search for gdb in the /usr/bin directory via the GUI is so great that the
-# script can time out - we can't just execute: gdb = fileTable.child('gdb')
-#gdbFoundFlag = False
-#while (not gdbFoundFlag):
-#    try:
-#        gdb = fileTable.child('gdb')
-#        gdbFoundFlag = True
-#    except:
-#        print 'still looking for gdb'
-#
-#gdb.grabFocus()
-#gdb.actions['activate'].do()
+newDebugSession = vbox42_tab1_session.child('sessionDruid_newSessionButton')
+newDebugSession.click()
+newSessionName = vbox42_tab1_session.child(name = 'sessionDruid_sessionName', roleName='text')
+newSessionName.text = theSession.getName()
 forwardButton.click()
 
 # ---------------------
@@ -191,29 +164,9 @@ for processName in processesToMonitor:
     tempProc.grabFocus()
     tempProc.actions['activate'].do()
     addButton.click()
-
 # Need to add a test here for the removeButton
 # Need to add a test here for the back button - both before and after process
 # groups are selected
-
-forwardButton.click()
-
-# ---------------------
-# page 3 - vbox50_tab3_termMonitor - Select process groups to monitor for termination
-# this actually assigns a task termination observer to the process - open question as
-# to whether this will remain unchanged in the GUI - as the user is also able to 
-# assign a termination observer to the process groups on page 5 - for now, we'll
-# assign a termination observer to every process group
-
-vbox50_tab3_termMonitor = sessionDruid_sessionNoteBook.child('vbox50_tab3_termMonitor')
-processTable = vbox50_tab3_termMonitor.child('sessionDruid_unexpectedExitTreeView', roleName = 'table')
-
-theList = processTable.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
-theDictionary = createProcessDict (theList)
-
-for x in userSelectedProcessGroups:
-    tempProcess = theDictionary[x]
-    tempProcess.actions['toggle'].do()
 
 forwardButton.click()
 
@@ -241,9 +194,8 @@ for processName in theProcessList:
     SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
     theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
     theDictionary = createProcessDict (theList)
-
     userSelectedObservers = userSelectedObserverDict[resolvedName]
-
+    
     for x in userSelectedObservers:
         tempObserver = theDictionary[x]
         tempObserver.actions['toggle'].do()
@@ -252,12 +204,13 @@ forwardButton.click()
 
 # ---------------------
 # page 6 - tab6_sessionName - Select name for new session
-vbox58_tab6_setSessionName = sessionDruid_sessionNoteBook.child('vbox58_tab6_setSessionName')
+#vbox58_tab6_setSessionName = sessionDruid_sessionNoteBook.child('vbox58_tab6_setSessionName')
 
 # Need to add a test here for the back button - both before and after the session
 # name is selected - not sensitive yet - finishButton.click()
-sessionName = vbox58_tab6_setSessionName.child('SessionDruid_sessionName')
-sessionName.actions['activate'].do()
-sessionName.__setattr__('text',theSession.getName())
+#sessionName = vbox58_tab6_setSessionName.child('SessionDruid_sessionName')
+#sessionName.actions['activate'].do()
+#sessionName.__setattr__('text',theSession.getName())
 finishButton.click()
 
+endFrysk(frysk)
