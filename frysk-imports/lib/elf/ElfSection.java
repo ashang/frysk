@@ -47,10 +47,12 @@ public class ElfSection {
 
 	private long pointer;
 	private boolean is32bit;
+	private Elf parent;
 	
-	protected ElfSection(long ptr, boolean is32bit){
+	protected ElfSection(long ptr, boolean is32bit, Elf parent){
 		this.pointer = ptr;
 		this.is32bit = is32bit;
+		this.parent = parent;
 	}
 	
 	public long getPointer(){
@@ -75,9 +77,9 @@ public class ElfSection {
 			return null;
 		
 		if(is32bit)
-			return new ElfSectionHeader32(elf_getshdr());
+			return new ElfSectionHeader32(elf_getshdr(), this.parent);
 		else
-			return new ElfSectionHeader64(elf_getshdr());
+			return new ElfSectionHeader64(elf_getshdr(), this.parent);
 	}
 	
 	/**
@@ -107,7 +109,7 @@ public class ElfSection {
 	public ElfData getData(){
 		long val = elf_getdata();
 		if(val != 0)
-			return new ElfData(elf_getdata(), is32bit);
+			return new ElfData(elf_getdata(), is32bit, parent);
 		else return null;
 	}
 	
@@ -116,7 +118,7 @@ public class ElfSection {
 	 * @return The uninterpreted ElfData in this section
 	 */
 	public ElfData getRawData(){
-		return new ElfData(elf_rawdata(), is32bit);
+		return new ElfData(elf_rawdata(), is32bit, parent);
 	}
 	
 	/**
@@ -124,7 +126,11 @@ public class ElfSection {
 	 * @return Creates a new ElfData for this section
 	 */
 	public ElfData createNewElfData(){
-		return new ElfData(elf_newdata(), is32bit);
+		return new ElfData(elf_newdata(), is32bit, parent);
+	}
+	
+	protected Elf getParent(){
+		return this.parent;
 	}
 	
 	protected native long elf_ndxscn();

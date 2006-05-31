@@ -47,16 +47,6 @@ extern "C"
 {
 #endif
 
-void
-lib::elf::ElfArchiveSymbol::elf_as_new (){
-	this->pointer = (jlong) malloc(sizeof(Elf_Arsym));
-}
-
-void
-lib::elf::ElfArchiveSymbol::elf_as_finalize (){
-	free((Elf_Arsym*) this->pointer);
-}
-
 jstring
 lib::elf::ElfArchiveSymbol::elf_as_get_name (){
 	char* name = ((Elf_Arsym*) this->pointer)->as_name;

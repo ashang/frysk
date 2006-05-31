@@ -45,8 +45,8 @@ package lib.elf;
  */
 public class ElfSectionHeader64 extends ElfSectionHeader {
 
-	public ElfSectionHeader64(long ptr) {
-		super(ptr);
+	public ElfSectionHeader64(long ptr, Elf parent) {
+		super(ptr, parent);
 		// TODO Auto-generated constructor stub
 	}
 

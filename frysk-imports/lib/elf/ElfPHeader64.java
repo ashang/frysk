@@ -45,8 +45,8 @@ package lib.elf;
  */
 public class ElfPHeader64 extends ElfPHeader {
 
-	public ElfPHeader64(long ptr) {
-		super(ptr);
+	public ElfPHeader64(long ptr, Elf parent) {
+		super(ptr, parent);
 	}
 
 	protected native long get_p_type();

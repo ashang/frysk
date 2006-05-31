@@ -45,10 +45,12 @@ package lib.elf;
  */
 public abstract class ElfSectionHeader {
 
-	long pointer;
+	private long pointer;
+	private Elf parent;
 	
-	protected ElfSectionHeader(long ptr){
+	protected ElfSectionHeader(long ptr, Elf parent){
 		this.pointer = ptr;
+		this.parent = parent;
 	}
 	
 	protected long getPointer(){
@@ -133,6 +135,10 @@ public abstract class ElfSectionHeader {
 	 */
 	public long getEntrySize(){
 		return get_sh_entsize();
+	}
+	
+	protected Elf getParent(){
+		return this.parent;
 	}
 	
 	protected abstract long get_sh_name();

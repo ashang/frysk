@@ -47,9 +47,11 @@ package lib.elf;
 public abstract class ElfEHeader {
 	
 	private long pointer;
+	private Elf parent;
 	
-	protected ElfEHeader(long ptr){
+	protected ElfEHeader(long ptr, Elf parent){
 		this.pointer = ptr;
+		this.parent = parent;
 	}
 	
 	protected long getPointer(){
@@ -171,6 +173,10 @@ public abstract class ElfEHeader {
 		return get_e_shstrndx();
 	}
 
+	protected Elf getParent(){
+		return this.parent;
+	}
+	
 	protected abstract byte get_e_fileclass();
 	protected abstract byte get_e_dataencoding();
 	protected abstract byte get_e_fileversion();

@@ -47,10 +47,12 @@ public class ElfData {
 
 	private long pointer;
 	private boolean is32bit;
+	private Elf parent;
 	
-	protected ElfData(long ptr, boolean is32bit){
+	protected ElfData(long ptr, boolean is32bit, Elf parent){
 		this.pointer = ptr;
 		this.is32bit = is32bit;
+		this.parent = parent;
 	}
 	
 	/**
@@ -101,7 +103,7 @@ public class ElfData {
 	 * @return The data in memory format
 	 */
 	public ElfData translateToMemoryRepresentation(int encoding){
-		return new ElfData(elf_xlatetom(encoding), is32bit);
+		return new ElfData(elf_xlatetom(encoding), is32bit, this.parent);
 	}
 	
 	/**
@@ -111,7 +113,7 @@ public class ElfData {
 	 * @return The data in Elf format
 	 */
 	public ElfData translateToELFRepresentation(int encoding){
-		return new ElfData(elf_xlatetof(encoding), is32bit);
+		return new ElfData(elf_xlatetof(encoding), is32bit, this.parent);
 	}
 	
 	/**
@@ -132,6 +134,10 @@ public class ElfData {
 		elf_data_finalize();
 	}
 
+	protected Elf getParent(){
+		return this.parent;
+	}
+	
 	native protected void elf_data_finalize();
 	native protected byte elf_data_get_byte(long offset);
 	native protected int elf_data_get_type();

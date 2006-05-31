@@ -46,13 +46,11 @@ package lib.elf;
 public class ElfArchiveSymbol {
 
 	private long pointer;
+	private Elf parent;	
 	
-	public ElfArchiveSymbol(){
-		elf_as_new();
-	}
-	
-	protected ElfArchiveSymbol(long pointer){
+	protected ElfArchiveSymbol(long pointer, Elf parent){
 		this.pointer = pointer;
+		this.parent = parent;
 	}
 	
 	/**
@@ -82,13 +80,11 @@ public class ElfArchiveSymbol {
 	protected long getPointer(){
 		return this.pointer;
 	}
-	
-	protected void finalize() throws Throwable {
-		elf_as_finalize();
+
+	protected Elf getParent(){
+		return this.parent;
 	}
 	
-	protected native void elf_as_new();
-	protected native void elf_as_finalize();
 	protected native String elf_as_get_name();
 	protected native int elf_as_get_offset();
 	protected native long elf_as_get_hash();

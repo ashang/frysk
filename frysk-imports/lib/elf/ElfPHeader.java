@@ -46,9 +46,11 @@ package lib.elf;
 public abstract class ElfPHeader {
 
 	private long pointer;
+	private Elf parent;
 	
-	protected ElfPHeader(long ptr){
+	protected ElfPHeader(long ptr, Elf parent){
 		this.pointer = ptr;
+		this.parent = parent;
 	}
 	
 	/**
@@ -116,6 +118,10 @@ public abstract class ElfPHeader {
 	
 	protected long getPointer(){
 		return this.pointer;
+	}
+	
+	protected Elf getParent(){
+		return this.parent;
 	}
 	
 	protected abstract long get_p_type();

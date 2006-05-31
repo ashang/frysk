@@ -45,8 +45,8 @@ package lib.elf;
  */
 public class ElfSectionHeader32 extends ElfSectionHeader {
 
-	public ElfSectionHeader32(long ptr) {
-		super(ptr);
+	public ElfSectionHeader32(long ptr, Elf parent ) {
+		super(ptr, parent);
 	}
 
 	protected native long get_sh_name();

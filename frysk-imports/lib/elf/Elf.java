@@ -45,7 +45,7 @@ package lib.elf;
 public class Elf {
 
 	private long pointer;
-	private boolean is32bit;	
+	private boolean is32bit;
 	
 	protected Elf(long ptr, boolean is32bit){
 		this.pointer = ptr;
@@ -122,9 +122,9 @@ public class Elf {
 	 */
 	public ElfEHeader getEHeader(){
 		if(is32bit)
-			return new ElfEHeader32(elf_getehdr());
+			return new ElfEHeader32(elf_getehdr(), this);
 		else
-			return new ElfEHeader64(elf_getehdr());
+			return new ElfEHeader64(elf_getehdr(), this);
 	}
 	
 	/**
@@ -133,9 +133,9 @@ public class Elf {
 	 */
 	public ElfEHeader createNewEHeader(){
 		if(is32bit)
-			return new ElfEHeader32(elf_newehdr());
+			return new ElfEHeader32(elf_newehdr(), this);
 		else
-			return new ElfEHeader64(elf_newehdr());
+			return new ElfEHeader64(elf_newehdr(), this);
 	}
 	
 	/**
@@ -155,9 +155,9 @@ public class Elf {
 				headers[i] = null;
 			else{
 				if(this.is32bit)
-					headers[i] = new ElfPHeader32(val);
+					headers[i] = new ElfPHeader32(val, this);
 				else
-					headers[i] = new ElfPHeader64(val);
+					headers[i] = new ElfPHeader64(val, this);
 			}
 		}
 		
@@ -172,9 +172,9 @@ public class Elf {
 	 */
 	public ElfPHeader createNewPHeader(long count){
 		if(is32bit)
-			return new ElfPHeader32(elf_newphdr(count));
+			return new ElfPHeader32(elf_newphdr(count), this);
 		else
-			return new ElfPHeader64(elf_newphdr(count));
+			return new ElfPHeader64(elf_newphdr(count), this);
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public class Elf {
 	 * @return The ElfSection
 	 */
 	public ElfSection getSectionByOffset(int offset){
-		return new ElfSection(elf_getscn(offset), is32bit);
+		return new ElfSection(elf_getscn(offset), is32bit, this);
 	}
 	
 	/**
@@ -195,7 +195,7 @@ public class Elf {
 		long val = elf_getscn(index);
 		if(val == 0)
 			return null;
-		return new ElfSection(elf_getscn(index), is32bit);
+		return new ElfSection(elf_getscn(index), is32bit, this);
 	}
 	
 	/**
@@ -206,7 +206,7 @@ public class Elf {
 	public ElfSection getNextSection(ElfSection previous){
 		long val = elf_nextscn(previous.getPointer());
 		if(val != 0)
-			return new ElfSection(val, is32bit);
+			return new ElfSection(val, is32bit, this);
 		else
 			return null;
 	}
@@ -216,7 +216,7 @@ public class Elf {
 	 * @return The new ElfSection
 	 */
 	public ElfSection createNewSection(){
-		return new ElfSection(elf_newscn(), is32bit);
+		return new ElfSection(elf_newscn(), is32bit, this);
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class Elf {
 	 * @return The Elf archive header
 	 */
 	public ElfArchiveHeader getArchiveHeader(){
-		return new ElfArchiveHeader(elf_getarhdr());
+		return new ElfArchiveHeader(elf_getarhdr(), this);
 	}
 	
 	/**
@@ -308,7 +308,7 @@ public class Elf {
 	 * @return The symbol table of the archive
 	 */
 	public ElfArchiveSymbol getArchiveSymbol(long ptr){
-		return new ElfArchiveSymbol(elf_getarsym(ptr));
+		return new ElfArchiveSymbol(elf_getarsym(ptr), this);
 	}
 	
 	/**

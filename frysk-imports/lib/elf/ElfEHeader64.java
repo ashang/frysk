@@ -45,8 +45,8 @@ package lib.elf;
  */
 public class ElfEHeader64 extends ElfEHeader {
 
-	public ElfEHeader64(long ptr) {
-		super(ptr);
+	public ElfEHeader64(long ptr, Elf parent) {
+		super(ptr, parent);
 	}
 
 	protected native byte get_e_fileclass();

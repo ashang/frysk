@@ -49,13 +49,11 @@ import java.util.Date;
 public class ElfArchiveHeader {
 
 	private long pointer;
+	private Elf parent;
 	
-	public ElfArchiveHeader(){
-		elf_ar_new();
-	}
-	
-	protected ElfArchiveHeader(long ptr){
+	protected ElfArchiveHeader(long ptr, Elf parent){
 		this.pointer = ptr;
+		this.parent = parent;
 	}
 	
 	/**
@@ -118,8 +116,8 @@ public class ElfArchiveHeader {
 		return this.pointer;
 	}
 
-	protected void finalize() throws Throwable {
-		elf_ar_finalize();
+	protected Elf getParent(){
+		return this.parent;
 	}
 	
 	protected native void elf_ar_new();

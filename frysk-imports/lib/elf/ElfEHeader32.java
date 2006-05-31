@@ -45,8 +45,8 @@ package lib.elf;
  */
 public class ElfEHeader32 extends ElfEHeader {
 
-	protected ElfEHeader32(long ptr) {
-		super(ptr);
+	protected ElfEHeader32(long ptr, Elf parent) {
+		super(ptr, parent);
 	}
 
 	protected native byte get_e_fileclass();

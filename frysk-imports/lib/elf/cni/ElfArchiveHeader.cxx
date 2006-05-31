@@ -47,16 +47,6 @@ extern "C"
 {
 #endif
 
-void
-lib::elf::ElfArchiveHeader::elf_ar_new (){
-	this->pointer = (jlong) malloc(sizeof(Elf_Arhdr));
-}
-
-void
-lib::elf::ElfArchiveHeader::elf_ar_finalize (){
-	free((Elf_Arhdr*) this->pointer);
-}
-
 jstring
 lib::elf::ElfArchiveHeader::elf_ar_get_name (){
 	char* name = ((Elf_Arhdr*) this->pointer)->ar_name;

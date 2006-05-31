@@ -1,3 +1,40 @@
+2006-05-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* ElfArchiveHeader.java (ElfArchiveHeader): Now takes a reference to the
+	parent Elf object to keep it from being garbage collected, also removed
+	default constructor.
+	(getParent): Added.
+	(finalize): Removed.
+	* ElfArchiveSymbol.java (ElfArchiveSymbol): Now takes a reference to the
+	parent Elf object, also removed default constructor.
+	(getParent): Added.
+	(finalize): Removed.
+	* ElfData.java (ElfData): Now takes a reference to the parent Elf object.
+	(getParent): Added.
+	* ElfEHeader.java (ElfEHeader): Now takes a reference to the parent Elf
+	object.
+	(getPointer): Added.
+	* ElfEHeader32.java (ElfEHeader32): Now takes a reference to the parent
+	Elf object.
+	* ElfEHeader64.java (ElfEHeader64): Ditto.
+	* ElfPHeader.java (ElfPHeader): Ditto.
+	(getParent): Added.
+	* ElfPHeader32.java (ElfPHeader32): Now takes a reference to the parent
+	Elf object.
+	* ElfPHeader64.java (ElfPHeader64): Ditto.
+	* ElfSection.java (ElfSection): Ditto.
+	(getParent): Added.
+	* ElfSectionHeader.java (ElfSectionHeader): Now takes a reference to
+	the parent Elf object.
+	(getParent): Added.
+	* ElfSectionHeader32.java (ElfSectionHeader32): Now takes a reference
+	to the parent Elf object.
+	* ElfSectionHeader64.java (ElfSectionHeader64): Ditto.
+	* cni/ElfArchiveHeader.cxx (elf_ar_new): Removed.
+	(elf_ar_finalize): Ditto.
+	* cni/ElfArchiveSymbol.cxx (elf_as_new): Ditto.
+	(elf_as_finalize): Ditto.
+
 2006-05-24  Adam Jocksch  <ajocksch@redhat.com>
 	
 	* tests/TestElf.java: Added Frysk header.
