@@ -1,3 +1,8 @@
+2006-06-01  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* hpd/PTNode.java: Renamed to ParseTreeNode
+	* hpd/ParseTreeNode.java: New (renamed PTNode.java to it)
+
 2006-05-30  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* hpd/TaskSet.java: Renamed to AllPTSet.java
