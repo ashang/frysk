@@ -1,3 +1,10 @@
+2006-05-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcDataModel.java: Removed timer insertion/refresh
+	calls (fix for 2702).
+	* ProcWiseDataModel.java: Ditto.
+	* datamodels/FlatProcObservableLinkedList.java: Ditto.
+
 2006-05-30  Andrew Cagney  <cagney@redhat.com>
 
 	* observers/TaskObserverRoot.java: Use frysk.proc.TasksObserver.

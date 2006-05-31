@@ -122,7 +122,7 @@ public class ProcViewPage extends Widget implements ButtonListener, Saveable{
 		this.refreshSpinButton.addListener(new SpinListener(){
 			public void spinEvent(SpinEvent event) {
 				if(event.getType() == SpinEvent.Type.VALUE_CHANGED){
-					procDataModel.setRefreshTime(refreshSpinButton.getIntValue());
+//					procDataModel.setRefreshTime(refreshSpinButton.getIntValue());
 				}
 			}			
 		});

@@ -52,7 +52,6 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 
-import frysk.event.TimerEvent;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -75,7 +74,7 @@ public class ProcWiseDataModel {
 	private ProcCreatedObserver procCreatedObserver;
 	private ProcDestroyedObserver procDestroyedObserver;
 
-	private TimerEvent refreshTimer;
+//	private TimerEvent refreshTimer;
 	
 	private Hashtable iterHash;
 	
@@ -95,13 +94,13 @@ public class ProcWiseDataModel {
 				this.selectedDC,
 				this.sensitiveDC});
 
-		this.refreshTimer = new TimerEvent(0, 5000){
-			public void execute() {
-				Manager.host.requestRefreshXXX (true);
-			}
-		};
-		
-		Manager.eventLoop.add (this.refreshTimer);
+//		this.refreshTimer = new TimerEvent(0, 5000){
+//			public void execute() {
+//				Manager.host.requestRefreshXXX (true);
+//			}
+//		};
+//		
+//		Manager.eventLoop.add (this.refreshTimer);
 		
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
@@ -112,6 +111,7 @@ public class ProcWiseDataModel {
 	}
 
 	private void setRow(TreeIter row, String name, GuiProc data, boolean selected){
+//		System.out.println(this + ": ProcWiseDataModel.setRow() adding " + name);	
 		treeStore.setValue(row, nameDC, name);
 		treeStore.setValue(row, objectDC, data);
 		treeStore.setValue(row, selectedDC, selected);
@@ -222,7 +222,7 @@ public class ProcWiseDataModel {
 					GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
 
 					// get an iterator pointing to the parent
-					try {
+//					try {
 						
 	
 						TreeIter parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
@@ -252,8 +252,7 @@ public class ProcWiseDataModel {
 								throw new RuntimeException(
 										"iter = treeStore.appendRow(parent) fails isIterValid test."); //$NON-NLS-1$
 
-							if (((GuiProc) treeStore
-									.getValue(parent, objectDC)).getProc() != null) {
+							if ((treeStore.getValue(parent, objectDC)) != null) {
 								GuiProc procData = ((GuiProc) treeStore.getValue(parent, objectDC));
 								Proc oldProc = procData.getProc();
 								setRow(parent, procData.getExecutableName(), null, false);
@@ -273,10 +272,11 @@ public class ProcWiseDataModel {
 							setRow(iter, "" + proc.getPid(),
 									GuiProc.GuiProcFactory.getGuiProc(proc), false);
 						}
-					} catch (Exception e) {
-//						errorLog.log(Level.WARNING,
-//						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e.getMessage());
-					}
+//					}
+//					catch (Exception e) {
+////						errorLog.log(Level.WARNING,
+////						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e.getMessage());
+//					}
 				}
 
 			});
@@ -294,7 +294,7 @@ public class ProcWiseDataModel {
 					
 					TreeIter parent = (TreeIter) iterHash
 							.get(guiProc.getExecutableName());
-					try {
+//					try {
 
 						if (parent == null)
 							throw new NullPointerException("proc "	+ proc + 
@@ -348,10 +348,10 @@ public class ProcWiseDataModel {
 							treeStore.removeRow(iter);
 						}
 
-					} catch (Exception e) {
-//						errorLog.log(Level.WARNING,
-//										"ProcWiseDataModel.ProcDestroyedObserver reported this error", e); //$NON-NLS-1$ //$NON-NLS-2$
-					}
+//					} catch (Exception e) {
+////						errorLog.log(Level.WARNING,
+////										"ProcWiseDataModel.ProcDestroyedObserver reported this error", e); //$NON-NLS-1$ //$NON-NLS-2$
+//					}
 				}
 			});
 		}

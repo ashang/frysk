@@ -55,7 +55,6 @@ import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeStore;
 import org.gnu.pango.Weight;
 
-import frysk.event.TimerEvent;
 import frysk.gui.Gui;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -79,7 +78,7 @@ public class ProcDataModel {
 	
 	private HashMap iterHash;
 	
-	private TimerEvent refreshTimer;
+	//private TimerEvent refreshTimer;
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
@@ -115,13 +114,13 @@ public class ProcDataModel {
 		// Change to HashMap from HashTable
 		this.iterHash = new HashMap();
 	
-		this.refreshTimer = new TimerEvent(0, 5000){
-			public void execute() {
-				Manager.host.requestRefreshXXX (true);
-			}
-		};
-		
-		Manager.eventLoop.add (this.refreshTimer);
+//		this.refreshTimer = new TimerEvent(0, 5000){
+//			public void execute() {
+//				Manager.host.requestRefreshXXX (true);
+//			}
+//		};
+//		
+//		Manager.eventLoop.add (this.refreshTimer);
 		
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
@@ -134,19 +133,19 @@ public class ProcDataModel {
 		Manager.host.observableTaskRemovedXXX.addObserver (taskDestroyedObserver);
 	}
 	
-	public void stopRefreshing(){
-		Manager.eventLoop.remove(refreshTimer);
-	}
-	
-	public void setRefreshTime(int sec){
-		Manager.eventLoop.remove(refreshTimer);
-		this.refreshTimer = new TimerEvent(0, sec*1000){
-			public void execute() { 
-				Manager.host.requestRefreshXXX (true); 
-			}
-		};
-		Manager.eventLoop.add (refreshTimer);
-	}
+//	public void stopRefreshing(){
+//		Manager.eventLoop.remove(refreshTimer);
+//	}
+//	
+//	public void setRefreshTime(int sec){
+//		Manager.eventLoop.remove(refreshTimer);
+//		this.refreshTimer = new TimerEvent(0, sec*1000){
+//			public void execute() { 
+//				Manager.host.requestRefreshXXX (true); 
+//			}
+//		};
+//		Manager.eventLoop.add (refreshTimer);
+//	}
 	
 	/**
 	 * call ps, parse the input and store in the treeStore

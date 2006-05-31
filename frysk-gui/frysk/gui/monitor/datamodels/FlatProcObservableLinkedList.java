@@ -43,9 +43,8 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
-import frysk.event.TimerEvent;
-import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.GuiProc;
+import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -72,13 +71,13 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 		Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
 		Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
 
-		TimerEvent refreshTimer = new TimerEvent(0, 5000){
-			public void execute() {
-				Manager.host.requestRefreshXXX (true);
-			}
-		};
-		
-		Manager.eventLoop.add (refreshTimer);
+//		TimerEvent refreshTimer = new TimerEvent(0, 5000){
+//			public void execute() {
+//				Manager.host.requestRefreshXXX (true);
+//			}
+//		};
+//		
+//		Manager.eventLoop.add (refreshTimer);
 	}
 	
 	class ProcCreatedObserver implements Observer{

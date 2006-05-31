@@ -410,6 +410,18 @@ public class Gui
 //			timer.start();
 //		}
 //	});
+
+	CustomEvents.addEvent(new Runnable() {
+		public void run() {
+			TimerEvent refreshTimer = new TimerEvent(0, 5000){
+				public void execute() {
+					Manager.host.requestRefreshXXX (true);
+				}
+			};
+		
+			Manager.eventLoop.add (refreshTimer);
+		}
+	});
 	
 	Gtk.main();
 		

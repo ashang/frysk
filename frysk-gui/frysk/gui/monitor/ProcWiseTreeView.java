@@ -62,13 +62,14 @@ public class ProcWiseTreeView extends TreeView {
 	}
 	
 	
-	private void mountDataModel(ProcWiseDataModel dataModel){
+	private void mountDataModel(final ProcWiseDataModel dataModel){
 		//this.setModel(dataModel.getModel());
 		
 		CellRendererText cellRendererText = new CellRendererText();
 		TreeViewColumn nameCol = new TreeViewColumn();
 		nameCol.packStart(cellRendererText, false);
 		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , dataModel.getNameDC());
+//		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.STRIKETHROUGH, dataModel.getSensitiveDC());
 		this.appendColumn(nameCol);
 		
 		this.removedProcFilter = new TreeModelFilter(dataModel.getModel());
@@ -96,7 +97,17 @@ public class ProcWiseTreeView extends TreeView {
 		
 		this.setModel(removedProcFilter);
 
-		
+//		this.getSelection().addListener(new TreeSelectionListener() {
+//			public void selectionChangedEvent(TreeSelectionEvent event) {
+//				TreeIter iter = dataModel.getModel().getIter(getSelection().getSelectedRows()[0]);
+//				System.out.println("\n===========================================");
+//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() name: " + dataModel.getModel().getValue(iter, dataModel.getNameDC()));
+//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() selected: " + dataModel.getModel().getValue(iter, dataModel.getSelectedDC()));
+//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() sensitive: " + dataModel.getModel().getValue(iter, dataModel.getSensitiveDC()));
+//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() path: " + dataModel.getModel().getValue(iter, dataModel.getPathDC()));
+//				System.out.println("===========================================\n");
+//			}
+//		});
 	}
 	
 }

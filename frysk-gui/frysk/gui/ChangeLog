@@ -1,3 +1,9 @@
+2006-05-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Gui.java: Added code for starting the refresh timer
+	as an event that is handled /after/ Gtk.main() is 
+	started (fix for 2702).
+
 2006-05-30  Andrew Cagney  <cagney@redhat.com>
 
 	* test/GuiTestLib.java: Use frysk.proc.TasksObserver.
