@@ -1,5 +1,12 @@
 2006-05-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java: removed
+	creation of new session when cancel button is clicked
+	and added currentSession.donotSave() (patch by 
+	mcvet@redhat.com fix for 2688).
+
+2006-05-31  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* Gui.java: Added code for starting the refresh timer
 	as an event that is handled /after/ Gtk.main() is 
 	started (fix for 2702).

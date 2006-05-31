@@ -702,7 +702,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 						saveButton.hideAll();
 						cancelButton.hideAll();
 						finishButton.showAll();
-						currentSession = new Session();
+						currentSession.dontSaveObject();
 					}
 				}});
 	}
