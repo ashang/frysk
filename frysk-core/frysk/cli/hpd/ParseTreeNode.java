@@ -48,34 +48,34 @@ public class ParseTreeNode
 	public final static int TYPE_RANGE = 0;
 	public final static int TYPE_REG = 1;
 
-	PTNode parent;
-	PTNode leftChild;
-	PTNode rightChild;
+	ParseTreeNode parent;
+	ParseTreeNode leftChild;
+	ParseTreeNode rightChild;
 	int id;
 	int type;
 
-	public PTNode(PTNode parent, int type)
+	public ParseTreeNode(ParseTreeNode parent, int type)
 	{
 		this.parent = parent;
 		this.id = -1;
 		this.type = type;
 	}
 
-	public PTNode(PTNode parent, int id, int type)
+	public ParseTreeNode(ParseTreeNode parent, int id, int type)
 	{
 		this.parent = parent;
 		this.id = id;
 		this.type = type;
 	}
 
-	public PTNode(int type)
+	public ParseTreeNode(int type)
 	{
 		this.parent = null;
 		this.id = -1;
 		this.type = type;
 	}
 
-	public PTNode(int id, int type)
+	public ParseTreeNode(int id, int type)
 	{
 		this.parent = null;
 		this.id = id;
@@ -92,12 +92,12 @@ public class ParseTreeNode
 		return result;
 	}
 
-	public void setParent(PTNode parent)
+	public void setParent(ParseTreeNode parent)
 	{
 		this.parent = parent;
 	}
 
-	public void setLeft(PTNode leftChild)
+	public void setLeft(ParseTreeNode leftChild)
 	{
 		if (leftChild != null)
 			leftChild.setParent(this);
@@ -105,7 +105,7 @@ public class ParseTreeNode
 		this.leftChild = leftChild;
 	}
 
-	public void setRight(PTNode rightChild)
+	public void setRight(ParseTreeNode rightChild)
 	{
 		if (rightChild != null)
 			rightChild.setParent(this);
@@ -113,17 +113,17 @@ public class ParseTreeNode
 		this.rightChild = rightChild;
 	}
 
-	public PTNode getParent()
+	public ParseTreeNode getParent()
 	{
 		return parent;
 	}
 
-	public PTNode getLeft()
+	public ParseTreeNode getLeft()
 	{
 		return leftChild;
 	}
 
-	public PTNode getRight()
+	public ParseTreeNode getRight()
 	{
 		return rightChild;
 	}

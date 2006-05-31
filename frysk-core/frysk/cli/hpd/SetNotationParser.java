@@ -56,9 +56,9 @@ public class SetNotationParser
 	/**
 	 * Parse a process/thread set notation.
 	 * @param set The string notation of the set to parse, should include brackets.
-	 * @return A tree with a meaningless root, processes at depth 1 and their threads at depth 2.
+	 * @return An array of ParseTreeNode objects, that look like cli/hpd/doc-files/parsetree.png
 	 */
-	public Vector parse(String set) throws ParseException
+	public ParseTreeNode[] parse(String set) throws ParseException
 	{
 		Vector root = new Vector();
 
@@ -67,9 +67,19 @@ public class SetNotationParser
 		tokenize();
 
 		S_1(root); //call first production
-		// expandRanges(root);
 
-		return root;
+		return (ParseTreeNode[]) root.toArray(new ParseTreeNode[root.size()]);
+	}
+
+	public static boolean setIsStatic(String set)
+	{
+		set = set.trim();
+		set = set.replaceAll(" *","");
+
+		if (set.charAt(1) == '!')
+			return true;
+		else
+			return false;
 	}
 
 	/*
@@ -103,7 +113,7 @@ public class SetNotationParser
 			}
 		}
 
-		this.tokens = new String[tokens.size()]; // convert vector to array so we don't have to cast all the fucking time
+		this.tokens = new String[tokens.size()]; // convert vector to array so we don't have to cast all the time
 		for (int i = 0; i < tokens.size(); i++)
 		{
 			this.tokens[i] = (String)tokens.get(i);
@@ -156,7 +166,7 @@ public class SetNotationParser
 	 */
 	private void S_2(Vector root) throws ParseException
 	{
-		PTNode node = null;
+		ParseTreeNode node = null;
 		int[] tempIDs = new int[4];
 
 		// we know that the second production with yield num.num:num.num, and
@@ -164,7 +174,7 @@ public class SetNotationParser
 		if (curToken+3 < tokens.length && curToken+5 < tokens.length
 			&& tokens[curToken+3].equals(":") && tokens[curToken+5].equals(".")) 
 		{
-			node = new PTNode(PTNode.TYPE_RANGE);
+			node = new ParseTreeNode(ParseTreeNode.TYPE_RANGE);
 
 			node.setLeft(S_4());
 
@@ -195,7 +205,7 @@ public class SetNotationParser
 		}
 		else 
 		{
-			node = new PTNode(PTNode.TYPE_REG);
+			node = new ParseTreeNode(ParseTreeNode.TYPE_REG);
 			
 			node.setLeft(S_3());
 
@@ -214,14 +224,14 @@ public class SetNotationParser
 	/*
 	 * S_3 -> num:num | num | *
 	 */
-	private PTNode S_3() throws ParseException 
+	private ParseTreeNode S_3() throws ParseException 
 	{
-		PTNode node = new PTNode(PTNode.TYPE_RANGE);
+		ParseTreeNode node = new ParseTreeNode(ParseTreeNode.TYPE_RANGE);
 
 		if (tokens[curToken].matches("\\d+"))
 		{
-			node.setLeft(new PTNode(Integer.parseInt(tokens[curToken]), PTNode.TYPE_REG));
-			node.setRight(new PTNode(Integer.parseInt(tokens[curToken]), PTNode.TYPE_REG));
+			node.setLeft(new ParseTreeNode(Integer.parseInt(tokens[curToken]), ParseTreeNode.TYPE_REG));
+			node.setRight(new ParseTreeNode(Integer.parseInt(tokens[curToken]), ParseTreeNode.TYPE_REG));
 			curToken++;
 
 			if (tokens[curToken].equals(":"))
@@ -230,7 +240,7 @@ public class SetNotationParser
 
 				if (tokens[curToken].matches("\\d+"))
 				{
-					node.setRight(new PTNode(Integer.parseInt(tokens[curToken]), PTNode.TYPE_REG));
+					node.setRight(new ParseTreeNode(Integer.parseInt(tokens[curToken]), ParseTreeNode.TYPE_REG));
 					curToken++;
 					
 					if (node.getRight().getID() < node.getLeft().getID())
@@ -242,8 +252,8 @@ public class SetNotationParser
 		}
 		else if (tokens[curToken].equals("*"))
 		{
-			node.setLeft(new PTNode(PTNode.TYPE_REG));
-			node.setRight(new PTNode(PTNode.TYPE_REG));
+			node.setLeft(new ParseTreeNode(ParseTreeNode.TYPE_REG));
+			node.setRight(new ParseTreeNode(ParseTreeNode.TYPE_REG));
 			curToken++;
 		}
 		else
@@ -257,9 +267,9 @@ public class SetNotationParser
 	/*
 	 * S_4 -> S_5.S_5
 	 */
-	private PTNode S_4() throws ParseException
+	private ParseTreeNode S_4() throws ParseException
 	{
-		PTNode node = new PTNode(PTNode.TYPE_REG);
+		ParseTreeNode node = new ParseTreeNode(ParseTreeNode.TYPE_REG);
 
 		node.setLeft(S_5()); //add a process node as a child
 
@@ -275,18 +285,18 @@ public class SetNotationParser
 	/*
 	 * S_5 -> num | *
 	 */
-	private PTNode S_5() throws ParseException
+	private ParseTreeNode S_5() throws ParseException
 	{
-		PTNode node = null;
+		ParseTreeNode node = null;
 
 		if (tokens[curToken].matches("\\d+"))
 		{
-			node = new PTNode(Integer.parseInt(tokens[curToken]), PTNode.TYPE_REG);
+			node = new ParseTreeNode(Integer.parseInt(tokens[curToken]), ParseTreeNode.TYPE_REG);
 			curToken++;
 		}
 		else if (tokens[curToken].equals("*"))
 		{
-			node = new PTNode(-1, PTNode.TYPE_REG);
+			node = new ParseTreeNode(-1, ParseTreeNode.TYPE_REG);
 			curToken++;
 		}
 		else

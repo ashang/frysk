@@ -39,7 +39,6 @@
 package frysk.cli.hpd;
 
 import java.text.ParseException;
-import java.util.Vector;
 
 public class SetParserTest
 {
@@ -48,16 +47,18 @@ public class SetParserTest
 	public static void main(String[] args)
 	{
 		SetNotationParser pr = new SetNotationParser();
-		Vector root;
+		ParseTreeNode[] root;
 		String temp = "";
 
+		System.out.println("Test [!3.2:4, 2.3, 3:4.5]:");
 		try 
 		{
 			root = pr.parse("[!3.2:4, 2.3, 3:4.5]");
-			for (int i = 0; i < root.size(); i++)
+			for (int i = 0; i < root.length; i++)
 			{
-				walkTree((PTNode)root.elementAt(i));
+				walkTree(root[i]);
 				temp += (result + " ");
+				result = "";
 			}
 		}
 		catch (ParseException e)
@@ -65,39 +66,45 @@ public class SetParserTest
 			System.out.println(e);
 			result = "Error";
 		}
+		System.out.println(temp);
 
+		System.out.println("\nTest [!2.5:3.*]: ");
 		try 
 		{
-			root = pr.parse("[!2.5:3.*]");
-			walkTree((PTNode)root.elementAt(0));
+			root = pr.parse("[! 2.5:3.*]");
+			walkTree(root[0]);
 		}
 		catch (ParseException e)
 		{
 			System.out.println(e);
 			result = "Error";
 		}
+		System.out.println(result);
+		System.out.println("Is static: " + SetNotationParser.setIsStatic("[ !2.5:3.*]"));
 
+		System.out.println("\nTest [*.5:3.*]: ");
 		try 
 		{
 			root = pr.parse("[*.5:3.*]");
-			walkTree((PTNode)root.elementAt(0));
+			walkTree(root[0]);
 		}
 		catch (ParseException e)
 		{
 			System.out.println(e);
 			result = "Error";
 		}
+		System.out.println(result);
 	}
 
 	
-	private static void walkTree(PTNode node)
+	private static void walkTree(ParseTreeNode node)
 	{
 		if (node.getLeft() != null)
 			walkTree(node.getLeft());
 
-		if (node.getType() == PTNode.TYPE_RANGE)
+		if (node.getType() == ParseTreeNode.TYPE_RANGE)
 			result += (":");
-		else if (node.getType() == PTNode.TYPE_REG)
+		else if (node.getType() == ParseTreeNode.TYPE_REG)
 		{
 			if (node.isLeaf())
 				result += (node.getID());
