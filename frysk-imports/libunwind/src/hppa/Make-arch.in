@@ -1,0 +1,11 @@
+# Word size.
+ELFW = 32
+# Does use dwarf2 unwind info.
+dwarf_target = true
+
+libunwind_setjmp_OBJS += \
+	$(arch)/siglongjmp.o
+
+libunwind_OBJS_local += \
+	$(arch)/getcontext.o \
+	$(arch)/setcontext.o
