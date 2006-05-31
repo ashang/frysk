@@ -1,0 +1,137 @@
+### Top-level Makefile template for libunwind.
+
+### Variables substituted from configure.
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_HEADER = $(INSTALL_DATA)
+
+build_triplet = @build@
+host_triplet = @host@
+target_triplet = @target@
+
+AR = @AR@
+AS = @AS@
+ARCH = @ARCH@
+AUTOCONF = @AUTOCONF@
+AUTOHEADER = @AUTOHEADER@
+CC = @CC@
+CFLAGS = @CFLAGS@
+CCAS = @CCAS@
+CCASFLAGS = @CCASFLAGS@
+CPPFLAGS = @CPPFLAGS@
+LDFLAGS = @LDFLAGS@
+LDFLAGS_STATIC_LIBCXA = @LDFLAGS_STATIC_LIBCXA@
+LIBCRTS = @LIBCRTS@
+LIBOBJS = @LIBOBJS@
+LIBS = @LIBS@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
+OBJEXT = @OBJEXT@
+PACKAGE = @PACKAGE@
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+PKG_EXTRA = @PKG_EXTRA@
+PKG_MAINTAINER = @PKG_MAINTAINER@
+PKG_MAJOR = @PKG_MAJOR@
+PKG_MINOR = @PKG_MINOR@
+RANLIB = @RANLIB@
+SET_MAKE = @SET_MAKE@
+SHELL = @SHELL@
+STRIP = @STRIP@
+
+arch = @arch@
+bindir = @bindir@
+build = @build@
+datadir = @datadir@
+exec_prefix = @exec_prefix@
+host = @host@
+includedir = @includedir@
+infodir = @infodir@
+install_sh = @install_sh@
+libdir = @libdir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+mkdir_p = @mkdir_p@
+oldincludedir = @oldincludedir@
+prefix = @prefix@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+sysconfdir = @sysconfdir@
+target = @target@
+
+### Set of headers to install.
+
+include_HEADERS = include/libunwind-$(arch).h include/libunwind-common.h \
+	include/libunwind-dynamic.h include/libunwind-ptrace.h
+
+ifeq ($(host),$(target))
+include_HEADERS += include/libunwind.h include/unwind.h
+endif
+
+all::
+
+check:: all
+
+clean::
+
+distclean::
+	-rm -f include/config.h include/libunwind-common.h
+	-rm -f include/libunwind.h include/tdep
+
+installdirs::
+	$(mkdir_p) "$(DESTDIR)$(includedir)"
+
+install:: all installdirs $(include_HEADERS)
+	test -z "$(includedir)" || $(mkdir_p) "$(DESTDIR)$(includedir)"
+	@list='$(include_HEADERS)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=`basename $$p`; \
+	  echo " $(INSTALL_HEADER) '$$d$$p' '$(DESTDIR)$(includedir)/$$f'"; \
+	  $(INSTALL_HEADER) "$$d$$p" "$(DESTDIR)$(includedir)/$$f"; \
+	done
+
+uninstall::
+	@list='$(include_HEADERS)'; for p in $$list; do \
+	  f=`basename $$p`; \
+	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
+	done
+
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+
+SUBDIRS = src tests doc
+
+all check clean distclean installdirs install uninstall::
+	@failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  $(MAKE) -C $$subdir $@ || eval $$failcom; \
+	done; \
+	test -z "$$fail"
+
+.PHONY: all check clean distclean installdirs install uninstall
+.NOEXPORT:
