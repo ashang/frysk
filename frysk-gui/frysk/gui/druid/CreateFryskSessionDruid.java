@@ -76,8 +76,8 @@ import org.gnu.gtk.event.TreeSelectionListener;
 
 import frysk.gui.monitor.CheckedListView;
 import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.GuiProc;
+import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
 import frysk.gui.monitor.WindowManager;
@@ -88,7 +88,6 @@ import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
-import frysk.proc.Proc;
 
 public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener {
 
@@ -131,7 +130,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		getProcessSelectionControls(glade);
 		getTagsetObserverControls(glade);
 		getProcessObserverControls(glade);
-    }
+	}
 	
 	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
 	{
@@ -139,27 +138,25 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	}
 	
 	private void addProcessParent(TreeIter unfilteredProcessIter) {
-		
-		if (unfilteredProcessIter == null)
+		if (unfilteredProcessIter == null){
 			return;
-		
-		if (!this.dataModel.getModel().isIterValid(unfilteredProcessIter))
-			return;
-			
-		GuiProc proc = (GuiProc) this.dataModel.getModel().getValue(unfilteredProcessIter,this.dataModel.getPathDC());
-		if (proc != null)
-		{
-			Proc coreProc = proc.getProc();
-			if (coreProc == null)
-				if (unfilteredProcessIter.getChildCount() > 0)
-				{
-					TreeIter childIter = unfilteredProcessIter.getChild(0);
-					coreProc = ((GuiProc)this.dataModel.getModel().getValue(childIter,this.dataModel.getPathDC())).getProc();
-				}
-			DebugProcess debugProcess = new DebugProcess(proc.getExecutableName(), proc.getNiceExecutablePath());
-//			debugProcess.addProc(proc);
-			currentSession.addProcess(debugProcess);
 		}
+		
+		if (!this.dataModel.getModel().isIterValid(unfilteredProcessIter)){
+			return;
+		}
+		
+		GuiProc proc = (GuiProc) this.dataModel.getModel().getValue(unfilteredProcessIter,this.dataModel.getObjectDC());
+		if (proc == null){
+			if (unfilteredProcessIter.getChildCount() > 0){
+				TreeIter childIter = unfilteredProcessIter.getChild(0);
+				proc = ((GuiProc)this.dataModel.getModel().getValue(childIter,this.dataModel.getObjectDC()));
+			}
+		}
+		
+		DebugProcess debugProcess = new DebugProcess(proc.getExecutableName(), proc.getNiceExecutablePath());
+		currentSession.addProcess(debugProcess);
+
 	}
 		
 	private boolean isChild(TreePath pathTest)
@@ -186,7 +183,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	{
 		if (selectedProcs.length > 0)
 		{
-			for(int i=0; i<selectedProcs.length;i++)
+ 			for(int i=0; i<selectedProcs.length;i++)
 			{
 				// Convert a filetered iterator to a non filtered iterator.
 				TreeIter unfilteredProcessIter;

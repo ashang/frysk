@@ -99,12 +99,21 @@ public class ProcWiseTreeView extends TreeView {
 
 //		this.getSelection().addListener(new TreeSelectionListener() {
 //			public void selectionChangedEvent(TreeSelectionEvent event) {
-//				TreeIter iter = dataModel.getModel().getIter(getSelection().getSelectedRows()[0]);
+//				System.out.println(this + ": .selectionChangedEvent() dataModel " + dataModel);
+//				System.out.println(this + ": .selectionChangedEvent() dataModel.getModel() " + dataModel.getModel());
+//				System.out.println(this + ": .selectionChangedEvent() selected rows[0] " + getSelection().getSelectedRows()[0]);
+//				TreeIter iter = getModel().getIter(getSelection().getSelectedRows()[0]);
+//				System.out.println(this + ": .selectionChangedEvent() iter " + iter);
+//
+//				iter = dataModel.getModel().getIter(removedProcFilter.convertPathToChildPath(iter.getPath()));
+//				System.out.println(this + ": .selectionChangedEvent() iter " + iter);
+//
+//				
 //				System.out.println("\n===========================================");
+//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() object: " + dataModel.getModel().getValue(iter, dataModel.getObjectDC()));
 //				System.out.println(this + ": ProcWiseTreeView.mountDataModel() name: " + dataModel.getModel().getValue(iter, dataModel.getNameDC()));
 //				System.out.println(this + ": ProcWiseTreeView.mountDataModel() selected: " + dataModel.getModel().getValue(iter, dataModel.getSelectedDC()));
 //				System.out.println(this + ": ProcWiseTreeView.mountDataModel() sensitive: " + dataModel.getModel().getValue(iter, dataModel.getSensitiveDC()));
-//				System.out.println(this + ": ProcWiseTreeView.mountDataModel() path: " + dataModel.getModel().getValue(iter, dataModel.getPathDC()));
 //				System.out.println("===========================================\n");
 //			}
 //		});

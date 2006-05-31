@@ -94,14 +94,6 @@ public class ProcWiseDataModel {
 				this.selectedDC,
 				this.sensitiveDC});
 
-//		this.refreshTimer = new TimerEvent(0, 5000){
-//			public void execute() {
-//				Manager.host.requestRefreshXXX (true);
-//			}
-//		};
-//		
-//		Manager.eventLoop.add (this.refreshTimer);
-		
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
 		
@@ -111,7 +103,10 @@ public class ProcWiseDataModel {
 	}
 
 	private void setRow(TreeIter row, String name, GuiProc data, boolean selected){
-//		System.out.println(this + ": ProcWiseDataModel.setRow() adding " + name);	
+//		if(data.getExecutableName().contains("bash")){
+//			System.out.println(this + ": ProcWiseDataModel.setRow() adding " + name);	
+//		}
+		
 		treeStore.setValue(row, nameDC, name);
 		treeStore.setValue(row, objectDC, data);
 		treeStore.setValue(row, selectedDC, selected);
@@ -164,7 +159,7 @@ public class ProcWiseDataModel {
 		return nameDC;
 	}
 
-	public DataColumnObject getPathDC() {
+	public DataColumnObject getObjectDC() {
 		return objectDC;
 	}
 	
@@ -220,63 +215,27 @@ public class ProcWiseDataModel {
 			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
 				public void run() {
 					GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-
-					// get an iterator pointing to the parent
-//					try {
-						
+					TreeIter parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
 	
-						TreeIter parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
-						if (parent != null)
-							if (!treeStore.isIterValid(parent))
-								throw new RuntimeException(
-										"TreeIter has parent, but isIterValid returns false."); //$NON-NLS-1$
-
-						if (parent == null) {
-							parent = treeStore.appendRow(null);
-							if (parent == null)
-								throw new RuntimeException(
-										"parent = treeStore.appendRow(null) returns a null."); //$NON-NLS-1$
-							if (!treeStore.isIterValid(parent))
-								throw new RuntimeException(
-										"parent = treeStore.appendRow(null) fails isIterValid test."); //$NON-NLS-1$
-							iterHash.put(guiProc.getExecutableName(), parent);
-							
-							setRow(parent, guiProc.getExecutableName() + "\t"
-									+ proc.getPid(), guiProc, false);
-						} else {
-							TreeIter iter = treeStore.appendRow(parent);
-							if (iter == null)
-								throw new RuntimeException(
-										"iter = treeStore.appendRow(null) returns a null."); //$NON-NLS-1$
-							if (!treeStore.isIterValid(iter))
-								throw new RuntimeException(
-										"iter = treeStore.appendRow(parent) fails isIterValid test."); //$NON-NLS-1$
-
-							if ((treeStore.getValue(parent, objectDC)) != null) {
-								GuiProc procData = ((GuiProc) treeStore.getValue(parent, objectDC));
-								Proc oldProc = procData.getProc();
-								setRow(parent, procData.getExecutableName(), null, false);
-								setRow(iter, "" + oldProc.getPid(),
-										procData, false);
-								iter = treeStore.appendRow(parent);
-								if (iter == null)
-									throw new RuntimeException(
-											"iter = treeStore.appendRow(null) returns a null."); //$NON-NLS-1$
-								if (!treeStore.isIterValid(iter))
-									throw new RuntimeException(
-											"iter = treeStore.appendRow(parent) fails isIterValid test."); //$NON-NLS-1$
-							}
-
-							// setRow(iter, "", ""+proc.getPid(),
-							// proc.getExe());
-							setRow(iter, "" + proc.getPid(),
-									GuiProc.GuiProcFactory.getGuiProc(proc), false);
+					if (parent == null) {
+						// new process name
+						parent = treeStore.appendRow(null);
+						iterHash.put(guiProc.getExecutableName(), parent);
+						setRow(parent, guiProc.getExecutableName() + "\t"+ proc.getPid(), guiProc, false);
+					} else {
+						// process name already exists, new instance.
+						TreeIter iter;
+						if ((treeStore.getValue(parent, objectDC)) != null) {
+							// the second instance of this proc name
+							GuiProc oldProcData = ((GuiProc) treeStore.getValue(parent, objectDC));
+							Proc oldProc = oldProcData.getProc();
+							setRow(parent, oldProcData.getExecutableName(), null, false);
+							iter = treeStore.appendRow(parent);
+							setRow(iter, "" + oldProc.getPid(),oldProcData, false);
 						}
-//					}
-//					catch (Exception e) {
-////						errorLog.log(Level.WARNING,
-////						"ProcWiseDataModel.ProcCreatedObserver reported thiis error",e.getMessage());
-//					}
+						iter = treeStore.appendRow(parent);
+						setRow(iter, "" + proc.getPid(),guiProc, false);
+					}
 				}
 
 			});
