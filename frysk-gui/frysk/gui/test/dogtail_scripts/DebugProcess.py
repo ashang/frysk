@@ -105,15 +105,15 @@ class DebugProcess:
 
     if len(theOtherProcessObservers) == len (thisProcessObservers):
 
-      print len(theOtherProcessObservers)
-      print len (thisProcessObservers)
+      #print len(theOtherProcessObservers)
+      #print len (thisProcessObservers)
 
       theOtherProcessObservers.sort()
       thisProcessObservers.sort()
 
       i = 0
       while i < len(thisProcessObservers):
-        print theOtherProcessObservers[i] + "  " + thisProcessObservers[i]
+        #print theOtherProcessObservers[i] + "  " + thisProcessObservers[i]
 
         if theOtherProcessObservers[i] != thisProcessObservers[i]:
           returnFlag = False

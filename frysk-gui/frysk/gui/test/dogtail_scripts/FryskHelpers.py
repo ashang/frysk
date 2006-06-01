@@ -73,6 +73,10 @@ FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork O
                         'frysk-gui.frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
                         'frysk-gui.frysk.gui.monitor.observers.TaskCloneObserver':'TaskCloneObserver' }
 
+# Location of Frysk persistent data files for Sessions
+FRYSK_SESSION_FILES = os.environ['HOME'] + "/.frysk/Sessions/"
+FRYSK_OBSERVER_FILES = os.environ['HOME'] + "/.frysk/Observers/"
+
 # ---------------------
 def extractString ( rawInput, assignedTo ):
     """ Function to extract value of string in param #1 assigned            

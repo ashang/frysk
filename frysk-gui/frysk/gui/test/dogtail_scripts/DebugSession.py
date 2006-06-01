@@ -73,7 +73,7 @@ class DebugSession:
     theProcessNames = []
     theProcessObjects = []
     for x in theProcesses:
-      print x.getName()
+      #print x.getName()
       theProcessNames.append( x.getName() )
       theProcessObjects.append( x )
     self.processesDict = dict( zip ( theProcessNames, theProcessObjects ) )
@@ -94,7 +94,7 @@ class DebugSession:
     return self.processes
 
   def dump( self ):
-    print 'name=' + self.name + ' ' + 'type=' + self.type
+    #print 'name=' + self.name + ' ' + 'type=' + self.type
     for x in self.processes:
       x.dump()
 
@@ -103,7 +103,7 @@ class DebugSession:
   def isequal ( self, theOtherDebugSession ):
     returnFlag = True
 
-    print self.getName() + theOtherDebugSession.getName()
+    #print self.getName() + theOtherDebugSession.getName()
 
     if self.getName() != theOtherDebugSession.getName():
       returnFlag = False
@@ -114,8 +114,8 @@ class DebugSession:
     theSessionProcesses = dict( self.getProcessesDict() )
     theOtherSessionProcesses = dict( theOtherDebugSession.getProcessesDict() )
 
-    print theSessionProcesses
-    print theOtherSessionProcesses
+    #print theSessionProcesses
+    #print theOtherSessionProcesses
       
     theKeys = theSessionProcesses.keys()
     theOtherKeys = theOtherSessionProcesses.keys()
@@ -129,8 +129,8 @@ class DebugSession:
           theProcess = theSessionProcesses.get( x )
           theOtherProcess = theOtherSessionProcesses.get( x )
 
-          print "DEBUG = " + theProcess.getName()
-          print "DEBUG = " + theOtherProcess.getName()
+          #print "DEBUG = " + theProcess.getName()
+          #print "DEBUG = " + theOtherProcess.getName()
         
           if not theProcess.isequal( theOtherProcess ):
             returnFlag = False

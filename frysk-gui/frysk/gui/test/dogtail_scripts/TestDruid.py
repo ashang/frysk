@@ -40,7 +40,7 @@
 
 '''
 Script name:    TestDruid.py
-Creation date:  April 2006
+Creation date:  May 2006
 Purpose:        Verify creation of Frysk Debug Session Druid
 Summary:        Simple, demo/prototype dogtail test script for Frysk
 '''
@@ -76,6 +76,10 @@ from FryskHelpers import createProcessDict
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
+from FryskHelpers import FRYSK_SESSION_FILES
+
+# Needed to het $HOME variable
+import os
 
 # Locate the application
 #frysk = tree.root.application ('java-gnome')
@@ -213,4 +217,23 @@ forwardButton.click()
 #sessionName.__setattr__('text',theSession.getName())
 finishButton.click()
 
+# ---------------------
+# Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+# matches the test input
+
+newlyCreatedSessionFile =  FRYSK_SESSION_FILES + theSession.getName()
+parser.parse(newlyCreatedSessionFile)
+newlyCreatedSession = handler.theDebugSession
+
+newlyCreatedSessionProcesses = newlyCreatedSession.getProcesses()
+theSessionProcesses = theSession.getProcesses()
+
+newlyCreatedSession.setProcessesDict(newlyCreatedSessionProcesses)
+theSession.setProcessesDict(theSessionProcesses)
+
+if theSession.isequal (newlyCreatedSession):
+    print "PASS - the session objects match"
+else:
+    print "FAIL - the session objects do not match"
+    
 endFrysk(frysk)
