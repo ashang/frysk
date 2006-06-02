@@ -1,3 +1,8 @@
+2006-06-02  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+        * frysk-imports/lib/elf/cni/Elf.cxx : Add C string terminator
+	to fileName.
+
 2006-05-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ElfArchiveHeader.java (elf_ar_new): Removed.

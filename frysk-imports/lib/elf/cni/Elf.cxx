@@ -58,6 +58,8 @@ void
 lib::elf::Elf::elf_begin (jstring file, jint command){
 	char *fileName = (char *) malloc (file->length() + 1);
 	JvGetStringUTFRegion (file, 0, file->length (), fileName);
+	fileName[file->length()]='\0';
+
 	errno = 0;
 	int fd = open (fileName, O_RDONLY);
 	if(errno != 0)
