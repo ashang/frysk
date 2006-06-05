@@ -37,7 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 #include <libdwfl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <gcj/cni.h>
+
+#include <gnu/gcj/RawDataManaged.h>
 
 #include "lib/dw/Dwfl.h"
 
@@ -46,14 +50,16 @@ lib::dw::Dwfl::dwfl_begin(jint pid){
 	
 	char * flags = "-:.debug:/usr/bin/debug";
 	
-	const ::Dwfl_Callbacks callbacks = {
-		::dwfl_linux_proc_find_elf,
-		::dwfl_standard_find_debuginfo,
-		NULL,
-		&flags
-	};
+	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) malloc(sizeof(::Dwfl_Callbacks));
 	
-	::Dwfl* dwfl = ::dwfl_begin(&callbacks);
+	cbs->find_elf = ::dwfl_linux_proc_find_elf;
+	cbs->find_debuginfo = ::dwfl_standard_find_debuginfo;
+	cbs->debuginfo_path = &flags;
+	cbs->section_address = NULL;
+	
+	this->callbacks = (gnu::gcj::RawDataManaged*) cbs;
+	
+	::Dwfl* dwfl = ::dwfl_begin(cbs);
 	
 	::dwfl_report_begin(dwfl);
 	::dwfl_linux_proc_report(dwfl, (pid_t) pid);

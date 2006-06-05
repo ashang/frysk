@@ -1,8 +1,11 @@
 package lib.dw;
 
+import gnu.gcj.RawDataManaged;
+
 public class Dwfl {
 	
 	private long pointer;
+	protected RawDataManaged callbacks;
 	
 	public Dwfl(int pid){
 		dwfl_begin(pid);
