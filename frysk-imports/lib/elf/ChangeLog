@@ -1,3 +1,7 @@
+2006-06-05  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Elf.cxx: Now uses alloca instead of malloc.
+
 2006-06-02  Yao Qi  <qiyaoltc@cn.ibm.com>
 
         * frysk-imports/lib/elf/cni/Elf.cxx : Add C string terminator

@@ -45,6 +45,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
+#include <alloca.h>
 
 #include "lib/elf/ElfException.h"
 #include "lib/elf/Elf.h"
@@ -56,7 +57,7 @@ extern "C"
 
 void
 lib::elf::Elf::elf_begin (jstring file, jint command){
-	char *fileName = (char *) malloc (file->length() + 1);
+	char *fileName = (char *) alloca (file->length() + 1);
 	JvGetStringUTFRegion (file, 0, file->length (), fileName);
 	fileName[file->length()]='\0';
 
