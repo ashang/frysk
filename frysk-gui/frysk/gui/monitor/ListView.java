@@ -130,18 +130,25 @@ public class ListView extends TreeView implements Observer {
 	}
 	
 	public Iterator getSelectedObjects(){
+
 		LinkedList selecteds = new LinkedList();
 		TreePath[] selectedPaths = this.getSelection().getSelectedRows();
-		for (int i = 0; i < selectedPaths.length; i++) {
-			selecteds.add((GuiObject) this.listStore.getValue(this.listStore.getIter(selectedPaths[i]), objectDC));
-		}
-		
+
+		/* Check for no selected rows */
+		if (selectedPaths.length > 0) {
+
+			for (int i = 0; i < selectedPaths.length; i++) {
+				selecteds.add((GuiObject) this.listStore.getValue(this.listStore.getIter(selectedPaths[i]), objectDC));
+			}
 		return selecteds.iterator();
+		} else { return null; }
 	}
 		
 	public GuiObject getSelectedObject(){
+
 		GuiObject selected = null;
 		
+		/* Check for no selected rows */
 		if(this.getSelection().getSelectedRows().length > 0){
 			selected = (GuiObject) this.listStore.getValue(this.listStore.getIter(this.getSelection().getSelectedRows()[0]), objectDC);
 		}

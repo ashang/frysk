@@ -333,10 +333,14 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					if (arg0.getType() == CellRendererTextEvent.Type.EDITED)
 					{
 						Session selected = (Session) previousSessions.getSelectedObject();
-						SessionManager.theManager.removeSession(selected);
-						selected.setName(arg0.getText());
-						SessionManager.theManager.addSession(selected);
-						SessionManager.theManager.save();
+
+						/* There may be nothing selected, and we may get a blank name string */
+						if (selected != null && !arg0.getText().equals("")) {
+							SessionManager.theManager.removeSession(selected);
+							selected.setName(arg0.getText());
+							SessionManager.theManager.addSession(selected);
+							SessionManager.theManager.save();
+						}
 					}
 				}
 		});
