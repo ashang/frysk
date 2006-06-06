@@ -1,5 +1,9 @@
 2005-06-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tests/TestDwfl.java (testGetLine): Now checks for correctness of
+	filename, line number, and column, also removed failing assertion from
+	end that was used for debugging purposes.
+	
 	* tests/TestDwfl.java: Added Frysk license.
 	* tests/TestLib.java: Ditto.
 	* tests/cni/TestLib.cxx: Ditto.

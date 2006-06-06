@@ -50,10 +50,9 @@ public class TestDwfl extends TestCase {
 		DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());
 		assertNotNull(line);
 		String filename = line.getSourceFile();
-		System.out.println(line.getLineNum());
-		System.out.println(line.getColumn());
-		assertNotNull(filename);
-		assertEquals(true, false);
+		assertEquals("TestLib.cxx", filename.substring(filename.lastIndexOf("/") +1));
+		assertEquals(51, line.getLineNum());
+		assertEquals(0, line.getColumn());
 	}
 	
 }
