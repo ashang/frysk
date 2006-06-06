@@ -1,3 +1,11 @@
+2005-06-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests: Added.
+	* tests/TestDwfl.java: Added.
+	* tests/TestLib.java: Added.
+	* tests/cni: Added.
+	* tests/cni/TestLib.cxx: Added.
+
 2005-06-05  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Dwfl.java (getCallbacks): Added, shouldn't be called just satisfying
