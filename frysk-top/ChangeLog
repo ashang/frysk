@@ -50,7 +50,7 @@
 	
 2005-12-08  Andrew Cagney  <cagney@redhat.com>
 
-	* Makefile.am (EXTRA_DIST): Add ommon/m4/ac_find_file.m4, and
+	* Makefile.am (EXTRA_DIST): Add common/m4/ac_find_file.m4, and
 	common/m4/ac_get_lib_line.m4.
 
 2005-12-02  Andrew Cagney  <cagney@redhat.com>
