@@ -40,7 +40,7 @@ package frysk.cli.hpd;
 
 import java.text.ParseException;
 
-public class SetParserTest
+public class TestSetParser
 {
 	static String result = new String();
 
