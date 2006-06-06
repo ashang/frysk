@@ -1,3 +1,7 @@
+2006-06-06  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (frysk2670_FILES): Fix typo, add remaining files.
+
 2006-05-24  Stan Cox  <scox@redhat.com>
 
 	* Makefile.am (frysk2670/gcj.sh): Copy files explicitly.

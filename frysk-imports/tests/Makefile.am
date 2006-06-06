@@ -323,10 +323,13 @@ frysk2299_GCTest_SOURCES = frysk2299/GCTest.java
 frysk2299_GCTest_LDFLAGS = --main=GCTest
 TESTS += frysk2299/GCTest
 
-frysk2670_TESTS = \
+frysk2670_FILES = \
 	frysk2670/AddTaskObserverAction.java \
 	frysk2670/ExitNotificationObserver.java \
-	frysk2670/TaskAction.java
+	frysk2670/TaskAction.java \
+	frysk2670/files.list \
+	frysk2670/files0.list \
+	frysk2670/frysk.jar
 EXTRA_DIST += $(frysk2670_FILES)
 TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh: $(frysk2670_FILES)
