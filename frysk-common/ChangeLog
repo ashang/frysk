@@ -1,3 +1,7 @@
+2006-06-06  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.rules: Added GEN_GCC_RPATHS to pick up libdw.so.1.
+
 2006-05-29  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.rules: Added frysk-imports/elfutils/libdwfl to import path.
