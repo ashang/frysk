@@ -107,6 +107,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private Button deleteSession;
 	
 	private Session currentSession = new Session();
+	private Entry nameEntry;
 
 	private Notebook notebook;
 	private Button nextButton;
@@ -349,6 +350,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					{
 						newSessionSelected = true;
 						previousSessionSelected = false;
+						nameEntry.setSensitive(true);
 					}
 					else
 						newSessionSelected = false;
@@ -356,7 +358,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					
 
 		
-		final Entry nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
+		nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
 		nameEntry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent arg0) {
 				currentSession.setName(nameEntry.getText());
@@ -387,6 +389,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					editSession.setSensitive(!editSession.getSensitive());
 					copySession.setSensitive(!copySession.getSensitive());
 					deleteSession.setSensitive(!deleteSession.getSensitive());
+					nameEntry.setSensitive(false);
 					previousSessionSelected = true;
 					if (previousSession.getState())
 					{
@@ -406,7 +409,6 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				Session selected = (Session)previousSessions.getSelectedObject();		
 				if (selected != null){
 					finishButton.setSensitive(true);
-					currentSession = (Session) previousSessions.getSelectedObject();
 				}
 				else
 				{
@@ -656,6 +658,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 						SessionManager.theManager.addSession(currentSession);
 						SessionManager.theManager.save();
 						WindowManager.theManager.mainWindow.setSession(currentSession);
+						currentSession = (Session) previousSessions.getSelectedObject();
 						hideAll();
 						return;
 					}
