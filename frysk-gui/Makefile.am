@@ -65,6 +65,7 @@ GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jargs.a
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-jline.a 
 GEN_GCJ_LDADD += -L../frysk-imports/elfutils/libelf -lelf
 GEN_GCJ_LDADD += -L../frysk-imports/elfutils/libdw -ldw
+GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-ftk.a
 GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon
 GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets

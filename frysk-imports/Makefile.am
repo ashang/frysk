@@ -54,6 +54,7 @@ GEN_GCJ_LDADD += libfrysk-jargs.a
 GEN_GCJ_LDADD += libfrysk-junit.a
 GEN_GCJ_LDADD += -Lelfutils/libelf -lelf
 GEN_GCJ_LDADD += -Lelfutils/libdw -ldw
+GEN_GCJ_LDADD += ./elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += -lopcodes
 
 all-local: lib/elf/tests/test-core lib/elf/tests/helloworld.o
