@@ -87,7 +87,7 @@ class LinuxIa32
     }
     Register[] dbg = dbg_regs ();  // debug registers
     
-    long pc (Task task)
+    public long pc (Task task)
     {
 	return eip.get (task);
     }

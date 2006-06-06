@@ -64,7 +64,7 @@ public class Isa
 	throw new RuntimeException ("not implemented");
     }
 
-    long pc (Task task)
+    public long pc (Task task)
     {
 	throw new RuntimeException ("not implemented");
     }
