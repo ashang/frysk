@@ -1,5 +1,9 @@
 2005-06-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tests/TestDwfl.java: Added Frysk license.
+	* tests/TestLib.java: Ditto.
+	* tests/cni/TestLib.cxx: Ditto.
+
 	* tests: Added.
 	* tests/TestDwfl.java: Added.
 	* tests/TestLib.java: Added.
