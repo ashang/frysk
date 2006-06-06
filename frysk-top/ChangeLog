@@ -1,6 +1,6 @@
 2006-05-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* .classpath: Eclispe project settings file.
+	* .classpath: Eclipse project settings file.
 	* .project: Ditto
 
 2006-05-08  Andrew Cagney  <cagney@redhat.com>
