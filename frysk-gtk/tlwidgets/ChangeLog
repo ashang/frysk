@@ -1,3 +1,10 @@
+2006-06-06  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Added varargs simultaneous events and
+	visual ties for simultaneous events, replaced the interval spinbox
+	with a logarithmic slider, and added label and marker info popups.
+
 2006-05-22  Chris Moller  <moller@mollerware.com>
 
 	* Makefile.am: Took the stripchart widgets and their wrappers out
