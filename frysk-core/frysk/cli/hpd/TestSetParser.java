@@ -39,18 +39,25 @@
 package frysk.cli.hpd;
 
 import java.text.ParseException;
+import junit.framework.TestCase;
 
-public class TestSetParser
+public class TestSetParser extends TestCase
 {
-	static String result = new String();
+	private String result;
+	private SetNotationParser pr;
+	private ParseTreeNode[] root;
 
-	public static void main(String[] args)
+	protected void setUp()
 	{
-		SetNotationParser pr = new SetNotationParser();
-		ParseTreeNode[] root;
+		result = new String();
+		pr = new SetNotationParser();
+	}
+
+	public void testReg()
+	{
+		result = "";
 		String temp = "";
 
-		System.out.println("Test [!3.2:4, 2.3, 3:4.5]:");
 		try 
 		{
 			root = pr.parse("[!3.2:4, 2.3, 3:4.5]");
@@ -63,12 +70,15 @@ public class TestSetParser
 		}
 		catch (ParseException e)
 		{
-			System.out.println(e);
 			result = "Error";
 		}
-		System.out.println(temp);
 
-		System.out.println("\nTest [!2.5:3.*]: ");
+		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
+	}
+
+	public void testRange()
+	{
+		result = "";
 		try 
 		{
 			root = pr.parse("[! 2.5:3.*]");
@@ -76,13 +86,12 @@ public class TestSetParser
 		}
 		catch (ParseException e)
 		{
-			System.out.println(e);
 			result = "Error";
 		}
-		System.out.println(result);
-		System.out.println("Is static: " + SetNotationParser.setIsStatic("[ !2.5:3.*]"));
+		assertEquals("2.5:3.-1", result);
+		assertEquals(true, SetNotationParser.setIsStatic("[ !2.5:3.*]"));
 
-		System.out.println("\nTest [*.5:3.*]: ");
+		result = "";
 		try 
 		{
 			root = pr.parse("[*.5:3.*]");
@@ -90,14 +99,14 @@ public class TestSetParser
 		}
 		catch (ParseException e)
 		{
-			System.out.println(e);
 			result = "Error";
 		}
-		System.out.println(result);
+
+		assertEquals("Error", result);
 	}
 
 	
-	private static void walkTree(ParseTreeNode node)
+	private void walkTree(ParseTreeNode node)
 	{
 		if (node.getLeft() != null)
 			walkTree(node.getLeft());
