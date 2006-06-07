@@ -1,4 +1,8 @@
-   CLASSPATH=.:/usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar:/usr/share/java/gtk2.8.jar:/usr/share/java/glib0.2.jar:/usr/share/java/vte0.11.jar
+     JAVA_RT_JAR = /usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar
+         GTK_JAR = /usr/share/java/gtk2.8.jar
+        GLIB_JAR = /usr/share/java/glib0.2.jar
+         VTE_JAR = /usr/share/java/vte0.11.jar
+    CLASSPATH=.:$(JAVA_RT_JAR):$(GTK_JAR):$(GLIB_JAR):$(VTE_JAR)
 
    LD_LIBRARY_PATH=/usr/local/qt/lib:/usr/local/lib
 
