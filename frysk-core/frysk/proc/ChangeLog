@@ -1,3 +1,7 @@
+2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Task.java (getDwflLine): Added.
+
 2006-06-06  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Isa.java (pc): Made public.

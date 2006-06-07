@@ -46,6 +46,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import lib.dw.Dwfl;
+import lib.dw.DwflLine;
 import frysk.Config;
 
 abstract public class Task
@@ -58,6 +61,8 @@ abstract public class Task
      */
     final Task creator;
 
+    private Dwfl dwfl;
+    
     /**
      * Return the task's corresponding TaskId.
      */
@@ -92,6 +97,13 @@ abstract public class Task
 	    isa = sendrecIsa ();
 	return isa;
     }
+    
+    public final DwflLine getDwflLine(){
+    	if(dwfl == null)
+    		dwfl = new Dwfl(getTid());
+    	return dwfl.getSourceLine(isa.pc(this));
+    }
+    
     /**
      * This Task's Instruction Set Architecture.
      */
