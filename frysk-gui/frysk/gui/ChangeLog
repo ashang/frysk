@@ -1,3 +1,10 @@
+2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DummySourceWindow.java (DummySourceWin): No longer calls set dummy
+	paths method in SourceWindowFactory, this is expected to temporarily
+	break the dummy source window.
+	* Gui.java (gui): No longer calls setTestFilesPath.
+
 2006-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Gui.java: Added a file check before frysk tries

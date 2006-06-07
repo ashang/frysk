@@ -1,3 +1,22 @@
+2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFactory.java: Created.
+	* SimpleParser.java: Moved from frysk-gui/frysk/gui/srcwin
+	* cparser: Added.
+	* cparser/CDTParser.java: Moved from frysk-gui, removed comment
+	highlighting for now.
+	* cparser/CTagsParser.java: Moved from frysk-gui.
+	* cparser/SimpleParser.java: Ditto.
+	* cparser/Token.java: Ditto.
+	* cparser/Tokenizer.java: Ditto.
+	* DOMFrysk.java (DOMFrysk): Added second constructor that only takes
+	name of the root element.
+	* DOMImage.java (getFunctions): Added.
+	* DOMLine.java (DOMLine): Now takes a long instead of a BigInteger.
+	(getAddress): Added.
+	* DOMSource.java (addLine): Now takes a long instead of a BigInteger.
+	* testDOM.java: Changes to reflect above change to DOMLine constructor.
+
 2006-05-15  Stepan Kasal  <skasal@redhat.com>
 
 	* DOMFrysk.java: ... and use ASCII minus instead of multibyte dashes.

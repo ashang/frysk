@@ -39,7 +39,6 @@
 package frysk.gui.srcwin;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -62,7 +61,6 @@ import frysk.dom.DOMTagTypes;
 import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.ColorPreference.ColorPreferenceListener;
-import frysk.gui.srcwin.cparser.CDTParser;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
@@ -115,8 +113,6 @@ public class SourceBuffer extends TextBuffer {
 	private TextTag includeTag;
 	private TextTag macroTag;
 	private TextTag templateTag;
-
-	private StaticParser staticParser;
 
 	// Hashmap of comments for each file
 	protected static HashMap comments = new HashMap();
@@ -802,19 +798,6 @@ public class SourceBuffer extends TextBuffer {
 
 		this.deleteText(this.getStartIter(), this.getEndIter());
 		this.insertText(bufferText);
-
-		if (!this.scope.isParsed()) {
-			
-			// now pass the resulting text to the parser
-			if (this.staticParser == null)
-				this.staticParser = new CDTParser();
-			try {
-				this.staticParser.parse(this.scope.getData(), this);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			this.scope.setParsed(true);
-		}
 
 		this.createTags();
 	}

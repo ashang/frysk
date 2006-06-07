@@ -41,7 +41,7 @@
  * CDTParser uses the parser from the Eclipse CDT to generate static information
  * about the source file
  */
-package frysk.gui.srcwin.cparser;
+package frysk.dom.cparser;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -93,8 +93,7 @@ import org.eclipse.cdt.core.parser.ast.IASTVariableReference;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
 import frysk.dom.DOMTagTypes;
-import frysk.gui.srcwin.SourceBuffer;
-import frysk.gui.srcwin.StaticParser;
+import frysk.dom.StaticParser;
 
 /**
  * @author ajocksch
@@ -107,7 +106,7 @@ public class CDTParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMSource source, SourceBuffer buffer) throws IOException {
+	public void parse(DOMSource source) throws IOException {
 		this.source = source;
 		
 		String filename = source.getFilePath() + "/" + source.getFileName();
@@ -153,7 +152,8 @@ public class CDTParser implements StaticParser {
 				while(tokenMaker.hasMoreTokens() && tokenMaker.peek().lineNum == t.lineNum){
 					t2 = tokenMaker.nextToken();
 				}
-				buffer.addComment(t.lineNum, t.colNum, t.lineNum, t2.colNum+t2.text.length());
+				t2.toString();
+//				buffer.addComment(t.lineNum, t.colNum, t.lineNum, t2.colNum+t2.text.length());
 			}
 			// C Style comments
 			else if(t.text.equals("/*")){
@@ -162,7 +162,8 @@ public class CDTParser implements StaticParser {
 					t2 = tokenMaker.nextToken();
 				}
 				t2 = tokenMaker.nextToken();
-				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
+				t2.toString();
+//				buffer.addComment(t.lineNum, t.colNum, t2.lineNum, t2.colNum+t2.text.length());
 			}
 			// For some reason the CDTParser doesn't pick up this keyword either
 			else if(t.text.equals("return")){

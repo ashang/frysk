@@ -41,9 +41,10 @@ package frysk.dom;
 import java.math.BigInteger;
 import java.util.Iterator;
 
+import junit.framework.TestCase;
+
 import org.jdom.Document;
 import org.jdom.Element;
-import junit.framework.*;
 
 /**
  * This is a test for the DOM implementation in Frysk.
@@ -249,12 +250,12 @@ public class TestDOM extends TestCase {
 		assertEquals("testing DOMSource.setFilePath()", testDOMSource.getFilePath(),
 				"/opt/share/java");
 
-		BigInteger no_bytes = BigInteger.valueOf(4);
-		BigInteger pc = BigInteger.valueOf(25842);
+		long no_bytes = 4;
+		long pc = 25842;
 		for (int ctr = 0; ctr < main_prog.length; ctr++) {
 			testDOMSource.addLine(ctr + 1, main_prog[ctr], true,
 					false, offset_index[ctr], pc);
-			pc = pc.add(no_bytes);
+			pc += no_bytes;
 		}
 
 		Iterator line_iter = testDOMSource.getLines();

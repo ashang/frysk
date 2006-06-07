@@ -39,13 +39,12 @@
 /**
  * An attempt to parser C/C++ code by simply tokenizing then lexing for the symbols we want
  */
-package frysk.gui.srcwin.cparser;
+package frysk.dom.cparser;
 
 import java.io.IOException;
 
 import frysk.dom.DOMSource;
-import frysk.gui.srcwin.SourceBuffer;
-import frysk.gui.srcwin.StaticParser;
+import frysk.dom.StaticParser;
 
 /**
  * @author ajocksch
@@ -59,7 +58,7 @@ public class SimpleParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMSource source, SourceBuffer buffer) throws IOException {
+	public void parse(DOMSource source) throws IOException {
 		this.tokenMaker = new Tokenizer(source.getFilePath() +"/" +  source.getFileName());
 		
 		while(this.tokenMaker.hasMoreTokens()){

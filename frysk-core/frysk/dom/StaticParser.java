@@ -40,11 +40,9 @@
  * The class that implements this interface should parse the given source file for
  * statically available information
  */
-package frysk.gui.srcwin;
+package frysk.dom;
 
 import java.io.IOException;
-
-import frysk.dom.DOMSource;
 
 
 /**
@@ -58,5 +56,5 @@ public interface StaticParser {
 	 * @param buffer The source buffer to put the resulting data in
 	 * @param filename TODO
 	 */
-	void parse(DOMSource source, SourceBuffer buffer) throws IOException;
+	void parse(DOMSource source) throws IOException;
 }

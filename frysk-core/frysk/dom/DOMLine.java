@@ -39,7 +39,6 @@
 
 package frysk.dom;
 
-import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -96,15 +95,15 @@ public class DOMLine {
 	 * 		Whether this line is executable or not
 	 * @param hasBreakpoint
 	 * 		Whether this line has any breakpoints on it or not
-	 * @param pc
+	 * @param address
 	 * 		The program counter value.
 	 */
 	public DOMLine(int lineNo, String lineText, int offset, 
-			boolean executable, boolean hasBreakpoint, BigInteger pc){
+			boolean executable, boolean hasBreakpoint, long address){
 		this.myElement = new Element(DOMLine.LINE_NODE);
 		myElement.setText(lineText);
 		myElement.setAttribute(DOMLine.NUMBER_ATTR, Integer.toString(lineNo));
-		myElement.setAttribute(DOMSource.PC_ATTR, pc.toString());
+		myElement.setAttribute(DOMSource.ADDR_ATTR, ""+address);
 		myElement.setAttribute(DOMLine.OFFSET_ATTR, Integer.toString(offset));
 		myElement.setAttribute(DOMLine.LENGTH_ATTR, Integer.toString(lineText.length()));
 		myElement.setAttribute(DOMLine.EXECUTABLE_ATTR, ""+executable);
@@ -383,6 +382,10 @@ public class DOMLine {
 		return null;
 	}
 
+	public long getAddress(){
+		return Long.parseLong(this.myElement.getAttributeValue(DOMSource.ADDR_ATTR));
+	}
+	
 	/**
 	 * get the JDOM Element of this line
 	 * 

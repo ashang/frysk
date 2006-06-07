@@ -141,7 +141,7 @@ public class DummySourceWindow {
 			
 		Messages.setBundlePaths(messaged);
 			
-		SourceWindowFactory.setTestFilesPath(testfiled);
+//		SourceWindowFactory.setTestFilesPath(testfiled);
 		SourceWindowFactory.setGladePaths(gladep);
 		
 		Preferences prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);

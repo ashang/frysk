@@ -98,7 +98,7 @@ abstract public class Task
 	return isa;
     }
     
-    public final DwflLine getDwflLine(){
+    public final DwflLine getDwflLineXXX(){
     	if(dwfl == null)
     		dwfl = new Dwfl(getTid());
     	return dwfl.getSourceLine(isa.pc(this));

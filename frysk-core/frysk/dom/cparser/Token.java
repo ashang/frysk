@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.gui.srcwin.cparser;
+package frysk.dom.cparser;
 
 class Token{
 	public String text;

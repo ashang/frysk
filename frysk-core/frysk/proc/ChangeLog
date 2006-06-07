@@ -1,5 +1,7 @@
 2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Task.java (getDwflLineXXX): Used to be getDwflLine.
+
 	* Task.java (getDwflLine): Added.
 
 2006-06-06  Adam Jocksch  <ajocksch@redhat.com>

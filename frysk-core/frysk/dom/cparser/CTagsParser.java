@@ -40,7 +40,7 @@
  * The CTagsParser attemps to do a basic parser of a C/C++ source file by using
  * ctags to generate the information
  */
-package frysk.gui.srcwin.cparser;
+package frysk.dom.cparser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -49,8 +49,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import frysk.dom.DOMSource;
-import frysk.gui.srcwin.SourceBuffer;
-import frysk.gui.srcwin.StaticParser;
+import frysk.dom.StaticParser;
 
 
 /**
@@ -62,7 +61,7 @@ public class CTagsParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMSource source, SourceBuffer buffer) throws IOException {
+	public void parse(DOMSource source) throws IOException {
 		String[] command = new String[7];
 		command[0] = "ctags";
 		command[1] = "--fields=+KSn";

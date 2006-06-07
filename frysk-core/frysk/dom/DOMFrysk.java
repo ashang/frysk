@@ -152,12 +152,14 @@ public class DOMFrysk {
 
 	/**
 	 * Creates a new DOMFrysk using the DOM contained in data
-	 * 
-	 * @param data
-	 *            The Document to use as the source window DOM
+	 * @param name TODO
 	 */
-	public DOMFrysk(Document data) {
-		this.data = data;
+	public DOMFrysk(String name) {
+		this(new Document(new Element(name)));
+	}
+	
+	public DOMFrysk(Document doc){
+		this.data = doc;
 		this.data.getRootElement().setText("Frysk JDOM");
 		this.data.getRootElement().addContent(pcName);
 	}

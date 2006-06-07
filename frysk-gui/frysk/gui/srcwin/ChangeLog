@@ -1,3 +1,12 @@
+2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceBuffer.java (loadFile): No longer tries to parse DOM, merely
+	creates tags from information contained in the DOM.
+	* SourceWindowFactory.java (setTestFilesPath): Removed.
+	(clearTestFilesPath): Removed.
+	(createSourceWindow): Now uses DOMFactory to create the DOM and no
+	longer pulls in test files.
+
 2006-05-17  Andrew Cagney  <cagney@redhat.com>
 
 	* SourceWindow.java: Comment out println calls.

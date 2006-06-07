@@ -297,8 +297,6 @@ public class Gui
 	IconManager.useSmallIcons();
 		
 	Messages.setBundlePaths(messagePaths);
-		
-	SourceWindowFactory.setTestFilesPath(testfilePaths);
 			
 		
 	try {

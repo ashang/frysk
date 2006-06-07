@@ -41,7 +41,6 @@ package frysk.dom;
 
 import java.util.Iterator;
 import java.util.Vector;
-import java.math.BigInteger;
 
 import org.jdom.Element;
 
@@ -68,7 +67,7 @@ public class DOMSource {
 	 */
 	public static final String IS_PARSED = "parsed";
 	// program counter attribute
-	public static final String PC_ATTR = "pc";
+	public static final String ADDR_ATTR = "pc";
 	// text of the source line
 	public static final String TEXT_ATTR = "text";
 	
@@ -158,7 +157,7 @@ public class DOMSource {
 	 * @param pc(program counter) for this line
 	 */
 	public void addLine(int lineno, String text, boolean is_executable, 
-			boolean has_break, int offset_index, BigInteger pc) {
+			boolean has_break, int offset_index, long pc) {
 		this.addLine(
 				new DOMLine(lineno, text, offset_index, 
 						is_executable, has_break, pc)
