@@ -123,13 +123,7 @@ public class SessionProcDataModel {
 		// Change to HashMap from HashTable
 		this.iterHash = new HashMap();
 	
-		this.refreshTimer = new TimerEvent(0, 5000){
-			public void execute() {
-				Manager.host.requestRefreshXXX (true);
-			}
-		};
 		
-		Manager.eventLoop.add (this.refreshTimer);
 		
 //		this.procCreatedObserver = new ProcCreatedObserver();
 //		this.procDestroyedObserver = new ProcDestroyedObserver();

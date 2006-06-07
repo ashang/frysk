@@ -1,3 +1,10 @@
+2006-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SessionProcDataModel.java: Removed call to refresh.
+	only Gui.java should be calling refresh (fix for 2722).
+	* datamodels/FlatProcObservableLinkedList.java: Added/removed
+	debug output. No changes.
+
 2006-05-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcDataModel.java: Removed timer insertion/refresh

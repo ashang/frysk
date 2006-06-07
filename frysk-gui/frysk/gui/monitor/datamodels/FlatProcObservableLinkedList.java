@@ -68,16 +68,10 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
 	
+//		System.out.println(this + ": FlatProcObservableLinkedList.FlatProcObservableLinkedList() adding observers to backend");
 		Manager.host.observableProcAddedXXX.addObserver(this.procCreatedObserver);
 		Manager.host.observableProcRemovedXXX.addObserver(this.procDestroyedObserver);
 
-//		TimerEvent refreshTimer = new TimerEvent(0, 5000){
-//			public void execute() {
-//				Manager.host.requestRefreshXXX (true);
-//			}
-//		};
-//		
-//		Manager.eventLoop.add (refreshTimer);
 	}
 	
 	class ProcCreatedObserver implements Observer{
@@ -85,25 +79,19 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    		final Proc proc = (Proc) obj;
 	    		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 	    			public void run() {
-	    				if(proc.getUID() != Manager.host.getSelf().getUID()){
-	    					return;
+	    				GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+
+	    				if(!guiProc.isOwned()){
+	    				//	System.out.println(this + ": ProcCreatedObserver.update() REJECTING" + guiProc.getNiceExecutablePath());
+		    				return;
 	    				}
 	    				
-
-//	    				String path = "nopath";
-//	    				try{
-//	    					proc.getExe();
-//	    				}catch(Exception e){
-//	    					
-//	    				}
-//	    				System.out.println(this + ": ProcCreatedObserver.update() " + path);
+	    				//System.out.println(this + ": ProcCreatedObserver.update() " + guiProc.getNiceExecutablePath());
+	    				guiProc.setName(proc.getPid() + " " + guiProc.getNiceExecutablePath());
+	    				guiProc.setToolTip(guiProc.getNiceExecutablePath());
 	    				
-	    				GuiProc procData = GuiProc.GuiProcFactory.getGuiProc(proc);
-	    				procData.setName(proc.getPid() + " " + procData.getNiceExecutablePath());
-	    				procData.setToolTip(procData.getNiceExecutablePath());
-	    				
-	    				add(procData);
-	    				hashMap.put(proc, procData);
+	    				add(guiProc);
+	    				hashMap.put(proc, guiProc);
 	    			}
 	    		});
 	        }

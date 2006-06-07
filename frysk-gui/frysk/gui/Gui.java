@@ -81,6 +81,7 @@ import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
@@ -225,18 +226,26 @@ public class Gui
 	InputStream is = null;
 	Preferences prefs = null;
 
-	try {
-	    is = new BufferedInputStream(new FileInputStream(location));
-	    Preferences.importPreferences(is);
-	} catch (FileNotFoundException e1) {
-	    errorLogFile.log(Level.WARNING, location
-			     + " not found. Will be created on program exit", e1); //$NON-NLS-1$
-	} catch (IOException e) {
-	    errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
-	} catch (InvalidPreferencesFormatException e) {
-	    errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
+	File checkFrysk = new File (Config.FRYSK_DIR);
+	if (!checkFrysk.exists()){
+		checkFrysk.mkdirs();
 	}
-
+	
+	File checkFile = new File (location);
+	if (checkFile.exists()){
+		try {
+			is = new BufferedInputStream(new FileInputStream(location));
+			Preferences.importPreferences(is);
+		} catch (FileNotFoundException e1) {
+			errorLogFile.log(Level.WARNING, location
+					+ " not found. Will be created on program exit", e1); //$NON-NLS-1$
+		} catch (IOException e) {
+			errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
+		} catch (InvalidPreferencesFormatException e) {
+			errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
+		}
+	}
+	
 	prefs = Preferences.userRoot();
 	return prefs;
     }
@@ -313,7 +322,7 @@ public class Gui
 	// Now that we now the glade paths are good, send the paths to
 	// the SourceWindowFactory
 	SourceWindowFactory.setGladePaths(glade_dirs);
-
+	
 	prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
 	PreferenceManager.setPreferenceModel(prefs);
 	initializePreferences();
@@ -383,6 +392,11 @@ public class Gui
 		}
 	});
 
+	//XXX: a hack to make sure the DataModelManager
+	// is initialized early enough. Should probably
+	// have an entitiy that initializes all Managers
+	DataModelManager.theManager.flatProcObservableLinkedList.getClass();
+	
 	TimerEvent timerEvent = new TimerEvent(0, 5000){
 		public void execute() {
 			CustomEvents.addEvent(new Runnable() {
@@ -433,9 +447,6 @@ public class Gui
 	
 	try {
 	    // Export the node to a file
-	    File checkFrysk = new File (Config.FRYSK_DIR);
-	    if (!checkFrysk.exists())
-		checkFrysk.mkdirs();
 	    prefs.exportSubtree (new FileOutputStream (Config.FRYSK_DIR + SETTINGSFILE));
 	} catch (Exception e) {
 	    errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
