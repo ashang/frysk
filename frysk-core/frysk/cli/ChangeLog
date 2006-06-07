@@ -1,3 +1,14 @@
+2006-06-07  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/TestSerParser.java: JUnitified it
+
+2006-05-31  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/ParseTreeNode.java: Changed all instance of PTNode to ParseTreeNode
+	* hpd/SetParserTest.java: Changed all instance of PTNode to ParseTreeNode
+	* hpd/SetNotationParse.java: Changed all instance of PTNode to ParseTreeNode
+	* hpd/AllPTSet.java: Changed all instance of PTNode to ParseTreeNode
+
 2006-06-01  Ivan Pantuyev  <ipantuye@redhat.com>
 	
 	* hpd/PTNode.java: Renamed to ParseTreeNode
