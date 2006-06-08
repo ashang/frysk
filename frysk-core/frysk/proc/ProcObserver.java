@@ -50,7 +50,7 @@ public interface ProcObserver
      * An interface for clients to correctly know about all tasks of a
      * Proc.
      */
-    public interface Tasks extends ProcObserver{
+    public interface Offspring extends ProcObserver{
 		
 	/**
 	 * Called when the observed process clones a new task.

@@ -1,3 +1,7 @@
+2006-06-08  Nurdin Premji  <npremji@redhat.com>
+
+	* .project: Added external builders to build in eclipse.
+
 2006-05-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* .classpath: Eclipse project settings file.

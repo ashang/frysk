@@ -41,8 +41,8 @@ package frysk.gui.monitor.observers;
 
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TasksObserver;
-import frysk.proc.ProcObserver.Tasks;
+import frysk.proc.OffspringObserver;
+import frysk.proc.ProcObserver.Offspring;
 
 public abstract class TaskObserverRoot extends ObserverRoot {
 
@@ -55,7 +55,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 	}
 
 	public void apply(Proc proc){
-	    new TasksObserver (proc, new Tasks()
+	    new OffspringObserver (proc, new Offspring()
 		{
 		    public void taskAdded(Task task)
 		    {

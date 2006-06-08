@@ -64,8 +64,8 @@ import frysk.gui.sessions.Session;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.TasksObserver;
-import frysk.proc.ProcObserver.Tasks;
+import frysk.proc.OffspringObserver;
+import frysk.proc.ProcObserver.Offspring;
 
 public class SessionProcDataModel {
 	
@@ -164,7 +164,7 @@ public class SessionProcDataModel {
 		treeStore.setValue(iter,threadParentDC, 0);
 		treeStore.setValue(iter,sensitiveDC, true);		
 	
-		new TasksObserver (proc, new Tasks()
+		new OffspringObserver (proc, new Offspring()
 		    {
 			public void deletedFrom(Object observable) {
 			}

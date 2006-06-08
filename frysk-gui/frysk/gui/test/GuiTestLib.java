@@ -48,8 +48,8 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.TasksObserver;
-import frysk.proc.ProcObserver.Tasks;
+import frysk.proc.OffspringObserver;
+import frysk.proc.ProcObserver.Offspring;
 import frysk.sys.Fork;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
@@ -143,7 +143,7 @@ public class GuiTestLib extends TestCase{
 		
 		private void listenForSignals(){
 			
-		    new TasksObserver (proc, new Tasks()
+		    new OffspringObserver (proc, new Offspring()
 			{
 			    public void deletedFrom(Object observable){}
 			    public void addFailed(Object observable, Throwable w){}

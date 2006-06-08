@@ -1,3 +1,10 @@
+2006-06-08  Nurdin Premji  <npremji@redhat.com>
+
+	* TestOffspringObserver.java: Used to be TestTasksObserver.
+	* ProcObserver.java (Offspring): Used to be Tasks.
+	* OffspringObserver.java: Used to be TasksObserver.
+	Implemented Forked Observer.
+
 2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Task.java (getDwflLineXXX): Used to be getDwflLine.
