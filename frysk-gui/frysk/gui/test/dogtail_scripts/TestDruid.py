@@ -241,9 +241,10 @@ class TestDruid ( unittest.TestCase ):
         self.theSession.setProcessesDict(self.theSessionProcesses)
 
         if self.theSession.isequal (newlyCreatedSession):
-            print "PASS - the session objects match"
+            pass
+            print 'PASS - the session objects match'
         else:
-            print "FAIL - the session objects do not match"
+            self.fail ('FAIL - the session objects do not match')
 
    def tearDown( self ):  
        # Exit Frysk
