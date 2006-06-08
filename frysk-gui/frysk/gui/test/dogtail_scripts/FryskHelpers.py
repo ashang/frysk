@@ -167,6 +167,16 @@ def startFrysk ():
     """ Start up the Frysk GUI
         Function returns an object that points to the Frysk GUI
     """
+    
+    # First, make sure that AT-SPI is enabled
+    import commands
+    import sys
+    AT_SPI_output = commands.getoutput('gconftool-2 -g /desktop/gnome/interface/accessibility')
+    if AT_SPI_output != 'true':
+        print '\n***AT SPI is not enabled - exiting now***'
+        print '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'
+        sys.exit(1)
+    
     # Start up Frysk 
     run ( FRYSK_BINARY_NAME, appName=FRYSK_APP_NAME )
     fryskObject = tree.root.application ( FRYSK_APP_NAME )
