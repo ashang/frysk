@@ -63,6 +63,7 @@ from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
 from FryskHelpers import getEventType
+from FryskHelpers import FRYSK_OBSERVER_FILES
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -88,9 +89,9 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         #skipDruid(self.frysk)
 
         # Load up some sample Observer objects         
-        parser = xml.sax.make_parser(  )
+        self.parser = xml.sax.make_parser(  )
         handler = ObserverHandler.ObserverHandler(  )
-        parser.setContentHandler(handler)    
+        self.parser.setContentHandler(handler)    
               
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
@@ -99,16 +100,16 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        parser.parse(sys.argv[1])
+        self.parser.parse(sys.argv[1])
         #inputFile = os.environ.get('TestCreateObserversfromDataModel_FILE')
         #parser.parse(inputFile)
 
-        theObserver = handler.theObserver
-        theObserver.dump()
-        theName = theObserver.getName()
-        theType = theObserver.getType()
+        self.theObserver = handler.theObserver
+        self.theObserver.dump()
+        theName = self.theObserver.getName()
+        theType = self.theObserver.getType()
 
-        theActions = theObserver.getActionPoints()
+        theActions = self.theObserver.getActionPoints()
         for tempAction in theActions:
           theActionName = tempAction.getName()
   
@@ -140,8 +141,9 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
         execObserver.actions['activate'].do()
 
-        # Start loop to create the new Observers
-
+        # Start loop to create the new Observers - for now, Frysk only supports (1)
+        # observer object in a persistent file - so the loop counter has a limit of
+        # (1)
         for i in range( self.matrixLength ):
   
             observerToCreate = self.theMatrix[i]
@@ -186,6 +188,28 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 print 'Successfully created new Observer with name = ' + newObserverName
   
         # end loop ---------
+        
+        ##############################################
+        
+        """Verify that the session object just created and presisted under $HOME/.frysk/Observers
+           matches the test input"""   
+  
+        # ---------------------
+        # Verify that the observer object just created and presisted under $HOME/.frysk/Observers
+        # matches the test input - it's not ideal to put this into the setup method - but it has to
+        # be run before the update test 
+
+        newlyCreatedObserverFile =  FRYSK_OBSERVER_FILES + self.theObserver.getName()
+        self.parser.parse(newlyCreatedObserverFile)
+        newlyCreatedObserver = self.handler.theObserver
+
+        if self.theObserver.isequal (newlyCreatedObserver):
+            pass
+            print 'PASS - the observer objects match'
+        else:
+            self.fail ('FAIL - the observer objects do not match')
+        
+        ###############################################
 
         # Return to the Frysk main menu
         okButton = customObservers.button( 'OK' )
