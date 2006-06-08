@@ -60,7 +60,7 @@ public class FilterRow extends ObserverItemRow{
 	}
 	
 	SimpleComboBox booleanComboBox;
-
+	Filter filter;
 	
 	FilterRow(ObserverItemsTable table, ObserverRoot observer, Combo myCombo) {
 		super(table, observer, myCombo);
@@ -69,38 +69,38 @@ public class FilterRow extends ObserverItemRow{
 		itemsComboBox.watchLinkedList(comboList);
 		
 		if(combo != null){
+			filter = (Filter) combo.getFilter();
 			itemsComboBox.setSelectedText(combo.getName());
 			comboList.swap(itemsComboBox.getSelectedObject(), combo);
 			itemsComboBox.setSelectedObject(combo);
+		
+			boolean currentBoolean = filter.getFilterBoolean();
+//			System.out.println(this + ": FilterRow.FilterRow() currentBoolean " + currentBoolean );
+			if(currentBoolean){
+				booleanComboBox.setSelectedObject(IS);
+			}else{
+				booleanComboBox.setSelectedObject(ISNOT);			
+			}
+
+			booleanComboBox.addListener(new ComboBoxListener() {
+				public void comboBoxEvent(ComboBoxEvent event) {
+					GuiObject object = booleanComboBox.getSelectedObject();
+					if(object == IS){
+						System.out.println(this
+								+ ": .comboBoxEvent() setting boolean to " + true);
+						filter.setFilterBoolean(true);
+					}else{
+						System.out.println(this
+								+ ": .comboBoxEvent() setting boolean to " + false);				
+						filter.setFilterBoolean(false);
+					}
+				}
+			});
 		}
-		
-		final Filter filter = (Filter) combo.getFilter();
-		
+				
 		booleanComboBox = new SimpleComboBox();
 		booleanComboBox.watchLinkedList(booleanList);
-		
-		boolean currentBoolean = filter.getFilterBoolean();
-//		System.out.println(this + ": FilterRow.FilterRow() currentBoolean " + currentBoolean );
-		if(currentBoolean){
-			booleanComboBox.setSelectedObject(IS);
-		}else{
-			booleanComboBox.setSelectedObject(ISNOT);			
-		}
-		
-		booleanComboBox.addListener(new ComboBoxListener() {
-			public void comboBoxEvent(ComboBoxEvent event) {
-				GuiObject object = booleanComboBox.getSelectedObject();
-				if(object == IS){
-					System.out.println(this
-							+ ": .comboBoxEvent() setting boolean to " + true);
-					filter.setFilterBoolean(true);
-				}else{
-					System.out.println(this
-							+ ": .comboBoxEvent() setting boolean to " + false);				
-					filter.setFilterBoolean(false);
-				}
-			}
-		});
+				
 	}	
 	
 	public void removeFromTable(){
