@@ -1,3 +1,10 @@
+2006-06-08  Nurdin Premji  <npremji@redhat.com>
+
+	* observers/TaskObserverRoot.java (apply): Changed reference from
+	"TasksObserver" to "OffspringObserver"
+	* SessionProcDataModel.java: Changed references from "Tasks" to
+	"Offspring" and "TasksObserver" to "OffspringObserver"
+
 2006-06-07  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SessionProcDataModel.java: Removed call to refresh.

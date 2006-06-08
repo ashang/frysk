@@ -1,5 +1,13 @@
 2006-06-08  Nurdin Premji  <npremji@redhat.com>
 
+	* .externalToolBuilders/Make.launch: Builder that runs make in frysk/bin
+	directory.
+	* .externalToolBuilders/Make Check.launch: Builder that runs make check
+	in frysk/bin directory
+	* .externalToolBuilders/Cleaner.launch: Builder that cleans the frysk/bin 
+	directory
+	* .externalToolBuilders/Autogen.sh.launch: Builder that runs autogen
+	script in frysk/bin directory
 	* .project: Added external builders to build in eclipse.
 
 2006-05-18  Sami Wagiaalla  <swagiaal@redhat.com>
