@@ -68,14 +68,14 @@ from FryskHelpers import getEventType
 import xml.sax
 import ObserverHandler
 import sys
-
+import os
 
 # The Frysk test objects
 from Observer import Observer
 from ObserverElement import ObserverElement
 from ObserverPoints import ObserverPoints
 
-class TestCreateObservers ( unittest.TestCase ):
+class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
     def setUp( self ):
 
@@ -90,9 +90,21 @@ class TestCreateObservers ( unittest.TestCase ):
         # Load up some sample Observer objects         
         parser = xml.sax.make_parser(  )
         handler = ObserverHandler.ObserverHandler(  )
-        parser.setContentHandler(handler)
-        parser.parse('temp.xml')
+        parser.setContentHandler(handler)    
+              
+        # Mechanism to allow multiple tests to be assembled into test suite,
+        # and have the test input data files be specified in the suite defiition,
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        parser.parse(sys.argv[1])
+        #inputFile = os.environ.get('TestCreateObserversfromDataModel_FILE')
+        #parser.parse(inputFile)
+
         theObserver = handler.theObserver
+        theObserver.dump()
         theName = theObserver.getName()
         theType = theObserver.getType()
 
@@ -268,7 +280,7 @@ class TestCreateObservers ( unittest.TestCase ):
 
 def suite():
         suite = unittest.TestSuite()
-        suite.addTest( unittest.makeSuite( TestCreateObservers ) )
+        suite.addTest( unittest.makeSuite( TestCreateObserversfromDataModel ) )
         return suite
 
 if __name__ == '__main__':

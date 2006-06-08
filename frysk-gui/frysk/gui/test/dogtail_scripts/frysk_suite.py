@@ -38,6 +38,15 @@
 # version and license this file solely under the GPL without
 # exception.
 
+
+# As of June 8, 2006, there's a problem with 
+# the test suite - either Frysk or Dogtail gets confused and attempts
+# to run tests before other tests have completed - short-term workaround
+# is to comment out these lines, run the tests separately, and read
+# the datafiles from the CLI
+
+
+
 """
 Script name:    frysk_suite.py
 Creation date:  April 2006
@@ -48,21 +57,40 @@ Summary:        Still a prototype
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 
-# Imports
+# Import the test suites
 import unittest
 import TestLicense
 import TestCredits
 import TestCreateObservers
+import TestCreateObserversfromDataModel
+import TestDruid
 
-# Assemble and run the suite
+# Import needed to access test file input files via envron var's
+import os
+
+# Define the test input files
+os.environ.__setitem__('TestCreateObserversfromDataModel_FILE', 'new_fork_custom_observer.xml')
+os.environ.__setitem__('TestDruid_FILE', 'another_new_session.xml')
+
+# Define the suite elements
 licenseSuite = TestLicense.suite()
 creditsSuite = TestCredits.suite()
-createSuite  = TestCreateObservers.suite()
+createObserverSuite  = TestCreateObservers.suite()
+createSuiteObserverDataSuite = TestCreateObserversfromDataModel.suite()
+druidSuite  = TestDruid.suite()
 
+# Assemble the suite
 suite = unittest.TestSuite()
 suite.addTest(licenseSuite)
-suite.addTest(createSuite)
 suite.addTest(creditsSuite)
+suite.addTest(createObserverSuite)
+suite.addTest(createObserverDataSuite)
+suite.addTest(druidSuite)
 
+# Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)
+
+# Cleanup
+os.environ.__delitem__('TestCreateObserversfromDataModel_FILE')
+os.environ.__delitem__('TestDruid_FILE')
 

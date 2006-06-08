@@ -1,4 +1,4 @@
-<Session type="frysk.gui.sessions.Session" name="aanother new session" tooltip="NoTootip">
+<Session type="frysk.gui.sessions.Session" name="aanother_new_session" tooltip="NoTootip">
   <procs>
     <elements>
       <element type="frysk.gui.sessions.DebugProcess" name="bash" tooltip="xterm" executablePath="xterm">

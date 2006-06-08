@@ -56,6 +56,7 @@ from dogtail import predicate
 import xml.sax
 import FryskHandler
 import sys
+import os
 
 # Set up for logging
 import dogtail.tc
@@ -78,162 +79,181 @@ from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
 from FryskHelpers import FRYSK_SESSION_FILES
 
-# Needed to het $HOME variable
-import os
+class TestDruid ( unittest.TestCase ):
 
-# Locate the application
-#frysk = tree.root.application ('java-gnome')
-frysk = startFrysk()
+   def setUp( self ):
 
-# ---------------------
-# Read the test input - need to make the file name a CLI arg for program
-parser = xml.sax.make_parser(  )
-handler = FryskHandler.FryskHandler(  )
-parser.setContentHandler(handler)
-parser.parse(sys.argv[1])
-theSession = handler.theDebugSession
+        # Set up for logging
+        self.TestString=dogtail.tc.TCString()
+        # Start up Frysk 
+        self.frysk = startFrysk()
 
-theProcessGroups = theSession.getProcesses()
-userSelectedProcessGroups = []
-for x in theProcessGroups:
-    userSelectedProcessGroups.append(x.getName())
+        # Load up some sample Observer objects 
+        self.parser = xml.sax.make_parser(  )
+        self.handler = FryskHandler.FryskHandler(  )
+        self.parser.setContentHandler(self.handler)
+       
+        # Mechanism to allow multiple tests to be assembled into test suite,
+        # and have the test input data files be specified in the suite defiition,
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[1])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
 
-userSelectedObserverDict = {}
-for x in theProcessGroups:
-    tempProcess = x.getName().encode('ascii')
-    userSelectedObserverDict[x.getName()] = x.getObservers()
+        self.theSession = self.handler.theDebugSession
+
+        theProcessGroups = self.theSession.getProcesses()
+        userSelectedProcessGroups = []
+        for x in theProcessGroups:
+            userSelectedProcessGroups.append(x.getName())
+
+        userSelectedObserverDict = {}
+        for x in theProcessGroups:
+            tempProcess = x.getName().encode('ascii')
+            userSelectedObserverDict[x.getName()] = x.getObservers()
     
-# ---------------------
-# Access the Druid GUI
-theDruid = frysk.dialog('Debug Session Druid')
+        # ---------------------
+        # Access the Druid GUI
+        theDruid = self.frysk.dialog('Debug Session Druid')
 
-# And the GUI's 'notebook' of (6) pages
-vbox1 = theDruid.child('dialog-vbox1')
-sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
+        # And the GUI's 'notebook' of pages
+        vbox1 = theDruid.child('dialog-vbox1')
+        sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
 
-# ---------------------
-# The action buttons are displayed on the bottom of all pages - the
-# specific buttons (Back, Forward, Finish) that are visible or enabled
-# varies with the page - and the current state of the page
-dialogActionArea1 = vbox1.child('dialog-action_area1')
-forwardButton = dialogActionArea1.button('Forward')
-backButton = dialogActionArea1.button('Back')
-finishButton = dialogActionArea1.button('Finish')
-saveButton = dialogActionArea1.button('Save')
-cancelButton = dialogActionArea1.button('Cancel')
+        # ---------------------
+        # The action buttons are displayed on the bottom of all pages - the
+        # specific buttons (Back, Forward, Finish) that are visible or enabled
+        # varies with the page - and the current state of the page
+        dialogActionArea1 = vbox1.child('dialog-action_area1')
+        forwardButton = dialogActionArea1.button('Forward')
+        backButton = dialogActionArea1.button('Back')
+        finishButton = dialogActionArea1.button('Finish')
+        saveButton = dialogActionArea1.button('Save')
+        cancelButton = dialogActionArea1.button('Cancel')
 
-# ---------------------
-# page #1 - vbox42_tab1_session - Select new/old session, specify
-# the debugger - note that as of May 8, 2006, selecting an existing
-# debug session is not implemented in the GUI - so, for now, we'll 
-# always create a new session
+        # ---------------------
+        # page #1 - vbox42_tab1_session - Select new/old session, specify
+        # the debugger - note that as of May 8, 2006, selecting an existing
+        # debug session is not implemented in the GUI - so, for now, we'll 
+        # always create a new session
 
-vbox42_tab1_session = sessionDruid_sessionNoteBook.child('vbox42_tab1_session')
-newDebugSession = vbox42_tab1_session.child('sessionDruid_newSessionButton')
-newDebugSession.click()
-newSessionName = vbox42_tab1_session.child(name = 'sessionDruid_sessionName', roleName='text')
-newSessionName.text = theSession.getName()
-forwardButton.click()
+        vbox42_tab1_session = sessionDruid_sessionNoteBook.child('vbox42_tab1_session')
+        newDebugSession = vbox42_tab1_session.child('sessionDruid_newSessionButton')
+        newDebugSession.click()
+        newSessionName = vbox42_tab1_session.child(name = 'sessionDruid_sessionName', roleName='text')
+        newSessionName.text = self.theSession.getName()
+        forwardButton.click()
 
-# ---------------------
-# page #2 - vbox43_tab2_processGroups - Select process groups to monitor
+        # ---------------------
+        # page #2 - vbox43_tab2_processGroups - Select process groups to monitor
 
-vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
+        vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
 
-# Select the host to monitor - for now, only local host works, so take no action
-hbox61_tab2_host = vbox43_tab2_processGroups.child('hbox61_tab2_host')  
-hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
+        # Select the host to monitor - for now, only local host works, so take no action
+        hbox61_tab2_host = vbox43_tab2_processGroups.child('hbox61_tab2_host')  
+        hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
 
-# Need to add a test here - the forwardButton is not sensitive until at least 
-# one process group is selected - need to try and catch an exception for:
-# (forwardButton.click()
+        # Need to add a test here - the forwardButton is not sensitive until at least 
+        # one process group is selected - need to try and catch an exception for:
+        # (forwardButton.click()
 
-# The 'from' list is the list from which processes are selected
-vbox45_tab2_fromGroupList = hbox62_tab2_groupLists.child('vbox45_tab2_fromGroupList')
-processGroups = vbox45_tab2_fromGroupList.child('scrolledwindow33')
-processGroups.grabFocus()
-procWiseTreeView = processGroups.child('sessionDruid_procWiseTreeView')
+        # The 'from' list is the list from which processes are selected
+        vbox45_tab2_fromGroupList = hbox62_tab2_groupLists.child('vbox45_tab2_fromGroupList')
+        processGroups = vbox45_tab2_fromGroupList.child('scrolledwindow33')
+        processGroups.grabFocus()
+        procWiseTreeView = processGroups.child('sessionDruid_procWiseTreeView')
 
-# These buttons add/remove processes from the selected ('to') list
-vbox44_tab2_groupListButtons = hbox62_tab2_groupLists.child('vbox44_tab2_groupListButtons')
-addButton = vbox44_tab2_groupListButtons.button('sessionDruid_addProcessGroupButton')
-removeButton = vbox44_tab2_groupListButtons.button('sessionDruid_removeProcessGroupButton')
+        # These buttons add/remove processes from the selected ('to') list
+        vbox44_tab2_groupListButtons = hbox62_tab2_groupLists.child('vbox44_tab2_groupListButtons')
+        addButton = vbox44_tab2_groupListButtons.button('sessionDruid_addProcessGroupButton')
+        removeButton = vbox44_tab2_groupListButtons.button('sessionDruid_removeProcessGroupButton')
 
-# Search the process list for a match with the userSelectedProcessGroups List
-theProcessList = procWiseTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+        # Search the process list for a match with the userSelectedProcessGroups List
+        theProcessList = procWiseTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
 
-processesToMonitor = findProcessNames (userSelectedProcessGroups, theProcessList)
-for processName in processesToMonitor:
-    tempProc = procWiseTreeView.child(processName)
-    tempProc.grabFocus()
-    tempProc.actions['activate'].do()
-    addButton.click()
-# Need to add a test here for the removeButton
-# Need to add a test here for the back button - both before and after process
-# groups are selected
+        processesToMonitor = findProcessNames (userSelectedProcessGroups, theProcessList)
+        for processName in processesToMonitor:
+            tempProc = procWiseTreeView.child(processName)
+            tempProc.grabFocus()
+            tempProc.actions['activate'].do()
+            addButton.click()
+        # Need to add a test here for the removeButton
+        # Need to add a test here for the back button - both before and after process
+        # groups are selected
 
-forwardButton.click()
+        forwardButton.click()
 
-# ---------------------
-# page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
+        # ---------------------
+        # page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
 
-hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
-forwardButton.click()
+        hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
+        forwardButton.click()
 
-# ---------------------
-# page 5 - hbox77_tab5_observers - Select process groups and observers
+        # ---------------------
+        # page 5 - hbox77_tab5_observers - Select process groups and observers
 
-hbox77_tab5_observers = sessionDruid_sessionNoteBook.child('hbox77_tab5_observers')
-vbox52_tab5_processGroups = hbox77_tab5_observers.child('vbox52_tab5_processGroups')
-SessionDruid_processObserverTreeView = vbox52_tab5_processGroups.child('SessionDruid_processObserverTreeView')
-theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+        hbox77_tab5_observers = sessionDruid_sessionNoteBook.child('hbox77_tab5_observers')
+        vbox52_tab5_processGroups = hbox77_tab5_observers.child('vbox52_tab5_processGroups')
+        SessionDruid_processObserverTreeView = vbox52_tab5_processGroups.child('SessionDruid_processObserverTreeView')
+        theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
 
-for processName in theProcessList:
-    resolvedName = extractString (str(processName), 'name')
-    tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
-    tempProc.grabFocus()
-    tempProc.actions['activate'].do()
+        for processName in theProcessList:
+            resolvedName = extractString (str(processName), 'name')
+            tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
+            tempProc.grabFocus()
+            tempProc.actions['activate'].do()
 
-    vbox54_tab5_observers = hbox77_tab5_observers.child('vbox54_tab5_observers')
-    SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
-    theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
-    theDictionary = createProcessDict (theList)
-    userSelectedObservers = userSelectedObserverDict[resolvedName]
+            vbox54_tab5_observers = hbox77_tab5_observers.child('vbox54_tab5_observers')
+            SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
+            theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+            theDictionary = createProcessDict (theList)
+            userSelectedObservers = userSelectedObserverDict[resolvedName]
     
-    for x in userSelectedObservers:
-        tempObserver = theDictionary[x]
-        tempObserver.actions['toggle'].do()
+            for x in userSelectedObservers:
+                tempObserver = theDictionary[x]
+                tempObserver.actions['toggle'].do()
 
-forwardButton.click()
+        forwardButton.click()
 
-# ---------------------
-# page 6 - tab6_sessionName - Select name for new session
-#vbox58_tab6_setSessionName = sessionDruid_sessionNoteBook.child('vbox58_tab6_setSessionName')
+        # Close the Druid
+        finishButton.click()  
 
-# Need to add a test here for the back button - both before and after the session
-# name is selected - not sensitive yet - finishButton.click()
-#sessionName = vbox58_tab6_setSessionName.child('SessionDruid_sessionName')
-#sessionName.actions['activate'].do()
-#sessionName.__setattr__('text',theSession.getName())
-finishButton.click()
+   def testSessionFile( self ):      
+        """Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+           matches the test input"""   
+  
+        # ---------------------
+        # Verify that the session object just created and presisted under $HOME/.frysk/Sessions
+        # matches the test input
 
-# ---------------------
-# Verify that the session object just created and presisted under $HOME/.frysk/Sessions
-# matches the test input
+        newlyCreatedSessionFile =  FRYSK_SESSION_FILES + self.theSession.getName()
+        self.parser.parse(newlyCreatedSessionFile)
+        newlyCreatedSession = self.handler.theDebugSession
 
-newlyCreatedSessionFile =  FRYSK_SESSION_FILES + theSession.getName()
-parser.parse(newlyCreatedSessionFile)
-newlyCreatedSession = handler.theDebugSession
+        newlyCreatedSessionProcesses = newlyCreatedSession.getProcesses()
+        self.theSessionProcesses = self.theSession.getProcesses()
 
-newlyCreatedSessionProcesses = newlyCreatedSession.getProcesses()
-theSessionProcesses = theSession.getProcesses()
+        newlyCreatedSession.setProcessesDict(newlyCreatedSessionProcesses)
+        self.theSession.setProcessesDict(self.theSessionProcesses)
 
-newlyCreatedSession.setProcessesDict(newlyCreatedSessionProcesses)
-theSession.setProcessesDict(theSessionProcesses)
+        if self.theSession.isequal (newlyCreatedSession):
+            print "PASS - the session objects match"
+        else:
+            print "FAIL - the session objects do not match"
 
-if theSession.isequal (newlyCreatedSession):
-    print "PASS - the session objects match"
-else:
-    print "FAIL - the session objects do not match"
-    
-endFrysk(frysk)
+   def tearDown( self ):  
+       # Exit Frysk
+        endFrysk( self.frysk )
+ 
+def suite():
+        suite = unittest.TestSuite()
+        suite.addTest( unittest.makeSuite( TestDruid ) )
+        return suite
+
+if __name__ == '__main__':
+  #unittest.main()
+  unittest.TextTestRunner( verbosity=2 ).run( suite() )
