@@ -1,15 +1,7 @@
 <Session type="frysk.gui.sessions.Session" name="aanother new session" tooltip="NoTootip">
   <procs>
     <elements>
-      <element type="frysk.gui.sessions.DebugProcess" name="init" tooltip="init" executablePath="init">
-        <observers>
-          <element name="Task Terminating Observer" />
-          <element name="Exit Notifiction Observer" />
-          <element name="Exec Observer" />
-        </observers>
-        <tagsets />
-      </element>
-      <element type="frysk.gui.sessions.DebugProcess" name="xterm" tooltip="xterm" executablePath="xterm">
+      <element type="frysk.gui.sessions.DebugProcess" name="bash" tooltip="xterm" executablePath="xterm">
         <observers>
           <element name="Task Terminating Observer" />
           <element name="Fork Observer" />
