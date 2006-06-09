@@ -1,3 +1,14 @@
+2006-06-09  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* hpd/ProcData.java: new
+	* hpd/TaskData.java: new
+	* hpd/ProcTasks.java: new
+	* hpd/TestSetCreation.java: new
+	* hpd/StaticPTSet.java: new
+	* hpd/AllPTSet.java: changed algorithms to simpler ones, added support for new classes
+	* hpd/SetNotationParser.java: removed support for "fuzzy" notations
+	* hpd/TestSetParser.java: accomodated to SetNotationParser changes, more tests
+
 2006-06-07  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* hpd/TestSerParser.java: JUnitified it
