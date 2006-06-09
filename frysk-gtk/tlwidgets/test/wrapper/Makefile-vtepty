@@ -1,0 +1,20 @@
+     JAVA_RT_JAR = /usr/lib/jvm/java-1.4.2-gcj-1.4.2.0/jre/lib/rt.jar
+         GTK_JAR = /usr/share/java/gtk2.8.jar
+        GLIB_JAR = /usr/share/java/glib0.2.jar
+         VTE_JAR = /usr/local/share/java/vte0.11.jar
+   FRYSK_SYS_JAR = ../../../../../frysk-build/frysk-sys/frysk-sys.jar
+    CLASSPATH=.:$(JAVA_RT_JAR):$(GTK_JAR):$(GLIB_JAR):$(VTE_JAR):$(FRYSK_SYS_JAR)
+
+  FRYSK_SYS_PATH = ../../../../../frysk-build/frysk-sys
+   LD_LIBRARY_PATH=$(FRYSK_SYS_PATH):/usr/local/lib
+
+all::run
+
+VtePtyTest.class: VtePtyTest.java
+	CLASSPATH=$(CLASSPATH) gcj -C $<
+
+run: VtePtyTest.class
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) gij -cp $(CLASSPATH) VtePtyTest
+
+clean:
+	rm -f *.class

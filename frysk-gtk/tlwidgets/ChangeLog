@@ -1,3 +1,12 @@
+2006-06-09  Chris Moller  <moller@mollerware.com>
+
+	* test/wrapper/.cvsignore: Lose the *.class files.
+	* test/wrapper/Makefile-pty:
+	* test/wrapper/Makefile-vtepty:
+	* test/wrapper/PtyTest.java:
+	* test/wrapper/VtePtyTest.java: Added tests for the Pty class and
+	Pty/Vte working together.
+
 2006-06-06  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c:
