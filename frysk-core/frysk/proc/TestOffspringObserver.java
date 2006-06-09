@@ -41,10 +41,11 @@ package frysk.proc;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 
 /**
- * Test that the Proc's Tasks Observer correctly reports the tasks
+ * Test that the Proc's Offspring Observer correctly reports the tasks
  * belonging to a process.
  */
 
@@ -54,47 +55,58 @@ public class TestOffspringObserver extends TestLib {
      * Check that adding ProcObserver.Tasks to a running process
      * correctly adds it's self to the correct number of tasks.
      */
-    public void testTasksObserver()
+    public void testOffspringObserver()
     {
 	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess(3);
 	Proc proc = ackDaemonProcess.findProcUsingRefresh();
 		
-	TasksObserverTester observerTester = new TasksObserverTester();
+	OffspringObserverTester observerTester = new OffspringObserverTester();
 	new OffspringObserver (proc, observerTester);
-		
+	
 	proc.observableAttached.addObserver(new Observer() {
 		public void update(Observable arg0, Object arg1) {
 		    Manager.eventLoop.requestStop();
 		}
 	    });
-
-	assertRunUntilStop ("running to attach");
-	assertEquals ("taskAddedCount", 0, observerTester.taskAddedCount);
-	assertEquals ("taskRemovedCount", 0, observerTester.taskRemovedCount);
-	assertEquals ("existingTaskCount", 4, observerTester.existingTaskCount);
-    }
 	
-    class TasksObserverTester
+	assertRunUntilStop ("running to attach");
+	assertEquals ("taskAddedCount", 0, observerTester.tasksAdded.size());
+	assertEquals ("taskRemovedCount", 0, observerTester.tasksRemoved.size());
+	assertEquals ("existingTaskCount", 4, observerTester.existingTasks.size());
+    }
+    
+    /**
+     * Check that we can monitor a clone that forks.
+     *
+     */
+    /*public void testCloneAndFork()
+    {
+    	
+    }*/
+	
+    class OffspringObserverTester
 	implements ProcObserver.Offspring
     {
 	
-	int taskAddedCount; 
-	int taskRemovedCount; 
-	int existingTaskCount;
+	
+	TaskSet tasksAdded = new TaskSet();
+	TaskSet tasksRemoved = new TaskSet();
+	TaskSet existingTasks = new TaskSet();
 		
 	public void taskAdded(Task task)
 	{
-	    this.taskAddedCount++;
+	    this.tasksAdded.add(task);
 	}
 
 	public void taskRemoved(Task task)
 	{
-	    this.taskRemovedCount++;
+	    this.tasksRemoved.add(task);
 	}
 
 	public void existingTask(Task task)
 	{
-	    this.existingTaskCount++;
+		logger.log(Level.FINE, "OffspringObserverTester.existingTask() task: {0}\n", task);
+	    this.existingTasks.add(task);
 	}
 
 	public void addedTo(Object observable)

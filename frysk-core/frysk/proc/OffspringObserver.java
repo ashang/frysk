@@ -46,7 +46,7 @@ import frysk.Config;
 import frysk.event.Event;
 
 /**
- * Provides a mechanism for tracing all clone events within a process.
+ * Provides a mechanism for tracing all clone and fork events within a process.
  */
 
 public final class OffspringObserver
@@ -56,6 +56,7 @@ public final class OffspringObserver
     private final Proc proc;
     private final ProcObserver.Offspring offspringObserver;
     private Task mainTask;
+    
     /**
      * An observer that monitors all Task-s of a process notifying the
      * caller of each new Task as it is added.
@@ -82,6 +83,8 @@ public final class OffspringObserver
 			return;
 		    }
 		    mainTask.requestAddClonedObserver (OffspringObserver.this);
+		    mainTask.requestAddForkedObserver (OffspringObserver.this);
+		    
 		}
 	    });
     }
@@ -104,6 +107,8 @@ public final class OffspringObserver
     				Task offspring)
     {
     	offspringObserver.taskAdded (offspring);
+    	logger.log (Level.FINE, "OffspringObserver.updateOffspring() parent: {0} " +
+    			"offspring: {1}\n", new Object[] { parent, offspring});
     	offspring.requestAddClonedObserver (this);
     	offspring.requestAddForkedObserver (this);
     	// Need to BLOCK and UNBLOCK so that the
@@ -123,19 +128,25 @@ public final class OffspringObserver
     	return updateOffspring(parent, offspring);
     }
     
+    private boolean isMainTaskAdded;
+    
     public void addedTo(Object observable)
     {
-	Task addedTask = (Task) observable;
-	if (addedTask == mainTask) {
+	if (!isMainTaskAdded) {
+		isMainTaskAdded= true;
 	    // XXX: Is there a race here with a rapidly cloning task?
 	    for (Iterator iterator = proc.getTasks().iterator();
 		 iterator.hasNext(); ) {
 		Task task = (Task) iterator.next();
-		offspringObserver.existingTask (addedTask);
-		if (task != mainTask)
+		offspringObserver.existingTask (task);
+		if (task != mainTask) {
+			logger.log (Level.FINE, "{0} Inside if not mainTask\n", this);
 		    task.requestAddClonedObserver (this);
 			task.requestAddForkedObserver (this);
+		}
 	    }
+	    
+	    
 	}
     }
 
@@ -149,11 +160,13 @@ public final class OffspringObserver
 	offspringObserver.taskRemoved ((Task) observable);
     }
 
-	public Action updateForkedParent(Task parent, Task offspring) {
+	public Action updateForkedParent(Task parent, Task offspring) 
+	{
 		return Action.CONTINUE;
 	}
 
-	public Action updateForkedOffspring(Task parent, Task offspring) {
-		return updateClonedOffspring(parent, offspring);
+	public Action updateForkedOffspring(Task parent, Task offspring) 
+	{
+		return updateOffspring(parent, offspring);
 	}
 }

@@ -1,3 +1,16 @@
+2006-06-09  Nurdin Premji  <npremji@redhat.com>
+
+	* TestOffspringObserver.java (tasksAdded): changed from integer counters
+	to task sets so that duplicates can be ignored.
+	(testOffspringObserver): more refactoring done, used to be
+	testTasksObserver. 
+	(OffsprintObserver): used to be TasksObserver.
+	* OffspringObserver.java (addedTo): Forgot to enclose if statement
+	in a block.
+	(updateOffspring): added some Logging info
+	(addedTo): changed if condition so that combination of clone and fork
+	observers do not both call existingTask (just the first one does)
+
 2006-06-08  Nurdin Premji  <npremji@redhat.com>
 
 	* TestOffspringObserver.java: Used to be TestTasksObserver.
