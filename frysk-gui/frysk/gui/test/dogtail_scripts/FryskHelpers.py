@@ -207,23 +207,12 @@ def skipDruid( fryskObject ):
     """ Skip the intial session setup Druid - this function is probably 
         temporary and will be used only during test development
     """
-    # ---------------------
-    # Access the Druid GUI
-    theDruid = fryskObject.dialog( 'Debug Session Druid' )
-
-    # And the GUI's 'notebook' of (6) pages
-    vbox1 = theDruid.child( 'dialog-vbox1' )
-        
-    # ---------------------
-    # The action buttons are displayed on the bottom of all pages - the
-    # specific buttons (Back, Forward, Finish) that are visible or enabled
-    # varies with the page - and the current state of the page
-    dialogActionArea1 = vbox1.child( 'dialog-action_area1' )
-    finishButton = dialogActionArea1.button( 'Finish' )
-    cancelButton = dialogActionArea1.button( 'Cancel' ) 
+    theDruid = fryskObject.dialog('Debug Session Druid')
+    cancelButton = theDruid.button( 'Cancel' )
     cancelButton.click()
+    finishButton = theDruid.button( 'Finish' )
     finishButton.click()
-        
+
 # ---------------------
 def getEventType ( eventClassName ):
     """ Based on the eventClass name, return the string used in the GUI

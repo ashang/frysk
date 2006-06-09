@@ -66,25 +66,20 @@ class TestLicense (unittest.TestCase):
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
+        self.theLogWriter = self.TestString.writer
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+
         # Start up Frysk 
         self.frysk = startFrysk()
         
         # Probably temporary - during test development
-        #skipDruid(self.frysk)
+        skipDruid(self.frysk)
         
-        # Temporary - for demo only
-        #dialogToKill = self.frysk.child(roleName = 'dialog')
-        #okButton = dialogToKill.button( 'OK' )
-        #okButton.click()
-        theDruid = self.frysk.dialog('Debug Session Druid')
-        cancelButton = theDruid.button( 'Cancel' )
-        cancelButton.click()
-        finishButton = theDruid.button( 'Finish' )
-        finishButton.click()
-
     def tearDown(self):    
         # Exit Frysk
         endFrysk(self.frysk)
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+
 
     def testLicense(self):      
         """Check that the license text is correct"""   
