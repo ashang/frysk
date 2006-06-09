@@ -14,3 +14,7 @@ TestRunner
 TestRunner.java
 gij.sh
 .deps
+compile
+depcomp
+install-sh
+missing

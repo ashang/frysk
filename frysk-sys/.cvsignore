@@ -22,3 +22,4 @@ TestRunner.java
 TestRunner.classes
 TestRunner
 *.class
+depcomp

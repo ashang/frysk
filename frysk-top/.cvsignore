@@ -5,3 +5,5 @@ configure
 bin
 install-sh
 missing
+compile
+depcomp

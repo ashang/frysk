@@ -1,3 +1,11 @@
+2006-06-09  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring:
+	compile
+	depcomp
+	install-sh
+	missing
+
 2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.am (GEN_CLASSPATH): Added cdtparser jar from frysk-imports.

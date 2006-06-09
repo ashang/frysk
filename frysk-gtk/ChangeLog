@@ -1,3 +1,11 @@
+2006-06-09  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring
+	compile
+	depcomp
+	install-sh
+	missing
+
 2006-06-06  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Changed linking against .a's to -Ldir -llib.

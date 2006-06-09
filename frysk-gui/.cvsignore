@@ -4,3 +4,5 @@ aclocal.m4
 autom4te.cache
 configure
 missing
+depcomp
+install-sh
