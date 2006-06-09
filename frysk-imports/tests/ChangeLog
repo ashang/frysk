@@ -1,5 +1,11 @@
 2006-06-09  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk2670/gcj.sh): Use $(GCJ), not gcj; add -d
+	. and -I . to GCJ.
+	* frysk2670/ExitNotificationObserver.java: Simplify.
+	* frysk2670/AddTaskObserverAction.java: Simplify.
+	* frysk2670/TaskAction.java: Simplify.
+	
 	* Makefile.am (frysk2670_FILES): Drop frysk2670/files0.list and
 	frysk2670/files.list.
 	(frysk2670/gcj.sh): List files explicitly.

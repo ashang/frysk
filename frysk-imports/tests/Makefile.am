@@ -340,14 +340,14 @@ frysk2670/gcj.sh:
 	echo '#!/bin/sh -xe' >> $@
 	echo mkdir -p frysk2670 >> $@
 	echo 'rm -f frysk2670/*.class' >> $@
-	echo gcj -C -classpath \
+	echo gcj -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
 		$(srcdir)/frysk2670/TaskAction.java \
 		$(srcdir)/frysk2670/ExitNotificationObserver.java \
 		$(srcdir)/frysk2670/AddTaskObserverAction.java \
 		>> $@
 	echo 'rm -f frysk2670/*.class' >> $@
-	echo gcj -C -classpath \
+	echo gcj -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
 		$(srcdir)/frysk2670/ExitNotificationObserver.java \
 		$(srcdir)/frysk2670/AddTaskObserverAction.java \
