@@ -336,6 +336,7 @@ frysk2670_FILES = \
 EXTRA_DIST += $(frysk2670_FILES)
 TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh:
+	mkdir -p frysk2670
 	rm -f $@
 	echo '#!/bin/sh -xe' >> $@
 	echo mkdir -p frysk2670 >> $@
