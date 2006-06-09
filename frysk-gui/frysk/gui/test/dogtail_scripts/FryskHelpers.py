@@ -175,8 +175,16 @@ def startFrysk ():
     if AT_SPI_output != 'true':
         print '\n***AT SPI is not enabled - exiting now***'
         print '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'
-        sys.exit(1)
-    
+        sys.exit(77)
+   
+    # Make sure that Frysk is not still running or in a funny state after previous tests
+    # This is a brutal way to do this - is there a better way?
+    try:
+        killFrysk()
+        print 'Frysk was still running - killed it - ok to start test'
+    except:
+        print 'Frysk not running - ok to start test'
+   
     # Start up Frysk 
     run ( FRYSK_BINARY_NAME, appName=FRYSK_APP_NAME )
     fryskObject = tree.root.application ( FRYSK_APP_NAME )
@@ -184,12 +192,17 @@ def startFrysk ():
 
 # ---------------------
 def endFrysk( fryskObject ):
-    """ Close the Frysk GUI and kill the process
+    """ Close the Frysk GUI 
     """
     # Exit Frysk GUI
     closeItem = fryskObject.menuItem( 'Close' )
     closeItem.click()
-    
+    killFrysk()
+     
+    # ---------------------
+def killFrysk( ):
+    """ Kill the process - cleanup the persistent object dir
+    """
     # The Frysk object in the panel cannot be accessed as it does not have any
     # AT/SPI information - just kill the process instead
     subprocess.Popen( [r'killall', '-KILL', FRYSK_PROCESS_NAME] ).wait()
@@ -201,7 +214,7 @@ def endFrysk( fryskObject ):
     os.mkdir( newDir )
     oldDir = os.getenv( 'HOME' ) + '/.frysk'
     os.rename( oldDir, newDir )
-    
+      
  # ---------------------
 def skipDruid( fryskObject ):
     """ Skip the intial session setup Druid - this function is probably 
