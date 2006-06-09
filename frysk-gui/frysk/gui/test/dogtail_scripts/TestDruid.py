@@ -248,8 +248,7 @@ class TestDruid ( unittest.TestCase ):
 
    def tearDown( self ):  
        # Exit Frysk
-       #endFrysk( self.frysk )
-       print 'done'
+       endFrysk( self.frysk )
  
 def suite():
         suite = unittest.TestSuite()
