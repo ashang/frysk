@@ -1,5 +1,7 @@
 2006-06-09  Chris Moller  <moller@mollerware.com>
 
+	* test/widget/forker.c: Added to provide an event generator for frysk.
+
 	* test/wrapper/.cvsignore: Lose the *.class files.
 	* test/wrapper/Makefile-pty:
 	* test/wrapper/Makefile-vtepty:
