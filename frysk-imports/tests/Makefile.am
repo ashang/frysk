@@ -332,17 +332,27 @@ frysk2670_FILES = \
 	frysk2670/AddTaskObserverAction.java \
 	frysk2670/ExitNotificationObserver.java \
 	frysk2670/TaskAction.java \
-	frysk2670/files.list \
-	frysk2670/files0.list \
 	frysk2670/frysk.jar
 EXTRA_DIST += $(frysk2670_FILES)
 TESTS += frysk2670/gcj.sh
-frysk2670/gcj.sh: $(frysk2670_FILES)
-	mkdir -p frysk2670
-	cp $(srcdir)/frysk2670/{*.java,*.list,*.jar} frysk2670
-	echo cd frysk2670 > $@
-	echo gcj -C -classpath frysk.jar @./files0.list >> $@
-	echo gcj -C -classpath frysk.jar @./files.list >> $@
+frysk2670/gcj.sh:
+	rm -f $@
+	echo '#!/bin/sh -xe' >> $@
+	echo mkdir -p frysk2670 >> $@
+	echo 'rm -f frysk2670/*.class' >> $@
+	echo gcj -C -classpath \
+		$(srcdir)/frysk2670/frysk.jar \
+		$(srcdir)/frysk2670/TaskAction.java \
+		$(srcdir)/frysk2670/ExitNotificationObserver.java \
+		$(srcdir)/frysk2670/AddTaskObserverAction.java \
+		>> $@
+	echo 'rm -f frysk2670/*.class' >> $@
+	echo gcj -C -classpath \
+		$(srcdir)/frysk2670/frysk.jar \
+		$(srcdir)/frysk2670/ExitNotificationObserver.java \
+		$(srcdir)/frysk2670/AddTaskObserverAction.java \
+		$(srcdir)/frysk2670/TaskAction.java \
+		>> $@
 	chmod a+x $@
 
 # Frysk, when creating test processes uses the sequence vfork -> fork
