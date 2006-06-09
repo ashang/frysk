@@ -37,103 +37,76 @@
 // version and license this file solely under the GPL without
 // exception.
 package frysk.cli.hpd;
-
-import java.text.ParseException;
+import frysk.proc.*;
 import junit.framework.TestCase;
+import java.text.ParseException;
 
-public class TestSetParser extends TestCase
+public class TestSetCreation extends TestCase
 {
-	private String result;
-	private SetNotationParser pr;
-	private ParseTreeNode[] root;
+	AllPTSet allset = null;
+	SetNotationParser parser = null;
+	StaticPTSet staticset = null;
+
 
 	protected void setUp()
 	{
-		result = new String();
-		pr = new SetNotationParser();
+		allset = new AllPTSet();
+		parser = new SetNotationParser();
+
+		Proc tempProc = new DummyProc();
+
+		int temp = allset.addProc(tempProc);
+		allset.addTask(new DummyTask(tempProc), temp);
+		allset.addTask(new DummyTask(tempProc), temp);
+		allset.addTask(new DummyTask(tempProc), temp);
+
+		temp = allset.addProc(tempProc);
+		allset.addTask(new DummyTask(tempProc), temp);
+		allset.addTask(new DummyTask(tempProc), temp);
+		allset.addTask(new DummyTask(tempProc), temp);
+		allset.addTask(new DummyTask(tempProc), temp);
+
+		temp = allset.addProc(tempProc);
+		allset.addTask(new DummyTask(tempProc), temp);
+		allset.addTask(new DummyTask(tempProc), temp);
+
+
 	}
 
-	public void testReg()
+	public void testAllSet()
 	{
-		result = "";
-		String temp = "";
+		String expected = "";
+		expected += "0.0:2\n";
+		expected += "1.0:3\n";
+		expected += "2.0:1\n";
 
-		try 
-		{
-			root = pr.parse("[!3.2:4, 2.3, 3:4.5]");
-			for (int i = 0; i < root.length; i++)
-			{
-				walkTree(root[i]);
-				temp += (result + " ");
-				result = "";
-			}
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
+		assertEquals(expected, allset.toString());
 	}
 
-	public void testRange()
+	public void testSubset()
 	{
-		result = "";
-		try 
+		String expected = "";
+		String actual = "";
+
+		expected += "0.0\n";
+		expected += "0.1\n";
+		expected += "1.0\n";
+		expected += "1.1\n";
+		expected += "1.2\n";
+		expected += "1.3\n";
+		expected += "2.0\n";
+		expected += "2.1\n";
+
+		try
 		{
-			root = pr.parse("[! 2.5:3.*]");
-			walkTree(root[0]);
+			ParseTreeNode[] parsed = parser.parse("[0.4:0.5, 1.1:2.4, *.0:1]");
+			staticset = allset.getSubset(parsed);
+			actual = staticset.toString();
 		}
 		catch (ParseException e)
 		{
-			result = "Error";
+			actual = "Parse Exception";
 		}
-		assertEquals("Error", result);
-		assertEquals(true, SetNotationParser.setIsStatic("[ !2.5:3.*]"));
-
-		result = "";
-		try 
-		{
-			root = pr.parse("[2.*:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("2.-1:3.-1", result);
-	
-		result = "";
-		try 
-		{
-			root = pr.parse("[*.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("Error", result);
-	}
-
-	
-	private void walkTree(ParseTreeNode node)
-	{
-		if (node.getLeft() != null)
-			walkTree(node.getLeft());
-
-		if (node.getType() == ParseTreeNode.TYPE_RANGE)
-			result += (":");
-		else if (node.getType() == ParseTreeNode.TYPE_REG)
-		{
-			if (node.isLeaf())
-				result += (node.getID());
-			else
-				result += (".");
-		}
-
-		if (node.getRight() != null)
-			walkTree(node.getRight());
+		assertEquals(expected, actual);
 	}
 }

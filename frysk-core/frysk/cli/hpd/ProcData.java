@@ -38,102 +38,34 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.text.ParseException;
-import junit.framework.TestCase;
+import frysk.proc.*;
 
-public class TestSetParser extends TestCase
+/**
+ * A class which holds a Task and any internal info about it. It is immutable.
+ */
+class ProcData
 {
-	private String result;
-	private SetNotationParser pr;
-	private ParseTreeNode[] root;
+	int id;
+	Proc proc;
 
-	protected void setUp()
+	public ProcData(Proc proc, int id)
 	{
-		result = new String();
-		pr = new SetNotationParser();
+		this.id = id;
+		this.proc = proc;
 	}
 
-	public void testReg()
+	public int getID()
 	{
-		result = "";
-		String temp = "";
-
-		try 
-		{
-			root = pr.parse("[!3.2:4, 2.3, 3:4.5]");
-			for (int i = 0; i < root.length; i++)
-			{
-				walkTree(root[i]);
-				temp += (result + " ");
-				result = "";
-			}
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
+		return id;
 	}
 
-	public void testRange()
+	public Proc getProc()
 	{
-		result = "";
-		try 
-		{
-			root = pr.parse("[! 2.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("Error", result);
-		assertEquals(true, SetNotationParser.setIsStatic("[ !2.5:3.*]"));
-
-		result = "";
-		try 
-		{
-			root = pr.parse("[2.*:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("2.-1:3.-1", result);
-	
-		result = "";
-		try 
-		{
-			root = pr.parse("[*.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("Error", result);
+		return proc;
 	}
 
-	
-	private void walkTree(ParseTreeNode node)
+	public String toString()
 	{
-		if (node.getLeft() != null)
-			walkTree(node.getLeft());
-
-		if (node.getType() == ParseTreeNode.TYPE_RANGE)
-			result += (":");
-		else if (node.getType() == ParseTreeNode.TYPE_REG)
-		{
-			if (node.isLeaf())
-				result += (node.getID());
-			else
-				result += (".");
-		}
-
-		if (node.getRight() != null)
-			walkTree(node.getRight());
+		return String.valueOf(id);
 	}
 }

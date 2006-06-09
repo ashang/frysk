@@ -38,102 +38,89 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.text.ParseException;
-import junit.framework.TestCase;
+import java.util.TreeMap;
+import java.util.Vector;
 
-public class TestSetParser extends TestCase
+/**
+ * A container for ProcData and a subset of it's TaskDatas. If you try to add tasks from other
+ * Procs you'll get an exception;
+ */
+class ProcTasks
 {
-	private String result;
-	private SetNotationParser pr;
-	private ParseTreeNode[] root;
+	ProcData proc;
+	TreeMap tasks; //maps taskId -> TaskData. A map quarantees sortedness and log(n) basic operations 
 
-	protected void setUp()
+	/**
+	 * Constructor
+	 */
+	public ProcTasks(ProcData proc)
 	{
-		result = new String();
-		pr = new SetNotationParser();
+		this.proc = proc;
+		this.tasks = new TreeMap();
 	}
 
-	public void testReg()
-	{
-		result = "";
-		String temp = "";
 
-		try 
+	/**
+	 * Constructor
+	 */
+	public ProcTasks(ProcData proc, TaskData[] taskarray)
+	{
+		this.proc = proc;
+		this.tasks = new TreeMap();
+
+		TaskData temp = null;
+
+		for (int i = 0; i < taskarray.length; i++)
 		{
-			root = pr.parse("[!3.2:4, 2.3, 3:4.5]");
-			for (int i = 0; i < root.length; i++)
+			temp = taskarray[i];
+			if (temp.getParentID() == proc.getID())
 			{
-				walkTree(root[i]);
-				temp += (result + " ");
-				result = "";
+				//task id -> task
+				tasks.put(new Integer(temp.getID()), temp);
 			}
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
-	}
-
-	public void testRange()
-	{
-		result = "";
-		try 
-		{
-			root = pr.parse("[! 2.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("Error", result);
-		assertEquals(true, SetNotationParser.setIsStatic("[ !2.5:3.*]"));
-
-		result = "";
-		try 
-		{
-			root = pr.parse("[2.*:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("2.-1:3.-1", result);
-	
-		result = "";
-		try 
-		{
-			root = pr.parse("[*.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("Error", result);
-	}
-
-	
-	private void walkTree(ParseTreeNode node)
-	{
-		if (node.getLeft() != null)
-			walkTree(node.getLeft());
-
-		if (node.getType() == ParseTreeNode.TYPE_RANGE)
-			result += (":");
-		else if (node.getType() == ParseTreeNode.TYPE_REG)
-		{
-			if (node.isLeaf())
-				result += (node.getID());
 			else
-				result += (".");
+				throw new IllegalArgumentException("ProcTasks was passed" +
+								" Tasks from a process that is not \"proc\"");
 		}
+	}
 
-		if (node.getRight() != null)
-			walkTree(node.getRight());
+	public boolean hasTask(int taskID)
+	{
+		return tasks.containsKey(new Integer(taskID));
+	}
+
+	public ProcData getProcData()
+	{
+		return proc;
+	}
+
+	/**
+	 * Returns a Vecotr of all TaskData objects order by ID
+	 * @return a Vector of TaskData objects
+	 */
+	public Vector getTaskData()
+	{
+		return new Vector( ((TreeMap) tasks.clone()).values() );
+	}
+
+	public void addTaskData(TaskData task)
+	{
+		if (task.getParentID() == proc.getID())
+		{
+			//task id -> task
+			tasks.put(new Integer(task.getID()), task);
+		}
+		else
+			throw new IllegalArgumentException("ProcTasks was passed Task not from this instance's process.");
+	}
+
+	public String toString()
+	{
+		String result = ""; 
+		Vector values = new Vector(tasks.values());
+		for (int i = 0; i < values.size(); i++)
+			result += (TaskData)values.elementAt(i) + "\n";
+
+		return result;
 	}
 }

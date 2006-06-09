@@ -38,102 +38,61 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.text.ParseException;
-import junit.framework.TestCase;
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.Arrays;
 
-public class TestSetParser extends TestCase
+/**
+ * A class which holds a number of ProcTasks. It is immutable.
+ */
+class StaticPTSet
 {
-	private String result;
-	private SetNotationParser pr;
-	private ParseTreeNode[] root;
+	Vector set;
 
-	protected void setUp()
+	public StaticPTSet(ProcTasks[] proctasks)
 	{
-		result = new String();
-		pr = new SetNotationParser();
+		set = new Vector(Arrays.asList(proctasks)); // clone to make sure it doesn't get modified 
 	}
 
-	public void testReg()
+	public Vector getProcTasks()
 	{
-		result = "";
-		String temp = "";
-
-		try 
-		{
-			root = pr.parse("[!3.2:4, 2.3, 3:4.5]");
-			for (int i = 0; i < root.length; i++)
-			{
-				walkTree(root[i]);
-				temp += (result + " ");
-				result = "";
-			}
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
+		return (Vector) set.clone();
 	}
 
-	public void testRange()
+	public Iterator getProcs()
 	{
-		result = "";
-		try 
-		{
-			root = pr.parse("[! 2.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("Error", result);
-		assertEquals(true, SetNotationParser.setIsStatic("[ !2.5:3.*]"));
+		Vector result = new Vector();
 
-		result = "";
-		try 
+		for (int i = 0; i < set.size(); i++)
 		{
-			root = pr.parse("[2.*:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("2.-1:3.-1", result);
-	
-		result = "";
-		try 
-		{
-			root = pr.parse("[*.5:3.*]");
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
+			result.add( ((ProcTasks) set.elementAt(i)).getProcData().getProc() );
 		}
 
-		assertEquals("Error", result);
+		return result.iterator();
 	}
 
-	
-	private void walkTree(ParseTreeNode node)
+	public Iterator getTasks()
 	{
-		if (node.getLeft() != null)
-			walkTree(node.getLeft());
+		Vector result = new Vector();
+		Vector temp = new Vector();
 
-		if (node.getType() == ParseTreeNode.TYPE_RANGE)
-			result += (":");
-		else if (node.getType() == ParseTreeNode.TYPE_REG)
+		for (int i = 0; i < set.size(); i++)
 		{
-			if (node.isLeaf())
-				result += (node.getID());
-			else
-				result += (".");
+			temp = ((ProcTasks) set.elementAt(i)).getTaskData();
+
+			for (int j = 0; j < temp.size(); j++)
+				result.add( ((TaskData) temp.elementAt(j)).getTask() );
 		}
 
-		if (node.getRight() != null)
-			walkTree(node.getRight());
+		return temp.iterator();
+	}
+
+	public String toString()
+	{
+		String result = "";
+		for (int i = 0; i < set.size(); i++)
+			result += (ProcTasks)set.elementAt(i);
+
+		return result;
 	}
 }

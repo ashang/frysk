@@ -132,7 +132,7 @@ public class SetNotationParser
 	 * More hacks: things like *.3:3.5 do not make sense and *.3:*.5 does,
 	 * but handling them in the grammar would be a pain, so they're simply
 	 * hacked in the code.
-	 * Same goes for determening that there're no ranges from one value to a lower one.
+	 * Same goes for determening that there're no ranges from a higher value to a lower one.
 	 */
 	
 	/*
@@ -163,6 +163,7 @@ public class SetNotationParser
 
 	/*
 	 * S_2 -> S_3.S_3S_6 | S_4:S_4S_6 // takes nasty looking-ahead
+	 * Also checks validity of range notation
 	 */
 	private void S_2(Vector root) throws ParseException
 	{
@@ -192,16 +193,16 @@ public class SetNotationParser
 			tempIDs[1] = node.getLeft().getRight().getID();
 			tempIDs[2] = node.getRight().getLeft().getID();
 			tempIDs[3] = node.getRight().getRight().getID();
-			if (((tempIDs[0] == -1 || tempIDs[2] == -1) && tempIDs[0] != tempIDs[2]) || 
+			if (((tempIDs[0] == -1 || tempIDs[2] == -1) && tempIDs[0] != tempIDs[2]) || //no *.a:b.c or a.b:*.c
+				((tempIDs[1] == -1 || tempIDs[3] == -1) && tempIDs[1] != tempIDs[3]) || //no a.*:b.c or a.b:c.*
 				(tempIDs[0] == -1 && tempIDs[0] == tempIDs[1]) || // no	*.*:a.b
-				(tempIDs[2] == -1 && tempIDs[2] == tempIDs[3]))  // no	a.b:*.*
+				(tempIDs[2] == -1 && tempIDs[2] == tempIDs[3])) // no	a.b:*.*
 				throw new ParseException("Erroneous p/t set notation, erroneous use of wildcard", curToken);
 
 			// check ranges
 			if ((tempIDs[2] < tempIDs[0]) ||
 				((tempIDs[0] == tempIDs[2]) && (tempIDs[3] < tempIDs[1])))
-				
-			throw new ParseException("Erroneous p/t set notation, illegal range", curToken);
+				throw new ParseException("Erroneous p/t set notation, illegal range", curToken);
 		}
 		else 
 		{
@@ -215,6 +216,15 @@ public class SetNotationParser
 				throw new ParseException("Erroneous p/t set notation, '.' expected", curToken);
 
 			node.setRight(S_3());
+
+			//Check that ranges go from low to high
+			tempIDs[0] = node.getLeft().getLeft().getID();
+			tempIDs[1] = node.getLeft().getRight().getID();
+			tempIDs[2] = node.getRight().getLeft().getID();
+			tempIDs[3] = node.getRight().getRight().getID();
+
+			if ((tempIDs[1] < tempIDs[0]) || (tempIDs[3] < tempIDs[2]))
+				throw new ParseException("Erroneous p/t set notation, illegal range", curToken);
 		}
 
 		root.add(node);
@@ -223,6 +233,7 @@ public class SetNotationParser
 
 	/*
 	 * S_3 -> num:num | num | *
+	 * Also checks validity of the notation
 	 */
 	private ParseTreeNode S_3() throws ParseException 
 	{
@@ -260,6 +271,7 @@ public class SetNotationParser
 		{
 			throw new ParseException("Erroneous p/t set notation, non-negative integer or '*' expected", curToken);
 		}
+
 
 		return node;
 	}
