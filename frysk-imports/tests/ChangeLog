@@ -1,3 +1,9 @@
+2006-06-09  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2137/Gcov.sh): Replace frysk2137/Gcj.sh, runs
+	gcov; mark as PASS.
+	* frysk2137/Gcov.java: Rename frysk2137/Hello.java
+
 2006-06-06  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (frysk2670_FILES): Fix typo, add remaining files.

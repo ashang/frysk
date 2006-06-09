@@ -207,14 +207,19 @@ frysk2488/gcj.sh: $(frysk2488_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-frysk2137_FILES = frysk2137/Hello.java
-EXTRA_DIST += $(frysk2137_FILES)
-XFAIL_TESTS += frysk2137/gcj.sh
-frysk2137/gcj.sh: $(frysk2137_FILES)
-	mkdir -p frysk2137
-	echo '#!/bin/sh -xe' > $@.tmp
-	echo $(GCJ) -fprofile-arcs -ftest-coverage -c -d . \
-		$(srcdir)/frysk2137/Hello.java >> $@.tmp
+noinst_PROGRAMS += frysk2137/Gcov frysk2137/Gcov.sh
+frysk2137_Gcov_SOURCES = frysk2137/Gcov.java
+frysk2137_Gcov_GCJFLAGS = --coverage
+frysk2137_Gcov_LDFLAGS = --main=frysk2137.Gcov --coverage
+TESTS += frysk2137/Gcov.sh
+CLEANFILES += frysk2137/*.gcno frysk2137/*.gcda Gcov.java.gcov
+frysk2137/Gcov.sh:
+	rm -f $@.tmp Gcov.java.gcov frysk2137/*.gcda
+	touch $@.tmp
+	echo '#!/bin/sh -ex' >> $@.tmp
+	echo './frysk2137/Gcov' >> $@.tmp
+	echo 'gcov -o frysk2137/frysk2137_Gcov-Gcov.o frysk2137/Gcov.java' >> $@.tmp
+	echo 'test -r Gcov.java.gcov' >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
