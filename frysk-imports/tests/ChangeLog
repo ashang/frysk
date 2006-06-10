@@ -1,5 +1,15 @@
 2006-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk2670/gcj.sh): Do not pass frysk.jar to GCJ.
+	Add $(srcdir) to include path.
+	(EXTRA_DIST): Remove frysk.jar.
+	* frysk2670/frysk.jar: Delete.
+	* frysk2670/other/Action.java: New file.
+	* frysk2670/Action.java: Change package to "one".
+	* frysk2670/AddTaskObserverAction.java: Ditto.
+	* frysk2670/ExitNotificationObserver.java: Ditto.
+	* frysk2670/TaskAction.java: Ditto.
+	
 	* frysk2670/LiaisonItem.java: Delete.
 	* frysk2670/Action.java: Fold in LiaisonItem.java, simplify.
 	* frysk2670/TaskAction.java: Simplify.

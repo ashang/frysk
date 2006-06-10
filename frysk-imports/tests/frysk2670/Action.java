@@ -1,4 +1,4 @@
-package frysk.gui.monitor.actions;
+package one;
 
 public abstract class Action
 {

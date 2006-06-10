@@ -330,11 +330,12 @@ TESTS += frysk2299/GCTest
 
 # The order is important!!
 frysk2670_FILES = \
+	$(srcdir)/frysk2670/other/Action.java \
 	$(srcdir)/frysk2670/Action.java \
 	$(srcdir)/frysk2670/ExitNotificationObserver.java \
 	$(srcdir)/frysk2670/AddTaskObserverAction.java \
 	$(srcdir)/frysk2670/TaskAction.java
-EXTRA_DIST += frysk2670/frysk.jar $(frysk2670_FILES)
+EXTRA_DIST += $(frysk2670_FILES)
 TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh:
 	mkdir -p frysk2670
@@ -345,16 +346,14 @@ frysk2670/gcj.sh:
 	echo 'echo ""' >> $@
 	echo 'echo "====> Sorted list - compiles"' >> $@
 	echo 'echo ""' >> $@
-	echo '( set -xe ; $(GCJ) -d . -I . -C -classpath \
-		$(srcdir)/frysk2670/frysk.jar \
+	echo '( set -xe ; $(GCJ) -d . -I . -I $(srcdir)/frysk2670 -C \
 		$(sort $(frysk2670_FILES)) \
 		) || exit 1' >> $@
 	echo 'rm -f frysk2670/*.class' >> $@
 	echo 'echo ""' >> $@
 	echo 'echo "====> Unsorted list - dies"' >> $@
 	echo 'echo ""' >> $@
-	echo '( set -xe ; $(GCJ) -d . -I . -C -classpath \
-		$(srcdir)/frysk2670/frysk.jar \
+	echo '( set -xe ; $(GCJ) -d . -I . -I $(srcdir)/frysk2670 -C \
 		$(frysk2670_FILES) \
 		) || exit 1' >> $@
 	chmod a+x $@

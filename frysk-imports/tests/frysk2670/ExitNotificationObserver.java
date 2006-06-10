@@ -1,11 +1,9 @@
-package frysk.gui.monitor.observers;
+package one;
 
-import frysk.gui.monitor.actions.TaskAction;
 // Can't remove next include.
-import frysk.proc.Action;
+import other.Action;
 
 public class ExitNotificationObserver
-    extends TaskTerminatingObserver
 {
 
     public ExitNotificationObserver()
