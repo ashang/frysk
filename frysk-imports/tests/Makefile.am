@@ -328,32 +328,37 @@ frysk2299_GCTest_SOURCES = frysk2299/GCTest.java
 frysk2299_GCTest_LDFLAGS = --main=GCTest
 TESTS += frysk2299/GCTest
 
+# The order is important!!
 frysk2670_FILES = \
-	frysk2670/AddTaskObserverAction.java \
-	frysk2670/ExitNotificationObserver.java \
-	frysk2670/TaskAction.java \
-	frysk2670/frysk.jar
-EXTRA_DIST += $(frysk2670_FILES)
+	$(srcdir)/frysk2670/GuiObject.java \
+	$(srcdir)/frysk2670/LiaisonItem.java \
+	$(srcdir)/frysk2670/Action.java \
+	$(srcdir)/frysk2670/ExitNotificationObserver.java \
+	$(srcdir)/frysk2670/AddTaskObserverAction.java \
+	$(srcdir)/frysk2670/TaskAction.java
+EXTRA_DIST += frysk2670/frysk.jar $(frysk2670_FILES)
 TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh:
 	mkdir -p frysk2670
 	rm -f $@
-	echo '#!/bin/sh -xe' >> $@
+	echo '#!/bin/sh -e' >> $@
 	echo mkdir -p frysk2670 >> $@
 	echo 'rm -f frysk2670/*.class' >> $@
-	echo gcj -d . -I . -C -classpath \
+	echo 'echo ""' >> $@
+	echo 'echo "====> Sorted list - compiles"' >> $@
+	echo 'echo ""' >> $@
+	echo '( set -xe ; gcj -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
-		$(srcdir)/frysk2670/TaskAction.java \
-		$(srcdir)/frysk2670/ExitNotificationObserver.java \
-		$(srcdir)/frysk2670/AddTaskObserverAction.java \
-		>> $@
+		$(sort $(frysk2670_FILES)) \
+		)' >> $@
 	echo 'rm -f frysk2670/*.class' >> $@
-	echo gcj -d . -I . -C -classpath \
+	echo 'echo ""' >> $@
+	echo 'echo "====> Unsorted list - dies"' >> $@
+	echo 'echo ""' >> $@
+	echo '( set -xe ; gcj -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
-		$(srcdir)/frysk2670/ExitNotificationObserver.java \
-		$(srcdir)/frysk2670/AddTaskObserverAction.java \
-		$(srcdir)/frysk2670/TaskAction.java \
-		>> $@
+		$(frysk2670_FILES) \
+		)' >> $@
 	chmod a+x $@
 
 # Frysk, when creating test processes uses the sequence vfork -> fork

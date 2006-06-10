@@ -1,3 +1,12 @@
+2006-06-10  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (frysk2670/gcj.sh): Use frysk2670_FILES.
+	(frysk2670_FILES): Add LiaisonItem.java, Event.java, and
+	GuiObject.java.
+	* frysk2670/LiaisonItem.java: Copy from frysk-gui, trim down.
+	* frysk2670/Event.java: Ditto.
+	* frysk2670/GuiObject.java: Ditto.
+
 2006-06-09  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (frysk2670/gcj.sh): Use $(GCJ), not gcj; add -d
