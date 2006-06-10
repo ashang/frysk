@@ -1,6 +1,6 @@
 package frysk.gui.monitor.actions;
 
-import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
@@ -15,7 +15,7 @@ public class AddTaskObserverAction
     public void execute(Task task)
     {
     }
-    public GuiObject getCopy()
+    public LiaisonItem getCopy()
     {
 	return null;
     }

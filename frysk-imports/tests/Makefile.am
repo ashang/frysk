@@ -330,7 +330,6 @@ TESTS += frysk2299/GCTest
 
 # The order is important!!
 frysk2670_FILES = \
-	$(srcdir)/frysk2670/GuiObject.java \
 	$(srcdir)/frysk2670/LiaisonItem.java \
 	$(srcdir)/frysk2670/Action.java \
 	$(srcdir)/frysk2670/ExitNotificationObserver.java \
@@ -341,7 +340,7 @@ TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh:
 	mkdir -p frysk2670
 	rm -f $@
-	echo '#!/bin/sh -e' >> $@
+	echo '#!/bin/sh' >> $@
 	echo mkdir -p frysk2670 >> $@
 	echo 'rm -f frysk2670/*.class' >> $@
 	echo 'echo ""' >> $@
@@ -350,7 +349,7 @@ frysk2670/gcj.sh:
 	echo '( set -xe ; gcj -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
 		$(sort $(frysk2670_FILES)) \
-		)' >> $@
+		) || exit 1' >> $@
 	echo 'rm -f frysk2670/*.class' >> $@
 	echo 'echo ""' >> $@
 	echo 'echo "====> Unsorted list - dies"' >> $@
@@ -358,7 +357,7 @@ frysk2670/gcj.sh:
 	echo '( set -xe ; gcj -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
 		$(frysk2670_FILES) \
-		)' >> $@
+		) || exit 1' >> $@
 	chmod a+x $@
 
 # Frysk, when creating test processes uses the sequence vfork -> fork

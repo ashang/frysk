@@ -1,5 +1,11 @@
 2006-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* Makefile.am (frysk2670_FILES): Remove GuiObject.java.
+	(frysk2670/gcj.sh): Explicitly check for exit status.
+	* frysk2670/LiaisonItem.java: Merge in GuiObject.java.
+	* frysk2670/AddTaskObserverAction.java: Update.
+	* frysk2670/ExitNotificationObserver.java: Update.
+	
 	* Makefile.am (frysk2670/gcj.sh): Use frysk2670_FILES.
 	(frysk2670_FILES): Add LiaisonItem.java, Event.java, and
 	GuiObject.java.

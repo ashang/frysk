@@ -1,21 +1,41 @@
 package frysk.gui.monitor;
 
 public abstract class LiaisonItem
-    extends GuiObject
 {
     public LiaisonItem()
     {
-	super();
+    }
+    public void setName(String name)
+    {
+    }
+    public String getName()
+    {
+	return null;
+    }
+    public void setToolTip(String toolTip)
+    {
+    }
+    public String getToolTip()
+    {
+	return null;
+    }
+    public boolean shouldSaveObject()
+    {
+	return false;
+    }
+    public void doSaveObject()
+    {
+    }
+    public void dontSaveObject()
+    {
     }
     public LiaisonItem(LiaisonItem other)
     {
-	super(other);
     }
     public LiaisonItem(String name, String toolTip)
     {
-	super(name, toolTip);
     }
-    public abstract GuiObject getCopy();
+    public abstract LiaisonItem getCopy();
     public abstract boolean setArgument(String argument);
     public abstract String getArgument();
     public abstract ObservableLinkedList getArgumentCompletionList();

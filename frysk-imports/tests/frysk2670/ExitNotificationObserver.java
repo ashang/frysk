@@ -1,7 +1,7 @@
 package frysk.gui.monitor.observers;
 
 import frysk.gui.common.dialogs.DialogManager;
-import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.LiaisonItem;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskAction;
 import frysk.proc.Action;
@@ -19,7 +19,7 @@ public class ExitNotificationObserver
 		public void execute(Task task)
 		{
 		}
-		public GuiObject getCopy()
+		public LiaisonItem getCopy()
 		{
 		    return null;
 		}
