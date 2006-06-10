@@ -1,5 +1,16 @@
 2006-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk2670/Action.java: Move ...
+	* frysk2670/one/Action.java: ... to here.
+	* frysk2670/AddTaskObserverAction.java: Move ...
+	* frysk2670/one/AddTaskObserverAction.java: .. to here.
+	* frysk2670/ExitNotificationObserver.java: Move ...
+	* frysk2670/one/ExitNotificationObserver.java: ... to here.
+	* frysk2670/TaskAction.java: Move ...
+	* frysk2670/one/TaskAction.java: ... to here.
+	* Makefile.am: Update.
+	(XFAIL_TESTS): Add frysk2670/gcj.sh.
+
 	* Makefile.am (frysk2670/gcj.sh): Do not pass frysk.jar to GCJ.
 	Add $(srcdir) to include path.
 	(EXTRA_DIST): Remove frysk.jar.

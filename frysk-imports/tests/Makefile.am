@@ -331,12 +331,12 @@ TESTS += frysk2299/GCTest
 # The order is important!!
 frysk2670_FILES = \
 	$(srcdir)/frysk2670/other/Action.java \
-	$(srcdir)/frysk2670/Action.java \
-	$(srcdir)/frysk2670/ExitNotificationObserver.java \
-	$(srcdir)/frysk2670/AddTaskObserverAction.java \
-	$(srcdir)/frysk2670/TaskAction.java
+	$(srcdir)/frysk2670/one/Action.java \
+	$(srcdir)/frysk2670/one/ExitNotificationObserver.java \
+	$(srcdir)/frysk2670/one/AddTaskObserverAction.java \
+	$(srcdir)/frysk2670/one/TaskAction.java
 EXTRA_DIST += $(frysk2670_FILES)
-TESTS += frysk2670/gcj.sh
+XFAIL_TESTS += frysk2670/gcj.sh
 frysk2670/gcj.sh:
 	mkdir -p frysk2670
 	rm -f $@
