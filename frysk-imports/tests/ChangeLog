@@ -1,7 +1,16 @@
 2006-06-10  Andrew Cagney  <cagney@redhat.com>
 
+	* frysk2670/LiaisonItem.java: Delete.
+	* frysk2670/Action.java: Fold in LiaisonItem.java, simplify.
+	* frysk2670/TaskAction.java: Simplify.
+	* frysk2670/Action.java: Update.
+	* frysk2670/AddTaskObserverAction.java: Update.
+	* frysk2670/ExitNotificationObserver.java: Update.
+	* Makefile.am (frysk2670_FILES): Remove LiaisonItem.java.
+	
 	* Makefile.am (frysk2670_FILES): Remove GuiObject.java.
 	(frysk2670/gcj.sh): Explicitly check for exit status.
+	* frysk2670/GuiObject.java: Delete.
 	* frysk2670/LiaisonItem.java: Merge in GuiObject.java.
 	* frysk2670/AddTaskObserverAction.java: Update.
 	* frysk2670/ExitNotificationObserver.java: Update.

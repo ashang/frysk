@@ -330,7 +330,6 @@ TESTS += frysk2299/GCTest
 
 # The order is important!!
 frysk2670_FILES = \
-	$(srcdir)/frysk2670/LiaisonItem.java \
 	$(srcdir)/frysk2670/Action.java \
 	$(srcdir)/frysk2670/ExitNotificationObserver.java \
 	$(srcdir)/frysk2670/AddTaskObserverAction.java \
@@ -346,7 +345,7 @@ frysk2670/gcj.sh:
 	echo 'echo ""' >> $@
 	echo 'echo "====> Sorted list - compiles"' >> $@
 	echo 'echo ""' >> $@
-	echo '( set -xe ; gcj -d . -I . -C -classpath \
+	echo '( set -xe ; $(GCJ) -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
 		$(sort $(frysk2670_FILES)) \
 		) || exit 1' >> $@
@@ -354,7 +353,7 @@ frysk2670/gcj.sh:
 	echo 'echo ""' >> $@
 	echo 'echo "====> Unsorted list - dies"' >> $@
 	echo 'echo ""' >> $@
-	echo '( set -xe ; gcj -d . -I . -C -classpath \
+	echo '( set -xe ; $(GCJ) -d . -I . -C -classpath \
 		$(srcdir)/frysk2670/frysk.jar \
 		$(frysk2670_FILES) \
 		) || exit 1' >> $@

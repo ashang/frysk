@@ -1,11 +1,8 @@
 package frysk.gui.monitor.observers;
 
-import frysk.gui.common.dialogs.DialogManager;
-import frysk.gui.monitor.LiaisonItem;
-import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.actions.TaskAction;
+// Can't remove next include.
 import frysk.proc.Action;
-import frysk.proc.Task;
 
 public class ExitNotificationObserver
     extends TaskTerminatingObserver
@@ -16,25 +13,9 @@ public class ExitNotificationObserver
 	super();
 	TaskAction myAction = new TaskAction ()
 	    {
-		public void execute(Task task)
+		public void execute (Object o)
 		{
 		}
-		public LiaisonItem getCopy()
-		{
-		    return null;
-		}
-		public boolean setArgument(String argument)
-		{
-		    return true;
-		}
-		public String getArgument()
-		{
-		    return null;
-		}
-		public ObservableLinkedList getArgumentCompletionList()
-		{
-		    return null;
-		}			
 	    };
 	myAction.dontSaveObject();
     }
