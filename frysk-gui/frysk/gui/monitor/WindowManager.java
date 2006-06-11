@@ -43,6 +43,7 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 
+import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
 import frysk.gui.register.RegisterWindow;
 
@@ -76,6 +77,7 @@ public class WindowManager implements Saveable{
 	public RegisterWindow registerWindow;
 //	public PickProcsDialog pickProcsDialog;
 	public MainWindowStatusBar mainWindowStatusBar;
+	public SessionManagerGui sessionManager;
 	/**}*/
 	
 	public WindowManager(){
@@ -103,6 +105,10 @@ public class WindowManager implements Saveable{
 	}
 	
 
+	public void initSessionManagerWindow(LibGlade glade)
+	{
+		this.sessionManager = new SessionManagerGui(glade);
+	}
 	public void initSessionDruidWindow(LibGlade session) throws IOException{
 		this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
 	}
