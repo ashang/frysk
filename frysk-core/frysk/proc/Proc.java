@@ -342,15 +342,56 @@ public abstract class Proc
 		}
 	    });
     }
+    
+    /**
+     * (Internal) Tell the process to add the specified Observation,
+     * attaching to the process if necessary.
+     * Adds a syscallObserver which changes the task to syscall
+     * tracing mode of necessary.
+     */
+    void requestAddSyscallObserver (Task task,
+			     TaskObservable observable,
+			     TaskObserver observer)
+    {
+	logger.log (Level.FINE, "{0} requestAddObservation\n", this); 
+	Manager.eventLoop.add (new TaskSyscallObservation (task, observable, observer)
+	    {
+		public void execute ()
+		{
+		    handleAddObservation (this);
+		}
+	    });
+    }
+    
     /**
      * (Internal) Tell the process to delete the specified
      * Observation, detaching from the process if necessary.
+     * Removes a syscallObserver exiting the task from syscall tracing
+     * mode of necessary.
      */
     void requestDeleteObserver (Task task,
 				TaskObservable observable,
 				TaskObserver observer)
     {
 	Manager.eventLoop.add (new TaskObservation (task, observable, observer)
+	    {
+		public void execute ()
+		{
+		    newState = oldState ().handleDeleteObservation
+			(Proc.this, this);
+		}
+	    });
+    }
+
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Observation, detaching from the process if necessary.
+     */
+    void requestDeleteSyscallObserver (Task task,
+				TaskObservable observable,
+				TaskObserver observer)
+    {
+	Manager.eventLoop.add (new TaskSyscallObservation (task, observable, observer)
 	    {
 		public void execute ()
 		{

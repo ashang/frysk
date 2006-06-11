@@ -55,6 +55,8 @@ import java.util.logging.Level;
 public class LinuxTask
     extends Task
 {
+    private long ptraceOptions = 0;	
+    
     // XXX: For moment wire in standard 32-bit little-endian memory
     // map.  This will be replaced by a memory map created using
     // information from /proc/PID/maps.
@@ -121,14 +123,20 @@ public class LinuxTask
     {
 	logger.log (Level.FINE, "{0} sendContinue\n", this); 
 	try {
-	    if (traceSyscall)
-		Ptrace.sysCall (getTid (), sig);
-	    else
-		Ptrace.cont (getTid (), sig);
+	    Ptrace.cont (getTid (), sig);
 	}
 	catch (Errno.Esrch e) {
 	    postDisappearedEvent (e);
 	}
+    }
+    protected void sendSyscallContinue(int sig){
+	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
+	try {
+	    Ptrace.sysCall (getTid (), sig);
+	}
+	catch (Errno.Esrch e) {
+	    postDisappearedEvent (e);
+	}   
     }
     protected void sendStepInstruction (int sig)
     {
@@ -151,14 +159,12 @@ public class LinuxTask
 	try {
 	    // XXX: Should be selecting the trace flags based on the
 	    // contents of .observers.
-	    long options = 0;
-	    options |= Ptrace.optionTraceClone ();
-	    options |= Ptrace.optionTraceFork ();
-	    options |= Ptrace.optionTraceExit ();
-	    if (traceSyscall)
-		options |= Ptrace.optionTraceSysgood ();
-	    options |= Ptrace.optionTraceExec ();
-	    Ptrace.setOptions (getTid (), options);
+	    ptraceOptions |= Ptrace.optionTraceClone ();
+	    ptraceOptions |= Ptrace.optionTraceFork ();
+	    ptraceOptions |= Ptrace.optionTraceExit ();
+	    //	ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
+	    ptraceOptions |= Ptrace.optionTraceExec ();
+	    Ptrace.setOptions (getTid (), ptraceOptions);
 	}
 	catch (Errno.Esrch e) {
 	    postDisappearedEvent (e);
@@ -184,4 +190,17 @@ public class LinuxTask
 	logger.log (Level.FINE, "{0} sendrecIsa\n", this);
 	return LinuxIa32.isaSingleton ();
     }
+    protected void startTracingSyscalls()
+    {
+	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
+	ptraceOptions |= Ptrace.optionTraceSysgood ();
+	this.sendSetOptions();
+    }
+    protected void stopTracingSyscalls()
+    {
+	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
+	ptraceOptions &= ~(Ptrace.optionTraceSysgood ());
+	this.sendSetOptions();
+    }
+   
 }

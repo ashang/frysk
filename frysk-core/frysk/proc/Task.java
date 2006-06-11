@@ -139,12 +139,6 @@ abstract public class Task
     ByteBuffer memory;
     ByteBuffer[] registerBank;
 
-    // XXX: Should be eliminated.  Flags indicating the intended state
-    // of various trace options.  Typically the thread has to first be
-    // stopped before the option can change -> number of state
-    // transitions.
-    public boolean traceSyscall;  	// Trace syscall entry and exit
-
     /**
      * Create a new Task skeleton.
      */
@@ -203,6 +197,7 @@ abstract public class Task
 
     // Send operation to corresponding underlying [kernel] task.
     protected abstract void sendContinue (int sig);
+    protected abstract void sendSyscallContinue(int sig);
     protected abstract void sendStepInstruction (int sig);
     protected abstract void sendStop ();
     protected abstract void sendSetOptions ();
@@ -257,6 +252,19 @@ abstract public class Task
     void handleDeleteObserver (Observable observable, Observer observer)
     {
 	newState = oldState ().handleDeleteObserver (Task.this, observable,
+						     observer);
+    }
+    void handleAddSyscallObserver (Observable observable, Observer observer)
+    {
+	newState = oldState ().handleAddSyscallObserver (Task.this, observable,
+						  observer);
+    }
+    /**
+     * (Internal) Delete the specified observer from the observable.
+     */
+    void handleDeleteSyscallObserver (Observable observable, Observer observer)
+    {
+	newState = oldState ().handleDeleteSyscallObserver (Task.this, observable,
 						     observer);
     }
     /**
@@ -358,6 +366,16 @@ abstract public class Task
 	newState = oldState ().handleSyscalledEvent (this);
     }
 
+    
+    
+    
+    
+    
+    
+    
+// test test teawt    
+    
+    
     /**
      * (internal) The task has terminated; if SIGNAL, VALUE is the
      * signal, otherwize it is the exit status.
@@ -692,15 +710,15 @@ abstract public class Task
     public void requestAddSyscallObserver (TaskObserver.Syscall o)
     {
 	logger.log (Level.FINE, "{0} requestAddSyscallObserver\n", this);
-	proc.requestAddObserver (this, syscallObservers, o);
+	proc.requestAddSyscallObserver (this, syscallObservers, o);
     }
     /**
      * Delete TaskObserver.Syscall.
      */
     public void requestDeleteSyscallObserver (TaskObserver.Syscall o)
     {
+	    proc.requestDeleteSyscallObserver (this, syscallObservers, o);
 	logger.log (Level.FINE, "{0} requestDeleteSyscallObserver\n", this);
-	proc.requestDeleteObserver (this, syscallObservers, o);
     }
     /**
      * Notify all Syscall observers of this Task's entry into a system
@@ -708,6 +726,7 @@ abstract public class Task
      */
     int notifySyscallEnter ()
     {
+	logger.log(Level.FINE, "{0} notifySyscallEnter {1}\n", new Object[]{this,new Integer(this.getIsa().getSyscallEventInfo().number(this))});
 	for (Iterator i = syscallObservers.iterator ();
 	     i.hasNext (); ) {
 	    TaskObserver.Syscall observer
@@ -723,7 +742,8 @@ abstract public class Task
      */
     int notifySyscallExit ()
     {
-	for (Iterator i = syscallObservers.iterator ();
+	    logger.log(Level.FINE, "{0} notifySyscallExit {1}\n", new Object[]{this,new Integer(this.getIsa().getSyscallEventInfo().number(this))});
+	    for (Iterator i = syscallObservers.iterator ();
 	     i.hasNext (); ) {
 	    TaskObserver.Syscall observer
 		= (TaskObserver.Syscall) i.next ();
@@ -770,4 +790,14 @@ abstract public class Task
 	}
 	return blockers.size ();
     }
+    
+    /**
+     * Turns on systemcall entry and exit tracing 
+     */
+    protected abstract void startTracingSyscalls();
+    
+    /**
+     * Turns off systemcall entry and exit tracing 
+     */
+    protected abstract void stopTracingSyscalls();
 }

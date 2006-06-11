@@ -39,35 +39,29 @@
 
 package frysk.proc;
 
-/**
- * The binding between an Observer and its Observable.
- */
-
-abstract class TaskObservation
-    extends Observation
+abstract class TaskSyscallObservation
+    extends TaskObservation
 {
-    protected Task task;
-    /**
-     * Create a new Observer binding.
+     /**
+     * Create a new SyscallObserver binding.
      */
-    public TaskObservation (Task task, Observable observable,
+    public TaskSyscallObservation (Task task, Observable observable,
 			    Observer observer)
     {
-	super (observable, observer);
-	this.task = task;
+	    super(task, observable, observer);
     }
     /**
-     * Handle adding the Observer to the Observable.
+     * Handle adding the SyscallObserver to the Observable.
      */
     public void handleAdd ()
     {
-	task.handleAddObserver (observable, observer);
+	task.handleAddSyscallObserver (observable, observer);
     }
     /**
-     * Handle deleting the Observer from the Observable.
+     * Handle deleting the SyscallObserver from the Observable.
      */
     public void handleDelete ()
     {
-	task.handleDeleteObserver (observable, observer);
+	task.handleDeleteSyscallObserver (observable, observer);
     }
 }

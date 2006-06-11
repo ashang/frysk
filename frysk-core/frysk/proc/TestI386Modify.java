@@ -175,7 +175,6 @@ public class TestI386Modify
 			killDuringTearDown (task.getTid ());
 			if (task.getIsa () instanceof LinuxIa32) {
 			    ia32Isa = true;
-			    task.traceSyscall = true;
 			    task.requestAddSyscallObserver (taskEventObserver);
 			    task.requestAddSignaledObserver (taskEventObserver);
 			}

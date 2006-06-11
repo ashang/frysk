@@ -46,4 +46,19 @@ public class DummyTask extends Task {
 		
 	}
 
+	protected void sendSyscallContinue(int sig) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void startTracingSyscalls() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void stopTracingSyscalls() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
