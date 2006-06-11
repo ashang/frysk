@@ -1,3 +1,29 @@
+2006-06-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Make procpop window visible=false 
+	on startup.
+	* druid/CreateFryskSessionDruid.java (getDruidStructureControls): 
+	Simply nextButton, cancelButton, finishButton, nextButton and 
+	backButton due to session management divorce form the Druid.
+
+2006-06-09  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (getNumberSuffix): Removed.
+	(copySession): Removed.
+	(toggleWarning): Removed.
+	(getDruidManagerControls): Removed.
+	
+	* glade/frysk_create_session_druid.glade: Removed
+	Session Management controls.
+	* glade/frysk_session_manager.glade: New file. Extrude
+	controls from frysk_create_session_druid.glade and encompass
+	in own GUI. 
+
+2006-06-08  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionManagerGui.java: New File. Session Management GUI.
+	* Gui.java (Gui): Added SessionManager instantiation.
+
 2006-06-08  Nurdin Premji  <npremji@redhat.com>
 
 	* test/GuiTestLib.java: Changed references from "Tasks" to 

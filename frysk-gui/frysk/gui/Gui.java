@@ -97,11 +97,13 @@ public class Gui
     LibGlade glade;
     LibGlade create_session_glade;
     LibGlade register_window;
+    LibGlade session_glade;
     
     private static Logger errorLogFile = null;
     private static final String SETTINGSFILE = ".settings";
     private static final String GLADE_FILE = "procpop.glade";
     private static final String CREATE_SESSION_GLADE = "frysk_create_session_druid.glade";
+    private static final String SESSION_MANAGER_GLADE = "frysk_session_manager.glade";
 
     public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 
@@ -171,6 +173,7 @@ public class Gui
 	    	glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
 	    	create_session_glade = new LibGlade (glade_dirs[i] + CREATE_SESSION_GLADE, this);
 	    	register_window = new LibGlade (glade_dirs[i] + "/registerwindow.glade", null);
+	        session_glade = new LibGlade(glade_dirs[i] + SESSION_MANAGER_GLADE, this);
 	    }
 	    catch (FileNotFoundException missingFile) {
 	    	searchPath += glade_dirs[i] + "\n";
@@ -187,6 +190,7 @@ public class Gui
 	    WindowManager.theManager.initLegacyProcpopWindows(glade);
 	    WindowManager.theManager.initRegisterWindow(register_window);
 	    WindowManager.theManager.initSessionDruidWindow(create_session_glade);
+	    WindowManager.theManager.initSessionManagerWindow(session_glade);	    
 	} catch (IOException e) {
 	    throw e;
 	}
@@ -399,7 +403,7 @@ public class Gui
 		public void execute() {
 			CustomEvents.addEvent(new Runnable() {
 				public void run() {
-					WindowManager.theManager.mainWindow.showAll();
+					//WindowManager.theManager.mainWindow.showAll();
 					WindowManager.theManager.splashScreen.hideAll();
 				}
 			});

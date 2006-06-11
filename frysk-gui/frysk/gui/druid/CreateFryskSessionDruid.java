@@ -39,8 +39,6 @@
 
 package frysk.gui.druid;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
@@ -48,11 +46,7 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.FileChooserButton;
-import org.gnu.gtk.Image;
-import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
-import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TreeIter;
@@ -61,16 +55,12 @@ import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.CellRendererTextEvent;
-import org.gnu.gtk.event.CellRendererTextListener;
 import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-import org.gnu.gtk.event.ToggleEvent;
-import org.gnu.gtk.event.ToggleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
@@ -80,7 +70,6 @@ import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
-import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.sessions.DebugProcess;
@@ -97,14 +86,9 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private ListView addedProcsTreeView;
 	private CheckedListView tagSetSelectionTreeView;
 	private CheckedListView  observerSelectionTreeView;
-	private ListView previousSessions;
 	private ListView processObserverSelectionTreeView;	
 	
-	private Image warningImage;
-	private Label warningLabel;
-	private Button copySession;
-	private Button editSession;
-	private Button deleteSession;
+	
 	
 	private Session currentSession = new Session();
 	private Entry nameEntry;
@@ -117,20 +101,52 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private Button cancelButton;
 
 	
-	private boolean newSessionSelected = true;
-	private boolean editSessionSelected = false;
-	private boolean previousSessionSelected = false;
-	
+
 	private int processSelected = 0;
 
 	public CreateFryskSessionDruid(LibGlade glade) {
 		super(glade.getWidget("SessionDruid").getHandle());	
-		this.addListener(this);
+		
 		getDruidStructureControls(glade);
-		getDruidManagerControls(glade);
 		getProcessSelectionControls(glade);
 		getTagsetObserverControls(glade);
 		getProcessObserverControls(glade);
+		this.addListener(this);
+	}
+	
+	public void setEditSessionMode(Session givenSession)
+	{
+		currentSession = givenSession;
+		if (currentSession == null) 
+			currentSession = new Session();
+			
+		processSelected = currentSession.getProcesses().size();
+		attachLinkedListsToWidgets();
+
+		notebook.setShowTabs(true);
+		notebook.setCurrentPage(0);
+		finishButton.hideAll();
+		nextButton.hideAll();
+		backButton.hideAll();
+		cancelButton.showAll();
+		saveButton.showAll();
+	}
+	
+	public void setNewSessionMode() {
+		nextButton.showAll(); nextButton.setSensitive(false);
+		backButton.showAll(); backButton.setSensitive(false);
+		finishButton.hideAll();
+		saveButton.hideAll();
+		cancelButton.hideAll();
+		nameEntry.setText("");
+
+		currentSession = null;
+		currentSession = new Session();
+		attachLinkedListsToWidgets();
+		
+		notebook.setShowTabs(false);
+		notebook.setCurrentPage(0);
+		processSelected = 0;
 	}
 	
 	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
@@ -247,237 +263,22 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	}
 	
 
+	
 	private void setProcessNext(int processCount)
 	{
-		if (processCount > 0)
+		if ((processCount > 0) && (nameEntry.getText().length() > 0))
+		{
 			this.nextButton.setSensitive(true);
+			this.saveButton.setSensitive(true);
+		}
 		else
+		{
 			this.nextButton.setSensitive(false);
-	}
-	
-	private String getNumberSuffix(int i)
-	{
-		String iString = ""+i;
-		if ((i <= 10) || (i >= 20))
-			switch (iString.charAt(iString.length()-1)) {
-				case '1': return "st";
-				case '2': return "nd";
-				case '3': return "rd";
-				default: return "th";
-			}	
-		if ((i>=11) && (i<=19))
-			return "th";		
-		return "";
-	}
-
-	private Session copySession(Session source) {
-		String session_name = source.getName();
-		String name[] = { session_name + " (copy)",
-				session_name + " (another copy)" };
-		Session dest = (Session) source.getCopy();
-		
-		for (int i = 0; i < name.length; i++)
-			if (SessionManager.theManager.getSessionByName(name[i]) == null) {
-				dest.setName(name[i]);
-				return dest;
-			}
-		for (int i = 3; i < Integer.MAX_VALUE - 1; i++)
-			if (SessionManager.theManager.getSessionByName(session_name + " ("
-				+ i + getNumberSuffix(i) + " copy)") == null) {
-				
-				dest.setName(session_name + " (" + i + getNumberSuffix(i) + " copy)");
-				return dest;
-			}
-
-		try {
-			dest.setName(session_name + "_"
-					+ File.createTempFile("zxc", "dfg").getName());
-		} catch (IOException e) {
+			this.saveButton.setSensitive(false);
 		}
-		return dest;
 	}
 	
-	private void toggleWarning(String warning, boolean show)
-	{
-		if (warning != null) 
-				warningLabel.setText(warning);
-		if (show)
-		{
-			warningImage.showAll();
-			warningLabel.showAll();
-		}
-		else
-		{
-			warningImage.hideAll();
-			warningLabel.hideAll();	
-		}
-		
-	}
-	private void getDruidManagerControls(LibGlade glade) {
-		
-		RadioButton debugExecutable = (RadioButton) glade.getWidget("sessionDruid_debugExecutableButton");
-		debugExecutable.setState(false);
-		debugExecutable.setSensitive(false);
-	
-		FileChooserButton executableChooser = (FileChooserButton) glade.getWidget("sessionDruid_execChooser");
-		executableChooser.setSensitive(false);
-	
-		warningImage = (Image) glade.getWidget("sessionDruid_warningIcon");
-		warningLabel = (Label) glade.getWidget("sessionDruid_warningLabel");
 
-		previousSessions = new ListView( glade.getWidget("sessionDruid_previousSessionsListView").getHandle());
-		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());		
-		previousSessions.setSensitive(false);
-		previousSessions.addEditListener(new CellRendererTextListener() {
-				public void cellRendererTextEvent(CellRendererTextEvent arg0) {
-					if (arg0.getType() == CellRendererTextEvent.Type.EDITED)
-					{
-						Session selected = (Session) previousSessions.getSelectedObject();
-
-						/* There may be nothing selected, and we may get a blank name string */
-						if (selected != null && !arg0.getText().equals("")) {
-							SessionManager.theManager.removeSession(selected);
-							selected.setName(arg0.getText());
-							SessionManager.theManager.addSession(selected);
-							SessionManager.theManager.save();
-						}
-					}
-				}
-		});
-
-		final RadioButton newSession = (RadioButton) glade.getWidget("sessionDruid_newSessionButton");
-		newSession.setState(true);
-		newSession.addListener(new ToggleListener(){
-			public void toggleEvent(ToggleEvent arg0) {
-				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
-					if (newSession.getState())
-					{
-						newSessionSelected = true;
-						previousSessionSelected = false;
-						nameEntry.setSensitive(true);
-					}
-					else
-						newSessionSelected = false;
-			}});
-					
-
-		
-		nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
-		nameEntry.addListener(new EntryListener() {
-			public void entryEvent(EntryEvent arg0) {
-				currentSession.setName(nameEntry.getText());
-				if (nameEntry.getText().length() > 0)
-				{
-					if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
-					{
-						toggleWarning("This session name is already being used.",true);
-						nextButton.setSensitive(false);
-					}
-					else
-					{
-						toggleWarning("",false);
-						nextButton.setSensitive(true);
-					}
-				}
-				else
-					nextButton.setSensitive(false);
-			}});		
-		
-		final RadioButton previousSession = (RadioButton) glade.getWidget("sessionDruid_previousDebugButton");
-		previousSession.setState(false);
-		previousSession.addListener(new ToggleListener(){
-			public void toggleEvent(ToggleEvent arg0) {
-				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
-				{
-					previousSessions.setSensitive(!previousSessions.getSensitive());
-					editSession.setSensitive(!editSession.getSensitive());
-					copySession.setSensitive(!copySession.getSensitive());
-					deleteSession.setSensitive(!deleteSession.getSensitive());
-					nameEntry.setSensitive(false);
-					previousSessionSelected = true;
-					if (previousSession.getState())
-					{
-						nextButton.hideAll();
-						finishButton.showAll();
-					}
-					else
-					{
-						nextButton.showAll();
-						finishButton.hideAll();
-					}
-				}
-			}});
-
-		previousSessions.getSelection().addListener(new TreeSelectionListener(){
-			public void selectionChangedEvent(TreeSelectionEvent arg0) {
-				Session selected = (Session)previousSessions.getSelectedObject();		
-				if (selected != null){
-					finishButton.setSensitive(true);
-				}
-				else
-				{
-					finishButton.setSensitive(false);
-				}
-				
-			}});
-		
-		editSession = (Button) glade.getWidget("sessionDruid_editSessionButton");
-		editSession.setSensitive(false);
-		editSession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					editSessionSelected= true;
-					currentSession = (Session)previousSessions.getSelectedObject();
-					if (currentSession != null) {
-						attachLinkedListsToWidgets();
-						notebook.setShowTabs(true);
-						notebook.setCurrentPage(1);
-						finishButton.hideAll();
-						cancelButton.showAll();
-						saveButton.showAll();
-					}
-	
-				}
-				
-			}});
-		
-		copySession = (Button) glade.getWidget("sessionDruid_copySessionButton");
-		copySession.setSensitive(false);
-		copySession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					Session selected = (Session)previousSessions.getSelectedObject();
-					if (selected != null) {
-						SessionManager.theManager.addSession(copySession(selected));
-						SessionManager.theManager.save();
-					}
-				}
-			}});
-		
-		deleteSession = (Button) glade.getWidget("sessionDruid_deleteSessionButton");
-		deleteSession.setSensitive(false);
-		deleteSession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					Session selected = (Session)previousSessions.getSelectedObject();
-					if (selected != null)
-						SessionManager.theManager.removeSession(selected);
-				}
-			}});
-
-		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
-		sizeGroup.addWidget(nameEntry);
-		sizeGroup.addWidget(executableChooser);
-		
-		SizeGroup buttonSizeGroup = new SizeGroup(SizeGroupMode.HORIZONTAL);
-		buttonSizeGroup.addWidget(newSession);
-		buttonSizeGroup.addWidget(debugExecutable);
-		buttonSizeGroup.addWidget(previousSession);
-	}
-	
 	private void getProcessSelectionControls(LibGlade glade) {
 		
 		Button addProcessGroupButton;
@@ -496,14 +297,21 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		
 		hostSelection = (ComboBox) glade.getWidget("sessionDruid_hostComboBox");
 		this.setUpCurrentPage();
+		
+		nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
+		nameEntry.addListener(new EntryListener() {
+			public void entryEvent(EntryEvent arg0) {
+				currentSession.setName(nameEntry.getText());
+				setProcessNext(processSelected);
+			}});		
 			
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(procWiseTreeView);
 		sizeGroup.addWidget(addedProcsTreeView);
-			
+
 		addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
 		removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
-		
+			
 		addProcessGroupButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK))
@@ -596,7 +404,6 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				}
 			}});
 		
-		
 		observerSelectionTreeView.watchLinkedList(ObserverManager.theManager.getTaskObservers());
 		observerSelectionTreeView.getCellRendererToggle().addListener(new CellRendererToggleListener() { 
 			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
@@ -649,32 +456,11 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		this.finishButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-					if (editSessionSelected) {
-						editSessionSelected = false;
-						notebook.setShowTabs(false);
-						notebook.setCurrentPage(0);
-						SessionManager.theManager.save();
-						return;
-					}
-					
-					if (newSessionSelected)
-					{
 						SessionManager.theManager.addSession(currentSession);
 						SessionManager.theManager.save();
-						WindowManager.theManager.mainWindow.setSession(currentSession);
-						currentSession = (Session) previousSessions.getSelectedObject();
-						hideAll();
-						return;
-					}
-					if (previousSessionSelected)
-					{
-						if (previousSessions.getSelectedObject() == null)
-							return;
-						WindowManager.theManager.mainWindow.setSession(
-								(Session)previousSessions.getSelectedObject());
-					}
-					
-					hideAll();
+						currentSession = null;
+						currentSession = new Session();
+						hide();
 				}
 			}
 		});
@@ -684,14 +470,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		this.saveButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-						editSessionSelected = false;
-						notebook.setShowTabs(false);
-						notebook.setCurrentPage(0);
 						SessionManager.theManager.save();
-						saveButton.hideAll();
-						cancelButton.hideAll();
-						finishButton.showAll();
-						currentSession = new Session();
+						hide();
 					}
 				}});
 		
@@ -699,34 +479,31 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		this.cancelButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-						editSessionSelected = false;
-						notebook.setShowTabs(false);
-						notebook.setCurrentPage(0);
-						SessionManager.theManager.load();
-						saveButton.hideAll();
-						cancelButton.hideAll();
-						finishButton.showAll();
 						currentSession.dontSaveObject();
+						SessionManager.theManager.load();
+						hide();
+						
 					}
 				}});
 	}
 	
-	private void attachLinkedListsToWidgets()
+	public void attachLinkedListsToWidgets()
 	{
+		if (!currentSession.getName().equals("NoName"))
+			nameEntry.setText(currentSession.getName());
 		addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
 		//tagSetSelectionTreeView;
 		processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
 		//observerSelectionTreeView;
 		processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
-		
-		
 	}
+
 
 	private void nextPage() {
 		
 		// Process previous page data
 		int page = this.notebook.getCurrentPage();
-	
+
 		this.notebook.setCurrentPage(page+1);
 		this.setUpCurrentPage();
 	}
@@ -763,13 +540,12 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	}
 
 	public void lifeCycleEvent(LifeCycleEvent event) {
-		
 	}
 
 	public boolean lifeCycleQuery(LifeCycleEvent event) {
 		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
-					this.hideAll();
+					this.hide();
 					return true;
 		}
 		return false;
