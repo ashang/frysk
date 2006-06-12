@@ -1,3 +1,14 @@
+2006-06-12 Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WindowManager.java (initLegacyProcpopWindows): Add PickProc
+	Dialog instantiation.
+	* PickProcDialog.java: New.
+	* PickProcListView.java: New.
+
+2006-06-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PickProcsDialog.java (PickProcsDialog): Remove showall();
+
 2006-06-08  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* WindowManager.java (initSessionDruidWindow): Added 
