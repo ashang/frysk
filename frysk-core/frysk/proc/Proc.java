@@ -128,10 +128,18 @@ public abstract class Proc
      {
         gid = sendrecGID();
         return gid;
-     }
+     }     
      protected abstract int sendrecGID ();
      private int gid;
 
+     /**
+      * 
+      * @return The main task for this process
+      */
+     public Task getMainTask(){
+    	 return this.host.get(new TaskId(this.getPid()));
+     }
+     
     /**
      * Return the Proc's command line argument list
      */

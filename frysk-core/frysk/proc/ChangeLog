@@ -1,3 +1,7 @@
+2006-06-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Proc.java (getMainTask): Added.
+
 2006-06-12  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (AckProcess): Add methods .addClone(int), and

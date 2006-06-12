@@ -101,7 +101,7 @@ abstract public class Task
     public final DwflLine getDwflLineXXX(){
     	if(dwfl == null)
     		dwfl = new Dwfl(getTid());
-    	return dwfl.getSourceLine(isa.pc(this));
+    	return dwfl.getSourceLine(getIsa().pc(this));
     }
     
     /**
