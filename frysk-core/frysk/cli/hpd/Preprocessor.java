@@ -45,7 +45,7 @@ import java.util.Vector;
  * Preprocessor handles constructs like linebreaks and compound statements, also provides a couple of
  * static functions that might come in handy.
  */
-public class Preprocessor 
+class Preprocessor 
 {
 	/**
 	 * LineBuffer is a simple class for accumulating lines of multiline commands

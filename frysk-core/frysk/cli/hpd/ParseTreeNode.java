@@ -43,7 +43,7 @@ package frysk.cli.hpd;
  * On creation sets takes a parent reference, but when you add it to a real parent, the refence get repointed to that parent,
  * just in case, might change depending on implementation.
  */
-public class ParseTreeNode
+class ParseTreeNode
 {
 	public final static int TYPE_RANGE = 0;
 	public final static int TYPE_REG = 1;

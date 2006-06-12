@@ -43,7 +43,7 @@ import java.lang.Integer;
 import java.util.Vector;
 import java.text.ParseException;
 
-public class SetNotationParser
+class SetNotationParser
 {
 	private int curToken;
 	private String[] tokens;

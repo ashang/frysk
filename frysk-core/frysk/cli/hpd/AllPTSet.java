@@ -58,7 +58,7 @@ import java.lang.RuntimeException;
  * The class makes some assumptions about when and how it's useful, and about
  * the engine, so review it for possible changes.
  */
-public class AllPTSet implements PTSet
+class AllPTSet implements PTSet
 {
 	// parallel arrays are not cute, but in this case they are handy
 	// Proc at proSet[i] has it's tasks in taskSets[i] in the form of a vector

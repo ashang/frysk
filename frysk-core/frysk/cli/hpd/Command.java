@@ -47,7 +47,7 @@ import java.util.Arrays;
  * Command class separates and contains different parts of a command: set, action, parameters.
  * It is immutable.
  */
-public class Command
+class Command
 {
 	private String myFullCommand;
 	private String mySet;
