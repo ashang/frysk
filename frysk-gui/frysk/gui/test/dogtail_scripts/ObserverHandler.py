@@ -175,12 +175,14 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           self.tempObserverElement.setType(attributes['type'])
           self.tempObserverElement.setName(attributes['name'])
           
-          # Temparary hack 
+          # The name attribute in the input file does not equal the
+          # GUI name - so, make the change here.
           if attributes['name'] == 'Log':
               self.tempObserverElement.setName('Log Generic Actions')
           if attributes['name'] == 'Resume':
               self.tempObserverElement.setName('Resume Generic Actions')
-
+          if attributes['name'] == 'Stop':
+              self.tempObserverElement.setName('Stop Generic Actions')
 
           self.tempObserverElement.setArgument(attributes['argument'])
           #print 'DEBUG - found an ActionPoint - arg = ' + attributes['argument']
