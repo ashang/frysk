@@ -48,6 +48,8 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.FileChooserButton;
 import org.gnu.gtk.RadioButton;
+import org.gnu.gtk.SizeGroup;
+import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.CellRendererTextEvent;
@@ -65,6 +67,8 @@ import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
+import frysk.gui.srcwin.SourceWindowFactory;
+import frysk.proc.Proc;
 
 /**
  * @author pmuldoon
@@ -79,6 +83,9 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 	
 	RadioButton previousSession;
 	RadioButton debugExecutable;
+	RadioButton debugSingleProcess;
+	Button debugSingleProcessAction;
+	
 	FileChooserButton executableChooser;
 	
 	private Button editSession;
@@ -95,6 +102,7 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 		getManagerControls(glade);
 		getSessionManagementControls(glade);
 		getDebugExecutableControls(glade);
+		getDebugSingleProcess(glade);
 		setButtonStates();
 	}
 	
@@ -108,6 +116,31 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 		executableChooser.setSensitive(!executableChooser.getSensitive());
 	}
 
+	private void getDebugSingleProcess(LibGlade glade) {
+		debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
+		debugSingleProcess.setState(false);
+		debugSingleProcessAction = (Button) glade.getWidget("SessionManager_singleProcessChooser");
+		debugSingleProcessAction.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent arg0) {
+				if (arg0.isOfType(ButtonEvent.Type.CLICK))
+				{
+					WindowManager.theManager.pickProcDialog.showAll();
+					WindowManager.theManager.pickProcDialog.run();
+					Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
+					if (chosenProc != null)
+						SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
+				}
+			}});
+		
+		SizeGroup labelGroup = new SizeGroup((SizeGroupMode.BOTH));
+		labelGroup.addWidget(debugExecutable);
+		labelGroup.addWidget(debugSingleProcess);
+		
+		SizeGroup chooserGroup = new SizeGroup((SizeGroupMode.BOTH));
+		chooserGroup.addWidget(executableChooser);
+		chooserGroup.addWidget(debugSingleProcessAction);
+	}
+	
 	private void getDebugExecutableControls(LibGlade glade) {
 		debugExecutable = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
 		debugExecutable.setState(false);

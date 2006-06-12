@@ -1,5 +1,9 @@
 2006-06-12  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* SessionManagerGui.java (getDebugSingleProcess): Added.
+	* glade/frysk_session_manager.glade: Added launch running process
+	to source window button.
+	
 	* glade/frysk_session_manager.glade: Change scrollbar policy
 	of previous session listbox to automatic.
 
