@@ -59,7 +59,7 @@ class DynamicPTSet implements PTSet
 		ProcTasks[] proctasks = pool.getSubset(nodes);
 		Vector result = new Vector(10, 5);
 
-		for (int i = 0; i < proctasks.length(); i++)
+		for (int i = 0; i < proctasks.length; i++)
 			result.add(proctasks[i].getProcData().getProc());
 
 		return result.iterator();
@@ -72,11 +72,11 @@ class DynamicPTSet implements PTSet
 		Vector temp = new Vector();
 		Vector result = new Vector(10, 10);
 
-		for (int i = 0; i < proctasks.length(); i++)
+		for (int i = 0; i < proctasks.length; i++)
 		{
-			temp = proctasks[i].getTaskDatas();
+			temp = proctasks[i].getTaskData();
 			for (int j = 0; j < temp.size(); j++)
-				result.add( ((Vector)temp.elementAt(i)).getTask() );
+				result.add( ((TaskData)temp.elementAt(i)).getTask() );
 		}
 
 		return result.iterator();
