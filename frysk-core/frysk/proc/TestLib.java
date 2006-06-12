@@ -298,6 +298,10 @@ public class TestLib
 	{
 	    Signal.tkill (pid, sig);
 	}
+	public void signal (int tid, Sig sig)
+	{
+	    Signal.tkill (tid, sig);
+	}
 	/**
 	 * Start CHILD as a running process.
 	 */
@@ -453,17 +457,25 @@ public class TestLib
 	    for (int i = 0; i < count; i++)
 		addClone ();
 	}
-	/** . */
-	private void spawn (Sig sig, String why)
+	/**
+	 * Tell TID to create a new offspring.  Wait for the
+	 * acknowledgment.
+	 */
+	private void spawn (int tid, Sig sig, String why)
 	{
 	    AckHandler ack = new AckHandler (spawnAck, why);
-	    signal (sig);
+	    signal (tid, sig);
 	    ack.await ();
 	}
 	/** Add a Task.  */
 	public void addClone ()
 	{
-	    spawn (addCloneSig, "addClone");
+	    spawn (getPid (), addCloneSig, "addClone");
+	}
+	/** Add a Task.  */
+	public void addClone (int tid)
+	{
+	    spawn (tid, addCloneSig, "addClone");
 	}
 	/** Delete a Task.  */
 	public void delClone ()
@@ -475,7 +487,12 @@ public class TestLib
 	/** Add a child Proc.  */
 	public void addFork ()
 	{
-	    spawn (addForkSig, "addFork");
+	    spawn (getPid (), addForkSig, "addFork");
+	}
+	/** Add a child Proc.  */
+	public void addFork (int tid)
+	{
+	    spawn (tid, addForkSig, "addFork");
 	}
 	/** Delete a child Proc.  */
 	public void delFork ()

@@ -1,3 +1,8 @@
+2006-06-12  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (AckProcess): Add methods .addClone(int), and
+	.addFork(int).
+
 2006-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TaskState.java: Added syscall tracing mode:
