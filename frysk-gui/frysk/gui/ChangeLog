@@ -1,3 +1,8 @@
+2006-06-12  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/frysk_session_manager.glade: Change scrollbar policy
+	of previous session listbox to automatic.
+
 2006-06-10  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Make procpop window visible=false 
