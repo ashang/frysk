@@ -1,3 +1,11 @@
+2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/PTSet.java: new
+	* hpd/DynamicPTSet.java: new
+	* hpd/AllPTSet.java: implements PTSet interface, generalized subset creation
+	* hpd/StaticPTSet.java: implements PTSet interface
+	* hpd/TestSetCreation.java: reflect changes to AllPTSet
+
 2006-06-09  Ivan Pantuyev  <ipantuye@redhat.com>
 	
 	* hpd/ProcData.java: new
