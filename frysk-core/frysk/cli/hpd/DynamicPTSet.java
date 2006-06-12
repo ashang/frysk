@@ -38,7 +38,6 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.Iterator;
 
