@@ -69,28 +69,18 @@ from Observer import Observer
 class TestCreateObservers ( unittest.TestCase ):
 
     def setUp( self ):
-
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-        
+        self.theLogWriter = self.TestString.writer
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary)  
-
+        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
+        
         # Probably temporary - during test development
-        #skipDruid(self.frysk)
-        
-        # Temporary - for demo only
-        #dialogToKill = self.frysk.child(roleName = 'dialog')
-        #okButton = dialogToKill.button( 'OK' )
-        #okButton.click()
-        theDruid = self.frysk.dialog('Debug Session Druid')
-        cancelButton = theDruid.button( 'Cancel' )
-        cancelButton.click()
-        finishButton = theDruid.button( 'Finish' )
-        finishButton.click()
-        
-        
+        skipDruid(self.frysk)
         
         # Load up some sample Observer objects - at some point, we'll
         # do this data loading from an XML file
@@ -211,6 +201,7 @@ class TestCreateObservers ( unittest.TestCase ):
        
         # Exit Frysk
         endFrysk( self.frysk )
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
  
     def testUpdateObservers( self ):      
         """Check that the newly created Observers can be queried and updated"""   

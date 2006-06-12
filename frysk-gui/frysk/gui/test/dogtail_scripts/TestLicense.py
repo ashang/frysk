@@ -65,6 +65,7 @@ from FryskHelpers import skipDruid
 class TestLicense (unittest.TestCase):
 
     def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
@@ -72,7 +73,7 @@ class TestLicense (unittest.TestCase):
 
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary)
+        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
         
         # Probably temporary - during test development
         skipDruid(self.frysk)

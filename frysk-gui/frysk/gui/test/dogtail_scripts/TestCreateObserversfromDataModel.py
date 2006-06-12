@@ -82,13 +82,15 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
-        
+        self.theLogWriter = self.TestString.writer
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary)  
-
+        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
+        
         # Probably temporary - during test development
-        #skipDruid(self.frysk)
+        skipDruid(self.frysk)
 
         # Load up some sample Observer objects         
         self.parser = xml.sax.make_parser(  )
@@ -266,6 +268,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
        
         # Exit Frysk
         endFrysk( self.frysk )
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
  
     def testUpdateObservers( self ):      
         """Check that the newly created Observers can be queried and updated"""   

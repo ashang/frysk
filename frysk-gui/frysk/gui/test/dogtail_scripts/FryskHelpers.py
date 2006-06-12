@@ -55,8 +55,13 @@ from dogtail import predicate
 # Needed to remove Frysk from Gnome Panel
 import subprocess
 
+# Set up for logging
+import dogtail.tc
+
 # Other imports
 import os
+import commands
+import sys
 import time
 
 # Constants
@@ -163,27 +168,27 @@ def createProcessDict ( inputList ):
     return theDictionary
 
 # ---------------------
-def startFrysk ( FryskBinary ):
+def startFrysk ( FryskBinary, logWriter ):
     """ Start up the Frysk GUI
         Function returns an object that points to the Frysk GUI
     """
     
     # First, make sure that AT-SPI is enabled
-    import commands
-    import sys
     AT_SPI_output = commands.getoutput('gconftool-2 -g /desktop/gnome/interface/accessibility')
     if AT_SPI_output != 'true':
         print '\n***AT SPI is not enabled - exiting now***'
         print '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'
+        logWriter.writeResult({'SEVERE' :  '***AT SPI is not enabled - exiting now***'  })
+        logWriter.writeResult({'SEVERE' :  '***Verify with this command: gconftool-2 -g /desktop/gnome/interface/accessibility ***'  })       
         sys.exit(77)
    
     # Make sure that Frysk is not still running or in a funny state after previous tests
     # This is a brutal way to do this - is there a better way?
     try:
         killFrysk()
-        print 'Frysk was still running - killed it - ok to start test'
+        logWriter.writeResult({'WARNING' :  'Frysk was still running at start of test- killed it - ok to start test'  })
     except:
-        print 'Frysk not running - ok to start test'
+        logWriter.writeResult({'INFO' :  'Frysk not running at start of test - ok to start test'  })
    
     # Start up Frysk 
     run ( FryskBinary, appName=FRYSK_APP_NAME )

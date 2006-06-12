@@ -82,13 +82,15 @@ from FryskHelpers import FRYSK_SESSION_FILES
 class TestDruid ( unittest.TestCase ):
 
    def setUp( self ):
-
-        # Set up for logging
+       
+       # Set up for logging
         self.TestString=dogtail.tc.TCString()
-         
+        self.theLogWriter = self.TestString.writer
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
+
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary)  
+        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
 
         # Load up some sample Observer objects 
         self.parser = xml.sax.make_parser(  )
@@ -251,6 +253,7 @@ class TestDruid ( unittest.TestCase ):
    def tearDown( self ):  
        # Exit Frysk
        endFrysk( self.frysk )
+       self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
  
 def suite():
         suite = unittest.TestSuite()
