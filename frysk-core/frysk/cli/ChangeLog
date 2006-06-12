@@ -1,4 +1,13 @@
 2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* hpd/AllPTSet.java: Removed from public scope
+	* hpd/Command.java: Removed from public scope
+	* hpd/ParseTreeNode.java: Removed from public scope
+	* hpd/Preprocessor.java: Removed from public scope
+	* hpd/SetNotationParser.java: Removed from public scope
+	* hpd/AllPTSet.java: Removed from public scope
+
+2006-06-12  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* hpd/PTSet.java: new
 	* hpd/DynamicPTSet.java: new
