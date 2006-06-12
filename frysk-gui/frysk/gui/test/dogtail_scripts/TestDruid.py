@@ -245,8 +245,8 @@ class TestDruid ( unittest.TestCase ):
         self.theSession.setProcessesDict(self.theSessionProcesses)
 
         if self.theSession.isequal (newlyCreatedSession):
-            pass
-            print 'PASS - the session objects match'
+            self.TestString.compare(self.theLogWriter.scriptName + '.testSessionFile()', newlyCreatedSession.getName(), self.theSession.getName() )
+            self.assertEqual(newlyCreatedSession.getName(), self.theSession.getName() )            
         else:
             self.fail ('FAIL - the session objects do not match')
 

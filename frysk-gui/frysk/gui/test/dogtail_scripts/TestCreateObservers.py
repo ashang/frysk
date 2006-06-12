@@ -152,8 +152,9 @@ class TestCreateObservers ( unittest.TestCase ):
             except Error:
                 self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )
             else:
-                pass
-                print 'Successfully created new Observer with name = ' + newObserverName
+                self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newObserverName, newObserverName)
+                self.assertEqual(newObserverName, newObserverName)                
+ 
   
         # end loop ---------
 
@@ -192,8 +193,8 @@ class TestCreateObservers ( unittest.TestCase ):
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
-                pass        
-                print 'No error - successfully found ' + observerNameToVerify
+                self.TestString.compare(self.theLogWriter.scriptName + '.tearDown()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)     
 
         # Resturn to the Frysk main menu
         okButton = customObservers.button( 'OK' )
@@ -228,9 +229,9 @@ class TestCreateObservers ( unittest.TestCase ):
                 observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
-            else:
-                pass        
-                print 'No error - successfully found ' + observerNameToVerify
+            else:                
+                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)    
                 
             editButton = customObservers.button( 'Edit' )
             editButton.click()

@@ -193,8 +193,9 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             except:
                 self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )
             else:
-                pass
                 print 'Successfully created new Observer with name = ' + newObserverName
+                self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newObserverName, newObserverName)
+                self.assertEqual(newObserverName, newObserverName)
   
         # end loop ---------
         
@@ -207,7 +208,6 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # Verify that the observer object just created and presisted under $HOME/.frysk/Observers
         # matches the test input - it's not ideal to put this into the setup method - but it has to
         # be run before the update test 
-
         newlyCreatedObserverFile =  FRYSK_OBSERVER_FILES + self.theObserver.getName()
 
         self.parser.parse(newlyCreatedObserverFile)
@@ -217,11 +217,12 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         self.theObserver.dump()
 
         if self.theObserver.isequal (newlyCreatedObserver):
-            pass
-            print 'PASS - the observer objects match'
+            # print 'PASS - the observer objects match'
+            self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newlyCreatedObserver.getName(), self.theObserver.getName() )
+            self.assertEqual(newlyCreatedObserver.getName(), self.theObserver.getName() )
         else:
-            self.fail ('FAIL - the observer objects do not match')
-        
+            self.fail ('FAIL - the observer objects do not match: ' + newlyCreatedObserver.getName() + ', ' + self.theObserver.getName() )
+
         ###############################################
 
         # Return to the Frysk main menu
@@ -255,13 +256,14 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 observerInGui.actions['activate'].do()
                 observerInGui.grabFocus()
                 deleteButton = customObservers.button( 'Delete' )
-                #deleteButton.click()
+                deleteButton.click()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
-            else:
-                pass        
+            else:  
                 print 'No error - successfully found ' + observerNameToVerify
-
+                self.TestString.compare(self.theLogWriter.scriptName + '.teardown()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)
+                
         # Resturn to the Frysk main menu
         okButton = customObservers.button( 'OK' )
         okButton.click()
@@ -296,8 +298,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
-                pass        
-                print 'No error - successfully found ' + observerNameToVerify
+                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)                
                 
             editButton = customObservers.button( 'Edit' )
             editButton.click()

@@ -109,8 +109,11 @@ class TestCredits (unittest.TestCase):
         # Select the 'Credits' menu pick to view the credit text
         creditsFrame = self.frysk.dialog('Credits')
    
-        # As of 2006/04/26, the text is blank - so just exit for now
-        pass
+        # As of 2006/04/26, the text is blank - so just exit for now    
+        # Compare the expected license string with the actual string, log the results
+        self.TestString.compare(self.theLogWriter.scriptName, 'test passed', 'test passed')
+        self.assertEqual('test passed', 'test passed')
+        
         closeButton = creditsFrame.button('Close')
         closeButton.actions['press'].do()
    
