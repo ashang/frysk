@@ -38,61 +38,10 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.util.Vector;
 import java.util.Iterator;
-import java.util.Arrays;
 
-/**
- * A class which holds a number of ProcTasks. It is immutable.
- */
-class StaticPTSet implements PTSet
+interface PTSet
 {
-	Vector set;
-
-	public StaticPTSet(ProcTasks[] proctasks)
-	{
-		set = new Vector(Arrays.asList(proctasks)); // clone to make sure it doesn't get modified 
-	}
-
-	public Vector getProcTasks()
-	{
-		return (Vector) set.clone();
-	}
-
-	public Iterator getProcs()
-	{
-		Vector result = new Vector();
-
-		for (int i = 0; i < set.size(); i++)
-		{
-			result.add( ((ProcTasks) set.elementAt(i)).getProcData().getProc() );
-		}
-
-		return result.iterator();
-	}
-
-	public Iterator getTasks()
-	{
-		Vector result = new Vector();
-		Vector temp = new Vector();
-
-		for (int i = 0; i < set.size(); i++)
-		{
-			temp = ((ProcTasks) set.elementAt(i)).getTaskData();
-
-			for (int j = 0; j < temp.size(); j++)
-				result.add( ((TaskData) temp.elementAt(j)).getTask() );
-		}
-
-		return temp.iterator();
-	}
-
-	public String toString()
-	{
-		String result = "";
-		for (int i = 0; i < set.size(); i++)
-			result += (ProcTasks)set.elementAt(i);
-
-		return result;
-	}
+	Iterator getProcs();
+	Iterator getTasks();
 }

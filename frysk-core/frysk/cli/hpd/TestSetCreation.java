@@ -100,7 +100,7 @@ public class TestSetCreation extends TestCase
 		try
 		{
 			ParseTreeNode[] parsed = parser.parse("[0.4:0.5, 1.1:2.4, *.0:1]");
-			staticset = allset.getSubset(parsed);
+			staticset = new StaticPTSet(allset.getSubset(parsed));
 			actual = staticset.toString();
 		}
 		catch (ParseException e)

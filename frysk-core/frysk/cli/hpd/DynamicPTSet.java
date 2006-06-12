@@ -38,61 +38,46 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.util.Vector;
-import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Iterator;
 
-/**
- * A class which holds a number of ProcTasks. It is immutable.
- */
-class StaticPTSet implements PTSet
+class DynamicPTSet implements PTSet
 {
-	Vector set;
+	ParseTreeNode[] nodes;
+	AllPTSet pool;
 
-	public StaticPTSet(ProcTasks[] proctasks)
+	public DynamicPTSet(AllPTSet ptpool, ParseTreeNode[] set)
 	{
-		set = new Vector(Arrays.asList(proctasks)); // clone to make sure it doesn't get modified 
+		nodes = set;
+		pool = ptpool;
 	}
 
-	public Vector getProcTasks()
-	{
-		return (Vector) set.clone();
-	}
-
+	//not efficient, but okay for now
 	public Iterator getProcs()
 	{
-		Vector result = new Vector();
+		ProcTasks[] proctasks = pool.getSubset(nodes);
+		Vector result = new Vector(10, 5);
 
-		for (int i = 0; i < set.size(); i++)
-		{
-			result.add( ((ProcTasks) set.elementAt(i)).getProcData().getProc() );
-		}
+		for (int i = 0; i < proctasks.length(); i++)
+			result.add(proctasks[i].getProcData().getProc());
 
 		return result.iterator();
 	}
 
+	//not efficient, but okay for now
 	public Iterator getTasks()
 	{
-		Vector result = new Vector();
+		ProcTasks[] proctasks = pool.getSubset(nodes);
 		Vector temp = new Vector();
+		Vector result = new Vector(10, 10);
 
-		for (int i = 0; i < set.size(); i++)
+		for (int i = 0; i < proctasks.length(); i++)
 		{
-			temp = ((ProcTasks) set.elementAt(i)).getTaskData();
-
+			temp = proctasks[i].getTaskDatas();
 			for (int j = 0; j < temp.size(); j++)
-				result.add( ((TaskData) temp.elementAt(j)).getTask() );
+				result.add( ((Vector)temp.elementAt(i)).getTask() );
 		}
 
-		return temp.iterator();
-	}
-
-	public String toString()
-	{
-		String result = "";
-		for (int i = 0; i < set.size(); i++)
-			result += (ProcTasks)set.elementAt(i);
-
-		return result;
+		return result.iterator();
 	}
 }
