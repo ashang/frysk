@@ -109,7 +109,8 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     self.actionPointFlag = False
     self.filterPointFlag = False
     self.theObserver = Observer()
-
+    self.emptyActionPointFlag = False
+ 
   #-------------------------------
   # def startDocument(self):
   
@@ -134,8 +135,10 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     elif self.currentTag == 'actionPoint':
       self.actionPointFlag = True
       #print 'Entering actionPoint'
-      self.tempObserverElement = ObserverElement()
-
+      self.tempActionPoint = ObserverPoints()
+      self.tempActionPointElements = []
+      self.tempActionPoint.setName(attributes['name'])
+       
     elif self.currentTag == 'filterPoints':
       self.theFilterPoints = []
       #print 'Entering filterPoints'
@@ -143,11 +146,11 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     elif self.currentTag == 'filterPoint':
       self.filterPointFlag = True
       #print 'Entering filterPoint'
-      self.tempObserverElement = ObserverElement()
-      self.tempObserverElement.setName(attributes['name'])
+      self.tempFilterPoint = ObserverPoints()
+      self.tempFilterPointElements = []
+      self.tempFilterPoint.setName(attributes['name'])
       #print 'DEBUG - found a filterPoint - name = ' + attributes['name']
-      #self.tempObserverElement.dump()
-
+      
 #   elif self.currentTag == 'elements':
       
     elif self.currentTag == 'element':
@@ -163,7 +166,9 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
 #          self.tempDebugProcess.setName(attributes['name'])          
           
         if attributes['type'] == 'frysk.gui.monitor.filters.TaskProcNameFilter':
-          self.tempObserverElement.setArgument(attributes['argument'])
+            self.tempObserverElement = ObserverElement()
+            self.tempObserverElement.setName(attributes['name'])
+            self.tempObserverElement.setArgument(attributes['argument'])
           #print 'DEBUG - found a filterPoint - arg = ' + attributes['argument']
           #self.tempObserverElement.dump()
         
@@ -184,7 +189,8 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           if attributes['name'] == 'Stop':
               self.tempObserverElement.setName('Stop Generic Actions')
 
-          self.tempObserverElement.setArgument(attributes['argument'])
+          self.tempObserverElement.setArgument(attributes['argument'])         
+ 
           #print 'DEBUG - found an ActionPoint - arg = ' + attributes['argument']
           #self.tempObserverElement.dump()
           
@@ -206,15 +212,18 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
   def endElement(self, name):
     if name == 'Observer':
         print 'END of Observer'
-        #self.theDebugSession.setProcesses(self.theDebugProcesses)
-      
+              
     elif name == 'actionPoints':
         self.theObserver.setActionPoints(self.theActionPoints)
 #        print 'END of actionPoints'
 
     elif name == 'actionPoint':
-#        print 'END of actionPoint'
-        self.actionPointFlag = False
+         #print 'END of actionPoint'
+         self.tempActionPoint.setElements(self.tempActionPointElements)
+         if self.emptyActionPointFlag != True:
+             self.theActionPoints.append(self.tempActionPoint)
+         self.actionPointFlag = False
+         self.emptyActionPointFlag = True
 
     elif name == 'filterPoints':
         self.theObserver.setFilterPoints(self.theFilterPoints)
@@ -222,17 +231,20 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
 
     elif name == 'filterPoint':
 #        print 'END of filterPoint'
-        if self.filterPointFlag == True:
-            self.theFilterPoints.append(self.tempObserverElement)
-            # print 'dump filterPoint' self.tempObserverElement.dump()
-        self.filterPointFlag = False
+         self.tempFilterPoint.setElements(self.tempFilterPointElements)
+         self.theFilterPoints.append(self.tempFilterPoint)         
+         self.filterPointFlag = False        
 
 #    elif name == 'elements':
 #        print 'END of elements'
       
-    elif name == 'element':
+    elif name == 'element':     
         if self.actionPointFlag == True:
-            self.theActionPoints.append(self.tempObserverElement)
-#            print 'Appending actionPoint'
+            self.tempActionPointElements.append(self.tempObserverElement)
+            if self.tempObserverElement.getType() == 'default type':
+                self.emptyActionPointFlag = True
+        elif self.filterPointFlag == True:
+            self.tempFilterPointElements.append(self.tempObserverElement)
+
 #        print 'END of element'
         

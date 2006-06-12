@@ -109,14 +109,23 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         #parser.parse(inputFile)
 
         self.theObserver = self.handler.theObserver
-        self.theObserver.dump()
+        #self.theObserver.dump()
         theName = self.theObserver.getName()
         theType = self.theObserver.getType()
 
-        theActions = self.theObserver.getActionPoints()
-        for tempAction in theActions:
-          theActionName = tempAction.getName()
-  
+        # June 12 - Assume one ActionPoint with name == "Generic Names" - the elements
+        # under this ActionPoint - "theActions" are where the actions are defined
+        #
+        # This is very incomplete! The test script needs to be updated to match 
+        # the new state of the code.
+        topLevelActionPoints = self.theObserver.getActionPoints()
+        for x in topLevelActionPoints:
+            #print str(x)
+            theActions = x.getElements()
+            for tempAction in theActions:
+                theActionName = tempAction.getName()
+                #print "DEBUG - " + theActionName
+    
         x = Observer()
         x.setName ( theName )
         x.setLoggingAction ( theActionName )
@@ -165,6 +174,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
             # Find and set the logging action combo box - again - this is the only combo
             # box that we can access until Frysk displays more accessibility infomation
+            #
+            # June 12 - the GUI code has changed - the test script needs to also change to match.
             newLoggingAction = observerToCreate.getLoggingAction()
             selectedItem=comboMenu.child( name=newLoggingAction )
             selectedItem.click()
@@ -182,7 +193,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 comboMenu = observerTypeComboBox.child( roleName='menu' )    
                 tempString = getEventType (observerToCreate.getType())
                 selectedItem=comboMenu.child( name = tempString )
-                selectedItem.click()                      
+                selectedItem.click() 
                                 
                 okButton = observerDetails.button( 'OK' )
                 okButton.click()
@@ -213,8 +224,16 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         self.parser.parse(newlyCreatedObserverFile)
         newlyCreatedObserver = self.handler.theObserver
 
-        newlyCreatedObserver.dump()
-        self.theObserver.dump()
+        #newlyCreatedObserver.dump()
+        #self.theObserver.dump()
+        
+        #########################################################
+        newlyCreatedFilterPoints = newlyCreatedObserver.getFilterPoints()
+        self.theObserverFilterPoints = self.theObserver.getFilterPoints()
+
+        newlyCreatedObserver.setFilterPointsDict(newlyCreatedFilterPoints)
+        self.theObserver.setFilterPointsDict(self.theObserverFilterPoints)
+        
 
         if self.theObserver.isequal (newlyCreatedObserver):
             # print 'PASS - the observer objects match'

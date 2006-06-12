@@ -58,6 +58,7 @@ class Observer:
   afterAction = 'Resume thread'
   filterPoints = ObserverPoints()
   actionPoints = ObserverPoints()
+  filterPointsDict = {}
   
   # constructor - not sure if we want this
   # def __init__(self, value):
@@ -76,6 +77,16 @@ class Observer:
   def setFilterPoints(self, value):
       self.filterPoints = value
       
+  def setFilterPointsDict ( self, theFilterNames ):
+    # use the process names as the keys, and the processes as the values
+    theFilterPointNames = []
+    theFilterPointObjects = []
+    for x in theFilterNames:
+      #print "DEBUG - name = " + x.getName()
+      theFilterPointNames.append( x.getName() )
+      theFilterPointObjects.append( x )
+    self.filterPointsDict = dict( zip ( theFilterPointNames, theFilterPointObjects ) )      
+            
   def setActionPoints (self, value):    
       self.actionPoints = value
     
@@ -93,6 +104,9 @@ class Observer:
 
   def getFilterPoints(self):
       return self.filterPoints
+ 
+  def getFilterPointsDict(self):
+      return self.filterPointsDict
       
   def getActionPoints (self):    
       return self.actionPoints
@@ -103,7 +117,7 @@ class Observer:
   def dump(self):
     print 'name=' + self.name
     print 'type=' + self.type
-    print 'loggingAction=' + self.loggingAction
+    #print 'loggingAction=' + self.loggingAction
     print 'afterAction=' + self.afterAction
     for x in self.filterPoints:
         x.dump()        
@@ -123,6 +137,38 @@ class Observer:
 
     if self.getType() != theOtherObserver.getType():
       returnFlag = False    
+      
+    theObserverFilterPoints = dict( self.getFilterPointsDict() )
+    theOtherObserverFilterPoints = dict( theOtherObserver.getFilterPointsDict() )
+  
+    theKeys = theObserverFilterPoints.keys()
+    theOtherKeys = theOtherObserverFilterPoints.keys()
+
+    if len( theKeys ) == len( theOtherKeys ):
+        
+        theKeys.sort()
+        theOtherKeys.sort()
+
+        for x in theKeys:
+          theFilterPoint = theObserverFilterPoints.get( x ) 
+          theOtherFilterPoint = theOtherObserverFilterPoints.get( x )
+
+          #print "DEBUG = " + theFilterPoint.getName() + str(theFilterPoint)
+          #print "DEBUG = " + theOtherFilterPoint.getName() + str(theOtherFilterPoint)
+        
+          #if not theFilterPoint.isequal( theOtherFilterPoint ):
+          #  returnFlag = False
+
+    else:
+      returnFlag = False      
+
+      
+ 
+    ############################################################
+    
+    #theFilterPoints = dict( self.getFilterPointsDict() )
+    #theOtherSessionProcesses = dict( theOtherDebugSession.getProcessesDict() )
+ 
  
     # June 9 - need to complete the isequal method!
     #if self.getFilterPoints() != theOtherObserver.getFilterPoints():
@@ -130,8 +176,9 @@ class Observer:
 
     #if self.getActionPoints() != theOtherObserver.getActionPoints():
     #  returnFlag = False    
-      
-    #if self.getAfterAction() != theOtherObserver.getAfterAction():
-    #  returnFlag = False    
+    
+    # This is not yet impplemented in the Observer data file  
+    # if self.getAfterAction() != theOtherObserver.getAfterAction():
+    #   returnFlag = False    
      
     return returnFlag

@@ -50,6 +50,7 @@ from ObserverElement import ObserverElement
 
 class ObserverPoints:
     type = 'default type'
+    name = 'default name'
     elements = []
     elementsDict = {}
 
@@ -60,6 +61,9 @@ class ObserverPoints:
     # getters and setters methods
     def setType ( self, value ):
         self.type = value
+  
+    def setName ( self, value ):
+        self.name = value
         
     def setElements (self, value):
         self.elements = value
@@ -69,18 +73,22 @@ class ObserverPoints:
       theElementNames = []
       theElementObjects = []
       for x in theElements:
-        print x.getName()
+        #print x.getName()
         theElementNames.append( x.getName() )
         theElementObjects.append( x )
       self.elementsDict = dict( zip ( theElementNames, theElementObjects ) )        
 
     def getType( self ):
         return self.type
+ 
+    def getName( self ):
+        return self.name
     
     def getElements (self):
         return self.elements
 
     def dump( self ):
+        print 'in ObserverPoints'
         print 'name=' + self.name
         print 'type=' + self.type
         for x in self.elements:

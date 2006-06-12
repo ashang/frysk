@@ -82,6 +82,7 @@ class ObserverElement:
         return self.Argument    
 
     def dump( self ):
+        print 'in element'
         print 'name=' + self.name
         print 'type=' + self.type
         print 'operand=' + self.operand
