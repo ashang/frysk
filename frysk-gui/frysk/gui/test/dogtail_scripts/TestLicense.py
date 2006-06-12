@@ -49,6 +49,7 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 # Imports
 from dogtail import tree
 from dogtail import predicate
+import sys
 
 # Set up for logging
 import dogtail.tc
@@ -70,7 +71,8 @@ class TestLicense (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
         # Start up Frysk 
-        self.frysk = startFrysk()
+        self.FryskBinary = sys.argv[1]
+        self.frysk = startFrysk(self.FryskBinary)
         
         # Probably temporary - during test development
         skipDruid(self.frysk)

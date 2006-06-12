@@ -82,16 +82,18 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
+        
         # Start up Frysk 
-        self.frysk = startFrysk()
+        self.FryskBinary = sys.argv[1]
+        self.frysk = startFrysk(self.FryskBinary)  
 
         # Probably temporary - during test development
         #skipDruid(self.frysk)
 
         # Load up some sample Observer objects         
         self.parser = xml.sax.make_parser(  )
-        handler = ObserverHandler.ObserverHandler(  )
-        self.parser.setContentHandler(handler)    
+        self.handler = ObserverHandler.ObserverHandler(  )
+        self.parser.setContentHandler(self.handler)    
               
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
@@ -100,11 +102,11 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[1])
+        self.parser.parse(sys.argv[2])
         #inputFile = os.environ.get('TestCreateObserversfromDataModel_FILE')
         #parser.parse(inputFile)
 
-        self.theObserver = handler.theObserver
+        self.theObserver = self.handler.theObserver
         self.theObserver.dump()
         theName = self.theObserver.getName()
         theType = self.theObserver.getType()
@@ -179,9 +181,14 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 tempString = getEventType (observerToCreate.getType())
                 selectedItem=comboMenu.child( name = tempString )
                 selectedItem.click()                      
+                                
                 okButton = observerDetails.button( 'OK' )
                 okButton.click()
-            except Error:
+
+                applyButton = customObservers.button ('Apply')
+                applyButton.click()
+
+            except:
                 self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )
             else:
                 pass
@@ -200,8 +207,12 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # be run before the update test 
 
         newlyCreatedObserverFile =  FRYSK_OBSERVER_FILES + self.theObserver.getName()
+
         self.parser.parse(newlyCreatedObserverFile)
         newlyCreatedObserver = self.handler.theObserver
+
+        newlyCreatedObserver.dump()
+        self.theObserver.dump()
 
         if self.theObserver.isequal (newlyCreatedObserver):
             pass
@@ -242,7 +253,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 observerInGui.actions['activate'].do()
                 observerInGui.grabFocus()
                 deleteButton = customObservers.button( 'Delete' )
-                deleteButton.click()
+                #deleteButton.click()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:

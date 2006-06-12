@@ -178,6 +178,10 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           # Temparary hack 
           if attributes['name'] == 'Log':
               self.tempObserverElement.setName('Log Generic Actions')
+          if attributes['name'] == 'Resume':
+              self.tempObserverElement.setName('Resume Generic Actions')
+
+
           self.tempObserverElement.setArgument(attributes['argument'])
           #print 'DEBUG - found an ActionPoint - arg = ' + attributes['argument']
           #self.tempObserverElement.dump()

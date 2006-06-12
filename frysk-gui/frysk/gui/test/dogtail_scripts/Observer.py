@@ -124,13 +124,14 @@ class Observer:
     if self.getType() != theOtherObserver.getType():
       returnFlag = False    
  
-    if self.getFilterPoints() != theOtherObserver.getFilterPoints():
-      returnFlag = False    
+    # June 9 - need to complete the isequal method!
+    #if self.getFilterPoints() != theOtherObserver.getFilterPoints():
+    #  returnFlag = False    
 
-    if self.getFilterPoints() != theOtherObserver.getFilterPoints():
-      returnFlag = False    
+    #if self.getActionPoints() != theOtherObserver.getActionPoints():
+    #  returnFlag = False    
       
-    if self.getAfterAction() != theOtherObserver.getAfterAction():
-      returnFlag = False    
+    #if self.getAfterAction() != theOtherObserver.getAfterAction():
+    #  returnFlag = False    
      
     return returnFlag

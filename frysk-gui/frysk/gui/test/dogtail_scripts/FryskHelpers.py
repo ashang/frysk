@@ -61,7 +61,7 @@ import time
 
 # Constants
 FRYSK_PROCESS_NAME = 'FryskGui'
-FRYSK_BINARY_NAME = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
+#FRYSK_BINARY_NAME = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
 
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
 FRYSK_APP_NAME = 'java-gnome'
@@ -163,7 +163,7 @@ def createProcessDict ( inputList ):
     return theDictionary
 
 # ---------------------
-def startFrysk ():
+def startFrysk ( FryskBinary ):
     """ Start up the Frysk GUI
         Function returns an object that points to the Frysk GUI
     """
@@ -186,7 +186,7 @@ def startFrysk ():
         print 'Frysk not running - ok to start test'
    
     # Start up Frysk 
-    run ( FRYSK_BINARY_NAME, appName=FRYSK_APP_NAME )
+    run ( FryskBinary, appName=FRYSK_APP_NAME )
     fryskObject = tree.root.application ( FRYSK_APP_NAME )
     return fryskObject
 

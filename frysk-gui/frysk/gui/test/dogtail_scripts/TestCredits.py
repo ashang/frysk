@@ -51,6 +51,7 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 # Imports
 from dogtail import tree
 from dogtail import predicate
+import sys
 
 # Set up for logging
 import dogtail.tc
@@ -68,8 +69,10 @@ class TestCredits (unittest.TestCase):
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
+        
         # Start up Frysk 
-        self.frysk = startFrysk()
+        self.FryskBinary = sys.argv[1]
+        self.frysk = startFrysk(self.FryskBinary)       
         
         # Temporary - for demo only
         #dialogToKill = self.frysk.child(roleName = 'dialog')

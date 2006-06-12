@@ -50,6 +50,7 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 # Imports
 from dogtail import tree
 from dogtail import predicate
+import sys
 
 # Set up for logging
 import dogtail.tc
@@ -71,8 +72,10 @@ class TestCreateObservers ( unittest.TestCase ):
 
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
+        
         # Start up Frysk 
-        self.frysk = startFrysk()
+        self.FryskBinary = sys.argv[1]
+        self.frysk = startFrysk(self.FryskBinary)  
 
         # Probably temporary - during test development
         #skipDruid(self.frysk)

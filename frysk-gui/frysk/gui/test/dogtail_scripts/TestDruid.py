@@ -85,8 +85,10 @@ class TestDruid ( unittest.TestCase ):
 
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
+         
         # Start up Frysk 
-        self.frysk = startFrysk()
+        self.FryskBinary = sys.argv[1]
+        self.frysk = startFrysk(self.FryskBinary)  
 
         # Load up some sample Observer objects 
         self.parser = xml.sax.make_parser(  )
@@ -100,7 +102,7 @@ class TestDruid ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[1])
+        self.parser.parse(sys.argv[2])
         #inputFile = os.environ.get('TestDruid_FILE')
         #self.parser.parse(inputFile)
 
