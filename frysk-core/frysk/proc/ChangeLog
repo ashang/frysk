@@ -3,6 +3,10 @@
 	* TestOffspringObserver.java (testCloneThenFork): Added
 	(testForkThenClone): Added
 	(tasksAddedCounter): Added back in counters for two layers of testing :)
+	(testCloneThenFork): Fixed problem with random failures. Error was that
+	TaskSet.toArray does not guarantee the order of the tasks is the order they
+	came in.
+	(testForkThenClone): Fixed ^
 
 2006-06-12  Adam Jocksch  <ajocksch@redhat.com>
 

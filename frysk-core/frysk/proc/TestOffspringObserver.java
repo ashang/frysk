@@ -99,25 +99,39 @@ public class TestOffspringObserver extends TestLib {
     	OffspringObserverTester observerTester = new OffspringObserverTester();
     	new OffspringObserver (proc, observerTester);
     
+    	proc.observableAttached.addObserver(new Observer() {
+    		public void update(Observable arg0, Object arg1) {
+    		    Manager.eventLoop.requestStop();
+    		}
+    	    });
+    	
+    	assertRunUntilStop ("running to attach");
+    	
     	//Clone a new task
     	ackDaemonProcess.addClone();
     	Task secondTask = ackDaemonProcess.findTaskUsingRefresh(false);  	
-    	
-    	//Fork the new task.
     	killDuringTearDown(secondTask.getTid());
+    	
+    	//in order to know exactly what tasks I'm looking for I'm going to
+    	//clear the tasksAdded set at every point. So first check that the
+    	//clone made it to the observer.
+    	Task[] tasksAdded = observerTester.tasksAdded.toArray();	
+    	assertEquals ("taskAddedCount", 1, observerTester.tasksAdded.size());
+    	observerTester.tasksAdded.clear();
+    	
+    	//Fork the new task. 	
     	ackDaemonProcess.addFork(secondTask.getTid());
     	
     	//Check that there is an existing task (the parent)
-    	assertEquals ("existingTasks", 1, observerTester.existingTasks.size());
+    	assertEquals ("existingTasks", 1, observerTester.existingTaskCounter);
     	
-    	//Check that there are two added tasks (the clone and the fork)
-    	assertEquals ("taskAddedCount", 2, observerTester.tasksAdded.size());
+    	//Check that there are 2 tasks added (the clone and the fork)
+    	assertEquals ("taskAddedCount", 2, observerTester.tasksAddedCounter);
     	
     	//check that the fork's parent is the clone.
-    	assertEquals("forksParent", observerTester.tasksAdded.toArray()[0].getProc(), 
-    			observerTester.tasksAdded.toArray()[1].getProc().getParent());
-    	
-    	//assertRunUntilStop ("running to attach");
+    	assertEquals("forksParent", tasksAdded[0].getProc(), 
+    			observerTester.tasksAdded.toArray()[0].getProc().getParent());
+   
     }
 	
     /**
@@ -135,28 +149,38 @@ public class TestOffspringObserver extends TestLib {
     	OffspringObserverTester observerTester = new OffspringObserverTester();
     	new OffspringObserver (proc, observerTester);
     	
+    	proc.observableAttached.addObserver(new Observer() {
+    		public void update(Observable arg0, Object arg1) {
+    		    Manager.eventLoop.requestStop();
+    		}
+    	    });
+    	
+    	assertRunUntilStop ("running to attach");
+    	
     	//Fork a new process
     	ackDaemonProcess.addFork();
-    	
-    	//weird bug if I don't check before hand I get an index out of bounds error.
-    	//assertEquals ("taskAddedCount", 1, observerTester.tasksAdded.size());
+    		
+    	//in order to know exactly what tasks I'm looking for I'm going to
+    	//clear the tasksAdded set at every point. So first check that the
+    	//fork made it to the observer.
+    	Task[] addedTasks = observerTester.tasksAdded.toArray();
+    	assertEquals ("taskAddedCount", 1, observerTester.tasksAdded.size());   	
+    	observerTester.tasksAdded.clear();
     	
     	//Clone on the new process
-    	Task[] addedTasks = observerTester.tasksAdded.toArray();
     	ackDaemonProcess.addClone(addedTasks[0].getTid());
     	
     	//check that there is 1 existing task (the parent)
     	assertEquals("existingTasks", 1, observerTester.existingTaskCounter);
     	
-    	//check that there are 2 added tasks, the fork and clone.
-    	assertEquals("tasksAdded", 2, observerTester.tasksAdded.size());
+    	//check that there are 2 tasks added (the fork and the clone)
+    	assertEquals("tasksAdded", 2, observerTester.tasksAddedCounter);
     	
     	
-    	//check that the clone and the forks have the same process.
-    	assertEquals("cloneparent", observerTester.tasksAdded.toArray()[0].getProc(), 
-    			observerTester.tasksAdded.toArray()[1].getProc());
+    	//check that the clone and the fork have the same process.
+    	assertEquals("cloneparent", addedTasks[0].getProc(), 
+    			observerTester.tasksAdded.toArray()[0].getProc());
     	
-    	//assertRunUntilStop("running to attach");
     }
     
     
