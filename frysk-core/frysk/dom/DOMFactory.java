@@ -29,7 +29,8 @@ public class DOMFactory {
 		}
 		else{
 			// create a new dom and associate it with the given task
-			dom = new DOMFrysk(task.getName());
+			String taskName = task.getName();
+			dom = new DOMFrysk("Task"+taskName.substring(0, taskName.indexOf(" ")));
 			dom.addImage(task.getName(), path, path);
 		}
 		
@@ -52,7 +53,7 @@ public class DOMFactory {
 				while(reader.ready()){
 					String text = reader.readLine();
 					// XXX: detect executable lines?
-					DOMLine l = new DOMLine(lineNum++, text, offset, false, false, Long.parseLong("deadbeef", 16));
+					DOMLine l = new DOMLine(lineNum++, text+"\n", offset, false, false, Long.parseLong("deadbeef", 16));
 					source.addLine(l);
 					
 					offset += text.length();

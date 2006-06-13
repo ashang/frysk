@@ -1,3 +1,9 @@
+2006-06-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFactory.java (createDOM): No longer uses the whole task name as
+	the name for the DOM since it contains invalid characters, also adds
+	newlines to the end of the lines that are parsed.
+
 2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMFactory.java: Created.
