@@ -45,9 +45,9 @@ import java.util.HashMap;
 import lib.dw.DwflLine;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -93,29 +93,55 @@ public class SourceWindowFactory {
 	 * @param task The Task to open a SourceWindow for.
 	 */
 	public static void createSourceWindow(Task task){
+
+		SourceWinBlocker blocker = new SourceWinBlocker();
+		blocker.myTask = task;
+		
+		System.out.println("Adding event to core");
+		
+		task.requestAddAttachedObserver(blocker);
+	}
+	
+	private static class SourceWinBlocker implements TaskObserver.Attached{
+
+		private Task myTask;
+		
+		public Action updateAttached(Task task) {
+			// TODO Auto-generated method stub
+			System.out.println("blocking");
+			CustomEvents.addEvent(new Runnable() {
+			
+				public void run() {
+					finishSourceWin(myTask);
+				}
+			
+			});
+			
+			return Action.BLOCK;
+		}
+
+		public void addedTo(Object observable) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void addFailed(Object observable, Throwable w) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void deletedFrom(Object observable) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	
+	private static void finishSourceWin(Task task){
+		System.out.println("finishing source win initialization");
+		
 		SourceWindow s = null;
 
-		task.requestAddAttachedObserver(new TaskObserver.Attached() {
-			
-			public void deletedFrom(Object observable) {
-				// TODO Auto-generated method stub
-			}
-		
-			public void addFailed(Object observable, Throwable w) {
-				// TODO Auto-generated method stub
-			}
-		
-			public void addedTo(Object observable) {
-				// TODO Auto-generated method stub
-			}
-		
-			public Action updateAttached(Task task) {
-				// TODO Auto-generated method stub
-				return Action.BLOCK;
-			}
-		
-		});
-		
 		if(map.containsKey(task)){
 			// Do something here to revive the existing window
 			s = (SourceWindow) map.get(task);
@@ -158,7 +184,7 @@ public class SourceWindowFactory {
 				
 //			printDOM(dom);
 		
-			DOMFunction f = new DOMFunction(new Element("blah"));
+			DOMFunction f = DOMFunction.createDOMFunction(dom.getImage(task.getName()), "main", "looper.c", 3, 3, 24, 28);
 			
 			StackLevel stack1 = new StackLevel(f, line.getLineNum());
 			

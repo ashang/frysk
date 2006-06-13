@@ -1,3 +1,10 @@
+2006-06-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactory.java (SourceWindowBlocker): Added.
+	(createSourceWin): Now pushes event onto the core event loop and
+	exits,
+	(finishSourceWin): Added, is called after task is  blocked.
+
 2006-06-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceBuffer.java (loadFile): No longer tries to parse DOM, merely

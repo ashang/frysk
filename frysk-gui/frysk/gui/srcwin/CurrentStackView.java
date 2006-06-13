@@ -117,8 +117,8 @@ public class CurrentStackView extends TreeView implements TreeSelectionListener 
 						.getData().getFileName()+ ": " + topLevel.getFunc().getName()
 						+ "  (i)");
 			else
-				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel
-						.getData().getFileName()+ ": " + topLevel.getFunc().getName());
+				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel.getData().getFileName() +
+						": " + topLevel.getFunc().getName());
 				
 			listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
 
