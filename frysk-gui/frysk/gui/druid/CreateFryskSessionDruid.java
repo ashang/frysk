@@ -43,7 +43,6 @@ import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.ComboBox;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Notebook;
@@ -283,7 +282,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		
 		Button addProcessGroupButton;
 		Button removeProcessGroupButton;
-		ComboBox hostSelection;
+		
 		
 		// Page 1 of the Druid. Initial Process Selection.
 		
@@ -295,7 +294,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		addedProcsTreeView = new ListView(glade.getWidget("sessionDruid_addedProcsTreeView").getHandle());
 		addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
 		
-		hostSelection = (ComboBox) glade.getWidget("sessionDruid_hostComboBox");
+		
 		this.setUpCurrentPage();
 		
 		nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
@@ -333,7 +332,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				}
 			}
 		});
-		hostSelection.setActive(0);	
+		
 	}
 	
 	private void getTagsetObserverControls(LibGlade glade)

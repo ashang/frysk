@@ -1,5 +1,9 @@
 2006-06-12  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/frysk_create_session_druid.glade: Added spacing consistent
+	with HIG. Removed Host button.
+	* druid/CreateFryskSessionDruid.java: Removed host based java controls.
+
 	* glade/frysk_session_manager.glade: Added spacing. Added
 	proper X-Align of single process launch button. Renamed
 	Title.
