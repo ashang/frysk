@@ -1,3 +1,9 @@
+2006-06-13  Nurdin Premji  <npremji@redhat.com>
+
+	* TestOffspringObserver.java (testCloneThenFork): Added
+	(testForkThenClone): Added
+	(tasksAddedCounter): Added back in counters for two layers of testing :)
+
 2006-06-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Proc.java (getMainTask): Added.

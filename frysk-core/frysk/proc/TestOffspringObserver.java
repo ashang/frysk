@@ -70,43 +70,126 @@ public class TestOffspringObserver extends TestLib {
 	    });
 	
 	assertRunUntilStop ("running to attach");
+	
+	//Ensure there are no calls to taskAdded.
 	assertEquals ("taskAddedCount", 0, observerTester.tasksAdded.size());
+	
+	//Ensure there are no calls to taskRemoved.
 	assertEquals ("taskRemovedCount", 0, observerTester.tasksRemoved.size());
+	
+	//Ensure there are 4 independent calls to existingTask.
 	assertEquals ("existingTaskCount", 4, observerTester.existingTasks.size());
+	
+	//Ensure there are 4 total calls to existingTask.
+	assertEquals ("existingTaskCounter", 4, observerTester.existingTaskCounter);
     }
     
     /**
      * Check that we can monitor a clone that forks.
      *
      */
-    /*public void testCloneAndFork()
+    public void testCloneThenFork()
     {
     	
-    }*/
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	//Add Observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    
+    	//Clone a new task
+    	ackDaemonProcess.addClone();
+    	Task secondTask = ackDaemonProcess.findTaskUsingRefresh(false);  	
+    	
+    	//Fork the new task.
+    	killDuringTearDown(secondTask.getTid());
+    	ackDaemonProcess.addFork(secondTask.getTid());
+    	
+    	//Check that there is an existing task (the parent)
+    	assertEquals ("existingTasks", 1, observerTester.existingTasks.size());
+    	
+    	//Check that there are two added tasks (the clone and the fork)
+    	assertEquals ("taskAddedCount", 2, observerTester.tasksAdded.size());
+    	
+    	//check that the fork's parent is the clone.
+    	assertEquals("forksParent", observerTester.tasksAdded.toArray()[0].getProc(), 
+    			observerTester.tasksAdded.toArray()[1].getProc().getParent());
+    	
+    	//assertRunUntilStop ("running to attach");
+    }
 	
+    /**
+     * Check that we can monitor a fork that clones.
+     */
+    public void testForkThenClone()
+    {
+    	
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	
+    	//Add observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    	
+    	//Fork a new process
+    	ackDaemonProcess.addFork();
+    	
+    	//weird bug if I don't check before hand I get an index out of bounds error.
+    	//assertEquals ("taskAddedCount", 1, observerTester.tasksAdded.size());
+    	
+    	//Clone on the new process
+    	Task[] addedTasks = observerTester.tasksAdded.toArray();
+    	ackDaemonProcess.addClone(addedTasks[0].getTid());
+    	
+    	//check that there is 1 existing task (the parent)
+    	assertEquals("existingTasks", 1, observerTester.existingTaskCounter);
+    	
+    	//check that there are 2 added tasks, the fork and clone.
+    	assertEquals("tasksAdded", 2, observerTester.tasksAdded.size());
+    	
+    	
+    	//check that the clone and the forks have the same process.
+    	assertEquals("cloneparent", observerTester.tasksAdded.toArray()[0].getProc(), 
+    			observerTester.tasksAdded.toArray()[1].getProc());
+    	
+    	//assertRunUntilStop("running to attach");
+    }
+    
+    
     class OffspringObserverTester
 	implements ProcObserver.Offspring
     {
 	
-	
 	TaskSet tasksAdded = new TaskSet();
 	TaskSet tasksRemoved = new TaskSet();
 	TaskSet existingTasks = new TaskSet();
+	int existingTaskCounter;
+	int tasksAddedCounter;
+	int tasksRemovedCounter;
 		
 	public void taskAdded(Task task)
 	{
+		logger.log(Level.FINE, "OffspringObserverTester.taskAdded() task: {0}\n", task);
 	    this.tasksAdded.add(task);
+	    tasksAddedCounter++;
 	}
 
 	public void taskRemoved(Task task)
 	{
+		logger.log(Level.FINE, "OffspringObserverTester.taskRemoved() task: {0}\n", task);
 	    this.tasksRemoved.add(task);
+	    tasksRemovedCounter++;
 	}
 
 	public void existingTask(Task task)
 	{
 		logger.log(Level.FINE, "OffspringObserverTester.existingTask() task: {0}\n", task);
 	    this.existingTasks.add(task);
+	    existingTaskCounter++;
 	}
 
 	public void addedTo(Object observable)

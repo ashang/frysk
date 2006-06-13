@@ -4,7 +4,7 @@
 	compile
 	depcomp
 
-2006-06-09  npremji  <npremji@to-rhaps5.toronto.redhat.com>
+2006-06-09  Nurdin Premji  <npremji@redhat.com>
 
 	* .externalToolBuilders/Create Bin dir.launch: Fixed
 	* .externalToolBuilders/Cleaner.launch: Fixed
