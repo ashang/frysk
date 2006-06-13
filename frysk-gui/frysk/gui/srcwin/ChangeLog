@@ -1,5 +1,11 @@
 2006-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (createSourceWin): Stores a reference to
+	the blocker for the task in a hash map so we can detatch from it when
+	we're done.
+	(finishSourceWin): If no DOM can be created, now tells task to resume
+	execution.
+
 	* SourceWindowFactory.java (finishSourceWin): Now uses the parent proc
 	for a key in the hashmap rather than the task itself.
 

@@ -72,6 +72,7 @@ public class SourceWindowFactory {
 	private static String[] gladePaths;
 
 	private static HashMap map;
+	private static HashMap blockerMap;
 	
 	/**
 	 * Sets the paths to look in to find the .glade files needed for the gui
@@ -83,6 +84,7 @@ public class SourceWindowFactory {
 	
 	static{
 		map = new HashMap();
+		blockerMap = new HashMap();
 	}
 	
 	/**
@@ -98,7 +100,7 @@ public class SourceWindowFactory {
 		SourceWinBlocker blocker = new SourceWinBlocker();
 		blocker.myTask = task;
 		
-		System.out.println("Adding event to core");
+		blockerMap.put(task, blocker);
 		
 		task.requestAddAttachedObserver(blocker);
 	}
@@ -153,6 +155,16 @@ public class SourceWindowFactory {
 		else{
 			
 			DOMFrysk dom = DOMFactory.createDOM(task);
+			
+			// If we don't have a dom, tell the task to continue
+			if(dom == null){
+				if(!blockerMap.containsKey(task))
+					throw new RuntimeException("No blocker found for the task we're trying to continue!");
+				
+				TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
+				task.requestDeleteAttachedObserver(o);
+				return;
+			}
 			
 			DwflLine line = task.getDwflLineXXX();
 				
