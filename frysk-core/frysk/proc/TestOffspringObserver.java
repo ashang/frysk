@@ -63,13 +63,7 @@ public class TestOffspringObserver extends TestLib {
 	OffspringObserverTester observerTester = new OffspringObserverTester();
 	new OffspringObserver (proc, observerTester);
 	
-	proc.observableAttached.addObserver(new Observer() {
-		public void update(Observable arg0, Object arg1) {
-		    Manager.eventLoop.requestStop();
-		}
-	    });
-	
-	assertRunUntilStop ("running to attach");
+	addObserverToProcRequestStop(proc);
 	
 	//Ensure there are no calls to taskAdded.
 	assertEquals ("taskAddedCount", 0, observerTester.tasksAdded.size());
@@ -99,13 +93,7 @@ public class TestOffspringObserver extends TestLib {
     	OffspringObserverTester observerTester = new OffspringObserverTester();
     	new OffspringObserver (proc, observerTester);
     
-    	proc.observableAttached.addObserver(new Observer() {
-    		public void update(Observable arg0, Object arg1) {
-    		    Manager.eventLoop.requestStop();
-    		}
-    	    });
-    	
-    	assertRunUntilStop ("running to attach");
+    	addObserverToProcRequestStop(proc);
     	
     	//Clone a new task
     	ackDaemonProcess.addClone();
@@ -149,13 +137,7 @@ public class TestOffspringObserver extends TestLib {
     	OffspringObserverTester observerTester = new OffspringObserverTester();
     	new OffspringObserver (proc, observerTester);
     	
-    	proc.observableAttached.addObserver(new Observer() {
-    		public void update(Observable arg0, Object arg1) {
-    		    Manager.eventLoop.requestStop();
-    		}
-    	    });
-    	
-    	assertRunUntilStop ("running to attach");
+    	addObserverToProcRequestStop(proc);
     	
     	//Fork a new process
     	ackDaemonProcess.addFork();
@@ -183,6 +165,17 @@ public class TestOffspringObserver extends TestLib {
     	
     }
     
+    //Add an observerto proc that just requests the event loop to stop
+    public void addObserverToProcRequestStop(Proc proc)
+    {
+    	proc.observableAttached.addObserver(new Observer() {
+    		public void update(Observable arg0, Object arg1) {
+    		    Manager.eventLoop.requestStop();
+    		}
+    	    });
+    	
+    	assertRunUntilStop ("running to attach");
+    }
     
     class OffspringObserverTester
 	implements ProcObserver.Offspring

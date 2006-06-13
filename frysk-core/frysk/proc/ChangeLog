@@ -7,6 +7,7 @@
 	TaskSet.toArray does not guarantee the order of the tasks is the order they
 	came in.
 	(testForkThenClone): Fixed ^
+	(addObserverToProcRequestStop): Added, refactored since its used by a bunch of tests.
 
 2006-06-12  Adam Jocksch  <ajocksch@redhat.com>
 
