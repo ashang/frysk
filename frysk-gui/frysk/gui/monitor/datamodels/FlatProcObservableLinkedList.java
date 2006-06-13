@@ -39,7 +39,7 @@
 
 package frysk.gui.monitor.datamodels;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -58,12 +58,12 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	private ProcCreatedObserver procCreatedObserver;
 	private ProcDestroyedObserver procDestroyedObserver;
 
-	HashMap hashMap;
+	Hashtable hashMap;
 	
 	public FlatProcObservableLinkedList(){
 		super();
 		
-		this.hashMap = new HashMap();
+		this.hashMap = new Hashtable();
 		
 		this.procCreatedObserver = new ProcCreatedObserver();
 		this.procDestroyedObserver = new ProcDestroyedObserver();
