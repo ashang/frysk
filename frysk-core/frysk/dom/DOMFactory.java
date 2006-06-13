@@ -20,6 +20,8 @@ public class DOMFactory {
 	public static DOMFrysk createDOM(Task task){
 		DOMFrysk dom;
 		DwflLine line = task.getDwflLineXXX();
+		if(line == null)
+			return null;
 		String fullPath = line.getSourceFile();
 		String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
 		String path = fullPath.substring(0, fullPath.lastIndexOf("/"));

@@ -1,5 +1,7 @@
 2006-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* DOMFactory.java (createDOM): Returns null if no DwflLine found.
+
 	* DOMFactory.java (createDOM): Now uses the proc as the key for the
 	hashmap rather than the task.
 
