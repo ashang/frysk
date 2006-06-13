@@ -130,7 +130,7 @@ class Observer:
   def isequal(self, theOtherObserver):
     returnFlag = True
  
-    print self.getName() + theOtherObserver.getName()
+    #print self.getName() + theOtherObserver.getName()
 
     if self.getName() != theOtherObserver.getName():
       returnFlag = False
@@ -156,8 +156,8 @@ class Observer:
           #print "DEBUG = " + theFilterPoint.getName() + str(theFilterPoint)
           #print "DEBUG = " + theOtherFilterPoint.getName() + str(theOtherFilterPoint)
         
-          #if not theFilterPoint.isequal( theOtherFilterPoint ):
-          #  returnFlag = False
+          if not theFilterPoint.isequal( theOtherFilterPoint ):
+              returnFlag = False
 
     else:
       returnFlag = False      

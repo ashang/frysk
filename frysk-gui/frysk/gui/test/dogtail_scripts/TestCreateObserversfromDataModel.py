@@ -115,23 +115,19 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
         # June 12 - Assume one ActionPoint with name == "Generic Names" - the elements
         # under this ActionPoint - "theActions" are where the actions are defined
-        #
         # This is very incomplete! The test script needs to be updated to match 
         # the new state of the code.
         topLevelActionPoints = self.theObserver.getActionPoints()
-        for x in topLevelActionPoints:
-            #print str(x)
-            theActions = x.getElements()
-            for tempAction in theActions:
-                theActionName = tempAction.getName()
-                #print "DEBUG - " + theActionName
-    
+        genericAction = topLevelActionPoints[0]
+
         x = Observer()
         x.setName ( theName )
-        x.setLoggingAction ( theActionName )
+        # June 12 - setLoggingAction is a temporary method - there should be a list of actions
+        #x.setLoggingAction ( theActionName )
         x.setType (theType)
         
-        # Create a List object to hold the Observer objects
+        # Create a List object to hold the Observer objects - for now, the GUI persists only
+        # one Observer per Observer file - but this may change, so we'll retain the matrix
         self.theMatrix = [x]
         self.matrixLength = len( self.theMatrix )
 
@@ -171,15 +167,6 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             observerPanel = observerDetails.child( roleName='panel' )
             combo =  observerPanel.child( roleName='combo box' )
             comboMenu = combo.child( roleName='menu' )
-
-            # Find and set the logging action combo box - again - this is the only combo
-            # box that we can access until Frysk displays more accessibility infomation
-            #
-            # June 12 - the GUI code has changed - the test script needs to also change to match.
-            newLoggingAction = observerToCreate.getLoggingAction()
-            selectedItem=comboMenu.child( name=newLoggingAction )
-            selectedItem.click()
-            
             tempString = getEventType (observerToCreate.getType())           
               
             try:
@@ -194,10 +181,38 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 tempString = getEventType (observerToCreate.getType())
                 selectedItem=comboMenu.child( name = tempString )
                 selectedItem.click() 
-                                
+
+                # At this point, we want to access the multiple actions (ActionPoints)
+                # defined in the Observer. The GUI elements to support the definition of
+                # more than one ActionPoint are generated at runtime, and do not have
+                # AT data names, however, so we cannot access them by name. We have to 
+                # deal with their order in the list[] of objects seen by Dogtail.
+                #
+                # In the code below, we always want the first comboBox and the 2nd button
+                # (this button is the '+' button) under the 'observerActionsTable' GUI
+                # element. This will be a real problem if the order of the elements
+                # as generated/displayed changes.
+
+                theActions = genericAction.getElements()
+                for tempAction in theActions:
+                    theActionName = tempAction.getName()
+                    observerActionsTable = observerPanel.child (name = 'observerActionsTable')
+                    # comboBox that lists the action types - the first one in the list[]
+                    theComboBoxes = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
+                    comboBox = theComboBoxes[0]
+                    # Select the action
+                    actionItem = comboBox.menuItem (theActionName)   #  newLoggingAction)
+                    actionItem.click()
+                    # The '+' and '-' buttons to enable adding/substracting action points
+                    theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
+                    # button [1] is the '+' button
+                    theButtons[1].click()
+
+                # Save the new Observer
                 okButton = observerDetails.button( 'OK' )
                 okButton.click()
 
+                # This button showed up on 20060609
                 applyButton = customObservers.button ('Apply')
                 applyButton.click()
 
@@ -220,7 +235,6 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # matches the test input - it's not ideal to put this into the setup method - but it has to
         # be run before the update test 
         newlyCreatedObserverFile =  FRYSK_OBSERVER_FILES + self.theObserver.getName()
-
         self.parser.parse(newlyCreatedObserverFile)
         newlyCreatedObserver = self.handler.theObserver
 

@@ -78,6 +78,9 @@ class ObserverPoints:
         theElementObjects.append( x )
       self.elementsDict = dict( zip ( theElementNames, theElementObjects ) )        
 
+    def getElementsDict (self):
+        return self.elementsDict
+
     def getType( self ):
         return self.type
  
@@ -99,7 +102,7 @@ class ObserverPoints:
     def isequal ( self, theOtherPoints ):
       returnFlag = True
   
-      if self.getType() != theOtherElement.getType():
+      if self.getType() != theOtherPoints.getType():
           returnFlag = False
           
       theElements = dict( self.getElementsDict() )
