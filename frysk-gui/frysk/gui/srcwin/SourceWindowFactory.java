@@ -55,6 +55,7 @@ import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.proc.Action;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
@@ -142,9 +143,11 @@ public class SourceWindowFactory {
 		
 		SourceWindow s = null;
 
-		if(map.containsKey(task)){
+		Proc proc = task.getProc();
+		
+		if(map.containsKey(proc)){
 			// Do something here to revive the existing window
-			s = (SourceWindow) map.get(task);
+			s = (SourceWindow) map.get(proc);
 			s.grabFocus();
 		}
 		else{
@@ -195,7 +198,7 @@ public class SourceWindowFactory {
 			s.addListener(new SourceWinListener());
 				
 			// Store the reference to the source window
-			map.put(task, s);
+			map.put(proc, s);
 		}
 	}
 	

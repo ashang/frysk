@@ -1,5 +1,8 @@
 2006-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWin): Now uses the parent proc
+	for a key in the hashmap rather than the task itself.
+
 	* SourceWindowFactory.java (SourceWindowBlocker): Added.
 	(createSourceWin): Now pushes event onto the core event loop and
 	exits,
