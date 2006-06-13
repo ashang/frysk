@@ -40,6 +40,13 @@
 include common/Makefile.rules
 include Makefile.gen
 
+EXTRA_DIST += \
+	frysk/bindir/ChangeLog \
+	frysk/gui/ChangeLog \
+	frysk/gui/common/ChangeLog \
+	frysk/gui/srcwin/ChangeLog \
+	frysk/gui/monitor/ChangeLog
+
 GEN_CLASSPATH += $(top_builddir)/../frysk-gtk/frysk-gtk.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-core/frysk-core.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-sys/frysk-sys.jar

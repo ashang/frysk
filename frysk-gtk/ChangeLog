@@ -1,3 +1,8 @@
+2006-06-13  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (EXTRA_DIST): Add EggTrayIcon/ChangeLog and
+	org/gnu/gtk/frysk/ChangeLog.
+
 2006-06-09  Nurdin Premji  <npremji@redhat.com>
 
 	* .cvsignore: Ignoring

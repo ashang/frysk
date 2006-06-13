@@ -42,6 +42,9 @@ include Makefile.gen
 
 SUBDIRS = tlwidgets tests
 
+EXTRA_DIST += EggTrayIcon/ChangeLog org/gnu/gtk/frysk/ChangeLog
+
+
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jargs.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar

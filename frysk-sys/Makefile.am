@@ -39,6 +39,8 @@
 
 include common/Makefile.rules
 include Makefile.gen
+
+EXTRA_DIST += frysk/sys/ChangeLog frysk/sys/proc/ChangeLog
 
 AM_CXXFLAGS += -I$(srcdir)/../frysk-imports/include
 

@@ -40,6 +40,18 @@
 
 include common/Makefile.rules
 include Makefile.gen
+
+EXTRA_DIST += \
+	prog/ChangeLog \
+	frysk/cli/ChangeLog \
+	frysk/event/ChangeLog \
+	frysk/proc/ChangeLog \
+	frysk/pkglibexecdir/ChangeLog \
+	frysk/model/ChangeLog \
+	frysk/lang/ChangeLog \
+	frysk/dom/ChangeLog \
+	frysk/expr/ChangeLog
+
 
 ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
 
@@ -86,7 +98,7 @@ frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_chi
 	$(COMPILE) -o $@ -c $^
 
 MOSTLYCLEANFILES += frysk/pkglibexecdir/funit-child-alias.$(OBJEXT)
-EXTRA_DIST +=  	$(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
+EXTRA_DIST += $(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
 EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/util.h
 
 # Try running funit from the install directory; ignore things like

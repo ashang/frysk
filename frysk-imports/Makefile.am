@@ -48,6 +48,14 @@ SUBDIRS = \
 	junit \
 	elfutils
 
+EXTRA_DIST += \
+	frysk/ChangeLog \
+	frysk/junit/ChangeLog \
+	inua/ChangeLog \
+	lib/dw/ChangeLog \
+	lib/elf/ChangeLog \
+	lib/opcodes/ChangeLog
+
 GEN_CLASSPATH += jargs.jar
 GEN_CLASSPATH += junit.jar
 GEN_GCJ_LDADD += libfrysk-jargs.a
