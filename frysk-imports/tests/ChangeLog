@@ -1,3 +1,7 @@
+2006-06-13  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (noinst_PROGRAMS): Do not list frysk2137/Gcov.sh.
+
 2006-06-10  Andrew Cagney  <cagney@redhat.com>
 
 	* frysk2670/Action.java: Move ...

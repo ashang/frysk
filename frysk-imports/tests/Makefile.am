@@ -207,7 +207,7 @@ frysk2488/gcj.sh: $(frysk2488_FILES)
 	chmod a+x $@.tmp
 	mv $@.tmp $@
 
-noinst_PROGRAMS += frysk2137/Gcov frysk2137/Gcov.sh
+noinst_PROGRAMS += frysk2137/Gcov
 frysk2137_Gcov_SOURCES = frysk2137/Gcov.java
 frysk2137_Gcov_GCJFLAGS = --coverage
 frysk2137_Gcov_LDFLAGS = --main=frysk2137.Gcov --coverage
