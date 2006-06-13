@@ -10,6 +10,7 @@ import java.util.HashMap;
 import lib.dw.DwflLine;
 
 import frysk.dom.cparser.CDTParser;
+import frysk.proc.Proc;
 import frysk.proc.Task;
 
 public class DOMFactory {
@@ -23,9 +24,11 @@ public class DOMFactory {
 		String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
 		String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
 		
-		if(hashmap.containsKey(task)){
+		Proc proc = task.getProc();
+		
+		if(hashmap.containsKey(proc)){
 			// retrieve the previously created dom
-			dom = (DOMFrysk) hashmap.get(task);
+			dom = (DOMFrysk) hashmap.get(proc);
 		}
 		else{
 			// create a new dom and associate it with the given task
@@ -77,6 +80,8 @@ public class DOMFactory {
 				//XXX: bork?
 			}
 		}
+		
+		hashmap.put(proc, dom);
 		
 		return dom;
 	}
