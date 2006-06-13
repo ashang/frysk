@@ -1,5 +1,11 @@
 2006-06-12  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/frysk_session_manager.glade: Added spacing. Added
+	proper X-Align of single process launch button. Renamed
+	Title.
+
+2006-06-12  Phil Muldoon  <pmuldoon@redhat.com>
+
 	* SessionManagerGui.java (getDebugSingleProcess): Added.
 	* glade/frysk_session_manager.glade: Added launch running process
 	to source window button.
