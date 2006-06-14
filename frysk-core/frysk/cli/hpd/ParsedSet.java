@@ -36,110 +36,66 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
 package frysk.cli.hpd;
 
-import java.text.ParseException;
-import junit.framework.TestCase;
+import java.lang.IllegalArgumentException;
 
-public class TestSetParser extends TestCase
+/**
+ * Contains information about three types of set notations: regular hpd, named set, exec.
+ * Returned by SetNotationParse.parse()
+ */
+class ParsedSet
 {
-	private String result;
-	private SetNotationParser pr;
-	private ParseTreeNode[] root;
-	private	ParsedSet parsed;
+	public static int TYPE_HPD = 0;		//the hpd *.3, 1:2.3.... notation
+	public static int TYPE_NAMED = 1;	//named set
+	public static int TYPE_EXEC = 2;	//by executable name
 
-	protected void setUp()
+	int type = 0;
+
+	String name = ""; //name of set or name of exec (depending on type)
+
+	ParseTreeNode[] nodes = null;
+	boolean isStatic = false;
+
+	/**
+	 * Constructor for TYPE_NAMED and TYPE_EXEC set notation
+	 */
+	public ParsedSet(int type, String name)
 	{
-		result = new String();
-		pr = new SetNotationParser();
+		if (type < 0 || type > 2)
+			throw new IllegalArgumentException("Unrecognized type in ParsedNotation.");
+
+		this.type = type;
+		this.name = name;
 	}
 
-	public void testReg()
+	/**
+	 * Constructor for TYPE_HPD set notation
+	 */
+	public ParsedSet(ParseTreeNode[] nodes, boolean isStatic)
 	{
-		result = "";
-		String temp = "";
-
-		try 
-		{
-			parsed = pr.parse("[!3.2:4, 2.3, 3:4.5]");
-			root = parsed.getParseTreeNodes();
-
-			for (int i = 0; i < root.length; i++)
-			{
-				walkTree(root[i]);
-				temp += (result + " ");
-				result = "";
-			}
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("3:3.2:4 2:2.3:3 3:4.5:5", temp.trim());
+		this.nodes = nodes;
+		this.isStatic = isStatic;
 	}
 
-	public void testRange()
+	public int getType()
 	{
-		result = "";
-		try 
-		{
-			parsed = pr.parse("[! 2.5:3.*]");
-			assertEquals(true, parsed.isStatic());
-			root = parsed.getParseTreeNodes();
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("Error", result);
-
-		result = "";
-		try 
-		{
-			parsed = pr.parse("[2.*:3.*]");
-			root = parsed.getParseTreeNodes();
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-		assertEquals("2.-1:3.-1", result);
-	
-		result = "";
-		try 
-		{
-			parsed = pr.parse("[*.5:3.*]");
-			root = parsed.getParseTreeNodes();
-			walkTree(root[0]);
-		}
-		catch (ParseException e)
-		{
-			result = "Error";
-		}
-
-		assertEquals("Error", result);
+		return type;
 	}
 
-	
-	private void walkTree(ParseTreeNode node)
+	public String getName()
 	{
-		if (node.getLeft() != null)
-			walkTree(node.getLeft());
+		return name;
+	}
 
-		if (node.getType() == ParseTreeNode.TYPE_RANGE)
-			result += (":");
-		else if (node.getType() == ParseTreeNode.TYPE_REG)
-		{
-			if (node.isLeaf())
-				result += (node.getID());
-			else
-				result += (".");
-		}
+	public ParseTreeNode[] getParseTreeNodes()
+	{
+		return nodes;
+	}
 
-		if (node.getRight() != null)
-			walkTree(node.getRight());
+	public boolean isStatic()
+	{
+		return isStatic;
 	}
 }

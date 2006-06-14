@@ -58,20 +58,38 @@ class SetNotationParser
 	 * @param set The string notation of the set to parse, should include brackets.
 	 * @return An array of ParseTreeNode objects, that look like cli/hpd/doc-files/parsetree.png
 	 */
-	public ParseTreeNode[] parse(String set) throws ParseException
+	public ParsedSet parse(String set) throws ParseException
 	{
-		Vector root = new Vector();
+		ParsedSet result;
+		set = set.replaceAll(" +", "");
+		String setnobr = set.substring(1,set.length()-1); // the set with brackets removed
 
-		notation = set;
-		curToken = 0;
-		tokenize();
+		if (setnobr.matches("\\w*"))
+		{
+			result = new ParsedSet(ParsedSet.TYPE_NAMED, setnobr);
+		}
+		else if (set.matches("exec(\\w*)"))
+		{
+			result = new ParsedSet(ParsedSet.TYPE_EXEC, setnobr.substring(5, setnobr.length()-1));
+		}
+		else
+		{
 
-		S_1(root); //call first production
+			Vector root = new Vector();
 
-		return (ParseTreeNode[]) root.toArray(new ParseTreeNode[root.size()]);
+			notation = set;
+			curToken = 0;
+			tokenize();
+
+			S_1(root); //call first production
+
+			result = new ParsedSet( (ParseTreeNode[]) root.toArray(new ParseTreeNode[0]), setIsStatic(set));
+		}
+
+		return result;
 	}
 
-	public static boolean setIsStatic(String set)
+	private static boolean setIsStatic(String set)
 	{
 		set = set.trim();
 		set = set.replaceAll(" *","");

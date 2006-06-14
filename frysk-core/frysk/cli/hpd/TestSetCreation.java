@@ -69,8 +69,6 @@ public class TestSetCreation extends TestCase
 		temp = allset.addProc(tempProc);
 		allset.addTask(new DummyTask(tempProc), temp);
 		allset.addTask(new DummyTask(tempProc), temp);
-
-
 	}
 
 	public void testAllSet()
@@ -99,8 +97,8 @@ public class TestSetCreation extends TestCase
 
 		try
 		{
-			ParseTreeNode[] parsed = parser.parse("[0.4:0.5, 1.1:2.4, *.0:1]");
-			staticset = new StaticPTSet(allset.getSubset(parsed));
+			ParsedSet parsed = parser.parse("[0.4:0.5, 1.1:2.4, *.0:1]");
+			staticset = new StaticPTSet( allset.getSubset(parsed.getParseTreeNodes()) );
 			actual = staticset.toString();
 		}
 		catch (ParseException e)
