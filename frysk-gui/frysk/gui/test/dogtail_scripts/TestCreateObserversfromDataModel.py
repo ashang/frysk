@@ -247,7 +247,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             except:
                 self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )
             else:
-                print 'Successfully created new Observer with name = ' + newObserverName
+                #print 'Successfully created new Observer with name = ' + newObserverName
+                self.theLogWriter.writeResult({'INFO' :  'Successfully created new Observer with name = ' + newObserverName})
                 self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newObserverName, newObserverName)
                 self.assertEqual(newObserverName, newObserverName)
   
@@ -266,16 +267,16 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         self.parser.parse(newlyCreatedObserverFile)
         newlyCreatedObserver = self.handler.theObserver
 
+        #print '---------newlyCreatedObserver.dump()-------'
         #newlyCreatedObserver.dump()
+        #print '---------self.theObserver.dump()--------'
         #self.theObserver.dump()
         
         #########################################################
-        #newlyCreatedFilterPoints = newlyCreatedObserver.getFilterPoints()
-        #self.theObserverFilterPoints = self.theObserver.getFilterPoints()
-
-        #newlyCreatedObserver.setFilterPointsDict(newlyCreatedFilterPoints)
-        #self.theObserver.setFilterPointsDict(self.theObserverFilterPoints)
-        
+        newlyCreatedFilterPoints = newlyCreatedObserver.getFilterPoints()
+        newlyCreatedObserver.setFilterPointsDict(newlyCreatedFilterPoints)
+        self.theObserverFilterPoints = self.theObserver.getFilterPoints()
+        self.theObserver.setFilterPointsDict(self.theObserverFilterPoints)
 
         if self.theObserver.isequal (newlyCreatedObserver):
             # print 'PASS - the observer objects match'
@@ -321,7 +322,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:  
-                print 'No error - successfully found ' + observerNameToVerify
+                self.theLogWriter.writeResult({'INFO' :  'No error - successfully found ' + observerNameToVerify })
                 self.TestString.compare(self.theLogWriter.scriptName + '.teardown()', observerNameToVerify, observerNameToVerify)
                 self.assertEqual(observerNameToVerify, observerNameToVerify)
                 

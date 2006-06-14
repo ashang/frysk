@@ -59,6 +59,7 @@ class Observer:
   filterPoints = ObserverPoints()
   actionPoints = ObserverPoints()
   filterPointsDict = {}
+  actionPointsDict = {}
   
   # constructor - not sure if we want this
   # def __init__(self, value):
@@ -78,7 +79,7 @@ class Observer:
       self.filterPoints = value
       
   def setFilterPointsDict ( self, theFilterNames ):
-    # use the process names as the keys, and the processes as the values
+    # use the names as the keys, and the objects as the values
     theFilterPointNames = []
     theFilterPointObjects = []
     for x in theFilterNames:
@@ -87,6 +88,16 @@ class Observer:
       theFilterPointObjects.append( x )
     self.filterPointsDict = dict( zip ( theFilterPointNames, theFilterPointObjects ) )      
             
+  def setActionPointsDict ( self, theActionNames ):
+    # use the names as the keys, and the objects as the values
+    theActionPointNames = []
+    theActionPointObjects = []
+    for x in theFilterNames:
+      #print "DEBUG - name = " + x.getName()
+      theActionPointNames.append( x.getName() )
+      theActionPointObjects.append( x )
+    self.ActionPointsDict = dict( zip ( theActionPointNames, theActionPointObjects ) )  
+    
   def setActionPoints (self, value):    
       self.actionPoints = value
     
@@ -108,6 +119,9 @@ class Observer:
   def getFilterPointsDict(self):
       return self.filterPointsDict
       
+  def getActionPointsDict(self):
+      return self.filterPointsDict
+      
   def getActionPoints (self):    
       return self.actionPoints
     
@@ -121,8 +135,8 @@ class Observer:
     print 'afterAction=' + self.afterAction
     for x in self.filterPoints:
         x.dump()        
-    #for x in self.actionPoints:
-    #    x.dump()
+    for x in self.actionPoints:
+        x.dump()
         
   # -------------------------------------
   # Compare two Observer objects
@@ -131,53 +145,58 @@ class Observer:
     returnFlag = True
  
     #print self.getName() + theOtherObserver.getName()
+    #print self.getType() + theOtherObserver.getType()
 
     if self.getName() != theOtherObserver.getName():
       returnFlag = False
 
     if self.getType() != theOtherObserver.getType():
-      returnFlag = False    
+      returnFlag = False         
       
-    #theObserverFilterPoints = dict( self.getFilterPointsDict() )
-    #theOtherObserverFilterPoints = dict( theOtherObserver.getFilterPointsDict() )
-  
-    #theKeys = theObserverFilterPoints.keys()
-    #theOtherKeys = theOtherObserverFilterPoints.keys()
+    # For the FilterPoints, we need to get the data into dictionaries
+    # that can be sorted by name
+    theObserverFilterPoints = dict( self.getFilterPointsDict() )
+    theOtherObserverFilterPoints = dict( theOtherObserver.getFilterPointsDict() )
+    theKeys = theObserverFilterPoints.keys()
+    theOtherKeys = theOtherObserverFilterPoints.keys()
 
-    #if len( theKeys ) == len( theOtherKeys ):
-    #    
-    #    theKeys.sort()
-    #    theOtherKeys.sort()
-    #
-    #    for x in theKeys:
-    #      theFilterPoint = theObserverFilterPoints.get( x ) 
-    #      theOtherFilterPoint = theOtherObserverFilterPoints.get( x )
-    #
-    #      #print "DEBUG = " + theFilterPoint.getName() + str(theFilterPoint)
-    #      #print "DEBUG = " + theOtherFilterPoint.getName() + str(theOtherFilterPoint)
-    #    
-    #      if not theFilterPoint.isequal( theOtherFilterPoint ):
-    #          returnFlag = False
-
+    if len( theKeys ) == len( theOtherKeys ):
+        theKeys.sort()
+        theOtherKeys.sort()
+    
+        for x in theKeys:
+          theFilterPoint = theObserverFilterPoints.get( x ) 
+          theOtherFilterPoint = theOtherObserverFilterPoints.get( x )
+          #print "DEBUG = " + theFilterPoint.getName() + theFilterPoint.getName()
+          #print "DEBUG = " + theOtherFilterPoint.getName() + theOtherFilterPoint.getName()
+          if not theFilterPoint.isequal( theOtherFilterPoint ):
+              returnFlag = False
     else:
-      returnFlag = False      
-
+      returnFlag = False
       
- 
-    ############################################################
-    
-    #theFilterPoints = dict( self.getFilterPointsDict() )
-    #theOtherSessionProcesses = dict( theOtherDebugSession.getProcessesDict() )
- 
- 
-    # June 9 - need to complete the isequal method!
-    #if self.getFilterPoints() != theOtherObserver.getFilterPoints():
-    #  returnFlag = False    
+           
+    # Same for For the ActionPoints, we need to get the data into dictionaries
+    # that can be sorted by name
+    theObserverActionPoints = dict( self.getActionPointsDict() )
+    theOtherObserverActionPoints = dict( theOtherObserver.getActionPointsDict() )
+    theKeys = theObserverActionPoints.keys()
+    theOtherKeys = theOtherObserverActionPoints.keys()
 
-    #if self.getActionPoints() != theOtherObserver.getActionPoints():
-    #  returnFlag = False    
+    if len( theKeys ) == len( theOtherKeys ):
+        theKeys.sort()
+        theOtherKeys.sort()
     
-    # This is not yet impplemented in the Observer data file  
+        for x in theKeys:
+          theActionPoint = theObserverActionPoints.get( x ) 
+          theOtherActionPoint = theOtherObserverActionPoints.get( x )
+          #print "DEBUG = " + theFilterPoint.getName() + theFilterPoint.getName()
+          #print "DEBUG = " + theOtherFilterPoint.getName() + theOtherFilterPoint.getName()
+          if not theActionPoint.isequal( theOtherActionPoint ):
+              returnFlag = False
+    else:
+      returnFlag = False
+
+    # This is not yet (20060609) implemented in the Observer data file  
     # if self.getAfterAction() != theOtherObserver.getAfterAction():
     #   returnFlag = False    
      
