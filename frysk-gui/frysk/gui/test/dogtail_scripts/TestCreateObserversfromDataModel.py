@@ -201,10 +201,38 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     theComboBoxes = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
                     comboBox = theComboBoxes[0]
                     # Select the action
-                    actionItem = comboBox.menuItem (theActionName)   #  newLoggingAction)
+                    actionItem = comboBox.menuItem (theActionName)
                     actionItem.click()
+
+                    # Need to handle text too! As of 20060613 the text is not 
+                    # written to the Observer data file
+
                     # The '+' and '-' buttons to enable adding/substracting action points
                     theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
+                    # button [1] is the '+' button
+                    theButtons[1].click()
+
+                # And - there is a similar situation for the multiple FilterPoints defined
+                # in the Observer
+
+                theFilterPoints = self.theObserver.getFilterPoints()
+                for tempFilterPoint in theFilterPoints:
+                    observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
+
+                    # comboBox that lists the filter types - the 2nd one in the list[]
+                    theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
+                    comboBox = theComboBoxes[1]
+                    filterItem = comboBox.menuItem (tempFilterPoint.getName() )
+                    filterItem.click()
+
+                    theTextBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='text'), False)
+                    theTextBox = theTextBoxes[0]
+                    theElements = tempFilterPoint.getElements()
+                    # As of 20060613, there is only one element in the list                    
+                    theElement = theElements[0]
+                    theTextBox.text = theElement.getArgument() 
+                    # The '+' and '-' buttons to enable adding/substracting action points
+                    theButtons = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
                     # button [1] is the '+' button
                     theButtons[1].click()
 
@@ -242,11 +270,11 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         #self.theObserver.dump()
         
         #########################################################
-        newlyCreatedFilterPoints = newlyCreatedObserver.getFilterPoints()
-        self.theObserverFilterPoints = self.theObserver.getFilterPoints()
+        #newlyCreatedFilterPoints = newlyCreatedObserver.getFilterPoints()
+        #self.theObserverFilterPoints = self.theObserver.getFilterPoints()
 
-        newlyCreatedObserver.setFilterPointsDict(newlyCreatedFilterPoints)
-        self.theObserver.setFilterPointsDict(self.theObserverFilterPoints)
+        #newlyCreatedObserver.setFilterPointsDict(newlyCreatedFilterPoints)
+        #self.theObserver.setFilterPointsDict(self.theObserverFilterPoints)
         
 
         if self.theObserver.isequal (newlyCreatedObserver):

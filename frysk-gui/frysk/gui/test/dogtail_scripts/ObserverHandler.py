@@ -149,8 +149,12 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       self.tempFilterPoint = ObserverPoints()
       self.tempFilterPointElements = []
       self.tempFilterPoint.setName(attributes['name'])
-      #print 'DEBUG - found a filterPoint - name = ' + attributes['name']
-      
+      #print 'DEBUG - found a filterPoint - argument = ' + attributes['argument']
+      if attributes['name'] == 'forking thread':
+          self.tempFilterPoint.setName('Name forking thread')
+      if attributes['name'] == 'forked thread':
+          self.tempFilterPoint.setName('Name forked thread')
+ 
 #   elif self.currentTag == 'elements':
       
     elif self.currentTag == 'element':
@@ -159,18 +163,13 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       p = re.compile('frysk.gui.monitor.actions*')
         
       try:
-#        if attributes['type'] == 'frysk.gui.sessions.DebugProcess':
-#          self.tempDebugProcess = DebugProcess()
-#          self.debugProcessFlag = True
-#          self.tempDebugProcess.setType(attributes['type'])
-#          self.tempDebugProcess.setName(attributes['name'])          
-          
         if attributes['type'] == 'frysk.gui.monitor.filters.TaskProcNameFilter':
             self.tempObserverElement = ObserverElement()
+            self.tempObserverElement.setType(attributes['type'])
             self.tempObserverElement.setName(attributes['name'])
             self.tempObserverElement.setArgument(attributes['argument'])
-          #print 'DEBUG - found a filterPoint - arg = ' + attributes['argument']
-          #self.tempObserverElement.dump()
+            #print 'DEBUG - found a filterPoint - arg = ' + attributes['argument']
+            #self.tempObserverElement.dump()
         
         #elif attributes['type'] == 'frysk.gui.monitor.actions.LogAction':
         # If we found an Action that matches the regexp defined above
@@ -244,7 +243,8 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
             if self.tempObserverElement.getType() == 'default type':
                 self.emptyActionPointFlag = True
         elif self.filterPointFlag == True:
+            #self.tempObserverElement.dump()
             self.tempFilterPointElements.append(self.tempObserverElement)
 
 #        print 'END of element'
-        
+

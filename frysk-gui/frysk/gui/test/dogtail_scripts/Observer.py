@@ -121,8 +121,8 @@ class Observer:
     print 'afterAction=' + self.afterAction
     for x in self.filterPoints:
         x.dump()        
-    for x in self.actionPoints:
-        x.dump()
+    #for x in self.actionPoints:
+    #    x.dump()
         
   # -------------------------------------
   # Compare two Observer objects
@@ -138,26 +138,26 @@ class Observer:
     if self.getType() != theOtherObserver.getType():
       returnFlag = False    
       
-    theObserverFilterPoints = dict( self.getFilterPointsDict() )
-    theOtherObserverFilterPoints = dict( theOtherObserver.getFilterPointsDict() )
+    #theObserverFilterPoints = dict( self.getFilterPointsDict() )
+    #theOtherObserverFilterPoints = dict( theOtherObserver.getFilterPointsDict() )
   
-    theKeys = theObserverFilterPoints.keys()
-    theOtherKeys = theOtherObserverFilterPoints.keys()
+    #theKeys = theObserverFilterPoints.keys()
+    #theOtherKeys = theOtherObserverFilterPoints.keys()
 
-    if len( theKeys ) == len( theOtherKeys ):
-        
-        theKeys.sort()
-        theOtherKeys.sort()
-
-        for x in theKeys:
-          theFilterPoint = theObserverFilterPoints.get( x ) 
-          theOtherFilterPoint = theOtherObserverFilterPoints.get( x )
-
-          #print "DEBUG = " + theFilterPoint.getName() + str(theFilterPoint)
-          #print "DEBUG = " + theOtherFilterPoint.getName() + str(theOtherFilterPoint)
-        
-          if not theFilterPoint.isequal( theOtherFilterPoint ):
-              returnFlag = False
+    #if len( theKeys ) == len( theOtherKeys ):
+    #    
+    #    theKeys.sort()
+    #    theOtherKeys.sort()
+    #
+    #    for x in theKeys:
+    #      theFilterPoint = theObserverFilterPoints.get( x ) 
+    #      theOtherFilterPoint = theOtherObserverFilterPoints.get( x )
+    #
+    #      #print "DEBUG = " + theFilterPoint.getName() + str(theFilterPoint)
+    #      #print "DEBUG = " + theOtherFilterPoint.getName() + str(theOtherFilterPoint)
+    #    
+    #      if not theFilterPoint.isequal( theOtherFilterPoint ):
+    #          returnFlag = False
 
     else:
       returnFlag = False      

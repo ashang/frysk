@@ -79,7 +79,7 @@ class ObserverElement:
         return self.operand
     
     def getArgument( self ):
-        return self.Argument    
+        return self.argument    
 
     def dump( self ):
         print 'in element'
