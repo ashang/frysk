@@ -1,3 +1,8 @@
+2006-06-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.rules (SUBST): Fix addition of "Generated from ..."
+	message so that it is correctly commented.
+
 2006-06-06  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.rules: Added GEN_GCC_RPATHS to pick up libdw.so.1.

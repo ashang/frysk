@@ -230,9 +230,16 @@ SUBST = \
 	mkdir -p `dirname $@` ; \
 	rm -f $@.tmp ; \
 	touch $@.tmp ; \
-	echo ''						>> $@.tmp ; \
-	echo '// Generated from: $<'			>> $@.tmp ; \
-	echo ''						>> $@.tmp ; \
+	case "$@" in \
+		*.java|*.cxx|*.c) \
+			echo '// Generated from: $<'	>> $@.tmp ; \
+			echo ''				>> $@.tmp ; \
+			;; \
+		*.sh) \
+			echo '\# Generated from: $<'	>> $@.tmp ; \
+			echo ''				>> $@.tmp ; \
+			;; \
+	esac ; \
 	$(SUBST_SED) < $< 				>> $@.tmp ; \
 	chmod a-w $@.tmp ; \
 	mv -f $@.tmp $@

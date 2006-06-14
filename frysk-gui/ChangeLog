@@ -1,3 +1,9 @@
+2006-06-14  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (noinst_PROGRAMS)
+	(frysk/gui/test/dogtail_scripts/frysk_suite.sh): Build and test
+	frysk_suite.sh.  Don't yet add to TESTS.
+
 2006-06-13  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (EXTRA_DIST): Add several ChangeLog's.
