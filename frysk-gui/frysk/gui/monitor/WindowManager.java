@@ -39,10 +39,12 @@
 package frysk.gui.monitor;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 
+import frysk.Config;
 import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
 import frysk.gui.register.RegisterWindow;
@@ -60,6 +62,8 @@ public class WindowManager implements Saveable{
 
 	public static WindowManager theManager = new WindowManager();
 	
+	public static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+
 	/**
 	 * Public instances of the windows
 	 * {*/
@@ -68,7 +72,6 @@ public class WindowManager implements Saveable{
 	public LogWidget logWindow;
 	public PreferencesWindow prefsWindow;
 	public CustomObserverDialog customeObserverDialog;
-	public ProgramAddWindow programAddWindow;
 	public AboutWindow aboutWindow;
 	public SplashScreenWindow splashScreen;
 	public CreateFryskSessionDruid createFryskSessionDruid;

@@ -67,9 +67,9 @@ public class ObserverManager {
 
 	static{
 		theManager.loadObservers();
-		theManager.initTaskObservers();
-
+		theManager.init();
 	}
+	
 	/**
 	 * A table that hashes observer names to
 	 * their prototypes. Also used to make sure
@@ -94,6 +94,10 @@ public class ObserverManager {
 		this.nameHash = new UniqueHashMap();
 		
 		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);
+	}
+	
+	public void init(){
+		this.initTaskObservers();
 	}
 	
 	/**
@@ -257,14 +261,14 @@ public class ObserverManager {
 			if(array[i].startsWith(".")){
 				continue;
 			}
+			
 			try{
 				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
 				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
 			}catch (Exception e) {
-				System.out.println(this	+ ": ObserverManager.loadObservers() Exception while loading " + array[i]);
 				e.printStackTrace();
 			}
-			
+
 			this.addTaskObserverPrototype(loadedObserver);
 		}
 		

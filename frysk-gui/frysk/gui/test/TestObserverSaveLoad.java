@@ -180,6 +180,8 @@ public class TestObserverSaveLoad extends TestCase{
 	
 	public void testExport(){
 		ObserverManager observerManager = new ObserverManager();
+		observerManager.init();
+		
 		TaskForkedObserver taskForkedObserver = new TaskForkedObserver();
 		
 		String testObserverName = "MyCustomObserverXXX_this_should_have_been_deleted_after_test";
@@ -191,6 +193,7 @@ public class TestObserverSaveLoad extends TestCase{
 		observerManager.save();
 		
 		ObserverManager anotherObserverManager = new ObserverManager();
+		anotherObserverManager.init();
 		assertEquals("Number of Observers", observerManager.getTaskObservers().size(), anotherObserverManager.getTaskObservers().size());
 		
 	//	observerManager.removeTaskObserverPrototype(taskForkedObserver);

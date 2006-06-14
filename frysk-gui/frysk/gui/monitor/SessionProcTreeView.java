@@ -45,16 +45,12 @@
 package frysk.gui.monitor;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
-import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRendererText;
-import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
@@ -66,12 +62,8 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.VPaned;
 import org.gnu.gtk.Widget;
-import org.gnu.gtk.event.ButtonEvent;
-import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
-import org.gnu.gtk.event.SpinEvent;
-import org.gnu.gtk.event.SpinListener;
 import org.gnu.gtk.event.TreeModelEvent;
 import org.gnu.gtk.event.TreeModelListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
@@ -79,18 +71,13 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
-import frysk.gui.Gui;
 import frysk.gui.sessions.Session;
 
-public class SessionProcTreeView extends Widget implements ButtonListener, Saveable{
+public class SessionProcTreeView extends Widget implements Saveable{
 
-	private SpinButton refreshSpinButton;
-	private Button refreshButton;
-	
 	private TreeView procTreeView;
 	private TreeView threadTreeView;
 		
-//	private ProcDataModel procDataModel;
 	private SessionProcDataModel procDataModel;
 	
 	private VPaned vPane;
@@ -100,16 +87,11 @@ public class SessionProcTreeView extends Widget implements ButtonListener, Savea
 	private VBox statusWidget;
 	private InfoWidget infoWidget;
 	
-	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
-	
 	private LibGlade glade;
 	
 	public SessionProcTreeView(LibGlade libGlade) throws IOException {
 		super((libGlade.getWidget("allProcVBox")).getHandle()); //$NON-NLS-1$
 		this.glade = libGlade;
-		
-		this.refreshSpinButton   = (SpinButton)  glade.getWidget("refreshSpinButton"); //$NON-NLS-1$
-		this.refreshButton       = (Button)      glade.getWidget("refreshButton"); //$NON-NLS-1$
 		
 		this.procTreeView        = (TreeView)    glade.getWidget("procTreeView"); //$NON-NLS-1$
 		this.threadTreeView      = (TreeView)    glade.getWidget("threadTreeView"); //$NON-NLS-1$
@@ -120,16 +102,6 @@ public class SessionProcTreeView extends Widget implements ButtonListener, Savea
 		
 		this.infoWidget = new InfoWidget();
 		this.statusWidget.add(infoWidget);
-		
-		this.refreshButton.addListener(this);
-		this.refreshSpinButton.addListener(new SpinListener(){
-			public void spinEvent(SpinEvent event) {
-				if(event.getType() == SpinEvent.Type.VALUE_CHANGED){
-					procDataModel.setRefreshTime(refreshSpinButton.getIntValue());
-				}
-			}			
-		});
-		
 		
 		this.procDataModel = new SessionProcDataModel();
 		
@@ -360,22 +332,6 @@ public class SessionProcTreeView extends Widget implements ButtonListener, Savea
 		this.threadTreeView.expandAll();
 	}
 	
-	public void buttonEvent(ButtonEvent event) {
-		if(this.refreshButton.equals(event.getSource()) 
-				&& event.getType() == ButtonEvent.Type.CLICK){
-			this.refresh();
-		}
-	
-	}
-	
-	private void refresh(){
-		try {
-			this.procDataModel.refresh();
-		} catch (IOException e) {
-			errorLog.log(Level.SEVERE,"Cannot refresh",e); //$NON-NLS-1$
-		}
-	}
-
 	private GuiProc getSelectedProc(){
 		TreeSelection ts = this.procTreeView.getSelection();
 		TreePath[] tp = ts.getSelectedRows();
@@ -408,16 +364,13 @@ public class SessionProcTreeView extends Widget implements ButtonListener, Savea
 
 	public void save(Preferences prefs) {
 		prefs.putInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
-		prefs.putInt("refreshSpinButton", (int) this.refreshSpinButton.getValue());
 	}
 
 
 	public void load(Preferences prefs) {
 		int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
-		int refreshTime = prefs.getInt("refreshSpinButton", (int) this.refreshSpinButton.getValue());
 		
 		this.vPane.setPosition(position);
-		this.refreshSpinButton.setValue(refreshTime);
 	}
 
 

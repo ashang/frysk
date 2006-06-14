@@ -1,3 +1,10 @@
+2006-06-14  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* glade/procpop.glade: removed all refresh buttons.
+	Added some padding, removed borders of proc view.
+	Added partial accessability info.
+	Removed ProgramView stuff.
+
 2006-06-14  Andrew Cagney  <cagney@redhat.com>
 
 	* test/dogtail_scripts/frysk_suite.sh: Rename ...

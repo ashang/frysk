@@ -44,6 +44,7 @@
  */
 package frysk.gui.monitor;
 
+import java.util.logging.Level;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
@@ -56,13 +57,14 @@ import org.gnu.gtk.Widget;
  * Generic log window, just prints out events it recieves
  * */
 public class LogWidget extends Widget implements Saveable {
-	
+
 	public TextView logTextView;
-   
+
 	public LogWidget(LibGlade glade){
 		super(glade.getWidget("logWidget").getHandle());
 		this.logTextView = (TextView) glade.getWidget("logTextView");
-    }
+		WindowManager.logger.log(Level.FINE, "{0} LogWidget\n", this);
+	}
 
 	public void print(String string){
 		TextBuffer tb = logTextView.getBuffer();
