@@ -176,6 +176,10 @@ public class LinuxTask
 	try {
 	    Ptrace.attach (getTid ());
 	}
+	catch (Errno.Eperm e) {
+	    logger.log (Level.FINE, "{" + e.toString ()
+			+ "} Cannot attach to process\n");
+	}
 	catch (Errno.Esrch e) {
 	    postDisappearedEvent (e);
 	}

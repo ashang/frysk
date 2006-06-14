@@ -51,6 +51,7 @@
 #include "frysk/sys/Errno$Einval.h"
 #include "frysk/sys/Errno$Echild.h"
 #include "frysk/sys/Errno$Esrch.h"
+#include "frysk/sys/Errno$Eperm.h"
 #include "frysk/sys/cni/Errno.hxx"
 
 /**
@@ -103,6 +104,10 @@ throwErrno (int err, jstring jmessage)
 #ifdef ECHILD
   case ECHILD:
     throw new frysk::sys::Errno$Echild (jmessage);
+#endif
+#ifdef EPERM
+  case EPERM:
+    throw new frysk::sys::Errno$Eperm (jmessage);
 #endif
   default:
     throw new frysk::sys::Errno (jmessage);

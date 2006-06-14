@@ -1,3 +1,7 @@
+2006-06-13  Stan Cox  <scox@redhat.com>
+
+	* LinuxTask.java (sendAttach):  Handle Errno.Eperm.
+
 2006-06-13  Nurdin Premji  <npremji@redhat.com>
 
 	* TestOffspringObserver.java (testCloneThenFork): Added
@@ -21,38 +25,43 @@
 
 2006-06-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
-	* TaskState.java: Added syscall tracing mode:
-	Added syscall equivilients to all running classes, which can added syscallObservers
-	and added trasitions from non syscall states to syscall states. So far
-	only tested transtions are implemented. Missing is transtion during running
-	state and all transtions back to non syscall mode.
-	Added blockedInExecSyscall state to handle transition to /syscallBlockedInExecSyscall/
-	state (fix for ending up in the wrong state by missing the sycall entry notification). 
-	Added syscallBlockedInExecSyscall to handle execEvent during runningInSyscall ( fix
-	for bug reported by Yao.)
-	* TaskSyscallObservation.java: new class. Handles addition/removal of
-	SyscallObservers.
-	* TestI386Modify.java: Removed task.traceSyscall = true. It is no longer needed
-	and test still passes :).
+	Added syscall equivalents to all running classes which can add
+	syscall Observers, and added transitions from non syscall states
+	to syscall states.
+	* TaskState.java (handleAddSyscallObserver): New.
+	(handleDeleteSyscallObserver): New.
+	(Attached): Add transitionToSyscallRunningState.
+	(waitForContinueOrUnblock): Add handleAddSyscallObserver.
+	(syscallWaitForContinueOrUnblock): New.
+	(syscallWaitForUnblock): New.
+	(Running): Renamed from running.
+	(SyscallRunning): New.
+	(runningInSyscall): Add handleExecedEvent.
+	(BlockedSignal): Add handleAddSyscallObserver.
+ 	(SyscallBlockedSignal): New.
+	(syscallBlockedContinue): New.
+	(syscallBlockedInExecSyscall): New.	
+	
+	* TaskSyscallObservation.java: New class.
+	* TestI386Modify.java: Removed task.traceSyscall = true.
 	* TestI386Regs.java: Ditto.
-	* TaskObservation.java: Changed the task reference from private to protected
-	so that specialized children of TaskObservation can see it.
+	* TaskObservation.java: Changed the task reference from private to
+	protected so that specialized children of TaskObservation can see it.
 	* Task.java: Removed traceSyscall flag.
-	Added handle(Add/Delete)SyscallObserver which take care of special handling
-	need for SyscallObservers.
-	Added abstract methods sendSyscallContinue,startTracingSyscalls, and 
-	stopTracingSyscalls.
-	* Proc.java: Added requestAddSyscallObserver, and requestDeleteSyscallObserver
-	which add/remove the special SyscallObservation instead of the default
+	(handle(Add/Delete)SyscallObserver):  Special handling need for
+	SyscallObservers. 
+	(sendSyscallContinue,startTracingSyscalls,stopTracingSyscalls): New.
+	* Proc.java (requestAddSyscallObserver, requestDeleteSyscallObserver):
+	Add/remove the special SyscallObservation instead of the default
 	Observations.
 	* LinuxTask.java: Added implementations of start/stop tracingSyscalls
-	and sendSyscallContinue.
-	Removed traceSyscalls flag, and checks for it this is handled by the 
-	active TaskState.
-	* DummyTask.java: Added empty implemintations of sendSyscallContinue,
+	and sendSyscallContinue.  Removed traceSyscalls flag, and checks
+	for it this is handled by the active TaskState.
+	* DummyTask.java: Added empty implementations of sendSyscallContinue,
 	startTracingSyscalls, and stopTracingSyscalls.
-	* TestTaskSyscallObserver.java: Added a test to make sure the State machine
-	can correctly handle an execedEvent in systemcall tracing mode.
+	* TestTaskSyscallObserver.java: Added a test to make sure the
+	State machine can correctly handle an execedEvent in systemcall
+	tracing mode. 
 
 2006-06-09  Nurdin Premji  <npremji@redhat.com>
 

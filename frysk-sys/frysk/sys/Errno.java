@@ -127,6 +127,19 @@ public class Errno
     }
 
     /**
+     * Operation not permitted
+     */
+    static public class Eperm
+	extends Errno
+    {
+        private static final long serialVersionUID = 1L;
+	protected Eperm (String message)
+	{
+	    super (message);
+	}
+    }
+
+    /**
      * Returns the error message string for this error.
      */
     public String toString ()
