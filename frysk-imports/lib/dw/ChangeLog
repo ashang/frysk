@@ -1,3 +1,8 @@
+2005-06-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cni/Dwfl.cxx (dwfl_begin): Now uses JvAllocBytes to allocate the
+	memory for the callbacks struct, so it can be kept in a RawDataManaged.
+
 2005-06-06  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestDwfl.java (testGetLine): Now checks for correctness of

@@ -50,7 +50,7 @@ lib::dw::Dwfl::dwfl_begin(jint pid){
 	
 	char * flags = "-:.debug:/usr/bin/debug";
 	
-	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) malloc(sizeof(::Dwfl_Callbacks));
+	::Dwfl_Callbacks *cbs = (::Dwfl_Callbacks*) JvAllocBytes(sizeof(::Dwfl_Callbacks));
 	
 	cbs->find_elf = ::dwfl_linux_proc_find_elf;
 	cbs->find_debuginfo = ::dwfl_standard_find_debuginfo;
