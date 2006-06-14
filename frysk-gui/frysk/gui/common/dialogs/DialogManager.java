@@ -49,6 +49,8 @@ import org.gnu.glib.CustomEvents;
 public class DialogManager {
 
 	
+	static int response;
+	
 	public static boolean showQueryDialog(String message){
 		QueryDialog myDialog = new QueryDialog(message);
 		myDialog.showAll();
@@ -112,7 +114,7 @@ public class DialogManager {
 	
 	}
 	
-	public static synchronized void showErrorDialog(String title, String message,
+	public static int showErrorDialog(String title, String message,
 		Exception except){
 		
 		final ErrorDialog myDialog = new ErrorDialog(title, message, except);
@@ -120,18 +122,21 @@ public class DialogManager {
 		CustomEvents.addEvent(new Runnable(){
 			public void run() {
 				myDialog.showAll();
-				myDialog.run();
+				response = myDialog.run();
 				DialogManager.myNotifyAll();
 			}
 		});
 		
-		try {
-			DialogManager.class.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			DialogManager.class.wait();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 
+
+		return response;
 	}
 	
 	public synchronized static void myNotifyAll(){

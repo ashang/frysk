@@ -1,3 +1,10 @@
+2006-06-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* dialogs/DialogManager.java (showErrorDialog): Return a response.
+	* dialogs/ErrorDialog.java (doImplementation): Use TextView instead of 
+	Label (to fix odd focus issues that randomly occur on selecting text).
+	Add Continue button to choice.
+
 2006-03-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferencWindow.java (attachEvents): Added events for template
