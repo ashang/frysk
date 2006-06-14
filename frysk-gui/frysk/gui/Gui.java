@@ -71,6 +71,7 @@ import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
+import frysk.gui.common.dialogs.ErrorDialog;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
@@ -367,8 +368,13 @@ public class Gui
 		    	Manager.eventLoop.run();
 		    }
 		    catch (Exception e) {
-		    	DialogManager.showErrorDialog("Frysk Core Errors", "Frysk Core has reported the following errors", e); //$NON-NLS-1$ //$NON-NLS-2$
-		    	System.exit(1);
+		    	int response = DialogManager.showErrorDialog("Frysk Core Warnings", "The Frysk Core has encountered problems with the last request.\n"+
+		    			"It has reported the following conditions. You can either ignore\n"+
+		    			"the condition and continue, or Quit Frysk.", e); //$NON-NLS-1$ //$NON-NLS-2$
+		    	if (response == ErrorDialog.QUIT)
+		    		System.exit(1);
+		    	else
+		    		run();
 		    }
 		}
 	});
