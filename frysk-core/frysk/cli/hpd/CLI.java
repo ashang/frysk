@@ -86,7 +86,39 @@ public class CLI
 			out.println("Executing unset: " + cmd);
 		}
 	}
-
+	class WhatHandler implements CommandHandler
+	{
+	        public void handle(Command cmd) throws ParseException {
+		       SymTab.what(cmd);
+		}
+	}
+        class QuitHandler implements CommandHandler
+        {
+	        public void handle(Command cmd) throws ParseException {
+		       System.exit(1);
+	        }
+	}
+	class HelpHandler implements CommandHandler
+	{
+		public void handle(Command cmd) throws ParseException {
+		    // TODO Use a better commands data structure 
+		    out.println("List of commands:");
+		    out.println();
+		    out.println("load");
+		    out.println("run");
+		    out.println("alias");
+		    out.println("unalias");
+		    out.println("set");
+		    out.println("unset");
+		    out.println("assign Lhs Expression");
+		    out.println("print Expression");
+		    out.println("what Lhs");
+		    out.println("help");
+		    out.println("quit");
+		    out.println("exit");
+		}
+	}
+    
 	/*
 	 * Private variables
 	 */
@@ -102,7 +134,7 @@ public class CLI
 
 	/**
 	 * Constructor
-	 * @param prompt String initialy to be used as the prompt
+	 * @param prompt String initially to be used as the prompt
 	 */
 	public CLI(String prompt)
 	{
@@ -116,6 +148,12 @@ public class CLI
 		handlers.put("unalias", new UnaliasHandler());
 		handlers.put("set", new SetHandler());
 		handlers.put("unset", new UnsetHandler());
+		handlers.put("assign", new PrintHandler());
+		handlers.put("print", new PrintHandler());
+		handlers.put("what", new WhatHandler());
+		handlers.put("help", new HelpHandler());
+		handlers.put("exit", new QuitHandler());
+		handlers.put("quit", new QuitHandler());
 	}
 
 	public String getPrompt()
