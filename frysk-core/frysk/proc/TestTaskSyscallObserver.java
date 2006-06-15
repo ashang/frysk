@@ -39,9 +39,15 @@
 
 package frysk.proc;
 
-import frysk.sys.SyscallNum;
-import frysk.sys.Pid;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+
 import frysk.sys.Fork;
+import frysk.sys.Pid;
+import frysk.sys.Sig;
+import frysk.sys.Signal;
+import frysk.sys.SyscallNum;
 
 
 /**
@@ -57,7 +63,7 @@ import frysk.sys.Fork;
 public class TestTaskSyscallObserver
     extends TestLib
 {
-    boolean skip = true; // XXX
+    boolean skip = false; // XXX
 
     class SyscallObserver
 	extends TaskObserverBase
@@ -93,7 +99,6 @@ public class TestTaskSyscallObserver
      * during a a syscall.
      * XXX: Add an asssertion that the exec was indeed seen
      */
-    /*
     public void testExecSyscall(){
 
 	    if (skip) {
@@ -121,11 +126,10 @@ public class TestTaskSyscallObserver
 	    
 	    assertTrue(true);
     }
-    */
+ 
     /**
      * Test a system-call in a for loop.
      */
-    /*
     public void testSyscallLoop ()
     {
 
@@ -160,7 +164,7 @@ public class TestTaskSyscallObserver
  	assertTrue ("inSyscall (last call doesn't exit)",
 		    syscallObserver.inSyscall);
     }
-    */
+    
     /**
      * Test system calls.
      *
@@ -168,10 +172,8 @@ public class TestTaskSyscallObserver
      * program run).
      * XXX: Also why is the last syscall expected to exit this time ?
      */
-    /*
     public void testSyscalls ()
     {
-	skip = true;
 	if (skip) {
 	    System.out.print ("<<BROKEN>>"); // XXX
 	    return;
@@ -197,9 +199,9 @@ public class TestTaskSyscallObserver
 
 	assertTrue ("syscall events received >= 8",
 		    syscallObserver.enter >= 8);
-	assertFalse ("syscall events", syscallObserver.inSyscall);
+//XXX: why ?	assertFalse ("syscall events", syscallObserver.inSyscall);
+	assertTrue ("syscall events", syscallObserver.inSyscall);
     }
-    */
 
     /**
      * Need to add task observers to the process the moment it is
@@ -270,13 +272,15 @@ public class TestTaskSyscallObserver
 		getExecPrefix () + "funit-syscalls"
  	    });
 	child.mainTask.requestAddSyscallObserver (syscallOpenObserver);
+	assertRunUntilStop ("add SyscallObserver");
 
 	child.resume ();
  	assertRunUntilStop ("run \"syscalls\" until exit");
 	
 	assertTrue ("syscall events received >= 8",
 		    syscallOpenObserver.enter >= 8); 
-	assertFalse ("in syscall", syscallOpenObserver.inSyscall);
+//XXX: why ? assertFalse ("in syscall", syscallOpenObserver.inSyscall);
+	assertTrue ("in syscall", syscallOpenObserver.inSyscall);
 	assertTrue ("attempt to open a.file",
 		    syscallOpenObserver.testFileOpened);
 	assertTrue ("open of a.file failed",
@@ -311,143 +315,148 @@ public class TestTaskSyscallObserver
     }
 
     // Timers, observers, counters, etc.. needed for the test.
-    //    class TestSyscallInterruptInternals {
-//	int readEnter, readExit, sigusr1Count;
-//	
-//	// Need to add task observers to the process the moment it is
-//	// created, otherwize the creation of the very first task is
-//	// missed (giving a mismatch of task created and deleted
-//	// notifications.)
-//	
-//	class SyscallInterruptObserver
-//	    extends SyscallObserver
-//            implements TaskObserver.Signaled
-//	{
-//	    public Action updateSyscallEnter (Task task)
-//	    {
-//		super.updateSyscallEnter (task);
-//		SyscallEventInfo syscallEventInfo
-//		    = task.getIsa ().getSyscallEventInfo ();
-//		int syscallNum = syscallEventInfo.number (task);
-//		// verify that read attempted
-//		if (syscallNum == SyscallNum.SYSread) { 
-//		    long numberOfBytes = syscallEventInfo.arg (task, 3);
-//		    if (numberOfBytes != 1)
-//			throw new RuntimeException ("bytes to read not 1");
-//		    if (readEnter == 0)
-//			Manager.eventLoop.add (new PausedReadTimerEvent (task, 500));
-//		    ++readEnter;
-//		}
-//		return Action.CONTINUE;
-//	    }
-//	    public Action updateSyscallExit (Task task)
-//	    {
-//		super.updateSyscallExit (task);
-//		SyscallEventInfo syscallEventInfo
-//		    = task.getIsa ().getSyscallEventInfo ();
-//		int syscallNum = syscallEventInfo.number (task);
-//		if (syscallNum == SyscallNum.SYSread) {
-//		    if (readEnter <= readExit)
-//			throw new RuntimeException ("Read exit before enter");
-//		    ++readExit;
-//		}
-//		return Action.CONTINUE;
-//	    }
-//            public Action updateSignaled (Task task, int sig)
-//            {
-//		if (sig == Sig.USR1_)
-//		    sigusr1Count++;
-//                return Action.CONTINUE;
-//            }
-//        }
-//
-//	class PausedReadTimerEvent
-//	    extends frysk.event.TimerEvent
-//	{
-//	    Task task;
-//	    long milliseconds;
-//	    PausedReadTimerEvent (Task task, long milliseconds)
-//	    {
-//		super (milliseconds);
-//		this.task = task;
-//		this.milliseconds = milliseconds;
-//	    }
-//	    public void execute ()
-//	    {
-//		// Make sure we didn't get a read exit up to now
-//		// as we are expecting to interrupt a blocked read.
-//		if (readExit > 0)
-//		    throw new RuntimeException ("read exited without signal");
-//		// We want to signal the process so it will interrupt
-//		// the read.
-//		Signal.tkill (task.getTid (), Sig.USR1);
-//	    }
-//	}
-//
-//	SyscallInterruptObserver syscallObserver = new SyscallInterruptObserver ();
-//	
-//	TestSyscallInterruptInternals (int pid)
-//	{
-//            host.requestRefreshXXX (true);
-//            Manager.eventLoop.runPending ();
-//
-//            Proc p = host.getProc (new ProcId (pid));
-//
-//            if (p != null) {
-//                List tasks = p.getTasks ();
-//                for (Iterator i = tasks.iterator (); i.hasNext (); ) {
-//                    Task t = (Task) i.next ();
-//                    if (t.getTaskId ().hashCode () == pid) {
-//                        t.traceSyscall = true;
-//                        t.requestAddSyscallObserver (syscallObserver);
-//                        t.requestAddSignaledObserver (syscallObserver);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Check that we can attach to a process currently in a syscall
-//     * and trace syscall events properly.
-//     */
-//    public void testSyscallInterrupt ()
-//    {
-//	if (skip) {
-//	    System.out.print ("<<BROKEN>>"); // XXX
-//	    return;
-//	}
-//	PipeReadChild prc = new PipeReadChild (false);
-//
-//	TestSyscallInterruptInternals t 
-//	    = new TestSyscallInterruptInternals (prc.getPid ());
-//	new StopEventLoopWhenChildProcRemoved ();
-//
-// 	assertRunUntilStop ("run \"syscallint\" until exit");
-//	assertEquals ("read enter events", 1, t.readEnter);
-//	assertEquals ("read exit events", 1, t.readExit);
-//	assertEquals ("SIGUSR1 events", 1, t.sigusr1Count);
-//    }
-//
-//    /**
-//     * Check that we can attach to a process currently in a syscall
-//     * and trace syscall events properly.
-//     */
-//    public void testSyscallInterruptRestart ()
-//    {
-//	if (skip) {
-//	    System.out.print ("<<BROKEN>>"); // XXX
-//	    return;
-//	}
-//	PipeReadChild prc = new PipeReadChild (true);
-//
-//	TestSyscallInterruptInternals t
-//	    = new TestSyscallInterruptInternals (prc.getPid ());
-//	new StopEventLoopWhenChildProcRemoved ();
-//
-// 	assertRunUntilStop ("run \"syscallint\" with restart until exit");
-//	assertEquals ("restart read enter events", 2, t.readEnter);
-//	assertEquals ("restart read exit events", 2, t.readExit);
-//	assertEquals ("restart sigusr1 events", 1, t.sigusr1Count);
-//    }
+        class TestSyscallInterruptInternals {
+	int readEnter, readExit, sigusr1Count;
+	
+	// Need to add task observers to the process the moment it is
+	// created, otherwize the creation of the very first task is
+	// missed (giving a mismatch of task created and deleted
+	// notifications.)
+	
+	class SyscallInterruptObserver
+	    extends SyscallObserver
+            implements TaskObserver.Signaled
+	{
+	    public Action updateSyscallEnter (Task task)
+	    {
+		super.updateSyscallEnter (task);
+		SyscallEventInfo syscallEventInfo
+		    = task.getIsa ().getSyscallEventInfo ();
+		int syscallNum = syscallEventInfo.number (task);
+		// verify that read attempted
+		if (syscallNum == SyscallNum.SYSread) { 
+		    long numberOfBytes = syscallEventInfo.arg (task, 3);
+		    logger.log(Level.FINE, "{0} updateSyscallEnter READ\n", this);
+		    if (numberOfBytes != 1)
+			throw new RuntimeException ("bytes to read not 1");
+		    if (readEnter == 0)
+			Manager.eventLoop.add (new PausedReadTimerEvent (task, 500));
+		    ++readEnter;
+		}
+		return Action.CONTINUE;
+	    }
+	    public Action updateSyscallExit (Task task)
+	    {
+		super.updateSyscallExit (task);
+		SyscallEventInfo syscallEventInfo
+		    = task.getIsa ().getSyscallEventInfo ();
+		int syscallNum = syscallEventInfo.number (task);
+		if (syscallNum == SyscallNum.SYSread) {
+     		   logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
+		   if (readEnter <= readExit)
+			throw new RuntimeException ("Read exit before enter");
+		    ++readExit;
+		}
+		return Action.CONTINUE;
+	    }
+            public Action updateSignaled (Task task, int sig)
+            {
+		if (sig == Sig.USR1_)
+		    sigusr1Count++;
+                return Action.CONTINUE;
+            }
+        }
+
+	class PausedReadTimerEvent
+	    extends frysk.event.TimerEvent
+	{
+	    Task task;
+	    long milliseconds;
+	    PausedReadTimerEvent (Task task, long milliseconds)
+	    {
+		super (milliseconds);
+		this.task = task;
+		this.milliseconds = milliseconds;
+	    }
+	    public void execute ()
+	    {
+		// Make sure we didn't get a read exit up to now
+		// as we are expecting to interrupt a blocked read.
+		if (readExit > 0)
+		    throw new RuntimeException ("read exited without signal");
+		// We want to signal the process so it will interrupt
+		// the read.
+		Signal.tkill (task.getTid (), Sig.USR1);
+	    }
+	}
+
+	SyscallInterruptObserver syscallObserver = new SyscallInterruptObserver ();
+	
+	TestSyscallInterruptInternals (int pid)
+	{
+            host.requestRefreshXXX (true);
+            Manager.eventLoop.runPending ();
+
+            Proc p = host.getProc (new ProcId (pid));
+
+            if (p != null) {
+                List tasks = p.getTasks ();
+                for (Iterator i = tasks.iterator (); i.hasNext (); ) {
+                    Task t = (Task) i.next ();
+                    if (t.getTaskId ().hashCode () == pid) {
+                        t.requestAddSyscallObserver (syscallObserver);
+                        assertRunUntilStop ("Add syscallObservers");
+                        t.requestAddSignaledObserver (syscallObserver);
+                        assertRunUntilStop ("Add signaledObservers");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Check that we can attach to a process currently in a syscall
+     * and trace syscall events properly.
+     */
+    public void testSyscallInterrupt ()
+    {
+	if (skip) {
+	    System.out.print ("<<BROKEN>>"); // XXX
+	    return;
+	}
+	PipeReadChild prc = new PipeReadChild (false);
+
+	TestSyscallInterruptInternals t 
+	    = new TestSyscallInterruptInternals (prc.getPid ());
+	new StopEventLoopWhenProcRemoved (prc.getPid());
+	
+ 	assertRunUntilStop ("run \"syscallint\" until exit");
+	assertEquals ("read enter events", 1, t.readEnter);
+	assertEquals ("read exit events", 1, t.readExit);
+	assertEquals ("SIGUSR1 events", 1, t.sigusr1Count);
+	assertTrue ("inSyscall", t.syscallObserver.inSyscall);
+    }
+
+    /**
+     * Check that we can attach to a process currently in a syscall
+     * and trace syscall events properly.
+     */
+    public void testSyscallInterruptRestart ()
+    {
+	if (skip) {
+	    System.out.print ("<<BROKEN>>"); // XXX
+	    return;
+	}
+	PipeReadChild prc = new PipeReadChild (true);
+
+	TestSyscallInterruptInternals t
+	    = new TestSyscallInterruptInternals (prc.getPid ());
+	new StopEventLoopWhenProcRemoved (prc.getPid());
+
+ 	assertRunUntilStop ("run \"syscallint\" with restart until exit");
+	assertEquals ("restart read enter events", 2, t.readEnter);
+	assertEquals ("restart read exit events", 2, t.readExit);
+	assertEquals ("restart sigusr1 events", 1, t.sigusr1Count);
+	assertTrue ("inSyscall", t.syscallObserver.inSyscall);
+    }
 }

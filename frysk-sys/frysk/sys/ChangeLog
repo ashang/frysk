@@ -1,3 +1,8 @@
+2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* cni/Wait.cxx: Fixed a bug resluting in the errno being
+	overwritten before being reported
+
 2006-06-15  Mike Cvet  <mcvet@redhat.com>
 
 	* Ptrace.java: Re-written to now perform all ptrace requests on a

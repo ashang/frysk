@@ -1113,6 +1113,35 @@ public class TestLib
 	    Proc proc = (Proc) obj;
 	    if (isChildOfMine (proc)) {
 		// Shut things down.
+		logger.log(Level.FINE, "{0} update {1} has been removed stopping event loop\n", new Object[]{this, proc});
+		Manager.eventLoop.requestStop ();
+		p = true;
+	    }else{
+		logger.log(Level.FINER, "{0} update {1} has been removed NOT stopping event loop because the parent of proc is {2}\n", new Object[]{this, proc, proc.getParent()});
+	    }
+	}
+    }
+
+    /**
+     * An observer that stops the eventloop when the process
+     * with the given pid is removed.
+     */
+    protected class StopEventLoopWhenProcRemoved
+	implements Observer
+    {
+	boolean p;
+	int pid;
+	StopEventLoopWhenProcRemoved (int pid)
+	{
+            this.pid = pid;
+	    Manager.host.observableProcRemovedXXX.addObserver (this);
+	}
+	public void update (Observable o, Object obj)
+	{
+	    Proc proc = (Proc) obj;
+	    if (proc.getPid() == this.pid) {
+		// Shut things down.
+		logger.log(Level.FINE, "{0} update {1} has been removed stopping event loop\n", new Object[]{this, proc});
 		Manager.eventLoop.requestStop ();
 		p = true;
 	    }

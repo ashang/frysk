@@ -618,12 +618,15 @@ abstract public class Task
      */
     int notifyTerminated (boolean signal, int value)
     {
+	logger.log(Level.FINE, "{0} notifyTerminated\n", this);
 	for (Iterator i = terminatedObservers.iterator ();
 	     i.hasNext (); ) {
 	    TaskObserver.Terminated observer
 		= (TaskObserver.Terminated) i.next ();
-	    if (observer.updateTerminated (this, signal, value) == Action.BLOCK)
+	    if (observer.updateTerminated (this, signal, value) == Action.BLOCK){
+		logger.log(Level.FINER, "{0} notifyTerminated adding {1} to blockers\n", new Object[]{this, observer});
 		blockers.add (observer);
+	    }
 	}
 	return blockers.size ();
     }

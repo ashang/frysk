@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+#define _GNU_SOURCE
+
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -44,10 +46,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include <sys/wait.h>
+
+#include "util.h"
 
 int childPid;
 
-_syscall2(int, tkill, pid_t, tid, int, sig);
+//_syscall2(int, tkill, pid_t, tid, int, sig);
 
 void handler (int sig) {
    tkill (childPid, SIGUSR2);
@@ -72,9 +77,8 @@ int main (int argc, char **argv)
   int fryskSig;
   int restart;
 
-  if (pipe (fd) < 0 || pipe (fd2) < 0) {
-    abort ();
-  }
+  OK(pipe,(fd));
+  OK(pipe,(fd2));
 
   // Get the frysk manager pid and signal to use to
   // indicate everything is ready.
@@ -105,6 +109,8 @@ int main (int argc, char **argv)
 	abort ();
       }
     }
+    trace("wrote to the parent process fd2[1]");
+
     // Wait until we get a signal and then allow program to finish.
     sigsuspend (&a);
     if (write (fd[1], "a", 1) < 0) {
@@ -113,7 +119,10 @@ int main (int argc, char **argv)
 	abort ();
       }
     }
+    trace("wrote to fd[1]");
+
     close (fd[1]);
+
   }
   else {
     /* Parent process.  */
@@ -140,16 +149,24 @@ int main (int argc, char **argv)
 	abort ();
       }
     }
+    trace("read from child process fd2[0]");
+
     // Indicate to frysk that parent and child processes are ready.
+    trace("signaling frysk...");
     tkill (fryskPid, fryskSig);
+    trace("signaled frysk");
+
+    trace("waiting to read from fd[0]");
     if (read (fd[0], buf, 1) < 0) {
       if (errno != EINTR) {
 	perror ("read");
 	abort ();
       }
     }
+    trace("read from fd[0]");
     close (fd[0]);
   }
 
+  trace("DONE");
   return 0;
 }

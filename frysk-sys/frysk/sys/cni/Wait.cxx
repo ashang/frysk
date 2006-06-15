@@ -175,12 +175,14 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   // processed, that way there is no possibility of a continued thread
   // getting its next event back on the queue resulting in live lock.
 
+  int myErrno = 0;
   int i = 0;
   while (true) {
     // Keep fetching the wait status until there are none left.  If
     // there are no children ECHILD is returned which is ok.
     errno = 0;
     tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
+    myErrno = errno;
     log (tail->pid, tail->status, errno);
     if (tail->pid <= 0)
       break;
@@ -191,12 +193,12 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   if (i > 2001)
     printf ("\tYo! There were %d simultaneous pending waitpid's!\n", i);
   // Check the reason for exiting.
-  switch (errno) {
+  switch (myErrno) {
   case 0:
   case ECHILD:
     break;
   default:
-    throwErrno (errno, "waitpid", "process", -1);
+    throwErrno (myErrno, "waitpid", "process", -1);
   }
 
   // Now unpack each, notifying the observer.

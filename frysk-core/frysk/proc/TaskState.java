@@ -303,6 +303,7 @@ class TaskState
 	 */
 	static TaskState transitionToSyscallRunningState (Task task)
 	{
+	    logger.log(Level.FINE, "transitionToSyscallRunningState\n");
 	    if (task.notifyAttached () > 0)
 		return syscallBlockedContinue;
 	    task.sendSyscallContinue (0);
@@ -895,28 +896,28 @@ class TaskState
 			return syscallRunning;
 		}
 		
-		TaskState handleExecedEvent (Task task)
-		{
-			logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
-			// Remove all tasks, retaining just this one.
-			task.proc.retain (task);
-			((LinuxProc)task.proc).getStat ().refresh();
-			if (task.notifyExeced () > 0) {
-			    return syscallBlockedInExecSyscall;
-			}
-			else {
-			    task.sendSyscallContinue (0);
-			    // return syscallRunning;
-			    // The assumption here is that if the state is in syscall tracing
-			    // mode and it recieves an exec event then the next event will be
-			    // a syscalledEvent. Using this assumption if an execedEvent is 
-			    // recieved outside of runningInSyscall we can conclude that we have
-			    // messed the syscalledEvent representing the entry to the exec syscall
-			    // thus the next event will represent the exit and the correct state
-			    // is runningInSyscall
-			    return runningInSyscall;
-			}
-		}
+//		TaskState handleExecedEvent (Task task)
+//		{
+//			logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
+//			// Remove all tasks, retaining just this one.
+//			task.proc.retain (task);
+//			((LinuxProc)task.proc).getStat ().refresh();
+//			if (task.notifyExeced () > 0) {
+//			    return syscallBlockedInExecSyscall;
+//			}
+//			else {
+//			    task.sendSyscallContinue (0);
+//			    // return syscallRunning;
+//			    // The assumption here is that if the state is in syscall tracing
+//			    // mode and it recieves an exec event then the next event will be
+//			    // a syscalledEvent. Using this assumption if an execedEvent is 
+//			    // recieved outside of runningInSyscall we can conclude that we have
+//			    // messed the syscalledEvent representing the entry to the exec syscall
+//			    // thus the next event will represent the exit and the correct state
+//			    // is runningInSyscall
+//			    return runningInSyscall;
+//			}
+//		}
 		TaskState handleContinue (Task task)
 		{
 			logger.log (Level.FINE, "{0} handleContinue\n", task); 
@@ -1267,7 +1268,7 @@ class TaskState
 		    task.blockers.remove (observer);
 		    if (task.blockers.size () > 0)
 			return this; // Still blocked.
-		    task.sendSyscallContinue(sig);
+		    task.sendSyscallContinue(0);
 		    return runningInSyscall;
 	    }
 	    
