@@ -387,7 +387,8 @@ frysk2631/ice.sh:
 XFAIL_TESTS += frysk2760/barriertest
 frysk2760_FILES = \
 	frysk2760/TestBarrier.cxx \
-	frysk2760/TestBarrier.java
+	frysk2760/TestBarrier.java \
+	frysk2760/linux.ptrace.h
 EXTRA_DIST += $(frysk2760_FILES)
 CLEANFILES += frysk2760/TestBarrier.h
 frysk2760/barriertest: $(frysk2760_FILES)
