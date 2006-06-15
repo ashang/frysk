@@ -90,6 +90,7 @@ import org.eclipse.cdt.core.parser.ast.IASTUsingDirective;
 import org.eclipse.cdt.core.parser.ast.IASTVariable;
 import org.eclipse.cdt.core.parser.ast.IASTVariableReference;
 
+import frysk.dom.DOMImage;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
 import frysk.dom.DOMTagTypes;
@@ -101,13 +102,15 @@ import frysk.dom.StaticParser;
  */
 public class CDTParser implements StaticParser {
 
+	private DOMImage image;
 	private DOMSource source;
 	
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMSource source) throws IOException {
+	public void parse(DOMSource source, DOMImage image) throws IOException {
 		this.source = source;
+		this.image = image;
 		
 		String filename = source.getFilePath() + "/" + source.getFileName();
 		
@@ -270,8 +273,12 @@ public class CDTParser implements StaticParser {
 			String lineText = line.getText();
 			String nameText = nameLine.getText();
 			
+			String funcName = nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length());
+			
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
-			nameLine.addTag(DOMTagTypes.FUNCTION, nameText.substring(arg0.getNameOffset() - nameLine.getOffset(), arg0.getNameOffset() - nameLine.getOffset() + arg0.getName().length()), arg0.getNameOffset() - nameLine.getOffset());
+			nameLine.addTag(DOMTagTypes.FUNCTION, funcName, funcName.length());
+			
+			image.addFunction(funcName, source.getFileName(), arg0.getStartingLine(), arg0.getEndingLine(), arg0.getStartingOffset(), arg0.getEndingOffset());
 			
 			// start building the full name of the function for jump-to purposes
 			String functionName = arg0.getName() + "(";

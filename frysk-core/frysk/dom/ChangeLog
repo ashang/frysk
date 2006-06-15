@@ -1,3 +1,15 @@
+2006-06-15  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DOMFactory.java (createDOM): Fixed off by one error for line offsets.
+	* cparser/StaticParser.java (parse): Now takes a DOMImage as well for
+	adding functions to.
+	* cparser/CDTParser.java (parse): Changed to reflect change in
+	interface.
+	(enterFunctionBody): Now adds the function to the DOMImage.
+	* cparser/CTagsParser.java (parse): Changed to reflect change in
+	interface.
+	* cparser/SimpleParser.java (parse): Ditto.
+
 2006-06-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMFactory.java (createDOM): Returns null if no DwflLine found.

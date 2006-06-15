@@ -61,7 +61,7 @@ public class DOMFactory {
 					DOMLine l = new DOMLine(lineNum++, text+"\n", offset, false, false, Long.parseLong("deadbeef", 16));
 					source.addLine(l);
 					
-					offset += text.length();
+					offset += text.length() + 1;
 				}
 			}
 			catch (FileNotFoundException e){
@@ -76,7 +76,7 @@ public class DOMFactory {
 			// Parse the file and populate the DOM
 			StaticParser parser = new CDTParser();
 			try{
-				parser.parse(source);
+				parser.parse(source, image);
 			}
 			catch (IOException e){
 				//XXX: bork?

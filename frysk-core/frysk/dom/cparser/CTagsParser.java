@@ -48,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import frysk.dom.DOMImage;
 import frysk.dom.DOMSource;
 import frysk.dom.StaticParser;
 
@@ -61,7 +62,7 @@ public class CTagsParser implements StaticParser {
 	/* (non-Javadoc)
 	 * @see frysk.gui.srcwin.StaticParser#parse(java.lang.String, com.redhat.fedora.frysk.gui.srcwin.SourceBuffer)
 	 */
-	public void parse(DOMSource source) throws IOException {
+	public void parse(DOMSource source, DOMImage image) throws IOException {
 		String[] command = new String[7];
 		command[0] = "ctags";
 		command[1] = "--fields=+KSn";
