@@ -1,3 +1,12 @@
+2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/ObserverManager.java: added loadObservers()
+	to init instead of it having to be called expelictly fix for (2707).
+	Added log statements.
+	Added check for existing observers with the same name as
+	observer being loaded, and code to update them if thats the
+	case.
+
 2006-06-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ListView.java (add): Added stickySelectMode. If

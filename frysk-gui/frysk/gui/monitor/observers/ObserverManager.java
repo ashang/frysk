@@ -41,6 +41,7 @@ package frysk.gui.monitor.observers;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import org.jdom.Element;
 
@@ -48,6 +49,7 @@ import frysk.Config;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.AddTaskObserverAction;
 import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.TaskProcNameFilter;
@@ -66,7 +68,6 @@ public class ObserverManager {
 	public static ObserverManager theManager = new ObserverManager();
 
 	static{
-		theManager.loadObservers();
 		theManager.init();
 	}
 	
@@ -98,6 +99,7 @@ public class ObserverManager {
 	
 	public void init(){
 		this.initTaskObservers();
+		this.loadObservers();
 	}
 	
 	/**
@@ -252,6 +254,7 @@ public class ObserverManager {
 	}
 	
 	private void loadObservers(){
+		WindowManager.logger.log(Level.FINE, "{0} loadObservers\n", this);
 		Element node = new Element("Observer");
 		File observerDir = new File(this.OBSERVERS_DIR);
 		
@@ -265,6 +268,13 @@ public class ObserverManager {
 			try{
 				node = ObjectFactory.theFactory.importNode(OBSERVERS_DIR+array[i]);
 				loadedObserver = (ObserverRoot)ObjectFactory.theFactory.loadObject(node);
+				ObserverRoot existingObserver = this.getObserverByName(loadedObserver.getName());
+				if(existingObserver != null){
+					// if there is an observer with the same name already
+					// assume the one being loaded is more uptodate.
+					this.removeTaskObserverPrototype(existingObserver);
+				}
+				WindowManager.logger.log(Level.FINER, "{0} loadObservers loaded {1}\n", new Object[]{this, loadedObserver.getName()});
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -282,6 +292,9 @@ public class ObserverManager {
 				Element node = new Element("Observer");
 				ObjectFactory.theFactory.saveObject(observer, node);
 				ObjectFactory.theFactory.exportNode( OBSERVERS_DIR + observer.getName(), node);
+				WindowManager.logger.log(Level.FINER, "{0} save saved {1}\n", new Object[]{this, observer.getName()});
+			}else{
+				WindowManager.logger.log(Level.FINER, "{0} save did not save {1}\n", new Object[]{this, observer.getName()});
 			}
 		}
 		
