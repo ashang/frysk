@@ -41,6 +41,7 @@ package frysk.gui.srcwin;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import lib.dw.DwflLine;
 
@@ -54,6 +55,7 @@ import org.jdom.output.XMLOutputter;
 import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
+import frysk.dom.DOMImage;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -199,7 +201,11 @@ public class SourceWindowFactory {
 				
 //			printDOM(dom);
 		
-			DOMFunction f = DOMFunction.createDOMFunction(dom.getImage(task.getName()), "main", "looper.c", 3, 3, 24, 28);
+//			DOMFunction f = DOMFunction.createDOMFunction(dom.getImage(task.getName()), "main", "looper.c", 3, 3, 24, 28);
+		
+			String filename = line.getSourceFile();
+			filename = filename.substring(filename.lastIndexOf("/") + 1);
+			DOMFunction f = getFunctionXXX(dom.getImage(task.getName()), filename, line.getLineNum());
 			
 			StackLevel stack1 = new StackLevel(f, line.getLineNum());
 			
@@ -224,6 +230,24 @@ public class SourceWindowFactory {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static DOMFunction getFunctionXXX(DOMImage image, String filename, int linenum){
+		Iterator functions = image.getFunctions();
+		
+		System.out.println("Looking for " + filename + ": " + linenum);
+		
+		while(functions.hasNext()){
+			DOMFunction function = (DOMFunction) functions.next();
+			System.out.println("\t"+function.getSource().getFileName() + ": " + function.getStartingLine());
+			if(function.getSource().getFileName().equals(filename) &&
+					function.getStartingLine() == linenum)
+				return function;
+		}
+		
+		System.out.println("nope");
+		
+		return null;
 	}
 	
 	/*
