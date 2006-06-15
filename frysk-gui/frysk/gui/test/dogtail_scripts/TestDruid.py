@@ -122,12 +122,65 @@ class TestDruid ( unittest.TestCase ):
     
         # ---------------------
         # Access the Druid GUI
-        theDruid = self.frysk.dialog('Debug Session Druid')
+        theDruid = self.frysk.child(name='Frysk Startup Manager')
+        theDruid.blink()
+        theDruid.blink()
+        theDruid.blink()
+        theDruid.blink()
+        
+        newButton = theDruid.child (name='New', roleName = 'push button')
+        newButton.blink()
+        newButton.blink()
+        newButton.blink()
+        newButton.blink()
+        newButton.click()
+        
+        theSessionManager = self.frysk.dialog('Create a Frysk Session Dialog')
+        theSessionManager.blink()
+        theSessionManager.blink()
+        theSessionManager.blink()        
+        theSessionManager.blink()
+        
+        quitButton = theDruid.button('Quit')
+        openButton = theDruid.button('Open')
+        quitButton.blink()
+        quitButton.blink()
+        quitButton.blink()        
+        quitButton.blink()
+        
+        
+        
+        
 
         # And the GUI's 'notebook' of pages
-        vbox1 = theDruid.child('dialog-vbox1')
+        vbox1 = theSessionManager.child('dialog-vbox1')
+        vbox1.blink()
+        vbox1.blink()
+        vbox1.blink()        
+        vbox1.blink()
+        
         sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
-
+        sessionDruid_sessionNoteBook.blink()
+        sessionDruid_sessionNoteBook.blink()
+        sessionDruid_sessionNoteBook.blink()
+        
+        vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
+        vbox43_tab2_processGroups.blink()
+        vbox43_tab2_processGroups.blink()
+        vbox43_tab2_processGroups.blink()
+        
+        sessionNameText = vbox43_tab2_processGroups.child(name='sessionNameText')
+        sessionNameText.blink()
+        sessionNameText.blink()
+        sessionNameText.blink()
+        sessionNameText.text = self.theSession.getName()
+        
+        hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
+        hbox62_tab2_groupLists.blink()
+        hbox62_tab2_groupLists.blink()        
+        hbox62_tab2_groupLists.blink()
+        hbox62_tab2_groupLists.blink()
+                
         # ---------------------
         # The action buttons are displayed on the bottom of all pages - the
         # specific buttons (Back, Forward, Finish) that are visible or enabled
@@ -145,12 +198,12 @@ class TestDruid ( unittest.TestCase ):
         # debug session is not implemented in the GUI - so, for now, we'll 
         # always create a new session
 
-        vbox42_tab1_session = sessionDruid_sessionNoteBook.child('vbox42_tab1_session')
-        newDebugSession = vbox42_tab1_session.child('sessionDruid_newSessionButton')
-        newDebugSession.click()
-        newSessionName = vbox42_tab1_session.child(name = 'sessionDruid_sessionName', roleName='text')
-        newSessionName.text = self.theSession.getName()
-        forwardButton.click()
+        #vbox42_tab1_session = sessionDruid_sessionNoteBook.child('vbox42_tab1_session')
+        #newDebugSession = vbox42_tab1_session.child('sessionDruid_newSessionButton')
+        #newDebugSession.click()
+        #newSessionName = vbox42_tab1_session.child(name = 'sessionDruid_sessionName', roleName='text')
+        #newSessionName.text = self.theSession.getName()
+        #forwardButton.click()
 
         # ---------------------
         # page #2 - vbox43_tab2_processGroups - Select process groups to monitor
@@ -158,8 +211,8 @@ class TestDruid ( unittest.TestCase ):
         vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
 
         # Select the host to monitor - for now, only local host works, so take no action
-        hbox61_tab2_host = vbox43_tab2_processGroups.child('hbox61_tab2_host')  
-        hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
+        #hbox61_tab2_host = vbox43_tab2_processGroups.child('hbox61_tab2_host')  
+        #hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
 
         # Need to add a test here - the forwardButton is not sensitive until at least 
         # one process group is selected - need to try and catch an exception for:
@@ -224,7 +277,11 @@ class TestDruid ( unittest.TestCase ):
         forwardButton.click()
 
         # Close the Druid
-        finishButton.click()  
+        finishButton.click() 
+        quitButton.click()
+         
+        
+        
 
    def testSessionFile( self ):      
         """Verify that the session object just created and presisted under $HOME/.frysk/Sessions
@@ -252,7 +309,7 @@ class TestDruid ( unittest.TestCase ):
 
    def tearDown( self ):  
        # Exit Frysk
-       endFrysk( self.frysk )
+       #endFrysk( self.frysk )
        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
  
 def suite():
