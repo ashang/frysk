@@ -68,12 +68,15 @@ public class FilterRow extends ObserverItemRow{
 		ObservableLinkedList comboList = ComboFactory.theFactory.getFilterCombos(observer);
 		itemsComboBox.watchLinkedList(comboList);
 		
+		booleanComboBox = new SimpleComboBox();
+		booleanComboBox.watchLinkedList(booleanList);
+		
 		if(combo != null){
 			filter = (Filter) combo.getFilter();
 			itemsComboBox.setSelectedText(combo.getName());
 			comboList.swap(itemsComboBox.getSelectedObject(), combo);
 			itemsComboBox.setSelectedObject(combo);
-		
+			
 			boolean currentBoolean = filter.getFilterBoolean();
 //			System.out.println(this + ": FilterRow.FilterRow() currentBoolean " + currentBoolean );
 			if(currentBoolean){
@@ -98,8 +101,7 @@ public class FilterRow extends ObserverItemRow{
 			});
 		}
 				
-		booleanComboBox = new SimpleComboBox();
-		booleanComboBox.watchLinkedList(booleanList);
+
 				
 	}	
 	
