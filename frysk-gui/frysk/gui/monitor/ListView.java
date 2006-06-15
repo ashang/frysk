@@ -52,6 +52,7 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
+import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
@@ -77,6 +78,7 @@ public class ListView extends TreeView implements Observer {
 	private ItemRemovedObserver itemRemovedObserver;
 	
 	private CellRendererText cellRendererText;
+	private boolean stickySelect = false;
 	
 	public ListView(){
 		super();
@@ -88,6 +90,10 @@ public class ListView extends TreeView implements Observer {
 		this.init();
 	}
 	
+	public void setStickySelect(boolean selectMode)
+	{
+		this.stickySelect = selectMode;
+	}
 
 	public void addEditListener(CellRendererTextListener listener)
 	{
@@ -109,7 +115,11 @@ public class ListView extends TreeView implements Observer {
 		TreeViewColumn nameCol = new TreeViewColumn();
 		nameCol.packStart(cellRendererText, false);
 		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
+		
+		this.listStore.setSortColumn(nameDC,SortType.ASCENDING);
+		this.setReorderable(true);
 		this.appendColumn(nameCol);	
+		
 	}
 	
 	private void init(){
@@ -126,7 +136,7 @@ public class ListView extends TreeView implements Observer {
 		this.initListStore();
 		this.setModel(listStore);
 		this.initTreeView();
-		
+	
 	}
 	
 	public Iterator getSelectedObjects(){
@@ -158,6 +168,8 @@ public class ListView extends TreeView implements Observer {
 	public void add(GuiObject object){
 		TreeIter treeIter = listStore.appendRow();
 		this.add(object, treeIter);
+		if (this.stickySelect)
+			setSelectedObject(object);
 	}
 	
 	/**
@@ -181,6 +193,8 @@ public class ListView extends TreeView implements Observer {
 	public void add(GuiObject object, int index){
 		TreeIter treeIter = listStore.insertRow(index);
 		this.add(object, treeIter);
+		if (this.stickySelect)
+			setSelectedObject(object);
 	}
 	
 	/**
@@ -194,6 +208,8 @@ public class ListView extends TreeView implements Observer {
 		listStore.setValue(treeIter, objectDC, object);
 		this.map.put(object, treeIter);
 		object.addObserver(this);	
+		if (this.stickySelect)
+			setSelectedObject(object);
 	}
 	
 	public void remove(GuiObject object){

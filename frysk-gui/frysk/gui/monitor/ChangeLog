@@ -1,3 +1,10 @@
+2006-06-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ListView.java (add): Added stickySelectMode. If
+	true, then the last object added is auto-selected.
+	(setStickySelect): Added. Set mode.
+	(initTreeView): Set sort order.
+
 2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* MenuBar.java (menuItemEvent): Removed references to customObserverWindow.
