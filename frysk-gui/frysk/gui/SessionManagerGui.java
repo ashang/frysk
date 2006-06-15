@@ -355,7 +355,7 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 	public boolean lifeCycleQuery(LifeCycleEvent event) {
 		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
-					this.hideAll();
+					System.exit(0);
 					return true;
 		}
 		return false;

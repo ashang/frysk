@@ -1,3 +1,9 @@
+2006-06-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionManagerGui.java (lifeCycleQuery): Fix bz 2769. 
+	Change behaviour of Window close event to System.exit(), 
+	not Window.hideAll().
+
 2006-06-14  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* glade/procpop.glade: removed all refresh buttons.
