@@ -74,7 +74,7 @@ public class ListView extends TreeView implements Observer {
 	protected ObservableLinkedList watchedList;
 	
 	private ItemAddedObserver itemAddedObserver;
-	private ItemRemvoedObserver itemRemvoedObserver;
+	private ItemRemovedObserver itemRemovedObserver;
 	
 	private CellRendererText cellRendererText;
 	
@@ -116,7 +116,7 @@ public class ListView extends TreeView implements Observer {
 		this.setHeadersVisible(false);
 	
 		this.itemAddedObserver = new ItemAddedObserver();
-		this.itemRemvoedObserver = new ItemRemvoedObserver();
+		this.itemRemovedObserver = new ItemRemovedObserver();
 		
 		this.map = new HashMap();
 		
@@ -206,7 +206,7 @@ public class ListView extends TreeView implements Observer {
 	public void unwatchList(){
 		this.clear();
 		this.watchedList.itemAdded.deleteObserver(itemAddedObserver);
-		this.watchedList.itemRemoved.deleteObserver(itemRemvoedObserver);
+		this.watchedList.itemRemoved.deleteObserver(itemRemovedObserver);
 		this.watchedList = null;
 		
 	}
@@ -243,7 +243,7 @@ public class ListView extends TreeView implements Observer {
 		Iterator iterator = linkedList.iterator();
 		
 		linkedList.itemAdded.addObserver(this.itemAddedObserver);
-		linkedList.itemRemoved.addObserver(this.itemRemvoedObserver);
+		linkedList.itemRemoved.addObserver(this.itemRemovedObserver);
 		
 		while (iterator.hasNext()) {
 			GuiObject object = (GuiObject) iterator.next();
@@ -284,7 +284,7 @@ public class ListView extends TreeView implements Observer {
 		}
 	}
 	
-	class ItemRemvoedObserver implements Observer{
+	class ItemRemovedObserver implements Observer{
 		public void update(Observable arg0, Object object) {
 			remove((GuiObject) object);
 		}
