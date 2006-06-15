@@ -207,7 +207,7 @@ lib::elf::Elf::elf_getshnum (jlong dst){
 
 jint
 lib::elf::Elf::elf_getshstrndx (jlong dst){
-	return ::elf_getshstrndx((::Elf*) this->pointer, (size_t*)(long) dst);
+	return ::elf_getshstrndx((::Elf*) this->pointer, (size_t*)(long) &dst);
 }
 
 jint
