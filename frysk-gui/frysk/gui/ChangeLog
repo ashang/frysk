@@ -1,3 +1,8 @@
+2006-06-15  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionManagerGui.java: Added double-click listener to
+	launch a session.
+
 2006-06-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (lifeCycleQuery): Fix bz 2769. 

@@ -62,6 +62,8 @@ import org.gnu.gtk.event.ToggleEvent;
 import org.gnu.gtk.event.ToggleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
+import org.gnu.gtk.event.TreeViewEvent;
+import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
@@ -209,6 +211,18 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 					}
 				}
 		});
+		
+
+		previousSessions.addListener( new TreeViewListener() {
+			public void treeViewEvent(TreeViewEvent arg0) {
+			      if (arg0.isOfType(TreeViewEvent.Type.ROW_ACTIVATED ))
+			      {
+			    	  WindowManager.theManager.mainWindow.showAll();
+			    	  WindowManager.theManager.mainWindow.setSession(
+			    			  (Session)previousSessions.getSelectedObject());
+			    	  hideAll();  
+			      }
+			}});
 		
 		previousSessions.getSelection().addListener(new TreeSelectionListener() {
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
