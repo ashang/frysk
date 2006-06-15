@@ -45,7 +45,9 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <linux/unistd.h>
+#include <linux.syscall.h>
 
 _syscall2(int, tkill, pid_t, tid, int, sig);
 

@@ -49,6 +49,8 @@
 #include <limits.h>
 #include <pthread.h>
 #include <string.h>
+#include <linux.syscall.h>
+#include <unistd.h>
 
 
 // Simple sleep for roughly SECONDS and then exit.

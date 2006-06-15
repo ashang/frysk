@@ -38,7 +38,7 @@
 # exception.
 
 EXTRA_DIST =
-AM_CFLAGS = -Werror -Wall
+AM_CFLAGS = -Werror -Wall -I$(top_srcdir)/include
 # Gag all the output from the failing tests
 noinst_PROGRAMS =
 noinst_SCRIPTS =

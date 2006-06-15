@@ -1,3 +1,17 @@
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* frysk2595/ptrace_after_exec.c: Added #include <linux.syscall.h>
+	and <sys/syscall>.
+	* frysk2595/ptrace_after_exec_of_thread.c: Ditto.
+	* frysk2595/ptrace_after_forked_thread_exits.c: Ditto.
+	* frysk2595/ptrace_before_forked_thread_exits.c: Ditto.
+	* frysk2595/ptrace_peek_wrong_thread.c: Ditto.
+	* process/multi_child_exec.c: Ditto.
+	* process/multi_child_parent_exec.c: Ditto.
+	* process/multi_parent_exec.c: Ditto.
+	* process/single_exec.c: Ditto.
+	* Makefile.am (AM_CFLAGS): Add -I$(top_srcdir)/include.
+
 2006-06-15  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (frysk2760_FILES): Add frysk2760/linux.ptrace.h

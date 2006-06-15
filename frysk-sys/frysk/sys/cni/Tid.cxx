@@ -39,6 +39,8 @@
 
 #include <sys/types.h>
 #include <linux/unistd.h>
+#include <linux.syscall.h>
+#include <unistd.h>
 
 _syscall0(pid_t,gettid)
 

@@ -49,6 +49,7 @@
 #include <linux/unistd.h>
 #include <pthread.h>
 #include <sys/poll.h>
+#include <linux.syscall.h>
 
 #define __REENTRANT
 

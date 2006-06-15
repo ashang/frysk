@@ -7,6 +7,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <linux/unistd.h>
+#include <linux.syscall.h>
+
 _syscall0(pid_t,gettid)
 
 int

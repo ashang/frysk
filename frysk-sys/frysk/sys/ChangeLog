@@ -1,3 +1,9 @@
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* cni/Poll.cxx: Add #include <linux.syscall> and <unistd.h>
+	* cni/Signal.cxx: Ditto.
+	* cni/Tid.cxx: Ditto.
+	
 2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* cni/Wait.cxx: Fixed a bug resluting in the errno being

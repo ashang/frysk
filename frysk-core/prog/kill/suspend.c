@@ -45,6 +45,8 @@
 #include <linux/unistd.h>
 #include <limits.h>
 #include <pthread.h>
+#include <linux.syscall.h>
+#include <unistd.h>
 
 pthread_mutex_t start;
 pthread_mutex_t stop;

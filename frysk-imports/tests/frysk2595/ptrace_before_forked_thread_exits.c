@@ -48,6 +48,7 @@
 #include <errno.h>
 #include <linux/unistd.h>
 #include <pthread.h>
+#include <linux.syscall.h>
 
 #define __REENTRANT
 

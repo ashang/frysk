@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <string.h>
 #include <sys/time.h>
+#include <linux.syscall.h>
+
 _syscall0(pid_t,gettid);
 
 #define NUM_THREADS 2

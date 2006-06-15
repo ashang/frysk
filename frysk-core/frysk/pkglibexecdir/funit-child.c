@@ -55,8 +55,10 @@
 #include <sys/prctl.h>
 #include <stdarg.h>
 
-#include "util.h"
+#include <linux.syscall.h>
+#include <unistd.h>
    
+#include "util.h"
 
 
 static void usage ()

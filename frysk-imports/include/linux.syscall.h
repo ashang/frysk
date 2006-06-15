@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,33 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <sys/types.h>
-#include <signal.h>
-#include <linux/unistd.h>
-#include <errno.h>
-
-#include <gcj/cni.h>
-
-#include "frysk/sys/Signal.h"
-#include "frysk/sys/Sig.h"
-#include "frysk/sys/cni/Errno.hxx"
-#include <linux.syscall.h>
-#include <unistd.h>
-
-void
-frysk::sys::Signal::tkill (jint tid, frysk::sys::Sig* sig)
-{
-  int signum = sig->hashCode ();
-  errno = 0;
-  if (::syscall (__NR_tkill, tid, signum) < 0)
-    throwErrno (errno, "tkill", "task", tid);
+#undef _syscall0
+#define _syscall0(type,name)						\
+type name(void)								\
+{									\
+        return syscall(__NR_##name);					\
 }
 
-void
-frysk::sys::Signal::kill (jint pid, frysk::sys::Sig* sig)
-{
-  int signum = sig->hashCode ();
-  errno = 0;
-  if (::kill (pid, signum) < 0)
-    throwErrno (errno, "kill", "process", pid);
+#undef _syscall1
+#define _syscall1(type,name,type1,arg1)					\
+type name(type1 arg1)							\
+{									\
+        return syscall(__NR_##name, arg1);				\
+}
+
+#undef _syscall2
+#define _syscall2(type,name,type1,arg1,type2,arg2)			\
+type name(type1 arg1,type2 arg2)					\
+{									\
+        return syscall(__NR_##name, arg1, arg2);			\
+}
+
+#undef _syscall3
+#define _syscall3(type,name,type1,arg1,type2,arg2,type3,arg3)		\
+type name(type1 arg1,type2 arg2, type3 arg3)				\
+{									\
+  return syscall(__NR_##name, arg1, arg2, arg3);			\
 }

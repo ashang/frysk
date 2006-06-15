@@ -153,6 +153,7 @@ AM_CXXFLAGS = \
 	$(ZZZ)
 
 AM_CFLAGS = \
+	-I$(top_srcdir)/../frysk-imports/include \
 	-I$(srcdir) \
 	-I$(top_builddir) \
 	-Werror \

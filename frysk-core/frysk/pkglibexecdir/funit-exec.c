@@ -45,6 +45,8 @@
 #include <ctype.h>
 #include <pthread.h>
 #include <limits.h>
+#include <linux.syscall.h>
+#include <unistd.h>
 
 #include "util.h"
 

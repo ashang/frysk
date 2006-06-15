@@ -47,7 +47,9 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <linux/unistd.h>
+#include <sys/syscall.h>
 #include <pthread.h>
+#include <linux.syscall.h>
 
 #define __REENTRANT
 
