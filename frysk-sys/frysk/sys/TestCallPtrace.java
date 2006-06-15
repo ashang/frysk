@@ -39,124 +39,38 @@
 
 package frysk.sys;
 
-/**
- * Host Errors, thrown by this directory.
- */
+import junit.framework.TestCase;
 
-public class Errno
-    extends RuntimeException
-{
-    private static final long serialVersionUID = 1L;
+public class TestCallPtrace extends TestCase {
 
-    /**
-     * Bad file descriptor.
-     */
-    static public class Ebadf
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Ebadf (String message)
-	{
-	    super (message);
+	private int pid;
+	
+	public void testFillEmpty () {
+		
+		String[] args = {"/bin/true"};
+		pid = Ptrace.child(null, null, null, args);
+		assertTrue(pid > 0);
+		System.out.println("JAVA: PID: " + pid);
+		int temp = TestLib.waitIt(pid);
+		assertEquals("Return from waitpid()", temp, pid);
+		Ptrace.singleStep(pid, 0);
+		System.out.println("JAVA: Finished singleStep");
+		int temp1 = TestLib.waitIt(pid);
+		assertEquals("Return from waitpid()", temp1, pid);
+		Ptrace.cont(pid, 0);
+		System.out.println("JAVA: Finished cont");
 	}
-    }
-    /**
-     * Not enough space.
-     */
-    static public class Enomem
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
+	
+	public void testAttach () {
 
-	protected Enomem (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * Bad address.
-     */
-    static public class Efault
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Efault (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * Invalid argument.
-     */
-    static public class Einval
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Einval (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * No such process.
-     */
-    static public class Esrch
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Esrch (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * No child process.
-     */
-    static public class Echild
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-	protected Echild (String message)
-	{
-	    super (message);
-	}
-    }
-
-    /**
-     * Operation not permitted
-     */
-    static public class Eperm
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-	protected Eperm (String message)
-	{
-	    super (message);
-	}
-    }
-
-    /**
-     * Returns the error message string for this error.
-     */
-    public String toString ()
-    {
-	return message;
-    }
-    private String message;
-
-    protected Errno (String message)
-    {
-	this.message = message;
-    }
-
-    protected Errno ()
-    {
-	this.message = "internal error";
-    }
-
-    static native void throwErrno (int err, String prefix);
+		pid = TestLib.forkIt();
+		assertTrue(pid > 0);
+		Ptrace.attach(pid);
+		System.out.println("JAVA: Finished attach");
+		int temp = TestLib.waitIt(pid);
+		assertEquals("Return from waitpid()", temp, pid);
+		Ptrace.detach(pid, 15);
+		System.out.println("JAVA: Finished detach");
+	    }
 }
+

@@ -135,6 +135,16 @@ throwErrno (int err, const char *prefix)
 }
 
 void
+frysk::sys::Errno::throwErrno (jint err, jstring prefix)
+{
+  int len = prefix->length ();
+  char string[len + 1];
+  JvGetStringUTFRegion (prefix, 0, len, string);
+  string[len] = '\0';
+  ::throwErrno (err, string);
+}
+
+void
 throwRuntimeException (const char *message)
 {
   throw new java::lang::RuntimeException

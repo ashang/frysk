@@ -37,126 +37,39 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.sys;
+#include <pthread.h>
+#include <sys/types.h>
+#include "linux.ptrace.h"
+#include <errno.h>
+#include <alloca.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
 
-/**
- * Host Errors, thrown by this directory.
- */
+#include <gcj/cni.h>
 
-public class Errno
-    extends RuntimeException
+#include "frysk/sys/Errno.h"
+#include "frysk/sys/Errno$Esrch.h"
+#include "frysk/sys/cni/Errno.hxx"
+#include "frysk/sys/TestLib.h"
+
+/* Create a dummy process to attach to */
+jint
+frysk::sys::TestLib::forkIt ()
 {
-    private static final long serialVersionUID = 1L;
+  jint pid; 
+  if ((pid = fork()) < 0) {
+    perror("Error: could not fork child process");
+    exit(1);
+  } else if (pid == 0) { /* Child */
+    sleep(5);
+    printf("DETACHED PROCESS: EXITING\n");
+  }
+  return pid; 
+}
 
-    /**
-     * Bad file descriptor.
-     */
-    static public class Ebadf
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Ebadf (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * Not enough space.
-     */
-    static public class Enomem
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Enomem (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * Bad address.
-     */
-    static public class Efault
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Efault (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * Invalid argument.
-     */
-    static public class Einval
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Einval (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * No such process.
-     */
-    static public class Esrch
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-
-	protected Esrch (String message)
-	{
-	    super (message);
-	}
-    }
-    /**
-     * No child process.
-     */
-    static public class Echild
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-	protected Echild (String message)
-	{
-	    super (message);
-	}
-    }
-
-    /**
-     * Operation not permitted
-     */
-    static public class Eperm
-	extends Errno
-    {
-        private static final long serialVersionUID = 1L;
-	protected Eperm (String message)
-	{
-	    super (message);
-	}
-    }
-
-    /**
-     * Returns the error message string for this error.
-     */
-    public String toString ()
-    {
-	return message;
-    }
-    private String message;
-
-    protected Errno (String message)
-    {
-	this.message = message;
-    }
-
-    protected Errno ()
-    {
-	this.message = "internal error";
-    }
-
-    static native void throwErrno (int err, String prefix);
+jint
+frysk::sys::TestLib::waitIt(jint pid) {
+	return waitpid(pid, NULL, __WALL);
 }

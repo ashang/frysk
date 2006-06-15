@@ -200,10 +200,16 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   }
 
   // Now unpack each, notifying the observer.
-
+  /* We need to keep track of the status of the previous item in this queue
+   * since some items are duplicated when waitpit() is called from a 
+   * multithreaded parent - see #2774 */
+  pid_t old_pid = -2;
+  int old_status = 0;
   while (head != tail) {
-    // Process the result.
-    processStatus (head->pid, head->status, observer);
+    // Process the result - check for a duplicate entry
+    if (old_pid != head->pid || old_status != head->status)
+      processStatus (head->pid, head->status, observer);
+    old_pid = head->pid; old_status = head->status;
     head = head->next;
   }
 }
