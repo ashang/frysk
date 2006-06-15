@@ -226,7 +226,7 @@ frysk2137/Gcov.sh:
 # test for kernel ptrace - from a thread other than the attacher
 noinst_PROGRAMS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_LDFLAGS = -lpthread
-TESTS += frysk2595/ptrace_peek_wrong_thread
+XFAIL_TESTS += frysk2595/ptrace_peek_wrong_thread
 frysk2595_ptrace_peek_wrong_thread_SOURCES = frysk2595/ptrace_peek_wrong_thread.c
 # test for kernel ptrace - fork from thread, and ptrace after thread exit
 noinst_PROGRAMS += frysk2595/ptrace_after_forked_thread_exits
@@ -236,7 +236,7 @@ frysk2595_ptrace_after_forked_thread_exits_SOURCES = frysk2595/ptrace_after_fork
 # test for kernel ptrace - fork from thread, and ptrace before thread exit
 noinst_PROGRAMS += frysk2595/ptrace_before_forked_thread_exits
 frysk2595_ptrace_before_forked_thread_exits_LDFLAGS = -lpthread
-TESTS += frysk2595/ptrace_before_forked_thread_exits
+XFAIL_TESTS += frysk2595/ptrace_before_forked_thread_exits
 frysk2595_ptrace_before_forked_thread_exits_SOURCES = frysk2595/ptrace_before_forked_thread_exits.c
 # test for kernel ptrace - ptrace after main thread execs - YES
 # THIS REALLY DOES WORK.
@@ -383,3 +383,18 @@ frysk2631/ice.sh:
 	echo $(GCJ) -I $(srcdir)/frysk2631 -d . $(srcdir)/frysk2631/ClassSwitch.java >> $@.tmp
 	chmod a+x $@.tmp
 	mv $@.tmp $@
+
+XFAIL_TESTS += frysk2760/barriertest
+frysk2760_FILES = \
+	frysk2760/TestBarrier.cxx \
+	frysk2760/TestBarrier.java
+EXTRA_DIST += $(frysk2760_FILES)
+CLEANFILES += frysk2760/TestBarrier.h
+frysk2760/barriertest: $(frysk2760_FILES)
+	mkdir -p frysk2760
+	$(GCJ) -I$(srcdir) -d . -C $(srcdir)/frysk2760/TestBarrier.java
+	$(GCJH) -I. frysk2760/TestBarrier
+	$(GCJ) -g -I. -c -o frysk2760/barriertest.o $(srcdir)/frysk2760/TestBarrier.cxx
+	$(GCJ) -g -I. --main=frysk2760.TestBarrier -o frysk2760/barriertest \
+		$(srcdir)/frysk2760/TestBarrier.java \
+		frysk2760/barriertest.o
