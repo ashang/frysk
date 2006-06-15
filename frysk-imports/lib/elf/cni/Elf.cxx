@@ -125,7 +125,7 @@ lib::elf::Elf::elf_getbase (){
 
 jstring
 lib::elf::Elf::elf_getident (jlong ptr){
-	char* ident = ::elf_getident((::Elf*) pointer, (size_t*)(long) ptr);
+	char* ident = ::elf_getident((::Elf*) pointer, (size_t*)(long) &ptr);
 	return JvNewString((const jchar*) ident, strlen(ident));
 }
 
@@ -202,7 +202,7 @@ lib::elf::Elf::elf_newscn (){
 
 jint
 lib::elf::Elf::elf_getshnum (jlong dst){
-	return ::elf_getshnum((::Elf*) this->pointer, (size_t*)(long) dst);
+	return ::elf_getshnum((::Elf*) this->pointer, (size_t*)(long) &dst);
 }
 
 jint
@@ -248,7 +248,7 @@ lib::elf::Elf::elf_rand (jint offset){
 
 jlong
 lib::elf::Elf::elf_getarsym (jlong ptr){
-	return (jlong) ::elf_getarsym((::Elf*) this->pointer, (size_t*)(long) ptr);
+	return (jlong) ::elf_getarsym((::Elf*) this->pointer, (size_t*)(long) &ptr);
 }
 
 jint
@@ -258,7 +258,7 @@ lib::elf::Elf::elf_cntl (jint command){
 
 jstring
 lib::elf::Elf::elf_rawfile (jlong ptr){
-	char* file = ::elf_rawfile((::Elf*) pointer, (size_t*)(long) ptr);
+	char* file = ::elf_rawfile((::Elf*) pointer, (size_t*)(long) &ptr);
 	return JvNewString((const jchar*) file, strlen(file));
 }
 
