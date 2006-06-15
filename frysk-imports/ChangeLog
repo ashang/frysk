@@ -1,3 +1,7 @@
+2006-06-15  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (EXTRA_DIST): Add lib/elf/tests/*.uu
+
 2006-06-13  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (EXTRA_DIST): Add several ChangeLog's.

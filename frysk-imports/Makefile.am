@@ -54,7 +54,9 @@ EXTRA_DIST += \
 	inua/ChangeLog \
 	lib/dw/ChangeLog \
 	lib/elf/ChangeLog \
-	lib/opcodes/ChangeLog
+	lib/opcodes/ChangeLog \
+	lib/elf/tests/test-core.bz2.uu \
+	lib/elf/tests/helloworld.o.bz2.uu
 
 GEN_CLASSPATH += jargs.jar
 GEN_CLASSPATH += junit.jar
@@ -67,12 +69,12 @@ GEN_GCJ_LDADD += -lopcodes
 
 all-local: lib/elf/tests/test-core lib/elf/tests/helloworld.o
 
-lib/elf/tests/test-core: $(srcdir)/lib/elf/tests/test-core.bz2.uu
+lib/elf/tests/test-core: lib/elf/tests/test-core.bz2.uu
 	mkdir -p lib/elf/tests
 	gmime-uudecode -o lib/elf/tests/test-core.bz2 $(srcdir)/lib/elf/tests/test-core.bz2.uu
 	bzip2 -d < lib/elf/tests/test-core.bz2 > lib/elf/tests/test-core
 
-lib/elf/tests/helloworld.o: $(srcdir)/lib/elf/tests/helloworld.o.bz2.uu
+lib/elf/tests/helloworld.o: lib/elf/tests/helloworld.o.bz2.uu
 	mkdir -p lib/elf/tests
 	gmime-uudecode -o lib/elf/tests/helloworld.o.bz2 $(srcdir)/lib/elf/tests/helloworld.o.bz2.uu
 	bzip2 -d < lib/elf/tests/helloworld.o.bz2 > lib/elf/tests/helloworld.o
