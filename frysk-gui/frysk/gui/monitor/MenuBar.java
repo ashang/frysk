@@ -92,7 +92,6 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 				WindowManager.theManager.logWindow.hideAll();
 				WindowManager.theManager.prefsWindow.hideAll();
 				//WindowManager.theManager.programAddWindow.hideAll();
-				WindowManager.theManager.customeObserverDialog.hideAll();
 			}
 		});
 		

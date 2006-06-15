@@ -1,3 +1,8 @@
+2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* MenuBar.java (menuItemEvent): Removed references to customObserverWindow.
+	* WindowManager.java: Ditto.
+
 2006-06-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* FilterRow.java (FilterRow): Fix bz 2770. Bring forward

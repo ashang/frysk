@@ -71,7 +71,6 @@ public class WindowManager implements Saveable{
 	public MainWindow mainWindow;
 	public LogWidget logWindow;
 	public PreferencesWindow prefsWindow;
-	public CustomObserverDialog customeObserverDialog;
 	public AboutWindow aboutWindow;
 	public SplashScreenWindow splashScreen;
 	public CreateFryskSessionDruid createFryskSessionDruid;
@@ -97,7 +96,6 @@ public class WindowManager implements Saveable{
 		this.aboutWindow = new AboutWindow(glade);
 		this.logWindow = new LogWidget(glade);
 		this.prefsWindow = new PreferencesWindow(glade);
-		this.customeObserverDialog = new CustomObserverDialog(glade);
 		//this.programAddWindow = new ProgramAddWindow(glade);
 		this.observersDialog = new ObserversDialog(glade);
 		this.editObserverDialog = new EditObserverDialog(glade);
@@ -123,7 +121,6 @@ public class WindowManager implements Saveable{
 	public void save(Preferences prefs) {
 		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		customeObserverDialog.save(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
 		registerWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/registers"));
 		//programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
@@ -131,7 +128,6 @@ public class WindowManager implements Saveable{
 	public void load(Preferences prefs) {
 		mainWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
 		logWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		customeObserverDialog.load(Preferences.userRoot().node(prefs.absolutePath() + "/customObserverWindow"));
 		registerWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/registers"));
 		//programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
 	}
