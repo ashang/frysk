@@ -191,7 +191,7 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 
 	private void getSessionManagementControls(LibGlade glade) {
 
-		previousSessions = new ListView( glade.getWidget("SessionManager_previousSessionsListView").getHandle());
+		previousSessions = new ListView(glade.getWidget("SessionManager_previousSessionsListView").getHandle());
 		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());		
 		
 
@@ -210,10 +210,9 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 			public void selectionChangedEvent(TreeSelectionEvent arg0) {
 				setButtonStates();
 			}});
-
-					
-
 		
+		previousSessions.setStickySelect(true);
+
 		editSession = (Button) glade.getWidget("SessionManager_editSessionButton");
 		copySession = (Button) glade.getWidget("SessionManager_copySessionButton");
 		deleteSession = (Button) glade.getWidget("SessionManager_deleteSessionButton");
