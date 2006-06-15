@@ -5,8 +5,14 @@
 
 2006-06-15  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (setNewSessionMode): Add
+	Cancel Button. Create edit session boolean identifier.
+	(getDruidStructureControls): Added edit session name
+	
 	* SessionManagerGui.java: Added double-click listener to
 	launch a session.
+	(getSessionManagementControls): Remove cell renderer text 
+	edit event; it was interfering with double click listener.
 
 2006-06-14  Phil Muldoon  <pmuldoon@redhat.com>
 

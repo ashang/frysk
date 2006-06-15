@@ -102,6 +102,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	
 
 	private int processSelected = 0;
+	private boolean editSession;
+	private String oldSessionName;
 
 	public CreateFryskSessionDruid(LibGlade glade) {
 		super(glade.getWidget("SessionDruid").getHandle());	
@@ -129,6 +131,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		backButton.hideAll();
 		cancelButton.showAll();
 		saveButton.showAll();
+		editSession = true;
+		oldSessionName = currentSession.getName();
 	}
 	
 	public void setNewSessionMode() {
@@ -136,7 +140,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		backButton.showAll(); backButton.setSensitive(false);
 		finishButton.hideAll();
 		saveButton.hideAll();
-		cancelButton.hideAll();
+		cancelButton.showAll();
 		nameEntry.setText("");
 
 		currentSession = null;
@@ -146,6 +150,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		notebook.setShowTabs(false);
 		notebook.setCurrentPage(0);
 		processSelected = 0;
+		editSession = false;
 	}
 	
 	private void setTreeSelected(TreeIter selected, boolean setSelected, boolean setChildren)
@@ -302,7 +307,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 			public void entryEvent(EntryEvent arg0) {
 				currentSession.setName(nameEntry.getText());
 				setProcessNext(processSelected);
-			}});		
+			}
+		});		
 			
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(procWiseTreeView);
@@ -469,7 +475,20 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		this.saveButton.addListener(new ButtonListener(){
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
-						SessionManager.theManager.save();
+						if (editSession)
+						{
+							SessionManager.theManager.save();
+							
+							if (!oldSessionName.equals(currentSession.getName()))
+							{
+								// If they edited the name of the session, reload the
+								// Session Manager so it picks up the old session and
+								// delete it.
+								SessionManager.theManager.load();
+								SessionManager.theManager.removeSession(
+									SessionManager.theManager.getSessionByName(oldSessionName));
+							}
+						}
 						hide();
 					}
 				}});

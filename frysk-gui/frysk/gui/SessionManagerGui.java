@@ -52,8 +52,6 @@ import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.CellRendererTextEvent;
-import org.gnu.gtk.event.CellRendererTextListener;
 import org.gnu.gtk.event.FileChooserEvent;
 import org.gnu.gtk.event.FileChooserListener;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -195,22 +193,6 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 
 		previousSessions = new ListView( glade.getWidget("SessionManager_previousSessionsListView").getHandle());
 		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());		
-		previousSessions.addEditListener(new CellRendererTextListener() {
-				public void cellRendererTextEvent(CellRendererTextEvent arg0) {
-					if (arg0.getType() == CellRendererTextEvent.Type.EDITED)
-					{
-						Session selected = (Session) previousSessions.getSelectedObject();
-
-						/* There may be nothing selected, and we may get a blank name string */
-						if (selected != null && !arg0.getText().equals("")) {
-							SessionManager.theManager.removeSession(selected);
-							selected.setName(arg0.getText());
-							SessionManager.theManager.addSession(selected);
-							SessionManager.theManager.save();
-						}
-					}
-				}
-		});
 		
 
 		previousSessions.addListener( new TreeViewListener() {
