@@ -45,7 +45,6 @@ import java.io.IOException;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.Dialog;
 import org.gnu.gtk.FileChooserButton;
 import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.SizeGroup;
@@ -63,6 +62,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.Session;
@@ -74,7 +74,7 @@ import frysk.proc.Proc;
  * @author pmuldoon
  *
  */
-public class SessionManagerGui extends Dialog implements LifeCycleListener{
+public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleListener{
 	
 	private Button quitButton;
 	private Session currentSession;
@@ -98,12 +98,14 @@ public class SessionManagerGui extends Dialog implements LifeCycleListener{
 	{
 		super(glade.getWidget("SessionManager").getHandle());
 		this.addListener(this);
+		this.setIcon(IconManager.windowIcon);
 		
 		getManagerControls(glade);
 		getSessionManagementControls(glade);
 		getDebugExecutableControls(glade);
 		getDebugSingleProcess(glade);
 		setButtonStates();
+	
 	}
 	
 	private void toggleControls()
