@@ -112,8 +112,8 @@ public class Elf {
 	 * @param ptr 
 	 * @return The file identification data
 	 */
-	public String getIdentification(long ptr){
-		return elf_getident(ptr);
+	public String getIdentification(){
+		return elf_getident();
 	}
 	
 	/**
@@ -224,8 +224,8 @@ public class Elf {
 	 * @param dst
 	 * @return The number of sections in the Elf file.
 	 */
-	public int getSectionNumber(long dst){
-		return elf_getshnum(dst);
+	public long getSectionCount(){
+		return elf_getshnum();
 	}
 	
 	/**
@@ -233,8 +233,8 @@ public class Elf {
 	 * @param dst
 	 * @return The section index of the section header string table in the Elf file.
 	 */
-	public int getSectionIndex(long dst){
-		return elf_getshstrndx(dst);
+	public long getSHeaderStringTableIndex(){
+		return elf_getshstrndx();
 	}
 	
 	/**
@@ -353,7 +353,7 @@ public class Elf {
 	protected native long elf_update(int __cmd);
 	protected native int elf_kind();
 	protected native long elf_getbase();
-	protected native String elf_getident(long ptr);
+	protected native String elf_getident();
 	protected native long elf_getehdr();
 	protected native long elf_newehdr();
 	protected native long[] elf_getphdrs();
@@ -362,10 +362,8 @@ public class Elf {
 	protected native long elf_getscn(long __index);
 	protected native long elf_nextscn(long __scn);
 	protected native long elf_newscn();
-	// TODO: Does this return an error/success code or the value?
-	protected native int elf_getshnum(long __dst);
-	// TODO: See above
-	protected native int elf_getshstrndx(long __dst);
+	protected native long elf_getshnum();
+	protected native long elf_getshstrndx();
 	protected native int elf_flagelf(int __cmd, int __flags);
 	protected native int elf_flagehdr(int __cmd, int __flags);
 	protected native int elf_flagphdr(int __cmd, int __flags);

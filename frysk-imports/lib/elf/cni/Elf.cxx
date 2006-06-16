@@ -124,9 +124,10 @@ lib::elf::Elf::elf_getbase (){
 }
 
 jstring
-lib::elf::Elf::elf_getident (jlong ptr){
-	char* ident = ::elf_getident((::Elf*) pointer, (size_t*)(long) &ptr);
-	return JvNewString((const jchar*) ident, strlen(ident));
+lib::elf::Elf::elf_getident (){
+	size_t length;
+	char* ident = ::elf_getident((::Elf*) pointer, &length);
+	return JvNewString((const jchar*) ident, length);
 }
 
 jlong
@@ -200,14 +201,20 @@ lib::elf::Elf::elf_newscn (){
 	return (jlong) ::elf_newscn((::Elf*) this->pointer);
 }
 
-jint
-lib::elf::Elf::elf_getshnum (jlong dst){
-	return ::elf_getshnum((::Elf*) this->pointer, (size_t*)(long) &dst);
+jlong
+lib::elf::Elf::elf_getshnum (){
+	size_t count;
+	/* XXX: What to do if this fails */
+	::elf_getshnum((::Elf*) this->pointer, &count);
+	return count;
 }
 
-jint
-lib::elf::Elf::elf_getshstrndx (jlong dst){
-	return ::elf_getshstrndx((::Elf*) this->pointer, (size_t*)(long) &dst);
+jlong
+lib::elf::Elf::elf_getshstrndx (){
+	size_t index;
+	/* XXX: What to do if this fails */
+	::elf_getshstrndx((::Elf*) this->pointer, &index);
+	return index;
 }
 
 jint

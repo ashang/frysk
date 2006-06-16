@@ -1,4 +1,21 @@
-2006-06-05  Adam Jocksch  <ajocksch@redhat.com>
+2006-06-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Elf.java (getIdentification): No longer takes a parameter.
+	(elf_getident): Ditto.
+	(elf_getshnum): Ditto.
+	(elf_getshstrndx): Ditto.
+	(getSectionNumber): Ditto, renamed to getSectionCount.
+	(getSectionIndex): No longer takes a parameter and renamed to
+	getSHeaderStringTableIndex.
+	* ElfData.java (translateToMemoryRepresentation): Implemented.
+	(translateToELFRepresentation): Ditto.
+	* cni/Elf.cxx: (elf_getident): No longer takes paramenter.
+	(elf_getshnum): Ditto.
+	(elf_getshstrndx): Ditto.
+	* cni/ElfData.cxx (elf_xlatetom): Implemented.
+	(elf_xlatetof): Ditto.
+
+2006-06-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Elf.cxx (elf_getident): Fixed 64bit bug.
 	(elf_getshnum): Ditto.

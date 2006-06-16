@@ -103,7 +103,10 @@ public class ElfData {
 	 * @return The data in memory format
 	 */
 	public ElfData translateToMemoryRepresentation(int encoding){
-		return new ElfData(elf_xlatetom(encoding), is32bit, this.parent);
+		long retval = elf_xlatetom(encoding);
+		if(retval == 0)
+			return null;
+		return new ElfData(retval, is32bit, this.parent);
 	}
 	
 	/**
@@ -113,7 +116,10 @@ public class ElfData {
 	 * @return The data in Elf format
 	 */
 	public ElfData translateToELFRepresentation(int encoding){
-		return new ElfData(elf_xlatetof(encoding), is32bit, this.parent);
+		long retval = elf_xlatetof(encoding);
+		if(retval == 0)
+			return null;
+		return new ElfData(retval, is32bit, this.parent);
 	}
 	
 	/**

@@ -56,7 +56,7 @@ lib::elf::ElfData::elf_data_finalize (){
 jbyte
 lib::elf::ElfData::elf_data_get_byte (jlong offset)
 {
-  uint8_t* data = (uint8_t*) ((Elf_Data*) this->pointer)->d_buf;	
+  uint8_t* data = (uint8_t*) ((::Elf_Data*) this->pointer)->d_buf;	
   size_t size = ((Elf_Data*) this->pointer)->d_size;
   if (offset < 0)
     return -1;
@@ -97,13 +97,19 @@ lib::elf::ElfData::elf_flagdata (jint command, jint flags){
 
 jlong
 lib::elf::ElfData::elf_xlatetom (jint encode){
-	/* not sure how to deal with this one yet */
-	return 0;
+	::Elf_Data *tmp;
+	if(this->is32bit)
+		return (jlong) ::elf32_xlatetom(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
+	else
+		return (jlong) ::elf64_xlatetom(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
 }
 jlong
 lib::elf::ElfData::elf_xlatetof (jint encode){
-	/* Again, unsure of this method */
-	return 0;
+	::Elf_Data *tmp;
+	if(this->is32bit)
+		return (jlong) ::elf32_xlatetof(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
+	else
+		return (jlong) ::elf64_xlatetof(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
 }
 
 #ifdef __cplusplus
