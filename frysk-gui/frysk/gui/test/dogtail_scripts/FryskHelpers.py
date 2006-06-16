@@ -64,6 +64,11 @@ import commands
 import sys
 import time
 
+# The Frysk test objects
+from Observer import Observer
+from DebugProcess import DebugProcess
+from DebugSession import DebugSession
+
 # Constants
 FRYSK_PROCESS_NAME = 'FryskGui'
 #FRYSK_BINARY_NAME = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
@@ -239,3 +244,134 @@ def getEventType ( eventClassName ):
     returnString = str( FRYSK_OBSERVER_TYPES.get( eventClassName ) )
     #print 'DEBUG - class=:' + eventClassName + ' name=' + returnString
     return returnString
+
+# ---------------------
+def createMinimalSession (fryskObject, sessionObject, quitBoolean):
+    """ This function is used to create a minimal session object - this
+        is needed as all tests that access the FryskGui must either create
+        a session or access an existing session.
+    """
+
+    theProcessGroups = sessionObject.getProcesses()
+    userSelectedProcessGroups = []
+    for x in theProcessGroups:
+        userSelectedProcessGroups.append(x.getName())
+
+    userSelectedObserverDict = {}
+    for x in theProcessGroups:
+        tempProcess = x.getName().encode('ascii')
+        userSelectedObserverDict[x.getName()] = x.getObservers()
+    
+    # ---------------------
+    # Access the Druid GUI
+    theDruid = fryskObject.child(name='Frysk Startup Manager')
+    newButton = theDruid.child (name='New', roleName = 'push button')
+    newButton.click()
+    
+    theSessionManager = fryskObject.dialog('Create a Frysk Session Dialog')
+    quitButton = theDruid.button('Quit')
+    openButton = theDruid.button('Open')
+
+    # And the GUI's 'notebook' of pages
+    vbox1 = theSessionManager.child('dialog-vbox1')
+    sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
+    vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
+    sessionNameText = vbox43_tab2_processGroups.child(name='sessionNameText')
+    sessionNameText.text = sessionObject.getName()
+    
+    hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
+        
+    # ---------------------
+    # The action buttons are displayed on the bottom of all pages - the
+    # specific buttons (Back, Forward, Finish) that are visible or enabled
+    # varies with the page - and the current state of the page
+    dialogActionArea1 = vbox1.child('dialog-action_area1')
+    forwardButton = dialogActionArea1.button('Forward')
+    backButton = dialogActionArea1.button('Back')
+    finishButton = dialogActionArea1.button('Finish')
+    saveButton = dialogActionArea1.button('Save')
+    cancelButton = dialogActionArea1.button('Cancel')
+
+    # ---------------------
+    # page #1 - vbox42_tab1_session - Select new/old session, specify
+    # the debugger - note that as of May 8, 2006, selecting an existing
+    # debug session is not implemented in the GUI - so, for now, we'll 
+    # always create a new session
+
+    # ---------------------
+    # page #2 - vbox43_tab2_processGroups - Select process groups to monitor
+
+    vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
+
+    # The 'from' list is the list from which processes are selected
+    vbox45_tab2_fromGroupList = hbox62_tab2_groupLists.child('vbox45_tab2_fromGroupList')
+    processGroups = vbox45_tab2_fromGroupList.child('scrolledwindow33')
+    processGroups.grabFocus()
+    procWiseTreeView = processGroups.child('sessionDruid_procWiseTreeView')
+
+    # These buttons add/remove processes from the selected ('to') list
+    vbox44_tab2_groupListButtons = hbox62_tab2_groupLists.child('vbox44_tab2_groupListButtons')
+    addButton = vbox44_tab2_groupListButtons.button('sessionDruid_addProcessGroupButton')
+    removeButton = vbox44_tab2_groupListButtons.button('sessionDruid_removeProcessGroupButton')
+
+    # Search the process list for a match with the userSelectedProcessGroups List
+    theProcessList = procWiseTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+
+    processesToMonitor = findProcessNames (userSelectedProcessGroups, theProcessList)
+    for processName in processesToMonitor:
+        tempProc = procWiseTreeView.child(processName)
+        tempProc.grabFocus()
+        tempProc.actions['activate'].do()
+        addButton.click()
+    # Need to add a test here for the removeButton
+    # Need to add a test here for the back button - both before and after process
+    # groups are selected
+
+    forwardButton.click()
+
+    # ---------------------
+    # page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
+
+    hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
+    forwardButton.click()
+
+    # ---------------------
+    # page 5 - hbox77_tab5_observers - Select process groups and observers
+
+    hbox77_tab5_observers = sessionDruid_sessionNoteBook.child('hbox77_tab5_observers')
+    vbox52_tab5_processGroups = hbox77_tab5_observers.child('vbox52_tab5_processGroups')
+    SessionDruid_processObserverTreeView = vbox52_tab5_processGroups.child('SessionDruid_processObserverTreeView')
+    theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+
+    for processName in theProcessList:
+        resolvedName = extractString (str(processName), 'name')
+        tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
+        tempProc.grabFocus()
+        tempProc.actions['activate'].do()
+
+        vbox54_tab5_observers = hbox77_tab5_observers.child('vbox54_tab5_observers')
+        SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
+        theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
+        theDictionary = createProcessDict (theList)
+        userSelectedObservers = userSelectedObserverDict[resolvedName]
+    
+        for x in userSelectedObservers:
+            tempObserver = theDictionary[x]
+            tempObserver.actions['toggle'].do()
+
+    forwardButton.click()
+
+    # Close the Druid
+    finishButton.click()
+
+    # Either quit FryskGui, or close the SessionManager and go to the 
+    # Monitor window
+    if quitBoolean:
+        quitButton.click()
+    else:
+        # Need to select just-created-session, then, select the 'Open' button
+        theSessionTable = theDruid.child(name='SessionManager_previousSessionsListView')
+        theNewlyCreatedSession = theSessionTable.child(name=sessionObject.getName(), roleName='table cell' )
+        theNewlyCreatedSession.actions['activate'].do()
+        theNewlyCreatedSession.grabFocus()       
+        openButton.click()

@@ -78,6 +78,7 @@ from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
 from FryskHelpers import FRYSK_SESSION_FILES
+from FryskHelpers import createMinimalSession
 
 class TestDruid ( unittest.TestCase ):
 
@@ -110,178 +111,10 @@ class TestDruid ( unittest.TestCase ):
 
         self.theSession = self.handler.theDebugSession
 
-        theProcessGroups = self.theSession.getProcesses()
-        userSelectedProcessGroups = []
-        for x in theProcessGroups:
-            userSelectedProcessGroups.append(x.getName())
+        # Create a Frysk session - True = quit the FryskGui after
+        # creating the session
+        createMinimalSession (self.frysk, self.theSession, True)
 
-        userSelectedObserverDict = {}
-        for x in theProcessGroups:
-            tempProcess = x.getName().encode('ascii')
-            userSelectedObserverDict[x.getName()] = x.getObservers()
-    
-        # ---------------------
-        # Access the Druid GUI
-        theDruid = self.frysk.child(name='Frysk Startup Manager')
-        theDruid.blink()
-        theDruid.blink()
-        theDruid.blink()
-        theDruid.blink()
-        
-        newButton = theDruid.child (name='New', roleName = 'push button')
-        newButton.blink()
-        newButton.blink()
-        newButton.blink()
-        newButton.blink()
-        newButton.click()
-        
-        theSessionManager = self.frysk.dialog('Create a Frysk Session Dialog')
-        theSessionManager.blink()
-        theSessionManager.blink()
-        theSessionManager.blink()        
-        theSessionManager.blink()
-        
-        quitButton = theDruid.button('Quit')
-        openButton = theDruid.button('Open')
-        quitButton.blink()
-        quitButton.blink()
-        quitButton.blink()        
-        quitButton.blink()
-        
-        
-        
-        
-
-        # And the GUI's 'notebook' of pages
-        vbox1 = theSessionManager.child('dialog-vbox1')
-        vbox1.blink()
-        vbox1.blink()
-        vbox1.blink()        
-        vbox1.blink()
-        
-        sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
-        sessionDruid_sessionNoteBook.blink()
-        sessionDruid_sessionNoteBook.blink()
-        sessionDruid_sessionNoteBook.blink()
-        
-        vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
-        vbox43_tab2_processGroups.blink()
-        vbox43_tab2_processGroups.blink()
-        vbox43_tab2_processGroups.blink()
-        
-        sessionNameText = vbox43_tab2_processGroups.child(name='sessionNameText')
-        sessionNameText.blink()
-        sessionNameText.blink()
-        sessionNameText.blink()
-        sessionNameText.text = self.theSession.getName()
-        
-        hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
-        hbox62_tab2_groupLists.blink()
-        hbox62_tab2_groupLists.blink()        
-        hbox62_tab2_groupLists.blink()
-        hbox62_tab2_groupLists.blink()
-                
-        # ---------------------
-        # The action buttons are displayed on the bottom of all pages - the
-        # specific buttons (Back, Forward, Finish) that are visible or enabled
-        # varies with the page - and the current state of the page
-        dialogActionArea1 = vbox1.child('dialog-action_area1')
-        forwardButton = dialogActionArea1.button('Forward')
-        backButton = dialogActionArea1.button('Back')
-        finishButton = dialogActionArea1.button('Finish')
-        saveButton = dialogActionArea1.button('Save')
-        cancelButton = dialogActionArea1.button('Cancel')
-
-        # ---------------------
-        # page #1 - vbox42_tab1_session - Select new/old session, specify
-        # the debugger - note that as of May 8, 2006, selecting an existing
-        # debug session is not implemented in the GUI - so, for now, we'll 
-        # always create a new session
-
-        #vbox42_tab1_session = sessionDruid_sessionNoteBook.child('vbox42_tab1_session')
-        #newDebugSession = vbox42_tab1_session.child('sessionDruid_newSessionButton')
-        #newDebugSession.click()
-        #newSessionName = vbox42_tab1_session.child(name = 'sessionDruid_sessionName', roleName='text')
-        #newSessionName.text = self.theSession.getName()
-        #forwardButton.click()
-
-        # ---------------------
-        # page #2 - vbox43_tab2_processGroups - Select process groups to monitor
-
-        vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
-
-        # Select the host to monitor - for now, only local host works, so take no action
-        #hbox61_tab2_host = vbox43_tab2_processGroups.child('hbox61_tab2_host')  
-        #hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
-
-        # Need to add a test here - the forwardButton is not sensitive until at least 
-        # one process group is selected - need to try and catch an exception for:
-        # (forwardButton.click()
-
-        # The 'from' list is the list from which processes are selected
-        vbox45_tab2_fromGroupList = hbox62_tab2_groupLists.child('vbox45_tab2_fromGroupList')
-        processGroups = vbox45_tab2_fromGroupList.child('scrolledwindow33')
-        processGroups.grabFocus()
-        procWiseTreeView = processGroups.child('sessionDruid_procWiseTreeView')
-
-        # These buttons add/remove processes from the selected ('to') list
-        vbox44_tab2_groupListButtons = hbox62_tab2_groupLists.child('vbox44_tab2_groupListButtons')
-        addButton = vbox44_tab2_groupListButtons.button('sessionDruid_addProcessGroupButton')
-        removeButton = vbox44_tab2_groupListButtons.button('sessionDruid_removeProcessGroupButton')
-
-        # Search the process list for a match with the userSelectedProcessGroups List
-        theProcessList = procWiseTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
-
-        processesToMonitor = findProcessNames (userSelectedProcessGroups, theProcessList)
-        for processName in processesToMonitor:
-            tempProc = procWiseTreeView.child(processName)
-            tempProc.grabFocus()
-            tempProc.actions['activate'].do()
-            addButton.click()
-        # Need to add a test here for the removeButton
-        # Need to add a test here for the back button - both before and after process
-        # groups are selected
-
-        forwardButton.click()
-
-        # ---------------------
-        # page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
-
-        hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
-        forwardButton.click()
-
-        # ---------------------
-        # page 5 - hbox77_tab5_observers - Select process groups and observers
-
-        hbox77_tab5_observers = sessionDruid_sessionNoteBook.child('hbox77_tab5_observers')
-        vbox52_tab5_processGroups = hbox77_tab5_observers.child('vbox52_tab5_processGroups')
-        SessionDruid_processObserverTreeView = vbox52_tab5_processGroups.child('SessionDruid_processObserverTreeView')
-        theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
-
-        for processName in theProcessList:
-            resolvedName = extractString (str(processName), 'name')
-            tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
-            tempProc.grabFocus()
-            tempProc.actions['activate'].do()
-
-            vbox54_tab5_observers = hbox77_tab5_observers.child('vbox54_tab5_observers')
-            SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
-            theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
-            theDictionary = createProcessDict (theList)
-            userSelectedObservers = userSelectedObserverDict[resolvedName]
-    
-            for x in userSelectedObservers:
-                tempObserver = theDictionary[x]
-                tempObserver.actions['toggle'].do()
-
-        forwardButton.click()
-
-        # Close the Druid
-        finishButton.click() 
-        quitButton.click()
-         
-        
-        
 
    def testSessionFile( self ):      
         """Verify that the session object just created and presisted under $HOME/.frysk/Sessions
