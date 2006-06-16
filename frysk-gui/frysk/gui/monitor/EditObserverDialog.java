@@ -48,12 +48,16 @@ import org.gnu.gtk.Entry;
 import org.gnu.gtk.Frame;
 import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.StateType;
+import org.gnu.gtk.TextBuffer;
+import org.gnu.gtk.TextView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.EntryEvent;
 import org.gnu.gtk.event.EntryListener;
+import org.gnu.gtk.event.TextBufferEvent;
+import org.gnu.gtk.event.TextBufferListener;
 
 import frysk.gui.common.dialogs.Dialog;
 import frysk.gui.monitor.observers.ObserverManager;
@@ -66,6 +70,8 @@ public class EditObserverDialog extends Dialog {
 	private ObserverRoot observer;
 	
 	Entry observerNameEntry;
+	TextView observerDescriptionTextView;
+	TextBuffer observerDescBuffer;
 	SimpleComboBox observerTypeComboBox;
 	
 	FiltersTable filtersTable;
@@ -106,7 +112,22 @@ public class EditObserverDialog extends Dialog {
 				}
 			}
 		});
-	
+		
+		observerDescriptionTextView = (TextView) glade.getWidget("observerDescriptionTextView");
+		observerDescBuffer = new TextBuffer();
+		
+		observerDescriptionTextView.setBuffer(observerDescBuffer);
+		observerDescBuffer.addListener(new TextBufferListener() {
+			public void textBufferEvent(TextBufferEvent event) {
+				if (event.isOfType(TextBufferEvent.Type.CHANGED))
+				{
+					observer.setToolTip(observerDescBuffer.getText(
+							observerDescBuffer.getStartIter(),
+							observerDescBuffer.getEndIter(),
+							false));
+				}
+				
+			}});
 		
 		observerTypeComboBox = new SimpleComboBox((glade.getWidget("observerTypeComboBox")).getHandle());
 		observerTypeComboBox.watchLinkedList(ObserverManager.theManager.getBaseObservers());
@@ -116,10 +137,16 @@ public class EditObserverDialog extends Dialog {
 				if(selected != null && !selected.getClass().equals(observer.getClass())){
 					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy((TaskObserverRoot) selected);
 					newObserver.setName(observerNameEntry.getText());
+					newObserver.setToolTip(observerDescBuffer.getText(
+							observerDescBuffer.getStartIter(),
+							observerDescBuffer.getEndIter(),
+							false));
+		
 					if(observerNameEntry.getText().length() == 0){
 						newObserver.setName("NewObserver");
 					}
 					
+
 					setObserver(newObserver);
 					setName(newObserver);
 					filtersTable.setObserver(newObserver);
@@ -180,6 +207,7 @@ public class EditObserverDialog extends Dialog {
 		this.setObserver(observer);
 		this.setName(observer);
 		this.setType(observer);
+		this.setDescription(observer);
 		setReturnAction(observer);
 		this.filtersTable.setObserver(observer);
 		this.actionsTable.setObserver(observer);
@@ -215,6 +243,10 @@ public class EditObserverDialog extends Dialog {
 	
 	private void setName(ObserverRoot observer){
 		this.observerNameEntry.setText(observer.getName());
+	}
+	
+	private void setDescription(ObserverRoot observer){
+		this.observerDescBuffer.setText(observer.getToolTip());
 	}
 	
 	private void setType(ObserverRoot oserver){

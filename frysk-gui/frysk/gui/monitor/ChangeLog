@@ -1,3 +1,10 @@
+2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* EditObserverDialog: Add observerDescriptionTextView. Add
+	TextBuffer change Listeners.
+	(setDescription): New.
+	(setAll): Added setDescription.
+
 2006-06-15  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverManager.java: added loadObservers()
