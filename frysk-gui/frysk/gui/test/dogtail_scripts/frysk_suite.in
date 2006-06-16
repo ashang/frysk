@@ -26,7 +26,6 @@ src=@abs_srcdir@/frysk/gui/test/dogtail_scripts
 cat <<EOF | grep -v '#' | while read script args ; do
 ${src}/TestCredits.py 
 ${src}/TestLicense.py 
-${src}/TestCreateObservers.py
 ${src}/TestCreateObserversfromDataModel.py ${src}/new_fork_custom_observer.xml
 # Run this one last for now - 20060609 - it hangs all bash processes on 
 # the system - http://sourceware.org/bugzilla/show_bug.cgi?id=2741 
