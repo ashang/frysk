@@ -1,5 +1,8 @@
 2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/procpop.glade: Added Observer Description
+	to editObserverDialog.
+
 	* Gui.java: Added Session Manager to taskbar
 	control center.
 	* SessionManagerGui.java: Set the Frysk icon
