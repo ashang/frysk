@@ -1,5 +1,9 @@
 2006-06-16  Adam Jocksch  <ajocksch@redhat.com>
 
+	* cni/ElfData.cxx (elf_xlatetom): Now initializes the Elf_Data
+	pointer.
+	(elf_xlatetof): Ditto.
+
 	* Elf.java (getIdentification): No longer takes a parameter.
 	(elf_getident): Ditto.
 	(elf_getshnum): Ditto.

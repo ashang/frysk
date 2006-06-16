@@ -39,6 +39,7 @@
 #include <libelf.h>
 #include <stdlib.h>
 #include <inttypes.h>
+#include <alloca.h>
 #include <gcj/cni.h>
 
 #include "lib/elf/ElfData.h"
@@ -97,7 +98,7 @@ lib::elf::ElfData::elf_flagdata (jint command, jint flags){
 
 jlong
 lib::elf::ElfData::elf_xlatetom (jint encode){
-	::Elf_Data *tmp;
+	::Elf_Data *tmp = (Elf_Data*) alloca(sizeof(Elf_Data));
 	if(this->is32bit)
 		return (jlong) ::elf32_xlatetom(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
 	else
@@ -105,7 +106,7 @@ lib::elf::ElfData::elf_xlatetom (jint encode){
 }
 jlong
 lib::elf::ElfData::elf_xlatetof (jint encode){
-	::Elf_Data *tmp;
+	::Elf_Data *tmp = (Elf_Data*) alloca(sizeof(Elf_Data));
 	if(this->is32bit)
 		return (jlong) ::elf32_xlatetof(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
 	else
