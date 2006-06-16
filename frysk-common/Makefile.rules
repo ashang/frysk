@@ -39,6 +39,7 @@
 
 # Initialize everything to empty and then use += to add things in.
 
+noinst_SCRIPTS =
 SUFFIXES =
 BUILT_SOURCES = 
 CLEANFILES = $(BUILT_SOURCES)

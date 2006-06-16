@@ -1,3 +1,12 @@
+2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Makefile.am: Added noinst_SCRIPT for
+	test-suite shell file generation.
+	Added corresponding CLEANFILES statement.
+
+	* commond/Makefile.rules: Added noinst_SCRIPTS
+	declare.
+
 2006-06-15  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (noinst_PROGRAMS): remove .../frysk_suite.sh; shell

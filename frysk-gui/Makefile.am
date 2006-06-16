@@ -83,6 +83,9 @@ TESTS_ENVIRONMENT = ( test x"$$DISPLAY" != x || sh -c "exit 77" ) &&
 
 # Not yet ...
 # TESTS += frysk/gui/test/dogtail_scripts/frysk_suite.sh
+noinst_SCRIPTS += frysk/gui/test/dogtail_scripts/frysk_suite.sh
 frysk/gui/test/dogtail_scripts/frysk_suite.sh: frysk/gui/test/dogtail_scripts/frysk_suite.in
 	$(SUBST)
 	chmod a+x $@
+
+CLEANFILES += frysk/gui/test/dogtail_scripts/frysk_suite.sh
