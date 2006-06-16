@@ -1,3 +1,7 @@
+2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Makefile.rules: Added noinst_SCRIPTS	declare.
+
 2006-06-15  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.rules (AM_CFLAGS): Added frysk-imports include files.
