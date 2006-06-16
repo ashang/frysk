@@ -107,6 +107,15 @@ public class SourceWindowFactory {
 		task.requestAddAttachedObserver(blocker);
 	}
 	
+	/**
+	 * Same behavior as {@see SourceWindowFactory#createSourceWindow(Task)},
+	 * except the task is expected to be blocked
+	 * @param task The blocked task to display the source for
+	 */
+	public static void createSourceWinFromBlockedTask(Task task){
+		finishSourceWin(task);
+	}
+	
 	private static class SourceWinBlocker implements TaskObserver.Attached{
 
 		private Task myTask;

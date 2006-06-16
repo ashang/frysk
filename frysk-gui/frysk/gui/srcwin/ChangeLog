@@ -1,3 +1,9 @@
+2006-06-16  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactory.java (createSourceWinFromStoppedTask):
+	Created, behaves the same as createSourceWindow except it assumes
+	that the task is already blocked.
+
 2006-06-15  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (getFunctionXXX): Added as an interim way
