@@ -1,3 +1,8 @@
+2006-06-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Specify static elfutil libraries,
+	re-order and add libebl/libebl.a.
+
 2006-06-13  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (EXTRA_DIST): Add several ChangeLog's.
