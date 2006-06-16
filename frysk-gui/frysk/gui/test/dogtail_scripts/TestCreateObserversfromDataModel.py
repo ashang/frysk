@@ -61,13 +61,14 @@ import unittest
 # Test support functions
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
-from FryskHelpers import skipDruid
+from FryskHelpers import createMinimalSession
 from FryskHelpers import getEventType
 from FryskHelpers import FRYSK_OBSERVER_FILES
 
 # Setup to parse test input data (XML file)
 import xml.sax
 import ObserverHandler
+import FryskHandler
 import sys
 import os
 
@@ -88,9 +89,29 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
         self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
+                
+         # Load up Session object
+        self.parser = xml.sax.make_parser(  )
+        self.handler = FryskHandler.FryskHandler(  )
+        self.parser.setContentHandler(self.handler)
+       
+        # Mechanism to allow multiple tests to be assembled into test suite,
+        # and have the test input data files be specified in the suite defiition,
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[2])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
+
+        self.theSession = self.handler.theDebugSession
+
+        # Create a Frysk session - True = quit the FryskGui after
+        # creating the session
+        createMinimalSession (self.frysk, self.theSession, False) 
         
-        # Probably temporary - during test development
-        skipDruid(self.frysk)
 
         # Load up some sample Observer objects         
         self.parser = xml.sax.make_parser(  )
@@ -104,7 +125,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[2])
+        self.parser.parse(sys.argv[3])
         #inputFile = os.environ.get('TestCreateObserversfromDataModel_FILE')
         #parser.parse(inputFile)
 
