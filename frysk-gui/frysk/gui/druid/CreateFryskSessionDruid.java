@@ -48,6 +48,8 @@ import org.gnu.gtk.Entry;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
+import org.gnu.gtk.TextBuffer;
+import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreePath;
@@ -87,6 +89,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private CheckedListView tagSetSelectionTreeView;
 	private CheckedListView  observerSelectionTreeView;
 	private ListView processObserverSelectionTreeView;	
+	private TextView observerDescriptionTextView;
+	private TextBuffer observerDescBuffer;
 	
 	
 	
@@ -390,13 +394,15 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		
 		observerSelectionTreeView = new CheckedListView(
 				glade.getWidget("SessionDruid_observerTreeView").getHandle());
-		
 		observerSelectionTreeView.expandAll();
 		
 		processObserverSelectionTreeView = new ListView(
 				glade.getWidget("SessionDruid_processObserverTreeView").getHandle());
-		
 		processObserverSelectionTreeView.expandAll();
+		
+		observerDescriptionTextView = (TextView) glade.getWidget("SessionDruid_observerDescription");
+		observerDescBuffer = new TextBuffer();
+		observerDescriptionTextView.setBuffer(observerDescBuffer);
 		
 		processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
 		processObserverSelectionTreeView.getSelection().addListener(new TreeSelectionListener(){
@@ -426,6 +432,12 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					observerProcessSelected.removeObserver((ObserverRoot)selected);
 				}
 			}});
+		
+		observerSelectionTreeView.getSelection().addListener(new TreeSelectionListener(){
+			public void selectionChangedEvent(TreeSelectionEvent arg0) {
+				observerDescBuffer.setText(observerSelectionTreeView.getSelectedObject().getToolTip());
+			}
+		});
 		
 		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
 		sizeGroup.addWidget(observerSelectionTreeView);

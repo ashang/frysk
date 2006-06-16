@@ -1,5 +1,11 @@
 2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (getProcessObserverControls):
+	Added observerDescriptionTextView TextView.
+	Added observerDescBuffer TextBuffer.
+	* glade/frysk_create_session_druid.glade: Added description textview
+	for observers.
+
 	* glade/procpop.glade: Added Observer Description
 	to editObserverDialog.
 
