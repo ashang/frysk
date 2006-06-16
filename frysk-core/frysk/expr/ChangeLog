@@ -1,3 +1,7 @@
+2006-06-16  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* TabException.java : Change class TabException to public.
+
 2005-11-28  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.inc: Delete, handled by Makefile.gen.sh.

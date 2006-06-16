@@ -38,11 +38,8 @@
 // exception.
 package frysk.cli.hpd;
 
-import jline.*;
 import java.io.*;
-import java.util.*;
 import java.text.ParseException;
-import antlr.collections.AST;
 import antlr.*;
 import frysk.lang.*;
 import frysk.expr.*;

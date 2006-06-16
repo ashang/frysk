@@ -49,7 +49,7 @@ package frysk.expr;
 
 import antlr.collections.*;
 
-class TabException
+public class TabException
     extends Exception
 {
     static final long serialVersionUID = 1;

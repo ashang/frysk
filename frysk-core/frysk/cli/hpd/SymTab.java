@@ -41,7 +41,6 @@ package frysk.cli.hpd;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import frysk.expr.*;
 
 public class SymTab
 {
