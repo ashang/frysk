@@ -63,6 +63,7 @@ import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.CheckedListView;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.GuiProc;
@@ -107,6 +108,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 
 	public CreateFryskSessionDruid(LibGlade glade) {
 		super(glade.getWidget("SessionDruid").getHandle());	
+		this.setIcon(IconManager.windowIcon);
 		
 		getDruidStructureControls(glade);
 		getProcessSelectionControls(glade);

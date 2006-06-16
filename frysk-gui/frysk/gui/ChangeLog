@@ -1,3 +1,10 @@
+2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java: Added Session Manager to taskbar
+	control center.
+	* SessionManagerGui.java: Set the Frysk icon
+	* CreateFryskSessionDruid.java: Ditto.
+
 2006-06-15  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (getSessionManagementControls):
