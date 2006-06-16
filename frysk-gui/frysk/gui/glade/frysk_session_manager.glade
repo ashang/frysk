@@ -280,6 +280,9 @@
 		      <property name="fixed_height_mode">False</property>
 		      <property name="hover_selection">False</property>
 		      <property name="hover_expand">False</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">SessionManager_previousSessionsListView</atkproperty>
+		      </accessibility>
 		    </widget>
 		  </child>
 		</widget>
