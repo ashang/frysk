@@ -1,3 +1,16 @@
+2006-06-16  Mike Cvet  <mcvet@redhat.com>
+
+	* PtraceByteBuffer.java: Moved over to frysk/sys.
+	* PtraceByteBuffer.cxx: Moved over to frysk/sys/cni; fixes to use the new
+	ptrace thread implementation - fixes #2783.
+	* funit-threadexit.c: Removed race condition.
+	* TestTaskTerminatedObserver.java: TestTerm now stops when the task dies
+	as opposed to timing out.
+	* TestLib.Java: Added print statement if event loop is not stopped.
+	* Ptrace.java: Added methods for peek() and poke().
+	* Ptrace.cxx: Added methods for peek() and poke().
+	* Makefile.am: Builds with headers from inua.
+
 2006-06-15  Nurdin Premji  <npremji@redhat.com>
 
 	* cni/Poll.cxx: Add #include <linux.syscall> and <unistd.h>

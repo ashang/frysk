@@ -95,6 +95,15 @@ public class Ptrace
 	 */ 
 	public static native long getEventMsg(int pid);
 	/**
+     * Fetch the word located at paddr.
+     */
+    public static native int peek(int peekRequest, int pid, String paddr);
+    /**
+     * Copy the word in data to child's addr.
+     */
+    public static native void poke(int pokeRequest, int pid, String paddr,
+                    int data);
+	/**
 	 * Create an attached child process.  Uses PT_TRACEME.
 	 */
 	public static native int child (String in, String out, String err,

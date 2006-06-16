@@ -47,10 +47,11 @@
 
 #include <java/lang/RuntimeException.h>
 
+#include "frysk/sys/PtraceByteBuffer.h"
+#include "frysk/sys/PtraceByteBuffer$Area.h"
+#include "frysk/sys/Ptrace.h"
 #include "inua/eio/Buffer.h"
 #include "inua/eio/ByteBuffer.h"
-#include "inua/eio/PtraceByteBuffer.h"
-#include "inua/eio/PtraceByteBuffer$Area.h"
 
 static java::lang::RuntimeException *
 newPerror (const char *syscall, pid_t pid, jlong addr, int nr)
@@ -67,8 +68,8 @@ newPerror (const char *syscall, pid_t pid, jlong addr, int nr)
 }
 
 
-inua::eio::PtraceByteBuffer$Area*
-inua::eio::PtraceByteBuffer$Area::textArea ()
+frysk::sys::PtraceByteBuffer$Area*
+frysk::sys::PtraceByteBuffer$Area::textArea ()
 {
 #if defined PT_READ_I && defined PT_WRITE_I
   return new PtraceByteBuffer$Area (PT_READ_I, PT_WRITE_I);
@@ -77,8 +78,8 @@ inua::eio::PtraceByteBuffer$Area::textArea ()
 #endif
 }
 
-inua::eio::PtraceByteBuffer$Area*
-inua::eio::PtraceByteBuffer$Area::dataArea ()
+frysk::sys::PtraceByteBuffer$Area*
+frysk::sys::PtraceByteBuffer$Area::dataArea ()
 {
 #if defined PT_READ_D && defined PT_WRITE_D
   return new PtraceByteBuffer$Area (PT_READ_D, PT_WRITE_D);
@@ -87,8 +88,8 @@ inua::eio::PtraceByteBuffer$Area::dataArea ()
 #endif
 }
 
-inua::eio::PtraceByteBuffer$Area*
-inua::eio::PtraceByteBuffer$Area::usrArea ()
+frysk::sys::PtraceByteBuffer$Area*
+frysk::sys::PtraceByteBuffer$Area::usrArea ()
 {
 #if defined PT_READ_U && defined PT_WRITE_U
   return new PtraceByteBuffer$Area (PT_READ_U, PT_WRITE_U);
@@ -98,7 +99,7 @@ inua::eio::PtraceByteBuffer$Area::usrArea ()
 }
 
 jint
-inua::eio::PtraceByteBuffer::peek (jlong addr)
+frysk::sys::PtraceByteBuffer::peek (jlong addr)
 {
   const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
   union
@@ -112,7 +113,7 @@ inua::eio::PtraceByteBuffer::peek (jlong addr)
   long paddr = addr & -sizeof (int);
 
   errno = 0;
-  tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
+  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
   if (errno != 0)
     throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
@@ -120,7 +121,7 @@ inua::eio::PtraceByteBuffer::peek (jlong addr)
 }
 
 jlong
-inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
+frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
 				   jlong off, jlong len)
 {
   const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
@@ -140,7 +141,7 @@ inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
 
   // Read an entire word.
   errno = 0;
-  tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
+  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
   if (errno != 0)
     throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
@@ -157,7 +158,7 @@ inua::eio::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
 }
 
 void
-inua::eio::PtraceByteBuffer::poke (jlong addr, jint byte)
+frysk::sys::PtraceByteBuffer::poke (jlong addr, jint byte)
 {
   const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
   const enum __ptrace_request pt_poke = (enum __ptrace_request) area->poke;
@@ -173,16 +174,16 @@ inua::eio::PtraceByteBuffer::poke (jlong addr, jint byte)
 
   // Perform a read ...
   errno = 0;
-  tmp.word = ::ptrace (pt_peek, pid, (char *) paddr, 0);
+  tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
   if (errno != 0)
-    throw newPerror ("ptrace.PEAK", pid, paddr, errno);
+    throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
   // ... modify ...
   tmp.byte[addr & (sizeof (int) - 1)] = byte;
 
   // ... write.
   errno = 0;
-  ::ptrace (pt_poke, pid, (char *) paddr, tmp.word);
+  frysk::sys::Ptrace::poke(pt_poke, pid, (jstring) (char *) paddr, tmp.word);
   if (errno != 0)
     throw newPerror ("ptrace.POKE", pid, paddr, errno);
 }

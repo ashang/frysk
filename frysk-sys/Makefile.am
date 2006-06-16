@@ -43,6 +43,7 @@ include Makefile.gen
 EXTRA_DIST += frysk/sys/ChangeLog frysk/sys/proc/ChangeLog
 
 AM_CXXFLAGS += -I$(srcdir)/../frysk-imports/include
+AM_CXXFLAGS += -I$(top_builddir)/../frysk-imports/
 
 GEN_SOURCEPATH += $(top_builddir)/../frysk-imports/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/

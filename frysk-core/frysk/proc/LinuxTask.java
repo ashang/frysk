@@ -41,9 +41,9 @@ package frysk.proc;
 
 import frysk.sys.Errno;
 import frysk.sys.Ptrace;
+import frysk.sys.PtraceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
-import inua.eio.PtraceByteBuffer;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.logging.Level;

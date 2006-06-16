@@ -1144,6 +1144,8 @@ public class TestLib
 		logger.log(Level.FINE, "{0} update {1} has been removed stopping event loop\n", new Object[]{this, proc});
 		Manager.eventLoop.requestStop ();
 		p = true;
+	    }else{
+	    	logger.log(Level.FINE, "{0} update {1} has been removed NOT stopping event loop\n", new Object[]{this, proc});
 	    }
 	}
     }

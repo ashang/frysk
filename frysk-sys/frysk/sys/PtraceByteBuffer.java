@@ -35,7 +35,9 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package inua.eio;
+package frysk.sys;
+
+import inua.eio.ByteBuffer;
 
 public class PtraceByteBuffer
     extends ByteBuffer

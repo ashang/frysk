@@ -139,7 +139,7 @@ main (int argc, char *argv[])
 
   trace ("PID=%d SIG=%d SEC=%d", pid, sig, sec);
 
-  tkill (pid, sig); // ack.
+  //tkill (pid, sig); // ack. /* Causes race condition - removed */
 
   threads = gettid();
   // Synchronization barrier; need both main and the new thread.
