@@ -63,7 +63,7 @@ public class TestOffspringObserver extends TestLib {
 	OffspringObserverTester observerTester = new OffspringObserverTester();
 	new OffspringObserver (proc, observerTester);
 	
-	addObserverToProcRequestStop(proc);
+	addObserverToProcRequestStopAssertRunUntilStop(proc);
 	
 	//Ensure there are no calls to taskAdded.
 	assertEquals ("taskAddedCount", 0, observerTester.tasksAdded.size());
@@ -93,7 +93,7 @@ public class TestOffspringObserver extends TestLib {
     	OffspringObserverTester observerTester = new OffspringObserverTester();
     	new OffspringObserver (proc, observerTester);
     
-    	addObserverToProcRequestStop(proc);
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
     	
     	//Clone a new task
     	ackDaemonProcess.addClone();
@@ -137,7 +137,7 @@ public class TestOffspringObserver extends TestLib {
     	OffspringObserverTester observerTester = new OffspringObserverTester();
     	new OffspringObserver (proc, observerTester);
     	
-    	addObserverToProcRequestStop(proc);
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
     	
     	//Fork a new process
     	ackDaemonProcess.addFork();
@@ -165,8 +165,116 @@ public class TestOffspringObserver extends TestLib {
     	
     }
     
+    public void testExistingClone()
+    {
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess ();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	ackDaemonProcess.addClone();
+    	
+    	//Add observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    	
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
+    	
+    	assertEquals("existingTask", 2, observerTester.existingTaskCounter);
+    	assertEquals("tasksAdded", 0, observerTester.tasksAddedCounter);
+    	assertEquals("tasksRemoved", 0, observerTester.tasksRemovedCounter);   	
+    }
+    
+    public void testExistingFork()
+    {
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess ();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	ackDaemonProcess.addFork();
+    	
+    	//Add observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    	
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
+    	
+    	//XXX: Right now existing children are not counted, should they be?
+    	assertEquals("existingTask", 1, observerTester.existingTaskCounter);
+    	assertEquals("tasksAdded", 0, observerTester.tasksAddedCounter);
+    	assertEquals("tasksRemoved", 0, observerTester.tasksRemovedCounter);   	
+    }
+    
+    public void testCloneThenKill()
+    {
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess ();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	//Add observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    	
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
+    	
+    	ackDaemonProcess.addClone();
+    	ackDaemonProcess.delClone();
+    	
+    	assertEquals("existingTasks", 1, observerTester.existingTaskCounter);
+    	assertEquals("tasksAdded", 1, observerTester.tasksAddedCounter);
+    	assertEquals("tasksRemoved", 1, observerTester.tasksRemovedCounter);
+    	
+    }
+    
+    public void testForkThenKill()
+    {
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess ();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	//Add observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    	
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
+    	
+    	ackDaemonProcess.addFork();
+    	ackDaemonProcess.delFork();
+    	
+    	assertEquals("existingTasks", 1, observerTester.existingTaskCounter);
+    	assertEquals("tasksAdded", 1, observerTester.tasksAddedCounter);
+    	assertEquals("tasksRemoved", 1, observerTester.tasksRemovedCounter);
+    	
+    }
+    
+    public void testStressForking()
+    {
+    	//Create Process
+    	AckDaemonProcess ackDaemonProcess = new AckDaemonProcess();
+    	Proc proc = ackDaemonProcess.findProcUsingRefresh();
+    	
+    	
+    	//Add observer
+    	OffspringObserverTester observerTester = new OffspringObserverTester();
+    	new OffspringObserver (proc, observerTester);
+    	
+    	addObserverToProcRequestStopAssertRunUntilStop(proc);
+    	
+    	//Fork a bunch of processes. Have them die soon after.
+    	int numberOfForks = 10;
+    	for (int i = 0; i < numberOfForks; i++)
+    	{
+    		ackDaemonProcess.addFork();
+    		ackDaemonProcess.delFork();
+    	}
+    	
+    	assertEquals("existingTasks", 1, observerTester.existingTaskCounter);
+    	assertEquals("tasksAdded", numberOfForks, observerTester.tasksAddedCounter);
+    	assertEquals("tasksRemoved", numberOfForks, observerTester.tasksRemovedCounter);
+    	
+    }
+    
     //Add an observerto proc that just requests the event loop to stop
-    public void addObserverToProcRequestStop(Proc proc)
+    public void addObserverToProcRequestStopAssertRunUntilStop(Proc proc)
     {
     	proc.observableAttached.addObserver(new Observer() {
     		public void update(Observable arg0, Object arg1) {

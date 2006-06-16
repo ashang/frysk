@@ -50,7 +50,7 @@ import frysk.event.Event;
  */
 
 public final class OffspringObserver
-    implements TaskObserver.Cloned, TaskObserver.Forked
+    implements TaskObserver.Cloned, TaskObserver.Forked, TaskObserver.Terminated
 {
     protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     private final Proc proc;
@@ -111,6 +111,7 @@ public final class OffspringObserver
     			"offspring: {1}\n", new Object[] { parent, offspring});
     	offspring.requestAddClonedObserver (this);
     	offspring.requestAddForkedObserver (this);
+    	offspring.requestAddTerminatedObserver(this);
     	// Need to BLOCK and UNBLOCK so that the
     	// request to add an observer has enough time
     	// to be processed before the task continues.
@@ -143,9 +144,9 @@ public final class OffspringObserver
 			logger.log (Level.FINE, "{0} Inside if not mainTask\n", this);
 		    task.requestAddClonedObserver (this);
 			task.requestAddForkedObserver (this);
+			task.requestAddTerminatedObserver(this);
 		}
 	    }
-	    
 	    
 	}
     }
@@ -168,5 +169,10 @@ public final class OffspringObserver
 	public Action updateForkedOffspring(Task parent, Task offspring) 
 	{
 		return updateOffspring(parent, offspring);
+	}
+
+	public Action updateTerminated(Task task, boolean signal, int value) {
+		offspringObserver.taskRemoved(task);
+		return Action.CONTINUE;
 	}
 }

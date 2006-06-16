@@ -53,7 +53,7 @@ public interface ProcObserver
     public interface Offspring extends ProcObserver{
 		
 	/**
-	 * Called when the observed process clones a new task.
+	 * Called when the observed process clones or forks a new task or process.
 	 */
 	void taskAdded(Task task);
 	
