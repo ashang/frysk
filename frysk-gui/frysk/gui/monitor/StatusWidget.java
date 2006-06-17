@@ -67,6 +67,7 @@ import org.gnu.gtk.event.MouseListener;
 import com.redhat.ftk.EventViewer;
 
 import frysk.gui.monitor.actions.GenericAction;
+import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class StatusWidget extends VBox{
@@ -231,15 +232,22 @@ public class StatusWidget extends VBox{
 		ObservableLinkedList observers = this.data.getObservers();
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
+			LogAction logAction = new LogAction();
+			logAction.setArgument("PID " + ((GuiProc)data).getProc().getPid());
 			final ObserverRoot observer = (ObserverRoot) iter.next();
 			observer.genericActionPoint.addAction(new TimelineAction(observer));
+			observer.genericActionPoint.addAction(logAction);
 		}
 		
 		this.data.getObservers().itemAdded.addObserver(new Observer(){
 
 			public void update(Observable arg0, Object obj) {
+				
+				LogAction logAction = new LogAction();
+				logAction.setArgument("PID " + ((GuiProc)data).getProc().getPid());
 				final ObserverRoot observer = (ObserverRoot)obj;
 				observer.genericActionPoint.addAction(new TimelineAction(observer));
+				observer.genericActionPoint.addAction(logAction);
 			}
 		});
 	}

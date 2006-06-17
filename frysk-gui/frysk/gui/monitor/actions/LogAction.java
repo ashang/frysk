@@ -39,6 +39,7 @@
 
 package frysk.gui.monitor.actions;
 
+import java.util.Date;
 import java.util.logging.Level;
 
 import frysk.gui.monitor.EventLogger;
@@ -56,6 +57,7 @@ public class LogAction extends GenericAction {
 		this.argument = new String();
 	}
 
+
 	public LogAction(LogAction other) {
 		super(other);
 		this.argument = other.argument;
@@ -66,9 +68,8 @@ public class LogAction extends GenericAction {
 	}
 
 	public void execute(ObserverRoot observer) {
-		//System.out.println("LogAction.execute()\n\t"+ observer.getInfo()); //$NON-NLS-1$
-		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getInfo());
-		WindowManager.theManager.logWindow.print(this.argument +"\n[" + observer.getInfo() + "]");
+		EventLogger.theLogger.getEventLogger().log(Level.INFO, this.argument + " triggered " +observer.getName());
+		WindowManager.theManager.logWindow.print(new Date() + " " + this.argument + " triggered " +observer.getName()+"\n");
 	}
 
 	public boolean setArgument(String comment) {
