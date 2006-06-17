@@ -5,7 +5,7 @@
 
 2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* Makefile.am: Added noinst_SCRIPT for
+	* Makefile.am: Added noinst_SCRIPTS for
 	test-suite shell file generation.
 	Added corresponding CLEANFILES statement.
 
