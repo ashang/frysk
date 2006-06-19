@@ -1,6 +1,8 @@
 2006-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* TestCallPtrace.java (testChildContinue): Finalized tests
+	(getPt): Set the ptrace thread to a daemon thread so that Frysk exits
+	properly.
 
 2006-06-16  Mike Cvet  <mcvet@redhat.com>
 

@@ -54,6 +54,7 @@ public class Ptrace
 	{
 		if (pt == null) {
 			pt = new PtraceThread();
+			pt.setDaemon(true);
 			pt.startThread();
 		}
 		return pt;
