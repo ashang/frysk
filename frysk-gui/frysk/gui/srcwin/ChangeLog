@@ -1,5 +1,9 @@
 2006-06-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWin): Now creates a dialog
+	rather than trying to throw an exception to be caught, since nothing
+	will be able to catch the exception.
+
 	* SourceWindowFactory.java (finishSoruceWin): Now throws a
 	NoDebugInfoException if the dom cannot be created.
 
