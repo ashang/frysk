@@ -79,6 +79,7 @@ from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
 from FryskHelpers import FRYSK_SESSION_FILES
 from FryskHelpers import createMinimalSession
+from FryskHelpers import createBigSession
 
 class TestDruid ( unittest.TestCase ):
 
@@ -93,7 +94,7 @@ class TestDruid ( unittest.TestCase ):
         self.FryskBinary = sys.argv[1]
         self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
 
-        # Load up some sample Observer objects 
+        # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
