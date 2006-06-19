@@ -195,6 +195,8 @@ public class ListView extends TreeView implements Observer {
 		this.add(object, treeIter);
 		if (this.stickySelect)
 			setSelectedObject(object);
+		else if (getSelectedObject() == null)
+			setSelectedObject(object);
 	}
 	
 	/**
@@ -210,6 +212,8 @@ public class ListView extends TreeView implements Observer {
 		object.addObserver(this);	
 		if (this.stickySelect)
 			setSelectedObject(object);
+		else if (getSelectedObject() == null)
+				setSelectedObject(object);
 	}
 	
 	public void remove(GuiObject object){
