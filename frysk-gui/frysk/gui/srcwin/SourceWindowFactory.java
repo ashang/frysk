@@ -171,10 +171,12 @@ public class SourceWindowFactory {
 			if(dom == null){
 				if(!blockerMap.containsKey(task))
 					throw new RuntimeException("No blocker found for the task we're trying to continue!");
+				else{
+					TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
+					task.requestDeleteAttachedObserver(o);
+				}
 				
-				TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
-				task.requestDeleteAttachedObserver(o);
-				return;
+				throw new RuntimeException("No Source information found for the given task");
 			}
 			
 			DwflLine line = task.getDwflLineXXX();

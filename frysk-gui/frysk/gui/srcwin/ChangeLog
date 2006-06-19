@@ -1,3 +1,9 @@
+2006-06-19  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactory.java (finishSourceWin): Fixed bug where
+	observers are no longer removed from a task if there aren't any
+	attached blockers following failure to get a dom object.
+
 2006-06-16  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (createSourceWinFromStoppedTask):
