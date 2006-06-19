@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import lib.dw.DwflLine;
+import lib.dw.NoDebugInfoException;
 
 import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
@@ -17,11 +18,11 @@ public class DOMFactory {
 
 	private static HashMap hashmap = new HashMap();
 	
-	public static DOMFrysk createDOM(Task task){
+	public static DOMFrysk createDOM(Task task) throws NoDebugInfoException{
 		DOMFrysk dom;
 		DwflLine line = task.getDwflLineXXX();
 		if(line == null)
-			return null;
+			throw new NoDebugInfoException("Could not find debug information for task " + task.getName());
 		String fullPath = line.getSourceFile();
 		String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
 		String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
