@@ -213,6 +213,7 @@ public class TestTaskTerminateObserver
         	break;
 	    }
         }
+        Manager.eventLoop.runPolling (timeout * 2 * 1000);
         new StopEventLoopWhenProcRemoved(proc.getPid());
  	assertTrue ("Number attached processes", attachCounter.count != 0);
 	assertTrue ("Number terminating processes", terminatingCounter.count != 0);

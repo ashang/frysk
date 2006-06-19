@@ -1,3 +1,7 @@
+2006-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* TestCallPtrace.java (testChildContinue): Finalized tests
+
 2006-06-16  Mike Cvet  <mcvet@redhat.com>
 
 	* PtraceByteBuffer.java: Moved over to frysk/sys.

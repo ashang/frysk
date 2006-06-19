@@ -45,20 +45,17 @@ public class TestCallPtrace extends TestCase {
 
 	private int pid;
 	
-	public void testFillEmpty () {
+	public void testChildContinue () {
 		
 		String[] args = {"/bin/true"};
 		pid = Ptrace.child(null, null, null, args);
 		assertTrue(pid > 0);
-		System.out.println("JAVA: PID: " + pid);
 		int temp = TestLib.waitIt(pid);
 		assertEquals("Return from waitpid()", temp, pid);
 		Ptrace.singleStep(pid, 0);
-		System.out.println("JAVA: Finished singleStep");
 		int temp1 = TestLib.waitIt(pid);
 		assertEquals("Return from waitpid()", temp1, pid);
 		Ptrace.cont(pid, 0);
-		System.out.println("JAVA: Finished cont");
 	}
 	
 	public void testAttach () {
@@ -66,11 +63,9 @@ public class TestCallPtrace extends TestCase {
 		pid = TestLib.forkIt();
 		assertTrue(pid > 0);
 		Ptrace.attach(pid);
-		System.out.println("JAVA: Finished attach");
 		int temp = TestLib.waitIt(pid);
 		assertEquals("Return from waitpid()", temp, pid);
 		Ptrace.detach(pid, 15);
-		System.out.println("JAVA: Finished detach");
 	    }
 }
 
