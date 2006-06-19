@@ -1,5 +1,8 @@
 2006-06-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSoruceWin): Now throws a
+	NoDebugInfoException if the dom cannot be created.
+
 	* SourceWindowFactory.java (finishSourceWin): Fixed bug where
 	observers are no longer removed from a task if there aren't any
 	attached blockers following failure to get a dom object.

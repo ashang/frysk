@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import lib.dw.DwflLine;
+import lib.dw.NoDebugInfoException;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.glib.CustomEvents;
@@ -111,6 +112,7 @@ public class SourceWindowFactory {
 	 * Same behavior as {@see SourceWindowFactory#createSourceWindow(Task)},
 	 * except the task is expected to be blocked
 	 * @param task The blocked task to display the source for
+	 * @throws NoDebugInfoException 
 	 */
 	public static void createSourceWinFromBlockedTask(Task task){
 		finishSourceWin(task);
@@ -164,11 +166,13 @@ public class SourceWindowFactory {
 			s.grabFocus();
 		}
 		else{
-			
-			DOMFrysk dom = DOMFactory.createDOM(task);
+			DOMFrysk dom;
+			try{
+				dom = DOMFactory.createDOM(task);
+			}
 			
 			// If we don't have a dom, tell the task to continue
-			if(dom == null){
+			catch (NoDebugInfoException e){
 				if(!blockerMap.containsKey(task))
 					throw new RuntimeException("No blocker found for the task we're trying to continue!");
 				else{
@@ -176,7 +180,7 @@ public class SourceWindowFactory {
 					task.requestDeleteAttachedObserver(o);
 				}
 				
-				throw new RuntimeException("No Source information found for the given task");
+				throw new RuntimeException("No Source information found for the given task", e);
 			}
 			
 			DwflLine line = task.getDwflLineXXX();
