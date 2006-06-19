@@ -1,5 +1,8 @@
 2006-06-19  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWin): Initialized dom with
+	null.
+
 	* SourceWindowFactory.java (finishSourceWin): Now creates a dialog
 	rather than trying to throw an exception to be caught, since nothing
 	will be able to catch the exception.

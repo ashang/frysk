@@ -167,7 +167,7 @@ public class SourceWindowFactory {
 			s.grabFocus();
 		}
 		else{
-			DOMFrysk dom;
+			DOMFrysk dom = null;
 			try{
 				dom = DOMFactory.createDOM(task);
 			}
