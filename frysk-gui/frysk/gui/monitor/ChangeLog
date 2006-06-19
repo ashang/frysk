@@ -1,3 +1,8 @@
+2006-06-19  Mike Cvet  <mcvet@redhat.com>
+
+	* observers/TaskTerminatingObserver.java: Small grammar correction.
+	* SessionProcDataModel.java (SessionProcDataModel): Fix for part of #2808.
+	
 2006-06-19  Nurdin Premji  <npremji@redhat.com>
 
 	* ListView.java (add): Changed to if condition to fix problem where 

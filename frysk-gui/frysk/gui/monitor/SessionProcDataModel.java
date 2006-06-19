@@ -137,14 +137,19 @@ public class SessionProcDataModel {
 	}
 	
 	public void setSession(Session session){
-		this.currentSession = session;
-		this.currentSession.populateProcs();
 		
-		Iterator i = this.currentSession.getProcesses().iterator();
-		while(i.hasNext()){
-			Iterator j = (((DebugProcess)i.next()).getProcs()).iterator();
-			while(j.hasNext()){
-				this.addProc((GuiProc)j.next());
+		/* Don't reset the session to itself */
+		if (this.currentSession != session) {
+			
+			this.currentSession = session;
+			this.currentSession.populateProcs();
+			
+			Iterator i = this.currentSession.getProcesses().iterator();
+			while(i.hasNext()){
+				Iterator j = (((DebugProcess)i.next()).getProcs()).iterator();
+				while(j.hasNext()){
+					this.addProc((GuiProc)j.next());
+				}
 			}
 		}
 	}
