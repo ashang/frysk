@@ -1,3 +1,8 @@
+2006-06-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/TaskObserverRoot.java (addFailed): Wrap original core
+	exception up in Runtime Exception.
+
 2006-06-16  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* EditObserverDialog: Add observerDescriptionTextView. Add

@@ -63,7 +63,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		    }
 		    public void addFailed(Object observable, Throwable w)
 		    {
-			throw new RuntimeException("Error occurred while adding observer");
+		    	new RuntimeException("An exception occured while requesting addition of a task observer ",w);
 		    }
 		    public void existingTask(Task task)
 		    {
