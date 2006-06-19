@@ -45,14 +45,9 @@ import java.io.IOException;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.FileChooserButton;
 import org.gnu.gtk.RadioButton;
-import org.gnu.gtk.SizeGroup;
-import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.FileChooserEvent;
-import org.gnu.gtk.event.FileChooserListener;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.ToggleEvent;
@@ -82,11 +77,9 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleLi
 	ListView previousSessions;
 	
 	RadioButton previousSession;
-	RadioButton debugExecutable;
 	RadioButton debugSingleProcess;
 	Button debugSingleProcessAction;
 	
-	FileChooserButton executableChooser;
 	
 	private Button editSession;
 	private Button copySession;
@@ -102,7 +95,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleLi
 		
 		getManagerControls(glade);
 		getSessionManagementControls(glade);
-		getDebugExecutableControls(glade);
+		//getDebugExecutableControls(glade);
 		getDebugSingleProcess(glade);
 		setButtonStates();
 	
@@ -115,7 +108,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleLi
 		copySession.setSensitive(!copySession.getSensitive());
 		deleteSession.setSensitive(!deleteSession.getSensitive());
 		newSession.setSensitive(!newSession.getSensitive());
-		executableChooser.setSensitive(!executableChooser.getSensitive());
+		debugSingleProcessAction.setSensitive(!debugSingleProcessAction.getSensitive());
 	}
 
 	private void getDebugSingleProcess(LibGlade glade) {
@@ -134,58 +127,40 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleLi
 				}
 			}});
 		
-		SizeGroup labelGroup = new SizeGroup((SizeGroupMode.BOTH));
-		labelGroup.addWidget(debugExecutable);
-		labelGroup.addWidget(debugSingleProcess);
-		
-		SizeGroup chooserGroup = new SizeGroup((SizeGroupMode.BOTH));
-		chooserGroup.addWidget(executableChooser);
-		chooserGroup.addWidget(debugSingleProcessAction);
 	}
 	
-	private void getDebugExecutableControls(LibGlade glade) {
-		debugExecutable = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
-		debugExecutable.setState(false);
-		executableChooser = (FileChooserButton) glade.getWidget("SessionManager_execChooser");
-		executableChooser.addListener(new FileChooserListener() {
-
-			public void currentFolderChanged(FileChooserEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			public void fileActivated(FileChooserEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			public void selectionChanged(FileChooserEvent arg0) {
-					setButtonStates();
-				
-			}
-
-			public void updatePreview(FileChooserEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}});
-		executableChooser.setSensitive(false);
-
-	}
+//	private void getDebugExecutableControls(LibGlade glade) {
+//		debugExecutable = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
+//		debugExecutable.setState(false);
+//		executableChooser = (FileChooserButton) glade.getWidget("SessionManager_execChooser");
+//		executableChooser.addListener(new FileChooserListener() {
+//
+//			public void currentFolderChanged(FileChooserEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			public void fileActivated(FileChooserEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//
+//			public void selectionChanged(FileChooserEvent arg0) {
+//					setButtonStates();
+//				
+//			}
+//
+//			public void updatePreview(FileChooserEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}});
+//		executableChooser.setSensitive(false);
+//
+//	}
 	
 	private void setButtonStates()
 	{
-		if (debugExecutable.getState() == false)
-		{
-			if (executableChooser.getFilename()!= null)
-				if (!executableChooser.getFilename().equals(""))
-				{
-					this.openButton.setSensitive(true);
-					return;
-				}
-			this.openButton.setSensitive(false);
-		}
-		else
-			if (previousSessions.getSelectedObject() !=null)
+			if ((previousSessions.getSelectedObject() !=null) && (previousSession.getState()))
 				this.openButton.setSensitive(true);
 			else
 				this.openButton.setSensitive(false);
