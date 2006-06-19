@@ -54,7 +54,7 @@ public final class OffspringObserver
 {
     protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     private final Proc proc;
-    private final ProcObserver.Offspring offspringObserver;
+    private final ProcObserver.Offspring procOffspringObserver;
     private Task mainTask;
     
     /**
@@ -65,7 +65,7 @@ public final class OffspringObserver
     {
 	logger.log (Level.FINE, "{0} new\n", this); 
 	proc = theProc;
-	offspringObserver = theOffspringObserver;
+	procOffspringObserver = theOffspringObserver;
 
 	// The rest of the construction must be done synchronous to
 	// the EventLoop, schedule it.
@@ -78,8 +78,10 @@ public final class OffspringObserver
 		    
 		    mainTask = Manager.host.get (new TaskId (proc.getPid ()));
 		    if (mainTask == null) {
-			offspringObserver.addFailed (proc,
-						 new RuntimeException ("Process lost"));
+		    logger.log (Level.FINE, "Could not get main thread of this process\n {0}", proc);
+			procOffspringObserver.addFailed (proc,
+						 new RuntimeException ("Process lost: could not " +
+						 		"get the main thread of this process.\n" + proc));
 			return;
 		    }
 		    mainTask.requestAddClonedObserver (OffspringObserver.this);
@@ -106,7 +108,7 @@ public final class OffspringObserver
     public Action updateOffspring (Task parent,
     				Task offspring)
     {
-    	offspringObserver.taskAdded (offspring);
+    	procOffspringObserver.taskAdded (offspring);
     	logger.log (Level.FINE, "OffspringObserver.updateOffspring() parent: {0} " +
     			"offspring: {1}\n", new Object[] { parent, offspring});
     	offspring.requestAddClonedObserver (this);
@@ -139,7 +141,7 @@ public final class OffspringObserver
 	    for (Iterator iterator = proc.getTasks().iterator();
 		 iterator.hasNext(); ) {
 		Task task = (Task) iterator.next();
-		offspringObserver.existingTask (task);
+		procOffspringObserver.existingTask (task);
 		if (task != mainTask) {
 			logger.log (Level.FINE, "{0} Inside if not mainTask\n", this);
 		    task.requestAddClonedObserver (this);
@@ -158,7 +160,7 @@ public final class OffspringObserver
 
     public void deletedFrom(Object observable)
     {
-	offspringObserver.taskRemoved ((Task) observable);
+	procOffspringObserver.taskRemoved ((Task) observable);
     }
 
 	public Action updateForkedParent(Task parent, Task offspring) 
@@ -172,7 +174,7 @@ public final class OffspringObserver
 	}
 
 	public Action updateTerminated(Task task, boolean signal, int value) {
-		offspringObserver.taskRemoved(task);
+		procOffspringObserver.taskRemoved(task);
 		return Action.CONTINUE;
 	}
 }

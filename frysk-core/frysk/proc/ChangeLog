@@ -1,3 +1,9 @@
+2006-06-19  Nurdin Premji  <npremji@redhat.com>
+
+	* OffspringObserver.java (procOffspringObserver): renamed. Was 
+	offspringObserver.
+	(execute): Added more detail to exception thrown. Bug 2795
+
 2006-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* TestTaskTerminateObserver.java (testTerm): Fixed attachCounter.count oops
