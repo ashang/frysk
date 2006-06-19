@@ -174,6 +174,9 @@ public class ListView extends TreeView implements Observer {
 		
 		if (this.stickySelect)
 			setSelectedObject(object);
+		 else if (getSelectedObject() == null)
+                        setSelectedObject(object);
+
 	}
 	
 	/**
