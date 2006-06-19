@@ -167,7 +167,11 @@ public class ListView extends TreeView implements Observer {
 
 	public void add(GuiObject object){
 		TreeIter treeIter = listStore.appendRow();
-		this.add(object, treeIter);
+		if (!map.containsKey(object))
+		{
+			this.add(object, treeIter);
+		}
+		
 		if (this.stickySelect)
 			setSelectedObject(object);
 	}
