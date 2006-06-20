@@ -1,5 +1,12 @@
 2006-06-20  Adam Jocksch  <ajocksch@redhat.com>
 
+	* ElfEHeader32.java: Removed.
+	* ElfEHeader64.java: Removed.
+	* ElfPHeader32.java: Removed.
+	* ElfPHeader64.java: Removed.
+	* ElfSectionHeader32.java: Removed.
+	* ElfSectionHeader64.java: Removed.
+
 	* Elf.java (Elf): No longer takes 32bit boolean.
 	(elf_getehdr): Now returns a ElfEHeader.
 	(getEHeader): refactored to reflect above change.
