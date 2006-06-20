@@ -1,3 +1,13 @@
+2006-06-20  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h:  Replaced GDK drawing primitives
+	in eventviewer with cairo graphics.  Replaced primitively drawn
+	markers (the little circles and squares--also GDK primitives) with
+	pango/cairo layouts using the Dingbats font.  Added automatic
+	color selection for markers and traces and automatic glyph
+	selection for markers.
+
 2006-06-09  Chris Moller  <moller@mollerware.com>
 
 	* test/widget/forker.c: Added to provide an event generator for frysk.
