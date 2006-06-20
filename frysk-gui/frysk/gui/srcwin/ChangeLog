@@ -1,5 +1,8 @@
 2006-06-20  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWin): No longer uses
+	DialogManager to launch the error dialog, now creates it's own.
+
 	* SourceWindowFactory.java (getFunctionXXX): Changed the heuristic for
 	finding the current function, since the previous one would break if 
 	weren't stopped on the function entry address.
