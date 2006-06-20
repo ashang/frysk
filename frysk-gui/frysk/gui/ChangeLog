@@ -1,3 +1,8 @@
+2006-06-20  Mike Cvet  <mcvet@redhat.com>
+
+	* glade/registerwindow.gladep: Added some accessibility information for
+	items in the register window.
+
 2006-06-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterWindow.java (setTask): No longer uses dummy data.
