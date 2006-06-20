@@ -259,17 +259,19 @@ public class SourceWindowFactory {
 		
 		System.out.println("Looking for " + filename + ": " + linenum);
 		
+		DOMFunction found = null;
+		
 		while(functions.hasNext()){
 			DOMFunction function = (DOMFunction) functions.next();
-			System.out.println("\t"+function.getSource().getFileName() + ": " + function.getStartingLine());
+			System.out.println("\t"+function.getSource().getFileName() + ": " + function.getStartingLine() + " - " + function.getEndingLine());
 			if(function.getSource().getFileName().equals(filename) &&
-					function.getStartingLine() == linenum)
-				return function;
+					function.getStartingLine() <= linenum){
+				if(found == null || function.getStartingLine() > found.getStartingLine())
+					found = function;
+			}
 		}
 		
-		System.out.println("nope");
-		
-		return null;
+		return found;
 	}
 	
 	/*

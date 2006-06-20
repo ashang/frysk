@@ -101,7 +101,7 @@ public class RegisterWindow extends Window implements Saveable{
 			
 			model.setValue(iter, (DataColumnString) cols[0], register.getName());
 			model.setValue(iter, (DataColumnObject) cols[9], register);
-			saveBinaryValue(""+0, 10, true, iter.getPath());
+			saveBinaryValue(""+register.get(this.myTask), 10, true, iter.getPath());
 		}
 		
 		TreeViewColumn col = new TreeViewColumn();
