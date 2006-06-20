@@ -1,5 +1,7 @@
 2006-06-20  Mike Cvet  <mcvet@redhat.com>
 
+	* SessionProcDataModel.java (setSession): Temporarily removed fix for #2808
+	as it is a wontfix.
 	* StatusWidget.java (createEvent): Added doNotSave() to the TimeLineAction
 	class, fixes #2810.
 

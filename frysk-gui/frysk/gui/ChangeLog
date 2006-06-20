@@ -1,3 +1,9 @@
+2006-06-20  Mike Cvet  <mcvet@redhat.com>
+
+	* Gui.java (menuItemEvent): Removed the session manager option from the
+	taskbar, via #2808 as there is no clean way to back out of the currently
+	running session.
+
 2006-06-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java: Remove debugExecutable glade based variables. 

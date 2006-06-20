@@ -359,16 +359,17 @@ public class Gui
 		}
 	    });
 	
+	/* Removed until we're ready to try this again */
 	// Session Window
-	MenuItem sessionWindowItem = new MenuItem("Session Manager", false); //$NON-NLS-1$
+	/*MenuItem sessionWindowItem = new MenuItem("Session Manager", false); //$NON-NLS-1$
 	sessionWindowItem.addListener (new MenuItemListener()
 	    {
 		public void menuItemEvent(MenuItemEvent arg0){
 		    WindowManager.theManager.sessionManager.showAll();
 		}
-	    });
+	    }); */
 	popupMenu.prepend(consoleWindowItem);
-	popupMenu.prepend(sessionWindowItem);
+	//popupMenu.prepend(sessionWindowItem);
 	
 	final Thread backendStarter  = new Thread(new Runnable(){
 		public void run(){

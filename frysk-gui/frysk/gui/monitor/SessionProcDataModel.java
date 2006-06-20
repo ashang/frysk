@@ -139,7 +139,7 @@ public class SessionProcDataModel {
 	public void setSession(Session session){
 		
 		/* Don't reset the session to itself */
-		if (this.currentSession != session) {
+	//	if (this.currentSession != session) { // removed until session window is re-implemented
 			
 			this.currentSession = session;
 			this.currentSession.populateProcs();
@@ -152,7 +152,7 @@ public class SessionProcDataModel {
 				}
 			}
 		}
-	}
+	//}
 	
 	public void addProc(GuiProc guiProc){
 		Proc proc = guiProc.getProc();
