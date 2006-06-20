@@ -36,7 +36,7 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-#include <libelf.h>
+#include <gelf.h>
 #include <stdlib.h>
 #include <inttypes.h>
 #include <alloca.h>
@@ -99,18 +99,14 @@ lib::elf::ElfData::elf_flagdata (jint command, jint flags){
 jlong
 lib::elf::ElfData::elf_xlatetom (jint encode){
 	::Elf_Data *tmp = (Elf_Data*) alloca(sizeof(Elf_Data));
-	if(this->is32bit)
-		return (jlong) ::elf32_xlatetom(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
-	else
-		return (jlong) ::elf64_xlatetom(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
+	return (jlong) ::gelf_xlatetom((::Elf*) this->parent, tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
+
 }
+
 jlong
 lib::elf::ElfData::elf_xlatetof (jint encode){
 	::Elf_Data *tmp = (Elf_Data*) alloca(sizeof(Elf_Data));
-	if(this->is32bit)
-		return (jlong) ::elf32_xlatetof(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
-	else
-		return (jlong) ::elf64_xlatetof(tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
+	return (jlong) gelf_xlatetof((::Elf*) this->parent, tmp, (Elf_Data*) this->pointer, (unsigned int) encode);
 }
 
 #ifdef __cplusplus

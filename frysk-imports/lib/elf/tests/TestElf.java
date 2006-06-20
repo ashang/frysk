@@ -64,22 +64,20 @@ public class TestElf extends TestCase {
 		assertEquals(testElf.getBase(), 0);
 		
 		ElfEHeader header = testElf.getEHeader();
-		assertEquals(3, header.getArchitecture());
-		assertEquals(1, header.getDataEncoding());
-		assertEquals(52, header.getELFHeaderSize());
-		assertEquals(0, header.getEntryPoint());
-		assertEquals(1, header.getFileClass());
-		assertEquals(1, header.getFileVersion());
-		assertEquals(0, header.getFlags());
-		assertEquals(4, header.getType());
-		assertEquals(0, header.getSectionHeaderEntryCount());
-		assertEquals(14, header.getProgramHeaderEntryCount());
-		assertEquals(32, header.getProgramHeaderEntrySize());
-		assertEquals(52, header.getProgramHeaderOffset());
+		assertEquals(3, header.machine);
+		assertEquals(52, header.ehsize);
+		assertEquals(0, header.entry);
+		assertEquals(1, header.version);
+		assertEquals(0, header.flags);
+		assertEquals(4, header.type);
+		assertEquals(0, header.shnum);
+		assertEquals(0, header.shentsize);
+		assertEquals(0, header.shoff);
+		assertEquals(14, header.phnum);
+		assertEquals(32, header.phentsize);
+		assertEquals(52, header.phoff);
 		
-		ElfPHeader[] pheaders = testElf.getPHeaders();
-		assertNotNull(pheaders);
-		assertEquals(pheaders.length, header.getProgramHeaderEntryCount());
+		int count = header.phnum;
 		
 		int[] pheaderFlags = {0, 5, 5, 4, 6, 5, 4, 6, 6, 5, 6, 6, 6, 6};
 		int[] pheaderOffsets = {500, 4096, 8192, 8192, 12288, 16384, 16384, 24576,
@@ -96,24 +94,24 @@ public class TestElf extends TestCase {
 				new BigInteger("134516736", 10), new BigInteger("3085901824", 10),
 				new BigInteger("3085983744", 10), new BigInteger("3220111360", 10)};
 		
-		for(int i = 0; i < pheaders.length; i++){
-			ElfPHeader pheader = pheaders[i];
+		for(int i = 0; i < count; i++){
+			ElfPHeader pheader = testElf.getPHeader(i);
 			assertNotNull(pheader);
 			
 			if(i == 0)
-				assertEquals(0, pheader.getAlignment());
+				assertEquals(0, pheader.align);
 			else
-				assertEquals(4096, pheader.getAlignment());
-			assertEquals(pheaderFlags[i], pheader.getFlags());
-			assertEquals(pheaderOffsets[i], pheader.getOffset());
-			assertEquals(0, pheader.getPhysicalAddress());
-			assertEquals(pheaderSegSizeFile[i], pheader.getSegmentSizeInFile());
-			assertEquals(pheaderSegSizeMem[i], pheader.getSegmentSizeInMem());
+				assertEquals(4096, pheader.align);
+			assertEquals(pheaderFlags[i], pheader.flags);
+			assertEquals(pheaderOffsets[i], pheader.offset);
+			assertEquals(0, pheader.paddr);
+			assertEquals(pheaderSegSizeFile[i], pheader.filesz);
+			assertEquals(pheaderSegSizeMem[i], pheader.memsz);
 			if(i == 0)
-				assertEquals(4, pheader.getType());
+				assertEquals(4, pheader.type);
 			else
-				assertEquals(1, pheader.getType());
-			assertEquals(pheaderAddr[i], new BigInteger(""+pheader.getVirtualAddress(), 10));
+				assertEquals(1, pheader.type);
+			assertEquals(pheaderAddr[i], new BigInteger(""+pheader.vaddr, 10));
 		}
 	}
 	
@@ -125,18 +123,18 @@ public class TestElf extends TestCase {
 		assertEquals(testElf.getBase(), 0);
 		
 		ElfEHeader header = testElf.getEHeader();
-		assertEquals(3, header.getArchitecture());
-		assertEquals(1, header.getDataEncoding());
-		assertEquals(52, header.getELFHeaderSize());
-		assertEquals(0, header.getEntryPoint());
-		assertEquals(1, header.getFileClass());
-		assertEquals(1, header.getFileVersion());
-		assertEquals(0, header.getFlags());
-		assertEquals(1, header.getType());
-		assertEquals(11, header.getSectionHeaderEntryCount());
-		assertEquals(0, header.getProgramHeaderEntryCount());
-		assertEquals(0, header.getProgramHeaderEntrySize());
-		assertEquals(0, header.getProgramHeaderOffset());
+		assertEquals(3, header.machine);
+		assertEquals(52, header.ehsize);
+		assertEquals(0, header.entry);
+		assertEquals(1, header.version);
+		assertEquals(0, header.flags);
+		assertEquals(1, header.type);
+		assertEquals(11, header.shnum);
+		assertEquals(40, header.shentsize);
+		assertEquals(236, header.shoff);
+		assertEquals(0, header.phnum);
+		assertEquals(0, header.phentsize);
+		assertEquals(0, header.phoff);
 		
 		int[] expectedIndices = {0, 52, 864, 96, 96, 96, 110, 155, 155, 676, 836};
 		int[] expectedInfo = {0, 0, 1, 0, 0, 0, 0, 0, 0, 8, 0};
@@ -155,7 +153,7 @@ public class TestElf extends TestCase {
 		};
 		int[] expectedBytes = {0, -115, 20, 0, 0, 72, 0, 0, 0, 0, 0};
 		
-		for(int i = 0; i < header.getSectionHeaderEntryCount(); i++){
+		for(int i = 0; i < header.shnum; i++){
 			ElfSection section = testElf.getSection(i);
 			assertNotNull(section);
 			assertEquals(section.getIndex(), i);
@@ -163,15 +161,15 @@ public class TestElf extends TestCase {
 			ElfSectionHeader sheader = section.getSectionHeader();
 			assertNotNull(sheader);
 
-			assertEquals(0, sheader.getAddress());
-			assertEquals(expectedIndices[i], sheader.getOffset());
-			assertEquals(expectedInfo[i], sheader.getAdditionalInfo());
-			assertEquals(expectedAlign[i], sheader.getAlignment());
-			assertEquals(expectedEntrySize[i], sheader.getEntrySize());
-			assertEquals(expectedFlags[i], sheader.getFlags());
-			assertEquals(expectedNameIndeces[i], sheader.getNameIndex());
-			assertEquals(expectedSize[i], sheader.getSize());
-			assertEquals(expectedTypes[i], sheader.getType());
+			assertEquals(0, sheader.addr);
+			assertEquals(expectedIndices[i], sheader.offset);
+			assertEquals(expectedInfo[i], sheader.info);
+			assertEquals(expectedAlign[i], sheader.addralign);
+			assertEquals(expectedEntrySize[i], sheader.entsize);
+			assertEquals(expectedFlags[i], sheader.flags);
+			assertEquals(expectedNameIndeces[i], sheader.name);
+			assertEquals(expectedSize[i], sheader.size);
+			assertEquals(expectedTypes[i], sheader.type);
 			
 			ElfData data = section.getData();
 			assertNotNull(data);
@@ -182,11 +180,6 @@ public class TestElf extends TestCase {
 			if(data.getSize() != 0)
 				assertEquals(expectedBytes[i], data.getByte(0));
 		}
-		
-		ElfPHeader[] pheaders = testElf.getPHeaders();
-		assertNotNull(pheaders);
-		assertEquals(pheaders.length, header.getProgramHeaderEntryCount());
-		
 	}
 	
 }

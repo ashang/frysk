@@ -45,11 +45,9 @@ package lib.elf;
 public class Elf {
 
 	private long pointer;
-	private boolean is32bit;
 	
-	protected Elf(long ptr, boolean is32bit){
+	protected Elf(long ptr){
 		this.pointer = ptr;
-		this.is32bit = is32bit;
 	}
 	
 	/**
@@ -71,7 +69,7 @@ public class Elf {
 	}
 	
 	public Elf clone(ElfCommand command){
-		return new Elf(elf_clone(command.getValue()), this.is32bit);
+		return new Elf(elf_clone(command.getValue()));
 	}
 	
 	/**
@@ -121,48 +119,23 @@ public class Elf {
 	 * @return The object file header
 	 */
 	public ElfEHeader getEHeader(){
-		if(is32bit)
-			return new ElfEHeader32(elf_getehdr(), this);
-		else
-			return new ElfEHeader64(elf_getehdr(), this);
+		return elf_getehdr();
 	}
 	
 	/**
 	 * Creates a new Elf Header if none exists
 	 * @return A new ElfHeader
 	 */
-	public ElfEHeader createNewEHeader(){
-		if(is32bit)
-			return new ElfEHeader32(elf_newehdr(), this);
-		else
-			return new ElfEHeader64(elf_newehdr(), this);
+	public int createNewEHeader(){
+		return elf_newehdr();
 	}
 	
 	/**
 	 * 
 	 * @return The program header table
 	 */
-	public ElfPHeader[] getPHeaders(){
-		long[] vals = elf_getphdrs();
-		if(vals == null)
-			return null;
-		
-		ElfPHeader[] headers = new ElfPHeader[vals.length];
-		
-		for(int i = 0; i < vals.length; i++){
-			long val = vals[i];
-			if(val == 0)
-				headers[i] = null;
-			else{
-				if(this.is32bit)
-					headers[i] = new ElfPHeader32(val, this);
-				else
-					headers[i] = new ElfPHeader64(val, this);
-			}
-		}
-		
-		return headers;
-			
+	public ElfPHeader getPHeader(int index){
+		return elf_getphdr(index);
 	}
 	
 	/**
@@ -170,11 +143,8 @@ public class Elf {
 	 * @param count 
 	 * @return The program header table
 	 */
-	public ElfPHeader createNewPHeader(long count){
-		if(is32bit)
-			return new ElfPHeader32(elf_newphdr(count), this);
-		else
-			return new ElfPHeader64(elf_newphdr(count), this);
+	public int createNewPHeader(long count){
+		return elf_newphdr(count);
 	}
 	
 	/**
@@ -183,7 +153,7 @@ public class Elf {
 	 * @return The ElfSection
 	 */
 	public ElfSection getSectionByOffset(int offset){
-		return new ElfSection(elf_getscn(offset), is32bit, this);
+		return new ElfSection(elf_getscn(offset), this);
 	}
 	
 	/**
@@ -195,7 +165,7 @@ public class Elf {
 		long val = elf_getscn(index);
 		if(val == 0)
 			return null;
-		return new ElfSection(elf_getscn(index), is32bit, this);
+		return new ElfSection(elf_getscn(index), this);
 	}
 	
 	/**
@@ -206,7 +176,7 @@ public class Elf {
 	public ElfSection getNextSection(ElfSection previous){
 		long val = elf_nextscn(previous.getPointer());
 		if(val != 0)
-			return new ElfSection(val, is32bit, this);
+			return new ElfSection(val, this);
 		else
 			return null;
 	}
@@ -216,7 +186,7 @@ public class Elf {
 	 * @return The new ElfSection
 	 */
 	public ElfSection createNewSection(){
-		return new ElfSection(elf_newscn(), is32bit, this);
+		return new ElfSection(elf_newscn(), this);
 	}
 	
 	/**
@@ -282,7 +252,7 @@ public class Elf {
 	 * @return The Elf archive header
 	 */
 	public ElfArchiveHeader getArchiveHeader(){
-		return new ElfArchiveHeader(elf_getarhdr(), this);
+		return elf_getarhdr();
 	}
 	
 	/**
@@ -329,14 +299,6 @@ public class Elf {
 		return elf_rawfile(ptr);
 	}
 	
-	/**
-	 * 
-	 * @return true iff this is a 32 bit elf object
-	 */
-	public boolean is32Bits(){
-		return this.is32bit;
-	}
-	
 	public long getPointer(){
 		return this.pointer;
 	}
@@ -354,10 +316,10 @@ public class Elf {
 	protected native int elf_kind();
 	protected native long elf_getbase();
 	protected native String elf_getident();
-	protected native long elf_getehdr();
-	protected native long elf_newehdr();
-	protected native long[] elf_getphdrs();
-	protected native long elf_newphdr(long __cnt);
+	protected native ElfEHeader elf_getehdr();
+	protected native int elf_newehdr();
+	protected native ElfPHeader elf_getphdr(int index);
+	protected native int elf_newphdr(long __cnt);
 	protected native long elf_offscn(long offset);
 	protected native long elf_getscn(long __index);
 	protected native long elf_nextscn(long __scn);
@@ -368,7 +330,7 @@ public class Elf {
 	protected native int elf_flagehdr(int __cmd, int __flags);
 	protected native int elf_flagphdr(int __cmd, int __flags);
 	protected native String elf_strptr(long __index, long __offset);
-	protected native long elf_getarhdr();
+	protected native ElfArchiveHeader elf_getarhdr();
 	protected native long elf_getaroff();
 	protected native long elf_rand(int __offset);
 	protected native long elf_getarsym(long __ptr);

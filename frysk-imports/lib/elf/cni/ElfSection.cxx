@@ -37,9 +37,11 @@
 // version and license this file solely under the GPL without
 // exception.
 #include <gcj/cni.h>
-#include <libelf.h>
+#include <stdlib.h>
+#include <gelf.h>
 
 #include "lib/elf/ElfSection.h"
+#include "lib/elf/ElfSectionHeader.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -51,12 +53,26 @@ lib::elf::ElfSection::elf_ndxscn (){
 	return ::elf_ndxscn((Elf_Scn*) this->pointer);
 }
 
-jlong
+lib::elf::ElfSectionHeader*
 lib::elf::ElfSection::elf_getshdr (){
-	if(this->is32bit)
-		return (jlong) elf32_getshdr((Elf_Scn*) this->pointer);
-	else
-		return (jlong) elf64_getshdr((Elf_Scn*) this->pointer);
+	GElf_Shdr* tmp = (GElf_Shdr*) JvMalloc(sizeof(GElf_Shdr));
+	if(::gelf_getshdr((Elf_Scn*) this->pointer, tmp) == NULL)
+		return NULL;
+		
+	lib::elf::ElfSectionHeader *header = new lib::elf::ElfSectionHeader(this->parent);
+	
+	header->name = (jint) tmp->sh_name;
+	header->type = (jint) tmp->sh_type;
+	header->flags = (jlong) tmp->sh_flags;
+	header->addr = (jlong) tmp->sh_addr;
+	header->offset = (jlong) tmp->sh_offset;
+	header->size = (jlong) tmp->sh_size;
+	header->link = (jint) tmp->sh_link;
+	header->info = (jint) tmp->sh_info;
+	header->addralign = (jlong) tmp->sh_addralign;
+	header->entsize = (jlong) tmp->sh_entsize;
+	
+	return header;
 }
 
 jint

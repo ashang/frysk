@@ -39,7 +39,6 @@
 package lib.elf;
 
 
-import java.util.Date;
 
 /**
  * An ElfArchiveHeader is a header for an archive member
@@ -48,83 +47,21 @@ import java.util.Date;
  */
 public class ElfArchiveHeader {
 
-	private long pointer;
+	public String name;
+	public long date;
+	public int uid;
+	public int gid;
+	public int mode;
+	public long size;
+	public String rawname;
+	
 	private Elf parent;
 	
-	protected ElfArchiveHeader(long ptr, Elf parent){
-		this.pointer = ptr;
+	protected ElfArchiveHeader(Elf parent){
 		this.parent = parent;
-	}
-	
-	/**
-	 * 
-	 * @return The name of the archive member
-	 */
-	public String getName(){
-		return elf_ar_get_name();
-	}
-	
-	/**
-	 * 
-	 * @return The file date
-	 */
-	public Date getDate(){
-		return new Date(elf_ar_get_date());
-	}
-	
-	/**
-	 * 
-	 * @return The user id of the file
-	 */
-	public int getUid(){
-		return elf_ar_get_uid();
-	}
-	
-	/**
-	 * 
-	 * @return The group id of the file 
-	 */
-	public int getGid(){
-		return elf_ar_get_gid();
-	}
-	
-	/**
-	 * 
-	 * @return The file mode
-	 */
-	public int getMode(){
-		return elf_ar_get_mode();
-	}
-	
-	/**
-	 * 
-	 * @return The file size
-	 */
-	public int getSize(){
-		return elf_ar_get_size();
-	}
-	
-	/**
-	 * 
-	 * @return The original name of the archive member
-	 */
-	public String getRawName(){
-		return elf_ar_get_raw_name();
-	}
-	
-	protected long getPointer(){
-		return this.pointer;
 	}
 
 	protected Elf getParent(){
 		return this.parent;
 	}
-	
-	protected native String elf_ar_get_name();
-	protected native long elf_ar_get_date();
-	protected native int elf_ar_get_uid();
-	protected native int elf_ar_get_gid();
-	protected native int elf_ar_get_mode();
-	protected native int elf_ar_get_size();
-	protected native String elf_ar_get_raw_name();
 }

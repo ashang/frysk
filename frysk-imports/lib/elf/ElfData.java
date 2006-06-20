@@ -46,12 +46,10 @@ package lib.elf;
 public class ElfData {
 
 	private long pointer;
-	private boolean is32bit;
 	private Elf parent;
 	
-	protected ElfData(long ptr, boolean is32bit, Elf parent){
+	protected ElfData(long ptr, Elf parent){
 		this.pointer = ptr;
-		this.is32bit = is32bit;
 		this.parent = parent;
 	}
 	
@@ -106,7 +104,7 @@ public class ElfData {
 		long retval = elf_xlatetom(encoding);
 		if(retval == 0)
 			return null;
-		return new ElfData(retval, is32bit, this.parent);
+		return new ElfData(retval, this.parent);
 	}
 	
 	/**
@@ -119,7 +117,7 @@ public class ElfData {
 		long retval = elf_xlatetof(encoding);
 		if(retval == 0)
 			return null;
-		return new ElfData(retval, is32bit, this.parent);
+		return new ElfData(retval, this.parent);
 	}
 	
 	/**

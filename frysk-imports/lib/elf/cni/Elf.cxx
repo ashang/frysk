@@ -37,7 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 #include <stdlib.h>
-#include <libelf.h>
+#include <gelf.h>
 #include <gcj/cni.h>
 #include <string.h>
 #include <sys/types.h>
@@ -45,10 +45,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
-#include <alloca.h>
 
 #include "lib/elf/ElfException.h"
 #include "lib/elf/Elf.h"
+#include "lib/elf/ElfEHeader.h"
+#include "lib/elf/ElfPHeader.h"
+#include "lib/elf/ElfArchiveHeader.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -57,7 +59,7 @@ extern "C"
 
 void
 lib::elf::Elf::elf_begin (jstring file, jint command){
-	char *fileName = (char *) alloca (file->length() + 1);
+	char fileName[file->length() + 1];
 	JvGetStringUTFRegion (file, 0, file->length (), fileName);
 	fileName[file->length()]='\0';
 
@@ -75,12 +77,6 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 	if(errno != 0 || !new_elf)
 		throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
 	
-	// Do a quick check for 32/64 bitness
-	if(elf32_getehdr(new_elf) != 0)
-		this->is32bit = true;
-	else
-		this->is32bit = false;
-	
 	this->pointer = (jlong) new_elf;
 }
 
@@ -92,7 +88,7 @@ lib::elf::Elf::elf_clone (jint command){
 void
 lib::elf::Elf::elf_memory (jstring image, jlong size){
 	int len = JvGetStringUTFLength (image);
-	char *imageName = (char *) alloca (len + 1);
+	char imageName[len + 1];
 	JvGetStringUTFRegion (image, 0, image->length (), imageName);
 
 	this->pointer = (jlong) ::elf_memory(imageName, (size_t) size);
@@ -130,60 +126,76 @@ lib::elf::Elf::elf_getident (){
 	return JvNewString((const jchar*) ident, length);
 }
 
-jlong
+void fillEHeader(lib::elf::ElfEHeader *header, GElf_Ehdr *ehdr){
+	header->ident = JvNewByteArray(EI_NIDENT);
+	jbyte *bytes = elements(header->ident);
+	for(int i = 0; i < EI_NIDENT; i++)
+		bytes[i] = (jbyte) ehdr->e_ident[i];
+	
+	header->type = (jint) ehdr->e_type;
+	header->machine = (jint) ehdr->e_machine;
+	header->version = (jint) ehdr->e_version;
+	header->entry = (jlong) ehdr->e_entry;
+	header->phoff = (jlong) ehdr->e_phoff;
+	header->shoff = (jlong) ehdr->e_shoff;
+	header->flags = (jint) ehdr->e_flags;
+	header->ehsize = (jint) ehdr->e_ehsize;
+	header->phentsize = (jint) ehdr->e_phentsize;
+	header->phnum = (jint) ehdr->e_phnum;
+	header->shentsize = (jint) ehdr->e_shentsize;
+	header->shnum = (jint) ehdr->e_shnum;
+	header->shstrndx = (jint) ehdr->e_shstrndx;
+}
+
+lib::elf::ElfEHeader*
 lib::elf::Elf::elf_getehdr(){
-	if(this->is32bit)
-		return (jlong) ::elf32_getehdr((::Elf*) this->pointer);
-	else
-		return (jlong) ::elf64_getehdr((::Elf*) this->pointer);
+	GElf_Ehdr *hdr = (GElf_Ehdr*) JvMalloc(sizeof(GElf_Ehdr));
+	if(::gelf_getehdr((::Elf*) this->pointer, hdr) == NULL)
+		return NULL;
+	
+	lib::elf::ElfEHeader *header = new lib::elf::ElfEHeader(this);
+	fillEHeader(header, hdr);
+	
+	return header;
 }
 
-jlong
+jint
 lib::elf::Elf::elf_newehdr (){
-	if(this->is32bit)
-		return (jlong) ::elf32_newehdr((::Elf*) this->pointer);
-	else
-		return (jlong) ::elf64_newehdr((::Elf*) this->pointer);
+	::Elf* elf = (::Elf*) this->pointer;
+	return (jint) ::gelf_newehdr(elf, gelf_getclass(elf));
 }
 
-jlongArray
-lib::elf::Elf::elf_getphdrs (){
-	if(this->is32bit){
-		::Elf32_Phdr* headers =  ::elf32_getphdr((::Elf*) this->pointer);
-		int count = ::elf32_getehdr((::Elf*) this->pointer)->e_phnum;
-		jlongArray array = JvNewLongArray((jint) count);
-		jlong*  jlp = elements(array);
-		for(int i = 0; i < count; i++)
-			jlp[i] = (jlong) &(headers[i]);
-			
-		return array;
-	}
-	else{
-		::Elf64_Phdr* headers =  ::elf64_getphdr((::Elf*) this->pointer);
-		int count = ::elf64_getehdr((::Elf*) this->pointer)->e_phnum;
-		jlongArray array = JvNewLongArray((jint) count);
-		jlong*  jlp = elements(array);
-		for(int i = 0; i < count; i++)
-			jlp[i] = (jlong) &(headers[i]);
-			
-		return array;
-	}
+void fillPHeader(lib::elf::ElfPHeader *header, GElf_Phdr *phdr){
+	header->type = (jint) phdr->p_type;
+	header->flags = (jint) phdr->p_flags;
+	header->offset = (jlong) phdr->p_offset;
+	header->vaddr = (jlong) phdr->p_vaddr;
+	header->paddr = (jlong) phdr->p_paddr;
+	header->filesz = (jlong) phdr->p_filesz;
+	header->memsz = (jlong) phdr->p_memsz;
+	header->align = (jlong) phdr->p_align;
 }
 
-jlong
+lib::elf::ElfPHeader*
+lib::elf::Elf::elf_getphdr (jint index){
+	GElf_Phdr * phdr = (GElf_Phdr *) JvMalloc(sizeof(GElf_Phdr));
+	if(::gelf_getphdr((::Elf*) this->pointer, index, phdr) == NULL)
+		return NULL;
+		
+	lib::elf::ElfPHeader *header = new lib::elf::ElfPHeader(this);
+	fillPHeader(header, phdr);
+	
+	return header;
+}
+
+jint
 lib::elf::Elf::elf_newphdr (jlong cnt){
-	if(this->is32bit)
-		return (jlong) ::elf32_newphdr((::Elf*) this->pointer, (size_t) cnt);
-	else
-		return (jlong) ::elf64_newphdr((::Elf*) this->pointer, (size_t) cnt);
+	return (jint) ::gelf_newphdr((::Elf*) this->pointer, (size_t) cnt);
 }
 
 jlong
 lib::elf::Elf::elf_offscn (jlong offset){
-	if(this->is32bit)
-		return (jlong) ::elf32_offscn((::Elf*) this->pointer, (Elf32_Off) offset);
-	else
-		return (jlong) ::elf64_offscn((::Elf*) this->pointer, (Elf64_Off) offset);
+	return (jlong) gelf_offscn((::Elf*) this->pointer, (Elf32_Off) offset);
 }
 
 jlong
@@ -238,9 +250,24 @@ lib::elf::Elf::elf_strptr (jlong index, jlong offset){
 	return JvNewString((const jchar*) strptr, strlen(strptr));
 }
 
-jlong
+lib::elf::ElfArchiveHeader*
 lib::elf::Elf::elf_getarhdr (){
-	return (jlong) ::elf_getarhdr((::Elf*) this->pointer);
+	Elf_Arhdr *hdr = ::elf_getarhdr((::Elf*) this->pointer);
+	
+	if(hdr == NULL)
+		return NULL;
+		
+	lib::elf::ElfArchiveHeader *header = new lib::elf::ElfArchiveHeader(this);
+	
+	header->name = JvNewString((const jchar*)hdr->ar_name, strlen(hdr->ar_name));
+	header->date = (jlong) hdr->ar_date;
+	header->uid = (jint) hdr->ar_uid;
+	header->gid = (jint) hdr->ar_gid;
+	header->mode = (jint) hdr->ar_mode;
+	header->size = (jlong) hdr->ar_size;
+	header->rawname = JvNewString((const jchar*) hdr->ar_rawname, strlen(hdr->ar_rawname));
+	
+	return header;
 }
 
 jlong

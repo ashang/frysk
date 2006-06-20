@@ -43,93 +43,24 @@ package lib.elf;
  * @author ajocksch
  *
  */
-public abstract class ElfPHeader {
+public class ElfPHeader {
 
-	private long pointer;
+	public int type;
+	public int flags;
+	public long offset;
+	public long vaddr;
+	public long paddr;
+	public long filesz;
+	public long memsz;
+	public long align;
+	
 	private Elf parent;
 	
-	protected ElfPHeader(long ptr, Elf parent){
-		this.pointer = ptr;
+	protected ElfPHeader(Elf parent){
 		this.parent = parent;
 	}
-	
-	/**
-	 * 
-	 * @return The type of the program segment 
-	 */
-	public long getType(){
-		return get_p_type();
-	}
-	
-	/**
-	 * 
-	 * @return The file offset of the segment
-	 */
-	public long getOffset(){
-		return get_p_offset();
-	}
-	
-	/**
-	 * 
-	 * @return The virtual address of the program segment
-	 */
-	public long getVirtualAddress(){
-		return get_p_vaddr();
-	}
-	
-	/**
-	 * @return The physical address of the program segment
-	 */
-	public long getPhysicalAddress(){
-		return get_p_paddr();
-	}
-	
-	/**
-	 * 
-	 * @return The size of the program segment in the file
-	 */
-	public long getSegmentSizeInFile(){
-		return get_p_filesz();
-	}
-	
-	/**
-	 * 
-	 * @return The size of the program segment in memory
-	 */
-	public long getSegmentSizeInMem(){
-		return get_p_memsz();
-	}
-	
-	/**
-	 * 
-	 * @return The program segment flags
-	 */
-	public long getFlags(){
-		return get_p_flags();
-	}
-	
-	/**
-	 * 
-	 * @return The program segment's alignment
-	 */
-	public long getAlignment(){
-		return get_p_align();
-	}
-	
-	protected long getPointer(){
-		return this.pointer;
-	}
-	
+
 	protected Elf getParent(){
-		return this.parent;
+		return parent;
 	}
-	
-	protected abstract long get_p_type();
-	protected abstract long get_p_offset();
-	protected abstract long get_p_vaddr();
-	protected abstract long get_p_paddr();
-	protected abstract long get_p_filesz();
-	protected abstract long get_p_memsz();
-	protected abstract long get_p_align();
-	protected abstract long get_p_flags();
 }

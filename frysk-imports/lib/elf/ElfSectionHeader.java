@@ -43,113 +43,26 @@ package lib.elf;
  * @author ajocksch
  *
  */
-public abstract class ElfSectionHeader {
+public  class ElfSectionHeader {
 
-	private long pointer;
+	public int name;
+	public int type;
+	public long flags;
+	public long addr;
+	public long offset;
+	public long size;
+	public int link;
+	public int info;
+	public long addralign;
+	public long entsize;
+	
 	private Elf parent;
 	
-	protected ElfSectionHeader(long ptr, Elf parent){
-		this.pointer = ptr;
+	protected ElfSectionHeader(Elf parent){
 		this.parent = parent;
-	}
-	
-	protected long getPointer(){
-		return this.pointer;
-	}
-	
-	/**
-	 * 
-	 * @return The index of the section's name in the string table
-	 */
-	public long getNameIndex(){
-		return get_sh_name();
-	}
-	
-	/**
-	 * 
-	 * @return The type of the header
-	 */
-	public long getType(){
-		return get_sh_type();
-	}
-	
-	/**
-	 * 
-	 * @return The section flags
-	 */
-	public long getFlags(){
-		return get_sh_flags();
-	}
-	
-	/**
-	 * 
-	 * @return The section's virtual address at execution
-	 */
-	public long getAddress(){
-		return get_sh_addr();
-	}
-	
-	/**
-	 * 
-	 * @return The section file offset
-	 */
-	public long getOffset(){
-		return get_sh_offset();
-	}
-	
-	/**
-	 * 
-	 * @return Size of the section in bytes
-	 */
-	public long getSize(){
-		return get_sh_size();
-	}
-	
-	// TODO: does this point to another Section Header?
-	/**
-	 * @return Link to another section
-	 */
-	public long getLink(){
-		return get_sh_link();
-	}
-	
-	/**
-	 * 
-	 * @return Any additional section information
-	 */
-	public long getAdditionalInfo(){
-		return get_sh_info();
-	}
-	
-	/**
-	 * 
-	 * @return The section alignment
-	 */
-	public long getAlignment(){
-		return get_sh_addralign();
-	}
-	
-	/**
-	 * 
-	 * @return The entry size if this section holds a table
-	 */
-	public long getEntrySize(){
-		return get_sh_entsize();
 	}
 	
 	protected Elf getParent(){
 		return this.parent;
-	}
-	
-	protected abstract long get_sh_name();
-	protected abstract long get_sh_type();
-	protected abstract long get_sh_flags();
-	protected abstract long get_sh_addr();
-	protected abstract long get_sh_offset();
-	protected abstract long get_sh_size();
-	protected abstract long get_sh_link();
-	protected abstract long get_sh_info();
-	protected abstract long get_sh_addralign();
-	protected abstract long get_sh_entsize();
-	
+	}	
 }
