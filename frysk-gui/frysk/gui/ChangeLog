@@ -10,6 +10,20 @@
 
 2006-06-19  Phil Muldoon  <pmuldoon@redhat.com>
 
+
+	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls.entryEvent): 
+	Added listener for same session name being added.
+	(getDruidStructureControls): get warning label and icon.
+	
+	* glade/frysk_create_session_druid.glade: Added warning label and icon.
+
+2006-06-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls.buttonEvent): 
+	Added iterator null	check test.
+
+	(entryEvent): Added listener for same session name being added.
+	
 	* SessionManagerGui.java: Remove debugExecutable glade based variables. 
 	(getDebugExecutableControls): Removed.
 	(setButtonStates): Alter states to reflect removed controls.

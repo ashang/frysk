@@ -45,6 +45,8 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.Image;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
@@ -91,6 +93,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	private ListView processObserverSelectionTreeView;	
 	private TextView observerDescriptionTextView;
 	private TextBuffer observerDescBuffer;
+	private Label warningLabel;
+	private Image warningIcon;
 	
 	
 	
@@ -137,8 +141,12 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		backButton.hideAll();
 		cancelButton.showAll();
 		saveButton.showAll();
+		saveButton.setSensitive(true);
 		editSession = true;
 		oldSessionName = currentSession.getName();
+		editSession = true;
+		this.warningIcon.hide();
+		this.warningLabel.hide();
 	}
 	
 	public void setNewSessionMode() {
@@ -276,15 +284,32 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 	
 	private void setProcessNext(int processCount)
 	{
-		if ((processCount > 0) && (nameEntry.getText().length() > 0))
+		if (editSession == false)
 		{
-			this.nextButton.setSensitive(true);
-			this.saveButton.setSensitive(true);
+				if ((processCount > 0) && (nameEntry.getText().length() > 0) &&
+				    (SessionManager.theManager.getSessionByName(nameEntry.getText()) == null))
+				{
+					this.nextButton.setSensitive(true);
+					this.saveButton.setSensitive(true);
+				}
+				else
+				{
+					this.nextButton.setSensitive(false);
+					this.saveButton.setSensitive(false);
+				}
 		}
 		else
 		{
-			this.nextButton.setSensitive(false);
-			this.saveButton.setSensitive(false);
+			if ((processCount > 0) && (nameEntry.getText().length() > 0))
+			{
+					this.nextButton.setSensitive(true);
+					this.saveButton.setSensitive(true);
+			}
+			else
+			{
+					this.nextButton.setSensitive(false);
+					this.saveButton.setSensitive(false);
+			}
 		}
 	}
 	
@@ -312,6 +337,20 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		nameEntry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent arg0) {
 				currentSession.setName(nameEntry.getText());
+				if (editSession == false)
+				{
+					if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
+					{
+						warningLabel.setText("Warning: The Session Name is already used. Please choose another.");
+						warningLabel.show();
+						warningIcon.show();
+					}
+					else
+					{
+						warningLabel.hide();
+						warningIcon.hide();
+					}
+				}
 				setProcessNext(processSelected);
 			}
 		});		
@@ -334,13 +373,14 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 			public void buttonEvent(ButtonEvent event) {
 				if(event.isOfType(ButtonEvent.Type.CLICK)){
 					Iterator i = addedProcsTreeView.getSelectedObjects();
-					while (i.hasNext())
-					{
-						DebugProcess currentDebugProcess = (DebugProcess) i.next();
-						TreePath foo = dataModel.searchName(currentDebugProcess.getName());
-						changeGroupState(procWiseTreeView,new TreePath[]{foo},false,false);
-						currentSession.removeProcess(currentDebugProcess);
-					}
+					if (i != null)
+						while (i.hasNext())
+						{
+							DebugProcess currentDebugProcess = (DebugProcess) i.next();
+							TreePath foo = dataModel.searchName(currentDebugProcess.getName());
+							changeGroupState(procWiseTreeView,new TreePath[]{foo},false,false);
+							currentSession.removeProcess(currentDebugProcess);
+						}
 				}
 			}
 		});
@@ -517,6 +557,9 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 						
 					}
 				}});
+		
+		this.warningIcon = (Image) glade.getWidget("sessionDruid_warningIcon");
+		this.warningLabel = (Label) glade.getWidget("sessionDruid_warningLabel");
 	}
 	
 	public void attachLinkedListsToWidgets()
