@@ -278,7 +278,11 @@ public class CDTParser implements StaticParser {
 			line.addTag(DOMTagTypes.KEYWORD, lineText.substring(arg0.getStartingOffset() - line.getOffset(), arg0.getNameOffset() - line.getOffset()), arg0.getStartingOffset() - line.getOffset());
 			nameLine.addTag(DOMTagTypes.FUNCTION, funcName, funcName.length());
 			
-			image.addFunction(funcName, source.getFileName(), arg0.getStartingLine(), arg0.getEndingLine(), arg0.getStartingOffset(), arg0.getEndingOffset());
+			int endingLine = arg0.getEndingLine();
+			if(endingLine == 0)
+				endingLine = arg0.getStartingLine();
+			
+			image.addFunction(funcName, source.getFileName(), arg0.getStartingLine(), endingLine, arg0.getStartingOffset(), arg0.getEndingOffset());
 			
 			// start building the full name of the function for jump-to purposes
 			String functionName = arg0.getName() + "(";
