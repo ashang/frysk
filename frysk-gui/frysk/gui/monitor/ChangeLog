@@ -1,3 +1,8 @@
+2006-06-20  Mike Cvet  <mcvet@redhat.com>
+
+	* StatusWidget.java (createEvent): Added doNotSave() to the TimeLineAction
+	class, fixes #2810.
+
 2006-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* observers/TaskTerminatingObserver.java: Small grammar correction.

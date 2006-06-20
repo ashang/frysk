@@ -266,6 +266,7 @@ public class StatusWidget extends VBox{
 		public TimelineAction(ObserverRoot observer) {
 			super("TimeLine Action",""); //$NON-NLS-1$ //$NON-NLS-2$
 			this.observer = observer;
+			this.dontSaveObject();
 			this.createEvent();
 		}
 
