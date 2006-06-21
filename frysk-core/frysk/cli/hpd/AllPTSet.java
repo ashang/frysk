@@ -42,7 +42,9 @@ import frysk.proc.*;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.LinkedList;
 import java.lang.IllegalStateException;
+import java.lang.IllegalArgumentException;
 import java.lang.RuntimeException;
 
 
@@ -53,10 +55,7 @@ import java.lang.RuntimeException;
  // for 3.*:4.5 would be {3, -1, 4, 5}
 
 /**
- * TaskSet represents a set of processes and their tasks. 
- * Tasks are stored in "two-dimensional" Vector [process][task].
- * The class makes some assumptions about when and how it's useful, and about
- * the engine, so review it for possible changes.
+ * AllPTSet holds all processes and their tasks and generates subsets for different types of sets. 
  */
 class AllPTSet implements PTSet
 {
@@ -163,7 +162,7 @@ class AllPTSet implements PTSet
 		}
 		else
 		{
-			throw new RuntimeException("Looking up Task in a nonexistent Proc");
+			throw new IllegalArgumentException("Looking up Task in a nonexistent Proc");
 		}
 
 		return result;
@@ -202,14 +201,36 @@ class AllPTSet implements PTSet
 		return result;
 	}
 
-	public Iterator getProcs()
+	public boolean containsTask(int procid, int taskid)
 	{
-		return getProcsVector().iterator();
+		boolean result = false;
+
+		if (procid < procSet.size() && taskid < ((Vector)taskSets.elementAt(procid)).size())
+			result = true;
+
+		return result;
 	}
 
 	public Iterator getTasks()
 	{
 		return getTasksVector().iterator();
+	}
+
+	public Iterator getTaskData()
+	{
+		LinkedList result = new LinkedList();
+		Vector temp = null;
+
+		for (int i = 0; i < taskSets.size(); i++)
+		{
+			temp = (Vector) taskSets.elementAt(i);
+			for (int j = 0; j < temp.size(); j++)
+			{
+				result.add(new TaskData((Task)temp.elementAt(j), j, i));
+			}
+		}
+
+		return result.iterator();
 	}
 
 
@@ -252,6 +273,11 @@ class AllPTSet implements PTSet
 		return result;
 	}
 
+	public ProcTasks[] getSubsetByState(int state)
+	{
+		return null;
+	}
+	
 	public String toString()
 	{
 		String result = "";

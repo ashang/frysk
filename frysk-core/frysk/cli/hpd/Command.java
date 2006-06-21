@@ -43,6 +43,9 @@ import java.util.Vector;
 import java.text.ParseException;
 import java.util.Arrays;
 
+// TODO: This is not a very good class, the lexing is primitive (and doesn't work well in
+// some instances). Add more commandline parsing features to it.
+
 /**
  * Command class separates and contains different parts of a command: set, action, parameters.
  * It is immutable.
@@ -131,31 +134,61 @@ class Command
 		str = str.trim();
 		str = str.replaceAll(" +", " ");
 		str = str.replaceAll(" *\" *", "\"");
+		str = str.replaceAll(" *\\[ *", "[");
+		str = str.replaceAll(" *\\] *", "]");
+
+		// a kinda lexing state machine, sort of
+		int tokBegin = 0;
 
 		boolean needQuote = false;
-		int qindex = -1;
+		boolean needBracket = false;
+
 		for (int i = 0; i < str.length(); i++)
 		{
 			if (str.charAt(i) == '\"')
 			{
 				if (needQuote)
 				{
-					result.add(str.substring(qindex+1, i));
+					result.add(str.substring(tokBegin, i));
+					tokBegin = i+1;
 					needQuote = false;
 				}
 				else
 				{
-					result.addAll(Arrays.asList(str.substring(qindex+1, i).split(" ")));
+					result.add(str.substring(tokBegin, i));
+					tokBegin = i+1;
 					needQuote = true;
 				}
-				qindex = i;
+			}
+			else if (str.charAt(i) == '[')
+			{
+				if (i != 0)
+					result.add(str.substring(tokBegin, i));
+				tokBegin = i;
+				needBracket = true;
+			}
+			else if (str.charAt(i) == ']')
+			{
+				result.add(str.substring(tokBegin, i+1));
+				tokBegin = i+1;
+				needBracket = false;
+			}
+			else if (str.charAt(i) == ' ')
+			{
+				if (!needQuote && !needBracket)
+				{
+					result.add(str.substring(tokBegin, i));
+					tokBegin = i+1;
+				}
 			}
 			else if (i == str.length()-1)
 			{
 				if (needQuote)
 					throw new ParseException("Unmatched quote.", i);
+				else if (needBracket)
+					throw new ParseException("Unmatched bracket.", i);
 				else
-					result.addAll(Arrays.asList(str.substring(qindex+1, i+1).split(" ")));
+					result.addAll(Arrays.asList(str.substring(tokBegin, i+1).split(" ")));
 			}
 		}
 

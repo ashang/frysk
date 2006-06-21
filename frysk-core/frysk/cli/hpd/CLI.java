@@ -128,6 +128,14 @@ public class CLI
 	private String prompt;
 	private Hashtable handlers;
 
+	// PT set related stuff
+	private AllPTSet allset;
+	private Hashtable namedPTSets;
+	private Hashtable builtinPTSets;
+
+	// alias
+	private Hashtable aliases;
+
 	/*
 	 * Public methods
 	 */
@@ -154,6 +162,19 @@ public class CLI
 		handlers.put("help", new HelpHandler());
 		handlers.put("exit", new QuitHandler());
 		handlers.put("quit", new QuitHandler());
+
+		// initialize PT set stuff
+		allset = new AllPTSet();
+
+		builtinPTSets = new Hashtable();
+		builtinPTSets.put("all", allset);
+
+		namedPTSets = new Hashtable();
+		namedPTSets.toString(); // placeholder so compiler doesn't give unused variable warnings
+
+		//initialize alias table
+		aliases = new Hashtable();
+		aliases.toString(); // placeholder so compiler doesn't give unused variable warnings
 	}
 
 	public String getPrompt()

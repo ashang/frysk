@@ -38,89 +38,77 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.util.TreeMap;
 import java.util.Vector;
+import java.util.Iterator;
 
-/**
- * A container for ProcData and a subset of it's TaskDatas. If you try to add tasks from other
- * Procs you'll get an exception;
- */
-class ProcTasks
+class StatePTSet implements PTSet
 {
-	ProcData proc;
-	TreeMap tasks; //maps taskId -> TaskData. A map quarantees sortedness and log(n) basic operations 
+	ParseTreeNode[] set;
+	AllPTSet pool;
 
-	/**
-	 * Constructor
-	 */
-	public ProcTasks(ProcData proc)
+	public StatePTSet(AllPTSet ptpool, int state)
 	{
-		this.proc = proc;
-		this.tasks = new TreeMap();
+		this.set = set;
+		pool = ptpool;
 	}
 
-
-	/**
-	 * Constructor
-	 */
-	public ProcTasks(ProcData proc, TaskData[] taskarray)
+	//not efficient, but okay for now
+	public Iterator getProcs()
 	{
-		this.proc = proc;
-		this.tasks = new TreeMap();
+		ProcTasks[] proctasks = pool.getSubsetByState(state);
+		Vector result = new Vector(10, 5);
 
-		TaskData temp = null;
+		for (int i = 0; i < proctasks.length; i++)
+			result.add(proctasks[i].getProcData().getProc());
 
-		for (int i = 0; i < taskarray.length; i++)
+		return result.iterator();
+	}
+
+	public boolean containsTask(int procid, int taskid)
+	{
+		boolean result = false;
+
+		ProcTasks[] proctasks = pool.getSubsetByState(state);
+		for (int i = 0; i < proctasks.length; i++)
 		{
-			temp = taskarray[i];
-			if (temp.getParentID() == proc.getID())
+			if (proctasks[i].getProcData().getID() == procid &&
+				proctasks[i].containsTask(taskid))
 			{
-				//task id -> task
-				tasks.put(new Integer(temp.getID()), temp);
+				result = true;
+				break;
 			}
-			else
-				throw new IllegalArgumentException("ProcTasks was passed" +
-								" Tasks from a process that is not \"proc\"");
 		}
-	}
-
-	public boolean containsTask(int taskID)
-	{
-		return tasks.containsKey(new Integer(taskID));
-	}
-
-	public ProcData getProcData()
-	{
-		return proc;
-	}
-
-	/**
-	 * Returns a Vecotr of all TaskData objects order by ID
-	 * @return a Vector of TaskData objects
-	 */
-	public Vector getTaskData()
-	{
-		return new Vector( ((TreeMap) tasks.clone()).values() );
-	}
-
-	public void addTaskData(TaskData task)
-	{
-		if (task.getParentID() == proc.getID())
-		{
-			//task id -> task
-			tasks.put(new Integer(task.getID()), task);
-		}
-		else
-			throw new IllegalArgumentException("ProcTasks was passed Task not from this instance's process.");
-	}
-
-	public String toString()
-	{
-		String result = ""; 
-		Vector values = new Vector(tasks.values());
-		for (int i = 0; i < values.size(); i++)
-			result += (TaskData)values.elementAt(i) + "\n";
 
 		return result;
+	}
+
+	//not efficient, but okay for now
+	public Iterator getTasks()
+	{
+		ProcTasks[] proctasks = pool.getSubsetByState(state);
+		Vector temp = new Vector();
+		Vector result = new Vector(10, 10);
+
+		for (int i = 0; i < proctasks.length; i++)
+		{
+			temp = proctasks[i].getTaskData();
+			for (int j = 0; j < temp.size(); j++)
+				result.add( ((TaskData)temp.elementAt(i)).getTask() );
+		}
+
+		return result.iterator();
+	}
+
+	public Iterator getTaskData()
+	{
+		ProcTasks[] proctasks = pool.getSubsetByState(state);
+		LinkedList result = new LinkedList();
+
+		for (int i = 0; i < proctasks.length; i++)
+		{
+			result.addAll(proctasks[i].getTaskData());
+		}
+
+		return result.iterator();
 	}
 }

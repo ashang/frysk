@@ -50,16 +50,16 @@ class ParsedSet
 	public static int TYPE_HPD = 0;		//the hpd *.3, 1:2.3.... notation
 	public static int TYPE_NAMED = 1;	//named set
 	public static int TYPE_EXEC = 2;	//by executable name
+	public static int TYPE_STATE = 3;	//by state
 
 	int type = 0;
-
 	String name = ""; //name of set or name of exec (depending on type)
 
 	ParseTreeNode[] nodes = null;
 	boolean isStatic = false;
 
 	/**
-	 * Constructor for TYPE_NAMED and TYPE_EXEC set notation
+	 * Constructor for TYPE_NAMED, TYPE_EXEC, TYPE_STATE set notation
 	 */
 	public ParsedSet(int type, String name)
 	{
@@ -75,6 +75,7 @@ class ParsedSet
 	 */
 	public ParsedSet(ParseTreeNode[] nodes, boolean isStatic)
 	{
+		this.type = TYPE_HPD;
 		this.nodes = nodes;
 		this.isStatic = isStatic;
 	}

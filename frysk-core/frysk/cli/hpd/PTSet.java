@@ -42,6 +42,7 @@ import java.util.Iterator;
 
 interface PTSet
 {
-	Iterator getProcs();
+	boolean containsTask(int procid, int taskid);
 	Iterator getTasks();
+	Iterator getTaskData();
 }

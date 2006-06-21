@@ -66,7 +66,13 @@ class SetNotationParser
 
 		if (setnobr.matches("\\w*"))
 		{
-			result = new ParsedSet(ParsedSet.TYPE_NAMED, setnobr);
+			if (setnobr.equals("running") ||
+				setnobr.equals("stopped") ||
+				setnobr.equals("runnable") ||
+				setnobr.equals("held"))
+				result = new ParsedSet(ParsedSet.TYPE_STATE, setnobr);
+			else
+				result = new ParsedSet(ParsedSet.TYPE_NAMED, setnobr);
 		}
 		else if (set.matches("exec(\\w*)"))
 		{

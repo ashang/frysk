@@ -40,23 +40,24 @@ package frysk.cli.hpd;
 
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 class DynamicPTSet implements PTSet
 {
-	ParseTreeNode[] nodes;
+	ParseTreeNode[] set;
 	AllPTSet pool;
 
 	public DynamicPTSet(AllPTSet ptpool, ParseTreeNode[] set)
 	{
-		nodes = set;
+		this.set = set;
 		pool = ptpool;
 	}
 
 	//not efficient, but okay for now
-	public Iterator getProcs()
+	public Iterator getProcData()
 	{
-		ProcTasks[] proctasks = pool.getSubset(nodes);
-		Vector result = new Vector(10, 5);
+		ProcTasks[] proctasks = pool.getSubset(set);
+		LinkedList result = new LinkedList();
 
 		for (int i = 0; i < proctasks.length; i++)
 			result.add(proctasks[i].getProcData().getProc());
@@ -64,18 +65,49 @@ class DynamicPTSet implements PTSet
 		return result.iterator();
 	}
 
+	public boolean containsTask(int procid, int taskid)
+	{
+		boolean result = false;
+
+		ProcTasks[] proctasks = pool.getSubset(set);
+		for (int i = 0; i < proctasks.length; i++)
+		{
+			if (proctasks[i].getProcData().getID() == procid &&
+				proctasks[i].containsTask(taskid))
+			{
+				result = true;
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	//not efficient, but okay for now
 	public Iterator getTasks()
 	{
-		ProcTasks[] proctasks = pool.getSubset(nodes);
+		ProcTasks[] proctasks = pool.getSubset(set);
 		Vector temp = new Vector();
-		Vector result = new Vector(10, 10);
+		LinkedList result = new LinkedList();
 
 		for (int i = 0; i < proctasks.length; i++)
 		{
 			temp = proctasks[i].getTaskData();
 			for (int j = 0; j < temp.size(); j++)
 				result.add( ((TaskData)temp.elementAt(i)).getTask() );
+		}
+
+		return result.iterator();
+	}
+
+	public Iterator getTaskData()
+	{
+		ProcTasks[] proctasks = pool.getSubset(set);
+		LinkedList result = new LinkedList();
+
+		for (int i = 0; i < proctasks.length; i++)
+		{
+			result.addAll(proctasks[i].getTaskData());
 		}
 
 		return result.iterator();

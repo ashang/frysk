@@ -41,34 +41,47 @@ package frysk.cli.hpd;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 /**
  * A class which holds a number of ProcTasks. It is immutable.
  */
 class StaticPTSet implements PTSet
 {
-	Vector set;
+	ProcTasks[] set;
 
 	public StaticPTSet(ProcTasks[] proctasks)
 	{
-		set = new Vector(Arrays.asList(proctasks)); // clone to make sure it doesn't get modified 
-	}
-
-	public Vector getProcTasks()
-	{
-		return (Vector) set.clone();
+		set = (ProcTasks[]) (Arrays.asList(proctasks)).toArray(new ProcTasks[0]); // clone to make sure it doesn't get modified 
 	}
 
 	public Iterator getProcs()
 	{
 		Vector result = new Vector();
 
-		for (int i = 0; i < set.size(); i++)
+		for (int i = 0; i < set.length; i++)
 		{
-			result.add( ((ProcTasks) set.elementAt(i)).getProcData().getProc() );
+			result.add(set[i].getProcData().getProc());
 		}
 
 		return result.iterator();
+	}
+
+	public boolean containsTask(int procid, int taskid)
+	{
+		boolean result = false;
+
+		for (int i = 0; i < set.length; i++)
+		{
+			if (set[i].getProcData().getID() == procid &&
+				set[i].containsTask(taskid))
+			{
+				result = true;
+				break;
+			}
+		}
+
+		return result;
 	}
 
 	public Iterator getTasks()
@@ -76,9 +89,9 @@ class StaticPTSet implements PTSet
 		Vector result = new Vector();
 		Vector temp = new Vector();
 
-		for (int i = 0; i < set.size(); i++)
+		for (int i = 0; i < set.length; i++)
 		{
-			temp = ((ProcTasks) set.elementAt(i)).getTaskData();
+			temp = set[i].getTaskData();
 
 			for (int j = 0; j < temp.size(); j++)
 				result.add( ((TaskData) temp.elementAt(j)).getTask() );
@@ -87,11 +100,23 @@ class StaticPTSet implements PTSet
 		return temp.iterator();
 	}
 
+	public Iterator getTaskData()
+	{
+		LinkedList result = new LinkedList();
+
+		for (int i = 0; i < set.length; i++)
+		{
+			result.addAll(set[i].getTaskData());
+		}
+
+		return result.iterator();
+	}
+
 	public String toString()
 	{
 		String result = "";
-		for (int i = 0; i < set.size(); i++)
-			result += (ProcTasks)set.elementAt(i);
+		for (int i = 0; i < set.length; i++)
+			result += set[i];
 
 		return result;
 	}
