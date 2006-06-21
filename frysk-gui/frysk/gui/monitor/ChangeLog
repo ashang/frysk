@@ -1,3 +1,14 @@
+2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* EditObserverDialog.java (EditObserverDialog): Set default
+	base observer selection to 0. Call setOkButtonState on 
+	Name and Base Observer widgets.
+	(setOkButtonState): New.
+	(checkSaveableState): New.
+	(setWarningVisibility): New.
+	(setWarning): New
+	(checkObserverNameDuplicate): New.
+	
 2006-06-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskForkedObserver.java: Added log calls.

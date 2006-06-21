@@ -46,6 +46,8 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Frame;
+import org.gnu.gtk.Image;
+import org.gnu.gtk.Label;
 import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextBuffer;
@@ -73,6 +75,7 @@ public class EditObserverDialog extends Dialog {
 	TextView observerDescriptionTextView;
 	TextBuffer observerDescBuffer;
 	SimpleComboBox observerTypeComboBox;
+	Button okButton;
 	
 	FiltersTable filtersTable;
 	ActionsTable actionsTable;
@@ -80,20 +83,29 @@ public class EditObserverDialog extends Dialog {
 	RadioButton resumeRadioButton;
 	RadioButton stopRadioButton;
 	RadioButton askMeRadioButton;
+
+	Label warningLabel;
+	Image warningIcon;
+	
+	String oldEditObserverName = "";
 	
 	EditObserverDialog(LibGlade glade){
 		super(glade.getWidget("editObserverDialog").getHandle());
+		
+		warningLabel = (Label) glade.getWidget("observerWarningLabel");
+		warningIcon = (Image) glade.getWidget("observerWarningIcon");
 		
 		Button button = (Button) glade.getWidget("editObserverCancelButton");
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
+					
 					EditObserverDialog.this.hideAll();
 				}
 			}
 		});
 		
-		button = (Button) glade.getWidget("editObserverOkButton");
+		okButton = (Button) glade.getWidget("editObserverOkButton");
 		button.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
@@ -104,11 +116,13 @@ public class EditObserverDialog extends Dialog {
 			}
 		});
 		
+	
 		observerNameEntry = (Entry) glade.getWidget("observerNameEntry");
 		observerNameEntry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent event) {
 				if(event.isOfType(EntryEvent.Type.CHANGED)){
 					observer.setName(observerNameEntry.getText());
+					setOkButtonState();
 				}
 			}
 		});
@@ -131,6 +145,7 @@ public class EditObserverDialog extends Dialog {
 		
 		observerTypeComboBox = new SimpleComboBox((glade.getWidget("observerTypeComboBox")).getHandle());
 		observerTypeComboBox.watchLinkedList(ObserverManager.theManager.getBaseObservers());
+		observerTypeComboBox.setActive(0);
 		observerTypeComboBox.addListener(new ComboBoxListener() {
 			public void comboBoxEvent(ComboBoxEvent event) {
 				ObserverRoot selected = (ObserverRoot) observerTypeComboBox.getSelectedObject();
@@ -151,6 +166,7 @@ public class EditObserverDialog extends Dialog {
 					setName(newObserver);
 					filtersTable.setObserver(newObserver);
 					actionsTable.setObserver(newObserver);
+					setOkButtonState();
 				}
 			}
 		});
@@ -201,6 +217,7 @@ public class EditObserverDialog extends Dialog {
 		frame.setBaseColor(StateType.SELECTED, Color.WHITE);
 		frame.setBaseColor(StateType.NORMAL, Color.WHITE);
 		frame.showAll();
+		
 	}
 	
 	private void setAll(ObserverRoot observer){
@@ -213,24 +230,95 @@ public class EditObserverDialog extends Dialog {
 		this.actionsTable.setObserver(observer);
 	}
 
+	
+
+	
+	private void setWarning(String text) {
+		warningLabel.setText(text);
+	}
+	
+	private void setWarningVisibility(boolean show)
+	{
+		if (show)
+		{
+			warningLabel.show();
+			warningIcon.show();
+		} else {
+			warningLabel.hide();
+			warningIcon.hide();
+		}
+	}
+	
+	/** Sets the ok button sensitivity 
+	* according to checkSaveableState()
+	**/
+	private void setOkButtonState()
+	{
+		okButton.setSensitive(checkSaveableState());
+	}
+	
+	private boolean checkObserverNameDuplicate() 
+	{
+		if (oldEditObserverName.equals(""))
+		{
+			if (ObserverManager.theManager.getObserverByName(observerNameEntry.getText()) != null)
+			{
+				setWarning("Observer already exists, please rename");
+				setWarningVisibility(true);
+				return true;
+			}
+		}
+		else
+		{
+			if (!oldEditObserverName.equals(observer.getName()))
+				if (ObserverManager.theManager.getObserverByName(observerNameEntry.getText()) != null)
+				{
+					setWarning("Observer already exists, please rename");
+					setWarningVisibility(true);
+					return true;
+				}
+		}
+		setWarningVisibility(false);
+		return false;
+	}
+	/** Checks whether observer is in a saveable state
+	 * 
+	 *
+	 **/
+	private boolean checkSaveableState()
+	{
+		 if (observerNameEntry.getText().length() < 1)
+			return false;
+	
+		 if (checkObserverNameDuplicate() == true)
+			 return false;
+		
+		 if (observerTypeComboBox.getSelectedObject() == null)
+			return false;
+		 
+		 return true;
+	}
 	/**
 	 * This is for creating a new observer.
 	 * call getObserver() to get the new observer
 	 * @see getObserver()
 	 */
 	public void editNewObserver(){
+		oldEditObserverName = "";
 		this.observerTypeComboBox.setSensitive(true);
 		this.setAll(new ObserverRoot());
+		setOkButtonState();
 	}
 	
 	public void editObserver(ObserverRoot observer){
+		oldEditObserverName = observer.getName();
 		this.setAll(observer);
-		
 		this.observerTypeComboBox.setSensitive(false);
 
 		if(observer.getClass().equals(ObserverRoot.class)){
 			this.observerTypeComboBox.setSensitive(true);
 		}
+		setOkButtonState();
 	}
 	
 	public ObserverRoot getObserver(){
@@ -278,5 +366,11 @@ public class EditObserverDialog extends Dialog {
 			return;
 		}
 		
+	}
+	
+	public int run()
+	{
+		setOkButtonState();
+		return super.run();
 	}
 }
