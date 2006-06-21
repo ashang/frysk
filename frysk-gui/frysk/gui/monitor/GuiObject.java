@@ -116,4 +116,10 @@ public class GuiObject extends GuiObservable implements SaveableXXX{
 		this.saveObject = false;
 	}
 	
+	public String toString(){
+		String myString = new String();
+		myString = super.toString() + " " + this.getName();
+		return myString;
+	}
+	
 }

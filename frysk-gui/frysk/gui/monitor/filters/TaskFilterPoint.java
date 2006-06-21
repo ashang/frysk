@@ -60,11 +60,16 @@ public class TaskFilterPoint extends FilterPoint {
 	}
 	
 	public boolean filter(Task task){
+		System.out.println(this + ": TaskFilterPoint.filter()");
 		Iterator iter = this.getItems().iterator();
 		while(iter.hasNext()){
 			TaskFilter filter = (TaskFilter) iter.next();
+			System.out.print("  " + this + ": TaskFilterPoint.filter() " + filter+ "...");
 			if(!filter.filter(task)){
+				System.out.println("FALSE");
 				return false;
+			}else{
+				System.out.println("TRUE");
 			}
 		}
 		return true;

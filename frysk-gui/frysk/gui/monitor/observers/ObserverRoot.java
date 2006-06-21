@@ -163,6 +163,9 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 	
 		protected void runActions(){
+			System.out
+					.println(this
+							+ ": ObserverRoot.runActions()");
 			this.genericActionPoint.runActions(this);
 		}
 		
@@ -186,8 +189,41 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			return baseName;
 		}
 
+		private void saveReturnAction(Element node){
+			if(this.getCurrentAction() == null){
+				node.setAttribute("returnAction", "null");
+				return;
+			}
+			if(this.getCurrentAction() == Action.BLOCK){
+				node.setAttribute("returnAction", Action.BLOCK.toString());
+				return;
+			}
+			if(this.getCurrentAction() == Action.CONTINUE){
+				node.setAttribute("returnAction",Action.CONTINUE.toString());
+				return;
+			}			
+		}
+		
+		private Action loadReturnAction(Element node){
+			String actionString = node.getAttributeValue("returnAction");
+			
+			if(actionString.equals("null")){
+				return null;
+			}
+			if(actionString.equals(Action.BLOCK.toString())){
+				return Action.BLOCK;
+			}
+			if(actionString.equals(Action.CONTINUE.toString())){
+				return Action.CONTINUE;
+			}
+			
+			throw new RuntimeException("Error while loading observer: unkown action");
+		}
+		
 		public void save(Element node) {
 			super.save(node);
+			
+			this.saveReturnAction(node);
 			
 			//actions
 			Element actionPointsXML = new Element("actionPoints");
@@ -219,6 +255,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		public void load(Element node) {	
 			super.load(node);
 
+			this.setReturnAction(this.loadReturnAction(node));
+			
 			//actions
 			Element actionPointsXML = node.getChild("actionPoints");
 			List list = (List) (actionPointsXML.getChildren("actionPoint"));
@@ -240,27 +278,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			}
 		}
 		
-//		public String toString(){
-//			String myString = "";
-//			myString+= "Name: " + this.getName() + "\n";
-//			myString+= "Base Name: " + this.getBaseName() + "\n";
-//			myString+= "FilterPoints:" + "\n";
-//			Iterator iter = this.filterPoints.iterator();
-//			while (iter.hasNext()) {
-//				FilterPoint filterPoint = (FilterPoint) iter.next();
-//				myString+=  filterPoint + "\n";
-//			}
-//			
-//			myString += "ActionPoints: \n";
-//			iter = this.actionPoints.iterator();
-//			while (iter.hasNext()) {
-//				ActionPoint actionPoint = (ActionPoint) iter.next();
-//				myString += actionPoint + "\n";
-//			}
-//			
-//			return myString;
-//		}
-
 		public GuiObject getCopy() {
 			return new ObserverRoot(this);
 		}
@@ -315,8 +332,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		 * execution of the observed thread.
 		 * @return
 		 */
-		protected frysk.proc.Action getReturnAction(){
-			
+		protected frysk.proc.Action whatActionShouldBeReturned(){
 			if(this.returnAction != null){
 				return this.returnAction;
 			}else{
@@ -329,6 +345,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 		
 		public frysk.proc.Action getCurrentAction(){
+			System.out.println(this
+					+ ": ObserverRoot.getCurrentAction() " + this.returnAction);
 			return this.returnAction;
 		}
 		

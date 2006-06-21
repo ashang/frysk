@@ -41,14 +41,18 @@ package frysk.gui.test;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import junit.framework.TestCase;
+import frysk.Config;
+import frysk.junit.Paths;
 import frysk.proc.Action;
 import frysk.proc.Manager;
+import frysk.proc.OffspringObserver;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.OffspringObserver;
 import frysk.proc.ProcObserver.Offspring;
 import frysk.sys.Fork;
 import frysk.sys.Sig;
@@ -56,6 +60,8 @@ import frysk.sys.Signal;
 
 public class GuiTestLib extends TestCase{
 	
+	 protected final static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+
 	public GuiTestLib(){
 	}
 
@@ -74,14 +80,14 @@ public class GuiTestLib extends TestCase{
 		assertNotNull("Value of created testProc", proc);
 	}
 	
-	public void testTestProcFork(){
-		TestProc testProc = new TestProc();
-		testProc.fork();
-		Proc proc = testProc.getProc();
-		// if fork returns then confermation signale must have been received
-		assertNotNull("Retrieved process",proc);
-		assertTrue("Call to fork returned", true);
-	}
+//	public void testTestProcFork(){
+//		TestProc testProc = new TestProc();
+//		testProc.fork();
+//		Proc proc = testProc.getProc();
+//		// if fork returns then confermation signale must have been received
+//		assertNotNull("Retrieved process",proc);
+//		assertTrue("Call to fork returned", true);
+//	}
 	
 	static protected class TestProc implements Observer, TaskObserver.Signaled  {
 		
@@ -93,17 +99,29 @@ public class GuiTestLib extends TestCase{
 		static final Sig delForkSig = Sig.INT;
 		static final Sig zombieForkSig = Sig.URG;
 		static final Sig execSig = Sig.PWR;
+		static final Sig exitSig = Sig.ALRM;
 		
 		int pid;
 		private Proc proc;
 		
 		public TestProc(){
+			logger.log(Level.FINE, "{0} TestProc\n", this);
+			String path = Paths.getExecPrefix () + "funit-child";
+			path = path.replaceAll("gui", "core");
 			Manager.host.observableProcAddedXXX.addObserver(this);
-			pid = Fork.exec(new String[]{".././frysk-core/prog/kill/child", "0"});
+			pid = Fork.exec(new String[]{path, "0", "0"});
 			this.getProc();
 		}
 		
+		/**
+		 * tells testProc to exit.
+		 */
+		public void exit(){
+			Signal.tkill (this.pid, addForkSig);
+		}
+		
 		public synchronized Proc getProc(){
+			logger.log(Level.FINE, "{0} getProc\n", this);
 			if(proc == null){
 				Manager.host.requestRefreshXXX(true);
 			    try {
@@ -111,9 +129,9 @@ public class GuiTestLib extends TestCase{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				this.listenForSignals();
 			}
 			
-			this.listenForSignals();
 			return proc;
 		}
 
@@ -133,16 +151,24 @@ public class GuiTestLib extends TestCase{
 		
 		
 		public synchronized void fork(){
+			logger.log(Level.FINE, "{0} fork\n", this);
 			Signal.tkill (this.pid, addForkSig);
 			try {
-				wait();
+				waitForAck();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 		
+		private void waitForAck() throws InterruptedException{
+			logger.log(Level.FINE, "{0} waitForAck\n", this);
+			wait();
+		}
+		
 		private void listenForSignals(){
-			
+			System.out.println(this
+					+ ": TestProc.listenForSignals()");
+			logger.log(Level.FINE, "{0} listenForSignals\n", this);
 		    new OffspringObserver (proc, new Offspring()
 			{
 			    public void deletedFrom(Object observable){}
@@ -150,11 +176,11 @@ public class GuiTestLib extends TestCase{
 			    public void addedTo(Object observable){}
 
 			    public void existingTask(Task task) {
-				task.requestDeleteSignaledObserver(TestProc.this);
+				logger.log(Level.FINER,"{0} listenForSignals adding SignaledObserver to existing task\n", this);
+				task.requestAddSignaledObserver(TestProc.this);
 			    }
 			
 			    public void taskRemoved(Task task) {
-				task.requestAddSignaledObserver(TestProc.this);
 			    }
 			
 			    public void taskAdded(Task task) {
@@ -168,15 +194,16 @@ public class GuiTestLib extends TestCase{
 		}
 
 		public Action updateSignaled(Task task, int signal) {
-// 			System.out.println("TestProc.updateSignaled()");
-// 			System.out.println("\n===========================================");
+			logger.log(Level.FINE, "{0} updateSignaled {1}\n", new Object[]{this, new Integer(signal)});
 			if(signal == Sig.USR2_){
 				notifyAll();
 			}
 			return Action.CONTINUE;
 		}
 
-		public void addedTo(Object observable) {}
+		public void addedTo(Object observable) {
+			logger.log(Level.FINE, "{0} addedTo\n", this);
+		}
 		public void addFailed(Object observable, Throwable w) {}
 		public void deletedFrom(Object observable){}
 		

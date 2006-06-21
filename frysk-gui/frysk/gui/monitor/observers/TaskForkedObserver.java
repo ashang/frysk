@@ -6,7 +6,10 @@
  */
 package frysk.gui.monitor.observers;
 
+import java.util.logging.Level;
+
 import frysk.gui.monitor.GuiObject;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.TaskActionPoint;
 import frysk.gui.monitor.filters.TaskFilterPoint;
 import frysk.proc.Action;
@@ -68,13 +71,12 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 //		dialog.showAll();
 //		dialog.run();
 
-		//System.out.println("TaskForkedObserver.updateForked() " + child.getTid());
-	        //System.out.println(this + ": TaskForkedObserver.updateForked()");
+		WindowManager.logger.log(Level.FINE, "{0} updateForkedOffspring child: {1} \n", new Object[]{this, child});
 		final Task myTask = task;
 		final Task myChild = child;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {
-			    //System.out.println(this + ": .run() running runnable");
+			    System.out.println(this + ": .run() running runnable");
 			    // This does the unblock.
 				bottomHalf(myTask, myChild);
 			}
@@ -85,9 +87,12 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 
 	private void bottomHalf(Task task, Task child){
+		WindowManager.logger.log(Level.FINE, "{0} bottomHalf\n", this);
 		this.setInfo(this.getName() + ": " + "PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: forked new child PID: "+ child.getProc().getPid() + " Host: " + Manager.host.getName());
 		if(this.runFilters(task, child)){
 			this.runActions(task, child);
+		}else{
+			WindowManager.logger.log(Level.FINER, "{0} bottomHalf run filters returned False\n", this);
 		}
 		
 //		child.requestAddForkedObserver(new TaskForkedObserver());
@@ -111,6 +116,7 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 	}
 	
 	private void runActions(Task task, Task child){
+		WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
 		super.runActions();
 		this.forkingTaskActionPoint.runActions(task);
 		this.forkedTaskActionPoint.runActions(child);

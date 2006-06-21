@@ -55,7 +55,7 @@ public class ShowSourceWin extends TaskAction {
 	}
 
 	public void execute(Task task) {
-		SourceWindowFactory.createSourceWindow(task);
+		SourceWindowFactory.createSourceWinFromBlockedTask(task);
 	}
 
 	public GuiObject getCopy() {

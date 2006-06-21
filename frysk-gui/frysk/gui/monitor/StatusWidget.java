@@ -51,18 +51,8 @@ import java.util.Observer;
 import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
-import org.gnu.gtk.Menu;
-import org.gnu.gtk.MenuItem;
-import org.gnu.gtk.PolicyType;
-import org.gnu.gtk.ScrolledWindow;
-import org.gnu.gtk.ShadowType;
-import org.gnu.gtk.TreeView;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.VSeparator;
-import org.gnu.gtk.event.MenuItemEvent;
-import org.gnu.gtk.event.MenuItemListener;
-import org.gnu.gtk.event.MouseEvent;
-import org.gnu.gtk.event.MouseListener;
 
 import com.redhat.ftk.EventViewer;
 
@@ -126,54 +116,54 @@ public class StatusWidget extends VBox{
 		//========================================
 		
 		//========================================
-		HBox hbox = new HBox(false, 0);
-		hbox.setBorderWidth(5);
-		VBox vbox = new VBox(false, 0);
-		hbox.packStart(new Label("Attached Observers: "), false, false, 0); //$NON-NLS-1$
-		hbox.packStart(new Label(""), true, false, 0); //$NON-NLS-1$
-		vbox.packStart(hbox, false, false, 0);
-
-		ScrolledWindow scrolledWindow = new ScrolledWindow();
-		scrolledWindow.addWithViewport(initAttacheObserversTreeView());
-		scrolledWindow.setShadowType(ShadowType.IN);
-		scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
-		vbox.packStart(scrolledWindow, true, true, 0);
-		mainVbox.packStart(vbox, false, true, 0);
+//		HBox hbox = new HBox(false, 0);
+//		hbox.setBorderWidth(5);
+//		VBox vbox = new VBox(false, 0);
+//		hbox.packStart(new Label("Attached Observers: "), false, false, 0); //$NON-NLS-1$
+//		hbox.packStart(new Label(""), true, false, 0); //$NON-NLS-1$
+//		vbox.packStart(hbox, false, false, 0);
+//
+//		ScrolledWindow scrolledWindow = new ScrolledWindow();
+//		scrolledWindow.addWithViewport(initAttacheObserversTreeView());
+//		scrolledWindow.setShadowType(ShadowType.IN);
+//		scrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+//		vbox.packStart(scrolledWindow, true, true, 0);
+//		mainVbox.packStart(vbox, false, true, 0);
 		//========================================
 
 		this.showAll();
 	}
 	
-	private TreeView initAttacheObserversTreeView(){
-		final ListView listView = new ListView();
-		listView.watchLinkedList(data.getObservers());
-		
-		final Menu menu = new Menu();
-		MenuItem item = new MenuItem("Remove", false); //$NON-NLS-1$
-		item.addListener(new MenuItemListener() {
-			public void menuItemEvent(MenuItemEvent event) {
-				data.remove((ObserverRoot) listView.getSelectedObject());
-			}
-		});
-		menu.add(item);
-		menu.showAll();
-		
-		listView.addListener(new MouseListener(){
-
-			public boolean mouseEvent(MouseEvent event) {
-				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
-						& event.getButtonPressed() == MouseEvent.BUTTON3){
-					if((listView.getSelection().getSelectedRows()).length > 0){
-						menu.popup();						
-					}
-                    return true;
-				}
-				return false;
-			}
-		});
-		
-		return listView;
-	}
+//	private TreeView initAttacheObserversTreeView(){
+//		final ListView listView = new ListView();
+//		listView.watchLinkedList(data.getObservers());
+//		
+//		final Menu menu = new Menu();
+//		MenuItem item = new MenuItem("Remove", false); //$NON-NLS-1$
+//		item.addListener(new MenuItemListener() {
+//			public void menuItemEvent(MenuItemEvent event) {
+//				data.remove((ObserverRoot) listView.getSelectedObject());
+//			}
+//		});
+//		menu.add(item);
+//		menu.showAll();
+//		
+//		listView.addListener(new MouseListener(){
+//
+//			public boolean mouseEvent(MouseEvent event) {
+//				if(event.getType() == MouseEvent.Type.BUTTON_PRESS 
+//						& event.getButtonPressed() == MouseEvent.BUTTON3){
+//					if((listView.getSelection().getSelectedRows()).length > 0){
+//						menu.popup();						
+//					}
+//                    return true;
+//				}
+//				return false;
+//			}
+//		});
+//		
+//		return listView;
+//	}
 
 
 //	private void initLogTextView(){
@@ -233,8 +223,14 @@ public class StatusWidget extends VBox{
 		ListIterator iter = observers.listIterator();
 		while(iter.hasNext()){
 			LogAction logAction = new LogAction();
-			logAction.setArgument("PID " + ((GuiProc)data).getProc().getPid());
 			final ObserverRoot observer = (ObserverRoot) iter.next();
+			
+			if(data instanceof GuiProc){
+				logAction.setArgument("PID " + ((GuiProc)data).getProc().getPid() +" triggered " +observer.getName());
+			}else{
+				logAction.setArgument("TID " + ((GuiTask)data).getTask().getTid() +" triggered " +observer.getName());
+			}
+			
 			observer.genericActionPoint.addAction(new TimelineAction(observer));
 			observer.genericActionPoint.addAction(logAction);
 		}
@@ -244,8 +240,15 @@ public class StatusWidget extends VBox{
 			public void update(Observable arg0, Object obj) {
 				
 				LogAction logAction = new LogAction();
-				logAction.setArgument("PID " + ((GuiProc)data).getProc().getPid());
+
 				final ObserverRoot observer = (ObserverRoot)obj;
+
+				if(data instanceof GuiProc){
+					logAction.setArgument("PID " + ((GuiProc)data).getProc().getPid() +" triggered " +observer.getName());
+				}else{
+					logAction.setArgument("TID " + ((GuiTask)data).getTask().getTid() +" triggered " +observer.getName());
+				}
+				
 				observer.genericActionPoint.addAction(new TimelineAction(observer));
 				observer.genericActionPoint.addAction(logAction);
 			}

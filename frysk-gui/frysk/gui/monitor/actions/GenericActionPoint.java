@@ -40,13 +40,15 @@
 package frysk.gui.monitor.actions;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class GenericActionPoint extends ActionPoint {
-
+	
 	public GenericActionPoint(){
 		super();
 	}
@@ -64,9 +66,11 @@ public class GenericActionPoint extends ActionPoint {
 	}
 
 	public void runActions(ObserverRoot observer){
+		WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
 		Iterator iterator = this.items.iterator();
 		while (iterator.hasNext()) {
 			GenericAction action = (GenericAction) iterator.next();
+			WindowManager.logger.log(Level.FINER, " {0} runActions {1}\n", new Object[]{this, action});
 			action.execute(observer);
 		}
 	}

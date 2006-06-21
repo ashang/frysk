@@ -39,13 +39,15 @@
 
 package frysk.gui.monitor;
 
-import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jdom.Element;
 
 public abstract class LiaisonPoint extends GuiObject implements SaveableXXX {
 protected ObservableLinkedList items;
 	
+	Logger logger = WindowManager.logger;
 	public LiaisonPoint(){
 		super();
 		this.items = new ObservableLinkedList();
@@ -67,10 +69,12 @@ protected ObservableLinkedList items;
 	public abstract ObservableLinkedList getApplicableItems();
 	
 	public void addItem(LiaisonItem item){
+		logger.log(Level.FINE, "{0} addItem {1}\n", new Object[] {this, item});
 		this.items.add(item);
 	}
 	
 	public void removeItem(LiaisonItem item){
+		logger.log(Level.FINE, "{0} removeItem {1}\n", new Object[] {this, item});
 		if(!this.items.remove(item)){
 			throw new IllegalArgumentException("the passed item ["+ item +"] is not a member of this Liason point");
 		}
@@ -94,16 +98,4 @@ protected ObservableLinkedList items;
 		this.items.load(elemetnsXML);
 	}
 
-	public String toString(){
-		String string = "";
-		
-		string += "  Name: " + this.getName() + "["+ super.toString() + "] size: " +this.items.size() +"\n";
-		Iterator iterator = this.items.iterator();
-		int i = 0;
-		while (iterator.hasNext()) {
-			LiaisonItem item = (LiaisonItem) iterator.next();
-			string += "    ["+i+++"] " + item + "\n";
-		}
-		return string;
-	}
 }

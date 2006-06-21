@@ -208,7 +208,7 @@ public class EditObserverDialog extends Dialog {
 		this.setName(observer);
 		this.setType(observer);
 		this.setDescription(observer);
-		setReturnAction(observer);
+		this.setReturnAction(observer);
 		this.filtersTable.setObserver(observer);
 		this.actionsTable.setObserver(observer);
 	}
