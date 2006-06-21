@@ -199,40 +199,84 @@ public class SessionProcDataModel {
 		// get an iterator pointing to the parent
 		TreeIter parent;
 		parent = (TreeIter) iterHash.get(task.getProc().getId());
+		TreeIter iter = null;
 		
+		try
+		{
+			if (treeStore.isIterValid(parent))
+					iter = treeStore.appendRow(parent);
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.addTask: Trying to add task " + task + "but failed.",e);
+			return;
+		}
 		
-		TreeIter iter = treeStore.appendRow(parent);
-		
-		iterHash.put(task.getTaskId(), iter);
-		
-		treeStore.setValue(iter, commandDC, Long.toHexString(task.getEntryPointAddress()));
-		treeStore.setValue(iter, pidDC, task.getTid());
-		treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
-		treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
-		treeStore.setValue(iter, isThreadDC, true);
+		try {
+			iterHash.put(task.getTaskId(), iter);
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.addTask: Cannot place task " + task + " in iterHash.",e);
+			return;
+		}
 			
-		treeStore.setValue(iter, procDataDC, GuiTask.GuiTaskFactory.getGuiTask(task));
-		treeStore.setValue(iter,sensitiveDC, true);
+		
+		try {
+			treeStore.setValue(iter, commandDC, Long.toHexString(task.getEntryPointAddress()));
+			treeStore.setValue(iter, pidDC, task.getTid());
+			treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
+			treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
+			treeStore.setValue(iter, isThreadDC, true);
+				
+			treeStore.setValue(iter, procDataDC, GuiTask.GuiTaskFactory.getGuiTask(task));
+			treeStore.setValue(iter,sensitiveDC, true);
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.addTask: treeStore setvalue on  " + task + " failed.",e);
+			return;
+		}
+		
 	}
 	
 	public void removeTask(Task task){
-		TreeIter iter = (TreeIter) iterHash.get(task.getTaskId());
-		if(iter == null){
-			throw new NullPointerException("task " + task + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
+
+		TreeIter iter;
+		try {
+			iter = (TreeIter) iterHash.get(task.getTaskId());
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.removeTask: Cannot find value in Hash for: " + task,e);
+			return;			
 		}
 			
-		treeStore.removeRow(iter);
-		iterHash.remove(task.getTaskId());
+		try {
+			treeStore.removeRow(iter);
+			iterHash.remove(task.getTaskId());
+		}  catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.removeTask: Cannot remove from treeStore for: " + task,e);
+			return;			
+		}	
 	}
 	
 	public void removeProc(Proc proc){
-		TreeIter iter = (TreeIter) iterHash.get(proc.getId());
-		if(iter == null){
-			throw new RuntimeException("proc " + proc + "Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
+		TreeIter iter;
+		try {
+			iter = (TreeIter) iterHash.get(proc.getId());
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.removeProc: Cannot find value in Hash for: " + proc,e);
+			return;			
 		}
 			
-		treeStore.removeRow(iter);
-		iterHash.remove(proc.getId());
+		try {		
+			treeStore.removeRow(iter);
+			iterHash.remove(proc.getId());
+		}  catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.removeProc: Cannot remove from treeStore for: " + proc,e);
+			return;			
+		}	
+			
 	}
 	
 	public void stopRefreshing(){

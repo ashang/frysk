@@ -1,5 +1,12 @@
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ProgramData.java: Remove. 
+	* ProgramDataModel.java: Remove.
+	* SessionProcDataModel.java (addTask): Convert
+	exceptions to log exceptions writes.
+	(removeTask): Ditto.
+	(removeProc): Ditto.
+	
 	* EditObserverDialog.java (EditObserverDialog): Set default
 	base observer selection to 0. Call setOkButtonState on 
 	Name and Base Observer widgets.
