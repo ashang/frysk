@@ -38,6 +38,7 @@
 // exception.
 package frysk.cli.hpd;
 
+import java.util.LinkedList;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -45,10 +46,12 @@ class StatePTSet implements PTSet
 {
 	ParseTreeNode[] set;
 	AllPTSet pool;
+	int state;
 
 	public StatePTSet(AllPTSet ptpool, int state)
 	{
-		this.set = set;
+		//this.set = set;
+		this.state = state;
 		pool = ptpool;
 	}
 
