@@ -43,6 +43,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import frysk.gui.Gui;
+import frysk.gui.monitor.WindowManager;
+import java.util.Date;
 
 import org.jdom.Element;
 
@@ -74,6 +79,8 @@ public class DebugProcess extends GuiObject {
 	ObservableLinkedList tagsets;
 	
 	ObservableLinkedList allProcsList;
+	
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	public DebugProcess(){
 		super();
@@ -144,6 +151,7 @@ public class DebugProcess extends GuiObject {
 
 
 	public void addProc(GuiProc guiProc){
+		
 		Iterator iterator = this.observers.iterator();
 		while (iterator.hasNext()) {
 			TaskObserverRoot observer = (TaskObserverRoot) iterator.next();
@@ -244,7 +252,14 @@ public class DebugProcess extends GuiObject {
 		while (i.hasNext()){
 			Element elementXML = (Element) i.next();
 			ObserverRoot observer = ObserverManager.theManager.getObserverByName(elementXML.getAttributeValue("name"));
-			observers.add(observer);
+			if (observer == null) {
+				errorLog.log(Level.SEVERE, new Date() + " DebugProcess.load(Element node): observer " + 
+						elementXML.getAttributeValue("name") + " not found in configuration \n");
+				WindowManager.theManager.logWindow.print(new Date() + " DebugProcess.load(Element node): observer " + 
+						elementXML.getAttributeValue("name") + " not found in configuration \n");
+			}
+			else
+				observers.add(observer);
 		}
 				
 		// load tagsets

@@ -1,3 +1,8 @@
+2006-06-21  Mike Cvet  <mcvet@redhat.com>
+
+	* sessions/DebugProcess.java (load): Missing loaded observers are now
+	caught with errors printed.
+
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Added warning icon and text to EditObserverDialog.
