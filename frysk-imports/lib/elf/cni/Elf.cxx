@@ -149,12 +149,12 @@ void fillEHeader(lib::elf::ElfEHeader *header, GElf_Ehdr *ehdr){
 
 lib::elf::ElfEHeader*
 lib::elf::Elf::elf_getehdr(){
-	GElf_Ehdr *hdr = (GElf_Ehdr*) JvMalloc(sizeof(GElf_Ehdr));
-	if(::gelf_getehdr((::Elf*) this->pointer, hdr) == NULL)
+	GElf_Ehdr hdr;
+	if(::gelf_getehdr((::Elf*) this->pointer, &hdr) == NULL)
 		return NULL;
 	
 	lib::elf::ElfEHeader *header = new lib::elf::ElfEHeader(this);
-	fillEHeader(header, hdr);
+	fillEHeader(header, &hdr);
 	
 	return header;
 }
@@ -178,12 +178,12 @@ void fillPHeader(lib::elf::ElfPHeader *header, GElf_Phdr *phdr){
 
 lib::elf::ElfPHeader*
 lib::elf::Elf::elf_getphdr (jint index){
-	GElf_Phdr * phdr = (GElf_Phdr *) JvMalloc(sizeof(GElf_Phdr));
-	if(::gelf_getphdr((::Elf*) this->pointer, index, phdr) == NULL)
+	GElf_Phdr phdr;
+	if(::gelf_getphdr((::Elf*) this->pointer, index, &phdr) == NULL)
 		return NULL;
 		
 	lib::elf::ElfPHeader *header = new lib::elf::ElfPHeader(this);
-	fillPHeader(header, phdr);
+	fillPHeader(header, &phdr);
 	
 	return header;
 }

@@ -1,3 +1,10 @@
+2006-06-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cni/Elf.cxx (elf_getehdr): No longer uses JvMalloc, now passes in
+	the address of the local variable.
+	(elf_getphdr): Ditto.
+	* cni/ElfSection.cxx (elf_getshdr): Ditto.
+
 2006-06-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* ElfEHeader32.java: Removed.
