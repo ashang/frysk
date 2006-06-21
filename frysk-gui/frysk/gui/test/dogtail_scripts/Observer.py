@@ -54,6 +54,7 @@ class Observer:
   # Set up some default values
   name = 'default Name'
   type = 'default type'
+  description = 'default description'
   loggingAction = 'Log Generic Actions'
   afterAction = 'Resume thread'
   filterPoints = ObserverPoints()
@@ -78,6 +79,9 @@ class Observer:
   def setFilterPoints(self, value):
       self.filterPoints = value
       
+  def setDescription(self, value):
+    self.description = value
+
   def setFilterPointsDict ( self, theFilterNames ):
     # use the names as the keys, and the objects as the values
     theFilterPointNames = []
@@ -97,7 +101,7 @@ class Observer:
       theActionPointNames.append( x.getName() )
       theActionPointObjects.append( x )
     self.ActionPointsDict = dict( zip ( theActionPointNames, theActionPointObjects ) )  
-    
+   
   def setActionPoints (self, value):    
       self.actionPoints = value
     
@@ -106,7 +110,10 @@ class Observer:
   
   def getName(self):
     return self.name
-   
+
+  def getDescription(self):
+    return self.description
+
   def getType(self):
     return self.type
   
@@ -131,6 +138,7 @@ class Observer:
   def dump(self):
     print 'name=' + self.name
     print 'type=' + self.type
+    print 'description=' + self.description
     #print 'loggingAction=' + self.loggingAction
     print 'afterAction=' + self.afterAction
     for x in self.filterPoints:
@@ -151,6 +159,9 @@ class Observer:
       returnFlag = False
 
     if self.getType() != theOtherObserver.getType():
+      returnFlag = False         
+      
+    if self.getDescription() != theOtherObserver.getDescription():
       returnFlag = False         
       
     # For the FilterPoints, we need to get the data into dictionaries

@@ -110,6 +110,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     self.filterPointFlag = False
     self.theObserver = Observer()
     self.emptyActionPointFlag = False
+    #self.buffer = ''
  
   #-------------------------------
   # def startDocument(self):
@@ -127,6 +128,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       self.theObserver = Observer()
       self.theObserver.setType (attributes['type'])
       self.theObserver.setName (attributes['name'])
+      self.theObserver.setDescription (attributes['tooltip'])
 
     elif self.currentTag == 'actionPoints':
       self.theActionPoints = []

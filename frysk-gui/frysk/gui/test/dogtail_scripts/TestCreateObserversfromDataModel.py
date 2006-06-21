@@ -133,6 +133,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         #self.theObserver.dump()
         theName = self.theObserver.getName()
         theType = self.theObserver.getType()
+        theDescription = self.theObserver.getDescription()
 
         # June 12 - Assume one ActionPoint with name == "Generic Names" - the elements
         # under this ActionPoint - "theActions" are where the actions are defined
@@ -146,7 +147,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # June 12 - setLoggingAction is a temporary method - there should be a list of actions
         #x.setLoggingAction ( theActionName )
         x.setType (theType)
-        
+        x.setDescription (theDescription)
+                
         # Create a List object to hold the Observer objects - for now, the GUI persists only
         # one Observer per Observer file - but this may change, so we'll retain the matrix
         self.theMatrix = [x]
@@ -193,9 +195,13 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             try:
                 # Set the new observer name
                 newObserverName = observerToCreate.getName()
-                observerName = observerPanel.child( roleName='text', name = 'observerNameEntry')   #description='Enter a name for the observer' )
-                observerName.actions['activate'].do()
+                observerName = observerPanel.child( roleName='text', name = 'observerNameEntry') 
                 observerName.text = newObserverName
+                
+                # and description
+                newObserverDescription = observerToCreate.getDescription() 
+                observerDescription = observerPanel.child( roleName='text', name = 'observerDescriptionTextView') 
+                observerDescription.text = newObserverDescription
                 
                 observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
                 comboMenu = observerTypeComboBox.child( roleName='menu' )    
