@@ -7,6 +7,10 @@
 	(removeTask): Ditto.
 	(removeProc): Ditto.
 	
+	(addProc): Convert exceptions to log exceptions writes.
+	(getSelectedProc): Add null check.
+	(getSelectedThread): Add null check.
+	
 	* EditObserverDialog.java (EditObserverDialog): Set default
 	base observer selection to 0. Call setOkButtonState on 
 	Name and Base Observer widgets.

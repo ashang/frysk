@@ -156,18 +156,39 @@ public class SessionProcDataModel {
 	
 	public void addProc(GuiProc guiProc){
 		Proc proc = guiProc.getProc();
-		TreeIter iter = treeStore.appendRow(null);
+		if (proc == null)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.addProck: Trying to add proc " + guiProc + "but failed as proc=null.");
+			return;
+		}
 
-		iterHash.put(proc.getId(), iter);
+		TreeIter iter;
+		try
+		{
+			iter = treeStore.appendRow(null);
+			iterHash.put(proc.getId(), iter);
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.addTask: Cannot store proc " + proc + " in hash.",e);
+			return;
+		}
 		
-		treeStore.setValue(iter, commandDC, proc.getCommand());
-		treeStore.setValue(iter, pidDC, proc.getPid());
-		treeStore.setValue(iter, procDataDC, (GuiProc.GuiProcFactory.getGuiProc(proc)));
-		treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
-		treeStore.setValue(iter, isThreadDC, false);
-			
-		treeStore.setValue(iter,threadParentDC, 0);
-		treeStore.setValue(iter,sensitiveDC, true);		
+		try {
+			treeStore.setValue(iter, commandDC, proc.getCommand());
+			treeStore.setValue(iter, pidDC, proc.getPid());
+			treeStore.setValue(iter, procDataDC, (GuiProc.GuiProcFactory.getGuiProc(proc)));
+			treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
+			treeStore.setValue(iter, isThreadDC, false);
+				
+			treeStore.setValue(iter,threadParentDC, 0);
+			treeStore.setValue(iter,sensitiveDC, true);
+		
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"SessionProcDataModel.addTask: Trying to add proc  " + proc + "tp treestore, but failed.",e);
+			return;
+		}
+
 	
 		new OffspringObserver (proc, new Offspring()
 		    {
