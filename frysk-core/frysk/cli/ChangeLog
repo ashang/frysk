@@ -1,6 +1,6 @@
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
-	hpd/StatePTSet.java: Broken HEAD build fixes.
+	* hpd/StatePTSet.java: Broken HEAD build fixes.
 	Fixed missing java.util import.	Declare state variable.
 	(StatePTSet): Set assignment of this.set to set.
 	Remove this.set = set.
