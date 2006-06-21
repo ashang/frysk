@@ -174,7 +174,7 @@ public class SourceWindowFactory {
 			
 			// If we don't have a dom, tell the task to continue
 			catch (NoDebugInfoException e){
-				if(blockerMap.containsKey(task))
+				if(blockerMap.containsKey(task)){
 					TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
 					task.requestDeleteAttachedObserver(o);
 				}

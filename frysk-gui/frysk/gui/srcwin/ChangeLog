@@ -1,3 +1,7 @@
+2006-06-20  Mark Wielaard  <mark@klomp.org>
+
+	* SourceWindowFactory.java (finishSourceWin): Fix if block.
+
 2006-06-20  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (finishSourceWin): No longer throws
