@@ -1,6 +1,8 @@
 2006-06-23  Stepan Kasal  <kasal@ucw.cz>
 
-	* Makefile.am: Work around a bug in GNU make -jN.
+	* Makefile.am: Work around a bug in GNU make -jN by mentioning *.map.
+
+	* Makefile.am: Mention the *.o files.
 
 2006-02-22  Roland McGrath  <roland@redhat.com>
 
