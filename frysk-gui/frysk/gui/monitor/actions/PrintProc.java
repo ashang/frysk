@@ -41,6 +41,7 @@ package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.monitor.WindowManager;
 import frysk.proc.Proc;
 
 public class PrintProc extends ProcAction {
@@ -54,7 +55,7 @@ public class PrintProc extends ProcAction {
 	}
 	
 	public void execute(Proc proc) {
-	    //System.out.println("Proc State : " + proc); //$NON-NLS-1$
+      WindowManager.theManager.logWindow.print("Task State : " + proc  + "\n");
 	}
 
 	public GuiObject getCopy() {

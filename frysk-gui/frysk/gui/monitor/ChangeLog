@@ -1,3 +1,25 @@
+2006-06-22  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* actions/ActionManager.java (initActionList): removed
+	ShowSourceWindow ation and AddTaskObserver action.
+	* actions/TaskActionPoint.java: Created a local list
+	of applicable actions that is passed to the user when
+	requested.
+	* actions/PrintProc.java: Prints to the log window now.
+	* actions/PrintTask.java: Ditto.
+
+2006-06-21  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskForkedObserver.java: Added log calls.
+	* observers/ObserverRoot.java: Added code for saving/loading return
+	action.
+	Removed toString.
+	* actions/GenericActionPoint.java: Added log calls.
+	* StatusWidget.java: Removed AttachedObservers treeView.
+	* LiaisonPoint.java: Removed toString.
+	Added log calls.
+	* GuiObject.java: Added toString.
+
 2006-06-22  Mike Cvet  <mcvet@redhat.com>
  
 	* EventLogger.java: Added a method for logging observer add 
@@ -44,6 +66,7 @@
 	Added log calls.
 	* GuiObject.java: Added toString.
 
+>>>>>>> 1.259
 2006-06-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionProcDataModel.java (setSession): Temporarily removed fix for #2808

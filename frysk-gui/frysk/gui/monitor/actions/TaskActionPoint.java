@@ -47,22 +47,39 @@ import frysk.proc.Task;
 
 public class TaskActionPoint extends ActionPoint{
 
+    private ObservableLinkedList applicableActions;
+    
 	public TaskActionPoint(){
 		super();
-	}
+	
+        this.applicableActions = new ObservableLinkedList();
+
+        this.initApplicableActions();
+    }
 	
 	public TaskActionPoint(String name, String toolTip) {
 		super(name, toolTip);
+        
+        this.applicableActions = new ObservableLinkedList();
+        
+        this.initApplicableActions();
 	}
 
 	public TaskActionPoint(TaskActionPoint other) {
 		super(other);
+        
+        this.applicableActions = new ObservableLinkedList(other.applicableActions);
 	}
 
 	public ObservableLinkedList getApplicableActions() {
 		return ActionManager.theManager.getTaskActions();
 	}
 	
+    private void initApplicableActions(){
+      this.applicableActions.add(new ShowSourceWin());
+      this.applicableActions.add(new AddTaskObserverAction()); 
+      this.applicableActions.add(new PrintTask());
+    }
 	/**
 	 * Run all the actions that belong to this @link ActionPoint.
 	 * @param task the task to perform the actions on.
@@ -76,7 +93,7 @@ public class TaskActionPoint extends ActionPoint{
 	}
 
 	public ObservableLinkedList getApplicableItems() {
-		return ActionManager.theManager.getTaskActions();
+		return this.applicableActions;
 	}
 
 	public GuiObject getCopy() {
