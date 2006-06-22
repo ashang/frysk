@@ -1,5 +1,10 @@
 2006-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWindow): Now hides the
+	session manager before showing the source window.
+	(SourceWinListener.lifeCycleQuery): Reshows the session manager when
+	the window exits.
+
 	* SourceWindow.java (createActions): Now sets program control actions
 	to insensitive since they are currently not implemented.
 	(attachEvents): Set mode box to insensitive since it is currently not

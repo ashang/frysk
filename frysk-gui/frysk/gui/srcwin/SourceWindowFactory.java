@@ -64,6 +64,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 import frysk.gui.monitor.EventLogger;
+import frysk.gui.monitor.WindowManager;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects in frysk
@@ -233,6 +234,8 @@ public class SourceWindowFactory {
 			
 			StackLevel stack1 = new StackLevel(f, line.getLineNum());
 			
+			WindowManager.theManager.sessionManager.hide();
+			
 			s = new SourceWindow(
 					glade, gladePaths[i],
 					dom, stack1);
@@ -296,6 +299,7 @@ public class SourceWindowFactory {
 				if(map.containsValue(arg0.getSource())){
 					SourceWindow s = (SourceWindow) arg0.getSource();
                     map.remove(s.getMyTask());
+                    WindowManager.theManager.sessionManager.show();
 				}
 			}
 			
