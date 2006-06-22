@@ -63,6 +63,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
+import frysk.gui.monitor.EventLogger;
+
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects in frysk
  * should be created. It takes care of setting paths to resource files as well as
@@ -143,8 +145,10 @@ public class SourceWindowFactory {
 		}
 
 		public void addFailed(Object observable, Throwable w) {
-			// TODO Auto-generated method stub
 			
+			EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
+					observable);
+			throw new RuntimeException (w);
 		}
 
 		public void deletedFrom(Object observable) {

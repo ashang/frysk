@@ -19,6 +19,7 @@ import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
+import frysk.gui.monitor.EventLogger;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 
@@ -137,6 +138,8 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 
 		public void addFailed (Object o, Throwable w) {
+			
+			EventLogger.logAddFailed("addFailed(Object o, Throwable w)", o);
 			throw new RuntimeException (w);
 		}
 

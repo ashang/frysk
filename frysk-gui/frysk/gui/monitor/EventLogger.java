@@ -45,7 +45,9 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.Date;
 
+import frysk.gui.Gui;
 import frysk.gui.monitor.observers.AttachedContinueObserver;
 import frysk.gui.monitor.observers.AttachedResumeObserver;
 import frysk.gui.monitor.observers.AttachedStopObserver;
@@ -73,6 +75,8 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 	private Logger eventLogFile = null;
 
 	public static EventLogger theLogger = new EventLogger();
+	
+	private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	class EventFileHandler extends FileHandler {
 
@@ -233,12 +237,24 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		// TODO Auto-generated method stub
 	}
 
-        public void addFailed(Object o, Throwable w) {
-	        throw new RuntimeException (w);
-        }
+	public void addFailed(Object o, Throwable w) {
+		
+		logAddFailed("addFailed(Object o, Throwable w)", o);
+		throw new RuntimeException (w);
+	}
+	
+	public static void logAddFailed(String where, Object o) {
+		
+		errorLog.log(Level.SEVERE, new Date() + " " + where + ": " + o 
+				+ " failed " + "to add");
+		WindowManager.theManager.logWindow.print(new Date() + " " + where 
+				+ ": " + o + " failed to add");
+	}
 
 	public void deletedFrom(Object o) {
 		// TODO Auto-generated method stub
 	}
+	
+	
 	
 }

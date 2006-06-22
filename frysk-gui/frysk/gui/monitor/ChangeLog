@@ -1,3 +1,11 @@
+2006-06-22  Mike Cvet  <mcvet@redhat.com>
+ 
+	* EventLogger.java: Added a method for logging observer add 
+	failiures.
+	* SessionProcDataModel.java: Logs observer add failiures.
+	* observers/ObserverRoot.java: ditto.
+	* observers/TaskObserverRoot.java: ditto.
+	
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* PickProcsDialog.java (PickProcDialog):

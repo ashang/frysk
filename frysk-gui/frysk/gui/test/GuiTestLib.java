@@ -57,6 +57,7 @@ import frysk.proc.ProcObserver.Offspring;
 import frysk.sys.Fork;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
+import frysk.gui.monitor.EventLogger;
 
 public class GuiTestLib extends TestCase{
 	
@@ -172,7 +173,9 @@ public class GuiTestLib extends TestCase{
 		    new OffspringObserver (proc, new Offspring()
 			{
 			    public void deletedFrom(Object observable){}
-			    public void addFailed(Object observable, Throwable w){}
+			    public void addFailed(Object observable, Throwable w){
+			    	EventLogger.logAddFailed("addFailed(Object observable, Throwable w)", observable);
+			    }
 			    public void addedTo(Object observable){}
 
 			    public void existingTask(Task task) {

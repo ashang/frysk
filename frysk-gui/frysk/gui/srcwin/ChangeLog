@@ -1,3 +1,7 @@
+2006-06-22  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: Observer add failiures are now logged properly.
+
 2006-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (finishSourceWin): Now calls requestUnblock

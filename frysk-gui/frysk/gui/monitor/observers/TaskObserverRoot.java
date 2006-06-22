@@ -44,6 +44,8 @@ import frysk.proc.Task;
 import frysk.proc.OffspringObserver;
 import frysk.proc.ProcObserver.Offspring;
 
+import frysk.gui.monitor.EventLogger;
+
 public abstract class TaskObserverRoot extends ObserverRoot {
 
 	public TaskObserverRoot(String name, String toolTip) {
@@ -63,7 +65,9 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		    }
 		    public void addFailed(Object observable, Throwable w)
 		    {
-		    	new RuntimeException("An exception occured while requesting addition of a task observer ",w);
+		    	EventLogger.logAddFailed("addFailed(Object observable," +
+		    			" Throwable w)", observable);
+		    	new RuntimeException(w);
 		    }
 		    public void existingTask(Task task)
 		    {

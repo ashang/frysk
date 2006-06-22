@@ -40,6 +40,7 @@
 package frysk.gui.monitor;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Observable;
@@ -196,7 +197,12 @@ public class SessionProcDataModel {
 			}
 		
 			public void addFailed(Object observable, Throwable w) {
-			    throw new RuntimeException("Failed to add tasks observer");
+				
+				errorLog.log(Level.SEVERE, new Date() + "EventLogger.addFailed" +
+	        			"(Object o, Throwable w): " + observable + " failed " + "to add");
+	        	WindowManager.theManager.logWindow.print(new Date() +
+	        			"EventLogger.addFailed(Object o, Throwable w): " + observable + " failed to add");
+			    throw new RuntimeException(w);
 			}
 		
 			public void addedTo(Object observable) {
