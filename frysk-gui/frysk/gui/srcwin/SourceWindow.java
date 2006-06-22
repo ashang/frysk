@@ -351,6 +351,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Edit/Copy", KeyValue.c,
 				ModifierType.CONTROL_MASK, true);
 		this.copy.connectAccelerator();
+		this.copy.setSensitive(false);
 
 		// Find action
 		this.find = new ToggleAction("find", "Find",
@@ -391,6 +392,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Run", KeyValue.r,
 				ModifierType.MOD1_MASK, true);
 		this.run.connectAccelerator();
+		this.run.setSensitive(false);
 
 		// Stop program action
 		this.stop = new Action("stop", "Stop", "Stop Program execution",
@@ -414,6 +416,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Step", KeyValue.s,
 				ModifierType.MOD1_MASK, true);
 		this.step.connectAccelerator();
+		this.step.setSensitive(false);
 
 		// Next action
 		this.next = new Action("next", "Next", "Next", "frysk-next");
@@ -427,6 +430,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Next", KeyValue.n,
 				ModifierType.MOD1_MASK, true);
 		this.next.connectAccelerator();
+		this.next.setSensitive(false);
 
 		// Finish action
 		this.finish = new Action("finish", "Finish", "Finish Function Call", "frysk-finish");
@@ -440,6 +444,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Finish", KeyValue.f,
 				ModifierType.MOD1_MASK, true);
 		this.finish.connectAccelerator();
+		this.finish.setSensitive(false);
 
 		// Continue action
 		this.cont = new Action("continue", "Continue", "Continue Execution", "frysk-continue");
@@ -453,6 +458,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Continue", KeyValue.c,
 				ModifierType.MOD1_MASK, true);
 		this.cont.connectAccelerator();
+		this.cont.setSensitive(false);
 
 		// Terminate action
 		this.terminate = new Action("terminate", "Terminate",
@@ -466,6 +472,7 @@ public class SourceWindow extends Window{
 		this.terminate.setAccelPath("<sourceWin>/Program/Terminate");
 		AccelMap.changeEntry("<sourceWin>/Program/Terminate", KeyValue.t,
 				ModifierType.MOD1_MASK, true);
+		this.terminate.setSensitive(false);
 
 		// Step assembly instruction action
 		this.stepAsm = new Action("stepAsm", "Step Assembly Instruction",
@@ -480,6 +487,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Step Assembly", KeyValue.s,
 				ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK), true);
 		this.stepAsm.connectAccelerator();
+		this.stepAsm.setSensitive(false);
 
 		// Next assembly instruction action
 		this.nextAsm = new Action("nextAsm", "Next Assembly Instruction",
@@ -494,6 +502,7 @@ public class SourceWindow extends Window{
 		AccelMap.changeEntry("<sourceWin>/Program/Next Assembly", KeyValue.n,
 				ModifierType.MOD1_MASK.or(ModifierType.SHIFT_MASK), true);
 		this.nextAsm.connectAccelerator();
+		this.nextAsm.setSensitive(false);
 
 		// Bottom of stack action
 		this.stackBottom = new Action("stackBottom", "To Bottom of Stack",
@@ -778,6 +787,8 @@ public class SourceWindow extends Window{
 		
 		// Mode box
 		((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
+		this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
+		
 
 		// Stack browser
 		this.stackView.addListener(listener);

@@ -1,3 +1,10 @@
+2006-06-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (createActions): Now sets program control actions
+	to insensitive since they are currently not implemented.
+	(attachEvents): Set mode box to insensitive since it is currently not
+	properly implemented.
+
 2006-06-22  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java: Observer add failiures are now logged properly.
