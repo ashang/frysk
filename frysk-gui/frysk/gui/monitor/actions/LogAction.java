@@ -71,11 +71,6 @@ public class LogAction extends GenericAction {
 
 		EventLogger.theLogger.getEventLogger().log(Level.INFO, this.argument + " triggered " +observer.getName());
 		WindowManager.theManager.logWindow.print(new Date() + " " + this.argument + " triggered " +observer.getName()+"\n");
-		System.out
-				.println("\n===========================================");
-		System.out.println(this.argument + " triggered " +observer.getName());
-		System.out
-				.println("===========================================\n");
 	}
 
 	public boolean setArgument(String comment) {
