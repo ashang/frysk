@@ -35,7 +35,6 @@ AM_CFLAGS += -fpic -Wall -Wshadow -Werror -Wunused -Wextra -Wformat=2 \
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/libebl \
 	   -I$(top_srcdir)/libelf -I$(top_srcdir)/libdw \
 	   -I$(top_srcdir)/lib -I..
-PACKAGE_VERSION = @PACKAGE_VERSION@
 
 
 modules = i386 sh x86_64 ia64 alpha arm sparc ppc ppc64 s390
@@ -46,6 +45,8 @@ libebl_pic = libebl_i386_pic.a libebl_sh_pic.a libebl_x86_64_pic.a \
 noinst_LIBRARIES = $(libebl_pic)
 noinst_DATA = $(libebl_pic:_pic.a=.so)
 
+# Workaround a bug in GNU make -jN:
+non-intermediate-maps: $(libebl_pic:_pic.a=.map)
 
 if MUDFLAP
 libelf = ../libelf/libelf.a

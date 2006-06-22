@@ -1,3 +1,7 @@
+2006-06-23  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Work around a bug in GNU make -jN.
+
 2006-02-22  Roland McGrath  <roland@redhat.com>
 
 	* ppc64_retval.c (SVR4_STRUCT_RETURN): New macro.
