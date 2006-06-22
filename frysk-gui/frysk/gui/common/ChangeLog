@@ -1,3 +1,7 @@
+2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* dialogs/NoDebugInfoDialog.java: New.
+
 2006-06-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* dialogs/DialogManager.java (showErrorDialog): Return a response.
