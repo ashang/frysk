@@ -39,6 +39,9 @@
 
 package frysk.gui.monitor.actions;
 
+import java.util.logging.Level;
+
+import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.WindowManager;
@@ -55,7 +58,8 @@ public class PrintProc extends ProcAction {
 	}
 	
 	public void execute(Proc proc) {
-      WindowManager.theManager.logWindow.print("Task State : " + proc  + "\n");
+      WindowManager.theManager.logWindow.print("Proc State : " + proc  + "\n");
+      EventLogger.theLogger.getEventLogger().log(Level.INFO, "Proc State : " + proc);
 	}
 
 	public GuiObject getCopy() {

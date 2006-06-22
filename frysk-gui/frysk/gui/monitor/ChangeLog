@@ -6,7 +6,9 @@
 	of applicable actions that is passed to the user when
 	requested.
 	* actions/PrintProc.java: Prints to the log window now.
+	(execute): Added eventlog call.
 	* actions/PrintTask.java: Ditto.
+	(execute): Added eventlog call.
 
 2006-06-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
