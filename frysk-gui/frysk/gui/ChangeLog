@@ -1,5 +1,7 @@
 2006-06-22  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* Gui.java (setupErrorLogging): Stop console spam.
+	
 	* glade/frysk_create_session_druid.glade: Removed tagSet controls.
 	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): 
 	Removed.
