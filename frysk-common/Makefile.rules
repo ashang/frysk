@@ -510,8 +510,8 @@ files.list:
 		    -name '*#*' -prune -o \
 		    -name '[A-Za-z]*.java' -print ; \
 	    done \
-	done > $@.tmp
-	sort $@.tmp >| $@
+	done | sort > $@.tmp
+	mv $@.tmp $@
 ${GEN_DIRNAME}.jar: files.list
 	rm -rf $(GEN_CLASSDIR)
 	mkdir -p $(GEN_CLASSDIR)
