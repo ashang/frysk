@@ -128,6 +128,6 @@ test $XMLLINT = no && AC_ERROR([no xmllint program found])
 AC_CHECK_PROGS([XMLCATALOG], [xmlcatalog], [no])
 test $XMLCATALOG = no && AC_ERROR([no xmlcatalog program found])
 
-# Check for gmime-uudecode
+# Check for uudecode
 AC_CHECK_PROGS([UUDECODE], [uudecode], [no])
 test $UUDECODE = no && AC_ERROR([no uudecode program found, please install sharutils package])
