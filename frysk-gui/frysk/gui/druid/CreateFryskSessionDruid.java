@@ -79,16 +79,16 @@ import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
-import frysk.gui.srcwin.tags.Tagset;
-import frysk.gui.srcwin.tags.TagsetManager;
+//import frysk.gui.srcwin.tags.Tagset;
+//import frysk.gui.srcwin.tags.TagsetManager;
 
 public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener {
 
 	private ProcWiseDataModel dataModel;
 	private ProcWiseTreeView procWiseTreeView;
-	private ListView processTagSetSelectionTreeView;
+	//private ListView processTagSetSelectionTreeView;
 	private ListView addedProcsTreeView;
-	private CheckedListView tagSetSelectionTreeView;
+	//private CheckedListView tagSetSelectionTreeView;
 	private CheckedListView  observerSelectionTreeView;
 	private ListView processObserverSelectionTreeView;	
 	private TextView observerDescriptionTextView;
@@ -120,7 +120,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		
 		getDruidStructureControls(glade);
 		getProcessSelectionControls(glade);
-		getTagsetObserverControls(glade);
+		//getTagsetObserverControls(glade);
 		getProcessObserverControls(glade);
 		this.addListener(this);
 	}
@@ -387,47 +387,47 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		
 	}
 	
-	private void getTagsetObserverControls(LibGlade glade)
-	{
-		processTagSetSelectionTreeView = new ListView(
-				glade.getWidget("SessionDruid_processTagSetTreeView").getHandle());
-		
-		tagSetSelectionTreeView = new CheckedListView(
-				glade.getWidget("SessionDruid_tagSetTreeView").getHandle());
-		
-		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
-		sizeGroup.addWidget(processTagSetSelectionTreeView);
-		sizeGroup.addWidget(tagSetSelectionTreeView);
-		
-		processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
-		processTagSetSelectionTreeView.getSelection().addListener(new TreeSelectionListener(){
-			public void selectionChangedEvent(TreeSelectionEvent arg0) {
-				DebugProcess selected = (DebugProcess)processTagSetSelectionTreeView.getSelectedObject();	
-				if (selected != null)
-				{
-					Iterator i = selected.getTagsets().iterator();
-					tagSetSelectionTreeView.clearChecked();
-					while (i.hasNext())
-						tagSetSelectionTreeView.setChecked(((Tagset)i.next()),true);
-				}
-			}});
-			
-		tagSetSelectionTreeView.watchLinkedList(TagsetManager.manager.getListTagsets());
-		tagSetSelectionTreeView.getCellRendererToggle().addListener(new CellRendererToggleListener() { 
-			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
-				GuiObject selected = (GuiObject) tagSetSelectionTreeView.getSelectedObject();
-				DebugProcess tagProcessSelected = (DebugProcess) processTagSetSelectionTreeView.getSelectedObject();
-				if (tagSetSelectionTreeView.isChecked(selected))
-				{
-					if (!tagProcessSelected.getTagsets().contains(selected))
-						tagProcessSelected.addTagset((Tagset)selected);
-				}	
-				else
-				{
-					tagProcessSelected.removeTagset((Tagset)selected);
-				}
-			}});
-	}
+//	private void getTagsetObserverControls(LibGlade glade)
+//	{
+//		processTagSetSelectionTreeView = new ListView(
+//				glade.getWidget("SessionDruid_processTagSetTreeView").getHandle());
+//		
+//		tagSetSelectionTreeView = new CheckedListView(
+//				glade.getWidget("SessionDruid_tagSetTreeView").getHandle());
+//		
+//		SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
+//		sizeGroup.addWidget(processTagSetSelectionTreeView);
+//		sizeGroup.addWidget(tagSetSelectionTreeView);
+//		
+//		processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+//		processTagSetSelectionTreeView.getSelection().addListener(new TreeSelectionListener(){
+//			public void selectionChangedEvent(TreeSelectionEvent arg0) {
+//				DebugProcess selected = (DebugProcess)processTagSetSelectionTreeView.getSelectedObject();	
+//				if (selected != null)
+//				{
+//					Iterator i = selected.getTagsets().iterator();
+//					tagSetSelectionTreeView.clearChecked();
+//					while (i.hasNext())
+//						tagSetSelectionTreeView.setChecked(((Tagset)i.next()),true);
+//				}
+//			}});
+//			
+//		tagSetSelectionTreeView.watchLinkedList(TagsetManager.manager.getListTagsets());
+//		tagSetSelectionTreeView.getCellRendererToggle().addListener(new CellRendererToggleListener() { 
+//			public void cellRendererToggleEvent(CellRendererToggleEvent arg0) {
+//				GuiObject selected = (GuiObject) tagSetSelectionTreeView.getSelectedObject();
+//				DebugProcess tagProcessSelected = (DebugProcess) processTagSetSelectionTreeView.getSelectedObject();
+//				if (tagSetSelectionTreeView.isChecked(selected))
+//				{
+//					if (!tagProcessSelected.getTagsets().contains(selected))
+//						tagProcessSelected.addTagset((Tagset)selected);
+//				}	
+//				else
+//				{
+//					tagProcessSelected.removeTagset((Tagset)selected);
+//				}
+//			}});
+//	}
 	
 	private void getProcessObserverControls(LibGlade glade) {
 	
@@ -568,7 +568,7 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 			nameEntry.setText(currentSession.getName());
 		addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
 		//tagSetSelectionTreeView;
-		processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
+		//processTagSetSelectionTreeView.watchLinkedList(currentSession.getProcesses());
 		//observerSelectionTreeView;
 		processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
 	}
