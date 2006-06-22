@@ -12,7 +12,7 @@
 
 2006-06-22  Mike Cvet  <mcvet@redhat.com>
 
-	* SourceWindowFactory.java: Observer add failiures are now logged properly.
+	* SourceWindowFactory.java: Observer add failures are now logged properly.
 
 2006-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
