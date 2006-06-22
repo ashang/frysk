@@ -187,9 +187,9 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             observerDetails = self.frysk.dialog( 'Observer Details' )
   
             # Find the panel on the frame
-            observerPanel = observerDetails.child( roleName='panel' )
-            combo =  observerPanel.child( roleName='combo box' )
-            comboMenu = combo.child( roleName='menu' )
+            observerPanel = observerDetails.child( name='table1', roleName='panel' )
+            #combo =  observerPanel.child( roleName='combo box' )
+            #comboMenu = combo.child( roleName='menu' )
             tempString = getEventType (observerToCreate.getType())           
               
             try:
@@ -312,11 +312,92 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         else:
             self.fail ('FAIL - the observer objects do not match: ' + newlyCreatedObserver.getName() + ', ' + self.theObserver.getName() )
 
-        ###############################################
-
         # Return to the Frysk main menu
         okButton = customObservers.button( 'OK' )
         okButton.click()
+
+        ###############################################
+
+
+        ### Need to add new test - compare Observer in file to Observer as displayed in GUI ###
+        # Populate new Observer Object from data displayed in GUI
+
+        observerFromGUI = Observer()
+        
+        # Select the 'Observers' menu item
+        observersItem = self.frysk.menuItem( 'Observers' )
+        observersItem.click()
+
+        # And the menu pick to access Observers
+        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection.click()
+
+        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customScrollPane = customObservers.child( roleName='scroll pane' )
+        customTable = customScrollPane.child( roleName = 'table' )
+
+        for i in range( self.matrixLength ):
+            observerToVerify = self.theMatrix[i]
+            observerNameToVerify = observerToVerify.getName()
+  
+            try:
+                observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
+                observerInGui.actions['activate'].do()
+                observerInGui.grabFocus()
+            except dogtail.tree.SearchError:
+                self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
+            else:
+                self.TestString.compare(self.theLogWriter.scriptName + '.testUpdateObservers()', observerNameToVerify, observerNameToVerify)
+                self.assertEqual(observerNameToVerify, observerNameToVerify)                
+                
+            editButton = customObservers.button( 'Edit' )
+            editButton.click()
+            
+            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
+
+            ##############################################
+            # Set observer name
+            observerFromGUI.setName(observerName.text)
+            
+            # and description
+            observerPanel = observerDetails.child( name='table1', roleName='panel' )
+            observerDescription = observerPanel.child( roleName='text', name = 'observerDescriptionTextView') 
+            observerFromGUI.setDescription(observerDescription.text)
+               
+            # and type? This is blocked by http://bugzilla.gnome.org/show_bug.cgi?id=345667
+            
+            #observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
+            #comboMenu = observerTypeComboBox.child( roleName='menu' ) 
+            #comboMenu.isSelected()
+            
+            #theTypes = comboMenu.findChildren(predicate.GenericPredicate(roleName='menu item'), False)
+            #for x in theTypes:
+            #    x.dump()
+            #    print x.isSelected()
+            
+            observerFromGUI.setType(self.theObserver.getType())
+            
+            # and the action Points
+                
+            # and the filter Points
+            
+
+            ###################################
+
+            okButton = observerDetails.button( 'OK' )
+            okButton.click()
+ 
+        # Resturn to the Frysk main menu
+        okButton = customObservers.button( 'OK' )
+        okButton.click()
+
+        
+
+
+       ###############################################
+
+  
 
     def tearDown( self ):    
  
