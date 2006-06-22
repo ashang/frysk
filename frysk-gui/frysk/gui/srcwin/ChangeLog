@@ -1,3 +1,8 @@
+2006-06-22  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactory.java (finishSourceWin): Now calls requestUnblock
+	before removing the observer.
+
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SourceWindowFactory.java (finishSourceWin): Use

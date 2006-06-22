@@ -64,7 +64,7 @@ public class CurrentStackView extends TreeView implements TreeSelectionListener 
 	public interface StackViewListener{
 		void currentStackChanged(StackLevel newLevel);
 	}
-	
+
 	private DataColumn[] stackColumns;
 	
 	private StackLevel currentLevel;
@@ -110,7 +110,7 @@ public class CurrentStackView extends TreeView implements TreeSelectionListener 
 				
 				current = current.getNextSection();
 			}
-				
+			
 			// If we've found inlined code, update the display
 			if(hasInlinedCode)
 				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel
