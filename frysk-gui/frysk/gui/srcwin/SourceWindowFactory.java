@@ -57,7 +57,7 @@ import frysk.dom.DOMFactory;
 import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
-import frysk.gui.common.dialogs.ErrorDialog;
+import frysk.gui.common.dialogs.NoDebugInfoDialog;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -179,13 +179,11 @@ public class SourceWindowFactory {
 					task.requestDeleteAttachedObserver(o);
 				}
 			
-				ErrorDialog dialog = new ErrorDialog("No debug information was found for the given process", e);
+				NoDebugInfoDialog dialog = new NoDebugInfoDialog("No debug information was found for the given process");
 				dialog.showAll();
-				int response = dialog.run();
+				dialog.run();
 				
-				if(response == ErrorDialog.QUIT)
-					System.exit(1);
-				
+					
 				return;
 			}
 			

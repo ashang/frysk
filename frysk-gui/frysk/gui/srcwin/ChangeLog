@@ -1,3 +1,8 @@
+2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SourceWindowFactory.java (finishSourceWin): Use
+	NoDebugInfoDialog for warning.
+
 2006-06-20  Mark Wielaard  <mark@klomp.org>
 
 	* SourceWindowFactory.java (finishSourceWin): Fix if block.
