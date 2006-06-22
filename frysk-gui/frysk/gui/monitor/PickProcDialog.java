@@ -39,11 +39,16 @@
 
 package frysk.gui.monitor;
 
+import org.gnu.gtk.Button;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.HBox;
+import org.gnu.gtk.HButtonBox;
 import org.gnu.gtk.PolicyType;
 import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.ScrolledWindow;
+import org.gnu.gtk.Widget;
+import org.gnu.gtk.event.TreeViewEvent;
+import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.common.dialogs.Dialog;
 import frysk.gui.monitor.datamodels.DataModelManager;
@@ -63,6 +68,20 @@ public class PickProcDialog extends Dialog {
 	public PickProcDialog(String path){
 		
 		this.ListView = new PickProcListView(path);
+		this.ListView.addListener(new TreeViewListener() {
+			public void treeViewEvent(TreeViewEvent event) {
+				if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
+					// Subtle .. it is not.
+					// On double click, simulate OK click
+					HButtonBox actionArea = getActionArea();
+					Widget[]buttons = actionArea.getChildren();
+					if (buttons.length == 1)
+						if (buttons[0] instanceof Button)
+							((Button) buttons[0]).click();
+
+				}
+			}
+		});
 		
 		this.ListView.watchLinkedList(DataModelManager.theManager.flatProcObservableLinkedList);
 		
@@ -77,7 +96,7 @@ public class PickProcDialog extends Dialog {
 		sWindow.addWithViewport(ListView);
 		mainBox.packEnd(sWindow);
 		
-		this.addButton(GtkStockItem.OK, ResponseType.OK.getValue());
+		this.addButton(GtkStockItem.OPEN, ResponseType.OK.getValue());
 
 		//this.showAll();
 	}

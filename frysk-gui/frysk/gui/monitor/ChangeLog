@@ -1,5 +1,9 @@
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* PickProcsDialog.java (PickProcDialog):
+	Added double click on Listview simulates Open button click.
+	Replaced OK button with Open.
+
 	* ProgramData.java: Remove. 
 	* ProgramDataModel.java: Remove.
 	* SessionProcDataModel.java (addTask): Convert
