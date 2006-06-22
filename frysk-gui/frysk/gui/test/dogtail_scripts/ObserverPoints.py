@@ -91,9 +91,9 @@ class ObserverPoints:
         return self.elements
 
     def dump( self ):
-        print 'in ObserverPoints'
-        print 'name=' + self.name
-        print 'type=' + self.type
+        print '    in ObserverPoints'
+        print '        name=' + self.name
+        print '        type=' + self.type
         for x in self.elements:
             x.dump()
       
@@ -119,11 +119,12 @@ class ObserverPoints:
         for x in theKeys:
           theElement = theElements.get( x )
           theOtherElement = theOtherElements.get( x )
-
-          print "DEBUG = " + theElement.getName()
-          print "DEBUG = " + theOtherElement.getName()
-        
+          #print "DEBUG = " + theElement.getName()
+          #print "DEBUG = " + theOtherElement.getName()        
           if not theElement.isequal( theOtherElement ):
             returnFlag = False
+            
+      else:
+          returnFlag = False      
 
       return returnFlag

@@ -67,19 +67,19 @@ class Observer:
   #   self.name = value
   
   # getters and setters methods
-  def setName(self, value):
+  def setName( self, value ):
     self.name = value
 
-  def setType(self, value):
+  def setType( self, value ):
     self.type = value
 
-  def setLoggingAction (self, value):
+  def setLoggingAction ( self, value ):
     self.loggingAction = value
     
-  def setFilterPoints(self, value):
+  def setFilterPoints( self, value ):
       self.filterPoints = value
       
-  def setDescription(self, value):
+  def setDescription( self, value ):
     self.description = value
 
   def setFilterPointsDict ( self, theFilterNames ):
@@ -96,46 +96,47 @@ class Observer:
     # use the names as the keys, and the objects as the values
     theActionPointNames = []
     theActionPointObjects = []
-    for x in theFilterNames:
+    for x in theActionNames:
       #print "DEBUG - name = " + x.getName()
       theActionPointNames.append( x.getName() )
       theActionPointObjects.append( x )
     self.ActionPointsDict = dict( zip ( theActionPointNames, theActionPointObjects ) )  
    
-  def setActionPoints (self, value):    
+  def setActionPoints ( self, value ):    
       self.actionPoints = value
     
-  def setAfterAction (self, value):
+  def setAfterAction ( self, value ):
     self.afterActions = value 
   
-  def getName(self):
+  def getName( self ):
     return self.name
 
-  def getDescription(self):
+  def getDescription( self ):
     return self.description
 
-  def getType(self):
+  def getType( self ):
     return self.type
   
-  def getLoggingAction(self):
+  def getLoggingAction( self ):
     return self.loggingAction
 
-  def getFilterPoints(self):
+  def getFilterPoints( self ):
       return self.filterPoints
  
-  def getFilterPointsDict(self):
+  def getFilterPointsDict( self ):
       return self.filterPointsDict
       
-  def getActionPointsDict(self):
+  def getActionPointsDict( self ):
       return self.filterPointsDict
       
-  def getActionPoints (self):    
+  def getActionPoints ( self ):    
       return self.actionPoints
     
-  def getAfterAction (self):
+  def getAfterAction ( self ):
     return self.afterActions
   
-  def dump(self):
+  def dump( self ):
+    print 'dump of Observer object:'
     print 'name=' + self.name
     print 'type=' + self.type
     print 'description=' + self.description
@@ -149,12 +150,9 @@ class Observer:
   # -------------------------------------
   # Compare two Observer objects
   
-  def isequal(self, theOtherObserver):
+  def isequal( self, theOtherObserver ):
     returnFlag = True
  
-    #print self.getName() + theOtherObserver.getName()
-    #print self.getType() + theOtherObserver.getType()
-
     if self.getName() != theOtherObserver.getName():
       returnFlag = False
 
@@ -190,6 +188,7 @@ class Observer:
     # that can be sorted by name
     theObserverActionPoints = dict( self.getActionPointsDict() )
     theOtherObserverActionPoints = dict( theOtherObserver.getActionPointsDict() )
+    
     theKeys = theObserverActionPoints.keys()
     theOtherKeys = theOtherObserverActionPoints.keys()
 
@@ -200,8 +199,6 @@ class Observer:
         for x in theKeys:
           theActionPoint = theObserverActionPoints.get( x ) 
           theOtherActionPoint = theOtherObserverActionPoints.get( x )
-          #print "DEBUG = " + theFilterPoint.getName() + theFilterPoint.getName()
-          #print "DEBUG = " + theOtherFilterPoint.getName() + theOtherFilterPoint.getName()
           if not theActionPoint.isequal( theOtherActionPoint ):
               returnFlag = False
     else:
@@ -209,6 +206,39 @@ class Observer:
 
     # This is not yet (20060609) implemented in the Observer data file  
     # if self.getAfterAction() != theOtherObserver.getAfterAction():
-    #   returnFlag = False    
+    #   returnFlag = False  
+    
+    if not returnFlag:
+        print 'expected:'
+        self.dump()
+        print 'actual;'
+        theOtherObserver.dump()
      
     return returnFlag
+
+  # -------------------------------------
+  # Compare two Observer objects
+  
+#  def compareDictionaries (self, theObserverPoints, theOtherObserverPoints ):
+#    returnFlag = True
+#      
+#    theKeys = theObserverPoints.keys()
+#    theOtherKeys = theOtherObserverPoints.keys()
+#
+#    if len( theKeys ) == len( theOtherKeys ):
+#        theKeys.sort()
+#        theOtherKeys.sort()
+#    
+#        for x in theKeys:
+#          theObserverPoint = theObserverPoints.get( x ) 
+#          theOtherObserverPoint = theOtherObserverPoints.get( x )
+#          print "DEBUG = " + theObserverPoint.getName() + theOtherObserverPoint.getName()
+#          theObserverPoint.dump()
+#          theOtherObserverPoint.dump()
+#          if not theObserverPoint.isequal( theOtherObserverPoint ):
+#              returnFlag = False
+#    else:
+#      returnFlag = False
+#      
+#      return returnFlag
+      

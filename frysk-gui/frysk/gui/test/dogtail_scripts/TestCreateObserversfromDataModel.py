@@ -305,6 +305,11 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         self.theObserverFilterPoints = self.theObserver.getFilterPoints()
         self.theObserver.setFilterPointsDict(self.theObserverFilterPoints)
 
+        newlyCreatedActionPoints = newlyCreatedObserver.getActionPoints()
+        newlyCreatedObserver.setActionPointsDict(newlyCreatedActionPoints)
+        self.theObserverActionPoints = self.theObserver.getActionPoints()
+        self.theObserver.setActionPointsDict(self.theObserverActionPoints)
+
         if self.theObserver.isequal (newlyCreatedObserver):
             # print 'PASS - the observer objects match'
             self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newlyCreatedObserver.getName(), self.theObserver.getName() )

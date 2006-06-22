@@ -221,6 +221,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     elif name == 'actionPoint':
          #print 'END of actionPoint'
          self.tempActionPoint.setElements(self.tempActionPointElements)
+         self.tempActionPoint.setElementsDict(self.tempActionPointElements)
          if self.emptyActionPointFlag != True:
              self.theActionPoints.append(self.tempActionPoint)
          self.actionPointFlag = False
@@ -233,6 +234,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     elif name == 'filterPoint':
 #        print 'END of filterPoint'
          self.tempFilterPoint.setElements(self.tempFilterPointElements)
+         self.tempFilterPoint.setElementsDict(self.tempFilterPointElements)
          self.theFilterPoints.append(self.tempFilterPoint)         
          self.filterPointFlag = False        
 

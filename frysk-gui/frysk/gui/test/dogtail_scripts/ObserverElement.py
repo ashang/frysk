@@ -82,17 +82,17 @@ class ObserverElement:
         return self.argument    
 
     def dump( self ):
-        print 'in element'
-        print 'name=' + self.name
-        print 'type=' + self.type
-        print 'operand=' + self.operand
-        print 'argument=' + self.argument
+        print '        in element'
+        print '            name=' + self.name
+        print '            type=' + self.type
+        print '            operand=' + self.operand
+        print '            argument=' + self.argument
  
     # ------------------------
     # Function to determine if two ObserverElement objects are equal
     def isequal ( self, theOtherElement ):
       returnFlag = True
-
+ 
       if self.getName() != theOtherElement.getName():
           returnFlag = False
           
