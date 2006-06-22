@@ -37,6 +37,13 @@
 // version and license this file solely under the GPL without
 // exception.
 
+/* Declares __NR_*.  Moreover it might define _syscall2 and such, so it is
+ * safer to make sure it gets included first. */
+#include <linux/unistd.h>
+
+/* Declares syscall() */
+#include <unistd.h>
+
 #undef _syscall0
 #define _syscall0(type,name)						\
 type name(void)								\

@@ -42,18 +42,14 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <linux/unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
 #include <sys/wait.h>
-#include <linux.syscall.h>
 
 #include "util.h"
 
 int childPid;
-
-//_syscall2(int, tkill, pid_t, tid, int, sig);
 
 void handler (int sig) {
    tkill (childPid, SIGUSR2);

@@ -42,7 +42,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
-#include <linux/unistd.h>
+
+#include <linux.syscall.h>
+_syscall2(int, tkill, pid_t, tid, int, sig);
 
 void
 handler (int n)
@@ -65,7 +67,7 @@ main (int argc, char *argv[], char *envp[])
   // Use tkill, instead of tkill (pid, sig) so that an exact task is
   // signalled.  Normal kill can send to any task and other tasks may
   // not be ready.
-  if (syscall (__NR_tkill, pid, sig) < 0) {
+  if (tkill(pid, sig) < 0) {
     perror ("tkill");
     exit (errno);
   }

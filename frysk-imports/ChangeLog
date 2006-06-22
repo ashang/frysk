@@ -1,3 +1,9 @@
+2006-06-21  Stepan Kasal  <kasal@ucw.cz>
+
+	* include/linux.syscall.h: Include the headers necessary to use
+	the macros defined here, users do not have to include them.
+	* Makefile.am (noinst_HEADERS): Add include/linux.syscall.h.
+
 2006-06-22  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Use uudecode instead of gmime-uudecode.
@@ -6,6 +12,10 @@
 
 	* Makefile.am (GEN_GCJ_LDADD): Specify static elfutil libraries,
 	re-order and add libebl/libebl.a.
+
+2006-06-15  Nurdin Premji  <npremji@redhat.com>
+
+	* include/linux.syscall.h: New file.
 
 2006-06-15  Stepan Kasal  <kasal@ucw.cz>
 

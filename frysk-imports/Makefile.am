@@ -86,4 +86,4 @@ CLEANFILES += lib/elf/tests/helloworld.o.bz2 lib/elf/tests/helloworld.o
 
 # we need to get this into the distribution
 noinstdir = $(srcdir)
-noinst_HEADERS = include/linux.ptrace.h
+noinst_HEADERS = include/linux.ptrace.h include/linux.syscall.h

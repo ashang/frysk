@@ -1,3 +1,8 @@
+2006-06-21  Stepan Kasal  <kasal@ucw.cz>
+
+	* util.h: Include linux.syscall.h; the calers need not to do that.
+	* funit-threadexit.c: Remove duplicate #include <unistd.h>.
+
 2006-06-15  Nurdin Premji  <npremji@redhat.com>
 
 	* funit-child.c: Added #include <linux.syscall.h> and <unistd.h>.

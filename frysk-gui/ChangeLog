@@ -1,3 +1,7 @@
+2006-06-23  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Distribute frysk/gui/test/dogtail_scripts/frysk_suite.in.
+
 2006-06-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (GEN_GCJ_LDADD): Specify static elfutil libraries,

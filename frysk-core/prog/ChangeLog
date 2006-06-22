@@ -1,3 +1,8 @@
+2006-06-21  Stepan Kasal  <kasal@ucw.cz>
+
+	* kill/suspend.c: Use _syscall2 to define tkill.
+	* kill/loop.c: Add #include <linux.syscall.h>.
+
 2006-06-15  Nurdin Premji  <npremji@redhat.com>
 
 	* kill/detach.c: Add #include <linux.syscall.h> and <unistd.h>.

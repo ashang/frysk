@@ -45,12 +45,10 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/select.h>
-#include <linux/unistd.h>
 #include <limits.h>
 #include <pthread.h>
 #include <string.h>
 #include <linux.syscall.h>
-#include <unistd.h>
 
 
 // Simple sleep for roughly SECONDS and then exit.

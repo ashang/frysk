@@ -42,11 +42,11 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/select.h>
-#include <linux/unistd.h>
 #include <limits.h>
 #include <pthread.h>
+
 #include <linux.syscall.h>
-#include <unistd.h>
+_syscall2(int, tkill, pid_t, tid, int, sig);
 
 pthread_mutex_t start;
 pthread_mutex_t stop;
@@ -95,10 +95,10 @@ thread <pid>, and then suspend for <suspend-seconds>.\n");
     pthread_mutex_lock (&start); // released by running SUB.
   }
 
-  // Use tkill, instead of tkill (pid, sig) so that an exact task is
+  // Use tkill, instead of kill (pid, sig) so that an exact task is
   // signalled.  Normal kill can send to any task and other tasks may
   // not be ready.
-  if (syscall (__NR_tkill, pid, sig) < 0) {
+  if (tkill (pid, sig) < 0) {
     perror ("tkill");
     exit (errno);
   }

@@ -40,8 +40,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <sys/types.h>
-#include <linux/unistd.h>
 #include <stdlib.h>
+#include <linux.syscall.h>
 
 _syscall0(pid_t, gettid);
 _syscall2(int, tkill, pid_t, tid, int, sig);
