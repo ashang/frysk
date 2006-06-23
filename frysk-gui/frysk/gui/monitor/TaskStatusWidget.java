@@ -48,7 +48,7 @@ package frysk.gui.monitor;
 public class TaskStatusWidget extends StatusWidget {
 
 	public TaskStatusWidget(GuiTask data) {
-		super(data);
+		super(data, "");
 		this.setName("Thread ID: " + data.getTask().getTid()); //$NON-NLS-1$
 	}
 
