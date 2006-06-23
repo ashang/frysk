@@ -358,7 +358,15 @@ public class Gui
 		    new ConsoleWindow();
 		}
 	    });
-	
+
+	MenuItem cliWindowItem = new MenuItem("Command Interface Window", false);
+	cliWindowItem.addListener (new MenuItemListener()
+	    {
+		public void menuItemEvent(MenuItemEvent arg0){
+		    new frysk.vtecli.ConsoleWindow();
+		}
+	    });
+
 	/* Removed until we're ready to try this again */
 	// Session Window
 	/*MenuItem sessionWindowItem = new MenuItem("Session Manager", false); //$NON-NLS-1$
@@ -369,6 +377,7 @@ public class Gui
 		}
 	    }); */
 	popupMenu.prepend(consoleWindowItem);
+	popupMenu.prepend(cliWindowItem);
 	//popupMenu.prepend(sessionWindowItem);
 	
 	final Thread backendStarter  = new Thread(new Runnable(){
