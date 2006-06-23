@@ -1,3 +1,7 @@
+2006-06-23  Rick Moseley  <rmoseley@redhat.com>
+
+	* observers/ExitNotificationObserver.java:  Fix message typo.
+
 2006-06-23  Chris Moller  <moller@mollerware.com>
 
 	* ProcStatusWidget.java;
