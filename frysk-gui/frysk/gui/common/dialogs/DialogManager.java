@@ -114,7 +114,7 @@ public class DialogManager {
 	
 	}
 	
-	public static int showErrorDialog(String title, String message,
+	public static synchronized int showErrorDialog(String title, String message,
 		Exception except){
 		
 		final ErrorDialog myDialog = new ErrorDialog(title, message, except);
@@ -127,12 +127,12 @@ public class DialogManager {
 			}
 		});
 		
-//		try {
-//			DialogManager.class.wait();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			DialogManager.class.wait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 
 
