@@ -150,7 +150,7 @@ public class SessionProcTreeView extends Widget implements Saveable{
 			}
 					
 		    }else{
-			infoWidget.setSelectedTask(null);
+		      infoWidget.setSelectedTask(null);
 		    }
 		}
 	    });

@@ -57,7 +57,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.actionPoints = new ObservableLinkedList();			
 			this.baseName     = "";			
 		
-			this.returnAction = null;
+			this.returnAction = Action.CONTINUE;
 			
 			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
@@ -76,7 +76,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			this.actionPoints = new ObservableLinkedList();			
 			this.baseName     = name;			
 			
-			this.returnAction = null;
+			this.returnAction = Action.CONTINUE;
 			
 			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);

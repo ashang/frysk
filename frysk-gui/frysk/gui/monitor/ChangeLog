@@ -1,5 +1,7 @@
 2006-06-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/ObserverRoot.java (ObserverRoot): Set default action to
+	CONTINUE fix for rappid dialogs upon observer firing.
 	* InfoWidget.java (InfoWidget): Removed threadStatusWidget from
 	being added to the stats widget.
 	* observers/TaskCloneObserver.java (bottomHalf): Added missing
