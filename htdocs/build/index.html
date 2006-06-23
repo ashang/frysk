@@ -1,286 +1,200 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
-<html>
-  <head>
-    <title>Building Frysk</title>
-    <link rel="stylesheet" href="../frysk.css" type="text/css">
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <meta http-equiv="Content-Style-Type" content="text/css">
-  </head>
-
-  <body>
-    <table cellspacing="2" cellpadding="2" border="0" width="100%">
-      <tr>
-        <td valign="bottom" height="80">
-          <img src="../frysklogo.png" alt="Frysk logo">
-        </td>
-        <td valign="bottom" class="topnavright" align="right">
-          <a href="../">Overview</a>
-          &nbsp;|&nbsp;
-          <a href="../usecases/">Use Cases</a>
-          &nbsp;|&nbsp;
-          <a href="../workflow/">Work Flows</a>
-          &nbsp;|&nbsp;
-          <a href="../questions/">Questions</a>
-          &nbsp;|&nbsp;
-          <a href="../getinvolved/">Get Involved</a>
-          &nbsp;|&nbsp;
-          <a href="../zilla/">FryskZilla</a>
-          &nbsp;|&nbsp;
-          <a href="../documentation/">Documentation</a>
-        </td>
-      </tr>
-    </table>
-    <div class="mainbackground">
-      <div class="maintextregion">
-        <img src="../fryskcorner.gif" alt="triangle">
-        <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17px;">
-          <tr>
-            <td width="200" valign="top" align="left">
-	      &nbsp;
-	    </td>
-            <td valign="bottom">
-<!-- start title -->
-        <h1>Building <em>frysk</em> From Source</h1>
-	      <!-- end title -->
-            </td>
-          </tr>
-          <tr>
-	    <td valign="top">
-	      <!-- start logo -->
-        &nbsp;
-	      <!-- end logo -->
-	    </td>
-            <td valign="top">
-	      <!-- start text -->
-
-<p>This page provides guidelines for building <em>frysk</em>, checked
-out from <tt>CVS</tt>, on a number of systems.</p>
-
-<h3>Set up your system's build environment</h3>
-
-<p>First you will need to set up your system's build environment so
-that all its prerequisites are met.</p>
-
-<dl>
-
-<dt><a name="rhel4"></a>Red Hat Enterprise Linux 4</dt>
-
-<dd>
-
-Red Hat Enterprise Linux 4 Update 3 and later include <tt>gcc4</tt>
-and <tt><em>frysk</em></tt> RPMs that contain everything needed to
-build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
-
-<pre>
-transfig xmlto passivetex xmltex \
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE>Building Frysk</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 2.0  (Linux)">
+	<META NAME="CREATED" CONTENT="20060623;7401400">
+	<META NAME="CHANGED" CONTENT="20060623;7420400">
+	<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+	<STYLE>
+	<!--
+		A:link { color: #7cc8ff; font-family: "Verdana", "Geneva", "Arial", "Helvetica", sans-serif }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" LINK="#7cc8ff" BGCOLOR="#cccccc" DIR="LTR">
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=2 STYLE="page-break-before: always">
+	<TR VALIGN=BOTTOM>
+		<TD HEIGHT=80>
+			<P STYLE="margin-right: 0.1in"><IMG SRC="../frysklogo.png" NAME="graphics1" ALT="Frysk logo" ALIGN=BOTTOM WIDTH=114 HEIGHT=47 BORDER=0>
+						</P>
+		</TD>
+		<TD>
+			<P ALIGN=RIGHT><FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="verdana, Geneva, Arial, Helvetica, sans-serif"><FONT COLOR="#5e5e5e"><A HREF="../../htdocs">Overview</A>
+			&nbsp;|&nbsp; <A HREF="../usecases">Use Cases</A> &nbsp;|&nbsp;
+			<A HREF="../workflow">Work Flows</A> &nbsp;|&nbsp; <A HREF="../questions">Questions</A>
+			&nbsp;|&nbsp; <A HREF="../getinvolved">Get Involved</A> &nbsp;|&nbsp;
+			<A HREF="../zilla">FryskZilla</A> &nbsp;|&nbsp; <A HREF="../documentation">Documentation</A>
+			</FONT></FONT></FONT>
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+<P STYLE="margin-bottom: 0in"><IMG SRC="../fryskcorner.gif" NAME="graphics2" ALT="triangle" ALIGN=BOTTOM WIDTH=40 HEIGHT=40 BORDER=0>
+</P>
+<TABLE WIDTH=99% BORDER=0 CELLPADDING=4 CELLSPACING=2>
+	<TR>
+		<TD WIDTH=200 VALIGN=TOP>
+			<P ALIGN=LEFT>&nbsp;<!-- start title --> 
+			</P>
+		</TD>
+		<TD VALIGN=BOTTOM>
+			<H1>Building <EM>frysk</EM> From Source<!-- end title --><!-- start logo --></H1>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD>
+			<P>&nbsp;<!-- end logo --><!-- start text --> 
+			</P>
+		</TD>
+		<TD>
+			<P>This page provides guidelines for building <EM>frysk</EM>,
+			checked out from <TT>CVS</TT>, on a number of systems.</P>
+			<H3>Set up your system's build environment</H3>
+			<P>First you will need to set up your system's build environment
+			so that all its prerequisites are met.</P>
+			<DL>
+				<DT><A NAME="rhel4"></A>Red Hat Enterprise Linux 4 
+				</DT><DD STYLE="margin-bottom: 0.2in">
+				Red Hat Enterprise Linux 4 Update 3 and later include <TT>gcc4</TT>
+				and <EM><TT>frysk</TT></EM> RPMs that contain everything needed
+				to build <EM>frysk</EM> from <TT>CVS</TT>; just install RPMs for
+				the following: 
+				</DD></DL>
+			<PRE STYLE="margin-left: 0.39in">transfig xmlto passivetex xmltex \
 gcc4 gcc4-c++ gcc4-java libgcj4-devel \
-frysk
-</pre>
-
-For additional updates, check Red Hat Enterprise Linux 4's tracker
-bug's <a
-href="/bugzilla/showdependencytree.cgi?id=2004">dependency
-tree</a>.
-
-</dd>
-
-<dt><a name="fc5">Fedora Core 5</a></dt>
-
-<dd>
-
-With the release of Fedora Core 5 it is largely possible to build and
-run <em>frysk</em> using the distributed RPMs.  Just note the
-following:
-
-<ul>
-
-<li><a
-href="/bugzilla/show_bug.cgi?id=2130"><tt>PASS:
-frysk2130/strace-clone-exec.sh</tt></a> A ptraced multi-threaded
-program that does an execve call from a non-main thread is
-spontaneously killed.<br> Fixed in <tt>kernel-2.6.16-1.2096_FC5</tt>.
-
-<li><a
-href="/bugzilla/show_bug.cgi?id=2595"><tt>PASS:
-frysk2595/ptrace_peek_wrong_thread</tt></a>: Only the attaching thread
-can peek and poke a process.<br> Grab a pre-built kernel snapshot with
-a workaround applied from:
-
-<pre>
-<a href="ftp://ftp.linux.org.uk/pub/people/cagney">ftp://ftp.linux.org.uk/pub/people/cagney</a>
-</pre>
-
-the patch can be found <a href="linux-2.6-ptrace-tgid.patch">here</a>.
-
-</li>
-
-<li>Check that the <tt>selinux</tt> security database is up-to-date
-(or disable SE Linux).  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt>
-behave weird; and <tt>/proc</tt> is not accessible</li>
-
-<li>You will need to install a number of packages vis:
-<pre>
-sudo yum install antlr jdom glib-java libgtk-java \
+frysk</PRE>
+			<DL>
+				<DD>
+				For additional updates, check Red Hat Enterprise Linux 4's
+				tracker bug's <A HREF="/bugzilla/showdependencytree.cgi%3Fid=2004">dependency
+				tree</A>. 
+				</DD><DT>
+				<A NAME="fc5"></A>Fedora Core 5 
+				</DT><DD>
+				With the release of Fedora Core 5 it is largely possible to build
+				and run <EM>frysk</EM> using the distributed RPMs. Just note the
+				following: 
+				</DD></DL>
+			<UL>
+				<LI><DD>
+				<TT><A HREF="/bugzilla/show_bug.cgi%3Fid=2130">PASS:
+				frysk2130/strace-clone-exec.sh</A></TT> A ptraced multi-threaded
+				program that does an execve call from a non-main thread is
+				spontaneously killed.<BR>Fixed in <TT>kernel-2.6.16-1.2096_FC5</TT>.
+								</DD><LI><DD STYLE="margin-bottom: 0.2in">
+				<TT><A HREF="/bugzilla/show_bug.cgi%3Fid=2595">PASS:
+				frysk2595/ptrace_peek_wrong_thread</A></TT>: Only the attaching
+				thread can peek and poke a process.<BR>Grab a pre-built kernel
+				snapshot with a workaround applied from: 
+				</DD><PRE STYLE="margin-bottom: 0.2in"><A HREF="ftp://ftp.linux.org.uk/pub/people/cagney">ftp://ftp.linux.org.uk/pub/people/cagney</A></PRE><DD>
+				the patch can be found <A HREF="linux-2.6-ptrace-tgid.patch">here</A>.
+								</DD><LI><DD>
+				Check that the <TT>selinux</TT> security database is up-to-date
+				(or disable SE Linux). Otherwise <TT>gij</TT> and <TT>gcj-dbtool</TT>
+				behave weird; and <TT>/proc</TT> is not accessible 
+				</DD><LI><DD STYLE="margin-bottom: 0.2in">
+				You will need to install a number of packages vis: 
+				</DD><PRE>sudo yum install antlr jdom glib-java libgtk-java \
 libvte-java vte-devel libglade-java gcc-java xmlto \
 transfig dogtail automake gcc-c++ libglade-java \
-libglade2-devel strace
-</pre>
-</li>
-
-<li>The <em>frysk</em> RPM included in FC-5 is very different to that
-used for RHEL-4 (the former is a lot simpler).  The Fedora Core 5
-source RPM can be found in the <a
-href="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
-development SRPM directory</a>.</li>
-
-</ul>
-
-For additional updates, check Fedora Core 5's tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=2104">dependency
-tree</a>
-
-</dd>
-
-<dt><a name="ubuntu">Ubuntu (Breezy Badger)</a></dt>
-
-<dd>
-
-While it's a bit of a struggle, it is possible to build <em>frysk</em>
-on Ubuntu:
-
-<ul>
-
-<li><tt>gcc 4.0.1-4ubuntu9</tt> has a number of serious bugs. <br>
-Download, build, and install a snapshot of the RHEL-4 gcc4 compiler
-(found <a
-href="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</a>).</li>
-
-<li>Make certain that <tt>automake-1.9</tt> is installed and selected
-as the default:
-<pre>
-$ sudo aptitude install automake1.9
+libglade2-devel strace sharutils</PRE>
+				<LI><DD>The <EM>frysk</EM> RPM included in FC-5 is very different
+				to that used for RHEL-4 (the former is a lot simpler). The Fedora
+				Core 5 source RPM can be found in the <A HREF="http://download.fedora.redhat.com/pub/fedora/linux/core/development/SRPMS/">Fedora
+				development SRPM directory</A>. 
+				</DD></UL>
+			<DL>
+				<DD>For additional updates, check Fedora Core 5's tracker bug's
+				<A HREF="/bugzilla/showdependencytree.cgi%3Fid=2104">dependency
+				tree</A> 
+				</DD><DT>
+				<A NAME="ubuntu"></A>Ubuntu (Breezy Badger) 
+				</DT><DD>
+				While it's a bit of a struggle, it is possible to build <EM>frysk</EM>
+				on Ubuntu: 
+				</DD></DL>
+			<UL>
+				<LI><DD>
+				<TT>gcc 4.0.1-4ubuntu9</TT> has a number of serious bugs.
+				<BR>Download, build, and install a snapshot of the RHEL-4 gcc4
+				compiler (found <A HREF="ftp://sources.redhat.com/pub/frysk/RHEL-4/">here</A>).
+								</DD><LI><DD STYLE="margin-bottom: 0.2in">
+				Make certain that <TT>automake-1.9</TT> is installed and selected
+				as the default: 
+				</DD><PRE>$ sudo aptitude install automake1.9
 $ sudo update-alternatives --display automake
-$ sudo update-alternatives --set automake /usr/bin/automake-1.9
-</pre>
-</li>
-
-<li>Per <a
-href="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
-Java Gnome</a>, append the line:
-<pre>
-http://www.natemccallum.com/uploads/debs/ ./
-</pre>
-to the file:
-<pre>
-/etc/apt/sources.list
-</pre>
-and then install the java-gnome stuff vis:
-<pre>
-$ sudo aptitude install libglade-java \
+$ sudo update-alternatives --set automake /usr/bin/automake-1.9</PRE>
+				<LI><DD STYLE="margin-bottom: 0.2in">Per <A HREF="http://java-gnome.sourceforge.net/cgi-bin/bin/view/Main/GetJavaGnome">Get
+				Java Gnome</A>, append the line: 
+				</DD><PRE STYLE="margin-bottom: 0.2in">http://www.natemccallum.com/uploads/debs/ ./</PRE><DD STYLE="margin-bottom: 0.2in">
+				to the file: 
+				</DD><PRE STYLE="margin-bottom: 0.2in">/etc/apt/sources.list</PRE><DD STYLE="margin-bottom: 0.2in">
+				and then install the java-gnome stuff vis: 
+				</DD><PRE>$ sudo aptitude install libglade-java \
 libgtk-java libglade2-dev libvte-dev
 $ pkg-config --modversion gtk2-java
-2.8.1
-</pre>
-</li>
-
-<li><tt>jdom</tt> had problems building; there appears to be some
-missing .jar dependencies. <br> Grabbing the jdom out of the RHEL-4
-mega-rpm and building that worked.</li>
-
-<li>The libvte-java bindings are missing. <br> You can hack around
-this by disabling the code using vte (there isn't much)</li>
-
-</ul>
-
-For additional updates, check Ubuntu' tracker bug's <a
-href="/bugzilla/showdependencytree.cgi?id=1976">dependency
-tree</a>.
-
-</dd>
-
-</dl>
-
-<h3>Check out <em>frysk</em> from <tt>CVS</tt></h3>
-
-<p>Normally you would use:</p>
-
-<pre>
-$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk
-</pre>
-
-<p>If you have <tt>CVS</tt> write access using account USER then:</p>
-
-<pre>
-$ export CVS_RSH=ssh
-$ cvs -d :ext:USER@sources.redhat.com:/cvs/frysk co frysk
-</pre>
-
-<p>To update an existing <em>frysk</em> <tt>CVS</tt> check-out
-use:</p>
-
-<pre>
-$ ( cd frysk && cvs update -d )
-</pre>
-
-<h3>Configure and Build</h3>
-
-<pre>
-$ ( mkdir build && cd build && ../frysk/autogen.sh && make -j2 )
-</pre>
-
-<h3>Verify the build environment (optional)</h3>
-
-<p>Both the <tt>frysk-imports</tt> and <tt>frysk-gtk</tt> directories
-include tests to ensure that the build system (compiler, kernel, and
-libraries) are working correctly.  Any FAILing tests should be
-investigated (XFAIL and XPASS tests are OK).</p>
-
-<pre>
-$ ( cd build/frysk-imports/tests && make check )
-$ ( cd build/frysk-gtk/tests && make check )
-</pre>
-
-<h3>Build</h3>
-
-<dd><tt>$ ( cd build && make -j2 )</tt></dd>
-
-<h3>Test</h3>
-
-<p>On Fedora Core 5, there should be no failures.</p>
-
-<pre>
-$ ( cd build && make check )
-</pre>
-
-<h3>Run</h3>
-
-<p><em>frysk</em> can then either be run from the build tree ...</p>
-
-<pre>
-$ ./build/frysk-gui/frysk/gui/FryskGui
-</pre>
-
-<p>... or installed and run from there</p>
-
-<pre>
-$ ( cd build && sudo make install )
-$ frysk
-</pre>
-
-              <!-- end text -->
-              <p>&nbsp;</p>
-            </td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <table cellspacing="2" cellpadding="2" border="0" width="100%">
-      <tr>
-        <td align="center" class="footer">
-          <a href="http://sources.redhat.com">sources.redhat.com</a>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>
+2.8.1</PRE>
+				<LI><DD><TT>jdom</TT> had problems building; there appears to be
+				some missing .jar dependencies. <BR>Grabbing the jdom out of the
+				RHEL-4 mega-rpm and building that worked. 
+				</DD><LI><DD>
+				The libvte-java bindings are missing. <BR>You can hack around
+				this by disabling the code using vte (there isn't much) 
+				</DD></UL>
+			<DL>
+				<DD STYLE="margin-bottom: 0.2in">For additional updates, check
+				Ubuntu' tracker bug's <A HREF="/bugzilla/showdependencytree.cgi%3Fid=1976">dependency
+				tree</A>. 
+				</DD></DL>
+			<H3>
+			Check out <EM>frysk</EM> from <TT>CVS</TT></H3>
+			<P>Normally you would use:</P>
+			<PRE STYLE="margin-bottom: 0.2in">$ cvs -d :pserver:anoncvs@sources.redhat.com:/cvs/frysk co frysk</PRE><P>
+			If you have <TT>CVS</TT> write access using account USER then:</P>
+			<PRE>$ export CVS_RSH=ssh
+$ cvs -d :ext:USER@sources.redhat.com:/cvs/frysk co frysk</PRE><P>
+			To update an existing <EM>frysk</EM> <TT>CVS</TT> check-out use:</P>
+			<PRE STYLE="margin-bottom: 0.2in">$ ( cd frysk &amp;&amp; cvs update -d )</PRE><H3>
+			Configure and Build</H3>
+			<PRE STYLE="margin-bottom: 0.2in">$ ( mkdir build &amp;&amp; cd build &amp;&amp; ../frysk/autogen.sh &amp;&amp; make -j2 )</PRE><H3>
+			Verify the build environment (optional)</H3>
+			<P>Both the <TT>frysk-imports</TT> and <TT>frysk-gtk</TT>
+			directories include tests to ensure that the build system
+			(compiler, kernel, and libraries) are working correctly. Any
+			FAILing tests should be investigated (XFAIL and XPASS tests are
+			OK).</P>
+			<PRE>$ ( cd build/frysk-imports/tests &amp;&amp; make check )
+$ ( cd build/frysk-gtk/tests &amp;&amp; make check )</PRE><H3>
+			Build</H3>
+			<DL>
+				<DD STYLE="margin-bottom: 0.2in"><TT>$ ( cd build &amp;&amp; make
+				-j2 )</TT> 
+				</DD></DL>
+			<H3>
+			Test</H3>
+			<P>On Fedora Core 5, there should be no failures.</P>
+			<PRE STYLE="margin-bottom: 0.2in">$ ( cd build &amp;&amp; make check )</PRE><H3>
+			Run</H3>
+			<P><EM>frysk</EM> can then either be run from the build tree ...</P>
+			<PRE STYLE="margin-bottom: 0.2in">$ ./build/frysk-gui/frysk/gui/FryskGui</PRE><P>
+			... or installed and run from there</P>
+			<PRE>$ ( cd build &amp;&amp; sudo make install )
+$ frysk</PRE><P>
+			<!-- end text -->&nbsp;</P>
+		</TD>
+	</TR>
+</TABLE>
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=2 CELLSPACING=2>
+	<TR>
+		<TD>
+			<P ALIGN=CENTER><A HREF="http://sources.redhat.com/">sources.redhat.com</A>
+						</P>
+		</TD>
+	</TR>
+</TABLE>
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>
