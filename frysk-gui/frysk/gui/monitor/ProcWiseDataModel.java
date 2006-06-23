@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
@@ -52,6 +54,7 @@ import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeStore;
 
+import frysk.gui.Gui;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -78,7 +81,7 @@ public class ProcWiseDataModel {
 	
 	private Hashtable iterHash;
 	
-//	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	public ProcWiseDataModel(){
 		this.iterHash = new Hashtable();
@@ -103,53 +106,58 @@ public class ProcWiseDataModel {
 	}
 
 	private void setRow(TreeIter row, String name, GuiProc data, boolean selected){
-//		if(data.getExecutableName().contains("bash")){
-//			System.out.println(this + ": ProcWiseDataModel.setRow() adding " + name);	
-//		}
-		
-		treeStore.setValue(row, nameDC, name);
-		treeStore.setValue(row, objectDC, data);
-		treeStore.setValue(row, selectedDC, selected);
-		treeStore.setValue(row, sensitiveDC, false);
-		if(data != null && data.isOwned()){
-			treeStore.setValue(row, sensitiveDC, true);
-			TreePath path = row.getPath();
-//			if(path.up()){
-//				TreeIter parent = null;
-//				parent = treeStore.getIter(path);
-//				System.out.println(this	+ ": ProcWiseDataModel.setRow() EXCEPTIONs path: " + path + " name: " + name);
-//				System.out.println(this	+ ": ProcWiseDataModel.setRow() parent: " + parent);
-//				
-//				if(parent != null){
-//					treeStore.setValue(parent, sensitiveDC, true);
-//				}
-//			}
-			
-			String pathString = path.toString();
-			if(pathString.contains(":")){
-				String parentString = pathString.substring(0, pathString.lastIndexOf(":"));
-				TreeIter parent = null;
-				parent = treeStore.getIter(parentString);
-				
-				if(parent != null){
-					treeStore.setValue(parent, sensitiveDC, true);
+		try {
+			treeStore.setValue(row, nameDC, name);
+			treeStore.setValue(row, objectDC, data);
+			treeStore.setValue(row, selectedDC, selected);
+			treeStore.setValue(row, sensitiveDC, false);
+		} catch (Exception e)
+		{
+			errorLog.log(Level.WARNING,"ProcWiseDataModel.setRow: unable to store value: " + name + " in treeStore");
+			return;
+		}
+		if(data != null)
+			if (data.isOwned()) {
+				treeStore.setValue(row, sensitiveDC, true);
+				TreePath path = row.getPath();
+	
+				if (path != null)
+				{
+					String pathString = path.toString();
+					if (pathString.contains(":")) {
+						String parentString = pathString.substring(0, pathString.lastIndexOf(":"));
+						TreeIter parent = null;
+						parent = treeStore.getIter(parentString);
+	
+						if(parent != null)
+							if (treeStore.isIterValid(parent))
+								treeStore.setValue(parent, sensitiveDC, true);
+					}
+				}
+				else
+				{
+					errorLog.log(Level.WARNING,"ProcWiseDataModel.setRow: Cannot discern path from TreePath");
+					return;
 				}
 			}
-		}
 	}
 
 	public TreePath searchName(String name)
 	{
-		TreeIter iter = treeStore.getFirstIter();		
+		TreeIter iter = treeStore.getFirstIter();	
 		while (iter != null)
 		{
-			String split[] = treeStore.getValue(iter,getNameDC()).split("\t");
-			
-			split[0] = split[0].trim();
-			if (split.length > 0)
-				if (split[0].equalsIgnoreCase(name))
-					return iter.getPath();
+			if (treeStore.isIterValid(iter))
+			{
+				String split[] = treeStore.getValue(iter,getNameDC()).split("\t");
 				
+				if (split.length > 0)
+				{
+					split[0] = split[0].trim();
+					if (split[0].equalsIgnoreCase(name))
+						return iter.getPath();
+				}
+			}	
 			iter = iter.getNextIter();
 		}
 		return null;	
@@ -173,17 +181,19 @@ public class ProcWiseDataModel {
 	
 	public void setSelected(TreeIter iter, boolean type, boolean setChildren)
 	{
-		if (treeStore.isIterValid(iter))
-		{
-			treeStore.setValue(iter,getSelectedDC(), type);
-			if (setChildren)
+		if (iter != null)
+			if (treeStore.isIterValid(iter))
 			{
-				int children = iter.getChildCount();
-				for (int count=0; count<children; count++)
-					if (treeStore.isIterValid(iter.getChild(count)))
-						treeStore.setValue(iter.getChild(count),getSelectedDC(), type);
+				treeStore.setValue(iter,getSelectedDC(), type);
+				if (setChildren)
+				{
+					int children = iter.getChildCount();
+					for (int count=0; count<children; count++)
+						if (iter.getChild(count) != null)
+							if (treeStore.isIterValid(iter.getChild(count)))
+								treeStore.setValue(iter.getChild(count),getSelectedDC(), type);
+				}
 			}
-		}
 	}
 	
 	public ArrayList dumpSelectedProcesses()
@@ -214,27 +224,57 @@ public class ProcWiseDataModel {
 			
 			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
 				public void run() {
-					GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-					TreeIter parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
+					GuiProc guiProc = null;
+					TreeIter parent = null;
+					try {
+						guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+					} catch (Exception e)
+					{
+						errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcCreatedObserver: Cannot " +
+								"get proc: " + proc + " from factory");
+						return;
+					}
+					
+					if (guiProc != null)
+					{
+						try {
+							parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
+						} catch (Exception e)
+						{
+							errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcCreatedObserver: Cannot " +
+									"get proc: " + proc + " from hash");
+							return;
+						}
+					} else
+					{
+						errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcCreatedObserver: GuiProc == null");
+						return;
+					}
+						
 	
 					if (parent == null) {
 						// new process name
 						parent = treeStore.appendRow(null);
-						iterHash.put(guiProc.getExecutableName(), parent);
-						setRow(parent, guiProc.getExecutableName() + "\t"+ proc.getPid(), guiProc, false);
+						if (parent != null) {
+							iterHash.put(guiProc.getExecutableName(), parent);
+							setRow(parent, guiProc.getExecutableName() + "\t"+ proc.getPid(), guiProc, false);
+						}
 					} else {
 						// process name already exists, new instance.
 						TreeIter iter;
-						if ((treeStore.getValue(parent, objectDC)) != null) {
-							// the second instance of this proc name
-							GuiProc oldProcData = ((GuiProc) treeStore.getValue(parent, objectDC));
-							Proc oldProc = oldProcData.getProc();
-							setRow(parent, oldProcData.getExecutableName(), null, false);
+						if (treeStore.isIterValid(parent))
+						{
+							if ((treeStore.getValue(parent, objectDC)) != null) {
+								// the second instance of this proc name
+								GuiProc oldProcData = ((GuiProc) treeStore.getValue(parent, objectDC));
+								Proc oldProc = oldProcData.getProc();
+								setRow(parent, oldProcData.getExecutableName(), null, false);
+								iter = treeStore.appendRow(parent);
+								setRow(iter, "" + oldProc.getPid(),oldProcData, false);
+							}
 							iter = treeStore.appendRow(parent);
-							setRow(iter, "" + oldProc.getPid(),oldProcData, false);
+							setRow(iter, "" + proc.getPid(),guiProc, false);
 						}
-						iter = treeStore.appendRow(parent);
-						setRow(iter, "" + proc.getPid(),guiProc, false);
 					}
 				}
 
@@ -249,68 +289,103 @@ public class ProcWiseDataModel {
 			
 			org.gnu.glib.CustomEvents.addEvent(new Runnable() {
 				public void run() {
-					GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-					
-					TreeIter parent = (TreeIter) iterHash
-							.get(guiProc.getExecutableName());
-//					try {
-
-						if (parent == null)
-							throw new NullPointerException("proc "	+ proc + 
-								"Not found in TreeIter HasTable. Cannot be removed"); //$NON-NLS-1$ //$NON-NLS-2$
-						else if (!treeStore.isIterValid(parent))
-							throw new RuntimeException(
-									"TreeIter has parent, but isIterValid returns false.");
-
-						int n = parent.getChildCount();
-
-						if (n == 0) {
-							treeStore.removeRow(parent);
-							iterHash.remove(guiProc.getExecutableName());
+					GuiProc guiProc = null;
+					TreeIter parent = null;
+					try {
+						guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+					} catch (Exception e)
+					{
+						errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcDestroyedObserver: Cannot " +
+								"get proc: " + proc + " from factory");
+						return;
+					}
+					if (guiProc != null)
+					{
+						try {
+							parent = (TreeIter) iterHash.get(guiProc.getExecutableName());
+						} catch (Exception e)
+						{
+							errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcDestroyedObserver: Cannot " +
+									"get proc: " + proc + " from hash");
 							return;
 						}
-
-						if (n > 1) {
-							for (int i = 0; i < n; i++) {
-								TreeIter iter = parent.getChild(i);
-								if (!treeStore.isIterValid(iter))
-									throw new RuntimeException(
-											"TreeIter child of parent "
-													+ guiProc.getExecutableName()
-													+ " isIterValid reports false");
-
-								if (((GuiProc) treeStore.getValue(iter,
-										objectDC)).getProc().getPid() == proc
-										.getPid()) {
-									treeStore.removeRow(iter);
-									break;
-								}
+					} else
+					{
+						errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcDestroyedObserver: GuiProc == null");
+						return;
+					}
+						
+					if (parent == null)
+					{
+						errorLog.log(Level.WARNING,"ProcWiseDataModel.ProcDestroyedObserver: proc "	+ proc + 
+						"Not found in TreeIter HasTable. Cannot be removed");
+						return;
+					}
+					
+					if (!treeStore.isIterValid(parent))
+					{
+						errorLog.log(Level.WARNING,
+						"ProcWiseDataModel.ProcDestroyedObserver: TreeIter has parent, but isIterValid returns false.");
+						return;
+					}
+					
+					int n = parent.getChildCount();
+					
+					if (n == 0) {
+						try {
+							treeStore.removeRow(parent);
+							iterHash.remove(guiProc.getExecutableName());
+						} catch (Exception e)
+						{
+							errorLog.log(Level.WARNING,
+							"ProcWiseDataModel.ProcDestroyedObserver: Cannot remove parents' children");
+						}
+						return;
+					}
+					
+					if (n > 1) {
+						for (int i = 0; i < n; i++) {
+							TreeIter iter = parent.getChild(i);
+							if (!treeStore.isIterValid(iter))
+							{
+								errorLog.log(Level.WARNING,
+										"ProcWiseDataModel.ProcDestroyedObserver: " +
+										"TreeIter child of parent "
+										+ guiProc.getExecutableName()
+										+ " isIterValid reports false");
+								return;
+							}
+							if (((GuiProc) treeStore.getValue(iter,
+									objectDC)).getProc().getPid() == proc
+									.getPid()) {
+								treeStore.removeRow(iter);
+								break;
 							}
 						}
-
-						n = parent.getChildCount();
-						if (n == 1) {
-							TreeIter iter = parent.getChild(0);
-							if (!treeStore.isIterValid(iter))
-								throw new RuntimeException(
-										"TreeIter child of parent "
-												+ guiProc.getExecutableName()
-												+ " isIterValid reports false");
-
-							GuiProc procData = ((GuiProc) treeStore.getValue(iter,objectDC));
-							Proc oldProc = procData.getProc();
-							
-							setRow(parent, procData.getExecutableName() + "\t"
-									+ oldProc.getPid(), procData,
-									treeStore.getValue(iter, selectedDC));
-
-							treeStore.removeRow(iter);
+					}
+					
+					n = parent.getChildCount();
+					if (n == 1) {
+						TreeIter iter = parent.getChild(0);
+						if (!treeStore.isIterValid(iter))
+						{
+							errorLog.log(Level.WARNING,
+									"ProcWiseDataModel.ProcDestroyedObserver: " +
+									"TreeIter child of parent "
+									+ guiProc.getExecutableName()
+									+ " isIterValid reports false");
+							return;
 						}
+						GuiProc procData = ((GuiProc) treeStore.getValue(iter,objectDC));
+						Proc oldProc = procData.getProc();
+						
+						setRow(parent, procData.getExecutableName() + "\t"
+								+ oldProc.getPid(), procData,
+								treeStore.getValue(iter, selectedDC));
+						
+						treeStore.removeRow(iter);
+					}
 
-//					} catch (Exception e) {
-////						errorLog.log(Level.WARNING,
-////										"ProcWiseDataModel.ProcDestroyedObserver reported this error", e); //$NON-NLS-1$ //$NON-NLS-2$
-//					}
 				}
 			});
 		}

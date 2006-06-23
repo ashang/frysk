@@ -1,3 +1,12 @@
+2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProcWiseDataModel.java (setRow): Add Null and Iter checks. Log
+	failures and drop invalid iter.
+	(searchName): Ditto.
+	(ProcDestroyedObserver): Ditto.
+	(ProcCreatedObserver): Ditto.
+	(setSelected): Added null check.
+
 2006-06-23  Rick Moseley  <rmoseley@redhat.com>
 
 	* observers/ExitNotificationObserver.java:  Fix message typo.
