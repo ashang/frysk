@@ -1,3 +1,7 @@
+2006-06-23  Ivan Pantuyev  <ipantuye@redhat.com>
+	
+	* Gui.java: Added a vte window to the taskbar right-click menu.
+
 2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/frysk_create_session_druid.java: Add prompting tips.
