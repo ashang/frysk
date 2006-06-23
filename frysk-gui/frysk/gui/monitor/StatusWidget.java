@@ -94,14 +94,14 @@ public class StatusWidget extends VBox{
 //		logScrolledWindow.setPolicy(PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
 //		mainVbox.packStart(logScrolledWindow, true, true, 0);
 		//========================================
-		
+		 
 		//========================================
 		this.viewer = new EventViewer();
 		// resize not implemented yet
 		//		this.viewer.resize (1, 1);
 		this.viewer.setBackgroundRGB (65536, 28000, 28000);
 		this.viewer.setTimebase (10.0);
-		trace0 = this.viewer.addTrace ("Trace");
+		trace0 = this.viewer.addTrace ("Trace", "blah, blah, blah");
 		this.viewer.setTraceRGB (trace0, 65535, 0, 0);
 
 		initLogTextView();
@@ -278,24 +278,27 @@ public class StatusWidget extends VBox{
 			count++;
 			if(count%3 == 0){
 			    //  this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0); /* red + green = yellow */
-			    this.markerId = viewer.addMarker(0, observer.getName());
+			    this.markerId = viewer.addMarker(0, observer.getName(),
+							     "This space for rent.");
 			    viewer.setMarkerRGB (this.markerId, 65535, 65535, 0);
 			}
 			
 			if(count%3 == 1){
 			    //   this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535); /* red + green = yellow */
-			    this.markerId = viewer.addMarker(1, observer.getName());
+			    this.markerId = viewer.addMarker(1, observer.getName(),
+							     "Your ad here");
 			    viewer.setMarkerRGB (this.markerId, 65535, 0, 65535);
 			}
 			if(count%3 == 2){
 			    //   this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535); /* red + green = yellow */
-			    this.markerId = viewer.addMarker(2, observer.getName());
+			    this.markerId = viewer.addMarker(2, observer.getName(),
+							     "Hi, guys");
 			    viewer.setMarkerRGB (this.markerId, 0, 65535, 65535);
 			}
 		}
 
 		public void execute(ObserverRoot observer) {
-		    viewer.appendEvent (trace0, markerId);
+		    viewer.appendEvent (trace0, markerId, "An event to remember.");
 		}
 
 	}
