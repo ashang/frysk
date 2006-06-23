@@ -235,6 +235,7 @@ public class SourceWindow extends Window{
 		ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
 		sw.add(this.watchView);
 
+		this.hideAll();
 		this.showAll();
 		this.glade.getWidget(FIND_BOX).hideAll();
 	}
