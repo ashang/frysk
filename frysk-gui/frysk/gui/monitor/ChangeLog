@@ -1,3 +1,9 @@
+2006-06-23  Nurdin Premji  <npremji@redhat.com>
+
+	* observers/TaskObserverRoot.java: Ditto. See below.
+	* SessionProcDataModel.java: Fixed a renaming OffspringObserver to
+	ProcTasksObserver and ProcObserver.Offspring to ProcObserver.ProcTasks.
+
 2006-06-23  Mike Cvet  <mcvet@redhat.com>
 
 	* ActionRow.java (ActionRow): Applies the information contained in the row
@@ -111,7 +117,6 @@
 	Added log calls.
 	* GuiObject.java: Added toString.
 
->>>>>>> 1.259
 2006-06-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionProcDataModel.java (setSession): Temporarily removed fix for #2808

@@ -43,8 +43,8 @@ import java.util.logging.Logger;
 
 import frysk.proc.Proc;
 import frysk.proc.Task;
-import frysk.proc.OffspringObserver;
-import frysk.proc.ProcObserver.Offspring;
+import frysk.proc.ProcTasksObserver;
+import frysk.proc.ProcObserver.ProcTasks;
 import java.util.logging.Level;
 
 
@@ -63,7 +63,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 	}
 
 	public void apply(Proc proc){
-	    new OffspringObserver (proc, new Offspring()
+	    new ProcTasksObserver (proc, new ProcTasks()
 		{
 		    public void taskAdded(Task task)
 		    {

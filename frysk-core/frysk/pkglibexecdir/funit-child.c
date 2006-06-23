@@ -94,6 +94,7 @@ Operation:\n\
     SIGPWR:    Re-exec this program\n\
     SIGPIPE:   (internal) Parent exited event (child notifies with SIGUSR1).\n\
     SIGCHLD:   (internal) Child exited event.\n\
+    SIGBUS:    Exit thread.\n\
   For any operation, the parent also acks by sending a SIGUSR2\n\
 ");
 }
@@ -421,6 +422,11 @@ server (void *np)
 	pfatal ("execve");
       }
       break;
+    case SIGBUS:
+      {
+	trace ("exit this thread");
+        return NULL;
+      }
     default:
       fatal ("unknown signal %d", sig);
     }
@@ -480,7 +486,7 @@ main (int argc, char *argv[], char *envp[])
   // is interested in; mask all those signals.
 
   sigemptyset (&sigmask);
-  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR, SIGFPE };
+  int signals[] = { SIGUSR1, SIGUSR2, SIGURG, SIGINT, SIGHUP, SIGPIPE, SIGALRM, SIGCHLD, SIGPWR, SIGFPE, SIGBUS };
   int i;
   for (i = 0; i < sizeof (signals) / sizeof(signals[0]); i++)
     sigaddset (&sigmask, signals[i]);

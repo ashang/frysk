@@ -1,3 +1,6 @@
+2006-06-23	Nurdin Premji <npremji@redhat.com>
+	* include/linux.syscall.h: Changed from undef def to ifndef.
+
 2006-06-21  Stepan Kasal  <kasal@ucw.cz>
 
 	* include/linux.syscall.h: Include the headers necessary to use

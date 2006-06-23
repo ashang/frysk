@@ -49,11 +49,11 @@ import frysk.Config;
 import frysk.junit.Paths;
 import frysk.proc.Action;
 import frysk.proc.Manager;
-import frysk.proc.OffspringObserver;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-import frysk.proc.ProcObserver.Offspring;
+import frysk.proc.ProcTasksObserver;
+import frysk.proc.ProcObserver.ProcTasks;
 import frysk.sys.Fork;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
@@ -170,7 +170,8 @@ public class GuiTestLib extends TestCase{
 			System.out.println(this
 					+ ": TestProc.listenForSignals()");
 			logger.log(Level.FINE, "{0} listenForSignals\n", this);
-		    new OffspringObserver (proc, new Offspring()
+		    new ProcTasksObserver (proc, new ProcTasks()
+
 			{
 			    public void deletedFrom(Object observable){}
 			    public void addFailed(Object observable, Throwable w){

@@ -44,30 +44,34 @@
 /* Declares syscall() */
 #include <unistd.h>
 
-#undef _syscall0
+#ifndef _syscall0
 #define _syscall0(type,name)						\
 type name(void)								\
 {									\
         return syscall(__NR_##name);					\
 }
+#endif
 
-#undef _syscall1
+#ifndef _syscall1
 #define _syscall1(type,name,type1,arg1)					\
 type name(type1 arg1)							\
 {									\
         return syscall(__NR_##name, arg1);				\
 }
+#endif
 
-#undef _syscall2
+#ifndef _syscall2
 #define _syscall2(type,name,type1,arg1,type2,arg2)			\
 type name(type1 arg1,type2 arg2)					\
 {									\
         return syscall(__NR_##name, arg1, arg2);			\
 }
+#endif
 
-#undef _syscall3
+#ifndef _syscall3
 #define _syscall3(type,name,type1,arg1,type2,arg2,type3,arg3)		\
 type name(type1 arg1,type2 arg2, type3 arg3)				\
 {									\
   return syscall(__NR_##name, arg1, arg2, arg3);			\
 }
+#endif

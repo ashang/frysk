@@ -612,6 +612,10 @@ public class TestLib
 	{
 	    super (filename, argv);
 	}
+	DetachedAckProcess (int count)
+	{
+		super (count);
+	}
 	/**
 	 * Create a detached process that is a child of this one.
 	 */

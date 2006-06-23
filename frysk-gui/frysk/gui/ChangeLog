@@ -1,3 +1,8 @@
+2006-06-23  Nurdin Premji  <npremji@redhat.com>
+
+	* test/GuiTestLib.java: Fixed a renaming OffspringObserver to
+	ProcTasksObserver and ProcObserver.Offspring to ProcObserver.ProcTasks.
+	
 2006-06-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (setupErrorLogging): Stop console spam.

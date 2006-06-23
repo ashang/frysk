@@ -1,3 +1,13 @@
+2006-06-23  Nurdin Premji  <npremji@redhat.com>
+
+	* TestLib.java (DetachedAckProcess): Added
+	* TestProcTasksObserver.java: Added, was TestOffspringObserver.
+	* ProcTasksObserver.java: Renamed, was OffspringObserver. Implemented 
+	TasksObserver.Terminated, unimplemented TasksObserver.ForkedObserver.
+	(requestAddObservers): added. To keep track of all the tasksObservers
+	implemented.
+	* ProcObserver.java (ProcTasks): Renamed was Offspring.
+
 2006-06-19  Nurdin Premji  <npremji@redhat.com>
 
 	* OffspringObserver.java (procOffspringObserver): renamed. Was 

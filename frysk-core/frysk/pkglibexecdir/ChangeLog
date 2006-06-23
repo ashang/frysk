@@ -1,3 +1,6 @@
+2006-06-23 	Nurdin Premji <npremji@redhat.com>
+	* funit-child.c Added signal SIGBUS to exit a thread.
+
 2006-06-21  Stepan Kasal  <kasal@ucw.cz>
 
 	* util.h: Include linux.syscall.h; the calers need not to do that.
