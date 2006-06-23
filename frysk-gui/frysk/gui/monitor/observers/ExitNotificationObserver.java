@@ -18,7 +18,7 @@ public class ExitNotificationObserver extends TaskTerminatingObserver {
 
 	public ExitNotificationObserver() {
 		super();
-		this.setName("Exit Notifiction Observer");
+		this.setName("Exit Notification Observer");
 		this.setToolTip("Notify the user that a task is about to exit\n" +
 				"and provide them the option to stop or resume the process");
 		
