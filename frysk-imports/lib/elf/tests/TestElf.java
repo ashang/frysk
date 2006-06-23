@@ -38,7 +38,6 @@
 // exception.
 package lib.elf.tests;
 
-import java.io.File;
 import java.math.BigInteger;
 
 import junit.framework.TestCase;
@@ -52,13 +51,12 @@ import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfType;
 
+import frysk.imports.Build;
+
 public class TestElf extends TestCase {
 	
 	public void testCore(){
-		File f = new File((String) null, "tmp");
-		String dir = f.getAbsolutePath();
-
-		Elf testElf = new Elf(dir.substring(0, dir.length() - 4)+"/lib/elf/tests/test-core", ElfCommand.ELF_C_READ);
+		Elf testElf = new Elf(Build.ABS_BUILDDIR+"/lib/elf/tests/test-core", ElfCommand.ELF_C_READ);
 		
 		assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
 		assertEquals(testElf.getBase(), 0);
@@ -116,8 +114,7 @@ public class TestElf extends TestCase {
 	}
 	
 	public void testObjectFile(){
-		File f = new File("lib/elf/tests/helloworld.o");
-		Elf testElf = new Elf(f.getAbsolutePath(), ElfCommand.ELF_C_READ);
+		Elf testElf = new Elf(Build.ABS_BUILDDIR+"/lib/elf/tests/helloworld.o", ElfCommand.ELF_C_READ);
 		
 		assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
 		assertEquals(testElf.getBase(), 0);
