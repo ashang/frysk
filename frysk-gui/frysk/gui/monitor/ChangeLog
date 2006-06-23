@@ -1,3 +1,17 @@
+2006-06-23  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskCloneObserver.java (bottomHalf): Added missing
+	consultation of the return action before unblockign the task.
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/ExitNotificationObserver.java: Changed the 
+	notification from a dialog to just logging the message.
+	* filters/ProcNameFilter.java: Removed old unused code.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* actions/LogAction.java: Fixed log messages.
+	* ObserversDialog.java: Removed old code.
+
 2006-06-23  Nurdin Premji  <npremji@redhat.com>
 
 	* observers/TaskObserverRoot.java: Ditto. See below.

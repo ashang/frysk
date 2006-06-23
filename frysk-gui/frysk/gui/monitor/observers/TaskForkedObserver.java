@@ -97,8 +97,10 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		
 //		child.requestAddForkedObserver(new TaskForkedObserver());
 		
-		task.requestUnblock(this);
-		child.requestUnblock(this);
+        Action action = this.whatActionShouldBeReturned();
+        if(action == Action.CONTINUE){
+          child.requestUnblock(this);
+        }
 	}
 	
 	public void apply(Task task){

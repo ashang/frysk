@@ -58,11 +58,11 @@ public class ExitNotificationObserver extends TaskTerminatingObserver {
 		
 		frysk.gui.monitor.actions.TaskAction myAction = new TaskAction(){
 			public void execute(Task task) {
-				if(DialogManager.showQueryDialog("Task ["+task+"] is about to exit.\n Would you like to block it")){
-					setReturnAction(Action.BLOCK);
-				}else{
-					setReturnAction(Action.CONTINUE);
-				}
+//				if(DialogManager.showQueryDialog("Task ["+task+"] is about to exit.\n Would you like to block it")){
+//					setReturnAction(Action.BLOCK);
+//				}else{
+//					setReturnAction(Action.CONTINUE);
+//				}
 			}
 		
 			public GuiObject getCopy() {

@@ -86,7 +86,11 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		if(this.runEnterFilters(task)){
 			this.runEnterActions(task);
 		}
-		task.requestUnblock(this);
+
+        Action action = this.whatActionShouldBeReturned();
+        if(action == Action.CONTINUE){
+          task.requestUnblock(this);
+        }
 	}
 
 	private void runEnterActions(Task task) {

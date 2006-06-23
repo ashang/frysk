@@ -85,8 +85,10 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 			this.runActions(task, clone);
 		}
 		
-		task.requestUnblock(this);
-		clone.requestUnblock(this);
+        Action action = this.whatActionShouldBeReturned();
+        if(action == Action.CONTINUE){
+          clone.requestUnblock(this);
+        }
 	}
 	
 	private boolean runFilters(Task task, Task clone){

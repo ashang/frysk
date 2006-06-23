@@ -69,7 +69,13 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 		if(this.runFilters(task, signal, value)){
 			this.runActions(task, signal, value);
 		}
-		task.requestUnblock(this);
+		
+		Action action = this.whatActionShouldBeReturned();
+        if(action == Action.BLOCK){
+          // 
+        }else{
+          task.requestUnblock(this);
+        }
 	}
 
 	private void runActions(Task task, boolean signal, int value) {

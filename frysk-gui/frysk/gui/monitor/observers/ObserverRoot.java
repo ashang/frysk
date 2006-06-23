@@ -166,9 +166,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 	
 		protected void runActions(){
-			System.out
-					.println(this
-							+ ": ObserverRoot.runActions()");
 			this.genericActionPoint.runActions(this);
 		}
 		
@@ -348,8 +345,6 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 		
 		public frysk.proc.Action getCurrentAction(){
-			System.out.println(this
-					+ ": ObserverRoot.getCurrentAction() " + this.returnAction);
 			return this.returnAction;
 		}
 		

@@ -53,8 +53,12 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 		if(this.runFilters(task)){
 			this.runActions(task);
 		}
-		task.requestUnblock(this);
-	}
+
+        Action action = this.whatActionShouldBeReturned();
+        if(action == Action.CONTINUE){
+          task.requestUnblock(this);
+        }
+    }
 	
 	private void runActions(Task task) {
 		super.runActions();

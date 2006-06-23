@@ -135,7 +135,7 @@ public class ObserversDialog extends Dialog {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
 					ObserverRoot scratchCopy = (ObserverRoot) selected.getCopy();
-					WindowManager.theManager.editObserverDialog.editObserver(scratchCopy);
+                   	WindowManager.theManager.editObserverDialog.editObserver(scratchCopy);
 					int response = showEditObserverDialog();
 					if(response == ResponseType.OK.getValue()){
 						ObserverRoot newObserver = WindowManager.theManager.editObserverDialog.getObserver();
@@ -235,20 +235,7 @@ public class ObserversDialog extends Dialog {
 		return WindowManager.theManager.editObserverDialog.run();
 	}
 	
-	
-//	private void retrieveList(){
-//		scratchList.clear();
-//		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
-//	}
-	
 	private void commitChanges(){
-//		ObserverManager.theManager.getTaskObservers().clear();
-//		Iterator iterator = scratchList.iterator();
-//		while (iterator.hasNext()) {
-//			ObserverRoot observer = (ObserverRoot) iterator.next();
-//			ObserverManager.theManager.addTaskObserverPrototype(observer);
-//		}
-		
 
 		scratchOld.clear();
 		scratchNew.clear();
@@ -257,17 +244,6 @@ public class ObserversDialog extends Dialog {
 	}
 	
 	private void undoChanges(){
-//		scratchList.clear();
-//		scratchList.copyFromList(ObserverManager.theManager.getTaskObservers());
-//		
-//		this.scratchNew.clear();
-//		this.scratchOld.clear();
-//		ObserverManager.theManager.getTaskObservers().clear();
-//		Iterator iterator = scratchList.iterator();
-//		while (iterator.hasNext()) {
-//			ObserverRoot observer = (ObserverRoot) iterator.next();
-//			ObserverManager.theManager.addTaskObserverPrototype(observer);
-//		}
 		
 		Iterator a = scratchOld.iterator();
 		Iterator b = scratchNew.iterator();
@@ -281,21 +257,18 @@ public class ObserversDialog extends Dialog {
 
 			if(oldObserver != null && newObserver == null){
 				//Observer was removed
-//				ObserverManager.theManager.removeTaskObserverPrototype(oldObserver);
 				ObserverManager.theManager.addTaskObserverPrototype(oldObserver);
 				continue;
 			}
 			
 			if(oldObserver == null && newObserver != null){
 				//Observer was added
-//				ObserverManager.theManager.addTaskObserverPrototype(newObserver);
 				ObserverManager.theManager.removeTaskObserverPrototype(newObserver);
 				continue;
 			}
 			
 			if(oldObserver != null && newObserver != null){
 				//Observer was edited
-//				ObserverManager.theManager.swapTaskObserverPrototype(oldObserver, newObserver);
 				ObserverManager.theManager.swapTaskObserverPrototype(newObserver, oldObserver);
 				continue;
 			}
@@ -307,10 +280,5 @@ public class ObserversDialog extends Dialog {
 		scratchNew.clear();
 
 	}
-
-//	public int run(){
-//		this.retrieveList();
-//		return super.run();
-//	}
 
 }

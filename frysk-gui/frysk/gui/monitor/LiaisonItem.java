@@ -84,6 +84,7 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 		}else{
 			node.setAttribute("argument", this.getArgument());
 		}
+        System.out.println(this + ": LiaisonItem.save() " + argument);
 	}
 	
 	public void load(Element node){
@@ -94,7 +95,8 @@ public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 		}else{
 			this.setArgument(argument);
 		}
-	}
+		System.out.println(this + ": LiaisonItem.load() " + argument);
+    }
 	
 	
 }
