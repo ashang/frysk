@@ -332,8 +332,8 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     # ---------------------
     # page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
 
-    hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
-    forwardButton.click()
+    #hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
+    #forwardButton.click()
 
     # ---------------------
     # page 5 - hbox77_tab5_observers - Select process groups and observers

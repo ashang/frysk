@@ -167,12 +167,12 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
 
-        # Until we can get the accessibility problem
-        # (http://sourceware.org/bugzilla/show_bug.cgi?id=2614) resolved,
-        # we'll just create a new Exec Observers
+        ## TODO NEXT - add code to enable creation of all observer types
+        temp = self.theMatrix[0]
+        print "DEBUG = " + temp.getType()
         execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
-        execObserver.actions['activate'].do()
-
+        execObserver.actions['activate'].do()  
+ 
         # Start loop to create the new Observers - for now, Frysk only supports (1)
         # observer object in a persistent file - so the loop counter has a limit of
         # (1)
