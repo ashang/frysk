@@ -1,3 +1,8 @@
+2006-06-23  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c: Added a bit of widget clean-up I
+	accidently left out earlier.
+
 2006-06-22  Chris Moller  <moller@mollerware.com>
 
 	* src/java/com/redhat/ftk/EventViewer.java:

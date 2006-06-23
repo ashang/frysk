@@ -1319,6 +1319,7 @@ ftk_eventviewer_destroy(GtkObject * widget,
   for (i = 0; i < ftk_ev_trace_next(eventviewer); i++) {
     ftk_trace_s * trace = ftk_ev_trace(eventviewer, i);
       
+    if (ftk_trace_string(trace)) free (ftk_trace_string (trace));
     if (ftk_trace_gc(trace)) g_object_unref (ftk_trace_gc (trace));
   }
 
