@@ -106,7 +106,8 @@ JNIEXPORT jint JNICALL
 Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1add_1trace (JNIEnv *env, 
 							      jclass cls,
 							      jobject sc,
-							      jstring lb)
+							      jstring lb,
+							      jstring ds)
 {
   jint rc;
   
@@ -114,8 +115,11 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1add_1trace (JNIEnv *env,
     (FtkEventViewer *)getPointerFromHandle(env, sc);
   gchar * label =
      (gchar *)(*env)->GetStringUTFChars(env, lb, NULL);
-  rc = (jint)ftk_eventviewer_add_trace (eventviewer, label);
+  gchar * desc =
+     (gchar *)(*env)->GetStringUTFChars(env, ds, NULL);
+  rc = (jint)ftk_eventviewer_add_trace (eventviewer, label, desc);
   (*env)->ReleaseStringUTFChars(env, lb, label);
+  (*env)->ReleaseStringUTFChars(env, ds, desc);
 
   return rc;
 }
@@ -200,7 +204,8 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1marker_1new (JNIEnv *env,
 							       jclass cls,
 							       jobject sc,
 							       int gl,
-							       jstring lb)
+							       jstring lb,
+							       jstring ds)
 {
   jint rc;
   
@@ -210,8 +215,11 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1marker_1new (JNIEnv *env,
   FtkGlyph glyph = (FtkGlyph)gl;
   gchar * label =
      (gchar *)(*env)->GetStringUTFChars(env, lb, NULL);
-  rc = (jint)ftk_eventviewer_marker_new (eventviewer, glyph, label);
+  gchar * desc =
+     (gchar *)(*env)->GetStringUTFChars(env, ds, NULL);
+  rc = (jint)ftk_eventviewer_marker_new (eventviewer, glyph, label, desc);
   (*env)->ReleaseStringUTFChars(env, lb, label);
+  (*env)->ReleaseStringUTFChars(env, ds, desc);
 
   return rc;
 }
@@ -249,13 +257,17 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1append_1event (JNIEnv *env,
 								 jclass cls,
 								 jobject sc,
 								 jint    tr,
-								 jint    mk)
+								 jint    mk,
+								 jstring ds)
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
   int trace = (int) tr;
   int marker = (int) mk;
-  ftk_eventviewer_append_event (eventviewer, trace, marker);
+  gchar * desc =
+     (gchar *)(*env)->GetStringUTFChars(env, ds, NULL);
+  ftk_eventviewer_append_event (eventviewer, trace, marker, desc);
+  (*env)->ReleaseStringUTFChars(env, ds, desc);
 }
 
 

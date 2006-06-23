@@ -88,8 +88,8 @@ public class EventViewer extends Widget
     /**
      * Add new trace
      */
-    public int addTrace(String label) {
-	return ftk_eventviewer_add_trace (getHandle(), label);
+    public int addTrace(String label, String desc) {
+	return ftk_eventviewer_add_trace (getHandle(), label, desc);
     }
 
     /**
@@ -118,8 +118,8 @@ public class EventViewer extends Widget
     /**
      * Add new marker
      */
-    public int addMarker(int glyph, String label) {
-	return ftk_eventviewer_marker_new (getHandle(), glyph, label);
+    public int addMarker(int glyph, String label, String desc) {
+	return ftk_eventviewer_marker_new (getHandle(), glyph, label, desc);
     }
 
     /**
@@ -133,8 +133,8 @@ public class EventViewer extends Widget
     /**
      * Append event
      */
-    public boolean  appendEvent(int trace, int marker) {
-	return ftk_eventviewer_append_event (getHandle(), trace, marker);
+    public boolean  appendEvent(int trace, int marker, String desc) {
+	return ftk_eventviewer_append_event (getHandle(), trace, marker, desc);
     }
 
 
@@ -157,7 +157,7 @@ public class EventViewer extends Widget
 	ftk_eventviewer_set_timebase (Handle sc, double span);
 
     native static final protected int
-	ftk_eventviewer_add_trace (Handle sc, String label);
+	ftk_eventviewer_add_trace (Handle sc, String label, String desc);
 
     native static final protected boolean
 	ftk_eventviewer_set_trace_rgb (Handle sc, int trace,
@@ -172,14 +172,16 @@ public class EventViewer extends Widget
 					     int lw, int ls);
 
     native static final protected int
-	ftk_eventviewer_marker_new (Handle sc, int glyph, String label);
+	ftk_eventviewer_marker_new (Handle sc, int glyph, String label,
+				    String desc);
 
     native static final protected boolean
 	ftk_eventviewer_set_marker_rgb (Handle sc, int marker,
 					int red, int green, int blue);
     
     native static final protected boolean
-	ftk_eventviewer_append_event (Handle sc, int trace, int marker);
+	ftk_eventviewer_append_event (Handle sc, int trace, int marker,
+				      String desc);
 
 }
 

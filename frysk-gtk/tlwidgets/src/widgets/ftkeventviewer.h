@@ -186,6 +186,12 @@ static const int db_symbols_count
 #endif
      ;
 
+static db_symbols_s little_dot
+#ifdef DO_INITIALISE
+= {filled_circle,	NULL, 0, NULL, 0, 0}
+#endif
+;
+
 #endif  /* INCLUDE_PRIVATE */
 
 typedef enum {
@@ -224,9 +230,12 @@ typedef struct {
   PangoLayout * label;
   int		glyph_hpos_d;
   int		label_hpos_d;
+  int		label_width;
+  int		label_height;
   int		vpos;
   FtkGlyph	glyph;
   GdkColor	color;
+  char	      * string;
   gboolean	label_modified;
 } ftk_marker_s;
 
@@ -234,8 +243,11 @@ typedef struct {
 #define ftk_marker_label(m)		(m)->label
 #define ftk_marker_glyph_hpos(m)	(m)->glyph_hpos_d
 #define ftk_marker_label_hpos(m)	(m)->label_hpos_d
+#define ftk_marker_label_width(m)	(m)->label_width
+#define ftk_marker_label_height(m)	(m)->label_height
 #define ftk_marker_vpos(m)		(m)->vpos
 #define ftk_marker_glyph(m)		(m)->glyph
+#define ftk_marker_string(m)		(m)->string
 #define ftk_marker_color(m)		(m)->color
 #define ftk_marker_color_red(m)		(m)->color.red
 #define ftk_marker_color_green(m)	(m)->color.green
@@ -243,46 +255,33 @@ typedef struct {
 #define ftk_marker_label_modified(m)	(m)->label_modified
 
 typedef struct _ftk_trace_s {
-#ifdef USE_OLD_STYLE
-  gint		linewidth;
-  GdkLineStyle	linestyle;
-  gboolean	linestyle_modified;
-#else
   double	linestyle;
   double	linewidth;
-#endif
   GdkColor	color;
-#ifdef USE_OLD_STYLE
-  gboolean 	color_modified;
-#endif
   GdkGC       * gc;
   PangoLayout * label;
   int		label_width_d;
   int		label_height_d;
   int		vpos_d;
+  char	      * string;
   gboolean	label_modified;		/* used */
 } ftk_trace_s;
 
 #define ftk_tie_s ftk_trace_s
 
 #define ftk_trace_gc(t)			(t)->gc
+#define ftk_trace_string(t)		(t)->string
 #define ftk_trace_label(t)		(t)->label
 #define ftk_trace_label_dwidth(t)	(t)->label_width_d
 #define ftk_trace_label_dheight(t)	(t)->label_height_d
 #define ftk_trace_vpos_d(t)		(t)->vpos_d
 #define ftk_trace_linestyle(t)		(t)->linestyle
 #define ftk_trace_linewidth(t)		(t)->linewidth
-#ifdef USE_OLD_STYLE
-#define ftk_trace_linestyle_modded(t)	(t)->linestyle_modified
-#endif
 #define ftk_trace_color(t)		(t)->color
 #define ftk_trace_color_pixel(t)	(t)->color.pixel
 #define ftk_trace_color_red(t)		(t)->color.red
 #define ftk_trace_color_green(t)	(t)->color.green
 #define ftk_trace_color_blue(t)		(t)->color.blue
-#ifdef USE_OLD_STYLE
-#define ftk_trace_color_modified(t)	(t)->color_modified
-#endif
 #define ftk_trace_label_modified(t)	(t)->label_modified
 
 #define ftk_tie_gc(t)			(t)->gc
@@ -292,28 +291,24 @@ typedef struct _ftk_trace_s {
 #define ftk_tie_vpos_d(t)		(t)->vpos_d
 #define ftk_tie_linestyle(t)		(t)->linestyle
 #define ftk_tie_linewidth(t)		(t)->linewidth
-#ifdef USE_OLD_STYLE
-#define ftk_tie_linestyle_modded(t)	(t)->linestyle_modified
-#endif
 #define ftk_tie_color(t)		(t)->color
 #define ftk_tie_color_pixel(t)		(t)->color.pixel
 #define ftk_tie_color_red(t)		(t)->color.red
 #define ftk_tie_color_green(t)		(t)->color.green
 #define ftk_tie_color_blue(t)		(t)->color.blue
-#ifdef USE_OLD_STYLE
-#define ftk_tie_color_modified(t)	(t)->color_modified
-#endif
 #define ftk_tie_label_modified(t)	(t)->label_modified
 
 typedef struct {
   gint		marker;
-  int		trace;
+  gint		trace;
+  gchar	      * string;
   int		loc;
   double	time;
 } ftk_event_s;
 
 #define ftk_event_marker(e)	(e)->marker
 #define ftk_event_trace(e)	(e)->trace
+#define ftk_event_string(e)	(e)->string
 #define ftk_event_loc(e)	(e)->loc
 #define ftk_event_time(e)	(e)->time
 
@@ -335,7 +330,8 @@ typedef struct {
 typedef enum {
   FTK_POPUP_TYPE_NONE,
   FTK_POPUP_TYPE_LABEL,
-  FTK_POPUP_TYPE_MARKER
+  FTK_POPUP_TYPE_MARKER,
+  FTK_POPUP_TYPE_LEGEND
 } ftk_popup_type_e;
 
 typedef struct _FtkEventViewer {
@@ -382,13 +378,9 @@ typedef struct _FtkEventViewer {
   int			  trace_width;
   int			  popup_trace;
   int			  popup_marker;
+  ftk_popup_type_e	  popup_type;
   FtkGlyph		  next_glyph;
   int			  next_color;
-  ftk_popup_type_e	  popup_type;
-#ifdef USE_OLD_STYLE
-  gboolean		  bg_color_modified;
-  GdkGC			* bg_gc;
-#endif
   gboolean		  trace_modified;		/* used */
   gboolean		  tie_modified;
   gboolean     		  markers_modified;		/* used */
@@ -522,10 +514,12 @@ ftk_eventviewer_set_timebase	(FtkEventViewer * eventviewer,
 gint
 ftk_eventviewer_add_trace_e	(FtkEventViewer * eventviewer,
 				 char * label,
+				 char * string,
 				 GError ** err);
 gint
 ftk_eventviewer_add_trace	(FtkEventViewer * eventviewer,
-				 char * label);
+				 char * label,
+				 char * string);
 
 gboolean
 ftk_eventviewer_set_trace_rgb_e	(FtkEventViewer * eventviewer,
@@ -572,11 +566,13 @@ gboolean
 ftk_eventviewer_append_event_e	(FtkEventViewer * eventviewer,
 				 gint trace,
 				 gint marker,
+				 gchar * string,
 				 GError ** err);
 gboolean
 ftk_eventviewer_append_event	(FtkEventViewer * eventviewer,
 				 gint trace,
-				 gint marker);
+				 gint marker,
+				 gchar * string);
 gboolean
 ftk_eventviewer_append_simultaneous_events_e (FtkEventViewer * eventviewer,
 					      gint tie_index,
@@ -589,11 +585,13 @@ gint
 ftk_eventviewer_marker_new_e		(FtkEventViewer * eventviewer,
 					 FtkGlyph glyph,
 					 char * label,
+					 char * string,
 					 GError ** err);
 gint
 ftk_eventviewer_marker_new 		(FtkEventViewer * eventviewer,
 					 FtkGlyph glyph,
-					 char * label);
+					 char * label,
+					 char * string);
 
 gboolean
 ftk_eventviewer_set_marker_rgb_e	(FtkEventViewer * eventviewer,

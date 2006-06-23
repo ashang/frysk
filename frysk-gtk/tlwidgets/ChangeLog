@@ -1,3 +1,15 @@
+2006-06-22  Chris Moller  <moller@mollerware.com>
+
+	* src/java/com/redhat/ftk/EventViewer.java:
+	* src/jni/com_redhat_ftk_EventViewer.c: Tweaked to match changes
+	in the widget API.
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Re-enable "tooltips" (commented
+	out during cairo surgery), added user-settable info strings to
+	traces, markers, and events (per Sami's "printf" paradigm),
+	re-enabled simultaneous event ties (also suppressed for cairo
+	surgery, new version based on cairo).
+
 2006-06-20  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c:
