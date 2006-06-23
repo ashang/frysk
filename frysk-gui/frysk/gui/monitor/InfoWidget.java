@@ -56,7 +56,9 @@ public class InfoWidget extends Notebook {
 	public Observable notifyUser;
 
 	public VBox procStatusVbox;
-	public VBox taskStatusVbox;
+	//XXX: should this be deleted now that there is only
+    // one view ?
+    public VBox taskStatusVbox;
 	
 	public InfoWidget(){
 		
@@ -72,7 +74,7 @@ public class InfoWidget extends Notebook {
 		VBox statusVbox = new VBox(true, 0);
 		NotifyingLabel statusWidgetLabel = new NotifyingLabel("Status"); //$NON-NLS-1$
 		statusVbox.packStart(procStatusVbox);
-		statusVbox.packStart(taskStatusVbox);
+		//statusVbox.packStart(taskStatusVbox);
 		this.appendPage(statusVbox, statusWidgetLabel);		
 		//========================================
 	

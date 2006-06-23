@@ -91,8 +91,8 @@ public class SessionProcTreeView extends Widget implements Saveable{
 	
     public SessionProcTreeView(LibGlade libGlade) throws IOException {
 	super((libGlade.getWidget("allProcVBox")).getHandle()); //$NON-NLS-1$
-	this.glade = libGlade;
 		
+	this.glade = libGlade;
 	this.procTreeView = (TreeView)glade.getWidget("procTreeView"); //$NON-NLS-1$
 	this.threadTreeView = (TreeView)glade.getWidget("threadTreeView"); //$NON-NLS-1$
 		

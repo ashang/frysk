@@ -1,5 +1,7 @@
 2006-06-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* InfoWidget.java (InfoWidget): Removed threadStatusWidget from
+	being added to the stats widget.
 	* observers/TaskCloneObserver.java (bottomHalf): Added missing
 	consultation of the return action before unblockign the task.
 	* observers/TaskTerminatingObserver.java: Ditto.
