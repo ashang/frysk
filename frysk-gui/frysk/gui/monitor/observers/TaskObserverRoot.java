@@ -39,15 +39,21 @@
 
 package frysk.gui.monitor.observers;
 
+import java.util.logging.Logger;
+
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.OffspringObserver;
 import frysk.proc.ProcObserver.Offspring;
+import java.util.logging.Level;
 
-import frysk.gui.monitor.EventLogger;
+
+import frysk.gui.Gui;
 
 public abstract class TaskObserverRoot extends ObserverRoot {
 
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+	
 	public TaskObserverRoot(String name, String toolTip) {
 		super(name, toolTip);
 	}
@@ -65,9 +71,8 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		    }
 		    public void addFailed(Object observable, Throwable w)
 		    {
-		    	EventLogger.logAddFailed("addFailed(Object observable," +
-		    			" Throwable w)", observable);
-		    	new RuntimeException(w);
+		    	errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
+		    	throw new RuntimeException(w);
 		    }
 		    public void existingTask(Task task)
 		    {

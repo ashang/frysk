@@ -42,7 +42,10 @@ package frysk.gui.monitor.datamodels;
 import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import frysk.gui.Gui;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Manager;
@@ -53,6 +56,8 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	/**
 	 * Comment for <code>serialVersionUID</code>
 	 */
+	
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	private static final long serialVersionUID = 1L;
 	
 	private ProcCreatedObserver procCreatedObserver;
@@ -79,19 +84,35 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    		final Proc proc = (Proc) obj;
 	    		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 	    			public void run() {
-	    				GuiProc guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
-
+	    				GuiProc guiProc = null;
+	    				try {
+	    					guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
+	    				} catch (Exception e) {
+	    					errorLog.log(Level.WARNING, "FlatProcObservableLinkedList.ProcCreatedObserver: Cannot get proc " + 
+	    							proc +" from guiFacory",e);
+	    					return;
+	    				}
 	    				if(!guiProc.isOwned()){
 	    				//	System.out.println(this + ": ProcCreatedObserver.update() REJECTING" + guiProc.getNiceExecutablePath());
 		    				return;
+	    				}
+	    				
+	    				if (guiProc == null) {
+	    					return;
 	    				}
 	    				
 	    				//System.out.println(this + ": ProcCreatedObserver.update() " + guiProc.getNiceExecutablePath());
 	    				guiProc.setName(proc.getPid() + " " + guiProc.getNiceExecutablePath());
 	    				guiProc.setToolTip(guiProc.getNiceExecutablePath());
 	    				
-	    				add(guiProc);
-	    				hashMap.put(proc, guiProc);
+	    				try {
+	    					add(guiProc);
+	    					hashMap.put(proc, guiProc);
+	    				} catch (Exception e) {
+	    					errorLog.log(Level.WARNING, "FlatProcObservableLinkedList.ProcCreatedObserver: Cannot add proc " + 
+	    							proc +" to DataModel",e);
+	    					return;
+	    				}
 	    			}
 	    		});
 	        }
@@ -104,8 +125,14 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 			final Proc proc = (Proc)obj;
 			org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 	    			public void run() {
-	    				remove(hashMap.get(proc));
-	    				hashMap.remove(proc);
+	    				try {
+	    					remove(hashMap.get(proc));
+	    					hashMap.remove(proc);
+	    				} catch (Exception e) {
+	    					errorLog.log(Level.WARNING, "FlatProcObservableLinkedList.ProcDestroyedObserver: Cannot remove proc " + 
+	    							proc + " from DataModel",e);
+	    					return;
+	    				}
 	    			}
 	    		});
 		}

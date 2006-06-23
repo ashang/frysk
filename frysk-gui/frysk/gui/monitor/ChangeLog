@@ -1,3 +1,11 @@
+2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/TaskObserverRoot.java (addFailed): Added in errorLog call. 
+	Rewrap and throw core exception.
+	* datamodels/FlatProcObservableLinkedList.java (ProcCreatedObserver): 
+	Add more robust logging and failure case handling (ie log and fail return).
+	(ProcDestroyedObserver): Ditto.
+
 2006-06-22  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* actions/LogAction.java (execute): Remove
