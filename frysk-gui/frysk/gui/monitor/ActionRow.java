@@ -58,7 +58,7 @@ public class ActionRow extends ObserverItemRow{
 			comboList.swap(itemsComboBox.getSelectedObject(), combo);
 			itemsComboBox.setSelectedObject(combo);
 		}
-		
+		super.apply(); /* Keep the info contained in this row in case no event was given to the argumentEntry */
 	}
 	
 	public void addToTable(){

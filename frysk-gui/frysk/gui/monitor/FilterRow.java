@@ -78,7 +78,7 @@ public class FilterRow extends ObserverItemRow{
 			itemsComboBox.setSelectedObject(combo);
 			
 			boolean currentBoolean = filter.getFilterBoolean();
-//			System.out.println(this + ": FilterRow.FilterRow() currentBoolean " + currentBoolean );
+
 			if(currentBoolean){
 				booleanComboBox.setSelectedObject(IS);
 			}else{
@@ -89,21 +89,14 @@ public class FilterRow extends ObserverItemRow{
 				public void comboBoxEvent(ComboBoxEvent event) {
 					GuiObject object = booleanComboBox.getSelectedObject();
 					if(object == IS){
-//						System.out.println(this
-//								+ ": .comboBoxEvent() setting boolean to "
-//								+ true);
 						filter.setFilterBoolean(true);
-					}else{
-//						System.out.println(this
-//								+ ": .comboBoxEvent() setting boolean to " + false);				
+					}else{				
 						filter.setFilterBoolean(false);
 					}
 				}
 			});
-		}
-				
-
-				
+		}	
+		super.apply();		/* Keep the info contained in this row in case no event was given to the argumentEntry */
 	}	
 	
 	public void removeFromTable(){

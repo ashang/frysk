@@ -1,3 +1,10 @@
+2006-06-23  Mike Cvet  <mcvet@redhat.com>
+
+	* ActionRow.java (ActionRow): Applies the information contained in the row
+	regardless if an event was passed to the argumentEntry box or not. Fix for
+	#2817.
+	* FilterRow.java (FilterRow): ditto.
+
 2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseDataModel.java (setRow): Add Null and Iter checks. Log
