@@ -1,5 +1,7 @@
 2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* FilterRow.java (comboBoxEvent): Removed System.out commands.
+
 	* observers/TaskObserverRoot.java (addFailed): Added in errorLog call. 
 	Rewrap and throw core exception.
 	* datamodels/FlatProcObservableLinkedList.java (ProcCreatedObserver): 

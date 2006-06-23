@@ -89,12 +89,13 @@ public class FilterRow extends ObserverItemRow{
 				public void comboBoxEvent(ComboBoxEvent event) {
 					GuiObject object = booleanComboBox.getSelectedObject();
 					if(object == IS){
-						System.out.println(this
-								+ ": .comboBoxEvent() setting boolean to " + true);
+//						System.out.println(this
+//								+ ": .comboBoxEvent() setting boolean to "
+//								+ true);
 						filter.setFilterBoolean(true);
 					}else{
-						System.out.println(this
-								+ ": .comboBoxEvent() setting boolean to " + false);				
+//						System.out.println(this
+//								+ ": .comboBoxEvent() setting boolean to " + false);				
 						filter.setFilterBoolean(false);
 					}
 				}
