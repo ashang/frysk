@@ -94,12 +94,12 @@ public class ConsoleWindow extends Window {
 		// term.show();
     }
 
-	public static void main(String[] args)
-	{
-		Gtk.init(args);
-		ConsoleWindow cs = new ConsoleWindow();
-		System.out.println(cs);
-		Gtk.main();
-	}
+	//public static void main(String[] args)
+	//{
+	//	Gtk.init(args);
+	//	ConsoleWindow cs = new ConsoleWindow();
+	//	System.out.println(cs);
+	//	Gtk.main();
+	//}
 }
 

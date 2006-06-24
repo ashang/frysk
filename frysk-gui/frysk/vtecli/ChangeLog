@@ -1,3 +1,8 @@
+2006-06-24  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ConsoleWindow.kava: Removed main(). 
+	Removed Gtk.init. (!!).
+
 2006-06-23  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* ConsoleWindow.java: new
