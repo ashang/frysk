@@ -1,3 +1,9 @@
+2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ConsoleWindow.java (ConsoleWindow): Deleted main
+	looks like the build system greps for main and tries
+	to do something special. Fixes undefined ref problem.
+
 2006-06-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ConsoleWindow.java: Removed main(). 
