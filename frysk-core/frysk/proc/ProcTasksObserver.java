@@ -124,7 +124,7 @@ implements TaskObserver.Cloned, TaskObserver.Terminated
 		// request to add an observer has enough time
 		// to be processed before the task continues.
 		offspring.requestUnblock (this);
-		return Action.BLOCK;
+        return Action.BLOCK;
 	}
 	
 	private boolean isMainTaskAdded;
@@ -149,7 +149,8 @@ implements TaskObserver.Cloned, TaskObserver.Terminated
 	
 	public void addFailed(Object observable, Throwable w)
 	{
-		throw new RuntimeException("How did this (addFailed) happen ?!");
+		//throw new RuntimeException("How did this (addFailed) happen ?!");
+      procTasksObserver.addFailed(observable, w);
 	}
 	
 	public void deletedFrom(Object observable)

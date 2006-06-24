@@ -1,5 +1,11 @@
 2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* observers/TaskObserverRoot.java (addFailed): removed exception.
+	* SessionProcDataModel.java (addFailed): Removed code sending error
+	to the log widget. Removed exception thrown here.
+
+2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* TaskStatusWidget.java: Deleted.
 	* StatusWidget.java: Added initialization of all eventViewers for 
 	threads of current task.

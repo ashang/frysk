@@ -72,7 +72,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		    public void addFailed(Object observable, Throwable w)
 		    {
 		    	errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
-		    	throw new RuntimeException(w);
+		    	//throw new RuntimeException(w);
 		    }
 		    public void existingTask(Task task)
 		    {

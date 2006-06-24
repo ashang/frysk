@@ -220,15 +220,14 @@ public class SessionProcDataModel
 
       public void addFailed(Object observable, Throwable w)
       {
-
-        errorLog.log(Level.SEVERE, new Date() + "EventLogger.addFailed"
+        errorLog.log(Level.WARNING, new Date() + "EventLogger.addFailed"
                                    + "(Object o, Throwable w): " + observable
                                    + " failed " + "to add");
-        WindowManager.theManager.logWindow.print(new Date()
-                                                 + "EventLogger.addFailed(Object o, Throwable w): "
-                                                 + observable
-                                                 + " failed to add");
-        throw new RuntimeException(w);
+//        WindowManager.theManager.logWindow.print(new Date()
+//                                                 + "EventLogger.addFailed(Object o, Throwable w): "
+//                                                 + observable
+//                                                 + " failed to add");
+//        throw new RuntimeException(w);
       }
 
       public void addedTo(Object observable)

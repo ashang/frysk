@@ -1,3 +1,8 @@
+2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcTasksObserver.java (addFailed): Made addFailed call addFailed of
+	the observer instead of throwing an exception.
+
 2006-06-23  Nurdin Premji  <npremji@redhat.com>
 
 	* TestLib.java (DetachedAckProcess): Added

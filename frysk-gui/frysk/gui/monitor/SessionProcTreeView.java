@@ -135,10 +135,6 @@ public class SessionProcTreeView
                 StatusWidget statusWidget = new StatusWidget(
                                                              data,
                                                              data.getProc().getCommand());
-                System.out.println(this
-                                   + ": SessionProcTreeView.SessionProcTreeView() adding widget ["
-                                   + statusWidget + "] to proc ["
-                                   + data.getProc() + "]");
                 data.setWidget(statusWidget, statusWidget.getTrace0());
               }
             infoWidget.setSelectedProc(data);
