@@ -50,7 +50,10 @@ package frysk.gui.monitor;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import frysk.gui.Gui;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -66,6 +69,7 @@ public class GuiProc extends GuiData{
 	private static final String PATH_NOT_FOUND = "*Could not retrieve path*";
 
 	private Proc proc;
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	private String executableName;
 	private String executablePath;
@@ -162,8 +166,15 @@ public class GuiProc extends GuiData{
 	 * process false otherwise;
 	 */
 	public boolean isOwned(){
-		return (this.proc.getUID() == Manager.host.getSelf().getUID() ||
-			this.proc.getGID() == Manager.host.getSelf().getGID() );
+		boolean owned = false;
+		try {
+			owned = (this.proc.getUID() == Manager.host.getSelf().getUID() ||
+					this.proc.getGID() == Manager.host.getSelf().getGID());
+		} catch (Exception e) {
+			errorLog.log(Level.WARNING, "GuiProc.isOwned: Error checking host/proc ownership",e);
+		}
+		
+		return owned;
 	}
 	
 	public String getFullExecutablePath(){
