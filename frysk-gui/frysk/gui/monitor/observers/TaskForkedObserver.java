@@ -76,7 +76,6 @@ public class TaskForkedObserver extends TaskObserverRoot implements TaskObserver
 		final Task myChild = child;
 		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 			public void run() {
-			    System.out.println(this + ": .run() running runnable");
 			    // This does the unblock.
 				bottomHalf(myTask, myChild);
 			}
