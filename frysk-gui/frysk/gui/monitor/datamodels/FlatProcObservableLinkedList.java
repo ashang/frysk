@@ -92,9 +92,14 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    							proc +" from guiFacory",e);
 	    					return;
 	    				}
-	    				if(!guiProc.isOwned()){
-	    				//	System.out.println(this + ": ProcCreatedObserver.update() REJECTING" + guiProc.getNiceExecutablePath());
-		    				return;
+	    				try {
+	    					if(!guiProc.isOwned())
+	    						return;
+	    				} catch (Exception e)
+	    				{
+	    					errorLog.log(Level.WARNING, "FlatProcObservableLinkedList.ProcCreatedObserver: Cannot check  guiProc " + 
+	    							"ownership",e);
+	    					return;
 	    				}
 	    				
 	    				if (guiProc == null) {

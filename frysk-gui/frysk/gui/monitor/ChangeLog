@@ -1,5 +1,8 @@
 2006-06-23  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* datamodels/FlatProcObservableLinkedList.java (ProcCreatedObserver): 
+	Wrap isOwned causing with Exception and log if fails.
+
 	* GuiProc.java: Wrap Manager.host.getSelf().getUID() to catch
 	concurrent modification stacktraces.
 
