@@ -1,5 +1,19 @@
 2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TaskStatusWidget.java: Deleted.
+	* StatusWidget.java: Added initialization of all eventViewers for 
+	threads of current task.
+	Added support for sending events coming for a task to that tasks
+	thread.
+	* SessionProcTreeView.java: Removed code for initializing EventView
+	widget for selected thread. They are now initialized all at once
+	when a proc is selected.
+	* SessionProcDataModel.java: Now keeps a GuiProc informed of its
+	tasks.
+	* GuiProc.java: Added tracking for the procs tasks.
+
+2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
 	* GuiData.java: Added getTrace, and changed setWidget to take a traceID.
 	* SessionProcTreeView.java (selectionChangedEvent): Formating Changes.
 	Fixed the code responsible for getting a procs parent.

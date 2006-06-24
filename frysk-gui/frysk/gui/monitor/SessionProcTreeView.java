@@ -73,10 +73,9 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 
-import frysk.gui.monitor.GuiProc.GuiProcFactory;
 import frysk.gui.sessions.Session;
 
-public class SessionProcTreeView
+public class SessionProcTreeView 
     extends Widget
     implements Saveable
 {
@@ -178,11 +177,11 @@ public class SessionProcTreeView
                 // GuiProc pdata = (GuiProc) procFilter.getValue(
                 // procFilter.getIter(selected),
                 // procDataModel.getProcDataDC());
-                GuiProc pdata = GuiProcFactory.getGuiProc(data.getTask().getProc());
-                StatusWidget sw = (StatusWidget) pdata.getWidget();
-                int trace = sw.newTrace(data.getTask().getName(),
-                                        "Other useful per-trace information.");
-                data.setWidget(sw, trace);
+//                GuiProc pdata = GuiProcFactory.getGuiProc(data.getTask().getProc());
+//                StatusWidget sw = (StatusWidget) pdata.getWidget();
+//                int trace = sw.newTrace(data.getTask().getName(),
+//                                        "Other useful per-trace information.");
+//                data.setWidget(sw, trace);
               }
 
           }

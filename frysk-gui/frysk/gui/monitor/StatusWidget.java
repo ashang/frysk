@@ -46,6 +46,7 @@
 
 package frysk.gui.monitor;
 
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -68,7 +69,7 @@ public class StatusWidget
 
   Label nameLabel;
 
-  private GuiData data;
+  //private GuiData data;
 
   private Frame frame;
 
@@ -87,13 +88,13 @@ public class StatusWidget
     return trace1;
   }
 
-  public StatusWidget(GuiData data, String procname)
+  public StatusWidget(GuiProc guiProc, String procname)
   {
     super(false, 0);
     // FontDescription font = new FontDescription();
     this.notifyUser = new Observable();
-    this.data = data;
-
+//    this.data = guiProc;
+    
     HBox mainVbox = new HBox(false, 0);
 
     // ========================================
@@ -112,7 +113,7 @@ public class StatusWidget
     // mainVbox.packStart(logScrolledWindow, true, true, 0);
     // ========================================
 
-    // ========================================
+    // ======================================== 
     this.viewer = new EventViewer();
     // resize not implemented yet
     // this.viewer.resize (1, 1);
@@ -121,11 +122,13 @@ public class StatusWidget
     trace0 = this.viewer.addTrace(procname, "Additional information.");
     this.viewer.setTraceRGB(trace0, 65535, 0, 0);
 
-    initLogTextView();
+    initLogTextView(guiProc);
 
     mainVbox.setBorderWidth(5);
     mainVbox.packStart(viewer, true, true, 0);
     // ========================================
+
+    this.initThreads(guiProc);
 
     // ========================================
     VSeparator seperator = new VSeparator();
@@ -150,6 +153,50 @@ public class StatusWidget
     // ========================================
 
     this.showAll();
+  }
+
+  private void initThreads(GuiProc guiProc)
+  {
+    ObservableLinkedList list = guiProc.getTasks();
+    Iterator iterator = list.iterator();
+    while (iterator.hasNext())
+      {
+        GuiTask guiTask = (GuiTask) iterator.next();
+        addTask(guiTask);
+      }
+
+    list.itemAdded.addObserver(new Observer()
+    {
+      public void update(Observable arg0, Object object)
+      {
+        GuiTask guiTask = (GuiTask) object;
+        addTask(guiTask);
+      }
+    });
+
+    list.itemRemoved.addObserver(new Observer()
+    {
+      public void update(Observable arg0, Object object)
+      {
+        GuiTask guiTask = (GuiTask) object;
+        removeTask(guiTask);
+      }
+    });
+  }
+
+  private void addTask(GuiTask guiTask)
+  {
+    // GuiProc pdata = GuiProcFactory.getGuiProc(data.getTask().getProc());
+    // StatusWidget sw = (StatusWidget) pdata.getWidget();
+    int trace = this.newTrace(guiTask.getTask().getName(),
+                              "Other useful per-trace information.");
+    guiTask.setWidget(this, trace);
+    this.initLogTextView(guiTask);
+  }
+
+  private void removeTask(GuiTask guiTask)
+  {
+    // XXX: no api in EventViewer for this
   }
 
   // private TreeView initAttacheObserversTreeView(){
@@ -238,52 +285,51 @@ public class StatusWidget
   // }
   //	
 
-  private void initLogTextView()
+  private void initLogTextView(final GuiData guiData)
   {
-    ObservableLinkedList observers = this.data.getObservers();
+    ObservableLinkedList observers = guiData.getObservers();
     ListIterator iter = observers.listIterator();
     while (iter.hasNext())
       {
         LogAction logAction = new LogAction();
         final ObserverRoot observer = (ObserverRoot) iter.next();
 
-        if (data instanceof GuiProc)
+        if (guiData instanceof GuiProc)
           {
-            logAction.setArgument("PID " + ((GuiProc) data).getProc().getPid()
+            logAction.setArgument("PID " + ((GuiProc) guiData).getProc().getPid()
                                   + " triggered " + observer.getName());
           }
         else
           {
-            logAction.setArgument("TID " + ((GuiTask) data).getTask().getTid()
+            logAction.setArgument("TID " + ((GuiTask) guiData).getTask().getTid()
                                   + " triggered " + observer.getName());
           }
 
-        observer.genericActionPoint.addAction(new TimelineAction(observer));
+        observer.genericActionPoint.addAction(new TimelineAction(observer, guiData));
         observer.genericActionPoint.addAction(logAction);
       }
 
-    this.data.getObservers().itemAdded.addObserver(new Observer()
+    guiData.getObservers().itemAdded.addObserver(new Observer()
     {
-
+      GuiData realGuiData = guiData;
       public void update(Observable arg0, Object obj)
       {
-
         LogAction logAction = new LogAction();
 
         final ObserverRoot observer = (ObserverRoot) obj;
 
-        if (data instanceof GuiProc)
+        if (realGuiData instanceof GuiProc)
           {
-            logAction.setArgument("PID " + ((GuiProc) data).getProc().getPid()
+            logAction.setArgument("PID " + ((GuiProc) realGuiData).getProc().getPid()
                                   + " triggered " + observer.getName());
           }
         else
           {
-            logAction.setArgument("TID " + ((GuiTask) data).getTask().getTid()
+            logAction.setArgument("TID " + ((GuiTask) realGuiData).getTask().getTid()
                                   + " triggered " + observer.getName());
           }
 
-        observer.genericActionPoint.addAction(new TimelineAction(observer));
+        observer.genericActionPoint.addAction(new TimelineAction(observer, realGuiData));
         observer.genericActionPoint.addAction(logAction);
       }
     });
@@ -309,11 +355,14 @@ public class StatusWidget
 
     private ObserverRoot observer;
 
-    public TimelineAction(ObserverRoot observer)
+    private GuiData guiData;
+
+    public TimelineAction(ObserverRoot observer, GuiData guiData)
     {
       super("TimeLine Action", ""); //$NON-NLS-1$ //$NON-NLS-2$
       this.observer = observer;
       this.dontSaveObject();
+      this.guiData = guiData;
       this.createEvent();
     }
 
@@ -352,7 +401,7 @@ public class StatusWidget
 
     public void execute(ObserverRoot observer)
     {
-      viewer.appendEvent(data.getTrace(), markerId,
+      viewer.appendEvent(guiData.getTrace(), markerId,
                          "Other useful per-event information.");
     }
 
