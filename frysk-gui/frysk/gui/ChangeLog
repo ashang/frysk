@@ -1,3 +1,8 @@
+2006-06-24  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java (Gui): Added log event before frysk core
+	window is populated. Cleaned up code. Indented.
+
 2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* Gui.java (menuItemEvent): put back old dummy consol window, had

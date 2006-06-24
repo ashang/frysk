@@ -93,393 +93,357 @@ import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Manager;
 
 public class Gui
-    implements LifeCycleListener, Saveable
+implements LifeCycleListener, Saveable
 {
-    LibGlade glade;
-    LibGlade create_session_glade;
-    LibGlade register_window;
-    LibGlade session_glade;
-    
-    private static Logger errorLogFile = null;
-    private static final String SETTINGSFILE = ".settings";
-    private static final String GLADE_FILE = "procpop.glade";
-    private static final String CREATE_SESSION_GLADE = "frysk_create_session_druid.glade";
-    private static final String SESSION_MANAGER_GLADE = "frysk_session_manager.glade";
-
-    public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
-
-    private static void initializePreferences(){    	
-    	PreferenceManager.sourceWinGroup.addPreference(new IntPreference(SourceWinPreferenceGroup.INLINE_LEVELS, 0, 10, 2));
-
-    	PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.EXEC_MARKS, true));
-    	PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.LINE_NUMS, true));
-    	PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.TOOLBAR, true));
-    	
-    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.EXEC_MARKS_COLOR,Color.BLACK));
-    	PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.LINE_NUMBER_COLOR,Color.BLACK));
-    	
-    	PreferenceGroup lnfGroup = new PreferenceGroup("Look and Feel", 2);
-    	lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.BACKGROUND,Color.WHITE));
-    	lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.CURRENT_LINE,Color.GREEN));
-    	lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.SEARCH,Color.ORANGE));
-    	lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.TEXT,Color.BLACK));
-    	lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.MARGIN,new Color(37779, 40349, 50115)));
-    	
-    	PreferenceManager.sourceWinGroup.addSubgroup(lnfGroup);
-    	
-    	PreferenceManager.addPreferenceGroup(PreferenceManager.sourceWinGroup);
-    	
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.CLASSES, Color.RED, Weight.BOLD, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.FUNCTIONS, new Color(4369, 6939, 51914), Weight.BOLD, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.GLOBALS, new Color(8224, 36494, 16191), Weight.NORMAL, Style.ITALIC));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.KEYWORDS, new Color(22102, 4112, 31868), Weight.BOLD, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OPTIMIZED, new Color(38293, 38293, 38293), Weight.NORMAL, Style.ITALIC));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OUT_OF_SCOPE, new Color(38293, 38293, 38293), Weight.NORMAL, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.VARIABLES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.COMMENTS, new Color(47031, 40606, 32125), Weight.NORMAL, Style.ITALIC));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.NAMESPACE, Color.RED, Weight.BOLD, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.INCLUDES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.MACRO, Color.BLACK, Weight.BOLD, Style.NORMAL));
-    	PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.TEMPLATE, new Color(42102, 24112, 51868), Weight.BOLD, Style.NORMAL));
-    	
-    	PreferenceManager.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
-    }
-    
-    private static void createDummyTagsets(){
-    	Tagset ts = new Tagset("httpd network layer", "For debugging aspects of httpd relating to the low level network layer", "httpd", "1.2");
-    	TagsetManager.manager.addTagset(ts);
-    	
-    	ts = new Tagset("httpd error messages", "Tags for dealing with httpd errors before they're sent to the client", "httpd", "1.2.1");
-    	TagsetManager.manager.addTagset(ts);
-    	
-    	ts = new Tagset("eclipse Copy and Pase bug finder", "Attaches hooks into eclipse's copy and paste mechnaism", "eclipse", "3.2M6");
-    	TagsetManager.manager.addTagset(ts);
-    	
-    	ts = new Tagset("Firefox plugin loader", "Aids in debugging plugin loading in firefox", "firefox", "1.5.0");
-    	TagsetManager.manager.addTagset(ts);
-    	
-    	ts = new Tagset("Firefox network layer", "Tags for debugging the low level network code in firefox", "firefox", "1.5.0");
-    }
-    
-    Gui (String[] glade_dirs)
+	LibGlade glade;
+	LibGlade create_session_glade;
+	LibGlade register_window;
+	LibGlade session_glade;
+	
+	private static Logger errorLogFile = null;
+	private static final String SETTINGSFILE = ".settings";
+	private static final String GLADE_FILE = "procpop.glade";
+	private static final String CREATE_SESSION_GLADE = "frysk_create_session_druid.glade";
+	private static final String SESSION_MANAGER_GLADE = "frysk_session_manager.glade";
+	
+	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
+	
+	private static void initializePreferences(){    	
+		PreferenceManager.sourceWinGroup.addPreference(new IntPreference(SourceWinPreferenceGroup.INLINE_LEVELS, 0, 10, 2));
+		
+		PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.EXEC_MARKS, true));
+		PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.LINE_NUMS, true));
+		PreferenceManager.sourceWinGroup.addPreference(new BooleanPreference(SourceWinPreferenceGroup.TOOLBAR, true));
+		
+		PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.EXEC_MARKS_COLOR,Color.BLACK));
+		PreferenceManager.sourceWinGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.LINE_NUMBER_COLOR,Color.BLACK));
+		
+		PreferenceGroup lnfGroup = new PreferenceGroup("Look and Feel", 2);
+		lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.BACKGROUND,Color.WHITE));
+		lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.CURRENT_LINE,Color.GREEN));
+		lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.SEARCH,Color.ORANGE));
+		lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.TEXT,Color.BLACK));
+		lnfGroup.addPreference(new ColorPreference(SourceWinPreferenceGroup.MARGIN,new Color(37779, 40349, 50115)));
+		
+		PreferenceManager.sourceWinGroup.addSubgroup(lnfGroup);
+		
+		PreferenceManager.addPreferenceGroup(PreferenceManager.sourceWinGroup);
+		
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.CLASSES, Color.RED, Weight.BOLD, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.FUNCTIONS, new Color(4369, 6939, 51914), Weight.BOLD, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.GLOBALS, new Color(8224, 36494, 16191), Weight.NORMAL, Style.ITALIC));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.KEYWORDS, new Color(22102, 4112, 31868), Weight.BOLD, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OPTIMIZED, new Color(38293, 38293, 38293), Weight.NORMAL, Style.ITALIC));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.OUT_OF_SCOPE, new Color(38293, 38293, 38293), Weight.NORMAL, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.VARIABLES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.COMMENTS, new Color(47031, 40606, 32125), Weight.NORMAL, Style.ITALIC));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.NAMESPACE, Color.RED, Weight.BOLD, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.INCLUDES, new Color(15677, 49601, 17990), Weight.NORMAL, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.MACRO, Color.BLACK, Weight.BOLD, Style.NORMAL));
+		PreferenceManager.syntaxHighlightingGroup.addPreference(new SyntaxPreference(SyntaxPreferenceGroup.TEMPLATE, new Color(42102, 24112, 51868), Weight.BOLD, Style.NORMAL));
+		
+		PreferenceManager.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
+	}
+	
+	private static void createDummyTagsets(){
+		Tagset ts = new Tagset("httpd network layer", "For debugging aspects of httpd relating to the low level network layer", "httpd", "1.2");
+		TagsetManager.manager.addTagset(ts);
+		
+		ts = new Tagset("httpd error messages", "Tags for dealing with httpd errors before they're sent to the client", "httpd", "1.2.1");
+		TagsetManager.manager.addTagset(ts);
+		
+		ts = new Tagset("eclipse Copy and Pase bug finder", "Attaches hooks into eclipse's copy and paste mechnaism", "eclipse", "3.2M6");
+		TagsetManager.manager.addTagset(ts);
+		
+		ts = new Tagset("Firefox plugin loader", "Aids in debugging plugin loading in firefox", "firefox", "1.5.0");
+		TagsetManager.manager.addTagset(ts);
+		
+		ts = new Tagset("Firefox network layer", "Tags for debugging the low level network code in firefox", "firefox", "1.5.0");
+	}
+	
+	Gui (String[] glade_dirs)
 	throws GladeXMLException, FileNotFoundException, IOException
-    {
-	// The location of the glade file may need to be modified
-	// here, depending on where the program is being run from. If
-	// the directory that the src directory is in is used as the
-	// root, this should work without modification
-	String searchPath = new String();
-	for (int i = 0; i < glade_dirs.length; i++) {
-	    try {// command line glade_dir
-	    	glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
-	    	create_session_glade = new LibGlade (glade_dirs[i] + CREATE_SESSION_GLADE, this);
-	    	register_window = new LibGlade (glade_dirs[i] + "/registerwindow.glade", null);
-	        session_glade = new LibGlade(glade_dirs[i] + SESSION_MANAGER_GLADE, this);
-	    }
-	    catch (FileNotFoundException missingFile) {
-	    	searchPath += glade_dirs[i] + "\n";
-	    	if(i == glade_dirs.length -1){
-	    		throw new FileNotFoundException ("Glade file not found in path " + searchPath); //$NON-NLS-1$
-	    	}else{
-	    		continue;
-	    	}
-	    }
-	    break;
-	}
-
-	try {
-	    WindowManager.theManager.initLegacyProcpopWindows(glade);
-	    WindowManager.theManager.initRegisterWindow(register_window);
-	    WindowManager.theManager.initSessionDruidWindow(create_session_glade);
-	    WindowManager.theManager.initSessionManagerWindow(session_glade);	    
-	} catch (IOException e) {
-	    throw e;
-	}
-    }
-
-    private static FileHandler buildHandler ()
-    {
-	FileHandler handler = null;
-	File log_dir = new File (Config.FRYSK_DIR + "logs" + "/");
-
-	if (!log_dir.exists())
-	    log_dir.mkdirs();
-
-	try {
-	    handler = new FryskErrorFileHandler(log_dir.getAbsolutePath()
-						+ "/" + "frysk_monitor_error.log", true);
-	}
-	catch (Exception e) {
-	    e.printStackTrace();
-	}
-
-	return handler;
-    }
-
-    private static void setupErrorLogging ()
-    {
-	// Get a logger; the logger is automatically created if it
-	// doesn't already exist
-	errorLogFile = Logger.getLogger(ERROR_LOG_ID);
-	errorLogFile.setUseParentHandlers(false);
-	//errorLogFile.setUseParentHandlers(true);
-	errorLogFile.addHandler(buildHandler());
-    }
-
-    private static Preferences importPreferences (String location)
-    {
-	InputStream is = null;
-	Preferences prefs = null;
-
-	File checkFrysk = new File (Config.FRYSK_DIR);
-	if (!checkFrysk.exists()){
-		checkFrysk.mkdirs();
-	}
-	
-	File checkFile = new File (location);
-	if (checkFile.exists()){
+	{
+		// The location of the glade file may need to be modified
+		// here, depending on where the program is being run from. If
+		// the directory that the src directory is in is used as the
+		// root, this should work without modification
+		String searchPath = new String();
+		for (int i = 0; i < glade_dirs.length; i++) {
+			try {// command line glade_dir
+				glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
+				create_session_glade = new LibGlade (glade_dirs[i] + CREATE_SESSION_GLADE, this);
+				register_window = new LibGlade (glade_dirs[i] + "/registerwindow.glade", null);
+				session_glade = new LibGlade(glade_dirs[i] + SESSION_MANAGER_GLADE, this);
+			}
+			catch (FileNotFoundException missingFile) {
+				searchPath += glade_dirs[i] + "\n";
+				if(i == glade_dirs.length -1){
+					throw new FileNotFoundException ("Glade file not found in path " + searchPath); //$NON-NLS-1$
+				}else{
+					continue;
+				}
+			}
+			break;
+		}
+		
 		try {
-			is = new BufferedInputStream(new FileInputStream(location));
-			Preferences.importPreferences(is);
-		} catch (FileNotFoundException e1) {
-			errorLogFile.log(Level.WARNING, location
-					+ " not found. Will be created on program exit", e1); //$NON-NLS-1$
+			WindowManager.theManager.initLegacyProcpopWindows(glade);
+			WindowManager.theManager.initRegisterWindow(register_window);
+			WindowManager.theManager.initSessionDruidWindow(create_session_glade);
+			WindowManager.theManager.initSessionManagerWindow(session_glade);	    
 		} catch (IOException e) {
-			errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
-		} catch (InvalidPreferencesFormatException e) {
-			errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
+			throw e;
 		}
 	}
 	
-	prefs = Preferences.userRoot();
-	return prefs;
-    }
-
-    public void lifeCycleEvent (LifeCycleEvent arg0)
-    {
-	Gtk.mainQuit();
-    }
-
-    public boolean lifeCycleQuery (LifeCycleEvent arg0)
-    {
-	Gtk.mainQuit();
-	return false;
-    }
-
-    public void save (Preferences prefs)
-    {
-	WindowManager.theManager.save(Preferences.userRoot().node(prefs.absolutePath() + "theManager"));
-    }
-
-    public void load (Preferences prefs)
-    {
-	WindowManager.theManager.load(Preferences.userRoot().node(prefs.absolutePath() + "theManager"));
-    }
-
-    public static void gui (String[] args, String[] glade_dirs,
-			    String[] imagePaths, 
-			    String[] messagePaths,
-			    String[] testfilePaths)
-    {
-	Gtk.init(args);
-
-	// Creates example tagsets until we can have real ones.
-	createDummyTagsets();
+	private static FileHandler buildHandler ()
+	{
+		FileHandler handler = null;
+		File log_dir = new File (Config.FRYSK_DIR + "logs" + "/");
+		
+		if (!log_dir.exists())
+			log_dir.mkdirs();
+		
+		try {
+			handler = new FryskErrorFileHandler(log_dir.getAbsolutePath()
+					+ "/" + "frysk_monitor_error.log", true);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return handler;
+	}
 	
-	//-------------------GUInea pigs-------------------
-	// System.out.println("infLoop PID : " + SysUtils.infLoop ());
-	// System.out.println("infThreadLoop PID : " + SysUtils.infThreadLoop (2));
-	//-------------------------------------------------
-
-	TrayIcon trayIcon;
-	Gui procpop = null;
-	Preferences prefs = null;
-
-	setupErrorLogging(); 
+	private static void setupErrorLogging ()
+	{
+		// Get a logger; the logger is automatically created if it
+		// doesn't already exist
+		errorLogFile = Logger.getLogger(ERROR_LOG_ID);
+		errorLogFile.setUseParentHandlers(false);
+		//errorLogFile.setUseParentHandlers(true);
+		errorLogFile.addHandler(buildHandler());
+	}
+	
+	private static Preferences importPreferences (String location)
+	{
+		InputStream is = null;
+		Preferences prefs = null;
 		
-	IconManager.setImageDir(imagePaths);
-	IconManager.loadIcons();
-	IconManager.useSmallIcons();
+		File checkFrysk = new File (Config.FRYSK_DIR);
+		if (!checkFrysk.exists()){
+			checkFrysk.mkdirs();
+		}
 		
-	Messages.setBundlePaths(messagePaths);
+		File checkFile = new File (location);
+		if (checkFile.exists()){
+			try {
+				is = new BufferedInputStream(new FileInputStream(location));
+				Preferences.importPreferences(is);
+			} catch (FileNotFoundException e1) {
+				errorLogFile.log(Level.WARNING, location
+						+ " not found. Will be created on program exit", e1); //$NON-NLS-1$
+			} catch (IOException e) {
+				errorLogFile.log(Level.SEVERE, location + " io error", e); //$NON-NLS-1$
+			} catch (InvalidPreferencesFormatException e) {
+				errorLogFile.log(Level.SEVERE, location + " Invalid Format", e); //$NON-NLS-1$
+			}
+		}
+		
+		prefs = Preferences.userRoot();
+		return prefs;
+	}
+	
+	public void lifeCycleEvent (LifeCycleEvent arg0)
+	{
+		Gtk.mainQuit();
+	}
+	
+	public boolean lifeCycleQuery (LifeCycleEvent arg0)
+	{
+		Gtk.mainQuit();
+		return false;
+	}
+	
+	public void save (Preferences prefs)
+	{
+		WindowManager.theManager.save(Preferences.userRoot().node(prefs.absolutePath() + "theManager"));
+	}
+	
+	public void load (Preferences prefs)
+	{
+		WindowManager.theManager.load(Preferences.userRoot().node(prefs.absolutePath() + "theManager"));
+	}
+	
+	public static void gui (String[] args, String[] glade_dirs,
+			String[] imagePaths, 
+			String[] messagePaths,
+			String[] testfilePaths)
+	{
+		Gtk.init(args);
+		
+		// Creates example tagsets until we can have real ones.
+		createDummyTagsets();
 			
+		TrayIcon trayIcon;
+		Gui procpop = null;
+		Preferences prefs = null;
 		
-	try {
-	    procpop = new Gui (glade_dirs);
-	} catch (GladeXMLException e1) {
-	    errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed", //$NON-NLS-1$
-			     e1);
-	    System.exit(1);
-	} catch (FileNotFoundException e1) {
-	    errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found", //$NON-NLS-1$
-			     e1);
-	    System.exit(1);
-	} catch (IOException e1) {
-	    errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
-	    System.exit(1);
-	}
-
-	
-	WindowManager.theManager.mainWindow.hideAll();
-
-	// Now that we now the glade paths are good, send the paths to
-	// the SourceWindowFactory
-	SourceWindowFactory.setGladePaths(glade_dirs);
-	
-	prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
-	PreferenceManager.setPreferenceModel(prefs);
-	initializePreferences();
-	
-	trayIcon = new TrayIcon("Frysk Monitor/Debugger", false); //$NON-NLS-1$
+		setupErrorLogging(); 
 		
-	trayIcon.setMenuButton(TrayIcon.BUTTON_3);
-	trayIcon.setWindowButton(TrayIcon.BUTTON_1);
-	trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);
+		IconManager.setImageDir(imagePaths);
+		IconManager.loadIcons();
+		IconManager.useSmallIcons();
 		
-	// Right click menu.
-	Menu popupMenu = new Menu();
-	trayIcon.setPopupMenu(popupMenu);
+		Messages.setBundlePaths(messagePaths);
 		
-	// Quit 
-	MenuItem quitItem = new MenuItem("Quit", false); //$NON-NLS-1$
-	quitItem.addListener (new MenuItemListener()
-	    {
-		public void menuItemEvent(MenuItemEvent arg0) {
-		    Gtk.mainQuit();
-		}
-	    });
-	popupMenu.add(quitItem);
 		
-	// Console Window
-	MenuItem consoleWindowItem = new MenuItem("Console Window", false); //$NON-NLS-1$
-	consoleWindowItem.addListener (new MenuItemListener()
-	    {
-		public void menuItemEvent(MenuItemEvent arg0){
-		    new ConsoleWindow();
+		try {
+			procpop = new Gui (glade_dirs);
+		} catch (GladeXMLException e1) {
+			errorLogFile.log(Level.SEVERE, "procpop.glade XML is badly formed", //$NON-NLS-1$
+					e1);
+			System.exit(1);
+		} catch (FileNotFoundException e1) {
+			errorLogFile.log(Level.SEVERE, "ProcPop glade XML file not found", //$NON-NLS-1$
+					e1);
+			System.exit(1);
+		} catch (IOException e1) {
+			errorLogFile.log(Level.SEVERE, "IOException: ", e1); //$NON-NLS-1$
+			System.exit(1);
 		}
-	    });
-
-	MenuItem cliWindowItem = new MenuItem("Command Interface Window", false);
-	cliWindowItem.addListener (new MenuItemListener()
-	    {
-		public void menuItemEvent(MenuItemEvent arg0){
-		    new frysk.vtecli.ConsoleWindow();
-		}
-	    });
-
-	/* Removed until we're ready to try this again */
-	// Session Window
-	/*MenuItem sessionWindowItem = new MenuItem("Session Manager", false); //$NON-NLS-1$
-	sessionWindowItem.addListener (new MenuItemListener()
-	    {
-		public void menuItemEvent(MenuItemEvent arg0){
-		    WindowManager.theManager.sessionManager.showAll();
-		}
-	    }); */
-	popupMenu.prepend(consoleWindowItem);
-	popupMenu.prepend(cliWindowItem);
-	//popupMenu.prepend(sessionWindowItem);
-	
-	final Thread backendStarter  = new Thread(new Runnable(){
-		public void run(){
-		    try {
-		    	// EventLoop eventLoop = new EventLoop();
-		    	// eventLoop.run();
-		    	Manager.eventLoop.run();
-		    }
-		    catch (Exception e) {
-		    	int response = DialogManager.showErrorDialog("Frysk Core Warnings", "The Frysk Core has encountered problems with the last request.\n"+
-		    			"It has reported the following conditions. You can either ignore\n"+
-		    			"the condition and continue, or Quit Frysk.", e); //$NON-NLS-1$ //$NON-NLS-2$
-		    	if (response == ErrorDialog.QUIT)
-		    		System.exit(1);
-		    	else
-		    		run();
-		    }
-		}
-	});
-	backendStarter.start();
-
-
-//	WindowManager.theManager.prefsWindow.addPage("One", new PreferenceWidget("One"));
-//	WindowManager.theManager.prefsWindow.addPage("two", new PreferenceWidget("Two"));
-//	WindowManager.theManager.prefsWindow.addPage("Three", new PreferenceWidget("Three"));
-
-	WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
-
-	final Gui myGui = procpop;
-	final Preferences myPrefs = prefs;
-
-	myGui.load(myPrefs);
-
-//	WindowManager.theManager.mainWindow.hideAll();
-
-	CustomEvents.addEvent(new Runnable() {
-		public void run() {
-			WindowManager.theManager.splashScreen.showAll();
-		}
-	});
-
-	//XXX: a hack to make sure the DataModelManager
-	// is initialized early enough. Should probably
-	// have an entitiy that initializes all Managers
-	DataModelManager.theManager.flatProcObservableLinkedList.getClass();
-	
-	TimerEvent timerEvent = new TimerEvent(0, 5000){
-		public void execute() {
-			CustomEvents.addEvent(new Runnable() {
-				public void run() {
-					//WindowManager.theManager.mainWindow.showAll();
-					WindowManager.theManager.splashScreen.hideAll();
+		
+		
+		WindowManager.theManager.mainWindow.hideAll();
+		
+		// Now that we now the glade paths are good, send the paths to
+		// the SourceWindowFactory
+		SourceWindowFactory.setGladePaths(glade_dirs);
+		
+		prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
+		PreferenceManager.setPreferenceModel(prefs);
+		initializePreferences();
+		
+		trayIcon = new TrayIcon("Frysk Monitor/Debugger", false); //$NON-NLS-1$
+		
+		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
+		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
+		trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);
+		
+		// Right click menu.
+		Menu popupMenu = new Menu();
+		trayIcon.setPopupMenu(popupMenu);
+		
+		// Quit 
+		MenuItem quitItem = new MenuItem("Quit", false); //$NON-NLS-1$
+		quitItem.addListener (new MenuItemListener()
+				{
+			public void menuItemEvent(MenuItemEvent arg0) {
+				Gtk.mainQuit();
+			}
+				});
+		popupMenu.add(quitItem);
+		
+		// Console Window
+		MenuItem consoleWindowItem = new MenuItem("Console Window", false); //$NON-NLS-1$
+		consoleWindowItem.addListener (new MenuItemListener()
+				{
+			public void menuItemEvent(MenuItemEvent arg0){
+				new ConsoleWindow();
+			}
+				});
+		
+		MenuItem cliWindowItem = new MenuItem("Command Interface Window", false);
+		cliWindowItem.addListener (new MenuItemListener()
+				{
+			public void menuItemEvent(MenuItemEvent arg0){
+				new frysk.vtecli.ConsoleWindow();
+			}
+				});
+		
+		popupMenu.prepend(consoleWindowItem);
+		popupMenu.prepend(cliWindowItem);
+		
+		final Thread backendStarter  = new Thread(new Runnable(){
+			public void run(){
+				try {
+					// EventLoop eventLoop = new EventLoop();
+					// eventLoop.run();
+					Manager.eventLoop.run();
 				}
-			});
-			Manager.eventLoop.remove(this);
-		}
-	};
-	Manager.eventLoop.add (timerEvent);
-	
-	
-//	CustomEvents.addEvent(new Runnable() {
-//		public void run() {
-//			WindowManager.theManager.splashScreen.showAll();
-//			Timer timer = new Timer(2000, new Fireable() {
-//				public boolean fire() {
-//					WindowManager.theManager.splashScreen.hideAll();
-//					WindowManager.theManager.mainWindow.showAll();
-//					return false;
-//				}
-//			});
-//			timer.start();
-//		}
-//	});
-
-	CustomEvents.addEvent(new Runnable() {
-		public void run() {
-			TimerEvent refreshTimer = new TimerEvent(0, 5000){
-				public void execute() {
-					Manager.host.requestRefreshXXX (true);
+				catch (Exception e) {
+					errorLogFile.log(Level.SEVERE, "Frysk Core Warnings. The Frysk Core has encountered problems: ", e); //$NON-NLS-1$
+					int response = DialogManager.showErrorDialog("Frysk Core Warnings", "The Frysk Core has encountered problems with the last request.\n"+
+							"It has reported the following conditions. You can either ignore\n"+
+							"the condition and continue, or Quit Frysk.", e); //$NON-NLS-1$ //$NON-NLS-2$
+					if (response == ErrorDialog.QUIT)
+						System.exit(1);
+					else
+						run();
 				}
-			};
+			}
+		});
+		backendStarter.start();
+			
+		WindowManager.theManager.mainWindow.setIcon(IconManager.windowIcon);
 		
-			Manager.eventLoop.add (refreshTimer);
+		final Gui myGui = procpop;
+		final Preferences myPrefs = prefs;
+		
+		myGui.load(myPrefs);
+			
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				WindowManager.theManager.splashScreen.showAll();
+			}
+		});
+		
+		//XXX: a hack to make sure the DataModelManager
+		// is initialized early enough. Should probably
+		// have an entitiy that initializes all Managers
+		DataModelManager.theManager.flatProcObservableLinkedList.getClass();
+		
+		TimerEvent timerEvent = new TimerEvent(0, 5000){
+			public void execute() {
+				CustomEvents.addEvent(new Runnable() {
+					public void run() {
+						WindowManager.theManager.splashScreen.hideAll();
+					}
+				});
+				Manager.eventLoop.remove(this);
+			}
+		};
+		Manager.eventLoop.add (timerEvent);
+		
+				
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				TimerEvent refreshTimer = new TimerEvent(0, 5000){
+					public void execute() {
+						Manager.host.requestRefreshXXX (true);
+					}
+				};
+				
+				Manager.eventLoop.add (refreshTimer);
+			}
+		});
+		
+		Gtk.main();
+		
+		Manager.eventLoop.requestStop();
+		procpop.save(prefs);
+		
+		//XXX:
+		ObserverManager.theManager.save();
+		
+		try {
+			// Export the node to a file
+			prefs.exportSubtree (new FileOutputStream (Config.FRYSK_DIR + SETTINGSFILE));
+		} catch (Exception e) {
+			errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
+			
 		}
-	});
-	
-	Gtk.main();
 		
-	Manager.eventLoop.requestStop();
-	procpop.save(prefs);
-
-	//XXX:
-	ObserverManager.theManager.save();
-	
-	try {
-	    // Export the node to a file
-	    prefs.exportSubtree (new FileOutputStream (Config.FRYSK_DIR + SETTINGSFILE));
-	} catch (Exception e) {
-	    errorLogFile.log(Level.SEVERE, "Errors exporting preferences", e); //$NON-NLS-1$
-
 	}
-
-    }
 }
