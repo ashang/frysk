@@ -1,3 +1,8 @@
+2006-06-23  Chris Moller  <moller@mollerware.com>
+
+	* SessionProcTreeView.java:
+	* StatusWidget.java: A couple more minor tweaks to multi-trace viewer.
+
 2006-06-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java (ObserverRoot): Set default action to

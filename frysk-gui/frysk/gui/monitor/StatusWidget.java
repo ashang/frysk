@@ -71,8 +71,8 @@ public class StatusWidget extends VBox{
     public  Observable notifyUser;
     // private int e2;
 
-    public void newTrace (int tid) {
-	int trace1 = this.viewer.addTrace (Integer.toString(tid), "bleep");
+    public void newTrace (String desc, String info) {
+	int trace1 = this.viewer.addTrace (desc, info);
 	this.viewer.setTraceRGB (trace1, 0, 65535, 0);
     }
 
@@ -106,7 +106,7 @@ public class StatusWidget extends VBox{
 	//		this.viewer.resize (1, 1);
 	this.viewer.setBackgroundRGB (65536, 65535, 65535);
 	this.viewer.setTimebase (10.0);
-	trace0 = this.viewer.addTrace (procname, "blah, blah, blah");
+	trace0 = this.viewer.addTrace (procname, "Additional information.");
 	this.viewer.setTraceRGB (trace0, 65535, 0, 0);
 
 	initLogTextView();
@@ -285,7 +285,7 @@ public class StatusWidget extends VBox{
 		/* red + green = yellow */
 		//  this.eventId = area.createEvent(observer.getName(), 65535, 65535, 0);
 		this.markerId = viewer.addMarker(0, observer.getName(),
-						 "This space for rent.");
+						 "Other useful per-marker information.");
 		viewer.setMarkerRGB (this.markerId, 65535, 65535, 0);
 	    }
 			
@@ -293,20 +293,21 @@ public class StatusWidget extends VBox{
 		/* red + green = yellow */
 		//   this.eventId = area.createEvent(observer.getName(),  65535, 0, 65535);
 		this.markerId = viewer.addMarker(1, observer.getName(),
-						 "Your ad here");
+						 "Even more useful per-marker information.");
 		viewer.setMarkerRGB (this.markerId, 65535, 0, 65535);
 	    }
 	    if(count%3 == 2){
 		/* red + green = yellow */
 		//   this.eventId = area.createEvent(observer.getName(),  0, 65535, 65535);
 		this.markerId = viewer.addMarker(2, observer.getName(),
-						 "Hi, guys");
+						 "Additional useful per-marker information.");
 		viewer.setMarkerRGB (this.markerId, 0, 65535, 65535);
 	    }
 	}
 
 	public void execute(ObserverRoot observer) {
-	    viewer.appendEvent (trace0, markerId, "An event to remember.");
+	    viewer.appendEvent (trace0, markerId,
+				"Other useful per-event information.");
 	}
 
     }

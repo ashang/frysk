@@ -145,7 +145,8 @@ public class SessionProcTreeView extends Widget implements Saveable{
 			if(!data.hasWidget()){
 			    GuiProc pdata = (GuiProc) procFilter.getValue(procFilter.getIter(selected), procDataModel.getProcDataDC());
 			    StatusWidget sw = (StatusWidget)pdata.getWidget();
-			    sw.newTrace(data.getTask().getTid());
+			    sw.newTrace(data.getTask().getName(),
+					"Other useful per-trace information.");
 			    data.setWidget(sw);
 			}
 					
