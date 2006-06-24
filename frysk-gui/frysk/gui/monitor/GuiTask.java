@@ -52,7 +52,7 @@ public class GuiTask extends GuiData{
 
 	private Task task;
 	
-	private GuiTask(Task task) {
+    private GuiTask(Task task) {
 		if(task == null){
 			throw new IllegalArgumentException("task cannot be null");
 		}
@@ -80,7 +80,7 @@ public class GuiTask extends GuiData{
 		observer.apply(this.task);
 	}
 	
-	public static class GuiTaskFactory{
+   public static class GuiTaskFactory{
 		static HashMap map = new HashMap();
 		
 		public static GuiTask getGuiTask(Task task){
@@ -96,4 +96,5 @@ public class GuiTask extends GuiData{
 			return guiTask;
 		}
 	}
+    
 }

@@ -355,7 +355,7 @@ public class Gui
 	consoleWindowItem.addListener (new MenuItemListener()
 	    {
 		public void menuItemEvent(MenuItemEvent arg0){
-		    new ConsoleWindow();
+//		    new ConsoleWindow();
 		}
 	    });
 
@@ -363,7 +363,7 @@ public class Gui
 	cliWindowItem.addListener (new MenuItemListener()
 	    {
 		public void menuItemEvent(MenuItemEvent arg0){
-		    new frysk.vtecli.ConsoleWindow();
+	//	    new frysk.vtecli.ConsoleWindow();
 		}
 	    });
 

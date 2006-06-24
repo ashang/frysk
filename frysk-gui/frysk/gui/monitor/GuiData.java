@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import org.gnu.gtk.Widget;
@@ -47,38 +48,56 @@ import frysk.gui.monitor.observers.ObserverRoot;
  * Used to store a pointer to objects in the back-end, and extra data that is
  * GUI specific.
  */
-public class GuiData extends GuiObject{
-	
-	Widget widget;
-	ObservableLinkedList observers;
-	
-	public GuiData(){
-		this.observers = new ObservableLinkedList();
-	}
+public class GuiData
+    extends GuiObject
+{
 
-	public void remove(ObserverRoot observer){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented"); //$NON-NLS-1$
-	}
-	
-	public ObservableLinkedList getObservers(){
-		return this.observers;
-	}
-	
-	public void setWidget(Widget widget){
-		if(this.widget != null){
-			throw new RuntimeException("Trying to set widget when widget is already set."); //$NON-NLS-1$
-		}
-		this.widget = widget;
-	}
-	
-	public Widget getWidget(){
-		return this.widget;
-	}
-	
-	public boolean hasWidget(){
-		return (this.widget != null);
-	}
-	
-	
+  Widget widget;
+
+  ObservableLinkedList observers;
+
+  private int trace;
+
+  public GuiData()
+  {
+    this.observers = new ObservableLinkedList();
+  }
+
+  public void remove(ObserverRoot observer)
+  {
+    // XXX: Not implemented.
+    throw new RuntimeException("Not implemented"); //$NON-NLS-1$
+  }
+
+  public ObservableLinkedList getObservers()
+  {
+    return this.observers;
+  }
+
+  public void setWidget(Widget widget, int trace)
+  {
+    if (this.widget != null)
+      {
+        throw new RuntimeException(
+                                   "Trying to set widget when widget is already set."); //$NON-NLS-1$
+      }
+    this.widget = widget;
+    this.trace = trace;
+  }
+
+  public Widget getWidget()
+  {
+    return this.widget;
+  }
+
+  public boolean hasWidget()
+  {
+    return (this.widget != null);
+  }
+
+  public int getTrace()
+  {
+    return this.trace;
+  }
+
 }
