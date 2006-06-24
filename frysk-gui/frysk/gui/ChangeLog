@@ -1,3 +1,8 @@
+2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Gui.java (menuItemEvent): put back old dummy consol window, had
+	commented it out by mistake.
+
 2006-06-23  Ivan Pantuyev  <ipantuye@redhat.com>
 	
 	* Gui.java: Added a vte window to the taskbar right-click menu.

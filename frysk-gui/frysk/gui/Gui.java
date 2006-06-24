@@ -355,7 +355,7 @@ public class Gui
 	consoleWindowItem.addListener (new MenuItemListener()
 	    {
 		public void menuItemEvent(MenuItemEvent arg0){
-//		    new ConsoleWindow();
+		    new ConsoleWindow();
 		}
 	    });
 
