@@ -55,6 +55,7 @@ GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jdom.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
 GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jargs.jar 
+GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jline.jar
 GEN_CLASSPATH += $(top_builddir)/../frysk-gtk/tlwidgets/ftk.jar
 GEN_CLASSPATH += $(FRYSK_GUI_JARS) 
 GEN_CLASSPATH += /usr/lib
