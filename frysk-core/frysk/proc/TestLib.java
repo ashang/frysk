@@ -614,7 +614,7 @@ public class TestLib
 	}
 	DetachedAckProcess (int count)
 	{
-		super (count);
+	    super (count);
 	}
 	/**
 	 * Create a detached process that is a child of this one.
@@ -637,15 +637,15 @@ public class TestLib
 		while (true) {
 		    Wait.waitAll (getPid (),
 				  new FailWaitObserver ("killing child")
-			{
-			    public void terminated (int pid, boolean signal,
-						    int value,
-						    boolean coreDumped)
-			    {
-				// Termination with signal is ok.
-				assertTrue ("terminated with signal", signal);
-			    }
-			});
+				  {
+				      public void terminated (int pid, boolean signal,
+							      int value,
+							      boolean coreDumped)
+				      {
+					  // Termination with signal is ok.
+					  assertTrue ("terminated with signal", signal);
+				      }
+				  });
 		}
 	    }
 	    catch (Errno.Echild e) {
@@ -1035,39 +1035,39 @@ public class TestLib
      * Watch for events involving the specified PID process; count the
      * number of events seen.
      */
-     class PidCounter
-	 implements Observer
-     {
-	 List what = new LinkedList (); // XXX:
-	 int pid;
-	 int count = 0;
-	 /**
-	  * Create a pid counter bound to PID.
-	  */
-	 PidCounter (int pid)
-	 {
-	     this.pid = pid;
-	 }
-	 /**
-	  * Create a pid counter bound to PID, and attached to
-	  * observable.
-	  */
-	 PidCounter (int pid, Observable observable)
-	 {
-	     this (pid);
-	     observable.addObserver (this);
-	 }
-	 public void update (Observable o, Object obj)
-	 {
-	     if (obj instanceof Proc) {
-		 Proc proc = (Proc) obj;
-		 if (proc.getPid () == pid) {
-		     count++;
-		     what.add (new RuntimeException ()); // XXX:
-		 }
-	     }
-	 }
-     }
+    class PidCounter
+	implements Observer
+    {
+	List what = new LinkedList (); // XXX:
+	int pid;
+	int count = 0;
+	/**
+	 * Create a pid counter bound to PID.
+	 */
+	PidCounter (int pid)
+	{
+	    this.pid = pid;
+	}
+	/**
+	 * Create a pid counter bound to PID, and attached to
+	 * observable.
+	 */
+	PidCounter (int pid, Observable observable)
+	{
+	    this (pid);
+	    observable.addObserver (this);
+	}
+	public void update (Observable o, Object obj)
+	{
+	    if (obj instanceof Proc) {
+		Proc proc = (Proc) obj;
+		if (proc.getPid () == pid) {
+		    count++;
+		    what.add (new RuntimeException ()); // XXX:
+		}
+	    }
+	}
+    }
 
     class IgnoreWaitObserver
 	implements Wait.Observer

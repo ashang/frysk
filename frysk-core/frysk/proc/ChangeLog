@@ -1,3 +1,10 @@
+2006-06-25  Andrew Cagney  <cagney@redhat.com>
+
+	* TaskState.java: Run EMACS indent over code.
+	* ProcTasksObserver.java: Ditto.
+	* TestLib.java: Ditto.
+	* TestProcTasksObserver.java: Ditto.
+
 2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcTasksObserver.java (addFailed): Made addFailed call addFailed of
