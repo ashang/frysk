@@ -38,7 +38,7 @@
 // exception.
 package frysk.cli.hpd;
 
-import jline.*;
+//import jline.*;
 import java.io.*;
 import java.util.*;
 import java.text.ParseException;
@@ -49,12 +49,64 @@ public class CLI
 	 * Command handlers
 	 */
 
+	/*
+	 * Set commands
+	 */
+	class DefsetHandler implements CommandHandler
+	{
+		public void handle(Command cmd) throws ParseException {
+			Vector params = cmd.getParameters();
+			String setname = null;
+			String setnot = null;
+			PTSet set = null;
+
+			if (params.size() > 0)
+			{
+				setname = (String) params.elementAt(0);
+				if (!setname.matches("\\w+"))
+					throw new ParseException("Set name must be alphanumeric.", 0);
+			}
+			else
+				throw new ParseException("Missing set name argument.", 0);
+
+			if (params.size() > 1)
+				setnot = (String) params.elementAt(0);
+			else
+				throw new ParseException("Missing set notation argument.", 0);
+
+			if (!builtinPTSets.containsKey(setnot))
+			{
+				set = createSet(setnot);
+				namedPTSets.put(setname, set);
+			}
+			else
+			{
+				//TODO create a nice exception or somethn'
+			}
+		}
+	}
+
+	class UndefsetHandler implements CommandHandler
+	{
+		public void handle(Command cmd) throws ParseException {
+		/*
+			if (namedPTSets.containsPTSets())
+			{
+			}
+			else
+			{
+			}
+			*/
+		}
+	}
+
 	class LoadHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
 			out.println("Executing load: " + cmd);
 		}
 	}
+
 	class RunHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
@@ -88,15 +140,15 @@ public class CLI
 	}
 	class WhatHandler implements CommandHandler
 	{
-	        public void handle(Command cmd) throws ParseException {
+		public void handle(Command cmd) throws ParseException {
 		       SymTab.what(cmd);
 		}
 	}
-        class QuitHandler implements CommandHandler
-        {
-	        public void handle(Command cmd) throws ParseException {
+	class QuitHandler implements CommandHandler
+    {
+		public void handle(Command cmd) throws ParseException {
 		       System.exit(1);
-	        }
+		}
 	}
 	class HelpHandler implements CommandHandler
 	{
@@ -123,10 +175,11 @@ public class CLI
 	 * Private variables
 	 */
 
-	private static final PrintStream out = System.out;
+	private static PrintStream out = null;// = System.out;
 	private Preprocessor prepro;
 	private String prompt;
 	private Hashtable handlers;
+	private SetNotationParser setparser;
 
 	// PT set related stuff
 	private AllPTSet allset;
@@ -144,10 +197,12 @@ public class CLI
 	 * Constructor
 	 * @param prompt String initially to be used as the prompt
 	 */
-	public CLI(String prompt)
+	public CLI(String prompt, PrintStream out)
 	{
 		this.prompt = prompt;
+		CLI.out = out;
 		prepro = new Preprocessor();
+		setparser = new SetNotationParser();
 		handlers = new Hashtable();
 
 		handlers.put("load", new LoadHandler());
@@ -221,10 +276,40 @@ public class CLI
 		return null;
 	}
 
+	private PTSet createSet(String set) throws ParseException
+	{
+		ParsedSet parsed = setparser.parse(set);
+		PTSet result = null;
+
+		if (parsed.getType() == ParsedSet.TYPE_STATE)
+		{
+			//TODO convert state name to something usable
+			result = new StatePTSet(allset, 0);
+		}
+		else if (parsed.getType() == ParsedSet.TYPE_HPD)
+		{
+			if (parsed.isStatic())
+				result = new StaticPTSet(allset.getSubset(parsed.getParseTreeNodes()));
+			else
+				result = new DynamicPTSet(allset, parsed.getParseTreeNodes());
+		}
+		else if (parsed.getType() == ParsedSet.TYPE_NAMED)
+		{
+			result = (PTSet) namedPTSets.get(parsed.getName());
+		}
+		else if (parsed.getType() == ParsedSet.TYPE_EXEC)
+		{
+			//TODO add exec functionality to allptset and put here
+		}
+
+		return result;
+	}
+
 	/**
-	 * Main function
+	 * Main function, renamed to not get caught by the build system
 	 */
-	public static void main(String[] args)
+	/*
+	public static void in(String[] args)
 	{
 		CLI dbg = new CLI("cli$ ");
 		ConsoleReader reader = null; // the jline reader
@@ -249,6 +334,6 @@ public class CLI
 			out.println("ERROR: Could not read from command line");
 			out.print(ioe.getMessage());
 		}
-
 	}
+	*/
 }
