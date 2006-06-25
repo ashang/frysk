@@ -1,3 +1,8 @@
+2006-06-25  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* funit-forks.c: Added Chris Moller's fork
+	stress tester.
+
 2006-06-23 	Nurdin Premji <npremji@redhat.com>
 	* funit-child.c Added signal SIGBUS to exit a thread.
 
