@@ -39,19 +39,93 @@
 
 package frysk.vtecli;
 
-import org.gnu.gtk.Gtk;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
-//import org.gnu.gdk.Color;
 import org.gnu.gnomevte.Terminal;
+import java.io.*;
 import frysk.sys.Pty;
+import frysk.cli.hpd.CLI;
+import jline.*;
 
 public class ConsoleWindow extends Window {
     private Terminal term;
-    String[] cmdargs = new String[1];
 	
+	private class reader implements Runnable
+	{
+		CLI cli;
+		ConsoleReader jlreader;
+		String fname;
+
+		reader(String fname)
+		{
+			this.fname = fname;
+
+			try
+			{
+				cli = new CLI("cli$ ", new PrintStream( new FileOutputStream(new File(fname)) ) );
+			}
+			catch (IOException ioe)
+			{
+				System.out.println("ERROR: Could not create a file output stream: ");
+				System.out.print(ioe.getMessage());
+			}
+
+			FileWriter out = null;
+			FileInputStream in = null;
+
+			try
+			{
+				out = new FileWriter(new File(fname));
+			}
+			catch (IOException ioe)
+			{
+				System.out.println("ERROR: Could not create a file writer: ");
+				System.out.print(ioe.getMessage());
+			}
+
+			try
+			{
+				in = new FileInputStream(new File(fname));
+			}
+			catch (IOException ioe)
+			{
+				System.out.println("ERROR: Could not create a file input stream: ");
+				System.out.print(ioe.getMessage());
+			}
+
+			try
+			{
+				jlreader = new ConsoleReader(in, out);
+			}
+			catch (IOException ioe)	{
+				System.out.println("ERROR: Could not create a command line");
+				System.out.print(ioe.getMessage());
+			}
+		}
+
+		public void run()
+		{
+			String line = "";
+
+			try
+			{
+				while (line != null && !line.equals("quit"))
+				{
+					line = jlreader.readLine(cli.getPrompt());
+					cli.execCommand(line);
+				}
+
+			}
+			catch (IOException ioe)
+			{
+				System.out.println("ERROR: Could not read from command line");
+				System.out.print(ioe.getMessage());
+			}
+		}
+	}
+
     public ConsoleWindow()
 	{
 		super(WindowType.TOPLEVEL);
@@ -66,11 +140,14 @@ public class ConsoleWindow extends Window {
 				{
 					if (event.isOfType(LifeCycleEvent.Type.DESTROY) ||
 						event.isOfType(LifeCycleEvent.Type.DELETE))
-						Gtk.mainQuit();
+						ConsoleWindow.this.shutDown();
 					
 					return true;
 				}
 			});
+
+		String[] cmdargs = new String[1];
+		cmdargs[0] = "-1";
 
 		Pty pty = new Pty();
 		
@@ -78,20 +155,27 @@ public class ConsoleWindow extends Window {
 		String name = pty.getName ();
 		System.out.println ("master = " + master + " name = " + name);
 
-		// term = Terminal.terminalAndShell();
+		//term = Terminal.terminalAndShell();
+		//term = new Terminal("/bin/bash", cmdargs, ".");
 		term = new Terminal();
 		term.setPty (master);
 		
 		term.setDefaultColors();
 		term.setSize (80, 25);
-		term.feed ("Hi, there!  This is VTE!  (term.feed() output)\r\n");
-
-		pty.ptyWrite ("Garbage Out  (pty.ptyWrite() output)\r\n");
+//		term.feed ("Hi, there!  This is VTE!  (term.feed() output)\r\n");
 
 		this.add(term);
 		this.showAll();
-		  
-		// term.show();
+
+		System.out.println ("master = " + master + " name = " + name);
+
+		reader rd = new reader(name);
+		new Thread(rd).start();
     }
+
+	private void shutDown()
+	{
+		this.destroy();
+	}
 }
 
