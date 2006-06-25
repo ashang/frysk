@@ -160,14 +160,10 @@ public class TestI386Regs
    }
 
 
-    boolean skip = true; // XXX
-
     public void testI386Regs ()
     {
-	if (skip) {
-	    System.out.print ("<<SKIPPING>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 	TestI386RegsInternals t = new TestI386RegsInternals ();
  	// Create program making an exit syscall");
 	new AttachedDaemonProcess (new String[]

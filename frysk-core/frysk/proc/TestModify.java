@@ -187,14 +187,10 @@ public class TestModify
 	}
     }
 	
-    boolean skip = true; // XXX
-
     public void testModify ()
     {
-	if (skip) {
-	    System.out.print ("<<SKIPPING>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 	TestModifyInternals t = new TestModifyInternals ();
 	// Create program making syscalls
 	new AttachedDaemonProcess (new String[]

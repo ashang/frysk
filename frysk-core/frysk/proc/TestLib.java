@@ -73,6 +73,23 @@ public class TestLib
     protected final static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
 
     /**
+     * A variable that has the value true.  Used by code trying to
+     * stop the optimizer realise that there's dead code around.
+     */
+    static boolean trueXXX = true;
+    /**
+     * A function that returns true, and prints skip.  Used by test
+     * cases that want to be skipped (vis: if(broken()) return) while
+     * trying to avoid the compiler's optimizer realizing that the
+     * rest of the function is dead.
+     */
+    static boolean brokenXXX ()
+    {
+	System.out.print ("<<BROKEN>>");
+	return trueXXX;
+    }
+
+    /**
      * Return the exec prefix that should be prepended to all
      * programs.
      */

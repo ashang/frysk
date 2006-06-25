@@ -1,5 +1,11 @@
 2006-06-25  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (brokenXXX, trueXXX): Add.
+	* TestI386Regs.java: Use.
+	* TestI386Modify.java: Use.
+	* TestTaskSyscallObserver.java: Use.
+	* TestModify.java: Use.
+	
 	* TaskState.java: Run EMACS indent over code.
 	* ProcTasksObserver.java: Ditto.
 	* TestLib.java: Ditto.

@@ -63,8 +63,6 @@ import frysk.sys.SyscallNum;
 public class TestTaskSyscallObserver
     extends TestLib
 {
-    boolean skip = false; // XXX
-
     class SyscallObserver
 	extends TaskObserverBase
 	implements TaskObserver.Syscall
@@ -101,11 +99,8 @@ public class TestTaskSyscallObserver
      */
     public void testExecSyscall(){
 
-	    if (skip) {
-		    System.out.print ("<<BROKEN>>"); // XXX
-		    return;
-	    }
-	    
+	if (brokenXXX ())
+	    return;
 	    
 	    //	  Create an unattached child process.
 	    AckProcess child = new DetachedAckProcess ();
@@ -133,10 +128,8 @@ public class TestTaskSyscallObserver
     public void testSyscallLoop ()
     {
 
-	if (skip) {
-	    System.out.print ("<<BROKEN>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 
  	int count = 5;
 	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
@@ -174,10 +167,8 @@ public class TestTaskSyscallObserver
      */
     public void testSyscalls ()
     {
-	if (skip) {
-	    System.out.print ("<<BROKEN>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 
  	// Create program making syscalls
 	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
@@ -258,10 +249,8 @@ public class TestTaskSyscallObserver
     public void testSyscallOpen ()
     {
 	
-	if (skip) {
-	    System.out.print ("<<BROKEN>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 
 	SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver ();
 	new StopEventLoopWhenChildProcRemoved ();
@@ -420,10 +409,8 @@ public class TestTaskSyscallObserver
      */
     public void testSyscallInterrupt ()
     {
-	if (skip) {
-	    System.out.print ("<<BROKEN>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 	PipeReadChild prc = new PipeReadChild (false);
 
 	TestSyscallInterruptInternals t 
@@ -443,10 +430,8 @@ public class TestTaskSyscallObserver
      */
     public void testSyscallInterruptRestart ()
     {
-	if (skip) {
-	    System.out.print ("<<BROKEN>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 	PipeReadChild prc = new PipeReadChild (true);
 
 	TestSyscallInterruptInternals t

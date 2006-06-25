@@ -190,14 +190,10 @@ public class TestI386Modify
 	}
     }
 	
-    boolean skip = true; // XXX
-
     public void testI386Modify ()
     {
-	if (skip) {
-	    System.out.print ("<<SKIPPING>>"); // XXX
+	if (brokenXXX ())
 	    return;
-	}
 	TestI386ModifyInternals t = new TestI386ModifyInternals ();
 	// Create program making syscalls
 	new AttachedDaemonProcess (new String[]
