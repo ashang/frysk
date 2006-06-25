@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#define _POSIX_C_SOURCE 199309
+//#define _POSIX_C_SOURCE 199309
 #include <time.h>
 #include <errno.h>
 
@@ -76,4 +76,5 @@ main(int ac, char * av[])
       break;
     }
   }
+  return 0;
 }
