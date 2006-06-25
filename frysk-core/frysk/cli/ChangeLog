@@ -1,3 +1,7 @@
+2006-06-25  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/CLI.java: commented out and changed the name of "main"
+
 2006-06-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* hpd/StatePTSet.java: Broken HEAD build fixes.

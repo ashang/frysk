@@ -1,3 +1,7 @@
+2006-06-25  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* Makefile.am: Added jline to classpath
+
 2006-06-23  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am: Distribute frysk/gui/test/dogtail_scripts/frysk_suite.in.
