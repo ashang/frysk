@@ -59,16 +59,6 @@ public class StressAttachDetachSignaledTask
 	extends TaskObserverBase
 	implements TaskObserver.Attached
     {
-	public void addedTo (Object o)
-	{
-	    Task task = (Task) o;
-	    task.requestDeleteAttachedObserver (this);
-	}
-	public void deletedFrom (Object o)
-	{
-	    Task task = (Task) o;
-	    task.requestAddAttachedObserver (this);
-	}
 	public Action updateAttached (Task task)
 	{
 	    return Action.CONTINUE;
@@ -88,23 +78,25 @@ public class StressAttachDetachSignaledTask
 
 	Spawn ()
 	{
-	    if (brokenXXX ())
-		return;
 	    AckDaemonProcess child = new AckDaemonProcess ();
 	    AttachDetach attachDetach = new AttachDetach ();
 	    Task task = child.findTaskUsingRefresh (true);
 
-	    // Ask for the observer to be attached, then run the event
-	    // loop sufficiently for the attach request to be
-	    // initiated but not completed.
-	    task.requestAddAttachedObserver (attachDetach);
-	    runPending ();
+	    for (int i = 0; i < 20; i++) {
+		// Ask for the observer to be attached, then run the
+		// event loop sufficiently for the attach request to
+		// be sent to the kernel.  Finally issue an operation
+		// which make a signal pending on that same task.
+		task.requestAddAttachedObserver (attachDetach);
+		runPending ();
+		op (child, i * 2 + 0);
 
-	    for (int i = 0; i < 100; i++) {
-		// Execute OP (which hopefully involves signals).
-		// While this op is being performed, the task will be
-		// constantly attaching and detaching.
-		op (child, i);
+		// Ask for the observer to be attached, then run the event
+		// loop sufficiently for the attach request to be
+		// initiated but not completed.
+		task.requestDeleteAttachedObserver (attachDetach);
+		runPending ();
+		op (child, i * 2 + 1);
 	    }
 	}
     }

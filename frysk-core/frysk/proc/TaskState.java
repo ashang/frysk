@@ -208,20 +208,25 @@ class TaskState
      */
     private static final TaskState attaching = new TaskState ("attaching")
 	{
-	    private TaskState transitionToAttached (Task task)
+	    private TaskState transitionToAttached (Task task, int signal)
 	    {
 		task.proc.performTaskAttachCompleted (task);
-		return Attached.waitForContinueOrUnblock;
+		return new Attached.WaitForContinueOrUnblock (signal);
 	    }
 	    TaskState handleStoppedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-		return transitionToAttached (task);
+		return transitionToAttached (task, 0);
+	    }
+	    TaskState handleSignaledEvent (Task task, int signal)
+	    {
+		logger.log (Level.FINE, "{0} handleSignaledEvent\n", task); 
+		return transitionToAttached (task, signal);
 	    }
 	    TaskState handleTrappedEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleTrappedEvent\n", task); 
-		return transitionToAttached (task);
+		return transitionToAttached (task, 0);
 	    }
     	    TaskState handleDisappearedEvent (Task task, Throwable w)
     	    {
@@ -288,12 +293,12 @@ class TaskState
 	 * Once the task is both unblocked and continued, should
 	 * transition to the running state.
 	 */
-	static TaskState transitionToRunningState (Task task)
+	static TaskState transitionToRunningState (Task task, int signal)
 	{
 	    task.sendSetOptions ();
 	    if (task.notifyAttached () > 0)
-		return blockedContinue;
-	    task.sendContinue (0);
+		return new BlockedSignal (signal);
+	    task.sendContinue (signal);
 	    return running;
 	}
 	/**
@@ -310,33 +315,42 @@ class TaskState
 	    return syscallRunning;
 	}
 	/**
-	 * Need either a continue or an unblock.
+	 * The blocked task has stopped, possibly with a pending
+	 * signal, waiting on either a continue or an unblock.
 	 */
-	private static final TaskState waitForContinueOrUnblock =
-	    new Attached ("waitForContinueOrUnblock")
+	private static class WaitForContinueOrUnblock
+	    extends Attached
+	{
+	    final int signal;
+	    WaitForContinueOrUnblock (int signal)
 	    {
-		TaskState handleUnblock (Task task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    return Attached.waitForContinueOrUnblock;
-		}
-		TaskState handleContinue (Task task)
-		{
-		    logger.log (Level.FINE, "{0} handleContinue\n", task); 
-		    if (task.blockers.size () == 0)
-			return transitionToRunningState (task);
-		    return Attached.waitForUnblock;
-		}
-		TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-		{
-		    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-		    task.startTracingSyscalls();
-		    observable.add(observer);
-		    return syscallWaitForContinueOrUnblock;
-		}	    
-	    };
+		super ("WaitForContinueOrUnblock");
+		this.signal = signal;
+	    }
+	    TaskState handleUnblock (Task task,
+				     TaskObserver observer)
+	    {
+		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		task.blockers.remove (observer);
+		return Attached.waitForContinueOrUnblock;
+	    }
+	    TaskState handleContinue (Task task)
+	    {
+		logger.log (Level.FINE, "{0} handleContinue\n", task); 
+		if (task.blockers.size () == 0)
+		    return Attached.transitionToRunningState (task, signal);
+		return new Attached.WaitForUnblock (signal);
+	    }
+	    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
+	    {
+		logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
+		task.startTracingSyscalls();
+		observable.add(observer);
+		return syscallWaitForContinueOrUnblock;
+	    }	    
+	}
+	private static final TaskState waitForContinueOrUnblock =
+	    new Attached.WaitForContinueOrUnblock (0);
 	/**
 	 * Need either a continue or an unblock.
 	 */
@@ -363,23 +377,37 @@ class TaskState
 		    observable.add(observer);
 		    return this;
 		}	    
-            };	
+            };
+
 	/**
 	 * Got continue, just need to clear the blocks.
 	 */
-	private static final TaskState waitForUnblock =
-	    new Attached ("waitForUnblock")
+	private static class WaitForUnblock
+	    extends Attached
+	{
+	    final int signal;
+	    WaitForUnblock (int signal)
 	    {
-		TaskState handleUnblock (Task task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    if (task.blockers.size () == 0)
-			return transitionToRunningState (task);
-		    return Attached.waitForUnblock;
-		}
-	    };
+		super ("WaitForUnblock");
+		this.signal = signal;
+	    }
+	    public String toString ()
+	    {
+		if (signal == 0)
+		    return super.toString ();
+		else
+		    return super.toString () + ",signal=" + signal;
+	    }
+	    TaskState handleUnblock (Task task,
+				     TaskObserver observer)
+	    {
+		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+		task.blockers.remove (observer);
+		if (task.blockers.size () == 0)
+		    return transitionToRunningState (task, signal);
+		return this;
+	    }
+	}
 	    
 	/**
 	 * Got continue, just need to clear the blocks.
@@ -584,26 +612,31 @@ class TaskState
 	private static TaskState wantToAttachContinue =
 	    new StartMainTask ("wantToAttachContinue")
 	    {
-		TaskState blockOrAttachContinue (Task task)
+		TaskState blockOrAttachContinue (Task task, int signal)
 		{
 		    if (task.notifyForkedOffspring () > 0)
 			return StartMainTask.attachContinueBlocked;
-		    return Attached.transitionToRunningState (task);
+		    return Attached.transitionToRunningState (task, signal);
 		}
 		TaskState handleTrappedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-		    return blockOrAttachContinue (task);
+		    return blockOrAttachContinue (task, 0);
 		}
 		TaskState handleStoppedEvent (Task task)
 		{
 		    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
-		    return blockOrAttachContinue (task);
+		    return blockOrAttachContinue (task, 0);
+		}
+		TaskState handleSignaledEvent (Task task, int signal)
+		{
+		    logger.log (Level.FINE, "{0} handleSignaledEvent\n", task);
+		    return blockOrAttachContinue (task, signal);
 		}
 	    };
 	/**
 	 * The task has stopped; just waiting for all the blockers to
-	 * be removed before detaching.
+	 * be removed before finishing the attach.
 	 */
 	private static TaskState attachBlocked =
 	    new StartMainTask ("attachBlocked")
@@ -620,9 +653,9 @@ class TaskState
 		{
 		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		    task.blockers.remove (observer);
-		    if (task.blockers.size () > 0)
-			return StartMainTask.attachBlocked;
-		    return Attached.waitForContinueOrUnblock;
+		    if (task.blockers.size () == 0)
+			return Attached.waitForContinueOrUnblock;
+		    return StartMainTask.attachBlocked;
 		}
 		TaskState handleContinue (Task task)
 		{
@@ -653,8 +686,7 @@ class TaskState
 		    task.blockers.remove (observer);
 		    if (task.blockers.size () > 0)
 			return StartMainTask.attachContinueBlocked;
-		    return Attached.transitionToRunningState (task);
-
+		    return Attached.transitionToRunningState (task, 0);
 		}
 	    };
     }
@@ -741,10 +773,12 @@ class TaskState
     /**
      * Keep the task running.
      */
-    private static class Running extends TaskState{
-	    
-	protected Running(String state) {
-	    super(state);
+    private static class Running
+	extends TaskState
+    {
+	protected Running (String state)
+	{
+	    super (state);
 	}
 	
 	TaskState handleSignaledEvent (Task task, int sig)
@@ -757,6 +791,15 @@ class TaskState
 		task.sendContinue (sig);
 		return running;
 	    }
+	}
+	TaskState handleStoppedEvent (Task task)
+	{
+	    // From time to time bogus stop events appear, for
+	    // instance when the kernel simultaneously receives both
+	    // an attach and signal for an identical process.  Just
+	    // discard them.
+	    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
+	    return this;
 	}
 	//	    TaskState handleSyscalledEvent (Task task)
 	//	    {
@@ -967,7 +1010,7 @@ class TaskState
     /**
      * Sharable instance of the running state.
      */
-    private static final TaskState running = new Running("running");
+    private static final TaskState running = new Running ("running");
 
     /**
      * Sharable instance of the syscallRunning state.

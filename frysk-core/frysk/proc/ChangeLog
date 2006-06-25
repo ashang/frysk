@@ -1,5 +1,11 @@
 2006-06-25  Andrew Cagney  <cagney@redhat.com>
 
+	* StressAttachDetachSignaledTask.java: Enable.  Remove code doing
+	back-to-back attach-detach as it is so agressive that the process
+	never makes forward progress.
+	* TaskState.java: During an attach save any signal delivering it
+	after the attach has completed.
+
 	* StressAttachDetachSignaledTask.java: New file and tests,
 	disable.
 
