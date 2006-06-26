@@ -1,5 +1,9 @@
 2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
 
+	* jline/src/jline/PtyTerminal.java: constructor calls initializeTerminal now
+	
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
 	* jline/src/jline/PtyTerminal.java: new
 
 2006-06-23	Nurdin Premji <npremji@redhat.com>
