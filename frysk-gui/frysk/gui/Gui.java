@@ -46,9 +46,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
@@ -69,7 +67,6 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
 import frysk.Config;
-import frysk.EventLogger;
 import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
