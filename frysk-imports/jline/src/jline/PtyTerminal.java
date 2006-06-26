@@ -41,9 +41,9 @@ import java.util.*;
 
 /**
  *  <p>
- *  Terminal that is used for unix platforms. Terminal initialization
+ *  Terminal that is used for a specifiable pty on unix platforms. Terminal initialization
  *  is handled by issuing the <em>stty</em> command against the
- *  <em>/dev/tty</em> file to disable character echoing and enable
+ *  the pty whose name is passed to contructor to disable character echoing and enable
  *  character input. All known unix systems (including
  *  Linux and Macintosh OS X) support the <em>stty</em>), so this
  *  implementation should work for an reasonable POSIX system.
@@ -70,6 +70,19 @@ public class PtyTerminal
 	public PtyTerminal(String ptyname)
 	{
 		this.ptyname = ptyname;
+		
+		try
+		{
+			initializeTerminal();
+		}
+		catch (IOException ioe)
+		{
+			System.out.println(ioe);
+		}
+		catch (InterruptedException e)
+		{
+			System.out.println(e);
+		}
 	}
 
 	/**
