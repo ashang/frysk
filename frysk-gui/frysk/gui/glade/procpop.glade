@@ -63,26 +63,15 @@
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">_File</property>
 		  <property name="use_underline">True</property>
-		  <accessibility>
-		    <atkproperty name="AtkObject::accessible_name" translatable="yes">menuitem6</atkproperty>
-		    <atkproperty name="AtkObject::accessible_description" translatable="yes">menuitem6</atkproperty>
-		  </accessibility>
 
 		  <child>
 		    <widget class="GtkMenu" id="menuitem6_menu">
-		      <accessibility>
-			<atkproperty name="AtkObject::accessible_name" translatable="yes">menuitem6_menu</atkproperty>
-			<atkproperty name="AtkObject::accessible_description" translatable="yes">menuitem6_menu</atkproperty>
-		      </accessibility>
 
 		      <child>
 			<widget class="GtkImageMenuItem" id="frysk_quit">
 			  <property name="visible">True</property>
 			  <property name="label">gtk-close</property>
 			  <property name="use_stock">True</property>
-			  <accessibility>
-			    <atkproperty name="AtkObject::accessible_description" translatable="yes">Close</atkproperty>
-			  </accessibility>
 			</widget>
 		      </child>
 		    </widget>
@@ -102,7 +91,7 @@
 		      <child>
 			<widget class="GtkMenuItem" id="customObserversMenuItem">
 			  <property name="visible">True</property>
-			  <property name="label" translatable="yes">Custom Observers... (DEMO)</property>
+			  <property name="label" translatable="yes">Manage Custom Observers...</property>
 			  <property name="use_underline">True</property>
 			</widget>
 		      </child>

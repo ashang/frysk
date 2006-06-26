@@ -41,7 +41,7 @@
 	      <child>
 		<widget class="GtkRadioButton" id="SessionManager_debugSingleProcessButton">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes" context="yes">Debug _Process</property>
+		  <property name="label" translatable="yes" context="yes">Debug an Existing _Process</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -102,7 +102,7 @@
 			  <child>
 			    <widget class="GtkLabel" id="label1">
 			      <property name="visible">True</property>
-			      <property name="label" translatable="yes">(None)</property>
+			      <property name="label" translatable="yes">(Click Here to Select a Process)</property>
 			      <property name="use_underline">True</property>
 			      <property name="use_markup">False</property>
 			      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -157,7 +157,7 @@
 		  <child>
 		    <widget class="GtkRadioButton" id="SessionManager_startSessionButton">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes" context="yes">_Start a Session</property>
+		      <property name="label" translatable="yes" context="yes">_Run or Manage Sessions</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>

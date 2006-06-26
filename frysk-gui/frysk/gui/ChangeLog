@@ -1,5 +1,10 @@
 2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/frysk_session_manager.glade: Changed labels, button
+	in conjuction with suggestions.
+	* glade/procpop.glade: Removed DEMO from custom observers
+	menu item.
+
 	* Gui.java (setupCoreLogging): Added. Setup core logging nicely.
 	(gui): Remove old force Level.FINE core logging.
 
