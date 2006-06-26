@@ -47,7 +47,8 @@ import org.gnu.gnomevte.Terminal;
 import java.io.*;
 import frysk.sys.Pty;
 import frysk.cli.hpd.CLI;
-import jline.*;
+import jline.ConsoleReader;
+import jline.PtyTerminal;
 
 public class ConsoleWindow extends Window {
     private Terminal term;
@@ -97,7 +98,7 @@ public class ConsoleWindow extends Window {
 
 			try
 			{
-				jlreader = new ConsoleReader(in, out);
+				jlreader = new ConsoleReader(in, out, null, new PtyTerminal(fname));
 			}
 			catch (IOException ioe)	{
 				System.out.println("ERROR: Could not create a command line");
