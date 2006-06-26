@@ -1,3 +1,7 @@
+2006-06-26  Rick Moseley  <rmoseley@redhat.com>
+
+	* test/dogtail_scripts/FryskHandler.py:  Fix typo.
+
 2006-06-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (Gui): Added log event before frysk core

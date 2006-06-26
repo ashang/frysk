@@ -59,7 +59,7 @@ from DebugSession import DebugSession
 #      <element type="frysk.gui.sessions.DebugProcess" name="init" tooltip="init" executablePath="init">
 #        <observers>
 #          <element name="Task Terminating Observer" />
-#          <element name="Exit Notifiction Observer" />
+#          <element name="Exit Notification Observer" />
 #          <element name="Exec Observer" />
 #        </observers>
 #        <tagsets />
