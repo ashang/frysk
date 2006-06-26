@@ -38,10 +38,10 @@
 // exception.
 package frysk.cli.hpd;
 
-//import jline.*;
 import java.io.*;
 import java.util.*;
 import java.text.ParseException;
+import java.lang.RuntimeException;
 
 public class CLI 
 {
@@ -155,7 +155,6 @@ public class CLI
 		public void handle(Command cmd) throws ParseException {
 		    // TODO Use a better commands data structure 
 		    out.println("List of commands:");
-		    out.println();
 		    out.println("load");
 		    out.println("run");
 		    out.println("alias");
@@ -207,6 +206,7 @@ public class CLI
 
 		handlers.put("load", new LoadHandler());
 		handlers.put("run", new RunHandler());
+		handlers.put("defset", new DefsetHandler());
 		handlers.put("alias", new AliasHandler());
 		handlers.put("unalias", new UnaliasHandler());
 		handlers.put("set", new SetHandler());
@@ -270,6 +270,10 @@ public class CLI
 				{
 					out.println(e.getMessage());
 				}
+				catch (RuntimeException e)
+				{
+					out.println(e.getMessage());
+				}
 			}
 		}
 
@@ -283,8 +287,28 @@ public class CLI
 
 		if (parsed.getType() == ParsedSet.TYPE_STATE)
 		{
-			//TODO convert state name to something usable
-			result = new StatePTSet(allset, 0);
+			int state = 0;
+			if (parsed.getName().equals("running"))
+				state = AllPTSet.TASK_STATE_RUNNING;
+			else if (parsed.getName().equals("stopped"))
+				state = AllPTSet.TASK_STATE_STOPPED;
+			else if (parsed.getName().equals("runnable"))
+				state = AllPTSet.TASK_STATE_RUNNABLE;
+			else if (parsed.getName().equals("held"))
+				state = AllPTSet.TASK_STATE_HELD;
+			else
+			{
+				throw new RuntimeException("Illegal state name.");
+			}
+
+			if (parsed.isStatic())
+			{
+				result = new StaticPTSet(allset.getSubsetByState(state));
+			}
+			else
+			{
+				result = new StatePTSet(allset, state);
+			}
 		}
 		else if (parsed.getType() == ParsedSet.TYPE_HPD)
 		{
@@ -295,7 +319,15 @@ public class CLI
 		}
 		else if (parsed.getType() == ParsedSet.TYPE_NAMED)
 		{
-			result = (PTSet) namedPTSets.get(parsed.getName());
+			
+			if (parsed.isStatic())
+			{
+				//TODO give an error here
+			}
+			else
+			{
+				result = (PTSet) namedPTSets.get(parsed.getName());
+			}
 		}
 		else if (parsed.getType() == ParsedSet.TYPE_EXEC)
 		{

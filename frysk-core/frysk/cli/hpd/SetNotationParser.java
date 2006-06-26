@@ -63,24 +63,30 @@ class SetNotationParser
 		ParsedSet result;
 		set = set.replaceAll(" +", "");
 		String setnobr = set.substring(1,set.length()-1); // the set with brackets removed
+		boolean isstatic = false;
 
+		if (setnobr.charAt(0) == '!')
+		{
+			isstatic = true;
+			setnobr = set.substring(1);
+		}
+		
 		if (setnobr.matches("\\w*"))
 		{
 			if (setnobr.equals("running") ||
 				setnobr.equals("stopped") ||
 				setnobr.equals("runnable") ||
 				setnobr.equals("held"))
-				result = new ParsedSet(ParsedSet.TYPE_STATE, setnobr);
+				result = new ParsedSet(ParsedSet.TYPE_STATE, setnobr, isstatic);
 			else
-				result = new ParsedSet(ParsedSet.TYPE_NAMED, setnobr);
+				result = new ParsedSet(ParsedSet.TYPE_NAMED, setnobr, isstatic);
 		}
 		else if (set.matches("exec(\\w*)"))
 		{
-			result = new ParsedSet(ParsedSet.TYPE_EXEC, setnobr.substring(5, setnobr.length()-1));
+			result = new ParsedSet(ParsedSet.TYPE_EXEC, setnobr.substring(5, setnobr.length()-1), isstatic);
 		}
 		else
 		{
-
 			Vector root = new Vector();
 
 			notation = set;
@@ -89,12 +95,12 @@ class SetNotationParser
 
 			S_1(root); //call first production
 
-			result = new ParsedSet( (ParseTreeNode[]) root.toArray(new ParseTreeNode[0]), setIsStatic(set));
+			result = new ParsedSet( (ParseTreeNode[]) root.toArray(new ParseTreeNode[0]), isstatic);
 		}
 
 		return result;
 	}
-
+/*
 	private static boolean setIsStatic(String set)
 	{
 		set = set.trim();
@@ -105,6 +111,7 @@ class SetNotationParser
 		else
 			return false;
 	}
+*/
 
 	/*
 	 * We don't need a lexer, screw that

@@ -61,13 +61,14 @@ class ParsedSet
 	/**
 	 * Constructor for TYPE_NAMED, TYPE_EXEC, TYPE_STATE set notation
 	 */
-	public ParsedSet(int type, String name)
+	public ParsedSet(int type, String name, boolean isstatic)
 	{
-		if (type < 0 || type > 2)
-			throw new IllegalArgumentException("Unrecognized type in ParsedNotation.");
+		if (type < TYPE_NAMED || type > TYPE_STATE)
+			throw new IllegalArgumentException("Illegal type in ParsedSet constructor.");
 
 		this.type = type;
 		this.name = name;
+		this.isStatic = isstatic;
 	}
 
 	/**

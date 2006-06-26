@@ -59,6 +59,12 @@ import java.lang.RuntimeException;
  */
 class AllPTSet implements PTSet
 {
+
+	public static final int TASK_STATE_RUNNING = 0;
+	public static final int TASK_STATE_STOPPED = 1;
+	public static final int TASK_STATE_RUNNABLE = 2;
+	public static final int TASK_STATE_HELD = 3;
+
 	// parallel arrays are not cute, but in this case they are handy
 	// Proc at proSet[i] has it's tasks in taskSets[i] in the form of a vector
 	Vector taskSets; // a Vector of Vectors containing Tasks
@@ -274,6 +280,11 @@ class AllPTSet implements PTSet
 	}
 
 	public ProcTasks[] getSubsetByState(int state)
+	{
+		return null;
+	}
+
+	public ProcTasks[] getSubsetByExec(String execname)
 	{
 		return null;
 	}
