@@ -46,8 +46,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
 import java.util.prefs.Preferences;
@@ -67,6 +70,7 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
 import frysk.Config;
+import frysk.EventLogger;
 import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
@@ -289,20 +293,8 @@ implements LifeCycleListener, Saveable
 
 		createDummyTagsets();
 	
-		// Uncomment below code to force core logging 
-		// Need to add LogManager soon to do this with finesse.
-	
-		//logger = EventLogger.get ("logs/", "frysk_core_event.log");
-		//Level level = Level.parse ("FINE");
-		//logger.setLevel(level);
-		//Level consoleLevel = Level.parse("FINE");
-	    //Handler consoleHandler = new ConsoleHandler ();
-        //consoleHandler.setLevel (consoleLevel);
-        //logger.addHandler (consoleHandler);
-        //logger.setLevel (consoleLevel);
-		
-		// End of core logger code comment block
-		
+		setupCoreLogging();
+
 		
 		TrayIcon trayIcon;
 		Gui procpop = null;
@@ -463,5 +455,39 @@ implements LifeCycleListener, Saveable
 			
 		}
 		
+	}
+	
+	private static void setupCoreLogging() {
+		// Get Core logger
+
+		logger = EventLogger.get ("logs/", "frysk_core_event.log");
+	    Handler consoleHandler = new ConsoleHandler ();
+        logger.addHandler (consoleHandler);		
+        
+		// Set the location of the level sets
+		System.setProperty("java.util.logging.config.file", Config.FRYSK_DIR+"logging.properties");
+		LogManager logManager = LogManager.getLogManager();
+		logManager.addLogger(logger);
+		
+		Level loggerLevel = Level.OFF;	
+		try {
+			loggerLevel = Level.parse(logManager.getProperty("java.util.logging.FileHandler.level"));
+		} catch (IllegalArgumentException e) {
+			loggerLevel = Level.OFF;
+		} catch (NullPointerException e1) {
+			loggerLevel = Level.OFF;
+		}
+		
+		Level consoleLoggerLevel = Level.OFF;	
+		try {
+			consoleLoggerLevel = Level.parse(logManager.getProperty("java.util.logging.ConsoleHandler.level"));
+		} catch (IllegalArgumentException e) {
+			consoleLoggerLevel = Level.OFF;
+		} catch (NullPointerException e1) {
+			consoleLoggerLevel = Level.OFF;
+		}
+		
+		logger.setLevel(loggerLevel);
+		consoleHandler.setLevel(consoleLoggerLevel);
 	}
 }
