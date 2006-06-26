@@ -111,7 +111,7 @@ public class ConsoleWindow extends Window {
 
 			try
 			{
-				while (line != null && !line.equals("quit"))
+				while (line != null && !line.trim().equals("quit"))
 				{
 					line = jlreader.readLine(cli.getPrompt());
 					cli.execCommand(line);
@@ -123,6 +123,8 @@ public class ConsoleWindow extends Window {
 				System.out.println("ERROR: Could not read from command line");
 				System.out.print(ioe.getMessage());
 			}
+
+			ConsoleWindow.this.shutDown();
 		}
 	}
 
@@ -155,8 +157,6 @@ public class ConsoleWindow extends Window {
 		String name = pty.getName ();
 		System.out.println ("master = " + master + " name = " + name);
 
-		//term = Terminal.terminalAndShell();
-		//term = new Terminal("/bin/bash", cmdargs, ".");
 		term = new Terminal();
 		term.setPty (master);
 		
