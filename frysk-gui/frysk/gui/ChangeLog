@@ -1,3 +1,9 @@
+2006-06-26  Adam Jocksch  <ajocksch@redhat.com>
+
+	* glade/registerwindow.glade: Set the border width on the main
+	register window to 12 and set the minimum height and widgth on the
+	register and register format dialogs.
+
 2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (gui): Added core logger thump (commented out)
