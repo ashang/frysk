@@ -46,7 +46,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.InvalidPreferencesFormatException;
@@ -67,6 +69,7 @@ import org.gnu.pango.Style;
 import org.gnu.pango.Weight;
 
 import frysk.Config;
+import frysk.EventLogger;
 import frysk.event.TimerEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
@@ -105,6 +108,8 @@ implements LifeCycleListener, Saveable
 	private static final String GLADE_FILE = "procpop.glade";
 	private static final String CREATE_SESSION_GLADE = "frysk_create_session_druid.glade";
 	private static final String SESSION_MANAGER_GLADE = "frysk_session_manager.glade";
+	
+	static Logger logger;
 	
 	public static final String ERROR_LOG_ID = "frysk.gui.errorlog";
 	
@@ -284,8 +289,24 @@ implements LifeCycleListener, Saveable
 		Gtk.init(args);
 		
 		// Creates example tagsets until we can have real ones.
+
 		createDummyTagsets();
-			
+	
+		// Uncomment below code to force core logging 
+		// Need to add LogManager soon to do this with finesse.
+	
+		//logger = EventLogger.get ("logs/", "frysk_core_event.log");
+		//Level level = Level.parse ("FINE");
+		//logger.setLevel(level);
+		//Level consoleLevel = Level.parse("FINE");
+	    //Handler consoleHandler = new ConsoleHandler ();
+        //consoleHandler.setLevel (consoleLevel);
+        //logger.addHandler (consoleHandler);
+        //logger.setLevel (consoleLevel);
+		
+		// End of core logger code comment block
+		
+		
 		TrayIcon trayIcon;
 		Gui procpop = null;
 		Preferences prefs = null;

@@ -1,3 +1,7 @@
+2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java (gui): Added core logger thump (commented out)
+
 2006-06-26  Rick Moseley  <rmoseley@redhat.com>
 
 	* test/dogtail_scripts/FryskHandler.py:  Fix typo.
