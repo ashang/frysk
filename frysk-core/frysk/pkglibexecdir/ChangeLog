@@ -1,3 +1,7 @@
+2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* funit-forks.c: Removed waits.
+
 2006-06-25  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* funit-forks.c: Fix warnings. Removed printed output.

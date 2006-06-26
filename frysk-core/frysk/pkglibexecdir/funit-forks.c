@@ -60,7 +60,9 @@ main(int ac, char * av[])
       {
 	int run;
 	struct timespec rs;
-	struct timespec ts = {0, lrint (drand48() * pfactor)};
+	//struct timespec ts = {0, lrint (drand48() * pfactor)};
+	struct timespec ts = {0, 0};
+
 	//fprintf (stderr, "iteration %d active %d pfactor %g delay %g\r",
 	//	 limit, active, ((double)pfactor)/1.0e9,
 	//	 ((double)ts.tv_nsec)/1.0e9);
