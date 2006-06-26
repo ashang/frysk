@@ -147,7 +147,7 @@ public class CLI
 	class QuitHandler implements CommandHandler
     {
 		public void handle(Command cmd) throws ParseException {
-		       System.exit(1);
+		       //System.exit(1);
 		}
 	}
 	class HelpHandler implements CommandHandler
