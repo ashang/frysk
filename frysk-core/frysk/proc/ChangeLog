@@ -1,3 +1,7 @@
+2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StressAttachDetachRapidlyForkingMainTask.java: New.
+
 2006-06-25  Andrew Cagney  <cagney@redhat.com>
 
 	* StressAttachDetachSignaledTask.java: Enable.  Remove code doing
