@@ -1,6 +1,6 @@
 2006-06-25  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* funit-forks.c: Fix warnings.
+	* funit-forks.c: Fix warnings. Removed printed output.
 	* funit-forks.c: Added Chris Moller's fork
 	stress tester. 
 

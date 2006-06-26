@@ -61,9 +61,9 @@ main(int ac, char * av[])
 	int run;
 	struct timespec rs;
 	struct timespec ts = {0, lrint (drand48() * pfactor)};
-	fprintf (stderr, "iteration %d active %d pfactor %g delay %g\r",
-		 limit, active, ((double)pfactor)/1.0e9,
-		 ((double)ts.tv_nsec)/1.0e9);
+	//fprintf (stderr, "iteration %d active %d pfactor %g delay %g\r",
+	//	 limit, active, ((double)pfactor)/1.0e9,
+	//	 ((double)ts.tv_nsec)/1.0e9);
 	run = 1;
 	while (run) {
 	  if (0 == nanosleep (&ts, &rs)) run = 0;
