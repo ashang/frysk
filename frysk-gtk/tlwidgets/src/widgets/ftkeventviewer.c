@@ -679,7 +679,7 @@ ftk_ev_button_press_event (GtkWidget * widget,
 }
 
 static void
-ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl)
+ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl, double dx)
 {
   GtkWidget * window = gtk_window_new (GTK_WINDOW_POPUP);
   GtkWidget * frame = gtk_frame_new (NULL);
@@ -700,35 +700,43 @@ ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl)
   gtk_widget_set_app_paintable (window, TRUE);
   gtk_container_set_border_width (GTK_CONTAINER (window), 2);
   gtk_widget_ensure_style (window);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_misc_set_alignment (GTK_MISC (label), 0.5, 0.5);
+  
+  gtk_widget_show (label);
+  gtk_container_add (GTK_CONTAINER (frame), label);
+  gtk_widget_show (frame);
+  gtk_container_add (GTK_CONTAINER (window), frame);
 
   {
+    GtkRequisition req;
+    int offset;
     gint px, py;
     GtkWidget * widget = GTK_WIDGET (eventviewer);
 
     gdk_display_get_pointer (gdk_screen_get_display (gtk_widget_get_screen (widget)),
 			     NULL, &px, &py, NULL);
 
-    gtk_window_move (GTK_WINDOW (ftk_ev_popup_window (eventviewer)), px + 10, py);
+    gtk_widget_size_request (frame, &req);
+
+    offset = lrint ((dx/((double)(widget->allocation.width))) *
+		    ((double)(req.width)));
+
+    /* the +4 in py +4 is because if the ptr is in the moved window after
+     * the move, the window pops down */
+    gtk_window_move (GTK_WINDOW (ftk_ev_popup_window (eventviewer)),
+		     (px + 10) - offset, py + 4);
     gtk_widget_show (ftk_ev_popup_window (eventviewer));
   }
-
-  
-  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.5, 0.5);
-  gtk_widget_show (label);
-  gtk_container_add (GTK_CONTAINER (frame), label);
-  gtk_widget_show (frame);
-
-  gtk_container_add (GTK_CONTAINER (window), frame);
 }
 
 static void
-ftk_create_popup (FtkEventViewer * eventviewer, char * lbl)
+ftk_create_popup (FtkEventViewer * eventviewer, char * lbl, double dx)
 {
   if (ftk_ev_popup_window (eventviewer))
     gtk_label_set_text (GTK_LABEL (ftk_ev_popup_label (eventviewer)), lbl);
   else 
-    ftk_create_popup_window (eventviewer, lbl);
+    ftk_create_popup_window (eventviewer, lbl, dx);
 }
 
 #define MULTI_EVENT_INCR 4
@@ -959,7 +967,7 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 	ftk_ev_popup_trace (eventviewer) = trace_idx;
 	if ((lbl = create_popup_label (eventviewer, pt, trace, revent, marker_idx, time_d,
 				       multi_event_next, multi_event)))
-	  ftk_create_popup (eventviewer, lbl);	
+	  ftk_create_popup (eventviewer, lbl, event->x);	
       }
     }
     else {
@@ -974,7 +982,7 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 	  ftk_ev_popup_marker (eventviewer) = marker_idx;
 	  if ((lbl = create_popup_label (eventviewer, pt, trace, revent, marker_idx, time_d,
 					 multi_event_next, multi_event)))
-	    ftk_create_popup (eventviewer, lbl);	
+	    ftk_create_popup (eventviewer, lbl, event->x);	
 	}
       }
       else {		/* existing popup, no hit, pop down */

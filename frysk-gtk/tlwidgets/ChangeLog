@@ -1,3 +1,10 @@
+2006-06-26  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c: Fix for bz 2844: the info pop-up
+	getting clipped when it exceeds the right-hand edge of the frysk
+	top-level window.  Patched by postioning the pop- proportionally
+	to the offset of the ptr w.r.t the size ofthe widget.
+
 2006-06-23  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c: Added a bit of widget clean-up I
