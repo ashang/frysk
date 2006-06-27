@@ -169,7 +169,8 @@ public class SourceWindowFactory {
 		if(map.containsKey(proc)){
 			// Do something here to revive the existing window
 			s = (SourceWindow) map.get(proc);
-			s.grabFocus();
+			s.showAll();
+			WindowManager.theManager.sessionManager.hide();
 		}
 		else{
 			DOMFrysk dom = null;
@@ -298,12 +299,21 @@ public class SourceWindowFactory {
 			if(arg0.isOfType(LifeCycleEvent.Type.DELETE)){
 				if(map.containsValue(arg0.getSource())){
 					SourceWindow s = (SourceWindow) arg0.getSource();
-                    map.remove(s.getMyTask());
+					Task t = s.getMyTask();
+                    map.remove(t);
+                    
+                    if(blockerMap.containsKey(t)){
+                    	TaskObserver.Attached observer = (TaskObserver.Attached) blockerMap.get(t);
+                    	t.requestUnblock(observer);
+                    	t.requestDeleteAttachedObserver(observer);
+                    }
+                    
                     WindowManager.theManager.sessionManager.show();
+                    s.hideAll();
 				}
 			}
 			
-			return false;
+			return true;
 		}
 		
 	}

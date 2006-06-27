@@ -1,3 +1,11 @@
+2006-06-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindowFactory.java (finishSourceWindow): If a source window
+	has been previously opened for this task restore it and hide the
+	session manager.
+	(SourceWinListener.lifeCycleQuery): Now unblocks the task when the 
+	source window closes.
+
 2006-06-22  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (finishSourceWindow): Now hides the
