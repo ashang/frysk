@@ -563,6 +563,7 @@ class TaskState
 			// Ya! All the blockers have been removed.
 			task.sendDetach (0);
 			task.proc.performTaskDetachCompleted (task);
+			return detached;
 		    }
 		    return StartMainTask.detachBlocked;
 		}

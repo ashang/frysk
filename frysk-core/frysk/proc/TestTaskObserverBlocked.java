@@ -207,7 +207,6 @@ public class TestTaskObserverBlocked
 	    assertRunUntilStop ("run to spawn");
 	    assertInState (SPAWN_OFFSPRING);
 	}
-
 	/**
 	 * Unblock the child, then confirm that it is running (running
 	 * child will signal this process).
@@ -340,7 +339,7 @@ public class TestTaskObserverBlocked
 	fork.assertUnblockOffspring ();
 	fork.assertUnblockParent ();
     }
-    /*
+    /**
      * Check that a fork observer can block both the parent and
      * child, and that the parent can be allowed to run before the
      * child.
@@ -351,6 +350,56 @@ public class TestTaskObserverBlocked
 	fork.assertRunToSpawn ();
 	fork.assertUnblockParent ();
 	fork.assertUnblockOffspring ();
+    }
+    /**
+     * Check that an unblocked offspring, that then exits, can be
+     * refreshed.  This confirms that an unblocked task transitioned
+     * to detached.
+     */
+    public void testRefreshAfterUnblockedForkExits ()
+    {
+	AckProcess proc = new AckDaemonProcess ();
+	Task task = proc.findTaskUsingRefresh (true);
+	class ForkUnblock
+	    extends TaskObserverBase
+	    implements TaskObserver.Forked
+	{
+	    Task parent;
+	    Task offspring;
+	    public void addedTo (Object o)
+	    {
+		Manager.eventLoop.requestStop ();
+	    }
+	    public Action updateForkedParent (Task parent, Task offspring)
+	    {
+		this.parent = parent;
+		this.offspring = offspring;
+		return Action.CONTINUE;
+	    }
+	    public Action updateForkedOffspring (Task parent, Task offspring)
+	    {
+		offspring.requestUnblock (this);
+		return Action.BLOCK;
+	    }
+	}
+	ForkUnblock forkUnblock = new ForkUnblock ();
+	task.requestAddForkedObserver (forkUnblock);
+	assertRunUntilStop ("adding fork observer");
+
+	// Create a child process, will transition through to
+	// detached.
+	proc.addFork ();
+	
+	// Now make the child exit.  Frysk's core can't see this since
+	// it isn't attached to the process.
+	proc.delFork ();
+
+	logger.log (Level.FINE, "{0} parent\n", forkUnblock.parent);
+	logger.log (Level.FINE, "{0} offspring\n", forkUnblock.offspring);
+
+	// Finally force a refresh.
+	host.requestRefreshXXX (true);
+	Manager.eventLoop.runPending ();
     }
 
 
