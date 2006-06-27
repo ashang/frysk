@@ -189,6 +189,7 @@ public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleLi
 			}});
 		
 		previousSessions.setStickySelect(true);
+		previousSessions.setSort();
 
 		editSession = (Button) glade.getWidget("SessionManager_editSessionButton");
 		copySession = (Button) glade.getWidget("SessionManager_copySessionButton");

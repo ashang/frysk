@@ -82,10 +82,12 @@ import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceGroup;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.monitor.ConsoleWindow;
+import frysk.gui.monitor.CoreDebugLogViewer;
 import frysk.gui.monitor.FryskErrorFileHandler;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.TrayIcon;
 import frysk.gui.monitor.WindowManager;
+import frysk.gui.monitor.datamodels.CoreDebugHandler;
 import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.srcwin.SourceWindowFactory;
@@ -289,8 +291,17 @@ implements LifeCycleListener, Saveable
 	{
 		Gtk.init(args);
 		
-		// Creates example tagsets until we can have real ones.
 
+		//XXX: a hack to make sure the DataModelManager
+		// is initialized early enough. Should probably
+		// have an entitiy that initializes all Managers
+		DataModelManager.theManager.flatProcObservableLinkedList.getClass();
+
+		IconManager.setImageDir(imagePaths);
+		IconManager.loadIcons();
+		IconManager.useSmallIcons();
+
+		// Creates example tagsets until we can have real ones.
 		createDummyTagsets();
 	
 		setupCoreLogging();
@@ -302,9 +313,6 @@ implements LifeCycleListener, Saveable
 		
 		setupErrorLogging(); 
 		
-		IconManager.setImageDir(imagePaths);
-		IconManager.loadIcons();
-		IconManager.useSmallIcons();
 		
 		Messages.setBundlePaths(messagePaths);
 		
@@ -409,10 +417,7 @@ implements LifeCycleListener, Saveable
 			}
 		});
 		
-		//XXX: a hack to make sure the DataModelManager
-		// is initialized early enough. Should probably
-		// have an entitiy that initializes all Managers
-		DataModelManager.theManager.flatProcObservableLinkedList.getClass();
+
 		
 		TimerEvent timerEvent = new TimerEvent(0, 5000){
 			public void execute() {
@@ -462,13 +467,19 @@ implements LifeCycleListener, Saveable
 
 		logger = EventLogger.get ("logs/", "frysk_core_event.log");
 	    Handler consoleHandler = new ConsoleHandler ();
+	    Handler guiHandler = new CoreDebugHandler();
         logger.addHandler (consoleHandler);		
+        logger.addHandler(guiHandler);
         
 		// Set the location of the level sets
 		System.setProperty("java.util.logging.config.file", Config.FRYSK_DIR+"logging.properties");
 		LogManager logManager = LogManager.getLogManager();
 		logManager.addLogger(logger);
 		
+		System.out.println(logManager.getProperty("java.util.logging.FileHandler.level"));
+		System.out.println(logManager.getProperty("java.util.logging.ConsoleHandler.level"));
+		System.out.println(logManager.getProperty("frysk.core.debug.WindowHandler.level"));
+
 		Level loggerLevel = Level.OFF;	
 		try {
 			loggerLevel = Level.parse(logManager.getProperty("java.util.logging.FileHandler.level"));
@@ -487,7 +498,23 @@ implements LifeCycleListener, Saveable
 			consoleLoggerLevel = Level.OFF;
 		}
 		
+		Level guiLoggerLevel = Level.OFF;	
+		try {
+			guiLoggerLevel = Level.parse(logManager.getProperty("frysk.core.debug.WindowHandler.level"));
+		} catch (IllegalArgumentException e) {
+			guiLoggerLevel = Level.OFF;
+		} catch (NullPointerException e1) {
+			guiLoggerLevel = Level.OFF;
+		}
+		
+		if (guiLoggerLevel != Level.OFF) {
+			CoreDebugLogViewer logShow = new CoreDebugLogViewer();
+			logShow.showAll();
+		
+		}
+		
 		logger.setLevel(loggerLevel);
 		consoleHandler.setLevel(consoleLoggerLevel);
+		guiHandler.setLevel(guiLoggerLevel);
 	}
 }
