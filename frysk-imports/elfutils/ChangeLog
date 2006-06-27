@@ -1,3 +1,7 @@
+2006-06-27  Rick Moseley  <rmoseley@redhat.com>
+
+	* Makefile.am: Change to not install for frysk.
+
 2005-11-18  Roland McGrath  <roland@redhat.com>
 
 	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): New variable.
