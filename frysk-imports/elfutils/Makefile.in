@@ -540,7 +540,6 @@ check: check-recursive
 all-am: Makefile config.h
 installdirs: installdirs-recursive
 installdirs-am:
-install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -636,6 +635,10 @@ distcheck-hook:
 
 rpm: dist
 	rpmbuild -ts --sign elfutils-@PACKAGE_VERSION@.tar.gz
+
+# Do not install the copy embedded in frysk:
+install:
+	: Do not install elfutils.
 
 # Tell version 3.79 and up of GNU make to not build goals in this
 # directory in parallel.
