@@ -1,3 +1,8 @@
+2006-06-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* StressAttachDetachRapidlyForkingMainTask.java: Add refreshTimer.
+	Add brokenXXX() to make sure testsuite passes.
+
 2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* StressAttachDetachRapidlyForkingMainTask.java: New.

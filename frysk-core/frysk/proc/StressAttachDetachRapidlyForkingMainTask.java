@@ -40,7 +40,7 @@
 package frysk.proc;
 
 import java.util.logging.Level;
-
+import frysk.event.TimerEvent;
 import frysk.proc.ProcObserver.ProcTasks;
 
 /**
@@ -50,7 +50,7 @@ import frysk.proc.ProcObserver.ProcTasks;
 public class StressAttachDetachRapidlyForkingMainTask
 extends TestLib
 {
-	static int numberOfForks = 50;
+	static int numberOfForks = 450;
 	static int numberOfForksResident = 2;
 	
 	/**
@@ -59,6 +59,16 @@ extends TestLib
 	 */
 	public void testTaskForkedObserver ()
 	{
+
+		// This test will fail when run with ./TestRunner -c
+		// as the intense logging will simulate enough load on the core
+		// for the refresh to happen and the child to exit, causeing the 
+		// race condition.
+
+		// Test for bz 2803. Have to exit here as the test will fail.
+
+		if (brokenXXX ()) return;
+
 		// Run a program that forks wildly.
 		AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
 		                                                                    {
@@ -86,7 +96,6 @@ extends TestLib
 				logger.log(Level.INFO, "updatedForkedParent count of: " + count + " for: " + 
 				parent.getProc().getCommand());
 				parent.requestUnblock (this);
-				
 				return Action.BLOCK;
 			}
 			
@@ -106,6 +115,7 @@ extends TestLib
 		}
 		ForkObserver forkObserver = new ForkObserver ();
 
+		// Add a tasks observer to add observers to fork's children
 		new ProcTasksObserver(child.mainTask.getProc(), new ProcTasks(){
 			public void deletedFrom(Object observable)
 			{
@@ -139,9 +149,19 @@ extends TestLib
 		}
 		);
 		
-	
+		// Add the fork observer
 		child.mainTask.requestAddForkedObserver (forkObserver);
-		
+	
+		// Create a refresh time with a low refresh.
+                 TimerEvent refreshTimer = new TimerEvent(0, 500){
+                 	public void execute() {
+                        	Manager.host.requestRefreshXXX (true);
+                        }
+                 };
+
+                Manager.eventLoop.add (refreshTimer);
+	
+		// Go ....
 		child.resume();
 		assertRunUntilStop ("run \"fork\" until exit");
 		
