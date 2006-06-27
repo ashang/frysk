@@ -1,7 +1,7 @@
 2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (getSessionManagementControls): Set doSort().
-	* Gui.java (setupCoreLogging): Setup guiEventLogger.
+	* Gui.java (setupCoreLogging): Setup guiEventLogger. Remove debug output.
 	
 	* glade/frysk_session_manager.glade: Changed labels, button
 	in conjuction with suggestions.

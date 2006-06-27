@@ -476,10 +476,6 @@ implements LifeCycleListener, Saveable
 		LogManager logManager = LogManager.getLogManager();
 		logManager.addLogger(logger);
 		
-		System.out.println(logManager.getProperty("java.util.logging.FileHandler.level"));
-		System.out.println(logManager.getProperty("java.util.logging.ConsoleHandler.level"));
-		System.out.println(logManager.getProperty("frysk.core.debug.WindowHandler.level"));
-
 		Level loggerLevel = Level.OFF;	
 		try {
 			loggerLevel = Level.parse(logManager.getProperty("java.util.logging.FileHandler.level"));
