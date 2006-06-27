@@ -126,7 +126,16 @@ public class DebugProcess extends GuiObject {
 			public void update(Observable observable, Object arg) {
 				GuiProc guiProc = (GuiProc) arg;
 				if((guiProc.getNiceExecutablePath()).equals(executablePath)){
-					addProc(guiProc);
+					//XXX: Hack this out. Needs core investigation. This will be caught 
+					//when bash forks().The child fork is named /bin/bash and 
+					//it will try to be added to a session here if the parent 
+					//had a fork process observer added. However the child will
+					//very soon be exec'd and in a short lived process, die.
+					//This will cause havoc in core state machine, because
+					//we are asking it to do continue attaching observer to a detached process.
+					//Double Jeopardy.
+
+					//addProc(guiProc);
 				}
 			}
 		});

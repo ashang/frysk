@@ -1,3 +1,7 @@
+2006-06-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* sessions/DebugProcess.java (update): Remove addProc().
+
 2006-06-27  Mike Cvet  <mcvet@redhat.com>
 
 	* Gui.java (gui): Added functionality for creating and looking for 
