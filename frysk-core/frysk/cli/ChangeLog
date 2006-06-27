@@ -1,3 +1,19 @@
+2006-06-27  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/SetNotationParser.java: fixed bug
+	* hpd/TestSetParser.java: two more tests
+
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/ParsedSet.java: Added support for static name and exec sets
+	* hpd/CLI.java: Added support for static name and exec sets, minor fixes
+	* hpd/SetNotationParser.java: Conform to ParsedSet changes
+	* hpd/AllPTSet.java: minor edit
+
+2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/CLI.java: remove call to System.exit()
+
 2006-06-25  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* hpd/CLI.java: commented out and changed the name of "main"
