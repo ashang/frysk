@@ -1,3 +1,14 @@
+2006-06-27  Mike Cvet  <mcvet@redhat.com>
+
+	* Gui.java (gui): Added functionality for creating and looking for 
+	lockfiles in ~/.frysk to show that frysk is already running. If the lock
+	exists, and belongs to a currently-running instance, bring up the current
+	instance and exit. Fixes #2857.
+	(importPreferences): Removed directory check, redundant from the lockfile
+	checking.
+	(MultipleInvocationEvent): Added - signals for multiple startups.
+	(InterruptEvent): Added - exit cleanly after an interrupt.
+
 2006-06-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* register/RegisterWindow.java (setTask): Now sets the title of the

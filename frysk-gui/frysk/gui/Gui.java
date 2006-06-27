@@ -72,6 +72,7 @@ import org.gnu.pango.Weight;
 import frysk.Config;
 import frysk.EventLogger;
 import frysk.event.TimerEvent;
+import frysk.event.SignalEvent;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.Messages;
 import frysk.gui.common.dialogs.DialogManager;
@@ -97,6 +98,9 @@ import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
 import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Manager;
+import frysk.sys.Signal;
+import frysk.sys.Sig;
+import frysk.sys.Pid;
 
 public class Gui
 implements LifeCycleListener, Saveable
@@ -239,11 +243,6 @@ implements LifeCycleListener, Saveable
 		InputStream is = null;
 		Preferences prefs = null;
 		
-		File checkFrysk = new File (Config.FRYSK_DIR);
-		if (!checkFrysk.exists()){
-			checkFrysk.mkdirs();
-		}
-		
 		File checkFile = new File (location);
 		if (checkFile.exists()){
 			try {
@@ -289,6 +288,41 @@ implements LifeCycleListener, Saveable
 			String[] messagePaths,
 			String[] testfilePaths)
 	{
+		
+		/* Make sure that a Frysk invocation is not already running */
+		int currentlyRunningPID;
+    	File dir = new File(Config.FRYSK_DIR);
+    	
+    	if (dir.exists()) {
+    		String[] contents = dir.list();
+    		for (int i = 0; i < contents.length; i++) {
+    			if (contents[i].startsWith("lock")) {
+    				currentlyRunningPID = Integer.parseInt(contents[i].substring(4));
+    				System.out.println("Frysk is already running!");
+    				try {
+    				Signal.kill(currentlyRunningPID, Sig.USR1);
+    				} catch (Exception e) {
+    					/* The lock file shouldn't be there */
+    					File f = new File(Config.FRYSK_DIR + contents[i]);
+    					f.delete();
+    					break;
+    				}
+    				System.exit(0);
+    			}
+    		}
+    	}
+    	else
+    		dir.mkdir();
+    	
+    	File lock = new File(Config.FRYSK_DIR + "lock" + Pid.get());
+    	try {
+    		lock.createNewFile();
+    		lock.deleteOnExit();
+    	} catch (IOException ioe) {
+    		System.out.println(ioe.getMessage());
+    		System.exit(1);
+    	}
+		
 		Gtk.init(args);
 		
 
@@ -444,6 +478,20 @@ implements LifeCycleListener, Saveable
 			}
 		});
 		
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				MultipleInvocationEvent mie = new MultipleInvocationEvent();
+				Manager.eventLoop.add (mie);
+			}
+		});
+		
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				InterruptEvent ie = new InterruptEvent();
+				Manager.eventLoop.add (ie);
+			}
+		});
+		
 		Gtk.main();
 		
 		Manager.eventLoop.requestStop();
@@ -512,5 +560,35 @@ implements LifeCycleListener, Saveable
 		logger.setLevel(loggerLevel);
 		consoleHandler.setLevel(consoleLoggerLevel);
 		guiHandler.setLevel(guiLoggerLevel);
+	}
+	
+	/* Handle a signal if another instance of Frysk is started */
+	static class MultipleInvocationEvent extends SignalEvent {
+		
+		public MultipleInvocationEvent() {
+			super(Sig.USR1);
+			logger.log (Level.FINE, "{0} MultipleInvocationEvent\n", this);
+		}
+		
+		public final void execute ()
+		{
+		    logger.log (Level.FINE, "{0} execute\n", this); 
+		    WindowManager.theManager.mainWindow.showAll();
+		}
+	}
+	
+	/* If the user cntl-c interrupts, handle it cleanly */
+	static class InterruptEvent extends SignalEvent {
+		
+		public InterruptEvent() {
+			super(Sig.INT);
+			logger.log (Level.FINE, "{0} InterruptEvent\n", this);
+		}
+		
+		public final void execute ()
+		{
+		    logger.log (Level.FINE, "{0} execute\n", this); 
+		    Gtk.mainQuit();
+		}
 	}
 }
