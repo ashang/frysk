@@ -2,8 +2,8 @@
 
 	* Gui.java (gui): Added functionality for creating and looking for 
 	lockfiles in ~/.frysk to show that frysk is already running. If the lock
-	exists, and belongs to a currently-running instance, bring up the current
-	instance and exit. Fixes #2857.
+	exists, and belongs to a currently-running instance then exit. Fixes #2857.
+	A bug prevents the window from being raised properly.
 	(importPreferences): Removed directory check, redundant from the lockfile
 	checking.
 	(MultipleInvocationEvent): Added - signals for multiple startups.

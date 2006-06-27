@@ -298,7 +298,6 @@ implements LifeCycleListener, Saveable
     		for (int i = 0; i < contents.length; i++) {
     			if (contents[i].startsWith("lock")) {
     				currentlyRunningPID = Integer.parseInt(contents[i].substring(4));
-    				System.out.println("Frysk is already running!");
     				try {
     				Signal.kill(currentlyRunningPID, Sig.USR1);
     				} catch (Exception e) {
@@ -307,6 +306,7 @@ implements LifeCycleListener, Saveable
     					f.delete();
     					break;
     				}
+    				System.out.println("Frysk is already running!");
     				System.exit(0);
     			}
     		}
@@ -571,9 +571,9 @@ implements LifeCycleListener, Saveable
 		}
 		
 		public final void execute ()
-		{
+		{	
 		    logger.log (Level.FINE, "{0} execute\n", this); 
-		    WindowManager.theManager.mainWindow.showAll();
+		    //WindowManager.theManager.mainWindow.showAll();
 		}
 	}
 	
