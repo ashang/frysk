@@ -1,5 +1,10 @@
 2006-06-27  Adam Jocksch  <ajocksch@redhat.com>
 
+	SourceWindow.java (doStackUp): No longer uses the outdate widget
+	from glade, now uses the local CurrenStackView variable.
+	(doStackDown): Ditto.
+	(doStackBottom): Ditto.
+
 	* SourceWindowFactory.java (finishSourceWindow): If a source window
 	has been previously opened for this task restore it and hide the
 	session manager.

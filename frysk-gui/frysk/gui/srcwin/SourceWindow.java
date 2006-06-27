@@ -74,7 +74,6 @@ import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
 import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreeView;
 import org.gnu.gtk.Widget;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ActionEvent;
@@ -1093,18 +1092,15 @@ public class SourceWindow extends Window{
 	 * 
 	 */
 	private void doStackUp() {
-		System.out.println("Stack up");
-		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
-
-		int selected = stackList.getSelection().getSelectedRows()[0]
+		int selected = this.stackView.getSelection().getSelectedRows()[0]
 				.getIndices()[0];
 
 		// Can't move above top stack
 		if (selected == 0)
 			return;
-
-		stackList.getSelection().select(
-				stackList.getModel().getIter("" + (selected - 1)));
+		
+		this.stackView.getSelection().select(
+				this.stackView.getModel().getIter("" + (selected - 1)));
 	}
 
 	/**
@@ -1112,23 +1108,20 @@ public class SourceWindow extends Window{
 	 * 
 	 */
 	private void doStackDown() {
-		System.out.println("Stack down");
-		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
-
-		int selected = stackList.getSelection().getSelectedRows()[0]
+		int selected = this.stackView.getSelection().getSelectedRows()[0]
 				.getIndices()[0];
 
 		int max = 0;
-		TreeIter iter = stackList.getModel().getIter("" + max);
+		TreeIter iter = this.stackView.getModel().getIter("" + max);
 		while (iter != null)
-			iter = stackList.getModel().getIter("" + max++);
+			iter = this.stackView.getModel().getIter("" + max++);
 
 		// Can't move below bottom stack
 		if (selected == max - 2)
 			return;
 
-		stackList.getSelection().select(
-				stackList.getModel().getIter("" + (selected + 1)));
+		this.stackView.getSelection().select(
+				this.stackView.getModel().getIter("" + (selected + 1)));
 	}
 
 	/**
@@ -1136,16 +1129,13 @@ public class SourceWindow extends Window{
 	 * 
 	 */
 	private void doStackBottom() {
-		System.out.println("Stack bottom");
-		TreeView stackList = (TreeView) this.glade.getWidget("stackBrowser");
-
 		int max = 0;
-		TreeIter iter = stackList.getModel().getIter("" + max);
+		TreeIter iter = this.stackView.getModel().getIter("" + max);
 		while (iter != null)
-			iter = stackList.getModel().getIter("" + max++);
+			iter = this.stackView.getModel().getIter("" + max++);
 
-		stackList.getSelection().select(
-				stackList.getModel().getIter("" + (max - 2)));
+		this.stackView.getSelection().select(
+				this.stackView.getModel().getIter("" + (max - 2)));
 	}
 	
 	private void doJumpToFunction(String name){
