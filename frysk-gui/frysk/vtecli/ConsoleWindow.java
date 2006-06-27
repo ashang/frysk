@@ -43,6 +43,7 @@ import org.gnu.gtk.Window;
 import org.gnu.gtk.WindowType;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
+import org.gnu.gdk.Color;
 import org.gnu.gnomevte.Terminal;
 import java.io.*;
 import frysk.sys.Pty;
@@ -65,7 +66,7 @@ public class ConsoleWindow extends Window {
 
 			try
 			{
-				cli = new CLI("cli$ ", new PrintStream( new FileOutputStream(new File(fname)) ) );
+				cli = new CLI("(frysk) ", new PrintStream( new FileOutputStream(new File(fname)) ) );
 			}
 			catch (IOException ioe)
 			{
@@ -133,7 +134,7 @@ public class ConsoleWindow extends Window {
 	{
 		super(WindowType.TOPLEVEL);
 
-		this.setTitle("Vte Example");
+		this.setTitle("Frysk Console Interface");
 		this.addListener(new LifeCycleListener() {
 				public void lifeCycleEvent(LifeCycleEvent event)
 				{
@@ -162,6 +163,8 @@ public class ConsoleWindow extends Window {
 		term.setPty (master);
 		
 		term.setDefaultColors();
+		term.setBackgroudColor(Color.WHITE);
+		term.setForegroundColor(Color.BLACK);
 		term.setSize (80, 25);
 //		term.feed ("Hi, there!  This is VTE!  (term.feed() output)\r\n");
 
