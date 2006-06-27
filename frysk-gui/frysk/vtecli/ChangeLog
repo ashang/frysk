@@ -1,3 +1,7 @@
+2006-06-27  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* ConsoleWindow.java: Better name, better prompt, better colors
+
 2006-06-26  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* ConsoleWindow.java: now uses a custom terminal for jline
