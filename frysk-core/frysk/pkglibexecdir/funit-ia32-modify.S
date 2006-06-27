@@ -77,3 +77,6 @@ label1:
 	.data
 d0:	.word 3
 #endif
+
+// make the stack non-executable
+.section	.note.GNU-stack,"",@progbits

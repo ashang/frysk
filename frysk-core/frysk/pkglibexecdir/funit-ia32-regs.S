@@ -53,3 +53,6 @@ main:
 	int $0x80
 	ret
 #endif
+
+// make the stack non-executable
+.section	.note.GNU-stack,"",@progbits

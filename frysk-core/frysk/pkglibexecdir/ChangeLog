@@ -1,3 +1,8 @@
+2006-06-27  Stepan Kasal  <kasal@ucw.cz>
+
+	* funit-ia32-modify.S, funit-ia32-regs.S: Make the stack
+	non-executable, using the recipe from Jakub Jelinek.
+
 2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* funit-forks.c: Removed waits.
