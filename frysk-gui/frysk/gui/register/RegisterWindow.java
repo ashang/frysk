@@ -87,6 +87,10 @@ public class RegisterWindow extends Window implements Saveable{
 	public void setTask(Task myTask){
 		this.myTask = myTask;
 		
+		this.setTitle(this.getTitle() + " - "
+			      + this.myTask.getProc ().getCommand () + " "
+			      + this.myTask.getName ());
+		
 		this.registerView = (TreeView) this.glade.getWidget("registerView");
 		
 		ListStore model = new ListStore(cols);
