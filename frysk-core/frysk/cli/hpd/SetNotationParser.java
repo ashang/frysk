@@ -81,7 +81,7 @@ class SetNotationParser
 			else
 				result = new ParsedSet(ParsedSet.TYPE_NAMED, setnobr, isstatic);
 		}
-		else if (set.matches("exec(\\w*)"))
+		else if (setnobr.matches("exec(.*)"))
 		{
 			result = new ParsedSet(ParsedSet.TYPE_EXEC, setnobr.substring(5, setnobr.length()-1), isstatic);
 		}

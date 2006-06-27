@@ -123,6 +123,37 @@ public class TestSetParser extends TestCase
 		assertEquals("Error", result);
 	}
 
+	public void testState()
+	{
+		try
+		{
+			parsed = pr.parse("[runnable]");
+			result = parsed.getName();
+		}
+		catch (ParseException e)
+		{
+			result = "Error";
+		}
+
+		assertEquals("runnable", result);
+		assertEquals(ParsedSet.TYPE_STATE, parsed.getType());
+	}
+
+	public void testExec()
+	{
+		try
+		{
+			parsed = pr.parse("[exec(bash)]");
+			result = parsed.getName();
+		}
+		catch (ParseException e)
+		{
+			result = "Error";
+		}
+
+		assertEquals("bash", result);
+		assertEquals(ParsedSet.TYPE_EXEC, parsed.getType());
+	}
 	
 	private void walkTree(ParseTreeNode node)
 	{
