@@ -59,9 +59,11 @@ public class DataModelManager {
 	
 	
 	public FlatProcObservableLinkedList flatProcObservableLinkedList;
+	public CoreDebugDataModel coreDebugDataModel;
 	
 	DataModelManager(){
 		this.flatProcObservableLinkedList = new FlatProcObservableLinkedList();
+		this.coreDebugDataModel = new CoreDebugDataModel();
 	}
 	
 }

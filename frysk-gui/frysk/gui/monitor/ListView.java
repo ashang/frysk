@@ -110,14 +110,19 @@ public class ListView extends TreeView implements Observer {
 		this.listStore = new ListStore(new DataColumn[]{nameDC, objectDC});
 	}
 	
+
+	public void setSort()
+	{
+		this.listStore.setSortColumn(nameDC,SortType.ASCENDING);
+		this.setReorderable(true);		
+	}
+	
 	protected void initTreeView() {
 		cellRendererText = new CellRendererText();
 		TreeViewColumn nameCol = new TreeViewColumn();
 		nameCol.packStart(cellRendererText, false);
 		nameCol.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT , nameDC);
 		
-		this.listStore.setSortColumn(nameDC,SortType.ASCENDING);
-		this.setReorderable(true);
 		this.appendColumn(nameCol);	
 		
 	}

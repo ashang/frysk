@@ -1,3 +1,13 @@
+2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* datamodels/DataModelManager.java: Register CoreDebugDataModel
+	* datamodels/CoreDebugLogRecord.java: New. 
+	* datamodels/CoreDebugDataModel.java: New.
+	* CoreDebugLogViewer.java: New.
+	* ListView.java (setSort): New.
+	(initTreeView): Moving sorting to setSort.
+
+
 2006-06-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskObserverRoot.java (addFailed): removed exception.
