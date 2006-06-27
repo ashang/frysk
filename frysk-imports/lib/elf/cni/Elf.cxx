@@ -65,8 +65,12 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 
 	errno = 0;
 	int fd = open (fileName, O_RDONLY);
-	if(errno != 0)
-		throw new lib::elf::ElfException(JvNewStringUTF("Could not open file for reading"));
+	if(errno != 0){
+		char* message = "Could not open %s for reading";
+		char error[strlen(fileName) + strlen(message) - 2];
+		sprintf(error, message, fileName);
+		throw new lib::elf::ElfException(JvNewStringUTF(error));
+	}
 	
 	if(::elf_version(EV_CURRENT) == EV_NONE)
 		throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));

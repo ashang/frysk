@@ -1,3 +1,8 @@
+2006-06-27  Adam Jocksch  <ajockshc@redhat.com>
+
+	* cni/Elf.cxx (elf_begin): Now prints out a more informative
+	message when the file open fails.
+
 2006-06-23  Adam jocksch  <ajocksch@redhat.com>
 
 	* tests/TestElf.cxx (testCore): Now uses Build.ABS_BUILDDIR.
