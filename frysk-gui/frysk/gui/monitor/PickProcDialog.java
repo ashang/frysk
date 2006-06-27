@@ -66,6 +66,8 @@ public class PickProcDialog extends Dialog {
 	PickProcListView ListView;
 	
 	public PickProcDialog(String path){
+		super();
+		this.setTitle("Select a process to debug");
 		
 		this.ListView = new PickProcListView(path);
 		this.ListView.addListener(new TreeViewListener() {

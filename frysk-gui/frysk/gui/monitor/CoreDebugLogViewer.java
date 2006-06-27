@@ -41,6 +41,7 @@ package frysk.gui.monitor;
 
 import java.util.Date;
 
+import org.gnu.gtk.Dialog;
 import org.gnu.gtk.GtkStockItem;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.PolicyType;
@@ -48,10 +49,14 @@ import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
+import org.gnu.gtk.event.DialogEvent;
+import org.gnu.gtk.event.DialogListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
-import frysk.gui.common.dialogs.Dialog;
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.datamodels.CoreDebugLogRecord;
 import frysk.gui.monitor.datamodels.DataModelManager;
 
@@ -69,7 +74,9 @@ public class CoreDebugLogViewer extends Dialog {
 	
 	public CoreDebugLogViewer(){
 		
-		super.setName("Frysk Developer Debug Window");
+		super();
+		this.setTitle("Frysk Developer Debug Window");
+		this.setIcon(IconManager.windowIcon);
 		this.logMessages = new ListView();
 		this.logMessages.watchLinkedList(DataModelManager.theManager.coreDebugDataModel);
 		this.logMessages.getSelection().addListener( new TreeSelectionListener(){
@@ -87,6 +94,8 @@ public class CoreDebugLogViewer extends Dialog {
 			}});
 
 		this.detailView = new TextView();
+		this.detailView.setEditable(false);
+		this.detailView.setIndent(5);
 		this.detailViewBuffer = new TextBuffer();
 		this.detailView.setBuffer(this.detailViewBuffer);
 		
@@ -110,6 +119,26 @@ public class CoreDebugLogViewer extends Dialog {
 		
 		this.addButton(GtkStockItem.CLOSE, ResponseType.OK.getValue());
 
+		this.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {}
+	         public boolean lifeCycleQuery(LifeCycleEvent event) {
+	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
+	            	 hideAll();
+	             }	
+	             return true;
+	         }
+		});
+		
+		this.addListener(new DialogListener() {
+		
+			public boolean dialogEvent(DialogEvent arg0) {
+				hideAll();
+				return false;
+			}
+		
+		});
+		
 		this.showAll();
 	}
 	

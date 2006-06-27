@@ -1,3 +1,9 @@
+2006-06-27  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PickProcDialog.java (PickProcDialog): Added title.
+	* CoreDebugLogViewer.java (CoreDebugLogViewer): Added title, icon, listeners
+	and textview indent.
+
 2006-06-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* datamodels/DataModelManager.java: Register CoreDebugDataModel
