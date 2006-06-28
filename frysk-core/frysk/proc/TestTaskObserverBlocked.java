@@ -401,6 +401,44 @@ public class TestTaskObserverBlocked
 	host.requestRefreshXXX (true);
 	Manager.eventLoop.runPending ();
     }
+    /**
+     * Check that new observers being added hot on the heals of an
+     * unblock get processed correctly - this forces the state machine
+     * that was detaching to start attaching again, but very late.
+     */
+    public void testAddObserverAfterUnblock ()
+    {
+	if (brokenXXX ())
+	    return;
+	AckProcess proc = new AckDaemonProcess ();
+	Task task = proc.findTaskUsingRefresh (true);
+	class UnblockAdd
+	    extends TaskObserverBase
+	    implements TaskObserver.Forked
+	{
+	    public void addedTo (Object o)
+	    {
+		Manager.eventLoop.requestStop ();
+	    }
+	    public Action updateForkedParent (Task parent, Task offspring)
+	    {
+		return Action.CONTINUE;
+	    }
+	    public Action updateForkedOffspring (Task parent, Task offspring)
+	    {
+		offspring.requestUnblock (this);
+		offspring.requestAddForkedObserver (this);
+		return Action.BLOCK;
+	    }
+	}
+	UnblockAdd observer = new UnblockAdd ();
+	task.requestAddForkedObserver (observer);
+	assertRunUntilStop ("adding fork observer");
+
+	// Create a child process, will transition through to
+	// detached.
+	proc.addFork ();
+    }
 
 
     /**
