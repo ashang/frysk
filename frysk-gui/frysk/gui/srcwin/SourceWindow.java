@@ -827,6 +827,7 @@ public class SourceWindow extends Window{
 
 	private void showFindBox(){
 		this.glade.getWidget(SourceWindow.FIND_BOX).showAll();
+		this.glade.getWidget(SourceWindow.FIND_TEXT).grabFocus();
 	}
 	
 	private void hideFindBox(){
