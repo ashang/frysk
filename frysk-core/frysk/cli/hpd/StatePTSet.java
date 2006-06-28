@@ -44,13 +44,11 @@ import java.util.Iterator;
 
 class StatePTSet implements PTSet
 {
-	ParseTreeNode[] set;
 	AllPTSet pool;
 	int state;
 
 	public StatePTSet(AllPTSet ptpool, int state)
 	{
-		//this.set = set;
 		this.state = state;
 		pool = ptpool;
 	}
@@ -59,7 +57,7 @@ class StatePTSet implements PTSet
 	public Iterator getProcs()
 	{
 		ProcTasks[] proctasks = pool.getSubsetByState(state);
-		Vector result = new Vector(10, 5);
+		LinkedList result = new LinkedList();
 
 		for (int i = 0; i < proctasks.length; i++)
 			result.add(proctasks[i].getProcData().getProc());
@@ -90,7 +88,7 @@ class StatePTSet implements PTSet
 	{
 		ProcTasks[] proctasks = pool.getSubsetByState(state);
 		Vector temp = new Vector();
-		Vector result = new Vector(10, 10);
+		LinkedList result = new LinkedList();
 
 		for (int i = 0; i < proctasks.length; i++)
 		{
