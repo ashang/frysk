@@ -725,7 +725,7 @@ ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl, double dx)
     /* the +4 in py +4 is because if the ptr is in the moved window after
      * the move, the window pops down */
     gtk_window_move (GTK_WINDOW (ftk_ev_popup_window (eventviewer)),
-		     (px + 10) - offset, py + 4);
+		     px - offset, py + 4);
     gtk_widget_show (ftk_ev_popup_window (eventviewer));
   }
 }
