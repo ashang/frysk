@@ -218,4 +218,34 @@ public class TestTaskTerminateObserver
  	assertTrue ("Number attached processes", attachCounter.count != 0);
 	assertTrue ("Number terminating processes", terminatingCounter.count != 0);
     }
+   
+   
+   /**
+    * Check that a terminating task can be blocked
+    */
+  public void testBlockingWhileTerminating ()
+   {
+     
+     AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
+     {
+      getExecPrefix () + "funit-child",
+      "1",
+      ""+ Manager.host.getSelf().getPid()
+     });
+     
+    TerminatingCounter terminatingCounter = new TerminatingCounter (){
+      public Action updateTerminating (Task task, boolean signal, int value)
+      {
+          count++;
+          return Action.BLOCK;
+      }
+    };
+    
+    child.mainTask.requestAddTerminatingObserver(terminatingCounter);
+    child.resume();
+
+    assertRunWhileProcNotRemoved(child.mainTask.getProc().getPid(), 5);
+    assertTrue ("Number terminating processes", terminatingCounter.count != 0);
+    
+   }
 }
