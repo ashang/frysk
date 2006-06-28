@@ -2,14 +2,12 @@ package frysk.dom;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
 import lib.dw.DwflLine;
 import lib.dw.NoDebugInfoException;
-
 import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
 import frysk.proc.Task;
@@ -18,7 +16,7 @@ public class DOMFactory {
 
 	private static HashMap hashmap = new HashMap();
 	
-	public static DOMFrysk createDOM(Task task) throws NoDebugInfoException{
+	public static DOMFrysk createDOM(Task task) throws NoDebugInfoException, IOException{
 		DOMFrysk dom;
 		DwflLine line = task.getDwflLineXXX();
 		if(line == null)
@@ -26,8 +24,6 @@ public class DOMFactory {
 		String fullPath = line.getSourceFile();
 		String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
 		String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
-		
-		System.out.println("Trying to read " + fullPath);
 		
 		Proc proc = task.getProc();
 		
@@ -53,40 +49,24 @@ public class DOMFactory {
 			
 			// Read the file lines from disk
 			// XXX: Remote file access?
-			try{
-				BufferedReader reader = new BufferedReader(new FileReader(new File(fullPath)));
-				int offset = 0;
-				int lineNum = 0;
+			BufferedReader reader = new BufferedReader(new FileReader(new File(fullPath)));
+			int offset = 0;
+			int lineNum = 0;
+			
+			while(reader.ready()){
+				String text = reader.readLine();
+				// XXX: detect executable lines?
+				DOMLine l = new DOMLine(lineNum++, text+"\n", offset, false, false, Long.parseLong("deadbeef", 16));
+				source.addLine(l);
 				
-				while(reader.ready()){
-					String text = reader.readLine();
-					// XXX: detect executable lines?
-					DOMLine l = new DOMLine(lineNum++, text+"\n", offset, false, false, Long.parseLong("deadbeef", 16));
-					source.addLine(l);
-					
-					offset += text.length() + 1;
-				}
-			}
-			catch (FileNotFoundException e){
-				//XXX: bork?
-				e.printStackTrace();
-			}
-			catch (IOException e2){
-				//XXX: bork?
-				e2.printStackTrace();
+				offset += text.length() + 1;
 			}
 			
 			image.addSource(source);
 			
 			// Parse the file and populate the DOM
 			StaticParser parser = new CDTParser();
-			try{
-				parser.parse(source, image);
-			}
-			catch (IOException e){
-				//XXX: bork?
-				e.printStackTrace();
-			}
+			parser.parse(source, image);
 		}
 		
 		hashmap.put(proc, dom);

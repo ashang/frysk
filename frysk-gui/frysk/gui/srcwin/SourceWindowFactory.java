@@ -58,13 +58,13 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
 import frysk.gui.common.dialogs.NoDebugInfoDialog;
+import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.monitor.EventLogger;
+import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
-
-import frysk.gui.monitor.EventLogger;
-import frysk.gui.monitor.WindowManager;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects in frysk
@@ -180,17 +180,18 @@ public class SourceWindowFactory {
 			
 			// If we don't have a dom, tell the task to continue
 			catch (NoDebugInfoException e){
-				if(blockerMap.containsKey(task)){
-					TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
-					task.requestUnblock(o);
-					task.requestDeleteAttachedObserver(o);
-				}
+				unblockTask(task);
 			
 				NoDebugInfoDialog dialog = new NoDebugInfoDialog("No debug information was found for the given process");
 				dialog.showAll();
 				dialog.run();
-				
-					
+				return;
+			}
+			catch (IOException e) {
+				unblockTask(task);
+				WarnDialog dialog = new WarnDialog("File not found", "Error loading source code: " + e.getMessage());
+				dialog.showAll();
+				dialog.run();
 				return;
 			}
 			
@@ -260,6 +261,14 @@ public class SourceWindowFactory {
 		}
 	}
 	
+	private static void unblockTask(Task task){
+		if(blockerMap.containsKey(task)){
+			TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
+			task.requestUnblock(o);
+			task.requestDeleteAttachedObserver(o);
+		}
+	}
+	
 	private static DOMFunction getFunctionXXX(DOMImage image, String filename, int linenum){
 		Iterator functions = image.getFunctions();
 		
@@ -302,11 +311,7 @@ public class SourceWindowFactory {
 					Task t = s.getMyTask();
                     map.remove(t);
                     
-                    if(blockerMap.containsKey(t)){
-                    	TaskObserver.Attached observer = (TaskObserver.Attached) blockerMap.get(t);
-                    	t.requestUnblock(observer);
-                    	t.requestDeleteAttachedObserver(observer);
-                    }
+                    unblockTask(t);
                     
                     WindowManager.theManager.sessionManager.show();
                     s.hideAll();

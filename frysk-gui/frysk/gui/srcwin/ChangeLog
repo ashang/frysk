@@ -1,5 +1,9 @@
 2006-06-28  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (finishSourceWindow): Now pops up a WarnDialog if
+	a IOException occurs while creating the DOM.
+	(unblockTask): Added, refactored out of multiple occurances in the code.
+
 	* SourceWindow.java (showFindBox): Now sets focus to be on the 
 	search text box, fixes bug 2854.
 
