@@ -1,3 +1,20 @@
+2006-06-26  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-sys/frysk/sys/TestPtraceByteBuffer.java: New test.
+	* frysk-sys/frysk/sys/TestLib.java (intVal, byteVal, longVal):
+	New static fields.
+	(getIntValAddr, getByteValAddr, getLongValAddr): New native methods.
+	(getFuncAddr): Likewise.
+	(getFuncBytes): Likewise.
+	* frysk-sys/frysk/sys/cni/TestLib.cxx
+	(dummyfunc): New static function.
+	(getIntValAddr, getByteValAddr, getLongValAddr): New method.
+	(getFuncAddr): Likewise.
+	(getFuncBytes): Likewise.
+
+	* frysk-sys/frysk/sys/cni/PtraceByteBuffer.cxx (peek): Use off when
+	storing bytes.
+
 2006-06-19  Mike Cvet  <mcvet@redhat.com>
 
 	* TestCallPtrace.java (testChildContinue): Finalized tests

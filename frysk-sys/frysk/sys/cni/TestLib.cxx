@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -72,4 +72,43 @@ frysk::sys::TestLib::forkIt ()
 jint
 frysk::sys::TestLib::waitIt(jint pid) {
 	return waitpid(pid, NULL, __WALL);
+}
+
+/* Dummy static function for use by getFuncAddr. */
+static void
+dummyfunc ()
+{
+  printf("never used, will be overwritten in child");
+}
+
+/* Returns the address of the value we want to inspect in the child. */
+jlong
+frysk::sys::TestLib::getIntValAddr ()
+{
+  return (jlong) &intVal;
+}
+jlong
+frysk::sys::TestLib::getLongValAddr ()
+{
+  return (jlong) &longVal;
+}
+jlong
+frysk::sys::TestLib::getByteValAddr ()
+{
+  return (jlong) &byteVal;
+}
+
+jlong
+frysk::sys::TestLib::getFuncAddr ()
+{
+  return (jlong) dummyfunc;
+}
+
+jbyteArray
+frysk::sys::TestLib::getFuncBytes ()
+{
+  char *addr = (char *) dummyfunc;
+  jbyteArray bytes = JvNewByteArray (4);
+  memcpy (elements (bytes), addr, 4);
+  return bytes;
 }

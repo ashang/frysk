@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -41,8 +41,23 @@ package frysk.sys;
 
 public class TestLib {
 
+  /* Values for inspection with ptrace peek. */
+  static int intVal = 42;
+  static byte byteVal = 43;
+  static long longVal = 44;
+
 	public static native int forkIt ();
 	
 	public static native int waitIt (int pid);
 	
+  /* Returns the address of a variable for inspection. */
+  public static native long getIntValAddr();
+  public static native long getLongValAddr();
+  public static native long getByteValAddr();
+
+  /* Returns the address of a function for inspection. */
+  public static native long getFuncAddr();
+
+  /* Returns the first 4 instruction bytes of the getFuncAddr(). */
+  public static native byte[] getFuncBytes();
 }

@@ -152,7 +152,7 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
     pend = paddr + sizeof (int);
 
   for (unsigned long a = addr; a < pend; a++)
-    bytes[a - addr] = tmp.byte[a - paddr];
+    bytes[a - addr + off] = tmp.byte[a - paddr];
 
   return pend - addr;
 }
