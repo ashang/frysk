@@ -1,3 +1,12 @@
+2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/StatePTSet.java: fixed bug
+
+2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/Message.java: new
+	* hpd/ExecPTSet.java: new
+
 2006-06-27  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* hpd/SetNotationParser.java: fixed bug
