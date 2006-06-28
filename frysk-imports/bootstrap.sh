@@ -69,3 +69,18 @@ echo "Running autoconf ... for elfutils"
 autoconf -f
 echo "Running automake ... for elfutils"
 automake --add-missing 
+cd ..
+
+target_cpu=`uname -a`
+
+case "${target_cpu}" in
+	*86*) 
+	# Now run a separate aclocal/autoconf/automake for libunwind
+	cd libunwind
+	echo "Running aclocal ... for libunwind"
+	aclocal
+	echo "Running autoconf ... for libunwind"
+	autoconf -f
+	echo "Running automake ... for libunwind"
+	automake --add-missing    ;;
+esac

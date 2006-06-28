@@ -47,6 +47,19 @@ SUBDIRS = \
 	cdtparser \
 	junit \
 	elfutils
+	
+# Add in libunwind only for certain arches
+if  TARGET_i686 
+SUBDIRS += libunwind
+endif
+
+if TARGET_x86_64
+SUBDIRS += libunwind
+endif
+
+if TARGET_ia64
+SUBDIRS += libunwind
+endif
 
 EXTRA_DIST += \
 	frysk/ChangeLog \
@@ -66,6 +79,29 @@ GEN_GCJ_LDADD += ./elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ./elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
+
+# Add in libunwind only for certain arches
+if TARGET_i686
+GEN_GCJ_LDADD += ./libunwind/src/libunwind.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-x86.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-setjmp.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
+endif
+
+if TARGET_x86_64
+GEN_GCJ_LDADD += ./libunwind/src/libunwind.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-x86_64.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-setjmp.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
+endif
+
+if TARGET_ia64
+GEN_GCJ_LDADD += ./libunwind/src/libunwind.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-ia64.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-setjmp.a
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
+endif
+
 GEN_GCJ_LDADD += -lopcodes
 
 all-local: lib/elf/tests/test-core lib/elf/tests/helloworld.o

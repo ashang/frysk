@@ -42,10 +42,19 @@ AC_PREREQ(2.59)
 sinclude(common/version.ac)
 AC_INIT(frysk, [FRYSK_VERSION])
 
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile jline/Makefile jargs/Makefile tests/Makefile
 cdtparser/Makefile junit/Makefile])
 AC_CONFIG_SUBDIRS([elfutils])
+
+case "${target_cpu}" in
+	*86*) AC_CONFIG_SUBDIRS([libunwind]);;
+esac
+
+AM_CONDITIONAL(TARGET_i686, [test ${target_cpu} = i686])
+AM_CONDITIONAL(TARGET_x86_64, [test ${target_cpu} = x86_64])
+AM_CONDITIONAL(TARGET_ia64, [test ${target_cpu} = ia64])
 
 sinclude(common/acinclude.m4)
 
