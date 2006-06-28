@@ -27,6 +27,8 @@ public class DOMFactory {
 		String filename = fullPath.substring(fullPath.lastIndexOf("/") + 1);
 		String path = fullPath.substring(0, fullPath.lastIndexOf("/"));
 		
+		System.out.println("Trying to read " + fullPath);
+		
 		Proc proc = task.getProc();
 		
 		if(hashmap.containsKey(proc)){
@@ -67,9 +69,11 @@ public class DOMFactory {
 			}
 			catch (FileNotFoundException e){
 				//XXX: bork?
+				e.printStackTrace();
 			}
 			catch (IOException e2){
 				//XXX: bork?
+				e2.printStackTrace();
 			}
 			
 			image.addSource(source);
@@ -81,6 +85,7 @@ public class DOMFactory {
 			}
 			catch (IOException e){
 				//XXX: bork?
+				e.printStackTrace();
 			}
 		}
 		
