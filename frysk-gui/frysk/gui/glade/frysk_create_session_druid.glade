@@ -876,12 +876,18 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox55</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkHBox" id="hbox90">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">6</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox90</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkImage" id="image17">
@@ -938,12 +944,18 @@
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">12</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox77</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkVBox" id="vbox52">
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">12</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox52</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkLabel" id="label102">
@@ -990,6 +1002,9 @@
 			      <property name="fixed_height_mode">False</property>
 			      <property name="hover_selection">False</property>
 			      <property name="hover_expand">False</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_processObserverTreeView</atkproperty>
+			      </accessibility>
 			    </widget>
 			  </child>
 			</widget>
@@ -1012,6 +1027,9 @@
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">6</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox53</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkAlignment" id="alignment77">
@@ -1079,12 +1097,18 @@
 		      <property name="visible">True</property>
 		      <property name="homogeneous">False</property>
 		      <property name="spacing">12</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox54</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkHBox" id="hbox80">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">12</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">hbox80</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkAlignment" id="alignment81">
@@ -1152,6 +1176,9 @@
 			      <property name="fixed_height_mode">False</property>
 			      <property name="hover_selection">False</property>
 			      <property name="hover_expand">False</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_observerTreeView</atkproperty>
+			      </accessibility>
 			    </widget>
 			  </child>
 			</widget>
@@ -1213,6 +1240,9 @@
 			      <property name="right_margin">0</property>
 			      <property name="indent">1</property>
 			      <property name="text" translatable="yes"></property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">SessionDruid_observerDescription</atkproperty>
+			      </accessibility>
 			    </widget>
 			  </child>
 			</widget>
