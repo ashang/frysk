@@ -53,7 +53,7 @@ import frysk.gui.register.RegisterWindow;
 /**
  * @author sami wagiaalla
  * Singleton; one window manager.
- * Provies an instance to our major components so that they can
+ * Provides an instance to our major components so that they can
  * be manipulated from any where in the gui code.
  * Add your windows here.
  * */

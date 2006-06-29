@@ -50,7 +50,9 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Random;
 
+import org.gnu.gdk.Color;
 import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
@@ -66,6 +68,16 @@ import frysk.gui.monitor.observers.ObserverRoot;
 public class StatusWidget
     extends VBox
 {
+	
+	private Color backgroundColor = Color.WHITE;
+	private Color[] traceColors = {Color.BLACK,};
+	private Color[] markerColors = {Color.BLACK, Color.BLUE};
+	private Random randomColorGenerator;
+	
+	private Color getColor (Color[] colors) {
+		int index = randomColorGenerator.nextInt(colors.length);
+		return colors[index];
+	}
 
   Label nameLabel;
 
@@ -84,13 +96,16 @@ public class StatusWidget
   public int newTrace(String desc, String info)
   {
     int trace1 = this.viewer.addTrace(desc, info);
-    this.viewer.setTraceRGB(trace1, 0, 65535, 0);
+    this.viewer.setTraceColor(trace1, getColor(traceColors));
     return trace1;
   }
 
   public StatusWidget(GuiProc guiProc, String procname)
   {
     super(false, 0);
+    
+    randomColorGenerator = new Random();
+	  
     // FontDescription font = new FontDescription();
     this.notifyUser = new Observable();
 //    this.data = guiProc;
@@ -117,10 +132,12 @@ public class StatusWidget
     this.viewer = new EventViewer();
     // resize not implemented yet
     // this.viewer.resize (1, 1);
-    this.viewer.setBackgroundRGB(65536, 65535, 65535);
+    this.viewer.setBackgroundColor(backgroundColor);
     this.viewer.setTimebase(10.0);
+    
+    //XXX: Change "Additional  information to something more meaningfull.
     trace0 = this.viewer.addTrace(procname, "Additional information.");
-    this.viewer.setTraceRGB(trace0, 65535, 0, 0);
+    this.viewer.setTraceColor(trace0, getColor(traceColors));
 
     initLogTextView(guiProc);
 
@@ -188,6 +205,7 @@ public class StatusWidget
   {
     // GuiProc pdata = GuiProcFactory.getGuiProc(data.getTask().getProc());
     // StatusWidget sw = (StatusWidget) pdata.getWidget();
+	//XXX: Change "other usefull..." to something more meaningfull.
     int trace = this.newTrace(guiTask.getTask().getName(),
                               "Other useful per-trace information.");
     guiTask.setWidget(this, trace);
@@ -375,8 +393,8 @@ public class StatusWidget
           // this.eventId = area.createEvent(observer.getName(), 65535, 65535,
           // 0);
           this.markerId = viewer.addMarker(0, observer.getName(),
-                                           "Other useful per-marker information.");
-          viewer.setMarkerRGB(this.markerId, 65535, 65535, 0);
+                                           observer.getToolTip());
+          viewer.setMarkerColor(this.markerId, getColor(markerColors));
         }
 
       if (count % 3 == 1)
@@ -385,8 +403,8 @@ public class StatusWidget
           // this.eventId = area.createEvent(observer.getName(), 65535, 0,
           // 65535);
           this.markerId = viewer.addMarker(1, observer.getName(),
-                                           "Even more useful per-marker information.");
-          viewer.setMarkerRGB(this.markerId, 65535, 0, 65535);
+                                           observer.getToolTip());
+          viewer.setMarkerColor(this.markerId, getColor(markerColors));
         }
       if (count % 3 == 2)
         {
@@ -394,8 +412,8 @@ public class StatusWidget
           // this.eventId = area.createEvent(observer.getName(), 0, 65535,
           // 65535);
           this.markerId = viewer.addMarker(2, observer.getName(),
-                                           "Additional useful per-marker information.");
-          viewer.setMarkerRGB(this.markerId, 0, 65535, 65535);
+                                           observer.getToolTip());
+          viewer.setMarkerColor(this.markerId, getColor(markerColors));
         }
     }
 

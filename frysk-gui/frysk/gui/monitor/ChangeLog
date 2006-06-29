@@ -1,3 +1,12 @@
+2006-06-29  Nurdin Premji  <npremji@redhat.com>
+
+	* WindowManager.java: Fixed spelling error in comment.
+	* SessionProcTreeView.java: Ran the Tom Tromey's eclipse-gnu formatter.
+	Added comments.
+	* StatusWidget.java: Added org.gnu.gdk.Color support.
+	Changed colours used to be easily changeable, maybe using preferences.
+	(getColor): added to randomly choose a colour from a set of colours.
+
 2006-06-27  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* PickProcDialog.java (PickProcDialog): Added title.

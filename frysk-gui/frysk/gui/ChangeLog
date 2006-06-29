@@ -1,3 +1,7 @@
+2006-06-29  Nurdin Premji  <npremji@redhat.com>
+
+	* glade/procpop.glade: Added proper names for all the widgets in procpop.
+
 2006-06-27  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* sessions/DebugProcess.java (update): Remove addProc().

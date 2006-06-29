@@ -1,41 +1,41 @@
-// This file is part of the program FRYSK.
+//This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+//Copyright 2005, Red Hat Inc.
 //
-// FRYSK is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
+//FRYSK is free software; you can redistribute it and/or modify it
+//under the terms of the GNU General Public License as published by
+//the Free Software Foundation; version 2 of the License.
 //
-// FRYSK is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with FRYSK; if not, write to the Free Software Foundation,
-// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
-// In addition, as a special exception, Red Hat, Inc. gives You the
-// additional right to link the code of FRYSK with code not covered
-// under the GNU General Public License ("Non-GPL Code") and to
-// distribute linked combinations including the two, subject to the
-// limitations in this paragraph. Non-GPL Code permitted under this
-// exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
-// Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
-// resulting work to be covered by the GNU General Public
-// License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
-// used in conjunction with FRYSK except the Non-GPL Code covered by
-// this exception. If you modify this file, you may extend this
-// exception to your version of the file, but you are not obligated to
-// do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
-// exception.
+//FRYSK is distributed in the hope that it will be useful, but
+//WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with FRYSK; if not, write to the Free Software Foundation,
+//Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+//
+//In addition, as a special exception, Red Hat, Inc. gives You the
+//additional right to link the code of FRYSK with code not covered
+//under the GNU General Public License ("Non-GPL Code") and to
+//distribute linked combinations including the two, subject to the
+//limitations in this paragraph. Non-GPL Code permitted under this
+//exception must only link to the code of FRYSK through those well
+//defined interfaces identified in the file named EXCEPTION found in
+//the source code files (the "Approved Interfaces"). The files of
+//Non-GPL Code may instantiate templates or use macros or inline
+//functions from the Approved Interfaces without causing the
+//resulting work to be covered by the GNU General Public
+//License. Only Red Hat, Inc. may make changes or additions to the
+//list of Approved Interfaces. You must obey the GNU General Public
+//License in all respects for all of the FRYSK code and other code
+//used in conjunction with FRYSK except the Non-GPL Code covered by
+//this exception. If you modify this file, you may extend this
+//exception to your version of the file, but you are not obligated to
+//do so. If you do not wish to provide this exception without
+//modification, you must delete this exception statement from your
+//version and license this file solely under the GPL without
+//exception.
 /*
  * Created on 8-Jul-05
  *
@@ -75,7 +75,7 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 
 import frysk.gui.sessions.Session;
 
-public class SessionProcTreeView 
+public class SessionProcTreeView
     extends Widget
     implements Saveable
 {
@@ -98,7 +98,7 @@ public class SessionProcTreeView
 
   private LibGlade glade;
 
-  public SessionProcTreeView(LibGlade libGlade) throws IOException
+  public SessionProcTreeView (LibGlade libGlade) throws IOException
   {
     super((libGlade.getWidget("allProcVBox")).getHandle());
 
@@ -118,9 +118,11 @@ public class SessionProcTreeView
     this.mountProcModel(this.procDataModel);
     this.threadViewInit(procDataModel);
 
+    //Called when the user selects a different process in the procTreeView.
     this.procTreeView.getSelection().addListener(new TreeSelectionListener()
     {
-      public void selectionChangedEvent(TreeSelectionEvent event)
+      
+      public void selectionChangedEvent (TreeSelectionEvent event)
       {
         if (procTreeView.getSelection().getSelectedRows().length > 0)
           {
@@ -156,9 +158,11 @@ public class SessionProcTreeView
       }
     });
 
+    
+    //called when a user selects a different thread from the threadTreeView.
     this.threadTreeView.getSelection().addListener(new TreeSelectionListener()
     {
-      public void selectionChangedEvent(TreeSelectionEvent event)
+      public void selectionChangedEvent (TreeSelectionEvent event)
       {
         if (procTreeView.getSelection().getSelectedRows().length > 0
             && threadTreeView.getSelection().getSelectedRows().length > 0)
@@ -173,11 +177,12 @@ public class SessionProcTreeView
                 // GuiProc pdata = (GuiProc) procFilter.getValue(
                 // procFilter.getIter(selected),
                 // procDataModel.getProcDataDC());
-//                GuiProc pdata = GuiProcFactory.getGuiProc(data.getTask().getProc());
-//                StatusWidget sw = (StatusWidget) pdata.getWidget();
-//                int trace = sw.newTrace(data.getTask().getName(),
-//                                        "Other useful per-trace information.");
-//                data.setWidget(sw, trace);
+                // GuiProc pdata =
+                // GuiProcFactory.getGuiProc(data.getTask().getProc());
+                // StatusWidget sw = (StatusWidget) pdata.getWidget();
+                // int trace = sw.newTrace(data.getTask().getName(),
+                // "Other useful per-trace information.");
+                // data.setWidget(sw, trace);
               }
 
           }
@@ -190,10 +195,11 @@ public class SessionProcTreeView
 
     this.procTreeView.setHeadersClickable(true);
 
+    //Called when a user "right clicks" on a process.
     this.procTreeView.addListener(new MouseListener()
     {
 
-      public boolean mouseEvent(MouseEvent event)
+      public boolean mouseEvent (MouseEvent event)
       {
         if (event.getType() == MouseEvent.Type.BUTTON_PRESS
             & event.getButtonPressed() == MouseEvent.BUTTON3)
@@ -213,7 +219,7 @@ public class SessionProcTreeView
     this.threadTreeView.addListener(new MouseListener()
     {
 
-      public boolean mouseEvent(MouseEvent event)
+      public boolean mouseEvent (MouseEvent event)
       {
         if (event.getType() == MouseEvent.Type.BUTTON_PRESS
             & event.getButtonPressed() == MouseEvent.BUTTON3)
@@ -232,7 +238,7 @@ public class SessionProcTreeView
 
   }
 
-  public void mountProcModel(final SessionProcDataModel dataModel)
+  public void mountProcModel (final SessionProcDataModel dataModel)
   {
 
     // this.procTreeView.setModel(psDataModel.getModel());
@@ -242,7 +248,7 @@ public class SessionProcTreeView
     procFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
     {
 
-      public boolean filter(TreeModel model, TreeIter iter)
+      public boolean filter (TreeModel model, TreeIter iter)
       {
 
         if (model.getValue(iter, dataModel.getSensitiveDC()) == false)
@@ -300,7 +306,7 @@ public class SessionProcTreeView
     pidCol.setTitle("PID"); //$NON-NLS-1$
     pidCol.addListener(new TreeViewColumnListener()
     {
-      public void columnClickedEvent(TreeViewColumnEvent arg0)
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getPidDC());
       }
@@ -308,7 +314,7 @@ public class SessionProcTreeView
     commandCol.setTitle("Command"); //$NON-NLS-1$
     commandCol.addListener(new TreeViewColumnListener()
     {
-      public void columnClickedEvent(TreeViewColumnEvent arg0)
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getCommandDC());
       }
@@ -322,7 +328,7 @@ public class SessionProcTreeView
 
     dataModel.getModel().addListener(new PropertyNotificationListener()
     {
-      public void notify(GObject arg0, String arg1)
+      public void notify (GObject arg0, String arg1)
       {
         // System.out.println("Notification : " + arg1); //$NON-NLS-1$
       }
@@ -331,7 +337,7 @@ public class SessionProcTreeView
     dataModel.getModel().addListener(new TreeModelListener()
     {
 
-      public void treeModelEvent(TreeModelEvent event)
+      public void treeModelEvent (TreeModelEvent event)
       {
         procTreeView.expandAll();
       }
@@ -341,8 +347,8 @@ public class SessionProcTreeView
     this.procTreeView.expandAll();
   }
 
-  public void mountThreadModel(final SessionProcDataModel dataModel,
-                               final TreePath relativeRoot)
+  public void mountThreadModel (final SessionProcDataModel dataModel,
+                                final TreePath relativeRoot)
   {
     final TreePath root = this.procFilter.convertPathToChildPath(relativeRoot);
     this.threadFilter = new TreeModelFilter(dataModel.getModel(), root);
@@ -350,7 +356,7 @@ public class SessionProcTreeView
     threadFilter.setVisibleMethod(new TreeModelFilterVisibleMethod()
     {
 
-      public boolean filter(TreeModel model, TreeIter iter)
+      public boolean filter (TreeModel model, TreeIter iter)
       {
 
         if (relativeRoot == null)
@@ -378,7 +384,7 @@ public class SessionProcTreeView
     this.threadTreeView.setModel(threadFilter);
   }
 
-  private void threadViewInit(SessionProcDataModel procDataModel)
+  private void threadViewInit (SessionProcDataModel procDataModel)
   {
     TreeViewColumn pidCol = new TreeViewColumn();
     TreeViewColumn commandCol = new TreeViewColumn();
@@ -419,7 +425,7 @@ public class SessionProcTreeView
     procDataModel.getModel().addListener(new TreeModelListener()
     {
 
-      public void treeModelEvent(TreeModelEvent event)
+      public void treeModelEvent (TreeModelEvent event)
       {
         threadTreeView.expandAll();
       }
@@ -429,7 +435,7 @@ public class SessionProcTreeView
     this.threadTreeView.expandAll();
   }
 
-  private GuiProc getSelectedProc()
+  private GuiProc getSelectedProc ()
   {
     TreeSelection ts = this.procTreeView.getSelection();
     TreePath[] tp = ts.getSelectedRows();
@@ -447,7 +453,7 @@ public class SessionProcTreeView
     return data;
   }
 
-  private GuiTask getSelectedThread()
+  private GuiTask getSelectedThread ()
   {
     TreeSelection ts = this.threadTreeView.getSelection();
     TreePath[] tp = ts.getSelectedRows();
@@ -465,19 +471,19 @@ public class SessionProcTreeView
     return data;
   }
 
-  public void save(Preferences prefs)
+  public void save (Preferences prefs)
   {
     prefs.putInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
   }
 
-  public void load(Preferences prefs)
+  public void load (Preferences prefs)
   {
     int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
 
     this.vPane.setPosition(position);
   }
 
-  public void setSession(Session session)
+  public void setSession (Session session)
   {
     this.procDataModel.setSession(session);
   }

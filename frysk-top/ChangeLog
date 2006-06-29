@@ -1,3 +1,9 @@
+2006-06-29  Nurdin Premji  <npremji@redhat.com>
+
+	* .settings/org.eclipse.jdt.ui.prefs: Ditto.
+	* .settings/org.eclipse.jdt.core.prefs: Added for gnu formatting in eclipse
+	based on Tom Tromey's formatter.
+
 2006-06-09  Nurdin Premji  <npremji@redhat.com>
 
 	* .cvsignore: Ignoring

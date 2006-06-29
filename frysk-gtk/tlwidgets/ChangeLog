@@ -1,3 +1,9 @@
+2006-06-29  Nurdin Premji  <npremji@redhat.com>
+
+	* src/java/com/redhat/ftk/EventViewer.java (setBackgroundColor): Added.
+	(setTraceColor): Added.
+	(setMarkerColor): Added.
+
 2006-06-26  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c: Fix for bz 2844: the info pop-up

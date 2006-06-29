@@ -10,6 +10,7 @@
 //package org.gnu.gtk;
 package com.redhat.ftk;
 
+import org.gnu.gdk.Color;
 import org.gnu.glib.GObject;
 import org.gnu.glib.Type;
 import org.gnu.glib.Struct;
@@ -79,6 +80,13 @@ public class EventViewer extends Widget
     }
 
     /**
+     * Set the background color using a Color
+     */
+    public boolean setBackgroundColor(Color color) {
+    return ftk_eventviewer_set_bg_rgb (getHandle(), color.getRed(), 
+    		color.getGreen(), color.getBlue());
+    }
+    /**
      * Set viewable window (seconds)
      */
     public boolean setTimebase(double span) {
@@ -99,7 +107,15 @@ public class EventViewer extends Widget
 	return ftk_eventviewer_set_trace_rgb (getHandle(), trace,
 					      red, green, blue);
     }
-
+    
+    /**
+     * Set trace using a color.
+     */
+    public boolean setTraceColor(int trace, Color color) {
+    return ftk_eventviewer_set_trace_rgb(getHandle(), trace, color.getRed(), 
+    		color.getGreen(), color.getBlue());
+    }
+    
     /**
      * Set trace label
      */
@@ -116,7 +132,11 @@ public class EventViewer extends Widget
     }
 
     /**
-     * Add new marker
+     * Add a new marker.
+     * @param glyph the symbol for this marker
+     * @param label the label for this marker.
+     * @param desc A description for this marker.
+     * @return
      */
     public int addMarker(int glyph, String label, String desc) {
 	return ftk_eventviewer_marker_new (getHandle(), glyph, label, desc);
@@ -130,6 +150,13 @@ public class EventViewer extends Widget
 					       red, green, blue);
     }
 
+    /**
+     * Set the marker using a Color
+     */
+    public boolean setMarkerColor(int marker, Color color) {
+    	return ftk_eventviewer_set_marker_rgb(getHandle(), marker, 
+    			color.getRed(), color.getGreen(), color.getBlue());
+    }
     /**
      * Append event
      */
