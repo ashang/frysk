@@ -1,3 +1,7 @@
+2006-06-29  Stepan Kasal  <kasal@ucw.cz>
+
+	* bootstrap.sh: Do not run automake in libunwind, it doesn't use it.
+
 2006-06-28  Rick Moseley  <rmoseley@redhat.com>
 
 	* bootstrap.sh: Added libunwind.

@@ -80,7 +80,5 @@ case "${target_cpu}" in
 	echo "Running aclocal ... for libunwind"
 	aclocal
 	echo "Running autoconf ... for libunwind"
-	autoconf -f
-	echo "Running automake ... for libunwind"
-	automake --add-missing    ;;
+	autoconf -f ;;
 esac

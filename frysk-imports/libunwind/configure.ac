@@ -8,7 +8,6 @@ AC_INIT(libunwind, mkvers(pkg_major, pkg_minor, pkg_extra), pkg_maintainer)
 AC_CONFIG_SRCDIR(src/mi/backtrace.c)
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_SYSTEM
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
 dnl Checks for programs.
 AC_PROG_CC
