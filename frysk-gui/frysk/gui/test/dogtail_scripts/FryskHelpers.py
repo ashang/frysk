@@ -338,9 +338,9 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     # ---------------------
     # page 5 - hbox77_tab5_observers - Select process groups and observers
 
-    hbox77_tab5_observers = sessionDruid_sessionNoteBook.child('hbox77_tab5_observers')
-    vbox52_tab5_processGroups = hbox77_tab5_observers.child('vbox52_tab5_processGroups')
-    SessionDruid_processObserverTreeView = vbox52_tab5_processGroups.child('SessionDruid_processObserverTreeView')
+    hbox77 = sessionDruid_sessionNoteBook.child('hbox77')
+    vbox52 = hbox77.child('vbox52')
+    SessionDruid_processObserverTreeView = vbox52.child('SessionDruid_processObserverTreeView')
     theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
 
     for processName in theProcessList:
@@ -349,8 +349,8 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
         tempProc.grabFocus()
         tempProc.actions['activate'].do()
 
-        vbox54_tab5_observers = hbox77_tab5_observers.child('vbox54_tab5_observers')
-        SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
+        vbox54 = hbox77.child('vbox54')
+        SessionDruid_observerTreeView = vbox54.child('SessionDruid_observerTreeView')
         theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
         theDictionary = createProcessDict (theList)
         userSelectedObservers = userSelectedObserverDict[resolvedName]
@@ -479,9 +479,9 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
     # ---------------------
     # page 5 - hbox77_tab5_observers - Select process groups and observers
 
-    hbox77_tab5_observers = sessionDruid_sessionNoteBook.child('hbox77_tab5_observers')
-    vbox52_tab5_processGroups = hbox77_tab5_observers.child('vbox52_tab5_processGroups')
-    SessionDruid_processObserverTreeView = vbox52_tab5_processGroups.child('SessionDruid_processObserverTreeView')
+    hbox77 = sessionDruid_sessionNoteBook.child('hbox77')
+    vbox52 = hbox77.child('vbox52')
+    SessionDruid_processObserverTreeView = vbox52.child('SessionDruid_processObserverTreeView')
     
     theProcessList = SessionDruid_processObserverTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
 
@@ -492,8 +492,8 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
         tempProc.grabFocus()
         tempProc.actions['activate'].do()
 
-        vbox54_tab5_observers = hbox77_tab5_observers.child('vbox54_tab5_observers')
-        SessionDruid_observerTreeView = vbox54_tab5_observers.child('SessionDruid_observerTreeView')
+        vbox54 = hbox77.child('vbox54')
+        SessionDruid_observerTreeView = vbox54.child('SessionDruid_observerTreeView')
 
         theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
 

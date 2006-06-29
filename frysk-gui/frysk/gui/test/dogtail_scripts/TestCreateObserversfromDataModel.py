@@ -159,7 +159,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
         observersSelection.click()
 
         # Create a new custom observer
