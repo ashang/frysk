@@ -1,3 +1,13 @@
+2006-06-30  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (toggleMemoryWindow): Added toggle for MemoryWindow.
+	(createActions): Added Action for MemoryWindow.
+	(createMenus): New MenuItem for MemoryWindow.
+	(attachEvents): Added Listener for MemoryWindow.
+	(doRun): Set running status for MemoryWindow.
+	(doStop): Ditto.
+	* SourceWindow.java: Formatted with new GNU formatter.
+
 2006-06-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (finishSourceWindow): Now pops up a WarnDialog if

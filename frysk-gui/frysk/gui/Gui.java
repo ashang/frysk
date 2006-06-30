@@ -108,6 +108,7 @@ implements LifeCycleListener, Saveable
 	LibGlade glade;
 	LibGlade create_session_glade;
 	LibGlade register_window;
+    LibGlade memory_window;
 	LibGlade session_glade;
 	
 	private static Logger errorLogFile = null;
@@ -186,6 +187,7 @@ implements LifeCycleListener, Saveable
 				glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
 				create_session_glade = new LibGlade (glade_dirs[i] + CREATE_SESSION_GLADE, this);
 				register_window = new LibGlade (glade_dirs[i] + "/registerwindow.glade", null);
+                memory_window = new LibGlade (glade_dirs[i] + "/memorywindow.glade", null);
 				session_glade = new LibGlade(glade_dirs[i] + SESSION_MANAGER_GLADE, this);
 			}
 			catch (FileNotFoundException missingFile) {
@@ -202,6 +204,7 @@ implements LifeCycleListener, Saveable
 		try {
 			WindowManager.theManager.initLegacyProcpopWindows(glade);
 			WindowManager.theManager.initRegisterWindow(register_window);
+            WindowManager.theManager.initMemoryWindow(memory_window);
 			WindowManager.theManager.initSessionDruidWindow(create_session_glade);
 			WindowManager.theManager.initSessionManagerWindow(session_glade);	    
 		} catch (IOException e) {

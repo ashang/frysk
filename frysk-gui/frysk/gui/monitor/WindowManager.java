@@ -36,6 +36,8 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
+
 package frysk.gui.monitor;
 
 import java.io.IOException;
@@ -48,87 +50,132 @@ import frysk.Config;
 import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
 import frysk.gui.register.RegisterWindow;
-
+import frysk.gui.memory.MemoryWindow;
 
 /**
- * @author sami wagiaalla
- * Singleton; one window manager.
- * Provides an instance to our major components so that they can
- * be manipulated from any where in the gui code.
- * Add your windows here.
- * */
+ * @author sami wagiaalla Singleton; one window manager. Provides an instance to
+ *         our major components so that they can be manipulated from any where
+ *         in the gui code. Add your windows here.
+ */
 
-public class WindowManager implements Saveable{
+public class WindowManager
+    implements Saveable
+{
 
-	public static WindowManager theManager = new WindowManager();
-	
-	public static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+  public static WindowManager theManager = new WindowManager();
 
-	/**
-	 * Public instances of the windows
-	 * {*/
-	public MenuBar    menuBar;
-	public MainWindow mainWindow;
-	public LogWidget logWindow;
-	public PreferencesWindow prefsWindow;
-	public AboutWindow aboutWindow;
-	public SplashScreenWindow splashScreen;
-	public CreateFryskSessionDruid createFryskSessionDruid;
-	public ObserversDialog observersDialog;
-	public EditObserverDialog editObserverDialog; 
-	public RegisterWindow registerWindow;
-	//public PickProcsDialog pickProcsDialog;
-	public PickProcDialog pickProcDialog;
-	public MainWindowStatusBar mainWindowStatusBar;
-	public SessionManagerGui sessionManager;
-	/**}*/
-	
-	public WindowManager(){
-		
-	}
-	
-	// Eventually we want to move away from one big glade file
-	// Renamed initWindows to below, as we migrate each window
-	// from the massive glade file
-	public void initLegacyProcpopWindows(LibGlade glade) throws IOException{
-		this.splashScreen = new SplashScreenWindow();
-		this.mainWindow = new MainWindow(glade);
-		this.aboutWindow = new AboutWindow(glade);
-		this.logWindow = new LogWidget(glade);
-		this.prefsWindow = new PreferencesWindow(glade);
-		//this.programAddWindow = new ProgramAddWindow(glade);
-		this.observersDialog = new ObserversDialog(glade);
-		this.editObserverDialog = new EditObserverDialog(glade);
-		this.menuBar = new MenuBar(glade);
-		//this.pickProcsDialog = new PickProcsDialog(null);
-		this.pickProcDialog = new PickProcDialog(null);
-		this.mainWindowStatusBar = new MainWindowStatusBar(glade);
-	}
-	
+  public static Logger logger = Logger.getLogger(Config.FRYSK_LOG_ID);
 
-	public void initSessionManagerWindow(LibGlade glade)
-	{
-		this.sessionManager = new SessionManagerGui(glade);
-	}
-	public void initSessionDruidWindow(LibGlade session) throws IOException{
-		this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
-	}
+  /**
+   * Public instances of the windows {
+   */
+  public MenuBar menuBar;
 
-	public void initRegisterWindow(LibGlade gladeFile){
-		this.registerWindow = new RegisterWindow(gladeFile);
-	}
+  public MainWindow mainWindow;
 
-	public void save(Preferences prefs) {
-		mainWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
-		logWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		registerWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/registers"));
-		//programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
-	}
+  public LogWidget logWindow;
 
-	public void load(Preferences prefs) {
-		mainWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/mainWindow"));
-		logWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/logWindow"));
-		registerWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/registers"));
-		//programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
-	}
+  public PreferencesWindow prefsWindow;
+
+  public AboutWindow aboutWindow;
+
+  public SplashScreenWindow splashScreen;
+
+  public CreateFryskSessionDruid createFryskSessionDruid;
+
+  public ObserversDialog observersDialog;
+
+  public EditObserverDialog editObserverDialog;
+
+  public RegisterWindow registerWindow;
+
+  public MemoryWindow memoryWindow;
+
+  // public PickProcsDialog pickProcsDialog;
+  public PickProcDialog pickProcDialog;
+
+  public MainWindowStatusBar mainWindowStatusBar;
+
+  public SessionManagerGui sessionManager;
+
+  /** } */
+
+  public WindowManager ()
+  {
+
+  }
+
+  // Eventually we want to move away from one big glade file
+  // Renamed initWindows to below, as we migrate each window
+  // from the massive glade file
+  public void initLegacyProcpopWindows (LibGlade glade) throws IOException
+  {
+    this.splashScreen = new SplashScreenWindow();
+    this.mainWindow = new MainWindow(glade);
+    this.aboutWindow = new AboutWindow(glade);
+    this.logWindow = new LogWidget(glade);
+    this.prefsWindow = new PreferencesWindow(glade);
+    // this.programAddWindow = new ProgramAddWindow(glade);
+    this.observersDialog = new ObserversDialog(glade);
+    this.editObserverDialog = new EditObserverDialog(glade);
+    this.menuBar = new MenuBar(glade);
+    // this.pickProcsDialog = new PickProcsDialog(null);
+    this.pickProcDialog = new PickProcDialog(null);
+    this.mainWindowStatusBar = new MainWindowStatusBar(glade);
+  }
+
+  public void initSessionManagerWindow (LibGlade glade)
+  {
+    this.sessionManager = new SessionManagerGui(glade);
+  }
+
+  public void initSessionDruidWindow (LibGlade session) throws IOException
+  {
+    this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
+  }
+
+  public void initRegisterWindow (LibGlade gladeFile)
+  {
+    this.registerWindow = new RegisterWindow(gladeFile);
+  }
+
+  public void initMemoryWindow (LibGlade gladeFile)
+  {
+    this.memoryWindow = new MemoryWindow(gladeFile);
+  }
+
+  public void save (Preferences prefs)
+  {
+    mainWindow.save(Preferences.userRoot().node(
+                                                prefs.absolutePath()
+                                                    + "/mainWindow"));
+    logWindow.save(Preferences.userRoot().node(
+                                               prefs.absolutePath()
+                                                   + "/logWindow"));
+    registerWindow.save(Preferences.userRoot().node(
+                                                    prefs.absolutePath()
+                                                        + "/registers"));
+    memoryWindow.save(Preferences.userRoot().node(
+                                                  prefs.absolutePath()
+                                                      + "/memory"));
+    // programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() +
+    // "/programAddWindow"));
+  }
+
+  public void load (Preferences prefs)
+  {
+    mainWindow.load(Preferences.userRoot().node(
+                                                prefs.absolutePath()
+                                                    + "/mainWindow"));
+    logWindow.load(Preferences.userRoot().node(
+                                               prefs.absolutePath()
+                                                   + "/logWindow"));
+    registerWindow.load(Preferences.userRoot().node(
+                                                    prefs.absolutePath()
+                                                        + "/registers"));
+    memoryWindow.load(Preferences.userRoot().node(
+                                                  prefs.absolutePath()
+                                                      + "/memory"));
+    //programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
+  }
 }

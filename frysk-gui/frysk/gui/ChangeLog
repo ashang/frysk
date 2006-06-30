@@ -1,3 +1,14 @@
+2006-06-30  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryFormatDialog.java: Added.
+	* memory/MemoryWindow.java: Added.
+	* glade/memorywindow.gladep: Added.
+	* glade/memorywindow.glade: Added.
+	* register/RegisterFormatDialog.java: Added Frysk license and formatted
+	with new GNU formatter.
+	* register/RegisterWindow.java: Ditto.
+	* Gui.java (Gui): Added new LibGlade for MemoryWindow and initialized it.
+
 2006-06-29  Nurdin Premji  <npremji@redhat.com>
 
 	* glade/procpop.glade: Added proper names for all the widgets in procpop.

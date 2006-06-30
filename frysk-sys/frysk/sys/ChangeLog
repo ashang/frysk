@@ -52,7 +52,7 @@
 	and any children created or attaches to other processes are performed
 	transparently on the ptrace thread which will continue to run after the 
 	very first ptrace request.
-	* Ptrace.java: Re-written to satisfy the new requirements for Ptrace.java,
+	* Ptrace.cxx: Re-written to satisfy the new requirements for Ptrace.java,
 	specifically satisfying all requests with the new java ptrace thread.
 	* Wait.cxx: Via #2774, double status returns via waitpid() have to be
 	eliminated.

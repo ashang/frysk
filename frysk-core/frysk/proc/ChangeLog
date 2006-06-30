@@ -1,3 +1,9 @@
+2006-06-30  Mike Cvet  <mcvet@redhat.com>
+
+	* Task.java (getMemory): Added
+	* Task.java: Reformatted with the new GNU style formatter.
+	* LinuxHost.java: Ditto.
+
 2006-06-28  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTaskTerminateObserver.java (testBlockingWhileTerminating): New

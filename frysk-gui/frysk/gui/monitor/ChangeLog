@@ -1,3 +1,10 @@
+2006-06-30  Mike Cvet  <mcvet@redhat.com>
+
+	* WindowManager.java (memoryWindow): New MemoryWindow object.
+	(initMemoryWindow): Added.
+	(save): Added path for MemoryWindow preferences.
+	(load): Ditto.
+
 2006-06-29  Nurdin Premji  <npremji@redhat.com>
 
 	* WindowManager.java: Fixed spelling error in comment.
