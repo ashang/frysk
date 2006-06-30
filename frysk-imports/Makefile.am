@@ -84,7 +84,7 @@ GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 if USE_LIBUNWIND
 GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a \
 		 ./libunwind/src/libunwind-setjmp.a \
-		 ./libunwind/src/libunwind-$(target_cpu).a \
+		 ./libunwind/src/libunwind-$(libunwind_cpu).a \
 		 ./libunwind/src/libunwind.a
 endif
 

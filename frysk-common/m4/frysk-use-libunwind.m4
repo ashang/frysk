@@ -45,4 +45,9 @@ i?86|x86_64|ia64)
 *)	use_libunwind=no;;
 esac
 AM_CONDITIONAL([USE_LIBUNWIND], [test $use_libunwind = yes])
+# libunwind uses a slightly different terminology:
+case $target_cpu in
+i?86)	AC_SUBST([libunwind_cpu], [x86]);;
+*)	AC_SUBST([libunwind_cpu], [$target_cpu]);;
+esac
 ])
