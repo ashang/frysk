@@ -40,25 +40,25 @@
 include common/Makefile.rules
 include Makefile.gen
 
-SUBDIRS = \
+CHECK_SUBDIRS = \
 	jline \
 	jargs \
 	tests \
 	cdtparser \
 	junit \
 	elfutils
+
+SUBDIRS = $(CHECK_SUBDIRS)
 	
 # Add in libunwind only for certain arches
-if  TARGET_i686 
+if USE_LIBUNWIND
 SUBDIRS += libunwind
 endif
 
-if TARGET_x86_64
-SUBDIRS += libunwind
-endif
-
-if TARGET_ia64
-SUBDIRS += libunwind
+# On certain platforms, "make check" in libunwind is disabled.
+# (This is probably not portable, but we do not mind.)
+if !CHECK_LIBUNWIND
+check-recursive: SUBDIRS = $(CHECK_SUBDIRS)
 endif
 
 EXTRA_DIST += \
@@ -81,25 +81,11 @@ GEN_GCJ_LDADD += ./elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 
 # Add in libunwind only for certain arches
-if TARGET_i686
-GEN_GCJ_LDADD += ./libunwind/src/libunwind.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-x86.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-setjmp.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
-endif
-
-if TARGET_x86_64
-GEN_GCJ_LDADD += ./libunwind/src/libunwind.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-x86_64.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-setjmp.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
-endif
-
-if TARGET_ia64
-GEN_GCJ_LDADD += ./libunwind/src/libunwind.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ia64.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-setjmp.a
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a
+if USE_LIBUNWIND
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a \
+		 ./libunwind/src/libunwind-setjmp.a \
+		 ./libunwind/src/libunwind-$(target_cpu).a \
+		 ./libunwind/src/libunwind.a
 endif
 
 GEN_GCJ_LDADD += -lopcodes

@@ -43,9 +43,9 @@ include Makefile.gen
 EXTRA_DIST += frysk/sys/ChangeLog frysk/sys/proc/ChangeLog
 
 AM_CXXFLAGS += -I$(srcdir)/../frysk-imports/include
-AM_CXXFLAGS += -I$(top_builddir)/../frysk-imports/
+AM_CXXFLAGS += -I../frysk-imports/
 
-GEN_SOURCEPATH += $(top_builddir)/../frysk-imports/
+GEN_SOURCEPATH += ../frysk-imports/
 GEN_SOURCEPATH += $(top_srcdir)/../frysk-imports/
 GEN_CLASSPATH += ../frysk-imports/junit.jar
 GEN_CLASSPATH += ../frysk-imports/jargs.jar
@@ -56,4 +56,10 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+if USE_LIBUNWIND
+GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-ptrace.a \
+		 ../frysk-imports/libunwind/src/libunwind-setjmp.a \
+		 ../frysk-imports/libunwind/src/libunwind-$(target_cpu).a \
+		 ../frysk-imports/libunwind/src/libunwind.a
+endif
 GEN_GCJ_LDADD += -lopcodes

@@ -47,16 +47,16 @@ EXTRA_DIST += \
 	frysk/gui/srcwin/ChangeLog \
 	frysk/gui/monitor/ChangeLog
 
-GEN_CLASSPATH += $(top_builddir)/../frysk-gtk/frysk-gtk.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-core/frysk-core.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-sys/frysk-sys.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/antlr.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jdom.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jargs.jar 
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jline.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-gtk/tlwidgets/ftk.jar
+GEN_CLASSPATH += ../frysk-gtk/frysk-gtk.jar
+GEN_CLASSPATH += ../frysk-core/frysk-core.jar
+GEN_CLASSPATH += ../frysk-sys/frysk-sys.jar
+GEN_CLASSPATH += ../frysk-imports/antlr.jar
+GEN_CLASSPATH += ../frysk-imports/frysk-imports.jar
+GEN_CLASSPATH += ../frysk-imports/jdom.jar
+GEN_CLASSPATH += ../frysk-imports/junit.jar 
+GEN_CLASSPATH += ../frysk-imports/jargs.jar 
+GEN_CLASSPATH += ../frysk-imports/jline.jar
+GEN_CLASSPATH += ../frysk-gtk/tlwidgets/ftk.jar
 GEN_CLASSPATH += $(FRYSK_GUI_JARS) 
 GEN_CLASSPATH += /usr/lib
 
@@ -74,6 +74,12 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+if USE_LIBUNWIND
+GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-ptrace.a \
+		 ../frysk-imports/libunwind/src/libunwind-setjmp.a \
+		 ../frysk-imports/libunwind/src/libunwind-$(target_cpu).a \
+		 ../frysk-imports/libunwind/src/libunwind.a
+endif
 GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-ftk.a
 GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon
 GEN_GCJ_LDADD += -L../frysk-gtk/tlwidgets

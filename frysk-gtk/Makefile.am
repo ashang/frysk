@@ -45,9 +45,9 @@ SUBDIRS = tlwidgets tests
 EXTRA_DIST += EggTrayIcon/ChangeLog org/gnu/gtk/frysk/ChangeLog
 
 
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/junit.jar 
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/jargs.jar
-GEN_CLASSPATH += $(top_builddir)/../frysk-imports/frysk-imports.jar
+GEN_CLASSPATH += ../frysk-imports/junit.jar 
+GEN_CLASSPATH += ../frysk-imports/jargs.jar
+GEN_CLASSPATH += ../frysk-imports/frysk-imports.jar
 GEN_CLASSPATH += $(FRYSK_GTK_JARS)
 
 GEN_GCJ_LDADD += ../frysk-imports/libfrysk-imports.a
@@ -58,6 +58,12 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdwfl/libdwfl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
+if USE_LIBUNWIND
+GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-ptrace.a \
+		 ../frysk-imports/libunwind/src/libunwind-setjmp.a \
+		 ../frysk-imports/libunwind/src/libunwind-$(target_cpu).a \
+		 ../frysk-imports/libunwind/src/libunwind.a
+endif
 GEN_GCJ_LDADD += -lopcodes
 
 # Hack, need to compile this entire sub-tree with JNI.

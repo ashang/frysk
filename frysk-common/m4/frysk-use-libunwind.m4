@@ -1,6 +1,6 @@
 # This file is part of the program FRYSK.
 #
-# Copyright 2005, 2006, Red Hat Inc.
+# Copyright 2006, Red Hat Inc.
 #
 # FRYSK is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -10,11 +10,11 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with FRYSK; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-# 
+#
 # In addition, as a special exception, Red Hat, Inc. gives You the
 # additional right to link the code of FRYSK with code not covered
 # under the GNU General Public License ("Non-GPL Code") and to
@@ -37,36 +37,12 @@
 # version and license this file solely under the GPL without
 # exception.
 
-AC_PREREQ(2.59)
-
-sinclude(common/version.ac)
-AC_INIT(frysk, [FRYSK_VERSION])
-
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-
-sinclude(common/acinclude.m4)
-
-dnl Relying that the above called AC_CANONICAL_TARGET.
-# No platform is ready to for "make check" in libunwind yet.
+AC_DEFINE([FRYSK_USE_LIBUNWIND], [
+AC_REQUIRE([AC_CANONICAL_TARGET])
 case $target_cpu in
-*)	check_libunwind=no;;
+i?86|x86_64|ia64)
+	use_libunwind=yes;
+*)	use_libunwind=no;;
 esac
-AM_CONDITIONAL([CHECK_LIBUNWIND], [test $check_libunwind = yes])
-
-AC_CONFIG_SUBDIRS([elfutils])
-if test $use_libunwind = yes; then
-	AC_CONFIG_SUBDIRS([libunwind])
-fi
-
-AC_FIND_FILE([antlr.jar], [/usr/share/java /usr/share/frysk/java], ANTLR_JAR)
-AC_FIND_FILE([jdom.jar], [/usr/share/java /usr/share/frysk/java], JDOM_JAR)
-
-AC_CONFIG_FILES([
-	Makefile
-	jline/Makefile
-	jargs/Makefile
-	tests/Makefile
-	cdtparser/Makefile
-	junit/Makefile])
-
-AC_OUTPUT
+AM_CONDITIONAL([USE_LIBUNWIND], [test $use_libunwind = yes])
+])

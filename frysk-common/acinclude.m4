@@ -131,3 +131,5 @@ test $XMLCATALOG = no && AC_ERROR([no xmlcatalog program found])
 # Check for uudecode
 AC_CHECK_PROGS([UUDECODE], [uudecode], [no])
 test $UUDECODE = no && AC_ERROR([no uudecode program found, please install sharutils package])
+
+FRYSK_USE_LIBUNWIND

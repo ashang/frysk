@@ -1,3 +1,7 @@
+2006-06-30  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (GEN_GCJ_LDADD): Add libunwind libs.
+
 2006-06-25  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* Makefile.am: Added jline to classpath

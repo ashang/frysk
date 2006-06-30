@@ -1,3 +1,11 @@
+2006-06-30  Stepan Kasal  <kasal@ucw.cz>
+
+	* configure.ac: Remove the code deciding whether to use libunwind,
+	it is in common/m4/frysk-use-libunwind.m4 now.  Add conditional
+	whether libunwind can undertake "make check".  And some cosmetics.
+	* Makefile.am: Clean up the code for libunwind; add hack to skip
+	"make check" there.
+
 2006-06-29  Stepan Kasal  <kasal@ucw.cz>
 
 	* bootstrap.sh: Do not run automake in libunwind, it doesn't use it.
