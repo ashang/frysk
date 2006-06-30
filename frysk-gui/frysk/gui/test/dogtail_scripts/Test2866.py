@@ -132,6 +132,7 @@ class TestCredits (unittest.TestCase):
                  observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                  self.fail ( 'Error - unable to locate Observer with name = ' + str(observerInGui) )
+                 sys.exit(1)
 
             # Make a simple change
             editButton = customObservers.button( 'Edit' )

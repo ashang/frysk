@@ -221,7 +221,11 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 # as generated/displayed changes.
 
                 theActions = genericAction.getElements()
+                actionListLength = len(theActions)
+                actionListCounter = 0
                 for tempAction in theActions:
+                    actionListCounter = actionListCounter + 1 
+                    
                     theActionName = tempAction.getName()
                     observerActionsTable = observerPanel.child (name = 'observerActionsTable')
                     # comboBox that lists the action types - the first one in the list[]
@@ -230,20 +234,25 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     # Select the action
                     actionItem = comboBox.menuItem (theActionName)
                     actionItem.click()
-
-                    # Need to handle text too! As of 20060613 the text is not 
-                    # written to the Observer data file
+                    
+                    actionText = observerActionsTable.child(roleName = 'text')
+                    actionText.text = tempAction.getArgument()
 
                     # The '+' and '-' buttons to enable adding/substracting action points
                     theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
                     # button [1] is the '+' button
-                    theButtons[1].click()
+                    if actionListCounter < actionListLength:
+                        theButtons[1].click()
 
                 # And - there is a similar situation for the multiple FilterPoints defined
                 # in the Observer
 
                 theFilterPoints = self.theObserver.getFilterPoints()
+                filterPointListLength = len(theFilterPoints)
+                filterPointListCounter = 0
+ 
                 for tempFilterPoint in theFilterPoints:
+                    filterPointListCounter = filterPointListCounter + 1 
                     observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
 
                     # comboBox that lists the filter types - the 2nd one in the list[]
@@ -261,15 +270,18 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     # The '+' and '-' buttons to enable adding/substracting action points
                     theButtons = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
                     # button [1] is the '+' button
-                    theButtons[1].click()
+                    if filterPointListCounter < filterPointListLength:
+                        theButtons[1].click()
 
-                # Save the new Observer
+     
+               # Save the new Observer
                 okButton = observerDetails.button( 'OK' )
                 okButton.click()
 
                 # This button showed up on 20060609
                 applyButton = customObservers.button ('Apply')
                 applyButton.click()
+
 
             except:
                 self.fail ( 'Error - unable to create new Observer with name = ' + newObserverName )

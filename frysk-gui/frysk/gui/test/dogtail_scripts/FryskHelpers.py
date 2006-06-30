@@ -373,7 +373,7 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
         theSessionTable = theDruid.child(name='SessionManager_previousSessionsListView')
         theNewlyCreatedSession = theSessionTable.child(name=sessionObject.getName(), roleName='table cell' )
         theNewlyCreatedSession.actions['activate'].do()
-        theNewlyCreatedSession.grabFocus()       
+        theNewlyCreatedSession.grabFocus()
         openButton.click()
         
 # ---------------------
@@ -487,7 +487,7 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
 
     for processName in theProcessList:
         resolvedName = extractString (str(processName), 'name')
-        print "DEBUG - name = " + resolvedName
+        #print "DEBUG - name = " + resolvedName
         tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
         tempProc.grabFocus()
         tempProc.actions['activate'].do()
