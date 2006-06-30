@@ -170,8 +170,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         ## TODO NEXT - add code to enable creation of all observer types
         temp = self.theMatrix[0]
         print "DEBUG = " + temp.getType()
-        execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
-        execObserver.actions['activate'].do()  
+        #execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
+        #execObserver.actions['activate'].do()  
  
         # Start loop to create the new Observers - for now, Frysk only supports (1)
         # observer object in a persistent file - so the loop counter has a limit of
@@ -334,7 +334,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
         observersSelection.click()
 
         customObservers = self.frysk.dialog( 'Custom Observers' )
@@ -415,7 +415,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
         observersSelection.click()
 
         customObservers = self.frysk.dialog( 'Custom Observers' )
@@ -455,7 +455,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
         observersSelection.click()
 
         customObservers = self.frysk.dialog( 'Custom Observers' )

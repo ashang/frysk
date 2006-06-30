@@ -80,8 +80,8 @@ FRYSK_APP_NAME = 'java-gnome'
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
                         'frysk.gui.monitor.observers.TaskExecObserver':'Exec Observer', 
                         'frysk.gui.monitor.observers.TaskTerminatingObserver':'Task Terminating Observer', 
-                        'frysk-gui.frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
-                        'frysk-gui.frysk.gui.monitor.observers.TaskCloneObserver':'TaskCloneObserver' }
+                        'frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
+                        'frysk.gui.monitor.observers.TaskCloneObserver':'TaskCloneObserver' }
 
 # Location of Frysk persistent data files for Sessions
 FRYSK_SESSION_FILES = os.environ['HOME'] + "/.frysk/Sessions/"

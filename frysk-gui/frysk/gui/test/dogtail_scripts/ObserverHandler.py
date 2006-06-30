@@ -156,7 +156,21 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           self.tempFilterPoint.setName('Name forking thread')
       if attributes['name'] == 'forked thread':
           self.tempFilterPoint.setName('Name forked thread')
- 
+      if attributes['name'] == "Exec'ing Thread":
+          self.tempFilterPoint.setName("Name Exec'ing Thread")
+      if attributes['name'] == 'Terminating Task':
+          self.tempFilterPoint.setName('Name Terminating Task')
+      if attributes['name'] == 'Exit Value':
+          self.tempFilterPoint.setName('Int Filter Exit Value')
+      if attributes['name'] == 'Cloning Thread':
+          self.tempFilterPoint.setName('Name Cloning Thread')
+      if attributes['name'] == 'Cloned Thread':
+          self.tempFilterPoint.setName('Name Cloned Thread')
+      if attributes['name'] == 'Task entering syscall':
+          self.tempFilterPoint.setName('Name Task entering syscall')
+      if attributes['name'] == 'Task exiting syscall':
+          self.tempFilterPoint.setName('Name Task exiting syscall')
+
 #   elif self.currentTag == 'elements':
       
     elif self.currentTag == 'element':
