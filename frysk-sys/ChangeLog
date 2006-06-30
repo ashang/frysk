@@ -1,5 +1,6 @@
 2006-06-30  Stepan Kasal  <kasal@ucw.cz>
 
+	* configure.ac: Include common/acinclude.m4 before AM_INIT_AUTOMAKE.
 	* Makefile.am (GEN_GCJ_LDADD): Add libunwind libs.
 
 2006-06-16  Andrew Cagney  <cagney@redhat.com>

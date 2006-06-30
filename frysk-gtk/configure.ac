@@ -42,10 +42,10 @@ AC_PREREQ(2.59)
 sinclude(common/version.ac)
 AC_INIT(frysk, [FRYSK_VERSION])
 
+sinclude(common/acinclude.m4)
+
 AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 AC_CONFIG_FILES([Makefile tlwidgets/Makefile tests/Makefile])
-
-sinclude(common/acinclude.m4)
 
 PKG_CHECK_MODULES(FRYSK_GTK, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])
 FRYSK_PKG_MODULE_VARIABLE(FRYSK_GTK_JARS, classpath, [gtk+-2.0 >= 2.7.0 gtk2-java >= 2.7.0 glib-java >= 0.2])

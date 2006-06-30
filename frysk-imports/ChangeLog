@@ -3,6 +3,7 @@
 	* configure.ac: Remove the code deciding whether to use libunwind,
 	it is in common/m4/frysk-use-libunwind.m4 now.  Add conditional
 	whether libunwind can undertake "make check".  And some cosmetics.
+	Include common/acinclude.m4 before AM_INIT_AUTOMAKE.
 	* Makefile.am: Clean up the code for libunwind; add hack to skip
 	"make check" there.
 

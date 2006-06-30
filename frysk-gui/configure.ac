@@ -42,9 +42,9 @@ AC_PREREQ(2.59)
 sinclude(common/version.ac)
 AC_INIT(frysk, [FRYSK_VERSION])
 
-AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
-
 sinclude(common/acinclude.m4)
+
+AM_INIT_AUTOMAKE([subdir-objects foreign no-installinfo no-exeext])
 
 lib=lib
 if [[ "x`uname -p`" = "xx86_64" ]]; then
