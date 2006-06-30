@@ -37,7 +37,7 @@
 # version and license this file solely under the GPL without
 # exception.
 
-AC_DEFINE([FRYSK_USE_LIBUNWIND], [
+AC_DEFUN([FRYSK_USE_LIBUNWIND], [
 AC_REQUIRE([AC_CANONICAL_TARGET])
 case $target_cpu in
 i?86|x86_64|ia64)
