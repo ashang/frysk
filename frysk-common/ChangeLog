@@ -1,3 +1,7 @@
+2006-06-30  Rick Moseley  <rmoseley@redhat.com>
+	
+	* m4/frysk-use-libunwind.m4: Disable libunwind for now.
+
 2006-06-30  Stepan Kasal  <kasal@ucw.cz>
 
 	* m4/frysk-use-libunwind.m4: New file, defines FRYSK_USE_LIBUNWIND.

@@ -41,7 +41,7 @@ AC_DEFUN([FRYSK_USE_LIBUNWIND], [
 AC_REQUIRE([AC_CANONICAL_TARGET])
 case $target_cpu in
 i?86|x86_64|ia64)
-	use_libunwind=yes;;
+	use_libunwind=no;;
 *)	use_libunwind=no;;
 esac
 AM_CONDITIONAL([USE_LIBUNWIND], [test $use_libunwind = yes])
