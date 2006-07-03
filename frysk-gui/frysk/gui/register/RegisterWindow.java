@@ -386,7 +386,7 @@ public class RegisterWindow
     return new String(tmp);
   }
 
-  private void saveBinaryValue (String rawString, int raadix,
+  private void saveBinaryValue (String rawString, int radix,
                                 boolean littleEndian, TreePath path)
   {
     long value = 0;
@@ -394,7 +394,7 @@ public class RegisterWindow
     // convert the data to little endian binary
     try
       {
-        value = Long.parseLong(rawString, raadix);
+        value = Long.parseLong(rawString, radix);
         binaryString = Long.toBinaryString(value);
       }
     // Invalid format, do nothing

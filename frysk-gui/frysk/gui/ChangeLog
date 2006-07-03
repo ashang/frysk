@@ -1,5 +1,20 @@
 2006-07-03  Mike Cvet  <mcvet@redhat.com>
 
+	* register/RegisterWindow.java (saveBinaryValue): Small spelling refactor.
+	* memory/MemoryFormatDialog.java (MemoryFormatDialog): Beginning to build
+	support for multiple endians and radix formats.
+	(save): ditto.
+	(load): ditto.
+	* memory/MemoryWindow.java: Edited and added structures to support
+	endian-ness and multiple bit formats, added some macros.
+	(reverse): Added.
+	(saveBinaryValue): ditto.
+	(DecCellListener): ditto.
+	(HexCellListener): ditto.
+	(OctCellListener): ditto.
+	(BinCellListener): ditto.
+	(signExtend): ditto.
+	(setTask): Now checking for endian-ness, bit formats.
 	* glade/memorywindow.glade: Rebuilt the Memory Window from scratch with new
 	functionality to display memory between user-defined areas.
 
