@@ -1,3 +1,8 @@
+2006-07-03  Mike Cvet  <mcvet@redhat.com>
+
+	* glade/memorywindow.glade: Rebuilt the Memory Window from scratch with new
+	functionality to display memory between user-defined areas.
+
 2006-06-30  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryFormatDialog.java: Added.
