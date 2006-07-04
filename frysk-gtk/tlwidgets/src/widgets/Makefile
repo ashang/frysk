@@ -13,6 +13,8 @@ PKGINSTALLDIR = $(LIBINSTALLDIR)/pkgconfig
      LIBS = `pkg-config --libs   gtk+-2.0` -lm
 
       CC = gcc
+DOCBOOK2HTML = docbook2html
+
 
 
 SOURCE_FILES = ftkconsole.c ftkstripchart.c ftktimeline.c
@@ -22,6 +24,11 @@ all::libftk.so
 
 %.o:%.c
 	$(CC) $(CFLAGS) -std=gnu99 $(INCS) -c $<
+
+%.html:%.sgml
+	$(DOCBOOK2HTML) -u $<
+
+eventviewer.html:eventviewer.sgml
 
 ftkconsole.o:    ftkconsole.c     ftkconsole.h
 ftktimeline.o:   ftktimeline.c    ftktimeline.h

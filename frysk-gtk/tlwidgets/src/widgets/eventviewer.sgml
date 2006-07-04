@@ -1,0 +1,2057 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+
+<article>
+  <refentry id="ftk_eventviewer_new">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_new</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_new</refname>
+      <refpurpose>Create a new eventviewer instance.</refpurpose>
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>GtkWidget * <function>ftk_eventviewer_new</function></funcdef>
+	  <paramdef>void</paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_new</function> creates and initialises new
+	eventviewer instance.  The returned GtkWidget pointer is in fact a
+	pointer to a FtkEventViewer structure which should be considered
+	opaque.  The returned widget pointer should be cast to an FtkEventViewer
+	pointer using the FTK_EVENTVIEWER() macro and used as the first
+	argument to all of the following functions.
+      </para>
+    </refsect1>
+  </refentry>
+
+    
+  <refentry id="ftk_eventviewer_resize">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_resize</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_resize</refname>
+      <refname>ftk_eventviewer_resize_e</refname>
+      <refpurpose>Resize an existing eventviewer instance.</refpurpose>
+    </refnamediv>
+    
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_resize</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>width</parameter></paramdef>
+	  <paramdef>gint <parameter>height</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_resize_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>width</parameter></paramdef>
+	  <paramdef>gint <parameter>height</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+
+      <table frame='all'>
+	<title><function>ftk_eventviewer_resize</function> Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>width</parameter></entry>
+	      <entry>The requested width of the viewer.  The actual width may
+	      be accted by the window manager.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>height</parameter></entry>
+	      <entry>The requested height of the viewer.  The actual height may
+	      be accted by the window manager.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_resize</function> attempts to resize the
+	viewer instance referenced by the first argument to the width and
+	height specified by the second and third arguments respectively.
+	<function>ftk_eventviewer_resize_e</function> does the same thing but,
+	<anchor id=error_stuff>
+	if the fourth argument is non-null, will create a GError structure at
+	the location specified by that argument.  The GError * pointer passed
+	to this function must be initialised to NULL; if it non-null when the
+	function returns, an error has occurred and the GError structure must
+	subsequently be freed using <function>g_error_free</function>.
+      </para>
+      
+    </refsect1>
+    
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  In addition, if
+	<anchor id=error_stuff2>
+	<function>ftk_eventviewer_resize_e</function> returns FALSE and has
+	a valid non-null fourth argument, a GError structure will be
+	created as described above.
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_bg_rgb">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_bg_rgb,
+	ftk_eventviewer_set_bg_color</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_set_bg_rgb</refname>
+      <refname>ftk_eventviewer_set_bg_rgb_e</refname>
+      <refname>ftk_eventviewer_set_bg_color</refname>
+      <refname>ftk_eventviewer_set_bg_color_e</refname>
+      <refpurpose>Set the background color of an existing eventviewer
+	instance.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_bg_rgb</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_bg_rgb_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_bg_color</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_bg_color_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_bg_rgb</function> and
+	  <function>ftk_eventviewer_set_bg_color</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>red</parameter></entry>
+	      <entry>The red component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>green</parameter></entry>
+	      <entry>The green component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>blue</parameter></entry>
+	      <entry>The blue component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>color</parameter></entry>
+	      <entry>A pointer to a GdkColor structure containing the
+	      appropriate color components.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+	
+      <para>
+	<function>ftk_eventviewer_set_bg_rgb</function> and
+	<function>ftk_eventviewer_set_bg_color</function> change the
+	bacground color of the viewer instance referenced by the first
+	argument.  <function>ftk_eventviewer_set_bg_rgb</function> accepts
+	color information in the second, third and fourth arguments as red,
+	green and blue color components respectively.  All three components
+	must be in a range of 0 to 65535 inclusive.
+	<function>ftk_eventviewer_set_bg_color</function> accepts color
+	information in its second argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <quote>lightblue,</quote> using gdk_color_parse(), q.v.)
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_bg_rgb_e</function> and
+	<function>ftk_eventviewer_set_bg_color_e</function> are identical to
+	<function>ftk_eventviewer_set_bg_rgb</function> and
+	<function>ftk_eventviewer_set_bg_color</function> respectively except
+	that they accept an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+    
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	All of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> versions of the functions work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_timebase">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_timebase</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+	<refname>ftk_eventviewer_set_timebase</refname>
+      <refname>ftk_eventviewer_set_timebase_e</refname>
+      <refpurpose>Set the value in seconds of the display width of an
+	an existing eventviewer instance.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_timebase</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gdouble <parameter>span</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_timebase_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gdouble <parameter>span</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title><function>ftk_eventviewer_timebase</function> Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>span</parameter></entry>
+	      <entry>The width in seconds spanned by the viewer.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+    
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_timebase</function> sets the width in
+	seconds ofthe range of events to be displayed.  That value
+	corresponds to the interval in time between the left edge of the
+	displayed information and the right edge, and may be modified by user
+	interaction of other controls.
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_timebase_e</function> is identical to
+	<function>ftk_eventviewer_set_timebase</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+    
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	These functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function works
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_add_trace">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_add_trace</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_add_trace</refname>
+      <refname>ftk_eventviewer_add_trace_e</refname>
+      <refpurpose>Add another trace to an
+	an existing eventviewer instance.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gint <function>ftk_eventviewer_add_trace</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>gchar * <parameter>description</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gint <function>ftk_eventviewer_add_trace_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>gchar * <parameter>description</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title><function>ftk_eventviewer_add_trace</function> Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>label</parameter></entry>
+	      <entry>A label to be associated with the trace.  (May be NULL.)</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>description</parameter></entry>
+	      <entry>Optional additional information that may be associated
+	      with the trace, displayed when the pointer hovers over the label
+	      displayed in the viewer.  May be NULL if unused.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_add_trace</function> appends a new trace to
+	the series of traces displayed by the viewer.  The <parameter
+	  class="function">label</parameter> argument is used to supply a
+	label for the trace while the <parameter
+	  class="function">description</parameter> argument supplies a string
+	that appears as additional information to the user when the pointer
+	pauses over the displayed label. The traces are displayed, top to
+	bottom, in the order in which they are defined.
+      </para>
+      <para>
+	<function>ftk_eventviewer_add_trace_e</function> is identical to
+	<function>ftk_eventviewer_add_trace</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	On success, these functions return an integer greater than or equal
+	to zero identifying the trace for future use.  Within a given viewer,
+	these values are unique, but they may not be unique in separate
+	viewer instances. On failure, a negative value is returned. The
+	<function>_e</function> version of the function works as <link
+	  linkend="error_stuff2">described</link> above.
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_trace_rgb">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_trace_rgb,
+	ftk_eventviewer_set_trace_color</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_set_trace_rgb</refname>
+      <refname>ftk_eventviewer_set_trace_rgb_e</refname>
+      <refname>ftk_eventviewer_set_trace_color</refname>
+      <refname>ftk_eventviewer_set_trace_color_e</refname>
+      <refpurpose>Set the color of an existing eventviewer
+	trace.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_rgb</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_rgb_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_color</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_color_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_trace_rgb</function> and
+	  <function>ftk_eventviewer_set_trace_color</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>trace</parameter></entry>
+	      <entry>The identifier of a trace previously defined by
+		<link linkend='ftk_eventviewer_add_trace'>
+		  <function>ftk_eventviewer_add_trace</function></link>.</entry>  
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>red</parameter></entry>
+	      <entry>The red component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>green</parameter></entry>
+	      <entry>The green component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>blue</parameter></entry>
+	      <entry>The blue component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>color</parameter></entry>
+	      <entry>A pointer to a GdkColor structure containing the
+	      appropriate color components.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_trace_rgb</function> and
+	<function>ftk_eventviewer_set_trace_color</function> change the color
+	in the viewer instance referenced by the first argument of the trace
+	identified by second argument.  The second argument must be a value
+	returned by a prior call to either
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace</function></link> or
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace_e</function></link> on the same viewer.
+	<function>ftk_eventviewer_set_trace_rgb</function> accepts color
+	information in the third, fourth and fifth arguments as red, green
+	and blue color components respectively.  All three components must be
+	in a range of 0 to 65535 inclusive.
+	<function>ftk_eventviewer_set_trace_color</function> accepts color
+	information in its third argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <quote>lightblue,</quote> using gdk_color_parse(), q.v.)
+	</para>
+      <para>
+	<function>ftk_eventviewer_set_trace_rgb_e</function> and
+	<function>ftk_eventviewer_set_trace_color_e</function> are identical to
+	<function>ftk_eventviewer_set_trace_rgb</function> and
+	<function>ftk_eventviewer_set_trace_color</function> respectively except
+	that they accept an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	All of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> versions of the functions work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_trace_label">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_trace_label</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_set_trace_label</refname>
+      <refname>ftk_eventviewer_set_trace_label_e</refname>
+      <refpurpose>Replace the label of a given trace in an existing eventviewer
+	instance.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_label</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_label_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_trace_label</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>trace</parameter></entry>
+	      <entry>The identifier of a trace previously defined by
+		<link linkend='ftk_eventviewer_add_trace'>
+	      <function>ftk_eventviewer_add_trace</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>label</parameter></entry>
+	      <entry>A pointer to a string that, if non-NULL, will replace the
+	      existing trace label.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>description</parameter></entry>
+	      <entry>A pointer to a string that, if non-NULL, will replace the
+	      existing trace description.  <emphasis>NOTE: This argument is not
+	      yet implemented.</emphasis></entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_trace_label</function> replaces the
+	label associated with a trace identified by the second argument in
+	the viewer identified by the first argument with the label specified
+	by the third argument.  The second argument must be a value
+	returned by a prior call to either
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace</function></link> or
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace_e</function></link> on the same viewer.
+      </para>
+      <para>
+	At some point, an additional <parameter>description</parameter>
+	argument will be added to similarly replace the description string.
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_trace_label_e</function> is identical to
+	<function>ftk_eventviewer_set_trace_label</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_trace_linestyle">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_trace_linestyle</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_set_trace_linestyle</refname>
+      <refname>ftk_eventviewer_set_trace_linestyle_e</refname>
+      <refpurpose>Set the linestyle and linewidth of the specified trace.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_linestyle</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gint <parameter>linewidth</parameter></paramdef>
+	  <paramdef>gint <parameter>linestyle</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_linestyle_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gint <parameter>linewidth</parameter></paramdef>
+	  <paramdef>gint <parameter>linestyle</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_trace_linestyle</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>trace</parameter></entry>
+	      <entry>The identifier of a trace previously defined by
+		<link linkend='ftk_eventviewer_add_trace'>
+	      <function>ftk_eventviewer_add_trace</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>linewidth</parameter></entry>
+	      <entry>The width, in pixels, of the trace.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>linestyle</parameter></entry>
+	      <entry>The length in pixels of the dashes used to create the
+	      trace.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_trace_linstyle</function> sets the line
+	style and line width of the trace identified by the second argument in
+	the viewer identified by the first argument.  The second argument must
+	be a value returned by a prior call to either
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace</function></link> or
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace_e</function></link> on the same viewer.
+      </para>
+      <para>
+	The <parameter>linewidth</parameter> argument may either be a positive
+	value specifying the width in pixels of the trace, or any negative
+	value to specify the use of the dafault width.  If the
+	<parameter>linestyle</parameter> argument is negative, a solid trace
+	will be created; if positive, a dashed trace consisting of segments of
+	the specified length alternating with gaps of the same length will be created.
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_trace_linestyle_e</function> is identical to
+	<function>ftk_eventviewer_set_trace_linestyle</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_marker_new">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_marker_new</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_marker_new</refname>
+      <refname>ftk_eventviewer_marker_new_e</refname>
+      <refpurpose>Define the characteristics of a marker to be used by the
+      viewer.</refpurpose>  
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gint <function>ftk_eventviewer_marker_new</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>FtkGlyph <parameter>glyph</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>gchar * <parameter>description</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gint <function>ftk_eventviewer_marker_new_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>FtkGlyph <parameter>glyph</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>gchar * <parameter>description</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title><function>ftk_eventviewer_marker_new</function> Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>glyph</parameter></entry>
+	      <entry>An enum value of type <link linkend='ftkglyph'>FtkGlyph</link>
+	      indentifying which of the available glyphs 
+	      to use in displaying the marker.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>label</parameter></entry>
+	      <entry>A label to be associated with the marker.  (May be NULL.)</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>description</parameter></entry>
+	      <entry>Optional additional information that may be associated
+	      with the marker, displayed when the pointer hovers over the marker
+	      or the corresponding legend displayed in the viewer.  May be NULL
+	      if unused.</entry> 
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if
+	      unused.</entry> 
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title></title>
+      <table frame='all' id='ftkglyph'>
+	<title><function>FtkGlyph</function> Values.</title>
+	<tgroup cols='3' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='center'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Enum</entry>
+	      <entry align = 'center'>Glyph</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_CIRCLE</constant></entry>
+	      <entry align = 'center'>&bull;</entry> 
+	      <entry>A filled circle.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_SQUARE</constant></entry>
+	      <entry align = 'center'>&squf;</entry> 
+	      <entry>A filled square.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_UP_TRIANGLE</constant></entry>
+	      <entry align = 'center'>&utrif;</entry> 
+	      <entry>A filled upwards-pointing triangle</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_DOWN_TRIANGLE</constant></entry>
+	      <entry align = 'center'>&dtrif;</entry> 
+	      <entry>A filled downwards-pointing triangle.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_DIAMOND</constant></entry>
+	      <entry align = 'center'>&diams;</entry> 
+	      <entry>A filled diamond.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_FOUR_STAR</constant></entry>
+	      <entry align = 'center'>&lozf;</entry> 
+	      <entry>A filled four-pointed star.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_OPEN_FOUR_STAR</constant></entry>
+	      <entry align = 'center'>&loz;</entry> 
+	      <entry>An open four-pointed star.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_FILLED_FIVE_STAR</constant></entry>
+	      <entry align = 'center'>&sstarf;</entry> 
+	      <entry>A filled five-pointed star.</entry> 
+	    </row>
+	    <row>
+	      <entry align='right'><constant>FTK_GLYPH_AUTOMATIC</constant></entry>
+	      <entry align = 'center'></entry> 
+	      <entry>A flag indicating that glyph selection and marker colors
+	      should be assigned automatically by the widget.</entry> 
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_marker_new</function> defines a marker to be
+	used in the viewer.  The <parameter>glyph</parameter> argument
+	specifies which of the available geometric shapes will be drawn in the
+	display to mark the location of an event, and the <parameter
+	  class="function">label</parameter> argument is used to supply a
+	label for the marker.  The <parameter
+	  class="function">description</parameter> argument supplies a string
+	that appears as additional information to the user when the pointer
+	pauses over a displayed event or the legend describing the significance
+	of the events..
+      </para>
+      <para>
+	If the value of the  <parameter>glyph</parameter> argument
+	is <constant>FTK_GLYPH_AUTOMATIC</constant>, glyphs will automatically be
+	assigned to markers in rotation.  In addition, a color will
+	autonatically be assigned
+	to the marker from a pool of pre-defined color values.  (See
+	<function>ftk_eventviewer_set_marker_rgb</function> or
+	<function>ftk_eventviewer_set_marker_color</function>.)
+      </para>
+      <para>
+	<function>ftk_eventviewer_marker_new_e</function> is identical to
+	<function>ftk_eventviewer_marker_new</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	On success, these functions return an integer greater than or equal
+	to zero identifying the marker for future use.  Within a given viewer,
+	these values are unique, but they may not be unique in separate
+	viewer instances. On failure, a negative value is returned. The
+	<function>_e</function> version of the function works as <link
+	  linkend="error_stuff2">described</link> above.
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_marker_rgb">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_marker_rgb,
+	ftk_eventviewer_set_marker_color</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_set_marker_rgb</refname>
+      <refname>ftk_eventviewer_set_marker_rgb_e</refname>
+      <refname>ftk_eventviewer_set_marker_color</refname>
+      <refname>ftk_eventviewer_set_marker_color_e</refname>
+      <refpurpose>Set the color of an existing eventviewer
+	marker.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_marker_rgb</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_marker_rgb_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_marker_color</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_marker_color_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_marker_rgb</function> and
+	  <function>ftk_eventviewer_set_marker_color</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>marker</parameter></entry>
+	      <entry>The identifier of a marker previously defined by
+		<link linkend='ftk_eventviewer_marker_new'>
+		  <function>ftk_eventviewer_marker_new</function></link>.</entry>  
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>red</parameter></entry>
+	      <entry>The red component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>green</parameter></entry>
+	      <entry>The green component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>blue</parameter></entry>
+	      <entry>The blue component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>color</parameter></entry>
+	      <entry>A pointer to a GdkColor structure containing the
+	      appropriate color components.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_marker_rgb</function> and
+	<function>ftk_eventviewer_set_marker_color</function> change the color
+	in the viewer instance referenced by the first argument of the marker
+	identified by second argument.  The second argument must be a value
+	returned by a prior call to either
+		<link linkend='ftk_eventviewer_marker_new'>
+	<function>ftk_eventviewer_marker_new</function></link> or
+		<link linkend='ftk_eventviewer_marker_new'>
+	<function>ftk_eventviewer_marker_new_e</function></link> on the same viewer.
+	<function>ftk_eventviewer_set_marker_rgb</function> accepts color
+	information in the third, fourth and fifth arguments as red, green
+	and blue color components respectively.  All three components must be
+	in a range of 0 to 65535 inclusive.
+	<function>ftk_eventviewer_set_marker_color</function> accepts color
+	information in its third argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <quote>lightblue,</quote> using gdk_color_parse(), q.v.)
+	</para>
+      <para>
+	<function>ftk_eventviewer_set_marker_rgb_e</function> and
+	<function>ftk_eventviewer_set_marker_color_e</function> are identical to
+	<function>ftk_eventviewer_set_marker_rgb</function> and
+	<function>ftk_eventviewer_set_marker_color</function> respectively except
+	that they accept an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	All of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> versions of the functions work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_marker_label">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_marker_label</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_set_marker_label</refname>
+      <refname>ftk_eventviewer_set_marker_label_e</refname>
+      <refpurpose>Replace the label of a given marker in an existing eventviewer
+	instance.  (<emphasis>NOTE: This function is not yet
+      implemented.</emphasis>)</refpurpose>  
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_marker_label</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_marker_label_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_marker_label</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>marker</parameter></entry>
+	      <entry>The identifier of a marker previously defined by
+		<link linkend='ftk_eventviewer_marker_new'>
+	      <function>ftk_eventviewer_marker_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>label</parameter></entry>
+	      <entry>A pointer to a string that, if non-NULL, will replace the
+	      existing marker label.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>description</parameter></entry>
+	      <entry>A pointer to a string that, if non-NULL, will replace the
+	      existing marker description.  <emphasis>NOTE: This argument is not
+	      yet implemented.</emphasis></entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_marker_label</function> replaces the
+	label associated with a marker identified by the second argument in
+	the viewer identified by the first argument with the label specified
+	by the third argument.  The second argument must be a value
+	returned by a prior call to either
+		<link linkend='ftk_eventviewer_marker_new'>
+	<function>ftk_eventviewer_marker_new</function></link> or
+		<link linkend='ftk_eventviewer_marker_new'>
+	<function>ftk_eventviewer_marker_new_e</function></link> on the same viewer.
+      </para>
+      <para>
+	At some point, an additional <parameter>description</parameter>
+	argument will be added to similarly replace the description string.
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_marker_label_e</function> is identical to
+	<function>ftk_eventviewer_set_marker_label</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_tie_new">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_tie_new</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_tie_new</refname>
+      <refname>ftk_eventviewer_tie_new_e</refname>
+      <refpurpose>Create a new tie in an
+	an existing eventviewer instance.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gint <function>ftk_eventviewer_tie_new</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gint <function>ftk_eventviewer_tie_new_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title><function>ftk_tie_new</function> Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_tie_new</function> defines a new tie in
+	a viewer.  Ties are used in
+	<link linkend='ftk_eventviewer_append_simultaneous_events'>
+	  <function>ftk_eventviewer_append_simultaneous_events</function></link>
+	  to visually connect simultaneous events.
+      </para>
+      <para>
+	<function>ftk_eventviewer_new_tie_e</function> is identical to
+	<function>ftk_eventviewer_new_tie</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	On success, these functions return an integer greater than or equal
+	to zero identifying the tie for future use.  Within a given viewer,
+	these values are unique, but they may not be unique in separate
+	viewer instances. On failure, a negative value is returned. The
+	<function>_e</function> version of the function works as <link
+	  linkend="error_stuff2">described</link> above.
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_set_tie_rgb">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_tie_rgb,
+	ftk_eventviewer_set_tie_color</refentrytitle>
+    </refmeta>
+
+    <refnamediv>
+      <refname>ftk_eventviewer_set_tie_rgb</refname>
+      <refname>ftk_eventviewer_set_tie_rgb_e</refname>
+      <refname>ftk_eventviewer_set_tie_color</refname>
+      <refname>ftk_eventviewer_set_tie_color_e</refname>
+      <refpurpose>Set the color of an existing eventviewer
+	tie.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_tie_rgb</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_tie_rgb_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>gint <parameter>red</parameter></paramdef>
+	  <paramdef>gint <parameter>green</parameter></paramdef>
+	  <paramdef>gint <parameter>blue</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_tie_color</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_tie_color_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>GdkColor * <parameter>color</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_tie_rgb</function> and
+	  <function>ftk_eventviewer_set_tie_color</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>tie</parameter></entry>
+	      <entry>The identifier of a tie previously defined by
+		<link linkend='ftk_eventviewer_tie_new'>
+		  <function>ftk_eventviewer_tie_new</function></link>.</entry>  
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>red</parameter></entry>
+	      <entry>The red component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>green</parameter></entry>
+	      <entry>The green component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>blue</parameter></entry>
+	      <entry>The blue component of the  requested color in a range of 0
+	      to 65535.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>color</parameter></entry>
+	      <entry>A pointer to a GdkColor structure containing the
+	      appropriate color components.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_tie_rgb</function> and
+	<function>ftk_eventviewer_set_tie_color</function> change the color
+	in the viewer instance referenced by the first argument of the tie
+	identified by second argument.  The second argument must be a value
+	returned by a prior call to either
+		<link linkend='ftk_eventviewer_tie_new'>
+	<function>ftk_eventviewer_tie_new</function></link> or
+		<link linkend='ftk_eventviewer_tie_new'>
+	<function>ftk_eventviewer_tie_new_e</function></link> on the same viewer.
+	<function>ftk_eventviewer_set_tie_rgb</function> accepts color
+	information in the third, fourth and fifth arguments as red, green
+	and blue color components respectively.  All three components must be
+	in a range of 0 to 65535 inclusive.
+	<function>ftk_eventviewer_set_tie_color</function> accepts color
+	information in its third argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <quote>lightblue,</quote> using gdk_color_parse(), q.v.)
+	</para>
+      <para>
+	<function>ftk_eventviewer_set_tie_rgb_e</function> and
+	<function>ftk_eventviewer_set_tie_color_e</function> are identical to
+	<function>ftk_eventviewer_set_tie_rgb</function> and
+	<function>ftk_eventviewer_set_tie_color</function> respectively except
+	that they accept an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	All of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> versions of the functions work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+<!--  not used
+  <refentry id="ftk_eventviewer_set_trace_label">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_trace_label</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_set_trace_label</refname>
+      <refname>ftk_eventviewer_set_trace_label_e</refname>
+      <refpurpose>Replace the label of a given trace in an existing eventviewer
+	instance.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_label</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_trace_label_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gchar * <parameter>label</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_trace_label</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>trace</parameter></entry>
+	      <entry>The identifier of a trace previously defined by
+		<link linkend='ftk_eventviewer_tie_new'>
+	      <function>ftk_eventviewer_tie_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>label</parameter></entry>
+	      <entry>A pointer to a string that, if non-NULL, will replace the
+	      existing trace label.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>description</parameter></entry>
+	      <entry>A pointer to a string that, if non-NULL, will replace the
+	      existing trace description.  <emphasis>NOTE: This argument is not
+	      yet implemented.</emphasis></entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_trace_label</function> replaces the
+	label associated with a trace identified by the second argument in
+	the viewer identified by the first argument with the label specified
+	by the third argument.  The second argument must be a value
+	returned by a prior call to either
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace</function></link> or
+		<link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace_e</function></link> on the same viewer.
+      </para>
+      <para>
+	At some point, an additional <parameter>description</parameter>
+	argument will be added to similarly replace the description string.
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_trace_label_e</function> is identical to
+	<function>ftk_eventviewer_set_trace_label</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+-->
+    
+
+
+  <refentry id="ftk_eventviewer_set_tie_linestyle">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_set_tie_linestyle</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_set_tie_linestyle</refname>
+      <refname>ftk_eventviewer_set_tie_linestyle_e</refname>
+      <refpurpose>Set the linestyle and linewidth of the specified tie.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_tie_linestyle</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>gint <parameter>linewidth</parameter></paramdef>
+	  <paramdef>gint <parameter>linestyle</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_set_tie_linestyle_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>gint <parameter>linewidth</parameter></paramdef>
+	  <paramdef>gint <parameter>linestyle</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_set_tie_linestyle</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>tie</parameter></entry>
+	      <entry>The identifier of a tie previously defined by
+		<link linkend='ftk_eventviewer_tie_new'>
+	      <function>ftk_eventviewer_tie_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>linewidth</parameter></entry>
+	      <entry>The width, in pixels, of the tie.</entry>
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>linestyle</parameter></entry>
+	      <entry>The length in pixels of the dashes used to create the
+	      tie.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_set_tie_linstyle</function> sets the line
+	style and line width of the tie identified by the second argument in
+	the viewer identified by the first argument.  The second argument must
+	be a value returned by a prior call to either
+		<link linkend='ftk_eventviewer_tie_new'>
+	<function>ftk_eventviewer_tie_new</function></link> or
+		<link linkend='ftk_eventviewer_tie_new'>
+	<function>ftk_eventviewer_tie_new_e</function></link> on the same viewer.
+      </para>
+      <para>
+	The <parameter>linewidth</parameter> argument may either be a positive
+	value specifying the width in pixels of the tie, or any negative
+	value to specify the use of the dafault width.  If the
+	<parameter>linestyle</parameter> argument is negative, a solid tie
+	will be created; if positive, a dashed tie consisting of segments of
+	the specified length alternating with gaps of the same length will be created.
+      </para>
+      <para>
+	<function>ftk_eventviewer_set_tie_linestyle_e</function> is identical to
+	<function>ftk_eventviewer_set_tie_linestyle</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_append_event">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_append_event</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_append_event</refname>
+      <refname>ftk_eventviewer_append_event_e</refname>
+      <refpurpose>Append an event for display in the viewer.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_append_event</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>gchar * <parameter>description</parameter></paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_append_event_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>trace</parameter></paramdef>
+	  <paramdef>gint <parameter>marker</parameter></paramdef>
+	  <paramdef>gchar * <parameter>description</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_append_event</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>trace</parameter></entry>
+	      <entry>The identifier of a trace previously defined by
+		<link linkend='ftk_eventviewer_add_trace'>
+	      <function>ftk_eventviewer_add_trace</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>marker</parameter></entry>
+	      <entry>The identifier of a marker previously defined by
+		<link linkend='ftk_eventviewer_marker_new'>
+	      <function>ftk_eventviewer_marker_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>description</parameter></entry>
+	      <entry>Optional additional information that may be associated
+	      with the event, displayed when the pointer hovers over the event
+	      displayed in the viewer.  May be NULL if unused.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_append_event</function> appends an event of
+	the given marker type to the given trace, using in internally provided
+	timestamp.  The trace specification, the second argument, must be a
+	value previously returned by <link linkend='ftk_eventviewer_add_trace'>
+	<function>ftk_eventviewer_add_trace</function></link>; similarly, the marker
+	argument must be a value returned by
+		<link linkend='ftk_eventviewer_marker_new'>
+	<function>ftk_eventviewer_marker_new</function></link>. 
+      </para>
+      <para>
+	The internally generated timestamp has microsecond resolution.
+      </para>
+      <para>
+	<function>ftk_eventviewer_append_event_e</function> is identical to
+	<function>ftk_eventviewer_append_event</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+    
+
+
+  <refentry id="ftk_eventviewer_append_simultaneous_events">
+    <refmeta>
+      <refentrytitle>ftk_eventviewer_append_simultaneous_events</refentrytitle>
+    </refmeta>
+    
+    <refnamediv>
+      <refname>ftk_eventviewer_append_simultaneous_events</refname>
+      <refname>ftk_eventviewer_append_simultaneous_events_e</refname>
+      <refpurpose>Append multiple simultaneous events for display in the viewer.</refpurpose> 
+    </refnamediv>
+
+    <refsynopsisdiv>
+      <funcsynopsis>
+	<funcsynopsisinfo>
+	  #include &lt;ftkeventviewer.h&gt;
+	</funcsynopsisinfo>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_append_simultaneous_events</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>...</paramdef>
+	</funcprototype>
+	<funcprototype>
+	  <funcdef>gboolean <function>ftk_eventviewer_append_simultaneous_events_e</function></funcdef>
+	  <paramdef>FtkEventViewer * <parameter>eventviewer</parameter></paramdef>
+	  <paramdef>gint <parameter>tie</parameter></paramdef>
+	  <paramdef>GError * <parameter>err</parameter></paramdef>
+	  <paramdef>...</paramdef>
+	</funcprototype>
+      </funcsynopsis>
+    </refsynopsisdiv>
+
+    <refsect1>
+      <title></title>
+      <table frame='all'>
+	<title>
+	  <function>ftk_eventviewer_append_simultaneous_events</function>
+	  Arguments</title>
+	<tgroup cols='2' colsep='1' rowsep='1'>
+	  <colspec align='right'>
+	  <colspec align='left'>
+	  <thead>
+	    <row>
+	      <entry align = 'right'>Argument</entry>
+	      <entry>Description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry align='right'><parameter>eventviewer</parameter></entry>
+	      <entry>A pointer to an opaque FtkEventViewer structure previously
+	      created using <link linkend='ftk_eventviewer_new'>
+	      <function>ftk_eventviewer_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align = 'right'><parameter>tie</parameter></entry>
+	      <entry>The identifier of a tie previously defined by
+		<link linkend='ftk_eventviewer_tie_new'>
+	      <function>ftk_eventviewer_tie_new</function></link>.</entry> 
+	    </row>
+	    <row>
+	      <entry align=right><parameter>err</parameter></entry>
+	      <entry>A pointer to a GError struct pointer.  May be NULL if unused.</entry>
+	    </row>
+	    <row>
+	      <entry align=right><parameter>...</parameter></entry>
+	      <entry>A variable-length list of any number of trace identifiers,
+	      marker identifiers, and description strings specifying an
+	      arbitrary number of simultaneously occurring events.</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>
+    </refsect1>
+
+    <refsect1>
+      <title>Description</title>
+      <para>
+	<function>ftk_eventviewer_append_simultaneous_events</function> appends
+	any number of events, all of which receive the same timestamp and thus
+	are considered to have occurred simultaneously.  The events to append
+	are specified as a repeated list of parameters identical to those
+	supplied to <link linkend='ftk_eventviewer_append_event'>
+	  <function>ftk_eventviewer_append_event_e</function></link>:
+	<parameter>trace</parameter>,
+	<parameter>marker</parameter>,
+	<parameter>description</parameter>.  The end of the list is indicated
+	by a <parameter>trace</parameter> argument of negative one (-1).  The
+	number of event-specifying parameters passed, exclusive of the terminal
+	-1, must be a multiple of three; the results of any other condition are
+	unpredictable. All three of
+	these parameters are as described in the description of <link
+	linkend='ftk_eventviewer_append_event'> 
+	  <function>ftk_eventviewer_append_event_e</function></link>.
+      </para>
+      <para>
+	<function>ftk_eventviewer_append_simultaneous_events_e</function> is identical to
+	<function>ftk_eventviewer_append_simultaneous_events</function> except
+	that it accepts an additional error-reporting argument as
+	<link linkend="error_stuff">described</link> above. 
+      </para>
+    </refsect1>
+      
+    <refsect1>
+      <title>Return value</title>
+      <para>
+	Both of these functions return TRUE on success and FALSE on
+	failure.  The <function>_e</function> version of the function work
+	as <link linkend="error_stuff2">described</link> above. 
+      </para>
+    </refsect1>
+  </refentry>
+</article>
+    

@@ -477,6 +477,7 @@ typedef enum {
 GType
 ftk_eventviewer_get_type		(void);
 
+
 GtkWidget *
 ftk_eventviewer_new		();
 
@@ -562,25 +563,6 @@ ftk_eventviewer_set_trace_linestyle	(FtkEventViewer * eventviewer,
 					 gint lw,
 					 gint ls);
 
-gboolean
-ftk_eventviewer_append_event_e	(FtkEventViewer * eventviewer,
-				 gint trace,
-				 gint marker,
-				 gchar * string,
-				 GError ** err);
-gboolean
-ftk_eventviewer_append_event	(FtkEventViewer * eventviewer,
-				 gint trace,
-				 gint marker,
-				 gchar * string);
-gboolean
-ftk_eventviewer_append_simultaneous_events_e (FtkEventViewer * eventviewer,
-					      gint tie_index,
-					      GError ** err, ...);
-gboolean
-ftk_eventviewer_append_simultaneous_events (FtkEventViewer * eventviewer,
-					    gint tie_index, ...); 
-
 gint
 ftk_eventviewer_marker_new_e		(FtkEventViewer * eventviewer,
 					 FtkGlyph glyph,
@@ -624,11 +606,16 @@ ftk_eventviewer_get_marker_color	(FtkEventViewer * eventviewer,
 
 gint
 ftk_eventviewer_tie_new_e	(FtkEventViewer * eventviewer,
+#ifdef USE_TIE_LABEL
 				 char * label,
+#endif
 				 GError ** err);
 gint
-ftk_eventviewer_tie_new		(FtkEventViewer * eventviewer,
-				 char * label);
+ftk_eventviewer_tie_new		(FtkEventViewer * eventviewer
+#ifdef USE_TIE_LABEL
+				 , char * label
+#endif
+				 );
 
 gboolean
 ftk_eventviewer_set_tie_rgb_e	(FtkEventViewer * eventviewer,
@@ -649,6 +636,7 @@ ftk_eventviewer_set_tie_color		(FtkEventViewer * eventviewer,
 					 gint tie,
 					 GdkColor * color);
 
+#ifdef USE_TIE_LABEL
 gboolean
 ftk_eventviewer_set_tie_label_e	(FtkEventViewer * eventviewer,
 					 gint tie,
@@ -658,6 +646,7 @@ gboolean
 ftk_eventviewer_set_tie_label		(FtkEventViewer * eventviewer,
 					 gint tie,
 					 char * label);
+#endif
 
 gboolean
 ftk_eventviewer_set_tie_linestyle_e	(FtkEventViewer * eventviewer,
@@ -672,6 +661,25 @@ ftk_eventviewer_set_tie_linestyle	(FtkEventViewer * eventviewer,
 					 gint ls);
 
 
+
+gboolean
+ftk_eventviewer_append_event_e	(FtkEventViewer * eventviewer,
+				 gint trace,
+				 gint marker,
+				 gchar * string,
+				 GError ** err);
+gboolean
+ftk_eventviewer_append_event	(FtkEventViewer * eventviewer,
+				 gint trace,
+				 gint marker,
+				 gchar * string);
+gboolean
+ftk_eventviewer_append_simultaneous_events_e (FtkEventViewer * eventviewer,
+					      gint tie_index,
+					      GError ** err, ...);
+gboolean
+ftk_eventviewer_append_simultaneous_events (FtkEventViewer * eventviewer,
+					    gint tie_index, ...); 
 
 
 G_END_DECLS

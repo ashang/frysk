@@ -1,0 +1,5027 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML
+><HEAD
+><TITLE
+></TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"></HEAD
+><BODY
+CLASS="ARTICLE"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_NEW"
+>ftk_eventviewer_new</A
+>&nbsp;--&nbsp;Create a new eventviewer instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_RESIZE"
+>ftk_eventviewer_resize</A
+>&nbsp;--&nbsp;Resize an existing eventviewer instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_BG_RGB"
+>ftk_eventviewer_set_bg_rgb,
+	ftk_eventviewer_set_bg_color</A
+>&nbsp;--&nbsp;Set the background color of an existing eventviewer
+	instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_TIMEBASE"
+>ftk_eventviewer_set_timebase</A
+>&nbsp;--&nbsp;Set the value in seconds of the display width of an
+	an existing eventviewer instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>ftk_eventviewer_add_trace</A
+>&nbsp;--&nbsp;Add another trace to an
+	an existing eventviewer instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_TRACE_RGB"
+>ftk_eventviewer_set_trace_rgb,
+	ftk_eventviewer_set_trace_color</A
+>&nbsp;--&nbsp;Set the color of an existing eventviewer
+	trace.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_TRACE_LABEL"
+>ftk_eventviewer_set_trace_label</A
+>&nbsp;--&nbsp;Replace the label of a given trace in an existing eventviewer
+	instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_TRACE_LINESTYLE"
+>ftk_eventviewer_set_trace_linestyle</A
+>&nbsp;--&nbsp;Set the linestyle and linewidth of the specified trace.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>ftk_eventviewer_marker_new</A
+>&nbsp;--&nbsp;Define the characteristics of a marker to be used by the
+      viewer.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_MARKER_RGB"
+>ftk_eventviewer_set_marker_rgb,
+	ftk_eventviewer_set_marker_color</A
+>&nbsp;--&nbsp;Set the color of an existing eventviewer
+	marker.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_MARKER_LABEL"
+>ftk_eventviewer_set_marker_label</A
+>&nbsp;--&nbsp;Replace the label of a given marker in an existing eventviewer
+	instance.  (<I
+CLASS="EMPHASIS"
+>NOTE: This function is not yet
+      implemented.</I
+>)</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>ftk_eventviewer_tie_new</A
+>&nbsp;--&nbsp;Create a new tie in an
+	an existing eventviewer instance.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_TIE_RGB"
+>ftk_eventviewer_set_tie_rgb,
+	ftk_eventviewer_set_tie_color</A
+>&nbsp;--&nbsp;Set the color of an existing eventviewer
+	tie.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_SET_TIE_LINESTYLE"
+>ftk_eventviewer_set_tie_linestyle</A
+>&nbsp;--&nbsp;Set the linestyle and linewidth of the specified tie.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_APPEND_EVENT"
+>ftk_eventviewer_append_event</A
+>&nbsp;--&nbsp;Append an event for display in the viewer.</DT
+><DT
+><A
+HREF="#FTK_EVENTVIEWER_APPEND_SIMULTANEOUS_EVENTS"
+>ftk_eventviewer_append_simultaneous_events</A
+>&nbsp;--&nbsp;Append multiple simultaneous events for display in the viewer.</DT
+></DL
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_NEW"
+></A
+>ftk_eventviewer_new</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN5"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_new&nbsp;--&nbsp;Create a new eventviewer instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN8"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN9"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>GtkWidget * <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></CODE
+>(void);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN15"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+> creates and initialises new
+	eventviewer instance.  The returned GtkWidget pointer is in fact a
+	pointer to a FtkEventViewer structure which should be considered
+	opaque.  The returned widget pointer should be cast to an FtkEventViewer
+	pointer using the FTK_EVENTVIEWER() macro and used as the first
+	argument to all of the following functions.
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_RESIZE"
+></A
+>ftk_eventviewer_resize</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN22"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_resize, ftk_eventviewer_resize_e&nbsp;--&nbsp;Resize an existing eventviewer instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN26"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN27"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_resize</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>width</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>height</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_resize_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>width</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>height</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN49"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN51"
+></A
+><P
+><B
+>Table 1. <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_resize</TT
+> Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>width</I
+></TT
+></TD
+><TD
+>The requested width of the viewer.  The actual width may
+	      be accted by the window manager.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>height</I
+></TT
+></TD
+><TD
+>The requested height of the viewer.  The actual height may
+	      be accted by the window manager.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN80"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_resize</TT
+> attempts to resize the
+	viewer instance referenced by the first argument to the width and
+	height specified by the second and third arguments respectively.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_resize_e</TT
+> does the same thing but,
+	<A
+NAME="ERROR_STUFF"
+></A
+>
+	if the fourth argument is non-null, will create a GError structure at
+	the location specified by that argument.  The GError * pointer passed
+	to this function must be initialised to NULL; if it non-null when the
+	function returns, an error has occurred and the GError structure must
+	subsequently be freed using <TT
+CLASS="FUNCTION"
+>g_error_free</TT
+>.
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN87"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  In addition, if
+	<A
+NAME="ERROR_STUFF2"
+></A
+>
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_resize_e</TT
+> returns FALSE and has
+	a valid non-null fourth argument, a GError structure will be
+	created as described above.
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_BG_RGB"
+></A
+>ftk_eventviewer_set_bg_rgb,
+	ftk_eventviewer_set_bg_color</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN95"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_bg_rgb, ftk_eventviewer_set_bg_rgb_e, ftk_eventviewer_set_bg_color, ftk_eventviewer_set_bg_color_e&nbsp;--&nbsp;Set the background color of an existing eventviewer
+	instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN101"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN102"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN144"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN146"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb</TT
+> and
+	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+></TD
+><TD
+>The red component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+></TD
+><TD
+>The green component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+></TD
+><TD
+>The blue component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+></TD
+><TD
+>A pointer to a GdkColor structure containing the
+	      appropriate color components.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN184"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color</TT
+> change the
+	bacground color of the viewer instance referenced by the first
+	argument.  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb</TT
+> accepts
+	color information in the second, third and fourth arguments as red,
+	green and blue color components respectively.  All three components
+	must be in a range of 0 to 65535 inclusive.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color</TT
+> accepts color
+	information in its second argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <SPAN
+CLASS="QUOTE"
+>"lightblue,"</SPAN
+> using gdk_color_parse(), q.v.)
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb_e</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color_e</TT
+> are identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_bg_color</TT
+> respectively except
+	that they accept an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN198"
+></A
+><H2
+>Return value</H2
+><P
+>	All of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> versions of the functions work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_TIMEBASE"
+></A
+>ftk_eventviewer_set_timebase</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN206"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_timebase, ftk_eventviewer_set_timebase_e&nbsp;--&nbsp;Set the value in seconds of the display width of an
+	an existing eventviewer instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN210"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN211"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_timebase</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gdouble <TT
+CLASS="PARAMETER"
+><I
+>span</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_timebase_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gdouble <TT
+CLASS="PARAMETER"
+><I
+>span</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN229"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN231"
+></A
+><P
+><B
+>Table 1. <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_timebase</TT
+> Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>span</I
+></TT
+></TD
+><TD
+>The width in seconds spanned by the viewer.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN256"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_timebase</TT
+> sets the width in
+	seconds ofthe range of events to be displayed.  That value
+	corresponds to the interval in time between the left edge of the
+	displayed information and the right edge, and may be modified by user
+	interaction of other controls.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_timebase_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_timebase</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN264"
+></A
+><H2
+>Return value</H2
+><P
+>	These functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function works
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_ADD_TRACE"
+></A
+>ftk_eventviewer_add_trace</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN272"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_add_trace, ftk_eventviewer_add_trace_e&nbsp;--&nbsp;Add another trace to an
+	an existing eventviewer instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN276"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN277"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gint <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gint <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN299"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN301"
+></A
+><P
+><B
+>Table 1. <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+> Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+></TD
+><TD
+>A label to be associated with the trace.  (May be NULL.)</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+></TD
+><TD
+>Optional additional information that may be associated
+	      with the trace, displayed when the pointer hovers over the label
+	      displayed in the viewer.  May be NULL if unused.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN330"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+> appends a new trace to
+	the series of traces displayed by the viewer.  The <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+> argument is used to supply a
+	label for the trace while the <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+> argument supplies a string
+	that appears as additional information to the user when the pointer
+	pauses over the displayed label. The traces are displayed, top to
+	bottom, in the order in which they are defined.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN340"
+></A
+><H2
+>Return value</H2
+><P
+>	On success, these functions return an integer greater than or equal
+	to zero identifying the trace for future use.  Within a given viewer,
+	these values are unique, but they may not be unique in separate
+	viewer instances. On failure, a negative value is returned. The
+	<TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function works as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above.
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_TRACE_RGB"
+></A
+>ftk_eventviewer_set_trace_rgb,
+	ftk_eventviewer_set_trace_color</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN348"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_trace_rgb, ftk_eventviewer_set_trace_rgb_e, ftk_eventviewer_set_trace_color, ftk_eventviewer_set_trace_color_e&nbsp;--&nbsp;Set the color of an existing eventviewer
+	trace.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN354"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN355"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN405"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN407"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb</TT
+> and
+	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+></TD
+><TD
+>The identifier of a trace previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>		  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+></TD
+><TD
+>The red component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+></TD
+><TD
+>The green component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+></TD
+><TD
+>The blue component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+></TD
+><TD
+>A pointer to a GdkColor structure containing the
+	      appropriate color components.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN451"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color</TT
+> change the color
+	in the viewer instance referenced by the first argument of the trace
+	identified by second argument.  The second argument must be a value
+	returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace_e</TT
+></A
+> on the same viewer.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb</TT
+> accepts color
+	information in the third, fourth and fifth arguments as red, green
+	and blue color components respectively.  All three components must be
+	in a range of 0 to 65535 inclusive.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color</TT
+> accepts color
+	information in its third argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <SPAN
+CLASS="QUOTE"
+>"lightblue,"</SPAN
+> using gdk_color_parse(), q.v.)
+	</P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb_e</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color_e</TT
+> are identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_color</TT
+> respectively except
+	that they accept an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN469"
+></A
+><H2
+>Return value</H2
+><P
+>	All of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> versions of the functions work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_TRACE_LABEL"
+></A
+>ftk_eventviewer_set_trace_label</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN477"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_trace_label, ftk_eventviewer_set_trace_label_e&nbsp;--&nbsp;Replace the label of a given trace in an existing eventviewer
+	instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN481"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN482"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_label</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_label_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN504"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN506"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_label</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+></TD
+><TD
+>The identifier of a trace previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+></TD
+><TD
+>A pointer to a string that, if non-NULL, will replace the
+	      existing trace label.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+></TD
+><TD
+>A pointer to a string that, if non-NULL, will replace the
+	      existing trace description.  <I
+CLASS="EMPHASIS"
+>NOTE: This argument is not
+	      yet implemented.</I
+></TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN542"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_label</TT
+> replaces the
+	label associated with a trace identified by the second argument in
+	the viewer identified by the first argument with the label specified
+	by the third argument.  The second argument must be a value
+	returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace_e</TT
+></A
+> on the same viewer.
+      </P
+><P
+>	At some point, an additional <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>
+	argument will be added to similarly replace the description string.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_label_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_label</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN556"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_TRACE_LINESTYLE"
+></A
+>ftk_eventviewer_set_trace_linestyle</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN564"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_trace_linestyle, ftk_eventviewer_set_trace_linestyle_e&nbsp;--&nbsp;Set the linestyle and linewidth of the specified trace.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN568"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN569"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_linestyle</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_linestyle_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN595"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN597"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_linestyle</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+></TD
+><TD
+>The identifier of a trace previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+></TD
+><TD
+>The width, in pixels, of the trace.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+></TD
+><TD
+>The length in pixels of the dashes used to create the
+	      trace.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN632"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_linstyle</TT
+> sets the line
+	style and line width of the trace identified by the second argument in
+	the viewer identified by the first argument.  The second argument must
+	be a value returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace_e</TT
+></A
+> on the same viewer.
+      </P
+><P
+>	The <TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+> argument may either be a positive
+	value specifying the width in pixels of the trace, or any negative
+	value to specify the use of the dafault width.  If the
+	<TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+> argument is negative, a solid trace
+	will be created; if positive, a dashed trace consisting of segments of
+	the specified length alternating with gaps of the same length will be created.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_linestyle_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_trace_linestyle</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN647"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_MARKER_NEW"
+></A
+>ftk_eventviewer_marker_new</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN655"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_marker_new, ftk_eventviewer_marker_new_e&nbsp;--&nbsp;Define the characteristics of a marker to be used by the
+      viewer.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN659"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN660"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gint <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, FtkGlyph <TT
+CLASS="PARAMETER"
+><I
+>glyph</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gint <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, FtkGlyph <TT
+CLASS="PARAMETER"
+><I
+>glyph</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN686"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN688"
+></A
+><P
+><B
+>Table 1. <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+> Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>glyph</I
+></TT
+></TD
+><TD
+>An enum value of type <A
+HREF="#FTKGLYPH"
+>FtkGlyph</A
+>
+	      indentifying which of the available glyphs 
+	      to use in displaying the marker.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+></TD
+><TD
+>A label to be associated with the marker.  (May be NULL.)</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+></TD
+><TD
+>Optional additional information that may be associated
+	      with the marker, displayed when the pointer hovers over the marker
+	      or the corresponding legend displayed in the viewer.  May be NULL
+	      if unused.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if
+	      unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN722"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="FTKGLYPH"
+></A
+><P
+><B
+>Table 2. <TT
+CLASS="FUNCTION"
+>FtkGlyph</TT
+> Values.</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Enum</TH
+><TH
+ALIGN="CENTER"
+>Glyph</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_CIRCLE</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#8226;</TD
+><TD
+>A filled circle.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_SQUARE</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#9642;</TD
+><TD
+>A filled square.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_UP_TRIANGLE</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#9652;</TD
+><TD
+>A filled upwards-pointing triangle</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_DOWN_TRIANGLE</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#9662;</TD
+><TD
+>A filled downwards-pointing triangle.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_DIAMOND</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#9826;</TD
+><TD
+>A filled diamond.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_FOUR_STAR</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#10022;</TD
+><TD
+>A filled four-pointed star.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_OPEN_FOUR_STAR</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#10023;</TD
+><TD
+>An open four-pointed star.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_FILLED_FIVE_STAR</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&#8902;</TD
+><TD
+>A filled five-pointed star.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_AUTOMATIC</CODE
+></TD
+><TD
+ALIGN="CENTER"
+>&nbsp;</TD
+><TD
+>A flag indicating that glyph selection and marker colors
+	      should be assigned automatically by the widget.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN782"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+> defines a marker to be
+	used in the viewer.  The <TT
+CLASS="PARAMETER"
+><I
+>glyph</I
+></TT
+> argument
+	specifies which of the available geometric shapes will be drawn in the
+	display to mark the location of an event, and the <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+> argument is used to supply a
+	label for the marker.  The <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+> argument supplies a string
+	that appears as additional information to the user when the pointer
+	pauses over a displayed event or the legend describing the significance
+	of the events..
+      </P
+><P
+>	If the value of the  <TT
+CLASS="PARAMETER"
+><I
+>glyph</I
+></TT
+> argument
+	is <CODE
+CLASS="CONSTANT"
+>FTK_GLYPH_AUTOMATIC</CODE
+>, glyphs will automatically be
+	assigned to markers in rotation.  In addition, a color will
+	autonatically be assigned
+	to the marker from a pool of pre-defined color values.  (See
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb</TT
+> or
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color</TT
+>.)
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN798"
+></A
+><H2
+>Return value</H2
+><P
+>	On success, these functions return an integer greater than or equal
+	to zero identifying the marker for future use.  Within a given viewer,
+	these values are unique, but they may not be unique in separate
+	viewer instances. On failure, a negative value is returned. The
+	<TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function works as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above.
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_MARKER_RGB"
+></A
+>ftk_eventviewer_set_marker_rgb,
+	ftk_eventviewer_set_marker_color</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN806"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_marker_rgb, ftk_eventviewer_set_marker_rgb_e, ftk_eventviewer_set_marker_color, ftk_eventviewer_set_marker_color_e&nbsp;--&nbsp;Set the color of an existing eventviewer
+	marker.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN812"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN813"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN863"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN865"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb</TT
+> and
+	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+></TD
+><TD
+>The identifier of a marker previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>		  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+></TD
+><TD
+>The red component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+></TD
+><TD
+>The green component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+></TD
+><TD
+>The blue component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+></TD
+><TD
+>A pointer to a GdkColor structure containing the
+	      appropriate color components.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN909"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color</TT
+> change the color
+	in the viewer instance referenced by the first argument of the marker
+	identified by second argument.  The second argument must be a value
+	returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new_e</TT
+></A
+> on the same viewer.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb</TT
+> accepts color
+	information in the third, fourth and fifth arguments as red, green
+	and blue color components respectively.  All three components must be
+	in a range of 0 to 65535 inclusive.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color</TT
+> accepts color
+	information in its third argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <SPAN
+CLASS="QUOTE"
+>"lightblue,"</SPAN
+> using gdk_color_parse(), q.v.)
+	</P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb_e</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color_e</TT
+> are identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_color</TT
+> respectively except
+	that they accept an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN927"
+></A
+><H2
+>Return value</H2
+><P
+>	All of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> versions of the functions work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_MARKER_LABEL"
+></A
+>ftk_eventviewer_set_marker_label</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN935"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_marker_label, ftk_eventviewer_set_marker_label_e&nbsp;--&nbsp;Replace the label of a given marker in an existing eventviewer
+	instance.  (<I
+CLASS="EMPHASIS"
+>NOTE: This function is not yet
+      implemented.</I
+>)</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN940"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN941"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_label</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_label_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN963"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN965"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_label</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+></TD
+><TD
+>The identifier of a marker previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>label</I
+></TT
+></TD
+><TD
+>A pointer to a string that, if non-NULL, will replace the
+	      existing marker label.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+></TD
+><TD
+>A pointer to a string that, if non-NULL, will replace the
+	      existing marker description.  <I
+CLASS="EMPHASIS"
+>NOTE: This argument is not
+	      yet implemented.</I
+></TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1001"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_label</TT
+> replaces the
+	label associated with a marker identified by the second argument in
+	the viewer identified by the first argument with the label specified
+	by the third argument.  The second argument must be a value
+	returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new_e</TT
+></A
+> on the same viewer.
+      </P
+><P
+>	At some point, an additional <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>
+	argument will be added to similarly replace the description string.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_label_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_marker_label</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1015"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_TIE_NEW"
+></A
+>ftk_eventviewer_tie_new</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1023"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_tie_new, ftk_eventviewer_tie_new_e&nbsp;--&nbsp;Create a new tie in an
+	an existing eventviewer instance.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN1027"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN1028"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gint <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gint <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1042"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1044"
+></A
+><P
+><B
+>Table 1. <TT
+CLASS="FUNCTION"
+>ftk_tie_new</TT
+> Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1065"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+> defines a new tie in
+	a viewer.  Ties are used in
+	<A
+HREF="#FTK_EVENTVIEWER_APPEND_SIMULTANEOUS_EVENTS"
+>	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events</TT
+></A
+>
+	  to visually connect simultaneous events.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new_tie_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new_tie</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1075"
+></A
+><H2
+>Return value</H2
+><P
+>	On success, these functions return an integer greater than or equal
+	to zero identifying the tie for future use.  Within a given viewer,
+	these values are unique, but they may not be unique in separate
+	viewer instances. On failure, a negative value is returned. The
+	<TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function works as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above.
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_TIE_RGB"
+></A
+>ftk_eventviewer_set_tie_rgb,
+	ftk_eventviewer_set_tie_color</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1083"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_tie_rgb, ftk_eventviewer_set_tie_rgb_e, ftk_eventviewer_set_tie_color, ftk_eventviewer_set_tie_color_e&nbsp;--&nbsp;Set the color of an existing eventviewer
+	tie.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN1089"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN1090"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, GdkColor * <TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1140"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1142"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb</TT
+> and
+	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+></TD
+><TD
+>The identifier of a tie previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>		  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>red</I
+></TT
+></TD
+><TD
+>The red component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>green</I
+></TT
+></TD
+><TD
+>The green component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>blue</I
+></TT
+></TD
+><TD
+>The blue component of the  requested color in a range of 0
+	      to 65535.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>color</I
+></TT
+></TD
+><TD
+>A pointer to a GdkColor structure containing the
+	      appropriate color components.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1186"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color</TT
+> change the color
+	in the viewer instance referenced by the first argument of the tie
+	identified by second argument.  The second argument must be a value
+	returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new_e</TT
+></A
+> on the same viewer.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb</TT
+> accepts color
+	information in the third, fourth and fifth arguments as red, green
+	and blue color components respectively.  All three components must be
+	in a range of 0 to 65535 inclusive.
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color</TT
+> accepts color
+	information in its third argument as a pointer to a GdkColor struct.
+	(N.B., a  GdkColor struct may be set from a descriptive string,
+	e.g. <SPAN
+CLASS="QUOTE"
+>"lightblue,"</SPAN
+> using gdk_color_parse(), q.v.)
+	</P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb_e</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color_e</TT
+> are identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_rgb</TT
+> and
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_color</TT
+> respectively except
+	that they accept an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1204"
+></A
+><H2
+>Return value</H2
+><P
+>	All of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> versions of the functions work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_SET_TIE_LINESTYLE"
+></A
+>ftk_eventviewer_set_tie_linestyle</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1212"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_set_tie_linestyle, ftk_eventviewer_set_tie_linestyle_e&nbsp;--&nbsp;Set the linestyle and linewidth of the specified tie.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN1216"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN1217"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_linestyle</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_linestyle_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1243"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1245"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_linestyle</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+></TD
+><TD
+>The identifier of a tie previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+></TD
+><TD
+>The width, in pixels, of the tie.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+></TD
+><TD
+>The length in pixels of the dashes used to create the
+	      tie.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1280"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_linstyle</TT
+> sets the line
+	style and line width of the tie identified by the second argument in
+	the viewer identified by the first argument.  The second argument must
+	be a value returned by a prior call to either
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+></A
+> or
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new_e</TT
+></A
+> on the same viewer.
+      </P
+><P
+>	The <TT
+CLASS="PARAMETER"
+><I
+>linewidth</I
+></TT
+> argument may either be a positive
+	value specifying the width in pixels of the tie, or any negative
+	value to specify the use of the dafault width.  If the
+	<TT
+CLASS="PARAMETER"
+><I
+>linestyle</I
+></TT
+> argument is negative, a solid tie
+	will be created; if positive, a dashed tie consisting of segments of
+	the specified length alternating with gaps of the same length will be created.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_linestyle_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_set_tie_linestyle</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1295"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_APPEND_EVENT"
+></A
+>ftk_eventviewer_append_event</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1303"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_append_event, ftk_eventviewer_append_event_e&nbsp;--&nbsp;Append an event for display in the viewer.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN1307"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN1308"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>, gchar * <TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1334"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1336"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+></TD
+><TD
+>The identifier of a trace previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+></TD
+><TD
+>The identifier of a marker previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+></TD
+><TD
+>Optional additional information that may be associated
+	      with the event, displayed when the pointer hovers over the event
+	      displayed in the viewer.  May be NULL if unused.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1373"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event</TT
+> appends an event of
+	the given marker type to the given trace, using in internally provided
+	timestamp.  The trace specification, the second argument, must be a
+	value previously returned by <A
+HREF="#FTK_EVENTVIEWER_ADD_TRACE"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_add_trace</TT
+></A
+>; similarly, the marker
+	argument must be a value returned by
+		<A
+HREF="#FTK_EVENTVIEWER_MARKER_NEW"
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_marker_new</TT
+></A
+>. 
+      </P
+><P
+>	The internally generated timestamp has microsecond resolution.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1386"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+><H1
+><A
+NAME="FTK_EVENTVIEWER_APPEND_SIMULTANEOUS_EVENTS"
+></A
+>ftk_eventviewer_append_simultaneous_events</H1
+><DIV
+CLASS="REFNAMEDIV"
+><A
+NAME="AEN1394"
+></A
+><H2
+>Name</H2
+>ftk_eventviewer_append_simultaneous_events, ftk_eventviewer_append_simultaneous_events_e&nbsp;--&nbsp;Append multiple simultaneous events for display in the viewer.</DIV
+><DIV
+CLASS="REFSYNOPSISDIV"
+><A
+NAME="AEN1398"
+></A
+><H2
+>Synopsis</H2
+><DIV
+CLASS="FUNCSYNOPSIS"
+><P
+></P
+><A
+NAME="AEN1399"
+></A
+><TABLE
+BORDER="0"
+BGCOLOR="#E0E0E0"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="FUNCSYNOPSISINFO"
+>	  #include &#60;ftkeventviewer.h&#62;
+	</PRE
+></TD
+></TR
+></TABLE
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, ...);</CODE
+></P
+><P
+><CODE
+><CODE
+CLASS="FUNCDEF"
+>gboolean <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events_e</TT
+></CODE
+>(FtkEventViewer * <TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+>, gint <TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+>, GError * <TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+>, ...);</CODE
+></P
+><P
+></P
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1419"
+></A
+><H2
+></H2
+><DIV
+CLASS="TABLE"
+><A
+NAME="AEN1421"
+></A
+><P
+><B
+>Table 1. 	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events</TT
+>
+	  Arguments</B
+></P
+><TABLE
+BORDER="1"
+BGCOLOR="#E0E0E0"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="RIGHT"
+>Argument</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>eventviewer</I
+></TT
+></TD
+><TD
+>A pointer to an opaque FtkEventViewer structure previously
+	      created using <A
+HREF="#FTK_EVENTVIEWER_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>tie</I
+></TT
+></TD
+><TD
+>The identifier of a tie previously defined by
+		<A
+HREF="#FTK_EVENTVIEWER_TIE_NEW"
+>	      <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_tie_new</TT
+></A
+>.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>err</I
+></TT
+></TD
+><TD
+>A pointer to a GError struct pointer.  May be NULL if unused.</TD
+></TR
+><TR
+><TD
+ALIGN="RIGHT"
+><TT
+CLASS="PARAMETER"
+><I
+>...</I
+></TT
+></TD
+><TD
+>A variable-length list of any number of trace identifiers,
+	      marker identifiers, and description strings specifying an
+	      arbitrary number of simultaneously occurring events.</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1452"
+></A
+><H2
+>Description</H2
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events</TT
+> appends
+	any number of events, all of which receive the same timestamp and thus
+	are considered to have occurred simultaneously.  The events to append
+	are specified as a repeated list of parameters identical to those
+	supplied to <A
+HREF="#FTK_EVENTVIEWER_APPEND_EVENT"
+>	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event_e</TT
+></A
+>:
+	<TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+>,
+	<TT
+CLASS="PARAMETER"
+><I
+>marker</I
+></TT
+>,
+	<TT
+CLASS="PARAMETER"
+><I
+>description</I
+></TT
+>.  The end of the list is indicated
+	by a <TT
+CLASS="PARAMETER"
+><I
+>trace</I
+></TT
+> argument of negative one (-1).  The
+	number of event-specifying parameters passed, exclusive of the terminal
+	-1, must be a multiple of three; the results of any other condition are
+	unpredictable. All three of
+	these parameters are as described in the description of <A
+HREF="#FTK_EVENTVIEWER_APPEND_EVENT"
+> 
+	  <TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_event_e</TT
+></A
+>.
+      </P
+><P
+>	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events_e</TT
+> is identical to
+	<TT
+CLASS="FUNCTION"
+>ftk_eventviewer_append_simultaneous_events</TT
+> except
+	that it accepts an additional error-reporting argument as
+	<A
+HREF="#ERROR_STUFF"
+>described</A
+> above. 
+      </P
+></DIV
+><DIV
+CLASS="REFSECT1"
+><A
+NAME="AEN1468"
+></A
+><H2
+>Return value</H2
+><P
+>	Both of these functions return TRUE on success and FALSE on
+	failure.  The <TT
+CLASS="FUNCTION"
+>_e</TT
+> version of the function work
+	as <A
+HREF="#ERROR_STUFF2"
+>described</A
+> above. 
+      </P
+></DIV
+></DIV
+></BODY
+></HTML
+>
