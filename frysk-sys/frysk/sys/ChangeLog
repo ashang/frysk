@@ -1,3 +1,9 @@
+2006-07-04  Mark Wielaard  <mark@klomp.org>
+
+	* frysk-sys/frysk/sys/TestPtraceByteBuffer.java
+	(testTextVariable): Make sure we are manipulating only the child
+	text area not our own.
+
 2006-06-26  Mark Wielaard  <mark@klomp.org>
 
 	* frysk-sys/frysk/sys/TestPtraceByteBuffer.java: New test.

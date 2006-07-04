@@ -115,6 +115,8 @@ public class TestPtraceByteBuffer extends TestCase
     intVal = buffer.getInt(addr);
     assertEquals("Forked child int value after poke", 2, intVal);
 
+    assertEquals("Our own int value", 42, TestLib.intVal);
+
     // Byte
     addr = TestLib.getByteValAddr();
     byte byteVal = buffer.getByte(addr);
@@ -123,6 +125,8 @@ public class TestPtraceByteBuffer extends TestCase
     buffer.putByte(addr, (byte) 3);
     byteVal = buffer.getByte(addr);
     assertEquals("Forked child long value after poke", 3, byteVal);
+
+    assertEquals("Our own byte value", 43, TestLib.byteVal);
 
     // Long
     addr = TestLib.getLongValAddr();
@@ -133,10 +137,11 @@ public class TestPtraceByteBuffer extends TestCase
     longVal = buffer.getLong(addr);
     assertEquals("Forked child long value after poke", 4, longVal);
 
+    assertEquals("Our own long value", 44, TestLib.longVal);
 
     // Pretend we have little endian values now
     newBytes = new byte[]
-      { (byte) 52, (byte) 0, (byte) 0, (byte) 0 };
+      { (byte) 62, (byte) 0, (byte) 0, (byte) 0 };
     addr = TestLib.getIntValAddr();
     buffer.position(addr);
     buffer.putByte(newBytes[0]);
@@ -145,10 +150,10 @@ public class TestPtraceByteBuffer extends TestCase
     buffer.putByte(newBytes[3]);
 
     addr = TestLib.getByteValAddr();
-    buffer.putByte(addr, (byte) 53);
+    buffer.putByte(addr, (byte) 63);
 
     newBytes = new byte[]
-      { (byte) 54, (byte) 0, (byte) 0, (byte) 0,
+      { (byte) 64, (byte) 0, (byte) 0, (byte) 0,
 	(byte) 0, (byte) 0, (byte) 0, (byte) 0 };
     addr = TestLib.getLongValAddr();
     buffer.position(addr);
@@ -166,29 +171,35 @@ public class TestPtraceByteBuffer extends TestCase
     // Int
     addr = TestLib.getIntValAddr();
     intVal = buffer.getInt(addr);
-    assertEquals("Our own int value", 42, TestLib.intVal);
+    assertEquals("Forked child int value", 62, intVal);
 
     buffer.putInt(addr, 2);
     intVal = buffer.getInt(addr);
     assertEquals("Forked child int value after poke", 2, intVal);
 
+    assertEquals("Our own int value", 42, TestLib.intVal);
+
     // Byte
     addr = TestLib.getByteValAddr();
     byteVal = buffer.getByte(addr);
-    assertEquals("Forked child byte value", 53, byteVal);
+    assertEquals("Forked child byte value", 63, byteVal);
 
     buffer.putByte(addr, (byte) 3);
     byteVal = buffer.getByte(addr);
     assertEquals("Forked child long value after poke", 3, byteVal);
 
+    assertEquals("Our own byte value", 43, TestLib.byteVal);
+
     // Long
     addr = TestLib.getLongValAddr();
     longVal = buffer.getLong(addr);
-    assertEquals("Forked child long value", 54, longVal);
+    assertEquals("Forked child long value", 64, longVal);
 
     buffer.putLong(addr, 4);
     longVal = buffer.getLong(addr);
     assertEquals("Forked child long value after poke", 4, longVal);
+
+    assertEquals("Our own long value", 44, TestLib.longVal);
   }
 
   /**
