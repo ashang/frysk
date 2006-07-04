@@ -327,6 +327,19 @@ typedef struct {
 #define ftk_link_trace_list_next(l)	(l)->trace_list_next
 #define ftk_link_trace_list_max(l)	(l)->trace_list_max
 
+typedef struct {
+  int tie_index;
+  int * event_list;
+  int event_list_next;
+  int event_list_max;
+} ftk_dlink_s;
+
+#define ftk_dlink_tie_index(l)		(l)->tie_index
+#define ftk_dlink_event_list(l)		(l)->event_list
+#define ftk_dlink_event(l,i)		(l)->event_list[i]
+#define ftk_dlink_event_list_next(l)	(l)->event_list_next
+#define ftk_dlink_event_list_max(l)	(l)->event_list_max
+
 typedef enum {
   FTK_POPUP_TYPE_NONE,
   FTK_POPUP_TYPE_LABEL,
@@ -371,6 +384,9 @@ typedef struct _FtkEventViewer {
   ftk_link_s		* links;
   int			  link_next;
   int			  link_max;
+  ftk_dlink_s		* dlinks;
+  int			  dlink_next;
+  int			  dlink_max;
   int			  label_box_width;
   int			  label_box_height;
   int			  total_height;
@@ -446,6 +462,10 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_link(v,i)	      &((v)->links[i])
 #define ftk_ev_link_next(v)		(v)->link_next
 #define ftk_ev_link_max(v)		(v)->link_max
+#define ftk_ev_dlinks(v)		(v)->dlinks
+#define ftk_ev_dlink(v,i)	      &((v)->dlinks[i])
+#define ftk_ev_dlink_next(v)		(v)->dlink_next
+#define ftk_ev_dlink_max(v)		(v)->dlink_max
 #define ftk_ev_trace_origin(v)		(v)->trace_origin
 #define ftk_ev_trace_width(v)		(v)->trace_width
 #define ftk_ev_markers(v)		(v)->markers
@@ -470,6 +490,7 @@ typedef enum {
   FTK_EV_ERROR_INVALID_COLOR,
   FTK_EV_ERROR_INVALID_GLYPH,
   FTK_EV_ERROR_INVALID_SPAN,
+  FTK_EV_ERROR_INVALID_EVENT,
 } ftk_ev_error_e;
 
 /*************** public api *****************/
@@ -662,13 +683,13 @@ ftk_eventviewer_set_tie_linestyle	(FtkEventViewer * eventviewer,
 
 
 
-gboolean
+gint
 ftk_eventviewer_append_event_e	(FtkEventViewer * eventviewer,
 				 gint trace,
 				 gint marker,
 				 gchar * string,
 				 GError ** err);
-gboolean
+gint
 ftk_eventviewer_append_event	(FtkEventViewer * eventviewer,
 				 gint trace,
 				 gint marker,
@@ -679,7 +700,15 @@ ftk_eventviewer_append_simultaneous_events_e (FtkEventViewer * eventviewer,
 					      GError ** err, ...);
 gboolean
 ftk_eventviewer_append_simultaneous_events (FtkEventViewer * eventviewer,
-					    gint tie_index, ...); 
+					    gint tie_index, ...);
+
+gboolean
+ftk_eventviewer_tie_events_e (FtkEventViewer * eventviewer,
+			      gint tie_index,
+			      GError ** err, ...);
+gboolean
+ftk_eventviewer_tie_events (FtkEventViewer * eventviewer,
+			    gint tie_index, ...); 
 
 
 G_END_DECLS

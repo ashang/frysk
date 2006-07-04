@@ -1,3 +1,14 @@
+2006-07-04  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Added ftk_eventviewer_tie_events
+	to the API to create visual links between non-simultaneous
+	events.  Added code to create the links.
+	* src/widgets/eventviewer.sgml:
+	* src/widgets/eventviewer.html:  Documented the above, added the
+	testcase I use to wring out the widget as an example app, and
+	added a few screen shots.
+
 2006-07-03  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c:
