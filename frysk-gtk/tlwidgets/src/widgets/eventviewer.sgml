@@ -1014,11 +1014,33 @@
 	      <entry align='right'><constant>FTK_GLYPH_AUTOMATIC</constant></entry>
 	      <entry align = 'center'></entry> 
 	      <entry>A flag indicating that glyph selection and marker colors
-	      should be assigned automatically by the widget.</entry> 
+	      should be assigned automatically by the widget. The colors used
+	      are those shown in the figure below.</entry> 
 	    </row>
 	  </tbody>
 	</tgroup>
       </table>
+    </refsect1>
+
+    <refsect1>
+      <title></title>
+      <figure id=predefinedcolors>
+	<title></title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata
+	      fileref="colorwheel.jpg"
+	      format=JPG
+	      scale=40
+	      align=center>
+	  </imageobject>
+	  <caption>
+	    <para>
+	      The predefined colors used by the viewer.
+	    </para>
+	  </caption>
+	</mediaobject>
+      </figure>
     </refsect1>
 
     <refsect1>
@@ -1040,9 +1062,11 @@
 	is <constant>FTK_GLYPH_AUTOMATIC</constant>, glyphs will automatically be
 	assigned to markers in rotation.  In addition, a color will
 	autonatically be assigned
-	to the marker from a pool of pre-defined color values.  (See
-	<function>ftk_eventviewer_set_marker_rgb</function> or
-	<function>ftk_eventviewer_set_marker_color</function>.)
+	to the marker from a pool of pre-defined color values.  (The colors may
+	also be set explicitly&mdash;see <link linkend='ftk_eventviewer_set_marker_rgb'>
+	<function>ftk_eventviewer_set_marker_rgb</function></link> or
+	<link linkend='ftk_eventviewer_set_marker_rgb'>
+	<function>ftk_eventviewer_set_marker_color</function></link>.)
       </para>
       <para>
 	<function>ftk_eventviewer_marker_new_e</function> is identical to
