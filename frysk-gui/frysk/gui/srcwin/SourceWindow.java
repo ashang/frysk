@@ -71,6 +71,7 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.SeparatorToolItem;
 import org.gnu.gtk.StateType;
+import org.gnu.gtk.StatusBar;
 import org.gnu.gtk.ToggleAction;
 import org.gnu.gtk.ToolBar;
 import org.gnu.gtk.ToolItem;
@@ -202,7 +203,7 @@ public class SourceWindow
 
   private ToggleAction toggleMemoryWindow;
 
-//  private DOMFrysk dom;
+  // private DOMFrysk dom;
 
   private Task myTask;
 
@@ -238,7 +239,7 @@ public class SourceWindow
     this.listener = new SourceWindowListener(this);
     this.glade = glade;
     this.gladePath = gladePath;
-//    this.dom = dom;
+    // this.dom = dom;
     this.stack = stack;
 
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
@@ -262,6 +263,9 @@ public class SourceWindow
     this.watchView = new VariableWatchView();
     ScrolledWindow sw = (ScrolledWindow) this.glade.getWidget("traceScrolledWindow");
     sw.add(this.watchView);
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stopped");
 
     this.hideAll();
     this.showAll();
@@ -339,7 +343,7 @@ public class SourceWindow
 
     if (this.view != null)
       ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
-    
+
     this.view = new SourceView(lastStack, this);
     ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
     this.view.showAll();
@@ -1134,6 +1138,9 @@ public class SourceWindow
     this.glade.getWidget("toolbarGotoBox").setSensitive(false);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
 
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Running");
+
     WindowManager.theManager.registerWindow.setIsRunning(true);
     WindowManager.theManager.memoryWindow.setIsRunning(true);
 
@@ -1161,6 +1168,9 @@ public class SourceWindow
     // Set status of toolbar buttons
     this.glade.getWidget("toolbarGotoBox").setSensitive(true);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(true);
+
+    StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
+    sbar.push(0, "Stopped");
 
     WindowManager.theManager.registerWindow.setIsRunning(false);
     WindowManager.theManager.memoryWindow.setIsRunning(true);

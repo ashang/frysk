@@ -1,5 +1,9 @@
 2006-07-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindow.java (SourceWindow): Now sets status bar text.
+	(doStop): Ditto.
+	(doRun): Ditto.
+
 	* SourceBuffer.java (hasInlinedCode): Now correctly handles the case
 	where no debugging information is present.
 
