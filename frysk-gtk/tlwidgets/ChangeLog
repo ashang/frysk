@@ -4,7 +4,10 @@
 	* src/widgets/ftkeventviewer.h: Fixed a couple of 'unused
 	variable' warnings.for bz 2880.  Added
 	ftk_eventviewer_append_simultaneous_event_array() to make life
-	easier for rhe Java wrapper.
+	easier for rhe Java wrapper.  Added
+	ftk_eventviewer_tie_event_array() as well.
+	* src/widgets/example/vev.c:  Added to provide examples of how to
+	use the widget.
 
 2006-07-04  Chris Moller  <moller@mollerware.com>
 

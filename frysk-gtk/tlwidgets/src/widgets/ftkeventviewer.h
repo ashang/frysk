@@ -728,6 +728,15 @@ gboolean
 ftk_eventviewer_tie_events (FtkEventViewer * eventviewer,
 			    gint tie_index, ...); 
 
+gboolean
+ftk_eventviewer_tie_event_array_e (FtkEventViewer * eventviewer,
+				   gint tie_index,
+				   gint count, gint * events,
+				   GError ** err);
+gboolean
+ftk_eventviewer_tie_event_array (FtkEventViewer * eventviewer,
+				 gint tie_index, gint count, gint * events); 
+
 
 G_END_DECLS
 

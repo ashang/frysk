@@ -122,11 +122,21 @@ catch_sigalrm (int sig)
 				    thread_parms[IDX_PARENT].marker_id,
 				    "termination of thread 0");
 
+#if 1
+      {
+	int events_to_tie[] = { clone_term_event, parent_term_event };
+	ftk_eventviewer_tie_event_array (thread_viewer,
+					 term_tie,
+					 sizeof(events_to_tie)/sizeof(gint),
+					 events_to_tie);
+      }
+#else
       ftk_eventviewer_tie_events (thread_viewer,
 				  term_tie,
 				  clone_term_event,
 				  parent_term_event,
 				  -1);
+#endif
       usleep (250000);
   
       clone_term_event =
