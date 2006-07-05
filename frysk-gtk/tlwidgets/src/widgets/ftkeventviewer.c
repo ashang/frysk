@@ -574,9 +574,7 @@ draw_dlink (FtkEventViewer * eventviewer, cairo_t * cr,
     for (i = 0; i < ftk_dlink_event_list_next (dlink); i++) {
       int event_index = ftk_dlink_event (dlink, i);
       ftk_event_s * event = ftk_ev_event (eventviewer, event_index);
-      int trace_idx	= ftk_event_trace (event);
       ftk_trace_s * trace = ftk_ev_trace (eventviewer, ftk_event_trace(event));
-      int loc		= ftk_event_loc (event);
       double etime =
 	(ftk_event_time (event) - ftk_ev_zero (eventviewer)) - time_offset;
       double loc_d = etime / ftk_ev_span (eventviewer);
