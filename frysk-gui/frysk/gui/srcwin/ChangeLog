@@ -1,3 +1,25 @@
+2006-07-05  Adam Jocksch  <ajocksch@redhat.com>
+
+	* CurrentStackView.java: Applied GNU formatting.
+	(CurrentStackView): Now handles the case where DOM information in the
+	stack frame is null, signifying a frame with no debugging
+	information.
+	* SourceBuffer.java: Applied GNU formatting.
+	(getVariable): Now handles case where there is no DOM for the current
+	frame.
+	(getLineCount): Ditto.
+	(loadFile): Ditto.
+	* SourceWindow.java (SourceWindow): Commented out unused DOMFrysk
+	variable.
+	(updateShownStackFrame): Now handles frames with no debug information.
+	* SourceWindowFactory.java: Applied GNU formatting.
+	(finishSourceWindow): Now handles cases where there is no debugging
+	information for the current process.
+	* StackLevel.java: Applied GNU formatting.
+	(NO_LINE): Added.
+	(StackLevel): Now handles cases where this is no debug information for
+	the current stack.
+
 2006-06-30  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindow.java (toggleMemoryWindow): Added toggle for MemoryWindow.

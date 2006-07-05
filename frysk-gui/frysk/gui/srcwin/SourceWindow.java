@@ -92,6 +92,7 @@ import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 
 import frysk.dom.DOMFrysk;
+import frysk.dom.DOMSource;
 import frysk.gui.common.IconManager;
 import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
@@ -201,7 +202,7 @@ public class SourceWindow
 
   private ToggleAction toggleMemoryWindow;
 
-  private DOMFrysk dom;
+//  private DOMFrysk dom;
 
   private Task myTask;
 
@@ -237,8 +238,7 @@ public class SourceWindow
     this.listener = new SourceWindowListener(this);
     this.glade = glade;
     this.gladePath = gladePath;
-    this.dom = dom;
-    this.dom.toString();
+//    this.dom = dom;
     this.stack = stack;
 
     this.glade.getWidget(SourceWindow.SOURCE_WINDOW).hideAll();
@@ -339,6 +339,7 @@ public class SourceWindow
 
     if (this.view != null)
       ((Container) ((Widget) this.view).getParent()).remove((Widget) this.view);
+    
     this.view = new SourceView(lastStack, this);
     ((ScrolledWindow) this.glade.getWidget(SourceWindow.TEXT_WINDOW)).add((Widget) this.view);
     this.view.showAll();
@@ -1101,7 +1102,8 @@ public class SourceWindow
   {
     if (! (this.view instanceof MixedView))
       {
-        // Replace the SourceView with a Mixedview to display Source/Assembly
+        // Replace the SourceView with a Mixedview to display
+        // Source/Assembly
         // mode
         ((Container) this.view.getParent()).remove((Widget) this.view);
         this.view = new MixedView(this.view.getScope(), this);
@@ -1113,8 +1115,10 @@ public class SourceWindow
 
   private void updateShownStackFrame (StackLevel selected)
   {
+    DOMSource source = selected.getData();
     ((Label) this.glade.getWidget("sourceLabel")).setText("<b>"
-                                                          + selected.getData().getFileName()
+                                                          + (source == null ? "Unknown File"
+                                                                           : source.getFileName())
                                                           + "</b>");
     ((Label) this.glade.getWidget("sourceLabel")).setUseMarkup(true);
     this.view.load(selected);
@@ -1277,7 +1281,6 @@ public class SourceWindow
 
   /**
    * Tells the debugger to move to the newest stack frame
-   * 
    */
   private void doStackBottom ()
   {
@@ -1416,10 +1419,9 @@ public class SourceWindow
       else if (text.equals("Mixed"))
         target.switchToMixedMode();
       /*
-       * Switch to Source/Assembly mode - we only need to worry about this
-       * case if we're switching from Source, Assembly, or Mixed view. If 
-       * we were previously in Source/Assembly view we don't need to
-       * do anything
+       * Switch to Source/Assembly mode - we only need to worry about this case
+       * if we're switching from Source, Assembly, or Mixed view. If we were
+       * previously in Source/Assembly view we don't need to do anything
        */
       else if (text.equals("Source/Assembly"))
         target.switchToSourceAsmMode();

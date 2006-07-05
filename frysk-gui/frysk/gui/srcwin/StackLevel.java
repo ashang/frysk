@@ -36,133 +36,165 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
+
 package frysk.gui.srcwin;
 
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMSource;
 
 /**
- * The StackLevel class represents a frame on the program execution stack (i.e. a
- * function call).
+ * The StackLevel class represents a frame on the program execution stack (i.e.
+ * a function call).
  * 
  * @author ajocksch
- *
  */
-public class StackLevel {
-	// Constant signifying the end of the line (length independantly)
-	public static int EOL = -1;
-	
-	// current line information
-	private CurrentLineSection currentLine;
-	
-	// Depth in the stack
-	private int depth;
-	
-	// Next and previous scopes in the stack
-	protected StackLevel nextScope;
-	protected StackLevel prevScope;
-	
-	// Actual data for this stack
-	private DOMFunction func;
-	private DOMSource data;
-	
-	/**
-	 * Creates a new StackLevel with the given current line. This constructor
-	 * allows the 'current line' to be a statement within a line. Eg:
-	 * <pre>i = 1; j = i+1;</pre>, the current line can be set to 'i = 1;' 
-	 * @param data The DOMSource representing the current file
-	 * @param line The line the PC is currently on (in the source code)
-	 * @param endLine The line that the current instruction ends on
-	 * @param colStart The column of the current instruction
-	 * @param colEnd The column of the end of the current instruction
-	 */
-	public StackLevel(DOMFunction func, CurrentLineSection currentLine){
-		this.currentLine = currentLine;
-		
-		this.depth = 0;
-		this.func = func;
-		this.data = func.getSource();
-	}
+public class StackLevel
+{
+  /**
+   * Constant signifying the end of the line (length independant)
+   */
+  public static int EOL = - 1;
 
-	/**
-	 * Creates a new stack level. This constructor assumes that the instruction at
-	 * the current PC takes up an entire line of code
-	 * @param data
-	 * @param line
-	 */
-	public StackLevel(DOMFunction func, int line){
-		this(func, new CurrentLineSection(line, line, 0, StackLevel.EOL));
-	}
-	
-	/**
-	 * @return The next scope in the stack
-	 */
-	public StackLevel getNextScope() {
-		return nextScope;
-	}
+  /**
+   * Constant signifying that there is no current line in this frame (i.e. no
+   * debug information)
+   */
+  public static int NO_LINE = - 2;
 
-	/**
-	 * @return The previous scope in the stack
-	 */
-	public StackLevel getPrevScope() {
-		return prevScope;
-	}
+  // current line information
+  private CurrentLineSection currentLine;
 
-	/**
-	 * Attaches another StackLevel as the next scope in the list. Any previously
-	 * attached scope is removed.
-	 * @param next The scope to follow this one in the stack frame
-	 */
-	public void addNextScope(StackLevel next){
-		if(this.nextScope != null){
-			next.nextScope = this.nextScope;
-			this.nextScope.depth++;
-			this.nextScope.prevScope = next;
-		}
-		
-		this.nextScope = next;
-		next.depth = this.depth + 1;
-		next.prevScope = this;
-	}
-	
-	/**
-	 * @return The depth of this scope in the stack
-	 */
-	public int getDepth() {
-		return depth;
-	}
+  // Depth in the stack
+  private int depth;
 
-	/**
-	 * @return The DOM object representing this stack
-	 */
-	public DOMSource getData() {
-		return data;
-	}
+  // Next and previous scopes in the stack
+  protected StackLevel nextScope;
 
-	/**
-	 *  @return true iff this scope has been previously parsed for static data
-	 */
-	public boolean isParsed() {
-		return this.data.isParsed();
-	}
+  protected StackLevel prevScope;
 
-	/**
-	 * @param parsed Whether or not this scope has been previously parsed for 
-	 * static data.
-	 */
-	public void setParsed(boolean parsed) {
-		this.data.setParsed(parsed);
-	}
+  // Actual data for this stack
+  private DOMFunction func;
 
-	public CurrentLineSection getCurrentLine() {
-		return currentLine;
-	}
+  private DOMSource data;
 
-	public void setCurrentLine(CurrentLineSection currentLine) {
-		this.currentLine = currentLine;
-	}
+  /**
+   * Creates a new StackLevel with the given current line. This constructor
+   * allows the 'current line' to be a statement within a line. Eg:
+   * 
+   * <pre>
+   * i = 1;
+   * j = i + 1;
+   * </pre>, the current line can be set to 'i = 1;'
+   * 
+   * @param data The DOMSource representing the current file
+   * @param line The line the PC is currently on (in the source code)
+   * @param endLine The line that the current instruction ends on
+   * @param colStart The column of the current instruction
+   * @param colEnd The column of the end of the current instruction
+   */
+  public StackLevel (DOMFunction func, CurrentLineSection currentLine)
+  {
+    this.currentLine = currentLine;
 
-	public DOMFunction getFunc() {
-		return func;
-	}
+    this.depth = 0;
+    this.func = func;
+    this.data = (func == null ? null : func.getSource());
+  }
+
+  /**
+   * Creates a new stack level. This constructor assumes that the instruction at
+   * the current PC takes up an entire line of code
+   * 
+   * @param data
+   * @param line
+   */
+  public StackLevel (DOMFunction func, int line)
+  {
+    this(func, new CurrentLineSection(line, line, 0, StackLevel.EOL));
+  }
+
+  /**
+   * @return The next scope in the stack
+   */
+  public StackLevel getNextScope ()
+  {
+    return nextScope;
+  }
+
+  /**
+   * @return The previous scope in the stack
+   */
+  public StackLevel getPrevScope ()
+  {
+    return prevScope;
+  }
+
+  /**
+   * Attaches another StackLevel as the next scope in the list. Any previously
+   * attached scope is removed.
+   * 
+   * @param next The scope to follow this one in the stack frame
+   */
+  public void addNextScope (StackLevel next)
+  {
+    if (this.nextScope != null)
+      {
+        next.nextScope = this.nextScope;
+        this.nextScope.depth++;
+        this.nextScope.prevScope = next;
+      }
+
+    this.nextScope = next;
+    next.depth = this.depth + 1;
+    next.prevScope = this;
+  }
+
+  /**
+   * @return The depth of this scope in the stack
+   */
+  public int getDepth ()
+  {
+    return depth;
+  }
+
+  /**
+   * @return The DOM object representing this stack
+   */
+  public DOMSource getData ()
+  {
+    return data;
+  }
+
+  /**
+   * @return true iff this scope has been previously parsed for static data
+   */
+  public boolean isParsed ()
+  {
+    return this.data.isParsed();
+  }
+
+  /**
+   * @param parsed Whether or not this scope has been previously parsed for
+   *          static data.
+   */
+  public void setParsed (boolean parsed)
+  {
+    this.data.setParsed(parsed);
+  }
+
+  public CurrentLineSection getCurrentLine ()
+  {
+    return currentLine;
+  }
+
+  public void setCurrentLine (CurrentLineSection currentLine)
+  {
+    this.currentLine = currentLine;
+  }
+
+  public DOMFunction getFunc ()
+  {
+    return func;
+  }
 }

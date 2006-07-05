@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.srcwin;
 
 import java.util.Iterator;
@@ -57,125 +58,147 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.dom.DOMFunction;
 import frysk.dom.DOMLine;
+import frysk.dom.DOMSource;
 
-public class CurrentStackView extends TreeView implements TreeSelectionListener {
+public class CurrentStackView
+    extends TreeView
+    implements TreeSelectionListener
+{
 
-	public interface StackViewListener{
-		void currentStackChanged(StackLevel newLevel);
-	}
+  public interface StackViewListener
+  {
+    void currentStackChanged (StackLevel newLevel);
+  }
 
-	private DataColumn[] stackColumns;
-	
-	private StackLevel currentLevel;
-	
-	private Vector observers;
-	
-	public CurrentStackView(StackLevel topLevel) {
-		super();
+  private DataColumn[] stackColumns;
 
-		this.setName("currentStackView");
-		this.getAccessible().setName("currentStackView_showsCurrentStack");
-		this.getAccessible().setDescription("Displays the current stack frame as well as the current stack");
-		
-		this.setHeadersVisible(false);
-		
-		this.observers = new Vector();
-		
-		stackColumns = new DataColumn[] { new DataColumnString(),
-				new DataColumnObject() };
-		ListStore listModel = new ListStore(stackColumns);
+  private StackLevel currentLevel;
 
-		TreeIter iter = null;
-		TreeIter last = null;
+  private Vector observers;
 
-		while (topLevel != null) {
-			iter = listModel.appendRow();
+  public CurrentStackView (StackLevel topLevel)
+  {
+    super();
 
-			CurrentLineSection current = topLevel.getCurrentLine();
-			boolean hasInlinedCode = false;
-				
-			// Go through each segment of the current line, but once we've found
-			// one stop checking
-			while(current != null && !hasInlinedCode){
-				// Go through each line of the segment
-				for(int i = current.getStartLine(); i < current.getEndLine(); i++){
-					// Check for inlined code
-					DOMLine line = topLevel.getData().getLine(i);
-					if(line != null && line.hasInlinedCode()){
-						hasInlinedCode = true;
-						break;
-					}
-				}
-				
-				current = current.getNextSection();
-			}
-			
-			// If we've found inlined code, update the display
-			if(hasInlinedCode)
-				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel
-						.getData().getFileName()+ ": " + topLevel.getFunc().getName()
-						+ "  (i)");
-			else
-				listModel.setValue(iter, (DataColumnString) stackColumns[0], topLevel.getData().getFileName() +
-						": " + topLevel.getFunc().getName());
-				
-			listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
+    this.setName("currentStackView");
+    this.getAccessible().setName("currentStackView_showsCurrentStack");
+    this.getAccessible().setDescription(
+                                        "Displays the current stack frame as well as the current stack");
 
-			// Save the last node so we can select it
-			if (topLevel.getNextScope() == null){
-				currentLevel = topLevel;
-				last = iter;
-			}
+    this.setHeadersVisible(false);
 
-			topLevel = topLevel.getNextScope();
-		}
-		this.setModel(listModel);
+    this.observers = new Vector();
 
-		TreeViewColumn column = new TreeViewColumn();
-		CellRenderer renderer = new CellRendererText();
-		column.packStart(renderer, true);
-		column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-				stackColumns[0]);
-		this.appendColumn(column);
-		
-		this.getSelection().setMode(SelectionMode.SINGLE);
-		this.getSelection().select(last);
-		
-		this.getSelection().addListener(this);
-	}
+    stackColumns = new DataColumn[] { new DataColumnString(),
+                                     new DataColumnObject() };
+    ListStore listModel = new ListStore(stackColumns);
 
-	/**
-	 * 
-	 * @return The currently selected stack level
-	 */
-	public StackLevel getCurrentLevel() {
-		return currentLevel;
-	}
+    TreeIter iter = null;
+    TreeIter last = null;
 
-	public void addListener(StackViewListener listener){
-		this.observers.add(listener);
-	}
-	
-	private void notifyObservers(StackLevel newStack){
-		Iterator iter = this.observers.iterator();
-		
-		while(iter.hasNext()){
-			((StackViewListener) iter.next()).currentStackChanged(newStack);
-		}
-	}
-	
-	public void selectionChangedEvent(TreeSelectionEvent arg0) {
-		TreeModel model = this.getModel();
+    while (topLevel != null)
+      {
+        iter = listModel.appendRow();
 
-		TreePath[] paths = this.getSelection().getSelectedRows();
-		if(paths.length == 0)
-			return;
-		
-		StackLevel selected = (StackLevel) model.getValue(model.getIter(paths[0]),
-				(DataColumnObject) stackColumns[1]);
-		
-		this.notifyObservers(selected);
-	}
-	
+        CurrentLineSection current = topLevel.getCurrentLine();
+        boolean hasInlinedCode = false;
+
+        // Go through each segment of the current line, but once we've found
+        // one stop checking
+        while (current != null && ! hasInlinedCode)
+          {
+            // Go through each line of the segment
+            for (int i = current.getStartLine(); i < current.getEndLine(); i++)
+              {
+                // Check for inlined code
+                DOMLine line = topLevel.getData().getLine(i);
+                if (line != null && line.hasInlinedCode())
+                  {
+                    hasInlinedCode = true;
+                    break;
+                  }
+              }
+
+            current = current.getNextSection();
+          }
+
+        DOMSource source = topLevel.getData();
+        DOMFunction func = topLevel.getFunc();
+
+        String row = (source == null ? "Unknown file" : source.getFileName())
+                     + ": "
+                     + (func == null ? "Unknown function" : func.getName());
+
+        // If we've found inlined code, update the display
+        if (hasInlinedCode)
+          row += " (i)";
+
+        listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+
+        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
+
+        // Save the last node so we can select it
+        if (topLevel.getNextScope() == null)
+          {
+            currentLevel = topLevel;
+            last = iter;
+          }
+
+        topLevel = topLevel.getNextScope();
+      }
+    this.setModel(listModel);
+
+    TreeViewColumn column = new TreeViewColumn();
+    CellRenderer renderer = new CellRendererText();
+    column.packStart(renderer, true);
+    column.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                               stackColumns[0]);
+    this.appendColumn(column);
+
+    this.getSelection().setMode(SelectionMode.SINGLE);
+    this.getSelection().select(last);
+
+    this.getSelection().addListener(this);
+  }
+
+  /**
+   * @return The currently selected stack level
+   */
+  public StackLevel getCurrentLevel ()
+  {
+    return currentLevel;
+  }
+
+  public void addListener (StackViewListener listener)
+  {
+    this.observers.add(listener);
+  }
+
+  private void notifyObservers (StackLevel newStack)
+  {
+    Iterator iter = this.observers.iterator();
+
+    while (iter.hasNext())
+      {
+        ((StackViewListener) iter.next()).currentStackChanged(newStack);
+      }
+  }
+
+  public void selectionChangedEvent (TreeSelectionEvent arg0)
+  {
+    TreeModel model = this.getModel();
+
+    TreePath[] paths = this.getSelection().getSelectedRows();
+    if (paths.length == 0)
+      return;
+
+    StackLevel selected = (StackLevel) model.getValue(
+                                                      model.getIter(paths[0]),
+                                                      (DataColumnObject) stackColumns[1]);
+
+    this.notifyObservers(selected);
+  }
+
 }
