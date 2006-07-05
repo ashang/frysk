@@ -12,6 +12,7 @@
 
 GtkWidget * eventviewer1;
 GtkWidget * eventviewer2;
+GtkWidget * frame2;
 
 gint clone_tie;
 gint term_tie;
@@ -263,7 +264,7 @@ catch_sigalrm (int sig)
 static void
 quit_cb (GtkButton * button, gpointer user_data)
 {
-  gtk_widget_destroy (eventviewer2);
+  gtk_widget_destroy (frame2);
   eventviewer2 = NULL;
 }
 
@@ -390,6 +391,23 @@ int main( int   argc,
   ftk_eventviewer_set_tie_color (thread_viewer, term_tie,  &term_tie_color);
   ftk_eventviewer_set_tie_linestyle (thread_viewer, term_tie,  2, 2);
 
+#if 1
+ {
+   ftk_simultaneous_events_s s_events[] = {
+     {thread_parms[IDX_PARENT].trace_id,
+      event_parms[IDX_CLONE].marker_id,
+      "a simultaneous w/ thread 0 clone"},
+     {thread_parms[IDX_THREAD0].trace_id,
+      event_parms[IDX_CLONE].marker_id,
+      "a simultaneous w/ parent clone"}
+   };
+
+   ftk_eventviewer_append_simultaneous_event_array (thread_viewer,
+						    clone_tie,
+						    sizeof(s_events)/sizeof(ftk_simultaneous_events_s),
+						    s_events);
+ }
+#else
   ftk_eventviewer_append_simultaneous_events (thread_viewer,
 					      clone_tie,
 					      thread_parms[IDX_PARENT].trace_id,
@@ -399,6 +417,7 @@ int main( int   argc,
 					      event_parms[IDX_CLONE].marker_id,
 					      "b simultaneous w/ parent clone",
 					      -1);
+#endif
 
   ftk_eventviewer_append_simultaneous_events (event_viewer,
 					      -1,
@@ -482,10 +501,10 @@ int main( int   argc,
   gtk_widget_show (frame);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), frame);
 
-  frame = gtk_frame_new ("Threads by event");
-  gtk_container_add (GTK_CONTAINER(frame), eventviewer2);
-  gtk_widget_show (frame);
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), frame);
+  frame2 = gtk_frame_new ("Threads by event");
+  gtk_container_add (GTK_CONTAINER(frame2), eventviewer2);
+  gtk_widget_show (frame2);
+  gtk_box_pack_start_defaults (GTK_BOX (vbox), frame2);
   
   {
     GtkWidget * hbutton_box = gtk_hbutton_box_new();

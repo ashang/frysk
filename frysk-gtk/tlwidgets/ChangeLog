@@ -1,7 +1,10 @@
 2006-07-05  Chris Moller  <moller@mollerware.com>
 
-	* src/widgets/ftkeventviewer.c: Fixed a couple of 'unused
-	variable' warnings.for bz 2880.
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Fixed a couple of 'unused
+	variable' warnings.for bz 2880.  Added
+	ftk_eventviewer_append_simultaneous_event_array() to make life
+	easier for rhe Java wrapper.
 
 2006-07-04  Chris Moller  <moller@mollerware.com>
 

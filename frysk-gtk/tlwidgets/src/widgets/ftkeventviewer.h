@@ -495,6 +495,13 @@ typedef enum {
 
 /*************** public api *****************/
 
+typedef struct {
+  gint trace;
+  gint marker;
+  gchar * string;
+} ftk_simultaneous_events_s;
+
+
 GType
 ftk_eventviewer_get_type		(void);
 
@@ -701,6 +708,17 @@ ftk_eventviewer_append_simultaneous_events_e (FtkEventViewer * eventviewer,
 gboolean
 ftk_eventviewer_append_simultaneous_events (FtkEventViewer * eventviewer,
 					    gint tie_index, ...);
+gboolean
+ftk_eventviewer_append_simultaneous_event_array_e (FtkEventViewer * eventviewer,
+						   gint tie_index,
+						   gint array_count,
+						   ftk_simultaneous_events_s * events_array,
+						   GError ** err);
+gboolean
+ftk_eventviewer_append_simultaneous_event_array (FtkEventViewer * eventviewer,
+						 gint tie_index,
+						 gint array_count,
+						 ftk_simultaneous_events_s * events_array);
 
 gboolean
 ftk_eventviewer_tie_events_e (FtkEventViewer * eventviewer,
