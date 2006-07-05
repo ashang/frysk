@@ -1,3 +1,21 @@
+2006-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTaskSyscallObserver.java: Enabled all tests.
+	Added test for deleting the last syscallobserver.
+	Added test for adding a syscall observer to a running task.
+	Added test for removing a syscall observer from a syscallRunning
+	task.
+	* TaskState.java (Running): Added handleAddSyscallObserver.
+	created transitionToSyscallRunning.
+	(handleSyscalledEvent): Added handling for blocking request.
+	(SyscallRunning) added handling for add/removing syscallObserver.
+	and special handling needed for removing the last syscallObserver.
+	Created transitionOutOfSyscallRunning.
+	Created syscallBlockedEnteringSyscall.
+	Created syscallBlockedExitingSyscall.
+	* Proc.java (requestAddSyscallObserver): Corrected log message.
+	* Observable.java (numberOfObservers): New function.
+
 2006-06-30  Mike Cvet  <mcvet@redhat.com>
 
 	* Task.java (getMemory): Added

@@ -1,3 +1,9 @@
+2006-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* funit-syscallloop.c: Added a command line option (-1)
+	which makes the program make system calls in an infinite
+	loop.
+
 2006-06-27  Stepan Kasal  <kasal@ucw.cz>
 
 	* funit-ia32-modify.S, funit-ia32-regs.S: Make the stack

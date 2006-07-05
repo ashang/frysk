@@ -900,8 +900,43 @@ class TaskState
 	    // observer.fail (new RuntimeException (task, "not blocked");
 	    return running;
 	}
+	TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
+	{
+      observable.add(observer);
+      task.sendStop();
+       return transitionToSyscallRunning;
+	}
+    
+    /**
+     * A task has been requested to stop, it is waiting
+     * for a stopevent to tell so it can send syscall tracing
+     * options and trasition to syscallRunning.
+     */
+     private static TaskState transitionToSyscallRunning = new TaskState("transitionToSyscallRunning"){
+       TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
+       {
+         logger.log(Level.FINE, "{0} handleAddSyscallObserver\n", task);
+         observable.add(observer);
+         return this; 
+       }
+       TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
+       {
+         logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
+         observable.delete(observer);
+         return this; 
+       }
+       TaskState handleStoppedEvent (Task task)
+       {
+         logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
+         task.startTracingSyscalls();
+         task.sendSyscallContinue(0);
+         return syscallRunning;
+       }
+    
+     };
+      
     }
-
+  
     /**
      * Keep the task running in syscall tracing mode
      */
@@ -926,9 +961,12 @@ class TaskState
 	TaskState handleSyscalledEvent (Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-	    task.notifySyscallEnter ();
-	    task.sendSyscallContinue(0);
-	    return runningInSyscall;
+	    if(task.notifySyscallEnter () > 0){
+	      return syscallBlockedEnteringSyscall;
+        }else{
+          task.sendSyscallContinue(0);
+          return runningInSyscall;
+        }
 	}
 		
 	TaskState handleTerminatingEvent (Task task, boolean signal,
@@ -950,29 +988,6 @@ class TaskState
 	      task.sendSyscallContinue (0);
 	    return syscallRunning;
 	}
-		
-	//		TaskState handleExecedEvent (Task task)
-	//		{
-	//			logger.log (Level.FINE, "{0} handleExecedEvent\n", task); 
-	//			// Remove all tasks, retaining just this one.
-	//			task.proc.retain (task);
-	//			((LinuxProc)task.proc).getStat ().refresh();
-	//			if (task.notifyExeced () > 0) {
-	//			    return syscallBlockedInExecSyscall;
-	//			}
-	//			else {
-	//			    task.sendSyscallContinue (0);
-	//			    // return syscallRunning;
-	//			    // The assumption here is that if the state is in syscall tracing
-	//			    // mode and it recieves an exec event then the next event will be
-	//			    // a syscalledEvent. Using this assumption if an execedEvent is 
-	//			    // recieved outside of runningInSyscall we can conclude that we have
-	//			    // messed the syscalledEvent representing the entry to the exec syscall
-	//			    // thus the next event will represent the exit and the correct state
-	//			    // is runningInSyscall
-	//			    return runningInSyscall;
-	//			}
-	//		}
 	TaskState handleContinue (Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleContinue\n", task); 
@@ -1016,8 +1031,50 @@ class TaskState
 	    // observer.fail (new RuntimeException (task, "not blocked");
 	    return syscallRunning;
 	}
+    
+    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
+    {
+      logger.log(Level.FINE, "{0} handleAddSyscallObserver\n", task);
+      observable.add(observer);
+      return this; 
+    }
+    TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
+    {
+      logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
+      observable.delete(observer);
+      if(observable.numberOfObservers() == 0){
+        logger.log(Level.FINE, "{0} handleDeleteSyscallObserver number of observer = 0 \n", task);
+        task.sendStop();
+        return transitionOutOfSyscallRunning;
+      }else{
+        return this;
+      }
+    }
     }
 
+    /**
+     * A task has been requested to stop, it is waiting
+     * for a stopevent to tell so it can send syscall tracing
+     * options and trasition to syscallRunning.
+     */
+     private static TaskState transitionOutOfSyscallRunning = new TaskState("transitionOutOfSyscallRunning"){
+       TaskState handleStoppedEvent (Task task)
+       {
+         logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
+         task.stopTracingSyscalls();
+         task.sendContinue(0);
+         return running;
+       }
+       
+       TaskState handleSyscalledEvent (Task task)
+        {
+          logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
+          return this;  
+        }
+       
+     };
+     
+  
 	    
     /**
      * Sharable instance of the running state.
@@ -1042,10 +1099,13 @@ class TaskState
 
 	    TaskState handleSyscalledEvent (Task task)
 	    {
-		logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-		task.notifySyscallExit ();
-		task.sendSyscallContinue (0);
-		return syscallRunning;
+	      logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
+	      if(task.notifySyscallExit () > 0){
+	        return syscallBlockedExitingSyscall;
+          }else{
+    		task.sendSyscallContinue (0);
+    		return syscallRunning;
+          }
 	    }
 	    TaskState handleTerminatingEvent (Task task, boolean signal,
 					      int value)
@@ -1099,6 +1159,17 @@ class TaskState
 		    return runningInSyscall;
 		}
 	    }
+        TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
+        {
+          logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
+          observable.delete(observer);
+          if(observable.numberOfObservers() == 0){
+            task.sendStop();
+            return transitionOutOfSyscallRunning;
+          }else{
+            return this;
+          }
+        }
 	};
 
     private static final TaskState detaching = new TaskState ("detaching")
@@ -1194,7 +1265,9 @@ class TaskState
 		task.proc.performTaskDetachCompleted (task);
 		return detached;
 	    }
-	    TaskState handleSyscalledEvent (Task task)
+	    
+        //XXX: why is this needed and why does it mean a syscallExit ?
+        TaskState handleSyscalledEvent (Task task)
 	    {
 		logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
 		task.notifySyscallExit ();
@@ -1255,6 +1328,7 @@ class TaskState
 	  to know why we are blocked). So this will be left unhandled untill
 	  a testcase tickles it, so we can investigate. But this is likely the
 	  correct implementation.
+      
 	  TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer){
 	  logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
 	  task.startTracingSyscalls();
@@ -1267,6 +1341,20 @@ class TaskState
 	  }
 	*/
     }
+    
+    
+    /**
+     * The task is in the blocked state with no pending signal.
+     * It is a common case that a task is blocked with no pending
+     * signal so this instance can be shared.
+     */
+    private static final TaskState blockedContinue = new BlockedSignal (0)
+    {
+        public String toString ()
+        {
+        return "blockedContinue";
+        }
+    };
     
     private static class SyscallBlockedSignal extends BlockedSignal{
 	SyscallBlockedSignal(int sig) {
@@ -1294,35 +1382,34 @@ class TaskState
 	    return "syscallBlockedSignal";
 	}
     }
-    
-    /**
-     * The task is in the blocked state with no pending signal.
-     * It is a common case that a task is blocked with no pending
-     * signal so this instance can be shared.
-     */
-    private static final TaskState blockedContinue = new BlockedSignal (0)
-	{
-	    public String toString ()
-	    {
-		return "blockedContinue";
-	    }
-	};
-    
+   
     /**
      * Sharable instance of the common blockedContinue in syscall tracing mode
      */
     private static final TaskState syscallBlockedContinue = new SyscallBlockedSignal (0)
-	{
-	    public String toString ()
-	    {
-		return "syscallBlockedContinue";
-	    }
-	};
-
+    {
+        public String toString ()
+        {
+        return "syscallBlockedContinue";
+        }
+    };
 
     /**
-     * A task in the middle of a syscall recieves an event the user
-     * is requests to block it.
+     * A task ends up in this state if it sends out a syscallExit
+     * event and an observer chooses to block it.
+     */
+    private static final TaskState syscallBlockedExitingSyscall = new SyscallBlockedSignal (0)
+    {
+        public String toString ()
+        {
+        return "syscallBlockedExitingSyscall";
+        }
+    };
+
+    
+    /**
+     * A task blocked after SyscallEnter notification or while runningInSyscall
+     * by an event other than syscalledEvent
      */
     public static class SyscallBlockedInSyscall extends SyscallBlockedSignal{
       SyscallBlockedInSyscall(int sig)
@@ -1357,6 +1444,17 @@ class TaskState
         }
     };
     
+    /**
+     * A Task ends up in this state if it sends out a syscallExit event
+     * and an observer chooses to block it.
+     */
+    private static final TaskState syscallBlockedEnteringSyscall = new SyscallBlockedInSyscall(0){
+      public String toString ()
+      {
+      return "syscallBlockedEnterinSyscall";
+      }
+    };
+ 
     /**
      * A task recieves an execedEvent and the client decides to block
      * the task -> this state. This state is needed because if in this state

@@ -46,8 +46,15 @@ main (int argc, char **argv)
   int i;
   int loop_count = atoi (argv[1]);
 
-  for (i = 0; i < loop_count; ++i)
-    close (-1);
+  if(loop_count == -1){
+    while(1){
+       close (-1);
+    }
+  }else{
+    for (i = 0; i < loop_count; ++i){
+      close (-1);
+    }
+  }
 
   return 0;
 }

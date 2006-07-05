@@ -361,7 +361,7 @@ public abstract class Proc
 			     TaskObservable observable,
 			     TaskObserver observer)
     {
-	logger.log (Level.FINE, "{0} requestAddObservation\n", this); 
+	logger.log (Level.FINE, "{0} requestAddSyscallObserver\n", this); 
 	Manager.eventLoop.add (new TaskSyscallObservation (task, observable, observer)
 	    {
 		public void execute ()

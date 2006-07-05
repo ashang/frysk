@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="/usr/share/java/cairo1.0.jar"/>
 	<classpathentry kind="lib" path="/usr/share/eclipse/plugins/org.eclipse.cdt.core_3.0.2/cdtparser.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/junit.jar"/>
+	<classpathentry kind="lib" path="/to/scratch/swagiaal/frysks/frysk.systemcall.bin/frysk-sys/frysk-sys.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

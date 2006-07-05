@@ -91,4 +91,10 @@ class Observable
     {
 	return observers.iterator ();
     }
+    /**
+     * Return the current number of observers
+     */
+    int numberOfObservers(){
+      return this.observers.size();
+    }
 }
