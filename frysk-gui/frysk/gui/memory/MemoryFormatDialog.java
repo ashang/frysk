@@ -69,6 +69,8 @@ import frysk.gui.monitor.Saveable;
 /**
  * Various options applicable to the MemoryWindow involving number of bits,
  * endian-ness, and radix.
+ * 
+ * @author mcvet, ajocksch
  */
 public class MemoryFormatDialog
     extends Dialog
@@ -78,7 +80,7 @@ public class MemoryFormatDialog
   private LibGlade glade;
 
   private DataColumn[] cols = { new DataColumnBoolean(),
-                               new DataColumnString(), new DataColumnString() };
+                               new DataColumnString()};
 
   private TreeView formatList;
 
@@ -97,18 +99,18 @@ public class MemoryFormatDialog
 
     final ListStore model = new ListStore(cols);
 
-    for (int j = 0; j < MemoryWindow.colNames.length; j++)
-      {
-        for (int i = 0; i < MemoryWindow.colNames[0].length; i++)
+        for (int i = 0; i < MemoryWindow.colNames.length; i++)
           {
+            
             TreeIter iter = model.appendRow();
-            String text = MemoryWindow.colNames[j][i].replaceFirst("LE",
+            String text = MemoryWindow.colNames[i].replaceFirst("LE",
                                                                    "Little Endian");
             text = text.replaceFirst("BE", "Big Endian");
+            text = text.replaceFirst("X-bit ", "");
+            
             model.setValue(iter, (DataColumnBoolean) cols[0], false);
             model.setValue(iter, (DataColumnString) cols[1], text);
           }
-      }
 
     TreeViewColumn col = new TreeViewColumn();
     CellRenderer renderer = new CellRendererToggle();
@@ -175,12 +177,10 @@ public class MemoryFormatDialog
 
     TreeIter iter = model.getFirstIter();
 
-    for (int i = 0; i < MemoryWindow.colNames[0].length; i++)
+    for (int i = 0; i < MemoryWindow.colNames.length; i++)
       {
         boolean val = model.getValue(iter, (DataColumnBoolean) cols[0]);
-
-        prefs.putBoolean(MemoryWindow.colNames[MemoryWindow.currentFormat][i],
-                         val);
+        prefs.putBoolean(MemoryWindow.colNames[i], val);
         iter = iter.getNextIter();
       }
   }
@@ -191,11 +191,10 @@ public class MemoryFormatDialog
     ListStore model = (ListStore) this.formatList.getModel();
     TreeIter iter = model.getFirstIter();
 
-    for (int i = 0; i < MemoryWindow.colNames[0].length; i++)
+    for (int i = 0; i < MemoryWindow.colNames.length; i++)
       {
         boolean val = prefs.getBoolean(
-                                       MemoryWindow.colNames[MemoryWindow.currentFormat][i],
-                                       i == 0);
+                     MemoryWindow.colNames[i], i == 0);
         model.setValue(iter, (DataColumnBoolean) cols[0], val);
         iter = iter.getNextIter();
       }

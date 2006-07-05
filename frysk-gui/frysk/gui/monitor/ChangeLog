@@ -1,3 +1,7 @@
+2006-07-05  Mike Cvet  <mcvet@redhat.com>
+
+	* SimpleComboBox.java (SimpleComboBox): Applied GNU formatting.
+
 2006-06-30  Mike Cvet  <mcvet@redhat.com>
 
 	* WindowManager.java (memoryWindow): New MemoryWindow object.

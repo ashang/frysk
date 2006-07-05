@@ -1,3 +1,17 @@
+2006-07-05  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryFormatDialog.java (save): Corrected preferences saving
+	error.
+	(load): Corrected preferences loading error.
+	* glade/memorywindow.glade: Added combobox for bit sizes, scrollbars, and
+	edited display properties; spinButtons for memory address manipulation.
+	* memory/MemoryWindow.java (recalculate): Added.
+	(handleFromSpin): ditto.
+	(handleToSpin): ditto.
+	(setTask): Now performs the bit format calculations externally, so that the
+	information can be re-calculated for other bitsizes.
+	(MemoryWindow): Added some more private variables used in recalculate().
+
 2006-07-03  Mike Cvet  <mcvet@redhat.com>
 
 	* register/RegisterWindow.java (saveBinaryValue): Small spelling refactor.
