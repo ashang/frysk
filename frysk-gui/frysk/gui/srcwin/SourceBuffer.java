@@ -610,11 +610,12 @@ public class SourceBuffer
    */
   public boolean hasInlineCode (int lineNumber)
   {
+    DOMSource source = this.scope.getData();
     // TODO: Inline code with assembly?
-    if (mode != SOURCE_MODE)
+    if (mode != SOURCE_MODE || source == null)
       return false;
 
-    DOMLine line = this.scope.getData().getLine(lineNumber + 1);
+    DOMLine line = source.getLine(lineNumber + 1);
     if (line == null)
       return false;
 

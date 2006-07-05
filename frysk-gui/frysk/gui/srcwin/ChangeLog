@@ -1,5 +1,8 @@
 2006-07-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceBuffer.java (hasInlinedCode): Now correctly handles the case
+	where no debugging information is present.
+
 	* CurrentStackView.java: Applied GNU formatting.
 	(CurrentStackView): Now handles the case where DOM information in the
 	stack frame is null, signifying a frame with no debugging
