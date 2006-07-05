@@ -39,6 +39,7 @@
 package frysk.cli.hpd;
 
 import java.util.TreeMap;
+import java.util.Vector;
 
 class UserHelp
 {
@@ -83,6 +84,7 @@ class UserHelp
 	public UserHelp()
 	{
 		String temp = null;
+		commandHelp = new TreeMap();
 		
 		temp = "Creates a new set \"set-name\" with members specified in \"p/t-set\" set notation.";
 		commandHelp.put("defset", new CommandHelp("defset",
@@ -110,5 +112,42 @@ class UserHelp
 													"List all user-defined set to which a proc/task belongs.",
 													"whichsets [p/t-set]",
 													temp));
+
+		temp = "Change the current p/t set to \"p/t-set\". If no set notation is given list members of the current set";
+		commandHelp.put("focus", new CommandHelp("whichsets",
+													"Change current set.",
+													"focus [p/t-set]",
+													temp));
+
+		temp = "Change the current p/t set to \"p/t-set\". If no set notation is given list members of the current set";
+		commandHelp.put("set", new CommandHelp("set",
+													"Change a debugger variable.",
+													"focus [p/t-set]",
+													temp));
+	}
+
+	public boolean isValidCommand(String cmd)
+	{
+		return commandHelp.containsKey(cmd);
+	}
+
+	public Vector getCmdList()
+	{
+		return new Vector(commandHelp.keySet());
+	}
+
+	public String getCmdDescription(String cmd)
+	{
+		return ((CommandHelp)commandHelp.get(cmd)).getDescription();
+	}
+
+	public String getCmdSyntax(String cmd)
+	{
+		return ((CommandHelp)commandHelp.get(cmd)).getSyntax();
+	}
+
+	public String getCmdFullDescr(String cmd)
+	{
+		return ((CommandHelp)commandHelp.get(cmd)).getFull();
 	}
 }

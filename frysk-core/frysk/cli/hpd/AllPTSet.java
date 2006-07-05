@@ -428,9 +428,12 @@ class AllPTSet implements PTSet
 		procP = procStart;
 		taskP = taskStart;
 
-		tempSet = (Vector)taskSets.elementAt(procP);
+		if (procP < taskSets.size())
+			tempSet = (Vector)taskSets.elementAt(procP);
+		else
+			procP = -1;
 
-		while (procP < procEnd || taskP <= taskEnd) 
+		while ((procP < procEnd || taskP <= taskEnd) && procP != -1) 
 		{
 			if (taskP > tempSet.size() - 1)
 			{
@@ -487,9 +490,13 @@ class AllPTSet implements PTSet
 		procP = procStart;
 		taskP = taskStart;
 
-		tempSet = (Vector)taskSets.elementAt(procP);
+		
+		if (procP < taskSets.size())
+			tempSet = (Vector)taskSets.elementAt(procP);
+		else
+			procP = -1;
 
-		while (procP < procEnd || taskP <= taskEnd)
+		while ((procP < procEnd || taskP <= taskEnd) && procP != -1)
 		{
 			if (taskP >= tempSet.size() || taskP > taskEnd)
 			{

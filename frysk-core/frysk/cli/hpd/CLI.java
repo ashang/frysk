@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -38,8 +38,13 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.io.*;
-import java.util.*;
+import java.io.PrintStream;
+
+import java.util.Vector;
+import java.util.LinkedList;
+import java.util.Hashtable;
+import java.util.Iterator;
+
 import java.text.ParseException;
 import java.lang.RuntimeException;
 
@@ -60,70 +65,224 @@ public class CLI
 			String setnot = null;
 			PTSet set = null;
 
-			if (params.size() > 0)
+			if (params.size() == 2)
 			{
 				setname = (String) params.elementAt(0);
 				if (!setname.matches("\\w+"))
 					throw new ParseException("Set name must be alphanumeric.", 0);
+
+				setnot = (String) params.elementAt(1);
+
+				if (!builtinPTSets.containsKey(setnot))
+				{
+					set = createSet(setnot);
+					namedPTSets.put(setname, set);
+				}
+				else
+				{
+					addMessage(new Message("The set name is reserved for a predefined set.", Message.TYPE_ERROR));
+				}
 			}
 			else
-				throw new ParseException("Missing set name argument.", 0);
-
-			if (params.size() > 1)
-				setnot = (String) params.elementAt(0);
-			else
-				throw new ParseException("Missing set notation argument.", 0);
-
-			if (!builtinPTSets.containsKey(setnot))
 			{
-				set = createSet(setnot);
-				namedPTSets.put(setname, set);
-			}
-			else
-			{
-				//TODO create a nice exception or somethn'
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
 			}
 		}
 	}
-
 	class UndefsetHandler implements CommandHandler
 	{
-		public void handle(Command cmd) throws ParseException {
-		/*
-			if (namedPTSets.containsPTSets())
+		public void handle(Command cmd) throws ParseException
+		{
+			if (cmd.getParameters().size() == 1)
 			{
+				String setname = (String)cmd.getParameters().elementAt(0);
+
+				if (builtinPTSets.contains(setname))
+				{
+					addMessage(new Message("The set \"" + setname + "\" cannot be undefined.",
+											Message.TYPE_ERROR));
+				}
+				else if (namedPTSets.contains(setname))
+				{
+					namedPTSets.remove(setname);
+					addMessage(new Message("Set \"" + setname + "\" successfuly undefined.", Message.TYPE_VERBOSE));
+				}
+				else
+				{
+					addMessage(new Message("Set \"" + setname + "\" does not exist, no action taken.",
+											Message.TYPE_NORMAL));
+				}
 			}
 			else
 			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
 			}
-			*/
 		}
 	}
 
-	class LoadHandler implements CommandHandler
+	class ViewsetHandler implements CommandHandler 
 	{
-		public void handle(Command cmd) throws ParseException {
-			out.println("Executing load: " + cmd);
+		public void handle(Command cmd) throws ParseException
+		{
+			PTSet tempset = null;
+			TaskData temptd = null;
+			String setname = "";
+			String output = "";
+
+			if (cmd.getParameters().size() <= 1)
+			{
+				if (cmd.getParameters().size() == 0)
+					tempset = targetset;
+				else if (cmd.getParameters().size() == 1)
+				{
+					setname = (String)cmd.getParameters().elementAt(0);
+					if (namedPTSets.containsKey(setname))
+						tempset = (PTSet) namedPTSets.get(setname);
+					else
+					{
+						addMessage(new Message("Set \"" + setname + "\" does not exist.",
+											Message.TYPE_NORMAL));
+						return;
+					}
+				}
+
+				for (Iterator iter = tempset.getTaskData(); iter.hasNext();)
+				{
+					//TODO this way of outputing is rather stoopid, but it's okay for now
+					temptd = (TaskData)iter.next();
+					output += "Set " + setname + " includes:\n";
+					output += "[" + temptd.getParentID() + "." + temptd.getID() + "]\n";
+					addMessage(new Message(output, Message.TYPE_NORMAL));
+				}
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
 		}
 	}
 
-	class RunHandler implements CommandHandler
+	class WhichsetsHandler implements CommandHandler
 	{
-		public void handle(Command cmd) throws ParseException {
-			out.println("Executing run: " + cmd);
+		public void handle(Command cmd) throws ParseException
+		{
+			PTSet searchset = null;
+			PTSet tempset = null;
+			TaskData temptd = null;
+			String setname = null;
+
+			//TODO check builtin sets
+			if (cmd.getParameters().size() <= 1)
+			{
+				if (cmd.getParameters().size() == 0)
+					searchset = targetset;
+				else if (cmd.getParameters().size() == 1)
+					searchset = createSet((String)cmd.getParameters().elementAt(0));
+
+				//start iterating through availabe sets
+				for (Iterator it = searchset.getTaskData(); it.hasNext();)
+				{
+					temptd = (TaskData) it.next();
+					addMessage(new Message("Task " + temptd.getParentID() + "." + temptd.getID() +
+											" is in sets: \n", Message.TYPE_NORMAL));
+					for (Iterator iter = namedPTSets.keySet().iterator(); iter.hasNext();)
+					{
+						setname = (String)iter.next();
+						tempset = (PTSet)namedPTSets.get(setname);
+
+						if ( tempset.containsTask(temptd.getParentID(), temptd.getID()) )
+						addMessage(new Message("\t" + setname + "\n", Message.TYPE_NORMAL));
+					}
+					addMessage(new Message("\n", Message.TYPE_NORMAL));
+				}
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
 		}
 	}
+
+	class FocusHandler implements CommandHandler 
+	{
+		public void handle(Command cmd) throws ParseException
+		{
+			if (cmd.getParameters().size() <= 1)
+			{
+				if (cmd.getParameters().size() == 1)
+					targetset = createSet((String)cmd.getParameters().elementAt(0));
+				else
+					( (CommandHandler) handlers.get("viewset") ).handle( new Command("viewset") );
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
+		}
+	}
+
+
 	class AliasHandler implements CommandHandler 
 	{
-		public void handle(Command cmd) throws ParseException {
-			Vector param = cmd.getParameters();
-			out.println(param);
+		public void handle(Command cmd) throws ParseException
+		{
+			Vector params = cmd.getParameters();
+			if (params.size() <= 2)
+			{
+				if (params.size() == 2)
+				{
+					aliases.put((String)params.elementAt(0), (String)params.elementAt(1));
+				}
+				else if (params.size() == 1)
+				{
+					String temp = (String)params.elementAt(0);
+					if (aliases.containsKey(temp))
+					{
+						addMessage(new Message(temp + " = " + (String)aliases.get(temp), Message.TYPE_NORMAL));
+					}
+					else
+						addMessage(new Message("Alias \"" + temp + "\" not defined.", Message.TYPE_ERROR));
+				}
+				else 
+				{
+					addMessage(new Message(aliases.toString(), Message.TYPE_NORMAL));
+				}
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
 		}
 	}
+
 	class UnaliasHandler implements CommandHandler
 	{
-		public void handle(Command cmd)  throws ParseException {
-			out.println("Executing unalias: " + cmd);
+		public void handle(Command cmd)  throws ParseException
+		{
+			Vector params = cmd.getParameters();
+			if (params.size() == 1)
+			{
+				if ( ((String)params.elementAt(0)).equals("-all") )
+				{
+						aliases = new Hashtable();
+						addMessage(new Message("Removing all aliases.", Message.TYPE_VERBOSE));
+				}
+				else
+				{
+					String temp = (String)params.elementAt(0);
+					if (aliases.containsKey(temp))
+					{
+						aliases.remove(temp);
+						addMessage(new Message("Removed alias \"" + temp + "\"", Message.TYPE_VERBOSE));
+					}
+					else
+						addMessage(new Message("Alias \"" + temp + "\" not defined.", Message.TYPE_ERROR));
+				}
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
 		}
 	}
 	class SetHandler implements CommandHandler
@@ -147,26 +306,27 @@ public class CLI
 	class QuitHandler implements CommandHandler
     {
 		public void handle(Command cmd) throws ParseException {
-		       //System.exit(1);
+		       addMessage(new Message("Quitting...", Message.TYPE_NORMAL));
 		}
 	}
 	class HelpHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
+			String output = "";
+
 		    // TODO Use a better commands data structure 
-		    out.println("List of commands:");
-		    out.println("load");
-		    out.println("run");
-		    out.println("alias");
-		    out.println("unalias");
-		    out.println("set");
-		    out.println("unset");
-		    out.println("assign Lhs Expression");
-		    out.println("print Expression");
-		    out.println("what Lhs");
-		    out.println("help");
-		    out.println("quit");
-		    out.println("exit");
+		    output += "List of commands: \n";
+			output += "defset setname [setnotation]\n";
+			output += "undefset setname\n";
+			output += "whichsets [hpd-setnotation]\n"; 
+			output += "viewset set-name\n"; 
+		    output += "assign Lhs Expression\n";
+		    output += "print Expression\n";
+		    output += "what Lhs\n";
+		    output += "help\n";
+		    output += "quit\n";
+
+		    addMessage(new Message(output, Message.TYPE_NORMAL));
 		}
 	}
     
@@ -176,14 +336,19 @@ public class CLI
 
 	private static PrintStream out = null;// = System.out;
 	private Preprocessor prepro;
-	private String prompt;
+	private String prompt; // string to represent prompt, will be moved
 	private Hashtable handlers;
-	private SetNotationParser setparser;
+	private UserHelp userhelp;
 
 	// PT set related stuff
-	private AllPTSet allset;
-	private Hashtable namedPTSets;
-	private Hashtable builtinPTSets;
+	private SetNotationParser setparser;
+	private AllPTSet allset; // the "all" set
+	private Hashtable namedPTSets; // user-created named sets
+	private Hashtable builtinPTSets; // predefined named sets
+	private PTSet targetset;
+
+	// other
+	private LinkedList messages; // debugger output messages, e.g. the Message class
 
 	// alias
 	private Hashtable aliases;
@@ -200,13 +365,16 @@ public class CLI
 	{
 		this.prompt = prompt;
 		CLI.out = out;
-		prepro = new Preprocessor();
-		setparser = new SetNotationParser();
-		handlers = new Hashtable();
 
-		handlers.put("load", new LoadHandler());
-		handlers.put("run", new RunHandler());
+		prepro = new Preprocessor();
+		handlers = new Hashtable();
+		userhelp = new UserHelp();
+
 		handlers.put("defset", new DefsetHandler());
+		handlers.put("undefset", new UndefsetHandler());
+		handlers.put("whichsets", new WhichsetsHandler());
+		handlers.put("viewset", new ViewsetHandler());
+		handlers.put("focus", new FocusHandler());
 		handlers.put("alias", new AliasHandler());
 		handlers.put("unalias", new UnaliasHandler());
 		handlers.put("set", new SetHandler());
@@ -215,17 +383,21 @@ public class CLI
 		handlers.put("print", new PrintHandler());
 		handlers.put("what", new WhatHandler());
 		handlers.put("help", new HelpHandler());
-		handlers.put("exit", new QuitHandler());
 		handlers.put("quit", new QuitHandler());
 
 		// initialize PT set stuff
+		setparser = new SetNotationParser();
+
 		allset = new AllPTSet();
+		targetset = allset;
 
 		builtinPTSets = new Hashtable();
 		builtinPTSets.put("all", allset);
 
 		namedPTSets = new Hashtable();
 		namedPTSets.toString(); // placeholder so compiler doesn't give unused variable warnings
+
+		messages = new LinkedList();
 
 		//initialize alias table
 		aliases = new Hashtable();
@@ -245,11 +417,11 @@ public class CLI
 
 		if (cmd != null)
 		{
-			for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) //preprocess and iterate
+			try
 			{
- 				pcmd = (String)iter.next();
-
-				try {
+				for (Iterator iter = prepro.preprocess(cmd); iter.hasNext();) //preprocess and iterate
+				{
+					pcmd = (String)iter.next();
 					command = new Command(pcmd);
 
 					if (command.getAction() != null)
@@ -258,26 +430,65 @@ public class CLI
 						if (handler != null)
 								handler.handle(command);
 						else
-							out.println("ERROR: Unrecognized command \"" +
-									command.getAction() + "\"");
+							addMessage(new Message("Unrecognized command: " + command.getAction() + ".",
+													Message.TYPE_ERROR));
 					}
 					else
 					{
-						out.println("ERROR: No action specified");
+						addMessage(new Message("No action specified.", Message.TYPE_ERROR));
 					}
 				}
-				catch (ParseException e)
-				{
-					out.println(e.getMessage());
-				}
-				catch (RuntimeException e)
-				{
-					out.println(e.getMessage());
-				}
+
 			}
+			catch (ParseException e)
+			{	
+				String msg = "";
+				if (e.getMessage() != null)
+					msg = e.getMessage();
+
+				addMessage(new Message(msg, Message.TYPE_ERROR));
+			}
+			catch (RuntimeException e)
+			{
+				e.printStackTrace();
+				String msg = "";
+				if (e.getMessage() != null)
+					msg = e.getMessage();
+
+				addMessage(new Message(msg, Message.TYPE_DBG_ERROR));
+			}
+
+			flushMessages();
 		}
 
 		return null;
+	}
+
+	private void addMessage(Message msg)
+	{
+		messages.add(msg);
+	}
+	
+	private void flushMessages()
+	{
+		String prefix = "";
+		Message tempmsg;
+
+		for (Iterator iter = messages.iterator(); iter.hasNext();)
+		{
+			tempmsg = (Message) iter.next();
+			
+			if (tempmsg.getType() == Message.TYPE_DBG_ERROR)
+				prefix = "Internal debugger error:  ";
+			else if (tempmsg.getType() == Message.TYPE_ERROR)
+				prefix = "Error: ";
+			else if (tempmsg.getType() == Message.TYPE_WARNING)
+				prefix = "Warning: ";
+
+			out.println(prefix + tempmsg.getMessage());
+
+			iter.remove();
+		}
 	}
 
 	private PTSet createSet(String set) throws ParseException
@@ -298,17 +509,15 @@ public class CLI
 				state = AllPTSet.TASK_STATE_HELD;
 			else
 			{
-				throw new RuntimeException("Illegal state name.");
+				throw new RuntimeException("Illegal state name when creating set.");
 			}
 
 			if (parsed.isStatic())
-			{
 				result = new StaticPTSet(allset.getSubsetByState(state));
-			}
 			else
-			{
 				result = new StatePTSet(allset, state);
-			}
+
+			addMessage( new Message("Creating new " + parsed.getName() + " state set.", Message.TYPE_VERBOSE));
 		}
 		else if (parsed.getType() == ParsedSet.TYPE_HPD)
 		{
@@ -316,22 +525,36 @@ public class CLI
 				result = new StaticPTSet(allset.getSubset(parsed.getParseTreeNodes()));
 			else
 				result = new DynamicPTSet(allset, parsed.getParseTreeNodes());
+
+			addMessage( new Message("Creating new HPD notation set.", Message.TYPE_VERBOSE));
 		}
 		else if (parsed.getType() == ParsedSet.TYPE_NAMED)
 		{
-			
 			if (parsed.isStatic())
 			{
-				//TODO give an error here
+				addMessage( new Message("Cannot create a static set from a predefined set.",
+											Message.TYPE_ERROR));
 			}
 			else
 			{
+				addMessage( new Message("Creating new set from named set \"" +
+											parsed.getName() + "\".", Message.TYPE_VERBOSE));
 				result = (PTSet) namedPTSets.get(parsed.getName());
 			}
+
 		}
 		else if (parsed.getType() == ParsedSet.TYPE_EXEC)
 		{
-			//TODO add exec functionality to allptset and put here
+			if (parsed.isStatic())
+			{
+				result = new StaticPTSet(allset.getSubsetByExec(parsed.getName()));
+			}
+			else
+			{
+				result = new ExecPTSet(allset, parsed.getName());
+			}
+			addMessage( new Message("Creating new set from executable \"" +
+											parsed.getName() + "\".", Message.TYPE_VERBOSE));
 		}
 
 		return result;
