@@ -110,6 +110,11 @@ public class SourceWindowFactory
   public static void createSourceWindow (Task task)
   {
 
+    // If it's already blocked, keep on moving
+    if(task.getBlockers().length != 0)
+      finishSourceWin(task);
+    
+    // else block it
     SourceWinBlocker blocker = new SourceWinBlocker();
     blocker.myTask = task;
 

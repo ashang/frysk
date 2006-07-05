@@ -266,7 +266,7 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-
+    
     this.hideAll();
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -909,7 +909,7 @@ public class SourceWindow
           SourceWindow.this.toggleMemoryWindow.setActive(false);
       }
     });
-
+    
     // Mode box
     ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);

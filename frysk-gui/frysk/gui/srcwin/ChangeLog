@@ -1,5 +1,8 @@
 2006-07-05  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (createSourceWindow): Now checks to 
+	see if the task is blocked, and if it is does not add a blocker.
+
 	* SourceWindow.java (SourceWindow): Now sets status bar text.
 	(doStop): Ditto.
 	(doRun): Ditto.
