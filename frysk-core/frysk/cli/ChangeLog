@@ -1,3 +1,9 @@
+2006-07-05  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* hpd/UserHelp.java: more commands
+	* hpd/CLI.java: some work on set commands, new debugger internal commands
+	* hpd/AllPTSet.java: fixed index out of bounds exception
+
 2006-06-28  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* hpd/UserHelp.java: new
