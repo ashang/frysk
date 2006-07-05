@@ -7,7 +7,7 @@
 	easier for rhe Java wrapper.  Added
 	ftk_eventviewer_tie_event_array() as well.
 	* src/widgets/example/vev.c:  Added to provide examples of how to
-	use the widget.
+	use the widget.  Fixed the bug with new traces overlaying the legend.
 
 2006-07-04  Chris Moller  <moller@mollerware.com>
 

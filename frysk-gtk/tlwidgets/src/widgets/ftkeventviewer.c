@@ -1200,6 +1200,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     }
     ftk_ev_label_box_width (eventviewer)  = max_label_width;
     ftk_ev_label_box_height (eventviewer) = total_label_height;
+    ftk_ev_markers_modified (eventviewer) = TRUE;
   }
   
 #define LEGEND_GAP		10
@@ -1828,6 +1829,11 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     ftk_trace_label_modified (trace)	= TRUE;
     
     ftk_ev_trace_modified (eventviewer) = TRUE;
+
+    if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
+      fprintf (stderr, "exposing\n");
+      ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+    }
   }
 
   return tag;
