@@ -1830,10 +1830,8 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     
     ftk_ev_trace_modified (eventviewer) = TRUE;
 
-    if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
-      fprintf (stderr, "exposing\n");
+    if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
       ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-    }
   }
 
   return tag;
