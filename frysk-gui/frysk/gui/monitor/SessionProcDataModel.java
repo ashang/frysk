@@ -208,7 +208,7 @@ public class SessionProcDataModel
       {
         errorLog.log(Level.WARNING,
                      "SessionProcDataModel.addTask: Trying to add proc  "
-                         + proc + "tp treestore, but failed.", e);
+                         + proc + "to treestore, but failed.", e);
         return;
       }
 

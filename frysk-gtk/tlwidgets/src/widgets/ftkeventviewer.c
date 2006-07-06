@@ -2042,6 +2042,11 @@ ftk_eventviewer_set_trace_linestyle (FtkEventViewer * eventviewer,
 					  lw, ls,
 					  NULL);
 }
+
+/*
+ * Create a new marker
+ */
+
 gint
 ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
 			      FtkGlyph glyph,

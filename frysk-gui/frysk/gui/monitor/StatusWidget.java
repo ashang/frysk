@@ -129,8 +129,7 @@ public class StatusWidget
 
     // ======================================== 
     this.viewer = new EventViewer();
-    // resize not implemented yet
-    // this.viewer.resize (1, 1);
+    this.viewer.resize (1, 1);
     this.viewer.setBackgroundColor(backgroundColor);
     this.viewer.setTimebase(10.0);
     

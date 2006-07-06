@@ -118,7 +118,7 @@ public class SessionProcTreeView
     this.mountProcModel(this.procDataModel);
     this.threadViewInit(procDataModel);
 
-    //Called when the user selects a different process in the procTreeView.
+    // Called when the user selects a different process in the procTreeView.
     this.procTreeView.getSelection().addListener(new TreeSelectionListener()
     {
       
@@ -141,10 +141,13 @@ public class SessionProcTreeView
               }
             infoWidget.setSelectedProc(data);
 
+            // Sets the status bar to read the full executable path of the given
+            // process.
             WindowManager.theManager.mainWindowStatusBar.push(
                                                               0,
                                                               data.getFullExecutablePath());
 
+            // Sets the selected thread to the first thread.
             if (threadTreeView.getModel().getFirstIter() != null)
               {
                 threadTreeView.getSelection().select(
@@ -158,8 +161,7 @@ public class SessionProcTreeView
       }
     });
 
-    
-    //called when a user selects a different thread from the threadTreeView.
+    // called when a user selects a different thread from the threadTreeView.
     this.threadTreeView.getSelection().addListener(new TreeSelectionListener()
     {
       public void selectionChangedEvent (TreeSelectionEvent event)
@@ -195,7 +197,7 @@ public class SessionProcTreeView
 
     this.procTreeView.setHeadersClickable(true);
 
-    //Called when a user "right clicks" on a process.
+    // Called when a user "right clicks" on a process.
     this.procTreeView.addListener(new MouseListener()
     {
 

@@ -44,7 +44,7 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1new (JNIEnv *env,
  * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_resize
  */
-/****************** not yet implemented 
+ 
 JNIEXPORT void JNICALL
 Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1resize (JNIEnv *env, 
 				                     jclass cls,
@@ -54,11 +54,10 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1resize (JNIEnv *env,
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int width  = (int) wd;
-  int height = (int) hg;
+  gint width  = (gint) wd;
+  gint height = (gint) hg;
   ftk_eventviewer_resize (eventviewer, width, height);
 }
-*******************/
 
 /*
  * Class:     com.redhat.ftk.EventViewer
@@ -75,10 +74,28 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1bg_1rgb (JNIEnv *env,
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int red   = (int) rj;
-  int green = (int) gj;
-  int blue  = (int) bj;
+  gint red   = (gint) rj;
+  gint green = (gint) gj;
+  gint blue  = (gint) bj;
   return (jboolean) ftk_eventviewer_set_bg_rgb (eventviewer, red, green, blue);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_bg_color
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1bg_1color (JNIEnv *env, 
+							jclass cls,
+							jobject sc,
+							jobject clr)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  
+  GdkColor *color = (GdkColor*)getPointerFromHandle(env, clr);
+ return (jboolean) ftk_eventviewer_set_bg_color (eventviewer, color);
 }
 
 /*
@@ -140,12 +157,33 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1trace_1rgb (JNIEnv *env,
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int trace = (int) tr;
-  int red   = (int) rj;
-  int green = (int) gj;
-  int blue  = (int) bj;
+  gint trace = (gint) tr;
+  gint red   = (gint) rj;
+  gint green = (gint) gj;
+  gint blue  = (gint) bj;
   return (jboolean)ftk_eventviewer_set_trace_rgb (eventviewer,
 						  trace, red, green, blue);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_trace_color
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1trace_1color (JNIEnv *env, 
+								   jclass cls,
+								   jobject sc,
+								   jint tr,
+								   jobject clr)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint trace = (gint) tr;
+  
+  GdkColor *color = (GdkColor *)getPointerFromHandle(env, clr);
+  return (jboolean)ftk_eventviewer_set_trace_color (eventviewer,
+						  trace, color);
 }
 
 /*
@@ -164,7 +202,7 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1trace_1label (JNIEnv *env
   
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int trace = (int) tr;
+  gint trace = (gint) tr;
   gchar * label =
      (gchar *)(*env)->GetStringUTFChars(env, lb, NULL);
   rc = (jboolean)ftk_eventviewer_set_trace_label (eventviewer, trace, label);
@@ -188,8 +226,8 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1trace_1linestyle (JNIEnv 
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int trace = (int) tr;
-  int linewidth   = (int) lw;
+  gint trace = (gint) tr;
+  gint linewidth   = (gint) lw;
   GdkLineStyle linestyle = (GdkLineStyle) ls;
   return (jboolean)ftk_eventviewer_set_trace_linestyle (eventviewer,trace,
 							linewidth, linestyle);
@@ -203,7 +241,7 @@ JNIEXPORT jint JNICALL
 Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1marker_1new (JNIEnv *env, 
 							       jclass cls,
 							       jobject sc,
-							       int gl,
+							       gint gl,
 							       jstring lb,
 							       jstring ds)
 {
@@ -240,12 +278,33 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1rgb (JNIEnv *env,
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int marker = (int) mk;
-  int red   = (int) rj;
-  int green = (int) gj;
-  int blue  = (int) bj;
+  gint marker = (gint) mk;
+  gint red   = (gint) rj;
+  gint green = (gint) gj;
+  gint blue  = (gint) bj;
   return (jboolean)ftk_eventviewer_set_marker_rgb (eventviewer,
 						   marker, red, green, blue);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_marker_color
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1marker_1color (JNIEnv *env, 
+								    jclass cls,
+								    jobject sc,
+								    jint mk,
+								    jobject clr)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint marker = (gint) mk;
+  
+  GdkColor * color = (GdkColor *)getPointerFromHandle(env, clr);
+  return (jboolean)ftk_eventviewer_set_marker_color (eventviewer,
+						   marker, color);
 }
 
 /*
@@ -262,16 +321,139 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1append_1event (JNIEnv *env,
 {
   FtkEventViewer * eventviewer =
     (FtkEventViewer *)getPointerFromHandle(env, sc);
-  int trace = (int) tr;
-  int marker = (int) mk;
+  gint trace = (gint) tr;
+  gint marker = (gint) mk;
   gchar * desc =
      (gchar *)(*env)->GetStringUTFChars(env, ds, NULL);
   ftk_eventviewer_append_event (eventviewer, trace, marker, desc);
   (*env)->ReleaseStringUTFChars(env, ds, desc);
 }
 
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_tie_new
+ */
+JNIEXPORT jint JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1tie_1new (JNIEnv *env, 
+							       jclass cls,
+							       jobject sc
+							       )
+{
+  
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  return ftk_eventviewer_tie_new(eventviewer);
+}
 
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_tie_rgb
+ */
 
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1tie_1rgb (JNIEnv *env, 
+								   jclass cls,
+								   jobject sc,
+								   jint tr,
+								   jint rj,
+								   jint gj,
+								   jint bj)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint trace = (gint) tr;
+  gint red   = (gint) rj;
+  gint green = (gint) gj;
+  gint blue  = (gint) bj;
+  return (jboolean)ftk_eventviewer_set_tie_rgb (eventviewer,
+						  trace, red, green, blue);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_tie_color
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1tie_1color (JNIEnv *env, 
+								   jclass cls,
+								   jobject sc,
+								   jint tr,
+								   jobject clr)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint trace = (gint) tr;
+  
+  GdkColor *color = (GdkColor *)getPointerFromHandle(env, clr);
+  return (jboolean)ftk_eventviewer_set_tie_color (eventviewer,
+						  trace, color);
+}
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_tie_linestyle
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1tie_1linestyle (JNIEnv *env, 
+									 jclass cls,
+									 jobject sc,
+									 jint tr,
+									 jint lw,
+									 jint ls)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  gint trace = (gint) tr;
+  gint linewidth   = (gint) lw;
+  GdkLineStyle linestyle = (GdkLineStyle) ls;
+  return (jboolean)ftk_eventviewer_set_tie_linestyle (eventviewer,trace,
+							linewidth, linestyle);
+}							
+
+/*
+ * Class:	com.redhat.ftk.EventViewer
+ * Method:	ftk_eventviewer_set_tie_linestyle
+ */
+ 
+JNIEXPORT jboolean JNICALL 
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1append_1simultaneous_1events_1array 
+(JNIEnv *env, jclass cls, jobject sc, jint ti, jint size, jobjectArray jevents)
+{
+	FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+      
+   	jclass SimEventClass = (*env)->GetObjectClass(env, (*env)->GetObjectArrayElement(env, jevents, 0));
+    
+    jfieldID traceFID = (*env)->GetFieldID(env, SimEventClass, "trace", "I");
+    jfieldID markerFID = (*env)->GetFieldID(env, SimEventClass, "marker", "I");
+    jfieldID stringFID = (*env)->GetFieldID(env, SimEventClass, "string", "Ljava/lang/String");
+    
+    gint tie = (gint) ti;
+    gint arrayCount = (gint) size;
+    ftk_simultaneous_events_s events[arrayCount];
+    
+    for (jint i = 0; i < size; i++) 
+    {
+    jobject event = (*env)->GetObjectArrayElement(env, jevents, i);
+    jint trace = (*env)->GetIntField(env, event, traceFID);
+    jint marker = (*env)->GetIntField(env, event, markerFID);
+    jstring string = (*env)->GetObjectField(env, event, stringFID);
+    gchar *str = (gchar *) (*env)->GetStringUTFChars(env, string, NULL);
+    events[i].trace = (gint) trace;
+    events[i].marker = (gint) marker;
+    events[i].string = str;
+    (*env)->ReleaseStringUTFChars(env, string,str);
+    
+    }
+    
+    return (jboolean)ftk_eventviewer_append_simultaneous_event_array(eventviewer, 
+    tie, arrayCount, events);
+}
+ 
+ 
+ 
 #ifdef __cplusplus
 }
 #endif

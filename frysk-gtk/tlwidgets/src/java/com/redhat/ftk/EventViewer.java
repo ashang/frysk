@@ -66,11 +66,9 @@ public class EventViewer extends Widget
     /**
      * Set eventviewer size
      */
-    /*    not yet implemented 
-    public return resize(int width, int height) {
+    public boolean resize(int width, int height) {
 	return ftk_eventviewer_resize (getHandle(), width, height);
     }
-    */
 
     /**
      * Set bg color
@@ -83,8 +81,7 @@ public class EventViewer extends Widget
      * Set the background color using a Color
      */
     public boolean setBackgroundColor(Color color) {
-    return ftk_eventviewer_set_bg_rgb (getHandle(), color.getRed(), 
-    		color.getGreen(), color.getBlue());
+    return ftk_eventviewer_set_bg_color (getHandle(), color.getHandle());
     }
     /**
      * Set viewable window (seconds)
@@ -112,8 +109,7 @@ public class EventViewer extends Widget
      * Set trace using a color.
      */
     public boolean setTraceColor(int trace, Color color) {
-    return ftk_eventviewer_set_trace_rgb(getHandle(), trace, color.getRed(), 
-    		color.getGreen(), color.getBlue());
+    return ftk_eventviewer_set_trace_color(getHandle(), trace, color.getHandle());
     }
     
     /**
@@ -154,8 +150,8 @@ public class EventViewer extends Widget
      * Set the marker using a Color
      */
     public boolean setMarkerColor(int marker, Color color) {
-    	return ftk_eventviewer_set_marker_rgb(getHandle(), marker, 
-    			color.getRed(), color.getGreen(), color.getBlue());
+    	return ftk_eventviewer_set_marker_color(getHandle(), marker, 
+    			color.getHandle());
     }
     /**
      * Append event
@@ -164,6 +160,42 @@ public class EventViewer extends Widget
 	return ftk_eventviewer_append_event (getHandle(), trace, marker, desc);
     }
 
+    
+    /**
+     * Add a tie
+     */
+    public int appendTie() {
+      return ftk_eventviewer_tie_new(getHandle());
+    }
+    
+    /**
+     * Set tie color
+     */
+    public boolean setTieRGB(int tie, int red, int green, int blue) {
+      return ftk_eventviewer_set_tie_rgb(getHandle(), tie, red, green, blue);
+    }
+    
+    /**
+     * Set tie color
+     */
+    public boolean setTieColor(int tie, Color color) {
+      return ftk_eventviewer_set_tie_color(getHandle(), tie, color.getHandle());
+    }
+    
+    /**
+     * Set tie linestyle
+     */
+    public boolean setTieLinestyle(int tie, int width, int style) {
+    return ftk_eventviewer_set_tie_linestyle (getHandle(), tie,
+                            width, style);
+    }
+    
+    /**
+     * Append simultaneous events.
+     */
+    public boolean appendSimultaneousEvents(int tie, com.redhat.ftk.SimultaneousEvent[] events) {
+      return ftk_eventviewer_append_simultaneous_events_array(getHandle(), tie, events.length, events);
+    }
 
     native static final protected int
 	ftk_eventviewer_get_type ();
@@ -171,14 +203,16 @@ public class EventViewer extends Widget
     native static final protected Handle
 	ftk_eventviewer_new ();
 
-    /* not yet implemented 
     native static final protected boolean
         ftk_eventviewer_resize (Handle sc, int width, int height);
-    */
+    
 
     native static final protected boolean
 	ftk_eventviewer_set_bg_rgb (Handle sc,
 				    int red, int green, int blue);
+    
+    native static final protected boolean
+    ftk_eventviewer_set_bg_color (Handle sc, Handle color);
 
     native static final protected boolean
 	ftk_eventviewer_set_timebase (Handle sc, double span);
@@ -189,6 +223,9 @@ public class EventViewer extends Widget
     native static final protected boolean
 	ftk_eventviewer_set_trace_rgb (Handle sc, int trace,
 				       int red, int green, int blue);
+    
+    native static final protected boolean
+    ftk_eventviewer_set_trace_color (Handle sc, int trace, Handle color);
 
     native static final protected boolean
 	ftk_eventviewer_set_trace_label (Handle sc, int trace,
@@ -207,8 +244,26 @@ public class EventViewer extends Widget
 					int red, int green, int blue);
     
     native static final protected boolean
+    ftk_eventviewer_set_marker_color (Handle sc, int marker, Handle color);
+    
+    native static final protected boolean
 	ftk_eventviewer_append_event (Handle sc, int trace, int marker,
 				      String desc);
+    
+    native static final protected int
+    ftk_eventviewer_tie_new (Handle sc);
+    
+    native static final protected boolean
+    ftk_eventviewer_set_tie_rgb (Handle sc, int tie, int red, int green, int blue);
+    
+    native static final protected boolean
+    ftk_eventviewer_set_tie_color (Handle sc, int tie, Handle color);
 
+    native static final protected boolean
+    ftk_eventviewer_set_tie_linestyle (Handle sc, int tie, int linewidth, int linestyle);
+    
+    native static final protected boolean
+    ftk_eventviewer_append_simultaneous_events_array (Handle sc, int tie, int arrayCount, com.redhat.ftk.SimultaneousEvent[] events);
+    
 }
 

@@ -1,3 +1,10 @@
+2006-07-06  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java (StatusWidget): Uncommented resize, it has been 
+	implemented.
+	* SessionProcDataModel.java (addProc): Fixed typo in error log.
+	* SessionProcTreeView.java: Added some comments.
+
 2006-07-06  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverRoot.java (setInfo): Added calls to update
