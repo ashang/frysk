@@ -67,271 +67,328 @@ import frysk.proc.Proc;
 
 /**
  * @author pmuldoon
- *
+ * 
+ * SessionManagerGui - Manager all entry workflows into the UI
+ * 
+ * 
  */
-public class SessionManagerGui extends org.gnu.gtk.Dialog implements LifeCycleListener{
-	
-	private Button quitButton;
-	private Session currentSession;
-	
-	ListView previousSessions;
-	
-	RadioButton previousSession;
-	RadioButton debugSingleProcess;
-	Button debugSingleProcessAction;
-	
-	
-	private Button editSession;
-	private Button copySession;
-	private Button deleteSession;
-	private Button newSession;
-	private Button openButton;
+public class SessionManagerGui
+    extends org.gnu.gtk.Dialog
+    implements LifeCycleListener
+{
 
-	public SessionManagerGui(LibGlade glade) 
-	{
-		super(glade.getWidget("SessionManager").getHandle());
-		this.addListener(this);
-		this.setIcon(IconManager.windowIcon);
-		
-		getManagerControls(glade);
-		getSessionManagementControls(glade);
-		//getDebugExecutableControls(glade);
-		getDebugSingleProcess(glade);
-		setButtonStates();
-	
-	}
-	
-	private void toggleControls()
-	{
-		previousSessions.setSensitive(!previousSessions.getSensitive());
-		editSession.setSensitive(!editSession.getSensitive());
-		copySession.setSensitive(!copySession.getSensitive());
-		deleteSession.setSensitive(!deleteSession.getSensitive());
-		newSession.setSensitive(!newSession.getSensitive());
-		debugSingleProcessAction.setSensitive(!debugSingleProcessAction.getSensitive());
-	}
+  private Button quitButton;
 
-	private void getDebugSingleProcess(LibGlade glade) {
-		debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
-		debugSingleProcess.setState(false);
-		debugSingleProcessAction = (Button) glade.getWidget("SessionManager_singleProcessChooser");
-		debugSingleProcessAction.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					WindowManager.theManager.pickProcDialog.showAll();
-					WindowManager.theManager.pickProcDialog.run();
-					Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
-					if (chosenProc != null)
-						SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
-				}
-			}});
-		
-	}
-	
-//	private void getDebugExecutableControls(LibGlade glade) {
-//		debugExecutable = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
-//		debugExecutable.setState(false);
-//		executableChooser = (FileChooserButton) glade.getWidget("SessionManager_execChooser");
-//		executableChooser.addListener(new FileChooserListener() {
-//
-//			public void currentFolderChanged(FileChooserEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			public void fileActivated(FileChooserEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			public void selectionChanged(FileChooserEvent arg0) {
-//					setButtonStates();
-//				
-//			}
-//
-//			public void updatePreview(FileChooserEvent arg0) {
-//				// TODO Auto-generated method stub
-//				
-//			}});
-//		executableChooser.setSensitive(false);
-//
-//	}
-	
-	private void setButtonStates()
-	{
-			if ((previousSessions.getSelectedObject() !=null) && (previousSession.getState()))
-				this.openButton.setSensitive(true);
-			else
-				this.openButton.setSensitive(false);
-	}
+  private Session currentSession;
 
-	private void getSessionManagementControls(LibGlade glade) {
+  ListView previousSessions;
 
-		previousSessions = new ListView(glade.getWidget("SessionManager_previousSessionsListView").getHandle());
-		previousSessions.watchLinkedList(SessionManager.theManager.getSessions());		
-		
+  RadioButton previousSession;
 
-		previousSessions.addListener( new TreeViewListener() {
-			public void treeViewEvent(TreeViewEvent arg0) {
-			      if (arg0.isOfType(TreeViewEvent.Type.ROW_ACTIVATED ))
-			      {
-			    	  WindowManager.theManager.mainWindow.showAll();
-			    	  WindowManager.theManager.mainWindow.setSession(
-			    			  (Session)previousSessions.getSelectedObject());
-			    	  hideAll();  
-			      }
-			}});
-		
-		previousSessions.getSelection().addListener(new TreeSelectionListener() {
-			public void selectionChangedEvent(TreeSelectionEvent arg0) {
-				setButtonStates();
-			}});
-		
-		previousSessions.setStickySelect(true);
-		previousSessions.setSort();
+  RadioButton debugSingleProcess;
 
-		editSession = (Button) glade.getWidget("SessionManager_editSessionButton");
-		copySession = (Button) glade.getWidget("SessionManager_copySessionButton");
-		deleteSession = (Button) glade.getWidget("SessionManager_deleteSessionButton");
-		newSession = (Button) glade.getWidget("SessionManager_newSessionButton");
+  Button debugSingleProcessAction;
 
-		newSession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					WindowManager.theManager.createFryskSessionDruid.setNewSessionMode();
-					WindowManager.theManager.createFryskSessionDruid.show();
+  private Button editSession;
 
-				}
-			}});
-		
-		previousSession = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
-		previousSession.setState(true);
-		previousSession.addListener(new ToggleListener(){
-			public void toggleEvent(ToggleEvent arg0) {
-				if (arg0.getType() == ToggleEvent.Type.TOGGLED)
-					toggleControls();
-					setButtonStates();
-			}});
+  private Button copySession;
 
-		
-		editSession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					currentSession = (Session)previousSessions.getSelectedObject();
-					if (currentSession != null) {
-						WindowManager.theManager.createFryskSessionDruid.setEditSessionMode(currentSession);
-						WindowManager.theManager.createFryskSessionDruid.show();
-					}
-	
-				}
-				
-			}});
-		
-		copySession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					Session selected = (Session)previousSessions.getSelectedObject();
-					if (selected != null) {
-						SessionManager.theManager.addSession(copySession(selected));
-						SessionManager.theManager.save();
-					}
-				}
-			}});
-		
-		deleteSession.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					Session selected = (Session)previousSessions.getSelectedObject();
-					if (selected != null)
-						SessionManager.theManager.removeSession(selected);
-				}
-			}});
+  private Button deleteSession;
 
-	}
+  private Button newSession;
 
-	private void getManagerControls(LibGlade glade) {
-		
-		this.quitButton = (Button) glade.getWidget("SessionManager_quitButton");
-		this.quitButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-					System.exit(0);
-			}});
-		
-		this.openButton = (Button) glade.getWidget("SessionManager_openButton");
-		this.openButton.setSensitive(false);
-		this.openButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent arg0) {
-				if (arg0.isOfType(ButtonEvent.Type.CLICK))
-				{
-					WindowManager.theManager.mainWindow.showAll();
-					WindowManager.theManager.mainWindow.setSession(
-							(Session)previousSessions.getSelectedObject());
-					hideAll();
-				}
-			}});
-		
-	}
-	
-	private String getNumberSuffix(int i)
-	{
-		String iString = ""+i;
-		if ((i <= 10) || (i >= 20))
-			switch (iString.charAt(iString.length()-1)) {
-				case '1': return "st";
-				case '2': return "nd";
-				case '3': return "rd";
-				default: return "th";
-			}	
-		if ((i>=11) && (i<=19))
-			return "th";		
-		return "";
-	}
+  private Button openButton;
 
-	private Session copySession(Session source) {
-		String session_name = source.getName();
-		String name[] = { session_name + " (copy)",
-				session_name + " (another copy)" };
-		Session dest = (Session) source.getCopy();
-		
-		for (int i = 0; i < name.length; i++)
-			if (SessionManager.theManager.getSessionByName(name[i]) == null) {
-				dest.setName(name[i]);
-				return dest;
-			}
-		for (int i = 3; i < Integer.MAX_VALUE - 1; i++)
-			if (SessionManager.theManager.getSessionByName(session_name + " ("
-				+ i + getNumberSuffix(i) + " copy)") == null) {
-				
-				dest.setName(session_name + " (" + i + getNumberSuffix(i) + " copy)");
-				return dest;
-			}
+  public SessionManagerGui (LibGlade glade)
+  {
+    super(glade.getWidget("SessionManager").getHandle());
+    this.addListener(this);
+    this.setIcon(IconManager.windowIcon);
 
-		try {
-			dest.setName(session_name + "_"
-					+ File.createTempFile("zxc", "dfg").getName());
-		} catch (IOException e) {
-		}
-		return dest;
-	}
+    getManagerControls(glade);
+    getSessionManagementControls(glade);
+    // getDebugExecutableControls(glade);
+    getDebugSingleProcess(glade);
+    setButtonStates();
 
+  }
 
-	public void lifeCycleEvent(LifeCycleEvent event) {
-		
-	}
+  private void toggleControls ()
+  {
+    previousSessions.setSensitive(! previousSessions.getSensitive());
+    if (newSession.getSensitive())
+      {
 
-	public boolean lifeCycleQuery(LifeCycleEvent event) {
-		if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
-                event.isOfType(LifeCycleEvent.Type.DELETE)) {
-					System.exit(0);
-					return true;
-		}
-		return false;
-	}
+        editSession.setSensitive(false);
+        copySession.setSensitive(false);
+        deleteSession.setSensitive(false);
+        newSession.setSensitive(false);
+      }
+    else
+      {
+
+        editSession.setSensitive(true);
+        copySession.setSensitive(true);
+        deleteSession.setSensitive(true);
+        newSession.setSensitive(true);
+      }
+    debugSingleProcessAction.setSensitive(! debugSingleProcessAction.getSensitive());
+  }
+
+  private void getDebugSingleProcess (LibGlade glade)
+  {
+    debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
+    debugSingleProcess.setState(false);
+    debugSingleProcessAction = (Button) glade.getWidget("SessionManager_singleProcessChooser");
+    debugSingleProcessAction.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            WindowManager.theManager.pickProcDialog.showAll();
+            WindowManager.theManager.pickProcDialog.run();
+            Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
+            if (chosenProc != null)
+              SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
+          }
+      }
+    });
+
+  }
+
+  private void setButtonStates ()
+  {
+    if (previousSession.getState())
+      if ((previousSessions.getSelectedObject() == null))
+        {
+          this.editSession.setSensitive(false);
+          this.copySession.setSensitive(false);
+          this.deleteSession.setSensitive(false);
+        }
+      else
+        {
+          this.editSession.setSensitive(true);
+          this.copySession.setSensitive(true);
+          this.deleteSession.setSensitive(true);
+        }
+
+    if ((previousSessions.getSelectedObject() != null)
+        && (previousSession.getState()))
+      this.openButton.setSensitive(true);
+    else
+      this.openButton.setSensitive(false);
+  }
+
+  private void getSessionManagementControls (LibGlade glade)
+  {
+
+    previousSessions = new ListView(
+                                    glade.getWidget(
+                                                    "SessionManager_previousSessionsListView").getHandle());
+    previousSessions.watchLinkedList(SessionManager.theManager.getSessions());
+
+    previousSessions.addListener(new TreeViewListener()
+    {
+      public void treeViewEvent (TreeViewEvent arg0)
+      {
+        if (arg0.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
+          {
+            WindowManager.theManager.mainWindow.showAll();
+            WindowManager.theManager.mainWindow.setSession((Session) previousSessions.getSelectedObject());
+            hideAll();
+          }
+      }
+    });
+
+    previousSessions.getSelection().addListener(new TreeSelectionListener()
+    {
+      public void selectionChangedEvent (TreeSelectionEvent arg0)
+      {
+        setButtonStates();
+      }
+    });
+
+    previousSessions.setStickySelect(true);
+    previousSessions.setSort();
+
+    editSession = (Button) glade.getWidget("SessionManager_editSessionButton");
+    copySession = (Button) glade.getWidget("SessionManager_copySessionButton");
+    deleteSession = (Button) glade.getWidget("SessionManager_deleteSessionButton");
+    newSession = (Button) glade.getWidget("SessionManager_newSessionButton");
+
+    newSession.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            WindowManager.theManager.createFryskSessionDruid.setNewSessionMode();
+            WindowManager.theManager.createFryskSessionDruid.show();
+
+          }
+      }
+    });
+
+    previousSession = (RadioButton) glade.getWidget("SessionManager_startSessionButton");
+    previousSession.setState(true);
+    previousSession.addListener(new ToggleListener()
+    {
+      public void toggleEvent (ToggleEvent arg0)
+      {
+        if (arg0.getType() == ToggleEvent.Type.TOGGLED)
+          toggleControls();
+        setButtonStates();
+      }
+    });
+
+    editSession.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            currentSession = (Session) previousSessions.getSelectedObject();
+            if (currentSession != null)
+              {
+                WindowManager.theManager.createFryskSessionDruid.setEditSessionMode(currentSession);
+                WindowManager.theManager.createFryskSessionDruid.show();
+              }
+
+          }
+
+      }
+    });
+
+    copySession.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            Session selected = (Session) previousSessions.getSelectedObject();
+            if (selected != null)
+              {
+                SessionManager.theManager.addSession(copySession(selected));
+                SessionManager.theManager.save();
+              }
+          }
+      }
+    });
+
+    deleteSession.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            Session selected = (Session) previousSessions.getSelectedObject();
+            if (selected != null)
+              SessionManager.theManager.removeSession(selected);
+          }
+      }
+    });
+
+  }
+
+  private void getManagerControls (LibGlade glade)
+  {
+
+    this.quitButton = (Button) glade.getWidget("SessionManager_quitButton");
+    this.quitButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          System.exit(0);
+      }
+    });
+
+    this.openButton = (Button) glade.getWidget("SessionManager_openButton");
+    this.openButton.setSensitive(false);
+    this.openButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            WindowManager.theManager.mainWindow.showAll();
+            WindowManager.theManager.mainWindow.setSession((Session) previousSessions.getSelectedObject());
+            hideAll();
+          }
+      }
+    });
+
+  }
+
+  private String getNumberSuffix (int i)
+  {
+    String iString = "" + i;
+    if ((i <= 10) || (i >= 20))
+      switch (iString.charAt(iString.length() - 1))
+        {
+        case '1':
+          return "st";
+        case '2':
+          return "nd";
+        case '3':
+          return "rd";
+        default:
+          return "th";
+        }
+    if ((i >= 11) && (i <= 19))
+      return "th";
+    return "";
+  }
+
+  private Session copySession (Session source)
+  {
+    String session_name = source.getName();
+    String name[] = { session_name + " (copy)",
+                     session_name + " (another copy)" };
+    Session dest = (Session) source.getCopy();
+
+    for (int i = 0; i < name.length; i++)
+      if (SessionManager.theManager.getSessionByName(name[i]) == null)
+        {
+          dest.setName(name[i]);
+          return dest;
+        }
+    for (int i = 3; i < Integer.MAX_VALUE - 1; i++)
+      if (SessionManager.theManager.getSessionByName(session_name + " (" + i
+                                                     + getNumberSuffix(i)
+                                                     + " copy)") == null)
+        {
+
+          dest.setName(session_name + " (" + i + getNumberSuffix(i) + " copy)");
+          return dest;
+        }
+
+    try
+      {
+        dest.setName(session_name + "_"
+                     + File.createTempFile("zxc", "dfg").getName());
+      }
+    catch (IOException e)
+      {
+      }
+    return dest;
+  }
+
+  public void lifeCycleEvent (LifeCycleEvent event)
+  {
+
+  }
+
+  public boolean lifeCycleQuery (LifeCycleEvent event)
+  {
+    if (event.isOfType(LifeCycleEvent.Type.DESTROY)
+        || event.isOfType(LifeCycleEvent.Type.DELETE))
+      {
+        System.exit(0);
+        return true;
+      }
+    return false;
+  }
 
 }

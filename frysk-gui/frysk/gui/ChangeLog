@@ -1,3 +1,9 @@
+2006-07-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionManagerGui.java : Apply GNU Format.
+	(toggleControls): Fix button sensitivity modes.
+	(setButtonStates): Ditto.
+
 2006-07-05  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryFormatDialog.java (save): Corrected preferences saving
