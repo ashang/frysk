@@ -1,5 +1,9 @@
 2006-07-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java: Apply GNU Format.
+	(setEditSessionMode): Set default message.
+	(setInitialName): Added.
+	
 	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls):
 	Make Info message dual purpose. Allow setting of markup.
 	Allow setting of text. Allow icon change.
