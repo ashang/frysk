@@ -1,5 +1,7 @@
 2006-07-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* glade/frysk_session_manager.glade: Remove Window hint Dialog.
+
 	* SessionManagerGui.java : Apply GNU Format.
 	(toggleControls): Fix button sensitivity modes.
 	(setButtonStates): Ditto.
