@@ -411,7 +411,7 @@ find ${dirs} -name 'cni' -print | while read d
 do
     find $d -name "[A-Za-z]*.cxx" -print
 done \
-    | xargs grep '#include ".*.h"' \
+    | xargs grep -H '#include ".*.h"' \
     | sed -e 's/\.cxx:#include "/.o /' -e 's/\.h".*$//' -e 's/$.*//' \
     | while read o h
 do

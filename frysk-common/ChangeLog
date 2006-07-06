@@ -1,3 +1,7 @@
+2006-07-06  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.gen.sh: Add -H to grep invocation.
+	
 2006-06-30  Rick Moseley  <rmoseley@redhat.com>
 	
 	* m4/frysk-use-libunwind.m4: Disable libunwind for now.
