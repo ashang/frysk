@@ -106,7 +106,7 @@ public class EditObserverDialog extends Dialog {
 		});
 		
 		okButton = (Button) glade.getWidget("editObserverOkButton");
-		button.addListener(new ButtonListener() {
+		okButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					filtersTable.apply();
@@ -116,7 +116,6 @@ public class EditObserverDialog extends Dialog {
 			}
 		});
 		
-	
 		observerNameEntry = (Entry) glade.getWidget("observerNameEntry");
 		observerNameEntry.addListener(new EntryListener() {
 			public void entryEvent(EntryEvent event) {

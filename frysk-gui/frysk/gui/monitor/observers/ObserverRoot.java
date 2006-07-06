@@ -162,7 +162,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		}
 	
 		protected String setInfo(String info) {
-			return info;
+		    return info;
 		}
 	
 		protected void runActions(){

@@ -62,7 +62,6 @@ import org.gnu.gtk.VSeparator;
 import com.redhat.ftk.EventViewer;
 
 import frysk.gui.monitor.actions.GenericAction;
-import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 public class StatusWidget
@@ -309,22 +308,22 @@ public class StatusWidget
     ListIterator iter = observers.listIterator();
     while (iter.hasNext())
       {
-        LogAction logAction = new LogAction();
+//        LogAction logAction = new LogAction();
         final ObserverRoot observer = (ObserverRoot) iter.next();
 
-        if (guiData instanceof GuiProc)
-          {
-            logAction.setArgument("PID " + ((GuiProc) guiData).getProc().getPid()
-                                  + " triggered " + observer.getName());
-          }
-        else
-          {
-            logAction.setArgument("TID " + ((GuiTask) guiData).getTask().getTid()
-                                  + " triggered " + observer.getName());
-          }
-
+//        if (guiData instanceof GuiProc)
+//          {
+//            logAction.setArgument("PID " + ((GuiProc) guiData).getProc().getPid()
+//                                  + " triggered " + observer.getName());
+//          }
+//        else
+//          {
+//            logAction.setArgument("TID " + ((GuiTask) guiData).getTask().getTid()
+//                                  + " triggered " + observer.getName());
+//          }
+//
         observer.genericActionPoint.addAction(new TimelineAction(observer, guiData));
-        observer.genericActionPoint.addAction(logAction);
+//        observer.genericActionPoint.addAction(logAction);
       }
 
     guiData.getObservers().itemAdded.addObserver(new Observer()
@@ -332,23 +331,23 @@ public class StatusWidget
       GuiData realGuiData = guiData;
       public void update(Observable arg0, Object obj)
       {
-        LogAction logAction = new LogAction();
+//        LogAction logAction = new LogAction();
 
         final ObserverRoot observer = (ObserverRoot) obj;
 
-        if (realGuiData instanceof GuiProc)
-          {
-            logAction.setArgument("PID " + ((GuiProc) realGuiData).getProc().getPid()
-                                  + " triggered " + observer.getName());
-          }
-        else
-          {
-            logAction.setArgument("TID " + ((GuiTask) realGuiData).getTask().getTid()
-                                  + " triggered " + observer.getName());
-          }
-
+//        if (realGuiData instanceof GuiProc)
+//          {
+//            logAction.setArgument("PID " + ((GuiProc) realGuiData).getProc().getPid()
+//                                  + " triggered " + observer.getName());
+//          }
+//        else
+//          {
+//            logAction.setArgument("TID " + ((GuiTask) realGuiData).getTask().getTid()
+//                                  + " triggered " + observer.getName());
+//          }
+//
         observer.genericActionPoint.addAction(new TimelineAction(observer, realGuiData));
-        observer.genericActionPoint.addAction(logAction);
+//        observer.genericActionPoint.addAction(logAction);
       }
     });
   }

@@ -47,7 +47,7 @@ import frysk.proc.Task;
 public class ShowSourceWin extends TaskAction {
 	
 	public ShowSourceWin() {
-		super("Source (EXAMPLE ONLY)", "Show a source window.\n This is an example only and does not reflect the state of your program"); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Source ", "Show the source of the thread.");
 	}
 	
 	public ShowSourceWin(ShowSourceWin other) {
@@ -55,7 +55,7 @@ public class ShowSourceWin extends TaskAction {
 	}
 
 	public void execute(Task task) {
-		SourceWindowFactory.createSourceWinFromBlockedTask(task);
+		SourceWindowFactory.createSourceWindow(task);
 	}
 
 	public GuiObject getCopy() {

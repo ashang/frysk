@@ -1,3 +1,12 @@
+2006-07-06  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* StatusWidget.java: Commented out log actions added at runtime.
+	* actions/ShowSourceWin.java (execute): Replaced  
+	SourceWindowFactory.createSourceWinFromBlockedTask(task) with smarter
+	SourceWindowFactory.createSourceWindow(task).
+	* EditObserverDialog.java (EditObserverDialog): listener was being
+	added to the wrong button (fixed).
+
 2006-07-05  Mike Cvet  <mcvet@redhat.com>
 
 	* SimpleComboBox.java (SimpleComboBox): Applied GNU formatting.
