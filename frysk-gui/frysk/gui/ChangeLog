@@ -1,5 +1,11 @@
 2006-07-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls):
+	Make Info message dual purpose. Allow setting of markup.
+	Allow setting of text. Allow icon change.
+	* glade/frysk_create_session.glade: Remove old warning error message.
+	Fix labels to be non-temporal and in-line with review.
+	
 	* glade/frysk_session_manager.glade: Remove Window hint Dialog.
 
 	* SessionManagerGui.java : Apply GNU Format.

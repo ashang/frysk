@@ -45,6 +45,8 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
+import org.gnu.gtk.GtkStockItem;
+import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
@@ -145,8 +147,6 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 		editSession = true;
 		oldSessionName = currentSession.getName();
 		editSession = true;
-		this.warningIcon.hide();
-		this.warningLabel.hide();
 	}
 	
 	public void setNewSessionMode() {
@@ -341,14 +341,15 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 				{
 					if (SessionManager.theManager.getSessionByName(nameEntry.getText()) != null)
 					{
-						warningLabel.setText("Warning: The Session Name is already used. Please choose another.");
-						warningLabel.show();
-						warningIcon.show();
+                      
+						warningLabel.setMarkup("<b>Warning:</b> The Session Name is already used. Please choose another.");
+                        warningIcon.set(GtkStockItem.DIALOG_WARNING,IconSize.BUTTON);
 					}
 					else
 					{
-						warningLabel.hide();
-						warningIcon.hide();
+                        warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
+                        warningIcon.set(GtkStockItem.INFO,IconSize.BUTTON);
+
 					}
 				}
 				setProcessNext(processSelected);
@@ -558,8 +559,8 @@ public class CreateFryskSessionDruid extends Dialog implements LifeCycleListener
 					}
 				}});
 		
-		this.warningIcon = (Image) glade.getWidget("sessionDruid_warningIcon");
-		this.warningLabel = (Label) glade.getWidget("sessionDruid_warningLabel");
+		this.warningIcon = (Image) glade.getWidget("sessionDruid_feedbackImage");
+		this.warningLabel = (Label) glade.getWidget("sessionDruid_feedbackLabel");
 	}
 	
 	public void attachLinkedListsToWidgets()
