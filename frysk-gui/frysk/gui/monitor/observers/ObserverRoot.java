@@ -1,10 +1,12 @@
 package frysk.gui.monitor.observers;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import org.gnu.glib.CustomEvents;
 import org.jdom.Element;
@@ -14,6 +16,7 @@ import frysk.gui.monitor.Combo;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
 import frysk.gui.monitor.actions.LogAction;
@@ -161,8 +164,16 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			return info;
 		}
 	
-		protected String setInfo(String info) {
-		    return info;
+        /**
+         * Should be called whent the observer has fired. Every time
+         * this is called it sends a message to the logs, so it should
+         * only be called once every time the information changes
+         * @param info info string to be set
+         */
+		protected void setInfo(String info) {
+		  EventLogger.theLogger.getEventLogger().log(Level.INFO, info);
+		  WindowManager.theManager.logWindow.print(new Date() + " " + info +"\n");
+		  this.info = info;
 		}
 	
 		protected void runActions(){
