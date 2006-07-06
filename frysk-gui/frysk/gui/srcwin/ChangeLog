@@ -1,5 +1,8 @@
 2006-07-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWindow): Now calls grabFocus
+	and setKeepAbove(true) for the source window.
+
 	* SourceView.java: Applied GNU formatting.
 	(exposeEvent): Refactored so that in the future it will be easier to
 	enable hover-over-variable display.

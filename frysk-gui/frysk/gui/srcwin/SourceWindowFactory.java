@@ -283,6 +283,8 @@ public class SourceWindowFactory
         s = new SourceWindow(glade, gladePaths[i], dom, stack1);
         s.setMyTask(task);
         s.addListener(new SourceWinListener());
+        s.setKeepAbove(true);
+        s.grabFocus();
 
         // Store the reference to the source window
         map.put(proc, s);
