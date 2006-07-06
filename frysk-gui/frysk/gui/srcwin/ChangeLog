@@ -1,3 +1,12 @@
+2006-07-06  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceView.java: Applied GNU formatting.
+	(exposeEvent): Refactored so that in the future it will be easier to
+	enable hover-over-variable display.
+	(mousedOverText): Now saves the variable in the object and
+	tells the window to refresh if we've moved from a variable to no
+	variable or vice versa.
+
 2006-07-05  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (createSourceWindow): Now checks to 
