@@ -1,5 +1,8 @@
 2006-07-06  Adam Jocksch  <ajocksch@redhat.com>
 
+	* SourceWindowFactory.java (finishSourceWindow): No longer calls
+	setKeepAbove(true) as this makes the dialog modal.
+
 	* SourceWindowFactory.java (finishSourceWindow): Now calls grabFocus
 	and setKeepAbove(true) for the source window.
 

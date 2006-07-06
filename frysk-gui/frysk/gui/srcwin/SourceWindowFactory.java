@@ -278,12 +278,11 @@ public class SourceWindowFactory
             stack1 = new StackLevel(f, StackLevel.NO_LINE);
           }
 
-        WindowManager.theManager.sessionManager.hide();
+//        WindowManager.theManager.sessionManager.hide();
 
         s = new SourceWindow(glade, gladePaths[i], dom, stack1);
         s.setMyTask(task);
         s.addListener(new SourceWinListener());
-        s.setKeepAbove(true);
         s.grabFocus();
 
         // Store the reference to the source window
