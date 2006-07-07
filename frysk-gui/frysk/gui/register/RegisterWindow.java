@@ -48,6 +48,7 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnDouble;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.ListStore;
@@ -98,7 +99,8 @@ public class RegisterWindow
                                new DataColumnString(), // octal be
                                new DataColumnString(), // binary le
                                new DataColumnString(), // binary be
-                               new DataColumnObject() }; // the Register object
+                               new DataColumnObject(), // the Register object
+                               new DataColumnDouble()}; // alignment
 
   protected static String[] colNames = { "Decimal (LE)", "Decimal (BE)",
                                         "Hexadecimal (LE)", "Hexadecimal (BE)",
@@ -157,6 +159,7 @@ public class RegisterWindow
 
         model.setValue(iter, (DataColumnString) cols[0], register.getName());
         model.setValue(iter, (DataColumnObject) cols[9], register);
+        model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
         saveBinaryValue("" + register.get(this.myTask), 10, true,
                         iter.getPath());
       }
@@ -168,14 +171,12 @@ public class RegisterWindow
     col.setReorderable(false);
     col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT, cols[0]);
     registerView.appendColumn(col);
-
+    
     for (int i = 0; i < colNames.length; i++)
       {
         col = new TreeViewColumn();
         col.setTitle(colNames[i]);
         col.setReorderable(true);
-        if(i > 0)
-          col.setAlignment(1.0);
         renderer = new CellRendererText();
         ((CellRendererText) renderer).setEditable(true);
         boolean littleEndian = false;
@@ -209,6 +210,7 @@ public class RegisterWindow
         col.packStart(renderer, false);
         col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
                                 cols[i + 1]);
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN, cols[10]);
         registerView.appendColumn(col);
 
         col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));

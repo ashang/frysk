@@ -1,5 +1,8 @@
 2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
 
+	* register/RegisterWindow.java (setTask): Now uses a seperate column to
+	enable right-justification.
+
 	* register/RegisterWindow.java (setTask): Now sets right alignment on
 	data columns.
 
