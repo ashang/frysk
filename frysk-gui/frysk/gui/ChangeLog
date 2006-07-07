@@ -1,3 +1,7 @@
+2006-07-07  Nurdin Premji  <npremji@redhat.com>
+
+	* glade/procpop.glade: Made main log window and process/task tree resizable.
+
 2006-07-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java: Apply GNU Format.
