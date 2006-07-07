@@ -1,5 +1,9 @@
 2006-07-07  Chris Moller  <moller@mollerware.com>
 
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Moved the legend out of the
+	scrolled window into it's own drawing area, tweaked tooltips to
+	handle that.
 	* src/java/com/redhat/ftk/EventViewer.java: Took out my
 	out-commenting (see below).  It works now; don't know why it
 	didn't last night.

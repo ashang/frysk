@@ -378,9 +378,11 @@ typedef struct _FtkEventViewer {
   GtkWidget		* interval_spin_button;
 #endif
   GtkWidget		* da_frame;
+  GtkWidget		* legend_frame;
   GtkWidget		* scroll;
   GtkAdjustment		* scroll_adj;
   GtkDrawingArea	* da;
+  GtkDrawingArea	* legend_da;
   GdkColor		  bg_color;
   const GdkColor       ** color_set;
   ftk_marker_s	        * markers;
@@ -406,7 +408,8 @@ typedef struct _FtkEventViewer {
   int			  dlink_max;
   int			  label_box_width;
   int			  label_box_height;
-  int			  total_height;
+  int			  da_height;
+  int			  legend_height;
   int			  trace_origin;
   int			  trace_width;
   int			  popup_trace;
@@ -446,7 +449,9 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_interval_scale(v)	(v)->interval_scale
 #endif
 #define ftk_ev_da_frame(v)		(v)->da_frame
+#define ftk_ev_legend_frame(v)		(v)->legend_frame
 #define ftk_ev_da(v)			(v)->da
+#define ftk_ev_legend_da(v)		(v)->legend_da
 #define ftk_ev_scroll(v)		(v)->scroll
 #define ftk_ev_scroll_adj(v)		(v)->scroll_adj
 #define ftk_ev_zero(v)			(v)->zero_d
@@ -478,7 +483,8 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_tie_modified(v)		(v)->tie_modified
 #define ftk_ev_label_box_width(v)	(v)->label_box_width
 #define ftk_ev_label_box_height(v)	(v)->label_box_height
-#define ftk_ev_total_height(v)		(v)->total_height
+#define ftk_ev_da_height(v)		(v)->da_height
+#define ftk_ev_legend_height(v)		(v)->legend_height
 #define ftk_ev_links(v)			(v)->links
 #define ftk_ev_link(v,i)	      &((v)->links[i])
 #define ftk_ev_link_next(v)		(v)->link_next

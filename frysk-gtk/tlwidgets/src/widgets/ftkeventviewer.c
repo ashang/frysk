@@ -26,14 +26,20 @@ static gboolean ftk_eventviewer_da_expose (GtkWidget * widget,
 static gboolean ftk_eventviewer_configure (GtkWidget * widget,
 					   GdkEventConfigure * event,
 					   gpointer data);
+
+static gboolean ftk_eventviewer_legend_da_expose (GtkWidget * widget,
+						  GdkEventExpose * event,
+						  gpointer data);
 #ifdef USE_OLD_STYLE
 static void ftk_eventviewer_realize (GtkWidget * widget,
 				     gpointer data);
 #endif
 static void ftk_eventviewer_destroy (GtkObject * widget,
 				     gpointer data);
+#if 0
 static void ftk_eventviewer_scale_toggle (GtkToggleButton * button,
 					  gpointer data);
+#endif
 
 #ifndef USE_SLIDER_INTERVAL
 static void ftk_eventviewer_spin_vc (GtkSpinButton *spinbutton,
@@ -52,6 +58,10 @@ static gboolean ftk_ev_button_press_event (GtkWidget * widget,
 static gboolean ftk_ev_motion_notify_event (GtkWidget * widget,
 					    GdkEventMotion * event,
 					    gpointer data);
+
+static gboolean ftk_ev_legend_motion_notify_event (GtkWidget * widget,
+						   GdkEventMotion * event,
+						   gpointer data);
 
 static gboolean ftk_ev_leave_notify_event (GtkWidget * widget,
 					   GdkEventCrossing * event,
@@ -89,6 +99,7 @@ static inline void double_to_timeval (struct timeval * tv,
 #define DEFAULT_TRACE_OFFSET		 10
 #define DEFAULT_INITIAL_WIDTH		100
 #define DEFAULT_INITIAL_HEIGHT		 30
+#define DEFAULT_INITIAL_LEGEND_HEIGHT	 30
 
 #define DEFAULT_SPAN			 60.0
 #define MINIMUM_SPAN			 1e-6
@@ -180,38 +191,30 @@ ftk_init_cr (FtkEventViewer * eventviewer)
 }
 
 static void
-ftk_eventviewer_init (FtkEventViewer * eventviewer)
+set_up_colors (FtkEventViewer * eventviewer)
 {
-  GtkTooltips * eventviewer_tips = gtk_tooltips_new ();
-  GtkVBox * vbox = ftk_ev_vbox (eventviewer);
-  
-  {
-    struct timeval now;
-    gettimeofday (&now, NULL);
-    ftk_ev_zero (eventviewer) = timeval_to_double (&now);
-    srand48 ((long int)(now.tv_usec));
-  }
+  int i;
 
-  {
-    int i;
-
-    ftk_ev_color_values(eventviewer) = malloc (sizeof(default_color_set));
-    memcpy (ftk_ev_color_values(eventviewer), default_color_set,
-	    sizeof(default_color_set));
+  ftk_ev_color_values(eventviewer) = malloc (sizeof(default_color_set));
+  memcpy (ftk_ev_color_values(eventviewer), default_color_set,
+	  sizeof(default_color_set));
 
 #define COLOR_RANDOMISER_ITERATIONS 30
-    for (i = 0; i < COLOR_RANDOMISER_ITERATIONS; i++) {
-      const GdkColor * tc;
-      int fi = lrint (drand48() * (double)(colors_count - 1));
-      int ti = lrint (drand48() * (double)(colors_count - 1));
+  for (i = 0; i < COLOR_RANDOMISER_ITERATIONS; i++) {
+    const GdkColor * tc;
+    int fi = lrint (drand48() * (double)(colors_count - 1));
+    int ti = lrint (drand48() * (double)(colors_count - 1));
 
-      tc =  ftk_ev_color_value(eventviewer, fi);
-      ftk_ev_color_value(eventviewer, fi) =
-	ftk_ev_color_value(eventviewer, ti);
-      ftk_ev_color_value(eventviewer, ti) = tc;
-    }
+    tc =  ftk_ev_color_value(eventviewer, fi);
+    ftk_ev_color_value(eventviewer, fi) =
+      ftk_ev_color_value(eventviewer, ti);
+    ftk_ev_color_value(eventviewer, ti) = tc;
   }
+}
 
+static void
+initialise_widget (FtkEventViewer * eventviewer)
+{
   ftk_ev_next_glyph (eventviewer)	= 0;
   ftk_ev_next_color (eventviewer)	= 0;
   
@@ -262,17 +265,305 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   ftk_ev_span(eventviewer) = DEFAULT_SPAN;
   
   ftk_ev_widget_modified (eventviewer) = TRUE;
+}
 
-#ifdef USE_FTK_SIGNAL
-  g_signal_connect (GTK_OBJECT (eventviewer), "ftkeventviewer",
-		    (GtkSignalFunc) ftk_eventviewer_expose, NULL);
+static GtkWidget *
+create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
+{
+  /*****************   button box  **************/
+    
+  GtkWidget * hbutton_box = gtk_hbox_new(FALSE, 5);
+  ftk_ev_hbutton_box (eventviewer) = hbutton_box;
+    
+#if 0  /* fixme -- not yet implemented */
+  {
+    /* scale button */
+      
+    GtkWidget * scale_toggle_button
+      = gtk_toggle_button_new_with_mnemonic ("_Scaled");
+
+    ftk_ev_scale_toggle_button (eventviewer) = scale_toggle_button;
+    
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
+			  ftk_ev_scale_toggle_button (eventviewer),
+			  "Draw to scale or as an unscaled sequence.",
+			  "private");
+    
+    g_signal_connect (GTK_OBJECT(scale_toggle_button),"toggled",
+                      (GtkSignalFunc) ftk_eventviewer_scale_toggle, NULL);
+    /* fixme -- make initial state configurable */
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (scale_toggle_button),
+				  TRUE);
+    gtk_box_pack_start (GTK_BOX (hbutton_box),
+			scale_toggle_button,
+			FALSE, FALSE, 0);
+  }
 #endif
+    
+  {
+    /* hold button */
+      
+    GtkWidget * hold_toggle_button
+      = gtk_toggle_button_new_with_mnemonic ("_Hold");
+
+    ftk_ev_hold_toggle_button (eventviewer) = hold_toggle_button;
+    
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
+			  ftk_ev_hold_toggle_button (eventviewer),
+			  "Enable or disable auto-updates.",
+			  "private");
+    
+#if 0 /* fixme -- don't know if needed */
+    g_signal_connect (GTK_OBJECT(scale_toggle_button),"toggled",
+                      (GtkSignalFunc) ftk_eventviewer_scale_toggle, NULL);
+#endif
+    /* fixme -- make initial state configurable */
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hold_toggle_button),
+				  FALSE);
+    gtk_box_pack_start (GTK_BOX (hbutton_box),
+			hold_toggle_button,
+			FALSE, FALSE, 0);
+  }	
+
+#ifdef USE_SLIDER_INTERVAL
+  {
+    /* interval slider */
+
+    GtkRequisition requisition;
+
+    GtkWidget * frame = gtk_frame_new (NULL);
+    GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
+    GtkWidget * label = gtk_label_new ("Interval");
+    GtkObject * ival_adj
+      = gtk_adjustment_new (log10 (ftk_ev_span (eventviewer)),
+			    log10 (MINIMUM_SPAN),
+			    log10 (MAXIMUM_SPAN),
+			    0.1,
+			    0.001,
+			    0.01);
+    GtkWidget * slider = gtk_hscale_new (GTK_ADJUSTMENT (ival_adj));
+      
+    ftk_ev_interval_scale (eventviewer) = slider;
+    gtk_widget_size_request (slider, &requisition);
+    gtk_widget_set_size_request (slider, 100, requisition.height);
+    
+    gtk_scale_set_digits (GTK_SCALE (slider), 1);
+    g_signal_connect (GTK_OBJECT(slider),"format-value",
+		      G_CALLBACK (ftk_eventviewer_slider_format),
+		      eventviewer);
+
+    g_signal_connect (GTK_OBJECT(slider),"change-value",
+		      G_CALLBACK (ftk_eventviewer_slider_cv),
+		      eventviewer);
+      
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
+			  slider,
+			  "Set display width in seconds.",
+			  "private");
+      
+    gtk_container_add (GTK_CONTAINER(frame), hbox);
+    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 10);
+    gtk_box_pack_start (GTK_BOX (hbox), slider, FALSE, FALSE, 0);
+    gtk_box_pack_end (GTK_BOX (hbutton_box),
+		      frame,
+		      FALSE, FALSE, 0);
+  }
+#endif
+
+#ifndef USE_SLIDER_INTERVAL
+  {
+    /* interval spin button */
+
+    GtkWidget * frame = gtk_frame_new (NULL);
+    GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
+    GtkWidget * label = gtk_label_new ("Interval");
+    GtkObject * ival_adj
+      = gtk_adjustment_new (ftk_ev_span (eventviewer),
+			    MINIMUM_SPAN,
+			    MAXIMUM_SPAN,
+			    1.0,
+			    ftk_ev_span (eventviewer),
+			    ftk_ev_span (eventviewer));
+    GtkWidget * ival_button
+      = gtk_spin_button_new (GTK_ADJUSTMENT (ival_adj), /* adjustment */
+			     1.0,		/* gdouble climb_rate */
+			     4);		/* guint digits	*/
+    g_signal_connect (GTK_OBJECT(ival_button),"value-changed",
+                      (GtkSignalFunc) ftk_eventviewer_spin_vc,
+		      eventviewer);
+
+    ftk_ev_interval_button (eventviewer) = ival_button;
+      
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
+			  ftk_ev_interval_button (eventviewer),
+			  "Set display width in seconds.",
+			  "private");
+
+    gtk_container_add (GTK_CONTAINER(frame), hbox);
+    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 10);
+    gtk_box_pack_start (GTK_BOX (hbox), ival_button, FALSE, FALSE, 0);
+    gtk_box_pack_end (GTK_BOX (hbutton_box),
+		      frame,
+		      FALSE, FALSE, 0);
+  }
+#endif
+
+  gtk_widget_show_all (hbutton_box);
+  
+  return hbutton_box;
+}
+  
+static GtkWidget *
+create_legend_area (FtkEventViewer * eventviewer)
+{
+  GtkWidget * frame = gtk_frame_new ("Legend");
+  GtkWidget * da = gtk_drawing_area_new();
+  
+  ftk_ev_legend_da (eventviewer) = GTK_DRAWING_AREA (da);
+  gtk_drawing_area_size (ftk_ev_legend_da(eventviewer),
+			 DEFAULT_INITIAL_WIDTH,
+			 DEFAULT_INITIAL_LEGEND_HEIGHT);
+  
+  gtk_widget_set_events(GTK_WIDGET (da),
+			GDK_POINTER_MOTION_MASK  |
+			GDK_LEAVE_NOTIFY_MASK);
+
+  g_signal_connect (GTK_OBJECT (da), "expose-event",
+		    (GtkSignalFunc) ftk_eventviewer_legend_da_expose, eventviewer);
+
+  g_signal_connect (GTK_OBJECT(da), "motion_notify_event",
+		    G_CALLBACK (ftk_ev_legend_motion_notify_event), eventviewer);
+
+  g_signal_connect (GTK_OBJECT(da), "leave_notify_event",
+		    G_CALLBACK (ftk_ev_leave_notify_event), eventviewer);
+  
+  ftk_ev_legend_frame (eventviewer) = frame;
+  gtk_container_add (GTK_CONTAINER(frame), da);
+  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+  gtk_widget_show_all (frame);
+
+  return frame;
+}
+  
+static GtkWidget *
+create_drawing_area (FtkEventViewer * eventviewer)
+{
+  /*****************  drawing area **************/
+  GtkWidget * scrolled_window;
+  GtkWidget * frame = gtk_frame_new (NULL);
+  GtkWidget * da = gtk_drawing_area_new();
+
+#if 0
+  {			/* atk stuff */
+    AtkObject * atk_obj = gtk_widget_get_accessible (da);
+    
+    fprintf (stderr, "initting atk %#08x\n", atk_obj);
+
+    if (GTK_IS_ACCESSIBLE (atk_obj)) {
+      fprintf (stderr, "accessible\n");
+    }
+  }
+#endif
+
+  ftk_ev_da(eventviewer) = GTK_DRAWING_AREA (da);
+  
+  gtk_drawing_area_size (ftk_ev_da(eventviewer),
+			 DEFAULT_INITIAL_WIDTH,
+			 DEFAULT_INITIAL_HEIGHT);
+  gtk_widget_show (da);
+
+  ftk_ev_da_frame (eventviewer) = frame;
+  
+  gtk_widget_set_app_paintable(da, TRUE);
+  
+  gtk_widget_set_events(GTK_WIDGET (da),
+			GDK_POINTER_MOTION_MASK  |
+#if 0
+			GDK_ENTER_NOTIFY_MASK |
+#endif
+			GDK_LEAVE_NOTIFY_MASK |
+			GDK_BUTTON_PRESS_MASK    |
+			GDK_BUTTON_RELEASE_MASK);
+
+  g_signal_connect (GTK_OBJECT (da), "expose-event",
+		    (GtkSignalFunc) ftk_eventviewer_da_expose, eventviewer);
+
+  g_signal_connect (GTK_OBJECT(da), "button_press_event",
+		    G_CALLBACK (ftk_ev_button_press_event), eventviewer);
+
+  g_signal_connect (GTK_OBJECT(da), "button_release_event",
+		    G_CALLBACK (ftk_ev_button_press_event), eventviewer);
+
+  g_signal_connect (GTK_OBJECT(da), "motion_notify_event",
+		    G_CALLBACK (ftk_ev_motion_notify_event), eventviewer);
+
+  g_signal_connect (GTK_OBJECT(da), "leave_notify_event",
+		    G_CALLBACK (ftk_ev_leave_notify_event), eventviewer);
+    
+  g_signal_connect (GTK_OBJECT(da),"configure-event",
+		    G_CALLBACK (ftk_eventviewer_configure), eventviewer);
+
+#ifndef NOT_USE_SCROLL
+  scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+				  GTK_POLICY_NEVER,
+				  GTK_POLICY_AUTOMATIC);
+  
+  gtk_container_add (GTK_CONTAINER(frame), scrolled_window);
+  gtk_widget_show (scrolled_window);
+#else
+  gtk_container_add (GTK_CONTAINER(frame), da);
+#endif
+  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+  gtk_widget_show (frame);
+
+  return frame;
+}
+
+GtkWidget *
+create_scrollbar (FtkEventViewer * eventviewer)
+{
+  /**************** scrollbar *************/
+    
+  GtkObject * scroll_adj
+    = gtk_adjustment_new (0.0,
+			  0.0,
+			  ftk_ev_span (eventviewer),
+			  1.0,
+			  ftk_ev_span (eventviewer),
+			  ftk_ev_span (eventviewer)/4.0);
+  GtkWidget * h_scroll = gtk_hscrollbar_new (GTK_ADJUSTMENT (scroll_adj));
+  gtk_range_set_update_policy (GTK_RANGE (h_scroll),
+			       GTK_UPDATE_CONTINUOUS);
+  gtk_widget_show (h_scroll);
+  ftk_ev_scroll (eventviewer) = h_scroll;
+  ftk_ev_scroll_adj (eventviewer) = GTK_ADJUSTMENT (scroll_adj);
+  g_signal_connect (GTK_OBJECT(h_scroll),"change-value",
+		    (GtkSignalFunc) ftk_eventviewer_scroll_cv, eventviewer);
+
+  return h_scroll;
+}
+
+static void
+ftk_eventviewer_init (FtkEventViewer * eventviewer)
+{
+  GtkTooltips * eventviewer_tips = gtk_tooltips_new ();
+  GtkVBox * vbox = ftk_ev_vbox (eventviewer);
+  
+  {
+    struct timeval now;
+    gettimeofday (&now, NULL);
+    ftk_ev_zero (eventviewer) = timeval_to_double (&now);
+    srand48 ((long int)(now.tv_usec));
+  }
+
+  set_up_colors (eventviewer);
+  initialise_widget (eventviewer);
+
   g_signal_connect (GTK_OBJECT (eventviewer), "expose-event",
 		    (GtkSignalFunc) ftk_eventviewer_expose, NULL);
-#ifdef USE_OLD_STYLE
-  g_signal_connect (GTK_OBJECT(eventviewer),"realize",
-		    (GtkSignalFunc) ftk_eventviewer_realize, NULL);
-#endif
   g_signal_connect (GTK_OBJECT(eventviewer), "destroy",
 		    GTK_SIGNAL_FUNC(ftk_eventviewer_destroy),
 		    NULL);
@@ -281,250 +572,15 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   gtk_box_set_spacing (GTK_BOX (vbox), 0);
 
   {
-    /*****************   button box  **************/
+    GtkWidget * bb = create_button_box (eventviewer, eventviewer_tips);
+    GtkWidget * la = create_legend_area (eventviewer);
+    GtkWidget * da = create_drawing_area (eventviewer);
+    GtkWidget * sb = create_scrollbar (eventviewer);
     
-    GtkWidget * hbutton_box = gtk_hbox_new(FALSE, 5);
-    ftk_ev_hbutton_box (eventviewer) = hbutton_box;
-
-    {
-      /* scale button */
-      
-      GtkWidget * scale_toggle_button
-	= gtk_toggle_button_new_with_mnemonic ("_Scaled");
-
-      ftk_ev_scale_toggle_button (eventviewer) = scale_toggle_button;
-      
-      gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
-			    ftk_ev_scale_toggle_button (eventviewer),
-			    "Draw to scale or as an unscaled sequence.",
-			    "private");
-    
-      g_signal_connect (GTK_OBJECT(scale_toggle_button),"toggled",
-                      (GtkSignalFunc) ftk_eventviewer_scale_toggle, NULL);
-      /* fixme -- make initial state configurable */
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (scale_toggle_button),
-				  TRUE);
-#if 0  /* fixme -- not yet implemented */
-      gtk_box_pack_start (GTK_BOX (hbutton_box),
-			  scale_toggle_button,
-			  FALSE, FALSE, 0);
-#endif
-    }
-    {
-      /* hold button */
-      
-      GtkWidget * hold_toggle_button
-	= gtk_toggle_button_new_with_mnemonic ("_Hold");
-
-      ftk_ev_hold_toggle_button (eventviewer) = hold_toggle_button;
-      
-      gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
-			    ftk_ev_hold_toggle_button (eventviewer),
-			    "Enable or disable auto-updates.",
-			    "private");
-    
-#if 0 /* fixme -- don't know if needed */
-      g_signal_connect (GTK_OBJECT(scale_toggle_button),"toggled",
-                      (GtkSignalFunc) ftk_eventviewer_scale_toggle, NULL);
-#endif
-      /* fixme -- make initial state configurable */
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hold_toggle_button),
-				    FALSE);
-      gtk_box_pack_start (GTK_BOX (hbutton_box),
-			  hold_toggle_button,
-			  FALSE, FALSE, 0);
-    }
-
-#ifdef USE_SLIDER_INTERVAL
-    {
-      /* interval slider */
-
-      GtkRequisition requisition;
-
-      GtkWidget * frame = gtk_frame_new (NULL);
-      GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
-      GtkWidget * label = gtk_label_new ("Interval");
-      GtkObject * ival_adj
-	= gtk_adjustment_new (log10 (ftk_ev_span (eventviewer)),
-			      log10 (MINIMUM_SPAN),
-			      log10 (MAXIMUM_SPAN),
-			      0.1,
-			      0.001,
-			      0.01);
-      GtkWidget * slider = gtk_hscale_new (GTK_ADJUSTMENT (ival_adj));
-      
-      ftk_ev_interval_scale (eventviewer) = slider;
-      gtk_widget_size_request (slider, &requisition);
-      gtk_widget_set_size_request (slider, 100, requisition.height);
-      
-      gtk_scale_set_digits (GTK_SCALE (slider), 1);
-      g_signal_connect (GTK_OBJECT(slider),"format-value",
-			G_CALLBACK (ftk_eventviewer_slider_format),
-			eventviewer);
-
-      g_signal_connect (GTK_OBJECT(slider),"change-value",
-			G_CALLBACK (ftk_eventviewer_slider_cv),
-			eventviewer);
-      
-      gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
-			    slider,
-			    "Set display width in seconds.",
-			    "private");
-      
-      gtk_container_add (GTK_CONTAINER(frame), hbox);
-      gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 10);
-      gtk_box_pack_start (GTK_BOX (hbox), slider, FALSE, FALSE, 0);
-      gtk_box_pack_end (GTK_BOX (hbutton_box),
-			frame,
-			FALSE, FALSE, 0);
-    }
-#endif
-
-#ifndef USE_SLIDER_INTERVAL
-    {
-      /* interval spin button */
-
-      GtkWidget * frame = gtk_frame_new (NULL);
-      GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
-      GtkWidget * label = gtk_label_new ("Interval");
-      GtkObject * ival_adj
-	= gtk_adjustment_new (ftk_ev_span (eventviewer),
-			      MINIMUM_SPAN,
-			      MAXIMUM_SPAN,
-			      1.0,
-			      ftk_ev_span (eventviewer),
-			      ftk_ev_span (eventviewer));
-      GtkWidget * ival_button
-	= gtk_spin_button_new (GTK_ADJUSTMENT (ival_adj), /* adjustment */
-			       1.0,		/* gdouble climb_rate */
-			       4);		/* guint digits	*/
-      g_signal_connect (GTK_OBJECT(ival_button),"value-changed",
-                      (GtkSignalFunc) ftk_eventviewer_spin_vc,
-			eventviewer);
-
-      ftk_ev_interval_button (eventviewer) = ival_button;
-      
-      gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
-			    ftk_ev_interval_button (eventviewer),
-			    "Set display width in seconds.",
-			    "private");
-
-      gtk_container_add (GTK_CONTAINER(frame), hbox);
-      gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 10);
-      gtk_box_pack_start (GTK_BOX (hbox), ival_button, FALSE, FALSE, 0);
-      gtk_box_pack_end (GTK_BOX (hbutton_box),
-			frame,
-			FALSE, FALSE, 0);
-    }
-#endif
-
-
-    
-    gtk_widget_show_all (hbutton_box);
-
-    gtk_box_pack_start (GTK_BOX (vbox), hbutton_box, FALSE, FALSE, 0);
-  }
-
-  
-  {
-    /*****************  drawing area **************/
-    GtkWidget * scrolled_window;
-    GtkWidget * frame = gtk_frame_new (NULL);
-    GtkWidget * da = gtk_drawing_area_new();
-
-#if 0
-    {			/* atk stuff */
-      AtkObject * atk_obj = gtk_widget_get_accessible (da);
-
-      fprintf (stderr, "initting atk %#08x\n", atk_obj);
-
-      if (GTK_IS_ACCESSIBLE (atk_obj)) {
-	fprintf (stderr, "accessible\n");
-      }
-    }
-#endif
-
-    ftk_ev_da(eventviewer) = GTK_DRAWING_AREA (da);
-  
-    gtk_drawing_area_size (ftk_ev_da(eventviewer),
-			 DEFAULT_INITIAL_WIDTH,
-			 DEFAULT_INITIAL_HEIGHT);
-    gtk_widget_show (da);
-
-    ftk_ev_da_frame (eventviewer) = frame;
-
-    gtk_widget_set_app_paintable(da, TRUE);
- 
-    gtk_widget_set_events(GTK_WIDGET (da),
-			  GDK_POINTER_MOTION_MASK  |
-#if 0
-			  GDK_ENTER_NOTIFY_MASK |
-#endif
-			  GDK_LEAVE_NOTIFY_MASK |
-                          GDK_BUTTON_PRESS_MASK    |
-                          GDK_BUTTON_RELEASE_MASK);
-
-#if 0
-    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
-			  da,
-			  "da tooltip.",
-			  "private");
-#endif
-    g_signal_connect (GTK_OBJECT (da), "expose-event",
-		      (GtkSignalFunc) ftk_eventviewer_da_expose, eventviewer);
-
-    g_signal_connect (GTK_OBJECT(da), "button_press_event",
-		      G_CALLBACK (ftk_ev_button_press_event), eventviewer);
-
-    g_signal_connect (GTK_OBJECT(da), "button_release_event",
-		      G_CALLBACK (ftk_ev_button_press_event), eventviewer);
-
-    g_signal_connect (GTK_OBJECT(da), "motion_notify_event",
-		      G_CALLBACK (ftk_ev_motion_notify_event), eventviewer);
-
-    g_signal_connect (GTK_OBJECT(da), "leave_notify_event",
-		      G_CALLBACK (ftk_ev_leave_notify_event), eventviewer);
-    
-    g_signal_connect (GTK_OBJECT(da),"configure-event",
-                      G_CALLBACK (ftk_eventviewer_configure), eventviewer);
-
-#ifndef NOT_USE_SCROLL
-    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-
-    gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
-    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
-				    GTK_POLICY_NEVER,
-				    GTK_POLICY_AUTOMATIC);
-
-    gtk_container_add (GTK_CONTAINER(frame), scrolled_window);
-    gtk_widget_show (scrolled_window);
-#else
-    gtk_container_add (GTK_CONTAINER(frame), da);
-#endif
-    gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-    gtk_widget_show (frame);
-    gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
-  }
-
-  {
-    /**************** scrollbar *************/
-    
-    GtkObject * scroll_adj
-      = gtk_adjustment_new (0.0,
-			    0.0,
-			    ftk_ev_span (eventviewer),
-			    1.0,
-			    ftk_ev_span (eventviewer),
-			    ftk_ev_span (eventviewer)/4.0);
-    GtkWidget * h_scroll = gtk_hscrollbar_new (GTK_ADJUSTMENT (scroll_adj));
-    gtk_range_set_update_policy (GTK_RANGE (h_scroll),
-                                 GTK_UPDATE_CONTINUOUS);
-    gtk_widget_show (h_scroll);
-    ftk_ev_scroll (eventviewer) = h_scroll;
-    ftk_ev_scroll_adj (eventviewer) = GTK_ADJUSTMENT (scroll_adj);
-    g_signal_connect (GTK_OBJECT(h_scroll),"change-value",
-                      (GtkSignalFunc) ftk_eventviewer_scroll_cv, eventviewer);
-    gtk_box_pack_start (GTK_BOX (vbox), h_scroll, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (vbox), bb, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (vbox), la, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (vbox), da, TRUE, TRUE, 0);
+    gtk_box_pack_start (GTK_BOX (vbox), sb, FALSE, FALSE, 0);
   }
 }
 
@@ -974,7 +1030,96 @@ create_popup_label (FtkEventViewer * eventviewer,
   return lbl;
 }
 
+static void
+handle_popup (FtkEventViewer * eventviewer,
+	      GdkEventMotion * event,
+	      ftk_popup_type_e pt,
+	      int trace_idx,
+	      int marker_idx,
+	      double time_d,
+	      ftk_trace_s * trace,
+	      ftk_event_s * revent,
+	      ftk_multi_event_s * multi_event,
+	      int multi_event_next)
+{
+  char * lbl;
+  
+  if (FTK_POPUP_TYPE_NONE == ftk_ev_popup_type (eventviewer)) {
+    if (FTK_POPUP_TYPE_NONE != pt) {	/* no existing popup, hit, create new popup */
+      ftk_ev_popup_type (eventviewer) = pt;
+      ftk_ev_popup_trace (eventviewer) = trace_idx;
+      if ((lbl = create_popup_label (eventviewer, pt, trace, revent, marker_idx, time_d,
+				     multi_event_next, multi_event)))
+	ftk_create_popup (eventviewer, lbl, event->x);	
+    }
+  }
+  else {
+    if (FTK_POPUP_TYPE_NONE != pt) {	/* existing popup, hit */
+      if ((ftk_ev_popup_trace (eventviewer) != trace_idx) ||
+	  (pt != ftk_ev_popup_type (eventviewer)) ||
+	  ((pt == ftk_ev_popup_type (eventviewer)) &&
+	   ((pt == FTK_POPUP_TYPE_LEGEND) || (pt == FTK_POPUP_TYPE_MARKER)) &&
+	   (ftk_ev_popup_marker (eventviewer) != marker_idx))) {
+	ftk_ev_popup_type (eventviewer) =  pt;
+	ftk_ev_popup_trace (eventviewer) = trace_idx;
+	ftk_ev_popup_marker (eventviewer) = marker_idx;
+	if ((lbl = create_popup_label (eventviewer, pt, trace, revent, marker_idx,
+				       time_d,
+				       multi_event_next, multi_event)))
+	  ftk_create_popup (eventviewer, lbl, event->x);	
+      }
+    }
+    else {		/* existing popup, no hit, pop down */
+      if (ftk_ev_popup_window (eventviewer))
+	gtk_widget_destroy (ftk_ev_popup_window (eventviewer));
+      ftk_ev_popup_type (eventviewer) =  FTK_POPUP_TYPE_NONE;
+    }
+  }
+  if (multi_event) free (multi_event);
+}
+
 #define POPUP_TOLERANCE 6
+static gboolean
+ftk_ev_legend_motion_notify_event (GtkWidget * widget,
+			    GdkEventMotion * event,
+			    gpointer data)
+{
+  FtkEventViewer * eventviewer = FTK_EVENTVIEWER (data);
+  g_return_val_if_fail (FTK_IS_EVENTVIEWER (eventviewer), FALSE);
+
+  {
+    int marker_idx;
+    ftk_popup_type_e pt;
+    ftk_marker_s * marker;
+    int pvpos = lrint (event->y) - 10;
+    int phpos = lrint (event->x);
+
+    pt = FTK_POPUP_TYPE_NONE;
+    for (marker_idx = 0;
+	 marker_idx < ftk_ev_markers_next (eventviewer);
+	 marker_idx++) {
+      marker = ftk_ev_marker (eventviewer, marker_idx);
+      /* fixme -- replace the constants */
+      if ((abs ((pvpos + 6) - ftk_marker_vpos (marker))  < POPUP_TOLERANCE) &&
+	  ((abs ((phpos - 4) - ftk_marker_glyph_hpos (marker)) < POPUP_TOLERANCE) ||
+	   ((phpos >=  ftk_marker_label_hpos (marker)) &&
+	    (phpos <= ftk_marker_label_hpos (marker) +
+	     ftk_marker_label_width(marker))))) {
+	pt = FTK_POPUP_TYPE_LEGEND;
+	break;
+      }
+    }
+
+    handle_popup (eventviewer, event, pt,
+		  0, marker_idx,
+		  0.0, NULL, NULL,
+		  NULL,
+		  0);
+  }
+
+  return TRUE;
+}
+
 static gboolean
 ftk_ev_motion_notify_event (GtkWidget * widget,
 			    GdkEventMotion * event,
@@ -996,7 +1141,6 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
     /* fixme maybe put in loop below and create running baseline */
     int pvpos = lrint (event->y) - 10;
     int phpos = lrint (event->x);
-    char * lbl = NULL;
     ftk_multi_event_s * multi_event = NULL;
     int multi_event_next = 0;
     int multi_event_max  = 0;
@@ -1060,54 +1204,12 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
       }
     }
 
-    if (FTK_POPUP_TYPE_NONE == pt) {
-      for (marker_idx = 0;
-	   marker_idx < ftk_ev_markers_next (eventviewer);
-	   marker_idx++) {
-	marker = ftk_ev_marker (eventviewer, marker_idx);
-	/* fixme -- replace the constants */
-	if ((abs ((pvpos + 6) - ftk_marker_vpos (marker))  < POPUP_TOLERANCE) &&
-	    ((abs ((phpos - 4) - ftk_marker_glyph_hpos (marker)) < POPUP_TOLERANCE) ||
-	     ((phpos >=  ftk_marker_label_hpos (marker)) &&
-	      (phpos <= ftk_marker_label_hpos (marker) +
-	       ftk_marker_label_width(marker))))) {
-	  pt = FTK_POPUP_TYPE_LEGEND;
-	  break;
-	}
-      }
-    }
+    handle_popup (eventviewer, event, pt,
+		  trace_idx, marker_idx,
+		  time_d, trace, revent,
+		  multi_event,
+		  multi_event_next);
 
-    if (FTK_POPUP_TYPE_NONE == ftk_ev_popup_type (eventviewer)) {
-      if (FTK_POPUP_TYPE_NONE != pt) {	/* no existing popup, hit, create new popup */
-	ftk_ev_popup_type (eventviewer) = pt;
-	ftk_ev_popup_trace (eventviewer) = trace_idx;
-	if ((lbl = create_popup_label (eventviewer, pt, trace, revent, marker_idx, time_d,
-				       multi_event_next, multi_event)))
-	  ftk_create_popup (eventviewer, lbl, event->x);	
-      }
-    }
-    else {
-      if (FTK_POPUP_TYPE_NONE != pt) {	/* existing popup, hit */
-	if ((ftk_ev_popup_trace (eventviewer) != trace_idx) ||
-	    (pt != ftk_ev_popup_type (eventviewer)) ||
-	    ((pt == ftk_ev_popup_type (eventviewer)) &&
-	     ((pt == FTK_POPUP_TYPE_LEGEND) || (pt == FTK_POPUP_TYPE_MARKER)) &&
-	     (ftk_ev_popup_marker (eventviewer) != marker_idx))) {
-	  ftk_ev_popup_type (eventviewer) =  pt;
-	  ftk_ev_popup_trace (eventviewer) = trace_idx;
-	  ftk_ev_popup_marker (eventviewer) = marker_idx;
-	  if ((lbl = create_popup_label (eventviewer, pt, trace, revent, marker_idx, time_d,
-					 multi_event_next, multi_event)))
-	    ftk_create_popup (eventviewer, lbl, event->x);	
-	}
-      }
-      else {		/* existing popup, no hit, pop down */
-	if (ftk_ev_popup_window (eventviewer))
-	  gtk_widget_destroy (ftk_ev_popup_window (eventviewer));
-	ftk_ev_popup_type (eventviewer) =  FTK_POPUP_TYPE_NONE;
-      }
-    }
-    if (multi_event) free (multi_event);
   }
 
   return TRUE;
@@ -1186,6 +1288,102 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
   
   if (kill_cr)  cairo_destroy (cr);
 }
+  
+#define LEGEND_MARGIN		10
+#define LEGEND_GLYPH_SPACING	3
+
+static gboolean
+ftk_eventviewer_legend_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
+				 gpointer data)
+{
+  FtkEventViewer * eventviewer = FTK_EVENTVIEWER (data);
+  
+  if (!ftk_ev_symbols_initted (eventviewer)) ftk_init_cr (eventviewer);
+  
+  /* compute legend extents and baselines */
+  
+  if (ftk_ev_markers_modified (eventviewer) ||
+      ftk_ev_widget_modified(eventviewer)) {
+    int l_h_pos = LEGEND_MARGIN;
+    int dww = (int)(dwidge->allocation.width);
+    int legend_width;
+    int i;
+    gint width = 0;
+    gint height = 0;
+    int legend_v_pos = 0;
+    
+    ftk_ev_markers_modified (eventviewer) = FALSE;
+    //    ftk_ev_widget_modified (eventviewer) = FALSE;
+
+    for ( i = 0; i < ftk_ev_markers_next (eventviewer); i++) {
+      gint gwidth, gheight;
+      ftk_marker_s * marker = ftk_ev_marker (eventviewer, i);
+
+      /* fixme -- maybe use marker_label_modified */
+      width   = ftk_marker_label_width(marker);
+      height  = ftk_marker_label_height(marker);
+
+      pango_layout_get_pixel_size (ftk_symbol_layout (ftk_marker_glyph (marker)),
+				   &gwidth, &gheight);
+
+      legend_width = gwidth + LEGEND_GLYPH_SPACING + width;
+      if ((l_h_pos + legend_width + LEGEND_MARGIN) > dww) {
+	l_h_pos  = LEGEND_MARGIN;
+	legend_v_pos += height;
+      }
+
+      ftk_marker_glyph_hpos (marker) = l_h_pos;
+      ftk_marker_label_hpos (marker) = l_h_pos + gwidth
+	+ LEGEND_GLYPH_SPACING ;
+      ftk_marker_vpos (marker) = legend_v_pos;
+      l_h_pos += gwidth + LEGEND_GLYPH_SPACING + width + LEGEND_MARGIN;
+    }
+    
+    ftk_ev_legend_height(eventviewer) = legend_v_pos + height;
+
+    if ((ftk_ev_legend_height(eventviewer) > (int)(dwidge->allocation.height)) ||
+	(ftk_ev_legend_height(eventviewer) < ((int)(dwidge->allocation.height) - 12))) {
+      gtk_widget_set_size_request (GTK_WIDGET (ftk_ev_legend_da (eventviewer)),
+				   (int)(dwidge->allocation.width),
+				   ftk_ev_legend_height(eventviewer));
+    }
+  }
+  
+  {	/* draw legend */
+    int i;
+
+    cairo_t * cr = gdk_cairo_create (dwidge->window);
+      
+    for ( i = 0; i < ftk_ev_markers_next (eventviewer); i++) {
+      ftk_marker_s * marker = ftk_ev_marker (eventviewer, i);
+
+      cairo_set_source_rgb (cr,
+			    (double)(ftk_marker_color_red (marker)) /
+			    (double)65535,
+			    (double)(ftk_marker_color_green (marker)) /
+			    (double)65535,
+			    (double)(ftk_marker_color_blue (marker)) /
+			    (double)65535);
+	
+      cairo_move_to (cr,
+		     (double)(ftk_marker_glyph_hpos(marker)),
+		     (double)(ftk_marker_vpos(marker)));
+      pango_cairo_show_layout (cr,
+			       ftk_symbol_layout (ftk_marker_glyph (marker)));
+      cairo_stroke (cr);
+	
+      cairo_move_to (cr,
+		     (double)(ftk_marker_label_hpos(marker)),
+		     (double)(ftk_marker_vpos(marker)));
+      pango_cairo_show_layout (cr, ftk_marker_label (marker));
+      cairo_stroke (cr);
+    }
+
+    cairo_destroy (cr);
+  }
+
+  return FALSE;
+}
 
 static gboolean
 ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
@@ -1195,7 +1393,8 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   
   if (!ftk_ev_symbols_initted (eventviewer)) ftk_init_cr (eventviewer);
 
-  if (ftk_ev_trace_modified (eventviewer)) {	/* compute label extents and baselines */
+  /* compute label extents and baselines */
+  if (ftk_ev_trace_modified (eventviewer)) {
     int i;
     int max_label_width  = 0;
     int total_label_height = 0;
@@ -1203,7 +1402,8 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     ftk_ev_trace_modified (eventviewer) = FALSE;
 
     for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
-      ftk_trace_s * trace = ftk_ev_trace(eventviewer, ftk_ev_trace_order_ety (eventviewer, i));
+      ftk_trace_s * trace = ftk_ev_trace(eventviewer,
+					 ftk_ev_trace_order_ety (eventviewer, i));
       
       if (ftk_trace_valid(trace)) {
 	if (ftk_trace_label_modified(trace)) {
@@ -1225,57 +1425,14 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     }
     ftk_ev_label_box_width (eventviewer)  = max_label_width;
     ftk_ev_label_box_height (eventviewer) = total_label_height;
-    ftk_ev_markers_modified (eventviewer) = TRUE;
+    ftk_ev_da_height(eventviewer) = ftk_ev_label_box_height (eventviewer);
   }
   
-#define LEGEND_GAP		10
-#define LEGEND_MARGIN		10
-#define LEGEND_GLYPH_SPACING	3
-  
-  
-  if (ftk_ev_markers_modified (eventviewer) ||
-      ftk_ev_widget_modified(eventviewer)) {	/* compute legend extents and baselines */
-    int l_h_pos = LEGEND_MARGIN;
-    int dww = (int)(dwidge->allocation.width);
-    int legend_width;
-    int i;
-    gint width = 0;
-    gint height = 0;
-    int legend_v_pos = ftk_ev_label_box_height (eventviewer) + LEGEND_GAP;
-    
-    ftk_ev_markers_modified (eventviewer) = FALSE;
-    ftk_ev_widget_modified (eventviewer) = FALSE;
-
-    for ( i = 0; i < ftk_ev_markers_next (eventviewer); i++) {
-      gint gwidth, gheight;
-      ftk_marker_s * marker = ftk_ev_marker (eventviewer, i);
-
-      /* fixme -- maybe use marker_label_modified */
-      width   = ftk_marker_label_width(marker);
-      height  = ftk_marker_label_height(marker);
-
-      pango_layout_get_pixel_size (ftk_symbol_layout (ftk_marker_glyph (marker)),
-				   &gwidth, &gheight);
-
-      legend_width = gwidth + LEGEND_GLYPH_SPACING + width;
-      if ((l_h_pos + legend_width + LEGEND_MARGIN) > dww) {
-	l_h_pos  = LEGEND_MARGIN;
-	legend_v_pos += height;
-      }
-
-      ftk_marker_glyph_hpos (marker) = l_h_pos;
-      ftk_marker_label_hpos (marker) = l_h_pos + gwidth + LEGEND_GLYPH_SPACING ;
-      ftk_marker_vpos (marker) = legend_v_pos;
-      l_h_pos += gwidth + LEGEND_GLYPH_SPACING + width + LEGEND_MARGIN;
-    }
-    ftk_ev_total_height(eventviewer) = legend_v_pos + height;
-  }
-
-  if ((ftk_ev_total_height(eventviewer) > (int)(dwidge->allocation.height)) ||
-      (ftk_ev_total_height(eventviewer) < ((int)(dwidge->allocation.height) - 12))) {
+  if ((ftk_ev_da_height(eventviewer) > (int)(dwidge->allocation.height)) ||
+      (ftk_ev_da_height(eventviewer) < ((int)(dwidge->allocation.height) - 12))) {
     gtk_widget_set_size_request (GTK_WIDGET (ftk_ev_da (eventviewer)),
 				 (int)(dwidge->allocation.width),
-				 ftk_ev_total_height(eventviewer));
+				 ftk_ev_da_height(eventviewer));
   }
   
   {
@@ -1304,7 +1461,8 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
 	(dww - LABEL_GAP) - ftk_ev_trace_origin (eventviewer);
 
     for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
-      ftk_trace_s * trace = ftk_ev_trace(eventviewer, ftk_ev_trace_order_ety (eventviewer, i));
+      ftk_trace_s * trace = ftk_ev_trace(eventviewer,
+					 ftk_ev_trace_order_ety (eventviewer, i));
 
 	if (ftk_trace_valid (trace)) {
 	  cairo_set_source_rgb (cr,
@@ -1348,36 +1506,12 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
       }
     }
 
-    {	/* draw legend */
-      int i;
-      
-      for ( i = 0; i < ftk_ev_markers_next (eventviewer); i++) {
-	ftk_marker_s * marker = ftk_ev_marker (eventviewer, i);
-
-	cairo_set_source_rgb (cr,
-			      (double)(ftk_marker_color_red (marker))/(double)65535,
-			      (double)(ftk_marker_color_green (marker))/(double)65535,
-			      (double)(ftk_marker_color_blue (marker))/(double)65535);
-	
-	cairo_move_to (cr,
-		       (double)(ftk_marker_glyph_hpos(marker)),
-		       (double)(ftk_marker_vpos(marker)));
-	pango_cairo_show_layout (cr, ftk_symbol_layout (ftk_marker_glyph (marker)));
-	cairo_stroke (cr);
-	
-	cairo_move_to (cr,
-		       (double)(ftk_marker_label_hpos(marker)),
-		       (double)(ftk_marker_vpos(marker)));
-	pango_cairo_show_layout (cr, ftk_marker_label (marker));
-	cairo_stroke (cr);
-      }
-    }
-
     {				/* draw points */
       int i,j;
 
     for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
-      ftk_trace_s * trace = ftk_ev_trace(eventviewer, ftk_ev_trace_order_ety (eventviewer, i));
+      ftk_trace_s * trace = ftk_ev_trace(eventviewer,
+					 ftk_ev_trace_order_ety (eventviewer, i));
       if (!ftk_trace_valid (trace)) continue;
 	
 	for (j = 0; j < ftk_trace_event_next(trace); j++) {
@@ -1428,6 +1562,9 @@ ftk_eventviewer_expose(GtkWidget * widget, GdkEventExpose * event,
     if (event) {
       gtk_container_propagate_expose (GTK_CONTAINER (eventviewer),
 				      ftk_ev_hbutton_box (eventviewer),	
+				      event);
+      gtk_container_propagate_expose (GTK_CONTAINER (widget),
+				      GTK_WIDGET (ftk_ev_legend_frame (eventviewer)),
 				      event);
       gtk_container_propagate_expose (GTK_CONTAINER (widget),
 				      GTK_WIDGET (ftk_ev_da_frame (eventviewer)),
@@ -1511,6 +1648,7 @@ ftk_eventviewer_destroy(GtkObject * widget,
   }
 }
 
+#if 0
 static void
 ftk_eventviewer_scale_toggle(GtkToggleButton * button,
 			     gpointer data)
@@ -1520,6 +1658,7 @@ ftk_eventviewer_scale_toggle(GtkToggleButton * button,
   /* fixme -- not yet implemented */
   //  gboolean active = gtk_toggle_button_get_active (button);
 }
+#endif
 
 #ifndef USE_SLIDER_INTERVAL
 static void
@@ -2327,6 +2466,10 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
 
   ftk_marker_string (marker) = string ? strdup (string) : NULL;
   ftk_ev_markers_modified (eventviewer) = TRUE;
+
+  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
+    ftk_eventviewer_legend_da_expose(GTK_WIDGET(ftk_ev_legend_da(eventviewer)),
+				     NULL, eventviewer);
 
   return ftk_ev_markers_next (eventviewer)++;
 }
