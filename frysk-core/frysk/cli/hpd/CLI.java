@@ -264,7 +264,7 @@ public class CLI
 			{
 				if ( ((String)params.elementAt(0)).equals("-all") )
 				{
-						aliases = new Hashtable();
+						aliases.clear();
 						addMessage(new Message("Removing all aliases.", Message.TYPE_VERBOSE));
 				}
 				else
@@ -285,18 +285,78 @@ public class CLI
 			}
 		}
 	}
+
 	class SetHandler implements CommandHandler
 	{
-		public void handle(Command cmd) throws ParseException {
-			out.println("Executing set: " + cmd);
+		public void handle(Command cmd) throws ParseException
+		{
+			Vector params = cmd.getParameters();
+			String temp;
+			if (params.size() == 3 && ((String)params.elementAt(1)).equals("=") )
+			{
+				temp = (String)params.elementAt(0);
+				if (dbgvars.variableIsValid(temp))
+				{
+					if (dbgvars.valueIsValid(temp, (String)params.elementAt(2)))
+					{
+						dbgvars.setVariable(temp, (String)params.elementAt(2));
+					}
+					else
+						addMessage(new Message("Illegal variable value.", Message.TYPE_ERROR));
+				}
+				else
+					addMessage(new Message("Illegal debugger variable \"" + (String)params.elementAt(0) + "\"",
+											Message.TYPE_ERROR));
+			}
+			else if (params.size() == 1)
+			{
+				temp = (String)params.elementAt(0);
+				if (dbgvars.variableIsValid(temp))
+				{
+					addMessage(new Message(temp + " = " + dbgvars.getValue(temp).toString(), Message.TYPE_NORMAL));
+				}
+				else
+					addMessage(new Message("Illegal debugger variable \"" + (String)params.elementAt(0) + "\"",
+											Message.TYPE_ERROR));
+			}
+			else if (params.size() == 0)
+			{
+					addMessage(new Message(dbgvars.toString(), Message.TYPE_NORMAL));
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
 		}
 	}
+
 	class UnsetHandler implements CommandHandler
 	{
-		public void handle(Command cmd) throws ParseException {
-			out.println("Executing unset: " + cmd);
+		public void handle(Command cmd) throws ParseException
+		{
+			Vector params = cmd.getParameters();
+			String temp;
+			if (params.size() == 1)
+			{
+				temp = (String)params.elementAt(0);
+				if (temp.equals("-all"))
+					dbgvars.unsetAll();
+				else
+				{
+					if (dbgvars.variableIsValid(temp))
+						dbgvars.unsetVariable(temp);
+					else
+						addMessage(new Message("\"" + (String)params.elementAt(0) + "\" is not a valid debugger variable",
+											Message.TYPE_ERROR));
+				}
+			}
+			else
+			{
+				addMessage(new Message("Usage: " + userhelp.getCmdSyntax(cmd.getAction()), Message.TYPE_NORMAL));
+			}
 		}
 	}
+
 	class WhatHandler implements CommandHandler
 	{
 		public void handle(Command cmd) throws ParseException {
@@ -313,13 +373,13 @@ public class CLI
 	{
 		public void handle(Command cmd) throws ParseException {
 			String output = "";
+			String temp = "";
 
-		    // TODO Use a better commands data structure 
-		    output += "List of commands: \n";
-			output += "defset setname [setnotation]\n";
-			output += "undefset setname\n";
-			output += "whichsets [hpd-setnotation]\n"; 
-			output += "viewset set-name\n"; 
+			for (Iterator iter = userhelp.getCmdList().iterator(); iter.hasNext();)
+			{
+				temp = (String)iter.next();
+				output += temp + " - " + userhelp.getCmdDescription(temp) + "\n";
+			}
 		    output += "assign Lhs Expression\n";
 		    output += "print Expression\n";
 		    output += "what Lhs\n";
@@ -339,6 +399,7 @@ public class CLI
 	private String prompt; // string to represent prompt, will be moved
 	private Hashtable handlers;
 	private UserHelp userhelp;
+	private DbgVariables dbgvars;
 
 	// PT set related stuff
 	private SetNotationParser setparser;
@@ -369,6 +430,7 @@ public class CLI
 		prepro = new Preprocessor();
 		handlers = new Hashtable();
 		userhelp = new UserHelp();
+		dbgvars = new DbgVariables();
 
 		handlers.put("defset", new DefsetHandler());
 		handlers.put("undefset", new UndefsetHandler());

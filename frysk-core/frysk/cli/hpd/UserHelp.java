@@ -114,15 +114,36 @@ class UserHelp
 													temp));
 
 		temp = "Change the current p/t set to \"p/t-set\". If no set notation is given list members of the current set";
-		commandHelp.put("focus", new CommandHelp("whichsets",
+		commandHelp.put("focus", new CommandHelp("focus",
 													"Change current set.",
 													"focus [p/t-set]",
 													temp));
 
-		temp = "Change the current p/t set to \"p/t-set\". If no set notation is given list members of the current set";
+		temp = "Create or view user-define commands.";
+		commandHelp.put("alias", new CommandHelp("alias",
+													"Create or view user-define commands.",
+													"\nCreate alias: alias command-name command-body\n"+
+													"View alias: alias [command-name]",
+													temp));
+
+		temp = "Remove previously defined command.";
+		commandHelp.put("unalias", new CommandHelp("unalias",
+													"Create or view user-define commands.",
+													"unalias { command-name | -all }",
+													temp));
+
+		temp = "Change value or \"debugger-var\" to \"value\". View value of \"debugger-var\" variable or " + 
+		 		"of all variables if none is specified.";
 		commandHelp.put("set", new CommandHelp("set",
-													"Change a debugger variable.",
-													"focus [p/t-set]",
+													"Change or view a debugger variable.",
+													"\nChange variable: set debugger-var = value\n" +
+													"View variable: set [debugger-var]",
+													temp));
+
+		temp = "Revert value of \"debugger-var\" variable to default, or of all variables if \"-all\" is present instead.";
+		commandHelp.put("unset", new CommandHelp("unset",
+													"Revert variable value to default.",
+													"unset { debugger-var | -all }",
 													temp));
 	}
 
