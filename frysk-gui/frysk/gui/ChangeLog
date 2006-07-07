@@ -1,3 +1,8 @@
+2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionManagerGui.java (getDebugSingleProcess): Only launch source window
+	on OK response.
+
 2006-07-07  Nurdin Premji  <npremji@redhat.com>
 
 	* glade/procpop.glade: Made main log window and process/task tree resizable.

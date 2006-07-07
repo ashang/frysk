@@ -46,6 +46,7 @@ import java.io.IOException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.RadioButton;
+import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -147,10 +148,11 @@ public class SessionManagerGui
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             WindowManager.theManager.pickProcDialog.showAll();
-            WindowManager.theManager.pickProcDialog.run();
+            int response = WindowManager.theManager.pickProcDialog.run();
             Proc chosenProc = WindowManager.theManager.pickProcDialog.getChoosenProc();
-            if (chosenProc != null)
-              SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
+            if (response == ResponseType.OK.getValue())
+              if (chosenProc != null)
+                SourceWindowFactory.createSourceWindow(chosenProc.getMainTask());
           }
       }
     });
