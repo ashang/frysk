@@ -174,6 +174,8 @@ public class RegisterWindow
         col = new TreeViewColumn();
         col.setTitle(colNames[i]);
         col.setReorderable(true);
+        if(i > 0)
+          col.setAlignment(1.0);
         renderer = new CellRendererText();
         ((CellRendererText) renderer).setEditable(true);
         boolean littleEndian = false;
