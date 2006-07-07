@@ -195,13 +195,11 @@ public class EventViewer extends Widget
     /**
      * Append simultaneous events.
      */
-    /*********  commented out by chlm
     public boolean appendSimultaneousEvents(int tie,
     com.redhat.ftk.SimultaneousEvent[] events) {
       return ftk_eventviewer_append_simultaneous_events_array(getHandle(),
       tie, events.length, events);
     }
-    ******/
 
     native static final protected int
 	ftk_eventviewer_get_type ();
@@ -270,11 +268,9 @@ public class EventViewer extends Widget
     ftk_eventviewer_set_tie_linestyle (Handle sc, int tie, int linewidth,
 				       int linestyle);
 
-    /******* commented out by chlm
     native static final protected boolean
     ftk_eventviewer_append_simultaneous_events_array (Handle sc, int tie,
     int arrayCount, com.redhat.ftk.SimultaneousEvent[] events);
-    ********/
     
 }
 

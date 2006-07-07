@@ -1,3 +1,9 @@
+2006-07-07  Chris Moller  <moller@mollerware.com>
+
+	* src/java/com/redhat/ftk/EventViewer.java: Took out my
+	out-commenting (see below).  It works now; don't know why it
+	didn't last night.
+
 2006-07-06  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c:
