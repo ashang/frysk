@@ -1,3 +1,9 @@
+2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ProcWiseDataModel.java: (ProcDestroyedObserver): Applied correct process
+	verb. Removed redundant split check.
+	(ProcCreatedObserver): Ditto.
+
 2006-07-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseDataModel.java: Apply GNU Format.

@@ -308,11 +308,11 @@ public class ProcWiseDataModel
               treeStore.setValue(parent, childCountDC, childCount);
               String parentName = treeStore.getValue(parent, nameDC);
               String[] comp = parentName.split("\\(");
-              if (comp.length > 0)
-                parentName = comp[0].trim() + " (" + childCount
-                             + " child processes)";
-              else
-                parentName += " (" + childCount + " child process)";
+              String processVerb = "process";
+              if (childCount > 1)
+                processVerb = "processes";
+              parentName = comp[0].trim() + " (" + childCount + " child "
+                           + processVerb + ")";
 
               treeStore.setValue(parent, nameDC, parentName);
             }
@@ -410,11 +410,12 @@ public class ProcWiseDataModel
               treeStore.setValue(parent, childCountDC, childCount);
               String parentName = treeStore.getValue(parent, nameDC);
               String[] comp = parentName.split("\\(");
-              if (comp.length > 0)
-                parentName = comp[0].trim() + " (" + childCount
-                             + " child processes)";
-              else
-                parentName += " (" + childCount + " child process)";
+              String processVerb = "process";
+              if (childCount > 1)
+                processVerb = "processes";
+
+              parentName = comp[0].trim() + " (" + childCount + " child "
+                           + processVerb + ")";
 
               treeStore.setValue(parent, nameDC, parentName);
 
