@@ -226,6 +226,14 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   ftk_ev_label_box_width(eventviewer)  = 0;
   ftk_ev_label_box_height(eventviewer) = 0;
 
+  ftk_ev_trace_pool(eventviewer)      = NULL;
+  ftk_ev_trace_pool_next(eventviewer) = 0;
+  ftk_ev_trace_pool_max(eventviewer)  = 0;
+
+  ftk_ev_trace_order(eventviewer)      = NULL;
+  ftk_ev_trace_order_next(eventviewer) = 0;
+  ftk_ev_trace_order_max(eventviewer)  = 0;
+
   ftk_ev_traces(eventviewer)     = NULL;
   ftk_ev_trace_next(eventviewer) = 0;
   ftk_ev_trace_max(eventviewer)  = 0;
@@ -235,11 +243,7 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   ftk_ev_tie_next(eventviewer) = 0;
   ftk_ev_tie_max(eventviewer)  = 0;
   ftk_ev_tie_modified(eventviewer)  = FALSE;
-  
-  ftk_ev_events(eventviewer)     = NULL;
-  ftk_ev_event_next(eventviewer) = 0;
-  ftk_ev_event_max(eventviewer)  = 0;
-  
+
   ftk_ev_links(eventviewer)     = NULL;
   ftk_ev_link_next(eventviewer) = 0;
   ftk_ev_link_max(eventviewer)  = 0;
@@ -424,6 +428,7 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   
   {
     /*****************  drawing area **************/
+    GtkWidget * scrolled_window;
     GtkWidget * frame = gtk_frame_new (NULL);
     GtkWidget * da = gtk_drawing_area_new();
 
@@ -482,8 +487,20 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
     
     g_signal_connect (GTK_OBJECT(da),"configure-event",
                       G_CALLBACK (ftk_eventviewer_configure), eventviewer);
-    
+
+#ifndef NOT_USE_SCROLL
+    scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+
+    gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+				    GTK_POLICY_NEVER,
+				    GTK_POLICY_AUTOMATIC);
+
+    gtk_container_add (GTK_CONTAINER(frame), scrolled_window);
+    gtk_widget_show (scrolled_window);
+#else
     gtk_container_add (GTK_CONTAINER(frame), da);
+#endif
     gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
     gtk_widget_show (frame);
     gtk_box_pack_start (GTK_BOX (vbox), frame, TRUE, TRUE, 0);
@@ -572,9 +589,10 @@ draw_dlink (FtkEventViewer * eventviewer, cairo_t * cr,
       gtk_adjustment_get_value (ftk_ev_scroll_adj (eventviewer));
 
     for (i = 0; i < ftk_dlink_event_list_next (dlink); i++) {
-      int event_index = ftk_dlink_event (dlink, i);
-      ftk_event_s * event = ftk_ev_event (eventviewer, event_index);
-      ftk_trace_s * trace = ftk_ev_trace (eventviewer, ftk_event_trace(event));
+      int event_index = ftk_dlink_event_pair_event (dlink, i);
+      int trace_index = ftk_dlink_event_pair_trace (dlink, i);
+      ftk_trace_s * trace = ftk_ev_trace (eventviewer, trace_index);
+      ftk_event_s * event = ftk_trace_event (trace, event_index);
       double etime =
 	(ftk_event_time (event) - ftk_ev_zero (eventviewer)) - time_offset;
       double loc_d = etime / ftk_ev_span (eventviewer);
@@ -992,22 +1010,26 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
     
     for (i = 0; i < ftk_ev_trace_next (eventviewer); i++) {
       ftk_trace_s * ltrace = ftk_ev_trace (eventviewer, i);
+
+      if (!ftk_trace_valid (ltrace)) continue;
       if (abs (ftk_trace_vpos_d (ltrace) - pvpos) < POPUP_TOLERANCE) {
 	trace = ltrace;
 	trace_idx = i;
 	if (phpos <= ftk_ev_label_box_width (eventviewer))
 	  pt = FTK_POPUP_TYPE_LABEL;
 	else {
+	  int j;
 	  int hit_count = 0;
 	  ftk_event_s * qevent = NULL;
-	  for (i = 0; i <  ftk_ev_event_next(eventviewer); i++) {
-	    ftk_event_s * pevent = ftk_ev_event (eventviewer, i);
+	  for (j = 0; j <  ftk_trace_event_next(ltrace); j++) {
+	    ftk_event_s * pevent = ftk_trace_event (ltrace, j);
 	    if ((abs (ftk_event_loc (pevent) - phpos) < POPUP_TOLERANCE) &&
-		(trace_idx == ftk_event_trace(pevent))){
+		(trace_idx == i)) {		/* fixme -- always true ? */
 	      if (1 == hit_count) {
 		multi_event_max = MULTI_EVENT_INCR;
 		multi_event = realloc (multi_event,
-				       multi_event_max * sizeof (ftk_multi_event_s));
+				       multi_event_max
+				       * sizeof (ftk_multi_event_s));
 		multi_event[0].marker_idx = marker_idx;
 		multi_event[0].event = qevent;
 		multi_event[0].time_d = time_d;
@@ -1021,7 +1043,8 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 		if (multi_event_next >= multi_event_max) {
 		  multi_event_max += MULTI_EVENT_INCR;
 		  multi_event = realloc (multi_event,
-					 multi_event_max * sizeof (ftk_multi_event_s));
+					 multi_event_max
+					 * sizeof (ftk_multi_event_s));
 		}
 		multi_event[multi_event_next].marker_idx = marker_idx;
 		multi_event[multi_event_next].event = pevent;
@@ -1112,6 +1135,7 @@ ftk_ev_leave_notify_event (GtkWidget * widget,
 
 static void
 draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
+		  ftk_trace_s * trace,
 		  ftk_event_s * event, gboolean flush_it)
 {
   //  int o_x, o_y;
@@ -1139,8 +1163,6 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
       if ((loc_d >= 0.0) && (loc_d <= 1.0)) {
 	int h_offset = ftk_ev_trace_origin (eventviewer) +
 	  lrint (((double)ftk_ev_trace_width (eventviewer)) * loc_d);
-	ftk_trace_s * trace =
-	  ftk_ev_trace (eventviewer, ftk_event_trace (event));
 	int sym_idx = ftk_marker_glyph (marker);
 	int v_offset = ftk_trace_vpos_d (trace) +
 	  ((ftk_trace_label_dheight(trace) >> 1) - ftk_symbol_v_center(sym_idx));
@@ -1179,24 +1201,27 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     int total_label_height = 0;
     
     ftk_ev_trace_modified (eventviewer) = FALSE;
-    
-    for (i = 0; i < ftk_ev_trace_next(eventviewer); i++) {
-      ftk_trace_s * trace = ftk_ev_trace(eventviewer, i);
 
-      if (ftk_trace_label_modified(trace)) {
-	gint width, height;
+    for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
+      ftk_trace_s * trace = ftk_ev_trace(eventviewer, ftk_ev_trace_order_ety (eventviewer, i));
+      
+      if (ftk_trace_valid(trace)) {
+	if (ftk_trace_label_modified(trace)) {
+	  gint width, height;
 
-	ftk_trace_label_modified(trace) = FALSE;
+	  ftk_trace_label_modified(trace) = FALSE;
 
-	pango_layout_get_pixel_size (ftk_trace_label(trace),
-				     &width, &height);
+	  pango_layout_get_pixel_size (ftk_trace_label(trace),
+				       &width, &height);
 
-	ftk_trace_label_dwidth(trace)  = width;
-	ftk_trace_label_dheight(trace) = height;
+	  ftk_trace_label_dwidth(trace)  = width;
+	  ftk_trace_label_dheight(trace) = height;
+	}
+	ftk_trace_vpos_d(trace) = total_label_height;
+	total_label_height += ftk_trace_label_dheight(trace);
+	max_label_width     = MAX (max_label_width,
+				   ftk_trace_label_dwidth(trace));
       }
-      ftk_trace_vpos_d(trace) = total_label_height;
-      total_label_height += ftk_trace_label_dheight(trace);
-      max_label_width     = MAX (max_label_width, ftk_trace_label_dwidth(trace));
     }
     ftk_ev_label_box_width (eventviewer)  = max_label_width;
     ftk_ev_label_box_height (eventviewer) = total_label_height;
@@ -1278,45 +1303,48 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
       ftk_ev_trace_width (eventviewer)  =
 	(dww - LABEL_GAP) - ftk_ev_trace_origin (eventviewer);
 
-      for (i = 0; i < ftk_ev_trace_next(eventviewer); i++) {
-	ftk_trace_s * trace = ftk_ev_trace(eventviewer, i);
+    for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
+      ftk_trace_s * trace = ftk_ev_trace(eventviewer, ftk_ev_trace_order_ety (eventviewer, i));
 
-	cairo_set_source_rgb (cr,
-			      (double)(ftk_trace_color_red (trace))/(double)65535,
-			      (double)(ftk_trace_color_green (trace))/(double)65535,
-			      (double)(ftk_trace_color_blue (trace))/(double)65535);
-	cairo_move_to (cr,
-		       (double)(ftk_ev_label_box_width (eventviewer) -
-				ftk_trace_label_dwidth (trace)),
-		       (double)(ftk_trace_vpos_d(trace)));
-	pango_cairo_show_layout (cr, ftk_trace_label(trace));
-	cairo_stroke (cr);
-
-	{
-	  double vp = (double)((ftk_trace_label_dheight(trace) >> 1) +
-			       ftk_trace_vpos_d(trace));
-
-	  if ((0.0 < ftk_trace_linewidth (trace)) ||
-	      (0.0 < ftk_trace_linestyle (trace))) {
-	    cairo_save (cr);
-	    
-	    if (0.0 < ftk_trace_linewidth (trace))
-	      cairo_set_line_width (cr, ftk_trace_linewidth (trace));
-	    
-	    if (0.0 < ftk_trace_linestyle (trace))
-	      cairo_set_dash (cr, &ftk_trace_linestyle (trace), 1, 0.0);
-	  }
-	  
-	  cairo_move_to (cr, (double)(ftk_ev_trace_origin (eventviewer)), vp);
-	  cairo_line_to (cr, (double)(ftk_ev_trace_origin (eventviewer) +
-				      ftk_ev_trace_width (eventviewer)), vp);
-	  
+	if (ftk_trace_valid (trace)) {
+	  cairo_set_source_rgb (cr,
+				(double)(ftk_trace_color_red (trace))/(double)65535,
+				(double)(ftk_trace_color_green (trace))/(double)65535,
+				(double)(ftk_trace_color_blue (trace))/(double)65535);
+	  cairo_move_to (cr,
+			 (double)(ftk_ev_label_box_width (eventviewer) -
+				  ftk_trace_label_dwidth (trace)),
+			 (double)(ftk_trace_vpos_d(trace)));
+	  pango_cairo_show_layout (cr, ftk_trace_label(trace));
 	  cairo_stroke (cr);
+
+	  {
+	    double vp = (double)((ftk_trace_label_dheight(trace) >> 1) +
+				 ftk_trace_vpos_d(trace));
+
+	    if ((0.0 < ftk_trace_linewidth (trace)) ||
+		(0.0 < ftk_trace_linestyle (trace))) {
+	      cairo_save (cr);
+	    
+	      if (0.0 < ftk_trace_linewidth (trace))
+		cairo_set_line_width (cr, ftk_trace_linewidth (trace));
+	    
+	      if (0.0 < ftk_trace_linestyle (trace))
+		cairo_set_dash (cr, &ftk_trace_linestyle (trace), 1, 0.0);
+	    }
+	    
+	    cairo_move_to (cr, (double)(ftk_ev_trace_origin (eventviewer)),
+			   vp);
+	    cairo_line_to (cr, (double)(ftk_ev_trace_origin (eventviewer) +
+					ftk_ev_trace_width (eventviewer)), vp);
 	  
-	  if (0.0 < ftk_trace_linewidth (trace)) cairo_restore (cr);
-	}
+	    cairo_stroke (cr);
+	  
+	    if (0.0 < ftk_trace_linewidth (trace)) cairo_restore (cr);
+	  }
 	
 
+	}
       }
     }
 
@@ -1346,15 +1374,21 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     }
 
     {				/* draw points */
-      int i;
+      int i,j;
 
-      for (i = 0; i < ftk_ev_event_next(eventviewer); i++) {
-	ftk_event_s * event = ftk_ev_event (eventviewer, i);
+    for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
+      ftk_trace_s * trace = ftk_ev_trace(eventviewer, ftk_ev_trace_order_ety (eventviewer, i));
+      if (!ftk_trace_valid (trace)) continue;
 	
-	draw_cairo_point (eventviewer, cr, event, FALSE);
+	for (j = 0; j < ftk_trace_event_next(trace); j++) {
+	  ftk_event_s * event = ftk_trace_event (trace, j);
+	
+	  draw_cairo_point (eventviewer, cr, trace, event, FALSE);
+	}
       }
     }
-    {				/* draw points */
+    
+    {				/* draw links */
       int i;
 
       for (i = 0; i < ftk_ev_link_next(eventviewer); i++) {
@@ -1363,7 +1397,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
 	draw_link (eventviewer, cr, link, FALSE);
       }
     }
-    {				/* draw points */
+    {				/* draw dlinks */
       int i;
 
       for (i = 0; i < ftk_ev_dlink_next(eventviewer); i++) {
@@ -1430,15 +1464,19 @@ ftk_eventviewer_destroy(GtkObject * widget,
   for (i = 0; i < ftk_ev_trace_next(eventviewer); i++) {
     ftk_trace_s * trace = ftk_ev_trace(eventviewer, i);
       
+    if (ftk_trace_label(trace)) g_object_unref (ftk_trace_label (trace));
     if (ftk_trace_string(trace)) free (ftk_trace_string (trace));
     if (ftk_trace_gc(trace)) g_object_unref (ftk_trace_gc (trace));
+    if (ftk_trace_events (trace))  free (ftk_trace_events(trace));
   }
+  if (ftk_ev_traces (eventviewer))  free (ftk_ev_traces(eventviewer));
 
   for (i = 0; i < ftk_ev_tie_next(eventviewer); i++) {
     ftk_tie_s * tie = ftk_ev_tie(eventviewer, i);
 
     if (ftk_tie_gc(tie)) g_object_unref (ftk_tie_gc (tie));
   }
+  if (ftk_ev_ties (eventviewer))    free (ftk_ev_ties(eventviewer));
 
   for (i = 0; i < ftk_ev_markers_next(eventviewer); i++) {
     ftk_marker_s * marker = ftk_ev_marker(eventviewer, i);
@@ -1446,38 +1484,31 @@ ftk_eventviewer_destroy(GtkObject * widget,
     if (ftk_marker_gc(marker)) g_object_unref (ftk_marker_gc (marker));
     if (ftk_marker_string (marker)) free (ftk_marker_string (marker));
   }
+  if (ftk_ev_markers (eventviewer)) free (ftk_ev_markers (eventviewer));
 
   for (i = 0; i < ftk_ev_link_next(eventviewer); i++) {
     ftk_link_s * link = ftk_ev_link(eventviewer, i);
 
     if (ftk_link_trace_list (link)) free (ftk_link_trace_list (link));
   }
+  if (ftk_ev_links (eventviewer))   free (ftk_ev_links(eventviewer));
 
   for (i = 0; i < ftk_ev_dlink_next(eventviewer); i++) {
     ftk_dlink_s * dlink = ftk_ev_dlink(eventviewer, i);
 
-    if (ftk_dlink_event_list (dlink)) free (ftk_dlink_event_list (dlink));
+    if (ftk_dlink_event_pair_list (dlink))
+      free (ftk_dlink_event_pair_list (dlink));
   }
+  if (ftk_ev_dlinks (eventviewer))  free (ftk_ev_dlinks(eventviewer));
 
-  for (i = 0; i < ftk_ev_event_next(eventviewer); i++) {
-    ftk_event_s * event = ftk_ev_event(eventviewer, i);
-
-    if (ftk_event_string (event)) free (ftk_event_string (event));
-  }
+  if (ftk_ev_color_values(eventviewer))
+    free (ftk_ev_color_values(eventviewer));
 
   for (i = 0; i < db_symbols_count; i++) {
     /* fixme -- this causes a segv */
     //    g_object_unref (ftk_symbol_layout(i));
     g_free (ftk_symbol_utf8(i));
   }
-      
-  if (ftk_ev_ties (eventviewer))    free (ftk_ev_ties(eventviewer));
-  if (ftk_ev_traces (eventviewer))  free (ftk_ev_traces(eventviewer));
-  if (ftk_ev_events (eventviewer))  free (ftk_ev_events(eventviewer));
-  if (ftk_ev_links (eventviewer))   free (ftk_ev_links(eventviewer));
-  if (ftk_ev_dlinks (eventviewer))  free (ftk_ev_dlinks(eventviewer));
-  if (ftk_ev_markers (eventviewer)) free (ftk_ev_markers (eventviewer));
-  if (ftk_ev_color_values(eventviewer)) free (ftk_ev_color_values(eventviewer));
 }
 
 static void
@@ -1527,23 +1558,23 @@ do_append (FtkEventViewer * eventviewer,
 	   gchar * string,
 	   double now_d)
 {
-    ftk_event_s * event;
-    int event_nr = -1;
-    
-#define FTK_EV_EVENT_INCR	64
-    
-  if (ftk_ev_event_max(eventviewer) <= ftk_ev_event_next(eventviewer)) {
-    ftk_ev_event_max(eventviewer) += FTK_EV_EVENT_INCR;
-    ftk_ev_events(eventviewer)
-      = realloc (ftk_ev_events(eventviewer),
-		 ftk_ev_event_max(eventviewer) * sizeof(ftk_event_s));
+  ftk_event_s * event;
+  int event_nr = -1;
+  ftk_trace_s * trace = ftk_ev_trace (eventviewer, trace_index);
+
+#define FTK_TRACE_EVENT_INCR	64
+  {
+    if (ftk_trace_event_next(trace) >= ftk_trace_event_max(trace)) {
+      ftk_trace_event_max(trace) += FTK_TRACE_EVENT_INCR;
+      ftk_trace_events(trace)
+	= realloc (ftk_trace_events(trace),
+		   ftk_trace_event_max(trace) * sizeof(ftk_event_s));
     }
-  event
-    = ftk_ev_event (eventviewer,
-		    event_nr = ftk_ev_event_next(eventviewer)++);
-   
+    event_nr = ftk_trace_event_next(trace)++;
+    event = ftk_trace_event (trace, event_nr);
+  }
+
   ftk_event_marker (event) = marker;
-  ftk_event_trace (event) = trace_index;
   ftk_event_string (event) = string ? strdup (string) : NULL;
   ftk_event_time (event) = ftk_ev_now(eventviewer) = now_d;
   ftk_event_loc (event) = -1;
@@ -1565,7 +1596,7 @@ do_append (FtkEventViewer * eventviewer,
   }
 
    if (GTK_WIDGET_DRAWABLE (eventviewer))
-     draw_cairo_point (eventviewer, NULL, event, TRUE);
+     draw_cairo_point (eventviewer, NULL, trace, event, TRUE);
 
    return event_nr;
 }
@@ -1801,16 +1832,34 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
 
   {
     char * t_label;
-    ftk_trace_s * trace;
+    ftk_trace_s * trace = NULL;
 #define FTK_EV_TRACE_INCR	8
-    
-    if (ftk_ev_trace_max(eventviewer) <= ftk_ev_trace_next(eventviewer)) {
-      ftk_ev_trace_max(eventviewer) += FTK_EV_TRACE_INCR;
-      ftk_ev_traces(eventviewer)
-	= realloc (ftk_ev_traces(eventviewer),
-		   ftk_ev_trace_max(eventviewer) * sizeof(ftk_trace_s));
+
+    if (ftk_ev_trace_pool (eventviewer) &&
+	(0 < ftk_ev_trace_pool_next (eventviewer))) {
+      tag = ftk_ev_trace_pool_ety(eventviewer,
+				  --ftk_ev_trace_pool_next (eventviewer ));
     }
-    trace = ftk_ev_trace (eventviewer, tag = ftk_ev_trace_next(eventviewer)++);
+    if (-1 == tag) {
+      if (ftk_ev_trace_max(eventviewer) <= ftk_ev_trace_next(eventviewer)) {
+	ftk_ev_trace_max(eventviewer) += FTK_EV_TRACE_INCR;
+	ftk_ev_traces(eventviewer)
+	  = realloc (ftk_ev_traces(eventviewer),
+		     ftk_ev_trace_max(eventviewer) * sizeof(ftk_trace_s));
+      }
+      tag = ftk_ev_trace_next(eventviewer)++;
+    }
+
+    if (ftk_ev_trace_order_next (eventviewer) >= ftk_ev_trace_order_max (eventviewer)) {
+#define FTK_TRACE_ORDER_INCR 4
+      ftk_ev_trace_order_max (eventviewer) += FTK_TRACE_ORDER_INCR;
+      ftk_ev_trace_order(eventviewer)
+	= realloc (ftk_ev_trace_order(eventviewer),
+		   ftk_ev_trace_order_max (eventviewer) * sizeof(int));
+    }
+    ftk_ev_trace_order_ety(eventviewer, ftk_ev_trace_order_next(eventviewer)++) = tag;
+    
+    trace = ftk_ev_trace (eventviewer, tag);
     ftk_trace_gc (trace)		= NULL;
     ftk_trace_vpos_d (trace)		= 0.0;
     ftk_trace_linestyle (trace)		= -1.0;
@@ -1818,6 +1867,9 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     ftk_trace_color_red (trace)		= DEFAULT_TRACE_RED;
     ftk_trace_color_green (trace)	= DEFAULT_TRACE_GREEN;
     ftk_trace_color_blue (trace)	= DEFAULT_TRACE_BLUE;
+    ftk_trace_event_next(trace) = 0;
+    ftk_trace_event_max(trace)  = 0;
+    ftk_trace_events(trace)     = NULL;
     
     if (label) asprintf (&t_label, "%s :%2d", label, tag);
     else       asprintf (&t_label, ":%2d", tag);
@@ -1827,11 +1879,13 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     free (t_label);
     ftk_trace_string (trace) = string ? strdup (string) : NULL;
     ftk_trace_label_modified (trace)	= TRUE;
+    ftk_trace_valid (trace)    = TRUE;
     
     ftk_ev_trace_modified (eventviewer) = TRUE;
 
     if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-      ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+      ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
+				eventviewer);
   }
 
   return tag;
@@ -1843,6 +1897,168 @@ ftk_eventviewer_add_trace (FtkEventViewer * eventviewer,
 			   char * string)
 {
   return ftk_eventviewer_add_trace_e (eventviewer, label, string, NULL);
+}
+
+gboolean
+ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
+				 gint trace_index,
+				 GError ** err)
+{
+  if (!FTK_IS_EVENTVIEWER (eventviewer)) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_EV_ERROR_INVALID_WIDGET,	/* error code */
+		 "Invalid FtkEventViewer widget.");
+    return FALSE;
+  }
+  
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
+		 "Invalid FtkEventViewer trace.");
+    return FALSE;
+  }
+
+  {
+    int i;
+
+    for (i = 0; i < ftk_ev_trace_order_next (eventviewer); i++) {
+      if (ftk_ev_trace_order_ety (eventviewer, i) == trace_index) {
+	if (i < (ftk_ev_trace_order_next (eventviewer) - 1)) {
+	  memmove (&ftk_ev_trace_order_ety (eventviewer, i),
+		   &ftk_ev_trace_order_ety (eventviewer, i + 1),
+		   ((ftk_ev_trace_order_next(eventviewer) - i) - 1) *
+		   sizeof(int));
+	  ftk_ev_trace_order_next (eventviewer)--;
+	  i--;
+	}
+      }
+    }
+  }
+
+  {
+    ftk_trace_s * trace = ftk_ev_trace (eventviewer, trace_index);
+
+    if (ftk_trace_label(trace)) {
+      g_object_unref (ftk_trace_label (trace));
+      ftk_trace_label (trace) = NULL;
+    }
+    if (ftk_trace_string(trace)) {
+      free (ftk_trace_string (trace));
+      ftk_trace_string (trace) = NULL;
+    }
+    if (ftk_trace_gc(trace)) {
+      g_object_unref (ftk_trace_gc (trace));
+      ftk_trace_gc (trace) = NULL;
+    }
+    if (ftk_trace_events(trace)) {
+      free (ftk_trace_events (trace));
+      ftk_trace_events (trace) = NULL;
+    }
+    ftk_trace_event_max (trace) = 0;
+    ftk_trace_event_next (trace) = 0;
+    ftk_trace_valid (trace) = FALSE;
+
+    if (ftk_ev_trace_pool_next(eventviewer) >=
+	ftk_ev_trace_pool_max(eventviewer)) {
+#define FTK_EVENt_POOL_INCR 4
+      ftk_ev_trace_pool_max(eventviewer) += FTK_EVENt_POOL_INCR;
+      ftk_ev_trace_pool(eventviewer) =
+	realloc (ftk_ev_trace_pool(eventviewer),
+		 ftk_ev_trace_pool_max(eventviewer) * sizeof(int));
+    }
+    ftk_ev_trace_pool_ety(eventviewer, ftk_ev_trace_pool_next(eventviewer)++) =
+      trace_index;
+  }
+
+  /* delete ftk_ev_dlinks(eventviewer) */
+  if (ftk_ev_dlinks (eventviewer)) {
+    int i;
+
+    for (i = 0; i < ftk_ev_dlink_next (eventviewer); i++) {
+      ftk_dlink_s * dlink = ftk_ev_dlink (eventviewer, i);
+
+      if (ftk_dlink_event_pair_list(dlink)) {
+	int j;
+
+	for (j = 0; j < ftk_dlink_event_list_next(dlink); j++) {
+	  int ti = ftk_dlink_event_pair_trace(dlink, j);
+	  if (trace_index == ti) {
+	    if (j < (ftk_dlink_event_list_next (dlink) - 1))
+	      memmove (&ftk_dlink_event_pair(dlink, j),
+		       &ftk_dlink_event_pair(dlink, j+1),
+		       ((ftk_dlink_event_list_next(dlink) - j) - 1) *
+		       sizeof(ftk_event_pair_s));
+	    ftk_dlink_event_list_next (dlink)--;
+	    j--;
+	  }
+	}
+      }
+
+      if (1 >= ftk_dlink_event_list_next (dlink)) {
+	if (ftk_dlink_event_pair_list(dlink))
+	  free(ftk_dlink_event_pair_list(dlink));
+	if (i < (ftk_ev_dlink_next (eventviewer) - 1)) 
+	  memmove (ftk_ev_dlink(eventviewer, i),
+		   ftk_ev_dlink(eventviewer, i+1),
+		   (ftk_ev_dlink_next (eventviewer) - 1)
+		   * sizeof(ftk_dlink_s));
+	ftk_ev_dlink_next (eventviewer)--;
+      }
+      
+    }
+  }
+  
+  /* delete ftk_ev_links(eventviewer) */
+  if (ftk_ev_links (eventviewer)) {
+    int i;
+
+    for (i = 0; i < ftk_ev_link_next (eventviewer); i++) {
+      ftk_link_s * link = ftk_ev_link (eventviewer, i);
+
+      if (ftk_link_trace_list(link)) {
+	int j;
+
+	for (j = 0; j < ftk_link_trace_list_next(link); j++) {
+	  int ti = ftk_link_trace(link, j);
+	  if (trace_index == ti) {
+	    if (j < (ftk_link_trace_list_next (link) - 1))
+	      memmove (&ftk_link_trace(link, j),
+		       &ftk_link_trace(link, j+1),
+		       ((ftk_link_trace_list_next(link) - j) - 1) *
+		       sizeof(gint));
+	    ftk_link_trace_list_next (link)--;
+	    j--;
+	  }
+	}
+      }
+
+      if (1 >= ftk_link_trace_list_next (link)) {
+	if (ftk_link_trace_list(link)) free(ftk_link_trace_list(link));
+	if (i < (ftk_ev_link_next (eventviewer) - 1)) 
+	  memmove (ftk_ev_link(eventviewer, i),
+		   ftk_ev_link(eventviewer, i+1),
+		   (ftk_ev_link_next (eventviewer) - 1) * sizeof(ftk_link_s));
+	ftk_ev_link_next (eventviewer)--;
+      }
+    }
+  }
+
+  ftk_ev_trace_modified(eventviewer) = TRUE;
+  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
+    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)),
+			      NULL, eventviewer);
+
+  return TRUE;
+}
+
+gboolean
+ftk_eventviewer_delete_trace	(FtkEventViewer * eventviewer,
+				 gint trace_idx)
+{
+  return ftk_eventviewer_delete_trace_e	(eventviewer, trace_idx, NULL);
 }
 
 /*
@@ -1867,7 +2083,8 @@ ftk_eventviewer_set_trace_rgb_e (FtkEventViewer * eventviewer,
     return FALSE;
   }
   
-  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer))) {
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
@@ -1956,7 +2173,8 @@ ftk_eventviewer_set_trace_label_e (FtkEventViewer * eventviewer,
     return FALSE;
   }
   
-  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer))) {
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
@@ -2014,7 +2232,8 @@ ftk_eventviewer_set_trace_linestyle_e (FtkEventViewer * eventviewer,
     return FALSE;
   }
   
-  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer))) {
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
@@ -2543,7 +2762,8 @@ ftk_eventviewer_append_event_e (FtkEventViewer * eventviewer,
     return -1;
   }
   
-  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer))) {
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
@@ -2564,7 +2784,8 @@ ftk_eventviewer_append_event_e (FtkEventViewer * eventviewer,
    
     gettimeofday (&now, NULL);
 
-    rc = do_append (eventviewer, trace_index, marker, string, timeval_to_double (&now));
+    rc = do_append (eventviewer, trace_index, marker, string,
+		    timeval_to_double (&now));
   }
 
   return rc;
@@ -2576,7 +2797,8 @@ ftk_eventviewer_append_event   (FtkEventViewer * eventviewer,
 				gint marker,
 				gchar * string)
 {
-  return ftk_eventviewer_append_event_e (eventviewer, trace, marker, string, NULL);
+  return ftk_eventviewer_append_event_e (eventviewer, trace, marker,
+					 string, NULL);
 }
 
 static gboolean
@@ -2588,8 +2810,8 @@ do_simultaneous_append (FtkEventViewer * eventviewer,
 			gchar *string,
 			GError ** err)
 {
-  if ((trace_index < 0) ||
-      (trace_index >= ftk_ev_trace_next (eventviewer))) {
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
@@ -2778,10 +3000,26 @@ ftk_eventviewer_append_simultaneous_event_array (FtkEventViewer * eventviewer,
 }
 
 static gboolean
-do_event_dlink (FtkEventViewer * eventviewer, ftk_dlink_s * dlink, gint event_index, GError ** err)
+do_event_dlink (FtkEventViewer * eventviewer, ftk_dlink_s * dlink,
+		ftk_event_pair_s * event_pair, GError ** err)
 {
+  gint trace_index = event_pair->trace_idx;
+  gint event_index = event_pair->event_idx;
+  ftk_trace_s * trace;
+
+  if ((trace_index < 0) || (trace_index >= ftk_ev_trace_next (eventviewer)) ||
+      !ftk_trace_valid (ftk_ev_trace (eventviewer, trace_index))) {
+    g_set_error (err,
+		 ftk_quark,				/* error domain */
+		 FTK_EV_ERROR_INVALID_TRACE,	/* error code */
+		 "Invalid FtkEventViewer trace.");
+    return FALSE;
+  }
+  
+  trace = ftk_ev_trace (eventviewer, trace_index);
+  
   if ((event_index < 0) ||
-      (event_index >= ftk_ev_event_next (eventviewer))) {
+      (event_index >= ftk_trace_event_next (trace))) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_EVENT,	/* error code */
@@ -2793,11 +3031,15 @@ do_event_dlink (FtkEventViewer * eventviewer, ftk_dlink_s * dlink, gint event_in
       ftk_dlink_event_list_max(dlink)) {
 #define FTK_LINK_EVENT_INCR	4
     ftk_dlink_event_list_max(dlink) +=  FTK_LINK_EVENT_INCR;
-    ftk_dlink_event_list(dlink) =
-      realloc (ftk_dlink_event_list(dlink),
-	       ftk_dlink_event_list_max(dlink) * sizeof(int));
+    ftk_dlink_event_pair_list(dlink) =
+      realloc (ftk_dlink_event_pair_list(dlink),
+	       ftk_dlink_event_list_max(dlink)
+	       * sizeof(ftk_event_pair_s));
   }
-  ftk_dlink_event(dlink, ftk_dlink_event_list_next(dlink)++) = event_index;
+  ftk_dlink_event_pair_trace(dlink, ftk_dlink_event_list_next(dlink)) =
+    trace_index;
+  ftk_dlink_event_pair_event(dlink, ftk_dlink_event_list_next(dlink)++) =
+    event_index;
 
   return TRUE;
 }
@@ -2816,7 +3058,7 @@ create_dlink (FtkEventViewer * eventviewer, gint tie_index)
   }
   dlink = ftk_ev_dlink(eventviewer, ftk_ev_dlink_next(eventviewer)++);
   ftk_dlink_tie_index(dlink)		= tie_index;
-  ftk_dlink_event_list(dlink)		= NULL;
+  ftk_dlink_event_pair_list(dlink)	= NULL;
   ftk_dlink_event_list_next(dlink)	= 0;
   ftk_dlink_event_list_max(dlink)	= 0;
 
@@ -2849,12 +3091,13 @@ do_dlink_ties (FtkEventViewer * eventviewer, gint tie_index,
   dlink = create_dlink (eventviewer, tie_index);
 
   while(1) {
-    gint event_index;
+    ftk_event_pair_s event_pair;
 
-    event_index = va_arg (ap, int);
-    if (-1 == event_index) break;
+    event_pair.trace_idx = va_arg (ap, gint);
+    if (-1 == event_pair.trace_idx) break;
+    event_pair.event_idx = va_arg (ap, gint);
 
-    rc = do_event_dlink (eventviewer, dlink, event_index, err);
+    rc = do_event_dlink (eventviewer, dlink, &event_pair, err);
     if (FALSE == rc) break;
   }
 
@@ -2898,7 +3141,8 @@ ftk_eventviewer_tie_events (FtkEventViewer * eventviewer,
 gboolean
 ftk_eventviewer_tie_event_array_e (FtkEventViewer * eventviewer,
 				   gint tie_index,
-				   gint count, gint * events,
+				   gint count,
+				   ftk_event_pair_s * events,
 				   GError ** err)
 {
   int i;
@@ -2924,7 +3168,7 @@ ftk_eventviewer_tie_event_array_e (FtkEventViewer * eventviewer,
   dlink = create_dlink (eventviewer, tie_index);
 
   for (i = 0; i < count; i++) {
-    rc = do_event_dlink (eventviewer, dlink, events[i], err);
+    rc = do_event_dlink (eventviewer, dlink, &events[i], err);
     if (FALSE == rc) break;
   }
 
@@ -2933,8 +3177,9 @@ ftk_eventviewer_tie_event_array_e (FtkEventViewer * eventviewer,
 
 gboolean
 ftk_eventviewer_tie_event_array (FtkEventViewer * eventviewer,
-				 gint tie_index, gint count, gint * events)
+				 gint tie_index, gint count,
+				 ftk_event_pair_s * events)
 {
-  return ftk_eventviewer_tie_event_array_e (eventviewer, tie_index, count, events, NULL);
+  return ftk_eventviewer_tie_event_array_e (eventviewer, tie_index, count,
+					    events, NULL);
 }
-

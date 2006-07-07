@@ -1,6 +1,14 @@
+2006-07-06  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Added a delete_trace() fcn, added
+	a vertical scrollbar to the drawing area, rewrote to associate the
+	events with traces rather than the widget.
+
 2006-07-06  Nurdin Premji  <npremji@redhat.com>
 
-	* src/java/com/redhat/ftk/EventViewer.java (ftk_eventviewer_tie_new): Added.
+	* src/java/com/redhat/ftk/EventViewer.java
+	(ftk_eventviewer_tie_new): Added. 
 	(ftk_eventviewer_set_tie_rgb): 
 	(ftk_eventviewer_set_tie_color): Added.
 	(ftk_eventviewer_set_tie_linestyle): Added.
@@ -10,18 +18,19 @@
 	(setTieColor): Added.
 	(setTieLinestyle): Added.
 	(appendSimultaneousEvents): Added.
-	(setBackgroundColor): Changed to use _set_color method in ftkeventviewer.c 
-    through jni.
+	(setBackgroundColor): Changed to use _set_color method in
+	ftkeventviewer.c through jni.
 	(setTraceColor): Ditto.
 	(setMarkerColor): Ditto.
 	* src/java/com/redhat/ftk/SimultaneousEvent.java: Added.
-	* Makefile.am: Added in SimultaneousEvent.java and modified classpath of 
-    Eventviewer to see this class.
-	* src/jni/com_redhat_ftk_EventViewer.c: Added support for set_*_color methods.
-	Changed ints to gints. Uncommented resize support, now implemented.
-	Added support for ties and Simultaneous Events.
-	* src/widgets/ftkeventviewer.c: Added a comment to show where code to create 
-	new marker starts.
+	* Makefile.am: Added in SimultaneousEvent.java and modified
+	classpath of Eventviewer to see this class.
+	* src/jni/com_redhat_ftk_EventViewer.c: Added support for
+	set_*_color methods. Changed ints to gints. Uncommented resize
+	support, now implemented. Added support for ties and Simultaneous
+	Events. 
+	* src/widgets/ftkeventviewer.c: Added a comment to show where code
+	to create new marker starts.
 	
 2006-07-05  Chris Moller  <moller@mollerware.com>
 

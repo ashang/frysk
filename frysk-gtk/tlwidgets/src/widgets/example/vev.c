@@ -10,6 +10,13 @@
 #include <gtk/gtk.h>
 #include <ftkeventviewer.h>
 
+typedef enum {
+  PB_NONE,
+  PB_KILL_EV_2,
+  PB_KILL_TRACE,
+  PB_ADD_TRACE
+} pb_e;
+
 GtkWidget * eventviewer1;
 GtkWidget * eventviewer2;
 GtkWidget * frame2;
@@ -122,21 +129,17 @@ catch_sigalrm (int sig)
 				    thread_parms[IDX_PARENT].marker_id,
 				    "termination of thread 0");
 
-#if 1
       {
-	int events_to_tie[] = { clone_term_event, parent_term_event };
+	ftk_event_pair_s events_to_tie[] = {
+	  {thread_parms[IDX_THREAD0].trace_id, clone_term_event},
+	  {thread_parms[IDX_PARENT].trace_id, parent_term_event}
+	};
 	ftk_eventviewer_tie_event_array (thread_viewer,
 					 term_tie,
-					 sizeof(events_to_tie)/sizeof(gint),
+					 sizeof(events_to_tie)/sizeof(ftk_event_pair_s),
 					 events_to_tie);
       }
-#else
-      ftk_eventviewer_tie_events (thread_viewer,
-				  term_tie,
-				  clone_term_event,
-				  parent_term_event,
-				  -1);
-#endif
+
       usleep (250000);
   
       clone_term_event =
@@ -162,9 +165,10 @@ catch_sigalrm (int sig)
 
       ftk_eventviewer_tie_events (thread_viewer,
 				  term_tie,
-				  clone_term_event,
-				  parent_term_event,
+				  thread_parms[IDX_THREAD1].trace_id, clone_term_event,
+				  thread_parms[IDX_PARENT].trace_id, parent_term_event,
 				  -1);
+
       usleep (250000);
     
       clone_term_event =
@@ -187,12 +191,12 @@ catch_sigalrm (int sig)
 				    thread_parms[IDX_PARENT].marker_id,
 				    "termination of thread 2");
 
-
       ftk_eventviewer_tie_events (thread_viewer,
 				  term_tie,
-				  clone_term_event,
-				  parent_term_event,
+				  thread_parms[IDX_THREAD2].trace_id, clone_term_event,
+				  thread_parms[IDX_PARENT].trace_id, parent_term_event,
 				  -1);
+
       sleep (1);
       ftk_eventviewer_append_event (thread_viewer,
 				    thread_parms[IDX_PARENT].trace_id,
@@ -246,7 +250,8 @@ catch_sigalrm (int sig)
   if (et <= max_event_nr) {
     int mi = 1 + (rt & 3);
     if (mi < 4) {
-      
+
+      err = NULL;
       int ti = (rt >> 2) & 3;
       ftk_eventviewer_append_event_e (FTK_EVENTVIEWER (eventviewer1),
 				      thread_parms[ti].trace_id,
@@ -257,6 +262,8 @@ catch_sigalrm (int sig)
 	fprintf (stderr, "Unable to append event: %s\n", err->message);
 	g_error_free (err);
       }
+      
+      err = NULL;
       ftk_eventviewer_append_event_e (FTK_EVENTVIEWER (eventviewer2),
 				      event_parms[mi].trace_id,
 				      thread_parms[ti].marker_id,
@@ -272,10 +279,28 @@ catch_sigalrm (int sig)
 }
 
 static void
-quit_cb (GtkButton * button, gpointer user_data)
+pb_cb (GtkButton * button, gpointer user_data)
 {
-  gtk_widget_destroy (frame2);
-  eventviewer2 = NULL;
+  switch((pb_e)GPOINTER_TO_INT (user_data)) {
+  case PB_NONE:
+    break;
+  case PB_KILL_EV_2:
+    gtk_widget_destroy (frame2);
+    eventviewer2 = NULL;
+    break;
+  case PB_KILL_TRACE:
+    ftk_eventviewer_delete_trace (thread_viewer, 1);
+    break;
+  case PB_ADD_TRACE:
+    {
+      gint nt =ftk_eventviewer_add_trace (thread_viewer, "fake0", "fake0");
+      ftk_eventviewer_append_event (thread_viewer,
+				    nt,
+				    event_parms[IDX_TERM].marker_id,
+				    "fave event");
+    }
+    break;
+  }
 }
 
 int main( int   argc,
@@ -284,7 +309,6 @@ int main( int   argc,
   GtkWidget *window;
   GtkWidget *vbox;
   GtkWidget *frame;
-  gboolean rc;
   GError * err;
   
   gtk_init (&argc, &argv);
@@ -496,16 +520,6 @@ int main( int   argc,
 
   max_event_nr = 4;
 
-  /* _e suffixed versions of the fcns tell you if something screwed up */
-  err = NULL;
-  if (NULL != err) {
-    fprintf (stderr, "Unable to set update: %s\n", err->message);
-    g_error_free (err);
-    exit (1);
-  }
-    
-  if (FALSE == rc) exit (2);
-
   frame = gtk_frame_new ("Events by thread");
   gtk_container_add (GTK_CONTAINER(frame), eventviewer1);
   gtk_widget_show (frame);
@@ -518,12 +532,23 @@ int main( int   argc,
   
   {
     GtkWidget * hbutton_box = gtk_hbutton_box_new();
-    GtkWidget * quit_button
-      = gtk_button_new_with_mnemonic ("_Quit");
+    GtkWidget * push_button;
 
-    g_signal_connect (GTK_OBJECT(quit_button),"clicked",
-                      (GtkSignalFunc) quit_cb, NULL);
-    gtk_container_add (GTK_CONTAINER (hbutton_box), quit_button);
+    push_button = gtk_button_new_with_mnemonic ("_Kill EV 2");
+    g_signal_connect (GTK_OBJECT(push_button),"clicked",
+                      (GtkSignalFunc) pb_cb, GINT_TO_POINTER (PB_KILL_EV_2));
+    gtk_container_add (GTK_CONTAINER (hbutton_box), push_button);
+
+    push_button = gtk_button_new_with_mnemonic ("_Delete Trace 1");
+    g_signal_connect (GTK_OBJECT(push_button),"clicked",
+                      (GtkSignalFunc) pb_cb, GINT_TO_POINTER (PB_KILL_TRACE));
+    gtk_container_add (GTK_CONTAINER (hbutton_box), push_button);
+
+    push_button = gtk_button_new_with_mnemonic ("_Add Trace");
+    g_signal_connect (GTK_OBJECT(push_button),"clicked",
+                      (GtkSignalFunc) pb_cb, GINT_TO_POINTER (PB_ADD_TRACE));
+    gtk_container_add (GTK_CONTAINER (hbutton_box), push_button);
+
     gtk_widget_show_all (hbutton_box);
 
     gtk_box_pack_start (GTK_BOX (vbox), hbutton_box, FALSE, FALSE, 0);
