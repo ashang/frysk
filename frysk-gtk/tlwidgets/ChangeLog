@@ -4,7 +4,13 @@
 	* src/widgets/ftkeventviewer.h: Added a delete_trace() fcn, added
 	a vertical scrollbar to the drawing area, rewrote to associate the
 	events with traces rather than the widget.
-
+	* src/widgets/example/vev.c: Added tests for above.
+	* src/java/com/redhat/ftk/EventViewer.java: Commented out
+	appendSimultaneousEvents() and
+	ftk_eventviewer_append_simultaneous_events_array()--
+	com.redhat.ftk.SimultaneousEvent couldn't be found and was killing
+	the build.
+	
 2006-07-06  Nurdin Premji  <npremji@redhat.com>
 
 	* src/java/com/redhat/ftk/EventViewer.java
