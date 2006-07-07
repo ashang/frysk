@@ -81,7 +81,8 @@ public class RegisterWindow
     extends Window
     implements Saveable
 {
-
+  public static String gladePath;
+  
   private Task myTask;
 
   private LibGlade glade;
@@ -135,7 +136,7 @@ public class RegisterWindow
 
   public void setTask (Task myTask)
   {
-    
+
     this.myTask = myTask;
 
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
@@ -281,8 +282,8 @@ public class RegisterWindow
   public void load (Preferences prefs)
   {
     this.prefs = prefs;
-    this.refreshList();
     this.formatDialog.load(prefs);
+    this.refreshList();
   }
 
   /**

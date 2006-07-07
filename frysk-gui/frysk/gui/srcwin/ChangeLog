@@ -1,3 +1,15 @@
+2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Now initializes the register
+	window.
+	(addEvents): Changed to use new local register window.
+	(doRun): Ditto.
+	(doStop): Ditto.
+	(toggleRegisterWindow): Ditto.
+	* SourceWindowFactory.java (finishSourceWindow): No longer hides the
+	session manager if a source window already exists, also calls
+	grabFocus().
+
 2006-07-06  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindowFactory.java (finishSourceWindow): No longer calls

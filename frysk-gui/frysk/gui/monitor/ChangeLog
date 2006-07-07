@@ -1,3 +1,10 @@
+2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* WindowManager.java (registerWindow): Removed.
+	(initRegisterWindow): Ditto.
+	(save): Removed registerWindow related code.
+	(load): Ditto.
+
 2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseDataModel.java: (ProcDestroyedObserver): Applied correct process

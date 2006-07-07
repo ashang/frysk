@@ -1,3 +1,11 @@
+2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Gui.java (Gui): Now keeps track of the proper directory for the glade
+	files and no longer initializes the register window through the
+	WindowManager.
+	* register/RegisterWindow.java (gladePath): Added.
+	(load): Now refreshes the list after preferences have been loaded.
+
 2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (getDebugSingleProcess): Only launch source window

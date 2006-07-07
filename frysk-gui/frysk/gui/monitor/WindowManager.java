@@ -49,7 +49,6 @@ import org.gnu.glade.LibGlade;
 import frysk.Config;
 import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
-import frysk.gui.register.RegisterWindow;
 import frysk.gui.memory.MemoryWindow;
 
 /**
@@ -86,8 +85,6 @@ public class WindowManager
   public ObserversDialog observersDialog;
 
   public EditObserverDialog editObserverDialog;
-
-  public RegisterWindow registerWindow;
 
   public MemoryWindow memoryWindow;
 
@@ -134,11 +131,6 @@ public class WindowManager
     this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
   }
 
-  public void initRegisterWindow (LibGlade gladeFile)
-  {
-    this.registerWindow = new RegisterWindow(gladeFile);
-  }
-
   public void initMemoryWindow (LibGlade gladeFile)
   {
     this.memoryWindow = new MemoryWindow(gladeFile);
@@ -152,9 +144,6 @@ public class WindowManager
     logWindow.save(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-    registerWindow.save(Preferences.userRoot().node(
-                                                    prefs.absolutePath()
-                                                        + "/registers"));
     memoryWindow.save(Preferences.userRoot().node(
                                                   prefs.absolutePath()
                                                       + "/memory"));
@@ -170,9 +159,6 @@ public class WindowManager
     logWindow.load(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-    registerWindow.load(Preferences.userRoot().node(
-                                                    prefs.absolutePath()
-                                                        + "/registers"));
     memoryWindow.load(Preferences.userRoot().node(
                                                   prefs.absolutePath()
                                                       + "/memory"));

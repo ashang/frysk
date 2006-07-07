@@ -190,7 +190,8 @@ public class SourceWindowFactory
         // Do something here to revive the existing window
         s = (SourceWindow) map.get(proc);
         s.showAll();
-        WindowManager.theManager.sessionManager.hide();
+        s.grabFocus();
+//        WindowManager.theManager.sessionManager.hide();
       }
     else
       {

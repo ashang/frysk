@@ -43,6 +43,7 @@ package frysk.gui.srcwin;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.prefs.Preferences;
 
 import org.gnu.gdk.Color;
 import org.gnu.gdk.KeyValue;
@@ -100,6 +101,7 @@ import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
 import frysk.gui.monitor.WindowManager;
+import frysk.gui.register.RegisterWindow;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
@@ -213,6 +215,8 @@ public class SourceWindow
 
   private VariableWatchView watchView;
 
+  private RegisterWindow regWin;
+
   // Due to java-gnome bug #319415
   private ToolTips tips;
 
@@ -234,6 +238,19 @@ public class SourceWindow
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
+    try
+      {
+        this.regWin = new RegisterWindow(
+                                         new LibGlade(
+                                                      RegisterWindow.gladePath,
+                                                      null));
+      }
+    catch (Exception e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    
     this.setIcon(IconManager.windowIcon);
 
     this.listener = new SourceWindowListener(this);
@@ -266,7 +283,7 @@ public class SourceWindow
 
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
-    
+
     this.hideAll();
     this.showAll();
     this.glade.getWidget(FIND_BOX).hideAll();
@@ -865,7 +882,7 @@ public class SourceWindow
     });
 
     // Register Window
-    WindowManager.theManager.registerWindow.addListener(new LifeCycleListener()
+    this.regWin.addListener(new LifeCycleListener()
     {
       public boolean lifeCycleQuery (LifeCycleEvent arg0)
       {
@@ -909,7 +926,7 @@ public class SourceWindow
           SourceWindow.this.toggleMemoryWindow.setActive(false);
       }
     });
-    
+
     // Mode box
     ((ComboBox) this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX)).addListener(listener);
     this.glade.getWidget(SourceWindow.VIEW_COMBO_BOX).setSensitive(false);
@@ -1141,7 +1158,7 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Running");
 
-    WindowManager.theManager.registerWindow.setIsRunning(true);
+    this.regWin.setIsRunning(true);
     WindowManager.theManager.memoryWindow.setIsRunning(true);
 
     // Set status of actions
@@ -1172,7 +1189,7 @@ public class SourceWindow
     StatusBar sbar = (StatusBar) this.glade.getWidget("statusBar");
     sbar.push(0, "Stopped");
 
-    WindowManager.theManager.registerWindow.setIsRunning(false);
+    this.regWin.setIsRunning(false);
     WindowManager.theManager.memoryWindow.setIsRunning(true);
 
     // Set status of actions
@@ -1312,17 +1329,29 @@ public class SourceWindow
 
   private void toggleRegisterWindow ()
   {
+    Preferences prefs = PreferenceManager.getPrefs();
+    
+    // Show the window
     if (this.toggleRegisterWindow.getActive())
       {
-        if (! WindowManager.theManager.registerWindow.hasTaskSet())
+        // load preferences
+        this.regWin.load(prefs.node(prefs.absolutePath() + "/registers"));
+
+        // set the task information
+        if (! this.regWin.hasTaskSet())
           {
-            WindowManager.theManager.registerWindow.setTask(this.myTask);
+            this.regWin.setTask(this.myTask);
           }
+        // If that's already there, just show it
         else
-          WindowManager.theManager.registerWindow.showAll();
+          this.regWin.showAll();
       }
+    // Hide the register window
     else
-      WindowManager.theManager.registerWindow.hideAll();
+      {
+        this.regWin.hideAll();
+        this.regWin.save(prefs.node(prefs.absolutePath() + "/registers"));
+      }
   }
 
   private void toggleMemoryWindow ()
