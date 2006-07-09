@@ -16,6 +16,10 @@
 
 GQuark ftk_quark;
 
+static gboolean ftk_eventviewer_da_scroll (GtkWidget      *widget,
+					   GdkEventScroll *event,
+					   gpointer        user_data);
+
 static gboolean ftk_eventviewer_expose (GtkWidget * widget,
 					GdkEventExpose * event,
 					gpointer data);
@@ -36,6 +40,9 @@ static void ftk_eventviewer_realize (GtkWidget * widget,
 #endif
 static void ftk_eventviewer_destroy (GtkObject * widget,
 				     gpointer data);
+
+static void ftk_eventviewer_center_click (GtkButton *button,
+					  gpointer   user_data);
 #if 0
 static void ftk_eventviewer_scale_toggle (GtkToggleButton * button,
 					  gpointer data);
@@ -218,6 +225,10 @@ initialise_widget (FtkEventViewer * eventviewer)
   ftk_ev_next_glyph (eventviewer)	= 0;
   ftk_ev_next_color (eventviewer)	= 0;
   
+  ftk_ev_min_time (eventviewer)		= HUGE_VAL;
+  ftk_ev_max_time (eventviewer)		= -HUGE_VAL;
+  ftk_ev_time_set (eventviewer)		= FALSE;
+  
   ftk_ev_popup_window (eventviewer)	= NULL;
   ftk_ev_popup_type (eventviewer)	= FTK_POPUP_TYPE_NONE;
   ftk_ev_popup_trace (eventviewer)	= -1;
@@ -323,6 +334,26 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
     gtk_box_pack_start (GTK_BOX (hbutton_box),
 			hold_toggle_button,
 			FALSE, FALSE, 0);
+  }
+  
+  {
+    /* center button */
+      
+    GtkWidget * center_button
+      = gtk_button_new_with_mnemonic ("_Center");
+
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
+			  center_button,
+			  "Center the available data in the display.",
+			  "private");
+    
+    g_signal_connect (GTK_OBJECT(center_button),"clicked",
+                      (GtkSignalFunc) ftk_eventviewer_center_click,
+		      eventviewer);
+
+    gtk_box_pack_start (GTK_BOX (hbutton_box),
+			center_button,
+			FALSE, FALSE, 0);
   }	
 
 #ifdef USE_SLIDER_INTERVAL
@@ -408,6 +439,28 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
   }
 #endif
 
+#ifdef USE_READOUT
+  {
+    /* center button */
+      
+    GtkWidget * frame   = gtk_frame_new ("Time");
+    GtkWidget * readout = gtk_label_new ("");
+
+    ftk_ev_readout (eventviewer) = readout;
+
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
+			  readout,
+			  "Time in seconds.",
+			  "private");
+
+    gtk_container_set_border_width (GTK_CONTAINER (frame), 4);
+    gtk_container_add (GTK_CONTAINER (frame), readout);
+    gtk_box_pack_end (GTK_BOX (hbutton_box),
+			frame,
+			FALSE, FALSE, 0);
+  }
+#endif
+
   gtk_widget_show_all (hbutton_box);
   
   return hbutton_box;
@@ -482,8 +535,12 @@ create_drawing_area (FtkEventViewer * eventviewer)
 			GDK_ENTER_NOTIFY_MASK |
 #endif
 			GDK_LEAVE_NOTIFY_MASK |
+			GDK_SCROLL_MASK    |
 			GDK_BUTTON_PRESS_MASK    |
 			GDK_BUTTON_RELEASE_MASK);
+
+  g_signal_connect (GTK_OBJECT (da), "scroll-event",
+		    (GtkSignalFunc) ftk_eventviewer_da_scroll, eventviewer);
 
   g_signal_connect (GTK_OBJECT (da), "expose-event",
 		    (GtkSignalFunc) ftk_eventviewer_da_expose, eventviewer);
@@ -509,7 +566,7 @@ create_drawing_area (FtkEventViewer * eventviewer)
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
 				  GTK_POLICY_NEVER,
-				  GTK_POLICY_AUTOMATIC);
+				  GTK_POLICY_ALWAYS);
   
   gtk_container_add (GTK_CONTAINER(frame), scrolled_window);
   gtk_widget_show (scrolled_window);
@@ -782,6 +839,61 @@ draw_link (FtkEventViewer * eventviewer, cairo_t * cr,
 /*                     callbacks                       */
 /*                                                     */
 /*******************************************************/
+static void
+ftk_eventviewer_center_click (GtkButton *button,
+			      gpointer   user_data)
+{
+  double slop;
+  FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
+  GtkAdjustment * adj = ftk_ev_scroll_adj (eventviewer);
+  double span = ftk_ev_max_time (eventviewer) - ftk_ev_min_time (eventviewer);
+
+  if (!ftk_ev_time_set (eventviewer) || (span == 0.0)) return;
+  
+  ftk_ev_span (eventviewer) = span;
+
+  slop = 0.25 * ftk_ev_span (eventviewer);
+
+  g_object_set (G_OBJECT (adj), "page-size", slop + ftk_ev_span (eventviewer),
+		NULL);
+  gtk_adjustment_set_value (adj, (ftk_ev_min_time (eventviewer)
+				  - ftk_ev_zero (eventviewer)) - slop/2.0);
+
+  gtk_range_set_value (GTK_RANGE (ftk_ev_interval_scale (eventviewer)),
+		       log10 (slop + ftk_ev_span (eventviewer)));
+
+  gtk_adjustment_changed (adj);
+
+  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
+    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+}
+
+static gboolean
+ftk_eventviewer_da_scroll (GtkWidget * widget,
+			   GdkEventScroll * event,
+			   gpointer user_data)
+{
+  FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
+  gboolean rc = FALSE;		/* false to propagate */
+
+  switch ((int)(event->state)) {
+  case 1:		/* shift */
+    gtk_propagate_event (ftk_ev_scroll (eventviewer), (GdkEvent *)event);
+    rc = TRUE;		/* inhibit prop	*/
+    break;
+  case 4:		/* ctrl */
+    gtk_propagate_event (ftk_ev_interval_scale(eventviewer),  (GdkEvent *)event);
+    rc = TRUE;		/* inhibit prop	*/
+    break;
+#if 0
+  case 8:		/* alt */
+    rc = TRUE;		/* inhibit prop	*/
+    break;
+#endif
+  }
+
+  return rc;
+}
 
 #ifdef USE_SLIDER_INTERVAL
 static gchar *
@@ -829,6 +941,34 @@ ftk_eventviewer_slider_cv (GtkRange * range,
     return FALSE;
   }
   else return TRUE;	/* do no more */
+}
+#endif
+
+#ifdef USE_READOUT
+/* offset = adj_val				*/
+/* mark = (time - zero) - offset		*/
+/* loc_d = mark / span				*/
+/* y = trace_origin +   trace_width * loc_d 	*/
+
+/* y - origin = width * loc			*/
+/* loc = (y - origin)/width			*/
+/* mark = loc * span				*/
+/* time - zero = mark + offset			*/
+
+static void
+set_readout (FtkEventViewer * eventviewer, double y)
+{
+  char * ro;
+  double loc_d = (y - ((double)(ftk_ev_trace_origin (eventviewer)))) /
+    ((double)(ftk_ev_trace_width (eventviewer)));
+  double mark_time = loc_d *  ftk_ev_span (eventviewer);
+  double tv = mark_time + gtk_adjustment_get_value (ftk_ev_scroll_adj (eventviewer));
+  fprintf (stderr, "%g %g\n",
+	   ftk_ev_min_time (eventviewer) - ftk_ev_zero (eventviewer),
+	   ftk_ev_max_time (eventviewer) - ftk_ev_zero (eventviewer));
+  asprintf (&ro, "%g", tv);
+  gtk_label_set_text (GTK_LABEL (ftk_ev_readout (eventviewer)), ro);
+  free (ro);
 }
 #endif
 
@@ -889,10 +1029,8 @@ ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl, double dx)
     offset = lrint ((dx/((double)(widget->allocation.width))) *
 		    ((double)(req.width)));
 
-    /* the +4 in py +4 is because if the ptr is in the moved window after
-     * the move, the window pops down */
     gtk_window_move (GTK_WINDOW (ftk_ev_popup_window (eventviewer)),
-		     px - offset, py + 4);
+		     px - offset, py + 18);
     gtk_widget_show (ftk_ev_popup_window (eventviewer));
   }
 }
@@ -993,7 +1131,8 @@ create_popup_label (FtkEventViewer * eventviewer,
 
       for (i = 0; i < me_next; i++) {
 	int count;
-	char * tlbl = create_popup_marker_label ((time_d != me[i].time_d) ? TRUE : FALSE,
+	char * tlbl = create_popup_marker_label ((time_d != me[i].time_d)
+						 ? TRUE : FALSE,
 						 &count,
 						 eventviewer,
 						 me[i].event,
@@ -1025,6 +1164,9 @@ create_popup_label (FtkEventViewer * eventviewer,
 		pango_layout_get_text (ftk_marker_label (marker)));
     
     break;
+  case FTK_POPUP_TYPE_TIME:
+    asprintf (&lbl, "%g", time_d);
+    break;
   }
 
   return lbl;
@@ -1055,11 +1197,13 @@ handle_popup (FtkEventViewer * eventviewer,
   }
   else {
     if (FTK_POPUP_TYPE_NONE != pt) {	/* existing popup, hit */
-      if ((ftk_ev_popup_trace (eventviewer) != trace_idx) ||
-	  (pt != ftk_ev_popup_type (eventviewer)) ||
-	  ((pt == ftk_ev_popup_type (eventviewer)) &&
-	   ((pt == FTK_POPUP_TYPE_LEGEND) || (pt == FTK_POPUP_TYPE_MARKER)) &&
-	   (ftk_ev_popup_marker (eventviewer) != marker_idx))) {
+      if ((ftk_ev_popup_trace (eventviewer) != trace_idx) ||	/* different trace	*/
+	  (pt != ftk_ev_popup_type (eventviewer)) ||		/* or different type	*/
+	  (pt == FTK_POPUP_TYPE_TIME) ||			/* or time		*/
+	  ((pt == ftk_ev_popup_type (eventviewer)) &&		/* or same type and...	*/
+	   ((pt == FTK_POPUP_TYPE_LEGEND) ||			/* either marker...	*/
+	    (pt == FTK_POPUP_TYPE_MARKER)) &&			/* or legend...		*/
+	   (ftk_ev_popup_marker (eventviewer) != marker_idx))) {   /* different idx	*/
 	ftk_ev_popup_type (eventviewer) =  pt;
 	ftk_ev_popup_trace (eventviewer) = trace_idx;
 	ftk_ev_popup_marker (eventviewer) = marker_idx;
@@ -1127,6 +1271,10 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 {
   FtkEventViewer * eventviewer = FTK_EVENTVIEWER (data);
   g_return_val_if_fail (FTK_IS_EVENTVIEWER (eventviewer), FALSE);
+
+#ifdef USE_READOUT
+  set_readout (eventviewer, event->x);
+#endif
 
   {
     int i;
@@ -1199,6 +1347,13 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 	    }
 	    qevent = pevent;
 	  }
+	  if (pt == FTK_POPUP_TYPE_NONE) {
+	    double loc_d = (event->x - ((double)(ftk_ev_trace_origin (eventviewer)))) /
+	      ((double)(ftk_ev_trace_width (eventviewer)));
+	    double mark_time = loc_d *  ftk_ev_span (eventviewer);
+	    time_d = mark_time + gtk_adjustment_get_value (ftk_ev_scroll_adj (eventviewer));
+	    pt = FTK_POPUP_TYPE_TIME;
+	  }
 	}
 	break;
       }
@@ -1267,12 +1422,16 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
 	  lrint (((double)ftk_ev_trace_width (eventviewer)) * loc_d);
 	int sym_idx = ftk_marker_glyph (marker);
 	int v_offset = ftk_trace_vpos_d (trace) +
-	  ((ftk_trace_label_dheight(trace) >> 1) - ftk_symbol_v_center(sym_idx));
+	  ((ftk_trace_label_dheight(trace) >> 1) -
+	   ftk_symbol_v_center(sym_idx));
 
 	cairo_set_source_rgb (cr,
-			      (double)(ftk_marker_color_red (marker))/(double)65535,
-			      (double)(ftk_marker_color_green (marker))/(double)65535,
-			      (double)(ftk_marker_color_blue (marker))/(double)65535);
+			      (double)(ftk_marker_color_red (marker)) /
+			      (double)65535,
+			      (double)(ftk_marker_color_green (marker)) /
+			      (double)65535,
+			      (double)(ftk_marker_color_blue (marker)) /
+			      (double)65535);
 
 	cairo_move_to (cr,
 		       (double)(h_offset - ftk_symbol_h_center(sym_idx)),
@@ -1460,10 +1619,9 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
       ftk_ev_trace_width (eventviewer)  =
 	(dww - LABEL_GAP) - ftk_ev_trace_origin (eventviewer);
 
-    for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
-      ftk_trace_s * trace = ftk_ev_trace(eventviewer,
-					 ftk_ev_trace_order_ety (eventviewer, i));
-
+      for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
+	ftk_trace_s * trace = ftk_ev_trace(eventviewer,
+					   ftk_ev_trace_order_ety (eventviewer, i));
 	if (ftk_trace_valid (trace)) {
 	  cairo_set_source_rgb (cr,
 				(double)(ftk_trace_color_red (trace))/(double)65535,
@@ -1505,6 +1663,13 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
 	}
       }
     }
+
+    cairo_rectangle (cr,
+		     ftk_ev_trace_origin (eventviewer),
+		     0,
+		     ftk_ev_trace_width (eventviewer),
+		     dwh);
+    cairo_clip (cr);
 
     {				/* draw points */
       int i,j;
@@ -1717,6 +1882,14 @@ do_append (FtkEventViewer * eventviewer,
   ftk_event_string (event) = string ? strdup (string) : NULL;
   ftk_event_time (event) = ftk_ev_now(eventviewer) = now_d;
   ftk_event_loc (event) = -1;
+  
+  ftk_trace_min_time (trace) = fmin (ftk_trace_min_time (trace), now_d);
+  ftk_trace_max_time (trace) = fmax (ftk_trace_max_time (trace), now_d);
+  ftk_trace_time_set (trace) = TRUE;
+  
+  ftk_ev_min_time (eventviewer) = fmin (ftk_ev_min_time (eventviewer), now_d);
+  ftk_ev_max_time (eventviewer) = fmax (ftk_ev_max_time (eventviewer), now_d);
+  ftk_ev_time_set (eventviewer) = TRUE;
   
   {
     gdouble upper;
@@ -2006,9 +2179,12 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     ftk_trace_color_red (trace)		= DEFAULT_TRACE_RED;
     ftk_trace_color_green (trace)	= DEFAULT_TRACE_GREEN;
     ftk_trace_color_blue (trace)	= DEFAULT_TRACE_BLUE;
-    ftk_trace_event_next(trace) = 0;
-    ftk_trace_event_max(trace)  = 0;
-    ftk_trace_events(trace)     = NULL;
+    ftk_trace_event_next(trace) 	= 0;
+    ftk_trace_event_max(trace)  	= 0;
+    ftk_trace_events(trace)     	= NULL;
+    ftk_trace_min_time (trace)		= HUGE_VAL;
+    ftk_trace_max_time (trace)		= -HUGE_VAL;
+    
     
     if (label) asprintf (&t_label, "%s :%2d", label, tag);
     else       asprintf (&t_label, ":%2d", tag);

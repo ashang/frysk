@@ -1,3 +1,13 @@
+2006-07-08  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Added a time readout to the
+	tooltip types, added a button to center all available data in the
+	display, added controls to allow the mouse wheel to scroll
+	multiple traces up and down, control-mouse wheel increases and
+	decreases the display interval, and shift-mouse wheel scrolls the
+	traces left and right.
+
 2006-07-07  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c:

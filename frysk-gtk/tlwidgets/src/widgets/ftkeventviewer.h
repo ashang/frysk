@@ -269,6 +269,8 @@ typedef struct {
 typedef struct _ftk_trace_s {
   double	linestyle;
   double	linewidth;
+  double	min_time;
+  double	max_time;
   GdkColor	color;
   GdkGC       * gc;
   PangoLayout * label;
@@ -276,16 +278,20 @@ typedef struct _ftk_trace_s {
   int		label_height_d;
   int		vpos_d;
   char	      * string;
-  gboolean	label_modified;		/* used */
   ftk_event_s * events;
   int		event_next;
   int		event_max;
+  gboolean	label_modified;		/* used */
   gboolean	valid;
+  gboolean	time_set;
 } ftk_trace_s;
 
 #define ftk_tie_s ftk_trace_s
 
 #define ftk_trace_gc(t)			(t)->gc
+#define ftk_trace_min_time(t)		(t)->min_time
+#define ftk_trace_max_time(t)		(t)->max_time
+#define ftk_trace_time_set(t)		(t)->time_set
 #define ftk_trace_string(t)		(t)->string
 #define ftk_trace_label(t)		(t)->label
 #define ftk_trace_label_dwidth(t)	(t)->label_width_d
@@ -358,7 +364,8 @@ typedef enum {
   FTK_POPUP_TYPE_NONE,
   FTK_POPUP_TYPE_LABEL,
   FTK_POPUP_TYPE_MARKER,
-  FTK_POPUP_TYPE_LEGEND
+  FTK_POPUP_TYPE_LEGEND,
+  FTK_POPUP_TYPE_TIME
 } ftk_popup_type_e;
 
 typedef struct _FtkEventViewer {
@@ -366,6 +373,8 @@ typedef struct _FtkEventViewer {
   double		  zero_d;
   double		  now_d;
   double		  span_d;
+  double		  min_time;
+  double		  max_time;
   GtkWidget		* popup_window;
   GtkWidget		* popup_label;
   GtkWidget		* hbutton_box;
@@ -379,6 +388,7 @@ typedef struct _FtkEventViewer {
 #endif
   GtkWidget		* da_frame;
   GtkWidget		* legend_frame;
+  GtkWidget		* readout;
   GtkWidget		* scroll;
   GtkAdjustment		* scroll_adj;
   GtkDrawingArea	* da;
@@ -423,9 +433,16 @@ typedef struct _FtkEventViewer {
   gboolean     		  widget_modified;		/* used */
   gboolean     		  symbols_initted;
   gboolean		  drawable;
+  gboolean		  time_set;
 } FtkEventViewer;
 
 #define ftk_ev_vbox(v)		      &((v)->vbox)
+#ifdef USE_READOUT
+#define ftk_ev_readout(t)		(t)->readout
+#endif
+#define ftk_ev_min_time(v)		(v)->min_time
+#define ftk_ev_max_time(v)		(v)->max_time
+#define ftk_ev_time_set(v)		(v)->time_set
 #define ftk_ev_color_values(v)		(v)->color_set
 #define ftk_ev_color_value(v,i)		(v)->color_set[i]
 #define ftk_ev_color_value_red(v,i)	(v)->color_set[i].red
