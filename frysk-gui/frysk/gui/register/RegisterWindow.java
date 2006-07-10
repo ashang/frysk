@@ -350,7 +350,7 @@ public class RegisterWindow
                                   register.getLength() * 4, 3));
 
         // flip the binary string to do big-endian
-        value = reverse(value);
+        value = switchEndianess(value);
         parsedValue = Long.parseLong(value, 2);
 
         // Binary big endian
@@ -383,11 +383,20 @@ public class RegisterWindow
     this.showAll();
   }
 
-  private String reverse (String toReverse)
+  /**
+   * Reverse the endianess of the binary string
+   * @param toSwitch The binary string to reverse the endianness of
+   * @return The opposite endian binary string
+   */
+  private String switchEndianess (String toSwitch)
   {
-    char[] tmp = new char[toReverse.length()];
-    for (int i = 0; i < tmp.length; i++)
-      tmp[i] = toReverse.charAt(toReverse.length() - i - 1);
+    char[] tmp = new char[toSwitch.length()];
+    // For each byte in the string
+    for (int i = 0; i < tmp.length; i+=8)
+      // Put the byte at the end of the old string at the start of the new one
+      for(int bitOffset = 0; bitOffset < 8; bitOffset++)
+        tmp[i + bitOffset] = toSwitch.charAt(toSwitch.length() - i - (8 - bitOffset));
+
     return new String(tmp);
   }
 
@@ -408,7 +417,7 @@ public class RegisterWindow
         return;
       }
     if (! littleEndian)
-      binaryString = reverse(binaryString);
+      binaryString = switchEndianess(binaryString);
 
     ListStore model = (ListStore) this.registerView.getModel();
     TreeIter iter = model.getIter(path);
