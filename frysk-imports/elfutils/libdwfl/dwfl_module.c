@@ -166,11 +166,18 @@ compare_modules (const void *a, const void *b)
 {
   Dwfl_Module *const *p1 = a, *const *p2 = b;
   const Dwfl_Module *m1 = *p1, *m2 = *p2;
+  GElf_Sxword diff;
   if (m1 == NULL)
     return -1;
   if (m2 == NULL)
     return 1;
-  return (GElf_Sxword) (m1->low_addr - m2->low_addr);
+  diff = m1->low_addr - m2->low_addr;
+  if (diff < 0)
+    return -1;
+  else if (diff >0)
+    return 1;
+  else
+    return 0;
 }
 
 

@@ -51,13 +51,12 @@ public class Register
     int length;
     String name;
 
-    Register (Isa isa, int bank, int offset, int length, String name)
+    Register (int bank, int offset, int length, String name)
     {
 	this.bank = bank;
 	this.offset = offset;
 	this.length = length;
 	this.name = name;
-	isa.registers.add (this);
     }
 
     public long get (frysk.proc.Task task)

@@ -1,3 +1,25 @@
+2006-07-10  Tim Moore  <timoore@redhat.com>
+
+	* Isa.java: Changed class to an interface.
+	* IsaIA32.java, IsaEMT64.java: New classes that implement the Isa
+	interface. 
+	* SyscallEventDecoder.java: New interface
+	(getSyscallEventInfo): method that returns a SyscallEventInfo object.
+	* LinuxIa32.java: Rework to use IsaIA32 class and implement
+	SyscallEventDecoder interface.
+	* LinuxEMT64.java: New class like LinuxIa32, but for EMT64
+	architecture. 
+	* Register.java (Register): Delete isa argument.
+	* LinuxTask.java (sendrecIsa): Hardwire LinuxIA32 singleton.
+	* Task.java (getSyscallEventInfo): New method.
+	(notifySyscallEnter, notifySyscallExit): Use it.
+	* TestI386Modify.java (updateSyscallEnter): Use new interface for
+	SyscallEventInfo. Use getRegisterByName instead of functions that don't
+	exist anymore in Isa.
+	* TestI386Regs.java (updateSyscallEnter): Ditto.
+	* TestModify.java (updateSignaled): Use new methods getByteOrder() and
+	getWordSize().
+
 2006-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTaskSyscallObserver.java: Enabled all tests.
@@ -18,7 +40,7 @@
 
 2006-06-30  Mike Cvet  <mcvet@redhat.com>
 
-	* Task.java (getMemory): Added
+	* Task.java (getMemory)): Added
 	* Task.java: Reformatted with the new GNU style formatter.
 	* LinuxHost.java: Ditto.
 

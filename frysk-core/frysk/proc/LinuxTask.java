@@ -192,7 +192,15 @@ public class LinuxTask
     protected Isa sendrecIsa ()
     {
 	logger.log (Level.FINE, "{0} sendrecIsa\n", this);
-	return LinuxIa32.isaSingleton ();
+	// XXX hardcoded until we have a factory for producing Isa objects
+	if (true) 
+	    {
+		return LinuxIa32.isaSingleton ();
+	    }
+	else
+	    {
+		return LinuxEMT64.isaSingleton ();
+	    }
     }
     protected void startTracingSyscalls()
     {

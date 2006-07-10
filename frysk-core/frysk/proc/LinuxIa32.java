@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,65 +39,9 @@
 
 package frysk.proc;
 
-import inua.eio.ByteOrder;
-
 class LinuxIa32
-    extends Isa
+    extends IsaIA32 implements SyscallEventDecoder
 {
-    static final int I387_OFFSET = 18*4;
-    static final int DBG_OFFSET = 63 * 4;
-
-    Register eax = new Register (this, 0, 6*4, 4, "eax");
-    Register ebx = new Register (this, 0, 0*4, 4, "ebx");
-    Register ecx = new Register (this, 0, 1*4, 4, "ecx");
-    Register edx = new Register (this, 0, 2*4, 4, "edx");
-    Register esi = new Register (this, 0, 3*4, 4, "esi");
-    Register edi = new Register (this, 0, 4*4, 4, "edi");
-    Register ebp = new Register (this, 0, 5*4, 4, "ebp");
-    Register cs  = new Register (this, 0, 13*4, 4, "cs");
-    Register ds  = new Register (this, 0, 7*4, 4, "ds");
-    Register es  = new Register (this, 0, 8*4, 4, "es");
-    Register fs  = new Register (this, 0, 9*4, 4, "fs");
-    Register gs  = new Register (this, 0, 10*4, 4, "gs");
-    Register ss  = new Register (this, 0, 16*4, 4, "ss");
-    Register orig_eax = new Register (this, 0, 11*4, 4, "orig_eax");
-    Register eip = new Register (this, 0, 12*4, 4, "eip");
-    Register efl = new Register (this, 0, 14*4, 4, "efl");
-    Register esp = new Register (this, 0, 15*4, 4, "esp");
-    
-    private Register[] fprs ()
-    {
-	Register[] fprs = new Register[10];
-	for (int i = 0; i < fprs.length; i++) {
-	    fprs[i] = new Register (this, 0, I387_OFFSET + 7*4 + i*8, 
-				    8, "st" + i);
-	}
-	return fprs;
-    }
-    Register[] st = fprs ();  // floating-point registers
-    
-    private Register[] dbg_regs ()
-    {
-	Register[] dbg_regs = new Register[8];
-	for (int i = 0; i < dbg_regs.length; i++) {
-	    dbg_regs[i] = new Register (this, 0, DBG_OFFSET + i*4, 
-					4, "d" + i);
-	}
-	return dbg_regs;
-    }
-    Register[] dbg = dbg_regs ();  // debug registers
-    
-    public long pc (Task task)
-    {
-	return eip.get (task);
-    }
-
-    LinuxIa32 ()
-    {
-	wordSize = 4;
-	byteOrder = ByteOrder.LITTLE_ENDIAN;
-    }
-
     private static LinuxIa32 isa;
     static LinuxIa32 isaSingleton ()
     {
@@ -107,18 +51,18 @@ class LinuxIa32
     }
 
     private SyscallEventInfo info;
-    SyscallEventInfo getSyscallEventInfo ()
+    public SyscallEventInfo getSyscallEventInfo ()
     {
 	if (info == null)
 	    info = new SyscallEventInfo ()
 		{
 		    int number (Task task)
 		    {
-			return (int)orig_eax.get (task);
+			return (int)getRegisterByName ("orig_eax").get (task);
 		    }
 		    long returnCode (Task task)
 		    {
-			return eax.get (task);
+			return getRegisterByName ("eax").get (task);
 		    }
 		    long arg (Task task, int n)
 		    {
@@ -126,17 +70,17 @@ class LinuxIa32
 			case 0:
 			    return (long)number (task);
 			case 1:
-			    return ebx.get (task);
+			    return getRegisterByName("ebx").get (task);
 			case 2:
-			    return ecx.get (task);
+			    return getRegisterByName("ecx").get (task);
 			case 3:
-			    return edx.get (task);
+			    return getRegisterByName("edx").get (task);
 			case 4:
-			    return esi.get (task);
+			    return getRegisterByName("esi").get (task);
 			case 5:
-			    return edi.get (task);
+			    return getRegisterByName("edi").get (task);
 			case 6:
-			    return eax.get (task);
+			    return getRegisterByName("eax").get (task);
 			default:
 			    throw new RuntimeException ("unknown syscall arg");
 			}

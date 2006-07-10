@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,41 +39,7 @@
 
 package frysk.proc;
 
-import java.util.Iterator;
-import inua.eio.ByteOrder;
-
-/**
- * Instruction Set Architecture.
- *
- */
-
-public interface Isa
+interface SyscallEventDecoder
 {
-    Iterator RegisterIterator ();
-
-    Register getRegisterByName (String name);
-
-    long pc (Task task);
-
-    int getWordSize ();
-    ByteOrder getByteOrder ();
-
-    // int addressSize;
-    // InstructionSet;
-    // FloatingPointFormat;
-    // Breakpoint;
-    // howToDoWatchpoints;
-    // howToComputePcAfterTrap;
-    // howToStepOutOfRange;
-
-    /**
-     * Return the System Call Decoder.
-     *
-     * XXX: This ISA object should be re-named; it is really the
-     * OS+ISA object.
-     */
-    //SyscallEventInfo getSyscallEventInfo ()
-    //{
-    //throw new RuntimeException ("not implemented");
-    //}
+    SyscallEventInfo getSyscallEventInfo ();
 }

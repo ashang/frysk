@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006 Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -40,40 +40,85 @@
 package frysk.proc;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import inua.eio.ByteOrder;
 
-/**
- * Instruction Set Architecture.
- *
- */
-
-public interface Isa
+class IsaIA32 implements Isa
 {
-    Iterator RegisterIterator ();
+    static final int I387_OFFSET = 18*4;
+    static final int DBG_OFFSET = 63 * 4;
 
-    Register getRegisterByName (String name);
+    static class IA32Register extends Register
+    {
+	IA32Register (String name, int wordOffset)
+	{
+	    super (0, wordOffset * 4, 4, name);
+	}
+    }
+    private static final IA32Register[] regDefs 
+	= { new IA32Register ("eax", 6),
+	    new IA32Register ("ebx", 0),
+	    new IA32Register ("ecx", 1),
+	    new IA32Register ("edx", 2),
+	    new IA32Register ("esi", 3),
+	    new IA32Register ("edi", 4),
+	    new IA32Register ("ebp", 5),
+	    new IA32Register ("cs", 13),
+	    new IA32Register ("ds", 7),
+	    new IA32Register ("es", 8),
+	    new IA32Register ("fs", 9),
+	    new IA32Register ("gs", 10),
+	    new IA32Register ("ss", 16),
+	    new IA32Register ("orig_eax", 11),
+	    new IA32Register ("eip", 12),
+	    new IA32Register ("efl", 14),
+	    new IA32Register ("esp", 15) };
 
-    long pc (Task task);
+    private LinkedHashMap registerMap = new LinkedHashMap ();
 
-    int getWordSize ();
-    ByteOrder getByteOrder ();
+    // No one is using the FP or debug registers yet, but here are
+    // some definitions for them.
+    Register[] st = new Register[10];
+    Register[] dbg = new Register[8];
 
-    // int addressSize;
-    // InstructionSet;
-    // FloatingPointFormat;
-    // Breakpoint;
-    // howToDoWatchpoints;
-    // howToComputePcAfterTrap;
-    // howToStepOutOfRange;
+    IsaIA32 ()
+    {
+	for (int i = 0; i < regDefs.length; i++) {
+	    registerMap.put (regDefs[i].name, regDefs[i]);
+	}
+	for (int i = 0; i < st.length; i++) {
+	    st[i] = new Register (0, I387_OFFSET + 7*4 + i*8,
+				  8, "st" + i);
+	}
+	for (int i = 0; i < dbg.length; i++) {
+	    dbg[i] = new Register (0, DBG_OFFSET + i*4, 4, "d" + i);
+	}
+    }
+    
+    public Iterator RegisterIterator ()
+    {
+	return registerMap.values ().iterator ();
+    }
 
-    /**
-     * Return the System Call Decoder.
-     *
-     * XXX: This ISA object should be re-named; it is really the
-     * OS+ISA object.
-     */
-    //SyscallEventInfo getSyscallEventInfo ()
-    //{
-    //throw new RuntimeException ("not implemented");
-    //}
+    public Register getRegisterByName (String name)
+    {
+	return (Register)registerMap.get (name);
+    }
+
+    public long pc (Task task)
+    {
+	return getRegisterByName ("eip").get (task);
+    }
+
+    public int getWordSize ()
+    {
+	return 4;
+    }
+
+    public ByteOrder getByteOrder ()
+    {
+	return ByteOrder.LITTLE_ENDIAN;
+    }
 }
+
+    

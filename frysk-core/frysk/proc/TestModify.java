@@ -93,8 +93,8 @@ public class TestModify
 			byte[] buf = new byte[16];
 			int len = memAddrFile.read (buf);
 			b = new ArrayByteBuffer (buf, 0, len);
-			b.order (task.getIsa ().byteOrder);
-			b.wordSize (task.getIsa ().wordSize);
+			b.order (task.getIsa ().getByteOrder ());
+			b.wordSize (task.getIsa ().getWordSize ());
 			memAddrFile.close ();
 			// Make sure file is deleted.
 			java.io.File f = new java.io.File (memAddrFileName);

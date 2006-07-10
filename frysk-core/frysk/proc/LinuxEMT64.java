@@ -39,41 +39,53 @@
 
 package frysk.proc;
 
-import java.util.Iterator;
-import inua.eio.ByteOrder;
-
-/**
- * Instruction Set Architecture.
- *
- */
-
-public interface Isa
+class LinuxEMT64
+    extends IsaEMT64 implements SyscallEventDecoder
 {
-    Iterator RegisterIterator ();
+        private static LinuxEMT64 isa;
+    static LinuxEMT64 isaSingleton ()
+    {
+        if (isa == null)
+            isa = new LinuxEMT64 ();
+        return isa;
+    }
 
-    Register getRegisterByName (String name);
-
-    long pc (Task task);
-
-    int getWordSize ();
-    ByteOrder getByteOrder ();
-
-    // int addressSize;
-    // InstructionSet;
-    // FloatingPointFormat;
-    // Breakpoint;
-    // howToDoWatchpoints;
-    // howToComputePcAfterTrap;
-    // howToStepOutOfRange;
-
-    /**
-     * Return the System Call Decoder.
-     *
-     * XXX: This ISA object should be re-named; it is really the
-     * OS+ISA object.
-     */
-    //SyscallEventInfo getSyscallEventInfo ()
-    //{
-    //throw new RuntimeException ("not implemented");
-    //}
+    private SyscallEventInfo info;
+    public SyscallEventInfo getSyscallEventInfo ()
+    {
+	if (info == null)
+	    info = new SyscallEventInfo ()
+		{
+		    int number (Task task)
+		    {
+			return (int)getRegisterByName ("orig_rax").get (task);
+		    }
+		    long returnCode (Task task)
+		    {
+			return getRegisterByName ("rax").get (task);
+		    }
+		    long arg (Task task, int n)
+		    {
+			switch (n) {
+			case 0:
+			    return (long)number (task);
+			case 1:
+			    return getRegisterByName("rdi").get (task);
+			case 2:
+			    return getRegisterByName("rsi").get (task);
+			case 3:
+			    return getRegisterByName("rdx").get (task);
+			case 4:
+			    return getRegisterByName("r10").get (task);
+			case 5:
+			    return getRegisterByName("r8").get (task);
+			case 6:
+			    return getRegisterByName("r9").get (task);
+			default:
+			    throw new RuntimeException ("unknown syscall arg");
+			}
+		    }
+		};
+	return info;
+    }
 }

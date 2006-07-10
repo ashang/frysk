@@ -94,41 +94,41 @@ public class TestI386Modify
 	    {
 		syscallState = 1;
 		SyscallEventInfo syscall
-		    = task.getIsa ().getSyscallEventInfo ();
+		    = task.getSyscallEventInfo ();
 		// The low-level assembler code performs an exit syscall
 		// and sets up the registers with simple values.  We want
 		// to verify that all the registers are as expected.
 		syscallNum = syscall.number (task);
 		if (syscallNum == 20) { 
 		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
-		    ebx = isa.ebx.get (task);
+		    ebx = isa.getRegisterByName ("ebx").get (task);
 		    assertEquals ("ebx register", 22, ebx);
-		    ecx = isa.ecx.get (task);
+		    ecx = isa.getRegisterByName ("ecx").get (task);
 		    assertEquals ("ecx register", 23, ecx);
 		    // edx contains address of memory location we
 		    // are expected to write 8 to
-		    edx = isa.edx.get (task);
+		    edx = isa.getRegisterByName ("edx").get (task);
 		    int mem = task.memory.getInt (edx);
 		    assertEquals ("old mem value", 3, mem);
 		    task.memory.putInt (edx, 8);
 		    mem = task.memory.getInt (edx);
 		    assertEquals ("new mem value", 8, mem);
-		    ebp = isa.ebp.get (task);
+		    ebp = isa.getRegisterByName ("ebp").get (task);
 		    assertEquals ("ebp register", 21, ebp);
 		    // esi contains the address we want to jump to
 		    // when we return from the syscall
-		    esi = isa.esi.get (task);
-		    isa.edi.put (task, esi);
+		    esi = isa.getRegisterByName ("esi").get (task);
+		    isa.getRegisterByName ("edi").put (task, esi);
 		    // set a number of the registers as expected
-		    isa.ebx.put (task, 2);
-		    isa.ecx.put (task, 3);
-		    isa.edx.put (task, 4);
-		    isa.ebp.put (task, 5);
-		    isa.esi.put (task, 6);
+		    isa.getRegisterByName ("ebx").put (task, 2);
+		    isa.getRegisterByName ("ecx").put (task, 3);
+		    isa.getRegisterByName ("edx").put (task, 4);
+		    isa.getRegisterByName ("ebp").put (task, 5);
+		    isa.getRegisterByName ("esi").put (task, 6);
 		}
 		else if (syscallNum == 1) {
 		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
-		    ebx = isa.ebx.get (task);
+		    ebx = isa.getRegisterByName ("ebx").get (task);
 		    assertEquals ("exit code", 2, ebx);
 		    exitSyscall = true;
 		}

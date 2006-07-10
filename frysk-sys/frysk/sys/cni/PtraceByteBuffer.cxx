@@ -104,20 +104,20 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr)
   const enum __ptrace_request pt_peek = (enum __ptrace_request) area->peek;
   union
   {
-    int word;
-    jbyte byte[sizeof (int)];
+    long word;
+    jbyte byte[sizeof (long)];
   }
   tmp;
 
   /* Word align the address, transfer one word.  */
-  long paddr = addr & -sizeof (int);
+  long paddr = addr & -sizeof (long);
 
   errno = 0;
   tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
   if (errno != 0)
     throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
-  return tmp.byte[addr & (sizeof (int) - 1)];
+  return tmp.byte[addr & (sizeof (long) - 1)];
 }
 
 jlong
@@ -128,8 +128,8 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
   jbyte *bytes = elements (buf);
   union
   {
-    int word;
-    jbyte byte[sizeof (int)];
+    long word;
+    jbyte byte[sizeof (long)];
   }
   tmp;
 
@@ -137,7 +137,7 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
     return 0;
 
   // Word align the address.
-  unsigned long paddr = addr & -sizeof (int);
+  unsigned long paddr = addr & -sizeof (long);
 
   // Read an entire word.
   errno = 0;
@@ -148,8 +148,8 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
   /* Adjust the xfer size to ensure that it doesn't exceed the size of
      the single word being transfered.  */
   unsigned long pend = addr + len;
-  if (pend > paddr + sizeof (int))
-    pend = paddr + sizeof (int);
+  if (pend > paddr + sizeof (long))
+    pend = paddr + sizeof (long);
 
   for (unsigned long a = addr; a < pend; a++)
     bytes[a - addr + off] = tmp.byte[a - paddr];
@@ -164,13 +164,13 @@ frysk::sys::PtraceByteBuffer::poke (jlong addr, jint byte)
   const enum __ptrace_request pt_poke = (enum __ptrace_request) area->poke;
   union
   {
-    int word;
-    jbyte byte[sizeof (int)];
+    long word;
+    jbyte byte[sizeof (long)];
   }
   tmp;
 
   /* Word align the address, transfer one word.  */
-  long paddr = addr & -sizeof (int);
+  long paddr = addr & -sizeof (long);
 
   // Perform a read ...
   errno = 0;
@@ -179,7 +179,7 @@ frysk::sys::PtraceByteBuffer::poke (jlong addr, jint byte)
     throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
   // ... modify ...
-  tmp.byte[addr & (sizeof (int) - 1)] = byte;
+  tmp.byte[addr & (sizeof (long) - 1)] = byte;
 
   // ... write.
   errno = 0;

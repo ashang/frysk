@@ -84,21 +84,21 @@ public class TestI386Regs
 	    {
 		syscallState = 1;
 		SyscallEventInfo syscall
-		    = task.getIsa (). getSyscallEventInfo ();
+		    = task.getSyscallEventInfo ();
 		// The low-level assembler code performs an exit syscall
 		// and sets up the registers with simple values.  We want
 		// to verify that all the registers are as expected.
 		syscallNum = syscall.number (task);
 		if (syscallNum == 1) { 
 		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
-		    orig_eax = isa.orig_eax.get (task);
-		    ebx = isa.ebx.get (task);
-		    ecx = isa.ecx.get (task);
-		    edx = isa.edx.get (task);
-		    ebp = isa.ebp.get (task);
-		    esi = isa.esi.get (task);
-		    edi = isa.edi.get (task);
-		    esp = isa.esp.get (task);
+		    orig_eax = isa.getRegisterByName ("orig_eax").get (task);
+		    ebx = isa.getRegisterByName ("ebx").get (task);
+		    ecx = isa.getRegisterByName ("ecx").get (task);
+		    edx = isa.getRegisterByName ("edx").get (task);
+		    ebp = isa.getRegisterByName ("ebp").get (task);
+		    esi = isa.getRegisterByName ("esi").get (task);
+		    edi = isa.getRegisterByName ("edi").get (task);
+		    esp = isa.getRegisterByName ("esp").get (task);
 		}
 		return Action.CONTINUE;
 	    }

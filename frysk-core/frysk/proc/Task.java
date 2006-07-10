@@ -101,6 +101,11 @@ abstract public class Task
     return isa;
   }
 
+  public final SyscallEventInfo getSyscallEventInfo ()
+  {
+    return ((SyscallEventDecoder)getIsa ()).getSyscallEventInfo ();
+  }
+
   public final DwflLine getDwflLineXXX ()
   {
     if (dwfl == null)
@@ -762,7 +767,7 @@ abstract public class Task
                new Object[] {
                              this,
                              new Integer(
-                                         this.getIsa().getSyscallEventInfo().number(
+                                         this.getSyscallEventInfo().number(
                                                                                     this)) });
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {
@@ -785,7 +790,7 @@ abstract public class Task
                new Object[] {
                              this,
                              new Integer(
-                                         this.getIsa().getSyscallEventInfo().number(
+                                         this.getSyscallEventInfo().number(
                                                                                     this)) });
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {

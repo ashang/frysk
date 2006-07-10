@@ -1,3 +1,9 @@
+2006-07-10  Tim Moore  <timoore@redhat.com>
+
+	* cni/PtraceByteBuffer.cxx (peek, poke): Change the type of data read
+	from / written to ptrace from int to long, corresponding to its
+	declared type in the ptrace prototype.
+
 2006-07-04  Mark Wielaard  <mark@klomp.org>
 
 	* frysk-sys/frysk/sys/TestPtraceByteBuffer.java
