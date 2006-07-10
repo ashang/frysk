@@ -111,11 +111,11 @@ ftk.jar: com/redhat/ftk/EventViewer.class \
 #            -g -O2 -fPIC -c $< -o $@
 
 EventViewer.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java SimultaneousEvent.o
-	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java -I ./ \
+	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I $(srcdir)/src/java -I ./ \
             -g -O2 -fPIC -c $< -o $@
 
 SimultaneousEvent.o: $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java
-	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
+	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I $(srcdir)/src/java \
             -g -O2 -fPIC -c $< -o $@
 
 #libftkjava.so: Stripchart.o StripchartX.o EventViewer.o SimultaneousEvent.o

@@ -1,3 +1,8 @@
+2006-07-10  Mark Wielaard  <mark@klomp.org>
+
+	* Makefile.am (EventViewer.o): Add $(srcdir) to include path.
+	(SimultaneousEvent.o): Likewise.
+
 2006-07-08  Chris Moller  <moller@mollerware.com>
 
 	* src/widgets/ftkeventviewer.c:
