@@ -513,8 +513,9 @@ public class MemoryWindow
         tmp[0] = '-';
         start = 1;
       }
-    for (int i = start; i < tmp.length; i++)
-      tmp[i] = toReverse.charAt(toReverse.length() - i - 1 + start);
+    for (int i = start; i < tmp.length; i+= 8)
+      for(int bitOffset = 0; bitOffset < 8; bitOffset++)
+        tmp[i+bitOffset] = toReverse.charAt(toReverse.length() + start - i - (8 - bitOffset));
 
     return new String(tmp);
   }
