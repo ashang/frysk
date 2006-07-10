@@ -1559,78 +1559,6 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkFrame" id="frame7">
-		  <property name="visible">True</property>
-		  <property name="label_xalign">0</property>
-		  <property name="label_yalign">0.5</property>
-		  <property name="shadow_type">GTK_SHADOW_IN</property>
-		  <accessibility>
-		    <atkproperty name="AtkObject::accessible_name" translatable="yes">frame7</atkproperty>
-		    <atkproperty name="AtkObject::accessible_description" translatable="yes">frame7</atkproperty>
-		  </accessibility>
-
-		  <child>
-		    <widget class="GtkTable" id="observerActionsTable">
-		      <property name="border_width">12</property>
-		      <property name="visible">True</property>
-		      <property name="n_rows">1</property>
-		      <property name="n_columns">4</property>
-		      <property name="homogeneous">False</property>
-		      <property name="row_spacing">6</property>
-		      <property name="column_spacing">6</property>
-		      <accessibility>
-			<atkproperty name="AtkObject::accessible_name" translatable="yes">observerActionsTable</atkproperty>
-		      </accessibility>
-		    </widget>
-		  </child>
-		</widget>
-		<packing>
-		  <property name="left_attach">1</property>
-		  <property name="right_attach">2</property>
-		  <property name="top_attach">4</property>
-		  <property name="bottom_attach">5</property>
-		  <property name="x_options">fill</property>
-		  <property name="y_options">fill</property>
-		</packing>
-	      </child>
-
-	      <child>
-		<widget class="GtkFrame" id="observerFiltersFrame">
-		  <property name="visible">True</property>
-		  <property name="label_xalign">0</property>
-		  <property name="label_yalign">0.5</property>
-		  <property name="shadow_type">GTK_SHADOW_IN</property>
-		  <accessibility>
-		    <atkproperty name="AtkObject::accessible_name" translatable="yes">observerFiltersFrame</atkproperty>
-		    <atkproperty name="AtkObject::accessible_description" translatable="yes">observerFiltersFrame</atkproperty>
-		  </accessibility>
-
-		  <child>
-		    <widget class="GtkTable" id="observerFiltersTable">
-		      <property name="border_width">12</property>
-		      <property name="visible">True</property>
-		      <property name="n_rows">1</property>
-		      <property name="n_columns">5</property>
-		      <property name="homogeneous">False</property>
-		      <property name="row_spacing">6</property>
-		      <property name="column_spacing">6</property>
-		      <accessibility>
-			<atkproperty name="AtkObject::accessible_name" translatable="yes">observerFiltersTable</atkproperty>
-		      </accessibility>
-		    </widget>
-		  </child>
-		</widget>
-		<packing>
-		  <property name="left_attach">1</property>
-		  <property name="right_attach">2</property>
-		  <property name="top_attach">3</property>
-		  <property name="bottom_attach">4</property>
-		  <property name="x_options">shrink|fill</property>
-		  <property name="y_options">shrink|fill</property>
-		</packing>
-	      </child>
-
-	      <child>
 		<widget class="GtkLabel" id="label128">
 		  <property name="visible">True</property>
 		  <property name="label" translatable="yes">Filters</property>
@@ -1672,48 +1600,6 @@
 		  <property name="right_attach">2</property>
 		  <property name="top_attach">2</property>
 		  <property name="bottom_attach">3</property>
-		  <property name="x_options">fill</property>
-		  <property name="y_options">fill</property>
-		</packing>
-	      </child>
-
-	      <child>
-		<widget class="GtkScrolledWindow" id="scrolledwindow55">
-		  <property name="visible">True</property>
-		  <property name="can_focus">True</property>
-		  <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-		  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-		  <property name="shadow_type">GTK_SHADOW_IN</property>
-		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
-
-		  <child>
-		    <widget class="GtkTextView" id="observerDescriptionTextView">
-		      <property name="visible">True</property>
-		      <property name="can_focus">True</property>
-		      <property name="editable">True</property>
-		      <property name="overwrite">False</property>
-		      <property name="accepts_tab">True</property>
-		      <property name="justification">GTK_JUSTIFY_LEFT</property>
-		      <property name="wrap_mode">GTK_WRAP_NONE</property>
-		      <property name="cursor_visible">True</property>
-		      <property name="pixels_above_lines">0</property>
-		      <property name="pixels_below_lines">0</property>
-		      <property name="pixels_inside_wrap">0</property>
-		      <property name="left_margin">0</property>
-		      <property name="right_margin">0</property>
-		      <property name="indent">0</property>
-		      <property name="text" translatable="yes"></property>
-		      <accessibility>
-			<atkproperty name="AtkObject::accessible_name" translatable="yes">observerDescriptionTextView</atkproperty>
-		      </accessibility>
-		    </widget>
-		  </child>
-		</widget>
-		<packing>
-		  <property name="left_attach">1</property>
-		  <property name="right_attach">2</property>
-		  <property name="top_attach">1</property>
-		  <property name="bottom_attach">2</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options">fill</property>
 		</packing>
@@ -1772,6 +1658,120 @@
 		  <property name="bottom_attach">3</property>
 		  <property name="x_options">fill</property>
 		  <property name="y_options"></property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkScrolledWindow" id="scrolledwindow57">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		  <property name="shadow_type">GTK_SHADOW_NONE</property>
+		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+
+		  <child>
+		    <widget class="GtkViewport" id="viewport1">
+		      <property name="visible">True</property>
+		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
+
+		      <child>
+			<widget class="GtkTable" id="observerActionsTable">
+			  <property name="border_width">12</property>
+			  <property name="visible">True</property>
+			  <property name="n_rows">1</property>
+			  <property name="n_columns">4</property>
+			  <property name="homogeneous">False</property>
+			  <property name="row_spacing">6</property>
+			  <property name="column_spacing">6</property>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">4</property>
+		  <property name="bottom_attach">5</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkScrolledWindow" id="scrolledwindow55">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		  <property name="shadow_type">GTK_SHADOW_IN</property>
+		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+
+		  <child>
+		    <widget class="GtkTextView" id="observerDescriptionTextView">
+		      <property name="visible">True</property>
+		      <property name="can_focus">True</property>
+		      <property name="editable">True</property>
+		      <property name="overwrite">False</property>
+		      <property name="accepts_tab">True</property>
+		      <property name="justification">GTK_JUSTIFY_LEFT</property>
+		      <property name="wrap_mode">GTK_WRAP_NONE</property>
+		      <property name="cursor_visible">True</property>
+		      <property name="pixels_above_lines">0</property>
+		      <property name="pixels_below_lines">0</property>
+		      <property name="pixels_inside_wrap">0</property>
+		      <property name="left_margin">0</property>
+		      <property name="right_margin">0</property>
+		      <property name="indent">0</property>
+		      <property name="text" translatable="yes"></property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">observerDescriptionTextView</atkproperty>
+		      </accessibility>
+		    </widget>
+		  </child>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">1</property>
+		  <property name="bottom_attach">2</property>
+		  <property name="x_options">fill</property>
+		  <property name="y_options">fill</property>
+		</packing>
+	      </child>
+
+	      <child>
+		<widget class="GtkScrolledWindow" id="scrolledwindow58">
+		  <property name="visible">True</property>
+		  <property name="can_focus">True</property>
+		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		  <property name="shadow_type">GTK_SHADOW_NONE</property>
+		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
+
+		  <child>
+		    <widget class="GtkViewport" id="viewport2">
+		      <property name="visible">True</property>
+		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
+
+		      <child>
+			<widget class="GtkTable" id="observerFiltersTable">
+			  <property name="border_width">12</property>
+			  <property name="visible">True</property>
+			  <property name="n_rows">1</property>
+			  <property name="n_columns">5</property>
+			  <property name="homogeneous">False</property>
+			  <property name="row_spacing">6</property>
+			  <property name="column_spacing">6</property>
+			</widget>
+		      </child>
+		    </widget>
+		  </child>
+		</widget>
+		<packing>
+		  <property name="left_attach">1</property>
+		  <property name="right_attach">2</property>
+		  <property name="top_attach">3</property>
+		  <property name="bottom_attach">4</property>
 		</packing>
 	      </child>
 	    </widget>
@@ -1879,7 +1879,7 @@
 	    </widget>
 	    <packing>
 	      <property name="padding">0</property>
-	      <property name="expand">True</property>
+	      <property name="expand">False</property>
 	      <property name="fill">True</property>
 	    </packing>
 	  </child>

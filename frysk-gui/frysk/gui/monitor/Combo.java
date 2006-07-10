@@ -45,7 +45,11 @@ package frysk.gui.monitor;
  * @author swagiaal
  *
  * An object representing a combination of a @link frysk.gui.monitor.LiaisonItem
- * and a @link frysk.gui.monitor.LiaisonPoint 
+ * and a @link frysk.gui.monitor.LiaisonPoint.
+ * 
+ * Combos store the permutations of an observers Action/FilterPoints with their
+ * respective applicable Actions/Filters.
+ * @see frysk.gui.monitor.filters.ComboFactory
  */
 public class Combo extends GuiObject {
 

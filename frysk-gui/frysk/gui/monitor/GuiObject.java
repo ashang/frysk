@@ -50,27 +50,27 @@ public class GuiObject extends GuiObservable implements SaveableXXX{
 	private boolean saveObject = true;
 	
 	private String name;
-	private String toolTip;
+    private String toolTip;
 	
 	public GuiObject(String name, String toolTip){
 		this.name = name;
-		this.toolTip = toolTip;
+    	this.toolTip = toolTip;
 		this.saveObject = true;
 	}
 
 	public GuiObject(GuiObject other) {
 		this.name = other.name;
-		this.toolTip = other.toolTip;
+        this.toolTip = other.toolTip;
 		this.saveObject = other.saveObject;
 	}
 
 	public GuiObject() {
 		this.setName("NoName");
-		this.setToolTip("NoTootip");
+	    this.setToolTip("NoTootip");
 		this.saveObject = true;
 	}
-
-	public GuiObject getCopy(){
+	
+    public GuiObject getCopy(){
 		return new GuiObject(this);
 	}
 	

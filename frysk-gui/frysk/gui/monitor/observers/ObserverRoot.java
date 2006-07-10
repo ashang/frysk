@@ -13,16 +13,15 @@ import org.jdom.Element;
 
 import frysk.gui.common.dialogs.DialogManager;
 import frysk.gui.monitor.Combo;
+import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.actions.GenericActionPoint;
-import frysk.gui.monitor.actions.LogAction;
 import frysk.gui.monitor.filters.Filter;
 import frysk.gui.monitor.filters.FilterPoint;
-import frysk.gui.monitor.EventLogger;
 import frysk.proc.Action;
 import frysk.proc.TaskObserver;
 
@@ -62,12 +61,14 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 		
 			this.returnAction = Action.CONTINUE;
 			
-			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
+			this.genericActionPoint = new GenericActionPoint(" ", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
 
-			LogAction logAction = new LogAction();
-			logAction.dontSaveObject();
-			this.genericActionPoint.addAction(logAction);
+//          XXX: logging is done though setInfo
+//          so this is not needed for the time being
+//			LogAction logAction = new LogAction();
+//			logAction.dontSaveObject();
+//			this.genericActionPoint.addAction(logAction);
 		}
 		
 		public ObserverRoot(String name, String toolTip){
@@ -81,7 +82,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			
 			this.returnAction = Action.CONTINUE;
 			
-			this.genericActionPoint = new GenericActionPoint("Generic Actions", "Actions that dont take any arguments" );
+			this.genericActionPoint = new GenericActionPoint(" ", "Actions that dont take any arguments" );
 			this.addActionPoint(genericActionPoint);
 
 		}
@@ -293,6 +294,12 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			return new ObserverRoot(this);
 		}
 		
+        /**
+         * Returns combo objects representing the currently applied
+         * filters.
+         * @see Combo.
+         * @return List of combos.
+         */
 		public ObservableLinkedList getCurrentFilterCombos(){
 			ObservableLinkedList combos = new ObservableLinkedList();
 			
@@ -308,6 +315,12 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 			return combos;
 		}
 
+        /**
+         * Returns combo objects representing the currently applied
+         * actions.
+         * @see Combo.
+         * @return List of combos.
+         */
 		public ObservableLinkedList getCurrentActionCombos() {
 			ObservableLinkedList combos = new ObservableLinkedList();
 			
@@ -317,7 +330,7 @@ public class ObserverRoot extends GuiObject implements TaskObserver, Observer, S
 				Iterator j = actionPoint.getItems().iterator();
 				while (j.hasNext()) {
 					frysk.gui.monitor.actions.Action action = (frysk.gui.monitor.actions.Action) j.next();
-					combos.add(new Combo(actionPoint, action));
+                    combos.add(new Combo(actionPoint, action));
 				}
 			}
 			return combos;

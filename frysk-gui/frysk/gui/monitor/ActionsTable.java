@@ -55,7 +55,7 @@ public class ActionsTable extends ObserverItemsTable{
 	}
 
 	public ObserverItemRow getNewRow(Combo combo) {
-		return new ActionRow(this, observer, combo);
+    	return new ActionRow(this, observer, combo);
 	}
 	
 	

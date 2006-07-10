@@ -507,7 +507,9 @@ public class CreateFryskSessionDruid
                                                            public void selectionChangedEvent (
                                                                                               TreeSelectionEvent arg0)
                                                            {
-                                                             observerDescBuffer.setText(observerSelectionTreeView.getSelectedObject().getToolTip());
+                                                             if(observerSelectionTreeView.getSelectedObject().getToolTip() != null){
+                                                               observerDescBuffer.setText(observerSelectionTreeView.getSelectedObject().getToolTip());
+                                                             }
                                                            }
                                                          });
 

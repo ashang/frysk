@@ -41,15 +41,13 @@ package frysk.gui.monitor;
 
 import java.util.Iterator;
 
-import org.gnu.gdk.Color;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
-import org.gnu.gtk.Frame;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.RadioButton;
-import org.gnu.gtk.StateType;
 import org.gnu.gtk.TextBuffer;
 import org.gnu.gtk.TextView;
 import org.gnu.gtk.event.ButtonEvent;
@@ -61,12 +59,16 @@ import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.TextBufferEvent;
 import org.gnu.gtk.event.TextBufferListener;
 
-import frysk.gui.common.dialogs.Dialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Action;
 
+/**
+ * @author swagiaal
+ *
+ * Dialog that is used to edit an observer.
+ */
 public class EditObserverDialog extends Dialog {
 
 	private ObserverRoot observer;
@@ -203,20 +205,6 @@ public class EditObserverDialog extends Dialog {
 		this.filtersTable = new FiltersTable(glade.getWidget("observerFiltersTable").getHandle());
 		this.actionsTable = new ActionsTable(glade.getWidget("observerActionsTable").getHandle());
 		
-		Frame frame = (Frame) glade.getWidget("observerFiltersFrame");
-		frame.setBackgroundColor(StateType.NORMAL, Color.WHITE);
-		frame.setBackgroundColor(StateType.ACTIVE, Color.WHITE);
-		frame.setBackgroundColor(StateType.INSENSITIVE, Color.WHITE);
-		frame.setBackgroundColor(StateType.SELECTED, Color.WHITE);
-		frame.setBackgroundColor(StateType.NORMAL, Color.WHITE);
-
-		frame.setBaseColor(StateType.NORMAL, Color.WHITE);
-		frame.setBaseColor(StateType.ACTIVE, Color.WHITE);
-		frame.setBaseColor(StateType.INSENSITIVE, Color.WHITE);
-		frame.setBaseColor(StateType.SELECTED, Color.WHITE);
-		frame.setBaseColor(StateType.NORMAL, Color.WHITE);
-		frame.showAll();
-		
 	}
 	
 	private void setAll(ObserverRoot observer){
@@ -229,9 +217,6 @@ public class EditObserverDialog extends Dialog {
 		this.actionsTable.setObserver(observer);
 	}
 
-	
-
-	
 	private void setWarning(String text) {
 		warningLabel.setText(text);
 	}

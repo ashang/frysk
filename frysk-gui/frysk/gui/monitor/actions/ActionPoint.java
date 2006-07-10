@@ -46,6 +46,7 @@ import frysk.gui.monitor.ObservableLinkedList;
 /**
  * In a similar manner to @link frysk.gui.monitor.filters.FilterPoint
  * ActionPoints provide a flexible interface to add actions to Observers.
+ * @see frysk.gui.monitor.LiaisonPoint
  * */
 public abstract class ActionPoint extends LiaisonPoint {
 	

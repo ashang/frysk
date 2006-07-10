@@ -53,6 +53,14 @@ import org.gnu.gtk.event.FocusListener;
 
 import frysk.gui.monitor.observers.ObserverRoot;
 
+/**
+ * 
+ * @author swagiaal
+ * 
+ * A widget that shows an observer item and allows the
+ * user to edit it. An observer item can either be a filter
+ * or an action.
+ */
 public abstract class ObserverItemRow {
 	
 		Combo combo;
@@ -91,7 +99,6 @@ public abstract class ObserverItemRow {
 				public boolean focusEvent(FocusEvent event) {
 					if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
 						apply();
-						//System.out.println(this + ": .focusEvent() applying: " + combo.getFilter().getName() + " ["+ combo.getFilter().getArgument()+"]");
 					}
 					return false;
 				}
@@ -102,16 +109,22 @@ public abstract class ObserverItemRow {
 				public void comboBoxEvent(ComboBoxEvent event) {
 					if(event.isOfType(ComboBoxEvent.Type.CHANGED)){
 						if(combo != null && combo.isApplied()){
-							combo.unApply();
-							combo = (Combo) itemsComboBox.getSelectedObject();
-							
-							toolTips.setTip(argumentEntry, combo.getToolTip(), "");
-							
-							ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
-							if(list!= null){
-								argumentEntry.watchList(list);
-							}
-							combo.apply();
+							Combo tempCombo = (Combo) itemsComboBox.getSelectedObject();
+                            
+                            // un apply the previous combo
+                            // if another one has been selected apply that one
+							if(tempCombo != null){
+                               combo.unApply();
+                               combo = tempCombo;
+                             
+    							toolTips.setTip(argumentEntry, combo.getToolTip(), "");
+    							
+    							ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
+    							if(list!= null){
+    								argumentEntry.watchList(list);
+    							}
+    							combo.apply();
+                            }
 						}
 					}
 				}
@@ -132,8 +145,9 @@ public abstract class ObserverItemRow {
 			removeButton.addListener(new ButtonListener() {
 				public void buttonEvent(ButtonEvent event) {
 					if (event.isOfType(ButtonEvent.Type.CLICK)) {
-						
-						if(ObserverItemRow.this.table.getRow() == 1){
+					  itemsComboBox.setSelectedObject(null);
+                      argumentEntry.setText("");
+						if(ObserverItemRow.this.table.getIndexOfFinalRow() == 1){
 							if(combo != null && combo.isApplied()){
 								combo.unApply();
 							}

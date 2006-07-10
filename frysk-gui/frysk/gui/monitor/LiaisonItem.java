@@ -41,7 +41,12 @@ package frysk.gui.monitor;
 
 import org.jdom.Element;
 
-
+/**
+ * @author swagiaal
+ * 
+ * An item that can be added to a LiaisonPoint. An item can
+ * either be an Action or a Filter.
+ */
 public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
 	protected Runnable runnable;
 	

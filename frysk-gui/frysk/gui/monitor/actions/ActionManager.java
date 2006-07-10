@@ -68,8 +68,8 @@ public class ActionManager extends Observable {
 	 * and adds it to the list.
 	 * */
 	private void initActionList() {
-		this.addGenericActionPrototype(new Stop());
-		this.addGenericActionPrototype(new Resume());
+//		this.addGenericActionPrototype(new Stop());
+//		this.addGenericActionPrototype(new Resume());
 		this.addGenericActionPrototype(new LogAction());
 		
 //		this.addTaskActionPrototype(new ShowSourceWin());

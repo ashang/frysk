@@ -50,6 +50,7 @@ import frysk.gui.monitor.LiaisonPoint;
  * their clients to filter the events.
  * Clients of observers add desired Filters to the correct
  * filter points.
+ * @see frysk.gui.monitor.LiaisonPoint
  * */
 public abstract class FilterPoint extends LiaisonPoint {
 	

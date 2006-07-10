@@ -116,8 +116,8 @@ public abstract class ObserverItemsTable extends Table {
 		}
 	}
 	
-	public int getRow(){
-		return this.row;
+	public int getIndexOfFinalRow(){
+	  return this.row;
 	}
 	
 	public void apply(){
@@ -146,6 +146,7 @@ public abstract class ObserverItemsTable extends Table {
 		this.allList.remove(itemRow);
 		this.applyList.remove(itemRow);
 		itemRow.removeFromTable();
+        row--;
 	}
 	
 }

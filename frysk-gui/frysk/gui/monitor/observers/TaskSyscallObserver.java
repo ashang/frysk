@@ -42,8 +42,8 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		this.addActionPoint(enteringTaskActionPoint);
 		this.addActionPoint(exitingTaskActionPoint);
 		
-		this.enteringGenericActionPoint = new GenericActionPoint("Enter Generic Actions","actions run when the task enters a syscall");
-		this.exitingGenericActionPoint = new GenericActionPoint("Exit Generic Actions", "actions run when the task exits a syscall");
+		this.enteringGenericActionPoint = new GenericActionPoint("Enter","actions run when the task enters a syscall");
+		this.exitingGenericActionPoint = new GenericActionPoint("Exit", "actions run when the task exits a syscall");
 		
 		this.addActionPoint(enteringGenericActionPoint);
 		this.addActionPoint(exitingGenericActionPoint);

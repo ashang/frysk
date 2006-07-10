@@ -1,3 +1,23 @@
+2006-07-10  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskSyscallObserver.java (TaskSyscallObserver): Fixed names
+	of actionPonts (part of fix for 2886).
+	* observers/ObserverRoot.java: Removed name of GenericActionPoint.
+	Added javadoc (part of fix for 2886).
+	* actions/ShowSourceWin.java (ShowSourceWin): Fixed name of action (part of 
+	fix for 2886).
+	* actions/ActionManager.java: Removed stop/resume Actions (part of fix for 2886).
+	* SimpleComboBox.java: Added support for default/no selection text (part of fix for 2886).
+	* ObserverItemsTable.java: Decremeted the row number when
+	a row is removed (part of fix for 2886).
+	* FilterRow.java: Added clearing of widgets when a row is
+	unapplied (part of fix for 2886).
+	* ObserverItemRow.java: Ditto.
+	* EditObserverDialog.java: Removed the frame around the table.
+	* LiaisonItem.java: Added javadoc.
+	* Combo.java: Ditto.
+	* actions/ActionPoint.java: Ditto.
+
 2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* WindowManager.java (registerWindow): Removed.

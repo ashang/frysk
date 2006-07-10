@@ -80,11 +80,13 @@ public class SimpleComboBox
 
   private ItemRemovedObserver itemRemovedObserver;
 
+  private GuiObject defaultItem;
+
   public SimpleComboBox (Handle handle)
   {
     super(handle);
     this.init();
-
+ 
     CellRendererText cellRendererText = new CellRendererText();
     // TreeViewColumn nameCol = new TreeViewColumn();
     // nameCol.packStart(cellRendererText, false);
@@ -93,7 +95,7 @@ public class SimpleComboBox
     this.packStart(cellRendererText, false);
     this.addAttributeMapping(cellRendererText, CellRendererText.Attribute.TEXT,
                              nameDC);
-
+    
   }
 
   SimpleComboBox ()
@@ -104,6 +106,8 @@ public class SimpleComboBox
 
   void init ()
   {
+    this.defaultItem = new GuiObject("Select an item...", "click to select an item");
+
     this.map = new HashMap();
 
     this.itemAddedObserver = new ItemAddedObserver();
@@ -126,8 +130,11 @@ public class SimpleComboBox
       }
     else
       {
-        return (GuiObject) this.listStore.getValue(this.getActiveIter(),
-                                                   objectDC);
+        GuiObject selected = (GuiObject) this.listStore.getValue(this.getActiveIter(), objectDC);
+        if(selected == this.defaultItem){
+          return null;
+        }
+        return selected;
       }
   }
 
@@ -156,10 +163,6 @@ public class SimpleComboBox
       }
     this.listStore.clear();
     this.map.clear();
-    // if(this.watchedList!=null){
-    // this.watchedList.itemAdded.deleteObserver(this);
-    // this.watchedList.itemRemoved.deleteObserver(this);
-    // }
   }
 
   public void update (Observable guiObject, Object object)
@@ -175,9 +178,10 @@ public class SimpleComboBox
    */
   public void setSelectedObject (GuiObject object)
   {
+
     if (object == null)
       {
-        this.setActive(- 1);
+        this.setSelectedObject(this.defaultItem);
         return;
       }
 
@@ -198,6 +202,7 @@ public class SimpleComboBox
    */
   public void setSelectedText (String text)
   {
+    
     TreePath treePath = this.listStore.getFirstIter().getPath();
 
     String displayedText;
@@ -217,6 +222,8 @@ public class SimpleComboBox
       }
     throw new IllegalArgumentException(
                                        "the passes text argument [" + text + "] does not match any of the items in this ComboBox"); //$NON-NLS-1$ //$NON-NLS-2$
+    
+    
   }
 
   /**
@@ -262,6 +269,9 @@ public class SimpleComboBox
         this.unwatchList();
       }
 
+    this.add(defaultItem);
+    this.setSelectedObject(defaultItem);
+    
     this.watchedList = linkedList;
     Iterator iterator = linkedList.iterator();
 
@@ -273,6 +283,7 @@ public class SimpleComboBox
         GuiObject object = (GuiObject) iterator.next();
         this.add(object);
       }
+    
   }
 
   public void unwatchList ()
@@ -301,6 +312,15 @@ public class SimpleComboBox
     }
   }
 
+  /**
+   * Set the text that is displayed when no item
+   * is selected. 
+   * Example: "No items slected" or "please select an item"
+   */
+  public void setNoSelectionText(String text){
+    this.defaultItem.setName(text);
+  }
+  
   private class ItemRemovedObserver
       implements Observer
   {

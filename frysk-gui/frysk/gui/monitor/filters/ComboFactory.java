@@ -54,6 +54,12 @@ import frysk.gui.monitor.observers.ObserverRoot;
  * takes a @link frysk.gui.monitor.observers.ObserverRoot and
  * returns all possible combinations of its FilterPoints and
  * their applicable filters.
+ * 
+ * Instead of presenting the user with two lists -one for an 
+ * observers Action/Filter points and another list for their
+ * respective appllicable Actions/Filters- Permutations of
+ * those can be calculated and the user presented with a single
+ * list. Calculating this list is what combo factory does.
  */
 
 public class ComboFactory {

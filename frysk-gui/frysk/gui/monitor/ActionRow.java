@@ -50,14 +50,15 @@ public class ActionRow extends ObserverItemRow{
 	ActionRow(ObserverItemsTable table, ObserverRoot observer, Combo myCombo) {
 		super(table, observer, myCombo);
 		
-		ObservableLinkedList comboList = ComboFactory.theFactory.getActionCombos(observer);
+        ObservableLinkedList comboList = ComboFactory.theFactory.getActionCombos(observer);
 		itemsComboBox.watchLinkedList(comboList);
 		
 		if(combo != null){
-			itemsComboBox.setSelectedText(combo.getName());
+        	itemsComboBox.setSelectedText(combo.getName());
 			comboList.swap(itemsComboBox.getSelectedObject(), combo);
 			itemsComboBox.setSelectedObject(combo);
 		}
+        
 		super.apply(); /* Keep the info contained in this row in case no event was given to the argumentEntry */
 	}
 	
@@ -65,10 +66,10 @@ public class ActionRow extends ObserverItemRow{
 		AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
 		
 		int count = 0;
-		table.attach(itemsComboBox,   count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
-		table.attach(argumentEntry,   count,++count,table.getRow(),table.getRow()+1, EXPAND_AND_FILL, AttachOptions.SHRINK, 0, 0);
-		table.attach(addButton,       count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
-		table.attach(removeButton,    count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(itemsComboBox,   count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(argumentEntry,   count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, EXPAND_AND_FILL, AttachOptions.SHRINK, 0, 0);
+		table.attach(addButton,       count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(removeButton,    count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
 	}
 	
 }

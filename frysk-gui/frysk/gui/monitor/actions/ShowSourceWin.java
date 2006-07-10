@@ -47,7 +47,7 @@ import frysk.proc.Task;
 public class ShowSourceWin extends TaskAction {
 	
 	public ShowSourceWin() {
-		super("Source ", "Show the source of the thread.");
+		super("Show source code of ", "Show the source code of the thread.");
 	}
 	
 	public ShowSourceWin(ShowSourceWin other) {

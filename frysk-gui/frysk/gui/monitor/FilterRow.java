@@ -40,6 +40,8 @@
 package frysk.gui.monitor;
 
 import org.gnu.gtk.AttachOptions;
+import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 
@@ -96,7 +98,20 @@ public class FilterRow extends ObserverItemRow{
 				}
 			});
 		}	
-		super.apply();		/* Keep the info contained in this row in case no event was given to the argumentEntry */
+
+        removeButton.addListener(new ButtonListener() {
+            public void buttonEvent(ButtonEvent event) {
+                if (event.isOfType(ButtonEvent.Type.CLICK)) {
+                    if(FilterRow.this.table.getIndexOfFinalRow() == 1){
+//                        if(combo != null && combo.isApplied()){
+                          booleanComboBox.setSelectedObject(null);
+//                        }
+                    }
+                }
+            }
+        });
+        
+        super.apply();		/* Keep the info contained in this row in case no event was given to the argumentEntry */
 	}	
 	
 	public void removeFromTable(){
@@ -108,10 +123,10 @@ public class FilterRow extends ObserverItemRow{
 		AttachOptions EXPAND_AND_FILL = AttachOptions.EXPAND.or(AttachOptions.FILL);
 		
 		int count = 0;
-		table.attach(itemsComboBox,   count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
-		table.attach(booleanComboBox, count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
-		table.attach(argumentEntry,   count,++count,table.getRow(),table.getRow()+1, EXPAND_AND_FILL, AttachOptions.SHRINK, 0, 0);
-		table.attach(addButton,       count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
-		table.attach(removeButton,    count,++count,table.getRow(),table.getRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(itemsComboBox,   count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(booleanComboBox, count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(argumentEntry,   count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, EXPAND_AND_FILL, AttachOptions.SHRINK, 0, 0);
+		table.attach(addButton,       count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
+		table.attach(removeButton,    count,++count,table.getIndexOfFinalRow(),table.getIndexOfFinalRow()+1, AttachOptions.SHRINK, AttachOptions.SHRINK, 0, 0);
 	}
 }

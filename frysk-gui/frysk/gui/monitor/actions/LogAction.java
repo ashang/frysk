@@ -53,7 +53,7 @@ public class LogAction extends GenericAction {
 	String argument;
 	
 	public LogAction() {
-		super("Log", "logs what is going on with this observer plus a user set comment"); //$NON-NLS-1$ //$NON-NLS-2$
+		super("Log event", "logs what is going on with this observer plus a user set comment"); //$NON-NLS-1$ //$NON-NLS-2$
 		this.argument = new String();
 	}
 
