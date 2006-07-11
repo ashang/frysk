@@ -1,3 +1,7 @@
+2006-07-10  Rick Moseley  <rmoseley@redhat.com>
+	
+	* Makefile.am: Remove libunwind-setjmp.a for now.
+
 2006-06-30  Stepan Kasal  <kasal@ucw.cz>
 
 	* configure.ac: Include common/acinclude.m4 before AM_INIT_AUTOMAKE.
