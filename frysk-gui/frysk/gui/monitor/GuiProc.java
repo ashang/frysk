@@ -66,7 +66,7 @@ import frysk.proc.Proc;
  */
 public class GuiProc extends GuiData{
 	
-	private static final String PATH_NOT_FOUND = "*Could not retrieve path*";
+	public static final String PATH_NOT_FOUND = "*Could not retrieve path*";
 
 	private Proc proc;
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
@@ -186,6 +186,10 @@ public class GuiProc extends GuiData{
 		try {
 			owned = (this.proc.getUID() == Manager.host.getSelf().getUID() ||
 					this.proc.getGID() == Manager.host.getSelf().getGID());
+                    
+            if (owned)
+              if (this.proc.getPid() == Manager.host.getSelf().getPid())
+                      owned = false;
 		} catch (Exception e) {
 			errorLog.log(Level.WARNING, "GuiProc.isOwned: Error checking host/proc ownership",e);
 		}

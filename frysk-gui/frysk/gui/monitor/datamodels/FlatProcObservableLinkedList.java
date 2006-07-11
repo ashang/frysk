@@ -85,6 +85,7 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    		org.gnu.glib.CustomEvents.addEvent(new Runnable(){
 	    			public void run() {
 	    				GuiProc guiProc = null;
+                        
 	    				try {
 	    					guiProc = GuiProc.GuiProcFactory.getGuiProc(proc);
 	    				} catch (Exception e) {
@@ -92,7 +93,8 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    							proc +" from guiFacory",e);
 	    					return;
 	    				}
-	    				try {
+                        
+                        try {
 	    					if(!guiProc.isOwned())
 	    						return;
 	    				} catch (Exception e)
@@ -105,9 +107,13 @@ public class FlatProcObservableLinkedList extends ObservableLinkedList{
 	    				if (guiProc == null) {
 	    					return;
 	    				}
+                        
+                        
+                        if (guiProc.getNiceExecutablePath().equals(GuiProc.PATH_NOT_FOUND))
+                          return;
 	    				
 	    				//System.out.println(this + ": ProcCreatedObserver.update() " + guiProc.getNiceExecutablePath());
-	    				guiProc.setName(proc.getPid() + " " + guiProc.getNiceExecutablePath());
+	    				guiProc.setName(guiProc.getNiceExecutablePath()+" - " + proc.getPid());
 	    				guiProc.setToolTip(guiProc.getNiceExecutablePath());
 	    				
 	    				try {

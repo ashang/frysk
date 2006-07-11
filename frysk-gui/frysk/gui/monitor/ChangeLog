@@ -1,3 +1,11 @@
+2006-07-11  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PickProcDialog.java (PickProcDialog): setSort() enabled.
+	* datamodels/FlatProcObservableLinkedList.java (ProcCreatedObserver): 
+	Test to see if GuiProc.getNiceExecutablePath() = GuiProc.PATH_NOT_FOUND.
+	* GuiProc.java (isOwned): Added check for PID = Self.
+	(PATH_NOT_FOUND): Made public.
+
 2006-07-10  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskSyscallObserver.java (TaskSyscallObserver): Fixed names
@@ -24,6 +32,10 @@
 	(initRegisterWindow): Ditto.
 	(save): Removed registerWindow related code.
 	(load): Ditto.
+
+2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* WindowManager.java (initSessionLauncherWindow): Added.
 
 2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
 

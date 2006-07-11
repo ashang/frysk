@@ -86,6 +86,7 @@ public class PickProcDialog extends Dialog {
 		});
 		
 		this.ListView.watchLinkedList(DataModelManager.theManager.flatProcObservableLinkedList);
+        this.ListView.setSort();
 		
 		HBox mainBox = new HBox(false,0);
 		this.getDialogLayout().add(mainBox);
