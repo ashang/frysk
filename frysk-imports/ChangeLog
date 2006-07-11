@@ -1,3 +1,7 @@
+2006-07-11  Rick Moseley <rmoseley@redhat.com>
+
+	* Makefile.am: Remove generic libunwind.a lib.
+
 2006-07-11  Adam Jocksch  <ajocksch@redhat.com>
 
 	* lib/unwind: Added.
