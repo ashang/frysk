@@ -1,3 +1,9 @@
+2006-07-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.rules (AM_CXXFLAGS): Changed paths of elfutils
+	headers to include '../frysk-imports' and added source and
+	build tree libunwind include directories.
+
 2006-07-10  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.gen.sh: Add link gcj first variable.

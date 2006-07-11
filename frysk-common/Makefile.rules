@@ -150,9 +150,11 @@ AM_GCJFLAGS = \
 AM_CXXFLAGS = \
 	-I$(srcdir) \
 	-I$(top_builddir) \
-	-I$(srcdir)/elfutils/libelf \
-	-I$(srcdir)/elfutils/libdw \
-	-I$(srcdir)/elfutils/libdwfl \
+	-I$(srcdir)/../frysk-imports/elfutils/libelf \
+	-I$(srcdir)/../frysk-imports/elfutils/libdw \
+	-I$(srcdir)/../frysk-imports/elfutils/libdwfl \
+	-I$(srcdir)/../frysk-imports/libunwind/include \
+	-I$(top_builddir)/../frysk-imports/libunwind/include \
 	-Werror \
 	-Wall \
 	-fPIC \
