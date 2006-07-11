@@ -100,7 +100,7 @@ import frysk.gui.common.prefs.BooleanPreference;
 import frysk.gui.common.prefs.PreferenceManager;
 import frysk.gui.common.prefs.PreferenceWindow;
 import frysk.gui.common.prefs.BooleanPreference.BooleanPreferenceListener;
-import frysk.gui.monitor.WindowManager;
+import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
@@ -214,6 +214,8 @@ public class SourceWindow
   private CurrentStackView stackView;
 
   private VariableWatchView watchView;
+  
+  private MemoryWindow memWin;
 
   private RegisterWindow regWin;
 
@@ -250,6 +252,19 @@ public class SourceWindow
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
+    
+    try
+    {
+      this.memWin = new MemoryWindow(
+                                       new LibGlade(
+                                                    MemoryWindow.gladePath,
+                                                    null));
+    }
+  catch (Exception e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     
     this.setIcon(IconManager.windowIcon);
 
@@ -905,7 +920,7 @@ public class SourceWindow
     });
 
     // Memory Window
-    WindowManager.theManager.memoryWindow.addListener(new LifeCycleListener()
+    this.memWin.addListener(new LifeCycleListener()
     {
       public boolean lifeCycleQuery (LifeCycleEvent arg0)
       {
@@ -1159,7 +1174,7 @@ public class SourceWindow
     sbar.push(0, "Running");
 
     this.regWin.setIsRunning(true);
-    WindowManager.theManager.memoryWindow.setIsRunning(true);
+    this.memWin.setIsRunning(true);
 
     // Set status of actions
     this.run.setSensitive(false);
@@ -1190,7 +1205,7 @@ public class SourceWindow
     sbar.push(0, "Stopped");
 
     this.regWin.setIsRunning(false);
-    WindowManager.theManager.memoryWindow.setIsRunning(true);
+    this.memWin.setIsRunning(true);
 
     // Set status of actions
     this.run.setSensitive(true);
@@ -1356,12 +1371,20 @@ public class SourceWindow
 
   private void toggleMemoryWindow ()
   {
+    Preferences prefs = PreferenceManager.getPrefs();
     if (this.toggleMemoryWindow.getActive())
       {
-        if (! WindowManager.theManager.memoryWindow.hasTaskSet())
-          WindowManager.theManager.memoryWindow.setTask(this.myTask);
+        this.memWin.load(prefs.node(prefs.absolutePath() + "/memory"));
+        
+        if (! this.memWin.hasTaskSet())
+          this.memWin.setTask(this.myTask);
         else
-          WindowManager.theManager.memoryWindow.showAll();
+          this.memWin.showAll();
+      }
+    else
+      {
+        this.memWin.hideAll();
+        this.memWin.save(prefs.node(prefs.absolutePath() + "/memory"));
       }
   }
 

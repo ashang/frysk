@@ -1,3 +1,12 @@
+2006-07-11  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindow.java (SourceWindow): Added initialization for the
+	memory window, removed import for WindowManager.
+	(addEvents): Now uses local register window.
+	(doRun): Ditto.
+	(doStop): Ditto.
+	(toggleMemoryWindow): Ditto.
+
 2006-07-07  Adam Jocksch  <ajocksch@redhat.com>
 
 	* SourceWindow.java (SourceWindow): Now initializes the register

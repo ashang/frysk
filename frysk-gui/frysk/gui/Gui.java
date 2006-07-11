@@ -82,6 +82,7 @@ import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceGroup;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.memory.MemoryWindow;
 import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.CoreDebugLogViewer;
 import frysk.gui.monitor.FryskErrorFileHandler;
@@ -207,7 +208,7 @@ implements LifeCycleListener, Saveable
 		try {
 			WindowManager.theManager.initLegacyProcpopWindows(glade);
 			RegisterWindow.gladePath = properGladeDir + "/registerwindow.glade";
-            WindowManager.theManager.initMemoryWindow(memory_window);
+            MemoryWindow.gladePath = properGladeDir + "/memorywindow.glade";
 			WindowManager.theManager.initSessionDruidWindow(create_session_glade);
 			WindowManager.theManager.initSessionManagerWindow(session_glade);	    
 		} catch (IOException e) {

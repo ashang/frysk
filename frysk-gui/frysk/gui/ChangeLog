@@ -1,6 +1,24 @@
 2006-07-11  Mike Cvet  <mcvet@redhat.com>
 
-	* register/RegisterWindow.java (switchEndianness): refactored, and
+	* memory/MemoryWindow.java: Cleaned up some private 
+	variables, class is now created from a Factory, other bittiness
+	and endianness fixes.
+	(setTask): Fixed a combobox display bug
+	(.comboBoxEvent): Fixed a combobox selection bug
+	(refreshList): Enabled endian-based reads
+	(switchEndianness): Refactored, now switches endianness properly,
+	and fixed an array bounds bug.
+	(recalculate): Removed redundant code now provided by rowAppend().
+	(rowAppend): Added.
+	(handleFromSpin): Enabled a check for spin bounds, Removed 
+	redundant code now provided by rowAppend().
+	(handleToSpin): Ditto and ditto.
+	* glade/memorywindow.glade: Fixed some alignment and window 
+	titles.
+	* glade/registerwindow.glade: Fixed title. 
+	* Gui.java (Gui): Removed reference to static MemoryWindow via 
+	WindowManager.
+	* register/RegisterWindow.java (switchEndianness): Refactored, and
 	fixed an array bounds bug.
 
 2006-07-10  Sami Wagiaalla  <swagiaal@redhat.com>

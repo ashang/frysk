@@ -49,7 +49,6 @@ import org.gnu.glade.LibGlade;
 import frysk.Config;
 import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
-import frysk.gui.memory.MemoryWindow;
 
 /**
  * @author sami wagiaalla Singleton; one window manager. Provides an instance to
@@ -85,8 +84,6 @@ public class WindowManager
   public ObserversDialog observersDialog;
 
   public EditObserverDialog editObserverDialog;
-
-  public MemoryWindow memoryWindow;
 
   // public PickProcsDialog pickProcsDialog;
   public PickProcDialog pickProcDialog;
@@ -131,11 +128,6 @@ public class WindowManager
     this.createFryskSessionDruid = new CreateFryskSessionDruid(session);
   }
 
-  public void initMemoryWindow (LibGlade gladeFile)
-  {
-    this.memoryWindow = new MemoryWindow(gladeFile);
-  }
-
   public void save (Preferences prefs)
   {
     mainWindow.save(Preferences.userRoot().node(
@@ -144,9 +136,7 @@ public class WindowManager
     logWindow.save(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-    memoryWindow.save(Preferences.userRoot().node(
-                                                  prefs.absolutePath()
-                                                      + "/memory"));
+
     // programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() +
     // "/programAddWindow"));
   }
@@ -159,9 +149,7 @@ public class WindowManager
     logWindow.load(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-    memoryWindow.load(Preferences.userRoot().node(
-                                                  prefs.absolutePath()
-                                                      + "/memory"));
+
     //programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
   }
 }
