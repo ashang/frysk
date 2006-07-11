@@ -164,7 +164,6 @@ echo_LDFLAGS ()
 		;;
     esac
     echo "${name_}_LDFLAGS += \${GEN_GCJ_NO_SIGCHLD_FLAGS}"
-    echo "${name_}_LDFLAGS += \${GEN_GCJ_LINK_FIRST}"
 }
 
 has_main ()

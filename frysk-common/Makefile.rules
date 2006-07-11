@@ -115,12 +115,6 @@ GEN_GCJ_NO_SIGCHLD_FLAGS = \
 	-Dgnu.gcj.runtime.NameFinder.demangle=false \
 	-Dgnu.gcj.runtime.NameFinder.use_addr2line=false
 
-# Make sure the gcj library gets searched first in case other
-# libraries have conflicting symbols
-GEN_GCJ_LINK_FIRST = \
-	-lgcc_s
-
-
 # Get some common macro definitions
 
 ACLOCAL_AMFLAGS = -I common/m4
