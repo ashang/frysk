@@ -1,0 +1,8 @@
+2005-07-11  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Frame.java: Created.
+	* StackTraceCreator.java: Created.
+	* UnwindException.java: Created.
+	* UnwindCallbacks.java: Created.
+	* cni/Frame.cxx: Created.
+	* cni/StackTraceCreator.cxx: Created.
