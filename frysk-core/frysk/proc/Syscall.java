@@ -40,7 +40,12 @@ package frysk.proc;
 
 import inua.util.PrintWriter;
 
-class Syscall
+/**
+ * A class that holds static Syscall info. It is used
+ * in combination with @link frysk.proc.SyscallEventInfo and
+ * the task to get information about a particular system call event.
+ */
+public class Syscall
 {
     int number;
     int numArgs;
@@ -97,7 +102,7 @@ class Syscall
 	}
     }
     
-    PrintWriter printCall (PrintWriter writer,
+    public PrintWriter printCall (PrintWriter writer,
 			   frysk.proc.Task task,
 			   SyscallEventInfo syscall)
     {
@@ -137,7 +142,7 @@ class Syscall
 	return writer;
     }
     
-    PrintWriter printReturn (PrintWriter writer,
+    public PrintWriter printReturn (PrintWriter writer,
 			     frysk.proc.Task task,
 			     SyscallEventInfo syscallEventInfo)
     {
@@ -180,9 +185,9 @@ class Syscall
 
     // XXX: Eventually this will be moved down to Linux, or even
     // further.
-    static Syscall syscallByNum (int num)
+    public static Syscall syscallByNum (int num)
     {
-	return syscallList[num];
+      return syscallList[num];
     }
 
     private static Syscall[] syscallList = {

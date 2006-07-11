@@ -1,3 +1,15 @@
+2006-07-11  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TaskState.java: Added comment to explain ignored syscallExit event
+	in transitionOutOfSyscallRunning state.
+	* Syscall.java: Added javadoc.
+	made printCall, printReturn, and syscallByNum public
+	* SyscallEventInfo.java: Added javadoc.
+	Changed number(),arg(), and returnCode() public.
+	* LinuxEMT64.java: Ditto.
+	* Host.java: Renamed attachedArg to AttachedObserver.
+	* LinuxIa32.java: Ditto.
+
 2006-07-10  Tim Moore  <timoore@redhat.com>
 
 	* Isa.java: Changed class to an interface.

@@ -56,15 +56,15 @@ class LinuxEMT64
 	if (info == null)
 	    info = new SyscallEventInfo ()
 		{
-		    int number (Task task)
+		    public int number (Task task)
 		    {
 			return (int)getRegisterByName ("orig_rax").get (task);
 		    }
-		    long returnCode (Task task)
+		    public long returnCode (Task task)
 		    {
 			return getRegisterByName ("rax").get (task);
 		    }
-		    long arg (Task task, int n)
+		    public long arg (Task task, int n)
 		    {
 			switch (n) {
 			case 0:

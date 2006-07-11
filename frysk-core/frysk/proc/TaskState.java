@@ -1068,7 +1068,11 @@ class TaskState
        
        TaskState handleSyscalledEvent (Task task)
         {
-          logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
+          // if the user chooses to removed the last syscallObserver
+          // while runningInSyscall casing the task to stop tracking syscalls
+          // an event signifying the syscall exit is deterministically received.
+          // In that case it is ignored.
+          logger.log (Level.FINE, "{0} handleSyscalledEvent -- ignored\n", task); 
           return this;  
         }
        

@@ -196,7 +196,7 @@ public abstract class Host
 						 final String stdoutArg,
 						 final String stderrArg,
 						 final String[] argsArg,
-						 final TaskObserver.Attached attachedArg)
+						 final TaskObserver.Attached attachedObserver)
     {
 	logger.log (Level.FINE, "{0} requestCreateAttachedProc\n", this); 
 	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
@@ -205,7 +205,7 @@ public abstract class Host
 		String stdout = stdoutArg;
 		String stderr = stderrArg;
 		String[] args = argsArg;
-		TaskObserver.Attached attached = attachedArg;
+		TaskObserver.Attached attached = attachedObserver;
 		public void execute ()
 		{
 		    newState= oldState ().handleCreateAttachedProc
@@ -218,10 +218,10 @@ public abstract class Host
      * stdout, and stderr are shared with this process) be created.
      */
     public final void requestCreateAttachedProc (String[] args,
-						 TaskObserver.Attached attached)
+						 TaskObserver.Attached attachedObserver)
     {
 	logger.log (Level.FINE, "{0} requestCreateAttachedProc String[] TaskObserver.Attached\n", this); 
-	requestCreateAttachedProc (null, null, null, args, attached);
+	requestCreateAttachedProc (null, null, null, args, attachedObserver);
     }
 
     /**

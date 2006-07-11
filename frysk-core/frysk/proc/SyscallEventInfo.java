@@ -38,13 +38,17 @@
 // exception.
 package frysk.proc;
 
-abstract class SyscallEventInfo
+/**
+ * An object that retrieves syscall info from a task. Used in combination
+ * with Syscall and a Task object to retrieve information.
+ */
+public abstract class SyscallEventInfo
 {
     public final static int ENTER = 0;
     public final static int EXIT = 1;
     public final static int UNKNOWN = -1;
 
-    abstract int number (Task task);
-    abstract long arg (Task task, int n);
-    abstract long returnCode (Task task);
+    public abstract int number (Task task);
+    public abstract long arg (Task task, int n);
+    public abstract long returnCode (Task task);
 }

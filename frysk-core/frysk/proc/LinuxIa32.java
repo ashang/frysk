@@ -56,15 +56,15 @@ class LinuxIa32
 	if (info == null)
 	    info = new SyscallEventInfo ()
 		{
-		    int number (Task task)
+		    public int number (Task task)
 		    {
 			return (int)getRegisterByName ("orig_eax").get (task);
 		    }
-		    long returnCode (Task task)
+		    public long returnCode (Task task)
 		    {
 			return getRegisterByName ("eax").get (task);
 		    }
-		    long arg (Task task, int n)
+		    public long arg (Task task, int n)
 		    {
 			switch (n) {
 			case 0:
