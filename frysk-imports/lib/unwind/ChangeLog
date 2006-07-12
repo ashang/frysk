@@ -1,5 +1,10 @@
 2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* FrameCursor.java (getNext): Renamed to getInner.
+	(getPrevious): Renamed to getOuter.
+	* cni/StackTraceCreator.cxx (unwind_setup): Changed to reflect updated
+	variable names.
+
 	* Frame.java: Renamed to FrameCursor.java.
 	(getFuncEndAddr): Removed, should be part of a higher level usage.
 	(getFuncStartAddr): Ditto.

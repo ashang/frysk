@@ -47,9 +47,9 @@ public class FrameCursor
 
   private RawDataManaged nativeCursor;
 
-  protected FrameCursor next;
+  protected FrameCursor inner;
 
-  protected FrameCursor previous;
+  protected FrameCursor outer;
 
   protected FrameCursor (long cursor)
   {
@@ -58,20 +58,20 @@ public class FrameCursor
 
   /**
    * 
-   * @return The next (i.e. more recent) stack frame unwind cursor
+   * @return The stack frame cursor from the next inner stack
    */
-  public FrameCursor getNext ()
+  public FrameCursor getInner ()
   {
-    return next;
+    return inner;
   }
 
   /**
    * 
-   * @return The previous (i.e. less recent) Stack frame unwind cursor.
+   * @return The stack frame cursor from the previous outer stack
    */
-  public FrameCursor getPrevious ()
+  public FrameCursor getOuter ()
   {
-    return previous;
+    return outer;
   }
 
   /**

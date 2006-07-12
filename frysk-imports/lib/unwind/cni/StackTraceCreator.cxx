@@ -210,8 +210,8 @@ lib::unwind::StackTraceCreator::unwind_setup (lib::unwind::UnwindCallbacks *cbs)
 		lib::unwind::FrameCursor *prev = new lib::unwind::FrameCursor((jlong) &cursor);
 		
 		// This seems backwards, but remember we're starting from the *most recent* frame
-		current->previous = prev;
-		prev->next = current;
+		current->outer = prev;
+		prev->innter = current;
 		current = prev;
 	}
 	
