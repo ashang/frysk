@@ -15,7 +15,7 @@ public class TestStackBacktrace
   
   public void testBacktrace ()
   {
-    if(broken())
+    if(brokenXXX())
       return;
     
     class TaskCreatedObserver implements TaskObserver.Attached
@@ -67,9 +67,5 @@ public class TestStackBacktrace
       System.out.println("Frame " + (indent + 1));
       frame = frame.outer;
     }
-  }
-  
-  private boolean broken(){
-    return true;
   }
 }

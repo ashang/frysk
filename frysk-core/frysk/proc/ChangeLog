@@ -1,5 +1,7 @@
 2006-07-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* TestLib.java (brokenXXX): Made protected.
+
 	* TestLib.java (assertRunUntilStop): Made protected.
 	(runPending): Ditto.
 
