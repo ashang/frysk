@@ -133,5 +133,12 @@ all check clean distclean installdirs install uninstall::
 	done; \
 	test -z "$$fail"
 
-.PHONY: all check clean distclean installdirs install uninstall
+.PHONY: all check clean distclean installdirs install uninstall distdir
 .NOEXPORT:
+
+# A dirty hack: pack whatever is present:
+distdir:
+	test -n '$(distdir)' && test '$(srcdir)' != .
+	tar cfC - '$(srcdir)' \
+	  --exclude=CVS --exclude=autom4te.cache --exclude=.cvsignore . \
+	  | tar xfC - '$(distdir)'
