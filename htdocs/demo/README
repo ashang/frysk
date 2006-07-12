@@ -1,0 +1,19 @@
+This directory contains information on how to demonstrate the Frysk
+monitor/debugger.  Here are a list of the other files in this directory:
+
+	frysk_demo.pdf - A Frysk script for setting up and demoing Frysk.
+	
+	looper.c - A demo program that loops forever.  Needed to demo the
+			source window part of Frysk.
+			
+	compile_looper.sh - A script to compile looper.c.
+	
+	
+The frysk_demo.pdf describes in detail how to setup and demonstrate Frysk.
+Instructions on which screens to bring up and what the fields on each
+screen mean.  The demo walks a user through:
+	
+	- Setting up a "debug session" with observers
+	- Showing the monitoring window in action
+	- Bringing up a source/register/memory window
+
