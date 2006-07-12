@@ -1,5 +1,7 @@
 2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* cni/StackTraceCreator.cxx (unwind_setup): Fixed typo.
+
 	* FrameCursor.java (getNext): Renamed to getInner.
 	(getPrevious): Renamed to getOuter.
 	* cni/StackTraceCreator.cxx (unwind_setup): Changed to reflect updated

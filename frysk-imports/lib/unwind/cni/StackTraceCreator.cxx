@@ -211,7 +211,7 @@ lib::unwind::StackTraceCreator::unwind_setup (lib::unwind::UnwindCallbacks *cbs)
 		
 		// This seems backwards, but remember we're starting from the *most recent* frame
 		current->outer = prev;
-		prev->innter = current;
+		prev->inner = current;
 		current = prev;
 	}
 	
