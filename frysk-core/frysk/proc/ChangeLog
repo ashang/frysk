@@ -1,3 +1,8 @@
+2006-07-12  Tim Moore  <timoore@redhat.com>
+
+	* LinuxTask.java (sendrecIsa) : really hardwire LinuxIa432 singleton,
+	not LinuxEMT64 singleton.
+
 2006-07-11  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TaskState.java: Added comment to explain ignored syscallExit event
