@@ -134,7 +134,6 @@ public class MemoryWindow
   private TreeView memoryView;
 
   private SpinButton fromSpin;
-
   private SpinButton toSpin;
 
   private Entry pcEntry;
@@ -142,11 +141,8 @@ public class MemoryWindow
   private SimpleComboBox bitsCombo;
 
   private GuiObject eight;
-
   private GuiObject sixteen;
-
   private GuiObject thirtytwo;
-
   private GuiObject sixtyfour;
 
   private ObservableLinkedList bitsList;
@@ -154,7 +150,6 @@ public class MemoryWindow
   private ListStore model;
 
   private double lastKnownFrom;
-
   private double lastKnownTo;
 
   protected static int currentFormat = 0;
@@ -175,7 +170,29 @@ public class MemoryWindow
 
     this.setIcon(IconManager.windowIcon);
   }
+  
+  public boolean hasTaskSet ()
+  {
+    return myTask != null;
+  }
 
+  public void setIsRunning (boolean running)
+  {
+    if (running)
+      {
+        this.glade.getWidget("memoryView").setSensitive(false);
+        this.glade.getWidget("formatSelector").setSensitive(false);
+      }
+    else
+      {
+        this.glade.getWidget("memoryView").setSensitive(true);
+        this.glade.getWidget("formatSelector").setSensitive(true);
+      }
+  }
+  
+  /**
+   * Assign this MemoryWindow to a task
+   */
   public void setTask (Task myTask)
   {
     this.myTask = myTask;
@@ -281,20 +298,9 @@ public class MemoryWindow
 
   }
 
-  public void setIsRunning (boolean running)
-  {
-    if (running)
-      {
-        this.glade.getWidget("memoryView").setSensitive(false);
-        this.glade.getWidget("formatSelector").setSensitive(false);
-      }
-    else
-      {
-        this.glade.getWidget("memoryView").setSensitive(true);
-        this.glade.getWidget("formatSelector").setSensitive(true);
-      }
-  }
-
+  /**
+   * Refresh and update the display of addresses and values
+   */
   private void refreshList ()
   {
 
@@ -315,13 +321,13 @@ public class MemoryWindow
                                                  iter,
                                                  (DataColumnObject) cols[OBJ]);
             model.setValue(iter, (DataColumnString) cols[1],
-                           Long.toBinaryString(new Long(val).byteValue()));
+            Long.toBinaryString(new Long(val).byteValue()));
             model.setValue(iter, (DataColumnString) cols[3],
-                           Long.toOctalString(new Long(val).byteValue()));
+            Long.toOctalString(new Long(val).byteValue()));
             model.setValue(iter, (DataColumnString) cols[5],
-                           Long.toString(new Long(val).byteValue()));
+            Long.toString(new Long(val).byteValue()));
             model.setValue(iter, (DataColumnString) cols[7],
-                           "0x" + Long.toHexString(new Long(val).byteValue()));
+            "0x" + Long.toHexString(new Long(val).byteValue()));
 
              val = switchEndianness(val, false);
              model.setValue(iter, (DataColumnString) cols[2],
@@ -344,13 +350,13 @@ public class MemoryWindow
                                                  iter,
                                                  (DataColumnObject) cols[OBJ]);
             model.setValue(iter, (DataColumnString) cols[1],
-                           Long.toBinaryString(new Long(val).shortValue()));
+            Long.toBinaryString(new Long(val).shortValue()));
             model.setValue(iter, (DataColumnString) cols[3],
-                           Long.toOctalString(new Long(val).shortValue()));
+            Long.toOctalString(new Long(val).shortValue()));
             model.setValue(iter, (DataColumnString) cols[5],
-                           Long.toString(new Long(val).shortValue()));
+            Long.toString(new Long(val).shortValue()));
             model.setValue(iter, (DataColumnString) cols[7],
-                           "0x" + Long.toHexString(new Long(val).shortValue()));
+            "0x" + Long.toHexString(new Long(val).shortValue()));
 
              val = switchEndianness(val, false);
              model.setValue(iter, (DataColumnString) cols[2],
@@ -373,13 +379,13 @@ public class MemoryWindow
                                                  iter,
                                                  (DataColumnObject) cols[OBJ]);
             model.setValue(iter, (DataColumnString) cols[1],
-                           Long.toBinaryString(new Long(val).intValue()));
+            Long.toBinaryString(new Long(val).intValue()));
             model.setValue(iter, (DataColumnString) cols[3],
-                           Long.toOctalString(new Long(val).intValue()));
+            Long.toOctalString(new Long(val).intValue()));
             model.setValue(iter, (DataColumnString) cols[5],
-                           Long.toString(new Long(val).intValue()));
+            Long.toString(new Long(val).intValue()));
             model.setValue(iter, (DataColumnString) cols[7],
-                           "0x" + Long.toHexString(new Long(val).intValue()));
+            "0x" + Long.toHexString(new Long(val).intValue()));
 
              val = switchEndianness(val, false);
              model.setValue(iter, (DataColumnString) cols[2],
@@ -405,16 +411,16 @@ public class MemoryWindow
                                           (DataColumnObject) cols[OBJ]);
 
             model.setValue(iter, (DataColumnString) cols[1],
-                           Long.toBinaryString(new Long(val).longValue()));
-
+            Long.toBinaryString(new Long(val).longValue()));
             model.setValue(iter, (DataColumnString) cols[3],
-                           Long.toOctalString(new Long(val).longValue()));
+            Long.toOctalString(new Long(val).longValue()));
             model.setValue(iter, (DataColumnString) cols[5],
-                           Long.toString(new Long(val).longValue()));
+            Long.toString(new Long(val).longValue()));
             model.setValue(iter, (DataColumnString) cols[7],
-                           "0x" + Long.toHexString(new Long(val).longValue()));
+            "0x" + Long.toHexString(new Long(val).longValue()));
             
              val = switchEndianness(val, false);
+             
              try {
              model.setValue(iter, (DataColumnString) cols[2],
              Long.toBinaryString(new Long(val).longValue()));
@@ -440,23 +446,9 @@ public class MemoryWindow
     this.showAll();
   }
 
-  public void save (Preferences prefs)
-  {
-    this.formatDialog.save(prefs);
-  }
-
-  public void load (Preferences prefs)
-  {
-    this.prefs = prefs;
-    this.formatDialog.load(prefs);
-    this.refreshList();
-  }
-
-  public boolean hasTaskSet ()
-  {
-    return myTask != null;
-  }
-
+  /**
+   * Switch a little-endian binary string to a big-endian
+   */
   private String switchEndianness (String toReverse, boolean littleEndian)
   {
     boolean neg = false;
@@ -513,6 +505,251 @@ public class MemoryWindow
                    binaryString);
   }
 
+  private String signExtend (String unextended, int bitlength, int bitsPerChar)
+  {
+    int fullDigits = (bitlength / bitsPerChar);
+    int digitsToAdd = fullDigits + (bitlength - fullDigits * bitsPerChar)
+                      - unextended.length();
+
+    for (int i = 0; i < digitsToAdd; i++)
+      unextended = '0' + unextended;
+
+    return unextended;
+  }
+
+  /**
+   * Recalculate the memory information based on a new bitsize and/or radix
+   */
+  public void recalculate ()
+  {
+    long start = (long) this.fromSpin.getValue();
+    long end = (long) this.toSpin.getValue();
+    this.lastKnownFrom = (double) start;
+    this.lastKnownTo = (double) end;
+    this.model.clear();
+
+    memoryView.setModel(model);
+
+    TreeViewColumn[] tvc = memoryView.getColumns();
+    for (int i = 0; i < tvc.length; i++)
+      {
+        memoryView.removeColumn(tvc[i]);
+      }
+
+    for (long i = start; i < end + 1; i++)
+      rowAppend(i);
+
+    TreeViewColumn col = new TreeViewColumn();
+    col.setTitle("Location");
+    CellRenderer renderer = new CellRendererText();
+    col.packStart(renderer, true);
+    col.setReorderable(false);
+    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                            cols[LOC]);
+    memoryView.appendColumn(col);
+
+    for (int i = 0; i < 8; i++)
+      {
+        col = new TreeViewColumn();
+        col.setTitle(colNames[i].replaceFirst(
+                                              "X",
+                                              ""
+                                                  + (int) Math.pow(
+                                                                   2,
+                                                                   currentFormat + 3)));
+        col.setReorderable(true);
+        renderer = new CellRendererText();
+        ((CellRendererText) renderer).setEditable(false);
+
+        boolean littleEndian = false;
+        switch (i)
+          {
+          case 0:
+            littleEndian = true; // fall through
+          case 1:
+            ((CellRendererText) renderer).addListener(new BinCellListener(
+                                                                          littleEndian));
+            break;
+          case 2:
+            littleEndian = true; // fall through
+          case 3:
+            ((CellRendererText) renderer).addListener(new OctCellListener(
+                                                                          littleEndian));
+            break;
+          case 4:
+            littleEndian = true; // fall through
+          case 5:
+            ((CellRendererText) renderer).addListener(new DecCellListener(
+                                                                          littleEndian));
+            break;
+          case 6:
+            littleEndian = true; // fall through
+          case 7:
+            ((CellRendererText) renderer).addListener(new HexCellListener(
+                                                                          littleEndian));
+            break;
+          }
+
+        col.packStart(renderer, false);
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                                cols[i + 1]);
+
+        memoryView.appendColumn(col);
+
+        col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
+
+        columns[i] = col;
+      }
+    this.refreshList();
+  }
+  
+  /**
+   * Helper function for calculating memory information and putting it into
+   * rows to be displayed
+   */
+  public void rowAppend(long i) {
+    
+    TreeIter iter = model.appendRow();
+    model.setValue(iter, (DataColumnString) cols[LOC],
+                   "0x" + Long.toHexString(i));
+    switch (currentFormat)
+      {
+      case EIGHT_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getByte(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+
+      case SIXTEEN_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getShort(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+
+      case THIRTYTWO_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getInt(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+
+      case SIXTYFOUR_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getLong(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+      }
+    
+  }
+  
+  /****************************************************************************
+   * SpinBox callback methods
+   ***************************************************************************/
+
+  public void handleFromSpin (double val)
+  {
+
+    if (val > this.lastKnownTo)
+      {
+        this.fromSpin.setValue(this.lastKnownTo);
+        this.lastKnownFrom = this.lastKnownTo;
+        return;
+      }
+
+    if (val > this.lastKnownFrom)
+      {
+        TreeIter iter = model.getFirstIter();
+
+        for (int i = (int) lastKnownFrom; i < (int) val + 1; i++)
+          {
+            model.removeRow(iter);
+            iter = iter.getNextIter();
+          }
+      }
+    else
+      {
+        for (long i = (long) val; i < lastKnownTo + 1; i++)
+          rowAppend(i);
+      }
+    refreshList();
+    this.lastKnownFrom = val;
+  }
+
+  public void handleToSpin (double val)
+  {
+
+    if (val < this.lastKnownFrom)
+      {
+        this.toSpin.setValue(lastKnownFrom);
+        this.lastKnownTo = this.lastKnownFrom;
+        return;
+      }
+
+    if (val > this.lastKnownTo)
+      {
+        for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
+          rowAppend(i);
+      }
+    else
+      {
+        TreeIter iter = model.getFirstIter();
+        for (int i = (int) this.fromSpin.getValue(); i < (int) val + 1; i++)
+          iter = iter.getNextIter();
+
+        while (iter != null)
+          {
+            model.removeRow(iter);
+            iter = iter.getNextIter();
+          }
+      }
+
+    this.lastKnownTo = val;
+    refreshList();
+  }
+  
+  /****************************************************************************
+   * Save and Load
+   ***************************************************************************/
+  
+  public void save (Preferences prefs)
+  {
+    this.formatDialog.save(prefs);
+  }
+
+  public void load (Preferences prefs)
+  {
+    this.prefs = prefs;
+    this.formatDialog.load(prefs);
+    this.refreshList();
+  }
+ 
+  /****************************************************************************
+   * Cell Listener Classes
+   ***************************************************************************/
+  
   class DecCellListener
       implements CellRendererTextListener
   {
@@ -602,219 +839,5 @@ public class MemoryWindow
     }
 
   }
-
-  private String signExtend (String unextended, int bitlength, int bitsPerChar)
-  {
-    int fullDigits = (bitlength / bitsPerChar);
-    int digitsToAdd = fullDigits + (bitlength - fullDigits * bitsPerChar)
-                      - unextended.length();
-
-    for (int i = 0; i < digitsToAdd; i++)
-      unextended = '0' + unextended;
-
-    return unextended;
-  }
-
-  public void recalculate ()
-  {
-    long start = (long) this.fromSpin.getValue();
-    long end = (long) this.toSpin.getValue();
-    this.lastKnownFrom = (double) start;
-    this.lastKnownTo = (double) end;
-    this.model.clear();
-
-    memoryView.setModel(model);
-
-    TreeViewColumn[] tvc = memoryView.getColumns();
-    for (int i = 0; i < tvc.length; i++)
-      {
-        memoryView.removeColumn(tvc[i]);
-      }
-
-    for (long i = start; i < end + 1; i++)
-      rowAppend(i);
-
-    TreeViewColumn col = new TreeViewColumn();
-    col.setTitle("Location");
-    CellRenderer renderer = new CellRendererText();
-    col.packStart(renderer, true);
-    col.setReorderable(false);
-    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                            cols[LOC]);
-    memoryView.appendColumn(col);
-
-    for (int i = 0; i < 8; i++)
-      {
-        col = new TreeViewColumn();
-        col.setTitle(colNames[i].replaceFirst(
-                                              "X",
-                                              ""
-                                                  + (int) Math.pow(
-                                                                   2,
-                                                                   currentFormat + 3)));
-        col.setReorderable(true);
-        renderer = new CellRendererText();
-        ((CellRendererText) renderer).setEditable(false);
-
-        boolean littleEndian = false;
-        switch (i)
-          {
-          case 0:
-            littleEndian = true; // fall through
-          case 1:
-            ((CellRendererText) renderer).addListener(new BinCellListener(
-                                                                          littleEndian));
-            break;
-          case 2:
-            littleEndian = true; // fall through
-          case 3:
-            ((CellRendererText) renderer).addListener(new OctCellListener(
-                                                                          littleEndian));
-            break;
-          case 4:
-            littleEndian = true; // fall through
-          case 5:
-            ((CellRendererText) renderer).addListener(new DecCellListener(
-                                                                          littleEndian));
-            break;
-          case 6:
-            littleEndian = true; // fall through
-          case 7:
-            ((CellRendererText) renderer).addListener(new HexCellListener(
-                                                                          littleEndian));
-            break;
-          }
-
-        col.packStart(renderer, false);
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                                cols[i + 1]);
-
-        memoryView.appendColumn(col);
-
-        col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
-
-        columns[i] = col;
-      }
-    this.refreshList();
-  }
   
-  public void rowAppend(long i) {
-    
-    TreeIter iter = model.appendRow();
-    model.setValue(iter, (DataColumnString) cols[LOC],
-                   "0x" + Long.toHexString(i));
-    switch (currentFormat)
-      {
-      case EIGHT_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getByte(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case SIXTEEN_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getShort(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case THIRTYTWO_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getInt(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case SIXTYFOUR_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getLong(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-      }
-    
-  }
-
-  public void handleFromSpin (double val)
-  {
-
-    if (val > this.lastKnownTo)
-      {
-        this.fromSpin.setValue(this.lastKnownTo);
-        this.lastKnownFrom = this.lastKnownTo;
-        return;
-      }
-
-    if (val > this.lastKnownFrom)
-      {
-        TreeIter iter = model.getFirstIter();
-
-        for (int i = (int) lastKnownFrom; i < (int) val + 1; i++)
-          {
-            model.removeRow(iter);
-            iter = iter.getNextIter();
-          }
-      }
-    else
-      {
-        for (long i = (long) val; i < lastKnownTo + 1; i++)
-          rowAppend(i);
-      }
-    refreshList();
-    this.lastKnownFrom = val;
-  }
-
-  public void handleToSpin (double val)
-  {
-
-    if (val < this.lastKnownFrom)
-      {
-        this.toSpin.setValue(lastKnownFrom);
-        this.lastKnownTo = this.lastKnownFrom;
-        return;
-      }
-
-    if (val > this.lastKnownTo)
-      {
-        for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
-          rowAppend(i);
-      }
-    else
-      {
-        TreeIter iter = model.getFirstIter();
-        for (int i = (int) this.fromSpin.getValue(); i < (int) val + 1; i++)
-          iter = iter.getNextIter();
-
-        while (iter != null)
-          {
-            model.removeRow(iter);
-            iter = iter.getNextIter();
-          }
-      }
-
-    this.lastKnownTo = val;
-    refreshList();
-  }
-
 }
