@@ -67,6 +67,8 @@ echo "Running aclocal ... for elfutils"
 aclocal -I m4
 echo "Running autoconf ... for elfutils"
 autoconf -f
+echo "Running autoheader ... for elfutils"
+autoheader
 echo "Running automake ... for elfutils"
 automake --add-missing 
 cd ..

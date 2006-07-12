@@ -1,3 +1,8 @@
+2006-07-12  Stepan Kasal  <kasal@ucw.cz>
+
+	* elfutils/config.h.in: Delete.
+	* bootstrap.sh: Run autoheader in elfutils.
+
 2006-07-11  Rick Moseley <rmoseley@redhat.com>
 
 	* Makefile.am: Remove generic libunwind.a lib.
