@@ -9,7 +9,10 @@
 
 2006-07-12  Mike Cvet  <mcvet@redhat.com>
 
-	* memory/MemoryWindow.java: Cleaned up and commented
+	* memory/MemoryWindow.java: Cleaned up and commented.
+	(refreshList): Now using BigInteger to represent any 64-bit words
+	so that they can properly and correctly be displayed in positive 
+	and negative binary form.
 
 2006-07-11  Mike Cvet  <mcvet@redhat.com>
 

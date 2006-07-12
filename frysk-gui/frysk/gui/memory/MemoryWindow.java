@@ -41,6 +41,7 @@
 package frysk.gui.memory;
 
 import java.util.prefs.Preferences;
+import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -297,6 +298,92 @@ public class MemoryWindow
     });
 
   }
+  
+  /**
+   * Recalculate the memory information based on a new bitsize and/or radix
+   */
+  public void recalculate ()
+  {
+    long start = (long) this.fromSpin.getValue();
+    long end = (long) this.toSpin.getValue();
+    this.lastKnownFrom = (double) start;
+    this.lastKnownTo = (double) end;
+    this.model.clear();
+
+    memoryView.setModel(model);
+
+    TreeViewColumn[] tvc = memoryView.getColumns();
+    for (int i = 0; i < tvc.length; i++)
+      {
+        memoryView.removeColumn(tvc[i]);
+      }
+
+    for (long i = start; i < end + 1; i++)
+      rowAppend(i);
+
+    TreeViewColumn col = new TreeViewColumn();
+    col.setTitle("Location");
+    CellRenderer renderer = new CellRendererText();
+    col.packStart(renderer, true);
+    col.setReorderable(false);
+    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                            cols[LOC]);
+    memoryView.appendColumn(col);
+
+    for (int i = 0; i < 8; i++)
+      {
+        col = new TreeViewColumn();
+        col.setTitle(colNames[i].replaceFirst(
+                                              "X",
+                                              ""
+                                                  + (int) Math.pow(
+                                                                   2,
+                                                                   currentFormat + 3)));
+        col.setReorderable(true);
+        renderer = new CellRendererText();
+        ((CellRendererText) renderer).setEditable(false);
+
+        boolean littleEndian = false;
+        switch (i)
+          {
+          case 0:
+            littleEndian = true; // fall through
+          case 1:
+            ((CellRendererText) renderer).addListener(new BinCellListener(
+                                                                          littleEndian));
+            break;
+          case 2:
+            littleEndian = true; // fall through
+          case 3:
+            ((CellRendererText) renderer).addListener(new OctCellListener(
+                                                                          littleEndian));
+            break;
+          case 4:
+            littleEndian = true; // fall through
+          case 5:
+            ((CellRendererText) renderer).addListener(new DecCellListener(
+                                                                          littleEndian));
+            break;
+          case 6:
+            littleEndian = true; // fall through
+          case 7:
+            ((CellRendererText) renderer).addListener(new HexCellListener(
+                                                                          littleEndian));
+            break;
+          }
+
+        col.packStart(renderer, false);
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+                                cols[i + 1]);
+
+        memoryView.appendColumn(col);
+
+        col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
+
+        columns[i] = col;
+      }
+    this.refreshList();
+  }
 
   /**
    * Refresh and update the display of addresses and values
@@ -304,6 +391,7 @@ public class MemoryWindow
   private void refreshList ()
   {
 
+    System.out.println("In RefreshList");
     // If there's no task, no point in refreshing
     if (this.myTask == null)
       return;
@@ -404,34 +492,21 @@ public class MemoryWindow
       case SIXTYFOUR_BIT:
         while (iter != null)
           {
-            String val = "";
+            BigInteger bi = new BigInteger(
+                            (String) model.getValue(iter, 
+                            (DataColumnObject) cols[OBJ]), 10);
 
-            val = (String) model.getValue(
-                                          iter,
-                                          (DataColumnObject) cols[OBJ]);
-
-            model.setValue(iter, (DataColumnString) cols[1],
-            Long.toBinaryString(new Long(val).longValue()));
-            model.setValue(iter, (DataColumnString) cols[3],
-            Long.toOctalString(new Long(val).longValue()));
-            model.setValue(iter, (DataColumnString) cols[5],
-            Long.toString(new Long(val).longValue()));
-            model.setValue(iter, (DataColumnString) cols[7],
-            "0x" + Long.toHexString(new Long(val).longValue()));
+            model.setValue(iter, (DataColumnString) cols[1], bi.toString(2));
+            model.setValue(iter, (DataColumnString) cols[3], bi.toString(8));
+            model.setValue(iter, (DataColumnString) cols[5], bi.toString(10));
+            model.setValue(iter, (DataColumnString) cols[7], bi.toString(16));
             
-             val = switchEndianness(val, false);
-             
-             try {
-             model.setValue(iter, (DataColumnString) cols[2],
-             Long.toBinaryString(new Long(val).longValue()));
-             } catch (Exception e) { System.out.println(e.getMessage()); }
-                        
-             model.setValue(iter, (DataColumnString) cols[4],
-             Long.toOctalString(new Long(val).longValue()));
-             model.setValue(iter, (DataColumnString) cols[6],
-             Long.toString(new Long(val).longValue()));
-             model.setValue(iter, (DataColumnString) cols[8],
-             "0x" + Long.toHexString(new Long(val).longValue()));
+            BigInteger bii = new BigInteger(switchEndianness(bi.toString(10), false), 10);
+            
+            model.setValue(iter, (DataColumnString) cols[2], bii.toString(2));
+            model.setValue(iter, (DataColumnString) cols[4], bii.toString(8));
+            model.setValue(iter, (DataColumnString) cols[6], bii.toString(10));
+            model.setValue(iter, (DataColumnString) cols[8], bii.toString(16));
 
             iter = iter.getNextIter();
           }
@@ -444,6 +519,70 @@ public class MemoryWindow
                                                        this.colVisible[i]));
 
     this.showAll();
+  }
+  
+  /**
+   * Helper function for calculating memory information and putting it into
+   * rows to be displayed
+   */
+  public void rowAppend (long i)
+  {
+    TreeIter iter = model.appendRow();
+    model.setValue(iter, (DataColumnString) cols[LOC], "0x"
+                                                       + Long.toHexString(i));
+    System.out.println("In RowAppend");
+    switch (currentFormat)
+      {
+      case EIGHT_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getByte(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+
+      case SIXTEEN_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getShort(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+
+      case THIRTYTWO_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getInt(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+
+      case SIXTYFOUR_BIT:
+        try
+          {
+            model.setValue(iter, (DataColumnObject) cols[OBJ],
+                           "" + myTask.getMemory().getLong(i));
+            System.out.println("The Long: " + myTask.getMemory().getLong(i));
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
+        break;
+      }
+
   }
 
   /**
@@ -468,8 +607,8 @@ public class MemoryWindow
     
     char[] tmp = new char[toReverse.length()];
     for (int i = 0; i < tmp.length; i+=8)
-      for(int bitOffset = 0; bitOffset < 8; bitOffset++){
-        tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i - (8 - bitOffset)); }
+      for(int bitOffset = 0; bitOffset < 8; bitOffset++)
+        tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i - (8 - bitOffset));
 
     if (neg)
       return ("-" +  new String(tmp));
@@ -515,154 +654,6 @@ public class MemoryWindow
       unextended = '0' + unextended;
 
     return unextended;
-  }
-
-  /**
-   * Recalculate the memory information based on a new bitsize and/or radix
-   */
-  public void recalculate ()
-  {
-    long start = (long) this.fromSpin.getValue();
-    long end = (long) this.toSpin.getValue();
-    this.lastKnownFrom = (double) start;
-    this.lastKnownTo = (double) end;
-    this.model.clear();
-
-    memoryView.setModel(model);
-
-    TreeViewColumn[] tvc = memoryView.getColumns();
-    for (int i = 0; i < tvc.length; i++)
-      {
-        memoryView.removeColumn(tvc[i]);
-      }
-
-    for (long i = start; i < end + 1; i++)
-      rowAppend(i);
-
-    TreeViewColumn col = new TreeViewColumn();
-    col.setTitle("Location");
-    CellRenderer renderer = new CellRendererText();
-    col.packStart(renderer, true);
-    col.setReorderable(false);
-    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                            cols[LOC]);
-    memoryView.appendColumn(col);
-
-    for (int i = 0; i < 8; i++)
-      {
-        col = new TreeViewColumn();
-        col.setTitle(colNames[i].replaceFirst(
-                                              "X",
-                                              ""
-                                                  + (int) Math.pow(
-                                                                   2,
-                                                                   currentFormat + 3)));
-        col.setReorderable(true);
-        renderer = new CellRendererText();
-        ((CellRendererText) renderer).setEditable(false);
-
-        boolean littleEndian = false;
-        switch (i)
-          {
-          case 0:
-            littleEndian = true; // fall through
-          case 1:
-            ((CellRendererText) renderer).addListener(new BinCellListener(
-                                                                          littleEndian));
-            break;
-          case 2:
-            littleEndian = true; // fall through
-          case 3:
-            ((CellRendererText) renderer).addListener(new OctCellListener(
-                                                                          littleEndian));
-            break;
-          case 4:
-            littleEndian = true; // fall through
-          case 5:
-            ((CellRendererText) renderer).addListener(new DecCellListener(
-                                                                          littleEndian));
-            break;
-          case 6:
-            littleEndian = true; // fall through
-          case 7:
-            ((CellRendererText) renderer).addListener(new HexCellListener(
-                                                                          littleEndian));
-            break;
-          }
-
-        col.packStart(renderer, false);
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
-                                cols[i + 1]);
-
-        memoryView.appendColumn(col);
-
-        col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
-
-        columns[i] = col;
-      }
-    this.refreshList();
-  }
-  
-  /**
-   * Helper function for calculating memory information and putting it into
-   * rows to be displayed
-   */
-  public void rowAppend(long i) {
-    
-    TreeIter iter = model.appendRow();
-    model.setValue(iter, (DataColumnString) cols[LOC],
-                   "0x" + Long.toHexString(i));
-    switch (currentFormat)
-      {
-      case EIGHT_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getByte(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case SIXTEEN_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getShort(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case THIRTYTWO_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getInt(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-
-      case SIXTYFOUR_BIT:
-        try
-          {
-            model.setValue(iter, (DataColumnObject) cols[OBJ],
-                           "" + myTask.getMemory().getLong(i));
-          }
-        catch (Exception e)
-          {
-            System.out.println(e.getMessage());
-          }
-        break;
-      }
-    
   }
   
   /****************************************************************************
