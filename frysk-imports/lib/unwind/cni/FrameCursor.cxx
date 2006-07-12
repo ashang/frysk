@@ -39,33 +39,44 @@
 #include <libunwind.h>
 #include <gcj/cni.h>
 
-#include "lib/unwind/Frame.h"
-#include "lib/unwind/UnwindException.h"
+#include "lib/unwind/FrameCursor.h"
 
 void
-lib::unwind::Frame::create_frame (jlong _cursor)
+lib::unwind::FrameCursor::create_frame_cursor (jlong _cursor)
 {
 	::unw_cursor_t *cursor = (::unw_cursor_t *) _cursor;
 	
-	// get the name and offset
-	int len = 127;
-	char buf[len+1];
-	::unw_word_t offset;
-	if (!::unw_get_proc_name(cursor, buf, len+1, &offset))
-		throw new lib::unwind::UnwindException(
-				JvNewStringUTF("Could not get procedure information for the current stack.")
-				);
-	this->functionName = JvNewStringUTF(buf);
+	::unw_cursor_t *native_cursor = (::unw_cursor_t *) JvMalloc(sizeof(::unw_cursor_t));
 	
-	// Get the proc info, specifically the start/end addresses of the function
-	::unw_proc_info_t proc_info;
-	if (!::unw_get_proc_info(cursor, &proc_info))
-		throw new lib::unwind::UnwindException(
-				JvNewStringUTF("Could not get current procedure start/end addresses.")
-				);
-	this->funcStartAddr = (jlong) proc_info.start_ip;
-	this->funcEndAddr = (jlong) proc_info.end_ip;
+	// Create a local copy of the unwind cursor
+	memcpy(native_cursor, cursor, sizeof(::unw_cursor_t));
 	
-	// XXX: is this correct?
-	this->pc = (jlong) proc_info.start_ip + offset;
+	this->nativeCursor = (gnu::gcj::RawDataManaged *) native_cursor;
+	
 }
+
+/*
+ * Following code may be useful at some point so we won't delete it.
+ * However for now it is superfluous so leave it commented out.
+ */
+//	// get the name and offset
+//	int len = 127;
+//	char buf[len+1];
+//	::unw_word_t offset;
+//	if (!::unw_get_proc_name(cursor, buf, len+1, &offset))
+//		throw new lib::unwind::UnwindException(
+//				JvNewStringUTF("Could not get procedure information for the current stack.")
+//				);
+//	this->functionName = JvNewStringUTF(buf);
+//	
+//	// Get the proc info, specifically the start/end addresses of the function
+//	::unw_proc_info_t proc_info;
+//	if (!::unw_get_proc_info(cursor, &proc_info))
+//		throw new lib::unwind::UnwindException(
+//				JvNewStringUTF("Could not get current procedure start/end addresses.")
+//				);
+//	this->funcStartAddr = (jlong) proc_info.start_ip;
+//	this->funcEndAddr = (jlong) proc_info.end_ip;
+//	
+//	// XXX: is this correct?
+//	this->pc = (jlong) proc_info.start_ip + offset;

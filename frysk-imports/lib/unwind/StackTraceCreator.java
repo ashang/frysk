@@ -42,10 +42,17 @@ package lib.unwind;
 
 public class StackTraceCreator
 {
-  public static Frame createStackTrace (UnwindCallbacks callbacks)
+  /**
+   * Using the provided set of callbacks, initialize libunwind to provide a
+   * full stack backtrace
+   * @param callbacks The necessary callback functions to provide the data
+   * that libunwind requires
+   * @return A linked list of the stack frame
+   */
+  public static FrameCursor createStackTrace (UnwindCallbacks callbacks)
   {
     return unwind_setup(callbacks);
   }
 
-  private static native Frame unwind_setup (UnwindCallbacks callbacks);
+  private static native FrameCursor unwind_setup (UnwindCallbacks callbacks);
 }

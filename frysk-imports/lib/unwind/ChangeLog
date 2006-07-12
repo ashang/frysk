@@ -1,3 +1,19 @@
+2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Frame.java: Renamed to FrameCursor.java.
+	(getFuncEndAddr): Removed, should be part of a higher level usage.
+	(getFuncStartAddr): Ditto.
+	(getFunctionName): Ditto.
+	(getPc): Ditto.
+	(create_frame): Renamed to create_frame_cursor.
+	* StackCreator.java (createStackTrace): Added javadoc comments.
+	* cni/Frame.cxx: Renamed to FrameCursor.cxx.
+	(create_frame): Renamed to create_frame_cursor, now only memcpy's the
+	data in the provided cursor into it's own personal pointer.
+	* cni/StackTraceCreator.cxx (unwind_setup): Now links FrameCursors together
+	in the correct order (i.e. last->first), so that each frame's "previous"
+	frame is the one immediately before it chronologically.
+
 2005-07-11  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Frame.java: Created.

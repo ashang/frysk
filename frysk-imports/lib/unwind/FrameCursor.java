@@ -40,60 +40,48 @@
 
 package lib.unwind;
 
-public class Frame
+import gnu.gcj.RawDataManaged;
+
+public class FrameCursor
 {
 
-  private String functionName;
-  
-  private long funcStartAddr;
-  
-  private long funcEndAddr;
-  
-  private long pc;
-  
-  protected Frame next;
-  
-  protected Frame previous;
+  private RawDataManaged nativeCursor;
 
-  protected Frame (long cursor)
+  protected FrameCursor next;
+
+  protected FrameCursor previous;
+
+  protected FrameCursor (long cursor)
   {
-    create_frame(cursor);
+    create_frame_cursor(cursor);
   }
 
-  public Frame getNextFrame ()
-  {
-    return this.next;
-  }
-
-  public long getFuncEndAddr ()
-  {
-    return funcEndAddr;
-  }
-
-  public long getFuncStartAddr ()
-  {
-    return funcStartAddr;
-  }
-
-  public String getFunctionName ()
-  {
-    return functionName;
-  }
-
-  public Frame getNext ()
+  /**
+   * 
+   * @return The next (i.e. more recent) stack frame unwind cursor
+   */
+  public FrameCursor getNext ()
   {
     return next;
   }
 
-  public long getPc ()
-  {
-    return pc;
-  }
-  
-  private native void create_frame (long cursor);
-
-  public Frame getPrevious ()
+  /**
+   * 
+   * @return The previous (i.e. less recent) Stack frame unwind cursor.
+   */
+  public FrameCursor getPrevious ()
   {
     return previous;
   }
+
+  /**
+   * 
+   * @return The raw pointer to this frame's unwind cursor
+   */
+  public RawDataManaged getNativeCursor ()
+  {
+    return nativeCursor;
+  }
+
+  private native void create_frame_cursor (long cursor);
 }

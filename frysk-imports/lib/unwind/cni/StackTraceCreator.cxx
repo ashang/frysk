@@ -41,7 +41,7 @@
 #include <gcj/cni.h>
 
 #include "lib/unwind/StackTraceCreator.h"
-#include "lib/unwind/Frame.h"
+#include "lib/unwind/FrameCursor.h"
 #include "lib/unwind/UnwindCallbacks.h"
 
 /***************************
@@ -187,7 +187,7 @@ int get_proc_name(::unw_addr_space_t as,
 	}
 }
 
-lib::unwind::Frame*
+lib::unwind::FrameCursor*
 lib::unwind::StackTraceCreator::unwind_setup (lib::unwind::UnwindCallbacks *cbs)
 {
 	/*
@@ -203,14 +203,16 @@ lib::unwind::StackTraceCreator::unwind_setup (lib::unwind::UnwindCallbacks *cbs)
 	::unw_init_remote(&cursor, addr_space, (void*) cbs);
 	
 	// Create the frame objects and return the top (most recent one)
-	lib::unwind::Frame *base_frame = new lib::unwind::Frame((jlong) &cursor);
-	lib::unwind::Frame *current = base_frame;
+	lib::unwind::FrameCursor *base_frame = new lib::unwind::FrameCursor((jlong) &cursor);
+	lib::unwind::FrameCursor *current = base_frame;
 	while (::unw_step(&cursor) > 0)
 	{
-		lib::unwind::Frame *next = new lib::unwind::Frame((jlong) &cursor);
-		current->next = next;
-		next->previous = current;
-		current = next;
+		lib::unwind::FrameCursor *prev = new lib::unwind::FrameCursor((jlong) &cursor);
+		
+		// This seems backwards, but remember we're starting from the *most recent* frame
+		current->previous = prev;
+		prev->next = current;
+		current = prev;
 	}
 	
 	return base_frame;
