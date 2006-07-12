@@ -390,8 +390,6 @@ public class MemoryWindow
    */
   private void refreshList ()
   {
-
-    System.out.println("In RefreshList");
     // If there's no task, no point in refreshing
     if (this.myTask == null)
       return;
@@ -400,118 +398,57 @@ public class MemoryWindow
     ListStore model = (ListStore) this.memoryView.getModel();
     TreeIter iter = model.getFirstIter();
 
-    switch (currentFormat)
-      {
-      case EIGHT_BIT:
         while (iter != null)
           {
-            String val = (String) model.getValue(
-                                                 iter,
-                                                 (DataColumnObject) cols[OBJ]);
-            model.setValue(iter, (DataColumnString) cols[1],
-            Long.toBinaryString(new Long(val).byteValue()));
-            model.setValue(iter, (DataColumnString) cols[3],
-            Long.toOctalString(new Long(val).byteValue()));
-            model.setValue(iter, (DataColumnString) cols[5],
-            Long.toString(new Long(val).byteValue()));
-            model.setValue(iter, (DataColumnString) cols[7],
-            "0x" + Long.toHexString(new Long(val).byteValue()));
 
-             val = switchEndianness(val, false);
-             model.setValue(iter, (DataColumnString) cols[2],
-             Long.toBinaryString(new Long(val).byteValue()));
-             model.setValue(iter, (DataColumnString) cols[4],
-             Long.toOctalString(new Long(val).byteValue()));
-             model.setValue(iter, (DataColumnString) cols[6],
-             Long.toString(new Long(val).byteValue()));
-             model.setValue(iter, (DataColumnString) cols[8],
-             "0x" + Long.toHexString(new Long(val).byteValue()));
-                        
-            iter = iter.getNextIter();
-          }
-        break;
-
-      case SIXTEEN_BIT:
-        while (iter != null)
-          {
-            String val = (String) model.getValue(
-                                                 iter,
-                                                 (DataColumnObject) cols[OBJ]);
-            model.setValue(iter, (DataColumnString) cols[1],
-            Long.toBinaryString(new Long(val).shortValue()));
-            model.setValue(iter, (DataColumnString) cols[3],
-            Long.toOctalString(new Long(val).shortValue()));
-            model.setValue(iter, (DataColumnString) cols[5],
-            Long.toString(new Long(val).shortValue()));
-            model.setValue(iter, (DataColumnString) cols[7],
-            "0x" + Long.toHexString(new Long(val).shortValue()));
-
-             val = switchEndianness(val, false);
-             model.setValue(iter, (DataColumnString) cols[2],
-             Long.toBinaryString(new Long(val).shortValue()));
-             model.setValue(iter, (DataColumnString) cols[4],
-             Long.toOctalString(new Long(val).shortValue()));
-             model.setValue(iter, (DataColumnString) cols[6],
-             Long.toString(new Long(val).shortValue()));
-             model.setValue(iter, (DataColumnString) cols[8],
-             "0x" + Long.toHexString(new Long(val).shortValue()));
-                        
-            iter = iter.getNextIter();
-          }
-        break;
-
-      case THIRTYTWO_BIT:
-        while (iter != null)
-          {
-            String val = (String) model.getValue(
-                                                 iter,
-                                                 (DataColumnObject) cols[OBJ]);
-            model.setValue(iter, (DataColumnString) cols[1],
-            Long.toBinaryString(new Long(val).intValue()));
-            model.setValue(iter, (DataColumnString) cols[3],
-            Long.toOctalString(new Long(val).intValue()));
-            model.setValue(iter, (DataColumnString) cols[5],
-            Long.toString(new Long(val).intValue()));
-            model.setValue(iter, (DataColumnString) cols[7],
-            "0x" + Long.toHexString(new Long(val).intValue()));
-
-             val = switchEndianness(val, false);
-             model.setValue(iter, (DataColumnString) cols[2],
-             Long.toBinaryString(new Long(val).intValue()));
-             model.setValue(iter, (DataColumnString) cols[4],
-             Long.toOctalString(new Long(val).intValue()));
-             model.setValue(iter, (DataColumnString) cols[6],
-             Long.toString(new Long(val).intValue()));
-             model.setValue(iter, (DataColumnString) cols[8],
-             "0x" + Long.toHexString(new Long(val).intValue()));
-
-            iter = iter.getNextIter();
-          }
-        break;
-
-      case SIXTYFOUR_BIT:
-        while (iter != null)
-          {
             BigInteger bi = new BigInteger(
                             (String) model.getValue(iter, 
                             (DataColumnObject) cols[OBJ]), 10);
+            
+            byte[] b = bi.toByteArray();
+            String bin = "";
+            String oct = "";
+            String hex = "";
+            
+            if (bi.signum() < 0)
+          {
+            for (int i = 0; i < b.length; i++)
+              {
+                bin = bin + Integer.toBinaryString(b[i] & 0xff);
+                oct = oct + Integer.toOctalString(b[i] & 0xff);
+                hex = hex + Integer.toHexString(b[i] & 0xff);
+              }
+          }
+        else
+          {
+            bin = bi.toString(2);
+            oct = bi.toString(8);
+            hex = bi.toString(16);
+          }
 
-            model.setValue(iter, (DataColumnString) cols[1], bi.toString(2));
-            model.setValue(iter, (DataColumnString) cols[3], bi.toString(8));
-            model.setValue(iter, (DataColumnString) cols[5], bi.toString(10));
-            model.setValue(iter, (DataColumnString) cols[7], bi.toString(16));
+            /* Big endian first */
+            model.setValue(iter, (DataColumnString) cols[2], bin);
+            model.setValue(iter, (DataColumnString) cols[4], oct);
+            model.setValue(iter, (DataColumnString) cols[6], bi.toString(10));
+            model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
+           
+            /* Little endian second */
+            bin = switchEndianness(bin, true);
+            BigInteger bii = new BigInteger(bin, 2);
             
-            BigInteger bii = new BigInteger(switchEndianness(bi.toString(10), false), 10);
+            b = bii.toByteArray();
             
-            model.setValue(iter, (DataColumnString) cols[2], bii.toString(2));
-            model.setValue(iter, (DataColumnString) cols[4], bii.toString(8));
-            model.setValue(iter, (DataColumnString) cols[6], bii.toString(10));
-            model.setValue(iter, (DataColumnString) cols[8], bii.toString(16));
+            bin = bii.toString(2);
+            oct = bii.toString(8);
+            hex = bii.toString(16);
+            
+            model.setValue(iter, (DataColumnString) cols[1], bin);
+            model.setValue(iter, (DataColumnString) cols[3], oct);
+            model.setValue(iter, (DataColumnString) cols[5], bii.toString(10));
+            model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
 
             iter = iter.getNextIter();
           }
-        break;
-      }
 
     for (int i = 0; i < MemoryWindow.colNames.length; i++)
       this.columns[i].setVisible(this.prefs.getBoolean(
@@ -530,7 +467,6 @@ public class MemoryWindow
     TreeIter iter = model.appendRow();
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
-    System.out.println("In RowAppend");
     switch (currentFormat)
       {
       case EIGHT_BIT:
@@ -574,7 +510,6 @@ public class MemoryWindow
           {
             model.setValue(iter, (DataColumnObject) cols[OBJ],
                            "" + myTask.getMemory().getLong(i));
-            System.out.println("The Long: " + myTask.getMemory().getLong(i));
           }
         catch (Exception e)
           {
@@ -586,7 +521,7 @@ public class MemoryWindow
   }
 
   /**
-   * Switch a little-endian binary string to a big-endian
+   * Switch the endianness of a binary string
    */
   private String switchEndianness (String toReverse, boolean littleEndian)
   {
@@ -600,10 +535,10 @@ public class MemoryWindow
     if (diff != 0)
       if (littleEndian)
         for (int i = 0; i < 8 - diff; i++)
-          toReverse = "0" + toReverse;
+          toReverse = toReverse + "0";
       else
         for (int i = 0; i < 8 - diff; i++)
-          toReverse = toReverse + "0";
+          toReverse = "0" + toReverse;
     
     char[] tmp = new char[toReverse.length()];
     for (int i = 0; i < tmp.length; i+=8)
