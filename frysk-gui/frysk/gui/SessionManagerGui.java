@@ -45,6 +45,7 @@ import java.io.IOException;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
+import org.gnu.gtk.Gtk;
 import org.gnu.gtk.RadioButton;
 import org.gnu.gtk.ResponseType;
 import org.gnu.gtk.event.ButtonEvent;
@@ -302,7 +303,7 @@ public class SessionManagerGui
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
-          System.exit(0);
+          Gtk.mainQuit();
       }
     });
 
@@ -387,7 +388,7 @@ public class SessionManagerGui
     if (event.isOfType(LifeCycleEvent.Type.DESTROY)
         || event.isOfType(LifeCycleEvent.Type.DELETE))
       {
-        System.exit(0);
+        Gtk.mainQuit();
         return true;
       }
     return false;

@@ -500,7 +500,7 @@ implements LifeCycleListener, Saveable
 		});
 		
 		Gtk.main();
-		
+        
 		Manager.eventLoop.requestStop();
 		procpop.save(prefs);
 		
