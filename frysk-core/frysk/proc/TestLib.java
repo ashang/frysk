@@ -132,7 +132,7 @@ public class TestLib
      *
      * XXX: Static to avoid gcc bugs.
      */
-    static void assertRunUntilStop (String reason)
+    protected static void assertRunUntilStop (String reason)
     {
 	assertRunUntilStop (5, reason);
     }
@@ -143,7 +143,7 @@ public class TestLib
      *
      * XXX: Static to avoid gcc bugs.
      */
-    static void runPending ()
+    protected static void runPending ()
     {
 	Manager.eventLoop.runPending ();
     }
