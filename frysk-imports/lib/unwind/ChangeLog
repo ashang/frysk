@@ -1,5 +1,7 @@
 2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
 
+	* RegisterX86.java: Added.
+
 	* cni/StackTraceCreator.cxx (unwind_setup): Fixed typo.
 
 	* FrameCursor.java (getNext): Renamed to getInner.
