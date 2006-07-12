@@ -256,6 +256,9 @@ AH_BOTTOM([
 #define attribute_hidden \
   __attribute__ ((visibility ("hidden")))
 
+# define internal_function_hidden \
+  internal_function_def __attribute__ ((visibility ("hidden")))
+
 /* Define ALLOW_UNALIGNED if the architecture allows operations on
    unaligned memory locations.  */
 #if defined __i386__ || defined __x86_64__
