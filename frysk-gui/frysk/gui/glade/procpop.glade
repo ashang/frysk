@@ -34,8 +34,8 @@
       <property name="homogeneous">False</property>
       <property name="spacing">6</property>
       <accessibility>
-	<atkproperty name="AtkObject::accessible_name" translatable="yes">vbox13</atkproperty>
-	<atkproperty name="AtkObject::accessible_description" translatable="yes">vbox13</atkproperty>
+	<atkproperty name="AtkObject::accessible_name" translatable="yes">mainVBox</atkproperty>
+	<atkproperty name="AtkObject::accessible_description" translatable="yes">mainVBox</atkproperty>
       </accessibility>
 
       <child>
@@ -44,8 +44,8 @@
 	  <property name="homogeneous">False</property>
 	  <property name="spacing">0</property>
 	  <accessibility>
-	    <atkproperty name="AtkObject::accessible_name" translatable="yes">vbox15</atkproperty>
-	    <atkproperty name="AtkObject::accessible_description" translatable="yes">vbox15</atkproperty>
+	    <atkproperty name="AtkObject::accessible_name" translatable="yes">menuVBox</atkproperty>
+	    <atkproperty name="AtkObject::accessible_description" translatable="yes">menuVBox</atkproperty>
 	  </accessibility>
 
 	  <child>
@@ -132,8 +132,8 @@
 	    <widget class="GtkHSeparator" id="menuSeparator">
 	      <property name="visible">True</property>
 	      <accessibility>
-		<atkproperty name="AtkObject::accessible_name" translatable="yes">hseparator4</atkproperty>
-		<atkproperty name="AtkObject::accessible_description" translatable="yes">hseparator4</atkproperty>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">menuSeparator</atkproperty>
+		<atkproperty name="AtkObject::accessible_description" translatable="yes">menu Separator</atkproperty>
 	      </accessibility>
 	    </widget>
 	    <packing>
@@ -162,8 +162,8 @@
 	  <property name="left_padding">0</property>
 	  <property name="right_padding">0</property>
 	  <accessibility>
-	    <atkproperty name="AtkObject::accessible_name" translatable="yes">alignment19</atkproperty>
-	    <atkproperty name="AtkObject::accessible_description" translatable="yes">alignment19</atkproperty>
+	    <atkproperty name="AtkObject::accessible_name" translatable="yes">mainAlignment</atkproperty>
+	    <atkproperty name="AtkObject::accessible_description" translatable="yes">main Alignment</atkproperty>
 	  </accessibility>
 
 	  <child>
@@ -171,11 +171,19 @@
 	      <property name="visible">True</property>
 	      <property name="homogeneous">False</property>
 	      <property name="spacing">0</property>
+	      <accessibility>
+		<atkproperty name="AtkObject::accessible_name" translatable="yes">allProcVBox</atkproperty>
+		<atkproperty name="AtkObject::accessible_description" translatable="yes">allProcVBox</atkproperty>
+	      </accessibility>
 
 	      <child>
 		<widget class="GtkHPaned" id="allHPaned">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
+		  <accessibility>
+		    <atkproperty name="AtkObject::accessible_name" translatable="yes">allHPaned</atkproperty>
+		    <atkproperty name="AtkObject::accessible_description" translatable="yes">allHPaned</atkproperty>
+		  </accessibility>
 
 		  <child>
 		    <widget class="GtkAlignment" id="procThreadAlignment">
@@ -189,12 +197,20 @@
 		      <property name="bottom_padding">0</property>
 		      <property name="left_padding">0</property>
 		      <property name="right_padding">0</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">procThreadAlignment</atkproperty>
+			<atkproperty name="AtkObject::accessible_description" translatable="yes">procThreadAlignmenet</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkVBox" id="procThreadVBox">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">6</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">procThreadVBox</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">procThreadVBox</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkNotebook" id="noteBook">
@@ -205,6 +221,10 @@
 			      <property name="tab_pos">GTK_POS_TOP</property>
 			      <property name="scrollable">False</property>
 			      <property name="enable_popup">False</property>
+			      <accessibility>
+				<atkproperty name="AtkObject::accessible_name" translatable="yes">noteBook</atkproperty>
+				<atkproperty name="AtkObject::accessible_description" translatable="yes">noteBook</atkproperty>
+			      </accessibility>
 
 			      <child>
 				<widget class="GtkVBox" id="procThreadVBox2">
@@ -212,12 +232,20 @@
 				  <property name="visible">True</property>
 				  <property name="homogeneous">False</property>
 				  <property name="spacing">6</property>
+				  <accessibility>
+				    <atkproperty name="AtkObject::accessible_name" translatable="yes">procThreadVBox2</atkproperty>
+				    <atkproperty name="AtkObject::accessible_description" translatable="yes">procTHreadVBox2</atkproperty>
+				  </accessibility>
 
 				  <child>
 				    <widget class="GtkVPaned" id="vPane">
 				      <property name="visible">True</property>
 				      <property name="can_focus">True</property>
 				      <property name="position">200</property>
+				      <accessibility>
+					<atkproperty name="AtkObject::accessible_name" translatable="yes">vPane</atkproperty>
+					<atkproperty name="AtkObject::accessible_description" translatable="yes">vPane</atkproperty>
+				      </accessibility>
 
 				      <child>
 					<widget class="GtkAlignment" id="procAlignment">
@@ -231,6 +259,10 @@
 					  <property name="bottom_padding">3</property>
 					  <property name="left_padding">0</property>
 					  <property name="right_padding">0</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">procAlignment</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">procAlignment</atkproperty>
+					  </accessibility>
 
 					  <child>
 					    <widget class="GtkScrolledWindow" id="procScrolledWindow">
@@ -275,6 +307,10 @@
 					  <property name="bottom_padding">0</property>
 					  <property name="left_padding">0</property>
 					  <property name="right_padding">0</property>
+					  <accessibility>
+					    <atkproperty name="AtkObject::accessible_name" translatable="yes">threadAlignment</atkproperty>
+					    <atkproperty name="AtkObject::accessible_description" translatable="yes">threadAlignment</atkproperty>
+					  </accessibility>
 
 					  <child>
 					    <widget class="GtkVBox" id="threadVBox">
@@ -406,6 +442,9 @@
 				  <property name="width_chars">-1</property>
 				  <property name="single_line_mode">False</property>
 				  <property name="angle">0</property>
+				  <accessibility>
+				    <atkproperty name="AtkObject::accessible_description" translatable="yes">Processes</atkproperty>
+				  </accessibility>
 				</widget>
 				<packing>
 				  <property name="type">tab</property>
@@ -431,12 +470,31 @@
 		    <widget class="GtkVPaned" id="statusVPaned">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
+		      <accessibility>
+			<atkproperty name="AtkObject::accessible_name" translatable="yes">statusVPaned</atkproperty>
+		      </accessibility>
 
 		      <child>
 			<widget class="GtkVBox" id="statusWidget">
 			  <property name="visible">True</property>
 			  <property name="homogeneous">False</property>
 			  <property name="spacing">6</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">statusWidget</atkproperty>
+			    <atkproperty name="AtkObject::accessible_description" translatable="yes">The main status widget box.</atkproperty>
+			  </accessibility>
+
+			  <child>
+			    <placeholder/>
+			  </child>
+
+			  <child>
+			    <placeholder/>
+			  </child>
+
+			  <child>
+			    <placeholder/>
+			  </child>
 
 			  <child>
 			    <placeholder/>
@@ -459,6 +517,9 @@
 			  <property name="bottom_padding">0</property>
 			  <property name="left_padding">0</property>
 			  <property name="right_padding">0</property>
+			  <accessibility>
+			    <atkproperty name="AtkObject::accessible_name" translatable="yes">mainLogAlignment</atkproperty>
+			  </accessibility>
 
 			  <child>
 			    <widget class="GtkNotebook" id="statusNoteBook">

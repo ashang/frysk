@@ -62,7 +62,8 @@ CLEANFILES = *.so *.jar
 #     $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java \
 #     $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
 SRC= $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java \
-      $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java
+      $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java \
+      $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.java
 AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	-Wall -Werror \
 	-I$(srcdir)/src/widgets \
@@ -80,14 +81,17 @@ AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 #              com/redhat/ftk/StripchartX.class \
 #              com/redhat/ftk/EventViewer.class
 CLEANFILES += com/redhat/ftk/EventViewer.class \
-	      com/redhat/ftk/SimultaneousEvent.class
+	      com/redhat/ftk/SimultaneousEvent.class \
+	      com/redhat/ftk/EventPair.class
 #com/redhat/ftk/Stripchart.class: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 #	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 #com/redhat/ftk/StripchartX.class: $(tlwidgetssrc)/java/com/redhat/ftk/StripchartX.java
 #	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
-com/redhat/ftk/EventViewer.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java com/redhat/ftk/SimultaneousEvent.class
+com/redhat/ftk/EventViewer.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java com/redhat/ftk/SimultaneousEvent.class com/redhat/ftk/EventPair.class
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 com/redhat/ftk/SimultaneousEvent.class: $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java
+	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
+com/redhat/ftk/EventPair.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.java
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 
 #ftk.jar: com/redhat/ftk/Stripchart.class \
@@ -98,9 +102,11 @@ com/redhat/ftk/SimultaneousEvent.class: $(tlwidgetssrc)/java/com/redhat/ftk/Simu
 #	                  -C . com/redhat/ftk/EventViewer.class
 
 ftk.jar: com/redhat/ftk/EventViewer.class \
-         com/redhat/ftk/SimultaneousEvent.class
+         com/redhat/ftk/SimultaneousEvent.class \
+         com/redhat/ftk/EventPair.class
 	$(JAR) cf ftk.jar -C . com/redhat/ftk/EventViewer.class \
 					  -C . com/redhat/ftk/SimultaneousEvent.class
+					  -C . com/redhat/ftk/EventPair.class
 
 #Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 #	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
@@ -110,7 +116,7 @@ ftk.jar: com/redhat/ftk/EventViewer.class \
 #	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
 #            -g -O2 -fPIC -c $< -o $@
 
-EventViewer.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java SimultaneousEvent.o
+EventViewer.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java SimultaneousEvent.o EventPair.o
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I $(srcdir)/src/java -I ./ \
             -g -O2 -fPIC -c $< -o $@
 
@@ -118,11 +124,15 @@ SimultaneousEvent.o: $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I $(srcdir)/src/java \
             -g -O2 -fPIC -c $< -o $@
 
+EventPair.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.java
+	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
+            -g -O2 -fPIC -c $< -o $@
+
 #libftkjava.so: Stripchart.o StripchartX.o EventViewer.o SimultaneousEvent.o
 #	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
 #		-Wl,-soname -Wl,libftkjava.so -o $@
 
-libftkjava.so: EventViewer.o SimultaneousEvent.o
+libftkjava.so: EventViewer.o SimultaneousEvent.o EventPair.o
 	$(GCJ) -shared $^ $(FRYSK_GTK_LIBS) \
 		-Wl,-soname -Wl,libftkjava.so -o $@
 

@@ -13,6 +13,7 @@
 #include "ftkeventviewer.h"
 
 //#define USE_FTK_SIGNAL
+#define _
 
 GQuark ftk_quark;
 
@@ -278,6 +279,14 @@ initialise_widget (FtkEventViewer * eventviewer)
   ftk_ev_widget_modified (eventviewer) = TRUE;
 }
 
+/*------------------------- Button Box --------------------------------------*/
+
+/*
+ * ---------------------------------------------------------------------------
+ * |	Hold | Center|										|Interval ----|---|
+ * ---------------------------------------------------------------------------
+ */
+
 static GtkWidget *
 create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 {
@@ -285,6 +294,14 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
     
   GtkWidget * hbutton_box = gtk_hbox_new(FALSE, 5);
   ftk_ev_hbutton_box (eventviewer) = hbutton_box;
+  
+  /* Accessibility for button box. */
+   AtkObject *obj;
+   obj = gtk_widget_get_accessible (hbutton_box);
+   atk_object_set_name(obj, _("Button Box"));
+   atk_object_set_description (obj, _("Box to hold all the buttons."));
+  
+  
     
 #if 0  /* fixme -- not yet implemented */
   {
@@ -323,6 +340,13 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 			  ftk_ev_hold_toggle_button (eventviewer),
 			  "Enable or disable auto-updates.",
 			  "private");
+			  
+	/* Accessibility for hold button. */
+   AtkObject *obj;
+   obj = gtk_widget_get_accessible (hold_toggle_button);
+   atk_object_set_name(obj, _("Auto-Updates"));
+   atk_object_set_description (obj, _("Enable/disable automatic-updates."));
+   
     
 #if 0 /* fixme -- don't know if needed */
     g_signal_connect (GTK_OBJECT(scale_toggle_button),"toggled",
@@ -354,6 +378,14 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
     gtk_box_pack_start (GTK_BOX (hbutton_box),
 			center_button,
 			FALSE, FALSE, 0);
+		
+   /* Accessibility for center button. */	
+   
+    AtkObject *obj;
+    obj = gtk_widget_get_accessible (center_button);
+    atk_object_set_name(obj, _("Center"));
+    atk_object_set_description (obj, _("Center available data in the display."));
+   
   }	
 
 #ifdef USE_SLIDER_INTERVAL
@@ -398,6 +430,39 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
     gtk_box_pack_end (GTK_BOX (hbutton_box),
 		      frame,
 		      FALSE, FALSE, 0);
+		      
+ 	/* Accessibility for interval slider */
+ 	
+ 	{
+ 		AtkObject *obj, *atk_widget, *atk_label;
+ 		
+ 		obj = gtk_widget_get_accessible(frame);
+ 		atk_object_set_name(obj, _("Interval Frame"));
+    	atk_object_set_description (obj, _("Frame to hold Interval Slider."));
+    	
+    	obj = gtk_widget_get_accessible(hbox);
+ 		atk_object_set_name(obj, _("Interval Box"));
+    	atk_object_set_description (obj, _("Box to hold Interval Slider."));  	
+ 		
+ 		AtkRelationSet *relation_set;
+        AtkRelation *relation;
+        AtkObject *targets[1];
+
+        atk_widget = gtk_widget_get_accessible (slider);
+        atk_object_set_name(atk_widget, _("Interval slider"));
+        atk_object_set_description(atk_widget, _("Logarithmic slider for time interval."));
+        
+        atk_label = gtk_widget_get_accessible (label);
+        atk_object_set_name(atk_widget, _("Interval Label"));
+        atk_object_set_description(atk_label, _("Label for the interval slider."));
+
+        relation_set = atk_object_ref_relation_set (atk_label);
+        targets[0] = atk_widget;
+
+        relation = atk_relation_new (targets, 1, ATK_RELATION_LABEL_FOR);
+        atk_relation_set_add (relation_set, relation);
+        g_object_unref (G_OBJECT (relation));
+ 	}
   }
 #endif
 
@@ -465,6 +530,16 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
   
   return hbutton_box;
 }
+
+
+/*------------------------------------ Legend Area --------------------------*/
+
+/*Legend																	 
+ * --------------------------------------------------------------------------
+ * | {GlyphA} ObserverA {GlyphB} ObserverB .....							|
+ * | ....																	|
+ * --------------------------------------------------------------------------
+ */
   
 static GtkWidget *
 create_legend_area (FtkEventViewer * eventviewer)
@@ -495,8 +570,21 @@ create_legend_area (FtkEventViewer * eventviewer)
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
   gtk_widget_show_all (frame);
 
+
+  /* Legend Accessibility. */
+  AtkObject *obj;
+  obj = gtk_widget_get_accessible (frame);
+  atk_object_set_name(obj, _("Legend Frame"));
+  atk_object_set_description (obj, _("Frame to hold legend."));
+  
+  obj = gtk_widget_get_accessible (da);
+  atk_object_set_name(obj, _("Legend Drawing Area"));
+  atk_object_set_description (obj, _("Drawing Area to hold Legend."));
+
   return frame;
 }
+
+/************************************* Drawing Area **************************/
   
 static GtkWidget *
 create_drawing_area (FtkEventViewer * eventviewer)
@@ -506,17 +594,22 @@ create_drawing_area (FtkEventViewer * eventviewer)
   GtkWidget * frame = gtk_frame_new (NULL);
   GtkWidget * da = gtk_drawing_area_new();
 
-#if 0
-  {			/* atk stuff */
-    AtkObject * atk_obj = gtk_widget_get_accessible (da);
+  			/* atk stuff */
+    AtkObject *obj;
+    obj = gtk_widget_get_accessible (da);
+    atk_object_set_name(obj, _("Drawing Area"));
+    atk_object_set_description(obj, _("Main drawing area for event viewer"));
     
-    fprintf (stderr, "initting atk %#08x\n", atk_obj);
+    obj = gtk_widget_get_accessible (frame);
+    atk_object_set_name(obj, _("Drawing Frame"));
+    atk_object_set_description(obj, _("The frame to hold the main drawing area"));
+        
+    /*fprintf (stderr, "initting atk %#08x\n", atk_obj);
 
     if (GTK_IS_ACCESSIBLE (atk_obj)) {
       fprintf (stderr, "accessible\n");
-    }
-  }
-#endif
+    } 
+    */
 
   ftk_ev_da(eventviewer) = GTK_DRAWING_AREA (da);
   
@@ -562,6 +655,13 @@ create_drawing_area (FtkEventViewer * eventviewer)
 
 #ifndef NOT_USE_SCROLL
   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  
+  
+  
+  /* Scrolled Window Accessibility. */
+  obj = gtk_widget_get_accessible (scrolled_window);
+  atk_object_set_name(obj, _("Drawing Scrolled Window"));
+  atk_object_set_description(obj, _("Scrolled Window to hold Drawing Area"));
 
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
@@ -592,6 +692,14 @@ create_scrollbar (FtkEventViewer * eventviewer)
 			  ftk_ev_span (eventviewer),
 			  ftk_ev_span (eventviewer)/4.0);
   GtkWidget * h_scroll = gtk_hscrollbar_new (GTK_ADJUSTMENT (scroll_adj));
+  
+   /* Horizontal ScrollBar Accessibility */
+  
+  AtkObject *obj;
+  obj = gtk_widget_get_accessible (h_scroll);
+  atk_object_set_name(obj, _("Main HScroll"));
+  atk_object_set_description(obj, _("The main horizontal scrollbar"));
+  
   gtk_range_set_update_policy (GTK_RANGE (h_scroll),
 			       GTK_UPDATE_CONTINUOUS);
   gtk_widget_show (h_scroll);
@@ -599,6 +707,7 @@ create_scrollbar (FtkEventViewer * eventviewer)
   ftk_ev_scroll_adj (eventviewer) = GTK_ADJUSTMENT (scroll_adj);
   g_signal_connect (GTK_OBJECT(h_scroll),"change-value",
 		    (GtkSignalFunc) ftk_eventviewer_scroll_cv, eventviewer);
+
 
   return h_scroll;
 }
@@ -609,6 +718,11 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   GtkTooltips * eventviewer_tips = gtk_tooltips_new ();
   GtkVBox * vbox = ftk_ev_vbox (eventviewer);
   
+  AtkObject *obj;
+  obj = gtk_widget_get_accessible (GTK_WIDGET (eventviewer));
+  atk_object_set_name(obj,_("Main VBox"));
+  atk_object_set_description(obj, _("The main event viewer VBox"));
+  
   {
     struct timeval now;
     gettimeofday (&now, NULL);
@@ -618,7 +732,7 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
 
   set_up_colors (eventviewer);
   initialise_widget (eventviewer);
-
+  
   g_signal_connect (GTK_OBJECT (eventviewer), "expose-event",
 		    (GtkSignalFunc) ftk_eventviewer_expose, NULL);
   g_signal_connect (GTK_OBJECT(eventviewer), "destroy",

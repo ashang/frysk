@@ -196,7 +196,7 @@ public class EventViewer extends Widget
      * Append simultaneous events.
      */
     public boolean appendSimultaneousEvents(int tie,
-    com.redhat.ftk.SimultaneousEvent[] events) {
+    SimultaneousEvent[] events) {
       return ftk_eventviewer_append_simultaneous_events_array(getHandle(),
       tie, events.length, events);
     }
@@ -270,7 +270,13 @@ public class EventViewer extends Widget
 
     native static final protected boolean
     ftk_eventviewer_append_simultaneous_events_array (Handle sc, int tie,
-    int arrayCount, com.redhat.ftk.SimultaneousEvent[] events);
+    int arrayCount, SimultaneousEvent[] events);
     
+    native static final protected boolean
+    ftk_eventviewer_delete_trace (Handle sc, int trace_idx);
+                
+    native static final protected boolean
+    ftk_eventviewer_tie_event_array (Handle sc, int tie_index, int count,
+                 EventPair[] events);
 }
 
