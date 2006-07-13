@@ -75,8 +75,7 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
 if USE_LIBUNWIND
-GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-ptrace.a \
-		 ../frysk-imports/libunwind/src/libunwind-$(libunwind_cpu).a
+GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-$(libunwind_cpu).a
 endif
 GEN_GCJ_LDADD += ../frysk-gtk/libfrysk-ftk.a
 GEN_GCJ_LDADD += -L../frysk-gtk/EggTrayIcon

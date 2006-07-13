@@ -82,8 +82,7 @@ GEN_GCJ_LDADD += ./elfutils/libelf/libelf.a
 
 # Add in libunwind only for certain arches
 if USE_LIBUNWIND
-GEN_GCJ_LDADD += ./libunwind/src/libunwind-ptrace.a \
-		 ./libunwind/src/libunwind-$(libunwind_cpu).a 
+GEN_GCJ_LDADD += ./libunwind/src/libunwind-$(libunwind_cpu).a 
 endif
 
 GEN_GCJ_LDADD += -lopcodes
