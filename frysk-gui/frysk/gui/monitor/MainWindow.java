@@ -72,7 +72,7 @@ public class MainWindow extends Window implements Saveable{
 		//XXX:
 		noteBook.getClass();
 		noteBook.removePage(1);
-		this.showAll();
+		//this.showAll();
 	}
 
 	public void setSession(Session session){

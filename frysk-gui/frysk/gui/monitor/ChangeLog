@@ -1,3 +1,7 @@
+2006-07-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* MainWindow.java (MainWindow): Remove .showAll().
+
 2006-07-11  Mike Cvet  <mcvet@redhat.com>
 
 	* WindowManager.java: Removed all references to MemoryWindow; taken care
