@@ -1,3 +1,10 @@
+2006-07-13  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java (padBytes): Added.
+	(switchEndianness): Calls padBytes to make sure all manipulated binary
+	strings are proper byte multiples.
+	(refreshList): Calls padBytes, fixed up some endianness problems.
+
 2006-07-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): 
@@ -24,7 +31,6 @@
 	so that they can properly and correctly be displayed in positive 
 	and negative binary form.
 
->>>>>>> 1.278
 2006-07-11  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java: Cleaned up some private 

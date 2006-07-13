@@ -398,19 +398,20 @@ public class MemoryWindow
     ListStore model = (ListStore) this.memoryView.getModel();
     TreeIter iter = model.getFirstIter();
 
-        while (iter != null)
-          {
+    while (iter != null)
+      {
 
-            BigInteger bi = new BigInteger(
-                            (String) model.getValue(iter, 
-                            (DataColumnObject) cols[OBJ]), 10);
-            
-            byte[] b = bi.toByteArray();
-            String bin = "";
-            String oct = "";
-            String hex = "";
-            
-            if (bi.signum() < 0)
+        BigInteger bi = new BigInteger(
+                        (String) model.getValue(iter,
+                                 (DataColumnObject) cols[OBJ]), 10);
+
+        byte[] b = bi.toByteArray();
+        String bin = "";
+        String oct = "";
+        String hex = "";
+        String dec = "";
+
+        if (bi.signum() < 0)
           {
             for (int i = 0; i < b.length; i++)
               {
@@ -425,42 +426,55 @@ public class MemoryWindow
             oct = bi.toString(8);
             hex = bi.toString(16);
           }
+        dec = bi.toString(10);
+        
+        int diff = bin.length() % 8;
+        if (diff != 0)
+          bin = padBytes(bin, false, diff);
+        
+        System.out.println("bi.toString(2): " + bi.toString(2));
+        System.out.println("bin: " + bin);
 
-            /* Big endian first */
-            model.setValue(iter, (DataColumnString) cols[2], bin);
-            model.setValue(iter, (DataColumnString) cols[4], oct);
-            model.setValue(iter, (DataColumnString) cols[6], bi.toString(10));
-            model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
-           
-            /* Little endian second */
-            bin = switchEndianness(bin, true);
-            BigInteger bii = new BigInteger(bin, 2);
-            
-            b = bii.toByteArray();
-            
-            bin = bii.toString(2);
-            oct = bii.toString(8);
-            hex = bii.toString(16);
-            
-            model.setValue(iter, (DataColumnString) cols[1], bin);
-            model.setValue(iter, (DataColumnString) cols[3], oct);
-            model.setValue(iter, (DataColumnString) cols[5], bii.toString(10));
-            model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
+        /* Big endian first */
+        model.setValue(iter, (DataColumnString) cols[2], bin);
+        model.setValue(iter, (DataColumnString) cols[4], oct);
+        model.setValue(iter, (DataColumnString) cols[6], dec);
+        model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
 
-            iter = iter.getNextIter();
-          }
+        /* Little endian second */
+        String bin2 = switchEndianness(bin, true);
+        BigInteger bii = new BigInteger(bin2, 2);
+
+        System.out.println("bii.toString(2): " + bii.toString(2));
+        System.out.println("bin2: " + bin2);
+
+        oct = bii.toString(8);
+        hex = bii.toString(16);
+        
+        /* Bad hack to get around weird BigInteger endian bug */
+        if (bin2.equals(bin))
+          dec = bi.toString(10);
+        else
+          dec = bii.toString(10);
+
+        model.setValue(iter, (DataColumnString) cols[1], bin2);
+        model.setValue(iter, (DataColumnString) cols[3], oct);
+        model.setValue(iter, (DataColumnString) cols[5], dec);
+        model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
+
+        iter = iter.getNextIter();
+      }
 
     for (int i = 0; i < MemoryWindow.colNames.length; i++)
       this.columns[i].setVisible(this.prefs.getBoolean(
-                                                       MemoryWindow.colNames[i],
-                                                       this.colVisible[i]));
+                           MemoryWindow.colNames[i], this.colVisible[i]));
 
     this.showAll();
   }
   
   /**
-   * Helper function for calculating memory information and putting it into
-   * rows to be displayed
+   * Helper function for calculating memory information and putting it into rows
+   * to be displayed
    */
   public void rowAppend (long i)
   {
@@ -519,36 +533,43 @@ public class MemoryWindow
       }
 
   }
+  
+ /**
+  * Pad this byte string with zeroes so that it is of proper size.
+  */ 
+  private String padBytes(String s, boolean littleEndian, int diff) {
+    
+      if (littleEndian)
+        for (int i = 0; i < 8 - diff; i++)
+          s = s + "0";
+      else
+        for (int i = 0; i < 8 - diff; i++)
+          s = "0" + s;
+      
+      return s;
+  }
 
   /**
    * Switch the endianness of a binary string
    */
   private String switchEndianness (String toReverse, boolean littleEndian)
   {
-    boolean neg = false;
-    if (toReverse.charAt(0) == '-') {
-      toReverse = toReverse.substring(1);
-      neg = true;
-    }
-    
     int diff = toReverse.length() % 8;
+    
+    /* The string isn't properly composed of bits yet */
     if (diff != 0)
-      if (littleEndian)
-        for (int i = 0; i < 8 - diff; i++)
-          toReverse = toReverse + "0";
-      else
-        for (int i = 0; i < 8 - diff; i++)
-          toReverse = "0" + toReverse;
+      toReverse = padBytes(toReverse, littleEndian, diff);
+    
+    /* No need to switch this string, it'll be identical either way */
+    if (toReverse.length() == 8)
+      return toReverse;
     
     char[] tmp = new char[toReverse.length()];
     for (int i = 0; i < tmp.length; i+=8)
       for(int bitOffset = 0; bitOffset < 8; bitOffset++)
         tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i - (8 - bitOffset));
 
-    if (neg)
-      return ("-" +  new String(tmp));
-    else
-      return new String(tmp);
+    return new String(tmp);
   }
 
   private void saveBinaryValue (String rawString, int radix,
