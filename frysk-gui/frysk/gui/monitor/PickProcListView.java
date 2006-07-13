@@ -55,7 +55,7 @@ public class PickProcListView extends ListView {
 	
 	PickProcListView(String path){
 		this.path = path;
-		this.setAlternateRowColor(true);
+		this.setAlternateRowColor(false);
 	}
 	
 	public void add(GuiObject object, TreeIter treeIter){

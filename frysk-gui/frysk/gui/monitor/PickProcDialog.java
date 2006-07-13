@@ -67,7 +67,7 @@ public class PickProcDialog extends Dialog {
 	
 	public PickProcDialog(String path){
 		super();
-		this.setTitle("Select a process to debug");
+		this.setTitle("Debug Process List");
 		
 		this.ListView = new PickProcListView(path);
 		this.ListView.addListener(new TreeViewListener() {
@@ -85,9 +85,12 @@ public class PickProcDialog extends Dialog {
 			}
 		});
 		
+		this.setHasSeparator(false);
 		this.ListView.watchLinkedList(DataModelManager.theManager.flatProcObservableLinkedList);
         this.ListView.setSort();
 		
+ 
+        
 		HBox mainBox = new HBox(false,0);
 		this.getDialogLayout().add(mainBox);
 		
@@ -100,6 +103,7 @@ public class PickProcDialog extends Dialog {
 		mainBox.packEnd(sWindow);
 		
 		this.addButton(GtkStockItem.OPEN, ResponseType.OK.getValue());
+		this.addButton(GtkStockItem.CANCEL, ResponseType.CANCEL.getValue());
 
 		//this.showAll();
 	}
