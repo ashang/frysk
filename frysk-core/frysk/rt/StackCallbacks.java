@@ -62,7 +62,7 @@ public class StackCallbacks
                             boolean needInfo)
   {
     Host.logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
-                                + Long.toHexString(instructionAddress));
+                                + Long.toHexString(instructionAddress) + "\n");
     throw new RuntimeException("Not implemented in core yet");
     // return get_proc_info(instructionAddress, needInfo);
   }
@@ -83,28 +83,32 @@ public class StackCallbacks
   {
     // XXX: Fixme for 64
     Host.logger.log(Level.FINE, "Libunwind: reading memory at 0x"
-                                + Long.toHexString(addr));
-    return myTask.getMemory().getInt(addr);
+                                + Long.toHexString(addr) + "\n");
+    long value = myTask.getMemory().getInt(addr);
+    Host.logger.log(Level.FINE, "Libunwind: read value 0x" + Long.toHexString(value) + "\n");
+    return value; 
   }
 
   public void writeMem (long as, long addr, long value)
   {
     Host.logger.log(Level.FINE, "Libunwind: writing value 0x"+Long.toHexString(value)+" to memory address 0x"
-                    + Long.toHexString(addr));
+                    + Long.toHexString(addr) +"\n");
     throw new RuntimeException("Not implemented in core yet");
   }
 
   public long accessReg (long as, long regnum)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName);
-    return myTask.getIsa().getRegisterByName(registerName).get(myTask);
+    Host.logger.log(Level.FINE, "Libunwind: reading from register " + registerName +"\n");
+    long value = myTask.getIsa().getRegisterByName(registerName).get(myTask);
+    Host.logger.log(Level.FINE, "Libunwind: read value 0x"+Long.toHexString(value)+"\n");
+    return value;
   }
 
   public void writeReg (long as, long regnum, long value)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: writing value 0x" +Long.toHexString(value)+ " to register " + registerName);
+    Host.logger.log(Level.FINE, "Libunwind: writing value 0x" +Long.toHexString(value)+ " to register " + registerName +"\n");
     // TODO Auto-generated method stub
     throw new RuntimeException("Not implemented in core yet");
   }
@@ -112,7 +116,7 @@ public class StackCallbacks
   public double accessFpreg (long as, long regnum)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName);
+    Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName +"\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return 0;
@@ -121,7 +125,7 @@ public class StackCallbacks
   public void writeFpreg (long as, long regnum, double value)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: writing value "+ value + " to register " + registerName);
+    Host.logger.log(Level.FINE, "Libunwind: writing value "+ value + " to register " + registerName +"\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
 
@@ -136,7 +140,7 @@ public class StackCallbacks
 
   public String getProcName (long as, long addr)
   {
-    Host.logger.log(Level.FINE,"Libunwind: getting procedure name at 0x" + Long.toHexString(addr));
+    Host.logger.log(Level.FINE,"Libunwind: getting procedure name at 0x" + Long.toHexString(addr) +"\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return null;
@@ -144,7 +148,7 @@ public class StackCallbacks
 
   public long getProcOffset (long as, long addr)
   {
-    Host.logger.log(Level.FINE,"Libunwind: getting procedure offset at 0x" + Long.toHexString(addr));
+    Host.logger.log(Level.FINE,"Libunwind: getting procedure offset at 0x" + Long.toHexString(addr) +"\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return 0;

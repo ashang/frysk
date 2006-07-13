@@ -1,5 +1,10 @@
 2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* StackCallbacks.java: Improved logging information and reformatted
+	to GNU formatting.
+	* TestStackBacktrace.java (testBacktrace): Added commented out logging
+	level.
+
 	* StackCallbacks.java: Added preamble.
 	(findProcInfo): Added logging.
 	(getDynInfoListAddr): Ditto.
