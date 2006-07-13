@@ -1,3 +1,10 @@
+2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* RegisterX86.java: Added preamble.
+	(getUnwindRegister): Now returns the string name of the register
+	for use in getRegisterByName.
+	* UnwindException.java: Added preamble.
+
 2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* RegisterX86.java: Added.
