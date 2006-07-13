@@ -1,3 +1,8 @@
+2006-07-13  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (getProcessObserverControls): 
+	Add NPE checks.
+
 2006-07-12  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java (refreshList): More endianness tuning
@@ -19,6 +24,7 @@
 	so that they can properly and correctly be displayed in positive 
 	and negative binary form.
 
+>>>>>>> 1.278
 2006-07-11  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java: Cleaned up some private 
@@ -71,6 +77,8 @@
 
 2006-07-07  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* SessionLauncher.java: New.
+	
 	* SessionManagerGui.java (getDebugSingleProcess): Only launch source window
 	on OK response.
 

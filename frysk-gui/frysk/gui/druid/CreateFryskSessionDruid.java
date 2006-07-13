@@ -460,58 +460,63 @@ public class CreateFryskSessionDruid
     observerDescriptionTextView.setBuffer(observerDescBuffer);
 
     processObserverSelectionTreeView.watchLinkedList(currentSession.getProcesses());
-    processObserverSelectionTreeView.getSelection().addListener(
-                                                                new TreeSelectionListener()
-                                                                {
-                                                                  public void selectionChangedEvent (
-                                                                                                     TreeSelectionEvent arg0)
-                                                                  {
-                                                                    DebugProcess selected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
-                                                                    if (selected != null)
-                                                                      {
-                                                                        Iterator i = selected.getObservers().iterator();
-                                                                        observerSelectionTreeView.clearChecked();
-                                                                        while (i.hasNext())
-                                                                          observerSelectionTreeView.setChecked(
-                                                                                                               (ObserverRoot) i.next(),
-                                                                                                               true);
-                                                                      }
-                                                                  }
-                                                                });
+    processObserverSelectionTreeView.getSelection()
+        .addListener(
+                    new TreeSelectionListener()
+                    {
+                      public void selectionChangedEvent (TreeSelectionEvent arg0)
+                      {
+                        DebugProcess selected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
+                        if (selected != null)
+                          {
+                            Iterator i = selected.getObservers().iterator();
+                            observerSelectionTreeView.clearChecked();
+                            while (i.hasNext())
+                              observerSelectionTreeView.setChecked((ObserverRoot) i.next(),
+                                                                   true);
+                          }
+                      }
+                    });
 
     observerSelectionTreeView.watchLinkedList(ObserverManager.theManager.getTaskObservers());
-    observerSelectionTreeView.getCellRendererToggle().addListener(
-                                                                  new CellRendererToggleListener()
-                                                                  {
-                                                                    public void cellRendererToggleEvent (
-                                                                                                         CellRendererToggleEvent arg0)
-                                                                    {
-                                                                      GuiObject selected = (GuiObject) observerSelectionTreeView.getSelectedObject();
-                                                                      DebugProcess observerProcessSelected = (DebugProcess) processObserverSelectionTreeView.getSelectedObject();
-                                                                      if (observerSelectionTreeView.isChecked(selected))
-                                                                        {
-                                                                          if (! observerProcessSelected.getObservers().contains(
-                                                                                                                                selected))
-                                                                            observerProcessSelected.addObserver((ObserverRoot) selected);
-                                                                        }
-                                                                      else
-                                                                        {
-                                                                          observerProcessSelected.removeObserver((ObserverRoot) selected);
-                                                                        }
-                                                                    }
-                                                                  });
+    observerSelectionTreeView.getCellRendererToggle()
+        .addListener(
+                     new CellRendererToggleListener()
+                     {
+                       public void cellRendererToggleEvent (
+                                                            CellRendererToggleEvent arg0)
+                       {
+                         GuiObject selected = (GuiObject) observerSelectionTreeView.getSelectedObject();
+                         DebugProcess observerProcessSelected = (DebugProcess) processObserverSelectionTreeView
+                           .getSelectedObject();
+                         if (observerSelectionTreeView.isChecked(selected))
+                           {
+                             if (! observerProcessSelected.getObservers().contains(
+                                                                                   selected))
+                               observerProcessSelected.addObserver((ObserverRoot) selected);
+                           }
+                         else
+                           {
+                             observerProcessSelected.removeObserver((ObserverRoot) selected);
+                           }
+                       }
+                     });
 
-    observerSelectionTreeView.getSelection().addListener(
-                                                         new TreeSelectionListener()
-                                                         {
-                                                           public void selectionChangedEvent (
-                                                                                              TreeSelectionEvent arg0)
-                                                           {
-                                                             if(observerSelectionTreeView.getSelectedObject().getToolTip() != null){
-                                                               observerDescBuffer.setText(observerSelectionTreeView.getSelectedObject().getToolTip());
-                                                             }
-                                                           }
-                                                         });
+    observerSelectionTreeView.getSelection()
+        .addListener(
+                     new TreeSelectionListener()
+                     {
+                       public void selectionChangedEvent ( TreeSelectionEvent arg0)
+                       {
+                         if (observerSelectionTreeView.getSelectedObject() != null)
+                           if(observerSelectionTreeView.getSelectedObject().getToolTip() != null){
+                             observerDescBuffer.setText(
+                                                        observerSelectionTreeView.
+                                                        getSelectedObject().
+                                                        getToolTip());
+                         }
+                       }
+                     });
 
     SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
     sizeGroup.addWidget(observerSelectionTreeView);
