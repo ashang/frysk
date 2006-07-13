@@ -1,14 +1,14 @@
 <Session type="frysk.gui.sessions.Session" name="aanother_new_session" tooltip="NoTootip">
   <procs>
     <elements>
-      <element type="frysk.gui.sessions.DebugProcess" name="bash" tooltip="xterm" executablePath="xterm">
+      <element type="frysk.gui.sessions.DebugProcess" name="nautilus" tooltip="xterm" executablePath="xterm">
         <observers>
           <element name="Task Terminating Observer" />
           <element name="Fork Observer" />
         </observers>
         <tagsets />
       </element>
-      <element type="frysk.gui.sessions.DebugProcess" name="FryskGui" tooltip="FryskGui" executablePath="FryskGui">
+      <element type="frysk.gui.sessions.DebugProcess" name="gnome-panel" tooltip="FryskGui" executablePath="FryskGui">
         <observers>
           <element name="Task Terminating Observer" />
           <element name="TaskCloneObserver" />
