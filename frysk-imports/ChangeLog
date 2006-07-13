@@ -1,3 +1,9 @@
+2006-07-13  Stepan Kasal  <kasal@ucw.cz>
+
+	* bootstrap.sh: Run autoheader in libunwind, autoconf in antlr..
+	* antlr/configure, libunwind/include/config.h.in, libunwind/aclocal.m4:
+	* elfutils/configure, elfutils/aclocal.m4, libunwind/configure: Delete.
+
 2006-07-12  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Remove libunwind-ptrace.a.

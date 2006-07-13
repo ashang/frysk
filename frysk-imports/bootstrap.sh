@@ -71,6 +71,9 @@ echo "Running autoheader ... for elfutils"
 autoheader
 echo "Running automake ... for elfutils"
 automake --add-missing 
+cd ../antlr
+echo "Running autoconf ... for antlr"
+autoconf -f
 cd ..
 
 target_cpu=`uname -a`
@@ -82,5 +85,8 @@ case "${target_cpu}" in
 	echo "Running aclocal ... for libunwind"
 	aclocal
 	echo "Running autoconf ... for libunwind"
-	autoconf -f ;;
+	autoconf -f
+	echo "Running autoheader ... for libunwind"
+	autoheader
+	;;
 esac
