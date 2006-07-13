@@ -1,3 +1,21 @@
+2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
+
+	* StackCallbacks.java: Added preamble.
+	(findProcInfo): Added logging.
+	(getDynInfoListAddr): Ditto.
+	(accessMem): Ditto.
+	(writeMem): Ditto.
+	(accessReg): Ditto, now fetches register contents.
+	(accessFpReg): Ditto.
+	(writeReg): Added logging.
+	(accessFpReg): Ditto.
+	(getProcName): Ditto.
+	(getProcOffset): Ditto.
+	* StackFactory.java: Added preamble.
+	* StackFrame.java: Ditto.
+	* TestStackBacktrace.java: Ditto.
+	* cni/StackBacktrace.cxx: Ditto.
+	
 2005-07-12  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TestStackBacktrace.java (testBacktrace): Now uses brokenXXX.

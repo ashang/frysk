@@ -58,7 +58,7 @@ import frysk.Config;
 
 public abstract class Host
 {
-    protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    public static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
     /**
      * The host corresponds to a specific system.
      */
