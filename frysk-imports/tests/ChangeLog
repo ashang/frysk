@@ -90,6 +90,11 @@
 	gcov; mark as PASS.
 	* frysk2137/Gcov.java: Rename frysk2137/Hello.java
 
+2006-06-09  Mike Cvet  <mcvet@redhat.com>
+        
+    * Makefile.am: Small fix for build breakage; frysk2670
+    directory wasn't created by the Makefile.
+
 2006-06-06  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (frysk2670_FILES): Fix typo, add remaining files.

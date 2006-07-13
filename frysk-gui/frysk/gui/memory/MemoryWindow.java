@@ -137,7 +137,8 @@ public class MemoryWindow
   private SpinButton fromSpin;
   private SpinButton toSpin;
 
-  private Entry pcEntry;
+  private Entry pcEntryDec;
+  private Entry pcEntryHex;
 
   private SimpleComboBox bitsCombo;
 
@@ -163,7 +164,8 @@ public class MemoryWindow
     currentFormat = currentFormat + THIRTYTWO_BIT; /* Seems like a good default */
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
-    this.pcEntry = (Entry) this.glade.getWidget("PCEntry");
+    this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
+    this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
     this.bitsCombo = new SimpleComboBox(
                                         (this.glade.getWidget("bitsCombo")).getHandle());
     this.model = new ListStore(cols);
@@ -223,7 +225,8 @@ public class MemoryWindow
     long end = pc_inc + 20;
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setValue((double) end);
-    this.pcEntry.setText("" + pc_inc);
+    this.pcEntryDec.setText("" + pc_inc);
+    this.pcEntryHex.setText("0x" + Long.toHexString(pc_inc));
 
     recalculate();
 
@@ -431,9 +434,6 @@ public class MemoryWindow
         int diff = bin.length() % 8;
         if (diff != 0)
           bin = padBytes(bin, false, diff);
-        
-        System.out.println("bi.toString(2): " + bi.toString(2));
-        System.out.println("bin: " + bin);
 
         /* Big endian first */
         model.setValue(iter, (DataColumnString) cols[2], bin);
@@ -444,9 +444,6 @@ public class MemoryWindow
         /* Little endian second */
         String bin2 = switchEndianness(bin, true);
         BigInteger bii = new BigInteger(bin2, 2);
-
-        System.out.println("bii.toString(2): " + bii.toString(2));
-        System.out.println("bin2: " + bin2);
 
         oct = bii.toString(8);
         hex = bii.toString(16);

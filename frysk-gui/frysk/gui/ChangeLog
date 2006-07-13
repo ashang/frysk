@@ -1,9 +1,12 @@
 2006-07-13  Mike Cvet  <mcvet@redhat.com>
 
+	* glade/memorywindow.glade: Added hexadecimal program counter entry
 	* memory/MemoryWindow.java (padBytes): Added.
 	(switchEndianness): Calls padBytes to make sure all manipulated binary
 	strings are proper byte multiples.
 	(refreshList): Calls padBytes, fixed up some endianness problems.
+	(pcEntryDec): Refactored.
+	(pcEntryHex): Added.
 
 2006-07-13  Phil Muldoon  <pmuldoon@redhat.com>
 
@@ -421,6 +424,16 @@
 
 	* Gui.java: Added a file check before frysk tries
 	to open settings file.
+
+2006-06-06  Mike Cvet  <mcvet@redhat.com>
+        
+    * ListView.java: Added a check for null selected objects
+    * druid/CreateFryskSessionDruid.java: Eliminated nullpointers from tapping
+    enter on a selected object in the ListView (Fixes 2720).
+    * druid/CreateFryskSessionDruid.java: fixed the way currentSession is
+    assigned when selecting previous sessions from the ListView so that it
+    does not get overwritten if it is selected and then a new session with
+    name is selected (fix for 2719).
 
 2006-05-31  Sami Wagiaalla  <swagiaal@redhat.com>
 
