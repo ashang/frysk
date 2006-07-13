@@ -1,5 +1,9 @@
 2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
 
+	* cni/StackTraceCreator.cxx (get_dyn_info_addr_list): Now sets dilap to 0
+	if retval is zero rather than just setting the value it points to to
+	zero.
+
 	* RegisterX86.java: Added preamble.
 	(getUnwindRegister): Now returns the string name of the register
 	for use in getRegisterByName.

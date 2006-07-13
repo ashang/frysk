@@ -38,6 +38,7 @@
 // exception.
 #include <libunwind.h>
 #include <endian.h>
+#include <stdio.h>
 #include <gcj/cni.h>
 
 #include "lib/unwind/StackTraceCreator.h"
@@ -84,7 +85,10 @@ int get_dyn_info_list_addr (::unw_addr_space_t as, ::unw_word_t *dilap,
 {
 	lib::unwind::UnwindCallbacks *cb = (lib::unwind::UnwindCallbacks*) arg;
 	jlong retval = cb->getDynInfoListAddr ((jlong) as);
-	*dilap = retval;
+	if(retval)
+		*dilap = retval;
+	else
+		dilap = 0;
 	
 	return 0;
 }
