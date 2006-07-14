@@ -85,7 +85,7 @@ tree</a>.
 
 </dd>
 
-<dt><a name="fc5">Fedora Core 5</a></dt>
+<dt><a name="fc5">Fedora Core 5</a>>br><a name="fc6">Fedora Core 6</a></dt>
 
 <dd>
 
@@ -94,26 +94,6 @@ run <em>frysk</em> using the distributed RPMs.  Just note the
 following:
 
 <ul>
-
-<li><a
-href="/bugzilla/show_bug.cgi?id=2130"><tt>PASS:
-frysk2130/strace-clone-exec.sh</tt></a> A ptraced multi-threaded
-program that does an execve call from a non-main thread is
-spontaneously killed.<br> Fixed in <tt>kernel-2.6.16-1.2096_FC5</tt>.
-
-<li><a
-href="/bugzilla/show_bug.cgi?id=2595"><tt>PASS:
-frysk2595/ptrace_peek_wrong_thread</tt></a>: Only the attaching thread
-can peek and poke a process.<br> Grab a pre-built kernel snapshot with
-a workaround applied from:
-
-<pre>
-<a href="ftp://ftp.linux.org.uk/pub/people/cagney">ftp://ftp.linux.org.uk/pub/people/cagney</a>
-</pre>
-
-the patch can be found <a href="linux-2.6-ptrace-tgid.patch">here</a>.
-
-</li>
 
 <li>Check that the <tt>selinux</tt> security database is up-to-date
 (or disable SE Linux).  Otherwise <tt>gij</tt> and <tt>gcj-dbtool</tt>
@@ -124,7 +104,7 @@ behave weird; and <tt>/proc</tt> is not accessible</li>
 sudo yum install antlr jdom glib-java libgtk-java \
 libvte-java vte-devel libglade-java gcc-java xmlto \
 transfig dogtail automake gcc-c++ libglade-java \
-libglade2-devel sharutils
+libglade2-devel sharutils eclipse-ecj
 </pre>
 </li>
 
