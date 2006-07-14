@@ -51,6 +51,7 @@ import org.gnu.gtk.IconSize;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.Notebook;
+import org.gnu.gtk.SelectionMode;
 import org.gnu.gtk.SizeGroup;
 import org.gnu.gtk.SizeGroupMode;
 import org.gnu.gtk.TextBuffer;
@@ -58,6 +59,7 @@ import org.gnu.gtk.TextView;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreePath;
+import org.gnu.gtk.TreeRowReference;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
@@ -69,6 +71,8 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
+import org.gnu.gtk.event.TreeViewEvent;
+import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.common.IconManager;
 import frysk.gui.monitor.CheckedListView;
@@ -250,40 +254,49 @@ public class CreateFryskSessionDruid
   private void changeGroupState (TreeView tree, TreePath[] selectedProcs,
                                  boolean filtered, boolean state)
   {
+
+	TreeRowReference[] paths = new TreeRowReference[selectedProcs.length];
+	TreeIter unfilteredProcessIter = null;
     if (selectedProcs.length > 0)
       {
-        for (int i = 0; i < selectedProcs.length; i++)
+    	
+    	for (int i=0; i<selectedProcs.length; i++)
+    	{
+    		if (filtered)
+    		{
+                unfilteredProcessIter = this.dataModel.getModel().getIter(
+                        deFilterPath(
+                                     tree,
+                                     selectedProcs[i]));
+    			
+    		}
+    		else
+    			unfilteredProcessIter = this.dataModel.getModel().getIter(selectedProcs[i]);
+    		paths[i] = new TreeRowReference(this.dataModel.getModel(),unfilteredProcessIter.getPath());
+    	}
+        for (int i = 0; i < paths.length; i++)
           {
             // Convert a filetered iterator to a non filtered iterator.
-            TreeIter unfilteredProcessIter;
-            if (filtered)
-              unfilteredProcessIter = this.dataModel.getModel().getIter(
-                                                                        deFilterPath(
-                                                                                     tree,
-                                                                                     selectedProcs[i]));
-            else
-              unfilteredProcessIter = this.dataModel.getModel().getIter(
-                                                                        selectedProcs[i]);
-
+   
             // Scenario 1: Tree iter has children (a process group); selected
             // the parent
-            if (unfilteredProcessIter.getChildCount() > 0)
+            if (this.dataModel.getModel().getIter(paths[i].getPath()).getChildCount() > 0)
               {
                 if (state)
                   {
-                    processSelected += unfilteredProcessIter.getChildCount() + 1;
-                    addProcessParent(unfilteredProcessIter);
+                    processSelected += this.dataModel.getModel().getIter(paths[i].getPath()).getChildCount() + 1;
+                    addProcessParent(this.dataModel.getModel().getIter(paths[i].getPath()));
                   }
                 else
-                  processSelected -= unfilteredProcessIter.getChildCount() + 1;
-                setTreeSelected(unfilteredProcessIter, state, true);
+                  processSelected -= this.dataModel.getModel().getIter(paths[i].getPath()).getChildCount() + 1;
+                setTreeSelected(this.dataModel.getModel().getIter(paths[i].getPath()), state, true);
               }
             else
               {
                 // Scenario 2: A child in the process group has been selected,
                 // also select
                 // the parent and siblings.
-                TreePath parent_path = unfilteredProcessIter.getPath();
+                TreePath parent_path = paths[i].getPath();
                 if (isChild(parent_path))
                   {
                     // we are a child that has a parent; sibilings and parent
@@ -296,11 +309,11 @@ public class CreateFryskSessionDruid
                       {
                         if (state)
                           {
-                            processSelected += unfilteredProcessIter.getChildCount() + 1;
+                            processSelected += this.dataModel.getModel().getIter(paths[i].getPath()).getChildCount() + 1;
                             addProcessParent(parent_iter);
                           }
                         else
-                          processSelected -= unfilteredProcessIter.getChildCount() + 1;
+                          processSelected -= this.dataModel.getModel().getIter(paths[i].getPath()).getChildCount() + 1;
                         setTreeSelected(parent_iter, state, true);
                       }
                   }
@@ -308,13 +321,13 @@ public class CreateFryskSessionDruid
                   {
                     if (state)
                       {
-                        addProcessParent(unfilteredProcessIter);
+                        addProcessParent(this.dataModel.getModel().getIter(paths[i].getPath()));
                         processSelected++;
                       }
                     else
                       processSelected--;
                     // Scenario 3: No children, or siblings
-                    setTreeSelected(unfilteredProcessIter, state, false);
+                    setTreeSelected(this.dataModel.getModel().getIter(paths[i].getPath()), state, false);
                   }
               }
           }
@@ -366,15 +379,38 @@ public class CreateFryskSessionDruid
     this.dataModel = new ProcWiseDataModel();
     procWiseTreeView = new ProcWiseTreeView(
                                             glade.getWidget(
-                                                            "sessionDruid_procWiseTreeView").getHandle(),
+                                            "sessionDruid_procWiseTreeView").getHandle(),
                                             this.dataModel);
+    
+    procWiseTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
+    
+    procWiseTreeView.addListener(new TreeViewListener() {
+		public void treeViewEvent(TreeViewEvent event) {
+			if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
+	         changeGroupState(procWiseTreeView,
+                     procWiseTreeView.getSelection().getSelectedRows(),
+                     true, true);
+		}});
 
     // Create a New ListView and mount the Linked List from Session data
     addedProcsTreeView = new ListView(
                                       glade.getWidget(
-                                                      "sessionDruid_addedProcsTreeView").getHandle());
+                                      "sessionDruid_addedProcsTreeView").getHandle());
     addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
-
+    addedProcsTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
+    addedProcsTreeView.addListener(new TreeViewListener() {
+		public void treeViewEvent(TreeViewEvent event) {
+			if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
+			{
+				DebugProcess currentDebugProcess = (DebugProcess) addedProcsTreeView.getSelectedObject();
+				if (currentDebugProcess != null) {
+					TreePath foo = dataModel.searchName(currentDebugProcess.getName());
+					changeGroupState(procWiseTreeView, new TreePath[] { foo },
+							false, false);
+					currentSession.removeProcess(currentDebugProcess);
+				}
+			}
+		}});
     this.setUpCurrentPage();
 
     nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");

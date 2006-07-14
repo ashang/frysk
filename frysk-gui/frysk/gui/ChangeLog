@@ -1,3 +1,10 @@
+2006-07-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls): 
+	Added multiple selection.
+	(changeGroupState): Convert to TreeRowReference.
+	(getProcessSelectionControls): Added double click to add and remove.
+
 2006-07-14  Rick Moseley  <rmoseley@redhat.com>
 
 	* monitor/GuiObject.java: Fix typo for "No Tootip".
