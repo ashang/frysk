@@ -1,3 +1,8 @@
+2006-07-14  Mike Cvet  <mcvet@redhat.com>
+
+	* Disassembler.java (Disassembler): Applied GNU formatting.
+	* Disassembler.cxx: Ditto.
+
 2006-05-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestOpcodes.java: Added Frysk header.
