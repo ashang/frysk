@@ -39,10 +39,7 @@
 
 package frysk.rt;
 
-import java.util.logging.Level;
-
 import frysk.proc.Action;
-import frysk.proc.Host;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;

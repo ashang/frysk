@@ -1,3 +1,7 @@
+2005-07-14  Mark Wielaard  <mark@klomp.org>
+
+	* TestStackBacktrace.java: Removed unused Level and Host imports.
+
 2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* StackCallbacks.java: Improved logging information and reformatted
