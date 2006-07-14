@@ -1,3 +1,7 @@
+2006-07-14  Rick Moseley  <rmoseley@redhat.com>
+
+	* monitor/GuiObject.java: Fix typo for "No Tootip".
+
 2006-07-13  Mike Cvet  <mcvet@redhat.com>
 
 	* glade/memorywindow.glade: Added hexadecimal program counter entry

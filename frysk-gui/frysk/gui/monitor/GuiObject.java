@@ -66,7 +66,7 @@ public class GuiObject extends GuiObservable implements SaveableXXX{
 
 	public GuiObject() {
 		this.setName("NoName");
-	    this.setToolTip("NoTootip");
+	    this.setToolTip("NoTooltip");
 		this.saveObject = true;
 	}
 	
