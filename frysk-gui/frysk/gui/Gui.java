@@ -460,30 +460,28 @@ implements LifeCycleListener, Saveable
 		
 
 		
-		TimerEvent timerEvent = new TimerEvent(0, 5000){
+		TimerEvent timerEvent = new TimerEvent(3000){
 			public void execute() {
 				CustomEvents.addEvent(new Runnable() {
 					public void run() {
 						WindowManager.theManager.splashScreen.hideAll();
 					}
 				});
-				Manager.eventLoop.remove(this);
 			}
 		};
 		Manager.eventLoop.add (timerEvent);
 		
-				
-		CustomEvents.addEvent(new Runnable() {
-			public void run() {
-				TimerEvent refreshTimer = new TimerEvent(0, 5000){
-					public void execute() {
+		TimerEvent refreshTimer = new TimerEvent(0, 3000) {
+			public void execute() {
+				CustomEvents.addEvent(new Runnable() {
+					public void run() {
 						Manager.host.requestRefreshXXX (true);
 					}
-				};
-				
-				Manager.eventLoop.add (refreshTimer);
+				});
 			}
-		});
+		};
+        Manager.eventLoop.add (refreshTimer);
+
 		
 		CustomEvents.addEvent(new Runnable() {
 			public void run() {

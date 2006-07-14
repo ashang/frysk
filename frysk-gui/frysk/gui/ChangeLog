@@ -19,6 +19,7 @@
 
 2006-07-14  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* Gui.java (gui): Fix splash screen timer. Fix requestRefreshXXX timer.
 	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls): 
 	Added multiple selection.
 	(changeGroupState): Convert to TreeRowReference.
