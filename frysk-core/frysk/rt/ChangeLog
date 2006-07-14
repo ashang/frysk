@@ -1,5 +1,11 @@
 2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
 
+	* StackCallbacks.java (findProcInfo): Now returns incomplete 
+	proc_info struct.
+	(accessMem): Reorganized comments to make more sense.
+	* TestStackBacktrace.java (testBacktrace): Added commented out
+	code for MapsBuilder testing, for debugging purposes.
+
 	* StackCallbacks.java (findProcInfo): Started gathering necessary
 	information to buidl the struct.
 	(build_procinfo): Added.

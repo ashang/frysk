@@ -69,11 +69,9 @@ public class StackCallbacks
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwarfDie die = dwfl.getDie(instructionAddress);
 
-    long struct = build_procinfo(die.getLowPC(), die.getHighPC(), 0, 0, 0,
-                                 0, 0);
-    Long.toHexString(struct);
+    long struct = build_procinfo(die.getLowPC(), die.getHighPC(), 0, 0, 0, 0, 0);
 
-    throw new RuntimeException("Not implemented in core yet");
+    return struct;
   }
 
   public void putUnwindInfo (long addressSpace, long procInfo)
@@ -90,9 +88,9 @@ public class StackCallbacks
 
   public long accessMem (long addressSpace, long addr)
   {
-    // XXX: Fixme for 64
     Host.logger.log(Level.FINE, "Libunwind: reading memory at 0x"
                                 + Long.toHexString(addr) + "\n");
+    // XXX: Fixme for 64
     long value = myTask.getMemory().getInt(addr);
     Host.logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");

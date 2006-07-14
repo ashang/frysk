@@ -93,16 +93,38 @@ public class TestStackBacktrace
     assertRunUntilStop("Observer was not added");
     
     assertNotNull(myTask);
+
+//    class MyBuilder extends MapsBuilder
+//    {
+//
+//      public void buildBuffer (byte[] maps)
+//      {
+//        maps[maps.length - 1] = 0;
+//      }
+//
+//      public void buildMap (long addressLow, long addressHigh, boolean permRead, boolean permWrite, boolean permExecute, boolean permPrivate, long offset, int devMajor, int devMinor, int inode, int pathnameOffset, int pathnameLength)
+//      {
+//        ByteBuffer buffer =  myTask.getMemory();
+//        
+//        for(long i = addressLow; i < addressHigh; i++){
+//          buffer.getByte(i);
+//        }
+//      }
+//      
+//    }
+//    
+//    MyBuilder builder = new MyBuilder();
+//    System.out.println("Before maps test");
+//    builder.construct(myTask.getTid());
+//    System.out.println("After maps test");
     
     StackFrame frame = StackFactory.createStackFrame(myTask);
     
     assertNotNull(frame);
     
-    int indent = 0;
+    int level = 0;
     while(frame != null){
-      for(int i = 0; i < indent; i++)
-        System.out.print("\t");
-      System.out.println("Frame " + (indent + 1));
+      System.out.println("Frame " + (++level));
       frame = frame.outer;
     }
   }
