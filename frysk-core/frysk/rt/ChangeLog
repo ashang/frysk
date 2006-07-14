@@ -1,3 +1,11 @@
+2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* StackCallbacks.java (findProcInfo): Started gathering necessary
+	information to buidl the struct.
+	(build_procinfo): Added.
+	* cni/StackCallbacks.java (build_procinfo): Added, takes the data
+	gathered and creates the proc_info struct.
+
 2005-07-14  Mark Wielaard  <mark@klomp.org>
 
 	* TestStackBacktrace.java: Removed unused Level and Host imports.

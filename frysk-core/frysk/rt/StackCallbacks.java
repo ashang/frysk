@@ -42,6 +42,8 @@ package frysk.rt;
 
 import java.util.logging.Level;
 
+import lib.dw.DwarfDie;
+import lib.dw.Dwfl;
 import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
 import frysk.proc.Host;
@@ -63,8 +65,15 @@ public class StackCallbacks
   {
     Host.logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
                                 + Long.toHexString(instructionAddress) + "\n");
+
+    Dwfl dwfl = new Dwfl(myTask.getTid());
+    DwarfDie die = dwfl.getDie(instructionAddress);
+
+    long struct = build_procinfo(die.getLowPC(), die.getHighPC(), 0, 0, 0,
+                                 0, 0);
+    Long.toHexString(struct);
+
     throw new RuntimeException("Not implemented in core yet");
-    // return get_proc_info(instructionAddress, needInfo);
   }
 
   public void putUnwindInfo (long addressSpace, long procInfo)
@@ -85,30 +94,37 @@ public class StackCallbacks
     Host.logger.log(Level.FINE, "Libunwind: reading memory at 0x"
                                 + Long.toHexString(addr) + "\n");
     long value = myTask.getMemory().getInt(addr);
-    Host.logger.log(Level.FINE, "Libunwind: read value 0x" + Long.toHexString(value) + "\n");
-    return value; 
+    Host.logger.log(Level.FINE, "Libunwind: read value 0x"
+                                + Long.toHexString(value) + "\n");
+    return value;
   }
 
   public void writeMem (long as, long addr, long value)
   {
-    Host.logger.log(Level.FINE, "Libunwind: writing value 0x"+Long.toHexString(value)+" to memory address 0x"
-                    + Long.toHexString(addr) +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: writing value 0x"
+                                + Long.toHexString(value)
+                                + " to memory address 0x"
+                                + Long.toHexString(addr) + "\n");
     throw new RuntimeException("Not implemented in core yet");
   }
 
   public long accessReg (long as, long regnum)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: reading from register " + registerName +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: reading from register "
+                                + registerName + "\n");
     long value = myTask.getIsa().getRegisterByName(registerName).get(myTask);
-    Host.logger.log(Level.FINE, "Libunwind: read value 0x"+Long.toHexString(value)+"\n");
+    Host.logger.log(Level.FINE, "Libunwind: read value 0x"
+                                + Long.toHexString(value) + "\n");
     return value;
   }
 
   public void writeReg (long as, long regnum, long value)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: writing value 0x" +Long.toHexString(value)+ " to register " + registerName +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: writing value 0x"
+                                + Long.toHexString(value) + " to register "
+                                + registerName + "\n");
     // TODO Auto-generated method stub
     throw new RuntimeException("Not implemented in core yet");
   }
@@ -116,7 +132,8 @@ public class StackCallbacks
   public double accessFpreg (long as, long regnum)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName
+                                + "\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return 0;
@@ -125,7 +142,8 @@ public class StackCallbacks
   public void writeFpreg (long as, long regnum, double value)
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
-    Host.logger.log(Level.FINE, "Libunwind: writing value "+ value + " to register " + registerName +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: writing value " + value
+                                + " to register " + registerName + "\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
 
@@ -140,7 +158,8 @@ public class StackCallbacks
 
   public String getProcName (long as, long addr)
   {
-    Host.logger.log(Level.FINE,"Libunwind: getting procedure name at 0x" + Long.toHexString(addr) +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
+                                + Long.toHexString(addr) + "\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return null;
@@ -148,12 +167,16 @@ public class StackCallbacks
 
   public long getProcOffset (long as, long addr)
   {
-    Host.logger.log(Level.FINE,"Libunwind: getting procedure offset at 0x" + Long.toHexString(addr) +"\n");
+    Host.logger.log(Level.FINE, "Libunwind: getting procedure offset at 0x"
+                                + Long.toHexString(addr) + "\n");
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return 0;
   }
 
-  // private native long get_proc_info (long address, boolean need_info);
+  private native long build_procinfo (long lowPC, long highPC, long lsda,
+                                      long gp, long flags, int unwind_size,
+                                      long unwind_info);
   // private native long free_proc_info(long proc_info);
+  // 
 }

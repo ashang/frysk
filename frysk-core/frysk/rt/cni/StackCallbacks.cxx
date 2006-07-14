@@ -42,14 +42,21 @@
 
 #include "frysk/rt/StackCallbacks.h"
 
-//jlong
-//frysk::rt::StackCallbacks::get_proc_info (jlong address, jboolean need_info)
-//{
-//	return 0;
-//}
-//
-//void
-//frysk::rt::StackCallbacks::clear_proc_info (jlong proc_info)
-//{
-//	
-//}
+jlong
+frysk::rt::StackCallbacks::build_procinfo(
+		jlong lowPC, jlong highPC, jlong lsda, jlong gp, jlong flags,
+		jint unwind_size, jlong unwind_info)
+{
+	unw_proc_info_t *proc_info = (unw_proc_info_t *) JvMalloc(sizeof(unw_proc_info_t));
+	
+	proc_info->start_ip = (unw_word_t) lowPC;
+	proc_info->end_ip = (unw_word_t) highPC;
+	proc_info->lsda = (unw_word_t) lsda;
+	proc_info->gp = (unw_word_t) gp;
+	proc_info->flags = (unw_word_t) flags;
+	proc_info->format = UNW_INFO_FORMAT_TABLE;
+	proc_info->unwind_info_size = (int) unwind_size;
+	proc_info->unwind_info = (void *) unwind_info;
+	
+	return (jlong) proc_info;
+}
