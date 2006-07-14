@@ -42,6 +42,8 @@ package frysk.gui.monitor;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,6 +53,8 @@ import org.jdom.Element;
 import org.jdom.input.DOMBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
+import frysk.gui.Gui;
 
 /**
  * The factory instantiates an object using the information
@@ -65,6 +69,7 @@ import org.jdom.output.XMLOutputter;
  * */
 public class ObjectFactory {
 	public static final ObjectFactory theFactory = new ObjectFactory();
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	
 	/**
 	 * Dynamically instantiates the object save to the given node,
@@ -146,7 +151,8 @@ public class ObjectFactory {
            doc = (org.w3c.dom.Document) builder.parse(new File(path));
  
         } catch (Exception e) {
-			e.printStackTrace();
+        	errorLog.log(Level.WARNING, "Could not parse node ",e); //$NON-NLS-1$
+        	return null;
         } 
         
         DOMBuilder doo = new DOMBuilder();

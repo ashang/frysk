@@ -1,3 +1,9 @@
+2006-07-14  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ObjectFactory.java (importNode): Added parse check.
+	* observers/ObserverManager.java (loadObservers): Added errorLog and continue
+	on bad observer load.
+
 2006-07-14  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java (StatusWidget): Uses default background color for eventviewer.

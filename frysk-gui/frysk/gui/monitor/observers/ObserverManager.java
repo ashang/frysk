@@ -42,10 +42,12 @@ package frysk.gui.monitor.observers;
 import java.io.File;
 import java.util.Iterator;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jdom.Element;
 
 import frysk.Config;
+import frysk.gui.Gui;
 import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
@@ -79,7 +81,7 @@ public class ObserverManager {
 	private UniqueHashMap nameHash;
 	
 	private final String OBSERVERS_DIR = Config.FRYSK_DIR + "Observers" + "/";
-	
+	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 	/**
 	 * a list containing a prototype of every available
 	 * observer.
@@ -276,7 +278,8 @@ public class ObserverManager {
 				}
 				WindowManager.logger.log(Level.FINER, "{0} loadObservers loaded {1}\n", new Object[]{this, loadedObserver.getName()});
 			}catch (Exception e) {
-				e.printStackTrace();
+				errorLog.log(Level.WARNING, "Observer  could not be loaded ",e); //$NON-NLS-1$
+				continue;
 			}
 
 			this.addTaskObserverPrototype(loadedObserver);
