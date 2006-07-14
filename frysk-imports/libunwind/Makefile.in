@@ -95,7 +95,9 @@ distclean::
 installdirs::
 	$(mkdir_p) "$(DESTDIR)$(includedir)"
 
-install:: all installdirs $(include_HEADERS)
+install:
+	: Do not install libunwind.
+no-install:: all installdirs $(include_HEADERS)
 	test -z "$(includedir)" || $(mkdir_p) "$(DESTDIR)$(includedir)"
 	@list='$(include_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
