@@ -31,21 +31,6 @@ webpages -a htdocs
 
 # For more info on whats going on below, see cvs(5).
 
-# To simplify the problem of building from ECLIPSE, FRYSK has been
-# broken down into a number of components, each of which being
-# relatively independant: frysk-sys contains the system or native
-# code; frysk-core containing the underlying framewory; ...; and an
-# additional common directory.
-
-# From ECLIPSE, use this module.
-
-frysk-eclipse -a \
-	frysk-imports \
-	frysk-sys \
-	frysk-gtk \
-	frysk-core \
-	frysk-gui
-
 # Each component consists of both a base directory and the common
 # directory.
 
@@ -70,7 +55,8 @@ frysk -a \
 	frysk-build-gtk \
 	frysk-build-core \
 	frysk-build-gui \
-	frysk-build-imports
+	frysk-build-imports \
+	frysk-build-htdocs
 
 # Modules for building FRYSK outside of eclipse.  In addition to the
 # three base directories an additional "top" directory is checked out.
@@ -81,3 +67,4 @@ frysk-build-gtk -d frysk/frysk-gtk frysk-gtk &frysk-common
 frysk-build-core -d frysk/frysk-core frysk-core &frysk-common
 frysk-build-gui -d frysk/frysk-gui frysk-gui &frysk-common
 frysk-build-imports -d frysk/frysk-imports frysk-imports &frysk-common
+frysk-build-htdocs -d frysk/htdocs htdocs
