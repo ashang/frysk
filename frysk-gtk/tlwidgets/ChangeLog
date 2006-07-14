@@ -1,13 +1,20 @@
+2006-07-14  Chris Moller  <moller@mollerware.com>
+
+	* src/widgets/ftkeventviewer.c:
+	* src/widgets/ftkeventviewer.h: Added copyright statements.
+
 2006-07-13  Nurdin Premji  <npremji@redhat.com>
 
-	* src/java/com/redhat/ftk/SimultaneousEvent.java: Added java-gnome license
+	* src/java/com/redhat/ftk/SimultaneousEvent.java: Added java-gnome
+	license 
 	* src/java/com/redhat/ftk/EventPair.java: Added java-gnome license
 
 2006-07-12  Nurdin Premji  <npremji@redhat.com>
 
 	* src/java/com/redhat/ftk/SimultaneousEvent.java: Ran GNU Formatter.
 	* src/java/com/redhat/ftk/EventPair.java: Added.
-	* src/java/com/redhat/ftk/EventViewer.java (ftk_eventviewer_tie_event_array): Added.
+	* src/java/com/redhat/ftk/EventViewer.java
+	(ftk_eventviewer_tie_event_array): Added. 
 	(ftk_eventviewer_delete_trace): Added.
 	* src/widgets/ftkeventviewer.c:
 	Added accessibility information, and some pretty comments that show
