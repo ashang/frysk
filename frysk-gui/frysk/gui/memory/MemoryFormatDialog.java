@@ -99,18 +99,25 @@ public class MemoryFormatDialog
 
     final ListStore model = new ListStore(cols);
 
-        for (int i = 0; i < MemoryWindow.colNames.length; i++)
-          {
-            
-            TreeIter iter = model.appendRow();
-            String text = MemoryWindow.colNames[i].replaceFirst("LE",
-                                                                   "Little Endian");
-            text = text.replaceFirst("BE", "Big Endian");
-            text = text.replaceFirst("X-bit ", "");
-            
-            model.setValue(iter, (DataColumnBoolean) cols[0], false);
-            model.setValue(iter, (DataColumnString) cols[1], text);
-          }
+    int i;
+    
+    for (i = 0; i < MemoryWindow.colNames.length - 1; i++)
+      {
+
+        TreeIter iter = model.appendRow();
+        String text = MemoryWindow.colNames[i].replaceFirst("LE",
+                                                            "Little Endian");
+        text = text.replaceFirst("BE", "Big Endian");
+        text = text.replaceFirst("X-bit ", "");
+
+        model.setValue(iter, (DataColumnBoolean) cols[0], false);
+        model.setValue(iter, (DataColumnString) cols[1], text);
+      }
+    
+    /* Instruction row */
+    TreeIter iter = model.appendRow();
+    model.setValue(iter, (DataColumnBoolean) cols[0], false);
+    model.setValue(iter, (DataColumnString) cols[1], MemoryWindow.colNames[i]);
 
     TreeViewColumn col = new TreeViewColumn();
     CellRenderer renderer = new CellRendererToggle();

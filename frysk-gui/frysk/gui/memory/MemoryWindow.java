@@ -41,6 +41,8 @@
 package frysk.gui.memory;
 
 import java.util.prefs.Preferences;
+import java.util.LinkedList;
+import java.util.Iterator;
 import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
@@ -54,14 +56,14 @@ import org.gnu.gtk.Entry;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
-import org.gnu.gtk.TreePath;
+//import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-import org.gnu.gtk.event.CellRendererTextEvent;
-import org.gnu.gtk.event.CellRendererTextListener;
+//import org.gnu.gtk.event.CellRendererTextEvent;
+//import org.gnu.gtk.event.CellRendererTextListener;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -75,6 +77,10 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Task;
+
+import lib.opcodes.Disassembler;
+import lib.opcodes.OpcodesException;
+import lib.opcodes.Instruction;
 
 /**
  * The MemoryWindow displays the information stored at various locations in
@@ -94,7 +100,8 @@ public class MemoryWindow
   private final int THIRTYTWO_BIT = 2;
   private final int SIXTYFOUR_BIT = 3;
   private final int LOC = 0; /* Memory address */
-  private final int OBJ = 9; /* Object stored in above address */
+  private final int OBJ = 10; /* Object stored in above address */
+  private final int BYTE_BITS = 8;
 
   private Task myTask;
 
@@ -114,6 +121,7 @@ public class MemoryWindow
   new DataColumnString(), /* decimal big endian */
   new DataColumnString(), /* hexadecimal little endian */
   new DataColumnString(), /* hexadecimal big endian */
+  new DataColumnString(), /* instruction */
   new DataColumnObject()  /* memory object */
   };
 
@@ -123,16 +131,19 @@ public class MemoryWindow
                                         "X-bit Decimal (LE)",
                                         "X-bit Decimal (BE)",
                                         "X-bit Hexadecimal (LE)",
-                                        "X-bit Hexadecimal (BE)" };
+                                        "X-bit Hexadecimal (BE)",
+                                        "Instruction" };
 
   protected boolean[] colVisible = { true, false, false, false, false, false,
-                                    false, false };
+                                    false, false, false };
 
-  private TreeViewColumn[] columns = new TreeViewColumn[9];
+  private TreeViewColumn[] columns = new TreeViewColumn[10];
 
   private MemoryFormatDialog formatDialog;
 
   private TreeView memoryView;
+  
+  private Disassembler diss;
 
   private SpinButton fromSpin;
   private SpinButton toSpin;
@@ -167,7 +178,7 @@ public class MemoryWindow
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
     this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
     this.bitsCombo = new SimpleComboBox(
-                                        (this.glade.getWidget("bitsCombo")).getHandle());
+                             (this.glade.getWidget("bitsCombo")).getHandle());
     this.model = new ListStore(cols);
     this.bitsList = new ObservableLinkedList();
 
@@ -220,7 +231,8 @@ public class MemoryWindow
     this.memoryView = (TreeView) this.glade.getWidget("memoryView");
 
     this.bitsCombo.showAll();
-
+    this.diss = new Disassembler(myTask.getMemory());
+    
     long pc_inc = myTask.getIsa().pc(myTask);
     long end = pc_inc + 20;
     this.fromSpin.setValue((double) pc_inc);
@@ -302,6 +314,10 @@ public class MemoryWindow
 
   }
   
+  /****************************************************************************
+   * Calculation, memory reading, and information display methods
+   ***************************************************************************/
+  
   /**
    * Recalculate the memory information based on a new bitsize and/or radix
    */
@@ -333,47 +349,15 @@ public class MemoryWindow
                             cols[LOC]);
     memoryView.appendColumn(col);
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < this.columns.length - 1; i++)
       {
         col = new TreeViewColumn();
         col.setTitle(colNames[i].replaceFirst(
-                                              "X",
-                                              ""
-                                                  + (int) Math.pow(
-                                                                   2,
-                                                                   currentFormat + 3)));
+                "X", "" + (int) Math.pow(2, currentFormat + 3)));
+        
         col.setReorderable(true);
         renderer = new CellRendererText();
         ((CellRendererText) renderer).setEditable(false);
-
-        boolean littleEndian = false;
-        switch (i)
-          {
-          case 0:
-            littleEndian = true; // fall through
-          case 1:
-            ((CellRendererText) renderer).addListener(new BinCellListener(
-                                                                          littleEndian));
-            break;
-          case 2:
-            littleEndian = true; // fall through
-          case 3:
-            ((CellRendererText) renderer).addListener(new OctCellListener(
-                                                                          littleEndian));
-            break;
-          case 4:
-            littleEndian = true; // fall through
-          case 5:
-            ((CellRendererText) renderer).addListener(new DecCellListener(
-                                                                          littleEndian));
-            break;
-          case 6:
-            littleEndian = true; // fall through
-          case 7:
-            ((CellRendererText) renderer).addListener(new HexCellListener(
-                                                                          littleEndian));
-            break;
-          }
 
         col.packStart(renderer, false);
         col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
@@ -396,14 +380,26 @@ public class MemoryWindow
     // If there's no task, no point in refreshing
     if (this.myTask == null)
       return;
-
+    
+    LinkedList instructionsList = null;
+    
+    try {
+    instructionsList = diss.disassembleInstructions((long)this.lastKnownFrom,
+                                          (long)(this.lastKnownTo - this.lastKnownFrom + 1));
+    }
+    catch (OpcodesException oe) {
+      System.out.println(oe.getMessage());
+    }
+    
+    Iterator li = instructionsList.listIterator(0);
+    Instruction ins = (Instruction) li.next();
+    
     // update values in the columns if one of them has been edited
     ListStore model = (ListStore) this.memoryView.getModel();
     TreeIter iter = model.getFirstIter();
 
     while (iter != null)
       {
-
         BigInteger bi = new BigInteger(
                         (String) model.getValue(iter,
                                  (DataColumnObject) cols[OBJ]), 10);
@@ -431,7 +427,7 @@ public class MemoryWindow
           }
         dec = bi.toString(10);
         
-        int diff = bin.length() % 8;
+        int diff = bin.length() % BYTE_BITS;
         if (diff != 0)
           bin = padBytes(bin, false, diff);
 
@@ -458,6 +454,17 @@ public class MemoryWindow
         model.setValue(iter, (DataColumnString) cols[3], oct);
         model.setValue(iter, (DataColumnString) cols[5], dec);
         model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
+        
+        if (ins != null)
+          {
+            model.setValue(iter, (DataColumnString) cols[9], ins.instruction);
+            if (li.hasNext())
+              ins = (Instruction) li.next();
+            else
+              ins = null;
+          }
+        else
+          model.setValue(iter, (DataColumnString) cols[9], "");
 
         iter = iter.getNextIter();
       }
@@ -531,16 +538,20 @@ public class MemoryWindow
 
   }
   
+  /****************************************************************************
+   * Endianness methods
+   ***************************************************************************/
+  
  /**
   * Pad this byte string with zeroes so that it is of proper size.
   */ 
   private String padBytes(String s, boolean littleEndian, int diff) {
     
       if (littleEndian)
-        for (int i = 0; i < 8 - diff; i++)
+        for (int i = 0; i < BYTE_BITS - diff; i++)
           s = s + "0";
       else
-        for (int i = 0; i < 8 - diff; i++)
+        for (int i = 0; i < BYTE_BITS - diff; i++)
           s = "0" + s;
       
       return s;
@@ -551,62 +562,23 @@ public class MemoryWindow
    */
   private String switchEndianness (String toReverse, boolean littleEndian)
   {
-    int diff = toReverse.length() % 8;
+    int diff = toReverse.length() % BYTE_BITS;
     
     /* The string isn't properly composed of bits yet */
     if (diff != 0)
       toReverse = padBytes(toReverse, littleEndian, diff);
     
     /* No need to switch this string, it'll be identical either way */
-    if (toReverse.length() == 8)
+    if (toReverse.length() == BYTE_BITS)
       return toReverse;
     
     char[] tmp = new char[toReverse.length()];
-    for (int i = 0; i < tmp.length; i+=8)
-      for(int bitOffset = 0; bitOffset < 8; bitOffset++)
-        tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i - (8 - bitOffset));
+    for (int i = 0; i < tmp.length; i += BYTE_BITS)
+      for(int bitOffset = 0; bitOffset < BYTE_BITS; bitOffset++)
+        tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i
+                                              - (BYTE_BITS - bitOffset));
 
     return new String(tmp);
-  }
-
-  private void saveBinaryValue (String rawString, int radix,
-                                boolean littleEndian, TreePath path)
-  {
-    long value = 0;
-    String binaryString = "";
-    // convert the data to little endian binary
-    try
-      {
-        value = Long.parseLong(rawString, radix);
-        binaryString = Long.toBinaryString(value);
-      }
-    // Invalid format, do nothing
-    catch (NumberFormatException e)
-      {
-        return;
-      }
-    if (! littleEndian)
-      binaryString = switchEndianness(binaryString, littleEndian);
-
-    ListStore model = (ListStore) this.memoryView.getModel();
-    TreeIter iter = model.getIter(path);
-
-    binaryString = signExtend(binaryString,
-                              (int) Math.pow(2, currentFormat + 3), 1);
-    model.setValue(iter, (DataColumnString) cols[1],
-                   binaryString);
-  }
-
-  private String signExtend (String unextended, int bitlength, int bitsPerChar)
-  {
-    int fullDigits = (bitlength / bitsPerChar);
-    int digitsToAdd = fullDigits + (bitlength - fullDigits * bitsPerChar)
-                      - unextended.length();
-
-    for (int i = 0; i < digitsToAdd; i++)
-      unextended = '0' + unextended;
-
-    return unextended;
   }
   
   /****************************************************************************
@@ -690,98 +662,4 @@ public class MemoryWindow
     this.refreshList();
   }
  
-  /****************************************************************************
-   * Cell Listener Classes
-   ***************************************************************************/
-  
-  class DecCellListener
-      implements CellRendererTextListener
-  {
-
-    boolean littleEndian;
-
-    public DecCellListener (boolean littleEndian)
-    {
-      this.littleEndian = littleEndian;
-    }
-
-    public void cellRendererTextEvent (CellRendererTextEvent arg0)
-    {
-      String text = arg0.getText();
-
-      MemoryWindow.this.saveBinaryValue(text, 10, littleEndian,
-                                        new TreePath(arg0.getIndex()));
-      MemoryWindow.this.refreshList();
-    }
-
-  }
-
-  class HexCellListener
-      implements CellRendererTextListener
-  {
-
-    boolean littleEndian;
-
-    public HexCellListener (boolean littleEndian)
-    {
-      this.littleEndian = littleEndian;
-    }
-
-    public void cellRendererTextEvent (CellRendererTextEvent arg0)
-    {
-      String text = arg0.getText();
-
-      if (text.indexOf("0x") != - 1)
-        text = text.substring(2);
-      MemoryWindow.this.saveBinaryValue(text, 16, littleEndian,
-                                        new TreePath(arg0.getIndex()));
-      MemoryWindow.this.refreshList();
-    }
-
-  }
-
-  class OctCellListener
-      implements CellRendererTextListener
-  {
-
-    boolean littleEndian;
-
-    public OctCellListener (boolean littleEndian)
-    {
-      this.littleEndian = littleEndian;
-    }
-
-    public void cellRendererTextEvent (CellRendererTextEvent arg0)
-    {
-      String text = arg0.getText();
-
-      MemoryWindow.this.saveBinaryValue(text, 8, littleEndian,
-                                        new TreePath(arg0.getIndex()));
-      MemoryWindow.this.refreshList();
-    }
-
-  }
-
-  class BinCellListener
-      implements CellRendererTextListener
-  {
-
-    boolean littleEndian;
-
-    public BinCellListener (boolean littleEndian)
-    {
-      this.littleEndian = littleEndian;
-    }
-
-    public void cellRendererTextEvent (CellRendererTextEvent arg0)
-    {
-      String text = arg0.getText();
-
-      MemoryWindow.this.saveBinaryValue(text, 2, littleEndian,
-                                        new TreePath(arg0.getIndex()));
-      MemoryWindow.this.refreshList();
-    }
-
-  }
-  
 }

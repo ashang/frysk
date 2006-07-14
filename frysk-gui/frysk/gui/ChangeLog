@@ -1,3 +1,22 @@
+2006-07-14  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java: Removed some redundant imports and methods.
+	(DecCellListener): Removed.
+	(HexCellListener): Ditto.
+	(OctCellListener): Ditto.
+	(BinCellListener): Ditto.
+	(signExtend): Ditto.
+	(saveBinaryValue): Ditto.
+	(diss): Added - Disassembler object for retrieving instructions from the
+	current task's memory space.
+	(setTask): Initializes above Disassembler object.
+	(recalculate): Removed more redundant code.
+	(refreshList): Retrieve instructions from Disassembler and display in 
+	the MemoryWindow columns, in conjunction with the other memory words.
+	
+	* memory/MemoryFormatDialog.java (MemoryFormatDialog): Added support for
+	the extra instruction column.
+
 2006-07-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls): 
