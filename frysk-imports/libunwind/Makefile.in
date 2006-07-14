@@ -122,7 +122,9 @@ uninstall::
 
 SUBDIRS = src tests doc
 
-all check clean distclean installdirs install uninstall::
+# Do not install in frysk:
+# all check clean distclean installdirs install uninstall::
+all check clean distclean installdirs uninstall::
 	@failcom='exit 1'; \
 	for f in x $$MAKEFLAGS; do \
 	  case $$f in \
