@@ -197,8 +197,8 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           
           # The name attribute in the input file does not equal the
           # GUI name - so, make the change here.
-          if attributes['name'] == 'Log':
-              self.tempObserverElement.setName('Log Generic Actions')
+          if attributes['name'] == 'Log event':
+              self.tempObserverElement.setName('Log event  ')
           if attributes['name'] == 'Resume':
               self.tempObserverElement.setName('Resume Generic Actions')
           if attributes['name'] == 'Stop':
