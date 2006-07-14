@@ -68,7 +68,7 @@ public class StatusWidget
     extends VBox
 {
 	
-	private Color backgroundColor = Color.WHITE;
+	//private Color backgroundColor = Color.WHITE;
 	private Color[] traceColors = {Color.BLACK,};
 	private Color[] markerColors = {Color.BLACK, Color.BLUE};
 	private Random randomColorGenerator;
@@ -130,7 +130,9 @@ public class StatusWidget
     // ======================================== 
     this.viewer = new EventViewer();
     this.viewer.resize (1, 1);
-    this.viewer.setBackgroundColor(backgroundColor);
+    //this.viewer.setBackgroundColor(backgroundColor);
+    
+    this.viewer.setBackgroundDefault();
     this.viewer.setTimebase(10.0);
     
     //XXX: Change "Additional  information to something more meaningfull.

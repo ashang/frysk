@@ -83,6 +83,14 @@ public class EventViewer extends Widget
     public boolean setBackgroundColor(Color color) {
     return ftk_eventviewer_set_bg_color (getHandle(), color.getHandle());
     }
+    
+    /*
+     * Set the background color to the default theme color for the background.
+     */
+    public boolean setBackgroundDefault() {
+      return ftk_eventviewer_set_bg_default(getHandle());
+    }
+    
     /**
      * Set viewable window (seconds)
      */
@@ -218,6 +226,14 @@ public class EventViewer extends Widget
     native static final protected boolean
     ftk_eventviewer_set_bg_color (Handle sc, Handle color);
 
+    native static final protected boolean
+    ftk_eventviewer_set_bg_default (Handle sc);
+    
+    /*    
+    native static final protected Color[]
+    ftk_eventviewer_get_bg_default(Handle sc);
+    */
+    
     native static final protected boolean
 	ftk_eventviewer_set_timebase (Handle sc, double span);
 

@@ -1,3 +1,7 @@
+2006-07-14  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java (StatusWidget): Uses default background color for eventviewer.
+
 2006-07-13  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* PickProcDialog.java (PickProcDialog): Added Cancel Button.

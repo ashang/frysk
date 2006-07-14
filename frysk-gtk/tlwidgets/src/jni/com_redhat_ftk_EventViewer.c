@@ -100,6 +100,38 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1bg_1color (JNIEnv *env,
 
 /*
  * Class:     com.redhat.ftk.EventViewer
+ * Method:    ftk_eventviewer_set_bg_default
+ */
+
+JNIEXPORT jboolean JNICALL
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1bg_1default (JNIEnv *env, 
+							jclass cls,
+							jobject sc)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  
+ return (jboolean) ftk_eventviewer_set_bg_default (eventviewer);
+}
+
+/*
+ * Class:	  com.redhat.ftk.EventViewer
+ * Method:	  ftk_eventviewer_get_bg_default
+ */
+/*JNIEXPORT jobjectArray JNICALL 
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1bg_1default (JNIEnv *env, 
+							jclass cls, 
+							jobject sc)
+{
+  FtkEventViewer * eventviewer =
+    (FTKEventViewer *)getPointerFromHandle(env, sc);
+  
+  GdkColor * backgrounds = ftk_eventviewer_get_bg_default (eventviewer);
+  
+}*/
+
+/*
+ * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_set_timebase
  */
 

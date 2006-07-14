@@ -2187,24 +2187,55 @@ gboolean
 ftk_eventviewer_set_bg_color_e (FtkEventViewer * eventviewer,
 				GdkColor * color, GError ** err)
 {
-  return ftk_eventviewer_set_bg_rgb_e (eventviewer,
+return ftk_eventviewer_set_bg_rgb_e (eventviewer,
 				       color->red,
 				       color->green,
 				       color->blue,
-				       err);
+				       err);				       
 }
 
 gboolean
 ftk_eventviewer_set_bg_color (FtkEventViewer * eventviewer,
 			      GdkColor * color)
 {
-  return ftk_eventviewer_set_bg_rgb_e (eventviewer,
-				       color->red,
-				       color->green,
-				       color->blue,
-				       NULL);
+  
+ return ftk_eventviewer_set_bg_color_e (eventviewer,
+				       color,
+				       NULL);				       
 }
 
+gboolean
+ftk_eventviewer_set_bg_default(FtkEventViewer * eventviewer)
+{
+  
+  GdkColor *backgrounds = ftk_eventviewer_get_bg_default(eventviewer);
+  
+  return ftk_eventviewer_set_bg_color (eventviewer,
+				       backgrounds);				
+}
+
+GdkColor * 
+ftk_eventviewer_get_bg_default(FtkEventViewer *eventviewer)
+{
+  GtkStyle *style = (GTK_WIDGET(ftk_ev_da(eventviewer)))->style;
+  
+  if (NULL == style) {
+  	fprintf(stderr, "Style was null");
+  }
+  
+  GdkColor *backgrounds = style->bg;
+  
+  if (NULL == backgrounds) {
+  	fprintf(stderr, "Backgrounds was null");
+  }
+ 
+ /* for (int i = 0; i < 5; i++) {
+  	fprintf(stderr, "red: %d green: %d blue: %d", backgrounds[i].red, 
+  	backgrounds[i].green, backgrounds[i].blue); 	
+  }*/
+  
+  return backgrounds;
+}
 
 gboolean
 ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
