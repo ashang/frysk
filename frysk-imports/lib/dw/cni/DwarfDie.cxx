@@ -36,53 +36,23 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+#include <libdw.h>
+#include <gcj/cni.h>
 
+#include "lib/dw/DwarfDie.h"
 
-package lib.dw;
-
-public class DwarfDie
+jlong
+lib::dw::DwarfDie::get_lowpc()
 {
+	Dwarf_Addr lowpc;
+	::dwarf_lowpc((Dwarf_Die *) this->pointer, &lowpc);
+	return (jlong) lowpc;
+}
 
-  private long pointer;
-
-  private Dwfl parent;
-
-  protected DwarfDie (long pointer, Dwfl parent)
-  {
-    this.pointer = pointer;
-    this.parent = parent;
-  }
-
-  protected Dwfl getParent ()
-  {
-    return this.parent;
-  }
-
-  // public DwarfDie getContainingCompilationUnit(){
-  // long val = dwarf_diecu();
-  // if(val == 0)
-  // return null;
-  //		
-  // return new DwarfDie(val);
-  // }
-
-  public long getHighPC ()
-  {
-    return get_highpc();
-  }
-
-  public long getLowPC ()
-  {
-    return get_lowpc();
-  }
-
-  protected long getPointer ()
-  {
-    return this.pointer;
-  }
-
-  // protected native long dwarf_diecu();
-  private native long get_lowpc ();
-
-  private native long get_highpc ();
+jlong
+lib::dw::DwarfDie::get_highpc()
+{
+	Dwarf_Addr highpc;
+	::dwarf_highpc((Dwarf_Die *) this->pointer, &highpc);
+	return (jlong) highpc;
 }

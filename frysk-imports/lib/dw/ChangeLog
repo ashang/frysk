@@ -1,3 +1,14 @@
+2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java: Changed to GNU formatting.
+	(getDie): Added.
+	* DwflDie.java: Changed to GNU formatting.
+	(DwflDie): Now takes a pointer to a Dwfl parent object.
+	(getLowPC): Added.
+	(getHighPC): Added.
+	* cni/DwflDie.cxx: Added.
+	* cni/Dwfl.java (dwfl_addrdie): Added.
+
 2005-06-19  Adam Jocksch  <ajocksch@redhat.com>
 
 	* NoDebugInfoException.java: Added.

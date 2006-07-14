@@ -88,3 +88,9 @@ jlong
 lib::dw::Dwfl::dwfl_getsrc(jlong addr){
 	return (jlong) ::dwfl_getsrc((::Dwfl*) this->pointer, (::Dwarf_Addr) addr);
 }
+
+jlong
+lib::dw::Dwfl::dwfl_addrdie(jlong addr){
+	Dwarf_Addr bias;
+	return (jlong) ::dwfl_addrdie((::Dwfl*) this->pointer, (::Dwarf_Addr) addr, &bias);	
+}
