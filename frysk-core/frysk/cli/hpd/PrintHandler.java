@@ -38,12 +38,13 @@
 // exception.
 package frysk.cli.hpd;
 
-import java.io.*;
+import java.io.StringReader;
 import java.text.ParseException;
-import antlr.*;
-import frysk.lang.*;
-import frysk.expr.*;
-
+import antlr.CommonAST;
+import frysk.lang.Variable;
+import frysk.expr.CppParser;
+import frysk.expr.CppLexer;
+import frysk.expr.CppTreeParser;
 
 public class PrintHandler implements CommandHandler
 {
@@ -52,13 +53,13 @@ public class PrintHandler implements CommandHandler
 	Variable result;
 	String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
 	if (sInput.length() == 0) {
-	    System.out.println("Usage " + cmd.getAction() + " Expression");
+	    cmd.getOut().println ("Usage " + cmd.getAction() + " Expression");
 	    return;
 	}
 	if (cmd.getAction().compareTo("assign") == 0) {
 	    int i = sInput.indexOf(' ');
 	    if (i == -1) {
-		System.out.println("Usage: assign Lhs Expression");
+		cmd.getOut().println ("Usage: assign Lhs Expression");
 		return;
 	    }
 	    sInput = sInput.substring(0, i) + "=" + sInput.substring(i);
@@ -72,16 +73,16 @@ public class PrintHandler implements CommandHandler
 	catch (antlr.RecognitionException r)
 	{}
 	catch (antlr.TokenStreamException t)
-	{System.out.print("Token");}
+	    {cmd.getOut().println ("Token");}
 	catch (frysk.expr.TabException t)
-	{System.out.print("Tab");}
+	    {cmd.getOut().println ("Tab");}
 
 	CommonAST t = (CommonAST)parser.getAST();
 	CppTreeParser treeParser = new CppTreeParser(4, 2, SymTab.symTab);
 
 	try {
 	    result = treeParser.expr(t);
-	    System.out.println(result);
+	    cmd.getOut().println (result);
 	}   catch (ArithmeticException ae)  {
 	    System.err.println("Arithmetic Exception occurred:  " + ae);
 	}

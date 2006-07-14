@@ -39,6 +39,7 @@
 
 package frysk.cli.hpd;
 
+import java.io.PrintStream;
 import java.util.Vector;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -56,6 +57,7 @@ class Command
 	private String mySet;
 	private String myAction;
 	private Vector myParameters;
+	private PrintStream out;
 
 	/**
 	 * The constructor.
@@ -194,4 +196,13 @@ class Command
 
 		return result;
 	}
+    public void setOut(PrintStream stream)
+    {
+	out = stream;
+    }
+    public PrintStream getOut()
+    {
+	return out;
+    }
+
 }

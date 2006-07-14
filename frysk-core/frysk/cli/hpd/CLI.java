@@ -486,6 +486,7 @@ public class CLI
 					pcmd = (String)iter.next();
 					command = new Command(pcmd);
 
+					command.setOut (CLI.out);
 					if (command.getAction() != null)
 					{
 						handler = (CommandHandler)handlers.get(command.getAction());
