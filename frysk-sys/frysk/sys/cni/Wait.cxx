@@ -224,9 +224,10 @@ frysk::sys::Wait::waitAll (jint wpid, frysk::sys::Wait$Observer* observer)
   int status;
   errno = 0;
   pid_t pid = ::waitpid (wpid, &status, __WALL);
+  int myErrno = errno;
   log (pid, status, errno);
   if (pid <= 0)
-    throwErrno (errno, "waitpid", "process", wpid);
+    throwErrno (myErrno, "waitpid", "process", wpid);
   // Process the result.
   processStatus (pid, status, observer);
 }
