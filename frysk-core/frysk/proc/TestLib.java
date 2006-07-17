@@ -83,9 +83,9 @@ public class TestLib
      * trying to avoid the compiler's optimizer realizing that the
      * rest of the function is dead.
      */
-    protected static boolean brokenXXX ()
+    protected static boolean brokenXXX (int bug)
     {
-	System.out.print ("<<BROKEN>>");
+	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
 	return trueXXX;
     }
 

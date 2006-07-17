@@ -99,7 +99,7 @@ public class TestTaskSyscallObserver
      */
     public void testExecSyscall(){
 
-	if (brokenXXX ())
+	if (brokenXXX (2245))
 	    return;
 	    
 	//	  Create an unattached child process.
@@ -128,7 +128,7 @@ public class TestTaskSyscallObserver
     public void testSyscallLoop ()
     {
 
-	if (brokenXXX ())
+	if (brokenXXX (2245))
 	    return;
 
  	int count = 5;
@@ -167,7 +167,7 @@ public class TestTaskSyscallObserver
      */
     public void testSyscalls ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2245))
 	    return;
 
  	// Create program making syscalls
@@ -249,7 +249,7 @@ public class TestTaskSyscallObserver
     public void testSyscallOpen ()
     {
 	
-	if (brokenXXX ())
+	if (brokenXXX (2245))
 	    return;
 
 	SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver ();
@@ -409,7 +409,7 @@ public class TestTaskSyscallObserver
      */
     public void testSyscallInterrupt ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2245))
 	    return;
 	PipeReadChild prc = new PipeReadChild (false);
 
@@ -430,7 +430,7 @@ public class TestTaskSyscallObserver
      */
     public void testSyscallInterruptRestart ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2245))
 	    return;
 	PipeReadChild prc = new PipeReadChild (true);
 

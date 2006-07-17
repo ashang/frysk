@@ -189,7 +189,7 @@ public class TestModify
 	
     public void testModify ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2933))
 	    return;
 	TestModifyInternals t = new TestModifyInternals ();
 	// Create program making syscalls

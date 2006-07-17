@@ -1,3 +1,7 @@
+2006-07-17  Andrew Cagney  <cagney@redhat.com>
+
+	* TestStackBacktrace.java: Pass bug number to brokenXXX call.
+
 2005-07-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* StackCallbacks.java (free_proc_info): Added.

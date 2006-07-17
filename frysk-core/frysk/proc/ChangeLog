@@ -1,5 +1,14 @@
 2006-07-17  Andrew Cagney  <cagney@redhat.com>
 
+	* TestLib.java (brokenXXX): Add bug parameter.
+	* StressAttachDetachRapidlyForkingMainTask.java: Update.
+	* TestI386Modify.java: Update.
+	* TestI386Regs.java: Update.
+	* TestModify.java: Update.
+	* TestTaskObserverBlocked.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+
 	* StressAttachDetachRapidlyForkingMainTask.java: Re-indent.
 	* TestTaskSyscallObserver.java: Ditto.
 

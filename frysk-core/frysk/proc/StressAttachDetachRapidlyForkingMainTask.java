@@ -67,7 +67,7 @@ public class StressAttachDetachRapidlyForkingMainTask
 
 	// Test for bz 2803. Have to exit here as the test will fail.
 
-	if (brokenXXX ()) return;
+	if (brokenXXX (2803)) return;
 
 	// Run a program that forks wildly.
 	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]

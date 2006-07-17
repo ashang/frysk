@@ -189,10 +189,10 @@ public class TestI386Modify
 		(new ProcRemovedObserver ());
 	}
     }
-	
+    
     public void testI386Modify ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2933))
 	    return;
 	TestI386ModifyInternals t = new TestI386ModifyInternals ();
 	// Create program making syscalls

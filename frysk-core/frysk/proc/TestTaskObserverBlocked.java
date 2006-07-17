@@ -408,7 +408,7 @@ public class TestTaskObserverBlocked
      */
     public void testAddObserverAfterUnblock ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2937))
 	    return;
 	AckProcess proc = new AckDaemonProcess ();
 	Task task = proc.findTaskUsingRefresh (true);

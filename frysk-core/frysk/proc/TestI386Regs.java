@@ -162,7 +162,7 @@ public class TestI386Regs
 
     public void testI386Regs ()
     {
-	if (brokenXXX ())
+	if (brokenXXX (2933))
 	    return;
 	TestI386RegsInternals t = new TestI386RegsInternals ();
  	// Create program making an exit syscall");
