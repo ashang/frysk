@@ -57,7 +57,7 @@ from DebugProcess import DebugProcess
 from DebugSession import DebugSession
 from ObserverElement import ObserverElement
 from ObserverPoints import ObserverPoints
-
+from FryskHelpers import getEventType
 
 # The input data to this parser takes this form:
 #
@@ -126,7 +126,9 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     if self.currentTag == 'Observer':
       self.buffer = ''
       self.theObserver = Observer()
-      self.theObserver.setType (attributes['type'])
+      # Translate the observer type string in the inut file to match
+      # the string displayed in the GUI
+      self.theObserver.setType(getEventType (attributes['type']))
       self.theObserver.setName (attributes['name'])
       self.theObserver.setDescription (attributes['tooltip'])
 

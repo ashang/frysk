@@ -190,8 +190,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             observerPanel = observerDetails.child( name='table1', roleName='panel' )
             #combo =  observerPanel.child( roleName='combo box' )
             #comboMenu = combo.child( roleName='menu' )
-            tempString = getEventType (observerToCreate.getType())           
-              
+               
             try:
                 # Set the new observer name
                 newObserverName = observerToCreate.getName()
@@ -205,8 +204,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 
                 observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
                 comboMenu = observerTypeComboBox.child( roleName='menu' )    
-                tempString = getEventType (observerToCreate.getType())
-                selectedItem=comboMenu.child( name = tempString )
+                selectedItem=comboMenu.child( name = observerToCreate.getType() )
                 selectedItem.click() 
 
                 # At this point, we want to access the multiple actions (ActionPoints)

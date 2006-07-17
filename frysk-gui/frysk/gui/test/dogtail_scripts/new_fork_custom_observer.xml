@@ -5,6 +5,9 @@
         <elements>
           <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #1" />
           <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #2" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #3" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #4" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #5" />
         </elements>
       </items>
     </actionPoint>
@@ -23,14 +26,28 @@
     <filterPoint name="forking thread" tooltip="Thread that performed the fork">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="fred" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="forking thread #1" filterBoolean="true" />
+        </elements>
+      </items>
+    </filterPoint>
+    <filterPoint name="forking thread" tooltip="Thread that performed the fork">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="forking thread #2" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>
     <filterPoint name="forked thread" tooltip="Main thread of newly forked process">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="barney" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="forked thread #1" filterBoolean="true" />
+        </elements>
+      </items>
+    </filterPoint>
+   <filterPoint name="forked thread" tooltip="Main thread of newly forked process">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="forked thead #2" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>
