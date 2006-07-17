@@ -60,3 +60,9 @@ frysk::rt::StackCallbacks::build_procinfo(
 	
 	return (jlong) proc_info;
 }
+
+void
+frysk::rt::StackCallbacks::free_proc_info(jlong proc_info)
+{
+	JvFree((unw_proc_info_t *) proc_info);
+}

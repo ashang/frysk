@@ -76,8 +76,7 @@ public class StackCallbacks
 
   public void putUnwindInfo (long addressSpace, long procInfo)
   {
-    throw new RuntimeException("Not implemented in core yet");
-    // free_proc_info(procInfo);
+    free_proc_info(procInfo);
   }
 
   public long getDynInfoListAddr (long addressSpace)
@@ -90,8 +89,10 @@ public class StackCallbacks
   {
     Host.logger.log(Level.FINE, "Libunwind: reading memory at 0x"
                                 + Long.toHexString(addr) + "\n");
+
     // XXX: Fixme for 64
     long value = myTask.getMemory().getInt(addr);
+
     Host.logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");
     return value;
@@ -111,7 +112,9 @@ public class StackCallbacks
     String registerName = RegisterX86.getUnwindRegister(regnum);
     Host.logger.log(Level.FINE, "Libunwind: reading from register "
                                 + registerName + "\n");
+
     long value = myTask.getIsa().getRegisterByName(registerName).get(myTask);
+
     Host.logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");
     return value;
@@ -131,7 +134,8 @@ public class StackCallbacks
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
     Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName
-                                + "\n");
+                                + "\n"); 
+    
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return 0;
@@ -158,12 +162,12 @@ public class StackCallbacks
   {
     Host.logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
                                 + Long.toHexString(addr) + "\n");
-    
+
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwarfDie die = dwfl.getDie(addr);
     return die.getName();
-    
-//    throw new RuntimeException("Not implemented in core yet");
+
+    // throw new RuntimeException("Not implemented in core yet");
   }
 
   public long getProcOffset (long as, long addr)
@@ -178,6 +182,5 @@ public class StackCallbacks
   private native long build_procinfo (long lowPC, long highPC, long lsda,
                                       long gp, long flags, int unwind_size,
                                       long unwind_info);
-  // private native long free_proc_info(long proc_info);
-  // 
+  private native void free_proc_info(long proc_info); 
 }

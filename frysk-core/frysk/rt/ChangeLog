@@ -1,5 +1,9 @@
 2005-07-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* StackCallbacks.java (free_proc_info): Added.
+	(putUnwindInfo): Now calls free_proc_info.
+	* cni.StackCallbacks.cxx (free_proc_info): Added.
+
 	* TestStackBacktrace.java (testBacktrace): Re-commented Maps test.
 
 	* StackCallbacks.java (getProcName): Implemented.
