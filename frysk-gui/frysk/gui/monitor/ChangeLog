@@ -1,3 +1,9 @@
+2006-07-17  Mike Cvet  <mcvet@redhat.com>
+
+	* ProcWiseDataModel.java (searchName): Added another split over (" ") so
+	that processes called foo (# child processes) will also be found by
+	the name search. Fixes #2931.
+
 2006-07-14  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ObjectFactory.java (importNode): Added parse check.

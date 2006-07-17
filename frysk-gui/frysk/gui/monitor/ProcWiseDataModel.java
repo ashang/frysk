@@ -171,11 +171,10 @@ public class ProcWiseDataModel
         if (treeStore.isIterValid(iter))
           {
             String split[] = treeStore.getValue(iter, getNameDC()).split("\t");
-
             if (split.length > 0)
               {
                 split[0] = split[0].trim();
-                if (split[0].equalsIgnoreCase(name))
+                if (split[0].split(" ")[0].equalsIgnoreCase(name))
                   return iter.getPath();
               }
           }
