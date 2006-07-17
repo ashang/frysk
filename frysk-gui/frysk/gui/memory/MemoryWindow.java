@@ -50,20 +50,18 @@ import org.gnu.gtk.Button;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.DataColumn;
+import org.gnu.gtk.DataColumnDouble;
 import org.gnu.gtk.DataColumnObject;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.SpinButton;
 import org.gnu.gtk.TreeIter;
-//import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.event.ButtonEvent;
 import org.gnu.gtk.event.ButtonListener;
-//import org.gnu.gtk.event.CellRendererTextEvent;
-//import org.gnu.gtk.event.CellRendererTextListener;
 import org.gnu.gtk.event.ComboBoxEvent;
 import org.gnu.gtk.event.ComboBoxListener;
 import org.gnu.gtk.event.LifeCycleEvent;
@@ -122,7 +120,8 @@ public class MemoryWindow
   new DataColumnString(), /* hexadecimal little endian */
   new DataColumnString(), /* hexadecimal big endian */
   new DataColumnString(), /* instruction */
-  new DataColumnObject()  /* memory object */
+  new DataColumnObject(), /* memory object */
+  new DataColumnDouble()  /* alignment field */
   };
 
   protected static String[] colNames = { "X-bit Binary (LE)",
@@ -272,7 +271,6 @@ public class MemoryWindow
             currentFormat = bitsList.indexOf(bitsCombo.getSelectedObject());
             recalculate();
           }
-
       }
     });
 
@@ -364,7 +362,8 @@ public class MemoryWindow
                                 cols[i + 1]);
 
         memoryView.appendColumn(col);
-
+        
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN, cols[11]);
         col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
 
         columns[i] = col;
@@ -431,13 +430,13 @@ public class MemoryWindow
         if (diff != 0)
           bin = padBytes(bin, false, diff);
 
-        /* Big endian first */
-        model.setValue(iter, (DataColumnString) cols[2], bin);
-        model.setValue(iter, (DataColumnString) cols[4], oct);
-        model.setValue(iter, (DataColumnString) cols[6], dec);
-        model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
+        /* Little endian first */
+        model.setValue(iter, (DataColumnString) cols[1], bin);
+        model.setValue(iter, (DataColumnString) cols[3], oct);
+        model.setValue(iter, (DataColumnString) cols[5], dec);
+        model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
 
-        /* Little endian second */
+        /* Big endian second */
         String bin2 = switchEndianness(bin, true);
         BigInteger bii = new BigInteger(bin2, 2);
 
@@ -450,10 +449,10 @@ public class MemoryWindow
         else
           dec = bii.toString(10);
 
-        model.setValue(iter, (DataColumnString) cols[1], bin2);
-        model.setValue(iter, (DataColumnString) cols[3], oct);
-        model.setValue(iter, (DataColumnString) cols[5], dec);
-        model.setValue(iter, (DataColumnString) cols[7], "0x" + hex);
+        model.setValue(iter, (DataColumnString) cols[2], bin2);
+        model.setValue(iter, (DataColumnString) cols[4], oct);
+        model.setValue(iter, (DataColumnString) cols[6], dec);
+        model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
         
         if (ins != null)
           {
@@ -485,6 +484,8 @@ public class MemoryWindow
     TreeIter iter = model.appendRow();
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
+    model.setValue(iter, (DataColumnDouble) cols[11], 1.0);
+    
     switch (currentFormat)
       {
       case EIGHT_BIT:

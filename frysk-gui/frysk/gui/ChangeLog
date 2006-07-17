@@ -1,3 +1,9 @@
+2006-07-17  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java (recalculate): Finished endianness conversion
+	with BigInteger.
+	(rowAppend): Added code for right alignment in the tree rows.
+
 2006-07-14  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java: Removed some redundant imports and methods.
