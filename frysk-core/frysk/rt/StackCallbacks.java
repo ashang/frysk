@@ -158,9 +158,12 @@ public class StackCallbacks
   {
     Host.logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
                                 + Long.toHexString(addr) + "\n");
-    throw new RuntimeException("Not implemented in core yet");
-    // TODO Auto-generated method stub
-    // return null;
+    
+    Dwfl dwfl = new Dwfl(myTask.getTid());
+    DwarfDie die = dwfl.getDie(addr);
+    return die.getName();
+    
+//    throw new RuntimeException("Not implemented in core yet");
   }
 
   public long getProcOffset (long as, long addr)
