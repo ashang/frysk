@@ -1,3 +1,7 @@
+2006-07-17  Rick Moseley  <rmoseley@redhat.com>
+
+	* EditObserverDialog.java: Set icon for the upper left corner.
+
 2006-07-17  Mike Cvet  <mcvet@redhat.com>
 
 	* ProcWiseDataModel.java (searchName): Added another split over (" ") so

@@ -59,6 +59,7 @@ import org.gnu.gtk.event.EntryListener;
 import org.gnu.gtk.event.TextBufferEvent;
 import org.gnu.gtk.event.TextBufferListener;
 
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -96,6 +97,7 @@ public class EditObserverDialog extends Dialog {
 		
 		warningLabel = (Label) glade.getWidget("observerWarningLabel");
 		warningIcon = (Image) glade.getWidget("observerWarningIcon");
+        this.setIcon(IconManager.windowIcon);
 		
 		Button button = (Button) glade.getWidget("editObserverCancelButton");
 		button.addListener(new ButtonListener() {
