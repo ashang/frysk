@@ -1,3 +1,8 @@
+2006-07-17  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindow.java (MemoryWindow): Fixed a static counter
+	increment bug.
+
 2006-07-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* glade/procpop.glade: Change window name for "Observers Detail" to

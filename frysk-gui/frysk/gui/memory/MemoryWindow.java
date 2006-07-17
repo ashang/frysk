@@ -171,7 +171,8 @@ public class MemoryWindow
     super(glade.getWidget("memoryWindow").getHandle());
     this.glade = glade;
     this.formatDialog = new MemoryFormatDialog(this.glade);
-    currentFormat = currentFormat + THIRTYTWO_BIT; /* Seems like a good default */
+    if (currentFormat == 0)
+      currentFormat = currentFormat + THIRTYTWO_BIT; /* Seems like a good default */
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
