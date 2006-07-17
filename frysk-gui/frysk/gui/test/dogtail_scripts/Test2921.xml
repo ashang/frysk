@@ -1,0 +1,22 @@
+<!-- Session data file to be used to recreate bug #2129, the problem is the Syscall Observer -->
+<Session type="frysk.gui.sessions.Session" name="aanother_new_session" tooltip="NoTootip">
+  <procs>
+    <elements>
+      <element type="frysk.gui.sessions.DebugProcess" name="nautilus" tooltip="nautilus" executablePath="nautilus">
+        <observers>
+          <element name="Task Terminating Observer" />
+          <element name="Fork Observer" />
+        </observers>
+        <tagsets />
+      </element>
+      <element type="frysk.gui.sessions.DebugProcess" name="gnome-panel" tooltip="gnome-panel" executablePath="gnome-panel">
+        <observers>
+          <element name="Task Terminating Observer" />
+          <element name="TaskCloneObserver" />
+          <element name="Syscall Observer" />
+        </observers>
+        <tagsets />
+      </element>
+    </elements>
+  </procs>
+</Session>
