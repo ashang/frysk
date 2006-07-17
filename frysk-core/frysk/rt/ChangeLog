@@ -1,5 +1,7 @@
 2005-07-17  Adam Jocksch  <ajocksch@redhat.com>
 
+	* TestStackBacktrace.java (testBacktrace): Re-commented Maps test.
+
 	* StackCallbacks.java (getProcName): Implemented.
 
 2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
