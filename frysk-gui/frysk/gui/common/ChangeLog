@@ -1,3 +1,8 @@
+2006-07-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* IconManager.java (loadIcons): Removed System.exit(1).	
+	(getFactory): Added.
+
 2006-07-17  Tim Moore  <moore@redhat.com>
 
 	* UBigInteger.java : New class for manipulating unsigned BigInteger

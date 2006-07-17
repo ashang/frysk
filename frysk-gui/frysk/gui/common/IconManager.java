@@ -30,7 +30,7 @@ public class IconManager {
 	// Tray Icon prefix
 	private static final String TRAY_PREFIX = "fryskTrayIcon";
 	
-	private static IconFactory[] factories;
+	public static IconFactory[] factories;
 	
 	private static String[] sizeDirs = new String[] {"16", "24", "32"};
 	
@@ -41,6 +41,8 @@ public class IconManager {
 	public static Pixbuf windowIcon;
 	
 	public static Pixbuf splashImage;
+	
+	private static boolean useSmallIcons = true;
 	
 	public static void setImageDir(String[] path){
 		IMAGES_DIR = path;
@@ -115,7 +117,6 @@ public class IconManager {
 				if(i == IMAGES_DIR.length - 1){
 					System.err.println("Error loading images on path " + IMAGES_DIR[i]+"! Exiting");
 					e.printStackTrace();
-					System.exit(1);
 				}
 				
 				continue;
@@ -128,11 +129,21 @@ public class IconManager {
 	}
 
 	public static void useSmallIcons(){
+		useSmallIcons = true;
 		factories[1].removeDefault();
 		factories[0].addDefault();
 	}
 	
+	public static IconFactory getFactory()
+	{
+		if (useSmallIcons)
+			return factories[0];
+		else
+			return factories[1];
+	}
+	
 	public static void useLargeIcons(){
+		useSmallIcons = false;
 		factories[0].removeDefault();
 		factories[1].addDefault();
 	}
