@@ -1,3 +1,7 @@
+2006-07-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* test/TestIconManager.java: New File.
+
 2006-07-17  Tim Moore  <moore@redhat.com>
 
 	* register/RegisterWindow.java (cols): Add column for BigInteger value
