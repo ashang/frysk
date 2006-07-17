@@ -1,0 +1,41 @@
+<Observer type="frysk.gui.monitor.observers.TaskCloneObserver" name="new_task_clone_custom_observer" tooltip="new_task_clone_custom_observer" returnAction="CONTINUE">
+  <actionPoints>
+    <actionPoint name=" " tooltip="Actions that dont take any arguments">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 1" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 2" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 3" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 4" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 5" />
+        </elements>
+      </items>
+    </actionPoint>
+    <actionPoint name="Cloning Thread" tooltip="Thread that made the clone system call">
+      <items>
+        <elements />
+      </items>
+    </actionPoint>
+    <actionPoint name="Cloning Thread" tooltip="Thread that made the clone system call">
+      <items>
+        <elements />
+      </items>
+    </actionPoint>
+  </actionPoints>
+  <filterPoints>
+    <filterPoint name="Cloning Thread" tooltip="Thread that made the clone system call">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="Thread1" filterBoolean="true" />
+        </elements>
+      </items>
+    </filterPoint>
+    <filterPoint name="Cloned Thread" tooltip="New thread that has just been created as a result of clone call">
+      <items>
+        <elements>
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="Thread2" filterBoolean="true" />
+        </elements>
+      </items>
+    </filterPoint>
+  </filterPoints>
+</Observer>
