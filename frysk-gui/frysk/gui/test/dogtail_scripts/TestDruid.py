@@ -114,7 +114,7 @@ class TestDruid ( unittest.TestCase ):
 
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
-        createMinimalSession (self.frysk, self.theSession, True)
+        createMinimalSession (self.frysk, self.theSession, False)
 
 
    def testSessionFile( self ):      
@@ -143,7 +143,7 @@ class TestDruid ( unittest.TestCase ):
 
    def tearDown( self ):  
        # Exit Frysk
-       #endFrysk( self.frysk )
+       endFrysk(self.frysk)
        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
  
 def suite():
