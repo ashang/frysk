@@ -42,6 +42,7 @@ package frysk.gui.register;
 
 import java.util.Iterator;
 import java.util.prefs.Preferences;
+import java.math.BigInteger;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
@@ -65,6 +66,7 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.UBigInteger;
 import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
 import frysk.proc.Register;
@@ -91,16 +93,17 @@ public class RegisterWindow
   private Preferences prefs;
 
   private DataColumn[] cols = { new DataColumnString(), // name
-                               new DataColumnString(), // decimal le
-                               new DataColumnString(), // decimal be
-                               new DataColumnString(), // hex le
-                               new DataColumnString(), // hex be
-                               new DataColumnString(), // octal le
-                               new DataColumnString(), // octal be
-                               new DataColumnString(), // binary le
-                               new DataColumnString(), // binary be
-                               new DataColumnObject(), // the Register object
-                               new DataColumnDouble()}; // alignment
+				new DataColumnString(), // decimal le
+				new DataColumnString(), // decimal be
+				new DataColumnString(), // hex le
+				new DataColumnString(), // hex be
+				new DataColumnString(), // octal le
+				new DataColumnString(), // octal be
+				new DataColumnString(), // binary le
+				new DataColumnString(), // binary be
+				new DataColumnObject(), // the Register object
+				new DataColumnDouble(), // alignment
+				new DataColumnObject ()}; // BigInteger value
 
   protected static String[] colNames = { "Decimal (LE)", "Decimal (BE)",
                                         "Hexadecimal (LE)", "Hexadecimal (BE)",
@@ -160,8 +163,7 @@ public class RegisterWindow
         model.setValue(iter, (DataColumnString) cols[0], register.getName());
         model.setValue(iter, (DataColumnObject) cols[9], register);
         model.setValue(iter, (DataColumnDouble) cols[10], 1.0);
-        saveBinaryValue("" + register.get(this.myTask), 10, true,
-                        iter.getPath());
+	saveBinaryValue(register.getBigInteger(myTask), iter.getPath());
       }
 
     TreeViewColumn col = new TreeViewColumn();
@@ -290,27 +292,6 @@ public class RegisterWindow
     this.refreshList();
   }
 
-  /**
-   * Sign extends the given string to 32 bits.
-   * 
-   * @param unextended The unextended string
-   * @param bitsPerChar The number of bits per character (i.e. for hex this is
-   *          4, for binary it is 1)
-   * @return The extended string TODO: Make this generic, so it no longer
-   *         assumes 32 bit little-endian
-   */
-  private String signExtend (String unextended, int bitlength, int bitsPerChar)
-  {
-    int fullDigits = (bitlength / bitsPerChar);
-    int digitsToAdd = fullDigits + (bitlength - fullDigits * bitsPerChar)
-                      - unextended.length();
-
-    for (int i = 0; i < digitsToAdd; i++)
-      unextended = '0' + unextended;
-
-    return unextended;
-  }
-
   /*
    * Refreshes the view of the items in the list
    */
@@ -327,49 +308,35 @@ public class RegisterWindow
     while (iter != null)
       {
         // get the register
-        Register register = (Register) model.getValue(
-                                                      iter,
-                                                      (DataColumnObject) cols[9]);
-
-        // reference everything from the little endian binary value
-        String value = model.getValue(iter, (DataColumnString) cols[7]);
-        long parsedValue = Long.parseLong(value, 2);
-
-        // Decimal little endian
-        model.setValue(iter, (DataColumnString) cols[1], "" + parsedValue);
-
-        // Hex little endian
-        model.setValue(iter, (DataColumnString) cols[3],
-                       "0x"
-                           + signExtend(Long.toHexString(parsedValue),
-                                        register.getLength() * 4, 4));
-
-        // Octal little endian
-        model.setValue(iter, (DataColumnString) cols[5],
-                       signExtend(Long.toOctalString(parsedValue),
-                                  register.getLength() * 4, 3));
-
-        // flip the binary string to do big-endian
-        value = switchEndianness(value, false);
-        parsedValue = Long.parseLong(value, 2);
-
-        // Binary big endian
-        model.setValue(iter, (DataColumnString) cols[8],
-                       signExtend(value, register.getLength() * 4, 1));
-
+        Register register 
+	  = (Register)model.getValue(iter,
+				     (DataColumnObject) cols[9]);
+	int bitlength = register.getLength() * 8;
+	BigInteger value
+	  = (BigInteger)model.getValue(iter, (DataColumnObject)cols[11]);
+	// Binary little endian
+	model.setValue(iter, (DataColumnString)cols[7], 
+		       UBigInteger.toString(value, bitlength, 2));
+	// Decimal little endian
+	model.setValue(iter, (DataColumnString)cols[1], value.toString());
+	// Hex little endian
+	model.setValue(iter, (DataColumnString)cols[3], 
+		       "0x" + UBigInteger.toString(value, bitlength, 16));
+	// Octal little endian
+	model.setValue(iter, (DataColumnString)cols[5], 
+		       UBigInteger.toString(value, bitlength, 8));
+	BigInteger bigEndValue = swizzleByteOrder(value, bitlength);
+	// Binary big endian
+	model.setValue(iter, (DataColumnString)cols[8], 
+		       UBigInteger.toString(bigEndValue, bitlength, 2));
         // Decimal big-endian
-        model.setValue(iter, (DataColumnString) cols[2], "" + parsedValue);
-
+	model.setValue(iter, (DataColumnString)cols[2], bigEndValue.toString());
         // Hex big-endian
-        model.setValue(iter, (DataColumnString) cols[4],
-                       "0x"
-                           + signExtend(Long.toHexString(parsedValue),
-                                        register.getLength() * 4, 4));
-
+	model.setValue(iter, (DataColumnString)cols[4], 
+		       "0x" + UBigInteger.toString(value, bitlength, 16));
         // Octal big-endian
-        model.setValue(iter, (DataColumnString) cols[6],
-                       signExtend(Long.toOctalString(parsedValue),
-                                  register.getLength() * 4, 3));
+	model.setValue(iter, (DataColumnString)cols[6], 
+		       UBigInteger.toString(value, bitlength, 8));
 
         iter = iter.getNextIter();
       }
@@ -384,66 +351,66 @@ public class RegisterWindow
   }
 
   /**
-   * Reverse the endianess of the binary string
-   * @param toSwitch The binary string to reverse the endianness of
-   * @return The opposite endian binary string
+   * Reverse the byte order of an integer.
    */
-  private String switchEndianness (String toSwitch, boolean littleEndian)
+  private static BigInteger swizzleByteOrder(BigInteger val, int bitLength)
   {
-    boolean neg = false;
-    if (toSwitch.charAt(0) == '-') {
-      toSwitch = toSwitch.substring(1);
-      neg = true;
-    }
-    
-    int diff = toSwitch.length() % 8;
-    if (diff != 0)
-      if (littleEndian)
-        for (int i = 0; i < 8 - diff; i++)
-          toSwitch = "0" + toSwitch;
-      else
-        for (int i = 0; i < 8 - diff; i++)
-          toSwitch = toSwitch + "0";
-    
-    char[] tmp = new char[toSwitch.length()];
-    for (int i = 0; i < tmp.length; i+=8)
-      for(int bitOffset = 0; bitOffset < 8; bitOffset++)
-        tmp[i + bitOffset] = toSwitch.charAt(toSwitch.length() - i - (8 - bitOffset));
+    int byteLength = bitLength / 8;
+    byte[] valBytes = val.toByteArray();
+    byte[] newbytes = new byte[byteLength];
 
-    if (neg)
-      return ("-" +  new String(tmp));
-    else
-      return new String(tmp);
+    for (int i = 0; i < valBytes.length; i++)
+      {
+	newbytes[byteLength - 1 - i] = valBytes[i];
+      }
+    return new BigInteger(newbytes);
   }
 
-  private void saveBinaryValue (String rawString, int radix,
-                                boolean littleEndian, TreePath path)
+  private void saveBinaryValue (BigInteger val, TreePath path)
   {
-    long value = 0;
-    String binaryString = "";
-    // convert the data to little endian binary
-    try
-      {
-        value = Long.parseLong(rawString, radix);
-        binaryString = Long.toBinaryString(value);
-      }
-    // Invalid format, do nothing
-    catch (NumberFormatException e)
-      {
-        return;
-      }
-    if (! littleEndian)
-      binaryString = switchEndianness(binaryString, littleEndian);
+    ListStore model = (ListStore) this.registerView.getModel();
+    TreeIter iter = model.getIter(path);
+    model.setValue (iter, (DataColumnObject)cols[11], val);
+  }
 
+  private void writeBinaryValue (BigInteger val, TreePath path)
+  {
     ListStore model = (ListStore) this.registerView.getModel();
     TreeIter iter = model.getIter(path);
     Register register = (Register) model.getValue(iter,
                                                   (DataColumnObject) cols[9]);
+    register.putBigInteger (myTask, val);
+    model.setValue (iter, (DataColumnObject)cols[11], val);
+  }
 
-    // TODO: Set the value of the register here
+  /**
+   * If the string is not negative but the sign bit of the register
+   * will be set, ensure that the BigInteger value is negative.
+   */
+  private void writeBinaryValue (String rawString, int radix,
+                                boolean littleEndian, TreePath path)
+  {
+    BigInteger value;
+    ListStore model = (ListStore)registerView.getModel();
+    TreeIter iter = model.getIter(path);
+    Register register = (Register)model.getValue(iter,
+						 (DataColumnObject) cols[9]);
+    int bitLength = register.getLength() * 8;
 
-    binaryString = signExtend(binaryString, register.getLength() * 4, 1);
-    model.setValue(iter, (DataColumnString) cols[7], binaryString);
+    try
+      {
+	value = new BigInteger(rawString, radix);
+      }
+    // Invalid format, do nothing XXX probably should throw some kind
+    // of error
+    catch (NumberFormatException e)
+      {
+        return;
+      }
+    if (!littleEndian)
+      value = swizzleByteOrder(value, bitLength);
+    value = UBigInteger.signExtend(value, bitLength);
+    writeBinaryValue(value, path);
   }
 
   class DecCellListener
@@ -461,8 +428,8 @@ public class RegisterWindow
     {
       String text = arg0.getText();
 
-      RegisterWindow.this.saveBinaryValue(text, 10, littleEndian,
-                                          new TreePath(arg0.getIndex()));
+      RegisterWindow.this.writeBinaryValue(text, 10, littleEndian,
+					   new TreePath(arg0.getIndex()));
       RegisterWindow.this.refreshList();
     }
 
@@ -485,8 +452,8 @@ public class RegisterWindow
 
       if (text.indexOf("0x") != - 1)
         text = text.substring(2);
-      RegisterWindow.this.saveBinaryValue(text, 16, littleEndian,
-                                          new TreePath(arg0.getIndex()));
+      RegisterWindow.this.writeBinaryValue(text, 16, littleEndian,
+					   new TreePath(arg0.getIndex()));
       RegisterWindow.this.refreshList();
     }
 
@@ -507,8 +474,8 @@ public class RegisterWindow
     {
       String text = arg0.getText();
 
-      RegisterWindow.this.saveBinaryValue(text, 8, littleEndian,
-                                          new TreePath(arg0.getIndex()));
+      RegisterWindow.this.writeBinaryValue(text, 8, littleEndian,
+					   new TreePath(arg0.getIndex()));
       RegisterWindow.this.refreshList();
     }
 
@@ -529,8 +496,8 @@ public class RegisterWindow
     {
       String text = arg0.getText();
 
-      RegisterWindow.this.saveBinaryValue(text, 2, littleEndian,
-                                          new TreePath(arg0.getIndex()));
+      RegisterWindow.this.writeBinaryValue(text, 2, littleEndian,
+					   new TreePath(arg0.getIndex()));
       RegisterWindow.this.refreshList();
     }
 

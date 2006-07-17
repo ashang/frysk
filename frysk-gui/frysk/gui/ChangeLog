@@ -1,3 +1,19 @@
+2006-07-17  Tim Moore  <moore@redhat.com>
+
+	* register/RegisterWindow.java (cols): Add column for BigInteger value
+	of a register.
+	(setTask): Initialize value of registers as a BigInteger, not the
+	string representation of a long.
+	(signExtend): delete
+	(refreshList): Derive all columns from the BigInteger value.
+	(swizzleByteOrder, saveBinaryValue(BigInteger, TreePath)): new methods
+	(writeBinaryValue): new method
+	(DecCellListener::cellRendererTextEvent,
+	 HexCellListener::cellRendererTextEvent,
+	 OctCellListener::cellRendererTextEvent, 
+	 BinCellListener::cellRendererTextEvent): Update the BigInteger
+	register value.
+
 2006-07-17  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindow.java (MemoryWindow): Fixed a static counter

@@ -39,6 +39,7 @@
 
 package frysk.proc;
 
+import java.math.BigInteger;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 
@@ -76,10 +77,32 @@ public class Register
 	return val;
     }
 
+    /**
+     * Returns the value of a register as a BigInteger.
+     *
+     * @param task the task from which to get the register
+     * @return BigInteger value preserving the sign.
+     */
+    public BigInteger getBigInteger (frysk.proc.Task task)
+    {
+	ByteBuffer b = task.registerBank[bank];
+	byte[] bytes = new byte[length];
+	if (b.order () == ByteOrder.LITTLE_ENDIAN) {
+	    for (int i = 0; i < length; i++) {
+		bytes[length - 1 - i] = (byte)b.get (i + offset);
+	    }
+	} else {
+	    for (int i = 0; i < length; i++) {
+		bytes[i] = (byte)b.get (i + offset);
+	    }
+	}
+	return new BigInteger (bytes);
+    }
+
     public void put (frysk.proc.Task task, long val)
     {
 	ByteBuffer b = task.registerBank[bank];
-	if (b.order () == ByteOrder.LITTLE_ENDIAN) {
+	if (b.order() == ByteOrder.LITTLE_ENDIAN) {
 	    for (int i = offset; i < offset + length; i++) {
 	        b.putByte (i, (byte)(val & 0xff));
 	        val = val >> 8;
@@ -92,6 +115,42 @@ public class Register
 	    }
 	}
     }
+
+    /**
+     * Write a register value.
+     *
+     * @param task task in which to write the register
+     * @param val the value
+     */
+    public void putBigInteger(frysk.proc.Task task, BigInteger val)
+    {
+      ByteBuffer b = task.registerBank[bank];
+      byte[] bytes = val.toByteArray();
+      int i;
+      if (b.order() == ByteOrder.LITTLE_ENDIAN) 
+	{
+	  for (i = 0; i < bytes.length; i++) 
+	    {
+	      b.putByte(i + offset, bytes[bytes.length - 1 - i]);
+	    }
+	  for (; i < length; i++)
+	    {
+	      b.putByte(i + offset, (byte)0);
+	    }
+	} 
+      else 
+	{
+	  for (i = length; i >= bytes.length; i--)
+	    {
+	      b.putByte(i + offset, (byte)0);
+	    }
+	  for (; i >= 0; i--) 
+	    {
+	      b.putByte (i + offset, bytes[i]);
+	    }
+	}
+    }
+	    
 
     public String getName ()
     {
