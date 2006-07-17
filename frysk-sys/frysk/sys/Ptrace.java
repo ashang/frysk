@@ -98,7 +98,7 @@ public class Ptrace
 	/**
      * Fetch the word located at paddr.
      */
-    public static native int peek(int peekRequest, int pid, String paddr);
+    public static native long peek(int peekRequest, int pid, String paddr);
     /**
      * Copy the word in data to child's addr.
      */
