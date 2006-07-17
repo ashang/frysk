@@ -102,24 +102,24 @@ public class TestTaskSyscallObserver
 	if (brokenXXX ())
 	    return;
 	    
-	    //	  Create an unattached child process.
-	    AckProcess child = new DetachedAckProcess ();
+	//	  Create an unattached child process.
+	AckProcess child = new DetachedAckProcess ();
 
-	    // Attach to the process using the exec observer.  The event
-	    // loop is kept running until SingleExecObserver .addedTo is
-	    // called indicating that the attach succeeded.
-	    Task task = child.findTaskUsingRefresh (true);
-	    SyscallObserver syscallObserver = new SyscallObserver ();
-	    task.requestAddSyscallObserver (syscallObserver);
-	    assertRunUntilStop ("adding exec observer causing attach");
+	// Attach to the process using the exec observer.  The event
+	// loop is kept running until SingleExecObserver .addedTo is
+	// called indicating that the attach succeeded.
+	Task task = child.findTaskUsingRefresh (true);
+	SyscallObserver syscallObserver = new SyscallObserver ();
+	task.requestAddSyscallObserver (syscallObserver);
+	assertRunUntilStop ("adding exec observer causing attach");
 
-	    // Do the exec; this call keeps the event loop running until
-	    // the child process has notified this process that the exec
-	    // has finished which is well after SingleExecObserver
-	    // .updateExeced has been called.
-	    child.exec ();
+	// Do the exec; this call keeps the event loop running until
+	// the child process has notified this process that the exec
+	// has finished which is well after SingleExecObserver
+	// .updateExeced has been called.
+	child.exec ();
 	    
-	    assertTrue(true);
+	assertTrue(true);
     }
  
     /**
@@ -190,7 +190,7 @@ public class TestTaskSyscallObserver
 
 	assertTrue ("syscall events received >= 8",
 		    syscallObserver.enter >= 8);
-//XXX: why ?	assertFalse ("syscall events", syscallObserver.inSyscall);
+	//XXX: why ?	assertFalse ("syscall events", syscallObserver.inSyscall);
 	assertTrue ("syscall events", syscallObserver.inSyscall);
     }
 
@@ -268,7 +268,7 @@ public class TestTaskSyscallObserver
 	
 	assertTrue ("syscall events received >= 8",
 		    syscallOpenObserver.enter >= 8); 
-//XXX: why ? assertFalse ("in syscall", syscallOpenObserver.inSyscall);
+	//XXX: why ? assertFalse ("in syscall", syscallOpenObserver.inSyscall);
 	assertTrue ("in syscall", syscallOpenObserver.inSyscall);
 	assertTrue ("attempt to open a.file",
 		    syscallOpenObserver.testFileOpened);
@@ -304,7 +304,7 @@ public class TestTaskSyscallObserver
     }
 
     // Timers, observers, counters, etc.. needed for the test.
-        class TestSyscallInterruptInternals {
+    class TestSyscallInterruptInternals {
 	int readEnter, readExit, sigusr1Count;
 	
 	// Need to add task observers to the process the moment it is
@@ -341,8 +341,8 @@ public class TestTaskSyscallObserver
 		    = task.getSyscallEventInfo ();
 		int syscallNum = syscallEventInfo.number (task);
 		if (syscallNum == SyscallNum.SYSread) {
-     		   logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
-		   if (readEnter <= readExit)
+		    logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);
+		    if (readEnter <= readExit)
 			throw new RuntimeException ("Read exit before enter");
 		    ++readExit;
 		}
