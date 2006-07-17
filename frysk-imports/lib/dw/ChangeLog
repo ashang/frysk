@@ -1,3 +1,13 @@
+2005-07-17  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwarfDie.java (getName): Added.
+	(get_diename): Added.
+	* cni/Dwarf.cxx (DWARF_POINTER): Refactored out.
+	* cni/DwarfDie.cxx (DWARF_DIE_POINTER): Ditto.
+	(get_diename): Added.
+	* cni/Dwfl.cxxx (DWFL_POINTER): Refactored out.
+	* cni/DwflLine.cxx (DWFL_LINE_POINTER): Ditto.
+
 2005-07-14  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Dwfl.java: Changed to GNU formatting.

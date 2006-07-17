@@ -76,6 +76,11 @@ public class DwarfDie
     return get_lowpc();
   }
 
+  public String getName ()
+  {
+    return get_diename();
+  }
+
   protected long getPointer ()
   {
     return this.pointer;
@@ -85,4 +90,6 @@ public class DwarfDie
   private native long get_lowpc ();
 
   private native long get_highpc ();
+
+  private native String get_diename ();
 }

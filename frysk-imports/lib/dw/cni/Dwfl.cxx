@@ -45,6 +45,8 @@
 
 #include "lib/dw/Dwfl.h"
 
+#define DWFL_POINTER (::Dwfl *) this->pointer
+
 void
 lib::dw::Dwfl::dwfl_begin(jint pid){
 	
@@ -70,7 +72,7 @@ lib::dw::Dwfl::dwfl_begin(jint pid){
 
 void
 lib::dw::Dwfl::dwfl_end(){
-	::dwfl_end((::Dwfl*) this->pointer);
+	::dwfl_end(DWFL_POINTER);
 }
 
 
@@ -86,11 +88,11 @@ lib::dw::Dwfl::dwfl_end(){
 
 jlong
 lib::dw::Dwfl::dwfl_getsrc(jlong addr){
-	return (jlong) ::dwfl_getsrc((::Dwfl*) this->pointer, (::Dwarf_Addr) addr);
+	return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
 }
 
 jlong
 lib::dw::Dwfl::dwfl_addrdie(jlong addr){
 	Dwarf_Addr bias;
-	return (jlong) ::dwfl_addrdie((::Dwfl*) this->pointer, (::Dwarf_Addr) addr, &bias);	
+	return (jlong) ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);	
 }

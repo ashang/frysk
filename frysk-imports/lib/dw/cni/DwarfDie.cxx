@@ -41,11 +41,13 @@
 
 #include "lib/dw/DwarfDie.h"
 
+#define DWARF_DIE_POINTER (Dwarf_Die *) this->pointer
+
 jlong
 lib::dw::DwarfDie::get_lowpc()
 {
 	Dwarf_Addr lowpc;
-	::dwarf_lowpc((Dwarf_Die *) this->pointer, &lowpc);
+	::dwarf_lowpc(DWARF_DIE_POINTER, &lowpc);
 	return (jlong) lowpc;
 }
 
@@ -53,6 +55,12 @@ jlong
 lib::dw::DwarfDie::get_highpc()
 {
 	Dwarf_Addr highpc;
-	::dwarf_highpc((Dwarf_Die *) this->pointer, &highpc);
+	::dwarf_highpc(DWARF_DIE_POINTER, &highpc);
 	return (jlong) highpc;
+}
+
+jstring
+lib::dw::DwarfDie::get_diename()
+{
+	return JvNewStringUTF(dwarf_diename(DWARF_DIE_POINTER));
 }

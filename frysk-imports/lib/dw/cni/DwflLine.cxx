@@ -42,23 +42,25 @@
 
 #include "lib/dw/DwflLine.h"
 
+#define DWFL_LINE_POINTER (::Dwfl_Line *) this->pointer
+
 jstring
 lib::dw::DwflLine::dwfl_lineinfo_source(){
-	const char* str = ::dwfl_lineinfo((::Dwfl_Line*) this->pointer, NULL, NULL, NULL, NULL, NULL);
+	const char* str = ::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, NULL, NULL, NULL);
 	return JvNewStringUTF(str);
 }
 
 jlong
 lib::dw::DwflLine::dwfl_lineinfo_addr(){
 	Dwarf_Addr addr;
-	::dwfl_lineinfo((::Dwfl_Line*) this->pointer, &addr, NULL, NULL, NULL, NULL);
+	::dwfl_lineinfo(DWFL_LINE_POINTER, &addr, NULL, NULL, NULL, NULL);
 	return (jlong) addr;
 }
 
 jint
 lib::dw::DwflLine::dwfl_lineinfo_linenum(){
 	int lineNum;
-	::dwfl_lineinfo((::Dwfl_Line*) this->pointer, NULL, &lineNum, NULL, NULL, NULL);
+	::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, &lineNum, NULL, NULL, NULL);
 	return (jint) lineNum;
 }
 
@@ -66,6 +68,6 @@ lib::dw::DwflLine::dwfl_lineinfo_linenum(){
 jint
 lib::dw::DwflLine::dwfl_lineinfo_col(){
 	int col;
-	::dwfl_lineinfo((::Dwfl_Line*) this->pointer, NULL, NULL, &col, NULL, NULL);
+	::dwfl_lineinfo(DWFL_LINE_POINTER, NULL, NULL, &col, NULL, NULL);
 	return (jint) col;
 }

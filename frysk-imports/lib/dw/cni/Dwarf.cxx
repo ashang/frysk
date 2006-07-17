@@ -44,6 +44,8 @@
 
 #include "lib/dw/Dwarf.h"
 
+#define DWARF_POINTER (::Dwarf *) this->pointer
+
 void
 lib::dw::Dwarf::dwarf_begin_elf(jlong elf, jint command, jlong section){
 	this->pointer = (jlong)
@@ -62,5 +64,5 @@ lib::dw::Dwarf::dwarf_begin(jstring file, jint command){
 
 jint 
 lib::dw::Dwarf::dwarf_end(){
-	return ::dwarf_end((::Dwarf*) this->pointer);
+	return ::dwarf_end(DWARF_POINTER);
 }
