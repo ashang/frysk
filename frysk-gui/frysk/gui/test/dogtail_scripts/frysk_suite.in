@@ -27,7 +27,14 @@ cat <<EOF | grep -v '#' | while read script args ; do
 ${src}/TestCredits.py ${src}/another_new_session.xml
 ${src}/TestLicense.py ${src}/another_new_session.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_fork_custom_observer.xml
+${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_syscall_custom_observer.xml
+${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_clone_custom_observer.xml
+# The next 2 tests fail - see bug 2871
+#${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_exec_custom_observer.xml
+#${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_term_custom_observer.xml
 ${src}/TestDruid.py ${src}/another_new_session.xml
+# The next test fails - see bug 2866
+#${src}/Test2866.py ${src}/another_new_session.xml
 EOF
     echo Running: ${script}
     if python ${script} ${frysk} ${args} ; then
