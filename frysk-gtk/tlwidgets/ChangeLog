@@ -1,3 +1,7 @@
+2006-07-17  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am: Rearranged the order of the targets to avoid make -j2 errors.
+
 2006-07-14  Nurdin Premji  <npremji@redhat.com>
 
 	* src/java/com/redhat/ftk/EventViewer.java (ftk_eventviewer_set_bg_default): Added.
