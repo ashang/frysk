@@ -85,6 +85,8 @@ public class SessionManagerGui
 
   ListView previousSessions;
 
+  RadioButton terminalSession;
+
   RadioButton previousSession;
 
   RadioButton debugSingleProcess;
@@ -111,8 +113,8 @@ public class SessionManagerGui
     getSessionManagementControls(glade);
     // getDebugExecutableControls(glade);
     getDebugSingleProcess(glade);
+	getTerminalSession(glade);
     setButtonStates();
-
   }
 
   private void toggleControls ()
@@ -160,6 +162,20 @@ public class SessionManagerGui
 
   }
 
+  private void getTerminalSession(LibGlade glade)
+  {
+  	terminalSession = (RadioButton) glade.getWidget("SessionManager_startTerminalSessionButton");
+	terminalSession.setState(false);
+   	terminalSession.addListener(new ToggleListener()
+    {
+      public void toggleEvent (ToggleEvent arg0)
+      {
+        setButtonStates();
+      }
+    });
+
+  }
+
   private void setButtonStates ()
   {
     if (previousSession.getState())
@@ -176,8 +192,9 @@ public class SessionManagerGui
           this.deleteSession.setSensitive(true);
         }
 
-    if ((previousSessions.getSelectedObject() != null)
-        && (previousSession.getState()))
+    if ((previousSessions.getSelectedObject() != null
+        && previousSession.getState())
+		|| terminalSession.getState())
       this.openButton.setSensitive(true);
     else
       this.openButton.setSensitive(false);
@@ -316,7 +333,11 @@ public class SessionManagerGui
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             WindowManager.theManager.mainWindow.showAll();
-            WindowManager.theManager.mainWindow.setSession((Session) previousSessions.getSelectedObject());
+			if (previousSession.getState())
+			{
+            	WindowManager.theManager.mainWindow.setSession((Session) previousSessions.getSelectedObject());
+				WindowManager.theManager.mainWindow.hideTerminal();
+			}
             hideAll();
           }
       }

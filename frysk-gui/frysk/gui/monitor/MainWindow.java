@@ -106,5 +106,9 @@ public class MainWindow extends Window implements Saveable{
 		sessionProcTreeView.load(Preferences.userRoot().node(prefs.absolutePath() + "/allProcWidget")); //$NON-NLS-1$
 	}
 	
+	public void hideTerminal()
+	{
+		sessionProcTreeView.hideTerminal();
+	}
 }
 

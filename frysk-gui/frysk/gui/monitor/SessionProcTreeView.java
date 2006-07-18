@@ -48,9 +48,7 @@ package frysk.gui.monitor;
 
 import java.io.IOException;
 import java.util.prefs.Preferences;
-
-import org.gnu.glade.LibGlade;
-import org.gnu.glib.GObject;
+import org.gnu.glade.LibGlade; import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.TreeIter;
@@ -64,6 +62,7 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.VPaned;
 import org.gnu.gtk.Widget;
+import org.gnu.gtk.Notebook;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeModelEvent;
@@ -72,6 +71,8 @@ import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
+import org.gnu.gdk.Color;
+import org.gnu.gnomevte.Terminal;
 
 import frysk.gui.sessions.Session;
 
@@ -93,6 +94,9 @@ public class SessionProcTreeView
   private TreeModelFilter threadFilter;
 
   private VBox statusWidget;
+  private VBox terminalWidget;
+  
+  private Notebook statusNotebook;
 
   private InfoWidget infoWidget;
 
@@ -109,9 +113,20 @@ public class SessionProcTreeView
     this.vPane = (VPaned) glade.getWidget("vPane");
 
     this.statusWidget = (VBox) glade.getWidget("statusWidget");
+    this.terminalWidget = (VBox) glade.getWidget("terminalWidget");
+
+	this.statusNotebook = (Notebook) glade.getWidget("statusNoteBook");
 
     this.infoWidget = new InfoWidget();
     this.statusWidget.add(infoWidget);
+
+	Terminal term = Terminal.terminalAndShell();
+	//Terminal term = new Terminal("/bin/sh", new String[] {}, System.getenv("PWD"));
+	term.setDefaultColors();
+	term.setForegroundColor(Color.BLACK);
+	term.setBackgroudColor(Color.WHITE);
+
+	this.terminalWidget.add(term);
 
     this.procDataModel = new SessionProcDataModel();
 
@@ -471,6 +486,12 @@ public class SessionProcTreeView
     model.getValue(model.getIter(tp[0]), this.procDataModel.getPidDC());
 
     return data;
+  }
+
+  public void hideTerminal()
+  {
+  	if (statusNotebook.getNumPages() == 2)
+		statusNotebook.removePage(1);
   }
 
   public void save (Preferences prefs)
