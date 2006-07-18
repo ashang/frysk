@@ -30,8 +30,11 @@ public class PreferenceManager
   static
     {
       preferenceGroups = new HashMap();
-
+      
       prefs = Preferences.userRoot();
+      
+      addPreferenceGroup(sourceWinGroup);
+      addPreferenceGroup(syntaxHighlightingGroup);
     }
 
   /**
