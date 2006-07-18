@@ -913,6 +913,21 @@ class TaskState
      * options and trasition to syscallRunning.
      */
      private static TaskState transitionToSyscallRunning = new TaskState("transitionToSyscallRunning"){
+       TaskState handleAddObserver (Task task, Observable observable,
+                                   Observer observer)
+       {
+        logger.log(Level.FINE, "{0} handleAddObserver\n", task);
+        observable.add(observer);
+        return running;
+       }
+
+       TaskState handleDeleteObserver (Task task, Observable observable,
+                                      Observer observer)
+       {
+         logger.log(Level.FINE, "{0} handleDeleteObserver\n", task);
+         observable.delete(observer);
+         return running;
+       }
        TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
        {
          logger.log(Level.FINE, "{0} handleAddSyscallObserver\n", task);

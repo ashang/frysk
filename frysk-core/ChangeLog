@@ -1,3 +1,8 @@
+2006-07-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/bindir/ftrace.xml: New file.
+	* frysk/bindir/ftrace.java: Moved to here.
+
 2006-07-12  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Remove libunwind-ptrace.a.

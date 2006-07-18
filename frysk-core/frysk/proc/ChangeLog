@@ -1,3 +1,10 @@
+2006-07-18  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TaskState.java: Added handling for adding/removing observers
+	while transitioning to syscall mode.
+	* Syscall.java: Replaced an incorrect print statement that was
+	resulting in string syscall arguments not being printed correctly.
+
 2006-07-17  Tim Moore  <moore@redhat.com>
 
 	* Register.java (getBigInteger, putBigInteger): New methods for

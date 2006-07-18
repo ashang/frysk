@@ -98,7 +98,7 @@ public class Syscall
 	    if (x.length () == 20)
 		x.append ("...");
 	    x.append ("\"");
-	    writer.print (toString ());
+	    writer.print (x);
 	}
     }
     

@@ -42,7 +42,6 @@
  */
 
 
-package prog.util;
 
 import inua.util.PrintWriter;
 
@@ -111,14 +110,11 @@ class ftrace
     public Action updateAttached (Task task)
     {
       task.requestAddSyscallObserver(new SyscallObserver());
+      setProc(task.getProc());
       return Action.CONTINUE;
     }
 
-    public void addedTo (Object observable)
-    {
-      Task task = (Task) observable;
-      setProc(task.getProc());
-    }
+    public void addedTo (Object observable){}
 
     public void addFailed (Object observable, Throwable w){
       throw new RuntimeException("Failed to attach to created proc", w);
