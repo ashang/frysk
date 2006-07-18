@@ -48,21 +48,21 @@ import org.gnu.gtk.Gtk;
 public class TestIconManager extends TestCase {
 
 	IconFactory defaultSet = null;
-	private static final String BASE_PATH = "frysk/gui/";
-	String[] imagePaths =   new String[] {
-		     		Build.ABS_SRCDIR + "/" + BASE_PATH + "images/"
-		 		};
 
-	public void testIconManagerLoad(){
-		Gtk.init(new String[]{});
-		
-                // Start loading factory. Need to improve this test as we are 
+	private static final String BASE_PATH = "frysk/gui/";
+
+	String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
+			+ "images/" };
+
+	public void testIconManagerLoad() {
+		Gtk.init(new String[] {});
+
+		// Start loading factory. Need to improve this test as we are 
 		// basically looking for a stracktrace.
 		IconManager.setImageDir(imagePaths);
-                IconManager.loadIcons();
-                IconManager.useSmallIcons();
+		IconManager.loadIcons();
+		IconManager.useSmallIcons();
 	}
-
 
 	public void testIconManagerGetFactory() {
 
@@ -75,29 +75,40 @@ public class TestIconManager extends TestCase {
 
 	public void testIconLookups() {
 
-			defaultSet = IconManager.getFactory();
-	
+		defaultSet = IconManager.getFactory();
 
-			// Basically manually grind through each icon lookup and test
-			// to make sure if the IconSet returned is not null.
-			assertNotNull("Testing frysk-run icon set lookup", defaultSet.lookupIconSet("frysk-run"));
-			assertNotNull("Testing frysk-stop icon set lookup", defaultSet.lookupIconSet("frysk-stop"));
+		// Basically manually grind through each icon lookup and test
+		// to make sure if the IconSet returned is not null.
+		assertNotNull("Testing frysk-run icon set lookup", defaultSet
+				.lookupIconSet("frysk-run"));
+		assertNotNull("Testing frysk-stop icon set lookup", defaultSet
+				.lookupIconSet("frysk-stop"));
 
-			assertNotNull("Testing frysk-next icon set lookup", defaultSet.lookupIconSet("frysk-next"));
-			assertNotNull("Testing frysk-nextAI icon set lookup", defaultSet.lookupIconSet("frysk-nextAI"));
+		assertNotNull("Testing frysk-next icon set lookup", defaultSet
+				.lookupIconSet("frysk-next"));
+		assertNotNull("Testing frysk-nextAI icon set lookup", defaultSet
+				.lookupIconSet("frysk-nextAI"));
 
-			assertNotNull("Testing frysk-step icon set lookup", defaultSet.lookupIconSet("frysk-step"));
-			assertNotNull("Testing frysk-stepAI icon set lookup", defaultSet.lookupIconSet("frysk-stepAI"));
-			assertNotNull("Testing frysk-continue icon set lookup", defaultSet.lookupIconSet("frysk-continue"));
-			assertNotNull("Testing frysk-finish icon set lookup", defaultSet.lookupIconSet("frysk-finish"));
-			assertNotNull("Testing frysk-down icon set lookup", defaultSet.lookupIconSet("frysk-down"));
-			assertNotNull("Testing frysk-up icon set lookup", defaultSet.lookupIconSet("frysk-up"));
-			assertNotNull("Testing frysk-bottom icon set lookup", defaultSet.lookupIconSet("frysk-bottom"));
+		assertNotNull("Testing frysk-step icon set lookup", defaultSet
+				.lookupIconSet("frysk-step"));
+		assertNotNull("Testing frysk-stepAI icon set lookup", defaultSet
+				.lookupIconSet("frysk-stepAI"));
+		assertNotNull("Testing frysk-continue icon set lookup", defaultSet
+				.lookupIconSet("frysk-continue"));
+		assertNotNull("Testing frysk-finish icon set lookup", defaultSet
+				.lookupIconSet("frysk-finish"));
+		assertNotNull("Testing frysk-down icon set lookup", defaultSet
+				.lookupIconSet("frysk-down"));
+		assertNotNull("Testing frysk-up icon set lookup", defaultSet
+				.lookupIconSet("frysk-up"));
+		assertNotNull("Testing frysk-bottom icon set lookup", defaultSet
+				.lookupIconSet("frysk-bottom"));
 
-			assertNotNull("Testing frysk-highlight icon set lookup", defaultSet.lookupIconSet("frysk-highlight"));
+		assertNotNull("Testing frysk-highlight icon set lookup", defaultSet
+				.lookupIconSet("frysk-highlight"));
 
-			assertNotNull("Testing splash-screen", IconManager.splashImage);
-			assertNotNull("Testing window-icon", IconManager.windowIcon);
-			assertNotNull("Testing animation", IconManager.anim);
+		assertNotNull("Testing splash-screen", IconManager.splashImage);
+		assertNotNull("Testing window-icon", IconManager.windowIcon);
+		assertNotNull("Testing animation", IconManager.anim);
 	}
 }
