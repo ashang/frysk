@@ -29,12 +29,11 @@ public class PreferenceManager
   // Initialize the hashmap for groups and the default preferences model
   static
     {
+	  
       preferenceGroups = new HashMap();
       
       prefs = Preferences.userRoot();
       
-      addPreferenceGroup(sourceWinGroup);
-      addPreferenceGroup(syntaxHighlightingGroup);
     }
 
   /**
