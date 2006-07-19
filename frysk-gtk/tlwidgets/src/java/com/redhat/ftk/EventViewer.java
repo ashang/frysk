@@ -91,6 +91,17 @@ public class EventViewer extends Widget
       return ftk_eventviewer_set_bg_default(getHandle());
     }
     
+    /*
+     * Get the default background colors.
+     */
+    public Color[] getBackgroundDefault() {
+      return ftk_eventviewer_get_bg_default(getHandle());
+    }
+    
+    public Color[] getForegroundDefault() {
+      return ftk_eventviewer_get_fg_default(getHandle());
+    }
+    
     /**
      * Set viewable window (seconds)
      */
@@ -228,11 +239,12 @@ public class EventViewer extends Widget
 
     native static final protected boolean
     ftk_eventviewer_set_bg_default (Handle sc);
-    
-    /*    
+      
     native static final protected Color[]
     ftk_eventviewer_get_bg_default(Handle sc);
-    */
+    
+    native static final protected Color[]
+    ftk_eventviewer_get_fg_default(Handle sc);
     
     native static final protected boolean
 	ftk_eventviewer_set_timebase (Handle sc, double span);

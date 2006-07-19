@@ -57,7 +57,6 @@ import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.VBox;
-import org.gnu.gtk.VSeparator;
 
 import com.redhat.ftk.EventViewer;
 
@@ -68,9 +67,9 @@ public class StatusWidget
     extends VBox
 {
 	
-	//private Color backgroundColor = Color.WHITE;
-	private Color[] traceColors = {Color.BLACK,};
-	private Color[] markerColors = {Color.BLACK, Color.BLUE};
+	private Color[] backgroundColors;
+	private Color[] traceColors;
+	private Color[] markerColors;
 	private Random randomColorGenerator;
 	
 	private Color getColor (Color[] colors) {
@@ -131,8 +130,12 @@ public class StatusWidget
     this.viewer = new EventViewer();
     this.viewer.resize (1, 1);
     //this.viewer.setBackgroundColor(backgroundColor);
+    backgroundColors = this.viewer.getBackgroundDefault();
+    traceColors = this.viewer.getForegroundDefault();
+    markerColors = this.viewer.getForegroundDefault();
     
-    this.viewer.setBackgroundDefault();
+    this.viewer.setBackgroundColor(backgroundColors[0]);    
+    
     this.viewer.setTimebase(10.0);
     
     //XXX: Change "Additional  information to something more meaningfull.
@@ -148,8 +151,8 @@ public class StatusWidget
     this.initThreads(guiProc);
 
     // ========================================
-    VSeparator seperator = new VSeparator();
-    mainVbox.packStart(seperator, false, true, 5);
+    //VSeparator seperator = new VSeparator();
+    //mainVbox.packStart(seperator, false, true, 5);
     // ========================================
 
     // ========================================

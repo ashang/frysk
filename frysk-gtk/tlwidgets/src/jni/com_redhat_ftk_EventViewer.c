@@ -118,17 +118,79 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1set_1bg_1default (JNIEnv *env,
  * Class:	  com.redhat.ftk.EventViewer
  * Method:	  ftk_eventviewer_get_bg_default
  */
-/*JNIEXPORT jobjectArray JNICALL 
+JNIEXPORT jobjectArray JNICALL 
 Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1bg_1default (JNIEnv *env, 
 							jclass cls, 
 							jobject sc)
 {
   FtkEventViewer * eventviewer =
-    (FTKEventViewer *)getPointerFromHandle(env, sc);
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
   
+  jobjectArray ret;
+  jclass colorClass = (*env)->FindClass(env, "org/gnu/gdk/Color");
+  if (NULL == colorClass) {
+  	fprintf(stderr, "Could not find Color class");
+  	return NULL;
+  }
+  
+  jmethodID cid = (*env)->GetMethodID(env, colorClass, "<init>", "(III)V");
+  
+  ret = (jobjectArray) (*env)->NewObjectArray(env, 5,
+         colorClass,
+         NULL);
+  
+  if (NULL == ret) {
+  	fprintf(stderr, "Could not allocate memory for color array");
+  	return NULL;
+  }
   GdkColor * backgrounds = ftk_eventviewer_get_bg_default (eventviewer);
+  for (int i = 0; i < 5; i++) {
+  	jobject tempColor = (*env)->NewObject(env, colorClass, cid, 
+  	backgrounds[i].red, backgrounds[i].green, backgrounds[i].blue);
+  	(*env)->SetObjectArrayElement(env, ret, i, tempColor);
+  }
   
-}*/
+  return ret;
+}
+
+/*
+ * Class:	  com.redhat.ftk.EventViewer
+ * Method:	  ftk_eventviewer_get_fg_default
+ */
+JNIEXPORT jobjectArray JNICALL 
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1fg_1default (JNIEnv *env, 
+							jclass cls, 
+							jobject sc)
+{
+  FtkEventViewer * eventviewer =
+    (FtkEventViewer *)getPointerFromHandle(env, sc);
+  
+  jobjectArray ret;
+  jclass colorClass = (*env)->FindClass(env, "org/gnu/gdk/Color");
+  if (NULL == colorClass) {
+  	fprintf(stderr, "Could not find Color class");
+  	return NULL;
+  }
+  
+  jmethodID cid = (*env)->GetMethodID(env, colorClass, "<init>", "(III)V");
+  
+  ret = (jobjectArray) (*env)->NewObjectArray(env, 5,
+         colorClass,
+         NULL);
+  
+  if (NULL == ret) {
+  	fprintf(stderr, "Could not allocate memory for color array");
+  	return NULL;
+  }
+  GdkColor * foregrounds = ftk_eventviewer_get_fg_default (eventviewer);
+  for (int i = 0; i < 5; i++) {
+  	jobject tempColor = (*env)->NewObject(env, colorClass, cid, 
+  	foregrounds[i].red, foregrounds[i].green, foregrounds[i].blue);
+  	(*env)->SetObjectArrayElement(env, ret, i, tempColor);
+  }
+  
+  return ret;
+}
 
 /*
  * Class:     com.redhat.ftk.EventViewer

@@ -1,5 +1,23 @@
 2006-07-19  Nurdin Premji  <npremji@redhat.com>
 
+	* src/java/com/redhat/ftk/EventViewer.java (ftk_eventviewer_get_bg_default): Added.
+	(ftk_eventviewer_get_fg_default): Added.
+	(getBackgroundDefault): Added.
+	(getForegroundDefault): Added.		
+	* src/jni/com_redhat_ftk_EventViewer.c (ftk_1eventviewer_1get_1bg_1default): Added
+	(ftk_1eventviewer_1get_1fg_1default): Added.
+	* src/widgets/ftkeventviewer.h (ftk_eventviewer_get_fg_default): Added.
+	* src/widgets/ftkeventviewer.c (ftk_eventviewer_preset_bg_rgb_e): Added.
+	(ftk_eventviewer_preset_marker_rgb_e): Added.
+	(ftk_eventviewer_preset_trace_rgb_e): Added.
+	(ftk_eventviewer_style): Added.
+	(create_drawing_area): Added signal handler for changing styles.
+	(ftk_eventviewer_get_bg_default): Removed print statement.
+	(ftk_eventviewer_set_bg_rgb_e): Changed to use preset_bg to avoid duplicate code.
+	(ftk_eventviewer_set_marker_rgb_e): Ditto.
+	(ftk_eventviewer_set_trace_rgb_e): Ditto.
+	(initialise_widget): Changed to use default theme style for bg colors.
+	
 	* Makefile.am: Added back target dependencies to avoid make -jN errors.
 
 2006-07-17  Nurdin Premji  <npremji@redhat.com>

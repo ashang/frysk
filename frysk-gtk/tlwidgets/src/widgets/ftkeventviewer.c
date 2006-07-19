@@ -44,9 +44,14 @@ static gboolean ftk_eventviewer_expose (GtkWidget * widget,
 static gboolean ftk_eventviewer_da_expose (GtkWidget * widget,
 					   GdkEventExpose * event,
 					   gpointer data);
+					   
 static gboolean ftk_eventviewer_configure (GtkWidget * widget,
 					   GdkEventConfigure * event,
 					   gpointer data);
+
+static gboolean ftk_eventviewer_style (GtkWidget * widget,
+						GtkStyle * previous_style,
+						gpointer data);
 
 static gboolean ftk_eventviewer_legend_da_expose (GtkWidget * widget,
 						  GdkEventExpose * event,
@@ -102,6 +107,19 @@ static gboolean ftk_eventviewer_slider_cv (GtkRange * range,
 					   gpointer  user_data);
 #endif
     
+gboolean
+ftk_eventviewer_preset_bg_rgb_e (FtkEventViewer * eventviewer, guint red, guint green, guint blue, GError ** err);
+    
+gboolean
+ftk_eventviewer_preset_trace_rgb_e(FtkEventViewer * eventviewer,
+				gint trace_index, guint red, guint green, guint blue,
+				GError ** err);
+				
+gboolean
+ftk_eventviewer_preset_marker_rgb_e(FtkEventViewer * eventviewer,
+				gint marker_index, guint red, guint green, guint blue,
+				GError ** err);
+				
 static inline double timeval_to_double (struct timeval * tv);
 static inline void double_to_timeval (struct timeval * tv,
 				      double time_d);
@@ -251,9 +269,11 @@ initialise_widget (FtkEventViewer * eventviewer)
   ftk_ev_popup_trace (eventviewer)	= -1;
   ftk_ev_popup_marker (eventviewer)	= -1;
 
-  ftk_ev_bg_red(eventviewer)	= DEFAULT_BG_RED;
-  ftk_ev_bg_green(eventviewer)	= DEFAULT_BG_GREEN;
-  ftk_ev_bg_blue(eventviewer)	= DEFAULT_BG_BLUE;
+  gtk_widget_ensure_style(GTK_WIDGET (ftk_ev_vbox(eventviewer)));
+  GtkStyle *style = gtk_widget_get_style (GTK_WIDGET (ftk_ev_vbox(eventviewer)));
+  ftk_ev_bg_red(eventviewer)	= style->bg[0].red;
+  ftk_ev_bg_green(eventviewer)	= style->bg[0].green;
+  ftk_ev_bg_blue(eventviewer)	= style->bg[0].blue;
   ftk_ev_label_box_width(eventviewer)  = 0;
   ftk_ev_label_box_height(eventviewer) = 0;
 
@@ -668,6 +688,10 @@ create_drawing_area (FtkEventViewer * eventviewer)
     
   g_signal_connect (GTK_OBJECT(da),"configure-event",
 		    G_CALLBACK (ftk_eventviewer_configure), eventviewer);
+		    
+  g_signal_connect (GTK_OBJECT(da), "style-set",
+  			G_CALLBACK (ftk_eventviewer_style), eventviewer);
+  
 
 #ifndef NOT_USE_SCROLL
   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
@@ -678,7 +702,8 @@ create_drawing_area (FtkEventViewer * eventviewer)
   obj = gtk_widget_get_accessible (scrolled_window);
   atk_object_set_name(obj, _("Drawing Scrolled Window"));
   atk_object_set_description(obj, _("Scrolled Window to hold Drawing Area"));
-
+  /* ------------------------------ */
+   
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
 				  GTK_POLICY_NEVER,
@@ -1885,6 +1910,41 @@ ftk_eventviewer_configure(GtkWidget * widget, GdkEventConfigure * event,
   return TRUE;	/* last handler */
 }
 
+static gboolean
+ftk_eventviewer_style (GtkWidget * widget, GtkStyle *previous_style,
+				gpointer data)
+{
+	FtkEventViewer * eventviewer = FTK_EVENTVIEWER (data);
+	
+	GtkDrawingArea *da = ftk_ev_da(eventviewer);
+	GtkStyle * style = gtk_widget_get_style(GTK_WIDGET(da));
+	
+	GdkColor * backgrounds = style->bg;
+	ftk_eventviewer_preset_bg_rgb_e(eventviewer, backgrounds->red, 
+	backgrounds->green, backgrounds->blue, NULL);
+		
+	GdkColor * foregrounds = style->fg;
+	
+	for (gint i = 0; i < ftk_ev_trace_next(eventviewer); i++) {
+		if (ftk_trace_valid (ftk_ev_trace (eventviewer, i))) {
+			ftk_eventviewer_preset_trace_rgb_e(eventviewer, i, 
+			foregrounds->red, foregrounds->green,
+			 foregrounds->blue, NULL);
+		}
+    }
+
+	for (gint i = 0; i < ftk_ev_markers_next(eventviewer); i++) {
+		ftk_eventviewer_preset_marker_rgb_e(eventviewer, i, 
+		foregrounds->red, foregrounds->green, 
+		foregrounds->blue, NULL);
+	}
+
+	if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (da))) {
+	    ftk_eventviewer_da_expose(GTK_WIDGET(da), NULL, eventviewer);
+	}
+	return TRUE;
+}
+
 static void
 ftk_eventviewer_destroy(GtkObject * widget,
 			gpointer data)
@@ -1942,6 +2002,8 @@ ftk_eventviewer_destroy(GtkObject * widget,
     g_free (ftk_symbol_utf8(i));
   }
 }
+
+
 
 #if 0
 static void
@@ -2140,13 +2202,11 @@ ftk_eventviewer_resize (FtkEventViewer * eventviewer,
  *	setting bg rgb
  *
  */
-
+ 
 gboolean
-ftk_eventviewer_set_bg_rgb_e (FtkEventViewer * eventviewer,
-			      guint red, guint green, guint blue,
-			      GError ** err)
+ftk_eventviewer_preset_bg_rgb_e (FtkEventViewer * eventviewer, guint red, guint green, guint blue, GError ** err)
 {
-  if (!FTK_IS_EVENTVIEWER (eventviewer)) {
+ if (!FTK_IS_EVENTVIEWER (eventviewer)) {
     g_set_error (err,
 		 ftk_quark,				/* error domain */
 		 FTK_EV_ERROR_INVALID_WIDGET,	/* error code */
@@ -2163,10 +2223,25 @@ ftk_eventviewer_set_bg_rgb_e (FtkEventViewer * eventviewer,
 		 "Invalid FtkEventViewer color.");
     return FALSE;
   }
+  
+  /*XXX: Remove Print statement. */
+  fprintf(stderr, "Background Color red: %d, green: %d blue: %d\n", red, green, blue);
 
   ftk_ev_bg_red(eventviewer)		= red;
   ftk_ev_bg_green(eventviewer)		= green;
-  ftk_ev_bg_blue(eventviewer)		= blue;
+  ftk_ev_bg_blue(eventviewer)		= blue;	
+  
+  return TRUE;
+}
+
+gboolean
+ftk_eventviewer_set_bg_rgb_e (FtkEventViewer * eventviewer,
+			      guint red, guint green, guint blue,
+			      GError ** err)
+{
+  if (!ftk_eventviewer_preset_bg_rgb_e (eventviewer, red, green, blue, err)) {
+  	return FALSE;
+  }
 
   if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
     ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
@@ -2209,7 +2284,6 @@ ftk_eventviewer_set_bg_default(FtkEventViewer * eventviewer)
 {
   
   GdkColor *backgrounds = ftk_eventviewer_get_bg_default(eventviewer);
-  
   return ftk_eventviewer_set_bg_color (eventviewer,
 				       backgrounds);				
 }
@@ -2217,7 +2291,8 @@ ftk_eventviewer_set_bg_default(FtkEventViewer * eventviewer)
 GdkColor * 
 ftk_eventviewer_get_bg_default(FtkEventViewer *eventviewer)
 {
-  GtkStyle *style = (GTK_WIDGET(ftk_ev_da(eventviewer)))->style;
+  gtk_widget_ensure_style(GTK_WIDGET(ftk_ev_da(eventviewer)));
+  GtkStyle *style = gtk_widget_get_style(GTK_WIDGET(ftk_ev_da(eventviewer)));
   
   if (NULL == style) {
   	fprintf(stderr, "Style was null");
@@ -2228,13 +2303,27 @@ ftk_eventviewer_get_bg_default(FtkEventViewer *eventviewer)
   if (NULL == backgrounds) {
   	fprintf(stderr, "Backgrounds was null");
   }
- 
- /* for (int i = 0; i < 5; i++) {
-  	fprintf(stderr, "red: %d green: %d blue: %d", backgrounds[i].red, 
-  	backgrounds[i].green, backgrounds[i].blue); 	
-  }*/
   
   return backgrounds;
+}
+
+GdkColor * 
+ftk_eventviewer_get_fg_default(FtkEventViewer *eventviewer)
+{
+  gtk_widget_ensure_style(GTK_WIDGET(ftk_ev_da(eventviewer)));
+  GtkStyle *style = gtk_widget_get_style(GTK_WIDGET(ftk_ev_da(eventviewer)));
+  
+  if (NULL == style) {
+  	fprintf(stderr, "Style was null");
+  }
+  
+  GdkColor *foregrounds = style->fg;
+  
+  if (NULL == foregrounds) {
+  	fprintf(stderr, "Backgrounds was null");
+  }
+ 
+  return foregrounds;
 }
 
 gboolean
@@ -2542,14 +2631,13 @@ ftk_eventviewer_delete_trace	(FtkEventViewer * eventviewer,
  *	setting trace rgb
  *
  */
-
+ 
 gboolean
-ftk_eventviewer_set_trace_rgb_e (FtkEventViewer * eventviewer,
-				 gint trace_index,
-				 guint red, guint green, guint blue,
-				 GError ** err)
+ftk_eventviewer_preset_trace_rgb_e(FtkEventViewer * eventviewer,
+				gint trace_index, guint red, guint green, guint blue,
+				GError ** err)
 {
-  ftk_trace_s * trace;
+	ftk_trace_s * trace;
   
   if (!FTK_IS_EVENTVIEWER (eventviewer)) {
     g_set_error (err,
@@ -2583,7 +2671,20 @@ ftk_eventviewer_set_trace_rgb_e (FtkEventViewer * eventviewer,
   ftk_trace_color_green (trace)		= green;
   ftk_trace_color_blue (trace)		= blue;
   ftk_ev_trace_modified (eventviewer)	= TRUE;
+	
+  return TRUE;
+}
 
+gboolean
+ftk_eventviewer_set_trace_rgb_e (FtkEventViewer * eventviewer,
+				 gint trace_index,
+				 guint red, guint green, guint blue,
+				 GError ** err)
+{
+  if (!ftk_eventviewer_preset_trace_rgb_e (eventviewer, trace_index, red, green, blue, err)) {
+  	return FALSE;
+  }
+  
   if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
     ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
   
@@ -2825,14 +2926,14 @@ ftk_eventviewer_marker_new (FtkEventViewer * eventviewer,
  *	setting marker rgb
  *
  */
-
+ 
 gboolean
-ftk_eventviewer_set_marker_rgb_e (FtkEventViewer * eventviewer,
+ftk_eventviewer_preset_marker_rgb_e (FtkEventViewer * eventviewer,
 				  gint marker_index,
 				  guint red, guint green, guint blue,
 				  GError ** err)
 {
-  ftk_marker_s * marker;
+ ftk_marker_s * marker;
   
   if (!FTK_IS_EVENTVIEWER (eventviewer)) {
     g_set_error (err,
@@ -2866,8 +2967,22 @@ ftk_eventviewer_set_marker_rgb_e (FtkEventViewer * eventviewer,
   ftk_marker_color_green (marker)	= green;
   ftk_marker_color_blue (marker)	= blue;
   ftk_ev_markers_modified (eventviewer)	= TRUE;
+	
+  return TRUE;
+}
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
+gboolean
+ftk_eventviewer_set_marker_rgb_e (FtkEventViewer * eventviewer,
+				  gint marker_index,
+				  guint red, guint green, guint blue,
+				  GError ** err)
+{
+ 
+ if (!ftk_eventviewer_preset_marker_rgb_e(eventviewer, marker_index, red, green, blue, err)) {
+ 	return FALSE;
+ }
+ 
+ if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
     ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
   
   return TRUE;

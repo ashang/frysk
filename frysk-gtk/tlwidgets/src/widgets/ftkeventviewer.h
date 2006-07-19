@@ -598,6 +598,9 @@ ftk_eventviewer_set_bg_default	(FtkEventViewer * eventviewer);
 GdkColor *
 ftk_eventviewer_get_bg_default (FtkEventViewer * eventviewer);
 
+GdkColor *
+ftk_eventviewer_get_fg_default (FtkEventViewer * eventviewer);
+
 gboolean
 ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
 				 double span,
