@@ -38,6 +38,9 @@
 # version and license this file solely under the GPL without
 # exception.
 
+# CD to the config directory
+cd `dirname $0`
+
 # Update any bootstraped sub directories.
 
 for s in */bootstrap.sh
