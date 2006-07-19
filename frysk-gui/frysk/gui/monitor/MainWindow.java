@@ -44,12 +44,10 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
-import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Window;
-import org.gnu.gtk.VBox;
 import org.gnu.gtk.Notebook;
-import org.gnu.gdk.Color;
-import org.gnu.gnomevte.Terminal;
+//import org.gnu.gdk.Color;
+//import org.gnu.gnomevte.Terminal;
 
 import frysk.gui.Gui;
 import frysk.gui.sessions.Session;
@@ -59,16 +57,12 @@ public class MainWindow extends Window implements Saveable{
 	//private ProcViewPage procViewPage;
 	private SessionProcTreeView sessionProcTreeView;
   	private Notebook statusNotebook;
- 	private VBox terminalWidget;
- 	
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 
 	public MainWindow(LibGlade glade) throws IOException {
 		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		
-		this.terminalWidget = (VBox) glade.getWidget("terminalWidget");
-
 		this.statusNotebook = (Notebook) glade.getWidget("statusNoteBook");
 
 		try {
@@ -127,7 +121,9 @@ public class MainWindow extends Window implements Saveable{
   	
   	public void buildTerminal()
   	{
-  		final Terminal term = Terminal.terminalAndShell();
+		// terminal-o-death commented out for now
+		/*
+	  	final Terminal term = Terminal.terminalAndShell();
 		term.setDefaultColors();
 		term.setForegroundColor(Color.BLACK);
 		term.setBackgroudColor(Color.WHITE);
@@ -139,7 +135,7 @@ public class MainWindow extends Window implements Saveable{
 				terminalWidget.showAll();
 			}
 		});
-		
+*/	
   	}
 }
 
