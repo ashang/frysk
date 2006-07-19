@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.Notebook;
@@ -59,19 +60,14 @@ public class MainWindow extends Window implements Saveable{
 	private SessionProcTreeView sessionProcTreeView;
   	private Notebook statusNotebook;
  	private VBox terminalWidget;
+ 	
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+
 	public MainWindow(LibGlade glade) throws IOException {
 		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		
 		this.terminalWidget = (VBox) glade.getWidget("terminalWidget");
-
-		Terminal term = Terminal.terminalAndShell();
-		//Terminal term = new Terminal("/bin/sh", new String[] {}, System.getenv("PWD"));
-		term.setDefaultColors();
-		term.setForegroundColor(Color.BLACK);
-		term.setBackgroudColor(Color.WHITE);
-		this.terminalWidget.add(term);
 
 		this.statusNotebook = (Notebook) glade.getWidget("statusNoteBook");
 
@@ -128,5 +124,24 @@ public class MainWindow extends Window implements Saveable{
 		if (statusNotebook.getNumPages() == 2)
 			statusNotebook.removePage(1);
 	}
+  	
+  	public void buildTerminal()
+  	{
+  		final Terminal term = Terminal.terminalAndShell();
+		term.setDefaultColors();
+		term.setForegroundColor(Color.BLACK);
+		term.setBackgroudColor(Color.WHITE);
+  		System.out.println("Adding terminal in build Terminal");
+		CustomEvents.addEvent(new Runnable() {
+			public void run() {
+				System.out.println("Adding terminal");
+				//Terminal term = new Terminal("/bin/sh", new String[] {}, System.getenv("PWD"));
+				terminalWidget.add(term);
+				term.showAll();
+				terminalWidget.showAll();
+			}
+		});
+		
+  	}
 }
 
