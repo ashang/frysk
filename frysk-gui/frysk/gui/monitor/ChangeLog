@@ -1,3 +1,16 @@
+2006-07-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* PickProcDialog.java (PickProcDialog): Rewritten. Use Custom 
+	Treeview. Added columns. Add sorting.
+	(getChoosenProc): Rewritten with constructor. Check TreeView
+	directly.
+	(setupNameColumn): New.
+	(setupPidColumn): New.
+	(setupLocationColumn): New.
+	(ProcCreatedObserver): New
+	(ProcDestroyedObserver): New.
+	(justPath): New.
+
 2006-07-19  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java (StatusWidget): Removed random separator.
