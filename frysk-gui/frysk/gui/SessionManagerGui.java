@@ -117,32 +117,18 @@ public class SessionManagerGui
     setButtonStates();
   }
 
-  private void toggleControls ()
-  {
-    previousSessions.setSensitive(! previousSessions.getSensitive());
-    if (newSession.getSensitive())
-      {
-
-        editSession.setSensitive(false);
-        copySession.setSensitive(false);
-        deleteSession.setSensitive(false);
-        newSession.setSensitive(false);
-      }
-    else
-      {
-
-        editSession.setSensitive(true);
-        copySession.setSensitive(true);
-        deleteSession.setSensitive(true);
-        newSession.setSensitive(true);
-      }
-    debugSingleProcessAction.setSensitive(! debugSingleProcessAction.getSensitive());
-  }
-
   private void getDebugSingleProcess (LibGlade glade)
   {
     debugSingleProcess = (RadioButton) glade.getWidget("SessionManager_debugSingleProcessButton");
     debugSingleProcess.setState(false);
+	debugSingleProcess.addListener(new ToggleListener()
+    {
+      public void toggleEvent (ToggleEvent arg0)
+      {
+        setButtonStates();
+      }
+    });
+
     debugSingleProcessAction = (Button) glade.getWidget("SessionManager_singleProcessChooser");
     debugSingleProcessAction.addListener(new ButtonListener()
     {
@@ -179,6 +165,9 @@ public class SessionManagerGui
   private void setButtonStates ()
   {
     if (previousSession.getState())
+	{
+		previousSessions.setSensitive(true);
+       	this.newSession.setSensitive(true);
       if ((previousSessions.getSelectedObject() == null))
         {
           this.editSession.setSensitive(false);
@@ -191,6 +180,15 @@ public class SessionManagerGui
           this.copySession.setSensitive(true);
           this.deleteSession.setSensitive(true);
         }
+	}
+	else
+	{
+		previousSessions.setSensitive(false);
+        this.editSession.setSensitive(false);
+        this.copySession.setSensitive(false);
+        this.deleteSession.setSensitive(false);
+       	this.newSession.setSensitive(false);
+	}
 
     if ((previousSessions.getSelectedObject() != null
         && previousSession.getState())
@@ -198,6 +196,11 @@ public class SessionManagerGui
       this.openButton.setSensitive(true);
     else
       this.openButton.setSensitive(false);
+
+	if (debugSingleProcess.getState())
+    	debugSingleProcessAction.setSensitive(true);
+	else
+    	debugSingleProcessAction.setSensitive(false);
   }
 
   private void getSessionManagementControls (LibGlade glade)
@@ -256,8 +259,6 @@ public class SessionManagerGui
     {
       public void toggleEvent (ToggleEvent arg0)
       {
-        if (arg0.getType() == ToggleEvent.Type.TOGGLED)
-          toggleControls();
         setButtonStates();
       }
     });
