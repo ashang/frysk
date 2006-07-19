@@ -8,6 +8,9 @@ HTML = \
 	usecases/index.html \
 	workflow/index.html \
 	zilla/index.html \
+	todo/index.html \
+	bugs/index.html \
+	bugzilla/index.html \
 	$(ZZZ)
 all: $(HTML:.html=.new)
 .PHONY: all
