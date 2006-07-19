@@ -187,6 +187,9 @@ public class Syscall
     // further.
     public static Syscall syscallByNum (int num)
     {
+      if(num >= syscallList.length){
+        return new Syscall("UKNOWN SYSCALL", num);
+      }
       return syscallList[num];
     }
 
