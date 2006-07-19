@@ -133,6 +133,7 @@ class ftrace
       SyscallEventInfo syscallEventInfo = task.getSyscallEventInfo ();
       frysk.proc.Syscall syscall = frysk.proc.Syscall.syscallByNum(syscallEventInfo.number(task));
       PrintWriter printWriter = new PrintWriter(System.out);
+      printWriter.print(task.getProc().getPid() + "." + task.getTid() + " ");
       syscall.printCall(printWriter, task, syscallEventInfo);
       printWriter.flush();
       return Action.CONTINUE;

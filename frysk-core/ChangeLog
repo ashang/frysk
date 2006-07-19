@@ -1,3 +1,8 @@
+2006-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* frysk/bindir/ftrace.java: Now prints the pid of the proc
+	and thread making the syscall.
+
 2006-07-18  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* frysk/bindir/ftrace.xml: New file.

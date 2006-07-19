@@ -74,6 +74,8 @@ class TaskState
 	else if (parentState == running)
 	    return StartClonedTask.waitForStop;
 	else
+      if (parentState == runningInSyscall)
+        return StartClonedTask.waitForStop;
 	    throw new RuntimeException ("clone's parent in unexpected state "
 					+ parentState);
     }
@@ -1188,6 +1190,22 @@ class TaskState
           }else{
             return this;
           }
+        }
+        TaskState handleForkedEvent (Task task, Task fork)
+        {
+            logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
+            if (task.notifyForkedParent (fork) > 0)
+              return syscallBlockedInSyscallContinue;
+            task.sendSyscallContinue (0);
+            return runningInSyscall;
+        }
+        TaskState handleClonedEvent (Task task, Task clone)
+        {
+            logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
+            if (task.notifyClonedParent (clone) > 0)
+              return syscallBlockedInSyscallContinue;
+            task.sendSyscallContinue (0);
+            return runningInSyscall;
         }
 	};
 

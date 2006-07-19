@@ -123,6 +123,66 @@ public class TestTaskSyscallObserver
     }
  
     /**
+     * test that the state machine can handle a fork event
+     * during a a syscall.
+     */
+    public void testForkSyscall(){
+
+//    if (brokenXXX (2245))
+//        return;
+//        
+    //    Create an unattached child process.
+    AckProcess child = new DetachedAckProcess ();
+
+    // Attach to the process using the exec observer.  The event
+    // loop is kept running until SingleExecObserver .addedTo is
+    // called indicating that the attach succeeded.
+    Task task = child.findTaskUsingRefresh (true);
+    SyscallObserver syscallObserver = new SyscallObserver ();
+    task.requestAddSyscallObserver (syscallObserver);
+    assertRunUntilStop ("adding exec observer causing attach");
+
+    // Do the exec; this call keeps the event loop running until
+    // the child process has notified this process that the exec
+    // has finished which is well after SingleExecObserver
+    // .updateExeced has been called.
+    child.addFork();
+        
+    assertTrue(true);
+    }
+ 
+        
+    /**
+     * test that the state machine can handle a fork event
+     * during a a syscall.
+     */
+    public void testCloneSyscall(){
+
+    if (brokenXXX (2245))
+        return;
+        
+    //    Create an unattached child process.
+    AckProcess child = new DetachedAckProcess ();
+
+    // Attach to the process using the exec observer.  The event
+    // loop is kept running until SingleExecObserver .addedTo is
+    // called indicating that the attach succeeded.
+    Task task = child.findTaskUsingRefresh (true);
+    SyscallObserver syscallObserver = new SyscallObserver ();
+    task.requestAddSyscallObserver (syscallObserver);
+    assertRunUntilStop ("adding exec observer causing attach");
+
+    // Do the exec; this call keeps the event loop running until
+    // the child process has notified this process that the exec
+    // has finished which is well after SingleExecObserver
+    // .updateExeced has been called.
+    child.addClone();
+        
+    assertTrue(true);
+    }
+ 
+        
+    /**
      * Test a system-call in a for loop.
      */
     public void testSyscallLoop ()

@@ -1,5 +1,10 @@
 2006-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
+	* TestTaskSyscallObserver.java (testExecSyscall): Added test
+	for while in syscall tracing mode and clone while in syscall
+	tracing mode.
+	* TaskState.java: Added handling for Fork and clone to state
+	runningInSyscall.
 	* Syscall.java (syscallByNum): Returns unknow syscall
 	instead of crashing when an unkown syscall is requested.
 
