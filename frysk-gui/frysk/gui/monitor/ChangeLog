@@ -1,6 +1,7 @@
 2006-07-18  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* MainWindow.java (buildTerminal): Added. Move from constructor.
+	Remove system.out.println().
 
 2006-07-17  Rick Moseley  <rmoseley@redhat.com>
 

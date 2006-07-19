@@ -131,10 +131,8 @@ public class MainWindow extends Window implements Saveable{
 		term.setDefaultColors();
 		term.setForegroundColor(Color.BLACK);
 		term.setBackgroudColor(Color.WHITE);
-  		System.out.println("Adding terminal in build Terminal");
 		CustomEvents.addEvent(new Runnable() {
 			public void run() {
-				System.out.println("Adding terminal");
 				//Terminal term = new Terminal("/bin/sh", new String[] {}, System.getenv("PWD"));
 				terminalWidget.add(term);
 				term.showAll();
