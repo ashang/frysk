@@ -1,3 +1,7 @@
+2006-07-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java (gui): Remove splash screen in mainline.
+
 2006-07-18  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionManagerGui.java (getManagerControls): Only build terminal when

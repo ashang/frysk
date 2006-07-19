@@ -452,24 +452,24 @@ implements LifeCycleListener, Saveable
 		
 		myGui.load(myPrefs);
 			
-		CustomEvents.addEvent(new Runnable() {
-			public void run() {
-				WindowManager.theManager.splashScreen.showAll();
-			}
-		});
-		
-
-		
-		TimerEvent timerEvent = new TimerEvent(3000){
-			public void execute() {
-				CustomEvents.addEvent(new Runnable() {
-					public void run() {
-						WindowManager.theManager.splashScreen.hideAll();
-					}
-				});
-			}
-		};
-		Manager.eventLoop.add (timerEvent);
+//		CustomEvents.addEvent(new Runnable() {
+//			public void run() {
+//				WindowManager.theManager.splashScreen.showAll();
+//			}
+//		});
+//		
+//
+//		
+//		TimerEvent timerEvent = new TimerEvent(3000){
+//			public void execute() {
+//				CustomEvents.addEvent(new Runnable() {
+//					public void run() {
+//						WindowManager.theManager.splashScreen.hideAll();
+//					}
+//				});
+//			}
+//		};
+//		Manager.eventLoop.add (timerEvent);
 		
 		TimerEvent refreshTimer = new TimerEvent(0, 3000) {
 			public void execute() {
