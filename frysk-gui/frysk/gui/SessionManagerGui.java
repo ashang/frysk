@@ -339,6 +339,10 @@ public class SessionManagerGui
             	WindowManager.theManager.mainWindow.setSession((Session) previousSessions.getSelectedObject());
 				WindowManager.theManager.mainWindow.hideTerminal();
 			}
+			if (terminalSession.getState())
+			{
+				WindowManager.theManager.mainWindow.buildTerminal();
+			}
             hideAll();
           }
       }

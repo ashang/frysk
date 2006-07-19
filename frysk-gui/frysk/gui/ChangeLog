@@ -1,19 +1,7 @@
-2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
-	
-	* monitor/SessionProcTreeView.java: Removed terminal from this class (moved to MainWindow)
-	* monitor/MainWindow.java: Added terminal and notebook to this class
+2006-07-18  Phil Muldoon  <pmuldoon@redhat.com>
 
-2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
-
-	* SessionManagerGui.java: fixed a bug with the "select process" button staying on
-
-2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
-	
-	* glade/frysk_session_manager.glade: Added a radio button for "blank terminal session"
-	* glade/procpop.glade: Added a terminal tab
-	* SessionManagerGui.java: Added functionality to "blank terminal session" radio button
-	* monitor/SessionProcTreeView.java: Added a terminal tab and a function to hide (remove it)
-	* monitor/MainWindow.java: Added a function for hiding terminal tab
+	* SessionManagerGui.java (getManagerControls): Only build terminal when
+	needed.
 
 2006-07-18  Phil Muldoon  <pmuldoon@redhat.com>
 
