@@ -1,4 +1,9 @@
 2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
+	
+	* monitor/SessionProcTreeView.java: Removed terminal from this class (moved to MainWindow)
+	* monitor/MainWindow.java: Added terminal and notebook to this class
+
+2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
 
 	* SessionManagerGui.java: fixed a bug with the "select process" button staying on
 
