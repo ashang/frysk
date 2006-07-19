@@ -1,3 +1,7 @@
+2006-07-19  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* test/TestGlade.java: New.
+
 2006-07-19	Nurdin Premji <npremji@redhat.com>
 	* glade/procpop.glade: Added minimum size for statusWidget box.
 
