@@ -1,3 +1,6 @@
+2006-07-19	Nurdin Premji <npremji@redhat.com>
+	* glade/procpop.glade: Added minimum size for statusWidget box.
+
 2006-07-19  Ivan Pantuyev <ipantuye@redhat.com>
 
 	* monitor/MainWindow.java: commented out terminal creation
