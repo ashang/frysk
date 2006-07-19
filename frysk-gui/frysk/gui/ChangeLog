@@ -1,4 +1,8 @@
 2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
+
+	* SessionManagerGui.java: fixed a bug with the "select process" button staying on
+
+2006-07-18  Ivan Pantuyev <ipantuye@redhat.com>
 	
 	* glade/frysk_session_manager.glade: Added a radio button for "blank terminal session"
 	* glade/procpop.glade: Added a terminal tab
