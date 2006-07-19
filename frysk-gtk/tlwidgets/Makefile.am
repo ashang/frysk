@@ -91,7 +91,7 @@ com/redhat/ftk/EventPair.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.ja
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 com/redhat/ftk/SimultaneousEvent.class: $(tlwidgetssrc)/java/com/redhat/ftk/SimultaneousEvent.java
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
-com/redhat/ftk/EventViewer.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java
+com/redhat/ftk/EventViewer.class: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java com/redhat/ftk/SimultaneousEvent.class com/redhat/ftk/EventPair.class
 	$(GCJ) -C -d . -classpath $(FRYSK_GTK_CLASSPATH) $(SRC)
 
 
@@ -126,7 +126,7 @@ EventPair.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventPair.java
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \
             -g -O2 -fPIC -c $< -o $@
 
-EventViewer.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java 
+EventViewer.o: $(tlwidgetssrc)/java/com/redhat/ftk/EventViewer.java SimultaneousEvent.o EventPair.o
 	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I $(srcdir)/src/java -I ./ \
             -g -O2 -fPIC -c $< -o $@
 

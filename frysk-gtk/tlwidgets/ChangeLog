@@ -1,3 +1,7 @@
+2006-07-19  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am: Added back target dependencies to avoid make -jN errors.
+
 2006-07-17  Nurdin Premji  <npremji@redhat.com>
 
 	* Makefile.am: Rearranged the order of the targets to avoid make -j2 errors.
