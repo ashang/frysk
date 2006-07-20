@@ -51,6 +51,7 @@ public class TestStackBacktrace
   private Task myTask;
   
   public void testBacktrace ()
+    throws Task.TaskException
   {
 //    Host.logger.setLevel(Level.FINE);
     if(brokenXXX (2936))

@@ -1,3 +1,7 @@
+2006-07-20  Tim Moore  <timmore@redhat.com>
+
+	* DOMFactory.java (createDom): handle TaskException.
+
 2006-06-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DOMFactory.java (createDOM): Now throws FileNotFoundExceptions and

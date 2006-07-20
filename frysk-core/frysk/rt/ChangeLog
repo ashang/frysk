@@ -1,3 +1,9 @@
+2006-07-20  Tim Moore  <timmore@redhat.com>
+
+	* StackCallbacks.java (StackCallbacks): Handle TaskException.
+	* StackFactory.java (createStackFrame): Throw TaskException.
+	* TestStackBacktrace.java (testBacktrace): ditto.
+
 2006-07-17  Andrew Cagney  <cagney@redhat.com>
 
 	* TestStackBacktrace.java: Pass bug number to brokenXXX call.

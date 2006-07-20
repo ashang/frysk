@@ -50,12 +50,15 @@ import lib.elf.ElfPHeader;
 import lib.elf.ElfSection;
 import lib.elf.ElfSectionHeader;
 import lib.elf.ElfType;
+import lib.elf.ElfException;
+import lib.elf.ElfFileException;
 
 import frysk.imports.Build;
 
 public class TestElf extends TestCase {
 	
-	public void testCore(){
+	public void testCore()
+	throws ElfException, ElfFileException {
 		Elf testElf = new Elf(Build.ABS_BUILDDIR+"/lib/elf/tests/test-core", ElfCommand.ELF_C_READ);
 		
 		assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
@@ -113,7 +116,8 @@ public class TestElf extends TestCase {
 		}
 	}
 	
-	public void testObjectFile(){
+	public void testObjectFile()
+	throws ElfException, ElfFileException {
 		Elf testElf = new Elf(Build.ABS_BUILDDIR+"/lib/elf/tests/helloworld.o", ElfCommand.ELF_C_READ);
 		
 		assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);

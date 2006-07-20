@@ -93,14 +93,23 @@ public class TestI386Modify
 	    public Action updateSyscallEnter (Task task)
 	    {
 		syscallState = 1;
-		SyscallEventInfo syscall
-		    = task.getSyscallEventInfo ();
+		SyscallEventInfo syscall;
+		LinuxIa32 isa;
+		try 
+		{
+		     syscall = task.getSyscallEventInfo();
+		     isa = (LinuxIa32)task.getIsa();		     
+		}
+		catch (Task.TaskException e)
+		{
+		     fail("got task exception " + e);
+		     return Action.CONTINUE; // not reached
+		}
 		// The low-level assembler code performs an exit syscall
 		// and sets up the registers with simple values.  We want
 		// to verify that all the registers are as expected.
 		syscallNum = syscall.number (task);
 		if (syscallNum == 20) { 
-		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    ebx = isa.getRegisterByName ("ebx").get (task);
 		    assertEquals ("ebx register", 22, ebx);
 		    ecx = isa.getRegisterByName ("ecx").get (task);
@@ -127,7 +136,6 @@ public class TestI386Modify
 		    isa.getRegisterByName ("esi").put (task, 6);
 		}
 		else if (syscallNum == 1) {
-		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    ebx = isa.getRegisterByName ("ebx").get (task);
 		    assertEquals ("exit code", 2, ebx);
 		    exitSyscall = true;
@@ -173,7 +181,16 @@ public class TestI386Modify
 			if (!isChildOfMine (task.proc))
 			    return;
 			killDuringTearDown (task.getTid ());
-			if (task.getIsa () instanceof LinuxIa32) {
+			Isa isa;
+			try
+			{
+			     isa = task.getIsa();
+			}
+			catch (Task.TaskException e)
+			{
+			     isa = null;
+			}
+			if (isa instanceof LinuxIa32) {
 			    ia32Isa = true;
 			    task.requestAddSyscallObserver (taskEventObserver);
 			    task.requestAddSignaledObserver (taskEventObserver);

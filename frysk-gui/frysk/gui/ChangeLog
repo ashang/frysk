@@ -1,3 +1,9 @@
+2006-07-20  Tim Moore  <timmore@redhat.com>
+
+	* memory/MemoryWindow.java (setTask): "Handle" TaskException.
+	* register/RegisterWindow.java (setTask): ditto.
+	* srcwin/SourceWindowFactory.java (finishSourceWin): ditto.
+
 2006-07-20 Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/frysk_create_session.glade: Added tooltips.

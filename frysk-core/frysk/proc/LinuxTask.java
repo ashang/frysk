@@ -44,6 +44,11 @@ import frysk.sys.Ptrace;
 import frysk.sys.PtraceByteBuffer;
 import frysk.sys.Sig;
 import frysk.sys.Signal;
+import lib.elf.Elf;
+import lib.elf.ElfEMachine;
+import lib.elf.ElfCommand;
+import lib.elf.ElfEHeader;
+import lib.elf.ElfException;
 import inua.eio.ByteBuffer;
 import inua.eio.ByteOrder;
 import java.util.logging.Level;
@@ -55,164 +60,189 @@ import java.util.logging.Level;
 public class LinuxTask
     extends Task
 {
-    private long ptraceOptions = 0;	
+  private long ptraceOptions = 0;	
     
-    // XXX: For moment wire in standard 32-bit little-endian memory
-    // map.  This will be replaced by a memory map created using
-    // information from /proc/PID/maps.
-    private void setupMapsXXX ()
-    {
-	// XXX: For writing at least, PTRACE must be used as /proc/mem
-	// cannot be written to.
-	memory = new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.DATA,
-				       0xffffffffl);
-	memory.order (ByteOrder.LITTLE_ENDIAN);
-	// XXX: For moment wire in a standard 32-bit little-endian
-	// register set.
-	registerBank = new ByteBuffer[] {
-	    new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.USR)
-	};
-	registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
-    }
+  // XXX: For moment wire in standard 32-bit little-endian memory
+  // map.  This will be replaced by a memory map created using
+  // information from /proc/PID/maps.
+  private void setupMapsXXX ()
+  {
+    // XXX: For writing at least, PTRACE must be used as /proc/mem
+    // cannot be written to.
+    memory = new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.DATA,
+				   0xffffffffl);
+    memory.order (ByteOrder.LITTLE_ENDIAN);
+    // XXX: For moment wire in a standard 32-bit little-endian
+    // register set.
+    registerBank = new ByteBuffer[] {
+      new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.USR)
+    };
+    registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
+  }
 
-    /**
-     * Create a new unattached Task.
-     */
-    LinuxTask (Proc proc, TaskId id)
-    {
-	super (proc, id);
-	setupMapsXXX ();
-    }
-    /**
-     * Create a new attached clone of Task.
-     */
-    LinuxTask (Task task, TaskId clone)
-    {
-	super (task, clone);
-	setupMapsXXX ();
-    }
-    /**
-     * Create a new attached main Task of Proc.
-     */
-    LinuxTask (Proc proc, TaskObserver.Attached attached)
-    {
-	super (proc, attached);
-	setupMapsXXX ();
-    }
+  /**
+   * Create a new unattached Task.
+   */
+  LinuxTask (Proc proc, TaskId id)
+    throws Task.TaskException
+  {
+    super (proc, id);
+    setupMapsXXX ();
+  }
+  /**
+   * Create a new attached clone of Task.
+   */
+  LinuxTask (Task task, TaskId clone)
+    throws TaskException
+  {
+    super (task, clone);
+    setupMapsXXX ();
+  }
+  /**
+   * Create a new attached main Task of Proc.
+   */
+  LinuxTask (Proc proc, TaskObserver.Attached attached)
+    throws TaskException
+  {
+    super (proc, attached);
+    setupMapsXXX ();
+  }
 
-    /**
-     * Must inject disappeared events back into the event loop so that
-     * they can be processed in sequence.  Calling
-     * receiveDisappearedEvent directly would cause a recursive state
-     * transition.
-     */
-    private void postDisappearedEvent (final Throwable arg)
-    {
-        logger.log (Level.FINE, "{0} postDisappearedEvent\n", this);
-        Manager.eventLoop.add (new TaskEvent ()
-            {
-                Throwable w = arg;
-                public void execute ()
-                {
-		    processDisappearedEvent (w);
-                }
-            });
-    }
+  /**
+   * Must inject disappeared events back into the event loop so that
+   * they can be processed in sequence.  Calling
+   * receiveDisappearedEvent directly would cause a recursive state
+   * transition.
+   */
+  private void postDisappearedEvent (final Throwable arg)
+  {
+    logger.log (Level.FINE, "{0} postDisappearedEvent\n", this);
+    Manager.eventLoop.add (new TaskEvent ()
+      {
+	Throwable w = arg;
+	public void execute ()
+	{
+	  processDisappearedEvent (w);
+	}
+      });
+  }
 
-    protected void sendContinue (int sig)
-    {
-	logger.log (Level.FINE, "{0} sendContinue\n", this); 
-	try {
-	    Ptrace.cont (getTid (), sig);
-	}
-	catch (Errno.Esrch e) {
-	    postDisappearedEvent (e);
-	}
+  protected void sendContinue (int sig)
+  {
+    logger.log (Level.FINE, "{0} sendContinue\n", this); 
+    try {
+      Ptrace.cont (getTid (), sig);
     }
-    protected void sendSyscallContinue(int sig){
-	logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
-	try {
-	    Ptrace.sysCall (getTid (), sig);
-	}
-	catch (Errno.Esrch e) {
-	    postDisappearedEvent (e);
-	}   
+    catch (Errno.Esrch e) {
+      postDisappearedEvent (e);
     }
-    protected void sendStepInstruction (int sig)
-    {
-	logger.log (Level.FINE, "{0} sendStepInstruction\n", this);
-	try {
-	    Ptrace.singleStep (getTid (), sig);
-	}
-	catch (Errno.Esrch e) {
-	    postDisappearedEvent (e);
-	}
+  }
+  protected void sendSyscallContinue(int sig){
+    logger.log(Level.FINE, "{0} sendSyscallContinue\n", this);
+    try {
+      Ptrace.sysCall (getTid (), sig);
     }
-    protected void sendStop ()
-    {
-	logger.log (Level.FINE, "{0} sendStop\n", this); 
-	Signal.tkill (id.hashCode (), Sig.STOP);
+    catch (Errno.Esrch e) {
+      postDisappearedEvent (e);
+    }   
+  }
+  protected void sendStepInstruction (int sig)
+  {
+    logger.log (Level.FINE, "{0} sendStepInstruction\n", this);
+    try {
+      Ptrace.singleStep (getTid (), sig);
     }
-    protected void sendSetOptions ()
-    {
-	logger.log (Level.FINE, "{0} sendSetOptions\n", this); 
-	try {
-	    // XXX: Should be selecting the trace flags based on the
-	    // contents of .observers.
-	    ptraceOptions |= Ptrace.optionTraceClone ();
-	    ptraceOptions |= Ptrace.optionTraceFork ();
-	    ptraceOptions |= Ptrace.optionTraceExit ();
-	    //	ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
-	    ptraceOptions |= Ptrace.optionTraceExec ();
-	    Ptrace.setOptions (getTid (), ptraceOptions);
-	}
-	catch (Errno.Esrch e) {
-	    postDisappearedEvent (e);
-	}
+    catch (Errno.Esrch e) {
+      postDisappearedEvent (e);
     }
-    protected void sendAttach ()
-    {
-	logger.log (Level.FINE, "{0} sendAttach\n", this);
-	try {
-	    Ptrace.attach (getTid ());
-	}
-	catch (Errno.Eperm e) {
-	    logger.log (Level.FINE, "{" + e.toString ()
-			+ "} Cannot attach to process\n");
-	}
-	catch (Errno.Esrch e) {
-	    postDisappearedEvent (e);
-	}
+  }
+  protected void sendStop ()
+  {
+    logger.log (Level.FINE, "{0} sendStop\n", this); 
+    Signal.tkill (id.hashCode (), Sig.STOP);
+  }
+  protected void sendSetOptions ()
+  {
+    logger.log (Level.FINE, "{0} sendSetOptions\n", this); 
+    try {
+      // XXX: Should be selecting the trace flags based on the
+      // contents of .observers.
+      ptraceOptions |= Ptrace.optionTraceClone ();
+      ptraceOptions |= Ptrace.optionTraceFork ();
+      ptraceOptions |= Ptrace.optionTraceExit ();
+      //	ptraceOptions |= Ptrace.optionTraceSysgood (); not set by default
+      ptraceOptions |= Ptrace.optionTraceExec ();
+      Ptrace.setOptions (getTid (), ptraceOptions);
     }
-    protected void sendDetach (int sig)
-    {
-	logger.log (Level.FINE, "{0} sendDetach\n", this);
-	Ptrace.detach (getTid (), sig);
+    catch (Errno.Esrch e) {
+      postDisappearedEvent (e);
     }
-    protected Isa sendrecIsa ()
-    {
-	logger.log (Level.FINE, "{0} sendrecIsa\n", this);
-	// XXX hardcoded until we have a factory for producing Isa objects
-	if (true) 
-	    {
-		return LinuxIa32.isaSingleton ();
-	    }
-	else
-	    {
-		return LinuxEMT64.isaSingleton ();
-	    }
+  }
+  protected void sendAttach ()
+  {
+    logger.log (Level.FINE, "{0} sendAttach\n", this);
+    try {
+      Ptrace.attach (getTid ());
     }
-    protected void startTracingSyscalls()
-    {
-	logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
-	ptraceOptions |= Ptrace.optionTraceSysgood ();
-	this.sendSetOptions();
+    catch (Errno.Eperm e) {
+      logger.log (Level.FINE, "{" + e.toString ()
+		  + "} Cannot attach to process\n");
     }
-    protected void stopTracingSyscalls()
-    {
-	logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
-	ptraceOptions &= ~(Ptrace.optionTraceSysgood ());
-	this.sendSetOptions();
+    catch (Errno.Esrch e) {
+      postDisappearedEvent (e);
     }
+  }
+  protected void sendDetach (int sig)
+  {
+    logger.log (Level.FINE, "{0} sendDetach\n", this);
+    Ptrace.detach (getTid (), sig);
+  }
+    
+  // Keep this around in an instance variable; it might be useful for
+  // diggging various things out of the executable.
+  private Elf elfFile;
+
+  protected Isa sendrecIsa ()
+    throws Task.TaskException
+  {
+    logger.log (Level.FINE, "{0} sendrecIsa\n", this);
+    try
+      {
+	elfFile = new Elf(getTid(), ElfCommand.ELF_C_READ);
+      }
+    catch (ElfException e)
+      {
+	throw (TaskException)
+	  (new TaskException("getting task's executable").initCause(e));
+      }
+
+    ElfEHeader header = elfFile.getEHeader();
+    // XXX hardcoded until we have a factory for producing Isa objects
+    if (header.machine == ElfEMachine.EM_386) 
+      {
+	return LinuxIa32.isaSingleton ();
+      }
+    else if (header.machine == ElfEMachine.EM_X86_64)
+      {
+	return LinuxEMT64.isaSingleton ();
+      }
+    else
+      {
+	throw new TaskException("Unknown machine type " + header.machine);
+      }
+  }
+
+  protected void startTracingSyscalls()
+  {
+    logger.log(Level.FINE, "{0} startTracingSyscalls\n", this);
+    ptraceOptions |= Ptrace.optionTraceSysgood ();
+    this.sendSetOptions();
+  }
+  protected void stopTracingSyscalls()
+  {
+    logger.log(Level.FINE, "{0} stopTracingSyscalls\n", this);
+    ptraceOptions &= ~(Ptrace.optionTraceSysgood ());
+    this.sendSetOptions();
+  }
    
 }

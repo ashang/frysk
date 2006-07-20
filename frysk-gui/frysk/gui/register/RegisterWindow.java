@@ -141,9 +141,17 @@ public class RegisterWindow
 
   public void setTask (Task myTask)
   {
-
     this.myTask = myTask;
-
+    Isa isa;
+    try 
+      {
+	isa  = this.myTask.getIsa();
+      }
+    catch (Task.TaskException e)
+      {
+	e.printStackTrace();
+	return;
+      }
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -152,7 +160,6 @@ public class RegisterWindow
     ListStore model = new ListStore(cols);
     registerView.setModel(model);
 
-    Isa isa = this.myTask.getIsa();
     Iterator registers = isa.RegisterIterator();
 
     while (registers.hasNext())

@@ -47,6 +47,7 @@
 #include <errno.h>
 
 #include "lib/elf/ElfException.h"
+#include "lib/elf/ElfFileException.h"
 #include "lib/elf/Elf.h"
 #include "lib/elf/ElfEHeader.h"
 #include "lib/elf/ElfPHeader.h"
@@ -59,9 +60,10 @@ extern "C"
 
 void
 lib::elf::Elf::elf_begin (jstring file, jint command){
-	char fileName[file->length() + 1];
+	int fileNameLen = JvGetStringUTFLength(file);
+	char fileName[fileNameLen + 1];
 	JvGetStringUTFRegion (file, 0, file->length (), fileName);
-	fileName[file->length()]='\0';
+	fileName[fileNameLen]='\0';
 
 	errno = 0;
 	int fd = open (fileName, O_RDONLY);
@@ -69,7 +71,7 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 		char* message = "Could not open %s for reading";
 		char error[strlen(fileName) + strlen(message) - 2];
 		sprintf(error, message, fileName);
-		throw new lib::elf::ElfException(JvNewStringUTF(error));
+		throw new lib::elf::ElfFileException(JvNewStringUTF(error));
 	}
 	
 	if(::elf_version(EV_CURRENT) == EV_NONE)
@@ -89,6 +91,7 @@ lib::elf::Elf::elf_clone (jint command){
 	return (jlong) ::elf_clone((::Elf*) this->pointer, (Elf_Cmd) command);
 }
 
+#if 0
 void
 lib::elf::Elf::elf_memory (jstring image, jlong size){
 	int len = JvGetStringUTFLength (image);
@@ -97,7 +100,8 @@ lib::elf::Elf::elf_memory (jstring image, jlong size){
 
 	this->pointer = (jlong) ::elf_memory(imageName, (size_t) size);
 }
-
+#endif
+    
 jint
 lib::elf::Elf::elf_next (){
 	return (jint) ::elf_next((::Elf*) this->pointer);

@@ -1,3 +1,21 @@
+2006-07-20  Tim Moore  <timmore@redhat.com>
+
+	* Task.java (Task.TaskException): New exception class.
+	(getSyscallEventInfo, getDwflLineXXX, sendrecIsa): Throw it.
+	(notifySyscallEnter, notifySyscallExit): Catch it.
+	* LinuxHost.java (sendCreateAttachedProc, cloneEvent, forkEvent): Catch
+	TaskException. 
+	* LinuxTask.java (LinuxTask): Throw TaskException.
+	(sendrecIsa): throw TaskException, use the task's executable to
+	determine the ISA.
+	* TestI386Modify.java (updateSyscallEnter, TestI386ModifyInternals):
+	Catch TaskException.
+	* TestI386Regs.java (updateSyscallEnter, TestI386RegsInternals): ditto.
+	* TestTaskSyscallObserver.java (getSyscallEventInfo): New method that
+	handles TaskException.
+	(updateSyscallEnter, updateSyscallExit): Use it.
+	
+
 2006-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTaskSyscallObserver.java (testExecSyscall): Added test

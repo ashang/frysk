@@ -130,7 +130,17 @@ class ftrace
 
     public Action updateSyscallEnter (Task task)
     {
-      SyscallEventInfo syscallEventInfo = task.getSyscallEventInfo ();
+      SyscallEventInfo syscallEventInfo;
+      try
+	{
+	  syscallEventInfo = task.getSyscallEventInfo ();
+	}
+      catch (Task.TaskException e) 
+	{
+	  // XXX Abort? or what?
+	  System.out.println("Got task exception " + e);
+	  return Action.CONTINUE;
+	}
       frysk.proc.Syscall syscall = frysk.proc.Syscall.syscallByNum(syscallEventInfo.number(task));
       PrintWriter printWriter = new PrintWriter(System.out);
       printWriter.print(task.getProc().getPid() + "." + task.getTid() + " ");
@@ -141,7 +151,17 @@ class ftrace
 
     public Action updateSyscallExit (Task task)
     {
-      SyscallEventInfo syscallEventInfo = task.getSyscallEventInfo ();
+      SyscallEventInfo syscallEventInfo;
+      try
+	{
+	  syscallEventInfo = task.getSyscallEventInfo ();
+	}
+      catch (Task.TaskException e) 
+	{
+	  // XXX Abort? or what?
+	  System.out.println("Got task exception " + e);
+	  return Action.CONTINUE;
+	}
       frysk.proc.Syscall syscall = frysk.proc.Syscall.syscallByNum(syscallEventInfo.number(task));
       PrintWriter printWriter = new PrintWriter(System.out);
       syscall.printReturn(printWriter, task, syscallEventInfo);

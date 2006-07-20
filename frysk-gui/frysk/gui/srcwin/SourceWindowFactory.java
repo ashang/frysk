@@ -263,9 +263,18 @@ public class SourceWindowFactory
         // DOMFunction.createDOMFunction(dom.getImage(task.getName()), "main",
         // "looper.c", 3, 3, 24, 28);
 
-        DwflLine line = task.getDwflLineXXX();
+        DwflLine line;
         DOMFunction f = null;
         StackLevel stack1 = null;
+	try 
+	  {
+	    line = task.getDwflLineXXX();
+	  }
+	catch (Task.TaskException e)
+	  {
+	    line = null;
+	  }
+	
         if (line != null)
           {
             String filename = line.getSourceFile();

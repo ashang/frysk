@@ -112,9 +112,16 @@ public class LinuxProc
 		}
 		else {
 		    // Add the process (it currently isn't attached).
-		    Task newTask = new LinuxTask (LinuxProc.this,
-						  new TaskId (tid));
-		    added.put (newTask.id, newTask);
+		    try
+			{
+			    Task newTask = new LinuxTask (LinuxProc.this,
+							  new TaskId (tid));
+			    added.put (newTask.id, newTask);
+			}
+		    catch (Task.TaskException e)
+			{
+			    // XXX error recovery?
+			}
 		}
 	    }
 	}

@@ -1,3 +1,16 @@
+2006-07-20  Tim Moore  <timmore@redhat.com>
+
+	* ElfFileException.java: New class.
+	* Elf.java (Elf(String, ElfCommand)): Throw exceptions.
+	(Elf(int, ElfCommand)): Open the executable Elf file associated with a
+	pid.
+	(Elf(String, long)): comment out.
+	* cni/Elf.cxx (elf_begin): Use the length of the UTF translation of the
+	file name for sizing the fileName array. Throw an ElfFileException
+	instead of an ElfException.
+	(elf_memory): Comment out.
+	* tests/TestElf.java (TestElf): throw exceptions.
+
 2006-06-27  Adam Jocksch  <ajockshc@redhat.com>
 
 	* cni/Elf.cxx (elf_begin): Now prints out a more informative

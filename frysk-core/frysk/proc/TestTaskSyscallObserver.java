@@ -271,8 +271,7 @@ public class TestTaskSyscallObserver
 	public Action updateSyscallEnter (Task task)
 	{
 	    super.updateSyscallEnter (task);
-	    SyscallEventInfo syscallEventInfo
-		= task.getSyscallEventInfo ();
+	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
 	    int syscallNum = syscallEventInfo.number (task);
 	    if (syscallNum == SyscallNum.SYSopen) { 
 		long addr = syscallEventInfo.arg (task, 1);
@@ -289,8 +288,7 @@ public class TestTaskSyscallObserver
 	public Action updateSyscallExit (Task task)
 	{
 	    super.updateSyscallExit (task);
-	    SyscallEventInfo syscallEventInfo
-		= task.getSyscallEventInfo ();
+	    SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
 	    int syscallNum = syscallEventInfo.number (task);
 	    if (syscallNum == SyscallNum.SYSopen && openingTestFile) {
 		openingTestFile = false;
@@ -363,6 +361,19 @@ public class TestTaskSyscallObserver
 	}
     }
 
+    private SyscallEventInfo getSyscallEventInfo(Task task)
+    {
+	try
+	{
+	    return task.getSyscallEventInfo();
+	}
+	catch (Task.TaskException e)
+	{
+	    fail("task exception " + e);
+	    return null; // not reached
+	}
+    }
+
     // Timers, observers, counters, etc.. needed for the test.
     class TestSyscallInterruptInternals {
 	int readEnter, readExit, sigusr1Count;
@@ -376,11 +387,12 @@ public class TestTaskSyscallObserver
 	    extends SyscallObserver
             implements TaskObserver.Signaled
 	{
+
+	    
 	    public Action updateSyscallEnter (Task task)
 	    {
 		super.updateSyscallEnter (task);
-		SyscallEventInfo syscallEventInfo
-		    = task.getSyscallEventInfo ();
+		SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
 		int syscallNum = syscallEventInfo.number (task);
 		// verify that read attempted
 		if (syscallNum == SyscallNum.SYSread) { 
@@ -397,8 +409,7 @@ public class TestTaskSyscallObserver
 	    public Action updateSyscallExit (Task task)
 	    {
 		super.updateSyscallExit (task);
-		SyscallEventInfo syscallEventInfo
-		    = task.getSyscallEventInfo ();
+		SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
 		int syscallNum = syscallEventInfo.number (task);
 		if (syscallNum == SyscallNum.SYSread) {
 		    logger.log(Level.FINE, "{0} updateSyscallExit READ\n", this);

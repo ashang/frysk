@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,39 +36,17 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+package lib.elf;
 
-package frysk.rt;
-
-import lib.unwind.FrameCursor;
-import lib.unwind.StackTraceCreator;
-import frysk.proc.Task;
-
-public class StackFactory
+/**
+ * Exception thrown when an Elf file can't be accessed in some way.
+ */
+public class ElfFileException extends ElfException 
 {
-  /**
-   * Find and return the stack backtrace for the provided task
-   * @param task The task to get stack information for
-   * @return The stack frames as a linked list
-   */
-  public static StackFrame createStackFrame(Task task)
-    throws Task.TaskException
+  private static final long serialVersionUID = 2006071900L;
+
+  public ElfFileException(String s) 
   {
-    StackCallbacks callbacks = new StackCallbacks(task);
-    FrameCursor innermost = StackTraceCreator.createStackTrace(callbacks);
-    StackFrame toReturn = new StackFrame(innermost);
-    
-    StackFrame current = toReturn;
-    FrameCursor currentCursor = innermost.getOuter();
-    while(currentCursor != null)
-      {
-	StackFrame outerFrame = new StackFrame(currentCursor);
-      
-	current.outer = outerFrame;
-	outerFrame.inner = current;
-	current = outerFrame;
-      
-	currentCursor = currentCursor.getOuter();
-      }
-    return toReturn;
+    super(s);
   }
 }

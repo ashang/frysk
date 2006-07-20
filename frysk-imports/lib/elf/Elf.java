@@ -55,7 +55,8 @@ public class Elf {
 	 * @param file The file to create the object from
 	 * @param command The appropriate {@see ElfCommand}
 	 */
-	public Elf(String file, ElfCommand command){
+	public Elf(String file, ElfCommand command)
+	throws ElfFileException, ElfException {
 		elf_begin(file, command.getValue());
 	}
 	
@@ -64,10 +65,25 @@ public class Elf {
 	 * @param image The name of the image in memory to use
 	 * @param size The size of the image
 	 */
-	public Elf(String image, long size){
-		elf_memory(image, size);
-	}
+	// I've disabled this. The image argument to the libelf
+	// elf_memory function is not a name but the raw memory address
+	// of an already mmaped Elf file. Until we determine how frysk
+	// can use this for a process it is debugging (if in fact it
+	// can), better to just turn this off. - timoore
+//	 public Elf(String image, long size){
+// 		elf_memory(image, size);
+// 	}
 	
+	/**
+	 * Creates a new Elf object for a process' executable.
+	 * @param pid The pid of the process
+	 * @param command The appropriate {@see ElfCommand}
+	 */
+	public Elf(int pid, ElfCommand command)
+	throws ElfFileException, ElfException {
+		this("/proc/" + pid + "/exe", command);
+	}
+
 	public Elf clone(ElfCommand command){
 		return new Elf(elf_clone(command.getValue()));
 	}
@@ -307,9 +323,10 @@ public class Elf {
 		elf_end();
 	}
 	
-	protected native void elf_begin(String file, int __cmd);
+	protected native void elf_begin(String file, int __cmd) 
+		throws ElfException, ElfFileException;
 	protected native long elf_clone(int __cmd);
-	protected native void elf_memory(String __image, long __size);
+	// protected native void elf_memory(String __image, long __size);
 	protected native int elf_next();
 	protected native int elf_end();
 	protected native long elf_update(int __cmd);

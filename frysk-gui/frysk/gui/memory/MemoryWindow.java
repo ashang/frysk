@@ -210,6 +210,20 @@ public class MemoryWindow
   public void setTask (Task myTask)
   {
     this.myTask = myTask;
+    long pc_inc;
+    try 
+      {
+	this.diss = new Disassembler(myTask.getMemory());
+    
+	pc_inc = myTask.getIsa().pc(myTask);
+      }
+    catch (Task.TaskException e) 
+      {
+	// XXX What to do if there's an error?
+	e.printStackTrace();
+	return;
+      }
+    long end = pc_inc + 20;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
@@ -232,9 +246,6 @@ public class MemoryWindow
 
     this.bitsCombo.showAll();
     this.diss = new Disassembler(myTask.getMemory());
-    
-    long pc_inc = myTask.getIsa().pc(myTask);
-    long end = pc_inc + 20;
     this.fromSpin.setValue((double) pc_inc);
     this.toSpin.setValue((double) end);
     this.pcEntryDec.setText("" + pc_inc);

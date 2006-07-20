@@ -83,14 +83,23 @@ public class TestI386Regs
 	    public Action updateSyscallEnter (Task task)
 	    {
 		syscallState = 1;
-		SyscallEventInfo syscall
-		    = task.getSyscallEventInfo ();
+		SyscallEventInfo syscall;
+		LinuxIa32 isa;
+		try 
+		{
+		    syscall = task.getSyscallEventInfo ();
+		    isa = (LinuxIa32)task.getIsa ();
+		}
+		catch (Task.TaskException e)
+		{
+		    fail("got task exception " + e);
+		    return Action.CONTINUE; // not reached
+		}
 		// The low-level assembler code performs an exit syscall
 		// and sets up the registers with simple values.  We want
 		// to verify that all the registers are as expected.
 		syscallNum = syscall.number (task);
 		if (syscallNum == 1) { 
-		    LinuxIa32 isa = (LinuxIa32)task.getIsa ();
 		    orig_eax = isa.getRegisterByName ("orig_eax").get (task);
 		    ebx = isa.getRegisterByName ("ebx").get (task);
 		    ecx = isa.getRegisterByName ("ecx").get (task);
@@ -142,7 +151,15 @@ public class TestI386Regs
 			if (!isChildOfMine (task.proc))
 			    return;
 			killDuringTearDown (task.getTid ());
-			if (task.getIsa () instanceof LinuxIa32) {
+			Isa isa;
+			try 
+			{
+			     isa = task.getIsa();
+			}
+			catch (Task.TaskException e) {
+			     isa = null;
+			}
+			if (isa instanceof LinuxIa32) {
 			    ia32Isa = true;
 			    task.requestAddSyscallObserver (taskEventObserver);
 			    task.requestAddSignaledObserver (taskEventObserver);

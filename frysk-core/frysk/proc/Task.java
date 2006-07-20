@@ -95,18 +95,22 @@ abstract public class Task
    * Returns this Task's Instruction Set Architecture.
    */
   public final Isa getIsa ()
+    throws Task.TaskException
   {
     if (isa == null)
       isa = sendrecIsa();
     return isa;
   }
 
+
   public final SyscallEventInfo getSyscallEventInfo ()
+    throws Task.TaskException
   {
-    return ((SyscallEventDecoder)getIsa ()).getSyscallEventInfo ();
+    return ((SyscallEventDecoder)getIsa()).getSyscallEventInfo();
   }
 
   public final DwflLine getDwflLineXXX ()
+    throws Task.TaskException
   {
     if (dwfl == null)
       dwfl = new Dwfl(getTid());
@@ -117,11 +121,11 @@ abstract public class Task
    * This Task's Instruction Set Architecture.
    */
   private Isa isa;
-
+ 
   /**
    * Fetch this Task's Instruction Set Architecture.
    */
-  abstract protected Isa sendrecIsa ();
+  abstract protected Isa sendrecIsa () throws Task.TaskException;
 
   /**
    * Return the task's entry point address. This is the address of the first
@@ -761,14 +765,20 @@ abstract public class Task
    */
   int notifySyscallEnter ()
   {
-    logger.log(
-               Level.FINE,
-               "{0} notifySyscallEnter {1}\n",
-               new Object[] {
-                             this,
-                             new Integer(
-                                         this.getSyscallEventInfo().number(
-                                                                                    this)) });
+    try 
+      {
+	logger.log(
+		   Level.FINE,
+		   "{0} notifySyscallEnter {1}\n",
+		   new Object[] 
+		     { this,
+		       new Integer(this.getSyscallEventInfo().number(this))
+		     });
+      }
+    catch (Task.TaskException e) 
+      {
+	logger.log(Level.SEVERE, "TaskException in {0}", this);
+      }
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
@@ -784,14 +794,19 @@ abstract public class Task
    */
   int notifySyscallExit ()
   {
-    logger.log(
-               Level.FINE,
-               "{0} notifySyscallExit {1}\n",
-               new Object[] {
-                             this,
-                             new Integer(
-                                         this.getSyscallEventInfo().number(
-                                                                                    this)) });
+    try 
+      {
+	logger.log(Level.FINE,
+		   "{0} notifySyscallExit {1}\n",
+		   new Object[] 
+		     { this,
+		       new Integer(this.getSyscallEventInfo().number(this))
+		     });
+      }
+    catch (Task.TaskException e) 
+      {
+	logger.log(Level.SEVERE, "TaskException in {0}", this);
+      }
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Syscall observer = (TaskObserver.Syscall) i.next();
@@ -854,4 +869,19 @@ abstract public class Task
    * Turns off systemcall entry and exit tracing 
    */
   protected abstract void stopTracingSyscalls ();
+
+  /**
+   * Superclass of exceptions related to tasks. These will usually be
+   * caused by errors accessing the process' executable or problems
+   * with ptrace.
+   */
+  public class TaskException extends Exception
+  {
+    private static final long serialVersionUID = 200607190000L;
+
+    public TaskException (String s)
+    {
+      super(s);
+    }
+  }
 }

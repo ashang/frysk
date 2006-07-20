@@ -18,7 +18,13 @@ public class DOMFactory {
 	
 	public static DOMFrysk createDOM(Task task) throws NoDebugInfoException, IOException{
 		DOMFrysk dom;
-		DwflLine line = task.getDwflLineXXX();
+		DwflLine line;
+		try {
+			line = task.getDwflLineXXX();
+		} catch (Task.TaskException e) {
+			throw new NoDebugInfoException("Couldn't access task "
+						       + task.getName());
+		}
 		if(line == null)
 			throw new NoDebugInfoException("Could not find debug information for task " + task.getName());
 		String fullPath = line.getSourceFile();

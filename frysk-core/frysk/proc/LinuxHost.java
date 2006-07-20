@@ -204,14 +204,22 @@ public class LinuxHost
     // See if the Host knows about this task.
     TaskId myTaskId = new TaskId(Tid.get());
     Task myTask = get(myTaskId);
-    if (myTask == null)
+    try
       {
-        // If not, find this process and add this task to it.
-        Proc myProc = getSelf();
-        myTask = new LinuxTask(myProc, myTaskId);
+	if (myTask == null)
+	  {
+	    // If not, find this process and add this task to it.
+	    Proc myProc = getSelf();
+	    myTask = new LinuxTask(myProc, myTaskId);
+	  }
+	Proc proc = new LinuxProc(myTask, new ProcId(pid));
+	new LinuxTask(proc, attached);
       }
-    Proc proc = new LinuxProc(myTask, new ProcId(pid));
-    new LinuxTask(proc, attached);
+    catch (Task.TaskException e)
+      {
+	// XXX do real exception handling
+      }
+
   }
 
   // When there's a SIGCHLD, poll the kernel's waitpid() queue
@@ -257,7 +265,16 @@ public class LinuxHost
         // before that event arrives.
         Task task = getTask(pid, "{0} cloneEvent\n");
         // Create an attached, and running, clone of TASK.
-        Task clone = new LinuxTask(task, new TaskId(clonePid));
+        Task clone;
+	try
+	  {
+	    clone = new LinuxTask(task, new TaskId(clonePid));
+	  }
+	catch (Task.TaskException e)
+	  {
+	    // XXX do real exception handling
+	    clone = null;
+	  }
         task.processClonedEvent(clone);
       }
 
@@ -274,7 +291,16 @@ public class LinuxHost
         ProcId forkId = new ProcId(childPid);
         Proc forkProc = new LinuxProc(task, forkId);
         // The main task.
-        Task forkTask = new LinuxTask(forkProc, (TaskObserver.Attached) null);
+        Task forkTask;
+	try
+	  {
+	    forkTask = new LinuxTask(forkProc, (TaskObserver.Attached) null);
+	  }
+	catch (Task.TaskException e)
+	  {
+	    // XXX do real exception handling
+	    forkTask = null;
+	  }
         task.processForkedEvent(forkTask);
       }
 

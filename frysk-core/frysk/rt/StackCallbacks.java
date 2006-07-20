@@ -48,17 +48,21 @@ import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
 import frysk.proc.Host;
 import frysk.proc.Task;
+import frysk.proc.Isa;
 
 public class StackCallbacks
     implements UnwindCallbacks
 {
   private Task myTask;
+  private Isa isa;
 
   public StackCallbacks (Task myTask)
+  throws Task.TaskException
   {
     this.myTask = myTask;
     this.myTask.toString();
-  }
+    isa = myTask.getIsa();
+    }
 
   public long findProcInfo (long addressSpace, long instructionAddress,
                             boolean needInfo)
@@ -113,7 +117,7 @@ public class StackCallbacks
     Host.logger.log(Level.FINE, "Libunwind: reading from register "
                                 + registerName + "\n");
 
-    long value = myTask.getIsa().getRegisterByName(registerName).get(myTask);
+    long value = isa.getRegisterByName(registerName).get(myTask);
 
     Host.logger.log(Level.FINE, "Libunwind: read value 0x"
                                 + Long.toHexString(value) + "\n");
