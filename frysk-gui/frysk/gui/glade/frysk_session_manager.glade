@@ -41,6 +41,7 @@
 	      <child>
 		<widget class="GtkRadioButton" id="SessionManager_debugSingleProcessButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Debugs an existing single process.</property>
 		  <property name="label" translatable="yes" context="yes">Debug an Existing _Process</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -60,6 +61,7 @@
 		<widget class="GtkButton" id="SessionManager_singleProcessChooser">
 		  <property name="visible">True</property>
 		  <property name="sensitive">False</property>
+		  <property name="tooltip" translatable="yes">Click to launch the process selection dialog.</property>
 		  <property name="can_focus">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="focus_on_click">True</property>
@@ -177,6 +179,7 @@
 		  <child>
 		    <widget class="GtkRadioButton" id="SessionManager_startSessionButton">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Allows you to manage, create new, and launch existing sessions.</property>
 		      <property name="label" translatable="yes" context="yes">_Run or Manage Sessions</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -276,6 +279,7 @@
 	      <child>
 		<widget class="GtkButton" id="SessionManager_newSessionButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Creates a new Frysk session. This will allow you to choose process groups to monitor, and observers to apply to those groups.</property>
 		  <property name="label">gtk-new</property>
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -291,6 +295,7 @@
 	      <child>
 		<widget class="GtkButton" id="SessionManager_editSessionButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Edits an existing session. Allows changes to what process groups are monitored, and what observers are applied to those groups.</property>
 		  <property name="label">gtk-edit</property>
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -306,6 +311,7 @@
 	      <child>
 		<widget class="GtkButton" id="SessionManager_copySessionButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Copies a session selected in the treeview. The naming convention follows (copy), (another copy), (3rd copy), (4th copy) and so on. The name of the session can be changed during an edit.</property>
 		  <property name="label">gtk-copy</property>
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -322,6 +328,7 @@
 		<widget class="GtkButton" id="SessionManager_deleteSessionButton">
 		  <property name="border_width">1</property>
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Deletes a selected session permanently, and removes it from the session store and treeview.</property>
 		  <property name="label">gtk-delete</property>
 		  <property name="use_stock">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -369,6 +376,7 @@
 	      <child>
 		<widget class="GtkButton" id="SessionManager_quitButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Quits Frysk.</property>
 		  <property name="can_default">True</property>
 		  <property name="label">gtk-quit</property>
 		  <property name="use_stock">True</property>
@@ -380,6 +388,7 @@
 	      <child>
 		<widget class="GtkButton" id="SessionManager_openButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Opens the currently selected session. This will close the session manager, and launch the session into the Frysk monitor.</property>
 		  <property name="can_default">True</property>
 		  <property name="label">gtk-open</property>
 		  <property name="use_stock">True</property>

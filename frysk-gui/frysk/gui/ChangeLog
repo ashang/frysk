@@ -1,3 +1,7 @@
+2006-07-20 Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/frysk_create_session.glade: Added tooltips.
+
 2006-07-19  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* druid/CreateFryskSessionDruid.java (setNewSessionMode): 
