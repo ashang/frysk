@@ -291,8 +291,8 @@ public class ChildPIDWindow
   public void finish (Session s)
   {
     ChildPIDWindow.this.hideAll();
-    WindowManager.theManager.mainWindow.showAll();
     WindowManager.theManager.mainWindow.setSession(s);
+    WindowManager.theManager.mainWindow.showAll();
   }
 
 }
