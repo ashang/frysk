@@ -114,6 +114,15 @@ public class ProcWiseDataModel
 
   }
 
+  public void unFilterData() {
+	  TreeIter iter = treeStore.getFirstIter();
+	  do {
+		  if (treeStore.isIterValid(iter))
+			  treeStore.setValue(iter, selectedDC, false);
+		  iter = iter.getNextIter();
+	  } while (iter != null);
+	  
+  }
   private void setRow (TreeIter row, String name, GuiProc data, int childcount,
                        boolean selected)
   {
