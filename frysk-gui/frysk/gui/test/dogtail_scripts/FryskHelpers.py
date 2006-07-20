@@ -75,6 +75,7 @@ FRYSK_PROCESS_NAME = 'FryskGui'
 
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
 FRYSK_APP_NAME = 'java-gnome'
+CUSTOM_OBSERVER_DIALOG = 'Custom Observer Details'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
@@ -321,7 +322,8 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     for processName in processesToMonitor:
         tempProc = procWiseTreeView.child(processName)
         tempProc.grabFocus()
-        tempProc.actions['activate'].do()
+        # Correct, but not optimal: tempProc.actions['activate'].do()
+        tempProc.doAction('activate')
         addButton.click()
     # Need to add a test here for the removeButton
     # Need to add a test here for the back button - both before and after process
@@ -347,8 +349,9 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
         resolvedName = extractString (str(processName), 'name')
         tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
         tempProc.grabFocus()
-        tempProc.actions['activate'].do()
-
+         # Correct, but not optimal: tempProc.actions['activate'].do()
+        tempProc.doAction('activate')
+        
         vbox54 = hbox77.child('vbox54')
         SessionDruid_observerTreeView = vbox54.child('SessionDruid_observerTreeView')
         theList = SessionDruid_observerTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
@@ -357,7 +360,9 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     
         for x in userSelectedObservers:
             tempObserver = theDictionary[x]
-            tempObserver.actions['toggle'].do()
+            # Correct, but not optimal: tempObserver.actions['toggle'].do()
+            tempObserver.doAction('toggle')
+            
 
     forwardButton.click()
 
@@ -372,7 +377,8 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
         # Need to select just-created-session, then, select the 'Open' button
         theSessionTable = theDruid.child(name='SessionManager_previousSessionsListView')
         theNewlyCreatedSession = theSessionTable.child(name=sessionObject.getName(), roleName='table cell' )
-        theNewlyCreatedSession.actions['activate'].do()
+        # Correct, but not optimal: theNewlyCreatedSession.actions['activate'].do()
+        theNewlyCreatedSession.doAction('activate')
         theNewlyCreatedSession.grabFocus()
         openButton.click()
         
@@ -451,7 +457,8 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
     for processName in processesToMonitor:
         tempProc = procWiseTreeView.child(processName)
         tempProc.grabFocus()
-        tempProc.actions['activate'].do()
+        # Correct, but not optimal: tempProc.actions['activate'].do()
+        tempProc.doAction('activate')
         addButton.click()
     # Need to add a test here for the removeButton
     # Need to add a test here for the back button - both before and after process
@@ -490,7 +497,8 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
         #print "DEBUG - name = " + resolvedName
         tempProc = SessionDruid_processObserverTreeView.child(resolvedName)
         tempProc.grabFocus()
-        tempProc.actions['activate'].do()
+        # Correct, but not optimal: tempProc.actions['activate'].do()
+        tempProc.doAction('activate')
 
         vbox54 = hbox77.child('vbox54')
         SessionDruid_observerTreeView = vbox54.child('SessionDruid_observerTreeView')
@@ -507,7 +515,8 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
                oddFlag = False
            else:
                oddFlag = True
-               x.actions['toggle'].do()
+               # Correct, but not optimal: x.actions['toggle'].do()
+               x.doAction('toggle')
 
     forwardButton.click()
 
@@ -522,7 +531,8 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
         # Need to select just-created-session, then, select the 'Open' button
         theSessionTable = theDruid.child(name='SessionManager_previousSessionsListView')
         theNewlyCreatedSession = theSessionTable.child(name=sessionObject.getName(), roleName='table cell' )
-        theNewlyCreatedSession.actions['activate'].do()
+        # Correct, but not optimal: theNewlyCreatedSession.actions['activate'].do()
+        theNewlyCreatedSession.doAction('activate')
         theNewlyCreatedSession.grabFocus()       
         openButton.click()
 

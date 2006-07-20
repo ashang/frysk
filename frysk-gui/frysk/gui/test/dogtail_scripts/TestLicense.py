@@ -138,12 +138,13 @@ class TestLicense (unittest.TestCase):
         self.assertEqual(licenseText.text, expectedLicenseString)
     
         # Close the license text frame
-        closebutton = licenseFrame.button('Close')
-        closebutton.actions['press'].do()
-    
+        closeButton = licenseFrame.button('Close')
+        # Correct, but not optimal: closeButton.actions['press'].do()
+        closeButton.doAction('press')
+  
         # Close the 'about Frysk' filler dialog
-        closebutton = aboutFrame.button('Close')
-        closebutton.click()
+        closeButton = aboutFrame.button('Close')
+        closeButton.click()
  
 def suite():
     suite = unittest.TestSuite()

@@ -64,6 +64,7 @@ from FryskHelpers import endFrysk
 from FryskHelpers import createMinimalSession
 from FryskHelpers import getEventType
 from FryskHelpers import FRYSK_OBSERVER_FILES
+from FryskHelpers import CUSTOM_OBSERVER_DIALOG
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -184,7 +185,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             # Press 'New'
             newObserverButton = customObservers.button( 'New' )
             newObserverButton.click()
-            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
   
             # Find the panel on the frame
             observerPanel = observerDetails.child( name='table1', roleName='panel' )
@@ -357,7 +358,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
   
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
-                observerInGui.actions['activate'].do()
+                # Correct, but not optimal: observerInGui.actions['activate'].do()
+                observerInGui.doAction('activate')
                 observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
@@ -368,7 +370,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             editButton = customObservers.button( 'Edit' )
             editButton.click()
             
-            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
             observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
 
             ##############################################
@@ -438,7 +440,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
   
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
-                observerInGui.actions['activate'].do()
+               # Correct, but not optimal: observerInGui.actions['activate'].do()
+                observerInGui.doAction('activate')
                 observerInGui.grabFocus()
                 deleteButton = customObservers.button( 'Delete' )
                 deleteButton.click()
@@ -478,7 +481,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
   
             try:
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
-                observerInGui.actions['activate'].do()
+                # Correct, but not optimal: observerInGui.actions['activate'].do()
+                observerInGui.doAction('activate')
                 observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
@@ -489,7 +493,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             editButton = customObservers.button( 'Edit' )
             editButton.click()
             
-            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
             observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
                        
             observerToVerify.setName( observerToVerify.getName() + ' updated' )

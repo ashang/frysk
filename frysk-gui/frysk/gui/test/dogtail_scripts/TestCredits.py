@@ -139,7 +139,8 @@ class TestCredits (unittest.TestCase):
         self.assertEqual('test passed', 'test passed')
         
         closeButton = creditsFrame.button('Close')
-        closeButton.actions['press'].do()
+        # Correct, but not optimal: closeButton.actions['press'].do()
+        closeButton.doAction('press')
    
         # Close the 'about Frysk' filler dialog
         closebutton = aboutFrame.button('Close')

@@ -68,6 +68,7 @@ import unittest
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
 from FryskHelpers import createMinimalSession
+from FryskHelpers import CUSTOM_OBSERVER_DIALOG
 
 class TestCredits (unittest.TestCase):
 
@@ -128,7 +129,8 @@ class TestCredits (unittest.TestCase):
         observerList = customTable.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
         for observerInGui in observerList:
             try:
-                 observerInGui.actions['activate'].do()
+                 # Correct, but not optimal: observerInGui.actions['activate'].do()
+                 observerInGui.doAction('activate')
                  observerInGui.grabFocus()
             except dogtail.tree.SearchError:
                  self.fail ( 'Error - unable to locate Observer with name = ' + str(observerInGui) )
@@ -138,7 +140,7 @@ class TestCredits (unittest.TestCase):
             editButton = customObservers.button( 'Edit' )
             editButton.click()
             
-            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
             observerDescription = observerDetails.child( name = 'observerDescriptionTextView', roleName = 'text' )
             originalDescription = observerDescription.text
             newDescription = originalDescription + ' updated'
@@ -151,7 +153,7 @@ class TestCredits (unittest.TestCase):
             editButton = customObservers.button( 'Edit' )
             editButton.click()
             
-            observerDetails = self.frysk.dialog( 'Observer Details' )
+            observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
             observerDescription = observerDetails.child( name = 'observerDescriptionTextView', roleName = 'text' )
             
             self.TestString.compare(self.theLogWriter.scriptName + '.testEditObservers()', observerDescription.text, newDescription)
