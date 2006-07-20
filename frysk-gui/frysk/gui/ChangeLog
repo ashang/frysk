@@ -1,8 +1,14 @@
 2006-07-19  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (setNewSessionMode): 
+	Call unFilterData. Stop eating processes.
+	(setEditSessionMode): Ditto.
+	(unFilterData): New.
+	
 	* test/TestGlade.java: New.
 
 2006-07-19	Nurdin Premji <npremji@redhat.com>
+
 	* glade/procpop.glade: Added minimum size for statusWidget box.
 
 2006-07-19  Ivan Pantuyev <ipantuye@redhat.com>

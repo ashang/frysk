@@ -168,6 +168,7 @@ public class CreateFryskSessionDruid
     warningLabel.setMarkup("Select a <b>Name</b> for the session, and some <b>Process Groups</b> to monitor");
     warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
     editSession = true;
+    unFilterData();
   }
 
   public void setNewSessionMode ()
@@ -191,6 +192,7 @@ public class CreateFryskSessionDruid
     this.nameEntry.setText(setInitialName());
     this.nameEntry.selectRegion(0, this.nameEntry.getText().length());
     editSession = false;
+    unFilterData();
   }
 
   private void setTreeSelected (TreeIter selected, boolean setSelected,
@@ -367,6 +369,9 @@ public class CreateFryskSessionDruid
       }
   }
 
+  private void unFilterData() {
+	  procWiseTreeView.psDataModel.unFilterData();
+  }
   private void getProcessSelectionControls (LibGlade glade)
   {
 
