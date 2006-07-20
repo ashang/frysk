@@ -83,6 +83,7 @@ import frysk.gui.monitor.ProcWiseDataModel;
 import frysk.gui.monitor.ProcWiseTreeView;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
@@ -558,11 +559,23 @@ public class CreateFryskSessionDruid
                          }
                        }
                      });
+    
+    
 
     SizeGroup sizeGroup = new SizeGroup(SizeGroupMode.BOTH);
     sizeGroup.addWidget(observerSelectionTreeView);
     sizeGroup.addWidget(processObserverSelectionTreeView);
 
+    Button customObserver = (Button) glade.getWidget("SessionDruid_createCustomObserver");
+    customObserver.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+        	WindowManager.theManager.observersDialog.showAll();
+      }
+    });
+    
     setUpCurrentPage();
   }
 

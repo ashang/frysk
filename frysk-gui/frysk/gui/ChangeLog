@@ -4,7 +4,11 @@
 	Call unFilterData. Stop eating processes.
 	(setEditSessionMode): Ditto.
 	(unFilterData): New.
-	
+	(getProcessObserverControls): Add Custom Observer controls
+	for button.
+	* glade/frysk_create_session.glade: Added Custom Observers
+	Button to druid.
+
 	* test/TestGlade.java: New.
 
 2006-07-19	Nurdin Premji <npremji@redhat.com>
