@@ -112,6 +112,7 @@ implements LifeCycleListener, Saveable
 	LibGlade register_window;
     LibGlade memory_window;
 	LibGlade session_glade;
+    LibGlade session_child_glade;
 	
 	private static Logger errorLogFile = null;
 	private static final String SETTINGSFILE = ".settings";
@@ -192,6 +193,7 @@ implements LifeCycleListener, Saveable
 				register_window = new LibGlade (glade_dirs[i] + "/registerwindow.glade", null);
                 memory_window = new LibGlade (glade_dirs[i] + "/memorywindow.glade", null);
 				session_glade = new LibGlade(glade_dirs[i] + SESSION_MANAGER_GLADE, this);
+                session_child_glade = new LibGlade(glade_dirs[i] + "/childpidwindow.glade",null);
 			}
 			catch (FileNotFoundException missingFile) {
 				searchPath += glade_dirs[i] + "\n";
@@ -210,7 +212,8 @@ implements LifeCycleListener, Saveable
 			RegisterWindow.gladePath = properGladeDir + "/registerwindow.glade";
             MemoryWindow.gladePath = properGladeDir + "/memorywindow.glade";
 			WindowManager.theManager.initSessionDruidWindow(create_session_glade);
-			WindowManager.theManager.initSessionManagerWindow(session_glade);	    
+			WindowManager.theManager.initSessionManagerWindow(session_glade);	
+            WindowManager.theManager.sessionManager.setChildPIDGlade(session_child_glade);
 		} catch (IOException e) {
 			throw e;
 		}

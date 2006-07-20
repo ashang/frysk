@@ -1,3 +1,9 @@
+2006-07-20  Mike Cvet  <mcvet@redhat.com>
+
+	* SessionProcDataModel.java (setSession): No longer calls 
+	populateProcs() on the new session - done already in the 
+	ChildPIDWindow.
+
 2006-07-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/ObserverManager.java (nameIsUsed): New function.

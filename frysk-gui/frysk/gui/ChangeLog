@@ -1,3 +1,13 @@
+2006-07-20  Mike Cvet  <mcvet@redhat.com>
+
+	* sessions/ChildPIDWindow.java: Added.
+	* glade/childpidwindow.glade: Added. 
+	* SessionManagerGui.java (.buttonEvent): Now calls the
+	ChildPIDWindow, which does the work for calling the MainWindow.
+	(setChildPIDGlade): Added - support for ChildPIDWindow glade.
+	* Gui.java (Gui): Added new glade file and support for
+	the ChildPIDWindow.
+
 2006-07-20  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* SessionManagerGui.java: Removed getNumberSuffix.
