@@ -171,7 +171,7 @@ public class PickProcDialog extends Dialog {
 		sWindow.setBorderWidth(10);
 		sWindow.setPolicy(PolicyType.NEVER, PolicyType.AUTOMATIC);
 
-		sWindow.addWithViewport(ListView);
+		sWindow.add(ListView);
 		mainBox.packEnd(sWindow);
 
 		this.addButton(GtkStockItem.OPEN, ResponseType.OK.getValue());
