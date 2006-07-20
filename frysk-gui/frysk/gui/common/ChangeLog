@@ -1,3 +1,8 @@
+2006-07-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* Util.java: New class.
+	(getNumberSuffix): Moved here from SessionManagerGui.
+
 2006-07-18  Adam Jocksch  <ajocksch@redhat.com>
 
 	* prefs/PreferenceManager.java: Now statically adds the default preference

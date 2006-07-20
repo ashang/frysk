@@ -239,6 +239,15 @@ public class ObserverManager {
 		}
 	}
 	
+    /**
+     * Checks of the name of the observer is already in use
+     * @param name name 
+     * @return
+     */
+    public boolean nameIsUsed(String name){
+      return this.nameHash.nameIsUsed(name);
+    }
+    
 	public void addBaseObserverPrototype(ObserverRoot observer){
 		this.baseObservers.add(observer);
 	}

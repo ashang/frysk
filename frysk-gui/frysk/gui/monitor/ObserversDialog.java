@@ -50,6 +50,7 @@ import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.TreeSelectionEvent;
 import org.gnu.gtk.event.TreeSelectionListener;
 
+import frysk.gui.common.Util;
 import frysk.gui.common.dialogs.Dialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -179,7 +180,8 @@ public class ObserversDialog extends Dialog {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
 					ObserverRoot selected = (ObserverRoot)observersListView.getSelectedObject();
 					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy(selected);
-					newObserver.setName("CopyOf_" + selected.getName());
+
+                    newObserver.setName(getCopyName(selected.getName()));
 					//scratchList.add(scratchList.indexOf(selected)+1, newObserver);
 					//scratchList.add(newObserver);
 					ObserverManager.theManager.addTaskObserverPrototype(newObserver);
@@ -281,4 +283,24 @@ public class ObserversDialog extends Dialog {
 
 	}
 
+    private String getCopyName(String originalName){
+      String name;
+      name = originalName;
+
+      if(ObserverManager.theManager.nameIsUsed(name)){
+        name = originalName + " (copy)";
+      }
+      
+      if(ObserverManager.theManager.nameIsUsed(name)){
+        name = originalName + " (another copy)";
+      }
+
+      int count = 3;
+      while(ObserverManager.theManager.nameIsUsed(name)){
+        name = originalName + " ("+ count + Util.getNumberSuffix(count)+" copy)";
+        count++;
+      }
+            
+      return name;
+    }
 }

@@ -1,3 +1,7 @@
+2006-07-20  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* SessionManagerGui.java: Removed getNumberSuffix.
+
 2006-07-20  Rick Moseley  <rmoseley@redhat.com>
 
 	* glade/procpop.glade: Added tooltips.

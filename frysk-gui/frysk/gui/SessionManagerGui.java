@@ -60,6 +60,7 @@ import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.Util;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.sessions.Session;
@@ -350,27 +351,7 @@ public class SessionManagerGui
 
   }
 
-  private String getNumberSuffix (int i)
-  {
-    String iString = "" + i;
-    if ((i <= 10) || (i >= 20))
-      switch (iString.charAt(iString.length() - 1))
-        {
-        case '1':
-          return "st";
-        case '2':
-          return "nd";
-        case '3':
-          return "rd";
-        default:
-          return "th";
-        }
-    if ((i >= 11) && (i <= 19))
-      return "th";
-    return "";
-  }
-
-  private Session copySession (Session source)
+ private Session copySession (Session source)
   {
     String session_name = source.getName();
     String name[] = { session_name + " (copy)",
@@ -385,11 +366,11 @@ public class SessionManagerGui
         }
     for (int i = 3; i < Integer.MAX_VALUE - 1; i++)
       if (SessionManager.theManager.getSessionByName(session_name + " (" + i
-                                                     + getNumberSuffix(i)
+                                                     + Util.getNumberSuffix(i)
                                                      + " copy)") == null)
         {
 
-          dest.setName(session_name + " (" + i + getNumberSuffix(i) + " copy)");
+          dest.setName(session_name + " (" + i + Util.getNumberSuffix(i) + " copy)");
           return dest;
         }
 
