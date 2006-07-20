@@ -1239,6 +1239,7 @@
 		      <child>
 			<widget class="GtkButton" id="createObserverButton">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Add a new custom observer</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-new</property>
 			  <property name="use_stock">True</property>
@@ -1255,6 +1256,7 @@
 		      <child>
 			<widget class="GtkButton" id="editCustomObserverButton">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Edit a custom observer</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-edit</property>
 			  <property name="use_stock">True</property>
@@ -1357,6 +1359,7 @@
 		      <child>
 			<widget class="GtkButton" id="removeObserverButton">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Delete a custom observer</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-delete</property>
 			  <property name="use_stock">True</property>
@@ -1833,6 +1836,7 @@
 		  <child>
 		    <widget class="GtkTextView" id="observerDescriptionTextView">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">This is a test</property>
 		      <property name="can_focus">True</property>
 		      <property name="editable">True</property>
 		      <property name="overwrite">False</property>
@@ -1948,6 +1952,7 @@
 	      <child>
 		<widget class="GtkRadioButton" id="resumeRadioButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Resume the thread after all actions are complete</property>
 		  <property name="can_focus">True</property>
 		  <property name="label" translatable="yes">Resume thread</property>
 		  <property name="use_underline">True</property>
@@ -1967,6 +1972,7 @@
 	      <child>
 		<widget class="GtkRadioButton" id="stopRadioButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Stop the thread after all actions are complete</property>
 		  <property name="can_focus">True</property>
 		  <property name="label" translatable="yes">Stop thread</property>
 		  <property name="use_underline">True</property>
@@ -1987,6 +1993,7 @@
 	      <child>
 		<widget class="GtkRadioButton" id="askMeRadioButton">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Pop up a dialog window asking what action is to be performed after the actions are complete</property>
 		  <property name="can_focus">True</property>
 		  <property name="label" translatable="yes">Ask me</property>
 		  <property name="use_underline">True</property>
