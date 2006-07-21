@@ -1,3 +1,12 @@
+2006-07-21  Nurdin Premji  <npremji@redhat.com>
+
+	* test/dogtail_scripts/TestCreateObservers.py (setUp): Used MANAGE_CUSTOM_OBSERVERS 
+	variable rather than hardcoded string
+	(tearDown): Ditto.
+	(testUpdateObservers): Ditto.
+	* test/dogtail_scripts/FryskHelpers.py: Updated names of some dialogs:
+	CUSTOM_OBSERVER and CUSTOM_OBSERVERS_DIALOG
+
 2006-07-21  Mike Cvet  <mcvet@redhat.com>
 
 	* glade/processpicker.glade: Added; refactored from childpidwindow.glade.
@@ -12,6 +21,7 @@
 	instead of this.showAll().
 	* SessionManagerGui.java (getManagerControls): Don't call run().
 
+>>>>>>> 1.315
 2006-07-21  Rick Moseley  <rmoseley@redhat.com>
 	
 	* glade/frysk_source.glade: Added a couple tooltips, modded window title.

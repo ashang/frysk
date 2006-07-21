@@ -62,6 +62,7 @@ import unittest
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
 from FryskHelpers import skipDruid
+from FryskHelpers import MANAGE_CUSTOM_OBSERVERS
 
 # The Observer class defines our Frysk Observer objects
 from Observer import Observer
@@ -105,7 +106,7 @@ class TestCreateObservers ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
         # Create a new custom observer
@@ -173,7 +174,7 @@ class TestCreateObservers ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( MANAGER_CUSTOM_OBSERVERS )
         observersSelection.click()
 
         customObservers = self.frysk.dialog( 'Custom Observers' )
@@ -212,7 +213,7 @@ class TestCreateObservers ( unittest.TestCase ):
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Custom Observers... (DEMO)' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
         customObservers = self.frysk.dialog( 'Custom Observers' )
