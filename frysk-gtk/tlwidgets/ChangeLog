@@ -1,3 +1,13 @@
+2006-07-21	Nurdin Premji <npremji@redhat.com>
+	
+	* src/widgets/ftkeventviewer.c: Added large code separating comments.
+	(initialise_widget): Added initial support for user	defined 
+	hold_toggle_button state.
+	(ftk_ev_button_press_event): Removed printf statement.
+	(ftk_eventviewer_add_trace_e): Changed to use default normal foreground color.
+	* src/widgets/ftkeventviewer.h: Added initial support for user defined
+	hold_toggle_button state.
+
 2006-07-19  Nurdin Premji  <npremji@redhat.com>
 
 	* src/java/com/redhat/ftk/EventViewer.java (ftk_eventviewer_get_bg_default): Added.

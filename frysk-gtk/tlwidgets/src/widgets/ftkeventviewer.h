@@ -450,6 +450,7 @@ typedef struct _FtkEventViewer {
   gboolean     		  symbols_initted;
   gboolean		  drawable;
   gboolean		  time_set;
+  gboolean		  hold_activated;
 } FtkEventViewer;
 
 #define ftk_ev_vbox(v)		      &((v)->vbox)
@@ -491,6 +492,7 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_now(v)			(v)->now_d
 #define ftk_ev_span(v)			(v)->span_d
 #define ftk_ev_drawable(v)		(v)->drawable
+#define ftk_ev_hold_activated(v)	(v)->hold_activated
 #define ftk_ev_bg_color(v)		(v)->bg_color
 #define ftk_ev_bg_pixel(v)		(v)->bg_color.pixel
 #define ftk_ev_bg_red(v)		(v)->bg_color.red

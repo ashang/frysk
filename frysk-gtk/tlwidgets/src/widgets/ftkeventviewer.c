@@ -33,6 +33,12 @@
 
 GQuark ftk_quark;
 
+
+/************************************************************
+ * 															*
+ * 				Callback Definitions.						*
+ * 															*
+ ************************************************************/
 static gboolean ftk_eventviewer_da_scroll (GtkWidget      *widget,
 					   GdkEventScroll *event,
 					   gpointer        user_data);
@@ -107,6 +113,12 @@ static gboolean ftk_eventviewer_slider_cv (GtkRange * range,
 					   gpointer  user_data);
 #endif
     
+    
+/************************************************************
+ * 															*
+ * 				Internal methods. 							*
+ *															*
+ ************************************************************/
 gboolean
 ftk_eventviewer_preset_bg_rgb_e (FtkEventViewer * eventviewer, guint red, guint green, guint blue, GError ** err);
     
@@ -119,18 +131,15 @@ gboolean
 ftk_eventviewer_preset_marker_rgb_e(FtkEventViewer * eventviewer,
 				gint marker_index, guint red, guint green, guint blue,
 				GError ** err);
-				
+		
+/************************************************************
+ * 															*
+ * 				Time Conversion Method Definitions			*
+ *															*
+ ************************************************************/
 static inline double timeval_to_double (struct timeval * tv);
 static inline void double_to_timeval (struct timeval * tv,
 				      double time_d);
-
-#define DEFAULT_BG_RED		65535
-#define DEFAULT_BG_GREEN	65535
-#define DEFAULT_BG_BLUE		65535
-
-#define DEFAULT_TRACE_RED	    0
-#define DEFAULT_TRACE_GREEN	    0
-#define DEFAULT_TRACE_BLUE	    0
 
 #define DEFAULT_TIE_RED		65535
 #define DEFAULT_TIE_GREEN	    0
@@ -257,6 +266,9 @@ set_up_colors (FtkEventViewer * eventviewer)
 static void
 initialise_widget (FtkEventViewer * eventviewer)
 {
+	
+  ftk_ev_hold_activated (eventviewer) = FALSE;
+  
   ftk_ev_next_glyph (eventviewer)	= 0;
   ftk_ev_next_color (eventviewer)	= 0;
   
@@ -390,7 +402,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 #endif
     /* fixme -- make initial state configurable */
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hold_toggle_button),
-				  FALSE);
+				  ftk_ev_hold_activated(eventviewer));
     gtk_box_pack_start (GTK_BOX (hbutton_box),
 			hold_toggle_button,
 			FALSE, FALSE, 0);
@@ -1132,11 +1144,12 @@ ftk_ev_button_press_event (GtkWidget * widget,
 			   GdkEventButton * event,
 			   gpointer data)
 {
-  fprintf (stderr, "bp %d(%d) [%g, %g]\n",
+/*  fprintf (stderr, "bp %d(%d) [%g, %g]\n",
 	   (int)event->button,
 	   (int)event->state,
 	   (double)event->x,
 	   (double)event->y);
+*/	   
   return TRUE;
 }
 
@@ -2224,9 +2237,6 @@ ftk_eventviewer_preset_bg_rgb_e (FtkEventViewer * eventviewer, guint red, guint 
     return FALSE;
   }
   
-  /*XXX: Remove Print statement. */
-  fprintf(stderr, "Background Color red: %d, green: %d blue: %d\n", red, green, blue);
-
   ftk_ev_bg_red(eventviewer)		= red;
   ftk_ev_bg_green(eventviewer)		= green;
   ftk_ev_bg_blue(eventviewer)		= blue;	
@@ -2426,9 +2436,11 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     ftk_trace_vpos_d (trace)		= 0.0;
     ftk_trace_linestyle (trace)		= -1.0;
     ftk_trace_linewidth (trace)		= -1.0;
-    ftk_trace_color_red (trace)		= DEFAULT_TRACE_RED;
-    ftk_trace_color_green (trace)	= DEFAULT_TRACE_GREEN;
-    ftk_trace_color_blue (trace)	= DEFAULT_TRACE_BLUE;
+    gtk_widget_ensure_style(GTK_WIDGET (ftk_ev_da(eventviewer)));
+    GtkStyle *style = gtk_widget_get_style (GTK_WIDGET (ftk_ev_da(eventviewer)));
+    ftk_trace_color_red (trace)		= style->fg[0].red;
+    ftk_trace_color_green (trace)	= style->fg[0].green;
+    ftk_trace_color_blue (trace)	= style->fg[0].blue;
     ftk_trace_event_next(trace) 	= 0;
     ftk_trace_event_max(trace)  	= 0;
     ftk_trace_events(trace)     	= NULL;

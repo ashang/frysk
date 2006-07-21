@@ -50,9 +50,9 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
+//import java.util.Random;
 
-import org.gnu.gdk.Color;
+//import org.gnu.gdk.Color;
 import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
@@ -67,7 +67,7 @@ public class StatusWidget
     extends VBox
 {
 	
-	private Color[] backgroundColors;
+/*	private Color[] backgroundColors;
 	private Color[] traceColors;
 	private Color[] markerColors;
 	private Random randomColorGenerator;
@@ -76,6 +76,7 @@ public class StatusWidget
 		int index = randomColorGenerator.nextInt(colors.length);
 		return colors[index];
 	}
+*/   
 
   Label nameLabel;
 
@@ -94,7 +95,7 @@ public class StatusWidget
   public int newTrace(String desc, String info)
   {
     int trace1 = this.viewer.addTrace(desc, info);
-    this.viewer.setTraceColor(trace1, getColor(traceColors));
+   // this.viewer.setTraceColor(trace1, getColor(traceColors));
     return trace1;
   }
 
@@ -102,7 +103,7 @@ public class StatusWidget
   {
     super(false, 0);
     
-    randomColorGenerator = new Random();
+//    randomColorGenerator = new Random();
 	  
     // FontDescription font = new FontDescription();
     this.notifyUser = new Observable();
@@ -130,17 +131,17 @@ public class StatusWidget
     this.viewer = new EventViewer();
     this.viewer.resize (1, 1);
     //this.viewer.setBackgroundColor(backgroundColor);
-    backgroundColors = this.viewer.getBackgroundDefault();
-    traceColors = this.viewer.getForegroundDefault();
-    markerColors = this.viewer.getForegroundDefault();
+//    backgroundColors = this.viewer.getBackgroundDefault();
+//    traceColors = this.viewer.getForegroundDefault();
+//    markerColors = this.viewer.getForegroundDefault();
     
-    this.viewer.setBackgroundColor(backgroundColors[0]);    
+//    this.viewer.setBackgroundColor(backgroundColors[0]);    
     
     this.viewer.setTimebase(10.0);
     
     //XXX: Change "Additional  information to something more meaningfull.
     trace0 = this.viewer.addTrace(procname, "Additional information.");
-    this.viewer.setTraceColor(trace0, getColor(traceColors));
+//    this.viewer.setTraceColor(trace0, getColor(traceColors));
 
     initLogTextView(guiProc);
 
@@ -397,7 +398,7 @@ public class StatusWidget
           // 0);
           this.markerId = viewer.addMarker(0, observer.getName(),
                                            observer.getToolTip());
-          viewer.setMarkerColor(this.markerId, getColor(markerColors));
+//          viewer.setMarkerColor(this.markerId, getColor(markerColors));
         }
 
       if (count % 3 == 1)
@@ -407,7 +408,7 @@ public class StatusWidget
           // 65535);
           this.markerId = viewer.addMarker(1, observer.getName(),
                                            observer.getToolTip());
-          viewer.setMarkerColor(this.markerId, getColor(markerColors));
+//          viewer.setMarkerColor(this.markerId, getColor(markerColors));
         }
       if (count % 3 == 2)
         {
@@ -416,7 +417,7 @@ public class StatusWidget
           // 65535);
           this.markerId = viewer.addMarker(2, observer.getName(),
                                            observer.getToolTip());
-          viewer.setMarkerColor(this.markerId, getColor(markerColors));
+//          viewer.setMarkerColor(this.markerId, getColor(markerColors));
         }
     }
 

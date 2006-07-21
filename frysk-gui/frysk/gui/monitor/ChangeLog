@@ -1,3 +1,8 @@
+2006-07-21  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java: Removed explicit color changing code.
+	Using style colors for now.
+
 2006-07-20  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionProcDataModel.java (setSession): No longer calls 
