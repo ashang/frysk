@@ -63,9 +63,7 @@ import dogtail.tc
 import unittest
 
 # Test support functions
-from FryskHelpers import startFrysk
-from FryskHelpers import endFrysk
-from FryskHelpers import createMinimalSession
+from FryskHelpers import *
 
 class TestLicense (unittest.TestCase):
 
@@ -112,7 +110,7 @@ class TestLicense (unittest.TestCase):
         """Check that the license text is correct"""   
        
         # Define the expected license string
-        expectedLicenseString = 'http://www.gnu.org/copyleft/gpl.html\n'
+        expectedLicenseString = EXPECTED_LICENSE
     
         # Select the 'Help' menu item
         helpItem = self.frysk.menuItem('Help')
@@ -123,14 +121,14 @@ class TestLicense (unittest.TestCase):
         aboutItem.click()    
     
         # Open the 'About' dialog and its child filler dialog
-        aboutFrame = self.frysk.dialog('About Frysk - Technology Preview')
+        aboutFrame = self.frysk.dialog(ABOUT_FRYSK)
             
         # Select the 'License' menu pick and click the button to open the license frame
-        licenseButton = aboutFrame.button('License')
+        licenseButton = aboutFrame.button(LICENSE)
         licenseButton.click()
     
         # In the license frame, select the license text
-        licenseFrame = self.frysk.dialog('License')
+        licenseFrame = self.frysk.dialog(LICENSE)
         licenseText = licenseFrame.child(roleName='text')
     
         # Compare the expected license string with the actual string, log the results

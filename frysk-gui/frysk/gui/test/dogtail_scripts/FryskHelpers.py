@@ -80,6 +80,8 @@ FRYSK_APP_NAME = 'java-gnome'
 CUSTOM_OBSERVER_DIALOG = 'Custom Observer Details'
 ABOUT_FRYSK = 'About Frysk - Technology Preview'
 CREDITS = 'Credits'
+EXPECTED_LICENSE = 'http://www.gnu.org/copyleft/gpl.html\n'
+LICENSE = 'License'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 

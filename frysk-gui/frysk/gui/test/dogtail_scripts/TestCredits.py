@@ -66,9 +66,6 @@ import unittest
 
 # Test support functions
 from FryskHelpers import *
-#from FryskHelpers import startFrysk
-#from FryskHelpers import endFrysk
-#from FryskHelpers import createMinimalSession
 
 class TestCredits (unittest.TestCase):
 
