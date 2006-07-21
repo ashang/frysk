@@ -59,12 +59,7 @@ import dogtail.tc
 import unittest
 
 # Test support functions
-from FryskHelpers import startFrysk
-from FryskHelpers import endFrysk
-from FryskHelpers import createMinimalSession
-from FryskHelpers import getEventType
-from FryskHelpers import FRYSK_OBSERVER_FILES
-from FryskHelpers import CUSTOM_OBSERVER_DIALOG
+from FryskHelpers import *
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -156,15 +151,15 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         self.matrixLength = len( self.theMatrix )
 
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem( 'Observers' )
+        observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
         # Create a new custom observer
-        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
 
@@ -341,14 +336,14 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         observerFromGUI = Observer()
         
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem( 'Observers' )
+        observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
-        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
 
@@ -423,14 +418,14 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         """Check that the newly created Observers can be queried and deleted"""   
     
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem( 'Observers' )
+        observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
-        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
 
@@ -464,14 +459,14 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         """Check that the newly created Observers can be queried and updated"""   
     
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem( 'Observers' )
+        observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
-        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
 

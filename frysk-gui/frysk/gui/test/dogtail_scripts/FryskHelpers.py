@@ -82,6 +82,9 @@ ABOUT_FRYSK = 'About Frysk - Technology Preview'
 CREDITS = 'Credits'
 EXPECTED_LICENSE = 'http://www.gnu.org/copyleft/gpl.html\n'
 LICENSE = 'License'
+OBSERVERS = 'Observers'
+MANAGE_CUSTOM_OBSERVERS = 'Manage Custom Observers...'
+CUSTOM_OBSERVERS = 'Custom Observers'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
