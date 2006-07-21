@@ -346,7 +346,7 @@ public class SourceWindow
   public void setMyTask (Task myTask)
   {
     this.myTask = myTask;
-    this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
+    this.setTitle(this.getTitle() + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
   }
 
@@ -447,7 +447,7 @@ public class SourceWindow
     this.find.connectAccelerator();
 
     // Launch preference window action
-    this.prefsLaunch = new Action("prefs", "Preferences", "Edit Preferences",
+    this.prefsLaunch = new Action("prefs", "Frysk Preferences", "Edit Preferences",
                                   GtkStockItem.PREFERENCES.getString());
     this.prefsLaunch.addListener(new ActionListener()
     {
@@ -833,12 +833,12 @@ public class SourceWindow
 
     // add Tooltips
     tips.setTip(this.glade.getWidget(SourceWindow.NEXT_FIND),
-                "Find Next Match", "Locate the next occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
+                "Find Next Match", "Locate the next occurrence in the file"); //$NON-NLS-1$ //$NON-NLS-2$
     tips.setTip(
                 this.glade.getWidget(SourceWindow.PREV_FIND),
-                "Find Previous Match", "Locate the previous occurance in the file"); //$NON-NLS-1$ //$NON-NLS-2$
+                "Find Previous Match", "Locate the previous occurrence in the file"); //$NON-NLS-1$ //$NON-NLS-2$
     tips.setTip(this.glade.getWidget(SourceWindow.HIGHLIGHT_FIND),
-                "Highlight All Matches", "Locate all occurances in the file"); //$NON-NLS-1$ //$NON-NLS-2$
+                "Highlight All Matches", "Locate all occurrences in the file"); //$NON-NLS-1$ //$NON-NLS-2$
     tips.setTip(this.glade.getWidget(SourceWindow.CLOSE_FIND),
                 "Hide Find Window", "Close the find window"); //$NON-NLS-1$ //$NON-NLS-2$
   }

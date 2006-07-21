@@ -1,3 +1,7 @@
+2006-07-21  Rick Moseley  <rmoseley@redhat.com>
+	
+	* glade/frysk_source.glade: Added a couple tooltips, modded window title.
+
 2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* sessions/ChildPIDWindow.java (checkSession): Set treeview sort components.

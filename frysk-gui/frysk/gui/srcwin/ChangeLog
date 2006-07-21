@@ -1,3 +1,7 @@
+2006-07-21  Rick Moseley  <rmoseley@redhat.com>
+
+	* SourceWindow.java: Minor change of source window title.
+
 2006-07-17  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Corrected misspelling of "occurrence".

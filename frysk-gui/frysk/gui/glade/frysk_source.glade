@@ -4,7 +4,7 @@
 <glade-interface>
 
 <widget class="GtkWindow" id="sourceWindow">
-  <property name="title" translatable="yes">Source</property>
+  <property name="title" translatable="yes">Frysk Source Window for: </property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_NONE</property>
   <property name="modal">False</property>
@@ -99,6 +99,7 @@
 		  <child>
 		    <widget class="GtkEntry" id="toolbarGotoBox">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Go to a function in the current source</property>
 		      <property name="can_focus">True</property>
 		      <property name="editable">True</property>
 		      <property name="visibility">True</property>
@@ -448,6 +449,7 @@ Mixed</property>
 	  <child>
 	    <widget class="GtkEntry" id="findText">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Find a character string in the source</property>
 	      <property name="can_focus">True</property>
 	      <property name="editable">True</property>
 	      <property name="visibility">True</property>
