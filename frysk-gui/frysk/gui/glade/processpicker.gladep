@@ -2,7 +2,7 @@
 <!DOCTYPE glade-project SYSTEM "http://glade.gnome.org/glade-project-2.0.dtd">
 
 <glade-project>
-  <name>ChildPIDWindow</name>
-  <program_name>childpidwindow</program_name>
+  <name>ProcessPicker</name>
+  <program_name>processpicker</program_name>
   <gnome_support>FALSE</gnome_support>
 </glade-project>

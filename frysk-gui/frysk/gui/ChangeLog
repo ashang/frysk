@@ -1,3 +1,11 @@
+2006-07-21  Mike Cvet  <mcvet@redhat.com>
+
+	* glade/processpicker.glade: Added; refactored from childpidwindow.glade.
+	* sessions/ProcessPicker.java: Refactored from childPIDWindow.
+	* SessionManagerGui.java (.buttonEvent): Fixed up from refactoring.
+	* Gui.java (process_picker_glade): Refactored from session_child_glade.
+	(Gui): Fixed up for the refactoring.
+
 2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* sessions/ChildPIDWindow.java (checkSession): Call this.run()

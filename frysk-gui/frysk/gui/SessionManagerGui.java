@@ -63,7 +63,7 @@ import frysk.gui.common.IconManager;
 import frysk.gui.common.Util;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
-import frysk.gui.sessions.ChildPIDWindow;
+import frysk.gui.sessions.ProcessPicker;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.SourceWindowFactory;
@@ -107,7 +107,7 @@ public class SessionManagerGui
   
   private LibGlade childWindowGlade;
   
-  private ChildPIDWindow childPIDWindow;
+  private ProcessPicker childPIDWindow;
 
   public SessionManagerGui (LibGlade glade)
   {
@@ -339,7 +339,7 @@ public class SessionManagerGui
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
-            childPIDWindow = new ChildPIDWindow(childWindowGlade);
+            childPIDWindow = new ProcessPicker(childWindowGlade);
             Session s = (Session) previousSessions.getSelectedObject();
 
 			if (previousSession.getState())
