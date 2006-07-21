@@ -197,7 +197,7 @@ public class DebugProcess extends GuiObject {
 	 * @param observer
 	 */
 	public void addObserver(ObserverRoot observer){
-		this.observers.add(observer);
+      this.observers.add(observer);
 	}
 	
 	public void removeObserver(ObserverRoot observer){
