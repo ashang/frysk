@@ -63,7 +63,7 @@ import frysk.gui.common.IconManager;
 import frysk.gui.common.Util;
 import frysk.gui.monitor.ListView;
 import frysk.gui.monitor.WindowManager;
-import frysk.gui.sessions.ProcessPicker;
+//import frysk.gui.sessions.ProcessPicker;
 import frysk.gui.sessions.Session;
 import frysk.gui.sessions.SessionManager;
 import frysk.gui.srcwin.SourceWindowFactory;
