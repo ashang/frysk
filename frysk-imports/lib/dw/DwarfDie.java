@@ -81,6 +81,19 @@ public class DwarfDie
     return get_diename();
   }
 
+  public DwarfDie[] getScopes (long addr)
+  {
+    long[] vals = get_scopes(addr);
+    DwarfDie[] dies = new DwarfDie[vals.length];
+    for(int i = 0; i < vals.length; i++)
+      if(vals[i] != 0)
+        dies[i] = new DwarfDie(vals[i], this.parent);
+      else
+        dies[i] = null;
+    
+    return dies;
+  }
+  
   protected long getPointer ()
   {
     return this.pointer;
@@ -92,4 +105,6 @@ public class DwarfDie
   private native long get_highpc ();
 
   private native String get_diename ();
+  
+  private native long[] get_scopes (long addr);
 }

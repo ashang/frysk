@@ -64,3 +64,17 @@ lib::dw::DwarfDie::get_diename()
 {
 	return JvNewStringUTF(dwarf_diename(DWARF_DIE_POINTER));
 }
+
+jlongArray
+lib::dw::DwarfDie::get_scopes(jlong addr)
+{
+	Dwarf_Die *dies;
+	int count = dwarf_getscopes(DWARF_DIE_POINTER, (Dwarf_Addr) addr, &dies);
+	jlongArray longs = JvNewLongArray((jint) count);
+	jlong* longp = elements(longs);
+	
+	for(int i = 0; i < count; i++)
+		longp[i] = (jlong) &dies[i];
+		
+	return longs;
+}

@@ -1,3 +1,10 @@
+2005-07-21  Adam Jocksch  <ajocksch@redhat.com>
+
+	* DwarfDie.java (getScopes): Added.
+	(get_scopes): Added.
+	* cni/DwarfDie.cxx (get_scopes): Added.
+	* tests/TestDwfl.java (testGetDie): Added.
+
 2005-07-17  Adam Jocksch  <ajocksch@redhat.com>
 
 	* DwarfDie.java (getName): Added.

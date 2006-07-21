@@ -39,6 +39,7 @@
 package lib.dw.tests;
 
 import junit.framework.TestCase;
+import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
 
@@ -54,5 +55,33 @@ public class TestDwfl extends TestCase {
 		assertEquals(51, line.getLineNum());
 		assertEquals(0, line.getColumn());
 	}
+    
+    public void testGetDie(){
+      Dwfl dwfl = new Dwfl(TestLib.getPid());
+      assertNotNull(dwfl);
+      
+      DwarfDie die = dwfl.getDie(TestLib.getFuncAddr());
+      assertNotNull(die);
+      assertEquals(134691144, die.getLowPC());
+      assertEquals(134691201, die.getHighPC());
+      assertEquals("TestLib.cxx",die.getName().substring(die.getName().lastIndexOf("/") +1));
+      
+      DwarfDie[] allDies = die.getScopes(TestLib.getFuncAddr());
+      assertNotNull(allDies);
+      
+      long[] lowpcs = {134691144, 134691144};
+      long[] highpcs = {134691171, 134691201};
+      String[] names = {"getFuncAddr", "TestLib.cxx"};
+      
+      for(int i = 0; i < allDies.length; i++){
+        assertNotNull(allDies[i]);
+        assertEquals(lowpcs[i], allDies[i].getLowPC());
+        assertEquals(highpcs[i], allDies[i].getHighPC());
+        if(i == 1)
+          assertEquals(names[i], allDies[i].getName().substring(die.getName().lastIndexOf("/") +1));
+        else
+          assertEquals(names[i], allDies[i].getName());
+      }
+    }
 	
 }
