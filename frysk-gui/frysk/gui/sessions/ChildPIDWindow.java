@@ -220,7 +220,7 @@ public class ChildPIDWindow
               {
                 if (model.isIterValid(child))
                   {
-                    model.setValue(iter, (DataColumnBoolean) columns[0], ! prev);
+                    model.setValue(child, (DataColumnBoolean) columns[0], ! prev);
                   }
 
                 child = child.getNextIter();

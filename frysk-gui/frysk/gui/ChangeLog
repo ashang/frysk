@@ -3,6 +3,7 @@
 	* glade/childpidwindow.glade: changed the closeButton to a 
 	launchButton.
 	* sessions/ChildPIDWindow.java (setListeners): Updated accordingly.
+	(.cellRendererToggleEvent): Fixed a parent checkbox selection bug.
 
 2006-07-21  Rick Moseley  <rmoseley@redhat.com>
 
