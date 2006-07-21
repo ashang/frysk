@@ -240,7 +240,7 @@ public class ChildPIDWindow
 
     procView.setModel(model);
 
-    ((Button) this.glade.getWidget("formatCloseButton")).addListener(new ButtonListener()
+    ((Button) this.glade.getWidget("launchButton")).addListener(new ButtonListener()
     {
       public void buttonEvent (ButtonEvent arg0)
       {
