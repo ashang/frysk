@@ -85,6 +85,9 @@ LICENSE = 'License'
 OBSERVERS = 'Observers'
 MANAGE_CUSTOM_OBSERVERS = 'Manage Custom Observers...'
 CUSTOM_OBSERVERS = 'Custom Observers'
+DEBUG_SESSION_DRUID = 'Debug Session Druid'
+FRYSK_STARTUP_MANAGER = 'Frysk Startup Manager'
+CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
@@ -240,7 +243,7 @@ def skipDruid( fryskObject ):
     """ Skip the intial session setup Druid - this function is probably 
         temporary and will be used only during test development
     """
-    theDruid = fryskObject.dialog('Debug Session Druid')
+    theDruid = fryskObject.dialog(DEBUG_SESSION_DRUID)
     cancelButton = theDruid.button( 'Cancel' )
     cancelButton.click()
     finishButton = theDruid.button( 'Finish' )
@@ -274,11 +277,11 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     
     # ---------------------
     # Access the Druid GUI
-    theDruid = fryskObject.child(name='Frysk Startup Manager')
+    theDruid = fryskObject.child(name=FRYSK_STARTUP_MANAGER)
     newButton = theDruid.child (name='New', roleName = 'push button')
     newButton.click()
     
-    theSessionManager = fryskObject.dialog('Create a Frysk Session Dialog')
+    theSessionManager = fryskObject.dialog(CREATE_A_FRYSK_SESSION_DIALOG)
     quitButton = theDruid.button('Quit')
     openButton = theDruid.button('Open')
 
@@ -400,11 +403,11 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
 
     # ---------------------
     # Access the Druid GUI
-    theDruid = fryskObject.child(name='Frysk Startup Manager')
+    theDruid = fryskObject.child(name=FRYSK_STARTUP_MANAGER)
     newButton = theDruid.child (name='New', roleName = 'push button')
     newButton.click()
     
-    theSessionManager = fryskObject.dialog('Create a Frysk Session Dialog')
+    theSessionManager = fryskObject.dialog(CREATE_A_FRYSK_SESSION_DIALOG)
     quitButton = theDruid.button('Quit')
     openButton = theDruid.button('Open')
 
