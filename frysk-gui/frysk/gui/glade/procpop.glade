@@ -12,7 +12,7 @@
 
 <widget class="GtkWindow" id="procpopWindow">
   <property name="border_width">6</property>
-  <property name="title" translatable="yes">Frysk</property>
+  <property name="title" translatable="yes">Frysk Monitor</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -276,6 +276,7 @@
 					      <child>
 						<widget class="GtkTreeView" id="procTreeView">
 						  <property name="visible">True</property>
+						  <property name="tooltip" translatable="yes">List of processes associated with this debug session, select one to view in the status pane at the right</property>
 						  <property name="can_focus">True</property>
 						  <property name="headers_visible">True</property>
 						  <property name="rules_hint">False</property>
@@ -386,6 +387,7 @@
 						  <child>
 						    <widget class="GtkTreeView" id="threadTreeView">
 						      <property name="visible">True</property>
+						      <property name="tooltip" translatable="yes">List of threads of the currently selected process in the &quot;Processes&quot; list above, select one to view in the status pane</property>
 						      <property name="can_focus">True</property>
 						      <property name="headers_visible">True</property>
 						      <property name="rules_hint">False</property>
@@ -750,7 +752,7 @@
 <widget class="GtkWindow" id="preferencesWindow">
   <property name="width_request">648</property>
   <property name="height_request">454</property>
-  <property name="title" translatable="yes">Preferences</property>
+  <property name="title" translatable="yes">Frysk Preferences</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">False</property>
@@ -1051,7 +1053,7 @@
   <property name="border_width">6</property>
   <property name="width_request">400</property>
   <property name="height_request">500</property>
-  <property name="title" translatable="yes">Custom Observers</property>
+  <property name="title" translatable="yes">Frysk Custom Observers</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">True</property>
@@ -1088,6 +1090,7 @@
 	  <child>
 	    <widget class="GtkButton" id="observersApplyButton">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Apply the changes made so far</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="label">gtk-apply</property>
@@ -1101,6 +1104,7 @@
 	  <child>
 	    <widget class="GtkButton" id="observersCancelButton">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Return to the monitor window without making changes</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="label">gtk-cancel</property>
@@ -1114,6 +1118,7 @@
 	  <child>
 	    <widget class="GtkButton" id="observersOkButton">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Apply the changes and return to the monitor window</property>
 	      <property name="can_default">True</property>
 	      <property name="has_default">True</property>
 	      <property name="can_focus">True</property>
@@ -1195,6 +1200,7 @@
 		  <child>
 		    <widget class="GtkTreeView" id="observersTreeView">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Select an observer to edit/duplicate/delete or click &quot;New&quot; to create a new custom observer</property>
 		      <property name="can_focus">True</property>
 		      <property name="headers_visible">False</property>
 		      <property name="rules_hint">False</property>
@@ -1239,7 +1245,7 @@
 		      <child>
 			<widget class="GtkButton" id="createObserverButton">
 			  <property name="visible">True</property>
-			  <property name="tooltip" translatable="yes">Add a new custom observer</property>
+			  <property name="tooltip" translatable="yes">Create a new custom observer</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-new</property>
 			  <property name="use_stock">True</property>
@@ -1256,7 +1262,7 @@
 		      <child>
 			<widget class="GtkButton" id="editCustomObserverButton">
 			  <property name="visible">True</property>
-			  <property name="tooltip" translatable="yes">Edit a custom observer</property>
+			  <property name="tooltip" translatable="yes">Edit the selected custom observer</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-edit</property>
 			  <property name="use_stock">True</property>
@@ -1359,7 +1365,7 @@
 		      <child>
 			<widget class="GtkButton" id="removeObserverButton">
 			  <property name="visible">True</property>
-			  <property name="tooltip" translatable="yes">Delete a custom observer</property>
+			  <property name="tooltip" translatable="yes">Delete the selected custom observer</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-delete</property>
 			  <property name="use_stock">True</property>
@@ -1433,7 +1439,7 @@
 
 <widget class="GtkDialog" id="editObserverDialog">
   <property name="border_width">6</property>
-  <property name="title" translatable="yes">Custom Observer Details</property>
+  <property name="title" translatable="yes">Frysk Custom Observer Details</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>
   <property name="modal">True</property>
@@ -1470,6 +1476,7 @@
 	  <child>
 	    <widget class="GtkButton" id="editObserverCancelButton">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Cancel this custom observer's definition</property>
 	      <property name="can_default">True</property>
 	      <property name="can_focus">True</property>
 	      <property name="label">gtk-cancel</property>
@@ -1483,6 +1490,7 @@
 	  <child>
 	    <widget class="GtkButton" id="editObserverOkButton">
 	      <property name="visible">True</property>
+	      <property name="tooltip" translatable="yes">Complete the definition of this custom observer and save</property>
 	      <property name="can_default">True</property>
 	      <property name="has_default">True</property>
 	      <property name="can_focus">True</property>
