@@ -54,6 +54,8 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.TreeViewColumnEvent;
+import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.CellRenderer;
 import org.gnu.gtk.CellRendererToggle;
 import org.gnu.gtk.event.CellRendererToggleListener;
@@ -63,6 +65,7 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.DataColumnString;
 import org.gnu.gtk.Dialog;
+import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreePath;
@@ -148,7 +151,9 @@ public class ChildPIDWindow
       /* We've got multiple processes by the same name... */
       {
         this.procView = (TreeView) this.glade.getWidget("procView");
-        procView.setHeadersVisible(false);
+        this.procView.setHeadersVisible(true);
+        this.procView.setHeadersClickable(true);
+        this.procView.setEnableSearch(true);
         this.model = new TreeStore(columns);
         newSession = s;
 
@@ -185,7 +190,7 @@ public class ChildPIDWindow
 
         setListeners();
 
-        this.procView.setAlternateRowColor(true);
+        //this.procView.setAlternateRowColor(true);
         this.showAll();
       }
   }
@@ -199,8 +204,10 @@ public class ChildPIDWindow
     TreeViewColumn col = new TreeViewColumn();
     CellRenderer renderer = new CellRendererToggle();
     col.packStart(renderer, false);
+ 
     col.addAttributeMapping(renderer, CellRendererToggle.Attribute.ACTIVE,
                             columns[0]);
+    col.setTitle("Launch?");
     procView.appendColumn(col);
 
     ((CellRendererToggle) renderer).addListener(new CellRendererToggleListener()
@@ -231,12 +238,36 @@ public class ChildPIDWindow
       }
     });
 
-    col = new TreeViewColumn();
-    renderer = new CellRendererText();
-    col.packStart(renderer, true);
-    col.addAttributeMapping(renderer, CellRendererText.Attribute.TEXT,
+    final TreeViewColumn col2 = new TreeViewColumn();
+    CellRendererText textrenderer = new CellRendererText();
+    col2.packStart(textrenderer, true);
+    col2.addAttributeMapping(textrenderer, CellRendererText.Attribute.TEXT,
                             columns[1]);
-    procView.appendColumn(col);
+  
+    col2.addListener(new TreeViewColumnListener() 
+    {
+    	public void columnClickedEvent(TreeViewColumnEvent event) {
+		if (col2.getSortOrder() == SortType.ASCENDING) 
+		  {
+			  model.setSortColumn(columns[1], SortType.DESCENDING);
+			  col2.setSortOrder(SortType.DESCENDING);
+		  } 
+		  else 
+		    {
+			  model.setSortColumn(columns[1], SortType.ASCENDING);
+			  col2.setSortOrder(SortType.ASCENDING);
+			}
+		  }
+	});    
+    col2.setTitle("Processes");
+    col2.addAttributeMapping(textrenderer, CellRendererText.Attribute.TEXT,
+            columns[1]);
+	col2.setClickable(true);
+    col2.setReorderable(true);
+    col2.setSortOrder(SortType.ASCENDING);
+    col2.setSortIndicator(true);
+    model.setSortColumn(columns[1], SortType.ASCENDING);
+    procView.appendColumn(col2);
 
     procView.setModel(model);
 

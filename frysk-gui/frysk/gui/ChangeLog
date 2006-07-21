@@ -1,5 +1,8 @@
 2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* sessions/ChildPIDWindow.java (checkSession): Set treeview sort components.
+	(setListeners): Setup columns to be sortable.
+	
 	* SessionManagerGui.java (getManagerControls): Added a run()
 	call make dialog modal, and stop stack
 
