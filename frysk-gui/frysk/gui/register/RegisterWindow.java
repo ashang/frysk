@@ -110,7 +110,7 @@ public class RegisterWindow
                                         "Octal (LE)", "Octal (BE)",
                                         "Binary (LE)", "Binary (BE)" };
 
-  protected boolean[] colVisible = { true, false, false, false, false, false,
+  protected boolean[] colVisible = { false, false, true, false, false, false,
                                     false, false };
 
   private TreeViewColumn[] columns = new TreeViewColumn[8];
@@ -152,7 +152,7 @@ public class RegisterWindow
 	e.printStackTrace();
 	return;
       }
-    this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
+    this.setTitle(this.getTitle() + this.myTask.getProc().getCommand()
                   + " " + this.myTask.getName());
 
     this.registerView = (TreeView) this.glade.getWidget("registerView");

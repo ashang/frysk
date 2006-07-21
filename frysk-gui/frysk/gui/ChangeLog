@@ -1,3 +1,11 @@
+2006-07-21  Rick Moseley  <rmoseley@redhat.com>
+
+	* glade/registerwindow.glade: Added tooltip, modded title to match source.
+	* register/RegisterFormatDialog.java: Make hexadecimal the default window 
+        at startup.
+	* register/RegisterWindow.java: Make hexadecimal the default window.
+        Change window title.
+
 2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* test/TestSessionSaveLoad.hava: Add extra DebugProcess field.
@@ -32,12 +40,7 @@
 	* sessions/ChildPIDWindow.java (checkSession): Call this.run()
 	instead of this.showAll().
 	* SessionManagerGui.java (getManagerControls): Don't call run().
-<<<<<<< ChangeLog
-	
-=======
 
->>>>>>> 1.315
->>>>>>> 1.316
 2006-07-21  Rick Moseley  <rmoseley@redhat.com>
 	
 	* glade/frysk_source.glade: Added a couple tooltips, modded window title.

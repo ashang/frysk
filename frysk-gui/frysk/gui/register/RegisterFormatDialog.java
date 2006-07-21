@@ -185,7 +185,7 @@ public class RegisterFormatDialog
 
     for (int i = 0; i < RegisterWindow.colNames.length; i++)
       {
-        boolean val = prefs.getBoolean(RegisterWindow.colNames[i], i == 0);
+        boolean val = prefs.getBoolean(RegisterWindow.colNames[i], i == 2);
         model.setValue(iter, (DataColumnBoolean) cols[0], val);
         iter = iter.getNextIter();
       }
