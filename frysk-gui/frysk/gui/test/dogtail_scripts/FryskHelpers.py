@@ -230,7 +230,7 @@ def killFrysk( ):
     # Cleanup all frysk config files created during the test - save them for test
     # failure analysis - need to add a means to tie test run info to dir name
     strTime = str( time.time() )
-    newDir = '/tmp/' + strTime
+    newDir = os.getenv( 'HOME' ) + '/.frysk' + strTime
     os.mkdir( newDir )
     oldDir = os.getenv( 'HOME' ) + '/.frysk'
     os.rename( oldDir, newDir )
