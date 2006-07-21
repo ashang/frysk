@@ -73,6 +73,9 @@ import frysk.gui.srcwin.tags.TagsetManager;
 public class DebugProcess extends GuiObject {
  
 	String executablePath;
+    String alternativeDisplayName = "";
+    private String realName;
+    
 	ObservableLinkedList procs;
 	
 	ObservableLinkedList observers;
@@ -81,6 +84,7 @@ public class DebugProcess extends GuiObject {
 	ObservableLinkedList allProcsList;
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+
 	
 	public DebugProcess(){
 		super();
@@ -93,9 +97,11 @@ public class DebugProcess extends GuiObject {
 		allProcsList = DataModelManager.theManager.flatProcObservableLinkedList;
 	}
 	
-	public DebugProcess(String name, String executablePath){
-		super(name, name);
+	public DebugProcess(String name, String altName, String executablePath){
+		super(altName, altName);
 		
+        this.realName = name;
+        this.alternativeDisplayName = altName;
 		this.executablePath = executablePath;
 		
 		this.procs = new ObservableLinkedList();
@@ -219,7 +225,30 @@ public class DebugProcess extends GuiObject {
 		return new DebugProcess(this);
 	}
 	
+    public void setAlternativeDisplayName(String name)
+    {
+      this.alternativeDisplayName = name;
+    }
+    
+    public String getAlternativeDisplayName()
+    {
+      return this.alternativeDisplayName;
+    }
+    
+    public String getRealName()
+    {
+      return this.realName;
+    }
+    
+    public void setRealName(String name)
+    {
+      this.realName = name;
+    }
+    
 	public void save(Element node) {
+      
+        super.setName(this.realName);
+        super.setToolTip(this.realName);
 		super.save(node);
 		
 		node.setAttribute("executablePath", this.executablePath);
@@ -252,7 +281,9 @@ public class DebugProcess extends GuiObject {
 
 	public void load(Element node) {
 		super.load(node);
-
+        this.realName = super.getName();
+        this.alternativeDisplayName = super.getName();
+        
 		this.executablePath = node.getAttribute("executablePath").getValue();
 		Element observersXML = node.getChild("observers");
 		List list = (List) observersXML.getChildren("element");
@@ -287,5 +318,7 @@ public class DebugProcess extends GuiObject {
 		}
 		
 	}
+    
+    
 	
 }

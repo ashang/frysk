@@ -170,6 +170,44 @@ public class CreateFryskSessionDruid
     warningIcon.set(GtkStockItem.INFO, IconSize.BUTTON);
     editSession = true;
     unFilterData();
+    filterDatainSession();
+  }
+
+  private void filterDatainSession ()
+  {
+    if (currentSession.getProcesses() == null)
+      return;
+    Iterator i = (Iterator) currentSession.getProcesses().iterator();
+    if (i != null)
+      while (i.hasNext())
+        {
+          DebugProcess currentDebugProcess = (DebugProcess) i.next();
+          if (currentDebugProcess == null)
+            continue;
+          
+          TreePath foo = dataModel.searchName(currentDebugProcess.getName());
+  
+          if (foo != null)
+            {
+              TreeIter foundIter = procWiseTreeView.psDataModel.getModel().getIter(
+                                                                                   foo);
+              if (procWiseTreeView.psDataModel.getModel().isIterValid(foundIter))
+                {
+                  String altName = procWiseTreeView.psDataModel.getModel().getValue(
+                                                                                   foundIter,
+                                                                                   procWiseTreeView.psDataModel.getNameDC());
+                  currentDebugProcess.setRealName(currentDebugProcess.getName());
+                  currentDebugProcess.setAlternativeDisplayName(altName);
+                  currentDebugProcess.setName(altName);
+           
+                  procWiseTreeView.psDataModel.getModel().setValue(
+                                                                   foundIter,
+                                                                   procWiseTreeView.psDataModel.getSelectedDC(),
+                                                                   true);
+                }
+            }
+        }
+
   }
 
   public void setNewSessionMode ()
@@ -229,6 +267,8 @@ public class CreateFryskSessionDruid
       }
 
     DebugProcess debugProcess = new DebugProcess(proc.getExecutableName(),
+                                                 this.dataModel.getModel().getValue(
+                                                 unfilteredProcessIter,this.dataModel.getNameDC()),
                                                  proc.getNiceExecutablePath());
     currentSession.addProcess(debugProcess);
 
@@ -260,17 +300,20 @@ public class CreateFryskSessionDruid
 
 	TreeRowReference[] paths = new TreeRowReference[selectedProcs.length];
 	TreeIter unfilteredProcessIter = null;
+    
     if (selectedProcs.length > 0)
       {
     	
     	for (int i=0; i<selectedProcs.length; i++)
     	{
+            if (selectedProcs[i] == null)
+              continue;
     		if (filtered)
     		{
                 unfilteredProcessIter = this.dataModel.getModel().getIter(
-                        deFilterPath(
-                                     tree,
-                                     selectedProcs[i]));
+                                                                          deFilterPath(
+                                                                          tree,
+                                                                          selectedProcs[i]));
     			
     		}
     		else
@@ -283,6 +326,8 @@ public class CreateFryskSessionDruid
    
             // Scenario 1: Tree iter has children (a process group); selected
             // the parent
+            if (paths[i] == null)
+              continue;
             if (this.dataModel.getModel().getIter(paths[i].getPath()).getChildCount() > 0)
               {
                 if (state)
@@ -473,7 +518,7 @@ public class CreateFryskSessionDruid
               while (i.hasNext())
                 {
                   DebugProcess currentDebugProcess = (DebugProcess) i.next();
-                  TreePath foo = dataModel.searchName(currentDebugProcess.getName());
+                  TreePath foo = dataModel.searchName(currentDebugProcess.getRealName());
                   changeGroupState(procWiseTreeView, new TreePath[] { foo },
                                    false, false);
                   currentSession.removeProcess(currentDebugProcess);

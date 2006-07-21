@@ -1,3 +1,14 @@
+2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* druid/CreateFryskSessionDruid.java (filterDatainSession): New.
+	* sessions/DebugProcess.java (setAlternativeDisplayName): 
+	New.
+	(getAlternativeDisplayName): Ditto.
+	(getRealName): Ditto.
+	(setRealName): Ditto.
+	(save): Swap out names before save.
+	(load): Populate names on load.
+
 2006-07-21  Nurdin Premji  <npremji@redhat.com>
 
 	* test/dogtail_scripts/TestCreateObservers.py (setUp): Used MANAGE_CUSTOM_OBSERVERS 
@@ -20,8 +31,12 @@
 	* sessions/ChildPIDWindow.java (checkSession): Call this.run()
 	instead of this.showAll().
 	* SessionManagerGui.java (getManagerControls): Don't call run().
+<<<<<<< ChangeLog
+	
+=======
 
 >>>>>>> 1.315
+>>>>>>> 1.316
 2006-07-21  Rick Moseley  <rmoseley@redhat.com>
 	
 	* glade/frysk_source.glade: Added a couple tooltips, modded window title.
