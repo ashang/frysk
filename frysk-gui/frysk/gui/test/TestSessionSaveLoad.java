@@ -58,7 +58,7 @@ public class TestSessionSaveLoad extends TestCase {
 		
 		SessionManager sessionManager = new SessionManager();
 		Session mySavedSession = new Session("1", "2");
-		DebugProcess debugProcess = new DebugProcess("3", "33");
+		DebugProcess debugProcess = new DebugProcess("3", "33", "333");
 		
 		Iterator iterator = ObserverManager.theManager.getTaskObservers().iterator();
 		while (iterator.hasNext()) {
