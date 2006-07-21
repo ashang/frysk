@@ -75,7 +75,11 @@ FRYSK_PROCESS_NAME = 'FryskGui'
 
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
 FRYSK_APP_NAME = 'java-gnome'
+
+# Other Frysk dialog titles
 CUSTOM_OBSERVER_DIALOG = 'Custom Observer Details'
+ABOUT_FRYSK = 'About Frysk - Technology Preview'
+CREDITS = 'Credits'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 

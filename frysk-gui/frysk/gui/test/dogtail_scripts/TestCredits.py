@@ -65,9 +65,10 @@ import dogtail.tc
 import unittest
 
 # Test support functions
-from FryskHelpers import startFrysk
-from FryskHelpers import endFrysk
-from FryskHelpers import createMinimalSession
+from FryskHelpers import *
+#from FryskHelpers import startFrysk
+#from FryskHelpers import endFrysk
+#from FryskHelpers import createMinimalSession
 
 class TestCredits (unittest.TestCase):
 
@@ -124,14 +125,14 @@ class TestCredits (unittest.TestCase):
         aboutItem.click()
    
         # Open the 'About' dialog and its child filler dialog
-        aboutFrame = self.frysk.dialog('About Frysk - Technology Preview')
+        aboutFrame = self.frysk.dialog(ABOUT_FRYSK)
    
         # Open the 'Credits' dialog
-        creditsButton = aboutFrame.button('Credits')
+        creditsButton = aboutFrame.button(CREDITS)
         creditsButton.click()
    
         # Select the 'Credits' menu pick to view the credit text
-        creditsFrame = self.frysk.dialog('Credits')
+        creditsFrame = self.frysk.dialog(CREDITS)
    
         # As of 2006/04/26, the text is blank - so just exit for now    
         # Compare the expected license string with the actual string, log the results

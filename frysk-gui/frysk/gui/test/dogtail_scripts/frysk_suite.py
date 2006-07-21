@@ -61,7 +61,6 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 import unittest
 import TestLicense
 import TestCredits
-import TestCreateObservers
 import TestCreateObserversfromDataModel
 import TestDruid
 
@@ -75,7 +74,6 @@ os.environ.__setitem__('TestDruid_FILE', 'another_new_session.xml')
 # Define the suite elements
 licenseSuite = TestLicense.suite()
 creditsSuite = TestCredits.suite()
-createObserverSuite  = TestCreateObservers.suite()
 createSuiteObserverDataSuite = TestCreateObserversfromDataModel.suite()
 druidSuite  = TestDruid.suite()
 
@@ -83,9 +81,8 @@ druidSuite  = TestDruid.suite()
 suite = unittest.TestSuite()
 suite.addTest(licenseSuite)
 suite.addTest(creditsSuite)
-suite.addTest(createObserverSuite)
-suite.addTest(createObserverDataSuite)
-suite.addTest(druidSuite)
+#suite.addTest(createObserverDataSuite)
+#suite.addTest(druidSuite)
 
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)
