@@ -1,5 +1,7 @@
 2005-07-21  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tests/testDwfl.java: GNU formatted.
+
 	* DwarfDie.java (getScopes): Added.
 	(get_scopes): Added.
 	* cni/DwarfDie.cxx (get_scopes): Added.
