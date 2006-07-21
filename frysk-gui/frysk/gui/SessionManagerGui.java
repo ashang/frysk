@@ -345,7 +345,6 @@ public class SessionManagerGui
 			if (previousSession.getState())
 			{
                 childPIDWindow.checkSession(s);
-                childPIDWindow.run();
 				WindowManager.theManager.mainWindow.hideTerminal();
 			}
 			if (terminalSession.getState())

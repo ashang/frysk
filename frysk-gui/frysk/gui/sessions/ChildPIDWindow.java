@@ -191,7 +191,8 @@ public class ChildPIDWindow
         setListeners();
 
         //this.procView.setAlternateRowColor(true);
-        this.showAll();
+        this.run();
+        //this.showAll();
       }
   }
 
