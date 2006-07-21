@@ -1,3 +1,9 @@
+2006-07-21  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring
+	config.guess
+	config.sub
+
 2006-07-13  Stepan Kasal  <kasal@ucw.cz>
 
 	* bootstrap.sh: Run autoheader in libunwind, autoconf in antlr..

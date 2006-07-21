@@ -1,3 +1,9 @@
+2006-07-21  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring
+	config.guess
+	config.sub
+
 2006-07-12  Rick Moseley <rmoseley@redhat.com>
 
 	* Makefile.am: Remove libunwind-ptrace.a.

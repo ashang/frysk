@@ -1,3 +1,9 @@
+2006-07-21  Nurdin Premji  <npremji@redhat.com>
+
+	* .cvsignore: Ignoring
+	config.guess
+	config.sub
+
 2006-07-19  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* frysk/bindir/ftrace.java: Now prints the pid of the proc

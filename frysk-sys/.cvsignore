@@ -23,3 +23,5 @@ TestRunner.classes
 TestRunner
 *.class
 depcomp
+config.guess
+config.sub
