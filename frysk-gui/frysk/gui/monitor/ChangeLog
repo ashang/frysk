@@ -1,3 +1,8 @@
+2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/ObserverManager.java (initTaskObservers): Removed
+	Experimental XProgramWatcheX observer.
+
 2006-07-21  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java: Removed explicit color changing code.
