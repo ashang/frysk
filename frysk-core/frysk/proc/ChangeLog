@@ -1,3 +1,8 @@
+2006-07-22  Andrew Cagney  <cagney@redhat.com>
+
+	* StressAttachDetachSignaledTask.java: Mark broken tests.
+	* TestProcTasksObserver.java: Mark broken tests.
+
 2006-07-20  Tim Moore  <timmore@redhat.com>
 
 	* Task.java (Task.TaskException): New exception class.

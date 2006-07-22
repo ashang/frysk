@@ -301,6 +301,8 @@ public class TestProcTasksObserver extends TestLib {
 	
     public void testDoCloneDetached() 
     {
+	if (brokenXXX (2954))
+	    return;
 	AckProcess ackProcess = new DetachedAckProcess ();
 	doClone(ackProcess);
     }
@@ -334,6 +336,8 @@ public class TestProcTasksObserver extends TestLib {
 	
     public void testDoCloneAckDaemon() 
     {
+	if (brokenXXX (2955))
+	    return;
 	AckProcess ackProcess = new AckDaemonProcess ();
 	doClone(ackProcess);
     }

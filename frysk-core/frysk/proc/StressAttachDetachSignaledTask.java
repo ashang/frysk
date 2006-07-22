@@ -107,6 +107,8 @@ public class StressAttachDetachSignaledTask
      */
     public void testForking ()
     {
+	if (brokenXXX (2952))
+	    return;
 	new Spawn ()
 	{
 	    void op (AckDaemonProcess child, int iteration)
@@ -129,6 +131,8 @@ public class StressAttachDetachSignaledTask
      */
     public void testCloning ()
     {
+	if (brokenXXX (2953))
+	    return;
 	new Spawn ()
 	{
 	    void op (AckDaemonProcess child, int iteration)
