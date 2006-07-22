@@ -55,6 +55,9 @@ public class StressAttachDetachManyTasks
      */
     public void test ()
     {
+	if (brokenXXX(2468))
+	  return;
+
 	final int timeout = 20;
 
 	Child child = new AckDaemonProcess (ackSignal, new String[]

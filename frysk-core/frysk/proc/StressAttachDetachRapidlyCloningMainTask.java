@@ -56,6 +56,9 @@ public class StressAttachDetachRapidlyCloningMainTask
      */
     public void test ()
     {
+	if (brokenXXX(2956))
+	  return;
+
 	final int timeout = 20;
 
 	Child child = new AckDaemonProcess (ackSignal, new String[]

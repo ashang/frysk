@@ -1,3 +1,10 @@
+2006-07-22  Mark Wielaard  <mark@klomp.org>
+
+	* StressAttachDetachManyTasks.java (test): Mark broken 2468.
+	* StressAttachDetachRapidlyCloningMainTask.java (test): Mark broken
+	2956.
+	* TestTaskObserverDetach.java (testDetachClone): Mark broken 2744.
+
 2006-07-22  Andrew Cagney  <cagney@redhat.com>
 
 	* StressAttachDetachSignaledTask.java: Mark broken tests.
