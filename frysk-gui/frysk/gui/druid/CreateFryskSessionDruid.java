@@ -171,6 +171,8 @@ public class CreateFryskSessionDruid
     editSession = true;
     unFilterData();
     filterDatainSession();
+    observerSelectionTreeView.setSensitive(true);
+    
   }
 
   private void filterDatainSession ()
@@ -426,6 +428,7 @@ public class CreateFryskSessionDruid
 
     // Page 1 of the Druid. Initial Process Selection.
 
+    
     // Create New Live Data Model and mount on the TreeView
     this.dataModel = new ProcWiseDataModel();
     procWiseTreeView = new ProcWiseTreeView(
@@ -438,9 +441,14 @@ public class CreateFryskSessionDruid
     procWiseTreeView.addListener(new TreeViewListener() {
 		public void treeViewEvent(TreeViewEvent event) {
 			if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
-	         changeGroupState(procWiseTreeView,
-                     procWiseTreeView.getSelection().getSelectedRows(),
-                     true, true);
+			  {	
+			         changeGroupState(procWiseTreeView,
+		                     procWiseTreeView.getSelection().getSelectedRows(),
+                		     true, true);
+				 if (!currentSession.getProcesses().isEmpty())
+				          observerSelectionTreeView.setSensitive(true);
+			  }
+
 		}});
 
     // Create a New ListView and mount the Linked List from Session data
@@ -450,18 +458,28 @@ public class CreateFryskSessionDruid
     addedProcsTreeView.watchLinkedList(currentSession.getProcesses());
     addedProcsTreeView.getSelection().setMode(SelectionMode.MULTIPLE);
     addedProcsTreeView.addListener(new TreeViewListener() {
-		public void treeViewEvent(TreeViewEvent event) {
-			if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
-			{
-				DebugProcess currentDebugProcess = (DebugProcess) addedProcsTreeView.getSelectedObject();
-				if (currentDebugProcess != null) {
-					TreePath foo = dataModel.searchName(currentDebugProcess.getName());
-					changeGroupState(procWiseTreeView, new TreePath[] { foo },
-							false, false);
-					currentSession.removeProcess(currentDebugProcess);
+			public void treeViewEvent(TreeViewEvent event) {
+				if (event.isOfType(TreeViewEvent.Type.ROW_ACTIVATED)) {
+					DebugProcess currentDebugProcess = (DebugProcess) addedProcsTreeView
+							.getSelectedObject();
+					if (currentDebugProcess != null) {
+						TreePath foo = dataModel.searchName(currentDebugProcess
+								.getName());
+						changeGroupState(procWiseTreeView,
+								new TreePath[] { foo }, false, false);
+						currentSession.removeProcess(currentDebugProcess);
+					}
+					if (currentSession.getProcesses().isEmpty())
+					{
+						observerSelectionTreeView.setSensitive(false);
+					}
+					else
+					{
+						observerSelectionTreeView.setSensitive(true);
+					}
 				}
 			}
-		}});
+		});
     this.setUpCurrentPage();
 
     nameEntry = (Entry) glade.getWidget("sessionDruid_sessionName");
@@ -496,36 +514,40 @@ public class CreateFryskSessionDruid
     addProcessGroupButton = (Button) glade.getWidget("sessionDruid_addProcessGroupButton");
     removeProcessGroupButton = (Button) glade.getWidget("sessionDruid_removeProcessGroupButton");
 
-    addProcessGroupButton.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent event)
-      {
-        if (event.isOfType(ButtonEvent.Type.CLICK))
-          changeGroupState(procWiseTreeView,
-                           procWiseTreeView.getSelection().getSelectedRows(),
-                           true, true);
-      }
-    });
+    addProcessGroupButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if (event.isOfType(ButtonEvent.Type.CLICK))
+					changeGroupState(procWiseTreeView, procWiseTreeView
+							.getSelection().getSelectedRows(), true, true);
+				if (!currentSession.getProcesses().isEmpty())
+					observerSelectionTreeView.setSensitive(true);
+			}
+		});
 
-    removeProcessGroupButton.addListener(new ButtonListener()
-    {
-      public void buttonEvent (ButtonEvent event)
-      {
-        if (event.isOfType(ButtonEvent.Type.CLICK))
-          {
-            Iterator i = addedProcsTreeView.getSelectedObjects();
-            if (i != null)
-              while (i.hasNext())
-                {
-                  DebugProcess currentDebugProcess = (DebugProcess) i.next();
-                  TreePath foo = dataModel.searchName(currentDebugProcess.getRealName());
-                  changeGroupState(procWiseTreeView, new TreePath[] { foo },
-                                   false, false);
-                  currentSession.removeProcess(currentDebugProcess);
-                }
-          }
-      }
-    });
+    removeProcessGroupButton.addListener(new ButtonListener() {
+			public void buttonEvent(ButtonEvent event) {
+				if (event.isOfType(ButtonEvent.Type.CLICK)) {
+					Iterator i = addedProcsTreeView.getSelectedObjects();
+					if (i != null)
+						while (i.hasNext()) {
+							DebugProcess currentDebugProcess = (DebugProcess) i
+									.next();
+							TreePath foo = dataModel
+									.searchName(currentDebugProcess
+											.getRealName());
+							changeGroupState(procWiseTreeView,
+									new TreePath[] { foo }, false, false);
+							currentSession.removeProcess(currentDebugProcess);
+
+						}
+
+					if (currentSession.getProcesses().isEmpty())
+						observerSelectionTreeView.setSensitive(false);
+					else
+						observerSelectionTreeView.setSensitive(true);
+				}
+			}
+		});
 
   }
 

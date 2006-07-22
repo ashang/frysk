@@ -8,6 +8,9 @@
 
 2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* druid/CreateFryskSessionDruid.java (getProcessSelectionControls): 
+	Do not allow editing on observers on a blank process list.
+
 	* test/TestSessionSaveLoad.hava: Add extra DebugProcess field.
 	* druid/CreateFryskSessionDruid.java (filterDatainSession): New.
 	* sessions/DebugProcess.java (setAlternativeDisplayName): 
