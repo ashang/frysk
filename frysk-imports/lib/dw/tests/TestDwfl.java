@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -48,6 +48,23 @@ import lib.dw.DwflLine;
 public class TestDwfl
     extends TestCase
 {
+    /**
+     * A variable that has the value true.  Used by code trying to
+     * stop the optimizer realise that there's dead code around.
+     */
+    static boolean trueXXX = true;
+    /**
+     * A function that returns true, and prints skip.  Used by test
+     * cases that want to be skipped (vis: if(broken()) return) while
+     * trying to avoid the compiler's optimizer realizing that the
+     * rest of the function is dead.
+     */
+    protected static boolean brokenXXX (int bug)
+    {
+	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
+	return trueXXX;
+    }
+
 
   public void testGetLine ()
   {
@@ -64,6 +81,8 @@ public class TestDwfl
 
   public void testGetDie ()
   {
+      if (brokenXXX (2951))
+	  return;
     Dwfl dwfl = new Dwfl(TestLib.getPid());
     assertNotNull(dwfl);
 
