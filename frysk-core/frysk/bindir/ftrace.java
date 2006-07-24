@@ -41,13 +41,7 @@ import inua.util.PrintWriter;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
-import frysk.EventLogger;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
