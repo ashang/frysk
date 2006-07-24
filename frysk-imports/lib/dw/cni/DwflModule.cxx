@@ -36,76 +36,21 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+#include "libdwfl.h"
 #include <gcj/cni.h>
-#include <stdlib.h>
-#include <gelf.h>
 
-#include "lib/elf/ElfSection.h"
-#include "lib/elf/ElfSectionHeader.h"
-#include "lib/elf/Elf.h"
+#include "lib/dw/DwflModule.h"
 
-#ifdef __cplusplus
-extern "C"
+#define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
+
+jlong
+lib::dw::DwflModule::module_getelf()
 {
-#endif
-
-jlong
-lib::elf::ElfSection::elf_ndxscn (){
-	return ::elf_ndxscn((Elf_Scn*) this->pointer);
-}
-
-lib::elf::ElfSectionHeader*
-lib::elf::ElfSection::elf_getshdr (){
-	GElf_Shdr tmp;
-	if(::gelf_getshdr((Elf_Scn*) this->pointer, &tmp) == NULL)
-		return NULL;
+	Dwarf_Addr bias = 0;
+	::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
+	if(elf == NULL)
+		return 0;
 		
-	lib::elf::ElfSectionHeader *header = new lib::elf::ElfSectionHeader(this->parent);
-	
-	GElf_Ehdr *ehdr = (GElf_Ehdr *) alloca(sizeof(GElf_Ehdr));
-	ehdr = gelf_getehdr((::Elf *) this->parent->getPointer(), ehdr);
-	header->name = JvNewStringUTF(
-						elf_strptr((::Elf *) this->parent->getPointer(), ehdr->e_shstrndx, tmp.sh_name)
-						); 
-	
-	header->type = (jint) tmp.sh_type;
-	header->flags = (jlong) tmp.sh_flags;
-	header->addr = (jlong) tmp.sh_addr;
-	header->offset = (jlong) tmp.sh_offset;
-	header->size = (jlong) tmp.sh_size;
-	header->link = (jint) tmp.sh_link;
-	header->info = (jint) tmp.sh_info;
-	header->addralign = (jlong) tmp.sh_addralign;
-	header->entsize = (jlong) tmp.sh_entsize;
-	
-	return header;
+	this->bias = (jlong) bias;
+	return (jlong) elf;	
 }
-
-jint
-lib::elf::ElfSection::elf_flagscn (jint command, jint flags){
-	return ::elf_flagscn((Elf_Scn*) this->pointer, (Elf_Cmd) command, flags);
-}
-
-jint
-lib::elf::ElfSection::elf_flagshdr (jint command, jint flags){
-	return ::elf_flagshdr((Elf_Scn*) this->pointer, (Elf_Cmd) command, flags);
-}
-
-jlong
-lib::elf::ElfSection::elf_getdata (){
-	return (jlong) ::elf_getdata((Elf_Scn*) this->pointer, (Elf_Data*) NULL);
-}
-
-jlong
-lib::elf::ElfSection::elf_rawdata (){
-	return (jlong) ::elf_rawdata((Elf_Scn*) this->pointer, (Elf_Data*) NULL);
-}
-
-jlong
-lib::elf::ElfSection::elf_newdata (){
-	return (jlong) ::elf_newdata((Elf_Scn*) this->pointer);
-}
-
-#ifdef __cplusplus
-}
-#endif

@@ -46,7 +46,7 @@ public class Elf {
 
 	private long pointer;
 	
-	protected Elf(long ptr){
+	public Elf(long ptr){
 		this.pointer = ptr;
 	}
 	

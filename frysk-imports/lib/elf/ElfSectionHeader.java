@@ -45,7 +45,7 @@ package lib.elf;
  */
 public  class ElfSectionHeader {
 
-	public int name;
+	public String name;
 	public int type;
 	public long flags;
 	public long addr;

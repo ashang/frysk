@@ -1,5 +1,14 @@
 2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
 
+	* Dwfl.java (getModule): Added.
+	(dwfl_addrmodule): Added.
+	* DwflModule.java: Added header and formatted to GNU formatting.
+	(getElf): Added.
+	(module_getelf): Added.
+	* ModuleElfFile.java: Added, rename pending.
+	* cni/Dwfl.cxx (dwfl_addrmodule): Added.
+	* cni/DwflModule.cxx: Added.
+
 	* test/TestDwfl.java (testGetLine): Removed checks for pc addresses,
 	since they were very fragile and break given the slightest change
 	(bug 2951).

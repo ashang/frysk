@@ -90,6 +90,15 @@ public class Dwfl
   //		
   // return dwarfs;
   // }
+  
+  public DwflModule getModule(long addr)
+  {
+    long val = dwfl_addrmodule(addr);
+    if(val == 0)
+      return null;
+    
+    return new DwflModule(addr, this);
+  }
 
   public DwflLine getSourceLine (long addr)
   {
@@ -126,6 +135,8 @@ public class Dwfl
   // protected native long[] dwfl_get_modules();
   // protected native long[] dwfl_getdwarf();
   protected native long dwfl_getsrc (long addr);
-
+  
   protected native long dwfl_addrdie (long addr);
+  
+  protected native long dwfl_addrmodule (long addr);
 }

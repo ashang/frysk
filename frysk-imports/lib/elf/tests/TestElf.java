@@ -36,6 +36,8 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
+
+
 package lib.elf.tests;
 
 import java.math.BigInteger;
@@ -55,132 +57,148 @@ import lib.elf.ElfFileException;
 
 import frysk.imports.Build;
 
-public class TestElf extends TestCase {
-	
-	public void testCore()
-	throws ElfException, ElfFileException {
-		Elf testElf = new Elf(Build.ABS_BUILDDIR+"/lib/elf/tests/test-core", ElfCommand.ELF_C_READ);
-		
-		assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
-		assertEquals(testElf.getBase(), 0);
-		
-		ElfEHeader header = testElf.getEHeader();
-		assertEquals(3, header.machine);
-		assertEquals(52, header.ehsize);
-		assertEquals(0, header.entry);
-		assertEquals(1, header.version);
-		assertEquals(0, header.flags);
-		assertEquals(4, header.type);
-		assertEquals(0, header.shnum);
-		assertEquals(0, header.shentsize);
-		assertEquals(0, header.shoff);
-		assertEquals(14, header.phnum);
-		assertEquals(32, header.phentsize);
-		assertEquals(52, header.phoff);
-		
-		int count = header.phnum;
-		
-		int[] pheaderFlags = {0, 5, 5, 4, 6, 5, 4, 6, 6, 5, 6, 6, 6, 6};
-		int[] pheaderOffsets = {500, 4096, 8192, 8192, 12288, 16384, 16384, 24576,
-				28672, 40960, 40960, 45056, 49152, 53248};
-		int[] pheaderSegSizeFile = {472, 4096, 0, 4096, 4096, 0, 8192, 4096, 12288, 0,
-				4096, 4096, 4096, 90112};
-		int[] pheaderSegSizeMem = {0, 4096, 102400, 4096, 4096, 1232896, 8192, 4096, 
-				12288, 4096, 4096, 4096, 4096, 90112};
-		BigInteger[] pheaderAddr = {new BigInteger("0", 10), new BigInteger("1507328", 10),
-				new BigInteger("1511424", 10), new BigInteger("1613824", 10),
-				new BigInteger("1617920", 10), new BigInteger("10477568", 10), 
-				new BigInteger("11710464", 10), new BigInteger("11718656", 10),
-				new BigInteger("11722752", 10), new BigInteger("134512640", 10),
-				new BigInteger("134516736", 10), new BigInteger("3085901824", 10),
-				new BigInteger("3085983744", 10), new BigInteger("3220111360", 10)};
-		
-		for(int i = 0; i < count; i++){
-			ElfPHeader pheader = testElf.getPHeader(i);
-			assertNotNull(pheader);
-			
-			if(i == 0)
-				assertEquals(0, pheader.align);
-			else
-				assertEquals(4096, pheader.align);
-			assertEquals(pheaderFlags[i], pheader.flags);
-			assertEquals(pheaderOffsets[i], pheader.offset);
-			assertEquals(0, pheader.paddr);
-			assertEquals(pheaderSegSizeFile[i], pheader.filesz);
-			assertEquals(pheaderSegSizeMem[i], pheader.memsz);
-			if(i == 0)
-				assertEquals(4, pheader.type);
-			else
-				assertEquals(1, pheader.type);
-			assertEquals(pheaderAddr[i], new BigInteger(""+pheader.vaddr, 10));
-		}
-	}
-	
-	public void testObjectFile()
-	throws ElfException, ElfFileException {
-		Elf testElf = new Elf(Build.ABS_BUILDDIR+"/lib/elf/tests/helloworld.o", ElfCommand.ELF_C_READ);
-		
-		assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
-		assertEquals(testElf.getBase(), 0);
-		
-		ElfEHeader header = testElf.getEHeader();
-		assertEquals(3, header.machine);
-		assertEquals(52, header.ehsize);
-		assertEquals(0, header.entry);
-		assertEquals(1, header.version);
-		assertEquals(0, header.flags);
-		assertEquals(1, header.type);
-		assertEquals(11, header.shnum);
-		assertEquals(40, header.shentsize);
-		assertEquals(236, header.shoff);
-		assertEquals(0, header.phnum);
-		assertEquals(0, header.phentsize);
-		assertEquals(0, header.phoff);
-		
-		int[] expectedIndices = {0, 52, 864, 96, 96, 96, 110, 155, 155, 676, 836};
-		int[] expectedInfo = {0, 0, 1, 0, 0, 0, 0, 0, 0, 8, 0};
-		int[] expectedAlign = {0, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1};
-		int[] expectedEntrySize = {0, 0, 8, 0, 0, 0, 0, 0, 0, 16, 0};
-		int[] expectedFlags = {0, 6, 0, 3, 3, 2, 0, 0, 0, 0, 0};
-		int[] expectedNameIndeces = {0, 31, 27, 37, 43, 48, 56, 65, 17, 1, 9};
-		int[] expectedSize = {0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25};
-		int[] expectedTypes = {0, 1, 9, 1, 8, 1, 1, 1, 3, 2, 3};
-		
-		int[] expectedDataSizes = {0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25};
-		ElfType[] expectedDataTypes = {ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE, 
-				ElfType.ELF_T_REL, ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
-				ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
-				ElfType.ELF_T_BYTE, ElfType.ELF_T_SYM, ElfType.ELF_T_BYTE
-		};
-		int[] expectedBytes = {0, -115, 20, 0, 0, 72, 0, 0, 0, 0, 0};
-		
-		for(int i = 0; i < header.shnum; i++){
-			ElfSection section = testElf.getSection(i);
-			assertNotNull(section);
-			assertEquals(section.getIndex(), i);
+public class TestElf
+    extends TestCase
+{
 
-			ElfSectionHeader sheader = section.getSectionHeader();
-			assertNotNull(sheader);
+  public void testCore () throws ElfException, ElfFileException
+  {
+    Elf testElf = new Elf(Build.ABS_BUILDDIR + "/lib/elf/tests/test-core",
+                          ElfCommand.ELF_C_READ);
 
-			assertEquals(0, sheader.addr);
-			assertEquals(expectedIndices[i], sheader.offset);
-			assertEquals(expectedInfo[i], sheader.info);
-			assertEquals(expectedAlign[i], sheader.addralign);
-			assertEquals(expectedEntrySize[i], sheader.entsize);
-			assertEquals(expectedFlags[i], sheader.flags);
-			assertEquals(expectedNameIndeces[i], sheader.name);
-			assertEquals(expectedSize[i], sheader.size);
-			assertEquals(expectedTypes[i], sheader.type);
-			
-			ElfData data = section.getData();
-			assertNotNull(data);
-			assertEquals(0, data.getAlignment());
-			assertEquals(0, data.getOffset());
-			assertEquals(expectedDataSizes[i], data.getSize());
-			assertEquals(expectedDataTypes[i], data.getType());
-			if(data.getSize() != 0)
-				assertEquals(expectedBytes[i], data.getByte(0));
-		}
-	}
-	
+    assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
+    assertEquals(testElf.getBase(), 0);
+
+    ElfEHeader header = testElf.getEHeader();
+    assertEquals(3, header.machine);
+    assertEquals(52, header.ehsize);
+    assertEquals(0, header.entry);
+    assertEquals(1, header.version);
+    assertEquals(0, header.flags);
+    assertEquals(4, header.type);
+    assertEquals(0, header.shnum);
+    assertEquals(0, header.shentsize);
+    assertEquals(0, header.shoff);
+    assertEquals(14, header.phnum);
+    assertEquals(32, header.phentsize);
+    assertEquals(52, header.phoff);
+
+    int count = header.phnum;
+
+    int[] pheaderFlags = { 0, 5, 5, 4, 6, 5, 4, 6, 6, 5, 6, 6, 6, 6 };
+    int[] pheaderOffsets = { 500, 4096, 8192, 8192, 12288, 16384, 16384, 24576,
+                            28672, 40960, 40960, 45056, 49152, 53248 };
+    int[] pheaderSegSizeFile = { 472, 4096, 0, 4096, 4096, 0, 8192, 4096,
+                                12288, 0, 4096, 4096, 4096, 90112 };
+    int[] pheaderSegSizeMem = { 0, 4096, 102400, 4096, 4096, 1232896, 8192,
+                               4096, 12288, 4096, 4096, 4096, 4096, 90112 };
+    BigInteger[] pheaderAddr = { new BigInteger("0", 10),
+                                new BigInteger("1507328", 10),
+                                new BigInteger("1511424", 10),
+                                new BigInteger("1613824", 10),
+                                new BigInteger("1617920", 10),
+                                new BigInteger("10477568", 10),
+                                new BigInteger("11710464", 10),
+                                new BigInteger("11718656", 10),
+                                new BigInteger("11722752", 10),
+                                new BigInteger("134512640", 10),
+                                new BigInteger("134516736", 10),
+                                new BigInteger("3085901824", 10),
+                                new BigInteger("3085983744", 10),
+                                new BigInteger("3220111360", 10) };
+
+    for (int i = 0; i < count; i++)
+      {
+        ElfPHeader pheader = testElf.getPHeader(i);
+        assertNotNull(pheader);
+
+        if (i == 0)
+          assertEquals(0, pheader.align);
+        else
+          assertEquals(4096, pheader.align);
+        assertEquals(pheaderFlags[i], pheader.flags);
+        assertEquals(pheaderOffsets[i], pheader.offset);
+        assertEquals(0, pheader.paddr);
+        assertEquals(pheaderSegSizeFile[i], pheader.filesz);
+        assertEquals(pheaderSegSizeMem[i], pheader.memsz);
+        if (i == 0)
+          assertEquals(4, pheader.type);
+        else
+          assertEquals(1, pheader.type);
+        assertEquals(pheaderAddr[i], new BigInteger("" + pheader.vaddr, 10));
+      }
+  }
+
+  public void testObjectFile () throws ElfException, ElfFileException
+  {
+    Elf testElf = new Elf(Build.ABS_BUILDDIR + "/lib/elf/tests/helloworld.o",
+                          ElfCommand.ELF_C_READ);
+
+    assertEquals(testElf.getKind(), ElfKind.ELF_K_ELF);
+    assertEquals(testElf.getBase(), 0);
+
+    ElfEHeader header = testElf.getEHeader();
+    assertEquals(3, header.machine);
+    assertEquals(52, header.ehsize);
+    assertEquals(0, header.entry);
+    assertEquals(1, header.version);
+    assertEquals(0, header.flags);
+    assertEquals(1, header.type);
+    assertEquals(11, header.shnum);
+    assertEquals(40, header.shentsize);
+    assertEquals(236, header.shoff);
+    assertEquals(0, header.phnum);
+    assertEquals(0, header.phentsize);
+    assertEquals(0, header.phoff);
+
+    int[] expectedIndices = { 0, 52, 864, 96, 96, 96, 110, 155, 155, 676, 836 };
+    int[] expectedInfo = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 8, 0 };
+    int[] expectedAlign = { 0, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1 };
+    int[] expectedEntrySize = { 0, 0, 8, 0, 0, 0, 0, 0, 0, 16, 0 };
+    int[] expectedFlags = { 0, 6, 0, 3, 3, 2, 0, 0, 0, 0, 0 };
+    String[] expectedNames = {"", ".text", ".rel.text", ".data", ".bss",
+                              ".rodata", ".comment", ".note.GNU-stack",
+                              ".shstrtab", ".symtab", ".strtab" };
+    int[] expectedSize = { 0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25 };
+    int[] expectedTypes = { 0, 1, 9, 1, 8, 1, 1, 1, 3, 2, 3 };
+
+    int[] expectedDataSizes = { 0, 43, 16, 0, 0, 14, 45, 0, 81, 160, 25 };
+    ElfType[] expectedDataTypes = { ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
+                                   ElfType.ELF_T_REL, ElfType.ELF_T_BYTE,
+                                   ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
+                                   ElfType.ELF_T_BYTE, ElfType.ELF_T_BYTE,
+                                   ElfType.ELF_T_BYTE, ElfType.ELF_T_SYM,
+                                   ElfType.ELF_T_BYTE };
+    int[] expectedBytes = { 0, - 115, 20, 0, 0, 72, 0, 0, 0, 0, 0 };
+
+    for (int i = 0; i < header.shnum; i++)
+      {
+        ElfSection section = testElf.getSection(i);
+        assertNotNull(section);
+        assertEquals(section.getIndex(), i);
+
+        ElfSectionHeader sheader = section.getSectionHeader();
+        assertNotNull(sheader);
+
+        assertEquals(0, sheader.addr);
+        assertEquals(expectedIndices[i], sheader.offset);
+        assertEquals(expectedInfo[i], sheader.info);
+        assertEquals(expectedAlign[i], sheader.addralign);
+        assertEquals(expectedEntrySize[i], sheader.entsize);
+        assertEquals(expectedFlags[i], sheader.flags);
+        assertEquals(expectedNames[i], sheader.name);
+        assertEquals(expectedSize[i], sheader.size);
+        assertEquals(expectedTypes[i], sheader.type);
+
+        ElfData data = section.getData();
+        assertNotNull(data);
+        assertEquals(0, data.getAlignment());
+        assertEquals(0, data.getOffset());
+        assertEquals(expectedDataSizes[i], data.getSize());
+        assertEquals(expectedDataTypes[i], data.getType());
+        if (data.getSize() != 0)
+          assertEquals(expectedBytes[i], data.getByte(0));
+      }
+  }
+
 }

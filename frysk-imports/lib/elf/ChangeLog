@@ -1,3 +1,14 @@
+2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Elf.java (Elf): Made public, for use in libdw{fl}, but still should
+	not be called.
+	* ElfSectionHeader.java (name): Now is the actual string rather than
+	the index.
+	* cni/ElfSection.cxx (elf_getshdr): Now retrieves the string table 
+	indices and sets the actual section names.
+	* tests/TestElf.java: GNU formatted.
+	(testObjectFile): Now tests against the actual section names.
+
 2006-07-20  Tim Moore  <timmore@redhat.com>
 
 	* ElfFileException.java: New class.

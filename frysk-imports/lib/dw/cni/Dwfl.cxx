@@ -96,3 +96,8 @@ lib::dw::Dwfl::dwfl_addrdie(jlong addr){
 	Dwarf_Addr bias;
 	return (jlong) ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);	
 }
+
+jlong
+lib::dw::Dwfl::dwfl_addrmodule(jlong addr){
+	return (jlong) ::dwfl_addrmodule(DWFL_POINTER, (Dwarf_Addr) addr);	
+}
