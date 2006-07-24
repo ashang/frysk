@@ -77,14 +77,14 @@ FRYSK_PROCESS_NAME = 'FryskGui'
 FRYSK_APP_NAME = 'java-gnome'
 
 # Other Frysk dialog titles
-CUSTOM_OBSERVER_DIALOG = 'Frysk Custom Observer Details'
+CUSTOM_OBSERVER_DIALOG = 'Custom Observer Details'
 ABOUT_FRYSK = 'About Frysk - Technology Preview'
 CREDITS = 'Credits'
 EXPECTED_LICENSE = 'http://www.gnu.org/copyleft/gpl.html\n'
 LICENSE = 'License'
 OBSERVERS = 'Observers'
 MANAGE_CUSTOM_OBSERVERS = 'Manage Custom Observers...'
-CUSTOM_OBSERVERS = 'Frysk Custom Observers'
+CUSTOM_OBSERVERS = 'Custom Observers'
 DEBUG_SESSION_DRUID = 'Debug Session Druid'
 FRYSK_STARTUP_MANAGER = 'Frysk Startup Manager'
 CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
@@ -95,6 +95,22 @@ FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork O
                         'frysk.gui.monitor.observers.TaskTerminatingObserver':'Task Terminating Observer', 
                         'frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
                         'frysk.gui.monitor.observers.TaskCloneObserver':'TaskCloneObserver' }
+
+# Used as a lookup table to match the key/type in XML files to value/GUI string
+FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name forking thread',
+                            'forked thread':'Name forked thread',
+                            "Exec'ing Thread":"Name Exec'ing Thread",
+                            'Terminating Task':'Name Terminating Task',
+                            'Exit Value':'Int Filter Exit Value',
+                            'Cloning Thread':'Name Cloning Thread',
+                            'Cloned Thread':'Name Cloned Thread',
+                            'Task entering syscall':'Name Task entering syscall',
+                            'Task exiting syscall':'Name Task exiting syscall' }
+
+# Used as a lookup table to match the key/type in XML files to value/GUI string
+FRYSK_ACTIONPOINT_NAMES = { 'Log event':'Log event  ',
+                            'Resume':'Resume Generic Actions',
+                            'Stop':'Stop Generic Actions' }
 
 # Location of Frysk persistent data files for Sessions
 FRYSK_SESSION_FILES = os.environ['HOME'] + "/.frysk/Sessions/"
@@ -548,3 +564,20 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
         theNewlyCreatedSession.grabFocus()       
         openButton.click()
 
+# ---------------------
+def getFilterPointName ( filterPointName ):
+    """ Based on the filter point name as expressed in the observer XML file,
+        return the corresponding string used in the GUI
+    """
+    returnString = str( FRYSK_FILTERPOINT_NAMES.get( filterPointName ) )
+    #print 'DEBUG - filterPointName=:' + filterPointName + ' name=' + returnString
+    return returnString
+
+# ---------------------
+def getActionPointName ( actionPointName ):
+    """ Based on the action point name as expressed in the observer XML file,
+        return the corresponding string used in the GUI
+    """
+    returnString = str( FRYSK_ACTIONPOINT_NAMES.get( actionPointName ) )
+    #print 'DEBUG - actionPointName=:' + actionPointName + ' name=[' + returnString + ']'
+    return returnString
