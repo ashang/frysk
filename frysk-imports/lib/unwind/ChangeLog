@@ -1,3 +1,11 @@
+2005-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* UnwindCallbacks.java (getProcInfo): Now returns a boolean and takes the
+	address of a pre-allocated proc_info object.
+	* cni.StackTraceCreator.cxx (find_proc_info): Uses refactored callback and
+	correctly passes the struct back to libunwind.
+	(unwind_setup): Set caching to UNW_CACHE_PER_THREAD.
+
 2005-07-13  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cni/StackTraceCreator.cxx (get_dyn_info_addr_list): Now sets dilap to 0

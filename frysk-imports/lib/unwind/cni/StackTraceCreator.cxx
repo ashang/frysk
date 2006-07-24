@@ -61,8 +61,10 @@ int find_proc_info (::unw_addr_space_t as, ::unw_word_t ip,
 {
 	lib::unwind::UnwindCallbacks *cb = (lib::unwind::UnwindCallbacks*) arg;
 	// delegate to the java interface
-	jlong retval = cb->findProcInfo ((jlong) &as, (jlong) ip, need_unwind_info != 0);
-	pip = (::unw_proc_info_t *) retval;
+	jboolean retval = cb->findProcInfo ((jlong) pip, (jlong) &as, (jlong) ip, need_unwind_info != 0);
+	
+	if(!retval)
+		return -UNW_ENOINFO;
 	
 	return 0;
 }
@@ -205,6 +207,7 @@ lib::unwind::StackTraceCreator::unwind_setup (lib::unwind::UnwindCallbacks *cbs)
 	::unw_addr_space_t addr_space = ::unw_create_addr_space(&accessors, 0);
 	::unw_cursor_t cursor;
 	::unw_init_remote(&cursor, addr_space, (void*) cbs);
+	::unw_set_caching_policy(addr_space, UNW_CACHE_PER_THREAD);
 	
 	// Create the frame objects and return the top (most recent one)
 	lib::unwind::FrameCursor *base_frame = new lib::unwind::FrameCursor((jlong) &cursor);

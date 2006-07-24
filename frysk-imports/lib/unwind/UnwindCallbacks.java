@@ -45,15 +45,16 @@ public interface UnwindCallbacks
    * Retrieves the information about a procedure that will be needed to unwind
    * it. If needinfo is true the returned struct does not need to contain values
    * for format, unwind_info_size, and unwind_info
-   * 
+   * @param procInfo TODO
    * @param addressSpace The unwind address space
    * @param instructionAddress The address within the procedure whose
    *          information is needed
    * @param needInfo Whether or not to fill in extra information
+   * 
    * @return The value of the pointer to the returned struct.
    */
-  long findProcInfo (long addressSpace, long instructionAddress,
-                     boolean needInfo);
+  boolean findProcInfo (long procInfo, long addressSpace,
+                     long instructionAddress, boolean needInfo);
 
   /**
    * Releases the resources allocated by the call to findProcInfo with needInfo
