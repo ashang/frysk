@@ -1,3 +1,9 @@
+2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* test/TestDwfl.java (testGetLine): Removed checks for pc addresses,
+	since they were very fragile and break given the slightest change
+	(bug 2951).
+
 2006-07-22  Andrew Cagney  <cagney@redhat.com>
 
 	* tests/TestDwfl.java (trueXXX, brokenXXX): Add.
