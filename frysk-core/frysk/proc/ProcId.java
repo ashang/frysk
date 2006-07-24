@@ -46,7 +46,7 @@ package frysk.proc;
  * like.  Anything wanting to search for a process should use this.
  */
 
-class ProcId
+public class ProcId
     extends Id
 {
     ProcId ()

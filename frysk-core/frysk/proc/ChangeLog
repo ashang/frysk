@@ -1,3 +1,9 @@
+2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestLib.java (AckDaemonProcess): Made public.
+	(AttachedDaemonProcess): Ditto.
+	* ProcId.java: Ditto.
+
 2006-07-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TestTaskSyscallObserver.java: Added test for adding syscall observer

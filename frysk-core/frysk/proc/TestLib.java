@@ -598,7 +598,7 @@ public class TestLib
 	{
 	    return Fork.daemon (stdin, stdout, stderr, argv);
 	}
-	AckDaemonProcess (Sig ack, String[] argv)
+	public AckDaemonProcess (Sig ack, String[] argv)
 	{
 	    super (ack, argv);
 	}
@@ -737,7 +737,7 @@ public class TestLib
 	 * Create an attached process blocked at it's entry-point
 	 * (i.e., just after the exec).
 	 */
-	AttachedDaemonProcess (String[] argv)
+	public AttachedDaemonProcess (String[] argv)
 	{
 	    // Create the child.
 	    AckProcess child = new DetachedAckProcess ((String)null, argv);
