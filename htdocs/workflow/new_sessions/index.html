@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>Frysk System Monitor / Debugger</title>
+    <link rel="stylesheet" href="../../frysk.css" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <meta http-equiv="Content-Style-Type" content="text/css">
+  </head>
+
+  <body>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td valign="bottom" height="80">
+          <img src="../../frysklogo.png" alt="Frysk logo">
+        </td>
+        <td valign="bottom" class="topnavright" align="right">
+          <a href="../../">Overview</a>
+          &nbsp;&gt;&nbsp;
+          <a href="../">WorkFlows</a>
+          &nbsp;&gt;&nbsp;
+	  Multiple Sessions
+        </td>
+      </tr>
+    </table>
+    <div class="mainbackground">
+      <div class="maintextregion">
+        <img src="../../fryskcorner.gif" alt="triangle">
+        <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17px;">
+          <tr>
+            <td>
+
+<h1>Multiple Sessions</h1>
+
+<ul>
+
+<li> User would like to start another instance of <em>frysk</em> from menu or from the command line: <br> <img src="s1.jpg"
+border="0"> <br>
+
+<ul>
+
+<li> It doesn't seem to make sense to run two <em>frysk</em>'s in two separate processes, so why not allow multiple <em>frysk</em> sessions in the same instance? This can be forced through a command-line option, or become default behaviour for selection from the menu. Without the (e.g.) --newsession flag, <em>frysk</em> will refuse to start, and display a message to the user indicating what sort of behaviour will achieve what they are looking for. </li>
+
+<li> It should be expected that users will want to monitor two separate suites of processes at the same time, necessitating this functionality. Disallowing two separate <em>frysk</em> instances avoids the tricky problems of a) 'what happens when we run <em>frysk</em> on <em>frysk</em>?' b) 'what happens if two Frysks try to monitor the same processes at the same time?'</li>
+
+</ul>
+
+</li>
+
+<li> So what we'll do is bring up a new session manager window, offering to load a previously created session, or create a new one; and lead to a main window with a tabbed interface. <br> <img src="s2.jpg" border="0"> <br>
+
+<ul>
+
+<li> The session running in the current instance will have to be disabled, insensitive, or just completely non-existant. </li>
+
+<li> Trying to open multiple session managers at the same time should be disabled. </li>
+
+<li> Once the new session has been selected, the main window which is already running will be brought to the foreground. The interface will now be tabbed between sessions; such that the user could choose to examine the timeline and and process list for either session simply by clicking on the appropriate tab. </li>
+
+<li> Integrating the two sessions into the main window does not, however, imply any sort of convergence between these two sessions; if the user wishes to add the examined processes into the same tab/session, they must do so via the session manager. </li>
+
+</ul>
+
+</li>
+
+<li> Once <em>frysk</em> is running, the user can access various
+windows (or applications from the menu): <br> <img src="s3.jpg"
+border="0"> <br>
+
+<ul>
+
+<li> Now that we are running multiple sessions at once through a single window, we'll need controls to edit and manipulate these sessions. Perhaps the user would like to add a new session, close a session, or simply re-start <em>frysk</em> from its inital state without having to quit <em>frysk</em> and execute it again.</li>
+
+<li> These controls could be placed in the main window toolbar itself, or perhaps through the taskbar icon. </li>
+
+</ul>
+
+</li>
+
+</ul>
+
+              <!-- end text -->
+              <p>&nbsp;</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+      <tr>
+        <td align="center" class="footer">
+          <a href="http://sources.redhat.com">sources.redhat.com</a>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
