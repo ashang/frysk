@@ -1,5 +1,9 @@
 2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
 
+	* ElfSection.cxx (elf_getshdr): Now uses proper namespace for
+	elf_strptr.
+	* Elf.java: GNU formatted.
+
 	* Elf.java (Elf): Made public, for use in libdw{fl}, but still should
 	not be called.
 	* ElfSectionHeader.java (name): Now is the actual string rather than

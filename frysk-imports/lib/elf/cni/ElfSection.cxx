@@ -65,7 +65,7 @@ lib::elf::ElfSection::elf_getshdr (){
 	GElf_Ehdr *ehdr = (GElf_Ehdr *) alloca(sizeof(GElf_Ehdr));
 	ehdr = gelf_getehdr((::Elf *) this->parent->getPointer(), ehdr);
 	header->name = JvNewStringUTF(
-						elf_strptr((::Elf *) this->parent->getPointer(), ehdr->e_shstrndx, tmp.sh_name)
+						::elf_strptr((::Elf *) this->parent->getPointer(), ehdr->e_shstrndx, tmp.sh_name)
 						); 
 	
 	header->type = (jint) tmp.sh_type;
