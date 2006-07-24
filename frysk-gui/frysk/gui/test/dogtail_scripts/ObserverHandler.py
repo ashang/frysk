@@ -57,7 +57,7 @@ from DebugProcess import DebugProcess
 from DebugSession import DebugSession
 from ObserverElement import ObserverElement
 from ObserverPoints import ObserverPoints
-from FryskHelpers import getEventType
+from FryskHelpers import *
 
 # The input data to this parser takes this form:
 #
@@ -154,24 +154,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       self.tempFilterPointElements = []
       self.tempFilterPoint.setName(attributes['name'])
       #print 'DEBUG - found a filterPoint - argument = ' + attributes['argument']
-      if attributes['name'] == 'forking thread':
-          self.tempFilterPoint.setName('Name forking thread')
-      if attributes['name'] == 'forked thread':
-          self.tempFilterPoint.setName('Name forked thread')
-      if attributes['name'] == "Exec'ing Thread":
-          self.tempFilterPoint.setName("Name Exec'ing Thread")
-      if attributes['name'] == 'Terminating Task':
-          self.tempFilterPoint.setName('Name Terminating Task')
-      if attributes['name'] == 'Exit Value':
-          self.tempFilterPoint.setName('Int Filter Exit Value')
-      if attributes['name'] == 'Cloning Thread':
-          self.tempFilterPoint.setName('Name Cloning Thread')
-      if attributes['name'] == 'Cloned Thread':
-          self.tempFilterPoint.setName('Name Cloned Thread')
-      if attributes['name'] == 'Task entering syscall':
-          self.tempFilterPoint.setName('Name Task entering syscall')
-      if attributes['name'] == 'Task exiting syscall':
-          self.tempFilterPoint.setName('Name Task exiting syscall')
+      self.tempFilterPoint.setName (getFilterPointName(attributes['name']))
 
 #   elif self.currentTag == 'elements':
       
@@ -198,14 +181,16 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           self.tempObserverElement.setName(attributes['name'])
           
           # The name attribute in the input file does not equal the
-          # GUI name - so, make the change here.
-          if attributes['name'] == 'Log event':
-              self.tempObserverElement.setName('Log event  ')
-          if attributes['name'] == 'Resume':
-              self.tempObserverElement.setName('Resume Generic Actions')
-          if attributes['name'] == 'Stop':
-              self.tempObserverElement.setName('Stop Generic Actions')
+          # GUI name - so, make the change here. 
+          self.tempObserverElement.setName (getActionPointName(attributes['name']))          
+#          if attributes['name'] == 'Log event':
+#              self.tempObserverElement.setName('Log event  ')
+#          if attributes['name'] == 'Resume':
+#              self.tempObserverElement.setName('Resume Generic Actions')
+#          if attributes['name'] == 'Stop':
+#              self.tempObserverElement.setName('Stop Generic Actions')
 
+          # But - the argument is just the argument
           self.tempObserverElement.setArgument(attributes['argument'])         
  
           #print 'DEBUG - found an ActionPoint - arg = ' + attributes['argument']
