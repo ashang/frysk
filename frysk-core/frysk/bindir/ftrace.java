@@ -37,17 +37,17 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/**
- * Print the auxilary vector.
- */
-
-
-
 import inua.util.PrintWriter;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
+import frysk.EventLogger;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
@@ -63,13 +63,20 @@ class ftrace
   {
     final PrintWriter out = new PrintWriter(System.out, true);
 
+//    Logger logger = EventLogger.get ("logs/", "frysk_core_event.log");
+//    Handler handler = new ConsoleHandler ();
+//    handler.setLevel(Level.FINEST);
+//    logger.addHandler(handler);
+//    logger.setLevel(Level.ALL);
+//    LogManager.getLogManager().addLogger(logger);
+     
     if (args.length == 0)
       {
         out.println("Usage: ftrace <command [arg ...]>");
         return;
       }
     
-
+    
     Manager.host.requestCreateAttachedProc(args, new AttachedObserver());
     Manager.eventLoop.start();
   }
@@ -79,6 +86,7 @@ class ftrace
     proc = myProc;
     Manager.host.observableProcRemovedXXX.addObserver (new ProcRemovedObserver(proc));
     System.out.println("ftrace.main() Proc.getPid() " + proc.getPid());
+    System.out.println("ftrace.main() Proc.getPid() " + proc.getExe());
   }
   
   /**
@@ -99,7 +107,6 @@ class ftrace
         Manager.eventLoop.requestStop ();
       }
     }
-    
   }
   
   /**
@@ -111,7 +118,8 @@ class ftrace
     {
       task.requestAddSyscallObserver(new SyscallObserver());
       setProc(task.getProc());
-      return Action.CONTINUE;
+      task.requestUnblock(this);
+      return Action.BLOCK;
     }
 
     public void addedTo (Object observable){}

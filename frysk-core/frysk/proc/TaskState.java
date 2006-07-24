@@ -73,11 +73,9 @@ class TaskState
 	    return detaching;
 	else if (parentState == running)
 	    return StartClonedTask.waitForStop;
-	else
-      if (parentState == runningInSyscall)
-        return StartClonedTask.waitForStop;
-	    throw new RuntimeException ("clone's parent in unexpected state "
-					+ parentState);
+    
+	throw new RuntimeException ("clone's parent in unexpected state "
+	                            + parentState);
     }
     protected TaskState (String state)
     {
@@ -1359,25 +1357,18 @@ class TaskState
 	    task.sendContinue (sig);
 	    return running;
 	}
-	/*
-	  XXX: as was shown in the case of a block due to notification
-	  about an execedEvent special handling might be needed (ie we need
-	  to know why we are blocked). So this will be left unhandled untill
-	  a testcase tickles it, so we can investigate. But this is likely the
-	  correct implementation.
-      
-	  TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer){
-	  logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-	  task.startTracingSyscalls();
-	  observable.add(observer);
-	  if(sig == 0){
-	  return syscallBlockedContinue;
-	  }else{
-	  return new SyscallBlockedSignal(sig);
-	  }
-	  }
-	*/
-    }
+	
+	TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer){
+	    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
+	    task.startTracingSyscalls();
+	    observable.add(observer);
+	    if(sig == 0){
+	      return syscallBlockedContinue;
+	    }else{
+	      return new SyscallBlockedSignal(sig);
+	    }
+  	  }
+	 }
     
     
     /**

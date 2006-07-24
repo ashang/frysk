@@ -1,3 +1,12 @@
+2006-07-24  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TestTaskSyscallObserver.java: Added test for adding syscall observer
+	to an attached state.
+	Added test to check that frysk doesnt miss first exec syscall.
+	Enabled some tests. 
+	* TaskState.java (handleAddSyscallObserver): Added 
+	handleAddSyscallObserver to state BlockedSignal.
+
 2006-07-22  Mark Wielaard  <mark@klomp.org>
 
 	* StressAttachDetachManyTasks.java (test): Mark broken 2468.

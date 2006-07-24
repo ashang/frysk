@@ -71,6 +71,9 @@ public class TestTaskSyscallObserver
 	int exit = 0;
 	// boolean inSyscall = false; //XXX: this assumption cannot be made
 	boolean inSyscall;
+    
+    boolean caughtExec = false;
+    
 	public void addedTo (Object o)
 	{
 	    super.addedTo (o);
@@ -78,10 +81,17 @@ public class TestTaskSyscallObserver
 	}
 	public Action updateSyscallEnter (Task task)
 	{
-	    assertFalse ("inSyscall", inSyscall);
-	    inSyscall = true;
-	    enter++;
-	    return Action.CONTINUE;
+      assertFalse ("inSyscall", inSyscall);
+	  inSyscall = true;
+	  enter++;
+	  
+      SyscallEventInfo syscallEventInfo = getSyscallEventInfo(task);
+      int syscallNum = syscallEventInfo.number (task);
+      if (syscallNum == SyscallNum.SYSexecve) { 
+        caughtExec = true;
+      }
+      
+      return Action.CONTINUE;
 	}
 	public Action updateSyscallExit (Task task)
 	{
@@ -95,31 +105,30 @@ public class TestTaskSyscallObserver
     /**
      * test that the state machine can handle an exec event
      * during a a syscall.
-     * XXX: Add an asssertion that the exec was indeed seen
      */
     public void testExecSyscall(){
-
-	if (brokenXXX (2245))
-	    return;
-	    
-	//	  Create an unattached child process.
-	AckProcess child = new DetachedAckProcess ();
-
-	// Attach to the process using the exec observer.  The event
-	// loop is kept running until SingleExecObserver .addedTo is
-	// called indicating that the attach succeeded.
-	Task task = child.findTaskUsingRefresh (true);
-	SyscallObserver syscallObserver = new SyscallObserver ();
-	task.requestAddSyscallObserver (syscallObserver);
-	assertRunUntilStop ("adding exec observer causing attach");
-
-	// Do the exec; this call keeps the event loop running until
-	// the child process has notified this process that the exec
-	// has finished which is well after SingleExecObserver
-	// .updateExeced has been called.
-	child.exec ();
-	    
-	assertTrue(true);
+  
+  //	if (brokenXXX (2245))
+  //	    return;
+  //	    
+    	//	  Create an unattached child process.
+    	AckProcess child = new DetachedAckProcess ();
+    
+    	// Attach to the process using the exec observer.  The event
+    	// loop is kept running until SingleExecObserver .addedTo is
+    	// called indicating that the attach succeeded.
+    	Task task = child.findTaskUsingRefresh (true);
+    	SyscallObserver syscallObserver = new SyscallObserver ();
+    	task.requestAddSyscallObserver (syscallObserver);
+    	assertRunUntilStop ("adding exec observer causing attach");
+    
+    	// Do the exec; this call keeps the event loop running until
+    	// the child process has notified this process that the exec
+    	// has finished which is well after SingleExecObserver
+    	// .updateExeced has been called.
+    	child.exec ();
+    	    
+    	assertEquals("Caught exec syscall",syscallObserver.caughtExec, true);
     }
  
     /**
@@ -151,17 +160,17 @@ public class TestTaskSyscallObserver
     assertTrue(true);
     }
  
-        
+    
     /**
      * test that the state machine can handle a fork event
      * during a a syscall.
      */
     public void testCloneSyscall(){
 
-    if (brokenXXX (2245))
+    if (brokenXXX (2957))
         return;
         
-    //    Create an unattached child process.
+    // Create an unattached child process.
     AckProcess child = new DetachedAckProcess ();
 
     // Attach to the process using the exec observer.  The event
@@ -188,8 +197,8 @@ public class TestTaskSyscallObserver
     public void testSyscallLoop ()
     {
 
-	if (brokenXXX (2245))
-	    return;
+//	if (brokenXXX (2245))
+//	    return;
 
  	int count = 5;
 	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
@@ -217,18 +226,64 @@ public class TestTaskSyscallObserver
  	assertTrue ("inSyscall (last call doesn't exit)",
 		    syscallObserver.inSyscall);
     }
+
     
     /**
-     * Test system calls.
-     *
-     * XXX: How is this different to testSyscallLoop (other than the
-     * program run).
-     * XXX: Also why is the last syscall expected to exit this time ?
+     * Test adding a syscall to a newly created attached
+     * process created by Frysk.
+     * Test that Frysk does not miss the first exec call.
+     */
+    SyscallObserver syscallObserver1 = new SyscallObserver();
+    
+    public void testCreateAttachedAddSyscallObserver ()
+    {
+
+      if (brokenXXX (2915))
+        return;
+    
+      int count = 5;
+
+      Manager.host.requestCreateAttachedProc(new String[]
+                                                        {
+                                                         getExecPrefix () + "funit-syscallloop",
+                                                         Integer.toString (count),
+                                                         }, new TaskObserver.Attached()
+      {
+        
+        public Action updateAttached (Task task)
+        {
+          new StopEventLoopWhenProcRemoved (task.getProc().getPid());
+          task.requestAddSyscallObserver(syscallObserver1);
+          task.requestUnblock(this);
+          return Action.BLOCK;
+        }
+
+        public void deletedFrom (Object observable){}
+        public void addFailed (Object observable, Throwable w){}
+        public void addedTo (Object observable){
+        }
+
+      });
+      
+      assertRunUntilStop("run until program exits");
+      assertRunUntilStop("run until program exits");
+
+      assertTrue("enough syscall enter events", syscallObserver1.enter >= count);
+      assertTrue("enough syscall enter exit", syscallObserver1.exit >= count);
+      assertTrue("inSyscall (last call doesn't exit)", syscallObserver1.inSyscall);
+      assertEquals("Caught exec syscall", syscallObserver1.caughtExec, true);
+    }
+
+    
+    /**
+     * Test system calls. XXX: How is this different to testSyscallLoop (other
+     * than the program run). XXX: Also why is the last syscall expected to exit
+     * this time ?
      */
     public void testSyscalls ()
     {
-	if (brokenXXX (2245))
-	    return;
+//	if (brokenXXX (2245))
+//	    return;
 
  	// Create program making syscalls
 	AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
@@ -307,8 +362,8 @@ public class TestTaskSyscallObserver
     public void testSyscallOpen ()
     {
 	
-	if (brokenXXX (2245))
-	    return;
+//	if (brokenXXX (2245))
+//	    return;
 
 	SyscallOpenObserver syscallOpenObserver = new SyscallOpenObserver ();
 	new StopEventLoopWhenChildProcRemoved ();
@@ -480,8 +535,8 @@ public class TestTaskSyscallObserver
      */
     public void testSyscallInterrupt ()
     {
-	if (brokenXXX (2245))
-	    return;
+//	if (brokenXXX (2245))
+//	    return;
 	PipeReadChild prc = new PipeReadChild (false);
 
 	TestSyscallInterruptInternals t 
@@ -501,8 +556,8 @@ public class TestTaskSyscallObserver
      */
     public void testSyscallInterruptRestart ()
     {
-	if (brokenXXX (2245))
-	    return;
+//	if (brokenXXX (2245))
+//	    return;
 	PipeReadChild prc = new PipeReadChild (true);
 
 	TestSyscallInterruptInternals t
