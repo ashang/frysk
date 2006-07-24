@@ -37,46 +37,14 @@
 // version and license this file solely under the GPL without
 // exception.
 
-#include <libunwind.h>
-#include <stdio.h>
-#include <gcj/cni.h>
+package frysk.rt;
 
-#include "frysk/rt/StackCallbacks.h"
-
-void
-frysk::rt::StackCallbacks::populate_procinfo(
-		jlong procInfo, jlong lowPC, jlong highPC, jlong lsda, jlong gp, jlong flags,
-		jint unwind_size, jlong unwind_info)
+class TestLib
 {
-	unw_proc_info_t *proc_info = (unw_proc_info_t *) procInfo;
-	
-	proc_info->start_ip = (unw_word_t) lowPC;
-	proc_info->end_ip = (unw_word_t) highPC;
-	proc_info->lsda = (unw_word_t) lsda;
-	proc_info->gp = (unw_word_t) gp;
-	proc_info->flags = (unw_word_t) flags;
-	proc_info->format = UNW_INFO_FORMAT_TABLE;
-	proc_info->unwind_info_size = (int) unwind_size;
-	proc_info->unwind_info = (void *) unwind_info;
-}
-
-void
-frysk::rt::StackCallbacks::populate_procinfo_nounwind(
-		jlong procInfo, jlong lowPC, jlong highPC, jlong lsda, jlong gp, jlong flags)
-{
-	unw_proc_info_t *proc_info = (unw_proc_info_t *) procInfo;
-	
-	proc_info->start_ip = (unw_word_t) lowPC;
-	proc_info->end_ip = (unw_word_t) highPC;
-	proc_info->lsda = (unw_word_t) lsda;
-	proc_info->gp = (unw_word_t) gp;
-	proc_info->flags = (unw_word_t) flags;
-	proc_info->unwind_info = NULL;
-}
-
-void
-frysk::rt::StackCallbacks::free_proc_info(jlong proc_info)
-{
-	if(((unw_proc_info_t *) proc_info)->unwind_info != NULL)
-		JvFree(((unw_proc_info_t *) proc_info)->unwind_info);
+  static String getMyPid()
+  {
+    return ""+getpid();
+  }
+  
+  private static native int getpid();
 }

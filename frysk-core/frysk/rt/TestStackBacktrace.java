@@ -37,32 +37,35 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.rt;
 
+import inua.eio.ByteBuffer;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
+import frysk.sys.Sig;
+import frysk.sys.proc.MapsBuilder;
 
 public class TestStackBacktrace
     extends TestLib
 {
   private Task myTask;
-  
-  public void testBacktrace ()
-    throws Task.TaskException
+
+  public void testBacktrace () throws Task.TaskException
   {
-//    Host.logger.setLevel(Level.FINE);
-    if(brokenXXX (2936))
+     if (brokenXXX(2936))
       return;
-    
-    class TaskCreatedObserver implements TaskObserver.Attached
+
+    class TaskCreatedObserver
+        implements TaskObserver.Attached
     {
 
       public Action updateAttached (Task task)
       {
-        TestStackBacktrace.this.myTask = task;
+        // TestStackBacktrace.this.myTask = task;
         Manager.eventLoop.requestStop();
         return Action.BLOCK;
       }
@@ -70,63 +73,87 @@ public class TestStackBacktrace
       public void addedTo (Object observable)
       {
         // TODO Auto-generated method stub
-        
+
       }
 
       public void addFailed (Object observable, Throwable w)
       {
         // TODO Auto-generated method stub
-        
+
       }
 
       public void deletedFrom (Object observable)
       {
         // TODO Auto-generated method stub
-        
+
       }
     }
-    
-    TaskCreatedObserver obs = new TaskCreatedObserver();
-    String command[] = {"pwd"};
-    
-    host.requestCreateAttachedProc(command, obs);
-    
-    assertRunUntilStop("Observer was not added");
-    
-    assertNotNull(myTask);
 
-//    class MyBuilder extends MapsBuilder
-//    {
-//
-//      public void buildBuffer (byte[] maps)
-//      {
-//        maps[maps.length - 1] = 0;
-//      }
-//
-//      public void buildMap (long addressLow, long addressHigh, boolean permRead, boolean permWrite, boolean permExecute, boolean permPrivate, long offset, int devMajor, int devMinor, int inode, int pathnameOffset, int pathnameLength)
-//      {
-//        ByteBuffer buffer =  myTask.getMemory();
-//        
-//        for(long i = addressLow; i < addressHigh; i++){
-//          buffer.getInt(i);
-//        }
-//      }
-//      
-//    }
-//    
-//    MyBuilder builder = new MyBuilder();
-//    System.out.println("Before maps test");
-//    builder.construct(myTask.getTid());
-//    System.out.println("After maps test");
-    
-    StackFrame frame = StackFactory.createStackFrame(myTask);
-    
-    assertNotNull(frame);
-    
-    int level = 0;
-    while(frame != null){
-      System.out.println("Frame " + (++level));
-      frame = frame.outer;
+    TaskCreatedObserver obs = new TaskCreatedObserver();
+
+    AckDaemonProcess process = new AckDaemonProcess(
+                                                    Sig.POLL,
+                                                    new String[] {
+                                                                  "/home/ajocksch/src/asmtest/looper2",
+                                                                  ""
+                                                                      + frysk.rt.TestLib.getMyPid() });
+    myTask = process.findTaskUsingRefresh(true);
+    assertNotNull(myTask);
+    myTask.requestAddAttachedObserver(obs);
+
+    assertRunUntilStop("Observer was not added");
+
+    class MyBuilder
+        extends MapsBuilder
+    {
+
+      public void buildBuffer (byte[] maps)
+      {
+        maps[maps.length - 1] = 0;
+      }
+
+      public void buildMap (long addressLow, long addressHigh,
+                            boolean permRead, boolean permWrite,
+                            boolean permExecute, boolean permPrivate,
+                            long offset, int devMajor, int devMinor, int inode,
+                            int pathnameOffset, int pathnameLength)
+      {
+        ByteBuffer buffer = myTask.getMemory();
+
+        for (long i = addressLow; i < addressHigh; i++)
+          {
+            System.err.println(Long.toHexString(i) + " is in the Mmap!");
+            buffer.getByte(i);
+          }
+      }
+
     }
+
+    // MyBuilder builder = new MyBuilder();
+    // System.out.println("Before maps test");
+    // builder.construct(myTask.getTid());
+    // System.out.println("After maps test");
+
+    StackFrame frame = StackFactory.createStackFrame(myTask);
+
+    assertNotNull(frame);
+
+    int level = 0;
+    while (frame != null)
+      {
+        System.out.println("Frame " + (++level));
+        System.out.println("\tFile: " + frame.getSourceFile());
+        System.out.println("\tFunc: " + frame.getMethodName());
+        System.out.println("\tLine: " + frame.getLineNumber());
+        System.out.println("\tCol: " + frame.getColumn());
+        System.out.println("\tAddr: " + frame.getAddress());
+        frame = frame.outer;
+      }
+
+    // MyBuilder builder2 = new MyBuilder();
+    // System.out.println("Before maps test");
+    // builder2.construct(myTask.getTid());
+    // System.out.println("After maps test");
   }
+
 }

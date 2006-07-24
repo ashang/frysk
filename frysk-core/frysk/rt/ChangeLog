@@ -1,3 +1,31 @@
+2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
+	* StackCallbacks.java (build_procinfo_nounwind): Added.
+	(findProcInfo): Refactored to reflect interface change, also calls
+	build_procinfo_nounwind.
+	(getProcName): Now correctly returns either the procedure
+	name or "".
+	(getProcOffset): Now implemented.
+	* StackFactory.java (createStackFrame): Refactored to reflect change
+	in StackFrame constructor.
+	* StackFrame.java (StackFrame): Now takes a Task object.
+	(getMethodName): Added.
+	(getSourceFile): Added.
+	(getLineNumber): Added.
+	(getColumn): Added.
+	(getAddress): Added.
+	(getMyTask): Added.
+	(getUnwindData): Added.
+	(initialize): Added.
+	* TestLib.java: Added.
+	* TestStackBacktrace.java (testBacktrace): Added printouts for stack
+	information, test is still disabled.
+	* cni/StackCallbacks.cxx (build_procinfo): Renamed to populate_procinfo.
+	(populate_procinfo_nounwind): Added.
+	(free_procinfo): No longer frees struct.
+	* cni/TestLib.cxx: Added.
+	* cni/StackFrame.cxx: Added.
+
 2006-07-20  Tim Moore  <timmore@redhat.com>
 
 	* StackCallbacks.java (StackCallbacks): Handle TaskException.

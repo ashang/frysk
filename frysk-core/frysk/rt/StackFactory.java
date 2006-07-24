@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.rt;
 
 import lib.unwind.FrameCursor;
@@ -47,27 +48,28 @@ public class StackFactory
 {
   /**
    * Find and return the stack backtrace for the provided task
+   * 
    * @param task The task to get stack information for
    * @return The stack frames as a linked list
    */
-  public static StackFrame createStackFrame(Task task)
-    throws Task.TaskException
+  public static StackFrame createStackFrame (Task task)
+      throws Task.TaskException
   {
     StackCallbacks callbacks = new StackCallbacks(task);
     FrameCursor innermost = StackTraceCreator.createStackTrace(callbacks);
-    StackFrame toReturn = new StackFrame(innermost);
-    
+    StackFrame toReturn = new StackFrame(innermost, task);
+
     StackFrame current = toReturn;
     FrameCursor currentCursor = innermost.getOuter();
-    while(currentCursor != null)
+    while (currentCursor != null)
       {
-	StackFrame outerFrame = new StackFrame(currentCursor);
-      
-	current.outer = outerFrame;
-	outerFrame.inner = current;
-	current = outerFrame;
-      
-	currentCursor = currentCursor.getOuter();
+        StackFrame outerFrame = new StackFrame(currentCursor, task);
+
+        current.outer = outerFrame;
+        outerFrame.inner = current;
+        current = outerFrame;
+
+        currentCursor = currentCursor.getOuter();
       }
     return toReturn;
   }

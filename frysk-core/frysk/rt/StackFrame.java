@@ -37,17 +37,93 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.rt;
 
+import frysk.proc.Task;
+import gnu.gcj.RawDataManaged;
+import lib.dw.Dwfl;
+import lib.dw.DwflLine;
 import lib.unwind.FrameCursor;
-
 
 public class StackFrame
 {
+
+  private String methodName;
+
+  private String sourceFile;
+
+  private int lineNum;
+
+  private int column;
+
+  private long address;
+
   protected StackFrame inner;
+
   protected StackFrame outer;
-  
-  public StackFrame(FrameCursor current){
-    
+
+  private RawDataManaged unwind_data;
+
+  private Task myTask;
+
+  public StackFrame (FrameCursor current, Task myTask)
+  {
+    this.myTask = myTask;
+    unwind_data = current.getNativeCursor();
+    initialize();
+
+    if (address != 0)
+      {
+        Dwfl dwfl = new Dwfl(myTask.getTid());
+        DwflLine line = dwfl.getSourceLine(address);
+        if (line != null)
+          {
+            this.lineNum = line.getLineNum();
+            this.sourceFile = line.getSourceFile();
+            this.column = line.getColumn();
+          }
+      }
+    else
+      {
+        this.sourceFile = "<Unknown file>";
+      }
   }
+
+  public String getMethodName ()
+  {
+    return methodName;
+  }
+
+  public String getSourceFile ()
+  {
+    return sourceFile;
+  }
+
+  public int getLineNumber ()
+  {
+    return lineNum;
+  }
+
+  public int getColumn ()
+  {
+    return column;
+  }
+
+  public long getAddress ()
+  {
+    return address;
+  }
+
+  public Task getMyTask ()
+  {
+    return myTask;
+  }
+
+  protected RawDataManaged getUnwindData ()
+  {
+    return unwind_data;
+  }
+
+  private native void initialize ();
 }

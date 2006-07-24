@@ -54,18 +54,18 @@ public class StackCallbacks
     implements UnwindCallbacks
 {
   private Task myTask;
+
   private Isa isa;
 
-  public StackCallbacks (Task myTask)
-  throws Task.TaskException
+  public StackCallbacks (Task myTask) throws Task.TaskException
   {
     this.myTask = myTask;
     this.myTask.toString();
     isa = myTask.getIsa();
-    }
+  }
 
-  public long findProcInfo (long addressSpace, long instructionAddress,
-                            boolean needInfo)
+  public boolean findProcInfo (long procInfo, long addressSpace,
+                               long instructionAddress, boolean needInfo)
   {
     Host.logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
                                 + Long.toHexString(instructionAddress) + "\n");
@@ -73,9 +73,21 @@ public class StackCallbacks
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwarfDie die = dwfl.getDie(instructionAddress);
 
-    long struct = build_procinfo(die.getLowPC(), die.getHighPC(), 0, 0, 0, 0, 0);
+    if (die == null)
+      return false;
 
-    return struct;
+    DwarfDie lowest = die.getScopes(instructionAddress)[0];
+    if (lowest == null)
+      return false;
+
+    if (needInfo)
+      populate_procinfo(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0, 0,
+                        0, 0,0);
+    else
+      populate_procinfo_nounwind(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0, 0,
+                        0);
+
+    return true;
   }
 
   public void putUnwindInfo (long addressSpace, long procInfo)
@@ -138,8 +150,8 @@ public class StackCallbacks
   {
     String registerName = RegisterX86.getUnwindRegister(regnum);
     Host.logger.log(Level.FINE, "Libunwind: reading register " + registerName
-                                + "\n"); 
-    
+                                + "\n");
+
     throw new RuntimeException("Not implemented in core yet");
     // TODO Auto-generated method stub
     // return 0;
@@ -167,24 +179,43 @@ public class StackCallbacks
     Host.logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
                                 + Long.toHexString(addr) + "\n");
 
+    // XXX: This doesn't work, it gets the file name
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwarfDie die = dwfl.getDie(addr);
-    return die.getName();
+    if (die == null)
+      return "";
 
-    // throw new RuntimeException("Not implemented in core yet");
+    DwarfDie lowest = die.getScopes(addr)[0];
+    if (lowest == null)
+      return "";
+
+    return lowest.getName();
   }
 
   public long getProcOffset (long as, long addr)
   {
     Host.logger.log(Level.FINE, "Libunwind: getting procedure offset at 0x"
                                 + Long.toHexString(addr) + "\n");
-    throw new RuntimeException("Not implemented in core yet");
-    // TODO Auto-generated method stub
-    // return 0;
+
+    Dwfl dwfl = new Dwfl(myTask.getTid());
+    DwarfDie die = dwfl.getDie(addr);
+    if (die == null)
+      return 0;
+
+    DwarfDie lowest = die.getScopes(addr)[0];
+    if (lowest == null)
+      return 0;
+
+    return addr - lowest.getLowPC();
   }
 
-  private native long build_procinfo (long lowPC, long highPC, long lsda,
-                                      long gp, long flags, int unwind_size,
-                                      long unwind_info);
-  private native void free_proc_info(long proc_info); 
+  private native void populate_procinfo (long procInfo, long lowPC,
+                                         long highPC, long lsda, long gp,
+                                         long flags, int unwSize, long unwInfo);
+
+  private native void populate_procinfo_nounwind (long procInfo, long lowPC,
+                                                  long highPC, long lsda,
+                                                  long gp, long flags);
+
+  private native void free_proc_info (long proc_info);
 }
