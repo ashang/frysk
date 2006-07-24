@@ -1,3 +1,18 @@
+2006-07-24  Mike Cvet  <mcvet@redhat.com>
+
+	* sessions/DebugProcess.java (populateProcs): Now explicitly calls methods
+	for the itemAdded and itemRemoved operations, and adding observers to the
+	processes added to the main list.
+	(addRemoveObservers): Added.
+	(addProcs): Added.
+	(addProcsMinusObserver): Added - adds procs to the main list without the
+	observers.
+	(addObservers): Added - explicitly adds observers to the processes in the
+	process list.
+	* sessions/ProcessPicker.java (checkSession): Adds processes to the process
+	list without adding observers...yet.
+	(pickProcs): Adds observers to the remaining selected processes after the fact.
+
 2006-07-21  Rick Moseley  <rmoseley@redhat.com>
 
 	* glade/registerwindow.glade: Added tooltip, modded title to match source.

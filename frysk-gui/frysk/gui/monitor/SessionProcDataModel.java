@@ -151,7 +151,7 @@ public class SessionProcDataModel
     // if (this.currentSession != session) { // removed until session window is
     // re-implemented
     this.currentSession = session;
-    session.populateProcs();
+    //session.populateProcs();
 
     Iterator i = this.currentSession.getProcesses().iterator();
     while (i.hasNext())

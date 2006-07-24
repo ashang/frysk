@@ -123,7 +123,8 @@ public class ProcessPicker
     while (debugprocesses.hasNext())
       {
         DebugProcess dp = (DebugProcess) debugprocesses.next();
-        dp.populateProcs();
+        dp.addRemoveObservers();
+        dp.addProcsMinusObserver();
         Iterator guiprocs = dp.getProcs().iterator();
         while (guiprocs.hasNext())
           {
@@ -311,6 +312,11 @@ public class ProcessPicker
           }
         parent = parent.getNextIter();
       }
+    
+    Iterator j = newSession.getProcesses().iterator();
+    while (j.hasNext())
+      ((DebugProcess)j.next()).addObservers();
+    
   }
 
   /**
