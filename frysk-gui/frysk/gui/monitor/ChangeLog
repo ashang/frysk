@@ -1,3 +1,14 @@
+2006-07-24  Mike Cvet  <mcvet@redhat.com>
+
+	* LiaisonPoint.java (LiaisonPoint): Applied GNU formatting.
+	* actions/ActionPoint.java: Ditto.
+	* LiaisonItem.java: Ditto.
+	* actions/Action.java: Ditto.
+	* filters/Filter.java: Ditto.
+	* filters/FilterManager.java: Ditto.
+	* actions/ActionManager.java: Ditto.
+	* filters/FilterPoint.java: Ditto.
+
 2006-07-21  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* observers/ObserverManager.java (initTaskObservers): Removed

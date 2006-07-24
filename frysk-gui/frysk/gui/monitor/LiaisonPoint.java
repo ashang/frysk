@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import java.util.logging.Level;
@@ -45,76 +46,85 @@ import java.util.logging.Logger;
 import org.jdom.Element;
 
 /**
- * 
- * @author swagiaal
- *
- * The job of a LiaisonPoint is to execute all its liaison Items
- * with its specialized argument. For example a TaskFilterPoint 
- * is a LiaisonPoint that is specialized in calling all its filters
- * with the task its deticated to as an argument.
- * 
- * If for instance the update function of an observer looks like this:
- *   updateForked(Task parent, Task child)
- *   
- * then that observer will create two TaskFilterPoints; deticating one
- * to the parent task and the other to the child task. Thereby allowing
- * the user to add TaskFilter(s) to either TaskFilterPoint and filter on
- * the properties of either task.
- * 
- * A LiaisonPoint can either be a FilterPoint or an ActionPoint.
+ * @author swagiaal The job of a LiaisonPoint is to execute all its liaison
+ *         Items with its specialized argument. For example a TaskFilterPoint is
+ *         a LiaisonPoint that is specialized in calling all its filters with
+ *         the task its deticated to as an argument. If for instance the update
+ *         function of an observer looks like this: updateForked(Task parent,
+ *         Task child) then that observer will create two TaskFilterPoints;
+ *         deticating one to the parent task and the other to the child task.
+ *         Thereby allowing the user to add TaskFilter(s) to either
+ *         TaskFilterPoint and filter on the properties of either task. A
+ *         LiaisonPoint can either be a FilterPoint or an ActionPoint.
  */
-public abstract class LiaisonPoint extends GuiObject implements SaveableXXX {
-protected ObservableLinkedList items;
-	
-	Logger logger = WindowManager.logger;
-	public LiaisonPoint(){
-		super();
-		this.items = new ObservableLinkedList();
-	}
-	
-	public LiaisonPoint(String name, String toolTip){
-		super(name, toolTip);
-		this.items = new ObservableLinkedList();
-	}
-	
-	public LiaisonPoint(LiaisonPoint other){
-		super(other);
-		this.items = new ObservableLinkedList(other.items); // Do copy items
-	}
-	
-	/**
-	 * Retrieves a list of applicable items from the appropriate Manager.
-	 * */
-	public abstract ObservableLinkedList getApplicableItems();
-	
-	public void addItem(LiaisonItem item){
-		logger.log(Level.FINE, "{0} addItem {1}\n", new Object[] {this, item});
-		this.items.add(item);
-	}
-	
-	public void removeItem(LiaisonItem item){
-		logger.log(Level.FINE, "{0} removeItem {1}\n", new Object[] {this, item});
-		if(!this.items.remove(item)){
-			throw new IllegalArgumentException("the passed item ["+ item +"] is not a member of this Liason point");
-		}
-	}
-	
-	public ObservableLinkedList getItems(){
-		return this.items;
-	}
-	
-	public void save(Element node) {
-		super.save(node);
-		
-		Element filtersXML = new Element("items");
-		this.items.save(filtersXML);
-		node.addContent(filtersXML);
-	}
-	
-	public void load(Element node) {
-		super.load(node);
-		Element elemetnsXML = node.getChild("items");
-		this.items.load(elemetnsXML);
-	}
+public abstract class LiaisonPoint
+    extends GuiObject
+    implements SaveableXXX
+{
+  protected ObservableLinkedList items;
+
+  Logger logger = WindowManager.logger;
+
+  public LiaisonPoint ()
+  {
+    super();
+    this.items = new ObservableLinkedList();
+  }
+
+  public LiaisonPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+    this.items = new ObservableLinkedList();
+  }
+
+  public LiaisonPoint (LiaisonPoint other)
+  {
+    super(other);
+    this.items = new ObservableLinkedList(other.items); // Do copy items
+  }
+
+  /**
+   * Retrieves a list of applicable items from the appropriate Manager.
+   */
+  public abstract ObservableLinkedList getApplicableItems ();
+
+  public void addItem (LiaisonItem item)
+  {
+    logger.log(Level.FINE, "{0} addItem {1}\n", new Object[] { this, item });
+    this.items.add(item);
+  }
+
+  public void removeItem (LiaisonItem item)
+  {
+    logger.log(Level.FINE, "{0} removeItem {1}\n", new Object[] { this, item });
+    if (! this.items.remove(item))
+      {
+        throw new IllegalArgumentException(
+                                           "the passed item ["
+                                               + item
+                                               + "] is not a member of this Liason point");
+      }
+  }
+
+  public ObservableLinkedList getItems ()
+  {
+    return this.items;
+  }
+
+  public void save (Element node)
+  {
+    super.save(node);
+
+    Element filtersXML = new Element("items");
+    this.items.save(filtersXML);
+    node.addContent(filtersXML);
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+    Element elemetnsXML = node.getChild("items");
+    this.items.load(elemetnsXML);
+  }
 
 }

@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
@@ -44,40 +45,50 @@ import frysk.gui.monitor.LiaisonPoint;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * In a similar manner to @link frysk.gui.monitor.filters.FilterPoint
- * ActionPoints provide a flexible interface to add actions to Observers.
+ * In a similar manner to
+ * 
+ * @link frysk.gui.monitor.filters.FilterPoint ActionPoints provide a flexible
+ *       interface to add actions to Observers.
  * @see frysk.gui.monitor.LiaisonPoint
- * */
-public abstract class ActionPoint extends LiaisonPoint {
-	
-	public ActionPoint() {
-		super();
-	}
+ */
+public abstract class ActionPoint
+    extends LiaisonPoint
+{
 
-	public ActionPoint(String name, String toolTip){
-		super(name, toolTip);
-	}
-	
-	public ActionPoint(ActionPoint other){
-		super(other);
-	}
-	
-	/**
-	 * Retrieves a list of applicable actions from the ActionManager.
-	 * */
-	public abstract ObservableLinkedList getApplicableActions();
-	
-	public void removeAction(Action action){
-		super.removeItem(action);
-	}
-	
-	public ObservableLinkedList getActions(){
-		return super.getItems();
-	}
+  public ActionPoint ()
+  {
+    super();
+  }
 
-	public void addAction(Action action) {
-		super.addItem(action);		
-	}
+  public ActionPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
 
-	public abstract GuiObject getCopy();
+  public ActionPoint (ActionPoint other)
+  {
+    super(other);
+  }
+
+  /**
+   * Retrieves a list of applicable actions from the ActionManager.
+   */
+  public abstract ObservableLinkedList getApplicableActions ();
+
+  public void removeAction (Action action)
+  {
+    super.removeItem(action);
+  }
+
+  public ObservableLinkedList getActions ()
+  {
+    return super.getItems();
+  }
+
+  public void addAction (Action action)
+  {
+    super.addItem(action);
+  }
+
+  public abstract GuiObject getCopy ();
 }

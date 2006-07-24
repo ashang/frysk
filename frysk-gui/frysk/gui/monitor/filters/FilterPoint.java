@@ -37,42 +37,49 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.LiaisonPoint;
 
 /**
- * FilterPoints provide a flexible interface between Observers
- * and the clients that would like to add filters to those observers.
- * Thus allowing reuse of a filter with different observer.
- * Observers add FilterPoints to themselves to allowed
- * their clients to filter the events.
- * Clients of observers add desired Filters to the correct
- * filter points.
+ * FilterPoints provide a flexible interface between Observers and the clients
+ * that would like to add filters to those observers. Thus allowing reuse of a
+ * filter with different observer. Observers add FilterPoints to themselves to
+ * allowed their clients to filter the events. Clients of observers add desired
+ * Filters to the correct filter points.
+ * 
  * @see frysk.gui.monitor.LiaisonPoint
- * */
-public abstract class FilterPoint extends LiaisonPoint {
-	
-	public FilterPoint(){
-		super();
-	}
-	
-	public FilterPoint(String name, String toolTip){
-		super(name, toolTip);
-	}
-	
-	public FilterPoint(FilterPoint other){
-		super(other);
-	}
-	
-	public void addFilter(Filter filter){
-		super.addItem(filter);
-	}
-	
-	public void removeFilter(Filter filter){
-		super.removeItem(filter);
-	}
-	
-	abstract public GuiObject getCopy();
+ */
+public abstract class FilterPoint
+    extends LiaisonPoint
+{
+
+  public FilterPoint ()
+  {
+    super();
+  }
+
+  public FilterPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  public FilterPoint (FilterPoint other)
+  {
+    super(other);
+  }
+
+  public void addFilter (Filter filter)
+  {
+    super.addItem(filter);
+  }
+
+  public void removeFilter (Filter filter)
+  {
+    super.removeItem(filter);
+  }
+
+  abstract public GuiObject getCopy ();
 }

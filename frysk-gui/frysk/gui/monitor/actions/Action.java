@@ -37,24 +37,29 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.LiaisonItem;
 
+public abstract class Action
+    extends LiaisonItem
+{
+  protected Runnable runnable;
 
-public abstract class Action extends LiaisonItem {
-	protected Runnable runnable;
-	
-	public Action() {
-		super();
-	}
+  public Action ()
+  {
+    super();
+  }
 
-	public Action(Action other) {
-		super(other);
-	}
+  public Action (Action other)
+  {
+    super(other);
+  }
 
-	public Action(String name, String toolTip) {
-		super(name, toolTip);
-	}
-		
+  public Action (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
 }

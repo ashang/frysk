@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import org.gnu.gtk.Widget;
@@ -45,60 +46,69 @@ import org.jdom.Element;
 import frysk.gui.monitor.DynamicWidget;
 import frysk.gui.monitor.LiaisonItem;
 
-public abstract class Filter extends LiaisonItem {
-	
-	/**
-	 * The widget that is used to edit the parameters of this
-	 * filter.
-	 */
-	protected DynamicWidget widget;
-	
-	boolean filterBoolean;
-	
-	public Filter(){
-		super();
-		this.widget = new DynamicWidget();
-		this.filterBoolean = true;
-	}
-	
-	public Filter(String name, String toolTip){
-		super(name, toolTip);
-		this.widget = new DynamicWidget();
-		this.filterBoolean = true;
-	}
-	
-	public Filter(Filter other){
-		super(other);
-		this.widget = new DynamicWidget(other.widget);
-		this.filterBoolean = other.filterBoolean;
-//		System.out.println(this + ": Filter.Filter() copying");
-	}
-	
-	/**
-	 * return the widget used to edit the parameters of this
-	 * filter.
-	 */
-	public Widget getWidget() {
-		//System.out.println("Filter.getWidget() Filter: " + this);
-		return this.widget;
-	}
+public abstract class Filter
+    extends LiaisonItem
+{
 
-	public void save(Element node){
-		super.save(node);
-		node.setAttribute("filterBoolean", this.filterBoolean+"");
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
-	}
-	
-	public void setFilterBoolean(boolean filterBoolean){
-		this.filterBoolean = filterBoolean;
-//		System.out.println(this + ": Filter.setFilterBoolean() boolean set to " + this.filterBoolean );
-	}
-	
-	public boolean getFilterBoolean(){
-		return this.filterBoolean;
-	}
+  /**
+   * The widget that is used to edit the parameters of this filter.
+   */
+  protected DynamicWidget widget;
+
+  boolean filterBoolean;
+
+  public Filter ()
+  {
+    super();
+    this.widget = new DynamicWidget();
+    this.filterBoolean = true;
+  }
+
+  public Filter (String name, String toolTip)
+  {
+    super(name, toolTip);
+    this.widget = new DynamicWidget();
+    this.filterBoolean = true;
+  }
+
+  public Filter (Filter other)
+  {
+    super(other);
+    this.widget = new DynamicWidget(other.widget);
+    this.filterBoolean = other.filterBoolean;
+    // System.out.println(this + ": Filter.Filter() copying");
+  }
+
+  /**
+   * return the widget used to edit the parameters of this filter.
+   */
+  public Widget getWidget ()
+  {
+    // System.out.println("Filter.getWidget() Filter: " + this);
+    return this.widget;
+  }
+
+  public void save (Element node)
+  {
+    super.save(node);
+    node.setAttribute("filterBoolean", this.filterBoolean + "");
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+    this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
+  }
+
+  public void setFilterBoolean (boolean filterBoolean)
+  {
+    this.filterBoolean = filterBoolean;
+    // System.out.println(this + ": Filter.setFilterBoolean() boolean set to " +
+    // this.filterBoolean );
+  }
+
+  public boolean getFilterBoolean ()
+  {
+    return this.filterBoolean;
+  }
 }

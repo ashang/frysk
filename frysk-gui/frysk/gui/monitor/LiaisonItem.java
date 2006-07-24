@@ -37,69 +37,82 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import org.jdom.Element;
 
 /**
- * @author swagiaal
- * 
- * An item that can be added to a LiaisonPoint. An item can
- * either be an Action or a Filter.
+ * @author swagiaal An item that can be added to a LiaisonPoint. An item can
+ *         either be an Action or a Filter.
  */
-public abstract class LiaisonItem extends GuiObject implements SaveableXXX{
-	protected Runnable runnable;
-	
-	public LiaisonItem() {
-		super();
-	}
+public abstract class LiaisonItem
+    extends GuiObject
+    implements SaveableXXX
+{
+  protected Runnable runnable;
 
-	public LiaisonItem(LiaisonItem other) {
-		super(other);
-	}
+  public LiaisonItem ()
+  {
+    super();
+  }
 
-	public LiaisonItem(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	public abstract GuiObject getCopy();
-	
-	public abstract boolean setArgument(String argument);
+  public LiaisonItem (LiaisonItem other)
+  {
+    super(other);
+  }
 
-	/**
-	 * uset to get the item's argument
-	 * @return the argument, null if the object takes no
-	 * argument
-	 */
-	public abstract String getArgument();
-	
-	/**
-	 * If the item whishes to have a completion list for its arguments
-	 * then it can return an observable linked list describing the list
-	 * of possible arguments. Otherwise just return null.
-	 * @return
-	 */
-	public abstract ObservableLinkedList getArgumentCompletionList();
-	
-	public void save(Element node){
-		super.save(node);
-		String argument = this.getArgument();
-		if(argument ==  null){
-			node.setAttribute("argument", "null");
-		}else{
-			node.setAttribute("argument", this.getArgument());
-		}
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		String argument = node.getAttributeValue("argument"); 
-		if(argument.equals("null")){
-			this.setArgument(null);
-		}else{
-			this.setArgument(argument);
-		}
-    }
-	
-	
+  public LiaisonItem (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  public abstract GuiObject getCopy ();
+
+  public abstract boolean setArgument (String argument);
+
+  /**
+   * uset to get the item's argument
+   * 
+   * @return the argument, null if the object takes no argument
+   */
+  public abstract String getArgument ();
+
+  /**
+   * If the item whishes to have a completion list for its arguments then it can
+   * return an observable linked list describing the list of possible arguments.
+   * Otherwise just return null.
+   * 
+   * @return
+   */
+  public abstract ObservableLinkedList getArgumentCompletionList ();
+
+  public void save (Element node)
+  {
+    super.save(node);
+    String argument = this.getArgument();
+    if (argument == null)
+      {
+        node.setAttribute("argument", "null");
+      }
+    else
+      {
+        node.setAttribute("argument", this.getArgument());
+      }
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+    String argument = node.getAttributeValue("argument");
+    if (argument.equals("null"))
+      {
+        this.setArgument(null);
+      }
+    else
+      {
+        this.setArgument(argument);
+      }
+  }
+
 }

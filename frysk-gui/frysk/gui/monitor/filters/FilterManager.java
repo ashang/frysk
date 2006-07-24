@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import java.util.Observable;
@@ -44,71 +45,82 @@ import java.util.Observable;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * Only once instance.
- * Keeps a list of available filters.
- * Provides an interface for instantiating those actions.
- * */
-public class FilterManager extends Observable {
-	
-	public static FilterManager theManager = new FilterManager();
-	
-	private ObservableLinkedList procFilters;
-	private ObservableLinkedList taskFilters;
-	private ObservableLinkedList intFilters;
-	
-	public FilterManager(){
-		this.taskFilters = new ObservableLinkedList();
-		this.procFilters = new ObservableLinkedList();
-		this.intFilters = new ObservableLinkedList();
-		this.initFilterList();
-	}
-	
-	private void initFilterList() {
-		this.addProcFilterPrototype(new ProcNameFilter());
-		this.addTaskFilterPrototype(new TaskProcNameFilter());
-		this.addIntFilterPrototype(new IntFilter());
-	}
-	
-	private void addIntFilterPrototype(IntFilter filter) {
-		this.intFilters.add(filter);
-	}
+ * Only once instance. Keeps a list of available filters. Provides an interface
+ * for instantiating those actions.
+ */
+public class FilterManager
+    extends Observable
+{
 
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instantiated.
-	 * */
-	public Filter getFilterCopy(Filter prototype){
-		return (Filter) prototype.getCopy();
-	}
-	
+  public static FilterManager theManager = new FilterManager();
 
-	/**
-	 * add an observer to the list of available observers.
-	 * */
-	public void addProcFilterPrototype(ProcFilter filter){
-		this.procFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
-	}
-	
-	public void addTaskFilterPrototype(TaskFilter filter){
-		this.taskFilters.add(filter);
-		this.hasChanged();
-		this.notifyObservers();
-	}
+  private ObservableLinkedList procFilters;
 
-	public ObservableLinkedList getProcFilters() {
-		return this.procFilters;
-	}
+  private ObservableLinkedList taskFilters;
 
-	public ObservableLinkedList getIntFilters() {
-		return this.intFilters;
-	}
+  private ObservableLinkedList intFilters;
 
-	public ObservableLinkedList getTaskFilters() {
-		return this.taskFilters;
-	}
-	
+  public FilterManager ()
+  {
+    this.taskFilters = new ObservableLinkedList();
+    this.procFilters = new ObservableLinkedList();
+    this.intFilters = new ObservableLinkedList();
+    this.initFilterList();
+  }
+
+  private void initFilterList ()
+  {
+    this.addProcFilterPrototype(new ProcNameFilter());
+    this.addTaskFilterPrototype(new TaskProcNameFilter());
+    this.addIntFilterPrototype(new IntFilter());
+  }
+
+  private void addIntFilterPrototype (IntFilter filter)
+  {
+    this.intFilters.add(filter);
+  }
+
+  /**
+   * Returns a copy of the prototype given. A list of available prototypes can
+   * be
+   * 
+   * @param prototype a prototype of the observer to be instantiated.
+   */
+  public Filter getFilterCopy (Filter prototype)
+  {
+    return (Filter) prototype.getCopy();
+  }
+
+  /**
+   * add an observer to the list of available observers.
+   */
+  public void addProcFilterPrototype (ProcFilter filter)
+  {
+    this.procFilters.add(filter);
+    this.hasChanged();
+    this.notifyObservers();
+  }
+
+  public void addTaskFilterPrototype (TaskFilter filter)
+  {
+    this.taskFilters.add(filter);
+    this.hasChanged();
+    this.notifyObservers();
+  }
+
+  public ObservableLinkedList getProcFilters ()
+  {
+    return this.procFilters;
+  }
+
+  public ObservableLinkedList getIntFilters ()
+  {
+    return this.intFilters;
+  }
+
+  public ObservableLinkedList getTaskFilters ()
+  {
+    return this.taskFilters;
+  }
+
 }

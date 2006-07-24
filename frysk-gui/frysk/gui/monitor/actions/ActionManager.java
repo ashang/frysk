@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import java.util.Observable;
@@ -44,90 +45,101 @@ import java.util.Observable;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * Only once instance.
- * Keeps a list of available actions.
- * Provides an interface for instantiating those actions.
- * */
-public class ActionManager extends Observable {
-	
-	public static ActionManager theManager = new ActionManager();
-	
-	private ObservableLinkedList procActions;
-	private ObservableLinkedList taskActions;
-	private ObservableLinkedList genericActions;
-	
-	public ActionManager(){
-		this.procActions = new ObservableLinkedList();
-		this.taskActions = new ObservableLinkedList();
-		this.genericActions = new ObservableLinkedList();
-		this.initActionList();
-	}
-	
-	/**
-	 * Instantiates each one of the static task observers
-	 * and adds it to the list.
-	 * */
-	private void initActionList() {
-//		this.addGenericActionPrototype(new Stop());
-//		this.addGenericActionPrototype(new Resume());
-		this.addGenericActionPrototype(new LogAction());
-		
-//		this.addTaskActionPrototype(new ShowSourceWin());
-		this.addTaskActionPrototype(new PrintTask());
-//		this.addTaskActionPrototype(new AddTaskObserverAction());
+ * Only once instance. Keeps a list of available actions. Provides an interface
+ * for instantiating those actions.
+ */
+public class ActionManager
+    extends Observable
+{
 
-		this.addProcActionPrototype(new PrintProc());
-	}
+  public static ActionManager theManager = new ActionManager();
 
-	/**
-	 * Returns a copy of the prototype given.
-	 * A list of available prototypes can be 
-	 * @param prototype a prototype of the observer to be
-	 * instantiated.
-	 * */
-	public Action getObserver(Action prototype){
-		//XXX: Not implemented.
-		throw new RuntimeException("Not implemented"); //$NON-NLS-1$
-		//return prototype.getCopy();
-	}
-	
-	public ObservableLinkedList getProcActions(){
-		return this.procActions;
-	}
+  private ObservableLinkedList procActions;
 
-	public ObservableLinkedList getTaskActions(){
-		return this.taskActions;
-	}
+  private ObservableLinkedList taskActions;
 
-	public ObservableLinkedList getGenericActions(){
-		return this.genericActions;
-	}
+  private ObservableLinkedList genericActions;
 
-	/**
-	 * Add a ProcAction to the list of available ProcAction
-	 * prototypes.
-	 * @param prototype the action to be added.
-	 * */
-	public void addProcActionPrototype(ProcAction prototype){
-		this.procActions.add(prototype);
-	}
-	
-	/**
-	 * Add a TaskAction to the list of available TaskAction
-	 * prototypes.
-	 * @param prototype the action to be added.
-	 * */
-	public void addTaskActionPrototype(TaskAction prototype){
-		this.taskActions.add(prototype);
-	}
+  public ActionManager ()
+  {
+    this.procActions = new ObservableLinkedList();
+    this.taskActions = new ObservableLinkedList();
+    this.genericActions = new ObservableLinkedList();
+    this.initActionList();
+  }
 
-	/**
-	 * Add a generic Action to the list of available Action
-	 * prototypes.
-	 * @param prototype the action to be added.
-	 * */
-	public void addGenericActionPrototype(Action prototype) {
-		this.genericActions.add(prototype);
-	}
-	
+  /**
+   * Instantiates each one of the static task observers and adds it to the list.
+   */
+  private void initActionList ()
+  {
+    // this.addGenericActionPrototype(new Stop());
+    // this.addGenericActionPrototype(new Resume());
+    this.addGenericActionPrototype(new LogAction());
+
+    // this.addTaskActionPrototype(new ShowSourceWin());
+    this.addTaskActionPrototype(new PrintTask());
+    // this.addTaskActionPrototype(new AddTaskObserverAction());
+
+    this.addProcActionPrototype(new PrintProc());
+  }
+
+  /**
+   * Returns a copy of the prototype given. A list of available prototypes can
+   * be
+   * 
+   * @param prototype a prototype of the observer to be instantiated.
+   */
+  public Action getObserver (Action prototype)
+  {
+    // XXX: Not implemented.
+    throw new RuntimeException("Not implemented"); //$NON-NLS-1$
+    // return prototype.getCopy();
+  }
+
+  public ObservableLinkedList getProcActions ()
+  {
+    return this.procActions;
+  }
+
+  public ObservableLinkedList getTaskActions ()
+  {
+    return this.taskActions;
+  }
+
+  public ObservableLinkedList getGenericActions ()
+  {
+    return this.genericActions;
+  }
+
+  /**
+   * Add a ProcAction to the list of available ProcAction prototypes.
+   * 
+   * @param prototype the action to be added.
+   */
+  public void addProcActionPrototype (ProcAction prototype)
+  {
+    this.procActions.add(prototype);
+  }
+
+  /**
+   * Add a TaskAction to the list of available TaskAction prototypes.
+   * 
+   * @param prototype the action to be added.
+   */
+  public void addTaskActionPrototype (TaskAction prototype)
+  {
+    this.taskActions.add(prototype);
+  }
+
+  /**
+   * Add a generic Action to the list of available Action prototypes.
+   * 
+   * @param prototype the action to be added.
+   */
+  public void addGenericActionPrototype (Action prototype)
+  {
+    this.genericActions.add(prototype);
+  }
+
 }
