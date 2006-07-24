@@ -235,6 +235,7 @@
 	      <child>
 		<widget class="GtkEntry" id="PCEntryHex">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Hexadecimal value of the current program counter</property>
 		  <property name="can_focus">True</property>
 		  <property name="editable">False</property>
 		  <property name="visibility">True</property>
@@ -279,6 +280,7 @@
 	      <child>
 		<widget class="GtkEntry" id="PCEntryDec">
 		  <property name="visible">True</property>
+		  <property name="tooltip" translatable="yes">Decimal value of the current porgram counter</property>
 		  <property name="can_focus">True</property>
 		  <property name="editable">False</property>
 		  <property name="visibility">True</property>
@@ -334,6 +336,7 @@
 		    <widget class="GtkTreeView" id="memoryView">
 		      <property name="border_width">12</property>
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Display of this process' specified memory addresses in the specified formats</property>
 		      <property name="can_focus">True</property>
 		      <property name="headers_visible">True</property>
 		      <property name="rules_hint">False</property>
@@ -481,6 +484,7 @@
 		      <child>
 			<widget class="GtkSpinButton" id="fromSpin">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">The beginning memory location to diplay</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
 			  <property name="digits">0</property>
@@ -500,6 +504,7 @@
 		      <child>
 			<widget class="GtkSpinButton" id="toSpin">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">The ending memory location to display</property>
 			  <property name="can_focus">True</property>
 			  <property name="climb_rate">1</property>
 			  <property name="digits">0</property>
@@ -558,6 +563,7 @@
 		  <child>
 		    <widget class="GtkButton" id="formatButton">
 		      <property name="visible">True</property>
+		      <property name="tooltip" translatable="yes">Add columns with different formats or delete columns</property>
 		      <property name="can_focus">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="focus_on_click">True</property>
@@ -710,6 +716,7 @@
 		      <child>
 			<widget class="GtkButton" id="closeButton">
 			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">Close this window for the named process/PID</property>
 			  <property name="can_focus">True</property>
 			  <property name="label">gtk-close</property>
 			  <property name="use_stock">True</property>

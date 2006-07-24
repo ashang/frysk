@@ -1,3 +1,9 @@
+2006-07-24 Rick Moseley  <rmoseley@redhat.com>
+
+	* glade/memorywindow.glade: Add tool tips.
+	* glade/proppop.glade: Tweak tool tips.
+	* glade/registerwindow: Ditto.
+
 2006-07-24 Phil Muldoon <pmuldoon@redhat.com> 
            Rick Moseley  <rmoseley@redhat.com>
 	   
