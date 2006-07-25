@@ -44,11 +44,15 @@ import java.util.logging.Level;
 
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
+import lib.dw.DwflDieBias;
+import lib.elf.Elf;
+import lib.elf.ElfData;
+import lib.elf.ElfSection;
 import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
 import frysk.proc.Host;
-import frysk.proc.Task;
 import frysk.proc.Isa;
+import frysk.proc.Task;
 
 public class StackCallbacks
     implements UnwindCallbacks
@@ -71,21 +75,44 @@ public class StackCallbacks
                                 + Long.toHexString(instructionAddress) + "\n");
 
     Dwfl dwfl = new Dwfl(myTask.getTid());
-    DwarfDie die = dwfl.getDie(instructionAddress);
+    DwflDieBias bias = dwfl.getDie(instructionAddress);
+    DwarfDie die = bias.die;
+
+    long adjustedAddress = instructionAddress - bias.bias;
 
     if (die == null)
       return false;
 
-    DwarfDie lowest = die.getScopes(instructionAddress)[0];
+    DwarfDie lowest = die.getScopes(adjustedAddress)[0];
     if (lowest == null)
       return false;
 
     if (needInfo)
-      populate_procinfo(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0, 0,
-                        0, 0,0);
+      {
+        Elf elf = null;
+        elf = dwfl.getModule(adjustedAddress).getElf().elf;
+        // elf = new Elf(myTask.getTid(), ElfCommand.ELF_C_READ);
+
+        ElfSection found = null;
+        for (int i = 0; i < elf.getSectionCount(); i++)
+          {
+            ElfSection current = elf.getSection(i);
+            if (current.getSectionHeader().name.equals(".debug_frame"))
+              {
+                found = current;
+                break;
+              }
+          }
+
+        if (found == null)
+          return false;
+
+        populate_procinfo(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0,
+                          0, 0, found.getData());
+      }
     else
-      populate_procinfo_nounwind(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0, 0,
-                        0);
+      populate_procinfo_nounwind(procInfo, lowest.getLowPC(),
+                                 lowest.getHighPC(), 0, 0, 0);
 
     return true;
   }
@@ -179,13 +206,13 @@ public class StackCallbacks
     Host.logger.log(Level.FINE, "Libunwind: getting procedure name at 0x"
                                 + Long.toHexString(addr) + "\n");
 
-    // XXX: This doesn't work, it gets the file name
     Dwfl dwfl = new Dwfl(myTask.getTid());
-    DwarfDie die = dwfl.getDie(addr);
+    DwflDieBias bias = dwfl.getDie(addr);
+    DwarfDie die = bias.die;
     if (die == null)
       return "";
 
-    DwarfDie lowest = die.getScopes(addr)[0];
+    DwarfDie lowest = die.getScopes(addr - bias.bias)[0];
     if (lowest == null)
       return "";
 
@@ -198,11 +225,12 @@ public class StackCallbacks
                                 + Long.toHexString(addr) + "\n");
 
     Dwfl dwfl = new Dwfl(myTask.getTid());
-    DwarfDie die = dwfl.getDie(addr);
+    DwflDieBias bias = dwfl.getDie(addr);
+    DwarfDie die = bias.die;
     if (die == null)
       return 0;
 
-    DwarfDie lowest = die.getScopes(addr)[0];
+    DwarfDie lowest = die.getScopes(addr - bias.bias)[0];
     if (lowest == null)
       return 0;
 
@@ -211,7 +239,7 @@ public class StackCallbacks
 
   private native void populate_procinfo (long procInfo, long lowPC,
                                          long highPC, long lsda, long gp,
-                                         long flags, int unwSize, long unwInfo);
+                                         long flags, ElfData debug_frame);
 
   private native void populate_procinfo_nounwind (long procInfo, long lowPC,
                                                   long highPC, long lsda,

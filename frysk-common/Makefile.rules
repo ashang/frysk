@@ -143,6 +143,7 @@ AM_GCJFLAGS = \
 
 AM_CXXFLAGS = \
 	-I$(srcdir) \
+	-I$(srcdir)/../frysk-imports \
 	-I$(top_builddir) \
 	-I$(srcdir)/../frysk-imports/elfutils/libelf \
 	-I$(srcdir)/../frysk-imports/elfutils/libdw \

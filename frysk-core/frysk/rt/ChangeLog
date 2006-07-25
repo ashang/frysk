@@ -1,5 +1,16 @@
 2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
 
+	* StackCallbacks.java (findProcInfo): Refactored to use
+	DwflDieBias, now searched for .debug_frame elf section and
+	passes that in to populate_procinfo.
+	(getProcName): Refactored to use DwflDieBias.
+	(getProcOffset): Ditto.
+	(populate_procinfo): Now takes a ElfData object.
+	* cni/StackCallbacks.cxx (populate_procinfo): Now copies out the
+	contents of the provided ElfData and passes that to libunwind.
+
+2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
+
 	* StackCallbacks.java (build_procinfo_nounwind): Added.
 	(findProcInfo): Refactored to reflect interface change, also calls
 	build_procinfo_nounwind.

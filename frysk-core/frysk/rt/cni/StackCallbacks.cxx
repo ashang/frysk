@@ -39,14 +39,16 @@
 
 #include <libunwind.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <gcj/cni.h>
 
 #include "frysk/rt/StackCallbacks.h"
+#include "../frysk-imports/lib/elf/ElfData.h"
 
 void
 frysk::rt::StackCallbacks::populate_procinfo(
 		jlong procInfo, jlong lowPC, jlong highPC, jlong lsda, jlong gp, jlong flags,
-		jint unwind_size, jlong unwind_info)
+		lib::elf::ElfData* debug_frame)
 {
 	unw_proc_info_t *proc_info = (unw_proc_info_t *) procInfo;
 	
@@ -56,8 +58,15 @@ frysk::rt::StackCallbacks::populate_procinfo(
 	proc_info->gp = (unw_word_t) gp;
 	proc_info->flags = (unw_word_t) flags;
 	proc_info->format = UNW_INFO_FORMAT_TABLE;
-	proc_info->unwind_info_size = (int) unwind_size;
-	proc_info->unwind_info = (void *) unwind_info;
+
+	int data_size = (int) debug_frame->getSize();
+	unsigned char* frame_data = (unsigned char*) malloc(data_size);
+	
+	for(int i = 0; i < data_size; i++)
+		frame_data[i] = (unsigned char) debug_frame->getByte((jlong) i);
+
+	proc_info->unwind_info_size = data_size;
+	proc_info->unwind_info = (void *) frame_data;
 }
 
 void
