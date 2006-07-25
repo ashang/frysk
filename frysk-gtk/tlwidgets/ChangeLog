@@ -1,3 +1,12 @@
+2006-07-25  Nurdin Premji  <npremji@redhat.com>
+
+	* src/widgets/ftkeventviewer.c (create_button_box): Fixed ally issue 
+	with slider getting label name.
+	(ftk_eventviewer_style): Removed marker color changes, markers/observers colors
+	will be handled manually.
+	* src/jni/com_redhat_ftk_EventViewer.c (ftk_1eventviewer_1delete_1trace): Added 
+	* src/java/com/redhat/ftk/EventViewer.java (deleteTrace): Added.
+
 2006-07-21	Nurdin Premji <npremji@redhat.com>
 	
 	* src/widgets/ftkeventviewer.c: Added large code separating comments.

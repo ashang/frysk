@@ -1,3 +1,10 @@
+2006-07-25  Nurdin Premji  <npremji@redhat.com>
+
+	* observers/TaskTerminatingObserver.java (Terminating Observer): Ditto
+	* observers/TaskCloneObserver.java (Clone Observer): 
+	Changed name to reflect naming style.
+	* StatusWidget.java (removeTask): Implemented.
+
 2006-07-25  Mike Cvet  <mcvet@redhat.com>
 
 	* GuiObservable.java: Applied GNU formatting.

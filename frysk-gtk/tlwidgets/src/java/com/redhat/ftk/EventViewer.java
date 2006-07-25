@@ -115,7 +115,14 @@ public class EventViewer extends Widget
     public int addTrace(String label, String desc) {
 	return ftk_eventviewer_add_trace (getHandle(), label, desc);
     }
-
+    
+    /*
+     * Remove trace
+     */
+    public boolean deleteTrace(int trace) {
+      return ftk_eventviewer_delete_trace (getHandle(), trace);
+    }
+    
     /**
      * Set trace rgb
      */

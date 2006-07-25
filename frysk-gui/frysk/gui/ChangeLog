@@ -1,3 +1,12 @@
+2006-07-25  Nurdin Premji  <npremji@redhat.com>
+
+	* test/dogtail_scripts/TestEventViewerButtons.py (zoon zoom!): Added.
+	* test/dogtail_scripts/FryskHelpers.py: Updated constants.
+	* test/dogtail_scripts/Test2921.xml: Updated.
+	* test/dogtail_scripts/frysk_suite.in: Added TestEventViewerButtons.py
+	Commented out TestEventViewerButtons, fails.
+	* test/dogtail_scripts/another_new_session.xml: Fixed typo. Updated.
+
 2006-07-24 Rick Moseley  <rmoseley@redhat.com>
 
 	* glade/memorywindow.glade: Add tool tips.

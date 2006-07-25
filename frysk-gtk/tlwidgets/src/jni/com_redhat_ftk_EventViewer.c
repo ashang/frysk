@@ -236,6 +236,20 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1add_1trace (JNIEnv *env,
 }
 
 /*
+ * Class:	com.redhat.ftk.EventViewer
+ * Method:	ftk_eventviewer_delete_trace
+ */
+ JNIEXPORT jboolean JNICALL
+ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1delete_1trace (JNIEnv *env,
+ 									jclass cls,
+ 									jobject sc,
+ 									jint trace)
+{
+	FtkEventViewer * eventviewer = (FtkEventViewer *)getPointerFromHandle(env, sc);
+	return (jboolean)ftk_eventviewer_delete_trace (eventviewer, (gint) trace);
+}
+
+/*
  * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_set_trace_rgb
  */

@@ -501,7 +501,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
         atk_object_set_description(atk_widget, _("Logarithmic slider for time interval."));
         
         atk_label = gtk_widget_get_accessible (label);
-        atk_object_set_name(atk_widget, _("Interval Label"));
+        atk_object_set_name(atk_label, _("Interval Label"));
         atk_object_set_description(atk_label, _("Label for the interval slider."));
 
         relation_set = atk_object_ref_relation_set (atk_label);
@@ -1946,12 +1946,12 @@ ftk_eventviewer_style (GtkWidget * widget, GtkStyle *previous_style,
 		}
     }
 
-	for (gint i = 0; i < ftk_ev_markers_next(eventviewer); i++) {
+/*	for (gint i = 0; i < ftk_ev_markers_next(eventviewer); i++) {
 		ftk_eventviewer_preset_marker_rgb_e(eventviewer, i, 
 		foregrounds->red, foregrounds->green, 
 		foregrounds->blue, NULL);
 	}
-
+*/
 	if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (da))) {
 	    ftk_eventviewer_da_expose(GTK_WIDGET(da), NULL, eventviewer);
 	}

@@ -4,15 +4,15 @@
     <elements>
       <element type="frysk.gui.sessions.DebugProcess" name="nautilus" tooltip="nautilus" executablePath="nautilus">
         <observers>
-          <element name="Task Terminating Observer" />
+          <element name="Terminating Observer" />
           <element name="Fork Observer" />
         </observers>
         <tagsets />
       </element>
       <element type="frysk.gui.sessions.DebugProcess" name="gnome-panel" tooltip="gnome-panel" executablePath="gnome-panel">
         <observers>
-          <element name="Task Terminating Observer" />
-          <element name="TaskCloneObserver" />
+          <element name="Terminating Observer" />
+          <element name="Clone Observer" />
           <element name="Syscall Observer" />
         </observers>
         <tagsets />

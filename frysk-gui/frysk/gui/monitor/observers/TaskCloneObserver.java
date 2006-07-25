@@ -23,7 +23,7 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 	public TaskActionPoint clonedTaskActionPoint;
 
 	public TaskCloneObserver(){
-		super("TaskCloneObserver", "Fires when a proc calls clone");
+		super("Clone Observer", "Fires when a proc calls clone");
 
 		this.cloningTaskFilterPoint = new TaskFilterPoint("Cloning Thread","Thread that made the clone system call");
 		this.clonedTaskFilterPoint = new TaskFilterPoint("Cloned Thread","New thread that has just been created as a result of clone call");

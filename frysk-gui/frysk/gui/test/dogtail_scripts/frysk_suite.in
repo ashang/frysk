@@ -29,6 +29,8 @@ ${src}/TestLicense.py ${src}/another_new_session.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_fork_custom_observer.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_syscall_custom_observer.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_clone_custom_observer.xml
+#This test fails
+#${src}/TestEventViewerButtons.py ${src}/another_new_session.xml
 # The next 2 tests fail - see bug 2871
 #${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_exec_custom_observer.xml
 #${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_term_custom_observer.xml

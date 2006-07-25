@@ -52,7 +52,7 @@ import java.util.Observable;
 import java.util.Observer;
 //import java.util.Random;
 
-//import org.gnu.gdk.Color;
+import org.gnu.gdk.Color;
 import org.gnu.gtk.Frame;
 import org.gnu.gtk.HBox;
 import org.gnu.gtk.Label;
@@ -67,17 +67,9 @@ public class StatusWidget
     extends VBox
 {
 	
-/*	private Color[] backgroundColors;
-	private Color[] traceColors;
-	private Color[] markerColors;
-	private Random randomColorGenerator;
-	
-	private Color getColor (Color[] colors) {
-		int index = randomColorGenerator.nextInt(colors.length);
-		return colors[index];
-	}
-*/   
-
+  private Color backgroundColor = new Color (50000, 50000, 50000);
+	   
+  private Color[] markerColors = {Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE};
   Label nameLabel;
 
   //private GuiData data;
@@ -102,15 +94,14 @@ public class StatusWidget
   public StatusWidget(GuiProc guiProc, String procname)
   {
     super(false, 0);
-    
-//    randomColorGenerator = new Random();
-	  
+    	  
     // FontDescription font = new FontDescription();
     this.notifyUser = new Observable();
 //    this.data = guiProc;
     
     HBox mainVbox = new HBox(false, 0);
-
+    mainVbox.setBorderWidth(5);
+    
     // ========================================
     frame = new Frame(""); //$NON-NLS-1$
     frame.setBorderWidth(10);
@@ -130,22 +121,14 @@ public class StatusWidget
     // ======================================== 
     this.viewer = new EventViewer();
     this.viewer.resize (1, 1);
-    //this.viewer.setBackgroundColor(backgroundColor);
-//    backgroundColors = this.viewer.getBackgroundDefault();
-//    traceColors = this.viewer.getForegroundDefault();
-//    markerColors = this.viewer.getForegroundDefault();
-    
-//    this.viewer.setBackgroundColor(backgroundColors[0]);    
-    
+    this.viewer.setBackgroundColor(backgroundColor);
     this.viewer.setTimebase(10.0);
     
     //XXX: Change "Additional  information to something more meaningfull.
     trace0 = this.viewer.addTrace(procname, "Additional information.");
-//    this.viewer.setTraceColor(trace0, getColor(traceColors));
 
     initLogTextView(guiProc);
 
-    mainVbox.setBorderWidth(5);
     mainVbox.packStart(viewer, true, true, 0);
     // ========================================
 
@@ -218,7 +201,8 @@ public class StatusWidget
 
   private void removeTask(GuiTask guiTask)
   {
-    // XXX: no api in EventViewer for this
+    int trace = guiTask.getTrace();
+    viewer.deleteTrace(trace);
   }
 
   // private TreeView initAttacheObserversTreeView(){
@@ -391,38 +375,42 @@ public class StatusWidget
     private void createEvent()
     {
       count++;
-      if (count % 3 == 0)
-        {
-          /* red + green = yellow */
-          // this.eventId = area.createEvent(observer.getName(), 65535, 65535,
-          // 0);
-          this.markerId = viewer.addMarker(0, observer.getName(),
+      
+      int observerglyph = 0, observercolor = 0;
+      if (observer.getBaseName().equals("Fork Observer")) {
+        observerglyph = 0;
+        observercolor = 0;
+      } else if (observer.getBaseName().equals("Exec Observer")) {
+        observerglyph = 1;
+        observercolor = 1;
+      } else if (observer.getBaseName().equals("Terminating Observer")) {
+        observerglyph = 2;
+        observercolor = 2;
+      } else if (observer.getBaseName().equals("Clone Observer")) {
+      observerglyph = 3;
+      observercolor = 0;
+      } else if (observer.getBaseName().equals("Syscall Observer")) {
+        observerglyph = 4;
+        observercolor = 1;
+      } else if (observer.getBaseName().equals("Exit Notification Observer")) {
+        observerglyph = 5;
+        observercolor = 2;
+      } else {
+        System.out.println("Couldn't understand observer base name: "+observer.getBaseName());
+        
+      }
+      
+      
+      this.markerId = viewer.addMarker(observerglyph, observer.getName(),
                                            observer.getToolTip());
-//          viewer.setMarkerColor(this.markerId, getColor(markerColors));
-        }
-
-      if (count % 3 == 1)
-        {
-          /* red + green = yellow */
-          // this.eventId = area.createEvent(observer.getName(), 65535, 0,
-          // 65535);
-          this.markerId = viewer.addMarker(1, observer.getName(),
-                                           observer.getToolTip());
-//          viewer.setMarkerColor(this.markerId, getColor(markerColors));
-        }
-      if (count % 3 == 2)
-        {
-          /* red + green = yellow */
-          // this.eventId = area.createEvent(observer.getName(), 0, 65535,
-          // 65535);
-          this.markerId = viewer.addMarker(2, observer.getName(),
-                                           observer.getToolTip());
-//          viewer.setMarkerColor(this.markerId, getColor(markerColors));
-        }
+      viewer.setMarkerColor(this.markerId, markerColors[observercolor]);
+        
     }
 
     public void execute(ObserverRoot observer)
     {
+      
+      //XXX: Change other usefull... 
       viewer.appendEvent(guiData.getTrace(), markerId,
                          "Other useful per-event information.");
     }

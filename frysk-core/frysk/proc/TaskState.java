@@ -220,7 +220,7 @@ class TaskState
 	    }
 	    TaskState handleSignaledEvent (Task task, int signal)
 	    {
-		logger.log (Level.FINE, "{0} handleSignaledEvent\n", task); 
+		logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n ", new Object[] {task,new Integer(signal)}); 
 		return transitionToAttached (task, signal);
 	    }
 	    TaskState handleTrappedEvent (Task task)
@@ -786,7 +786,7 @@ class TaskState
 	
 	TaskState handleSignaledEvent (Task task, int sig)
 	{
-	    logger.log (Level.FINE, "{0} handleSignaledEvent\n", task); 
+	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n", new Object[] {task, new Integer(sig)}); 
 	    if (task.notifySignaled (sig) > 0) {
 		return new BlockedSignal (sig);
 	    }
