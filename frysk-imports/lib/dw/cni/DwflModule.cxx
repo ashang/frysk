@@ -40,17 +40,22 @@
 #include <gcj/cni.h>
 
 #include "lib/dw/DwflModule.h"
+#include "lib/dw/ModuleElfBias.h"
+#include "lib/elf/Elf.h"
 
 #define DWFL_MODULE_POINTER (Dwfl_Module *) this->pointer
 
-jlong
+lib::dw::ModuleElfBias*
 lib::dw::DwflModule::module_getelf()
 {
 	Dwarf_Addr bias = 0;
 	::Elf *elf = dwfl_module_getelf(DWFL_MODULE_POINTER, &bias);
 	if(elf == NULL)
-		return 0;
+		return NULL;
 		
-	this->bias = (jlong) bias;
-	return (jlong) elf;	
+	lib::dw::ModuleElfBias *ret = new lib::dw::ModuleElfBias();
+	ret->elf = new lib::elf::Elf((jlong) elf);
+	ret->bias = (jlong) bias;
+		
+	return ret;	
 }

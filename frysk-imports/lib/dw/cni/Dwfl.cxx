@@ -44,6 +44,8 @@
 #include <gnu/gcj/RawDataManaged.h>
 
 #include "lib/dw/Dwfl.h"
+#include "lib/dw/DwflDieBias.h"
+#include "lib/dw/DwarfDie.h"
 
 #define DWFL_POINTER (::Dwfl *) this->pointer
 
@@ -91,10 +93,19 @@ lib::dw::Dwfl::dwfl_getsrc(jlong addr){
 	return (jlong) ::dwfl_getsrc(DWFL_POINTER, (::Dwarf_Addr) addr);
 }
 
-jlong
+lib::dw::DwflDieBias *
 lib::dw::Dwfl::dwfl_addrdie(jlong addr){
 	Dwarf_Addr bias;
-	return (jlong) ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);	
+	Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);
+	
+	if(!die)
+		return NULL;
+	
+	lib::dw::DwflDieBias *retval = new lib::dw::DwflDieBias();
+	retval->die = new lib::dw::DwarfDie((jlong) die, this);
+	retval->bias = (jlong) bias;
+	
+	return retval;
 }
 
 jlong

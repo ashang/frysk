@@ -109,13 +109,9 @@ public class Dwfl
     return new DwflLine(val, this);
   }
 
-  public DwarfDie getDie (long addr)
+  public DwflDieBias getDie (long addr)
   {
-    long val = dwfl_addrdie(addr);
-    if (val == 0)
-      return null;
-
-    return new DwarfDie(val, this);
+    return dwfl_addrdie(addr);
   }
 
   protected long getPointer ()
@@ -136,7 +132,7 @@ public class Dwfl
   // protected native long[] dwfl_getdwarf();
   protected native long dwfl_getsrc (long addr);
   
-  protected native long dwfl_addrdie (long addr);
+  protected native DwflDieBias dwfl_addrdie (long addr);
   
   protected native long dwfl_addrmodule (long addr);
 }

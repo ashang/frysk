@@ -43,6 +43,7 @@ package lib.dw.tests;
 import junit.framework.TestCase;
 import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
+import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 
 public class TestDwfl
@@ -84,12 +85,18 @@ public class TestDwfl
     Dwfl dwfl = new Dwfl(TestLib.getPid());
     assertNotNull(dwfl);
     
-    DwarfDie die = dwfl.getDie(TestLib.getFuncAddr());
+    DwflDieBias bias = dwfl.getDie(TestLib.getFuncAddr());
+    assertNotNull(bias);
+    
+    assertEquals(0, bias.bias);
+    
+    DwarfDie die = bias.die;
     assertNotNull(die);
+    
     assertEquals("TestLib.cxx",
                  die.getName().substring(die.getName().lastIndexOf("/") + 1));
 
-    DwarfDie[] allDies = die.getScopes(TestLib.getFuncAddr());
+    DwarfDie[] allDies = die.getScopes(TestLib.getFuncAddr() - bias.bias);
     assertNotNull(allDies);
 
     String[] names = { "getFuncAddr", "TestLib.cxx" };

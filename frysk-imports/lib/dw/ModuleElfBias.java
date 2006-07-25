@@ -39,42 +39,11 @@
 
 package lib.dw;
 
+import lib.elf.Elf;
 
-public class DwflModule
+public class ModuleElfBias
 {
+  public Elf elf;
 
-  protected long bias;
-  
-  private long pointer;
-
-  private Dwfl parent;
-
-  protected DwflModule (long val, Dwfl parent)
-  {
-    this.pointer = val;
-    this.parent = parent;
-    this.bias = 0;
-  }
-
-  // public String getName(){
-  // return dwfl_module_info_getname();
-  // }
-
-  protected long getPointer ()
-  {
-    return pointer;
-  }
-
-  protected Dwfl getParent ()
-  {
-    return this.parent;
-  }
-
-  public ModuleElfBias getElf ()
-  {
-    return module_getelf();
-  }
-
-  // protected native String dwfl_module_info_getname();
-  private native ModuleElfBias module_getelf();
+  public long bias;
 }

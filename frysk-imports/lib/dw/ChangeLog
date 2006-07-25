@@ -1,3 +1,18 @@
+2006-07-25  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Dwfl.java (getDie): Now returns an instance of DwflDieBias.
+	(dwfl_addrdie): Ditto.
+	* DwflDieBias.java: Added.
+	* DwflModule.java (getElf): Refactored to reflect the name change to
+	ModuleElfBias, also moved most of the logic to the native code.
+	(module_getelf): Now returns a ModuleElfBias object.
+	* ModuleElfBias.java: Renamed from ModuleElfFile.java.
+	* cni/Dwfl.cxx (dwfl_addrdie): Now returns a DwflDieBias object.
+	* cni/DwflModule.cxx (module_getelf): Now returns a ModuleElfBias
+	object.
+	* tests/TestDwfl.java (testGetDie): Now uses DwflDieBias and checks for
+	the returned bias.
+
 2006-07-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Dwfl.java (getModule): Added.
