@@ -35,6 +35,8 @@ ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}
 ${src}/TestDruid.py ${src}/another_new_session.xml
 # The next test fails - see bug 2866
 #${src}/Test2866.py ${src}/another_new_session.xml
+# The next test fails - see bug 2807
+#${src}/TestStressDruid.py ${src}/another_new_session.xml
 # Resolved bugs - keep these tests to prevent regressions
 ${src}/TestCredits.py ${src}/Test2921.xml
 EOF

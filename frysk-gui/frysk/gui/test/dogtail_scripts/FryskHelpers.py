@@ -466,24 +466,30 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
     # Search the process list for a match with the userSelectedProcessGroups List
     theProcessList = procWiseTreeView.findChildren(predicate.GenericPredicate(roleName='table cell'), False)
 
-    import re
+#    import re
+#    processesToMonitor = []
+#    for FryskProcessName in theProcessList:
+#       strFryskProcessName = str( FryskProcessName )
+#       targetName = extractString ( strFryskProcessName, 'name' )
+#       tempName = removeAfterTab( targetName )
+#       # print "tempName = [[[" + tempName + "]]]"
+#      
+#       # Only names that start with a-zA-Z 
+#       if  re.match('[a-zA-Z]', tempName):
+#           # print "include = " + tempName + "  ---  " + targetName
+#           processesToMonitor.append( targetName )
+#       #else:
+#           # print "skip = " + tempName
+#    
+#    #procWiseTreeView.dump()
     
-    processesToMonitor = []
-    for FryskProcessName in theProcessList:
-       strFryskProcessName = str( FryskProcessName )
-       targetName = extractString ( strFryskProcessName, 'name' )
-       tempName = removeAfterTab( targetName )
-       # print "tempName = [[[" + tempName + "]]]"
-      
-       # Only names that start with a-zA-Z 
-       if  re.match('[a-zA-Z]', tempName):
-           # print "include = " + tempName + "  ---  " + targetName
-           processesToMonitor.append( targetName )
-       #else:
-           # print "skip = " + tempName
-    
-    for processName in processesToMonitor:
-        tempProc = procWiseTreeView.child(processName)
+    for processName in theProcessList:
+        #processesToMonitor:
+        #print "DEBUG - processName = " + processName
+        
+        #procWiseTreeView.dump()
+        #tempProc = procWiseTreeView.child(processName)
+        tempProc = procWiseTreeView.child(roleName='table cell')
         tempProc.grabFocus()
         # Correct, but not optimal: tempProc.actions['activate'].do()
         tempProc.doAction('activate')
@@ -496,20 +502,9 @@ def createBigSession (fryskObject, sessionObject, quitBoolean):
 
     # ---------------------
     # page 4 - hbox83_tab4_tagSets - Select tag sets - not really implemented yet
-
-    #import sys
-    #sys.exit(1)
-
-    import time
-    time.sleep(30)
-
-    hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
-    
-    import sys
-    sys.exit(1)
-
-    forwardButton.click()
-
+ 
+#    hbox83_tab4_tagSets = sessionDruid_sessionNoteBook.child('hbox83_tab4_tagSets')
+#    forwardButton.click()
 
     # ---------------------
     # page 5 - hbox77_tab5_observers - Select process groups and observers
