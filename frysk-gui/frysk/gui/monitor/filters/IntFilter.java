@@ -45,7 +45,6 @@ import org.jdom.Element;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
-import frysk.gui.monitor.DynamicWidget.IntCallback;
 
 public class IntFilter
     extends Filter
@@ -59,8 +58,6 @@ public class IntFilter
     super("Int Filter",
           "Passes if value at filter call matches the given value");
     // this.value = value;
-
-    this.initWidget();
   }
 
   public IntFilter (int value)
@@ -68,8 +65,6 @@ public class IntFilter
     super("Int Filter",
           "Passes if value at filter call matches the given value");
     this.value = value;
-
-    this.initWidget();
   }
 
   public IntFilter (IntFilter other)
@@ -77,19 +72,6 @@ public class IntFilter
     super(other);
     this.value = other.value;
 
-    this.initWidget();
-  }
-
-  private void initWidget ()
-  {
-    widget.addInteger(new GuiObject("Value", "Value to match"), value,
-                      new IntCallback()
-                      {
-                        public void intChanged (int i)
-                        {
-                          value = i;
-                        }
-                      });
   }
 
   public GuiObject getCopy ()
@@ -97,9 +79,9 @@ public class IntFilter
     return new IntFilter(this);
   }
 
-  public boolean filter (int value)
+  public boolean filter (int value2)
   {
-    return (this.value == value);
+    return (value2 == value);
   }
 
   public void save (Element node)

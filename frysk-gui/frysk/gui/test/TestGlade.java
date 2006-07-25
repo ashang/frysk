@@ -41,12 +41,16 @@ package frysk.gui.test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import junit.framework.TestCase;
-import frysk.gui.Build;
 
 import org.gnu.glade.GladeXMLException;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
+
+import frysk.gui.common.IconManager;
+import frysk.gui.monitor.WindowManager;
+import frysk.gui.Build;
 
 public class TestGlade extends TestCase {
 
@@ -83,6 +87,9 @@ public class TestGlade extends TestCase {
 			Build.SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH,
 			// ... and absolute.
 			Build.ABS_SRCDIR + "/" + BASE_PATH + GLADE_PKG_PATH, };
+
+    String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
+                                        + "images/" };
 
 	public void setUp() {
 		Gtk.init(new String[] {});
@@ -179,6 +186,36 @@ public class TestGlade extends TestCase {
 				.getWidget("formatDialog"));
 		
 		
+		// TestWindowManager
+        IconManager.setImageDir(imagePaths);
+        IconManager.loadIcons();
+        IconManager.useSmallIcons();
+        Object defaultSet = IconManager.getFactory();
+        assertNotNull("Testing getFactory", defaultSet);
+        try
+          {
+            WindowManager.theManager.initLegacyProcpopWindows(glade);
+            WindowManager.theManager.initSessionDruidWindow(create_session_glade);
+            WindowManager.theManager.initSessionManagerWindow(session_glade);
+          }
+        catch (Exception e)
+          {
+            e.printStackTrace();
+          }
+
+        assertNotNull("menuBar",WindowManager.theManager.menuBar);
+		assertNotNull("mainWindow",WindowManager.theManager.mainWindow);
+		assertNotNull("logWindow",WindowManager.theManager.logWindow);
+		assertNotNull("prefsWindow",WindowManager.theManager.prefsWindow);
+		assertNotNull("aboutWindow",WindowManager.theManager.aboutWindow);
+		assertNotNull("splashScreen",WindowManager.theManager.splashScreen);
+		assertNotNull("createFryskSessionDruid",WindowManager.theManager.createFryskSessionDruid);
+		assertNotNull("observersDialog",WindowManager.theManager.observersDialog);
+		assertNotNull("editObserverDialog",WindowManager.theManager.editObserverDialog);
+		assertNotNull("pickProcDialog",WindowManager.theManager.pickProcDialog);
+		assertNotNull("mainWindowStatusBar",WindowManager.theManager.mainWindowStatusBar);
+		assertNotNull("sessionManager",WindowManager.theManager.sessionManager);
+         
 	}
 
 }

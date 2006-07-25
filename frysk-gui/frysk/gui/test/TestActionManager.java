@@ -37,49 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.gui.test;
 
-package frysk.gui.monitor.filters;
+import junit.framework.TestCase;
+import frysk.gui.monitor.actions.ActionManager;
+import frysk.gui.monitor.actions.GenericAction;
+import frysk.gui.monitor.actions.LogAction;
+import frysk.gui.monitor.actions.PrintProc;
+import frysk.gui.monitor.actions.PrintTask;
+import frysk.gui.monitor.actions.ProcAction;
+import frysk.gui.monitor.actions.TaskAction;
 
-import org.jdom.Element;
+public class TestActionManager extends TestCase{
 
-import frysk.gui.monitor.LiaisonItem;
+	public void testAddingRemovingActions(){
+      GenericAction genericAction = new LogAction();
+      TaskAction taskAction = new PrintTask();
+      ProcAction procAction = new PrintProc();
+      
+      ActionManager.theManager.addGenericActionPrototype(genericAction);
+      ActionManager.theManager.addTaskActionPrototype(taskAction);
+      ActionManager.theManager.addProcActionPrototype(procAction);
 
-public abstract class Filter extends LiaisonItem {
-	
-	boolean filterBoolean;
-	
-	public Filter(){
-		super();
-		this.filterBoolean = true;
-	}
-	
-	public Filter(String name, String toolTip){
-		super(name, toolTip);
-		this.filterBoolean = true;
-	}
-	
-	public Filter(Filter other){
-		super(other);
-		this.filterBoolean = other.filterBoolean;
-//		System.out.println(this + ": Filter.Filter() copying");
-	}
-	
-	public void save(Element node){
-		super.save(node);
-		node.setAttribute("filterBoolean", this.filterBoolean+"");
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
-	}
-	
-	public void setFilterBoolean(boolean filterBoolean){
-		this.filterBoolean = filterBoolean;
-//		System.out.println(this + ": Filter.setFilterBoolean() boolean set to " + this.filterBoolean );
-	}
-	
-	public boolean getFilterBoolean(){
-		return this.filterBoolean;
-	}
+      assertTrue("Action has been added", ActionManager.theManager.getGenericActions().contains(genericAction));
+      assertTrue("Action has been added", ActionManager.theManager.getTaskActions().contains(taskAction));
+      assertTrue("Action has been added", ActionManager.theManager.getProcActions().contains(procAction));
+      
+      ActionManager.theManager.removeGenericActionPrototype(genericAction);
+      ActionManager.theManager.removeTaskActionPrototype(taskAction);
+      ActionManager.theManager.removeProcActionPrototype(procAction);
+
+    }
+    
 }

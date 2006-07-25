@@ -75,7 +75,7 @@ public class FilterManager
     this.addIntFilterPrototype(new IntFilter());
   }
 
-  private void addIntFilterPrototype (IntFilter filter)
+  public void addIntFilterPrototype (IntFilter filter)
   {
     this.intFilters.add(filter);
   }
@@ -123,4 +123,19 @@ public class FilterManager
     return this.taskFilters;
   }
 
+  public void removeGenericFilterPrototype (IntFilter intFilter)
+  {
+    this.intFilters.remove(intFilter);
+  }
+
+  public void removeTaskFilterPrototype (TaskFilter taskFilter)
+  {
+    this.taskFilters.remove(taskFilter);
+  }
+
+  public void removeProcFilterPrototype (ProcFilter procFilter)
+  {
+    this.procFilters.remove(procFilter);
+  }
+  
 }

@@ -73,28 +73,12 @@ public class ActionManager
    */
   private void initActionList ()
   {
-    // this.addGenericActionPrototype(new Stop());
-    // this.addGenericActionPrototype(new Resume());
+
     this.addGenericActionPrototype(new LogAction());
 
-    // this.addTaskActionPrototype(new ShowSourceWin());
     this.addTaskActionPrototype(new PrintTask());
-    // this.addTaskActionPrototype(new AddTaskObserverAction());
 
     this.addProcActionPrototype(new PrintProc());
-  }
-
-  /**
-   * Returns a copy of the prototype given. A list of available prototypes can
-   * be
-   * 
-   * @param prototype a prototype of the observer to be instantiated.
-   */
-  public Action getObserver (Action prototype)
-  {
-    // XXX: Not implemented.
-    throw new RuntimeException("Not implemented"); //$NON-NLS-1$
-    // return prototype.getCopy();
   }
 
   public ObservableLinkedList getProcActions ()
@@ -142,4 +126,18 @@ public class ActionManager
     this.genericActions.add(prototype);
   }
 
+  public void removeGenericActionPrototype (GenericAction genericAction)
+  {
+    this.genericActions.remove(genericAction);
+  }
+
+  public void removeTaskActionPrototype (TaskAction taskAction)
+  {
+    this.taskActions.remove(taskAction);
+  }
+
+  public void removeProcActionPrototype (ProcAction procAction)
+  {
+    this.procActions.remove(procAction);
+  }
 }

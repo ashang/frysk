@@ -1,3 +1,14 @@
+2006-07-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* filters/IntFilter.java (IntFilter): Removed reference to FilterWidget.
+	* filters/FilterManager.java: Added remove* methods for removing
+	Filter prototypes.
+	* filters/Filter.java: Removed references to FilterWidget.
+	* actions/ActionManager.java: Added remove methods for removing
+	action prototyps.
+	* FilterWidget.java: Deleted.
+	* FilterLineWidget.java: Deleted.
+
 2006-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* observers/TaskTerminatingObserver.java (Terminating Observer): Ditto

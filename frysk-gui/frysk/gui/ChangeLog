@@ -1,3 +1,9 @@
+2006-07-25  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* test/TestFilterManager.java: New test.
+	* test/TestActionManager.java: New test.
+	* test/TestGlade.java: Added tests for WindowManager.
+
 2006-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* test/dogtail_scripts/TestEventViewerButtons.py (zoon zoom!): Added.

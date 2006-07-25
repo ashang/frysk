@@ -37,49 +37,36 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.gui.test;
 
-package frysk.gui.monitor.filters;
+import junit.framework.TestCase;
+import frysk.gui.monitor.filters.FilterManager;
+import frysk.gui.monitor.filters.IntFilter;
+import frysk.gui.monitor.filters.ProcFilter;
+import frysk.gui.monitor.filters.ProcNameFilter;
+import frysk.gui.monitor.filters.TaskFilter;
+import frysk.gui.monitor.filters.TaskProcNameFilter;
 
-import org.jdom.Element;
+public class TestFilterManager extends TestCase{
 
-import frysk.gui.monitor.LiaisonItem;
+	public void testAddingRemovingFilters(){
+      
+      IntFilter intFilter = new IntFilter();
+      TaskFilter taskFilter = new TaskProcNameFilter();
+      ProcFilter procFilter = new ProcNameFilter();
+      
+      FilterManager.theManager.addIntFilterPrototype(intFilter);
+      FilterManager.theManager.addTaskFilterPrototype(taskFilter);
+      FilterManager.theManager.addProcFilterPrototype(procFilter);
 
-public abstract class Filter extends LiaisonItem {
-	
-	boolean filterBoolean;
-	
-	public Filter(){
-		super();
-		this.filterBoolean = true;
-	}
-	
-	public Filter(String name, String toolTip){
-		super(name, toolTip);
-		this.filterBoolean = true;
-	}
-	
-	public Filter(Filter other){
-		super(other);
-		this.filterBoolean = other.filterBoolean;
-//		System.out.println(this + ": Filter.Filter() copying");
-	}
-	
-	public void save(Element node){
-		super.save(node);
-		node.setAttribute("filterBoolean", this.filterBoolean+"");
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
-	}
-	
-	public void setFilterBoolean(boolean filterBoolean){
-		this.filterBoolean = filterBoolean;
-//		System.out.println(this + ": Filter.setFilterBoolean() boolean set to " + this.filterBoolean );
-	}
-	
-	public boolean getFilterBoolean(){
-		return this.filterBoolean;
-	}
+      assertTrue("Filter has been added", FilterManager.theManager.getIntFilters().contains(intFilter));
+      assertTrue("Filter has been added", FilterManager.theManager.getTaskFilters().contains(taskFilter));
+      assertTrue("Filter has been added", FilterManager.theManager.getProcFilters().contains(procFilter));
+      
+      FilterManager.theManager.removeGenericFilterPrototype(intFilter);
+      FilterManager.theManager.removeTaskFilterPrototype(taskFilter);
+      FilterManager.theManager.removeProcFilterPrototype(procFilter);
+
+    }
+    
 }
