@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
@@ -44,40 +45,51 @@ import java.util.Iterator;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
-public class IntFilterPoint extends FilterPoint {
-	
-	public IntFilterPoint(){
-		super();
-	}
-	
-	public IntFilterPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	public IntFilterPoint(IntFilterPoint other) {
-		super(other);
-	}
-	
-	public boolean filter(int value){
-		Iterator iter = this.getItems().iterator();
-		while(iter.hasNext()){
-			IntFilter filter = (IntFilter) iter.next();
-			if(!filter.filter(value)){
-				return false;
-			}
-		}
-		return true;
-	}
+public class IntFilterPoint
+    extends FilterPoint
+{
 
-	public ObservableLinkedList getApplicableFilters() {
-		return FilterManager.theManager.getProcFilters();
-	}
+  public IntFilterPoint ()
+  {
+    super();
+  }
 
-	public ObservableLinkedList getApplicableItems() {
-		return FilterManager.theManager.getIntFilters();
-	}
+  public IntFilterPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
 
-	public GuiObject getCopy() {
-		return new IntFilterPoint(this);
-	}
+  public IntFilterPoint (IntFilterPoint other)
+  {
+    super(other);
+  }
+
+  public boolean filter (int value)
+  {
+    Iterator iter = this.getItems().iterator();
+    while (iter.hasNext())
+      {
+        IntFilter filter = (IntFilter) iter.next();
+        if (! filter.filter(value))
+          {
+            return false;
+          }
+      }
+    return true;
+  }
+
+  public ObservableLinkedList getApplicableFilters ()
+  {
+    return FilterManager.theManager.getProcFilters();
+  }
+
+  public ObservableLinkedList getApplicableItems ()
+  {
+    return FilterManager.theManager.getIntFilters();
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new IntFilterPoint(this);
+  }
 }

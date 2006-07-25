@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.GuiObject;
@@ -44,41 +45,49 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
 /**
- * @author swagiaal
- * Filter passes if the name of the parent process of 
- * the given Task matches the stored process name.
+ * @author swagiaal Filter passes if the name of the parent process of the given
+ *         Task matches the stored process name.
  */
-public class TaskProcNameFilter extends TaskFilter {
-	
-	private ProcNameFilter procNamefilter;
-	
-	public TaskProcNameFilter(){
-		super("Name", "name of the process");
-		this.procNamefilter = new ProcNameFilter();
-	}
-	
-	public TaskProcNameFilter(TaskProcNameFilter other){
-		super(other);
-		this.procNamefilter = new ProcNameFilter(other.procNamefilter);
-	}
-	
-	public boolean filter(Task task) {
-		return this.procNamefilter.filter(task.getProc());
-	}
-	
-	public GuiObject getCopy() {
-		return new TaskProcNameFilter(this);
-	}
+public class TaskProcNameFilter
+    extends TaskFilter
+{
 
-	public boolean setArgument(String argument) {
-		return this.procNamefilter.setArgument(argument);
-	}
+  private ProcNameFilter procNamefilter;
 
-	public String getArgument() {
-		return this.procNamefilter.getArgument();
-	}
+  public TaskProcNameFilter ()
+  {
+    super("Name", "name of the process");
+    this.procNamefilter = new ProcNameFilter();
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
+  public TaskProcNameFilter (TaskProcNameFilter other)
+  {
+    super(other);
+    this.procNamefilter = new ProcNameFilter(other.procNamefilter);
+  }
+
+  public boolean filter (Task task)
+  {
+    return this.procNamefilter.filter(task.getProc());
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new TaskProcNameFilter(this);
+  }
+
+  public boolean setArgument (String argument)
+  {
+    return this.procNamefilter.setArgument(argument);
+  }
+
+  public String getArgument ()
+  {
+    return this.procNamefilter.getArgument();
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }

@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
@@ -46,58 +47,69 @@ import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Task;
 
 /**
- * 
- * @author swagiaal
- *
- * When executed this action adds the given observer
- * to the given task. 
+ * @author swagiaal When executed this action adds the given observer to the
+ *         given task.
  */
-public class AddTaskObserverAction extends TaskAction {
+public class AddTaskObserverAction
+    extends TaskAction
+{
 
-	TaskObserverRoot observer;
-	
-	public AddTaskObserverAction() {
-		super("Add observer to", "Add given observer to the given task"); 
-		this.observer = null;
-	}
+  TaskObserverRoot observer;
 
-	public AddTaskObserverAction(AddTaskObserverAction other) {
-		super(other);
-		this.observer = other.observer;
-	}
+  public AddTaskObserverAction ()
+  {
+    super("Add observer to", "Add given observer to the given task");
+    this.observer = null;
+  }
 
-	public void execute(Task task) {
-		observer.apply(task.getProc());
-	}
+  public AddTaskObserverAction (AddTaskObserverAction other)
+  {
+    super(other);
+    this.observer = other.observer;
+  }
 
-	public GuiObject getCopy() {
-		return new AddTaskObserverAction(this);
-	}
+  public void execute (Task task)
+  {
+    observer.apply(task.getProc());
+  }
 
-	public void setObserver(TaskObserverRoot taskObserver){
-		this.observer = taskObserver;
-	}
+  public GuiObject getCopy ()
+  {
+    return new AddTaskObserverAction(this);
+  }
 
-	public boolean setArgument(String argument) {
-		TaskObserverRoot observer = ObserverManager.theManager.getObserverByName(argument);
-		if(observer != null){
-			this.observer = observer;
-			return true;
-		}
-		return false;
-	}
+  public void setObserver (TaskObserverRoot taskObserver)
+  {
+    this.observer = taskObserver;
+  }
 
-	public String getArgument() {
-		if(this.observer != null){
-			return this.observer.getName();
-		}else{
-			return "";
-		}
-	
-	}
+  public boolean setArgument (String argument)
+  {
+    TaskObserverRoot observer = ObserverManager.theManager.getObserverByName(argument);
+    if (observer != null)
+      {
+        this.observer = observer;
+        return true;
+      }
+    return false;
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return ObserverManager.theManager.getTaskObservers();
-	}
-	
+  public String getArgument ()
+  {
+    if (this.observer != null)
+      {
+        return this.observer.getName();
+      }
+    else
+      {
+        return "";
+      }
+
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return ObserverManager.theManager.getTaskObservers();
+  }
+
 }

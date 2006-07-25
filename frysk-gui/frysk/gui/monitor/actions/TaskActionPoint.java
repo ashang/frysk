@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import java.util.Iterator;
@@ -45,59 +46,73 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
-public class TaskActionPoint extends ActionPoint{
+public class TaskActionPoint
+    extends ActionPoint
+{
 
-    private ObservableLinkedList applicableActions;
-    
-	public TaskActionPoint(){
-		super();
-	
-        this.applicableActions = new ObservableLinkedList();
+  private ObservableLinkedList applicableActions;
 
-        this.initApplicableActions();
-    }
-	
-	public TaskActionPoint(String name, String toolTip) {
-		super(name, toolTip);
-        
-        this.applicableActions = new ObservableLinkedList();
-        
-        this.initApplicableActions();
-	}
+  public TaskActionPoint ()
+  {
+    super();
 
-	public TaskActionPoint(TaskActionPoint other) {
-		super(other);
-        
-        this.applicableActions = new ObservableLinkedList(other.applicableActions);
-	}
+    this.applicableActions = new ObservableLinkedList();
 
-	public ObservableLinkedList getApplicableActions() {
-		return ActionManager.theManager.getTaskActions();
-	}
-	
-    private void initApplicableActions(){
-      this.applicableActions.add(new ShowSourceWin());
-      this.applicableActions.add(new AddTaskObserverAction()); 
-      this.applicableActions.add(new PrintTask());
-    }
-	/**
-	 * Run all the actions that belong to this @link ActionPoint.
-	 * @param task the task to perform the actions on.
-	 * */
-	public void runActions(Task task){
-		Iterator iter = this.items.iterator();
-		while(iter.hasNext()){
-			TaskAction action = (TaskAction) iter.next();
-			action.execute(task);
-		}
-	}
+    this.initApplicableActions();
+  }
 
-	public ObservableLinkedList getApplicableItems() {
-		return this.applicableActions;
-	}
+  public TaskActionPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
 
-	public GuiObject getCopy() {
-		return new TaskActionPoint(this);
-	}
+    this.applicableActions = new ObservableLinkedList();
+
+    this.initApplicableActions();
+  }
+
+  public TaskActionPoint (TaskActionPoint other)
+  {
+    super(other);
+
+    this.applicableActions = new ObservableLinkedList(other.applicableActions);
+  }
+
+  public ObservableLinkedList getApplicableActions ()
+  {
+    return ActionManager.theManager.getTaskActions();
+  }
+
+  private void initApplicableActions ()
+  {
+    this.applicableActions.add(new ShowSourceWin());
+    this.applicableActions.add(new AddTaskObserverAction());
+    this.applicableActions.add(new PrintTask());
+  }
+
+  /**
+   * Run all the actions that belong to this
+   * 
+   * @link ActionPoint.
+   * @param task the task to perform the actions on.
+   */
+  public void runActions (Task task)
+  {
+    Iterator iter = this.items.iterator();
+    while (iter.hasNext())
+      {
+        TaskAction action = (TaskAction) iter.next();
+        action.execute(task);
+      }
+  }
+
+  public ObservableLinkedList getApplicableItems ()
+  {
+    return this.applicableActions;
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new TaskActionPoint(this);
+  }
 
 }

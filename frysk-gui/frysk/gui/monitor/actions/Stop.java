@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 // import frysk.gui.monitor.WindowManager;
@@ -44,36 +45,44 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
-public class Stop extends ProcAction {
-	
-	public Stop() {
-		super("Stop", "Stop current process"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+public class Stop
+    extends ProcAction
+{
 
-	public Stop(Stop other){
-		super(other);
-	}
-	
-    public void execute(Proc proc) {
-	    // proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);            
-	// proc.requestAttachedStop();
-	throw new RuntimeException ("XXX: mechanism for stopping a process/task."); //$NON-NLS-1$
-    }
+  public Stop ()
+  {
+    super("Stop", "Stop current process"); //$NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	public GuiObject getCopy() {
-		return new Stop(this);
-	}
+  public Stop (Stop other)
+  {
+    super(other);
+  }
 
-	public boolean setArgument(String argument) {
-		return false;
-	}
+  public void execute (Proc proc)
+  {
+    // proc.observableAttachedStop.addObserver(WindowManager.theManager.logWindow.attachedStopObserver);
+    // proc.requestAttachedStop();
+    throw new RuntimeException("XXX: mechanism for stopping a process/task."); //$NON-NLS-1$
+  }
 
-	public String getArgument() {
-		return null;
-	}
+  public GuiObject getCopy ()
+  {
+    return new Stop(this);
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
+  public boolean setArgument (String argument)
+  {
+    return false;
+  }
+
+  public String getArgument ()
+  {
+    return null;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }
-

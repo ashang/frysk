@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
@@ -45,40 +46,52 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
 
-public class TaskFilterPoint extends FilterPoint {
-	
-	public TaskFilterPoint(){
-		super();
-	}
-	
-	public TaskFilterPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	public TaskFilterPoint(TaskFilterPoint other) {
-		super(other);
-	}
-	
-	public boolean filter(Task task){
-		Iterator iter = this.getItems().iterator();
-		while(iter.hasNext()){
-			TaskFilter filter = (TaskFilter) iter.next();
-			if(!filter.filter(task)){
-				System.out.println("FALSE");
-				return false;
-			}else{
-				System.out.println("TRUE");
-			}
-		}
-		return true;
-	}
+public class TaskFilterPoint
+    extends FilterPoint
+{
 
-	public ObservableLinkedList getApplicableItems() {
-		return FilterManager.theManager.getTaskFilters();
-	}
+  public TaskFilterPoint ()
+  {
+    super();
+  }
 
-	public GuiObject getCopy() {
-		return new TaskFilterPoint(this);
-	}
+  public TaskFilterPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  public TaskFilterPoint (TaskFilterPoint other)
+  {
+    super(other);
+  }
+
+  public boolean filter (Task task)
+  {
+    Iterator iter = this.getItems().iterator();
+    while (iter.hasNext())
+      {
+        TaskFilter filter = (TaskFilter) iter.next();
+        if (! filter.filter(task))
+          {
+            System.out.println("FALSE");
+            return false;
+          }
+        else
+          {
+            System.out.println("TRUE");
+          }
+      }
+    return true;
+  }
+
+  public ObservableLinkedList getApplicableItems ()
+  {
+    return FilterManager.theManager.getTaskFilters();
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new TaskFilterPoint(this);
+  }
 
 }

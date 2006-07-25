@@ -37,30 +37,38 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.proc.Proc;
 
-public abstract class ProcAction extends Action {
-	
-	public ProcAction(){
-		super();
-	}
-	
-	public ProcAction(String name, String toolTip) {
-		super(name, toolTip);
-	}
+public abstract class ProcAction
+    extends Action
+{
 
-	public ProcAction(ProcAction other){
-		super(other);
-	}
-	
-	public abstract void execute(Proc proc);
+  public ProcAction ()
+  {
+    super();
+  }
 
-	public void execute(Proc[] procs){
-		for (int i = 0; i < procs.length; i++) {
-			this.execute(procs[i]);
-		}
-	}
-	
+  public ProcAction (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  public ProcAction (ProcAction other)
+  {
+    super(other);
+  }
+
+  public abstract void execute (Proc proc);
+
+  public void execute (Proc[] procs)
+  {
+    for (int i = 0; i < procs.length; i++)
+      {
+        this.execute(procs[i]);
+      }
+  }
+
 }

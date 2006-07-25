@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
@@ -45,36 +46,46 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
-public class ProcFilterPoint extends FilterPoint {
-	
-	public ProcFilterPoint(){
-		super();
-	}
-	
-	public ProcFilterPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	public ProcFilterPoint(ProcFilterPoint other) {
-		super(other);
-	}
-	
-	public boolean filter(Proc proc){
-		Iterator iter = this.getItems().iterator();
-		while(iter.hasNext()){
-			ProcFilter filter = (ProcFilter) iter.next();
-			if(!filter.filter(proc)){
-				return false;
-			}
-		}
-		return true;
-	}
+public class ProcFilterPoint
+    extends FilterPoint
+{
 
-	public ObservableLinkedList getApplicableItems() {
-		return FilterManager.theManager.getProcFilters();
-	}
+  public ProcFilterPoint ()
+  {
+    super();
+  }
 
-	public GuiObject getCopy() {
-		return new ProcFilterPoint(this);
-	}
+  public ProcFilterPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  public ProcFilterPoint (ProcFilterPoint other)
+  {
+    super(other);
+  }
+
+  public boolean filter (Proc proc)
+  {
+    Iterator iter = this.getItems().iterator();
+    while (iter.hasNext())
+      {
+        ProcFilter filter = (ProcFilter) iter.next();
+        if (! filter.filter(proc))
+          {
+            return false;
+          }
+      }
+    return true;
+  }
+
+  public ObservableLinkedList getApplicableItems ()
+  {
+    return FilterManager.theManager.getProcFilters();
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new ProcFilterPoint(this);
+  }
 }

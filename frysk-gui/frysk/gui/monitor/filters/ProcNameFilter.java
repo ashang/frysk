@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.GuiObject;
@@ -45,49 +46,56 @@ import frysk.gui.monitor.SaveableXXX;
 import frysk.proc.Proc;
 
 /**
- * 
- * @author swagiaal
- *
- * Filter passes if the name if the given process
- * matches the stored process name.
+ * @author swagiaal Filter passes if the name if the given process matches the
+ *         stored process name.
  */
-public class ProcNameFilter extends ProcFilter implements SaveableXXX {
-	
-	private String procName;
+public class ProcNameFilter
+    extends ProcFilter
+    implements SaveableXXX
+{
 
-	public ProcNameFilter(){
-		super("Name", "Filters for the proc with the given name ");
-		this.procName = new String();	
-    }
-	
-	public ProcNameFilter(ProcNameFilter other){
-		super(other);
-		this.procName = other.procName;
-    }
-	
-	public boolean filter(Proc proc) {
-		if(proc.getCommand().equals(procName)){
-			return true;
-		}
-		return false;
-	}
-	
-	public GuiObject getCopy() {
-    	return new ProcNameFilter(this);
-	}
+  private String procName;
 
-    public boolean setArgument(String argument) {
-		this.procName = argument;
-		return true;
-	}
+  public ProcNameFilter ()
+  {
+    super("Name", "Filters for the proc with the given name ");
+    this.procName = new String();
+  }
 
-	public String getArgument() {
-		return this.procName;
-	}
+  public ProcNameFilter (ProcNameFilter other)
+  {
+    super(other);
+    this.procName = other.procName;
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
-	
-	
+  public boolean filter (Proc proc)
+  {
+    if (proc.getCommand().equals(procName))
+      {
+        return true;
+      }
+    return false;
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new ProcNameFilter(this);
+  }
+
+  public boolean setArgument (String argument)
+  {
+    this.procName = argument;
+    return true;
+  }
+
+  public String getArgument ()
+  {
+    return this.procName;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
+
 }

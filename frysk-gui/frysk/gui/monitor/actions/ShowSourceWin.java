@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
@@ -44,34 +45,43 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.proc.Task;
 
-public class ShowSourceWin extends TaskAction {
-	
-	public ShowSourceWin() {
-		super("Show source code of ", "Show the source code of the thread.");
-	}
-	
-	public ShowSourceWin(ShowSourceWin other) {
-		super(other);
-	}
+public class ShowSourceWin
+    extends TaskAction
+{
 
-	public void execute(Task task) {
-		SourceWindowFactory.createSourceWindow(task);
-	}
+  public ShowSourceWin ()
+  {
+    super("Show source code of ", "Show the source code of the thread.");
+  }
 
-	public GuiObject getCopy() {
-		return new ShowSourceWin(this);
-	}
+  public ShowSourceWin (ShowSourceWin other)
+  {
+    super(other);
+  }
 
-	public boolean setArgument(String argument) {
-		return false;
-	}
+  public void execute (Task task)
+  {
+    SourceWindowFactory.createSourceWindow(task);
+  }
 
-	public String getArgument() {
-		return null;
-	}
+  public GuiObject getCopy ()
+  {
+    return new ShowSourceWin(this);
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
-	
+  public boolean setArgument (String argument)
+  {
+    return false;
+  }
+
+  public String getArgument ()
+  {
+    return null;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
+
 }

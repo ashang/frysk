@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import java.util.logging.Level;
@@ -47,34 +48,44 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Proc;
 
-public class PrintProc extends ProcAction {
-	
-	public PrintProc() {
-		super("Print state of", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+public class PrintProc
+    extends ProcAction
+{
 
-	public PrintProc(PrintProc other){
-		super(other);
-	}
-	
-	public void execute(Proc proc) {
-      WindowManager.theManager.logWindow.print("Proc State : " + proc  + "\n");
-      EventLogger.theLogger.getEventLogger().log(Level.INFO, "Proc State : " + proc);
-	}
+  public PrintProc ()
+  {
+    super("Print state of", "Print the state of the selected process or thread"); //$NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	public GuiObject getCopy() {
-		return new PrintProc(this);
-	}
+  public PrintProc (PrintProc other)
+  {
+    super(other);
+  }
 
-	public boolean setArgument(String argument) {
-		return false;
-	}
+  public void execute (Proc proc)
+  {
+    WindowManager.theManager.logWindow.print("Proc State : " + proc + "\n");
+    EventLogger.theLogger.getEventLogger().log(Level.INFO,
+                                               "Proc State : " + proc);
+  }
 
-	public String getArgument() {
-		return null;
-	}
+  public GuiObject getCopy ()
+  {
+    return new PrintProc(this);
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
+  public boolean setArgument (String argument)
+  {
+    return false;
+  }
+
+  public String getArgument ()
+  {
+    return null;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }

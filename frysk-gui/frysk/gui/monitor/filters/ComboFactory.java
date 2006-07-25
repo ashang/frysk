@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import java.util.Iterator;
@@ -48,55 +49,59 @@ import frysk.gui.monitor.actions.ActionPoint;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
- * 
- * @author swagiaal
- *
- * takes a @link frysk.gui.monitor.observers.ObserverRoot and
- * returns all possible combinations of its FilterPoints and
- * their applicable filters.
- * 
- * Instead of presenting the user with two lists -one for an 
- * observers Action/Filter points and another list for their
- * respective appllicable Actions/Filters- Permutations of
- * those can be calculated and the user presented with a single
- * list. Calculating this list is what combo factory does.
+ * @author swagiaal takes a
+ * @link frysk.gui.monitor.observers.ObserverRoot and returns all possible
+ *       combinations of its FilterPoints and their applicable filters. Instead
+ *       of presenting the user with two lists -one for an observers
+ *       Action/Filter points and another list for their respective appllicable
+ *       Actions/Filters- Permutations of those can be calculated and the user
+ *       presented with a single list. Calculating this list is what combo
+ *       factory does.
  */
 
-public class ComboFactory {
-	public static ComboFactory theFactory = new ComboFactory();
-	
-	public ComboFactory(){
-		
-	}
-	
-	public ObservableLinkedList getFilterCombos(ObserverRoot observer){
-		ObservableLinkedList combos = new ObservableLinkedList();
-		
-		Iterator i = observer.getFilterPoints().iterator();
-		while (i.hasNext()) {
-			FilterPoint filterPoint = (FilterPoint) i.next();
-			Iterator j = filterPoint.getApplicableItems().iterator();
-			while (j.hasNext()) {
-				Filter filter = (Filter) j.next();
-				combos.add(new Combo(filterPoint, filter));
-			}
-		}
-		return combos;
-	}
-	
-	public ObservableLinkedList getActionCombos(ObserverRoot observer){
-		ObservableLinkedList combos = new ObservableLinkedList();
-		
-		Iterator i = observer.getActionPoints().iterator();
-		while (i.hasNext()) {
-			ActionPoint actionPoint = (ActionPoint) i.next();
-			Iterator j = actionPoint.getApplicableItems().iterator();
-			while (j.hasNext()) {
-				Action action = (Action) j.next();
-				combos.add(new Combo(actionPoint, action));
-			}
-		}
-		return combos;
-	}
-	
+public class ComboFactory
+{
+  public static ComboFactory theFactory = new ComboFactory();
+
+  public ComboFactory ()
+  {
+
+  }
+
+  public ObservableLinkedList getFilterCombos (ObserverRoot observer)
+  {
+    ObservableLinkedList combos = new ObservableLinkedList();
+
+    Iterator i = observer.getFilterPoints().iterator();
+    while (i.hasNext())
+      {
+        FilterPoint filterPoint = (FilterPoint) i.next();
+        Iterator j = filterPoint.getApplicableItems().iterator();
+        while (j.hasNext())
+          {
+            Filter filter = (Filter) j.next();
+            combos.add(new Combo(filterPoint, filter));
+          }
+      }
+    return combos;
+  }
+
+  public ObservableLinkedList getActionCombos (ObserverRoot observer)
+  {
+    ObservableLinkedList combos = new ObservableLinkedList();
+
+    Iterator i = observer.getActionPoints().iterator();
+    while (i.hasNext())
+      {
+        ActionPoint actionPoint = (ActionPoint) i.next();
+        Iterator j = actionPoint.getApplicableItems().iterator();
+        while (j.hasNext())
+          {
+            Action action = (Action) j.next();
+            combos.add(new Combo(actionPoint, action));
+          }
+      }
+    return combos;
+  }
+
 }

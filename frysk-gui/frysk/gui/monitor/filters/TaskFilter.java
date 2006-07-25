@@ -37,24 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import frysk.proc.Task;
 
-public abstract class TaskFilter extends Filter {
-	
-	TaskFilter(){
-		super();
-	}
-	
-	TaskFilter(String name, String toolTip) {
-		super(name, toolTip);
-	}
+public abstract class TaskFilter
+    extends Filter
+{
 
-	TaskFilter(TaskFilter other) {
-		super(other);
-	}
+  TaskFilter ()
+  {
+    super();
+  }
 
-	public abstract boolean filter(Task task);
-	
+  TaskFilter (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  TaskFilter (TaskFilter other)
+  {
+    super(other);
+  }
+
+  public abstract boolean filter (Task task);
+
 }

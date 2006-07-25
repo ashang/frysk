@@ -37,42 +37,51 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public abstract class GenericAction extends Action {
+public abstract class GenericAction
+    extends Action
+{
 
-	public GenericAction(){
-		super();
-	}
-	
-	public GenericAction(String name, String toolTip) {
-		super(name, toolTip);
-	}
+  public GenericAction ()
+  {
+    super();
+  }
 
-	public GenericAction(GenericAction other){
-		super(other);
-	}
-	
-	public abstract void execute(ObserverRoot observer);
-	
-	public GuiObject getCopy() {
-		return null;
-	}
+  public GenericAction (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
 
-	public boolean setArgument(String argument) {
-		return false;
-	}
+  public GenericAction (GenericAction other)
+  {
+    super(other);
+  }
 
+  public abstract void execute (ObserverRoot observer);
 
-	public String getArgument() {
-		return null;
-	}
-	
-	public ObservableLinkedList getArgumentCompletionList(){
-		return null;
-	}
+  public GuiObject getCopy ()
+  {
+    return null;
+  }
+
+  public boolean setArgument (String argument)
+  {
+    return false;
+  }
+
+  public String getArgument ()
+  {
+    return null;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }

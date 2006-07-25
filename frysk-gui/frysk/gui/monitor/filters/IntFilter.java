@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import org.jdom.Element;
@@ -46,72 +47,94 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.SaveableXXX;
 import frysk.gui.monitor.DynamicWidget.IntCallback;
 
-public class IntFilter extends Filter implements SaveableXXX{
+public class IntFilter
+    extends Filter
+    implements SaveableXXX
+{
 
-	int value;
-	
-	public IntFilter(){
-		super("Int Filter", "Passes if value at filter call matches the given value");
-		//this.value = value;
-		
-		this.initWidget();
-	}
-	
-	public IntFilter(int value){
-		super("Int Filter", "Passes if value at filter call matches the given value");
-		this.value = value;
-		
-		this.initWidget();
-	}
-	
-	public IntFilter(IntFilter other) {
-		super(other);
-		this.value = other.value;
-		
-		this.initWidget();
-	}
+  int value;
 
-	private void initWidget(){
-		widget.addInteger(new GuiObject("Value","Value to match"), value, new IntCallback() {
-			public void intChanged(int i) {
-				value = i;
-			}
-		});
-	}
-	
-	public GuiObject getCopy() {
-		return new IntFilter(this);
-	}
+  public IntFilter ()
+  {
+    super("Int Filter",
+          "Passes if value at filter call matches the given value");
+    // this.value = value;
 
-	public boolean filter(int value2) {
-		return (value2 == value);
-	}
+    this.initWidget();
+  }
 
-	public void save(Element node) {
-		super.save(node);
-		node.setAttribute("value", ""+this.value);
-	}
+  public IntFilter (int value)
+  {
+    super("Int Filter",
+          "Passes if value at filter call matches the given value");
+    this.value = value;
 
-	public void load(Element node) {
-		super.load(node);
-		this.value = Integer.parseInt(node.getAttribute("value").getValue());
-	}
+    this.initWidget();
+  }
 
-	public boolean setArgument(String argument) {
-		try {
-			this.value = Integer.parseInt(argument);
-		} catch (Exception e) {
-			return true;
-		}
-		return true;
-	}
+  public IntFilter (IntFilter other)
+  {
+    super(other);
+    this.value = other.value;
 
-	public String getArgument() {
-		return ""+this.value;
-	}
+    this.initWidget();
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
+  private void initWidget ()
+  {
+    widget.addInteger(new GuiObject("Value", "Value to match"), value,
+                      new IntCallback()
+                      {
+                        public void intChanged (int i)
+                        {
+                          value = i;
+                        }
+                      });
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new IntFilter(this);
+  }
+
+  public boolean filter (int value)
+  {
+    return (this.value == value);
+  }
+
+  public void save (Element node)
+  {
+    super.save(node);
+    node.setAttribute("value", "" + this.value);
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+    this.value = Integer.parseInt(node.getAttribute("value").getValue());
+  }
+
+  public boolean setArgument (String argument)
+  {
+    try
+      {
+        this.value = Integer.parseInt(argument);
+      }
+    catch (Exception e)
+      {
+        return true;
+      }
+    return true;
+  }
+
+  public String getArgument ()
+  {
+    return "" + this.value;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 
 }

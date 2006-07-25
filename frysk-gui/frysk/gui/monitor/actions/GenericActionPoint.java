@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import java.util.Iterator;
@@ -47,40 +48,51 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public class GenericActionPoint extends ActionPoint {
-	
-	public GenericActionPoint(){
-		super();
-	}
-	
-	public GenericActionPoint(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	public GenericActionPoint(GenericActionPoint other) {
-		super(other);
-	}
+public class GenericActionPoint
+    extends ActionPoint
+{
 
-	public ObservableLinkedList getApplicableActions() {
-		return ActionManager.theManager.getGenericActions();
-	}
+  public GenericActionPoint ()
+  {
+    super();
+  }
 
-	public void runActions(ObserverRoot observer){
-		WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
-		Iterator iterator = this.items.iterator();
-		while (iterator.hasNext()) {
-			GenericAction action = (GenericAction) iterator.next();
-			WindowManager.logger.log(Level.FINER, " {0} runActions {1}\n", new Object[]{this, action});
-			action.execute(observer);
-		}
-	}
+  public GenericActionPoint (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
 
-	public ObservableLinkedList getApplicableItems() {
-		return ActionManager.theManager.getGenericActions();
-	}
-	
-	public GuiObject getCopy() {
-		return new GenericActionPoint(this);
-	}
-	
+  public GenericActionPoint (GenericActionPoint other)
+  {
+    super(other);
+  }
+
+  public ObservableLinkedList getApplicableActions ()
+  {
+    return ActionManager.theManager.getGenericActions();
+  }
+
+  public void runActions (ObserverRoot observer)
+  {
+    WindowManager.logger.log(Level.FINE, "{0} runActions\n", this);
+    Iterator iterator = this.items.iterator();
+    while (iterator.hasNext())
+      {
+        GenericAction action = (GenericAction) iterator.next();
+        WindowManager.logger.log(Level.FINER, " {0} runActions {1}\n",
+                                 new Object[] { this, action });
+        action.execute(observer);
+      }
+  }
+
+  public ObservableLinkedList getApplicableItems ()
+  {
+    return ActionManager.theManager.getGenericActions();
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new GenericActionPoint(this);
+  }
+
 }

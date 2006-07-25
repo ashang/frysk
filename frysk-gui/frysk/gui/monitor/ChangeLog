@@ -1,3 +1,29 @@
+2006-07-25  Mike Cvet  <mcvet@redhat.com>
+
+	* GuiObservable.java: Applied GNU formatting.
+	* GuiObject.java: Ditto.
+	* filters/IntFilterPoint.java: Ditto.
+	* filters/IntFilter.java: Ditto.
+	* filters/ProcFilterPoint.java: Ditto.
+	* filters/ProcFilter.java: Ditto.
+	* filters/ProcNameFilter.java: Ditto.
+	* filters/TaskFilterPoint.java: Ditto.
+	* filters/TaskFilter.java: Ditto.
+	* filters/TaskProcNameFilter.java: Ditto.
+	* actions/AddTaskObserverAction.java: Ditto.
+	* actions/GenericActionPoint.java: Ditto.
+	* actions/GenericAction.java: Ditto.
+	* actions/PrintProc.java: Ditto.
+	* actions/PrintTask.java: Ditto.
+	* actions/ShowSourceWin.java: Ditto.
+	* actions/Resume.java: Ditto.
+	* actions/ProcAction.java: Ditto.
+	* actions/Stop.java: Ditto.
+	* actions/TaskActionPoint.java: Ditto.
+	* actions/TaskAction.java: Ditto.
+	* actions/LogAction.java: Ditto.
+	* filters/ComboFactory.java: Ditto.
+
 2006-07-24  Mike Cvet  <mcvet@redhat.com>
 
 	* LiaisonPoint.java (LiaisonPoint): Applied GNU formatting.

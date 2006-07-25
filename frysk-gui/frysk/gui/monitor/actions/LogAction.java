@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import java.util.Date;
@@ -48,42 +49,58 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public class LogAction extends GenericAction {
+public class LogAction
+    extends GenericAction
+{
 
-	String argument;
-	
-	public LogAction() {
-		super("Log event", "logs what is going on with this observer plus a user set comment"); //$NON-NLS-1$ //$NON-NLS-2$
-		this.argument = new String();
-	}
+  String argument;
 
+  public LogAction ()
+  {
+    super(
+          "Log event", "logs what is going on with this observer plus a user set comment"); //$NON-NLS-1$ //$NON-NLS-2$
+    this.argument = new String();
+  }
 
-	public LogAction(LogAction other) {
-		super(other);
-		this.argument = other.argument;
-	}
+  public LogAction (LogAction other)
+  {
+    super(other);
+    this.argument = other.argument;
+  }
 
-	public GuiObject getCopy() {
-		return new LogAction(this);
-	}
+  public GuiObject getCopy ()
+  {
+    return new LogAction(this);
+  }
 
-	public void execute(ObserverRoot observer) {
+  public void execute (ObserverRoot observer)
+  {
 
-		EventLogger.theLogger.getEventLogger().log(Level.INFO, observer.getName() + " triggered: " + this.argument);
-		WindowManager.theManager.logWindow.print(new Date() + " " + observer.getName() + " triggered: " + this.argument +"\n");
-	}
+    EventLogger.theLogger.getEventLogger().log(
+                                               Level.INFO,
+                                               observer.getName()
+                                                   + " triggered: "
+                                                   + this.argument);
+    WindowManager.theManager.logWindow.print(new Date() + " "
+                                             + observer.getName()
+                                             + " triggered: " + this.argument
+                                             + "\n");
+  }
 
-	public boolean setArgument(String comment) {
-		this.argument = comment;
-		return true;
-	}
+  public boolean setArgument (String comment)
+  {
+    this.argument = comment;
+    return true;
+  }
 
-	public String getArgument() {
-		return this.argument;
-	}
+  public String getArgument ()
+  {
+    return this.argument;
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 
 }

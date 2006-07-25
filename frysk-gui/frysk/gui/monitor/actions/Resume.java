@@ -37,43 +37,53 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Proc;
 
-public class Resume extends ProcAction {
-	
-	public Resume() {
-		super("Resume", "Resume execution of the current process"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+public class Resume
+    extends ProcAction
+{
 
-	public Resume(ProcAction other){
-		super(other);
-	}
-	
-	public void execute(Proc proc) {
-	    // XXX: Resume behavior should be implemented by removing,
-	    // or unblocking, all blocking observers.
-	    // proc.requestAttachedContinue();		
-	    throw new RuntimeException ("not applicable"); //$NON-NLS-1$
-	}
+  public Resume ()
+  {
+    super("Resume", "Resume execution of the current process"); //$NON-NLS-1$ //$NON-NLS-2$
+  }
 
-	public GuiObject getCopy() {
-		return new Resume(this);
-	}
+  public Resume (ProcAction other)
+  {
+    super(other);
+  }
 
-	public boolean setArgument(String argument) {
-		return false;
-	}
+  public void execute (Proc proc)
+  {
+    // XXX: Resume behavior should be implemented by removing,
+    // or unblocking, all blocking observers.
+    // proc.requestAttachedContinue();
+    throw new RuntimeException("not applicable"); //$NON-NLS-1$
+  }
 
-	public String getArgument() {
-		return null;
-	}
+  public GuiObject getCopy ()
+  {
+    return new Resume(this);
+  }
 
-	public ObservableLinkedList getArgumentCompletionList() {
-		return null;
-	}
+  public boolean setArgument (String argument)
+  {
+    return false;
+  }
+
+  public String getArgument ()
+  {
+    return null;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 
 }

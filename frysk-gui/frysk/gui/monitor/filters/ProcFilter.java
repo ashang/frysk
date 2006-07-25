@@ -37,24 +37,30 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor.filters;
 
 import frysk.proc.Proc;
 
-public abstract class ProcFilter extends Filter {
-	
-	ProcFilter(){
-		super();
-	}
-	
-	ProcFilter(String name, String toolTip) {
-		super(name, toolTip);
-	}
-	
-	ProcFilter(ProcFilter other) {
-		super(other);
-	}
+public abstract class ProcFilter
+    extends Filter
+{
 
-	public abstract boolean filter(Proc proc);
-	
+  ProcFilter ()
+  {
+    super();
+  }
+
+  ProcFilter (String name, String toolTip)
+  {
+    super(name, toolTip);
+  }
+
+  ProcFilter (ProcFilter other)
+  {
+    super(other);
+  }
+
+  public abstract boolean filter (Proc proc);
+
 }

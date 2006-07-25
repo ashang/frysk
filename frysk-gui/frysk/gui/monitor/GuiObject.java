@@ -37,89 +37,107 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import org.jdom.Element;
 
-
 /**
  * A GuiObject is one that has a name and a tooltip.
- * */
-public class GuiObject extends GuiObservable implements SaveableXXX{
-	
-	private boolean saveObject = true;
-	
-	private String name;
-    private String toolTip;
-	
-	public GuiObject(String name, String toolTip){
-		this.name = name;
-    	this.toolTip = toolTip;
-		this.saveObject = true;
-	}
+ */
+public class GuiObject
+    extends GuiObservable
+    implements SaveableXXX
+{
 
-	public GuiObject(GuiObject other) {
-		this.name = other.name;
-        this.toolTip = other.toolTip;
-		this.saveObject = other.saveObject;
-	}
+  private boolean saveObject = true;
 
-	public GuiObject() {
-		this.setName("NoName");
-	    this.setToolTip("NoTooltip");
-		this.saveObject = true;
-	}
-	
-    public GuiObject getCopy(){
-		return new GuiObject(this);
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-		
-		this.notifyObservers();
-	}
+  private String name;
 
-	public String getName() {
-		return name;
-	}
+  private String toolTip;
 
-	public void setToolTip(String toolTip) {
-		this.toolTip = toolTip;
-		
-		this.notifyObservers();
-	}
+  public GuiObject (String name, String toolTip)
+  {
+    this.name = name;
+    this.toolTip = toolTip;
+    this.saveObject = true;
+  }
 
-	public String getToolTip() {
-		return toolTip;
-	}
+  public GuiObject (GuiObject other)
+  {
+    this.name = other.name;
+    this.toolTip = other.toolTip;
+    this.saveObject = other.saveObject;
+  }
 
-	public void save(Element node) {
-		node.setAttribute("name", this.getName());
-		node.setAttribute("tooltip", this.getToolTip());
-	}
+  public GuiObject ()
+  {
+    this.setName("NoName");
+    this.setToolTip("NoTooltip");
+    this.saveObject = true;
+  }
 
-	public void load(Element node) {
-		this.setName(node.getAttribute("name").getValue());
-		this.setToolTip(node.getAttribute("tooltip").getValue());
-	}
-	
-	public boolean shouldSaveObject(){
-		return this.saveObject;
-	}
+  public GuiObject getCopy ()
+  {
+    return new GuiObject(this);
+  }
 
-	public void doSaveObject() {
-		this.saveObject = true;
-	}
+  public void setName (String name)
+  {
+    this.name = name;
 
-	public void dontSaveObject() {
-		this.saveObject = false;
-	}
-	
-	public String toString(){
-		String myString = new String();
-		myString = super.toString() + " " + this.getName();
-		return myString;
-	}
-	
+    this.notifyObservers();
+  }
+
+  public String getName ()
+  {
+    return name;
+  }
+
+  public void setToolTip (String toolTip)
+  {
+    this.toolTip = toolTip;
+
+    this.notifyObservers();
+  }
+
+  public String getToolTip ()
+  {
+    return toolTip;
+  }
+
+  public void save (Element node)
+  {
+    node.setAttribute("name", this.getName());
+    node.setAttribute("tooltip", this.getToolTip());
+  }
+
+  public void load (Element node)
+  {
+    this.setName(node.getAttribute("name").getValue());
+    this.setToolTip(node.getAttribute("tooltip").getValue());
+  }
+
+  public boolean shouldSaveObject ()
+  {
+    return this.saveObject;
+  }
+
+  public void doSaveObject ()
+  {
+    this.saveObject = true;
+  }
+
+  public void dontSaveObject ()
+  {
+    this.saveObject = false;
+  }
+
+  public String toString ()
+  {
+    String myString = new String();
+    myString = super.toString() + " " + this.getName();
+    return myString;
+  }
+
 }
