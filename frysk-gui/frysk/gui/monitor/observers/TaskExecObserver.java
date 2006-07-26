@@ -23,7 +23,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 		this.taskFilterPoint = new TaskFilterPoint("Execing Thread", "The thread that is calling exec");
 		this.addFilterPoint(taskFilterPoint);
 		
-		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName() + " (A)", taskFilterPoint.getToolTip());
+		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName(), taskFilterPoint.getToolTip());
 		this.addActionPoint(taskActionPoint);
 	}
 

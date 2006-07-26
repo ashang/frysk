@@ -2,6 +2,7 @@
 
 	* observers/TaskExecObserver.java (TaskExecObserver): Removed single
 	quote from "Exec'ing".
+	(TaskExecObserver): removed "(A)" from actionPoint name.
 	* observers/ObserverManager.java (initTaskObservers): Removed
 	ExitNotificationObserver from the manager.
 	* ObjectFactory.java (getObject): Changed it toreturn
