@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -38,83 +38,99 @@
 // exception.
 
 
-package frysk.gui.monitor.actions;
+package frysk.gui.memory;
 
-import java.util.Iterator;
+import java.util.prefs.Preferences;
 
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
+import org.gnu.glade.LibGlade;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
+
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.proc.Task;
 
-public class TaskActionPoint
-    extends ActionPoint
+/**
+ * @author mcvet
+ *
+ */
+public class MemoryWindowFactory
 {
 
-  private ObservableLinkedList applicableActions;
+  private static LibGlade glade;
 
-  public TaskActionPoint ()
+  public static MemoryWindow memWin = null;
+  
+  private static Task myTask;
+
+  public MemoryWindowFactory (LibGlade glade)
   {
-    super();
 
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
   }
 
-  public TaskActionPoint (String name, String toolTip)
+  public static void setGladePath (LibGlade libGlade)
   {
-    super(name, toolTip);
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
+    glade = libGlade;
   }
 
-  public TaskActionPoint (TaskActionPoint other)
+  public static void createMemoryWindow (Task task)
   {
-    super(other);
-
-    this.applicableActions = new ObservableLinkedList(other.applicableActions);
+    if (task.getBlockers().length != 0)
+      finishMemWin(task);
   }
 
-  public ObservableLinkedList getApplicableActions ()
+  private static void finishMemWin (Task task)
   {
-    return ActionManager.theManager.getTaskActions();
-  }
-
-  private void initApplicableActions ()
-  {
-    this.applicableActions.add(new ShowSourceWin());
-    this.applicableActions.add(new AddTaskObserverAction());
-    this.applicableActions.add(new PrintTask());
-    this.applicableActions.add(new ShowRegWin());
-    this.applicableActions.add(new ShowMemWin());
-  }
-
-  /**
-   * Run all the actions that belong to this
-   * 
-   * @link ActionPoint.
-   * @param task the task to perform the actions on.
-   */
-  public void runActions (Task task)
-  {
-    Iterator iter = this.items.iterator();
-    while (iter.hasNext())
+    myTask = task;
+    memWin = null;
+    
+    try
       {
-        TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
+        memWin = new MemoryWindow(glade);
       }
-  }
+    catch (Exception e)
+      {
+        e.printStackTrace();
+      }
 
-  public ObservableLinkedList getApplicableItems ()
+
+    memWin.addListener(new LifeCycleListener()
+    {
+      public boolean lifeCycleQuery (LifeCycleEvent arg0)
+      {
+        if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
+          {
+            memWin.hideAll();
+            return true;
+          }
+
+        return false;
+      }
+
+      public void lifeCycleEvent (LifeCycleEvent arg0)
+      {
+        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
+          memWin.hideAll();
+      }
+    });
+    
+    Preferences prefs = PreferenceManager.getPrefs();
+    memWin.load(prefs.node(prefs.absolutePath() + "/memory"));
+
+    if (! memWin.hasTaskSet())
+      {
+        memWin.setIsRunning(false);
+        memWin.setTask(myTask);
+      }
+    else
+      memWin.showAll();
+  }
+  
+  public static void killMemWin()
   {
-    return this.applicableActions;
+    memWin.setIsRunning(true);
+    Preferences prefs = PreferenceManager.getPrefs();
+    memWin.hideAll();
+    memWin.save(prefs.node(prefs.absolutePath() + "/memory"));
   }
-
-  public GuiObject getCopy ()
-  {
-    return new TaskActionPoint(this);
-  }
-
+  
 }

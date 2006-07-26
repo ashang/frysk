@@ -38,83 +38,61 @@
 // exception.
 
 
-package frysk.gui.monitor.actions;
-
-import java.util.Iterator;
+package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Task;
+import frysk.proc.Proc;
 
-public class TaskActionPoint
-    extends ActionPoint
+
+/**
+ * @author mcvet
+ */
+public class ProcParentNameFilter
+    extends ProcFilter
 {
+  
+  private String parentName;
 
-  private ObservableLinkedList applicableActions;
-
-  public TaskActionPoint ()
+  public ProcParentNameFilter ()
   {
-    super();
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
+    super("Name", "Filters for the proc with the given name ");
+    this.parentName = new String();
   }
 
-  public TaskActionPoint (String name, String toolTip)
-  {
-    super(name, toolTip);
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
-  }
-
-  public TaskActionPoint (TaskActionPoint other)
+  public ProcParentNameFilter (ProcParentNameFilter other)
   {
     super(other);
-
-    this.applicableActions = new ObservableLinkedList(other.applicableActions);
+    this.parentName = other.parentName;
   }
 
-  public ObservableLinkedList getApplicableActions ()
+  public boolean filter (Proc proc)
   {
-    return ActionManager.theManager.getTaskActions();
-  }
-
-  private void initApplicableActions ()
-  {
-    this.applicableActions.add(new ShowSourceWin());
-    this.applicableActions.add(new AddTaskObserverAction());
-    this.applicableActions.add(new PrintTask());
-    this.applicableActions.add(new ShowRegWin());
-    this.applicableActions.add(new ShowMemWin());
-  }
-
-  /**
-   * Run all the actions that belong to this
-   * 
-   * @link ActionPoint.
-   * @param task the task to perform the actions on.
-   */
-  public void runActions (Task task)
-  {
-    Iterator iter = this.items.iterator();
-    while (iter.hasNext())
+    if (proc.getParent().getCommand().equals(parentName))
       {
-        TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
+        return true;
       }
-  }
-
-  public ObservableLinkedList getApplicableItems ()
-  {
-    return this.applicableActions;
+    return false;
   }
 
   public GuiObject getCopy ()
   {
-    return new TaskActionPoint(this);
+    return new ProcParentNameFilter(this);
   }
 
+  public boolean setArgument (String argument)
+  {
+    this.parentName = argument;
+    return true;
+  }
+
+  public String getArgument ()
+  {
+    return this.parentName;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }

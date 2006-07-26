@@ -612,7 +612,7 @@ public class MemoryWindow
       {
         TreeIter iter = model.getFirstIter();
 
-        for (int i = (int) lastKnownFrom; i < (int) val + 1; i++)
+        for (int i = (int) lastKnownFrom; i < (int) val; i++)
           {
             model.removeRow(iter);
             iter = iter.getNextIter();
@@ -620,7 +620,7 @@ public class MemoryWindow
       }
     else
       {
-        for (long i = (long) val; i < lastKnownTo + 1; i++)
+        for (long i = (long) val; i < lastKnownFrom + 1; i++)
           rowAppend(i);
       }
     refreshList();

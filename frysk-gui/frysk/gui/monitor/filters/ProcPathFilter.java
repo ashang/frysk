@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -38,83 +38,70 @@
 // exception.
 
 
-package frysk.gui.monitor.actions;
-
-import java.util.Iterator;
+package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Task;
+import frysk.proc.Proc;
 
-public class TaskActionPoint
-    extends ActionPoint
+/**
+ * @author mcvet
+ *
+ */
+public class ProcPathFilter
+    extends ProcFilter
 {
+  private String path;
 
-  private ObservableLinkedList applicableActions;
-
-  public TaskActionPoint ()
+  public ProcPathFilter ()
   {
-    super();
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
+    super("Name", "Filters for the proc with the given name ");
+    this.path = new String();
   }
 
-  public TaskActionPoint (String name, String toolTip)
-  {
-    super(name, toolTip);
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
-  }
-
-  public TaskActionPoint (TaskActionPoint other)
+  public ProcPathFilter (ProcPathFilter other)
   {
     super(other);
-
-    this.applicableActions = new ObservableLinkedList(other.applicableActions);
+    this.path = other.path;
   }
 
-  public ObservableLinkedList getApplicableActions ()
+  public boolean filter (Proc proc)
   {
-    return ActionManager.theManager.getTaskActions();
-  }
+    String otherPath = proc.getExe();
+    int i;
 
-  private void initApplicableActions ()
-  {
-    this.applicableActions.add(new ShowSourceWin());
-    this.applicableActions.add(new AddTaskObserverAction());
-    this.applicableActions.add(new PrintTask());
-    this.applicableActions.add(new ShowRegWin());
-    this.applicableActions.add(new ShowMemWin());
-  }
-
-  /**
-   * Run all the actions that belong to this
-   * 
-   * @link ActionPoint.
-   * @param task the task to perform the actions on.
-   */
-  public void runActions (Task task)
-  {
-    Iterator iter = this.items.iterator();
-    while (iter.hasNext())
+    for (i = otherPath.length() - 1; i > 0; i--)
       {
-        TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
+        if (otherPath.charAt(i) == '/')
+          break;
       }
-  }
+    otherPath = otherPath.substring(0, i);
 
-  public ObservableLinkedList getApplicableItems ()
-  {
-    return this.applicableActions;
+    if (otherPath.equals(path))
+      {
+        return true;
+      }
+    return false;
   }
 
   public GuiObject getCopy ()
   {
-    return new TaskActionPoint(this);
+    return new ProcPathFilter(this);
   }
 
+  public boolean setArgument (String argument)
+  {
+    this.path = argument;
+    return true;
+  }
+
+  public String getArgument ()
+  {
+    return this.path;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }

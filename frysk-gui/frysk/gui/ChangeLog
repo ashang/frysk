@@ -1,3 +1,15 @@
+2006-07-26  Mike Cvet  <mcvet@redhat.com>
+
+	* register/RegisterWindowFactory.java: Added: Factory for 
+	the RegisterWindow.
+	* memory/MemoryWindowFactory.java: Added: Factory for the
+	MemoryWindow.
+	* sessions/ProcessPicker.java: Applied some GNU formatting.
+	* Gui.java: Added new imports for RegisterWindowFactory and
+	MemoryWindowFactory.
+	(Gui): Now calls Memory and Register factories with glade for 
+	initialization.
+
 2006-07-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* test/TestFilterManager.java: New test.

@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -38,83 +38,98 @@
 // exception.
 
 
-package frysk.gui.monitor.actions;
+package frysk.gui.register;
 
-import java.util.Iterator;
+import java.util.prefs.Preferences;
 
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
+import org.gnu.glade.LibGlade;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
+
+import frysk.gui.common.prefs.PreferenceManager;
 import frysk.proc.Task;
 
-public class TaskActionPoint
-    extends ActionPoint
+/**
+ * @author mcvet
+ *
+ */
+public class RegisterWindowFactory
 {
 
-  private ObservableLinkedList applicableActions;
+  private static LibGlade glade;
 
-  public TaskActionPoint ()
+  public static RegisterWindow regWin = null;
+  
+  private static Task myTask;
+
+  public RegisterWindowFactory (LibGlade glade)
   {
-    super();
 
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
   }
 
-  public TaskActionPoint (String name, String toolTip)
+  public static void setGladePath (LibGlade libGlade)
   {
-    super(name, toolTip);
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
+    glade = libGlade;
   }
 
-  public TaskActionPoint (TaskActionPoint other)
+  public static void createRegisterWindow (Task task)
   {
-    super(other);
-
-    this.applicableActions = new ObservableLinkedList(other.applicableActions);
+    if (task.getBlockers().length != 0)
+      finishRegWin(task);
   }
 
-  public ObservableLinkedList getApplicableActions ()
+  private static void finishRegWin (Task task)
   {
-    return ActionManager.theManager.getTaskActions();
-  }
-
-  private void initApplicableActions ()
-  {
-    this.applicableActions.add(new ShowSourceWin());
-    this.applicableActions.add(new AddTaskObserverAction());
-    this.applicableActions.add(new PrintTask());
-    this.applicableActions.add(new ShowRegWin());
-    this.applicableActions.add(new ShowMemWin());
-  }
-
-  /**
-   * Run all the actions that belong to this
-   * 
-   * @link ActionPoint.
-   * @param task the task to perform the actions on.
-   */
-  public void runActions (Task task)
-  {
-    Iterator iter = this.items.iterator();
-    while (iter.hasNext())
+    myTask = task;
+    
+    try
       {
-        TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
+        regWin = new RegisterWindow(glade);
       }
-  }
+    catch (Exception e)
+      {
+        e.printStackTrace();
+      }
 
-  public ObservableLinkedList getApplicableItems ()
+
+    regWin.addListener(new LifeCycleListener()
+    {
+      public boolean lifeCycleQuery (LifeCycleEvent arg0)
+      {
+        if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
+          {
+            regWin.hideAll();
+            return true;
+          }
+
+        return false;
+      }
+
+      public void lifeCycleEvent (LifeCycleEvent arg0)
+      {
+        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
+          regWin.hideAll();
+      }
+    });
+    
+    Preferences prefs = PreferenceManager.getPrefs();
+    regWin.load(prefs.node(prefs.absolutePath() + "/registers"));
+
+    if (! regWin.hasTaskSet())
+      {
+        regWin.setIsRunning(false);
+        regWin.setTask(myTask);
+      }
+    else
+      regWin.showAll();
+  }
+  
+  public static void killRegWin()
   {
-    return this.applicableActions;
+    regWin.setIsRunning(true);
+    Preferences prefs = PreferenceManager.getPrefs();
+    regWin.hideAll();
+    regWin.save(prefs.node(prefs.absolutePath() + "/registers"));
   }
-
-  public GuiObject getCopy ()
-  {
-    return new TaskActionPoint(this);
-  }
-
+  
 }

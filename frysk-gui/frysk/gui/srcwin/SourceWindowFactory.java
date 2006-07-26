@@ -81,6 +81,8 @@ public class SourceWindowFactory
   private static HashMap map;
 
   private static HashMap blockerMap;
+  
+  public static SourceWindow srcWin = null;
 
   /**
    * Sets the paths to look in to find the .glade files needed for the gui
@@ -182,15 +184,13 @@ public class SourceWindowFactory
 
   private static void finishSourceWin (Task task)
   {
-    SourceWindow s = null;
-
     Proc proc = task.getProc();
     if (map.containsKey(proc))
       {
         // Do something here to revive the existing window
-        s = (SourceWindow) map.get(proc);
-        s.showAll();
-        s.grabFocus();
+        srcWin = (SourceWindow) map.get(proc);
+        srcWin.showAll();
+        srcWin.grabFocus();
 //        WindowManager.theManager.sessionManager.hide();
       }
     else
@@ -290,16 +290,16 @@ public class SourceWindowFactory
 
 //        WindowManager.theManager.sessionManager.hide();
 
-        s = new SourceWindow(glade, gladePaths[i], dom, stack1);
-        s.setMyTask(task);
-        s.addListener(new SourceWinListener());
-        s.grabFocus();
+        srcWin = new SourceWindow(glade, gladePaths[i], dom, stack1);
+        srcWin.setMyTask(task);
+        srcWin.addListener(new SourceWinListener());
+        srcWin.grabFocus();
 
         // Store the reference to the source window
-        map.put(proc, s);
+        map.put(proc, srcWin);
       }
   }
-
+  
   /**
    * Print out the DOM in XML format
    */

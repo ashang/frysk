@@ -71,6 +71,9 @@ public class FilterManager
   private void initFilterList ()
   {
     this.addProcFilterPrototype(new ProcNameFilter());
+    this.addProcFilterPrototype(new ProcParentNameFilter());
+    this.addProcFilterPrototype(new ProcPathFilter());
+    this.addProcFilterPrototype(new ProcCommandLineFilter());
     this.addTaskFilterPrototype(new TaskProcNameFilter());
     this.addIntFilterPrototype(new IntFilter());
   }

@@ -82,7 +82,7 @@ import frysk.gui.common.prefs.ColorPreference;
 import frysk.gui.common.prefs.IntPreference;
 import frysk.gui.common.prefs.PreferenceGroup;
 import frysk.gui.common.prefs.PreferenceManager;
-import frysk.gui.memory.MemoryWindow;
+import frysk.gui.memory.MemoryWindowFactory;
 import frysk.gui.monitor.ConsoleWindow;
 import frysk.gui.monitor.CoreDebugLogViewer;
 import frysk.gui.monitor.FryskErrorFileHandler;
@@ -92,7 +92,7 @@ import frysk.gui.monitor.WindowManager;
 import frysk.gui.monitor.datamodels.CoreDebugHandler;
 import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
-import frysk.gui.register.RegisterWindow;
+import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
@@ -185,7 +185,6 @@ implements LifeCycleListener, Saveable
 		// the directory that the src directory is in is used as the
 		// root, this should work without modification
 		String searchPath = new String();
-        String properGladeDir = "";
 		for (int i = 0; i < glade_dirs.length; i++) {
 			try {// command line glade_dir
 				glade = new LibGlade (glade_dirs[i] + GLADE_FILE, this);
@@ -203,14 +202,13 @@ implements LifeCycleListener, Saveable
 					continue;
 				}
 			}
-            properGladeDir = glade_dirs[i];
 			break;
 		}
 		
 		try {
 			WindowManager.theManager.initLegacyProcpopWindows(glade);
-			RegisterWindow.gladePath = properGladeDir + "/registerwindow.glade";
-            MemoryWindow.gladePath = properGladeDir + "/memorywindow.glade";
+            RegisterWindowFactory.setGladePath(register_window);
+            MemoryWindowFactory.setGladePath(memory_window);
 			WindowManager.theManager.initSessionDruidWindow(create_session_glade);
 			WindowManager.theManager.initSessionManagerWindow(session_glade);	
             WindowManager.theManager.sessionManager.setChildPIDGlade(process_picker_glade);

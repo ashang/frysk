@@ -71,11 +71,12 @@ import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeViewColumn;
+//import org.gnu.gtk.event.LifeCycleEvent;
+//import org.gnu.gtk.event.LifeCycleListener;
 
 /**
- * A dialog allowing the user select and de-select processes of the same
- * name, allowing customization of which processes are brought to the
- * MainWindow.
+ * A dialog allowing the user select and de-select processes of the same name,
+ * allowing customization of which processes are brought to the MainWindow.
  * 
  * @author mcvet
  */
@@ -109,7 +110,7 @@ public class ProcessPicker
 
   /**
    * Determine whether or not the incoming session contains multiple processes
-   * with the same name. If so, build a dialog for the user so they can 
+   * with the same name. If so, build a dialog for the user so they can
    * determine specifically which processes they are interested in.
    */
   public void checkSession (Session s)
@@ -195,7 +196,7 @@ public class ProcessPicker
   }
 
   /**
-   * Set up the listeners for the checkboxes and the close button - which 
+   * Set up the listeners for the checkboxes and the close button - which
    * finalizes all the changes.
    */
   public void setListeners ()
@@ -203,7 +204,7 @@ public class ProcessPicker
     TreeViewColumn col = new TreeViewColumn();
     CellRenderer renderer = new CellRendererToggle();
     col.packStart(renderer, false);
- 
+
     col.addAttributeMapping(renderer, CellRendererToggle.Attribute.ACTIVE,
                             columns[0]);
     col.setTitle("");
@@ -226,7 +227,8 @@ public class ProcessPicker
               {
                 if (model.isIterValid(child))
                   {
-                    model.setValue(child, (DataColumnBoolean) columns[0], ! prev);
+                    model.setValue(child, (DataColumnBoolean) columns[0],
+                                   ! prev);
                   }
 
                 child = child.getNextIter();
@@ -241,27 +243,28 @@ public class ProcessPicker
     CellRendererText textrenderer = new CellRendererText();
     col2.packStart(textrenderer, true);
     col2.addAttributeMapping(textrenderer, CellRendererText.Attribute.TEXT,
-                            columns[1]);
-  
-    col2.addListener(new TreeViewColumnListener() 
+                             columns[1]);
+
+    col2.addListener(new TreeViewColumnListener()
     {
-    	public void columnClickedEvent(TreeViewColumnEvent event) {
-		if (col2.getSortOrder() == SortType.ASCENDING) 
-		  {
-			  model.setSortColumn(columns[1], SortType.DESCENDING);
-			  col2.setSortOrder(SortType.DESCENDING);
-		  } 
-		  else 
-		    {
-			  model.setSortColumn(columns[1], SortType.ASCENDING);
-			  col2.setSortOrder(SortType.ASCENDING);
-			}
-		  }
-	});    
+      public void columnClickedEvent (TreeViewColumnEvent event)
+      {
+        if (col2.getSortOrder() == SortType.ASCENDING)
+          {
+            model.setSortColumn(columns[1], SortType.DESCENDING);
+            col2.setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            model.setSortColumn(columns[1], SortType.ASCENDING);
+            col2.setSortOrder(SortType.ASCENDING);
+          }
+      }
+    });
     col2.setTitle("Processes");
     col2.addAttributeMapping(textrenderer, CellRendererText.Attribute.TEXT,
-            columns[1]);
-	col2.setClickable(true);
+                             columns[1]);
+    col2.setClickable(true);
     col2.setReorderable(true);
     col2.setSortOrder(SortType.ASCENDING);
     col2.setSortIndicator(true);
@@ -281,9 +284,9 @@ public class ProcessPicker
           }
       }
     });
-    
+
   }
-  
+
   /**
    * After the user is finished selecting PIDs from the checkboxes, iterate
    * through the boxes and remove the de-selected PIDs from the session.
@@ -312,11 +315,11 @@ public class ProcessPicker
           }
         parent = parent.getNextIter();
       }
-    
+
     Iterator j = newSession.getProcesses().iterator();
     while (j.hasNext())
-      ((DebugProcess)j.next()).addObservers();
-    
+      ((DebugProcess) j.next()).addObservers();
+
   }
 
   /**

@@ -1,3 +1,15 @@
+2006-07-26  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/TaskActionPoint.java (initApplicableActions): Added new actions
+	for initialization.
+	* actions/ShowRegWin.java: Added: New action.
+	* actions/ShowMemWin.java: Ditto.
+	* filters/ProcCommandLineFilter.java: Added: New filter.
+	* filters/ProcPathFilter.java: Ditto.
+	* filters/ProcParentNameFilter.java: Ditto.
+	* filters/FilterManager.java (initFilterList): Added some new filters for 
+	initialization.
+
 2006-07-25  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* filters/IntFilter.java (IntFilter): Removed reference to FilterWidget.

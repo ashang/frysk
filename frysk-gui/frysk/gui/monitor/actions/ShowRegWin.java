@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -40,81 +40,51 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.Iterator;
-
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+import frysk.gui.register.RegisterWindowFactory;
 import frysk.proc.Task;
 
-public class TaskActionPoint
-    extends ActionPoint
+/**
+ * @author mcvet
+ */
+public class ShowRegWin
+    extends TaskAction
 {
-
-  private ObservableLinkedList applicableActions;
-
-  public TaskActionPoint ()
+  public ShowRegWin ()
   {
-    super();
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
+    super("Show the register values of ",
+          "Show the register values belonging to the thread.");
   }
 
-  public TaskActionPoint (String name, String toolTip)
-  {
-    super(name, toolTip);
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
-  }
-
-  public TaskActionPoint (TaskActionPoint other)
+  public ShowRegWin (ShowRegWin other)
   {
     super(other);
-
-    this.applicableActions = new ObservableLinkedList(other.applicableActions);
   }
 
-  public ObservableLinkedList getApplicableActions ()
+  public void execute (Task task)
   {
-    return ActionManager.theManager.getTaskActions();
-  }
-
-  private void initApplicableActions ()
-  {
-    this.applicableActions.add(new ShowSourceWin());
-    this.applicableActions.add(new AddTaskObserverAction());
-    this.applicableActions.add(new PrintTask());
-    this.applicableActions.add(new ShowRegWin());
-    this.applicableActions.add(new ShowMemWin());
-  }
-
-  /**
-   * Run all the actions that belong to this
-   * 
-   * @link ActionPoint.
-   * @param task the task to perform the actions on.
-   */
-  public void runActions (Task task)
-  {
-    Iterator iter = this.items.iterator();
-    while (iter.hasNext())
-      {
-        TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
-      }
-  }
-
-  public ObservableLinkedList getApplicableItems ()
-  {
-    return this.applicableActions;
+    if (RegisterWindowFactory.regWin == null)
+      RegisterWindowFactory.createRegisterWindow(task);
   }
 
   public GuiObject getCopy ()
   {
-    return new TaskActionPoint(this);
+    return new ShowRegWin(this);
   }
 
+  public boolean setArgument (String argument)
+  {
+    return false;
+  }
+
+  public String getArgument ()
+  {
+    return null;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
 }

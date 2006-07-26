@@ -1,3 +1,18 @@
+2006-07-26  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: Added static SourceWindow variable.
+	(finishSourceWin): Edited to use above variable.
+	* SourceWindow.java: Removed some unnecessary imports and
+	global variables for the Memory and Register windows, which is
+	now taken care of by their respective factories.
+	(SourceWindow): Remove Register and Memory window initialization.
+	(attachEvents): Remove listeners for the above windows.
+	(doRun): Removed references to the above windows.
+	(doStop): Ditto.
+	(toggleMemoryWindow): Allows MemoryWindowFactory to take care of
+	initialization, showing, hiding, and task assigning.
+	(toggleRegisterWindow): Ditto for RegisterWindowFactory.
+
 2006-07-21  Rick Moseley  <rmoseley@redhat.com>
 
 	* SourceWindow.java: Minor change of source window title.
