@@ -31,3 +31,12 @@ s:\(import java.util.\*;\):/* \1 */:
 
 1138 s:\(AST tmp[0-9][0-9]*_AST = null;\):/* \1 */:
 1139 s:\(tmp[0-9][0-9]*_AST =\):/* \1 */:
+
+/buildTokenTypeASTClassMap/,+2 s/};/}/
+
+# Causes "unread" warnings from ecj
+/post_expr2_AST/d
+/tmp42_AST/d
+/tmp43_AST/d
+/tmp44_AST/d
+/tmp45_AST/d

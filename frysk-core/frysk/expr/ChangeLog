@@ -1,3 +1,11 @@
+2006-07-26  Stan Cox <scox@redhat.com>
+
+	* cpp.g (signed_pm_expression): New, for eliminating non-determinism.
+	(variable): Likewise.
+	(expr): Handle unary negation.
+	* CppTreeParser.sed: Eliminate warnings in antlr generated file.
+	* CppParser.sed: Eliminate warnings in antlr generated file.
+	
 2006-06-16  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* TabException.java : Change class TabException to public.

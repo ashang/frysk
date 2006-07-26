@@ -40,3 +40,35 @@ s:\(import antlr.collections.impl.ASTArray;\):/* \1 */:
 594 s:\(AST tmp[0-9][0-9]*_AST_in = (AST)_t;\):/* \1 */:
 615 s:\(AST tmp[0-9][0-9]*_AST_in = (AST)_t;\):/* \1 */:
 636 s:\(AST tmp[0-9][0-9]*_AST_in = (AST)_t;\):/* \1 */:
+# Causes "unread" warnings from ecj
+/tmp60_AST_in/d
+/tmp61_AST_in/d
+/tmp62_AST_in/d
+/tmp63_AST_in/d
+/tmp64_AST_in/d
+/tmp65_AST_in/d
+/tmp66_AST_in/d
+/tmp68_AST_in/d
+/tmp69_AST_in/d
+/tmp70_AST_in/d
+/tmp71_AST_in/d
+/tmp72_AST_in/d
+/tmp73_AST_in/d
+/tmp74_AST_in/d
+/tmp75_AST_in/d
+/tmp76_AST_in/d
+/tmp77_AST_in/d
+/tmp78_AST_in/d
+/tmp79_AST_in/d
+/tmp80_AST_in/d
+/tmp81_AST_in/d
+/tmp82_AST_in/d
+/tmp83_AST_in/d
+/tmp84_AST_in/d
+/tmp85_AST_in/d
+/tmp86_AST_in/d
+/tmp88_AST_in/d
+/tmp89_AST_in/d
+/tmp90_AST_in/d
+/tmp91_AST_in/d
+/tmp92_AST_in/d

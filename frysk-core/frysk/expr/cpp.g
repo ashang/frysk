@@ -299,16 +299,21 @@
 
   multiplicative_expression throws TabException 
   :	
-    pm_expression
+    signed_pm_expression
       (options{warnWhenFollowAmbig = false;}:
-	      (STAR^ | DIVIDE^ | MOD^) pm_expression
+	      (STAR^ | DIVIDE^ | MOD^) signed_pm_expression
       )*
+  ;
+
+  signed_pm_expression throws TabException
+  :
+    (options {warnWhenFollowAmbig=false;} : MINUS^)? pm_expression
   ;
 
   pm_expression throws TabException 
   {String sTabText;}
   :	
-    post_expr1:postfix_expression 
+    post_expr1:primary_expression 
     {
       if(bTabPressed)
       {
@@ -322,7 +327,7 @@
     }
 
     ( (DOTMBR^ | POINTERTOMBR^) 
-      post_expr2:postfix_expression
+      post_expr2:primary_expression
       {
 	if(bTabPressed)
 	{
@@ -342,13 +347,14 @@
    *  The parser thus bails out immediately and returns the
    *  parse tree constructed so far.
    */
-  postfix_expression! throws TabException 
+  /* ??? add (id_expression | (TAB {bTabPressed = true;})) */
+  variable! throws TabException 
   {
     AST astPostExpr = null, astDotExpr = null;
   } 
   :
     (
-      prim_expr: primary_expression
+      prim_expr: id_expression
       {
 	astPostExpr = #prim_expr;
       }
@@ -397,7 +403,7 @@
      */
   primary_expression throws TabException 
   :
-    (id_expression | (TAB {bTabPressed = true;}))
+    variable
   |
     constant
   |
@@ -765,8 +771,11 @@
   { Variable v1, v2, log_expr;}
   :
     #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
-  |
-    #(MINUS  v1=expr v2=expr)  {  returnVar = v1.getType().subtract(v1, v2);  }
+  | ( #(MINUS expr expr) )=> #( MINUS v1=expr v2=expr ) 
+				{ returnVar = v1.getType().subtract(v1, v2);  }
+  | #( MINUS v1=expr ) 
+				{ returnVar = IntegerType.newIntegerVariable(intType, "0", 0);
+				  returnVar = returnVar.getType().subtract(returnVar, v1); }
   |
     #(STAR  v1=expr v2=expr)  {	returnVar = v1.getType().multiply(v1, v2);  }
   |
@@ -924,6 +933,13 @@
       if((returnVar = ((Variable)symTab.get(ident.getText()))) == null) {
 	returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
 	symTab.put(ident.getText(), returnVar);
+      }
+    }
+  |
+    tident:TAB_IDENT  {
+      if((returnVar = ((Variable)symTab.get(tident.getText()))) == null) {
+	returnVar = IntegerType.newIntegerVariable(intType, tident.getText(), 0);
+	symTab.put(tident.getText(), returnVar);
       }
     }
   ;
