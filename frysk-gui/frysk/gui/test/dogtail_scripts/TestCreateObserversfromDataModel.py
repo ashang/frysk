@@ -241,11 +241,11 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     #actionText.text = tempAction.getArgument()
                     actionText.text = tempElement.getArgument()
 
-                # The '+' and '-' buttons to enable adding/substracting action points
-                theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
-                # button [1] is the '+' button
-                if actionListCounter < actionListLength:
-                    theButtons[1].click()
+                    # The '+' and '-' buttons to enable adding/substracting action points
+                    theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
+                    # button [1] is the '+' button
+                    if actionListCounter < actionListLength:
+                        theButtons[1].click()
 
             # And - there is a similar situation for the multiple FilterPoints defined
             # in the Observer

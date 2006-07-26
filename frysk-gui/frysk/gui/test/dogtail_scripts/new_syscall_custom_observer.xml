@@ -3,32 +3,45 @@
     <actionPoint name=" " tooltip="Actions that dont take any arguments">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #1" />
-          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #2" />
-          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #3" />
-          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #4" />
-          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Event #5" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 1" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 2" />
         </elements>
       </items>
     </actionPoint>
     <actionPoint name="Task entering syscall" tooltip="the Task when it is entering the syscall">
       <items>
-        <elements />
+        <elements>
+          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
+          <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of " tooltip="Show the register values belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of " tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+        </elements>
       </items>
     </actionPoint>
     <actionPoint name="Task exiting syscall" tooltip="the Task when it is exiting the syscall">
       <items>
-        <elements />
+        <elements>
+          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
+          <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of " tooltip="Show the register values belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of " tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+        </elements>
       </items>
     </actionPoint>
     <actionPoint name="Enter" tooltip="actions run when the task enters a syscall">
       <items>
-        <elements />
+        <elements>
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="" />
+        </elements>
       </items>
     </actionPoint>
     <actionPoint name="Exit" tooltip="actions run when the task exits a syscall">
       <items>
-        <elements />
+        <elements>
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="" />
+        </elements>
       </items>
     </actionPoint>
   </actionPoints>
@@ -36,14 +49,14 @@
     <filterPoint name="Task entering syscall" tooltip="the Task when it is entering the syscall">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="Thread1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="task1" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>
     <filterPoint name="Task exiting syscall" tooltip="the Task when it is exiting the syscall">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="Thread2" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="task2" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>

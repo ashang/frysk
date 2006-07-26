@@ -77,14 +77,14 @@ FRYSK_PROCESS_NAME = 'FryskGui'
 FRYSK_APP_NAME = 'java-gnome'
 
 # Other Frysk dialog titles
-CUSTOM_OBSERVER_DIALOG = 'Custom Observer Details'
+CUSTOM_OBSERVER_DIALOG = 'Frysk Custom Observer Details'
 ABOUT_FRYSK = 'About Frysk - Technology Preview'
 CREDITS = 'Credits'
 EXPECTED_LICENSE = 'http://www.gnu.org/copyleft/gpl.html\n'
 LICENSE = 'License'
 OBSERVERS = 'Observers'
 MANAGE_CUSTOM_OBSERVERS = 'Manage Custom Observers...'
-CUSTOM_OBSERVERS = 'Custom Observers'
+CUSTOM_OBSERVERS = 'Frysk Custom Observers'
 DEBUG_SESSION_DRUID = 'Debug Session Druid'
 FRYSK_STARTUP_MANAGER = 'Frysk Startup Manager'
 CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
@@ -92,14 +92,14 @@ CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
                         'frysk.gui.monitor.observers.TaskExecObserver':'Exec Observer', 
-                        'frysk.gui.monitor.observers.TaskTerminatingObserver':'Task Terminating Observer', 
+                        'frysk.gui.monitor.observers.TaskTerminatingObserver':'Terminating Observer', 
                         'frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
-                        'frysk.gui.monitor.observers.TaskCloneObserver':'TaskCloneObserver' }
+                        'frysk.gui.monitor.observers.TaskCloneObserver':'Clone Observer' }
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name forking thread',
                             'forked thread':'Name forked thread',
-                            "Exec'ing Thread":"Name Exec'ing Thread",
+                            "Execing Thread":"Name Execing Thread",
                             'Terminating Task':'Name Terminating Task',
                             'Exit Value':'Int Filter Exit Value',
                             'Cloning Thread':'Name Cloning Thread',
