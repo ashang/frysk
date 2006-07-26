@@ -24,23 +24,25 @@ frysk=@abs_builddir@/frysk/gui/FryskGui
 src=@abs_srcdir@/frysk/gui/test/dogtail_scripts
 
 cat <<EOF | grep -v '#' | while read script args ; do
+#
+# Tests that should pass
 ${src}/TestCredits.py ${src}/another_new_session.xml
 ${src}/TestLicense.py ${src}/another_new_session.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_fork_custom_observer.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_syscall_custom_observer.xml
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_clone_custom_observer.xml
-#This test fails
-#${src}/TestEventViewerButtons.py ${src}/another_new_session.xml
-# The next 2 tests fail - see bug 2871
-#${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_exec_custom_observer.xml
-#${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_term_custom_observer.xml
+${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_task_term_custom_observer.xml
 ${src}/TestDruid.py ${src}/another_new_session.xml
-# The next test fails - see bug 2866
-#${src}/Test2866.py ${src}/another_new_session.xml
-# The next test fails - see bug 2807
-#${src}/TestStressDruid.py ${src}/another_new_session.xml
-# Resolved bugs - keep these tests to prevent regressions
+#
+# Tests that currently fail - commented out
+# ${src}/TestEventViewerButtons.py ${src}/another_new_session.xml
+# bug 2871 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_exec_custom_observer.xml
+# bug 2866 ${src}/Test2866.py ${src}/another_new_session.xml
+# bug 2807 ${src}/TestStressDruid.py ${src}/another_new_session.xml
+#
+# Tests for resolved bugs - run these tests to prevent regressions
 ${src}/TestCredits.py ${src}/Test2921.xml
+#
 EOF
     echo Running: ${script}
     if python ${script} ${frysk} ${args} ; then
