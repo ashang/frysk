@@ -1,17 +1,19 @@
-<Session type="frysk.gui.sessions.Session" name="another_new_session" tooltip="NoTootip">
+<Session type="frysk.gui.sessions.Session" name="New Frysk Session" tooltip="NoTooltip">
   <procs>
     <elements>
-      <element type="frysk.gui.sessions.DebugProcess" name="nautilus" tooltip="nautilus" executablePath="nautilus">
+      <element type="frysk.gui.sessions.DebugProcess" name="nautilus" tooltip="nautilus" executablePath="/usr/bin/nautilus">
         <observers>
-          <element name="Terminating Observer" />
+          <element name="Task Terminating Observer" />
+          <element name="Exec Observer" />
           <element name="Fork Observer" />
         </observers>
         <tagsets />
       </element>
-      <element type="frysk.gui.sessions.DebugProcess" name="gnome-panel" tooltip="gnome-panel" executablePath="gnome-panel">
+      <element type="frysk.gui.sessions.DebugProcess" name="gnome-panel" tooltip="gnome-panel" executablePath="/usr/bin/gnome-panel">
         <observers>
-          <element name="Terminating Observer" />
-          <element name="Clone Observer" />
+          <element name="TaskCloneObserver" />
+          <element name="Syscall Observer" />
+          <element name="Exit Notification Observer" />
         </observers>
         <tagsets />
       </element>
