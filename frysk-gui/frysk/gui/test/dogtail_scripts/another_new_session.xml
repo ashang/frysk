@@ -1,4 +1,4 @@
-<Session type="frysk.gui.sessions.Session" name="New Frysk Session" tooltip="NoTooltip">
+<Session type="frysk.gui.sessions.Session" name="NewFryskSession" tooltip="NoTooltip">
   <procs>
     <elements>
       <element type="frysk.gui.sessions.DebugProcess" name="nautilus" tooltip="nautilus" executablePath="/usr/bin/nautilus">

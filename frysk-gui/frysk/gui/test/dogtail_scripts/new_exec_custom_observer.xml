@@ -1,13 +1,14 @@
-<Observer type="frysk.gui.monitor.observers.TaskExecObserver" name="new_exec_custom_observer" tooltip="new_exec_custom_observer description" returnAction="CONTINUE">
+<Observer type="frysk.gui.monitor.observers.TaskExecObserver" name="new_exec_custom_observer" tooltip="NoTooltip" returnAction="CONTINUE">
   <actionPoints>
     <actionPoint name=" " tooltip="Actions that dont take any arguments">
       <items>
         <elements>
           <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 1" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 2" />
         </elements>
       </items>
     </actionPoint>
-    <actionPoint name="Execing Thread (A)" tooltip="The thread that is calling exec">
+    <actionPoint name="Execing Thread" tooltip="The thread that is calling exec">
       <items>
         <elements>
           <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
@@ -24,7 +25,6 @@
       <items>
         <elements>
           <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="thread 1" filterBoolean="true" />
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="Thread 2" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>

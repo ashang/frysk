@@ -216,13 +216,16 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
             #theActions = genericAction.getElements()
             theActions = self.theObserver.getActionPoints()
-            actionListLength = len(theActions)
+            #actionListLength = len(theActions)
             #print "DEBUG - the actions length = " + str(actionListLength)
             actionListCounter = 0
             for tempAction in theActions:
                 actionListCounter = actionListCounter + 1 
                 
                 theElements = tempAction.getElements()
+                actionListLength = len(theElements)
+                #print "DEBUG - the actions length = " + str(actionListLength)
+                actionListCounter = 0
                 for tempElement in theElements:
                     
                     #theActionName = tempAction.getName()
@@ -241,11 +244,13 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     #actionText.text = tempAction.getArgument()
                     actionText.text = tempElement.getArgument()
 
+                    #print "Press the + button"
                     # The '+' and '-' buttons to enable adding/substracting action points
                     theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
                     # button [1] is the '+' button
                     if actionListCounter < actionListLength:
                         theButtons[1].click()
+                        #print "pressed the button"
 
             # And - there is a similar situation for the multiple FilterPoints defined
             # in the Observer
