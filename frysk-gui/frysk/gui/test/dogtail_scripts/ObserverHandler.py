@@ -59,21 +59,23 @@ from ObserverElement import ObserverElement
 from ObserverPoints import ObserverPoints
 from FryskHelpers import *
 
-# The input data to this parser takes this form:
+# The input data to this parser takes this form (data current as of July 26, 2006
 #
-#<Observer type="frysk.gui.monitor.observers.TaskForkedObserver" name="NewForkingCustomObserver" tooltip="Fires when a proc forks">
+#<Observer type="frysk.gui.monitor.observers.TaskForkedObserver" name="NoName" tooltip="NoTooltip" returnAction="CONTINUE">
 #  <actionPoints>
-#    <actionPoint name="Generic Actions" tooltip="Actions that dont take any arguments">
+#    <actionPoint name=" " tooltip="Actions that dont take any arguments">
 #      <items>
 #        <elements>
-#          <element type="frysk.gui.monitor.actions.LogAction" name="Log" tooltip="logs what is going on with this observer plus a user set comment" argument="bedrock" />
-#          <element type="frysk.gui.monitor.actions.Resume" name="Resume" tooltip="Resume execution of the current process" argument="null" />
+#          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="123" />
 #        </elements>
 #      </items>
 #    </actionPoint>
 #    <actionPoint name="forking thread" tooltip="Thread that performed the fork">
 #      <items>
-#        <elements />
+#        <elements>
+#          <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
+#          <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
+#        </elements>
 #      </items>
 #    </actionPoint>
 #    <actionPoint name="forked thread" tooltip="Main thread of newly forked process">
@@ -86,14 +88,14 @@ from FryskHelpers import *
 #    <filterPoint name="forking thread" tooltip="Thread that performed the fork">
 #      <items>
 #        <elements>
-#          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="fred" />
+#          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="abc" filterBoolean="true" />
 #        </elements>
 #      </items>
 #    </filterPoint>
 #    <filterPoint name="forked thread" tooltip="Main thread of newly forked process">
 #      <items>
 #        <elements>
-#          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="barney" />
+#          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="def" filterBoolean="true" />
 #        </elements>
 #      </items>
 #    </filterPoint>
@@ -109,7 +111,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     self.actionPointFlag = False
     self.filterPointFlag = False
     self.theObserver = Observer()
-    self.emptyActionPointFlag = False
+    #self.emptyActionPointFlag = False
     #self.buffer = ''
  
   #-------------------------------
@@ -182,7 +184,15 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           
           # The name attribute in the input file does not equal the
           # GUI name - so, make the change here. 
-          self.tempObserverElement.setName (getActionPointName(attributes['name']))          
+          # ******* Add the action point name here?????
+          #print "DEBUG - combined string = " + self.tempActionPoint.getName() + ' ' + attributes['name']
+          #self.tempObserverElement.setName (getElementName ( attributes['name']), self.tempActionPoint.getName() )
+          #print "calling derive"
+  #        tempString = deriveElementName ( attributes['name'], self.tempActionPoint.getName() )
+          #print "back from calling derive"
+          self.tempObserverElement.setName (deriveElementName ( attributes['name'], self.tempActionPoint.getName()) )
+ #         print "DEBUG = " + self.tempObserverElement.getName()
+          #self.tempObserverElement.setName (getActionPointName(attributes['name']))          
 #          if attributes['name'] == 'Log event':
 #              self.tempObserverElement.setName('Log event  ')
 #          if attributes['name'] == 'Resume':
@@ -214,19 +224,22 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
   def endElement(self, name):
     if name == 'Observer':
         print 'END of Observer'
+        #self.theObserver.dump()
               
     elif name == 'actionPoints':
         self.theObserver.setActionPoints(self.theActionPoints)
-#        print 'END of actionPoints'
+        #print 'END of actionPoints'
 
     elif name == 'actionPoint':
          #print 'END of actionPoint'
+         #self.tempActionPoint.dump()
          self.tempActionPoint.setElements(self.tempActionPointElements)
          self.tempActionPoint.setElementsDict(self.tempActionPointElements)
-         if self.emptyActionPointFlag != True:
-             self.theActionPoints.append(self.tempActionPoint)
+         #if self.emptyActionPointFlag != True:
+         #    self.theActionPoints.append(self.tempActionPoint)
+         self.theActionPoints.append(self.tempActionPoint)
          self.actionPointFlag = False
-         self.emptyActionPointFlag = True
+         #self.emptyActionPointFlag = True
 
     elif name == 'filterPoints':
         self.theObserver.setFilterPoints(self.theFilterPoints)
@@ -245,11 +258,10 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     elif name == 'element':     
         if self.actionPointFlag == True:
             self.tempActionPointElements.append(self.tempObserverElement)
-            if self.tempObserverElement.getType() == 'default type':
-                self.emptyActionPointFlag = True
+            #if self.tempObserverElement.getType() == 'default type':
+            #    self.emptyActionPointFlag = True
         elif self.filterPointFlag == True:
             #self.tempObserverElement.dump()
             self.tempFilterPointElements.append(self.tempObserverElement)
 
 #        print 'END of element'
-

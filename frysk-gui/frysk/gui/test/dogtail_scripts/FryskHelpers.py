@@ -77,25 +77,24 @@ FRYSK_PROCESS_NAME = 'FryskGui'
 FRYSK_APP_NAME = 'java-gnome'
 
 # Other Frysk dialog titles
-CUSTOM_OBSERVER_DIALOG = 'Frysk Custom Observer Details'
+CUSTOM_OBSERVER_DIALOG = 'Custom Observer Details'
 ABOUT_FRYSK = 'About Frysk - Technology Preview'
 CREDITS = 'Credits'
 EXPECTED_LICENSE = 'http://www.gnu.org/copyleft/gpl.html\n'
 LICENSE = 'License'
 OBSERVERS = 'Observers'
 MANAGE_CUSTOM_OBSERVERS = 'Manage Custom Observers...'
-CUSTOM_OBSERVERS = 'Frysk Custom Observers'
+CUSTOM_OBSERVERS = 'Custom Observers'
 DEBUG_SESSION_DRUID = 'Debug Session Druid'
 FRYSK_STARTUP_MANAGER = 'Frysk Startup Manager'
 CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
-MONITOR = 'Frysk Monitor'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
                         'frysk.gui.monitor.observers.TaskExecObserver':'Exec Observer', 
-                        'frysk.gui.monitor.observers.TaskTerminatingObserver':'Terminating Observer', 
+                        'frysk.gui.monitor.observers.TaskTerminatingObserver':'Task Terminating Observer', 
                         'frysk.gui.monitor.observers.TaskSyscallObserver':'Syscall Observer', 
-                        'frysk.gui.monitor.observers.TaskCloneObserver':'Clone Observer' }
+                        'frysk.gui.monitor.observers.TaskCloneObserver':'TaskCloneObserver' }
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name forking thread',
@@ -577,3 +576,19 @@ def getActionPointName ( actionPointName ):
     returnString = str( FRYSK_ACTIONPOINT_NAMES.get( actionPointName ) )
     #print 'DEBUG - actionPointName=:' + actionPointName + ' name=[' + returnString + ']'
     return returnString
+
+# ---------------------
+def deriveElementName ( string1, string2 ):
+    """ Based on the element name and the corresponding action name
+        as expressed in the observer XML file,
+        return the corresponding string used in the GUI
+    """
+    #print "in derive"
+    #print 'DEBUG - [' + string1 + '][' + string2 + ']'
+    if string1 != ' ':
+        returnString = string1 + ' ' + string2
+    else:
+        returnString = string2    
+    return returnString
+
+

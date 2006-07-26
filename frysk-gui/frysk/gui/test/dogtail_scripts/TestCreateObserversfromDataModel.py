@@ -165,7 +165,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
         ## TODO NEXT - add code to enable creation of all observer types
         temp = self.theMatrix[0]
-        print "DEBUG = " + temp.getType()
+        #print "DEBUG = " + temp.getType()
         #execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
         #execObserver.actions['activate'].do()  
  
@@ -187,86 +187,96 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             #combo =  observerPanel.child( roleName='combo box' )
             #comboMenu = combo.child( roleName='menu' )
                
-            try:
-                # Set the new observer name
-                newObserverName = observerToCreate.getName()
-                observerName = observerPanel.child( roleName='text', name = 'observerNameEntry') 
-                observerName.text = newObserverName
+            #try:
+            # Set the new observer name
+            newObserverName = observerToCreate.getName()
+            observerName = observerPanel.child( roleName='text', name = 'observerNameEntry') 
+            observerName.text = newObserverName
                 
-                # and description
-                newObserverDescription = observerToCreate.getDescription() 
-                observerDescription = observerPanel.child( roleName='text', name = 'observerDescriptionTextView') 
-                observerDescription.text = newObserverDescription
+            # and description
+            newObserverDescription = observerToCreate.getDescription() 
+            observerDescription = observerPanel.child( roleName='text', name = 'observerDescriptionTextView') 
+            observerDescription.text = newObserverDescription
                 
-                observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
-                comboMenu = observerTypeComboBox.child( roleName='menu' )    
-                selectedItem=comboMenu.child( name = observerToCreate.getType() )
-                selectedItem.click() 
+            observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
+            comboMenu = observerTypeComboBox.child( roleName='menu' )    
+            selectedItem=comboMenu.child( name = observerToCreate.getType() )
+            selectedItem.click()              
 
-                # At this point, we want to access the multiple actions (ActionPoints)
-                # defined in the Observer. The GUI elements to support the definition of
-                # more than one ActionPoint are generated at runtime, and do not have
-                # AT data names, however, so we cannot access them by name. We have to 
-                # deal with their order in the list[] of objects seen by Dogtail.
-                #
-                # In the code below, we always want the first comboBox and the 2nd button
-                # (this button is the '+' button) under the 'observerActionsTable' GUI
-                # element. This will be a real problem if the order of the elements
-                # as generated/displayed changes.
+            # At this point, we want to access the multiple actions (ActionPoints)
+            # defined in the Observer. The GUI elements to support the definition of
+            # more than one ActionPoint are generated at runtime, and do not have
+            # AT data names, however, so we cannot access them by name. We have to 
+            # deal with their order in the list[] of objects seen by Dogtail.
+            #
+            # In the code below, we always want the first comboBox and the 2nd button
+            # (this button is the '+' button) under the 'observerActionsTable' GUI
+            # element. This will be a real problem if the order of the elements
+            # as generated/displayed changes.
 
-                theActions = genericAction.getElements()
-                actionListLength = len(theActions)
-                actionListCounter = 0
-                for tempAction in theActions:
-                    actionListCounter = actionListCounter + 1 
+            #theActions = genericAction.getElements()
+            theActions = self.theObserver.getActionPoints()
+            actionListLength = len(theActions)
+            #print "DEBUG - the actions length = " + str(actionListLength)
+            actionListCounter = 0
+            for tempAction in theActions:
+                actionListCounter = actionListCounter + 1 
+                
+                theElements = tempAction.getElements()
+                for tempElement in theElements:
                     
-                    theActionName = tempAction.getName()
+                    #theActionName = tempAction.getName()
+                    theActionName = tempElement.getName()
+                    #print "DEBUG - the action name = " + theActionName
                     observerActionsTable = observerPanel.child (name = 'observerActionsTable')
                     # comboBox that lists the action types - the first one in the list[]
                     theComboBoxes = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
                     comboBox = theComboBoxes[0]
                     # Select the action
+                    #comboBox.dump()
                     actionItem = comboBox.menuItem (theActionName)
                     actionItem.click()
                     
                     actionText = observerActionsTable.child(roleName = 'text')
-                    actionText.text = tempAction.getArgument()
+                    #actionText.text = tempAction.getArgument()
+                    actionText.text = tempElement.getArgument()
 
-                    # The '+' and '-' buttons to enable adding/substracting action points
-                    theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
-                    # button [1] is the '+' button
-                    if actionListCounter < actionListLength:
-                        theButtons[1].click()
+                # The '+' and '-' buttons to enable adding/substracting action points
+                theButtons = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
+                # button [1] is the '+' button
+                if actionListCounter < actionListLength:
+                    theButtons[1].click()
 
-                # And - there is a similar situation for the multiple FilterPoints defined
-                # in the Observer
+            # And - there is a similar situation for the multiple FilterPoints defined
+            # in the Observer
 
-                theFilterPoints = self.theObserver.getFilterPoints()
-                filterPointListLength = len(theFilterPoints)
-                filterPointListCounter = 0
+            theFilterPoints = self.theObserver.getFilterPoints()
+            filterPointListLength = len(theFilterPoints)
+            filterPointListCounter = 0
  
-                for tempFilterPoint in theFilterPoints:
-                    filterPointListCounter = filterPointListCounter + 1 
-                    observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
+            for tempFilterPoint in theFilterPoints:
+                filterPointListCounter = filterPointListCounter + 1 
+                observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
 
-                    # comboBox that lists the filter types - the 2nd one in the list[]
-                    theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
-                    comboBox = theComboBoxes[1]
-                    filterItem = comboBox.menuItem (tempFilterPoint.getName() )
-                    filterItem.click()
+                # comboBox that lists the filter types - the 2nd one in the list[]
+                theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
+                comboBox = theComboBoxes[1]
+                filterItem = comboBox.menuItem (tempFilterPoint.getName() )
+                filterItem.click()
 
-                    theTextBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='text'), False)
-                    theTextBox = theTextBoxes[0]
-                    theElements = tempFilterPoint.getElements()
-                    # As of 20060613, there is only one element in the list                    
-                    theElement = theElements[0]
-                    theTextBox.text = theElement.getArgument() 
-                    # The '+' and '-' buttons to enable adding/substracting action points
-                    theButtons = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
-                    # button [1] is the '+' button
-                    if filterPointListCounter < filterPointListLength:
-                        theButtons[1].click()
+                theTextBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='text'), False)
+                theTextBox = theTextBoxes[0]
+                theElements = tempFilterPoint.getElements()
+                # As of 20060613, there is only one element in the list                    
+                theElement = theElements[0]
+                theTextBox.text = theElement.getArgument() 
+                # The '+' and '-' buttons to enable adding/substracting action points
+                theButtons = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
+                # button [1] is the '+' button
+                if filterPointListCounter < filterPointListLength:
+                    theButtons[1].click()
 
+            try:
      
                # Save the new Observer
                 okButton = observerDetails.button( 'OK' )
