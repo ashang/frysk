@@ -41,10 +41,10 @@
 #include <unistd.h>
 #include <gcj/cni.h>
 
-#include "frysk/rt/TestLib.h"
+#include "frysk/rt/tests/TestLib.h"
 
 jint
-frysk::rt::TestLib::getpid()
+frysk::rt::tests::TestLib::getpid()
 {
 	return (jint) ::getpid();	
 }

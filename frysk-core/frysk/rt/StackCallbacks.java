@@ -46,7 +46,10 @@ import lib.dw.DwarfDie;
 import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.elf.Elf;
+import lib.elf.ElfCommand;
 import lib.elf.ElfData;
+import lib.elf.ElfException;
+import lib.elf.ElfFileException;
 import lib.elf.ElfSection;
 import lib.unwind.RegisterX86;
 import lib.unwind.UnwindCallbacks;
@@ -73,11 +76,10 @@ public class StackCallbacks
   {
     Host.logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
                                 + Long.toHexString(instructionAddress) + "\n");
-
+    
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwflDieBias bias = dwfl.getDie(instructionAddress);
     DwarfDie die = bias.die;
-
     long adjustedAddress = instructionAddress - bias.bias;
 
     if (die == null)
@@ -90,9 +92,22 @@ public class StackCallbacks
     if (needInfo)
       {
         Elf elf = null;
-        elf = dwfl.getModule(adjustedAddress).getElf().elf;
-        // elf = new Elf(myTask.getTid(), ElfCommand.ELF_C_READ);
-
+//        elf = dwfl.getModule(adjustedAddress).getElf().elf;
+        try
+          {
+            elf = new Elf(myTask.getTid(), ElfCommand.ELF_C_READ);
+          }
+        catch (ElfFileException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        catch (ElfException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        
         ElfSection found = null;
         for (int i = 0; i < elf.getSectionCount(); i++)
           {
@@ -106,7 +121,7 @@ public class StackCallbacks
 
         if (found == null)
           return false;
-
+        
         populate_procinfo(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0,
                           0, 0, found.getData());
       }

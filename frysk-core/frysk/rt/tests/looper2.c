@@ -37,14 +37,35 @@
 // version and license this file solely under the GPL without
 // exception.
 
-package frysk.rt;
+#include <stdio.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
 
-class TestLib
-{
-  static String getMyPid()
-  {
-    return ""+getpid();
+void baz(int pid){
+  kill((pid_t) pid, SIGPOLL);
+  while(1){
   }
+}
+
+void bar(int pid){
+  baz(pid);
+}
+
+void foo(int pid){
+  bar(pid);
+}
+
+int main(int argc, char ** argv){
+
+  if(argc != 2){
+    fprintf(stderr, "Got %d parameters!\n", argc);
+    exit(1);
+  }
+
+//  printf("Pid: %d\n", getpid());
+  foo(atoi(argv[1]));
   
-  private static native int getpid();
+  return 0;
 }

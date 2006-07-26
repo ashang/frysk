@@ -38,7 +38,7 @@
 // exception.
 
 
-package frysk.rt;
+package frysk.rt.tests;
 
 import inua.eio.ByteBuffer;
 import frysk.proc.Action;
@@ -46,6 +46,9 @@ import frysk.proc.Manager;
 import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
+import frysk.core.Build;
 import frysk.sys.Sig;
 import frysk.sys.proc.MapsBuilder;
 
@@ -56,9 +59,9 @@ public class TestStackBacktrace
 
   public void testBacktrace () throws Task.TaskException
   {
-     if (brokenXXX(2936))
-      return;
-
+//     if (brokenXXX(2936))
+//      return;
+    
     class TaskCreatedObserver
         implements TaskObserver.Attached
     {
@@ -91,12 +94,12 @@ public class TestStackBacktrace
 
     TaskCreatedObserver obs = new TaskCreatedObserver();
 
+    System.err.println("\n"+Build.ABS_BUILDDIR + "/frysk/rt/tests/looper2 ");
     AckDaemonProcess process = new AckDaemonProcess(
                                                     Sig.POLL,
                                                     new String[] {
-                                                                  "/home/ajocksch/src/asmtest/looper2",
-                                                                  ""
-                                                                      + frysk.rt.TestLib.getMyPid() });
+                                                                  Build.ABS_BUILDDIR + "/frysk/rt/tests/looper2",
+                                                                      ""+ frysk.rt.tests.TestLib.getMyPid() });
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
     myTask.requestAddAttachedObserver(obs);
@@ -129,10 +132,10 @@ public class TestStackBacktrace
 
     }
 
-    // MyBuilder builder = new MyBuilder();
-    // System.out.println("Before maps test");
-    // builder.construct(myTask.getTid());
-    // System.out.println("After maps test");
+//     MyBuilder builder = new MyBuilder();
+//     System.out.println("Before maps test");
+//     builder.construct(myTask.getTid());
+//     System.out.println("After maps test");
 
     StackFrame frame = StackFactory.createStackFrame(myTask);
 
@@ -147,13 +150,13 @@ public class TestStackBacktrace
         System.out.println("\tLine: " + frame.getLineNumber());
         System.out.println("\tCol: " + frame.getColumn());
         System.out.println("\tAddr: " + frame.getAddress());
-        frame = frame.outer;
+        frame = frame.getOuter();
       }
 
-    // MyBuilder builder2 = new MyBuilder();
-    // System.out.println("Before maps test");
-    // builder2.construct(myTask.getTid());
-    // System.out.println("After maps test");
+//     MyBuilder builder2 = new MyBuilder();
+//     System.out.println("Before maps test");
+//     builder2.construct(myTask.getTid());
+//     System.out.println("After maps test");
   }
 
 }
