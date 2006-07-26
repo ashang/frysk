@@ -59,8 +59,8 @@ public class TestStackBacktrace
 
   public void testBacktrace () throws Task.TaskException
   {
-//     if (brokenXXX(2936))
-//      return;
+     if (brokenXXX(2936))
+      return;
     
     class TaskCreatedObserver
         implements TaskObserver.Attached
@@ -93,8 +93,6 @@ public class TestStackBacktrace
     }
 
     TaskCreatedObserver obs = new TaskCreatedObserver();
-
-    System.err.println("\n"+Build.ABS_BUILDDIR + "/frysk/rt/tests/looper2 ");
     AckDaemonProcess process = new AckDaemonProcess(
                                                     Sig.POLL,
                                                     new String[] {
