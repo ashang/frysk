@@ -136,8 +136,8 @@ public class ObserverManager {
 		this.tryAddTaskObserverPrototype(observer);
 		this.addBaseObserverPrototype((ObserverRoot) observer.getCopy());
 		
-		observer = new ExitNotificationObserver();
-		tryAddTaskObserverPrototype(observer);	
+//		observer = new ExitNotificationObserver();
+//		tryAddTaskObserverPrototype(observer);	
 		//============================================
 //		final TaskForkedObserver customObserver = new TaskForkedObserver();
 //		customObserver.setName("Custom 'ls' Watcher");
@@ -279,18 +279,18 @@ public class ObserverManager {
 				ObserverRoot existingObserver = this.getObserverByName(loadedObserver.getName());
 				if(existingObserver != null){
 					// if there is an observer with the same name already
-					// assume the one being loaded is more uptodate.
+					// assume the one being loaded is more up to date.
 					this.removeTaskObserverPrototype(existingObserver);
 				}
 				WindowManager.logger.log(Level.FINER, "{0} loadObservers loaded {1}\n", new Object[]{this, loadedObserver.getName()});
 			}catch (Exception e) {
-				errorLog.log(Level.WARNING, "Observer  could not be loaded ",e); //$NON-NLS-1$
+				errorLog.log(Level.WARNING, "Observer  could not be loaded ",e);
 				continue;
 			}
 
 			this.addTaskObserverPrototype(loadedObserver);
 		}
-		
+		System.out.println(this + ": ObserverManager.loadObservers() DONE");
 	}
 	
 	public void save(){

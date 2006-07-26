@@ -74,7 +74,8 @@ public class ObjectFactory {
 	/**
 	 * Dynamically instantiates the object save to the given node,
 	 * @param node the node form where to retrieved object information.
-	 * @return the instantiated object.
+	 * @return the instantiated object. NULL if the object cannot be
+     * loaded.
 	 */
 	public Object getObject(Element node){
 		Object loadedObject = null;
@@ -88,9 +89,8 @@ public class ObjectFactory {
 			java.lang.reflect.Constructor constr = cls.getConstructor(new Class[]{});
 			loadedObject =  constr.newInstance(new Object[] {});
 		} catch (Exception e) {
-		    //System.out.println("ObjectFactory.getObject() " + type);
-			e.printStackTrace();
-		}
+		  loadedObject = null;
+        }
 
 //		System.out.println("ObjectFactory.getObject() " + loadedObject.getClass());
 //		System.out.println("===========================================\n");

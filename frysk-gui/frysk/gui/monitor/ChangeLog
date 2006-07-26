@@ -1,3 +1,12 @@
+2006-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskExecObserver.java (TaskExecObserver): Removed single
+	quote from "Exec'ing".
+	* observers/ObserverManager.java (initTaskObservers): Removed
+	ExitNotificationObserver from the manager.
+	* ObjectFactory.java (getObject): Changed it toreturn
+	null upon falior instead of thowing an exception.
+
 2006-07-26  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/TaskActionPoint.java (initApplicableActions): Added new actions
