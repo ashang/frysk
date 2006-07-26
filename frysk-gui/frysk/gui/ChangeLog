@@ -1,5 +1,8 @@
 2006-07-26  Mike Cvet  <mcvet@redhat.com>
 
+	* memory/MemoryWindow.java (handleFromSpin): Fixed some spinbox bugs.
+	(handleToSpin): Ditto.
+	(rowAppend): Fixed to work woth row prepends as well.
 	* register/RegisterWindowFactory.java: Added: Factory for 
 	the RegisterWindow.
 	* memory/MemoryWindowFactory.java: Added: Factory for the

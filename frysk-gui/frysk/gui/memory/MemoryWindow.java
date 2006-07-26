@@ -94,11 +94,17 @@ public class MemoryWindow
 {
 
   private final int EIGHT_BIT = 0;
+
   private final int SIXTEEN_BIT = 1;
+
   private final int THIRTYTWO_BIT = 2;
+
   private final int SIXTYFOUR_BIT = 3;
+
   private final int LOC = 0; /* Memory address */
+
   private final int OBJ = 10; /* Object stored in above address */
+
   private final int BYTE_BITS = 8;
 
   private Task myTask;
@@ -106,11 +112,12 @@ public class MemoryWindow
   private LibGlade glade;
 
   private Preferences prefs;
-  
+
   public static String gladePath;
 
-  private DataColumn[] cols = { 
-  new DataColumnString(), /* memory location */
+  TreeIter lastIter = null;
+
+  private DataColumn[] cols = { new DataColumnString(), /* memory location */
   new DataColumnString(), /* binary little endian */
   new DataColumnString(), /* binary big endian */
   new DataColumnString(), /* octal little endian */
@@ -121,7 +128,7 @@ public class MemoryWindow
   new DataColumnString(), /* hexadecimal big endian */
   new DataColumnString(), /* instruction */
   new DataColumnObject(), /* memory object */
-  new DataColumnDouble()  /* alignment field */
+  new DataColumnDouble() /* alignment field */
   };
 
   protected static String[] colNames = { "X-bit Binary (LE)",
@@ -130,8 +137,7 @@ public class MemoryWindow
                                         "X-bit Decimal (LE)",
                                         "X-bit Decimal (BE)",
                                         "X-bit Hexadecimal (LE)",
-                                        "X-bit Hexadecimal (BE)",
-                                        "Instruction" };
+                                        "X-bit Hexadecimal (BE)", "Instruction" };
 
   protected boolean[] colVisible = { true, false, false, false, false, false,
                                     false, false, false };
@@ -141,20 +147,25 @@ public class MemoryWindow
   private MemoryFormatDialog formatDialog;
 
   private TreeView memoryView;
-  
+
   private Disassembler diss;
 
   private SpinButton fromSpin;
+
   private SpinButton toSpin;
 
   private Entry pcEntryDec;
+
   private Entry pcEntryHex;
 
   private SimpleComboBox bitsCombo;
 
   private GuiObject eight;
+
   private GuiObject sixteen;
+
   private GuiObject thirtytwo;
+
   private GuiObject sixtyfour;
 
   private ObservableLinkedList bitsList;
@@ -162,6 +173,7 @@ public class MemoryWindow
   private ListStore model;
 
   private double lastKnownFrom;
+
   private double lastKnownTo;
 
   protected static int currentFormat = 0;
@@ -173,18 +185,19 @@ public class MemoryWindow
     this.formatDialog = new MemoryFormatDialog(this.glade);
     if (currentFormat == 0)
       currentFormat = currentFormat + THIRTYTWO_BIT; /* Seems like a good default */
+
     this.fromSpin = (SpinButton) this.glade.getWidget("fromSpin");
     this.toSpin = (SpinButton) this.glade.getWidget("toSpin");
     this.pcEntryDec = (Entry) this.glade.getWidget("PCEntryDec");
     this.pcEntryHex = (Entry) this.glade.getWidget("PCEntryHex");
     this.bitsCombo = new SimpleComboBox(
-                             (this.glade.getWidget("bitsCombo")).getHandle());
+                                        (this.glade.getWidget("bitsCombo")).getHandle());
     this.model = new ListStore(cols);
     this.bitsList = new ObservableLinkedList();
 
     this.setIcon(IconManager.windowIcon);
   }
-  
+
   public boolean hasTaskSet ()
   {
     return myTask != null;
@@ -203,7 +216,7 @@ public class MemoryWindow
         this.glade.getWidget("formatSelector").setSensitive(true);
       }
   }
-  
+
   /**
    * Assign this MemoryWindow to a task
    */
@@ -211,17 +224,17 @@ public class MemoryWindow
   {
     this.myTask = myTask;
     long pc_inc;
-    try 
+    try
       {
-	this.diss = new Disassembler(myTask.getMemory());
-    
-	pc_inc = myTask.getIsa().pc(myTask);
+        this.diss = new Disassembler(myTask.getMemory());
+
+        pc_inc = myTask.getIsa().pc(myTask);
       }
-    catch (Task.TaskException e) 
+    catch (Task.TaskException e)
       {
-	// XXX What to do if there's an error?
-	e.printStackTrace();
-	return;
+        // XXX What to do if there's an error?
+        e.printStackTrace();
+        return;
       }
     long end = pc_inc + 20;
     this.setTitle(this.getTitle() + " - " + this.myTask.getProc().getCommand()
@@ -277,9 +290,10 @@ public class MemoryWindow
       {
         if (arg0.isOfType(ComboBoxEvent.Type.CHANGED))
           {
-            if (bitsList.indexOf(bitsCombo.getSelectedObject()) == -1) {
-              return;
-            }
+            if (bitsList.indexOf(bitsCombo.getSelectedObject()) == - 1)
+              {
+                return;
+              }
             currentFormat = bitsList.indexOf(bitsCombo.getSelectedObject());
             recalculate();
           }
@@ -323,11 +337,11 @@ public class MemoryWindow
     });
 
   }
-  
-  /****************************************************************************
+
+  /*****************************************************************************
    * Calculation, memory reading, and information display methods
-   ***************************************************************************/
-  
+   ****************************************************************************/
+
   /**
    * Recalculate the memory information based on a new bitsize and/or radix
    */
@@ -348,7 +362,7 @@ public class MemoryWindow
       }
 
     for (long i = start; i < end + 1; i++)
-      rowAppend(i);
+      rowAppend(i, null);
 
     TreeViewColumn col = new TreeViewColumn();
     col.setTitle("Location");
@@ -363,8 +377,12 @@ public class MemoryWindow
       {
         col = new TreeViewColumn();
         col.setTitle(colNames[i].replaceFirst(
-                "X", "" + (int) Math.pow(2, currentFormat + 3)));
-        
+                                              "X",
+                                              ""
+                                                  + (int) Math.pow(
+                                                                   2,
+                                                                   currentFormat + 3)));
+
         col.setReorderable(true);
         renderer = new CellRendererText();
         ((CellRendererText) renderer).setEditable(false);
@@ -374,8 +392,9 @@ public class MemoryWindow
                                 cols[i + 1]);
 
         memoryView.appendColumn(col);
-        
-        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN, cols[11]);
+
+        col.addAttributeMapping(renderer, CellRendererText.Attribute.XALIGN,
+                                cols[11]);
         col.setVisible(this.prefs.getBoolean(colNames[i], colVisible[i]));
 
         columns[i] = col;
@@ -391,20 +410,24 @@ public class MemoryWindow
     // If there's no task, no point in refreshing
     if (this.myTask == null)
       return;
-    
+
     LinkedList instructionsList = null;
-    
-    try {
-    instructionsList = diss.disassembleInstructions((long)this.lastKnownFrom,
-                                          (long)(this.lastKnownTo - this.lastKnownFrom + 1));
-    }
-    catch (OpcodesException oe) {
-      System.out.println(oe.getMessage());
-    }
-    
+
+    try
+      {
+        instructionsList = diss.disassembleInstructions(
+                                                        (long) this.lastKnownFrom,
+                                                        (long) (this.lastKnownTo
+                                                                - this.lastKnownFrom + 1));
+      }
+    catch (OpcodesException oe)
+      {
+        System.out.println(oe.getMessage());
+      }
+
     Iterator li = instructionsList.listIterator(0);
     Instruction ins = (Instruction) li.next();
-    
+
     // update values in the columns if one of them has been edited
     ListStore model = (ListStore) this.memoryView.getModel();
     TreeIter iter = model.getFirstIter();
@@ -412,8 +435,10 @@ public class MemoryWindow
     while (iter != null)
       {
         BigInteger bi = new BigInteger(
-                        (String) model.getValue(iter,
-                                 (DataColumnObject) cols[OBJ]), 10);
+                                       (String) model.getValue(
+                                                               iter,
+                                                               (DataColumnObject) cols[OBJ]),
+                                       10);
 
         byte[] b = bi.toByteArray();
         String bin = "";
@@ -437,7 +462,7 @@ public class MemoryWindow
             hex = bi.toString(16);
           }
         dec = bi.toString(10);
-        
+
         int diff = bin.length() % BYTE_BITS;
         if (diff != 0)
           bin = padBytes(bin, false, diff);
@@ -454,7 +479,7 @@ public class MemoryWindow
 
         oct = bii.toString(8);
         hex = bii.toString(16);
-        
+
         /* Bad hack to get around weird BigInteger endian bug */
         if (bin2.equals(bin))
           dec = bi.toString(10);
@@ -465,7 +490,7 @@ public class MemoryWindow
         model.setValue(iter, (DataColumnString) cols[4], oct);
         model.setValue(iter, (DataColumnString) cols[6], dec);
         model.setValue(iter, (DataColumnString) cols[8], "0x" + hex);
-        
+
         if (ins != null)
           {
             model.setValue(iter, (DataColumnString) cols[9], ins.instruction);
@@ -482,22 +507,26 @@ public class MemoryWindow
 
     for (int i = 0; i < MemoryWindow.colNames.length; i++)
       this.columns[i].setVisible(this.prefs.getBoolean(
-                           MemoryWindow.colNames[i], this.colVisible[i]));
+                                                       MemoryWindow.colNames[i],
+                                                       this.colVisible[i]));
 
     this.showAll();
   }
-  
+
   /**
    * Helper function for calculating memory information and putting it into rows
-   * to be displayed
+   * to be displayed.
+   * By default append rows to the end; occasionally prepend rows to the front.
    */
-  public void rowAppend (long i)
+  public void rowAppend (long i, TreeIter iter)
   {
-    TreeIter iter = model.appendRow();
+    if (iter == null)
+      iter = model.appendRow();
+
     model.setValue(iter, (DataColumnString) cols[LOC], "0x"
                                                        + Long.toHexString(i));
     model.setValue(iter, (DataColumnDouble) cols[11], 1.0);
-    
+
     switch (currentFormat)
       {
       case EIGHT_BIT:
@@ -550,24 +579,25 @@ public class MemoryWindow
       }
 
   }
-  
-  /****************************************************************************
+
+  /*****************************************************************************
    * Endianness methods
-   ***************************************************************************/
-  
- /**
-  * Pad this byte string with zeroes so that it is of proper size.
-  */ 
-  private String padBytes(String s, boolean littleEndian, int diff) {
-    
-      if (littleEndian)
-        for (int i = 0; i < BYTE_BITS - diff; i++)
-          s = s + "0";
-      else
-        for (int i = 0; i < BYTE_BITS - diff; i++)
-          s = "0" + s;
-      
-      return s;
+   ****************************************************************************/
+
+  /**
+   * Pad this byte string with zeroes so that it is of proper size.
+   */
+  private String padBytes (String s, boolean littleEndian, int diff)
+  {
+
+    if (littleEndian)
+      for (int i = 0; i < BYTE_BITS - diff; i++)
+        s = s + "0";
+    else
+      for (int i = 0; i < BYTE_BITS - diff; i++)
+        s = "0" + s;
+
+    return s;
   }
 
   /**
@@ -576,27 +606,27 @@ public class MemoryWindow
   private String switchEndianness (String toReverse, boolean littleEndian)
   {
     int diff = toReverse.length() % BYTE_BITS;
-    
+
     /* The string isn't properly composed of bits yet */
     if (diff != 0)
       toReverse = padBytes(toReverse, littleEndian, diff);
-    
+
     /* No need to switch this string, it'll be identical either way */
     if (toReverse.length() == BYTE_BITS)
       return toReverse;
-    
+
     char[] tmp = new char[toReverse.length()];
     for (int i = 0; i < tmp.length; i += BYTE_BITS)
-      for(int bitOffset = 0; bitOffset < BYTE_BITS; bitOffset++)
+      for (int bitOffset = 0; bitOffset < BYTE_BITS; bitOffset++)
         tmp[i + bitOffset] = toReverse.charAt(toReverse.length() - i
                                               - (BYTE_BITS - bitOffset));
 
     return new String(tmp);
   }
-  
-  /****************************************************************************
+
+  /*****************************************************************************
    * SpinBox callback methods
-   ***************************************************************************/
+   ****************************************************************************/
 
   public void handleFromSpin (double val)
   {
@@ -620,8 +650,11 @@ public class MemoryWindow
       }
     else
       {
-        for (long i = (long) val; i < lastKnownFrom + 1; i++)
-          rowAppend(i);
+        for (long i = (long) val; i < lastKnownFrom; i++)
+          {
+            TreeIter newRow = model.prependRow();
+            rowAppend(i, newRow);
+          }
       }
     refreshList();
     this.lastKnownFrom = val;
@@ -640,29 +673,34 @@ public class MemoryWindow
     if (val > this.lastKnownTo)
       {
         for (long i = (long) lastKnownTo + 1; i < val + 1; i++)
-          rowAppend(i);
+          rowAppend(i, null);
       }
     else
       {
-        TreeIter iter = model.getFirstIter();
-        for (int i = (int) this.fromSpin.getValue(); i < (int) val + 1; i++)
-          iter = iter.getNextIter();
+        TreeIter i = model.getFirstIter();
+        while (i != null)
+          i = i.getNextIter();
 
-        while (iter != null)
+        TreeIter ii = model.getFirstIter();
+        long j;
+        for (j = (long) lastKnownFrom; j < (long) val; j++)
+          ii = ii.getNextIter();
+
+        for (; j < lastKnownTo; j++)
           {
-            model.removeRow(iter);
-            iter = iter.getNextIter();
+            model.removeRow(ii);
+            ii = ii.getNextIter();
           }
       }
 
     this.lastKnownTo = val;
     refreshList();
   }
-  
+
   /****************************************************************************
    * Save and Load
    ***************************************************************************/
-  
+
   public void save (Preferences prefs)
   {
     this.formatDialog.save(prefs);
@@ -674,5 +712,5 @@ public class MemoryWindow
     this.formatDialog.load(prefs);
     this.refreshList();
   }
- 
+
 }
