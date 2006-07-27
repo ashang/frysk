@@ -1,3 +1,7 @@
+2006-07-27  Stan Cox  <scox@redhat.com>
+
+	* cpp.g: Reformat using emacs antlr-mode style.
+
 2006-07-26  Stan Cox <scox@redhat.com>
 
 	* cpp.g (signed_pm_expression): New, for eliminating non-determinism.
