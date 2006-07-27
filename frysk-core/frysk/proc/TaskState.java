@@ -71,7 +71,7 @@ class TaskState
 	    // XXX: Is this needed?  Surely the infant can detect that
 	    // it should detach, and the parent handle that.
 	    return detaching;
-	else if (parentState == running)
+	else if (parentState == running || parentState == runningInSyscall)
 	    return StartClonedTask.waitForStop;
     
 	throw new RuntimeException ("clone's parent in unexpected state "
@@ -731,7 +731,8 @@ class TaskState
 	    observable.delete (observer);
 	    return this;
 	}
-	private static final TaskState waitForStop =
+
+    private static final TaskState waitForStop =
 	    new StartClonedTask ("waitForStop")
 	    {
 		TaskState handleUnblock (Task task,
@@ -771,6 +772,76 @@ class TaskState
 		    return running;
 		}
 	    };
+	    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
+	    {
+          task.startTracingSyscalls();
+	      observable.add(observer);
+	      return SyscallStartClonedTask.syscallBlockedOffspring;
+	    }
+    }
+
+    /**
+     * A cloned task just starting out, wait for it to stop, and for
+     * it to be unblocked.  A cloned task is never continued.
+     */
+    static class SyscallStartClonedTask
+    extends StartClonedTask
+    {
+    SyscallStartClonedTask (String name)
+    {
+        super ("SyscallStartClonedTask." + name);
+    }
+//    private static TaskState attemptSyscallContinue (Task task)
+//    {
+//        logger.log (Level.FINE, "{0} attemptSyscallContinue\n", task); 
+//        task.sendSetOptions ();
+//        if (task.notifyClonedOffspring () > 0)
+//        return SyscallStartClonedTask.syscallBlockedOffspring;
+//        // XXX: Really notify attached here?
+//        if (task.notifyAttached () > 0)
+//          return syscallBlockedContinue;
+//        task.sendSyscallContinue (0);
+//        return syscallRunning;
+//    }
+//    
+//    private static final TaskState waitForStop =
+//        new StartClonedTask ("waitForStop")
+//        {
+//        TaskState handleUnblock (Task task,
+//                     TaskObserver observer)
+//        {
+//            logger.log (Level.FINE, "{0} handleUnblock\n", task); 
+//            // XXX: Should instead fail?
+//            task.blockers.remove (observer);
+//            return StartClonedTask.waitForStop;
+//        }
+//        TaskState handleTrappedEvent (Task task)
+//        {
+//            logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
+//            return attemptContinue (task);
+//        }
+//        TaskState handleStoppedEvent (Task task)
+//        {
+//            logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
+//            return attemptContinue (task);
+//        }
+//        };
+    
+    protected static final TaskState syscallBlockedOffspring = new StartClonedTask("syscallBlockedOffspring")
+    {
+      TaskState handleUnblock (Task task, TaskObserver observer)
+      {
+        logger.log(Level.FINE, "{0} handleUnblock\n", task);
+        task.blockers.remove(observer);
+        if (task.blockers.size() > 0)
+          return SyscallStartClonedTask.syscallBlockedOffspring;
+        // XXX: Really notify attached here?
+        if (task.notifyAttached() > 0)
+          return syscallBlockedContinue;
+        task.sendSyscallContinue(0);
+        return syscallRunning;
+      }
+    };
     }
 
     /**
@@ -1065,6 +1136,7 @@ class TaskState
         return this;
       }
     }
+
     }
 
     /**

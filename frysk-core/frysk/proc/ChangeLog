@@ -1,3 +1,13 @@
+2006-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* TaskState.java (clonedState): Added handling for 
+	runningInSyscall.
+	Created SyscallStartClonedTask.
+	* Task.java (notifyClonedOffspring): Added log call.
+	(notifyAttached): Ditto.
+	* Syscall.java (syscallByNum): Added check for out of
+	bound syscall numbers.
+
 2006-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* TaskState.java (TaskState): added signal number to logging messages

@@ -510,6 +510,7 @@ abstract public class Task
    */
   int notifyClonedOffspring ()
   {
+    logger.log(Level.FINE, "{0} notifyClonedOffspring\n", this);
     for (Iterator i = creator.clonedObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Cloned observer = (TaskObserver.Cloned) i.next();
@@ -550,6 +551,7 @@ abstract public class Task
    */
   int notifyAttached ()
   {
+    logger.log(Level.FINE, "{0} notifyAttached\n", this);
     for (Iterator i = attachedObservers.iterator(); i.hasNext();)
       {
         TaskObserver.Attached observer = (TaskObserver.Attached) i.next();

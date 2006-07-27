@@ -140,7 +140,7 @@ public class TestTaskSyscallObserver
 //    if (brokenXXX (2245))
 //        return;
 //        
-    //    Create an unattached child process.
+    // Create an unattached child process.
     AckProcess child = new DetachedAckProcess ();
 
     // Attach to the process using the exec observer.  The event
@@ -167,8 +167,8 @@ public class TestTaskSyscallObserver
      */
     public void testCloneSyscall(){
 
-    if (brokenXXX (2957))
-        return;
+//    if (brokenXXX (2957))
+//        return;
         
     // Create an unattached child process.
     AckProcess child = new DetachedAckProcess ();
@@ -177,8 +177,28 @@ public class TestTaskSyscallObserver
     // loop is kept running until SingleExecObserver .addedTo is
     // called indicating that the attach succeeded.
     Task task = child.findTaskUsingRefresh (true);
-    SyscallObserver syscallObserver = new SyscallObserver ();
-    task.requestAddSyscallObserver (syscallObserver);
+    SyscallObserver syscallObserver1 = new SyscallObserver ();
+    
+    final SyscallObserver syscallObserver2 = new SyscallObserver ();
+    
+    task.requestAddSyscallObserver (syscallObserver1);
+    task.requestAddClonedObserver(new TaskObserver.Cloned()
+    {
+    
+      public void deletedFrom (Object observable){}
+      public void addFailed (Object observable, Throwable w){ fail(); }
+      public Action updateClonedParent (Task task, Task clone){ return Action.CONTINUE; }
+      public void addedTo (Object observable){}
+    
+      public Action updateClonedOffspring (Task parent, Task offspring)
+      {
+        offspring.requestAddSyscallObserver(syscallObserver2);
+        offspring.requestUnblock(this);
+        return Action.BLOCK;
+//        return Action.CONTINUE;
+      }
+    
+    });
     assertRunUntilStop ("adding exec observer causing attach");
 
     // Do the exec; this call keeps the event loop running until
@@ -187,7 +207,12 @@ public class TestTaskSyscallObserver
     // .updateExeced has been called.
     child.addClone();
         
-    assertTrue(true);
+//    System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall() 1: " + syscallObserver1.enter);
+//    System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall() 2: " + syscallObserver2.enter);
+    
+    assertTrue("number of system calls", syscallObserver1.enter > 0);
+    assertTrue("number of system calls", syscallObserver2.enter > 0);
+     
     }
  
         
@@ -233,7 +258,30 @@ public class TestTaskSyscallObserver
      * process created by Frysk.
      * Test that Frysk does not miss the first exec call.
      */
-    SyscallObserver syscallObserver1 = new SyscallObserver();
+    SyscallObserver syscallObserver1 = new SyscallObserver(){
+      public void addedTo (Object observable){
+        Task task = (Task) observable;
+        task.requestUnblock(attachedObserver);
+      }
+    };
+    
+    TaskObserver.Attached attachedObserver = new TaskObserver.Attached()
+    {
+      
+      public Action updateAttached (Task task)
+      {
+        logger.log(Level.FINE, "{0} **updateAttached\n", task);
+        new StopEventLoopWhenProcRemoved (task.getProc().getPid());
+        task.requestAddSyscallObserver(syscallObserver1);
+//        task.requestUnblock(this);
+        return Action.BLOCK;
+      }
+
+      public void deletedFrom (Object observable){}
+      public void addFailed (Object observable, Throwable w){}
+      public void addedTo (Object observable){}
+
+    };
     
     public void testCreateAttachedAddSyscallObserver ()
     {
@@ -243,35 +291,20 @@ public class TestTaskSyscallObserver
     
       int count = 5;
 
+      
       Manager.host.requestCreateAttachedProc(new String[]
                                                         {
                                                          getExecPrefix () + "funit-syscallloop",
                                                          Integer.toString (count),
-                                                         }, new TaskObserver.Attached()
-      {
-        
-        public Action updateAttached (Task task)
-        {
-          new StopEventLoopWhenProcRemoved (task.getProc().getPid());
-          task.requestAddSyscallObserver(syscallObserver1);
-          task.requestUnblock(this);
-          return Action.BLOCK;
-        }
-
-        public void deletedFrom (Object observable){}
-        public void addFailed (Object observable, Throwable w){}
-        public void addedTo (Object observable){
-        }
-
-      });
+                                                         }, attachedObserver);
       
-      assertRunUntilStop("run until program exits");
+      //assertRunUntilStop("run until program exits");
       assertRunUntilStop("run until program exits");
 
       assertTrue("enough syscall enter events", syscallObserver1.enter >= count);
       assertTrue("enough syscall enter exit", syscallObserver1.exit >= count);
       assertTrue("inSyscall (last call doesn't exit)", syscallObserver1.inSyscall);
-      assertEquals("Caught exec syscall", syscallObserver1.caughtExec, true);
+      assertTrue("Caught exec syscall", syscallObserver1.caughtExec);
     }
 
     
