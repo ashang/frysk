@@ -207,8 +207,6 @@ implements LifeCycleListener, Saveable
 		
 		try {
 			WindowManager.theManager.initLegacyProcpopWindows(glade);
-            RegisterWindowFactory.setGladePath(register_window);
-            MemoryWindowFactory.setGladePath(memory_window);
 			WindowManager.theManager.initSessionDruidWindow(create_session_glade);
 			WindowManager.theManager.initSessionManagerWindow(session_glade);	
             WindowManager.theManager.sessionManager.setChildPIDGlade(process_picker_glade);
@@ -380,6 +378,8 @@ implements LifeCycleListener, Saveable
 		// Now that we now the glade paths are good, send the paths to
 		// the SourceWindowFactory
 		SourceWindowFactory.setGladePaths(glade_dirs);
+        RegisterWindowFactory.setPaths(glade_dirs);
+        MemoryWindowFactory.setPaths(glade_dirs);
 		
 		prefs = importPreferences (Config.FRYSK_DIR + SETTINGSFILE);
 		PreferenceManager.setPreferenceModel(prefs);

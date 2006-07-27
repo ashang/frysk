@@ -41,13 +41,20 @@
 package frysk.gui.memory;
 
 import java.util.prefs.Preferences;
+import java.util.Hashtable;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
+import frysk.gui.common.TaskBlockCounter;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.monitor.EventLogger;
+import frysk.gui.monitor.WindowManager;
+import frysk.proc.Action;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 
 /**
  * @author mcvet
@@ -56,36 +63,92 @@ import frysk.proc.Task;
 public class MemoryWindowFactory
 {
 
-  private static LibGlade glade;
-
   public static MemoryWindow memWin = null;
   
-  private static Task myTask;
-
-  public MemoryWindowFactory (LibGlade glade)
+  private static Hashtable taskTable;
+  
+  private static Hashtable blockerTable;
+  
+  private static String[] gladePaths;
+  
+  private final static String MEM_GLADE = "memorywindow.glade";
+  
+  public static void setPaths(String[] paths)
   {
-
-  }
-
-  public static void setGladePath (LibGlade libGlade)
-  {
-    glade = libGlade;
+    gladePaths = paths;
+    taskTable = new Hashtable();
+    blockerTable = new Hashtable();
   }
 
   public static void createMemoryWindow (Task task)
   {
-    if (task.getBlockers().length != 0)
-      finishMemWin(task);
+    MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+    if (mw != null)
+      {
+        mw.showAll();
+        return;
+      }
+      
+//    if (task.getBlockers().length != 0)
+//      {
+//        mw = finishMemWin(mw, task);
+//      }
+    
+    MemWinBlocker blocker = new MemWinBlocker();
+    blocker.myTask = task;
+
+    if (taskTable.get(task) == null || TaskBlockCounter.getBlockCount(task) == 0)
+        task.requestAddAttachedObserver(blocker);
+      
+    TaskBlockCounter.incBlockCount(task);
+    blockerTable.put(task, blocker);
+    
+    return;
   }
 
-  private static void finishMemWin (Task task)
+  public static MemoryWindow finishMemWin (MemoryWindow mw, Task task)
   {
-    myTask = task;
-    memWin = null;
+
+    LibGlade glade = null;
+
+    // Look for the right path to load the glade file from
+    int i = 0;
+    for (; i < gladePaths.length; i++)
+      {
+        try
+          {
+            glade = new LibGlade(gladePaths[i] + "/"
+                                 + MEM_GLADE, null);
+          }
+        catch (Exception e)
+          {
+            if (i < gladePaths.length - 1)
+              // If we don't find the glade file, look at the next file
+              continue;
+            else
+              {
+                e.printStackTrace();
+                System.exit(1);
+              }
+
+          }
+
+        // If we've found it, break
+        break;
+      }
+    // If we don't have a glade file by this point, bail
+    if (glade == null)
+      {
+        System.err.println("Could not file source window glade file in path "
+                           + gladePaths[gladePaths.length - 1]
+                           + "! Exiting.");
+        return mw;
+      }
     
     try
       {
-        memWin = new MemoryWindow(glade);
+        mw = new MemoryWindow(glade);
+        taskTable.put(task, mw);
       }
     catch (Exception e)
       {
@@ -93,13 +156,15 @@ public class MemoryWindowFactory
       }
 
 
-    memWin.addListener(new LifeCycleListener()
+    mw.addListener(new LifeCycleListener()
     {
       public boolean lifeCycleQuery (LifeCycleEvent arg0)
       {
         if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
           {
-            memWin.hideAll();
+            MemoryWindow mw = (MemoryWindow) arg0.getSource();
+            mw.hideAll();
+            
             return true;
           }
 
@@ -109,28 +174,133 @@ public class MemoryWindowFactory
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
         if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          memWin.hideAll();
+          {
+            MemoryWindow mw = (MemoryWindow) arg0.getSource();
+            mw.hideAll();
+          }
       }
     });
     
+    mw.addListener(new MemWinListener());
+    
     Preferences prefs = PreferenceManager.getPrefs();
-    memWin.load(prefs.node(prefs.absolutePath() + "/memory"));
+    mw.load(prefs.node(prefs.absolutePath() + "/memory"));
 
-    if (! memWin.hasTaskSet())
+    if (! mw.hasTaskSet())
       {
-        memWin.setIsRunning(false);
-        memWin.setTask(myTask);
+        mw.setIsRunning(false);
+        mw.setTask(task);
       }
     else
-      memWin.showAll();
+      mw.showAll();
+    
+    return mw;
   }
   
-  public static void killMemWin()
+  public static void setMemWin(Task task)
   {
-    memWin.setIsRunning(true);
-    Preferences prefs = PreferenceManager.getPrefs();
-    memWin.hideAll();
-    memWin.save(prefs.node(prefs.absolutePath() + "/memory"));
+    MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+    mw = finishMemWin(mw, task);
+    memWin = mw;
   }
+  
+  private static void unblockTask (Task task)
+  {
+    if (TaskBlockCounter.getBlockCount(task) == 1)
+      {
+        System.out.println(">>>DETACHING<<<");
+        TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+        task.requestUnblock(o);
+        task.requestDeleteAttachedObserver(o);
+        blockerTable.remove(task);
+      }
+    TaskBlockCounter.decBlockCount(task);
+    Preferences prefs = PreferenceManager.getPrefs();
+    MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+    mw.save(prefs);
+    taskTable.remove(task);
+  }
+  
+  private static class MemWinListener
+  implements LifeCycleListener
+{
+
+public void lifeCycleEvent (LifeCycleEvent arg0)
+{
+}
+
+public boolean lifeCycleQuery (LifeCycleEvent arg0)
+{
+
+  /*
+   * If the window is closing we want to remove it and it's task from the
+   * map, so that we know to create a new instance next time
+   */
+  if (arg0.isOfType(LifeCycleEvent.Type.DELETE) 
+      || arg0.isOfType(LifeCycleEvent.Type.DESTROY)
+      || arg0.isOfType(LifeCycleEvent.Type.HIDE))
+    {
+          MemoryWindow mw = (MemoryWindow) arg0.getSource();
+          Task t = mw.getMyTask();
+
+          unblockTask(t);
+
+          if (mw.equals(memWin))
+            WindowManager.theManager.mainWindow.showAll();
+          
+          mw.hideAll();
+          return true;
+    }
+
+  return false;
+}
+
+}
+  
+  private static class MemWinBlocker
+  implements TaskObserver.Attached
+{
+
+private Task myTask;
+
+public Action updateAttached (Task task)
+{
+  // TODO Auto-generated method stub
+  System.out.println("blocking");
+  CustomEvents.addEvent(new Runnable()
+  {
+    
+    public void run ()
+    {
+      MemoryWindow mw = (MemoryWindow) taskTable.get(myTask);
+      finishMemWin(mw, myTask);
+    }
+
+  });
+
+  return Action.BLOCK;
+}
+
+public void addedTo (Object observable)
+{
+  // TODO Auto-generated method stub
+
+}
+
+public void addFailed (Object observable, Throwable w)
+{
+
+  EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
+                           observable);
+  throw new RuntimeException(w);
+}
+
+public void deletedFrom (Object observable)
+{
+  // TODO Auto-generated method stub
+
+}
+
+}
   
 }

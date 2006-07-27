@@ -509,4 +509,10 @@ public class RegisterWindow
     }
 
   }
+  
+  public Task getMyTask()
+  {
+    return this.myTask;
+  }
+  
 }

@@ -1,5 +1,40 @@
 2006-07-27  Mike Cvet  <mcvet@redhat.com>
 
+	* register/RegisterWindowFactory.java: Added some imports, added
+	new global variables.
+	(setPaths): Added.
+	(createRegisterWindow): Uses the task observer thread to finish
+	initializing the now-dynamic RegisterWindow. Also uses the new
+	TaskBlockCounter.
+	(finishRegWin): Build new LibGlade objects for multiple windows
+	via the new directory string array. Edited LifeCycleEvent and 
+	Query to hide the current window.
+	(setGladePath): Removed.
+	(setRegWin): Added.
+	(killRegWin): Removed.
+	(RegWinListener): Added.
+	(unblockTask): Now properly unblocks the observed task, updates
+	the block counter, and cleans everything up when nothing else is
+	blocking the task.
+	* register/RegisterWindow.java (getMyTask): Added.
+	* memory/MemoryWindow.java (getMyTask): Added.
+	* memory/MemoryWindowFactory.java: Added some imports, added
+	new global variables.
+	(setPaths): Added.
+	(createMemoryWindow): Uses the task observer thread to finish
+	initializing the MemoryWindow. Now utilizes the TaskBlockCounter.
+	(finishMemWin): Build new LibGlade objects for multiple windows
+	via the new directory string array. Edited LifeCycleEvent and Query 
+	to hide current window.
+	(setGladePath): Removed.
+	(setMemWin): Added.
+	(killMemWin): Removed.
+	(MemWinListener): Added.
+	(unblockTask): Now properly unblocks the task, updates the block
+	counter, and cleans everything up if needed.
+	* Gui.java (Gui): Removed references to Register and Memory
+	WindowFactories with LibGlade parameter.
+	(gui): Send directory string into Register and Memory factories.
 	* sessions/ProcessPicker.java (checkSession): Fixed an Observer
 	adding bug.
 

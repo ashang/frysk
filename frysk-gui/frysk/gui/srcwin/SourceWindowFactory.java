@@ -42,6 +42,7 @@ package frysk.gui.srcwin;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import lib.dw.DwflLine;
@@ -59,6 +60,7 @@ import frysk.dom.DOMFrysk;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMImage;
 import frysk.gui.common.dialogs.WarnDialog;
+import frysk.gui.common.TaskBlockCounter;
 import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
@@ -80,7 +82,9 @@ public class SourceWindowFactory
 
   private static HashMap map;
 
-  private static HashMap blockerMap;
+  private static Hashtable blockerTable;
+  
+  private static Hashtable taskTable;
   
   public static SourceWindow srcWin = null;
 
@@ -97,7 +101,8 @@ public class SourceWindowFactory
   static
     {
       map = new HashMap();
-      blockerMap = new HashMap();
+      blockerTable = new Hashtable();
+      taskTable = new Hashtable();
     }
 
   /**
@@ -111,6 +116,13 @@ public class SourceWindowFactory
    */
   public static void createSourceWindow (Task task)
   {
+    
+    SourceWindow sw = (SourceWindow) taskTable.get(task);
+    if (sw != null)
+      {
+        sw.showAll();
+        return;
+      }
 
     // If it's already blocked, keep on moving
     if(task.getBlockers().length != 0)
@@ -119,10 +131,12 @@ public class SourceWindowFactory
     // else block it
     SourceWinBlocker blocker = new SourceWinBlocker();
     blocker.myTask = task;
+    
+    if (taskTable.get(task) == null || TaskBlockCounter.getBlockCount(task) == 0)
+        task.requestAddAttachedObserver(blocker);
 
-    blockerMap.put(task, blocker);
-
-    task.requestAddAttachedObserver(blocker);
+    TaskBlockCounter.incBlockCount(task);
+    blockerTable.put(task, blocker);
   }
 
   /**
@@ -291,6 +305,7 @@ public class SourceWindowFactory
 //        WindowManager.theManager.sessionManager.hide();
 
         srcWin = new SourceWindow(glade, gladePaths[i], dom, stack1);
+        taskTable.put(task, srcWin);
         srcWin.setMyTask(task);
         srcWin.addListener(new SourceWinListener());
         srcWin.grabFocus();
@@ -318,12 +333,15 @@ public class SourceWindowFactory
 
   private static void unblockTask (Task task)
   {
-    if (blockerMap.containsKey(task))
+    if (blockerTable.containsKey(task) && TaskBlockCounter.getBlockCount(task) == 1)
       {
-        TaskObserver.Attached o = (TaskObserver.Attached) blockerMap.get(task);
+        TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
         task.requestUnblock(o);
         task.requestDeleteAttachedObserver(o);
+        taskTable.remove(task);
+        blockerTable.remove(task);
       }
+    TaskBlockCounter.decBlockCount(task);
   }
 
   private static DOMFunction getFunctionXXX (DOMImage image, String filename,

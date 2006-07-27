@@ -41,64 +41,127 @@
 package frysk.gui.register;
 
 import java.util.prefs.Preferences;
+import java.util.Hashtable;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
+import frysk.gui.common.TaskBlockCounter;
 import frysk.gui.common.prefs.PreferenceManager;
+import frysk.gui.monitor.EventLogger;
+import frysk.gui.monitor.WindowManager;
+import frysk.proc.Action;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 
 /**
  * @author mcvet
- *
  */
 public class RegisterWindowFactory
 {
 
-  private static LibGlade glade;
-
   public static RegisterWindow regWin = null;
-  
-  private static Task myTask;
 
-  public RegisterWindowFactory (LibGlade glade)
+  private static Hashtable taskTable;
+
+  private static Hashtable blockerTable;
+
+  private static String[] gladePaths;
+
+  private final static String REG_GLADE = "registerwindow.glade";
+
+  public static void setPaths (String[] paths)
   {
-
-  }
-
-  public static void setGladePath (LibGlade libGlade)
-  {
-    glade = libGlade;
+    gladePaths = paths;
+    taskTable = new Hashtable();
+    blockerTable = new Hashtable();
   }
 
   public static void createRegisterWindow (Task task)
   {
-    if (task.getBlockers().length != 0)
-      finishRegWin(task);
+    RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+
+    if (rw != null)
+      {
+        rw.showAll();
+        return;
+      }
+
+    // if (task.getBlockers().length != 0)
+    // {
+    // mw = finishRegWin(mw, task);
+    // }
+
+    RegWinBlocker blocker = new RegWinBlocker();
+    blocker.myTask = task;
+
+    if (taskTable.get(task) == null
+        || TaskBlockCounter.getBlockCount(task) == 0)
+        task.requestAddAttachedObserver(blocker);
+
+    TaskBlockCounter.incBlockCount(task);
+    blockerTable.put(task, blocker);
+
+    return;
   }
 
-  private static void finishRegWin (Task task)
+  public static RegisterWindow finishRegWin (RegisterWindow rw, Task task)
   {
-    myTask = task;
-    
+
+    LibGlade glade = null;
+
+    // Look for the right path to load the glade file from
+    int i = 0;
+    for (; i < gladePaths.length; i++)
+      {
+        try
+          {
+            glade = new LibGlade(gladePaths[i] + "/" + REG_GLADE, null);
+          }
+        catch (Exception e)
+          {
+            if (i < gladePaths.length - 1)
+              // If we don't find the glade file, look at the next file
+              continue;
+            else
+              {
+                e.printStackTrace();
+                System.exit(1);
+              }
+
+          }
+
+        // If we've found it, break
+        break;
+      }
+    // If we don't have a glade file by this point, bail
+    if (glade == null)
+      {
+        System.err.println("Could not file source window glade file in path "
+                           + gladePaths[gladePaths.length - 1] + "! Exiting.");
+        return rw;
+      }
+
     try
       {
-        regWin = new RegisterWindow(glade);
+        rw = new RegisterWindow(glade);
+        taskTable.put(task, rw);
       }
     catch (Exception e)
       {
         e.printStackTrace();
       }
 
-
-    regWin.addListener(new LifeCycleListener()
+    rw.addListener(new LifeCycleListener()
     {
       public boolean lifeCycleQuery (LifeCycleEvent arg0)
       {
         if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
           {
-            regWin.hideAll();
+            RegisterWindow mw = (RegisterWindow) arg0.getSource();
+            mw.hideAll();
             return true;
           }
 
@@ -108,28 +171,133 @@ public class RegisterWindowFactory
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
         if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          regWin.hideAll();
+          {
+            RegisterWindow mw = (RegisterWindow) arg0.getSource();
+            mw.hideAll();
+          }
       }
     });
-    
-    Preferences prefs = PreferenceManager.getPrefs();
-    regWin.load(prefs.node(prefs.absolutePath() + "/registers"));
 
-    if (! regWin.hasTaskSet())
+    rw.addListener(new RegWinListener());
+
+    Preferences prefs = PreferenceManager.getPrefs();
+    rw.load(prefs.node(prefs.absolutePath() + "/register"));
+
+    if (! rw.hasTaskSet())
       {
-        regWin.setIsRunning(false);
-        regWin.setTask(myTask);
+        rw.setIsRunning(false);
+        rw.setTask(task);
       }
     else
-      regWin.showAll();
+      rw.showAll();
+
+    return rw;
   }
-  
-  public static void killRegWin()
+
+  public static void setRegWin (Task task)
   {
-    regWin.setIsRunning(true);
-    Preferences prefs = PreferenceManager.getPrefs();
-    regWin.hideAll();
-    regWin.save(prefs.node(prefs.absolutePath() + "/registers"));
+    RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+    rw = finishRegWin(rw, task);
+    regWin = rw;
   }
-  
+
+  private static void unblockTask (Task task)
+  {
+    if (TaskBlockCounter.getBlockCount(task) == 1)
+      {
+        System.out.println(">>>DETACHING<<<");
+        TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+        task.requestUnblock(o);
+        task.requestDeleteAttachedObserver(o);
+        blockerTable.remove(task);
+      }
+    TaskBlockCounter.decBlockCount(task);
+    Preferences prefs = PreferenceManager.getPrefs();
+    RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+    rw.save(prefs);
+    taskTable.remove(task);
+  }
+
+  private static class RegWinListener
+      implements LifeCycleListener
+  {
+
+    public void lifeCycleEvent (LifeCycleEvent arg0)
+    {
+    }
+
+    public boolean lifeCycleQuery (LifeCycleEvent arg0)
+    {
+
+      /*
+       * If the window is closing we want to remove it and it's task from the
+       * map, so that we know to create a new instance next time
+       */
+      if (arg0.isOfType(LifeCycleEvent.Type.DELETE)
+          || arg0.isOfType(LifeCycleEvent.Type.DESTROY)
+          || arg0.isOfType(LifeCycleEvent.Type.HIDE))
+        {
+          RegisterWindow rw = (RegisterWindow) arg0.getSource();
+          Task t = rw.getMyTask();
+
+          unblockTask(t);
+
+          if (!rw.equals(regWin))
+            WindowManager.theManager.mainWindow.showAll();
+          
+          rw.hideAll();
+          return true;
+        }
+
+      return false;
+    }
+
+  }
+
+  private static class RegWinBlocker
+      implements TaskObserver.Attached
+  {
+
+    private Task myTask;
+
+    public Action updateAttached (Task task)
+    {
+      // TODO Auto-generated method stub
+      System.out.println("blocking");
+      CustomEvents.addEvent(new Runnable()
+      {
+
+        public void run ()
+        {
+          RegisterWindow mw = (RegisterWindow) taskTable.get(myTask);
+          finishRegWin(mw, myTask);
+        }
+
+      });
+
+      return Action.BLOCK;
+    }
+
+    public void addedTo (Object observable)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+
+      EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
+                               observable);
+      throw new RuntimeException(w);
+    }
+
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
+
+    }
+
+  }
+
 }

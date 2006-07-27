@@ -42,6 +42,7 @@ package frysk.gui.monitor.actions;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
+//import frysk.gui.memory.MemoryWindow;
 import frysk.gui.memory.MemoryWindowFactory;
 import frysk.proc.Task;
 
@@ -64,8 +65,12 @@ public class ShowMemWin
 
   public void execute (Task task)
   {
-    if (MemoryWindowFactory.memWin == null)
-      MemoryWindowFactory.createMemoryWindow(task);
+//    if (MemoryWindowFactory.memWin == null)
+//      MemoryWindowFactory.createMemoryWindow(task);
+//    else
+//      MemoryWindowFactory.memWin.showAll();
+    MemoryWindowFactory.createMemoryWindow(task);
+    //mw.showAll();
   }
 
   public GuiObject getCopy ()

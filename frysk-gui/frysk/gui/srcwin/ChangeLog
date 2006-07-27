@@ -1,3 +1,15 @@
+2006-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java: Cleaned up global variables; now works
+	properly with the TaskBlockCounter.
+	(createSourceWindow): Added null checks and counter checks for
+	multiple windows watching the same process.
+	(unblockTask): Decrements the block counter, properly cleans up
+	after an exit.
+	* SourceWindow.java (toggleRegisterWindow): Calls RegisterWindow
+	properly through the new factory.
+	(toggleMemoryWindow): Ditto for MemoryWindow.
+
 2006-07-26  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java: Added static SourceWindow variable.

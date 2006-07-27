@@ -712,5 +712,10 @@ public class MemoryWindow
     this.formatDialog.load(prefs);
     this.refreshList();
   }
+  
+  public Task getMyTask()
+  {
+    return this.myTask;
+  }
 
 }

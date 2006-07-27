@@ -1264,7 +1264,7 @@ public class SourceWindow
     if (regWin == null)
       {
         RegisterWindowFactory.createRegisterWindow(myTask);
-        regWin = RegisterWindowFactory.regWin;
+        RegisterWindowFactory.setRegWin(myTask);
       }
     else
       {
@@ -1278,7 +1278,7 @@ public class SourceWindow
     if (memWin == null)
       {
         MemoryWindowFactory.createMemoryWindow(myTask);
-        memWin = MemoryWindowFactory.memWin;
+        MemoryWindowFactory.setMemWin(myTask);
       }
     else
       {

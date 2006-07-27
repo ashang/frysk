@@ -37,55 +37,41 @@
 // version and license this file solely under the GPL without
 // exception.
 
+package frysk.gui.common;
 
-package frysk.gui.monitor.actions;
+import java.util.Hashtable;
 
-import frysk.gui.monitor.GuiObject;
-import frysk.gui.monitor.ObservableLinkedList;
-//import frysk.gui.register.RegisterWindow;
-import frysk.gui.register.RegisterWindowFactory;
 import frysk.proc.Task;
 
-/**
- * @author mcvet
- */
-public class ShowRegWin
-    extends TaskAction
+
+public class TaskBlockCounter
 {
-  public ShowRegWin ()
+  
+  public static Hashtable blockTable = new Hashtable();
+  
+  public static int getBlockCount(Task task)
   {
-    super("Show the register values of ",
-          "Show the register values belonging to the thread.");
+    Integer i = (Integer)blockTable.get(task);
+    if (i == null)
+      return 0;
+    else
+      return i.intValue();
   }
-
-  public ShowRegWin (ShowRegWin other)
+  
+  public static void incBlockCount(Task task)
   {
-    super(other);
+    Integer i = (Integer)blockTable.get(task);
+    if (i == null)
+      blockTable.put(task, new Integer(1));
+    else
+      blockTable.put(task, new Integer(i.intValue() + 1));
   }
-
-  public void execute (Task task)
+  
+  public static void decBlockCount(Task task)
   {
-    RegisterWindowFactory.createRegisterWindow(task);
-    //rw.showAll();
+    Integer i = (Integer)blockTable.get(task);
+    if (i != null)
+      blockTable.put(task, new Integer(i.intValue() - 1));
   }
-
-  public GuiObject getCopy ()
-  {
-    return new ShowRegWin(this);
-  }
-
-  public boolean setArgument (String argument)
-  {
-    return false;
-  }
-
-  public String getArgument ()
-  {
-    return null;
-  }
-
-  public ObservableLinkedList getArgumentCompletionList ()
-  {
-    return null;
-  }
+  
 }

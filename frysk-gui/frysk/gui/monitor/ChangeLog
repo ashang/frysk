@@ -1,3 +1,10 @@
+2006-07-27  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/ShowRegWin.java (execute): Properly execute the new
+	RegisterWindow.
+	* actions/ShowMemWin.java (execute): Properly execute the new
+	MemoryWindow.
+
 2006-07-26  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskExecObserver.java (TaskExecObserver): Removed single
