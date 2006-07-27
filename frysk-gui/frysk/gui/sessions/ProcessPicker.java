@@ -148,7 +148,13 @@ public class ProcessPicker
       }
 
     if (! flag) /* All singleton processes; return the session as-is */
-      finish(s);
+      {
+        Iterator j = s.getProcesses().iterator();
+        while (j.hasNext())
+          ((DebugProcess) j.next()).addObservers();
+        
+        finish(s);
+      }
     else
       /* We've got multiple processes by the same name... */
       {
