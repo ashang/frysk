@@ -1,3 +1,8 @@
+2006-07-25  Adam Jocksch  <ajocksch@redhat.com>
+
+	* cpp.g: Reverted to version 1.10, changes generate ecj unused variable
+	warnings.
+
 2006-07-27  Stan Cox  <scox@redhat.com>
 
 	* cpp.g: Reformat using emacs antlr-mode style.
