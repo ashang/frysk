@@ -76,23 +76,39 @@ public class StackCallbacks
   {
     Host.logger.log(Level.FINE, "Libunwind: findProcInfo for 0x"
                                 + Long.toHexString(instructionAddress) + "\n");
-    
+
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwflDieBias bias = dwfl.getDie(instructionAddress);
+
+    if (bias == null)
+      {
+        Host.logger.log(Level.FINE,
+                        "Libunwind: aborted, could not find dwfl die and bias\n");
+        return false;
+      }
+
     DwarfDie die = bias.die;
     long adjustedAddress = instructionAddress - bias.bias;
 
     if (die == null)
-      return false;
+      {
+        Host.logger.log(Level.FINE,
+                        "Libunwind: aborted, could not find dwfl die\n");
+        return false;
+      }
 
     DwarfDie lowest = die.getScopes(adjustedAddress)[0];
     if (lowest == null)
-      return false;
+      {
+        Host.logger.log(Level.FINE,
+                        "Libunwind: aborted, could not find lowest scope information\n");
+        return false;
+      }
 
     if (needInfo)
       {
         Elf elf = null;
-//        elf = dwfl.getModule(adjustedAddress).getElf().elf;
+        // elf = dwfl.getModule(adjustedAddress).getElf().elf;
         try
           {
             elf = new Elf(myTask.getTid(), ElfCommand.ELF_C_READ);
@@ -101,13 +117,19 @@ public class StackCallbacks
           {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            Host.logger.log(Level.FINE,
+                            "Libunwind: aborted, could not find elf information\n");
+            return false;
           }
         catch (ElfException e)
           {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            Host.logger.log(Level.FINE,
+                            "Libunwind: aborted, could not find elf information\n");
+            return false;
           }
-        
+
         ElfSection found = null;
         for (int i = 0; i < elf.getSectionCount(); i++)
           {
@@ -120,8 +142,12 @@ public class StackCallbacks
           }
 
         if (found == null)
-          return false;
-        
+          {
+            Host.logger.log(Level.FINE,
+                            "Libunwind: aborted, could not .debug_frame section\n");
+            return false;
+          }
+
         populate_procinfo(procInfo, lowest.getLowPC(), lowest.getHighPC(), 0,
                           0, 0, found.getData());
       }
