@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -60,6 +60,24 @@ import frysk.imports.Build;
 public class TestElf
     extends TestCase
 {
+    /**
+     * A variable that has the value true.  Used by code trying to
+     * stop the optimizer realise that there's dead code around.
+     */
+    static boolean trueXXX = true;
+    /**
+     * A function that returns true, and prints skip.  Used by test
+     * cases that want to be skipped (vis: if(broken()) return) while
+     * trying to avoid the compiler's optimizer realizing that the
+     * rest of the function is dead.
+     */
+    protected static boolean brokenXXX (int bug)
+    {
+	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
+	return trueXXX;
+    }
+
+
 
   public void testCore () throws ElfException, ElfFileException
   {
@@ -131,6 +149,9 @@ public class TestElf
 
   public void testObjectFile () throws ElfException, ElfFileException
   {
+    if (brokenXXX(2712))
+      return;
+
     Elf testElf = new Elf(Build.ABS_BUILDDIR + "/lib/elf/tests/helloworld.o",
                           ElfCommand.ELF_C_READ);
 
@@ -138,18 +159,18 @@ public class TestElf
     assertEquals(testElf.getBase(), 0);
 
     ElfEHeader header = testElf.getEHeader();
-    assertEquals(3, header.machine);
-    assertEquals(52, header.ehsize);
-    assertEquals(0, header.entry);
-    assertEquals(1, header.version);
-    assertEquals(0, header.flags);
-    assertEquals(1, header.type);
-    assertEquals(11, header.shnum);
-    assertEquals(40, header.shentsize);
-    assertEquals(236, header.shoff);
-    assertEquals(0, header.phnum);
-    assertEquals(0, header.phentsize);
-    assertEquals(0, header.phoff);
+    assertEquals("machine", 3, header.machine);
+    assertEquals("ehsize", 52, header.ehsize);
+    assertEquals("entry", 0, header.entry);
+    assertEquals("version", 1, header.version);
+    assertEquals("flags", 0, header.flags);
+    assertEquals("type", 1, header.type);
+    assertEquals("shnum", 11, header.shnum);
+    assertEquals("shentsize", 40, header.shentsize);
+    assertEquals("shoff", 236, header.shoff);
+    assertEquals("phnum", 0, header.phnum);
+    assertEquals("phentsize", 0, header.phentsize);
+    assertEquals("phoff", 0, header.phoff);
 
     int[] expectedIndices = { 0, 52, 864, 96, 96, 96, 110, 155, 155, 676, 836 };
     int[] expectedInfo = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 8, 0 };
@@ -174,30 +195,30 @@ public class TestElf
     for (int i = 0; i < header.shnum; i++)
       {
         ElfSection section = testElf.getSection(i);
-        assertNotNull(section);
-        assertEquals(section.getIndex(), i);
+        assertNotNull("section-" + i, section);
+        assertEquals("section-" + i + ".getIndex()", section.getIndex(), i);
 
         ElfSectionHeader sheader = section.getSectionHeader();
         assertNotNull(sheader);
 
-        assertEquals(0, sheader.addr);
-        assertEquals(expectedIndices[i], sheader.offset);
-        assertEquals(expectedInfo[i], sheader.info);
-        assertEquals(expectedAlign[i], sheader.addralign);
-        assertEquals(expectedEntrySize[i], sheader.entsize);
-        assertEquals(expectedFlags[i], sheader.flags);
-        assertEquals(expectedNames[i], sheader.name);
-        assertEquals(expectedSize[i], sheader.size);
-        assertEquals(expectedTypes[i], sheader.type);
+        assertEquals("section-" + i + "-addr", 0, sheader.addr);
+        assertEquals("section-" + i + "-offset", expectedIndices[i], sheader.offset);
+        assertEquals("section-" + i + "-info", expectedInfo[i], sheader.info);
+        assertEquals("section-" + i + "-addralign", expectedAlign[i], sheader.addralign);
+        assertEquals("section-" + i + "-entsize", expectedEntrySize[i], sheader.entsize);
+        assertEquals("section-" + i + "-flags", expectedFlags[i], sheader.flags);
+        assertEquals("section-" + i + "-name", expectedNames[i], sheader.name);
+        assertEquals("section-" + i + "-size", expectedSize[i], sheader.size);
+        assertEquals("section-" + i + "-type", expectedTypes[i], sheader.type);
 
         ElfData data = section.getData();
         assertNotNull(data);
-        assertEquals(0, data.getAlignment());
-        assertEquals(0, data.getOffset());
-        assertEquals(expectedDataSizes[i], data.getSize());
-        assertEquals(expectedDataTypes[i], data.getType());
+        assertEquals("section-" + i + "-alignment", 0, data.getAlignment());
+        assertEquals("section-" + i + "-offset", 0, data.getOffset());
+        assertEquals("section-" + i + "-size", expectedDataSizes[i], data.getSize());
+        assertEquals("section-" + i + "-type", expectedDataTypes[i], data.getType());
         if (data.getSize() != 0)
-          assertEquals(expectedBytes[i], data.getByte(0));
+          assertEquals("section-" + i + "-byte", expectedBytes[i], data.getByte(0));
       }
   }
 

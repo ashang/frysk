@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, Red Hat Inc.
+// Copyright 2005, 2006 Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -49,11 +49,32 @@ import lib.opcodes.OpcodesException;
 
 public class TestOpcodes extends TestCase {
 
+    /**
+     * A variable that has the value true.  Used by code trying to
+     * stop the optimizer realise that there's dead code around.
+     */
+    static boolean trueXXX = true;
+    /**
+     * A function that returns true, and prints skip.  Used by test
+     * cases that want to be skipped (vis: if(broken()) return) while
+     * trying to avoid the compiler's optimizer realizing that the
+     * rest of the function is dead.
+     */
+    protected static boolean brokenXXX (int bug)
+    {
+	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
+	return trueXXX;
+    }
+
 	/*
 	 * Note: this test is expected to fail on anything but i386 for the time being.
 	 * TODO: come up with a way of doing the correct assertEquals for other archs
 	 */
 	public void testDisassembler(){
+
+	  if (brokenXXX(2712))
+	    return;
+
 		ByteBuffer buffer = new DummyByteBuffer();
 		final int numInstructions = 16;
 		

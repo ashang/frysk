@@ -1,3 +1,7 @@
+2006-07-27  Mark Wielaard  <mark@klomp.org>
+
+	* tests/TestDwfl.java (testGetLine): Mark as broken bug #2965.
+
 2006-07-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Dwfl.java (getDie): Now returns an instance of DwflDieBias.
