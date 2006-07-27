@@ -1,3 +1,10 @@
+2006-07-27  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/looper2.c (baz): Moved the call to kill inside the busy-wait to
+	prevent a race condition.
+	(main): Removed arg check since this is being run in a deterministic
+	way.
+
 2006-07-26  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Removed debugging output

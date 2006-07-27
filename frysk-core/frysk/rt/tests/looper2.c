@@ -44,8 +44,8 @@
 #include <stdlib.h>
 
 void baz(int pid){
-  kill((pid_t) pid, SIGPOLL);
   while(1){
+  	kill((pid_t) pid, SIGPOLL);
   }
 }
 
@@ -59,12 +59,6 @@ void foo(int pid){
 
 int main(int argc, char ** argv){
 
-  if(argc != 2){
-    fprintf(stderr, "Got %d parameters!\n", argc);
-    exit(1);
-  }
-
-//  printf("Pid: %d\n", getpid());
   foo(atoi(argv[1]));
   
   return 0;
