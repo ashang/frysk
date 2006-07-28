@@ -46,12 +46,13 @@
 #include <pthread.h>
 
 volatile int lock;
+volatile pid_t pid;
+volatile int sig;
 
 void *signal_parent(void* args)
 {
-  pid_t pid = *(pid_t *) args;
-  while(lock);
-  kill(pid, SIGPOLL);
+  while(lock == 1);
+  kill(pid, sig);
   pthread_exit(NULL);
 }
 
@@ -75,24 +76,35 @@ void foo()
 int main(int argc, char ** argv)
 {
 
-  if(argc == 1)
+  if(argc < 3)
   {
-  	printf("Usage: looper2 <pid>\n");
+  	printf("Usage: looper2 <pid> <signal>\n");
   	exit(0);
   }
 
   errno = 0;
-  pid_t pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
+  pid_t target_pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
   if(errno)
   {
   	perror("Invalid pid");
   	exit(1);
   }
+  
+  errno = 0;
+  int signal = (int) strtoul(argv[2], (char **) NULL, 10);
+  if(errno)
+  {
+  	perror("Invalid signal");
+  	exit(1);
+  }
+  
+  pid = target_pid;
+  sig = signal;
 
   lock = 1;
 
   pthread_t thread;
-  pthread_create( &thread, NULL, signal_parent, (void *) &pid);
+  pthread_create( &thread, NULL, signal_parent, NULL);
 
   foo();
   

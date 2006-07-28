@@ -97,7 +97,8 @@ public class TestStackBacktrace
                                                     Sig.POLL,
                                                     new String[] {
                                                                   Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/funit-rt-looper",
-                                                                      ""+ frysk.rt.tests.TestLib.getMyPid() });
+                                                                      ""+ frysk.rt.tests.TestLib.getMyPid(),
+                                                                      ""+ Sig.POLL_});
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
     myTask.requestAddAttachedObserver(obs);

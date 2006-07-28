@@ -1,5 +1,7 @@
 2006-07-28  Adam Jocksch  <ajocksch@redhat.com>
 
+	* funit-rt-looper.c: Now takes the signal to send as a parameter.
+
 	* funit-rt-looper.c: Moved from frysk.rt.tests.
 
 2006-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
