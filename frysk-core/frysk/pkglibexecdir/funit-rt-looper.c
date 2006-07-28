@@ -41,25 +41,60 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
+#include <errno.h>
 #include <stdlib.h>
+#include <pthread.h>
 
-void baz(int pid){
+volatile int lock;
+
+void *signal_parent(void* args)
+{
+  pid_t pid = *(pid_t *) args;
+  while(lock);
+  kill(pid, SIGPOLL);
+  pthread_exit(NULL);
+}
+
+void baz()
+{
+  lock = 0;
   while(1){
-  	kill((pid_t) pid, SIGPOLL);
   }
 }
 
-void bar(int pid){
-  baz(pid);
+void bar()
+{
+  baz();
 }
 
-void foo(int pid){
-  bar(pid);
+void foo()
+{
+  bar();
 }
 
-int main(int argc, char ** argv){
+int main(int argc, char ** argv)
+{
 
-  foo(atoi(argv[1]));
+  if(argc == 1)
+  {
+  	printf("Usage: looper2 <pid>\n");
+  	exit(0);
+  }
+
+  errno = 0;
+  pid_t pid = (pid_t) strtoul(argv[1], (char **) NULL, 10);
+  if(errno)
+  {
+  	perror("Invalid pid");
+  	exit(1);
+  }
+
+  lock = 1;
+
+  pthread_t thread;
+  pthread_create( &thread, NULL, signal_parent, (void *) &pid);
+
+  foo();
   
   return 0;
 }

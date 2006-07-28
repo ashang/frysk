@@ -1,3 +1,7 @@
+2006-07-28  Adam Jocksch  <ajocksch@redhat.com>
+
+	* funit-rt-looper.c: Moved from frysk.rt.tests.
+
 2006-07-05  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* funit-syscallloop.c: Added a command line option (-1)

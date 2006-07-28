@@ -1,3 +1,10 @@
+2006-07-28  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/looper2.c: Made significant changes to prevent race conditions,
+	moved to frysk.pkglibexecdir.
+	* tests/TestStackBacktrace.java (testBacktrace): Changed exec path to
+	reflect above move, test is still disabled.
+
 2006-07-27  Adam Jocksch  <ajocksch@redhat.com>
 
 	* StackCallbacks.java (findProcInfo): Added additional checks and 

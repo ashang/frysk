@@ -96,7 +96,7 @@ public class TestStackBacktrace
     AckDaemonProcess process = new AckDaemonProcess(
                                                     Sig.POLL,
                                                     new String[] {
-                                                                  Build.ABS_BUILDDIR + "/frysk/rt/tests/looper2",
+                                                                  Build.ABS_BUILDDIR + "/frysk/pkglibexecdir/funit-rt-looper",
                                                                       ""+ frysk.rt.tests.TestLib.getMyPid() });
     myTask = process.findTaskUsingRefresh(true);
     assertNotNull(myTask);
