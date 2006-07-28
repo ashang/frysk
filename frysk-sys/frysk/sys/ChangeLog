@@ -1,3 +1,8 @@
+2006-07-28  Mark Wielaard  <mark@klomp.org>
+
+	* Ptrace.java (poke): Change data parameter from int to long.
+	* cni/Ptrace.cxx (poke): Likewise.
+
 2006-07-17  Tim Moore  <moore@redhat.com>
 
 	* Ptrace.java (peek): Change return type of peek to long.

@@ -103,7 +103,7 @@ public class Ptrace
      * Copy the word in data to child's addr.
      */
     public static native void poke(int pokeRequest, int pid, String paddr,
-                    int data);
+                    long data);
 	/**
 	 * Create an attached child process.  Uses PT_TRACEME.
 	 */

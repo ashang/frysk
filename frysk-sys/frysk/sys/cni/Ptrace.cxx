@@ -182,7 +182,7 @@ frysk::sys::Ptrace::peek(jint peekRequest, jint pid, jstring paddr)
 
 void
 frysk::sys::Ptrace::poke(jint peekRequest, jint pid, jstring paddr,
-                                        jint data)
+                                        jlong data)
 {
   _callPtrace((enum __ptrace_request) peekRequest, pid, (char *)paddr,
                                         data, "ptrace.poke");
