@@ -57,17 +57,27 @@ import frysk.proc.Task;
 import frysk.proc.TaskObserver;
 
 /**
+ * Factory for creating RegisterWindows - allows multiple RegisterWindows to be
+ * instantiated for different processes, and disallows multiple windows on the
+ * same process. Uses a TaskBlockCounter to co-ordinate the un-blocking of the
+ * process between the Memory and SourceWindows if the other two are also 
+ * running on that process.
+ *  
  * @author mcvet
  */
 public class RegisterWindowFactory
 {
 
+  /* Instance of this class used by the SourceWindow to ensure singularity */
   public static RegisterWindow regWin = null;
 
+  /* Keeps track of which RegisterWindows belong to which Task. */
   private static Hashtable taskTable;
 
+  /* Keeps track of which TaskBlockCounter belongs to the Task. */
   private static Hashtable blockerTable;
 
+  /* Used to instantiate the glade file multiple times */
   private static String[] gladePaths;
 
   private final static String REG_GLADE = "registerwindow.glade";
@@ -79,10 +89,16 @@ public class RegisterWindowFactory
     blockerTable = new Hashtable();
   }
 
+  /**
+   * Performs checks to ensure no other RegisterWindow is running on this Task;
+   * if not, assigns a TaskBlockCounter and attaches an Observer if there is
+   * no other Window already running on this Task.
+   */
   public static void createRegisterWindow (Task task)
   {
     RegisterWindow rw = (RegisterWindow) taskTable.get(task);
 
+    /* Check if there is already a RegisterWindow running on this task */
     if (rw != null)
       {
         rw.showAll();
@@ -97,16 +113,21 @@ public class RegisterWindowFactory
     RegWinBlocker blocker = new RegWinBlocker();
     blocker.myTask = task;
 
-    if (taskTable.get(task) == null
-        || TaskBlockCounter.getBlockCount(task) == 0)
+    /* If this Task is already blocked, don't try to block it again */
+    if (TaskBlockCounter.getBlockCount(task) == 0)
         task.requestAddAttachedObserver(blocker);
 
+    /* Indicate that there is another window on this Task */
     TaskBlockCounter.incBlockCount(task);
     blockerTable.put(task, blocker);
 
     return;
   }
 
+  /**
+   * Initializes the Glade file, the RegisterWindow itself, adds listeners and
+   * Assigns the Task.
+   */
   public static RegisterWindow finishRegWin (RegisterWindow rw, Task task)
   {
 
@@ -194,6 +215,10 @@ public class RegisterWindowFactory
     return rw;
   }
 
+  /**
+   * Used by the SourceWindow to assign the static regWin object which it uses
+   * to ensure there is only one RegisterWindow running for its Task.
+   */
   public static void setRegWin (Task task)
   {
     RegisterWindow rw = (RegisterWindow) taskTable.get(task);
@@ -201,6 +226,11 @@ public class RegisterWindowFactory
     regWin = rw;
   }
 
+  /**
+   * Check to see if this instance is the last one blocking the Task - if so,
+   * request to unblock it. If not, then just decrement the block count and
+   * clean up.
+   */
   private static void unblockTask (Task task)
   {
     if (TaskBlockCounter.getBlockCount(task) == 1)

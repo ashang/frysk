@@ -1,3 +1,7 @@
+2006-07-28  Mike Cvet  <mcvet@redhat.com>
+
+	* TaskBlockCounter.java: Commented.
+
 2006-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* TaskBlockCounter.java: Added.

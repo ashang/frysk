@@ -1,3 +1,8 @@
+2006-07-28  Mike Cvet  <mcvet@redhat.com>
+
+	* DOMFactory.java: Applied GNU formatting.
+	* DOMFrysk.java (checkImageDup): Ditto.
+
 2006-07-20  Tim Moore  <timmore@redhat.com>
 
 	* DOMFactory.java (createDom): handle TaskException.

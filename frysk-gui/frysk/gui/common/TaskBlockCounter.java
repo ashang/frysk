@@ -43,10 +43,17 @@ import java.util.Hashtable;
 
 import frysk.proc.Task;
 
-
+/**
+ * Used as kind of semaphore to co-ordinate the un-blocking of a Task between
+ * different Objects which may be using the same blocked Task - the Register/
+ * Memory/SourceWindows.
+ * 
+ * @author mcvet
+ */
 public class TaskBlockCounter
 {
   
+  /* Keep track how many Objects are watching each Task */
   public static Hashtable blockTable = new Hashtable();
   
   public static int getBlockCount(Task task)
