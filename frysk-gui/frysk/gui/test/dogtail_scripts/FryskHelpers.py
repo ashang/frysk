@@ -88,6 +88,7 @@ CUSTOM_OBSERVERS = 'Frysk Custom Observers'
 DEBUG_SESSION_DRUID = 'Debug Session Druid'
 FRYSK_STARTUP_MANAGER = 'Frysk Startup Manager'
 CREATE_A_FRYSK_SESSION_DIALOG = 'Create a Frysk Session Dialog'
+MONITOR = 'Frysk Monitor'
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork Observer', 
