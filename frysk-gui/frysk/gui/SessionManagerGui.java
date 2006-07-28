@@ -105,9 +105,9 @@ public class SessionManagerGui
 
   private Button openButton;
   
-  private LibGlade childWindowGlade;
+  private String[] glade_dirs;
   
-  private ProcessPicker childPIDWindow;
+  private ProcessPicker processPicker;
 
   public SessionManagerGui (LibGlade glade)
   {
@@ -339,28 +339,63 @@ public class SessionManagerGui
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
-            childPIDWindow = new ProcessPicker(childWindowGlade);
+            LibGlade glade = getGlade();
+            processPicker = new ProcessPicker(glade);
             Session s = (Session) previousSessions.getSelectedObject();
 
 			if (previousSession.getState())
 			{
-                childPIDWindow.checkSession(s);
-              
-                /* Remove me when ^^^ is fixed... */
-                //WindowManager.theManager.mainWindow.setSession(s);
-                //WindowManager.theManager.mainWindow.showAll();
-                
+                processPicker.checkSession(s);
 				WindowManager.theManager.mainWindow.hideTerminal();
 			}
 			if (terminalSession.getState())
 			{
 				WindowManager.theManager.mainWindow.buildTerminal();
+                hideAll();
 			}
-            hideAll();
           }
       }
     });
 
+  }
+  
+  private LibGlade getGlade()
+  {
+    LibGlade glade = null;
+
+    // Look for the right path to load the glade file from
+    int i = 0;
+    for (; i < glade_dirs.length; i++)
+      {
+        try
+          {
+            glade = new LibGlade(glade_dirs[i] + "/"
+                                 + "processpicker.glade", null);
+          }
+        catch (Exception e)
+          {
+            if (i < glade_dirs.length - 1)
+              // If we don't find the glade file, look at the next file
+              continue;
+            else
+              {
+                e.printStackTrace();
+                System.exit(1);
+              }
+
+          }
+
+        // If we've found it, break
+        break;
+      }
+    // If we don't have a glade file by this point, bail
+    if (glade == null)
+      {
+        System.err.println("Could not file source window glade file in path "
+                           + glade_dirs[glade_dirs.length - 1]
+                           + "! Exiting.");
+      }
+    return glade;
   }
 
  private Session copySession (Session source)
@@ -413,9 +448,9 @@ public class SessionManagerGui
     return false;
   }
   
-  public void setChildPIDGlade(LibGlade glade)
+  public void setGladePath(String[] glade_dirs)
   {
-    this.childWindowGlade = glade;
+    this.glade_dirs = glade_dirs;
   }
 
 }

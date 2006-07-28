@@ -210,6 +210,19 @@ public class DebugProcess
           }
       }
   }
+  
+  public void removeProcsMinusObserver ()
+  {
+    Iterator iterator = allProcsList.iterator();
+    while (iterator.hasNext())
+      {
+        GuiProc guiProc = (GuiProc) iterator.next();
+        if ((guiProc.getNiceExecutablePath()).equals(this.executablePath))
+          {
+            this.procs.remove(guiProc);
+          }
+      }
+  }
 
   public void addObservers ()
   {

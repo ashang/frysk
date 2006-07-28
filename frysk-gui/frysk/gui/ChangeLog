@@ -1,5 +1,22 @@
 2006-07-28  Mike Cvet  <mcvet@redhat.com>
 
+	* glade/processpicker.glade: Added a cancel button, among other
+	changes.
+	* sessions/ProcessPicker.java (setListeners): Added cancelButton
+	actions.
+	(.lifeCycleEvent): Added actions for getting back to the session
+	manager after a cancel.
+	* sessions/DebugProcess.java (removeProcsMinusObserver): Added.
+	* sessions/Session.java: Applied GNU formatting.
+	* SessionManagerGui.java (processPicker): Refactored.
+	(.buttonEvent): Put the hideAll() call for the SessionManagerGui
+	into an approparite 'if' clause.
+	(Gui): Remove glade assignments to the ProcessPicker.
+	(gui): Sends in the glade paths to the SessionManagerGui.
+	(getGlade): Added.
+	(.buttonEvent): Now instantiates new LibGlades for new
+	ProcessPickers.
+	* sessions/SessionManager.java: Applied GNU formatting.
 	* register/RegisterWindowFactory.java: Commented.
 	* memory/MemoryWindowFactory.java: Commented.
 

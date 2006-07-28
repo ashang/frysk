@@ -54,6 +54,8 @@ import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
 import org.gnu.gtk.event.ButtonListener;
 import org.gnu.gtk.event.ButtonEvent;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.TreeViewColumnEvent;
 import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.CellRenderer;
@@ -71,8 +73,6 @@ import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeViewColumn;
-//import org.gnu.gtk.event.LifeCycleEvent;
-//import org.gnu.gtk.event.LifeCycleListener;
 
 /**
  * A dialog allowing the user select and de-select processes of the same name,
@@ -152,12 +152,13 @@ public class ProcessPicker
         Iterator j = s.getProcesses().iterator();
         while (j.hasNext())
           ((DebugProcess) j.next()).addObservers();
-        
+
         finish(s);
       }
     else
       /* We've got multiple processes by the same name... */
       {
+        this.procView = new TreeView();
         this.procView = (TreeView) this.glade.getWidget("procView");
         this.procView.setHeadersVisible(true);
         this.procView.setHeadersClickable(true);
@@ -197,6 +198,7 @@ public class ProcessPicker
           }
 
         setListeners();
+        procView.expandAll();
         this.run();
       }
   }
@@ -286,9 +288,54 @@ public class ProcessPicker
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
             pickProcs();
+            WindowManager.theManager.sessionManager.hideAll();
             finish(newSession);
           }
       }
+    });
+
+    ((Button) this.glade.getWidget("cancelButton")).addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent arg0)
+      {
+        if (arg0.isOfType(ButtonEvent.Type.CLICK))
+          {
+            Iterator i = newSession.getProcesses().iterator();
+            while (i.hasNext())
+              {
+                DebugProcess dp = (DebugProcess) i.next();
+                dp.removeProcsMinusObserver();
+              }
+            ProcessPicker.this.hideAll();
+            WindowManager.theManager.sessionManager.showAll();
+          }
+      }
+    });
+
+    this.addListener(new LifeCycleListener()
+    {
+
+      public boolean lifeCycleQuery (LifeCycleEvent arg0)
+      {
+        return false;
+      }
+
+      public void lifeCycleEvent (LifeCycleEvent arg0)
+      {
+        if (arg0.isOfType(LifeCycleEvent.Type.DELETE)
+            || arg0.isOfType(LifeCycleEvent.Type.DESTROY))
+          {
+            Iterator i = newSession.getProcesses().iterator();
+            while (i.hasNext())
+              {
+                DebugProcess dp = (DebugProcess) i.next();
+                dp.removeProcsMinusObserver();
+              }
+            ProcessPicker.this.hideAll();
+            WindowManager.theManager.sessionManager.showAll();
+          }
+      }
+
     });
 
   }

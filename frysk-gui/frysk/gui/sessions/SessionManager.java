@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.sessions;
 
 import java.io.File;
@@ -49,80 +50,97 @@ import frysk.gui.monitor.ObjectFactory;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.UniqueHashMap;
 
-public class SessionManager {
-	
-	public static SessionManager theManager = new SessionManager();
+public class SessionManager
+{
 
-	ObservableLinkedList sessions = new ObservableLinkedList();
-	
-	private UniqueHashMap nameHash = new UniqueHashMap();
-	
-	private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
-	
-	public SessionManager(){
-		ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
-		this.load();
-	}
-	
-	public ObservableLinkedList getSessions(){
-		return this.sessions;
-	}
-	
-	public boolean nameIsUsed(String name){
-		return this.nameHash.nameIsUsed(name);
-	}
-	
-	public void addSession(Session session){
-		this.nameHash.add(session);
-		this.sessions.add(session);
-	}
-	
-	public void removeSession(Session session){
-		ObjectFactory.theFactory.deleteNode( SESSIONS_DIR + session.getName());
-		this.nameHash.remove(session);
-		this.sessions.remove(session);
-	}
-	
-	public void save(){
-		Iterator iterator = this.getSessions().iterator();
-		while (iterator.hasNext()) {
-			Session session = (Session) iterator.next();
-			if(session.shouldSaveObject()){
-				Element node = new Element("Session");
-				ObjectFactory.theFactory.saveObject(session, node);
-				ObjectFactory.theFactory.exportNode( SESSIONS_DIR + session.getName(), node);
-			}
-		}
-	}
-	
-	public void clear()
-	{
-		this.nameHash.clear();
-		this.sessions.clear();
-	}
-	
-	public void load(){
-		clear();
-		Element node = new Element("Session");
-		File sessionsDir = new File(this.SESSIONS_DIR);
-		String[] array = sessionsDir.list();
-		Session loadedSession = null;
-		for (int i = 0; i < array.length; i++) {
-			if(array[i].startsWith(".")){
-				continue;
-			}
-			try{
-				node = ObjectFactory.theFactory.importNode(SESSIONS_DIR+array[i]);
-				loadedSession = (Session)ObjectFactory.theFactory.loadObject(node);
-			}catch(Exception e){
-				continue;
-			}
-			this.addSession(loadedSession);
-		}
-		
-	}
+  public static SessionManager theManager = new SessionManager();
 
-	public Session getSessionByName(String name) {
-		return (Session) this.nameHash.get(name);
-	}
+  ObservableLinkedList sessions = new ObservableLinkedList();
+
+  private UniqueHashMap nameHash = new UniqueHashMap();
+
+  private final String SESSIONS_DIR = Config.FRYSK_DIR + "Sessions" + "/";
+
+  public SessionManager ()
+  {
+    ObjectFactory.theFactory.makeDir(SESSIONS_DIR);
+    this.load();
+  }
+
+  public ObservableLinkedList getSessions ()
+  {
+    return this.sessions;
+  }
+
+  public boolean nameIsUsed (String name)
+  {
+    return this.nameHash.nameIsUsed(name);
+  }
+
+  public void addSession (Session session)
+  {
+    this.nameHash.add(session);
+    this.sessions.add(session);
+  }
+
+  public void removeSession (Session session)
+  {
+    ObjectFactory.theFactory.deleteNode(SESSIONS_DIR + session.getName());
+    this.nameHash.remove(session);
+    this.sessions.remove(session);
+  }
+
+  public void save ()
+  {
+    Iterator iterator = this.getSessions().iterator();
+    while (iterator.hasNext())
+      {
+        Session session = (Session) iterator.next();
+        if (session.shouldSaveObject())
+          {
+            Element node = new Element("Session");
+            ObjectFactory.theFactory.saveObject(session, node);
+            ObjectFactory.theFactory.exportNode(SESSIONS_DIR
+                                                + session.getName(), node);
+          }
+      }
+  }
+
+  public void clear ()
+  {
+    this.nameHash.clear();
+    this.sessions.clear();
+  }
+
+  public void load ()
+  {
+    clear();
+    Element node = new Element("Session");
+    File sessionsDir = new File(this.SESSIONS_DIR);
+    String[] array = sessionsDir.list();
+    Session loadedSession = null;
+    for (int i = 0; i < array.length; i++)
+      {
+        if (array[i].startsWith("."))
+          {
+            continue;
+          }
+        try
+          {
+            node = ObjectFactory.theFactory.importNode(SESSIONS_DIR + array[i]);
+            loadedSession = (Session) ObjectFactory.theFactory.loadObject(node);
+          }
+        catch (Exception e)
+          {
+            continue;
+          }
+        this.addSession(loadedSession);
+      }
+
+  }
+
+  public Session getSessionByName (String name)
+  {
+    return (Session) this.nameHash.get(name);
+  }
 }

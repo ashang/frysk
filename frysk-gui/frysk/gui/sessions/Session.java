@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.sessions;
 
 import java.util.Iterator;
@@ -47,73 +48,83 @@ import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 
 /**
- * 
- * @author swagiaal, pmuldoon
- *
- * A Session object is used to hold and save user
- * preferences with respect to a debug session.
+ * @author swagiaal, pmuldoon A Session object is used to hold and save user
+ *         preferences with respect to a debug session.
  */
-public class Session extends GuiObject{
-	
-	private ObservableLinkedList procs;
-	
-	public void setName(String name) {
-		super.setName(name);
-	}
-	
-	public Session(){
-		super();
-		this.procs = new ObservableLinkedList();
-	}
-	
-	public Session(String name, String toolTip){
-		super(name, toolTip);
-		this.procs = new ObservableLinkedList();
-	}
-	
-	public Session(Session other) {
-		super(other);
+public class Session
+    extends GuiObject
+{
 
-		this.procs = new ObservableLinkedList(other.procs);
-	}
-	
-	public void addProcess(DebugProcess process){
-		this.procs.add(process);
-	}
-	
-	public void removeProcess(DebugProcess process){
-		this.procs.remove(process);
-	}
-	
-	public ObservableLinkedList getProcesses(){
-		return this.procs;
-	}
-	
-	public void populateProcs(){
-		Iterator iterator = this.procs.iterator();
-		while (iterator.hasNext()) {
-			DebugProcess debugProcess = (DebugProcess) iterator.next();
-			debugProcess.populateProcs();
-		}
-	}
-	
-	public void save(Element node){
-		super.save(node);
-		Element procsXML = new Element("procs");
-		this.procs.save(procsXML);
-		node.addContent(procsXML);
-	}
-	
-	public GuiObject getCopy() {
-		return new Session(this);
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		
-		Element procsXML = node.getChild("procs");
-		this.procs.load(procsXML);
-	}
+  private ObservableLinkedList procs;
 
-	
+  public void setName (String name)
+  {
+    super.setName(name);
+  }
+
+  public Session ()
+  {
+    super();
+    this.procs = new ObservableLinkedList();
+  }
+
+  public Session (String name, String toolTip)
+  {
+    super(name, toolTip);
+    this.procs = new ObservableLinkedList();
+  }
+
+  public Session (Session other)
+  {
+    super(other);
+
+    this.procs = new ObservableLinkedList(other.procs);
+  }
+
+  public void addProcess (DebugProcess process)
+  {
+    this.procs.add(process);
+  }
+
+  public void removeProcess (DebugProcess process)
+  {
+    this.procs.remove(process);
+  }
+
+  public ObservableLinkedList getProcesses ()
+  {
+    return this.procs;
+  }
+
+  public void populateProcs ()
+  {
+    Iterator iterator = this.procs.iterator();
+    while (iterator.hasNext())
+      {
+        DebugProcess debugProcess = (DebugProcess) iterator.next();
+        debugProcess.populateProcs();
+      }
+  }
+
+  public void save (Element node)
+  {
+    super.save(node);
+    Element procsXML = new Element("procs");
+    this.procs.save(procsXML);
+    node.addContent(procsXML);
+  }
+
+  public GuiObject getCopy ()
+  {
+    return new Session(this);
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+
+    Element procsXML = node.getChild("procs");
+    this.procs.load(procsXML);
+  }
+
 }
