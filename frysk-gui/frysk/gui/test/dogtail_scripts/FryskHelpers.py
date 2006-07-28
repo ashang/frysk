@@ -407,8 +407,9 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
         theSessionTable = theDruid.child(name='SessionManager_previousSessionsListView')
         theNewlyCreatedSession = theSessionTable.child(name=sessionObject.getName(), roleName='table cell' )
         # Correct, but not optimal: theNewlyCreatedSession.actions['activate'].do()
-        theNewlyCreatedSession.doAction('activate')
-        theNewlyCreatedSession.grabFocus()
+        # Comment out per bug http://sources.redhat.com/bugzilla/show_bug.cgi?id=2974
+        #     theNewlyCreatedSession.doAction('activate')
+        #     theNewlyCreatedSession.grabFocus()
         openButton.click()
         
 # ---------------------
