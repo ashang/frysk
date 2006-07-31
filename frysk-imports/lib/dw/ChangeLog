@@ -1,3 +1,7 @@
+2006-07-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/TestDwfl.java (testGetLine): Fixed, test now works on x86_64.
+
 2006-07-27  Mark Wielaard  <mark@klomp.org>
 
 	* tests/TestDwfl.java (testGetLine): Mark as broken bug #2965.

@@ -46,6 +46,8 @@ import lib.dw.Dwfl;
 import lib.dw.DwflDieBias;
 import lib.dw.DwflLine;
 
+import frysk.imports.Build;
+
 public class TestDwfl
     extends TestCase
 {
@@ -69,9 +71,6 @@ public class TestDwfl
 
   public void testGetLine ()
   {
-    if (brokenXXX(2965))
-      return;
-
     Dwfl dwfl = new Dwfl(TestLib.getPid());
     assertNotNull(dwfl);
     DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());
@@ -79,7 +78,10 @@ public class TestDwfl
     String filename = line.getSourceFile();
     assertEquals("TestLib.cxx",
                  filename.substring(filename.lastIndexOf("/") + 1));
-    assertEquals(51, line.getLineNum());
+    if(Build.BUILD_ARCH.indexOf("_64") == -1)
+      assertEquals(51, line.getLineNum());
+    else
+      assertEquals(52, line.getLineNum());
     assertEquals(0, line.getColumn());
   }
 

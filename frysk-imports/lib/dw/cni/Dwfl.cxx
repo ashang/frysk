@@ -98,7 +98,7 @@ lib::dw::Dwfl::dwfl_addrdie(jlong addr){
 	Dwarf_Addr bias;
 	Dwarf_Die *die = ::dwfl_addrdie(DWFL_POINTER, (::Dwarf_Addr) addr, &bias);
 	
-	if(!die)
+	if(die == NULL)
 		return NULL;
 	
 	lib::dw::DwflDieBias *retval = new lib::dw::DwflDieBias();
