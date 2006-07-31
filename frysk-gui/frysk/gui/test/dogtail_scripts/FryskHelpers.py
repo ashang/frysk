@@ -52,7 +52,7 @@ from dogtail import tree
 from dogtail.utils import run
 from dogtail import predicate
 
-# Needed to remove Frysk from Gnome Panel
+# Needed to remove Frysk from Gnome Panel and to invoke funit-child
 import subprocess
 
 # Set up for logging
@@ -116,6 +116,23 @@ FRYSK_ACTIONPOINT_NAMES = { 'Log event':'Log event  ',
 # Location of Frysk persistent data files for Sessions
 FRYSK_SESSION_FILES = os.environ['HOME'] + "/.frysk/Sessions/"
 FRYSK_OBSERVER_FILES = os.environ['HOME'] + "/.frysk/Observers/"
+
+# Used with funit-child to create/control processes used in testing
+FUNIT_CHILD_BINARY = '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child'
+FUNIT_TIMEOUT = '10'
+FUNIT_MANAGER_TID = '0'
+SIGUSR1 = '-SIGUSR1'   # Add a clone
+SIGUSR2 = '-SIGUSR2'   # Delete a clone
+SIGHUP = '-SIGHUP'     # Add a fork
+SIGINT = '-SIGINT'     # Delete a fork
+SIGURG = '-SIGURG'     # Terminate a fork; results in a child zombie
+SIGALRM = '-SIGALRM'   # Exit.
+SIGFPE =  '-SIGFPE'    # Exec program in a clone
+SIGPWR =  '-SIGPWR'    # Re-exec this program
+SIGPIPE = '-SIGPIPE'   # (internal) Parent exited event (child notifies with SIGUSR1).
+SIGCHLD = '-SIGCHLD'   # (internal) Child exited event.
+SIGBUS = '-SIGBUS'     # Exit thread.
+
 
 # ---------------------
 def extractString ( rawInput, assignedTo ):
@@ -582,4 +599,15 @@ def deriveElementName ( string1, string2 ):
         returnString = string2    
     return returnString
 
+# ---------------------
+def startFunitChild (timeout, managerTid):
+    """ Function to invoke funit-child
+    """
+    pidValue=subprocess.Popen([FUNIT_CHILD_BINARY, FUNIT_TIMEOUT, FUNIT_MANAGER_TID]).pid
+    return pidValue
 
+# ---------------------
+def signalFunitChild (targetPid, theSignal):
+    """ Function to send signals to funit-child
+    """
+    subprocess.Popen( ['kill', theSignal, targetPid] ).wait() 
