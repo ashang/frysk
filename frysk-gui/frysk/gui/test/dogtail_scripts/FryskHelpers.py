@@ -255,17 +255,6 @@ def killFrysk( ):
     oldDir = os.getenv( 'HOME' ) + '/.frysk'
     os.rename( oldDir, newDir )
       
- # ---------------------
-def skipDruid( fryskObject ):
-    """ Skip the intial session setup Druid - this function is probably 
-        temporary and will be used only during test development
-    """
-    theDruid = fryskObject.dialog(DEBUG_SESSION_DRUID)
-    cancelButton = theDruid.button( 'Cancel' )
-    cancelButton.click()
-    finishButton = theDruid.button( 'Finish' )
-    finishButton.click()
-
 # ---------------------
 def getEventType ( eventClassName ):
     """ Based on the eventClass name, return the string used in the GUI
