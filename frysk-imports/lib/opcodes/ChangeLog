@@ -1,5 +1,7 @@
 2006-05-31  Adam Jocksch  <ajocksch@redhat.com>
 
+	* tests/TestOpcodes.java (brokenPpcXXX): Added.
+
 	* tests/TestOpcodes.java (testDisassembler): Re-failed for ppc/ppc64.
 
 	* tests/TestOpcodes.java (testDisassembler): Fixed, test now works

@@ -72,6 +72,14 @@ public class TestOpcodes
     return trueXXX;
   }
 
+  /**
+   * See above
+   */
+  protected static boolean brokenPpcXXX (int bug)
+  {
+    return brokenXXX(bug);
+  }
+
   /*
    * Note: this test is expected to fail on anything but i386 for the time
    * being. TODO: come up with a way of doing the correct assertEquals for other
@@ -81,8 +89,10 @@ public class TestOpcodes
   {
 
     if (Build.TARGET_ARCH.indexOf("ppc") != - 1)
-      if (brokenXXX(2712))
-        return;
+      {
+        if (brokenPpcXXX(2712))
+          return;
+      }
 
     ByteBuffer buffer = new DummyByteBuffer();
     final int numInstructions = 16;
