@@ -253,6 +253,7 @@ typedef struct {
   GdkColor	color;
   char	      * string;
   gboolean	label_modified;
+  int index;
 } ftk_marker_s;
 
 #define ftk_marker_gc(m)		(m)->gc
@@ -269,6 +270,7 @@ typedef struct {
 #define ftk_marker_color_green(m)	(m)->color.green
 #define ftk_marker_color_blue(m)	(m)->color.blue
 #define ftk_marker_label_modified(m)	(m)->label_modified
+#define ftk_marker_index(m)			(m)->index
 
 typedef struct {
   gint		marker;

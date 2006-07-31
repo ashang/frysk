@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
 #include <cairo.h>
 #include <glib-object.h>
 #define DO_INITIALISE
@@ -140,7 +141,15 @@ ftk_eventviewer_preset_marker_rgb_e(FtkEventViewer * eventviewer,
 static inline double timeval_to_double (struct timeval * tv);
 static inline void double_to_timeval (struct timeval * tv,
 				      double time_d);
-
+				      
+/************************************************************
+ * 															*
+ * 				Accessibility Definitions					*
+ *				      				    					*
+ ************************************************************/
+ static AtkObject *
+ftk_eventviewer_get_accessible (GtkWidget *widget);
+ 
 #define DEFAULT_TIE_RED		65535
 #define DEFAULT_TIE_GREEN	    0
 #define DEFAULT_TIE_BLUE	    0
@@ -161,6 +170,7 @@ static inline void double_to_timeval (struct timeval * tv,
 /*                    object stuff                     */
 /*                                                     */
 /*******************************************************/
+static GtkWidgetClass *parent_class = NULL;
 
 enum {
   FTK_EVENTVIEWER_SIGNAL,
@@ -185,6 +195,13 @@ ftk_eventviewer_class_init (FtkEventViewerClass *klass,
 		    NULL,                
 		    g_cclosure_marshal_VOID__VOID,
 		    G_TYPE_NONE, 0);
+
+  GtkWidgetClass *widget_class;
+  	    
+  widget_class = (GtkWidgetClass *) klass;
+  
+  widget_class->get_accessible = ftk_eventviewer_get_accessible;
+  parent_class = gtk_type_class (gtk_widget_get_type ());  		    
 }
 
 static void
@@ -612,7 +629,7 @@ create_legend_area (FtkEventViewer * eventviewer)
 
   g_signal_connect (GTK_OBJECT(da), "leave_notify_event",
 		    G_CALLBACK (ftk_ev_leave_notify_event), eventviewer);
-  
+		     
   ftk_ev_legend_frame (eventviewer) = frame;
   gtk_container_add (GTK_CONTAINER(frame), da);
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
@@ -1946,15 +1963,10 @@ ftk_eventviewer_style (GtkWidget * widget, GtkStyle *previous_style,
 		}
     }
 
-/*	for (gint i = 0; i < ftk_ev_markers_next(eventviewer); i++) {
-		ftk_eventviewer_preset_marker_rgb_e(eventviewer, i, 
-		foregrounds->red, foregrounds->green, 
-		foregrounds->blue, NULL);
-	}
-*/
 	if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (da))) {
 	    ftk_eventviewer_da_expose(GTK_WIDGET(da), NULL, eventviewer);
 	}
+
 	return TRUE;
 }
 
@@ -2890,6 +2902,7 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
   }
   
   marker = ftk_ev_marker (eventviewer, ftk_ev_markers_next (eventviewer));
+  ftk_marker_index(marker) = ftk_ev_markers_next(eventviewer);
   ftk_marker_gc (marker)    = NULL;
   ftk_marker_label (marker) =
     gtk_widget_create_pango_layout (GTK_WIDGET (eventviewer), label);
@@ -2917,9 +2930,12 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
   ftk_marker_string (marker) = string ? strdup (string) : NULL;
   ftk_ev_markers_modified (eventviewer) = TRUE;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
+  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
     ftk_eventviewer_legend_da_expose(GTK_WIDGET(ftk_ev_legend_da(eventviewer)),
 				     NULL, eventviewer);
+	ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)),
+					 NULL, eventviewer);
+  }
 
   return ftk_ev_markers_next (eventviewer)++;
 }
@@ -2994,9 +3010,10 @@ ftk_eventviewer_set_marker_rgb_e (FtkEventViewer * eventviewer,
  	return FALSE;
  }
  
- if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+ if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
+    ftk_eventviewer_legend_da_expose(GTK_WIDGET(ftk_ev_legend_da(eventviewer)), NULL, eventviewer);
+ }
+ 
   return TRUE;
 }
 
@@ -3789,4 +3806,829 @@ ftk_eventviewer_tie_event_array (FtkEventViewer * eventviewer,
 {
   return ftk_eventviewer_tie_event_array_e (eventviewer, tie_index, count,
 					    events, NULL);
+}
+
+
+/* ========================== ACCESSIBILITY ========================= */
+
+static gpointer accessible_parent_class;
+static gpointer accessible_item_parent_class;
+static GQuark accessible_private_data_quark = 0;
+
+#define FTK_TYPE_EVENTVIEWER_MARKER_ACCESSIBLE (ftk_eventviewer_marker_accessible_get_type())
+#define FTK_EVENTVIEWER_MARKER_ACCESSIBLE(obj)      (G_TYPE_CHECK_INSTANCE_CAST ((obj), FTK_TYPE_EVENTVIEWER_MARKER_ACCESSIBLE, FtkEventViewerMarkerAccessible))
+#define FTK_IS_EVENTVIEWER_MARKER_ACCESSIBLE(obj)   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FTK_TYPE_EVENTVIEWER_MARKER_ACCESSIBLE))
+
+static GType ftk_eventviewer_marker_accessible_get_type (void);
+
+typedef struct
+{
+	AtkObject parent;
+	
+	ftk_marker_s * marker;
+	
+	AtkStateSet *state_set;
+	
+	GtkWidget *widget;
+	
+	GtkTextBuffer *text_buffer;
+	
+} FtkEventViewerMarkerAccessible;
+
+typedef struct _FtkEventViewerMarkerAccessibleClass
+{
+	AtkObjectClass parent_class;
+} FtkEventViewerMarkerAccessibleClass;
+
+static gboolean ftk_eventviewer_marker_accessible_is_showing (FtkEventViewerMarkerAccessible *item);
+
+
+//static void
+//ftk_eventviewer_marker_accessible_get_extents (AtkComponent *component,
+//                                           gint         *x,
+//                                           gint         *y,
+//                                           gint         *width,
+//                                           gint         *height,
+//                                           AtkCoordType  coord_type)
+//{
+//	FtkEventViewerMarkerAccessible *marker;
+//  AtkObject *parent_obj;
+//  gint l_x, l_y;
+//
+//  g_return_if_fail (FTK_IS_EVENTVIEWER_MARKER_ACCESSIBLE (component));
+//
+//  marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (component);
+//  if (!GTK_IS_WIDGET (marker->widget))
+//    return;
+//
+//  if (atk_state_set_contains_state (marker->state_set, ATK_STATE_DEFUNCT))
+//    return;
+//
+//  *width = marker->marker->label_width;
+//  *height = marker->marker->label_height;
+//  if (ftk_eventviewer_marker_accessible_is_showing (marker))
+//    {
+//      parent_obj = gtk_widget_get_accessible (marker->widget);
+//      atk_component_get_position (ATK_COMPONENT (parent_obj), &l_x, &l_y, coord_type);
+//      *x = l_x + marker->marker->glyph_hpos_d;
+//      *y = l_y + marker->marker->vpos;
+//    }
+//  else
+//    {
+//      *x = G_MININT;
+//      *y = G_MININT;
+//    }
+//}
+
+//static gboolean
+//ftk_eventviewer_marker_accessible_grab_focus (AtkComponent *component)
+//{
+//FtkEventViewerMarkerAccessible *marker;
+//  GtkWidget *toplevel;
+//
+//  g_return_val_if_fail (FTK_IS_EVENTVIEWER_MARKER_ACCESSIBLE (component), FALSE);
+//
+//  marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (component);
+//  if (!GTK_IS_WIDGET (marker->widget))
+//    return FALSE;
+//
+//  gtk_widget_grab_focus (marker->widget);
+//  //gtk_icon_view_set_cursor_item (FTK_EVENTVIEWER (marker->widget), marker->marker, -1);
+//  toplevel = gtk_widget_get_toplevel (GTK_WIDGET (marker->widget));
+//  if (GTK_WIDGET_TOPLEVEL (toplevel))
+//    gtk_window_present (GTK_WINDOW (toplevel));
+//
+//  return TRUE;
+//}
+//
+//static void
+//atk_component_item_interface_init (AtkComponentIface *iface)
+//{
+//iface->get_extents = ftk_eventviewer_marker_accessible_get_extents;
+//  iface->grab_focus = ftk_eventviewer_marker_accessible_grab_focus;
+//}
+
+static gboolean
+ftk_eventviewer_marker_accessible_add_state (FtkEventViewerMarkerAccessible *marker,
+                                         AtkStateType               state_type,
+                                         gboolean                   emit_signal)
+{
+gboolean rc;
+
+  rc = atk_state_set_add_state (marker->state_set, state_type);
+  /*
+   * The signal should only be generated if the value changed,
+   * not when the item is set up.  So states that are set
+   * initially should pass FALSE as the emit_signal argument.
+   */
+
+  if (emit_signal)
+    {
+      atk_object_notify_state_change (ATK_OBJECT (marker), state_type, TRUE);
+      /* If state_type is ATK_STATE_VISIBLE, additional notification */
+      if (state_type == ATK_STATE_VISIBLE)
+        g_signal_emit_by_name (marker, "visible_data_changed");
+    }
+
+  return rc;
+}
+
+static gboolean
+ftk_eventviewer_marker_accessible_remove_state (FtkEventViewerMarkerAccessible *marker,
+                                            AtkStateType               state_type,
+                                            gboolean                   emit_signal)
+{
+if (atk_state_set_contains_state (marker->state_set, state_type))
+    {
+      gboolean rc;
+
+      rc = atk_state_set_remove_state (marker->state_set, state_type);
+      /*
+       * The signal should only be generated if the value changed,
+       * not when the item is set up.  So states that are set
+       * initially should pass FALSE as the emit_signal argument.
+       */
+
+      if (emit_signal)
+        {
+          atk_object_notify_state_change (ATK_OBJECT (marker), state_type, FALSE);
+          /* If state_type is ATK_STATE_VISIBLE, additional notification */
+          if (state_type == ATK_STATE_VISIBLE)
+            g_signal_emit_by_name (marker, "visible_data_changed");
+        }
+
+      return rc;
+    }
+  else
+    return FALSE;
+}
+
+static gboolean
+ftk_eventviewer_marker_accessible_is_showing (FtkEventViewerMarkerAccessible *marker)
+{
+FtkEventViewer *eventviewer;
+  GdkRectangle visible_rect;
+  gboolean is_showing;
+
+  /*
+   * An item is considered "SHOWING" if any part of the item is in the
+   * visible rectangle.
+   */
+
+  if (!FTK_IS_EVENTVIEWER (marker->widget))
+    return FALSE;
+
+  if (marker->marker == NULL)
+    return FALSE;
+
+  eventviewer = FTK_EVENTVIEWER (marker->widget);
+  visible_rect.x = 0;
+  visible_rect.y = 0;
+ visible_rect.width = marker->widget->allocation.width;
+  visible_rect.height = marker->widget->allocation.height;
+
+  if (((marker->marker->glyph_hpos_d + marker->marker->label_width) < visible_rect.x) ||
+     ((marker->marker->vpos + marker->marker->label_height) < (visible_rect.y)) ||
+     (marker->marker->glyph_hpos_d > (visible_rect.x + visible_rect.width)) ||
+     (marker->marker->vpos > (visible_rect.y + visible_rect.height)))
+    is_showing =  FALSE;
+  else
+    is_showing = TRUE;
+
+  return is_showing;
+}
+
+static gboolean
+ftk_eventviewer_marker_accessible_set_visibility (FtkEventViewerMarkerAccessible *marker,
+                                              gboolean                   emit_signal)
+{
+if (ftk_eventviewer_marker_accessible_is_showing (marker))
+    return ftk_eventviewer_marker_accessible_add_state (marker, ATK_STATE_SHOWING,
+						    emit_signal);
+  else
+    return ftk_eventviewer_marker_accessible_remove_state (marker, ATK_STATE_SHOWING,
+						       emit_signal);
+}
+
+static void
+ftk_eventviewer_marker_accessible_object_init (FtkEventViewerMarkerAccessible *marker)
+{
+
+  marker->state_set = atk_state_set_new ();
+
+  atk_state_set_add_state (marker->state_set, ATK_STATE_ENABLED);
+  atk_state_set_add_state (marker->state_set, ATK_STATE_FOCUSABLE);
+  atk_state_set_add_state (marker->state_set, ATK_STATE_SENSITIVE);
+  atk_state_set_add_state (marker->state_set, ATK_STATE_VISIBLE);
+}
+
+static void
+ftk_eventviewer_marker_accessible_finalize (GObject *object)
+{
+ FtkEventViewerMarkerAccessible *marker;
+ 
+  g_return_if_fail (FTK_IS_EVENTVIEWER_MARKER_ACCESSIBLE (object));
+
+  marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (object);
+
+  if (marker->widget)
+    g_object_remove_weak_pointer (G_OBJECT (marker->widget), (gpointer) &marker->widget);
+
+  if (marker->state_set)
+    g_object_unref (marker->state_set);
+
+  if (marker->text_buffer)
+     g_object_unref (marker->text_buffer);
+
+  G_OBJECT_CLASS (accessible_item_parent_class)->finalize (object);
+}
+
+static G_CONST_RETURN gchar*
+ftk_eventviewer_marker_accessible_get_name (AtkObject *obj)
+{
+if (obj->name)
+    return obj->name;
+  else
+    {
+      FtkEventViewerMarkerAccessible *marker;
+      GtkTextIter start_iter;
+      GtkTextIter end_iter;
+
+      marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (obj);
+ 
+      gtk_text_buffer_get_start_iter (marker->text_buffer, &start_iter); 
+      gtk_text_buffer_get_end_iter (marker->text_buffer, &end_iter); 
+
+      return gtk_text_buffer_get_text (marker->text_buffer, &start_iter, &end_iter, FALSE);
+    }
+}
+
+static AtkObject*
+ftk_eventviewer_marker_accessible_get_parent (AtkObject *obj)
+{
+FtkEventViewerMarkerAccessible *marker;
+
+  g_return_val_if_fail (FTK_IS_EVENTVIEWER_MARKER_ACCESSIBLE (obj), NULL);
+  marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (obj);
+
+  if (marker->widget)
+    return gtk_widget_get_accessible (marker->widget);
+  else
+    return NULL;
+}
+
+static gint
+ftk_eventviewer_marker_accessible_get_index_in_parent (AtkObject *obj)
+{
+	FtkEventViewerMarkerAccessible *marker;
+
+  g_return_val_if_fail (FTK_IS_EVENTVIEWER_MARKER_ACCESSIBLE (obj), 0);
+  marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (obj);
+
+  return marker->marker->index; 
+}
+
+static AtkStateSet *
+ftk_eventviewer_marker_accessible_ref_state_set (AtkObject *obj)
+{
+FtkEventViewerMarkerAccessible *marker;
+  FtkEventViewer *eventviewer;
+
+  marker = FTK_EVENTVIEWER_MARKER_ACCESSIBLE (obj);
+  g_return_val_if_fail (marker->state_set, NULL);
+
+  if (!marker->widget)
+    return NULL;
+
+  eventviewer = FTK_EVENTVIEWER (marker->widget);
+
+  return g_object_ref (marker->state_set);
+}
+
+static void
+ftk_eventviewer_marker_accessible_class_init (AtkObjectClass *klass)
+{
+GObjectClass *gobject_class;
+
+  accessible_item_parent_class = g_type_class_peek_parent (klass);
+
+  gobject_class = (GObjectClass *)klass;
+
+  gobject_class->finalize = ftk_eventviewer_marker_accessible_finalize;
+
+  klass->get_index_in_parent = ftk_eventviewer_marker_accessible_get_index_in_parent; 
+  klass->get_name = ftk_eventviewer_marker_accessible_get_name; 
+  klass->get_parent = ftk_eventviewer_marker_accessible_get_parent; 
+  klass->ref_state_set = ftk_eventviewer_marker_accessible_ref_state_set; 
+}
+
+static GType
+ftk_eventviewer_marker_accessible_get_type (void)
+{
+	static GType type = 0;
+
+  if (!type)
+    {
+      static const GTypeInfo tinfo =
+      {
+        sizeof (FtkEventViewerMarkerAccessibleClass),
+        (GBaseInitFunc) NULL, /* base init */
+        (GBaseFinalizeFunc) NULL, /* base finalize */
+        (GClassInitFunc) ftk_eventviewer_marker_accessible_class_init, /* class init */
+        (GClassFinalizeFunc) NULL, /* class finalize */
+        NULL, /* class data */
+        sizeof (FtkEventViewerMarkerAccessible), /* instance size */
+        0, /* nb preallocs */
+        (GInstanceInitFunc) ftk_eventviewer_marker_accessible_object_init, /* instance init */
+        NULL /* value table */
+      };
+
+//      static const GInterfaceInfo atk_component_info =
+//      {
+//        (GInterfaceInitFunc) atk_component_item_interface_init,
+//        (GInterfaceFinalizeFunc) NULL,
+//        NULL
+//      };
+      type = g_type_register_static (ATK_TYPE_OBJECT,
+                                     _("FtkEventViewerMarkerAccessible"), &tinfo, 0);
+//      g_type_add_interface_static (type, ATK_TYPE_COMPONENT,
+//                                   &atk_component_info);
+ }
+
+  return type;
+}
+
+#define FTK_TYPE_EVENTVIEWER_LEGEND_ACCESSIBLE      (ftk_eventviewer_accessible_get_type ())
+#define FTK_EVENTVIEWER_LEGEND_ACCESSIBLE(obj)      (G_TYPE_CHECK_INSTANCE_CAST ((obj), FTK_TYPE_EVENTVIEWER_LEGEND_ACCESSIBLE, FtkEventViewerLegendAccessible))
+#define FTK_IS_EVENTVIEWER_LEGEND_ACCESSIBLE(obj)   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), FTK_TYPE_EVENTVIEWER_LEGEND_ACCESSIBLE))
+
+static GType ftk_eventviewer_accessible_get_type (void);
+
+typedef struct
+{
+   AtkObject parent;
+} FtkEventViewerLegendAccessible;
+
+typedef struct
+{
+  AtkObject *marker;
+  gint       index;
+} FtkEventViewerMarkerAccessibleInfo;
+
+typedef struct
+{
+  GList *buttons;
+  GList *markers;
+
+//  GList *traces;
+//  GList *events;
+} FtkEventViewerLegendAccessiblePrivate;
+
+static FtkEventViewerLegendAccessiblePrivate *
+ftk_eventviewer_accessible_get_priv (AtkObject *accessible)
+{
+	return g_object_get_qdata (G_OBJECT (accessible),
+                             accessible_private_data_quark);
+}
+
+static void
+ftk_eventviewer_marker_accessible_info_new (AtkObject *accessible,
+                                        AtkObject *marker,
+                                        gint       index)
+{
+FtkEventViewerMarkerAccessibleInfo *info;
+  FtkEventViewerMarkerAccessibleInfo *tmp_info;
+  FtkEventViewerLegendAccessiblePrivate *priv;
+  GList *markers;
+
+  info = g_new (FtkEventViewerMarkerAccessibleInfo, 1);
+  info->marker = marker;
+  info->index = index;
+
+  priv = ftk_eventviewer_accessible_get_priv (accessible);
+  markers = priv->markers;
+  while (markers)
+    {
+      tmp_info = markers->data;
+      if (tmp_info->index > index)
+        break;
+      markers = markers->next;
+    }
+  priv->markers = g_list_insert_before (priv->markers, markers, info);
+
+}
+
+static gint
+ftk_eventviewer_accessible_get_n_children (AtkObject *accessible)
+{
+ FtkEventViewer *eventviewer;
+ GtkWidget *widget;
+
+  widget = GTK_ACCESSIBLE (accessible)->widget;
+  if (!widget)
+      return 0;
+
+  eventviewer = FTK_EVENTVIEWER(widget);
+  return ftk_ev_markers_next(eventviewer) + 1;
+}
+
+static AtkObject *
+ftk_eventviewer_accessible_find_child (AtkObject *accessible,
+                                     gint       index)
+{
+	if (index < (ftk_eventviewer_accessible_get_n_children(accessible) - 1)) {
+FtkEventViewerLegendAccessiblePrivate *priv;
+  FtkEventViewerMarkerAccessibleInfo *info;
+  GList *markers;
+
+  priv = ftk_eventviewer_accessible_get_priv (accessible);
+  markers = priv->markers;
+
+  while (markers)
+    {
+      info = markers->data;
+      if (info->index == index)
+        return info->marker;
+      markers = markers->next; 
+    }
+	} else {
+		GtkWidget *widget = GTK_ACCESSIBLE (accessible)->widget;
+		if (!widget)
+		return 0;
+		
+		FtkEventViewer *eventviewer = FTK_EVENTVIEWER(widget);
+		return gtk_widget_get_accessible(ftk_ev_hbutton_box(eventviewer));
+	}
+  return NULL;
+}
+
+static AtkObject *
+ftk_eventviewer_accessible_ref_child (AtkObject *accessible,
+                                    gint       index)
+{
+	 //GtkDrawingArea *legend;
+  FtkEventViewer *eventviewer;
+  GtkWidget *widget;
+  //GList *icons;
+  AtkObject *obj;
+  FtkEventViewerMarkerAccessible *ally_item;
+
+  widget = GTK_ACCESSIBLE (accessible)->widget;
+  if (!widget)
+    return NULL;
+
+  //legend = GTK_DRAWING_AREA (widget);
+  eventviewer = FTK_EVENTVIEWER(widget);
+  
+  ftk_marker_s *marker = ftk_ev_marker(eventviewer, index);
+  obj = ftk_eventviewer_accessible_find_child(accessible, index);
+  
+  if (!obj)
+  {
+  	obj = g_object_new (ftk_eventviewer_marker_accessible_get_type(), NULL);
+  	ftk_eventviewer_marker_accessible_info_new (accessible, obj, index);
+  	
+  	obj->role = ATK_ROLE_UNKNOWN;
+  	ally_item = FTK_EVENTVIEWER_MARKER_ACCESSIBLE(obj);;
+  	ally_item->marker = marker;
+  	ally_item->widget = widget;
+  	ally_item->text_buffer = gtk_text_buffer_new (NULL);
+
+    gtk_text_buffer_set_text (ally_item->text_buffer, 
+				   pango_layout_get_text (marker->label), -1);
+
+    ftk_eventviewer_marker_accessible_set_visibility (ally_item, FALSE);
+    g_object_add_weak_pointer (G_OBJECT (widget), (gpointer) &(ally_item->widget));
+  }
+   
+  g_object_ref (obj);
+
+  return obj;
+}
+
+static void
+ftk_eventviewer_accessible_clear_cache (FtkEventViewerLegendAccessiblePrivate *priv)
+{
+FtkEventViewerMarkerAccessibleInfo *info;
+  GList *markers;
+
+  markers = priv->markers;
+  while (markers)
+    {
+      info = (FtkEventViewerMarkerAccessibleInfo *) markers->data;
+      g_object_unref (info->marker);
+      g_free (markers->data);
+      markers = markers->next;
+    }
+  g_list_free (priv->markers);
+  priv->markers = NULL;
+}
+
+//static void
+//ftk_eventviewer_accessible_notify_gtk (GObject *obj,
+//                                     GParamSpec *pspec)
+//{
+//  GtkDrawingArea *legend;
+//  GtkWidget *widget;
+//  AtkObject *atk_obj;
+//  FtkEventViewerLegendAccessiblePrivate *priv;
+//
+//  if (strcmp (pspec->name, "model") == 0)
+//    {
+//      widget = GTK_WIDGET (obj); 
+//      atk_obj = gtk_widget_get_accessible (widget);
+//      priv = ftk_eventviewer_accessible_get_priv (atk_obj);
+//      if (priv->model)
+//        {
+//          g_object_remove_weak_pointer (G_OBJECT (priv->model),
+//                                        (gpointer *)&priv->model);
+//          gtk_icon_view_accessible_disconnect_model_signals (priv->model, widget);
+//        }
+//      ftk_eventviewer_accessible_clear_cache (priv);
+//
+//      legend = GTK_DRAWING_AREA (obj);
+//      priv->model = legend->priv->model;
+//      /* If there is no model the GtkIconView is probably being destroyed */
+//      if (priv->model)
+//        {
+//          g_object_add_weak_pointer (G_OBJECT (priv->model), (gpointer *)&priv->model);
+//          gtk_icon_view_accessible_connect_model_signals (icon_view);
+//        }
+//    }
+//
+//  return;
+//}
+
+static void
+ftk_eventviewer_accessible_initialize (AtkObject *accessible,
+                                     gpointer   data)
+{
+ FtkEventViewerLegendAccessiblePrivate *priv;
+ // GtkDrawingArea *legend;
+  FtkEventViewer * eventviewer;
+
+  if (ATK_OBJECT_CLASS (accessible_parent_class)->initialize)
+    ATK_OBJECT_CLASS (accessible_parent_class)->initialize (accessible, data);
+
+  priv = g_new0 (FtkEventViewerLegendAccessiblePrivate, 1);
+  g_object_set_qdata (G_OBJECT (accessible),
+                      accessible_private_data_quark,
+                      priv);
+
+  //legend = GTK_DRAWING_AREA (data);
+  eventviewer = FTK_EVENTVIEWER (data);
+  
+//  g_signal_connect (data,
+//                    "notify",
+//                    G_CALLBACK (gtk_icon_view_accessible_notify_gtk),
+//                    NULL);
+
+//  priv->model = icon_view->priv->model;
+//  if (priv->model)
+//    {
+//      g_object_add_weak_pointer (G_OBJECT (priv->model), (gpointer *)&priv->model);
+//      gtk_icon_view_accessible_connect_model_signals (icon_view);
+//    }
+                          
+  accessible->role = ATK_ROLE_DRAWING_AREA;
+}
+
+static void
+ftk_eventviewer_accessible_finalize (GObject *object)
+{
+FtkEventViewerLegendAccessiblePrivate *priv;
+
+  priv = ftk_eventviewer_accessible_get_priv (ATK_OBJECT (object));
+  ftk_eventviewer_accessible_clear_cache (priv);
+
+  g_free (priv);
+
+  G_OBJECT_CLASS (accessible_parent_class)->finalize (object);
+}
+
+static void
+ftk_eventviewer_accessible_destroyed (GtkWidget *widget,
+                                    GtkAccessible *accessible)
+{
+AtkObject *atk_obj;
+  FtkEventViewerLegendAccessiblePrivate *priv;
+
+  atk_obj = ATK_OBJECT (accessible);
+  priv = ftk_eventviewer_accessible_get_priv (atk_obj);
+}
+
+static void
+ftk_eventviewer_accessible_connect_widget_destroyed (GtkAccessible *accessible)
+{
+	if (accessible->widget)
+    {
+      g_signal_connect_after (accessible->widget,
+                              "destroy",
+                              G_CALLBACK (ftk_eventviewer_accessible_destroyed),
+                              accessible);
+    }
+  GTK_ACCESSIBLE_CLASS (accessible_parent_class)->connect_widget_destroyed (accessible);
+}
+
+static void
+ftk_eventviewer_accessible_class_init (AtkObjectClass *klass)
+{
+	GObjectClass *gobject_class;
+  GtkAccessibleClass *accessible_class;
+
+  accessible_parent_class = g_type_class_peek_parent (klass);
+
+  gobject_class = (GObjectClass *)klass;
+  accessible_class = (GtkAccessibleClass *)klass;
+
+  gobject_class->finalize = ftk_eventviewer_accessible_finalize;
+
+  klass->get_n_children = ftk_eventviewer_accessible_get_n_children;
+  klass->ref_child = ftk_eventviewer_accessible_ref_child;
+  klass->initialize = ftk_eventviewer_accessible_initialize;
+
+  accessible_class->connect_widget_destroyed = ftk_eventviewer_accessible_connect_widget_destroyed;
+
+  accessible_private_data_quark = g_quark_from_static_string ("event_viewer_legend-accessible-private-data");
+}
+
+static AtkObject*
+ftk_eventviewer_accessible_ref_accessible_at_point (AtkComponent *component,
+                                                  gint          x,
+                                                  gint          y,
+                                                  AtkCoordType  coord_type)
+{
+GtkWidget *widget;
+ // GtkDrawingArea *legend;
+ FtkEventViewer *eventviewer;
+ // ftk_marker_s *marker;
+  gint x_pos, y_pos;
+
+  widget = GTK_ACCESSIBLE (component)->widget;
+  if (widget == NULL)
+  /* State is defunct */
+    return NULL;
+
+  //legend = GTK_DRAWING_AREA (widget);
+  eventviewer = FTK_EVENTVIEWER (widget);
+  atk_component_get_extents (component, &x_pos, &y_pos, NULL, NULL, coord_type);
+// XXX: Must create a function to find marker at given x, y coordinates.
+//  marker = ftk_eventviewer_legend_get_item_at_coords (legend, x - x_pos, y - y_pos, TRUE, NULL);
+//  if (marker)
+//    return ftk_eventviewer_accessible_ref_child (ATK_OBJECT (component), marker->index);
+
+  return NULL;
+}
+
+static void
+atk_component_interface_init (AtkComponentIface *iface)
+{
+	iface->ref_accessible_at_point = ftk_eventviewer_accessible_ref_accessible_at_point;
+}
+
+static GType
+ftk_eventviewer_accessible_get_type (void)
+{
+ static GType type = 0;
+
+  if (!type)
+    {
+      static GTypeInfo tinfo =
+      {
+        0, /* class size */
+        (GBaseInitFunc) NULL, /* base init */
+        (GBaseFinalizeFunc) NULL, /* base finalize */
+        (GClassInitFunc) ftk_eventviewer_accessible_class_init,
+        (GClassFinalizeFunc) NULL, /* class finalize */
+        NULL, /* class data */
+        0, /* instance size */
+        0, /* nb preallocs */
+        (GInstanceInitFunc) NULL, /* instance init */
+        NULL /* value table */
+      };
+      static const GInterfaceInfo atk_component_info =
+      {
+        (GInterfaceInitFunc) atk_component_interface_init,
+        (GInterfaceFinalizeFunc) NULL,
+        NULL
+      };
+     
+      /*
+       * Figure out the size of the class and instance
+       * we are deriving from
+       */
+      AtkObjectFactory *factory;
+      GType derived_type;
+      GTypeQuery query;
+      GType derived_atk_type;
+
+      derived_type = g_type_parent (FTK_EVENTVIEWER_TYPE);
+      factory = atk_registry_get_factory (atk_get_default_registry (), 
+                                          derived_type);
+      derived_atk_type = atk_object_factory_get_accessible_type (factory);
+      g_type_query (derived_atk_type, &query);
+      tinfo.class_size = query.class_size;
+      tinfo.instance_size = query.instance_size;
+ 
+      type = g_type_register_static (derived_atk_type, 
+                                     "FtkEventViewerLegendAccessible", 
+                                     &tinfo, 0);
+      g_type_add_interface_static (type, ATK_TYPE_COMPONENT,
+                                   &atk_component_info);
+    }
+  return type;
+}
+
+static AtkObject *
+ftk_eventviewer_accessible_new (GObject *obj)
+{
+	AtkObject *accessible;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (obj), NULL);
+
+  accessible = g_object_new (ftk_eventviewer_accessible_get_type (), NULL);
+  atk_object_initialize (accessible, obj);
+
+  return accessible;
+}
+
+static GType
+ftk_eventviewer_accessible_factory_get_accessible_type (void)
+{
+	return ftk_eventviewer_accessible_get_type ();
+}
+
+static AtkObject*
+ftk_eventviewer_accessible_factory_create_accessible (GObject *obj)
+{
+	return ftk_eventviewer_accessible_new (obj);
+}
+
+static void
+ftk_eventviewer_accessible_factory_class_init (AtkObjectFactoryClass *klass)
+{
+  klass->create_accessible = ftk_eventviewer_accessible_factory_create_accessible;
+  klass->get_accessible_type = ftk_eventviewer_accessible_factory_get_accessible_type;
+}
+
+static GType
+ftk_eventviewer_accessible_factory_get_type (void)
+{
+  static GType type = 0;
+
+	if (!type)
+    {
+      static const GTypeInfo tinfo =
+      {
+        sizeof (AtkObjectFactoryClass),
+        NULL,           /* base_init */
+        NULL,           /* base_finalize */
+        (GClassInitFunc) ftk_eventviewer_accessible_factory_class_init,
+        NULL,           /* class_finalize */
+        NULL,           /* class_data */
+        sizeof (AtkObjectFactory),
+        0,             /* n_preallocs */
+        NULL, NULL
+      };
+
+      type = g_type_register_static (ATK_TYPE_OBJECT_FACTORY, 
+                                    "FtkEventViewerLegendAccessibleFactory",
+                                    &tinfo, 0);
+    }
+    
+  return type;
+}
+
+
+static AtkObject *
+ftk_eventviewer_get_accessible (GtkWidget *widget)
+{
+  static gboolean first_time = TRUE;
+
+  if (first_time)
+    {
+      AtkObjectFactory *factory;
+      AtkRegistry *registry;
+      GType derived_type; 
+      GType derived_atk_type; 
+
+      /*
+       * Figure out whether accessibility is enabled by looking at the
+       * type of the accessible object which would be created for
+       * the parent type of GtkIconView.
+       */
+      derived_type = g_type_parent (FTK_EVENTVIEWER_TYPE);
+
+      registry = atk_get_default_registry ();
+      factory = atk_registry_get_factory (registry,
+                                          derived_type);
+      derived_atk_type = atk_object_factory_get_accessible_type (factory);
+      if (g_type_is_a (derived_atk_type, GTK_TYPE_ACCESSIBLE)) 
+	atk_registry_set_factory_type (registry, 
+				       FTK_EVENTVIEWER_TYPE,
+				       ftk_eventviewer_accessible_factory_get_type ());
+      first_time = FALSE;
+    } 
+ 
+  return (* GTK_WIDGET_CLASS (parent_class)->get_accessible) (widget);
 }

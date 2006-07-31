@@ -1,3 +1,12 @@
+2006-07-31  Nurdin Premji  <npremji@redhat.com>
+
+	* src/widgets/ftkeventviewer.h (ftk_marker_index): Added for accessibility.
+	(ftk_marker_s): Added index for accessibility.
+	* src/widgets/ftkeventviewer.c (ftk_eventviewer_style): Cleaned out commented code.
+	(ftk_eventviewer_class_init): Added accessibility stuff.
+	(ftk_eventviewer_set_marker_rgb_e): Also expose the legend area as well as drawing area.
+	Added accessibility methods, dogtail should now be able to detect observer/markers.
+
 2006-07-25  Nurdin Premji  <npremji@redhat.com>
 
 	* src/widgets/ftkeventviewer.c (create_button_box): Fixed ally issue 
