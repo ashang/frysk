@@ -226,22 +226,18 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 actionListLength = len(theElements)
                 #print "DEBUG - the actions length = " + str(actionListLength)
                 actionListCounter = 0
-                for tempElement in theElements:
-                    
-                    #theActionName = tempAction.getName()
+                for tempElement in theElements:                 
+
                     theActionName = tempElement.getName()
-                    #print "DEBUG - the action name = " + theActionName
                     observerActionsTable = observerPanel.child (name = 'observerActionsTable')
                     # comboBox that lists the action types - the first one in the list[]
                     theComboBoxes = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
                     comboBox = theComboBoxes[0]
                     # Select the action
-                    #comboBox.dump()
                     actionItem = comboBox.menuItem (theActionName)
                     actionItem.click()
                     
                     actionText = observerActionsTable.child(roleName = 'text')
-                    #actionText.text = tempAction.getArgument()
                     actionText.text = tempElement.getArgument()
 
                     #print "Press the + button"
@@ -300,9 +296,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 self.TestString.compare(self.theLogWriter.scriptName + '.setUp()', newObserverName, newObserverName)
                 self.assertEqual(newObserverName, newObserverName)
   
-        # end loop ---------
-        
-        ##############################################
+        # end loop --------
         
         """Verify that the session object just created and presisted under $HOME/.frysk/Observers
            matches the test input"""   
@@ -320,7 +314,6 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         #print '---------self.theObserver.dump()--------'
         #self.theObserver.dump()
         
-        #########################################################
         newlyCreatedFilterPoints = newlyCreatedObserver.getFilterPoints()
         newlyCreatedObserver.setFilterPointsDict(newlyCreatedFilterPoints)
         self.theObserverFilterPoints = self.theObserver.getFilterPoints()
@@ -341,9 +334,6 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # Return to the Frysk main menu
         okButton = customObservers.button( 'OK' )
         okButton.click()
-
-        ###############################################
-
 
         ### Need to add new test - compare Observer in file to Observer as displayed in GUI ###
         # Populate new Observer Object from data displayed in GUI
@@ -383,7 +373,6 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             observerDetails = self.frysk.dialog( CUSTOM_OBSERVER_DIALOG )
             observerName = observerDetails.child( name = 'observerNameEntry', roleName = 'text' )
 
-            ##############################################
             # Set observer name
             observerFromGUI.setName(observerName.text)
             
@@ -392,8 +381,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             observerDescription = observerPanel.child( roleName='text', name = 'observerDescriptionTextView') 
             observerFromGUI.setDescription(observerDescription.text)
                
-            # and type? This is blocked by http://bugzilla.gnome.org/show_bug.cgi?id=345667
-            
+            # and type? This is blocked by http://bugzilla.gnome.org/show_bug.cgi?id=345667           
             #observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
             #comboMenu = observerTypeComboBox.child( roleName='menu' ) 
             #comboMenu.isSelected()
@@ -407,24 +395,14 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             
             # and the action Points
                 
-            # and the filter Points
-            
-
-            ###################################
+            # and the filter Points            
 
             okButton = observerDetails.button( 'OK' )
             okButton.click()
  
         # Resturn to the Frysk main menu
         okButton = customObservers.button( 'OK' )
-        okButton.click()
-
-        
-
-
-       ###############################################
-
-  
+        okButton.click()  
 
     def tearDown( self ):    
  

@@ -76,7 +76,6 @@ from FryskHelpers import findProcessNames
 from FryskHelpers import createProcessDict
 from FryskHelpers import startFrysk
 from FryskHelpers import endFrysk
-#from FryskHelpers import skipDruid
 from FryskHelpers import FRYSK_SESSION_FILES
 from FryskHelpers import createMinimalSession
 from FryskHelpers import createBigSession
