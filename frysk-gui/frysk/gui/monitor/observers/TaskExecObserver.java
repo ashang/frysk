@@ -20,7 +20,7 @@ public class TaskExecObserver extends TaskObserverRoot implements TaskObserver.E
 	public TaskExecObserver(){
 		super("Exec Observer", "Fires every time this task executes an exec call");
 		
-		this.taskFilterPoint = new TaskFilterPoint("Execing Thread", "The thread that is calling exec");
+		this.taskFilterPoint = new TaskFilterPoint("execing thread", "The thread that is calling exec");
 		this.addFilterPoint(taskFilterPoint);
 		
 		this.taskActionPoint = new TaskActionPoint(taskFilterPoint.getName(), taskFilterPoint.getToolTip());

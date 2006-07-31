@@ -25,13 +25,13 @@ public class TaskTerminatingObserver extends TaskObserverRoot implements TaskObs
 	public TaskTerminatingObserver() {
 		super("Terminating Observer", "Fires when this process is exiting");
 		
-		this.taskFilterPoint = new TaskFilterPoint("Terminating Task","The task that is terminating");
-		this.intFilterPoint = new IntFilterPoint("Exit Value","the exit value of the task");
+		this.taskFilterPoint = new TaskFilterPoint("terminating task","The task that is terminating");
+		this.intFilterPoint = new IntFilterPoint("exit value","the exit value of the task");
 
 		this.addFilterPoint(taskFilterPoint);
 		this.addFilterPoint(intFilterPoint);
 		
-		this.taskActionPoint = new TaskActionPoint("Terminating Task","The task that is terminating");
+		this.taskActionPoint = new TaskActionPoint("terminating task","The task that is terminating");
 		
 		this.addActionPoint(taskActionPoint);
 	}

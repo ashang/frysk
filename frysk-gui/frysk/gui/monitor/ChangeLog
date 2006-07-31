@@ -1,3 +1,19 @@
+2006-07-31  Mike Cvet  <mcvet@redhat.com>
+
+	* observers/TaskSyscallObserver.java (TaskSyscallObserver): Some
+	string display fixes.
+	* observers/TaskTerminatingObserver.java (TaskTerminatingObserver): Ditto.
+	* observers/TaskCloneObserver.java (TaskCloneObserver): Ditto.
+	* observers/TaskExecObserver.java (TaskExecObserver): Ditto.
+	* filters/TaskProcNameFilter.java (TaskProcNameFilter): Ditto.
+	* filters/ProcPathFilter.java (ProcPathFilter): Ditto.
+	* filters/ProcParentNameFilter.java (ProcParentNameFilter): Ditto.
+	* filters/IntFilter.java (IntFilter): Ditto.
+	* filters/ProcCommandLineFilter.java (ProcCommandLineFilter): Ditto.
+	* actions/ShowSourceWin.java (ShowSourceWin): Ditto.
+	* actions/ShowMemWin.java (ShowMemWin): Ditto.
+	* actions/ShowRegWin.java (ShowRegWin): Ditto.
+	
 2006-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/ShowRegWin.java (execute): Properly execute the new

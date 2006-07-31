@@ -54,7 +54,7 @@ public class ShowRegWin
 {
   public ShowRegWin ()
   {
-    super("Show the register values of ",
+    super("Show the register values of",
           "Show the register values belonging to the thread.");
   }
 

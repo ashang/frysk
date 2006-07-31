@@ -54,7 +54,7 @@ public class ShowMemWin
 {
   public ShowMemWin ()
   {
-    super("Show the memory space of ",
+    super("Show the memory space of",
           "Show the values in the memory space belonging to the thread.");
   }
 

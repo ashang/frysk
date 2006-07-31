@@ -55,14 +55,14 @@ public class IntFilter
 
   public IntFilter ()
   {
-    super("Int Filter",
+    super("Value of",
           "Passes if value at filter call matches the given value");
     // this.value = value;
   }
 
   public IntFilter (int value)
   {
-    super("Int Filter",
+    super("Value of",
           "Passes if value at filter call matches the given value");
     this.value = value;
   }

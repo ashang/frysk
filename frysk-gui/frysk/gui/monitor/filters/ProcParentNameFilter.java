@@ -56,7 +56,7 @@ public class ProcParentNameFilter
 
   public ProcParentNameFilter ()
   {
-    super("Name", "Filters for the proc with the given name ");
+    super("Parent name of", "name of the parent process");
     this.parentName = new String();
   }
 

@@ -51,7 +51,7 @@ public class ShowSourceWin
 
   public ShowSourceWin ()
   {
-    super("Show source code of ", "Show the source code of the thread.");
+    super("Show source code of", "Show the source code of the thread.");
   }
 
   public ShowSourceWin (ShowSourceWin other)

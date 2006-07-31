@@ -55,7 +55,7 @@ public class ProcPathFilter
 
   public ProcPathFilter ()
   {
-    super("Name", "Filters for the proc with the given name ");
+    super("Executable path", "executable path");
     this.path = new String();
   }
 

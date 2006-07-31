@@ -54,7 +54,7 @@ public class ProcCommandLineFilter
 
   public ProcCommandLineFilter ()
   {
-    super("Name", "Filters for the proc with the given name ");
+    super("Name", "command line args");
   }
 
   public ProcCommandLineFilter (ProcCommandLineFilter other)

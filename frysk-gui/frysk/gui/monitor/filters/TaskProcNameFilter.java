@@ -56,7 +56,7 @@ public class TaskProcNameFilter
 
   public TaskProcNameFilter ()
   {
-    super("Name", "name of the process");
+    super("Name of", "name of the process");
     this.procNamefilter = new ProcNameFilter();
   }
 
