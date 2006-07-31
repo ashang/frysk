@@ -1,3 +1,8 @@
+2006-05-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* tests/TestOpcodes.java (testDisassembler): Fixed, test now works
+	on x86_64.
+
 2006-07-27  Mark Wielaard  <mark@klomp.org>
 
 	* tests/TestOpcodes.java (testDisassembler): Mark as broken bug #2712.
