@@ -112,6 +112,7 @@ class FryskHandler(xml.sax.handler.ContentHandler):
     elif self.currentTag == "procs":
       self.theDebugProcesses = []
       
+#   Comment out for now - not needed in current data model
 #   elif self.currentTag == "elements":
       
     elif self.currentTag == "element":
@@ -127,9 +128,9 @@ class FryskHandler(xml.sax.handler.ContentHandler):
        
     elif self.currentTag == "observers":
       self.theObservers = []
-    
-#   elif self.currentTag == "tagsets":
 
+#   Comment out for now - not needed in current data model    
+#   elif self.currentTag == "tagsets":
 
   #-------------------------------
   def characters(self, data):
@@ -140,9 +141,11 @@ class FryskHandler(xml.sax.handler.ContentHandler):
     if name == "Session":
       self.theDebugSession.setProcesses(self.theDebugProcesses)
       
-    # elif name == "procs":
+#   Comment out for now - not needed in current data model
+#   elif name == "procs":
 
-    # elif name == "elements":
+#   Comment out for now - not needed in current data model
+#   elif name == "elements":
 
     elif name == "element":
       if self.debugProcessFlag == True:
@@ -153,5 +156,5 @@ class FryskHandler(xml.sax.handler.ContentHandler):
       self.observerFlag = False
       self.tempDebugProcess.setObservers(self.theObservers)
       
-    # elif name == "tagsets":
-
+#   Comment out for now - not needed in current data model
+#   elif name == "tagsets":
