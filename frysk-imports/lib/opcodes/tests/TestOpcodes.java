@@ -80,8 +80,9 @@ public class TestOpcodes
   public void testDisassembler ()
   {
 
-    // if (brokenXXX(2712))
-    // return;
+    if (Build.TARGET_ARCH.indexOf("ppc") != - 1)
+      if (brokenXXX(2712))
+        return;
 
     ByteBuffer buffer = new DummyByteBuffer();
     final int numInstructions = 16;
@@ -106,9 +107,9 @@ public class TestOpcodes
 
     String[] insts;
 
-    boolean is64 = Build.BUILD_ARCH.indexOf("_64") != - 1; 
-    
-    if (!is64)
+    boolean is64 = Build.BUILD_ARCH.indexOf("_64") != - 1;
+
+    if (! is64)
       {
         insts = new String[] { "DWORD PTR [ecx]", "BYTE PTR [ebx]", "0x5",
                               "es", "es", "al", "BYTE PTR [ebx]", "0x5", "es",
@@ -125,13 +126,13 @@ public class TestOpcodes
 
     assertNotNull(insts);
 
-    int instCount = is64? 11: 16;
-    
+    int instCount = is64 ? 11 : 16;
+
     for (int i = 0; i < instCount; i++)
       {
         Instruction inst = (Instruction) list.get(i);
         assertNotNull(inst);
-        
+
         assertEquals(addrs[i], Long.toHexString(inst.address));
         assertEquals(insts[i], inst.instruction);
       }
