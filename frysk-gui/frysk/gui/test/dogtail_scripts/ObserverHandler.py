@@ -111,8 +111,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
     self.actionPointFlag = False
     self.filterPointFlag = False
     self.theObserver = Observer()
-    #self.emptyActionPointFlag = False
-    #self.buffer = ''
+    self.buffer = ''
  
   #-------------------------------
   # def startDocument(self):
@@ -155,9 +154,9 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       self.tempFilterPoint = ObserverPoints()
       self.tempFilterPointElements = []
       self.tempFilterPoint.setName(attributes['name'])
-      #print 'DEBUG - found a filterPoint - argument = ' + attributes['argument']
       self.tempFilterPoint.setName (getFilterPointName(attributes['name']))
 
+#   Comment out for now - not needed in current data model
 #   elif self.currentTag == 'elements':
       
     elif self.currentTag == 'element':
@@ -171,10 +170,7 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
             self.tempObserverElement.setType(attributes['type'])
             self.tempObserverElement.setName(attributes['name'])
             self.tempObserverElement.setArgument(attributes['argument'])
-            #print 'DEBUG - found a filterPoint - arg = ' + attributes['argument']
-            #self.tempObserverElement.dump()
-        
-        #elif attributes['type'] == 'frysk.gui.monitor.actions.LogAction':
+         
         # If we found an Action that matches the regexp defined above
         elif p.search (attributes['type']) != 'None':
           #print p.search (attributes['type'])      
@@ -184,37 +180,20 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           
           # The name attribute in the input file does not equal the
           # GUI name - so, make the change here. 
-          # ******* Add the action point name here?????
-          #print "DEBUG - combined string = " + self.tempActionPoint.getName() + ' ' + attributes['name']
-          #self.tempObserverElement.setName (getElementName ( attributes['name']), self.tempActionPoint.getName() )
-          #print "calling derive"
-  #        tempString = deriveElementName ( attributes['name'], self.tempActionPoint.getName() )
-          #print "back from calling derive"
           self.tempObserverElement.setName (deriveElementName ( attributes['name'], self.tempActionPoint.getName()) )
- #         print "DEBUG = " + self.tempObserverElement.getName()
-          #self.tempObserverElement.setName (getActionPointName(attributes['name']))          
-#          if attributes['name'] == 'Log event':
-#              self.tempObserverElement.setName('Log event  ')
-#          if attributes['name'] == 'Resume':
-#              self.tempObserverElement.setName('Resume Generic Actions')
-#          if attributes['name'] == 'Stop':
-#              self.tempObserverElement.setName('Stop Generic Actions')
 
           # But - the argument is just the argument
           self.tempObserverElement.setArgument(attributes['argument'])         
- 
-          #print 'DEBUG - found an ActionPoint - arg = ' + attributes['argument']
-          #self.tempObserverElement.dump()
           
       except:
         self.observerFlag = True
-#        self.theObservers.append(attributes['name']) 
        
- #   elif self.currentTag == 'observers':
- #     self.theObservers = []
+#   Comment out for now - not needed in current data model
+#   elif self.currentTag == 'observers':
+#       self.theObservers = []
     
+#   Comment out for now - not needed in current data model
 #   elif self.currentTag == 'tagsets':
-
 
   #-------------------------------
   def characters(self, data):
@@ -232,14 +211,10 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
 
     elif name == 'actionPoint':
          #print 'END of actionPoint'
-         #self.tempActionPoint.dump()
          self.tempActionPoint.setElements(self.tempActionPointElements)
          self.tempActionPoint.setElementsDict(self.tempActionPointElements)
-         #if self.emptyActionPointFlag != True:
-         #    self.theActionPoints.append(self.tempActionPoint)
          self.theActionPoints.append(self.tempActionPoint)
          self.actionPointFlag = False
-         #self.emptyActionPointFlag = True
 
     elif name == 'filterPoints':
         self.theObserver.setFilterPoints(self.theFilterPoints)
@@ -252,16 +227,13 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
          self.theFilterPoints.append(self.tempFilterPoint)         
          self.filterPointFlag = False        
 
+#   Comment out for now - not needed in current data model
 #    elif name == 'elements':
 #        print 'END of elements'
       
     elif name == 'element':     
         if self.actionPointFlag == True:
             self.tempActionPointElements.append(self.tempObserverElement)
-            #if self.tempObserverElement.getType() == 'default type':
-            #    self.emptyActionPointFlag = True
         elif self.filterPointFlag == True:
-            #self.tempObserverElement.dump()
             self.tempFilterPointElements.append(self.tempObserverElement)
 
-#        print 'END of element'
