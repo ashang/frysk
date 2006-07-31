@@ -1,5 +1,10 @@
 2006-07-31  Mike Cvet  <mcvet@redhat.com>
 
+	* filters/TaskProcParentNameFilter.java: Added.
+	* filters/TaskProcPathFilter.java: Ditto.
+	* filters/TaskProcCommandLineFilter.java: Ditto.
+	* filters/FilterManager.java: Added initializations for the above three
+	filters.
 	* observers/TaskSyscallObserver.java (TaskSyscallObserver): Some
 	string display fixes.
 	* observers/TaskTerminatingObserver.java (TaskTerminatingObserver): Ditto.
@@ -10,7 +15,9 @@
 	* filters/ProcParentNameFilter.java (ProcParentNameFilter): Ditto.
 	* filters/IntFilter.java (IntFilter): Ditto.
 	* filters/ProcCommandLineFilter.java (ProcCommandLineFilter): Ditto.
-	* actions/ShowSourceWin.java (ShowSourceWin): Ditto.
+	(filter): Fixed up command option matching.
+	(setArgument): Added.
+	* actions/ShowSourceWin.java (ShowSourceWin): Some string display fixes.
 	* actions/ShowMemWin.java (ShowMemWin): Ditto.
 	* actions/ShowRegWin.java (ShowRegWin): Ditto.
 	

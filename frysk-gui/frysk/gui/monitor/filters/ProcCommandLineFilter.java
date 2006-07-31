@@ -54,7 +54,7 @@ public class ProcCommandLineFilter
 
   public ProcCommandLineFilter ()
   {
-    super("Name", "command line args");
+    super("Command line args of", "command line args");
   }
 
   public ProcCommandLineFilter (ProcCommandLineFilter other)
@@ -66,20 +66,28 @@ public class ProcCommandLineFilter
   public boolean filter (Proc proc)
   {
     String[] temp = proc.getCmdLine();
-    int j;
-    if (temp.length != argsList.length)
+    int count = 0;
+    
+    if (temp.length != argsList.length + 1)
       return false;
-    for (int i = 0; i < temp.length; i++)
+    
+    for (int i = 0; i < argsList.length; i++)
       {
-        for (j = 0; i < argsList.length; j++)
+        for (int j = 1; j < temp.length; j++)
           {
-            if (temp[i].equals(argsList[j]))
-              break;
+            System.out.println(argsList[i] + temp[j]);
+            if (argsList[i].equals(temp[j]))
+              {
+                count++;
+                break;
+              }
           }
-        if (j > argsList.length - 1)
-          return false;
       }
-    return false;
+    
+    if (count == argsList.length)
+      return true;
+    else
+      return false;
   }
 
   public GuiObject getCopy ()
@@ -90,6 +98,12 @@ public class ProcCommandLineFilter
   public boolean setArgument (String argument)
   {
     this.argsList = argument.split(" ");
+    return true;
+  }
+  
+  public boolean setArgument (String[] argument)
+  {
+    this.argsList = argument;
     return true;
   }
 

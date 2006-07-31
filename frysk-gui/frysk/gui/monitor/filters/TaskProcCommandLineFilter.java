@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2005, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// 
+// type filter text
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -42,62 +42,47 @@ package frysk.gui.monitor.filters;
 
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
-import frysk.proc.Proc;
+import frysk.proc.Task;
 
 /**
- * @author mcvet
- *
+ * @mcvet
  */
-public class ProcPathFilter
-    extends ProcFilter
+public class TaskProcCommandLineFilter
+    extends TaskFilter
 {
-  private String path;
 
-  public ProcPathFilter ()
+  private ProcCommandLineFilter procCommandLineFilter;
+
+  public TaskProcCommandLineFilter ()
   {
-    super("Executable path of", "executable path");
-    this.path = new String();
+    super("Command line args of", "Command line arguments of the process");
+    this.procCommandLineFilter = new ProcCommandLineFilter();
   }
 
-  public ProcPathFilter (ProcPathFilter other)
+  public TaskProcCommandLineFilter (TaskProcCommandLineFilter other)
   {
     super(other);
-    this.path = other.path;
+    this.procCommandLineFilter = new ProcCommandLineFilter(other.procCommandLineFilter);
   }
 
-  public boolean filter (Proc proc)
+  public boolean filter (Task task)
   {
-    String otherPath = proc.getExe();
-    int i;
-
-    for (i = otherPath.length() - 1; i > 0; i--)
-      {
-        if (otherPath.charAt(i) == '/')
-          break;
-      }
-    otherPath = otherPath.substring(0, i);
-
-    if (otherPath.equals(path))
-      {
-        return true;
-      }
-    return false;
+    return this.procCommandLineFilter.filter(task.getProc());
   }
 
   public GuiObject getCopy ()
   {
-    return new ProcPathFilter(this);
+    return new TaskProcCommandLineFilter(this);
   }
 
   public boolean setArgument (String argument)
   {
-    this.path = argument;
-    return true;
+    return this.procCommandLineFilter.setArgument(argument);
   }
 
   public String getArgument ()
   {
-    return this.path;
+    return this.procCommandLineFilter.getArgument();
   }
 
   public ObservableLinkedList getArgumentCompletionList ()
