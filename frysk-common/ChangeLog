@@ -1,3 +1,9 @@
+2006-07-31  Adam Jocksch  <ajocksch@redhat.com>
+
+	* Makefile.rules (SUBST_SED): Added target_cpu to the list of items
+	to be substituted.
+	* Build.javain (BUILD_ARCH): Added.
+
 2006-07-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* Makefile.rules (AM_CXX_FLAGS): Added path to frysk-imports so that

@@ -228,7 +228,8 @@ SUBST_SED = sed \
 		-e 's,[@]pkgincludedir[@],$(pkgincludedir),g' \
 		-e 's,[@]pkglibexecdir[@],$(pkglibexecdir),g' \
 		-e 's,[@]GEN_PACKAGENAME[@],$(GEN_PACKAGENAME),g' \
-		-e 's,[@]VERSION[@],$(VERSION),g'
+		-e 's,[@]VERSION[@],$(VERSION),g' \
+		-e 's,[@]target_cpu[@],@target_cpu@,g'
 
 SUBST = \
 	mkdir -p `dirname $@` ; \
