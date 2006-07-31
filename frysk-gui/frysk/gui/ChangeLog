@@ -1,3 +1,8 @@
+2006-07-31  Mike Cvet  <mcvet@redhat.com>
+
+	* test/TestFilterManager.java (testAddingRemovingFilters): Added
+	tests for some new Filters.
+
 2006-07-28  Mike Cvet  <mcvet@redhat.com>
 
 	* glade/processpicker.glade: Added a cancel button, among other
