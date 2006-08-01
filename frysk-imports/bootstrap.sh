@@ -38,8 +38,7 @@
 # version and license this file solely under the GPL without
 # exception.
 
-./common/Makefile.gen.sh \
-    frysk \
+FILE_LIST="frysk \
     inua \
     junit/junit.jar \
     ANTLR_JAR \
@@ -47,7 +46,31 @@
     JDOM_JAR \
     jline/jline.jar \
     jargs/jargs.jar \
-    lib
+    lib/dw \
+    lib/elf \
+    lib/opcodes "
+    
+target_cpu=`uname -a`
+
+case "${target_cpu}" in
+       *86*)
+       # libunwind is supported on X86 and X86_64 now, so buildlibunwind
+       # java binding.  When libunwind is supported on PPC/PPC64, libuwind
+       # and its java bindings could be built unconditionally.
+       FILE_LIST+=lib/unwind
+       # Now run a separate aclocal/autoconf/automake for libunwind
+       cd libunwind
+       echo "Running aclocal ... for libunwind"
+       aclocal
+       echo "Running autoconf ... for libunwind"
+       autoconf -f
+       echo "Running autoheader ... for libunwind"
+       autoheader
+       cd ..
+       ;;
+esac
+
+./common/Makefile.gen.sh $FILE_LIST
     
 
 # Generate everything (always run with --add-missing).
@@ -76,17 +99,4 @@ echo "Running autoconf ... for antlr"
 autoconf -f
 cd ..
 
-target_cpu=`uname -a`
 
-case "${target_cpu}" in
-	*86*) 
-	# Now run a separate aclocal/autoconf/automake for libunwind
-	cd libunwind
-	echo "Running aclocal ... for libunwind"
-	aclocal
-	echo "Running autoconf ... for libunwind"
-	autoconf -f
-	echo "Running autoheader ... for libunwind"
-	autoheader
-	;;
-esac
