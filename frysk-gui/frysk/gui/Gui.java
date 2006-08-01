@@ -569,32 +569,44 @@ implements LifeCycleListener, Saveable
 	}
 	
 	/* Handle a signal if another instance of Frysk is started */
-	static class MultipleInvocationEvent extends SignalEvent {
-		
-		public MultipleInvocationEvent() {
-			super(Sig.USR1);
-			logger.log (Level.FINE, "{0} MultipleInvocationEvent\n", this);
-		}
-		
-		public final void execute ()
-		{	
-		    logger.log (Level.FINE, "{0} execute\n", this); 
-		    //WindowManager.theManager.mainWindow.showAll();
-		}
-	}
+	static class MultipleInvocationEvent
+      extends SignalEvent
+  {
+
+    public MultipleInvocationEvent ()
+    {
+      super(Sig.USR1);
+      logger.log(Level.FINE, "{0} MultipleInvocationEvent\n", this);
+    }
+
+    public final void execute ()
+    {
+      logger.log(Level.FINE, "{0} execute\n", this);
+      CustomEvents.addEvent(new Runnable()
+      {
+        public void run ()
+        {
+          WindowManager.theManager.mainWindow.showAll();
+        }
+      });
+    }
+  }
 	
 	/* If the user cntl-c interrupts, handle it cleanly */
-	static class InterruptEvent extends SignalEvent {
-		
-		public InterruptEvent() {
-			super(Sig.INT);
-			logger.log (Level.FINE, "{0} InterruptEvent\n", this);
-		}
-		
-		public final void execute ()
-		{
-		    logger.log (Level.FINE, "{0} execute\n", this); 
-		    Gtk.mainQuit();
-		}
-	}
+	static class InterruptEvent
+      extends SignalEvent
+  {
+
+    public InterruptEvent ()
+    {
+      super(Sig.INT);
+      logger.log(Level.FINE, "{0} InterruptEvent\n", this);
+    }
+
+    public final void execute ()
+    {
+      logger.log(Level.FINE, "{0} execute\n", this);
+      Gtk.mainQuit();
+    }
+  }
 }
