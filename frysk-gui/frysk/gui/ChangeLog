@@ -1,3 +1,9 @@
+2006-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* test/dogtail_scripts/frysk_suite.in : Added in TestEventViewerMarker.py.
+	Uncommented TestEventViewerButtons testcase.
+	* test/dogtail_scripts/TestEventViewerMarkers.py : Added.
+
 2006-07-31  Mike Cvet  <mcvet@redhat.com>
 
 	* test/TestFilterManager.java (testAddingRemovingFilters): Added
