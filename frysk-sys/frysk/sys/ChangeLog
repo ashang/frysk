@@ -1,3 +1,7 @@
+2006-08-01  Adam Jocksch  <ajocksch@redhat.com>
+
+	* TestMapRead.java: New file, test is disabled since it breaks.
+
 2006-07-28  Mark Wielaard  <mark@klomp.org>
 
 	* Ptrace.java (poke): Change data parameter from int to long.
