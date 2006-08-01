@@ -1,3 +1,9 @@
+2006-08-01  Nurdin Premji  <npremji@redhat.com>
+
+	* htdocs/index.html: Added link to developers page. Also added to all 
+	subdirectories.
+	* htdocs/developers/index.html: Added.
+
 2006-07-18  Andrew Cagney  <cagney@redhat.com>
 
 	* bootstrap.sh: "cd" to source directory.

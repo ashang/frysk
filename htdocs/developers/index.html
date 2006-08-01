@@ -8,8 +8,8 @@
     <meta http-equiv="Content-Style-Type" content="text/css">
   </head>
 
-  <body>
-    <table cellspacing="2" cellpadding="2" border="0" width="100%">
+<body>
+<table cellspacing="2" cellpadding="2" border="0" width="100%">
       <tr>
         <td valign="bottom" height="80">
           <img src="../frysklogo.png" alt="Frysk logo">
@@ -29,40 +29,69 @@
           &nbsp;|&nbsp;
           <a href="../build/">Build</a>
           &nbsp;|&nbsp;
-          <a href="../documentation/">Documentation</a>
-		&nbsp;|&nbsp;
+          Documentation
+	  &nbsp;|&nbsp;
 	  <a href="developers/">Developers</a>
         </td>
       </tr>
     </table>
-    <div class="mainbackground">
+<div class="mainbackground">
       <div class="maintextregion">
-        <img src="../fryskcorner.gif" alt="triangle">
+<img src="../fryskcorner.gif" alt="triangle">
         <table cellspacing="2" cellpadding="4" border="0" width="99%" style="margin-top:17px;">
           <tr>
             <td width="200" valign="top" align="left">
 	      &nbsp;
 	    </td>
             <td valign="bottom">
-<!-- start title -->
-        <h1>Forwarding to <em>frysk</em>'s Bugzilla Page</h1>
-<!-- end title -->
+              <!-- start title -->
+<h1>AtkObject</h1>
+	      <!-- end title -->
             </td>
           </tr>
           <tr>
 	    <td valign="top">
-<!-- start logo -->
-&nbsp;
-<!-- end logo -->
+	      <!-- start logo -->
+		&nbsp;
+	      <!-- end logo -->
 	    </td>
             <td valign="top">
 	      <!-- start text -->
+	<p>Here is how to set up standard widgets so that they can be seen by
+dogtail.</p>
 
-<p> In 5 seconds your browser should refresh loading <a
-href="../bugzilla/"><em>frysk</em>'s Bugzilla</a> page.  If nothing
-happens, click <a href="../bugzilla/">this</a> link.</p>
+<p>All Gtk widgets have associated accessibility objects. What dogtail
+needs is for these widgets to be given names so they can be more easily
+accessed.</p>
 
-              <!-- end text -->
+<p>In order to do this in Gtk C code do the following (assuming the widget
+you are looking at is called myWidget:</p>
+
+<pre>
+GtkWidget * widget = myWidget;
+AtkObject *myAccessibility = gtk_widget_get_accessibility(widget);
+atk_object_set_name(myAccessibility, _("My Name"));
+atk_object_set_description(myAccessibility, _("My Description."));
+</pre>
+
+<p>_("") is for internationalization purposes if you so choose.</p>
+
+<p>This is all dogtail needs to be able to access this widget by name.</p>
+
+<p>In terms of java-gnome, the easiest thing to do is to open up the glade
+file and click on the accessibility tab (far right) and give a name and
+description.</p>
+
+<p>In java-gnome, if you can't use the glade accessibility, the code is very similar:</p>
+
+<pre>
+AtkObject obj = widget.getAccessible();
+obj.setName("My Name");
+obj.setDescription("My Description");
+</pre>
+
+<p>This should give you accessibility for all standard widgets.</p>
+<!-- end text -->
               <p>&nbsp;</p>
             </td>
           </tr>
@@ -76,5 +105,5 @@ happens, click <a href="../bugzilla/">this</a> link.</p>
         </td>
       </tr>
     </table>
-  </body>
+</body>
 </html>
