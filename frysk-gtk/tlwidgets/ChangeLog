@@ -1,3 +1,9 @@
+2006-08-01	Nurdin Premji	<npremji@redhat.com>
+	
+	* src/widgets/ftkeventviewer.c (ftk_eventviewer_accessible_get_n_children)
+	Added back missing accessibility for legend area, drawing area, and main scrollbar.
+	(ftk_eventviewer_accessible_find_child): Ditto.
+
 2006-07-31  Nurdin Premji  <npremji@redhat.com>
 
 	* src/widgets/ftkeventviewer.h (ftk_marker_index): Added for accessibility.

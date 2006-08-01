@@ -3810,6 +3810,13 @@ ftk_eventviewer_tie_event_array (FtkEventViewer * eventviewer,
 
 
 /* ========================== ACCESSIBILITY ========================= */
+enum  {
+	FTK_ACCESSIBLE_HBUTTON_BOX,
+	FTK_ACCESSIBLE_LEGEND_FRAME,
+	FTK_ACCESSIBLE_DRAWING_FRAME,
+	FTK_ACCESSIBLE_MAIN_HSCROLL,
+	FTK_ACCESSIBLE_LAST
+};
 
 static gpointer accessible_parent_class;
 static gpointer accessible_item_parent_class;
@@ -4229,35 +4236,53 @@ ftk_eventviewer_accessible_get_n_children (AtkObject *accessible)
       return 0;
 
   eventviewer = FTK_EVENTVIEWER(widget);
-  return ftk_ev_markers_next(eventviewer) + 1;
+  return ftk_ev_markers_next(eventviewer) + FTK_ACCESSIBLE_LAST;
 }
 
 static AtkObject *
 ftk_eventviewer_accessible_find_child (AtkObject *accessible,
                                      gint       index)
 {
-	if (index < (ftk_eventviewer_accessible_get_n_children(accessible) - 1)) {
-FtkEventViewerLegendAccessiblePrivate *priv;
-  FtkEventViewerMarkerAccessibleInfo *info;
-  GList *markers;
-
-  priv = ftk_eventviewer_accessible_get_priv (accessible);
-  markers = priv->markers;
-
-  while (markers)
-    {
-      info = markers->data;
-      if (info->index == index)
-        return info->marker;
-      markers = markers->next; 
-    }
-	} else {
-		GtkWidget *widget = GTK_ACCESSIBLE (accessible)->widget;
-		if (!widget)
+	GtkWidget *widget = GTK_ACCESSIBLE (accessible)->widget;
+	
+	if (!widget)
 		return 0;
 		
-		FtkEventViewer *eventviewer = FTK_EVENTVIEWER(widget);
+	FtkEventViewer *eventviewer = FTK_EVENTVIEWER(widget);
+	
+	int number_of_markers = (int) ftk_ev_markers_next(eventviewer);
+	
+	FtkEventViewerLegendAccessiblePrivate *priv;
+	FtkEventViewerMarkerAccessibleInfo *info;
+  	GList *markers;
+  		
+	switch (index - number_of_markers)
+	{
+	case (FTK_ACCESSIBLE_HBUTTON_BOX) :
 		return gtk_widget_get_accessible(ftk_ev_hbutton_box(eventviewer));
+		break;
+	case (FTK_ACCESSIBLE_LEGEND_FRAME) :
+		return gtk_widget_get_accessible(ftk_ev_legend_frame(eventviewer));
+		break;
+	case (FTK_ACCESSIBLE_DRAWING_FRAME) :
+		return gtk_widget_get_accessible(ftk_ev_da_frame(eventviewer));
+		break;
+	case (FTK_ACCESSIBLE_MAIN_HSCROLL) :
+		return gtk_widget_get_accessible(ftk_ev_scroll(eventviewer));
+		break;
+	default :
+ 	 	priv = ftk_eventviewer_accessible_get_priv (accessible);
+  		markers = priv->markers;
+
+  		while (markers)
+    	{
+      	info = markers->data;
+      	if (info->index == index)
+        	return info->marker;
+      	markers = markers->next; 
+    	}
+		break;	
+	
 	}
   return NULL;
 }
