@@ -5,7 +5,7 @@ package frysk.sys;
 import junit.framework.TestCase;
 import frysk.sys.proc.MapsBuilder;
 
-public class TestMapRead
+public class StressMapRead
     extends TestCase
 {
   /**
@@ -66,10 +66,10 @@ public class TestMapRead
                           int pathnameLength)
     {
 
-      for (long i = addressLow; i < addressHigh; i++)
+//      System.err.println("Highest: " + Long.toHexString(addressHigh));
+      for (long i = addressLow; i < addressHigh - 4; i++)
         {
-          // System.err.println(Long.toHexString(i) + " is in the Mmap!");
-          // assertEquals(0, i & 0x3);
+//          System.err.println(Long.toHexString(i) + " is in the Mmap!");
           buffer.getInt(i);
         }
     }
@@ -78,12 +78,10 @@ public class TestMapRead
 
   public void testMapRead ()
   {
-    if(brokenXXX(2928))
-      return;
     
     PtraceByteBuffer buffer = new PtraceByteBuffer(pid,
                                                    PtraceByteBuffer.Area.DATA);
-
+    
     MapIntBuilder builder2 = new MapIntBuilder(buffer);
     builder2.construct(pid);
   }

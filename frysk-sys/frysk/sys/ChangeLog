@@ -1,3 +1,8 @@
+2006-08-02  Adam Jocksch  <ajocksch@redhat.com>
+
+	* StressMapRead.java: Renamed from TestMapRead since the test
+	is very cpu-intensive, also enabled test.
+
 2006-08-01  Adam Jocksch  <ajocksch@redhat.com>
 
 	* TestMapRead.java: New file, test is disabled since it breaks.
