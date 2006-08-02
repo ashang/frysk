@@ -1,3 +1,8 @@
+2006-08-02  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Do not list XFAIL_TESTS twice when declaring
+	that all TESTS depend on Makefile.
+
 2006-04-06  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (noinst_PROGRAMS): Define.

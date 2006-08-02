@@ -46,7 +46,7 @@ TESTS_ENVIRONMENT = eval > /dev/null 2>&1
 XFAIL_TESTS =
 TESTS = $(XFAIL_TESTS)
 all-local: $(TESTS)
-$(TESTS) $(XFAIL_TESTS): Makefile
+$(TESTS): Makefile
 CLEANFILES = \
 	$(TESTS) \
 	$(noinst_SCRIPTS) \
