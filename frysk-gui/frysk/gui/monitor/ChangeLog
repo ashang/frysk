@@ -1,3 +1,7 @@
+2006-08-02  Adam Jockcsh  <ajocksch@redhat.com>
+
+	* TrayIcon.java (TrayIcon): Updated javadocs.
+
 2006-08-02  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/TaskActionPoint.java (initApplicableActions): Added the 

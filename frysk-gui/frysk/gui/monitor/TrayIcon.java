@@ -92,10 +92,9 @@ public class TrayIcon implements Saveable{
 	 */
 	
 	/**
-	 * Creates a new TrayIcon with the given text and image
-	 * @param tooltip Name of the TrayIcon
-	 * @param buttonText Text to appear on the button
-	 * @param icon Icon to appear on the button
+     * Creates a new TrayIcon
+     * @param tooltip the tooltip to display when you hover over the icon
+     * @param active whether the icon should be animated or not 
 	 */
 	public TrayIcon(String tooltip, boolean active){
 		this.tooltip = tooltip;
