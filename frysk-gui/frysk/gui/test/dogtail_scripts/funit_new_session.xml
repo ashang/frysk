@@ -1,0 +1,14 @@
+<Session type="frysk.gui.sessions.Session" name="NewFryskSession" tooltip="NoTooltip">
+  <procs>
+    <elements>
+      <element type="frysk.gui.sessions.DebugProcess" name="funit-child" tooltip="funit-child" executablePath="/notnfs/frysk-build/frysk-core/frysk/pkglibexecdir/funit-child">
+        <observers>
+          <element name="Terminating Observer" />
+          <element name="Exec Observer" />
+          <element name="Fork Observer" />
+        </observers>
+        <tagsets />
+      </element>
+    </elements>
+  </procs>
+</Session>

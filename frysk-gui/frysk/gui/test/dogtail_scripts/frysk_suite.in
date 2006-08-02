@@ -35,6 +35,8 @@ ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}
 ${src}/TestCreateObserversfromDataModel.py ${src}/another_new_session.xml ${src}/new_exec_custom_observer.xml
 ${src}/TestDruid.py ${src}/another_new_session.xml
 #
+# Test that should fail for now.
+ ${src}/Test2985.py ${src}/funit_new_session.xml
 # Tests that currently fail - commented out
  ${src}/TestEventViewerButtons.py ${src}/another_new_session.xml
  ${src}/TestEventViewerMarkers.py ${src}/another_new_session.xml
@@ -43,10 +45,6 @@ ${src}/TestDruid.py ${src}/another_new_session.xml
 #
 # Tests for resolved bugs - run these tests to prevent regressions
 ${src}/TestCredits.py ${src}/Test2921.xml
-# Test Backwards Compatibility with older files.
-${src}/TestCreateObserversfromDataModel.py ${src}/deprecated.xml ${src}/new_fork_custom_observer.xml
-${src}/TestCreateObserversfromDataModel.py ${src}/deprecated.xml ${src}/new_syscall_custom_observer.xml
-${src}/TestCreateObserversfromDataModel.py ${src}/deprecated.xml ${src}/new_task_clone_custom_observer.xml
 #
 EOF
     echo Running: ${script}

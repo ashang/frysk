@@ -1,3 +1,10 @@
+2006-08-02  Nurdin Premji  <npremji@redhat.com>
+
+	* test/dogtail_scripts/funit_new_session.xml: Added
+	* test/dogtail_scripts/Test2985.py: Added. 
+	* test/dogtail_scripts/frysk_suite.in: Removed deprecated tests.
+	Added test for bug 2985.
+
 2006-08-01  Mike Cvet  <mcvet@redhat.com>
 
 	* Gui.java (MultipleInvocationEvent.run): Fixed a race condition
