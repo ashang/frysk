@@ -49,6 +49,10 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 
 /**
+ * Provides the ability to execute a binary or other program externally to
+ * Frysk, allowing the flexibility of user-defined actions following some 
+ * event.
+ * 
  * @author mcvet
  */
 public class RunExternal
@@ -71,6 +75,9 @@ public class RunExternal
 
   public void execute (Task task)
   {
+    /* Try to execute the arguments given by the user */
+    //TODO: figure out if this executable exists before it gets sent away
+    // to get borked by exec
     Manager.host.requestCreateAttachedProc(execString.split(" "), new AttachedObserver());
   }
 
@@ -95,6 +102,11 @@ public class RunExternal
     return null;
   }
   
+  /**
+   * Attach to this executed program so that we know whats going on - we'll
+   * be able to gather information or manipulate it in other ways, should
+   * the need arise later.
+   */
   class AttachedObserver
       implements TaskObserver.Attached
   {
@@ -115,6 +127,10 @@ public class RunExternal
     }
   }
   
+  /**
+   * We want to know when the externally-executed program has quit, so 
+   * that we can continue or optionally run another program.
+   */
   class TaskTerminatedObserver
   implements TaskObserver.Terminated
 {

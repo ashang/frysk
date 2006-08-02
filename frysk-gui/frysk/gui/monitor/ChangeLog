@@ -2,7 +2,7 @@
 
 	* actions/TaskActionPoint.java (initApplicableActions): Added the 
 	RunExternal Action to the Actions list.
-	* actions/RunExternal.java: Added.
+	* actions/RunExternal.java: Added, commented.
 
 2006-07-31  Mike Cvet  <mcvet@redhat.com>
 
