@@ -10,7 +10,7 @@
 // WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 // General Public License for more details.
-// type filter text
+// 
 // You should have received a copy of the GNU General Public License
 // along with FRYSK; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
@@ -40,82 +40,97 @@
 
 package frysk.gui.monitor.actions;
 
-import java.util.Iterator;
-
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 
-public class TaskActionPoint
-    extends ActionPoint
+import frysk.proc.Action;
+import frysk.proc.Manager;
+
+/**
+ * @author mcvet
+ */
+public class RunExternal
+    extends TaskAction
 {
-
-  private ObservableLinkedList applicableActions;
-
-  public TaskActionPoint ()
+  
+  String execString;
+  
+  public RunExternal ()
   {
-    super();
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
+    super("Execute an external program from",
+          "Execute an external script or binary");
+    this.execString = new String();
   }
 
-  public TaskActionPoint (String name, String toolTip)
-  {
-    super(name, toolTip);
-
-    this.applicableActions = new ObservableLinkedList();
-
-    this.initApplicableActions();
-  }
-
-  public TaskActionPoint (TaskActionPoint other)
+  public RunExternal (RunExternal other)
   {
     super(other);
-
-    this.applicableActions = new ObservableLinkedList(other.applicableActions);
   }
 
-  public ObservableLinkedList getApplicableActions ()
+  public void execute (Task task)
   {
-    return ActionManager.theManager.getTaskActions();
-  }
-
-  private void initApplicableActions ()
-  {
-    this.applicableActions.add(new ShowSourceWin());
-    this.applicableActions.add(new AddTaskObserverAction());
-    this.applicableActions.add(new PrintTask());
-    this.applicableActions.add(new ShowRegWin());
-    this.applicableActions.add(new ShowMemWin());
-    this.applicableActions.add(new RunExternal());
-  }
-
-  /**
-   * Run all the actions that belong to this
-   * 
-   * @link ActionPoint.
-   * @param task the task to perform the actions on.
-   */
-  public void runActions (Task task)
-  {
-    Iterator iter = this.items.iterator();
-    while (iter.hasNext())
-      {
-        TaskAction action = (TaskAction) iter.next();
-        action.execute(task);
-      }
-  }
-
-  public ObservableLinkedList getApplicableItems ()
-  {
-    return this.applicableActions;
+    Manager.host.requestCreateAttachedProc(execString.split(" "), new AttachedObserver());
   }
 
   public GuiObject getCopy ()
   {
-    return new TaskActionPoint(this);
+    return new RunExternal(this);
   }
 
+  public boolean setArgument (String argument)
+  {
+    this.execString = argument;
+    return true;
+  }
+
+  public String getArgument ()
+  {
+    return this.execString;
+  }
+
+  public ObservableLinkedList getArgumentCompletionList ()
+  {
+    return null;
+  }
+  
+  class AttachedObserver
+      implements TaskObserver.Attached
+  {
+
+    public void addedTo (Object observable){}
+    
+    public Action updateAttached (Task task)
+    {
+      task.requestAddTerminatedObserver(new TaskTerminatedObserver());
+      return Action.CONTINUE;
+    }
+    
+    public void deletedFrom (Object observable){}
+    
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException("Failed to attach to created proc", w);
+    }
+  }
+  
+  class TaskTerminatedObserver
+  implements TaskObserver.Terminated
+{
+  public void addedTo (Object observable) {}
+  
+  public Action updateTerminated (Task task, boolean signal, int value)
+  {
+    return Action.CONTINUE;
+  }
+  
+  public void deletedFrom (Object observable) {}
+  
+  public void addFailed (Object observable, Throwable w)
+  {
+    throw new RuntimeException("Failed to attach to created proc", w);
+  }
+}
+  
 }

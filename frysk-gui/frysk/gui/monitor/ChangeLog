@@ -1,3 +1,9 @@
+2006-08-02  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/TaskActionPoint.java (initApplicableActions): Added the 
+	RunExternal Action to the Actions list.
+	* actions/RunExternal.java: Added.
+
 2006-07-31  Mike Cvet  <mcvet@redhat.com>
 
 	* filters/TaskProcParentNameFilter.java: Added.
