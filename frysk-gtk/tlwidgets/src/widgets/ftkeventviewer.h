@@ -108,7 +108,7 @@ const GdkColor * default_color_set[]
 #define ftk_default_color_green(i)	default_color_set[i]->green
 #define ftk_default_color_blue(i)	default_color_set[i]->blue
 
-static const int colors_count
+static const gint colors_count
 #ifdef DO_INITIALISE
 = sizeof(default_color_set)/sizeof(GdkColor *)
 #endif
@@ -168,10 +168,10 @@ static const char filled_5star[]
 typedef struct {
   const char * unicode;
   char * utf8;
-  int    strlen;
+  gint    strlen;
   PangoLayout *layout;
-  int h_center;
-  int v_center;
+  gint h_center;
+  gint v_center;
 } db_symbols_s;
 
 static db_symbols_s db_symbols[]
@@ -196,7 +196,7 @@ static db_symbols_s db_symbols[]
 #define ftk_symbol_h_center(i)	db_symbols[i].h_center
 #define ftk_symbol_v_center(i)	db_symbols[i].v_center
 
-static const int db_symbols_count
+static const gint db_symbols_count
 #ifdef DO_INITIALISE
 = sizeof(db_symbols)/sizeof(db_symbols_s)
 #endif
@@ -244,16 +244,16 @@ typedef enum {
 typedef struct {
   GdkGC       * gc;
   PangoLayout * label;
-  int		glyph_hpos_d;
-  int		label_hpos_d;
-  int		label_width;
-  int		label_height;
-  int		vpos;
+  gint		glyph_hpos_d;
+  gint		label_hpos_d;
+  gint		label_width;
+  gint		label_height;
+  gint		vpos;
   FtkGlyph	glyph;
   GdkColor	color;
   char	      * string;
   gboolean	label_modified;
-  int index;
+  gint index;
 } ftk_marker_s;
 
 #define ftk_marker_gc(m)		(m)->gc
@@ -275,7 +275,7 @@ typedef struct {
 typedef struct {
   gint		marker;
   gchar	      * string;
-  int		loc;
+  gint		loc;
   double	time;
 } ftk_event_s;
 
@@ -292,17 +292,17 @@ typedef struct _ftk_trace_s {
   GdkColor	color;
   GdkGC       * gc;
   PangoLayout * label;
-  int		label_width_d;
-  int		label_height_d;
-  int		vpos_d;
+  gint		label_width_d;
+  gint		label_height_d;
+  gint		vpos_d;
   char	      * string;
   ftk_event_s * events;
-  int		event_next;
-  int		event_max;
+  gint		event_next;
+  gint		event_max;
   gboolean	label_modified;		/* used */
   gboolean	valid;
   gboolean	time_set;
-  int index;
+  gint index;
 } ftk_trace_s;
 
 #define ftk_tie_s ftk_trace_s
@@ -347,10 +347,10 @@ typedef struct _ftk_trace_s {
 
 typedef struct {
   double when;
-  int tie_index;
-  int * trace_list;
-  int trace_list_next;
-  int trace_list_max;
+  gint tie_index;
+  gint * trace_list;
+  gint trace_list_next;
+  gint trace_list_max;
 } ftk_link_s;
 
 #define ftk_link_when(l)		(l)->when
@@ -366,10 +366,10 @@ typedef struct {
 } ftk_event_pair_s;
 
 typedef struct {
-  int tie_index;
+  gint tie_index;
   ftk_event_pair_s * event_pair_list;
-  int event_list_next;
-  int event_list_max;
+  gint event_list_next;
+  gint event_list_max;
 } ftk_dlink_s;
 
 #define ftk_dlink_tie_index(l)		(l)->tie_index
@@ -417,37 +417,37 @@ typedef struct _FtkEventViewer {
   GdkColor		  bg_color;
   const GdkColor       ** color_set;
   ftk_marker_s	        * markers;
-  int	      		  markers_next;
-  int	      		  markers_max;
+  gint	      		  markers_next;
+  gint	      		  markers_max;
   ftk_trace_s		* traces;
-  int			  trace_next;
-  int			  trace_max;
-  int			* trace_pool;
-  int			  trace_pool_next;
-  int			  trace_pool_max;
-  int			* trace_order;
-  int			  trace_order_next;
-  int			  trace_order_max;
+  gint			  trace_next;
+  gint			  trace_max;
+  gint			* trace_pool;
+  gint			  trace_pool_next;
+  gint			  trace_pool_max;
+  gint			* trace_order;
+  gint			  trace_order_next;
+  gint			  trace_order_max;
   ftk_tie_s		* ties;
-  int			  tie_next;
-  int			  tie_max;
+  gint			  tie_next;
+  gint			  tie_max;
   ftk_link_s		* links;
-  int			  link_next;
-  int			  link_max;
+  gint			  link_next;
+  gint			  link_max;
   ftk_dlink_s		* dlinks;
-  int			  dlink_next;
-  int			  dlink_max;
-  int			  label_box_width;
-  int			  label_box_height;
-  int			  da_height;
-  int			  legend_height;
-  int			  trace_origin;
-  int			  trace_width;
-  int			  popup_trace;
-  int			  popup_marker;
+  gint			  dlink_next;
+  gint			  dlink_max;
+  gint			  label_box_width;
+  gint			  label_box_height;
+  gint			  da_height;
+  gint			  legend_height;
+  gint			  trace_origin;
+  gint			  trace_width;
+  gint			  popup_trace;
+  gint			  popup_marker;
   ftk_popup_type_e	  popup_type;
   FtkGlyph		  next_glyph;
-  int			  next_color;
+  gint			  next_color;
   gboolean		  trace_modified;		/* used */
   gboolean		  tie_modified;
   gboolean     		  markers_modified;		/* used */
@@ -456,7 +456,7 @@ typedef struct _FtkEventViewer {
   gboolean		  drawable;
   gboolean		  time_set;
   gboolean		  hold_activated;
-  int			  accessible_index;
+  gint			  accessible_index;
 } FtkEventViewer;
 
 #define ftk_ev_vbox(v)		      &((v)->vbox)

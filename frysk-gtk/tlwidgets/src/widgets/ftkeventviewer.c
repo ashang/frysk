@@ -212,10 +212,10 @@ ftk_init_cr (FtkEventViewer * eventviewer)
     gdk_cairo_create (GTK_WIDGET (ftk_ev_da (eventviewer))->window);
 
   {
-    int i;
+    gint i;
     gsize br, bw;
     PangoFontDescription * desc;
-    int width, height;
+    gint width, height;
 
 #define FONT "dingbats 10"    
     desc = pango_font_description_from_string (FONT);
@@ -261,7 +261,7 @@ ftk_init_cr (FtkEventViewer * eventviewer)
 static void
 set_up_colors (FtkEventViewer * eventviewer)
 {
-  int i;
+  gint i;
 
   ftk_ev_color_values(eventviewer) = malloc (sizeof(default_color_set));
   memcpy (ftk_ev_color_values(eventviewer), default_color_set,
@@ -270,8 +270,8 @@ set_up_colors (FtkEventViewer * eventviewer)
 #define COLOR_RANDOMISER_ITERATIONS 30
   for (i = 0; i < COLOR_RANDOMISER_ITERATIONS; i++) {
     const GdkColor * tc;
-    int fi = lrint (drand48() * (double)(colors_count - 1));
-    int ti = lrint (drand48() * (double)(colors_count - 1));
+    gint fi = lrint (drand48() * (double)(colors_count - 1));
+    gint ti = lrint (drand48() * (double)(colors_count - 1));
 
     tc =  ftk_ev_color_value(eventviewer, fi);
     ftk_ev_color_value(eventviewer, fi) =
@@ -455,7 +455,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 
 #ifdef USE_SLIDER_INTERVAL
   {
-    /* interval slider */
+    /* ginterval slider */
 
     GtkRequisition requisition;
 
@@ -496,7 +496,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 		      frame,
 		      FALSE, FALSE, 0);
 		      
- 	/* Accessibility for interval slider */
+ 	/* Accessibility for ginterval slider */
  	
  	{
  		AtkObject *obj, *atk_widget, *atk_label;
@@ -515,11 +515,11 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 
         atk_widget = gtk_widget_get_accessible (slider);
         atk_object_set_name(atk_widget, _("Interval slider"));
-        atk_object_set_description(atk_widget, _("Logarithmic slider for time interval."));
+        atk_object_set_description(atk_widget, _("Logarithmic slider for time ginterval."));
         
         atk_label = gtk_widget_get_accessible (label);
         atk_object_set_name(atk_label, _("Interval Label"));
-        atk_object_set_description(atk_label, _("Label for the interval slider."));
+        atk_object_set_description(atk_label, _("Label for the ginterval slider."));
 
         relation_set = atk_object_ref_relation_set (atk_label);
         targets[0] = atk_widget;
@@ -533,7 +533,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 
 #ifndef USE_SLIDER_INTERVAL
   {
-    /* interval spin button */
+    /* ginterval spin button */
 
     GtkWidget * frame = gtk_frame_new (NULL);
     GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
@@ -854,13 +854,13 @@ double_to_timeval (struct timeval * tv, double time_d)
 /*******************************************************/
 
 typedef struct {
-  int x;
-  int y;
+  gint x;
+  gint y;
 } ftk_coord_s;
 
 
 /* Return 0 if a.y == b.y, -1 if a.y < b.y, 1 if a.y > b.y. */
-static int
+static gint
 coord_sort (a, b)
      ftk_coord_s * a;
      ftk_coord_s * b;
@@ -876,7 +876,7 @@ draw_dlink (FtkEventViewer * eventviewer, cairo_t * cr,
 	    ftk_dlink_s * dlink,
 	    gboolean flush_it)
 {
-  int i;
+  gint i;
   gboolean kill_cr;
 
   if (1 < ftk_dlink_event_list_next (dlink)) {
@@ -888,14 +888,14 @@ draw_dlink (FtkEventViewer * eventviewer, cairo_t * cr,
       gtk_adjustment_get_value (ftk_ev_scroll_adj (eventviewer));
 
     for (i = 0; i < ftk_dlink_event_list_next (dlink); i++) {
-      int event_index = ftk_dlink_event_pair_event (dlink, i);
-      int trace_index = ftk_dlink_event_pair_trace (dlink, i);
+      gint event_index = ftk_dlink_event_pair_event (dlink, i);
+      gint trace_index = ftk_dlink_event_pair_trace (dlink, i);
       ftk_trace_s * trace = ftk_ev_trace (eventviewer, trace_index);
       ftk_event_s * event = ftk_trace_event (trace, event_index);
       double etime =
 	(ftk_event_time (event) - ftk_ev_zero (eventviewer)) - time_offset;
       double loc_d = etime / ftk_ev_span (eventviewer);
-      int h_offset = ftk_ev_trace_origin (eventviewer) +
+      gint h_offset = ftk_ev_trace_origin (eventviewer) +
 	lrint (((double)ftk_ev_trace_width (eventviewer)) * loc_d);
 
       coords[i].x = h_offset;
@@ -941,10 +941,10 @@ draw_dlink (FtkEventViewer * eventviewer, cairo_t * cr,
   }
 }
 
-static int
+static gint
 int_sort (a, b)
-     int * a;
-     int * b;
+     gint * a;
+     gint * b;
 {
   return ((*a) == (*b)) ? 0 : (((*a) < (*b)) ? -1 : 1);
 }
@@ -965,9 +965,9 @@ draw_link (FtkEventViewer * eventviewer, cairo_t * cr,
     double loc_d = link_time / ftk_ev_span (eventviewer);
     
     if ((loc_d >= 0.0) && (loc_d <= 1.0)) {
-      int i;
+      gint i;
       
-      int h_offset = ftk_ev_trace_origin (eventviewer) +
+      gint h_offset = ftk_ev_trace_origin (eventviewer) +
 	lrint (((double)ftk_ev_trace_width (eventviewer)) * loc_d);
 
       if (0 < ftk_link_trace_list_next(link)) {
@@ -1204,7 +1204,7 @@ ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl, double dx)
 
   {
     GtkRequisition req;
-    int offset;
+    gint offset;
     gint px, py;
     GtkWidget * widget = GTK_WIDGET (eventviewer);
 
@@ -1233,22 +1233,22 @@ ftk_create_popup (FtkEventViewer * eventviewer, char * lbl, double dx)
 
 #define MULTI_EVENT_INCR 4
 typedef struct {
-  int marker_idx;
+  gint marker_idx;
   ftk_event_s * event;
   double time_d;
 } ftk_multi_event_s;
 
 static char *
 create_popup_marker_label (gboolean prepend_ts,
-			   int * count_p,
+			   gint * count_p,
 			   FtkEventViewer * eventviewer,
 			   ftk_event_s * revent,
 			   ftk_trace_s * trace,
-			   int marker_idx,
+			   gint marker_idx,
 			   double time_d)
 {
   char * lbl;
-  int count;
+  gint count;
   ftk_marker_s * marker = ftk_ev_marker (eventviewer, marker_idx);
   const char * trace_label = pango_layout_get_text (ftk_trace_label (trace));
   const char * marker_label = pango_layout_get_text (ftk_marker_label (marker));
@@ -1289,9 +1289,9 @@ create_popup_label (FtkEventViewer * eventviewer,
 		    ftk_popup_type_e pt,
 		    ftk_trace_s * trace,
 		    ftk_event_s * revent,
-		    int marker_idx,
+		    gint marker_idx,
 		    double time_d,
-		    int me_next,
+		    gint me_next,
 		    ftk_multi_event_s * me)
 {
   char * lbl = NULL;
@@ -1313,7 +1313,7 @@ create_popup_label (FtkEventViewer * eventviewer,
     break;
   case FTK_POPUP_TYPE_MARKER:
     if (me) {
-      int i;
+      gint i;
       double time_d = -1.0;
 
       for (i = 0; i < me_next; i++) {
@@ -1363,13 +1363,13 @@ static void
 handle_popup (FtkEventViewer * eventviewer,
 	      GdkEventMotion * event,
 	      ftk_popup_type_e pt,
-	      int trace_idx,
-	      int marker_idx,
+	      gint trace_idx,
+	      gint marker_idx,
 	      double time_d,
 	      ftk_trace_s * trace,
 	      ftk_event_s * revent,
 	      ftk_multi_event_s * multi_event,
-	      int multi_event_next)
+	      gint multi_event_next)
 {
   char * lbl;
   
@@ -1419,11 +1419,11 @@ ftk_ev_legend_motion_notify_event (GtkWidget * widget,
   g_return_val_if_fail (FTK_IS_EVENTVIEWER (eventviewer), FALSE);
 
   {
-    int marker_idx;
+    gint marker_idx;
     ftk_popup_type_e pt;
     ftk_marker_s * marker;
-    int pvpos = lrint (event->y) - 10;
-    int phpos = lrint (event->x);
+    gint pvpos = lrint (event->y) - 10;
+    gint phpos = lrint (event->x);
 
     pt = FTK_POPUP_TYPE_NONE;
     for (marker_idx = 0;
@@ -1464,9 +1464,9 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 #endif
 
   {
-    int i;
-    int trace_idx;
-    int marker_idx;
+    gint i;
+    gint trace_idx;
+    gint marker_idx;
     ftk_trace_s * trace;
     ftk_marker_s * marker;
     ftk_popup_type_e pt;
@@ -1474,11 +1474,11 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
     double time_d = 0.0;
     /* fixme -- replace 12 w something based of font hgt */
     /* fixme maybe put in loop below and create running baseline */
-    int pvpos = lrint (event->y) - 10;
-    int phpos = lrint (event->x);
+    gint pvpos = lrint (event->y) - 10;
+    gint phpos = lrint (event->x);
     ftk_multi_event_s * multi_event = NULL;
-    int multi_event_next = 0;
-    int multi_event_max  = 0;
+    gint multi_event_next = 0;
+    gint multi_event_max  = 0;
 
     trace = NULL;
     marker = NULL;
@@ -1497,8 +1497,8 @@ ftk_ev_motion_notify_event (GtkWidget * widget,
 	if (phpos <= ftk_ev_label_box_width (eventviewer))
 	  pt = FTK_POPUP_TYPE_LABEL;
 	else {
-	  int j;
-	  int hit_count = 0;
+	  gint j;
+	  gint hit_count = 0;
 	  ftk_event_s * qevent = NULL;
 	  for (j = 0; j <  ftk_trace_event_next(ltrace); j++) {
 	    ftk_event_s * pevent = ftk_trace_event (ltrace, j);
@@ -1582,8 +1582,8 @@ draw_cairo_point (FtkEventViewer * eventviewer, cairo_t * cr,
 		  ftk_trace_s * trace,
 		  ftk_event_s * event, gboolean flush_it)
 {
-  //  int o_x, o_y;
-  //  int d_w, d_h;
+  //  gint o_x, o_y;
+  //  gint d_w, d_h;
   gboolean kill_cr;
 
   ftk_event_loc (event) = -1;
@@ -1650,13 +1650,13 @@ ftk_eventviewer_legend_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   
   if (ftk_ev_markers_modified (eventviewer) ||
       ftk_ev_widget_modified(eventviewer)) {
-    int l_h_pos = LEGEND_MARGIN;
-    int dww = (int)(dwidge->allocation.width);
-    int legend_width;
-    int i;
+    gint l_h_pos = LEGEND_MARGIN;
+    gint dww = (int)(dwidge->allocation.width);
+    gint legend_width;
+    gint i;
     gint width = 0;
     gint height = 0;
-    int legend_v_pos = 0;
+    gint legend_v_pos = 0;
     
     ftk_ev_markers_modified (eventviewer) = FALSE;
     //    ftk_ev_widget_modified (eventviewer) = FALSE;
@@ -1696,7 +1696,7 @@ ftk_eventviewer_legend_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   }
   
   {	/* draw legend */
-    int i;
+    gint i;
 
     cairo_t * cr = gdk_cairo_create (dwidge->window);
       
@@ -1741,9 +1741,9 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
 
   /* compute label extents and baselines */
   if (ftk_ev_trace_modified (eventviewer)) {
-    int i;
-    int max_label_width  = 0;
-    int total_label_height = 0;
+    gint i;
+    gint max_label_width  = 0;
+    gint total_label_height = 0;
     
     ftk_ev_trace_modified (eventviewer) = FALSE;
 
@@ -1784,8 +1784,8 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   {
     cairo_t * cr = gdk_cairo_create (dwidge->window);
 
-    int dww = (int)(dwidge->allocation.width);
-    int dwh = (int)(dwidge->allocation.height);
+    gint dww = (int)(dwidge->allocation.width);
+    gint dwh = (int)(dwidge->allocation.height);
   
     cairo_rectangle (cr, 0, 0, dww, dwh);
     cairo_set_source_rgb (cr,
@@ -1798,7 +1798,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     cairo_stroke (cr);
 
     {		/* draw labels and baselines */
-      int i;
+      gint i;
 
 #define LABEL_GAP 10
       ftk_ev_trace_origin (eventviewer) =
@@ -1859,7 +1859,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     cairo_clip (cr);
 
     {				/* draw points */
-      int i,j;
+      gint i,j;
 
     for (i = 0; i < ftk_ev_trace_order_next(eventviewer); i++) {
       ftk_trace_s * trace = ftk_ev_trace(eventviewer,
@@ -1875,7 +1875,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     }
     
     {				/* draw links */
-      int i;
+      gint i;
 
       for (i = 0; i < ftk_ev_link_next(eventviewer); i++) {
 	ftk_link_s * link = ftk_ev_link (eventviewer, i);
@@ -1884,7 +1884,7 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
       }
     }
     {				/* draw dlinks */
-      int i;
+      gint i;
 
       for (i = 0; i < ftk_ev_dlink_next(eventviewer); i++) {
 	ftk_dlink_s * dlink = ftk_ev_dlink (eventviewer, i);
@@ -1976,7 +1976,7 @@ static void
 ftk_eventviewer_destroy(GtkObject * widget,
 			gpointer data)
 {
-  int i;
+  gint i;
   FtkEventViewer * eventviewer = FTK_EVENTVIEWER (widget);
   g_return_if_fail (FTK_IS_EVENTVIEWER (widget));
 
@@ -2082,7 +2082,7 @@ do_append (FtkEventViewer * eventviewer,
 	   double now_d)
 {
   ftk_event_s * event;
-  int event_nr = -1;
+  gint event_nr = -1;
   ftk_trace_s * trace = ftk_ev_trace (eventviewer, trace_index);
 
 #define FTK_TRACE_EVENT_INCR	64
@@ -2407,7 +2407,7 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
 					char * string,
 					GError ** err)
 {
-  int tag = -1;
+  gint tag = -1;
   
   if (!FTK_IS_EVENTVIEWER (eventviewer)) {
     g_set_error (err,
@@ -2516,7 +2516,7 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
   }
 
   {
-    int i;
+    gint i;
 
     for (i = 0; i < ftk_ev_trace_order_next (eventviewer); i++) {
       if (ftk_ev_trace_order_ety (eventviewer, i) == trace_index) {
@@ -2569,7 +2569,7 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
 
   /* delete ftk_ev_dlinks(eventviewer) */
   if (ftk_ev_dlinks (eventviewer)) {
-    int i;
+    gint i;
 
     for (i = 0; i < ftk_ev_dlink_next (eventviewer); i++) {
       ftk_dlink_s * dlink = ftk_ev_dlink (eventviewer, i);
@@ -2578,7 +2578,7 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
 	int j;
 
 	for (j = 0; j < ftk_dlink_event_list_next(dlink); j++) {
-	  int ti = ftk_dlink_event_pair_trace(dlink, j);
+	  gint ti = ftk_dlink_event_pair_trace(dlink, j);
 	  if (trace_index == ti) {
 	    if (j < (ftk_dlink_event_list_next (dlink) - 1))
 	      memmove (&ftk_dlink_event_pair(dlink, j),
@@ -2607,7 +2607,7 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
   
   /* delete ftk_ev_links(eventviewer) */
   if (ftk_ev_links (eventviewer)) {
-    int i;
+    gint i;
 
     for (i = 0; i < ftk_ev_link_next (eventviewer); i++) {
       ftk_link_s * link = ftk_ev_link (eventviewer, i);
@@ -2616,7 +2616,7 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
 	int j;
 
 	for (j = 0; j < ftk_link_trace_list_next(link); j++) {
-	  int ti = ftk_link_trace(link, j);
+	  gint ti = ftk_link_trace(link, j);
 	  if (trace_index == ti) {
 	    if (j < (ftk_link_trace_list_next (link) - 1))
 	      memmove (&ftk_link_trace(link, j),
@@ -2913,7 +2913,7 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
     gtk_widget_create_pango_layout (GTK_WIDGET (eventviewer), label);
   ftk_marker_label_modified(marker) = TRUE;
   if (glyph == FTK_GLYPH_AUTOMATIC) {
-    int ci = ftk_ev_next_color (eventviewer)++;
+    gint ci = ftk_ev_next_color (eventviewer)++;
     ftk_ev_next_color (eventviewer) %= colors_count;
 
     ftk_marker_glyph (marker) = ftk_ev_next_glyph (eventviewer)++;
@@ -3110,7 +3110,7 @@ ftk_eventviewer_tie_new_e (FtkEventViewer * eventviewer,
 #endif
 			   GError ** err)
 {
-  int tag = -1;
+  gint tag = -1;
   
   if (!FTK_IS_EVENTVIEWER (eventviewer)) {
     g_set_error (err,
@@ -3381,7 +3381,7 @@ ftk_eventviewer_append_event_e (FtkEventViewer * eventviewer,
 				gchar * string,
 				GError ** err)
 {
-  int rc = -1;
+  gint rc = -1;
   
   if (!FTK_IS_EVENTVIEWER (eventviewer)) {
     g_set_error (err,
@@ -3522,10 +3522,10 @@ do_simultaneous (FtkEventViewer * eventviewer, gint tie_index,
     gint marker_index;
     gchar * string;
 
-    trace_index = va_arg (ap, int);
+    trace_index = va_arg (ap, gint);
     if (-1 == trace_index) break;
     
-    marker_index = va_arg (ap, int);
+    marker_index = va_arg (ap, gint);
     string       = va_arg (ap, char *);
 
     rc = do_simultaneous_append (eventviewer,
@@ -3582,7 +3582,7 @@ ftk_eventviewer_append_simultaneous_event_array_e (FtkEventViewer * eventviewer,
 						   ftk_simultaneous_events_s * events_array,
 						   GError ** err)
 {
-  int i;
+  gint i;
   struct timeval now;
   double now_d;
   ftk_link_s * link;
@@ -3774,7 +3774,7 @@ ftk_eventviewer_tie_event_array_e (FtkEventViewer * eventviewer,
 				   ftk_event_pair_s * events,
 				   GError ** err)
 {
-  int i;
+  gint i;
   ftk_dlink_s * dlink;
   gboolean rc = TRUE;
   

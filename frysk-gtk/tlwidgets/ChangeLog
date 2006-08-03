@@ -1,7 +1,10 @@
 2006-08-03  Nurdin Premji  <npremji@redhat.com>
 
-	* src/widgets/ftkeventviewer.c: Added accessibility support for traces.
+	* src/widgets/ftkeventviewer.c: Changed all ints to gints.
 	* src/widgets/ftkeventviewer.h: Ditto.
+
+	* src/widgets/ftkeventviewer.c: Added accessibility support for traces.
+	* src/widgets/ftkeventviewer.h: Ditto. 
 
 2006-08-01	Nurdin Premji	<npremji@redhat.com>
 	
