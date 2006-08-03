@@ -1,3 +1,14 @@
+2006-08-03  Tim Moore  <timoore@redhat.com>
+
+	* MachineType.java: New class; constants for architecture of
+	running program.
+	* SyscallExaminer.java: New file. Utility superclass for tests
+	that halt on a system call for examining machine state.
+	* TestI386Regs.java: Rewrite to use SyscallExaminer.
+	* TestX8664Regs.java: New file. Register access test for x86_64.
+	* TestLib.java (tearDown): Only kill children that were registered
+	with killDuringTearDown.
+
 2006-07-27  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TaskState.java (clonedState): Added handling for 

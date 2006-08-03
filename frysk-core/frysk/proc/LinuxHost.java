@@ -350,7 +350,10 @@ public class LinuxHost
                               boolean coreDumped)
       {
         Task task = getTask(pid, "{0} terminated\n");
-        task.processTerminatedEvent(signal, value);
+	if (task == null)
+	  logger.log(Level.WARNING, "No task for pid {0}\n", new Integer(pid));
+	else
+	  task.processTerminatedEvent(signal, value);
       }
     };
 

@@ -1,3 +1,8 @@
+2006-08-03  Tim Moore  <timoore@redhat.com>
+
+	* Uname.java: New file, interface to uname(2).
+	* cni/Uname.cxx: New file.
+
 2006-08-02  Adam Jocksch  <ajocksch@redhat.com>
 
 	* StressMapRead.java: Renamed from TestMapRead since the test

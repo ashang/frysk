@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -42,25 +42,23 @@ package frysk.proc;
 import java.util.Observable;
 
 /**
- * Check that I386 registers can be accessed.
+ * Check that x86_64 registers can be accessed.
  */
 
-public class TestI386Regs
+public class TestX8664Regs
   extends SyscallExaminer
 {
-  // Timers, observers, counters, etc.. needed for the test.
-  class TestI386RegsInternals extends SyscallExaminer.Tester
+  class TestX8664RegsInternals extends SyscallExaminer.Tester
   {
-    boolean ia32Isa;
+    boolean EMT64Isa;
     int syscallNum;
-    long orig_eax;
-    long ebx;
-    long ecx;
-    long edx;
-    long ebp;
-    long esp;
-    long esi;
-    long edi;
+    long orig_rax;
+    long rdi;
+    long rsi;
+    long rdx;
+    long r10;
+    long r8;
+    long r9;
 	
     // Need to add task observers to the process the moment it is
     // created, otherwize the creation of the very first task is
@@ -72,13 +70,15 @@ public class TestI386Regs
     {
       public Action updateSyscallEnter (Task task)
       {
+	logger.entering("TestX8664Regs.TaskEventObserver",
+			"updateSyscallEnter");
 	super.updateSyscallEnter(task);
 	SyscallEventInfo syscall;
-	LinuxIa32 isa;
+	LinuxEMT64 isa;
 	try 
 	  {
 	    syscall = task.getSyscallEventInfo ();
-	    isa = (LinuxIa32)task.getIsa ();
+	    isa = (LinuxEMT64)task.getIsa ();
 	  }
 	catch (Task.TaskException e)
 	  {
@@ -90,14 +90,13 @@ public class TestI386Regs
 	// to verify that all the registers are as expected.
 	syscallNum = syscall.number (task);
 	if (syscallNum == 1) { 
-	  orig_eax = isa.getRegisterByName ("orig_eax").get (task);
-	  ebx = isa.getRegisterByName ("ebx").get (task);
-	  ecx = isa.getRegisterByName ("ecx").get (task);
-	  edx = isa.getRegisterByName ("edx").get (task);
-	  ebp = isa.getRegisterByName ("ebp").get (task);
-	  esi = isa.getRegisterByName ("esi").get (task);
-	  edi = isa.getRegisterByName ("edi").get (task);
-	  esp = isa.getRegisterByName ("esp").get (task);
+	  orig_rax = isa.getRegisterByName ("orig_rax").get (task);
+	  rdi = isa.getRegisterByName ("rdi").get (task);
+	  rsi = isa.getRegisterByName ("rsi").get (task);
+	  rdx = isa.getRegisterByName ("rdx").get (task);
+	  r10 = isa.getRegisterByName ("r10").get (task);
+	  r8 = isa.getRegisterByName ("r8").get (task);
+	  r9 = isa.getRegisterByName ("r9").get (task);
 	}
 	return Action.CONTINUE;
       }
@@ -122,22 +121,22 @@ public class TestI386Regs
 	  {
 	    isa = null;
 	  }
-	if (isa instanceof LinuxIa32) 
+	if (isa instanceof LinuxEMT64) 
 	  {
-	    ia32Isa = true;
+	    EMT64Isa = true;
 	    task.requestAddSyscallObserver(taskEventObserver);
 	    task.requestAddSignaledObserver(taskEventObserver);
 	  }
 	else
 	  {
 	    // If not ia32, stop immediately
-	    ia32Isa = false;
+	    EMT64Isa = false;
 	    Manager.eventLoop.requestStop();
 	  }
       }
     }
 
-    TestI386RegsInternals ()
+    TestX8664RegsInternals ()
     {
       super();
       addTaskAddedObserver(new RegsTestObserver());
@@ -145,27 +144,28 @@ public class TestI386Regs
   }
   
 
-  public void testI386Regs ()
+  public void testX8664Regs ()
   {
-    if (MachineType.getMachineType() != MachineType.IA32)
+    if (MachineType.getMachineType() != MachineType.X8664)
       return;
-    TestI386RegsInternals t = new TestI386RegsInternals ();
+    TestX8664RegsInternals t = new TestX8664RegsInternals();
     // Create program making an exit syscall");
-    new AttachedDaemonProcess (new String[]
+    AttachedDaemonProcess child = new AttachedDaemonProcess (new String[]
 	{
-	  getExecPrefix () + "funit-ia32-regs"
-	}).resume ();
+	  getExecPrefix () + "funit-x8664-regs"
+	});
+    logger.finest("About to resume funit-x8664-regs");
+    child.resume();
     assertRunUntilStop ("run \"x86regs\" until exit");
 
-    if (t.ia32Isa) {
-      assertEquals ("orig_eax register", 1, t.orig_eax);
-      assertEquals ("ebx register", 2, t.ebx);
-      assertEquals ("ecx register", 3, t.ecx);
-      assertEquals ("edx register", 4, t.edx);
-      assertEquals ("ebp register", 5, t.ebp);
-      assertEquals ("esi register", 6, t.esi);
-      assertEquals ("edi register", 7, t.edi);
-      assertEquals ("esp register", 8, t.esp);
+    if (t.EMT64Isa) {
+      assertEquals ("orig_rax register", 1, t.orig_rax);
+      assertEquals ("rdi register", 2, t.rdi);
+      assertEquals ("rsi register", 3, t.rsi);
+      assertEquals ("rdx register", 4, t.rdx);
+      assertEquals ("r10 register", 5, t.r10);
+      assertEquals ("r8 register", 6, t.r8);
+      assertEquals ("r9 register", 7, t.r9);
 
       assertTrue ("exited", t.exited);
     }

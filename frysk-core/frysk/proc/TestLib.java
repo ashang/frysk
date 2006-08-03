@@ -1265,6 +1265,9 @@ public class TestLib
 
 	// Kill off all the registered children.  Once that signal is
 	// processed the task will die.
+	// Make sure there are still children to kill. Someone else
+	// may have waited on their deaths already.
+	
 	for (Iterator i = children.iterator (); i.hasNext (); ) {
 	    Integer child = (Integer) i.next ();
 	    int pid = child.intValue ();
@@ -1275,9 +1278,11 @@ public class TestLib
 			    new Object[] { this, child });
 	    }
 	    catch (Errno.Esrch e) {
-		// Toss it.
-		logger.log (Level.FINE, "{0} kill -KILL {1,number,integer} (failed)\n",
-			    new Object[] { this, child });
+	      // Toss it.
+	      logger.log (Level.FINE,
+			  "{0} kill -KILL {1,number,integer} (failed)\n",
+			  new Object[] { this, child });
+	      i.remove();
 	    }
 	    // There's a problem here with both stopped and attached
 	    // tasks.  The Sig.KILL won't be delivered, and
@@ -1317,7 +1322,7 @@ public class TestLib
 	// events (clone et.al.), the task is detached / killed.
 	// Doing that frees up the task so that it can run to exit.
 	try {
-	    while (true) {
+	    while (!children.isEmpty()) {
 	    	Wait.waitAll (-1, new Wait.Observer ()
 		    {
 			private void detach (int pid)
@@ -1370,10 +1375,12 @@ public class TestLib
 			public void terminated (int pid, boolean signal,
 						int value, boolean coreDumped)
 			{
+			  children.remove(new Integer(pid));
 			}
 			public void disappeared (int pid, Throwable w)
-			{
+		       {
 			    detach (pid);
+			    children.remove(new Integer(pid));
 			}
 		    });
   	    }

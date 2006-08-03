@@ -1,3 +1,7 @@
+2006-08-03  Tim Moore  <timoore@redhat.com>
+
+	* funit-x8664-regs.S: New x8664 specific program.
+
 2006-07-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* funit-rt-looper.c: Now takes the signal to send as a parameter.
