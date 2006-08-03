@@ -1,5 +1,8 @@
 2006-08-03  Tim Moore  <timoore@redhat.com>
 
+	* LinuxHost.java (PollWaitOnSigChld.terminated): Test for null
+	pointer return from getTask.
+
 	* MachineType.java: New class; constants for architecture of
 	running program.
 	* SyscallExaminer.java: New file. Utility superclass for tests
