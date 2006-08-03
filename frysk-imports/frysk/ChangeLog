@@ -1,4 +1,9 @@
+2006-08-03  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (FRYSK_LOG_ID): Rename to just "frysk".
+
 2006-02-28  Rick Moseley  <rmoseley@redhat.com>
+
 	* EventLogger.java:  Remove unneeded import of ConsoleHnadler.
 
 2006-02-27  Stan Cox  <scox@redhat.com>

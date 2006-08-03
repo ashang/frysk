@@ -65,5 +65,5 @@ public class Config
     // User's config directory.
     public static final String FRYSK_DIR
 	= System.getProperty("user.home") + "/" + ".frysk" + "/";
-    public static final String FRYSK_LOG_ID = "frysk.core.eventlog";
+    public static final String FRYSK_LOG_ID = "frysk";
 }
