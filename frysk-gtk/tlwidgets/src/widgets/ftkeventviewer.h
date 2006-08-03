@@ -302,6 +302,7 @@ typedef struct _ftk_trace_s {
   gboolean	label_modified;		/* used */
   gboolean	valid;
   gboolean	time_set;
+  int index;
 } ftk_trace_s;
 
 #define ftk_tie_s ftk_trace_s
@@ -328,6 +329,7 @@ typedef struct _ftk_trace_s {
 #define ftk_trace_event_next(t)		(t)->event_next
 #define ftk_trace_event_max(t)		(t)->event_max
 #define ftk_trace_valid(t)		(t)->valid
+#define ftk_trace_index(t)		(t)->index
 
 #define ftk_tie_gc(t)			(t)->gc
 #define ftk_tie_label(t)		(t)->label
@@ -410,6 +412,7 @@ typedef struct _FtkEventViewer {
   GtkWidget		* scroll;
   GtkAdjustment		* scroll_adj;
   GtkDrawingArea	* da;
+  GtkScrolledWindow * da_scrolled_window;
   GtkDrawingArea	* legend_da;
   GdkColor		  bg_color;
   const GdkColor       ** color_set;
@@ -453,6 +456,7 @@ typedef struct _FtkEventViewer {
   gboolean		  drawable;
   gboolean		  time_set;
   gboolean		  hold_activated;
+  int			  accessible_index;
 } FtkEventViewer;
 
 #define ftk_ev_vbox(v)		      &((v)->vbox)
@@ -487,6 +491,7 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_da_frame(v)		(v)->da_frame
 #define ftk_ev_legend_frame(v)		(v)->legend_frame
 #define ftk_ev_da(v)			(v)->da
+#define ftk_ev_da_scrolled_window(v) (v)->da_scrolled_window
 #define ftk_ev_legend_da(v)		(v)->legend_da
 #define ftk_ev_scroll(v)		(v)->scroll
 #define ftk_ev_scroll_adj(v)		(v)->scroll_adj
@@ -538,6 +543,7 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_markers_max(v)		(v)->markers_max
 #define ftk_ev_markers_modified(v)	(v)->markers_modified
 #define ftk_ev_widget_modified(v)	(v)->widget_modified
+#define ftk_ev_accessible_index(v) 	(v)->accessible_index
 
 typedef struct _FtkEventViewerClass {
   GtkVBoxClass parent_class;
@@ -623,6 +629,13 @@ gint
 ftk_eventviewer_add_trace	(FtkEventViewer * eventviewer,
 				 char * label,
 				 char * string);
+				 
+gint
+ftk_eventviewer_add_trace_after_trace_e (FtkEventViewer * eventviewer,
+				 gint parent_trace,
+			     char * label,
+			     char * string,
+			     GError ** err);				 
 
 gboolean
 ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
