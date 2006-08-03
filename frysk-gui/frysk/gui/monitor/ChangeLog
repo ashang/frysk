@@ -1,5 +1,11 @@
 2006-08-03  Mike Cvet  <mcvet@redhat.com>
 
+	* observers/TaskCloneObserver.java: Added Frysk license, applied 
+	GNU formatting.
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskSyscallObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
 	* actions/RunExternal.java (execute): Put in an executable existence
 	check.
 
