@@ -388,11 +388,11 @@ public class TestTaskObserverBlocked
 
 	// Create a child process, will transition through to
 	// detached.
-	proc.addFork ();
+	proc.assertSendAddForkWaitForAcks ();
 	
 	// Now make the child exit.  Frysk's core can't see this since
 	// it isn't attached to the process.
-	proc.delFork ();
+	proc.assertSendDelForkWaitForAcks ();
 
 	logger.log (Level.FINE, "{0} parent\n", forkUnblock.parent);
 	logger.log (Level.FINE, "{0} offspring\n", forkUnblock.offspring);
@@ -437,7 +437,7 @@ public class TestTaskObserverBlocked
 
 	// Create a child process, will transition through to
 	// detached.
-	proc.addFork ();
+	proc.assertSendAddForkWaitForAcks ();
     }
 
 

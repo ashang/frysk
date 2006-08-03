@@ -124,7 +124,7 @@ public class TestExec
 	TmpFile tmpFile = new TmpFile ();
 	AckProcess child = new DetachedAckProcess
 	    ((String)null, new String[] { "/bin/rm", tmpFile.toString (), });
-	child.addClone ();
+	child.assertSendAddCloneWaitForAcks ();
 	Task mainTask = child.findTaskUsingRefresh (true);
 	Task clone = child.findTaskUsingRefresh (false);
 
@@ -194,7 +194,7 @@ public class TestExec
 	// the child process has notified this process that the exec
 	// has finished which is well after SingleExecObserver
 	// .updateExeced has been called.
-	child.exec ();
+	child.assertSendExecWaitForAcks ();
 
 	assertEquals ("pid after attached single exec", child.getPid (),
 		      execObserver.savedTid);
@@ -244,9 +244,9 @@ public class TestExec
 	// loop running until the child process has notified this
 	// process that the exec has finished which is well after
 	// ExecParentObserver .updateExeced has been called.
-	child.addClone ();
-	child.addClone ();
-	child.exec ();
+	child.assertSendAddCloneWaitForAcks ();
+	child.assertSendAddCloneWaitForAcks ();
+	child.assertSendExecWaitForAcks ();
 
 	assertTrue ("task after attached multiple parent exec",
 		    proc.getPid () == task.getTid ()); // not main task
@@ -308,15 +308,15 @@ public class TestExec
 	// the main thread is left and is therefore the only thread that 
 	// can receive the event. 
 
-	child.addClone ();
-	child.addClone ();
+	child.assertSendAddCloneWaitForAcks ();
+	child.assertSendAddCloneWaitForAcks ();
 
 	String[] beforeCmdLine = proc.getCmdLine ();
 	String beforeCommand = proc.getCommand ();
 	
 	Task childtask = child.findTaskUsingRefresh (false);
 	childtask.requestAddExecedObserver (execObserverChild);
-	child.exec (childtask.getTid ());
+	child.assertSendExecWaitForAcks (childtask.getTid ());
 
 	assertEquals ("task after attached multiple clone exec", proc,
 		      task.getProc()); // parent/child relationship

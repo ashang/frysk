@@ -115,10 +115,10 @@ public class StressAttachDetachSignaledTask
 	    {
 		switch (iteration % 2) {
 		case 0:
-		    child.addFork ();
+		    child.assertSendAddForkWaitForAcks ();
 		    break;
 		case 1:
-		    child.delFork ();
+		    child.assertSendDelForkWaitForAcks ();
 		    break;
 		}
 	    }
@@ -139,10 +139,10 @@ public class StressAttachDetachSignaledTask
 	    {
 		switch (iteration % 2) {
 		case 0:
-		    child.addClone ();
+		    child.assertSendAddCloneWaitForAcks ();
 		    break;
 		case 1:
-		    child.delClone ();
+		    child.assertSendDelCloneWaitForAcks ();
 		    break;
 		}
 	    }
@@ -158,7 +158,7 @@ public class StressAttachDetachSignaledTask
 	{
 	    void op (AckDaemonProcess child, int iteration)
 	    {
-		child.exec ();
+		child.assertSendExecWaitForAcks ();
 	    }
 	};
     }

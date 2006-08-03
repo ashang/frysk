@@ -207,7 +207,7 @@ public class TestRefresh
 	// looses two tasks, and that the lost tasks have been
 	// transitioned to the dead state.
 	for (int i = 0; i < nrKills; i++)
-	    child.delClone ();
+	    child.assertSendDelCloneWaitForAcks ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertEquals ("proc's task count after kills",
@@ -230,7 +230,7 @@ public class TestRefresh
 
 	// Finally, tell the child to add a task back.  Check that the
 	// counts are again updated.
-	child.addClone ();
+	child.assertSendAddCloneWaitForAcks ();
 	tracker.proc.requestRefresh ();
 	Manager.eventLoop.runPending ();
 	assertEquals ("proc's task count after add",
@@ -296,7 +296,7 @@ public class TestRefresh
 	// Create the zombie maker, and then get it to create one
 	// child.
 	AckProcess zombie = new AckDaemonProcess ();
-	zombie.addFork ();
+	zombie.assertSendAddForkWaitForAcks ();
 	
 	// Do a refresh, find the zombie maker, check it has one child
 	// process, save it.
@@ -311,7 +311,7 @@ public class TestRefresh
 	// Blow away the parent, this turns the child into a daemon,
 	// do a refresh and check that the child's parent changed to
 	// process one.
-	zombie.fryParent ();
+	zombie.assertSendFryParentWaitForAcks ();
 	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	assertNotSame ("child's parent and zombie maker",
@@ -337,7 +337,7 @@ public class TestRefresh
     public void testExitLoosesChild ()
     {
 	AckProcess daemon = new AckDaemonProcess ();
-	daemon.addFork ();
+	daemon.assertSendAddForkWaitForAcks ();
 
 	// Find the process and it's children.
 	Proc daemonProc = daemon.findProcUsingRefresh ();
@@ -376,7 +376,7 @@ public class TestRefresh
 	host.observableProcRemovedXXX.addObserver (daemonCheck);
 
 	// Blow away the daemon, force an update.
-	daemon.fryParent ();
+	daemon.assertSendFryParentWaitForAcks ();
 	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
 	assertTrue ("daemonCheck.deleted", daemonCheck.deleted);
@@ -392,7 +392,7 @@ public class TestRefresh
 	// Create the zombie maker, and then get it to create one
 	// child.
 	AckProcess zombie = new AckDaemonProcess ();
-	zombie.addFork ();
+	zombie.assertSendAddForkWaitForAcks ();
 	
 	// Do a refresh (that includes updating the task list), find
 	// the zombie maker, check that it's child has one task and no
@@ -408,7 +408,7 @@ public class TestRefresh
 
 	// Turn the zombie-child into a true zombie, check things are
 	// updated.
-	zombie.zombieFork ();
+	zombie.assertSendZombieForkWaitForAcks ();
 	host.requestRefreshXXX (true);
 	Manager.eventLoop.runPending ();
  	assertEquals ("zombie maker child count",
@@ -430,7 +430,7 @@ public class TestRefresh
 	AckProcess child = new AckDaemonProcess ();
 	Proc proc = child.findProcUsingRefresh ();
 	
-	child.exec ();
+	child.assertSendExecWaitForAcks ();
 
 	host.requestRefreshXXX (false);
 	Manager.eventLoop.runPending ();
@@ -458,7 +458,7 @@ public class TestRefresh
 	assertTrue ("task before unattached multiple clone exec",
 		    proc.getPid () != taskBefore.getTid ()); // not main task
 
- 	child.execClone ();
+ 	child.assertSendExecCloneWaitForAcks ();
 
 	Manager.host.requestRefreshXXX (true);
  	Manager.eventLoop.runPending ();

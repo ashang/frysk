@@ -87,7 +87,7 @@ public class TestProcTasksObserver extends TestLib {
 	//Create Process
 	Proc proc = ackProcess.findProcUsingRefresh();
 		
-	ackProcess.addClone();
+	ackProcess.assertSendAddCloneWaitForAcks();
 		
 	final int count = 2;
 		
@@ -152,7 +152,7 @@ public class TestProcTasksObserver extends TestLib {
 	runPending();
 		
 	//Add a clone.	
-	ackProcess.addClone();
+	ackProcess.assertSendAddCloneWaitForAcks();
 		
 	assertEquals ("taskAddedCount", addcount, observerTester.tasksAdded.size());
 		
@@ -221,7 +221,7 @@ public class TestProcTasksObserver extends TestLib {
 		
 	assertRunUntilStop("clone then kill");
 		
-	ackProcess.addClone();
+	ackProcess.assertSendAddCloneWaitForAcks();
 		
 	Task task = ackProcess.findTaskUsingRefresh(false);
 	Signal.tkill(task.getTid(), Sig.BUS);

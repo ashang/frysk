@@ -475,14 +475,14 @@ public class TestLib
 	{
 	    this ();
 	    for (int i = 0; i < count; i++)
-		addClone ();
+		assertSendAddCloneWaitForAcks ();
 	}
 	/** Create a possibly busy AckProcess.  Add COUNT threads.  */
 	AckProcess (int count, boolean busy)
 	{
 	    this (busy);
 	    for (int i = 0; i < count; i++)
-		addClone ();
+		assertSendAddCloneWaitForAcks ();
 	}
 	/**
 	 * Tell TID to create a new offspring.  Wait for the
@@ -495,43 +495,46 @@ public class TestLib
 	    ack.await ();
 	}
 	/** Add a Task.  */
-	public void addClone ()
+	public void assertSendAddCloneWaitForAcks ()
 	{
-	    spawn (getPid (), addCloneSig, "addClone");
+	    spawn (getPid (), addCloneSig, "assertSendAddCloneWaitForAcks");
 	}
 	/** Add a Task.  */
-	public void addClone (int tid)
+	public void assertSendAddCloneWaitForAcks (int tid)
 	{
 	    spawn (tid, addCloneSig, "addClone");
 	}
 	/** Delete a Task.  */
-	public void delClone ()
+	public void assertSendDelCloneWaitForAcks ()
 	{
-	    AckHandler ack = new AckHandler (parentAck, "delClone");
+	    AckHandler ack = new AckHandler (parentAck,
+					     "assertSendDelCloneWaitForAcks");
 	    signal (delCloneSig);
 	    ack.await ();
 	}
 	/** Add a child Proc.  */
-	public void addFork ()
+	public void assertSendAddForkWaitForAcks ()
 	{
-	    spawn (getPid (), addForkSig, "addFork");
+	    spawn (getPid (), addForkSig, "assertSendAddForkWaitForAcks");
 	}
 	/** Add a child Proc.  */
-	public void addFork (int tid)
+	public void assertSendAddForkWaitForAcks (int tid)
 	{
 	    spawn (tid, addForkSig, "addFork");
 	}
 	/** Delete a child Proc.  */
-	public void delFork ()
+	public void assertSendDelForkWaitForAcks ()
 	{
-	    AckHandler ack = new AckHandler (parentAck, "delFork");
+	    AckHandler ack = new AckHandler (parentAck,
+					     "assertSendDelForkWaitForAcks");
 	    signal (delForkSig);
 	    ack.await ();
 	}
 	/** Terminate a fork Proc (creates zombie).  */
-	public void zombieFork ()
+	public void assertSendZombieForkWaitForAcks ()
 	{
-	    AckHandler ack = new AckHandler (parentAck, "zombieFork");
+	    AckHandler ack = new AckHandler (parentAck,
+					     "assertSendZombieForkWaitForAcks");
 	    signal (zombieForkSig);
 	    ack.await ();
 	}
@@ -539,9 +542,10 @@ public class TestLib
 	 * Kill the parent, expect an ack from the child (there had
 	 * better be a child).
 	 */
-	void fryParent ()
+	void assertSendFryParentWaitForAcks ()
 	{
-	    AckHandler ack = new AckHandler (childAck, "fryParent");
+	    AckHandler ack = new AckHandler (childAck,
+					     "assertSendFryParentWaitForAcks");
 	    signal (Sig.KILL);
 	    ack.await ();
 	}
@@ -549,32 +553,33 @@ public class TestLib
 	 * Request that TID (assumed to be a child) perform an exec
 	 * call.
 	 */
-	void exec (int tid)
+	void assertSendExecWaitForAcks (int tid)
 	{
-	    AckHandler ack = new AckHandler (execAck, "exec:" + tid);
+	    AckHandler ack = new AckHandler (execAck,
+					     "assertSendExecWaitForAcks:"
+					     + tid);
 	    Signal.tkill (tid, execSig);
 	    ack.await ();
 	}
 	/**
 	 * Request that the main task perform an exec.
 	 */
-	void exec ()
+	void assertSendExecWaitForAcks ()
 	{
-	    AckHandler ack = new AckHandler (execAck, "exec");
-	    signal (execSig);
-	    ack.await ();
+	    assertSendExecWaitForAcks (getPid ());
 	}
 	/**
 	 * Request that the cloned task perform an exec.
 	 */
-	void execClone ()
+	void assertSendExecCloneWaitForAcks ()
 	{
 	    // First the main thread acks with .parentAck, and then
 	    // the execed process acks with .childAck.
-	    AckHandler ack = new AckHandler (new Sig[] {
-						 parentAck,
-						 childAck
-					     }, "execClone");
+	    AckHandler ack = new AckHandler (new Sig[]
+		{
+		    parentAck,
+		    childAck
+		}, "assertSendExecCloneWaitForAcks");
 	    signal (execCloneSig);
 	    ack.await ();
 	}

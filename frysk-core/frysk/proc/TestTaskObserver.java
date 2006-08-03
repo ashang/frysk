@@ -302,7 +302,7 @@ public class TestTaskObserver
 	if (main)
 	    assertTaskGone (task.getTid (), Sig.KILL);
 	else {
-	    child.delClone ();
+	    child.assertSendDelCloneWaitForAcks ();
 	    assertTaskGone (task.getTid (), Sig.NONE);
 	}	    
 

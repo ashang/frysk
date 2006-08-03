@@ -126,7 +126,7 @@ public class TestTaskSyscallObserver
     	// the child process has notified this process that the exec
     	// has finished which is well after SingleExecObserver
     	// .updateExeced has been called.
-    	child.exec ();
+    	child.assertSendExecWaitForAcks ();
     	    
     	assertEquals("Caught exec syscall",syscallObserver.caughtExec, true);
     }
@@ -155,7 +155,7 @@ public class TestTaskSyscallObserver
     // the child process has notified this process that the exec
     // has finished which is well after SingleExecObserver
     // .updateExeced has been called.
-    child.addFork();
+    child.assertSendAddForkWaitForAcks();
         
     assertTrue(true);
     }
@@ -205,7 +205,7 @@ public class TestTaskSyscallObserver
     // the child process has notified this process that the exec
     // has finished which is well after SingleExecObserver
     // .updateExeced has been called.
-    child.addClone();
+    child.assertSendAddCloneWaitForAcks();
         
 //    System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall() 1: " + syscallObserver1.enter);
 //    System.out.println(this + ": TestTaskSyscallObserver.testCloneSyscall() 2: " + syscallObserver2.enter);

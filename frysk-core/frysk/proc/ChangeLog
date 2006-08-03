@@ -1,3 +1,22 @@
+2006-08-03  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (AckProcess).  Rename .addClone to
+	.assertSendAddCloneWaitForAcks, .delClone to
+	.assertSendDelCloneWaitForAcks, .addFork to
+	.assertSendAddForkWaitForAcks, .delFork to
+	.assertSendDelForkWaitForAcks, .zombieFork to
+	.assertSendZombieForkWaitForAcks, .fryParent to
+	.assertSendFryParentWaitForAcks, .exec to
+	.assertSendExecWaitForAcks, and .execClone to
+	.assertSendExecCloneWaitForAcks.
+	* StressAttachDetachSignaledTask.java: Update.
+	* TestExec.java: Update.
+	* TestProcTasksObserver.java: Update.
+	* TestRefresh.java: Update.
+	* TestTaskObserver.java: Update.
+	* TestTaskObserverBlocked.java: Update.
+	* TestTaskSyscallObserver.java: Update.
+
 2006-08-03  Tim Moore  <timoore@redhat.com>
 
 	* LinuxHost.java (PollWaitOnSigChld.terminated): Test for null
