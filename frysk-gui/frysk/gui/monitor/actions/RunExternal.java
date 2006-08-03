@@ -48,6 +48,8 @@ import frysk.proc.TaskObserver;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 
+import java.io.File;
+
 /**
  * Provides the ability to execute a binary or other program externally to
  * Frysk, allowing the flexibility of user-defined actions following some 
@@ -59,6 +61,7 @@ public class RunExternal
     extends TaskAction
 {
   
+  /* The input string to be executed */
   String execString;
   
   public RunExternal ()
@@ -76,9 +79,13 @@ public class RunExternal
   public void execute (Task task)
   {
     /* Try to execute the arguments given by the user */
-    //TODO: figure out if this executable exists before it gets sent away
-    // to get borked by exec
-    Manager.host.requestCreateAttachedProc(execString.split(" "), new AttachedObserver());
+    String[] temp = execString.split(" ");
+    File bin = new File(temp[0]);
+    
+    if (bin.exists())
+      Manager.host.requestCreateAttachedProc(temp, new AttachedObserver());
+    else
+      System.out.println("File does not exist!");
   }
 
   public GuiObject getCopy ()
