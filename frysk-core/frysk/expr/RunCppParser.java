@@ -39,6 +39,7 @@
 
 package frysk.expr;
 
+import jargs.gnu.CmdLineParser;
 import java.io.*;
 import antlr.collections.AST;
 import jline.*;
@@ -95,10 +96,9 @@ public class RunCppParser
 	    CppParser parser = new CppParser(lexer);
 
 	    parser.start();
-	    AST t = parser.getAST();
-	    if (t != null)
-		System.out.println(t.toStringTree());
-	    System.out.println("\n");
+	    CommonAST t = (CommonAST)parser.getAST();
+	    // Print the resulting tree out in LISP notation
+	    System.out.println("parse tree: " + t.toStringTree());
 	}
 	catch (TabException exTab) {
 	    System.out.println("tab expression: "+ exTab);
@@ -184,8 +184,9 @@ public class RunCppParser
 	    
 	    try {
 	      parser.start();
-	      // AST t = parser.getAST();
-	      parser.getAST ();
+	      CommonAST t = (CommonAST)parser.getAST();
+	      // Print the resulting tree out in LISP notation
+	      System.out.println("parse tree: " + t.toStringTree());
 	    }
 	    catch (TabException exTab) {
 	      sCompletionArray = TabCompletion(exTab.getAst(), exTab.getTabExpression().trim());
@@ -234,9 +235,24 @@ public class RunCppParser
     public static void main(String[] args)
 	throws Exception
     {
+        // Create the command line parser, and use it to parse all
+        // command line options.
+        CmdLineParser clParser = new CmdLineParser ();
+	Completor parseCompletor = new ParserCompletor();
+	ConsoleReader consReader = null;
+	CmdLineParser.Option verboseOption 
+	    = clParser.addBooleanOption('v', "verbose");
+        try {
+            clParser.parse(args);
+        }
+        catch (CmdLineParser.OptionException e) {
+            System.out.println (e.getMessage());
+            System.out.println ("Usage: [ -v ]");
+        }
+	Boolean verbose = (Boolean)clParser.getOptionValue(verboseOption, Boolean.FALSE);  
+
 	try {
 	  //PrintWriter pw = new PrintWriter(System.out);
-	  ConsoleReader consReader;
 
 	  try {
 	    consReader = new ConsoleReader();
@@ -246,15 +262,24 @@ public class RunCppParser
 	    throw (new IOException(ioe.getMessage() + 
 		  "I/O exception when creating new instance of Console Reader"));
 	  }
-	  consReader.addCompletor(new ParserCompletor());
+	  consReader.addCompletor(parseCompletor);
       
 	  String sInput;
 	  Variable result;
 	  Map symTab = new HashMap();
 	  try {
-	    while(!((sInput = consReader.readLine("$")).equalsIgnoreCase("exit")))
+	      while (!((sInput = consReader.readLine("$")).equalsIgnoreCase("exit")))
 	    {
-	      if(sInput.equals(""))
+	      if (sInput.equals("help") || sInput.equals("h")) {
+		  System.out.println("Variable=Expression\nExpression\nhelp, h\nquit, exit, q");
+		  continue;
+	      }
+	      if (sInput.equals("quit") || sInput.equals("q")) {
+		  System.out.println("V=Expression\nExpression\nhelp[h]\nquit[q]");
+		  break;
+	      }
+		    
+	      if (sInput.equals(""))
 		continue;
 
 	      sInput += (char)3;
@@ -264,6 +289,9 @@ public class RunCppParser
 	      parser.start();
 
 	      CommonAST t = (CommonAST)parser.getAST();
+	      // Print the resulting tree out in LISP notation
+	      if (verbose.booleanValue())
+		  System.out.println("parse tree: " + t.toStringTree());
 	      CppTreeParser treeParser = new CppTreeParser(4, 2, symTab);
 
 	      try {
@@ -284,5 +312,7 @@ public class RunCppParser
 	    System.err.println("exception: "+e);
 	    e.printStackTrace(System.err);   // so we can get stack trace
 	}
+	consReader.flushConsole();
+	consReader.removeCompletor(parseCompletor);
     }
 }

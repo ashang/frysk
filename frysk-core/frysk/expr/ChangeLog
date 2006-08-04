@@ -1,3 +1,10 @@
+2006-08-04  Stan Cox  <scox@redhat.com>
+
+	* CppTreeParser.sed: Rewrite.
+	* CppParser.sed: Rewrite.
+	* cpp.g: Reformat.  Eliminate non-determinism.
+	* RunCppParser.java (main): Add verboseOption.
+	
 2006-07-25  Adam Jocksch  <ajocksch@redhat.com>
 
 	* cpp.g: Reverted to version 1.10, changes generate ecj unused variable
