@@ -37,26 +37,31 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import org.gnu.glib.Handle;
 
 import frysk.gui.monitor.observers.ObserverRoot;
 
-public class ActionsTable extends ObserverItemsTable{
+public class ActionsTable
+    extends ObserverItemsTable
+{
 
-	public ActionsTable(Handle handle) {
-		super(handle);
+  public ActionsTable (Handle handle)
+  {
+    super(handle);
 
-	}
+  }
 
-	public ObservableLinkedList getCombos(ObserverRoot observer) {
-		return observer.getCurrentActionCombos();
-	}
+  public ObservableLinkedList getCombos (ObserverRoot observer)
+  {
+    return observer.getCurrentActionCombos();
+  }
 
-	public ObserverItemRow getNewRow(Combo combo) {
-    	return new ActionRow(this, observer, combo);
-	}
-	
-	
+  public ObserverItemRow getNewRow (Combo combo)
+  {
+    return new ActionRow(this, observer, combo);
+  }
+
 }

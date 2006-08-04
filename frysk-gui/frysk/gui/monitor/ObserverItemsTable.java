@@ -37,9 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
-
-
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -53,100 +52,133 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
  * @author swagiaal
- *
  */
-public abstract class ObserverItemsTable extends Table {
+public abstract class ObserverItemsTable
+    extends Table
+{
 
-	private int row;
-	protected ObserverRoot observer;
-	
-	private LinkedList applyList;
-	private LinkedList allList;
-	
-	public ObserverItemsTable(Handle handle) {
-		super(handle);
-		
-		this.applyList = new LinkedList();
-		this.allList = new LinkedList();
-		
-		this.row = 0;
-		this.setBaseColor(StateType.NORMAL, Color.WHITE);
-		this.setBackgroundColor(StateType.NORMAL, Color.WHITE);
-		this.setBackgroundColor(StateType.ACTIVE, Color.WHITE);
-		this.setBackgroundColor(StateType.INSENSITIVE, Color.WHITE);
-		this.setBackgroundColor(StateType.SELECTED, Color.WHITE);
-		this.setBackgroundColor(StateType.NORMAL, Color.WHITE);
+  private int row;
 
-		this.setBaseColor(StateType.NORMAL, Color.WHITE);
-		this.setBaseColor(StateType.ACTIVE, Color.WHITE);
-		this.setBaseColor(StateType.INSENSITIVE, Color.WHITE);
-		this.setBaseColor(StateType.SELECTED, Color.WHITE);
-		this.setBaseColor(StateType.NORMAL, Color.WHITE);
-		this.showAll();
-	}
-	
-	abstract public ObserverItemRow getNewRow(Combo combo);
+  private String offendingArg;
 
-	void addRow(Combo combo){
-		ObserverItemRow itemRow = this.getNewRow(combo);
-		itemRow.addToTable();
+  protected ObserverRoot observer;
 
-		if(combo == null){
-			this.applyList.add(itemRow);
-		}
-		this.allList.add(itemRow);
-		
-		this.row++;
-		this.showAll();
-	}
+  private LinkedList applyList;
 
-	abstract public ObservableLinkedList getCombos(ObserverRoot observer);
-	
-	public void setObserver(ObserverRoot observer){		
-		this.clear();
-		this.observer = observer;
-		Iterator iterator = this.getCombos(observer).iterator();
-		while (iterator.hasNext()) {
-			Combo combo = (Combo) iterator.next();
-			this.addRow(combo);
-		}
-		
-		if(this.row == 0){
-			this.addRow(null);
-		}
-	}
-	
-	public int getIndexOfFinalRow(){
-	  return this.row;
-	}
-	
-	public void apply(){
-		Iterator iterator = this.applyList.iterator();
-		while (iterator.hasNext()) {
-			ObserverItemRow itemRow = (ObserverItemRow) iterator.next();
-			itemRow.apply();
-		}
-		this.applyList.clear();
-	}
-	
-	public void clear(){
-		Iterator iterator = this.allList.iterator();
+  private LinkedList allList;
 
-		while (iterator.hasNext()) {
-			ObserverItemRow itemRow = (ObserverItemRow) iterator.next();
-			itemRow.removeFromTable();
-			row--;
-		}
-		
-		this.allList.clear();
-		this.applyList.clear();
-	}
-	
-	public void removeRow(ObserverItemRow itemRow){
-		this.allList.remove(itemRow);
-		this.applyList.remove(itemRow);
-		itemRow.removeFromTable();
+  public ObserverItemsTable (Handle handle)
+  {
+    super(handle);
+
+    this.applyList = new LinkedList();
+    this.allList = new LinkedList();
+
+    this.row = 0;
+    this.setBaseColor(StateType.NORMAL, Color.WHITE);
+    this.setBackgroundColor(StateType.NORMAL, Color.WHITE);
+    this.setBackgroundColor(StateType.ACTIVE, Color.WHITE);
+    this.setBackgroundColor(StateType.INSENSITIVE, Color.WHITE);
+    this.setBackgroundColor(StateType.SELECTED, Color.WHITE);
+    this.setBackgroundColor(StateType.NORMAL, Color.WHITE);
+
+    this.setBaseColor(StateType.NORMAL, Color.WHITE);
+    this.setBaseColor(StateType.ACTIVE, Color.WHITE);
+    this.setBaseColor(StateType.INSENSITIVE, Color.WHITE);
+    this.setBaseColor(StateType.SELECTED, Color.WHITE);
+    this.setBaseColor(StateType.NORMAL, Color.WHITE);
+    this.showAll();
+  }
+
+  abstract public ObserverItemRow getNewRow (Combo combo);
+
+  void addRow (Combo combo)
+  {
+    ObserverItemRow itemRow = this.getNewRow(combo);
+    itemRow.addToTable();
+
+    if (combo == null)
+      {
+        this.applyList.add(itemRow);
+      }
+    this.allList.add(itemRow);
+
+    this.row++;
+    this.showAll();
+  }
+
+  abstract public ObservableLinkedList getCombos (ObserverRoot observer);
+
+  public void setObserver (ObserverRoot observer)
+  {
+    this.clear();
+    this.observer = observer;
+    Iterator iterator = this.getCombos(observer).iterator();
+    while (iterator.hasNext())
+      {
+        Combo combo = (Combo) iterator.next();
+        this.addRow(combo);
+      }
+
+    if (this.row == 0)
+      {
+        this.addRow(null);
+      }
+  }
+
+  public int getIndexOfFinalRow ()
+  {
+    return this.row;
+  }
+
+  public boolean apply ()
+  {
+    Iterator iterator = this.applyList.iterator();
+    while (iterator.hasNext())
+      {
+        ObserverItemRow itemRow = (ObserverItemRow) iterator.next();
+        if (itemRow.apply() == false)
+          {
+            this.offendingArg = itemRow.getOffendingArg();
+            Iterator i = this.applyList.iterator();
+            while (i.hasNext())
+              {
+                ObserverItemRow row = (ObserverItemRow) i.next();
+                row.combo.unApply();
+              }
+            return false;
+          }
+      }
+    this.applyList.clear();
+    return true;
+  }
+
+  public void clear ()
+  {
+    Iterator iterator = this.allList.iterator();
+
+    while (iterator.hasNext())
+      {
+        ObserverItemRow itemRow = (ObserverItemRow) iterator.next();
+        itemRow.removeFromTable();
         row--;
-	}
-	
+      }
+
+    this.allList.clear();
+    this.applyList.clear();
+  }
+
+  public void removeRow (ObserverItemRow itemRow)
+  {
+    this.allList.remove(itemRow);
+    this.applyList.remove(itemRow);
+    itemRow.removeFromTable();
+    row--;
+  }
+
+  public String getOffendingArg ()
+  {
+    return this.offendingArg;
+  }
+
 }

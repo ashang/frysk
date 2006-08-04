@@ -46,25 +46,26 @@ import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
  * @author swagiaal
- *
  */
-public class FiltersTable extends ObserverItemsTable {
+public class FiltersTable
+    extends ObserverItemsTable
+{
 
-	
-	public FiltersTable(Handle handle) {
-		super(handle);
-		
-		this.showAll();
-	}
+  public FiltersTable (Handle handle)
+  {
+    super(handle);
 
-	public ObservableLinkedList getCombos(ObserverRoot observer) {
-		return observer.getCurrentFilterCombos();
-	}
-	
+    this.showAll();
+  }
 
-	public ObserverItemRow getNewRow(Combo combo) {
-			return new FilterRow(this, observer, combo);
-	}
-			
-	
+  public ObservableLinkedList getCombos (ObserverRoot observer)
+  {
+    return observer.getCurrentFilterCombos();
+  }
+
+  public ObserverItemRow getNewRow (Combo combo)
+  {
+    return new FilterRow(this, observer, combo);
+  }
+
 }

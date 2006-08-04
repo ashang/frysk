@@ -72,6 +72,8 @@ public abstract class ObserverItemRow {
 		Button removeButton;
 
 		ObserverRoot observer;
+        
+        String offendingArg;
 
 		protected ObserverItemsTable table;
 		
@@ -162,20 +164,26 @@ public abstract class ObserverItemRow {
 			});
 		}
 		
-		public void apply() {
+		public boolean apply() {
 			if(combo == null){
 				// this FilterRow represents and unapplied filter
 				combo = (Combo) itemsComboBox.getSelectedObject();
 			}
 
 			if(combo == null){// nothing was selected by user
-				return;
+				return false;
 			}
 			if(!combo.isApplied()){
 				combo.apply();
 			}
 			
-			((LiaisonItem)combo.getFilter()).setArgument(argumentEntry.getText());
+			if (((LiaisonItem)combo.getFilter()).setArgument(argumentEntry.getText()))
+              return true;
+            else
+              {
+                this.offendingArg = (((LiaisonItem)combo.getFilter()).getArgument());
+                return false;
+              }
 		}
 
 		public void removeFromTable(){
@@ -188,6 +196,11 @@ public abstract class ObserverItemRow {
 		}
 		
 		public abstract void addToTable();
+        
+        public String getOffendingArg()
+        {
+          return this.offendingArg;
+        }
 		
 }
 

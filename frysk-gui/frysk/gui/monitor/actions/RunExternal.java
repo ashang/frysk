@@ -78,14 +78,7 @@ public class RunExternal
 
   public void execute (Task task)
   {
-    /* Try to execute the arguments given by the user */
-    String[] temp = execString.split(" ");
-    File bin = new File(temp[0]);
-    
-    if (bin.exists())
-      Manager.host.requestCreateAttachedProc(temp, new AttachedObserver());
-    else
-      System.out.println("File does not exist!");
+      Manager.host.requestCreateAttachedProc(execString.split(" "), new AttachedObserver());
   }
 
   public GuiObject getCopy ()
@@ -95,8 +88,20 @@ public class RunExternal
 
   public boolean setArgument (String argument)
   {
-    this.execString = argument;
-    return true;
+    String[] temp = argument.split(" ");
+    File bin = new File(temp[0]);
+    
+    if (bin.exists())
+      {
+        this.execString = argument;
+        return true;
+      }
+    else
+      {
+        System.out.println("The executable :" + temp[0] + " does not exist!");
+        this.execString = temp[0];
+        return false;
+      }
   }
 
   public String getArgument ()

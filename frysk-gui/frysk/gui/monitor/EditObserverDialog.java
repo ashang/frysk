@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import java.util.Iterator;
@@ -66,297 +67,356 @@ import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.proc.Action;
 
 /**
- * @author swagiaal
- *
- * Dialog that is used to edit an observer.
+ * @author swagiaal Dialog that is used to edit an observer.
  */
-public class EditObserverDialog extends Dialog {
+public class EditObserverDialog
+    extends Dialog
+{
 
-	private ObserverRoot observer;
-	
-	Entry observerNameEntry;
-	TextView observerDescriptionTextView;
-	TextBuffer observerDescBuffer;
-	SimpleComboBox observerTypeComboBox;
-	Button okButton;
-	
-	FiltersTable filtersTable;
-	ActionsTable actionsTable;
-	
-	RadioButton resumeRadioButton;
-	RadioButton stopRadioButton;
-	RadioButton askMeRadioButton;
+  private ObserverRoot observer;
 
-	Label warningLabel;
-	Image warningIcon;
-	
-	String oldEditObserverName = "";
-	
-	EditObserverDialog(LibGlade glade){
-		super(glade.getWidget("editObserverDialog").getHandle());
-		
-		warningLabel = (Label) glade.getWidget("observerWarningLabel");
-		warningIcon = (Image) glade.getWidget("observerWarningIcon");
-        this.setIcon(IconManager.windowIcon);
-		
-		Button button = (Button) glade.getWidget("editObserverCancelButton");
-		button.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					
-					EditObserverDialog.this.hideAll();
-				}
-			}
-		});
-		
-		okButton = (Button) glade.getWidget("editObserverOkButton");
-		okButton.addListener(new ButtonListener() {
-			public void buttonEvent(ButtonEvent event) {
-				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					filtersTable.apply();
-					actionsTable.apply();
-					EditObserverDialog.this.hideAll();
-				}
-			}
-		});
-		
-		observerNameEntry = (Entry) glade.getWidget("observerNameEntry");
-		observerNameEntry.addListener(new EntryListener() {
-			public void entryEvent(EntryEvent event) {
-				if(event.isOfType(EntryEvent.Type.CHANGED)){
-					observer.setName(observerNameEntry.getText());
-					setOkButtonState();
-				}
-			}
-		});
-		
-		observerDescriptionTextView = (TextView) glade.getWidget("observerDescriptionTextView");
-		observerDescBuffer = new TextBuffer();
-		
-		observerDescriptionTextView.setBuffer(observerDescBuffer);
-		observerDescBuffer.addListener(new TextBufferListener() {
-			public void textBufferEvent(TextBufferEvent event) {
-				if (event.isOfType(TextBufferEvent.Type.CHANGED))
-				{
-					observer.setToolTip(observerDescBuffer.getText(
-							observerDescBuffer.getStartIter(),
-							observerDescBuffer.getEndIter(),
-							false));
-				}
-				
-			}});
-		
-		observerTypeComboBox = new SimpleComboBox((glade.getWidget("observerTypeComboBox")).getHandle());
-		observerTypeComboBox.watchLinkedList(ObserverManager.theManager.getBaseObservers());
-		observerTypeComboBox.setActive(0);
-		observerTypeComboBox.addListener(new ComboBoxListener() {
-			public void comboBoxEvent(ComboBoxEvent event) {
-				ObserverRoot selected = (ObserverRoot) observerTypeComboBox.getSelectedObject();
-				if(selected != null && !selected.getClass().equals(observer.getClass())){
-					ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy((TaskObserverRoot) selected);
-					newObserver.setName(observerNameEntry.getText());
-					newObserver.setToolTip(observerDescBuffer.getText(
-							observerDescBuffer.getStartIter(),
-							observerDescBuffer.getEndIter(),
-							false));
-		
-					if(observerNameEntry.getText().length() == 0){
-						newObserver.setName("NewObserver");
-					}
-					
+  Entry observerNameEntry;
 
-					setObserver(newObserver);
-					setName(newObserver);
-					filtersTable.setObserver(newObserver);
-					actionsTable.setObserver(newObserver);
-					setOkButtonState();
-				}
-			}
-		});
-	
-		resumeRadioButton = (RadioButton) glade.getWidget("resumeRadioButton");
-		resumeRadioButton.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-				    //System.out.println(this + ": .buttonEvent() resumeRadioButton");
-					observer.setReturnAction(Action.CONTINUE);
-				}
-			}
-		});
-		
-		stopRadioButton = (RadioButton) glade.getWidget("stopRadioButton");
-		stopRadioButton.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-				    //System.out.println(this + ": .buttonEvent() stopRadioButton");
-					observer.setReturnAction(Action.BLOCK);
-				}
-			}
-		});
-		
-		askMeRadioButton = (RadioButton) glade.getWidget("askMeRadioButton");
-		askMeRadioButton.addListener(new ButtonListener(){
-			public void buttonEvent(ButtonEvent event) {
-				if(event.isOfType(ButtonEvent.Type.CLICK)){
-				    //System.out.println(this + ": .buttonEvent() askMeRadioButton");
-					observer.setReturnAction(null);
-				}
-			}
-		});
-		
-		this.filtersTable = new FiltersTable(glade.getWidget("observerFiltersTable").getHandle());
-		this.actionsTable = new ActionsTable(glade.getWidget("observerActionsTable").getHandle());
-		
-	}
-	
-	private void setAll(ObserverRoot observer){
-		this.setObserver(observer);
-		this.setName(observer);
-		this.setType(observer);
-		this.setDescription(observer);
-		this.setReturnAction(observer);
-		this.filtersTable.setObserver(observer);
-		this.actionsTable.setObserver(observer);
-	}
+  TextView observerDescriptionTextView;
 
-	private void setWarning(String text) {
-		warningLabel.setText(text);
-	}
-	
-	private void setWarningVisibility(boolean show)
-	{
-		if (show)
-		{
-			warningLabel.show();
-			warningIcon.show();
-		} else {
-			warningLabel.hide();
-			warningIcon.hide();
-		}
-	}
-	
-	/** Sets the ok button sensitivity 
-	* according to checkSaveableState()
-	**/
-	private void setOkButtonState()
-	{
-		okButton.setSensitive(checkSaveableState());
-	}
-	
-	private boolean checkObserverNameDuplicate() 
-	{
-		if (oldEditObserverName.equals(""))
-		{
-			if (ObserverManager.theManager.getObserverByName(observerNameEntry.getText()) != null)
-			{
-				setWarning("Observer already exists, please rename");
-				setWarningVisibility(true);
-				return true;
-			}
-		}
-		else
-		{
-			if (!oldEditObserverName.equals(observer.getName()))
-				if (ObserverManager.theManager.getObserverByName(observerNameEntry.getText()) != null)
-				{
-					setWarning("Observer already exists, please rename");
-					setWarningVisibility(true);
-					return true;
-				}
-		}
-		setWarningVisibility(false);
-		return false;
-	}
-	/** Checks whether observer is in a saveable state
-	 * 
-	 *
-	 **/
-	private boolean checkSaveableState()
-	{
-		 if (observerNameEntry.getText().length() < 1)
-			return false;
-	
-		 if (checkObserverNameDuplicate() == true)
-			 return false;
-		
-		 if (observerTypeComboBox.getSelectedObject() == null)
-			return false;
-		 
-		 return true;
-	}
-	/**
-	 * This is for creating a new observer.
-	 * call getObserver() to get the new observer
-	 * @see getObserver()
-	 */
-	public void editNewObserver(){
-		oldEditObserverName = "";
-		this.observerTypeComboBox.setSensitive(true);
-		this.setAll(new ObserverRoot());
-		setOkButtonState();
-	}
-	
-	public void editObserver(ObserverRoot observer){
-		oldEditObserverName = observer.getName();
-		this.setAll(observer);
-		this.observerTypeComboBox.setSensitive(false);
+  TextBuffer observerDescBuffer;
 
-		if(observer.getClass().equals(ObserverRoot.class)){
-			this.observerTypeComboBox.setSensitive(true);
-		}
-		setOkButtonState();
-	}
-	
-	public ObserverRoot getObserver(){
-		return this.observer;
-	}
-	
-	private void setObserver(ObserverRoot observer){
-		this.observer = observer;
-	}
-	
-	private void setName(ObserverRoot observer){
-		this.observerNameEntry.setText(observer.getName());
-	}
-	
-	private void setDescription(ObserverRoot observer){
-		this.observerDescBuffer.setText(observer.getToolTip());
-	}
-	
-	private void setType(ObserverRoot oserver){
-		this.observerTypeComboBox.setSelectedObject(null);
-		Iterator iter = ObserverManager.theManager.getBaseObservers().iterator();
-		while (iter.hasNext()) {
-			GuiObject obj = (GuiObject) iter.next();
-			if((obj.getClass().toString()).equals(oserver.getClass().toString())){
-				this.observerTypeComboBox.setSelectedObject(obj);
-			}
-		}
-	}
-	
-	private void setReturnAction(ObserverRoot observer){
-		Action returnAction = observer.getCurrentAction();
-		
-		if(returnAction == null){
-			this.askMeRadioButton.activate();
-			return;
-		}
-		
-		if(returnAction == Action.BLOCK){
-			this.stopRadioButton.activate();
-			return;
-		}
-		
-		if(returnAction == Action.CONTINUE){
-			this.resumeRadioButton.activate();
-			return;
-		}
-		
-	}
-	
-	public int run()
-	{
-		setOkButtonState();
-		return super.run();
-	}
+  SimpleComboBox observerTypeComboBox;
+
+  Button okButton;
+
+  FiltersTable filtersTable;
+
+  ActionsTable actionsTable;
+
+  RadioButton resumeRadioButton;
+
+  RadioButton stopRadioButton;
+
+  RadioButton askMeRadioButton;
+
+  Label warningLabel;
+
+  Image warningIcon;
+
+  String oldEditObserverName = "";
+
+  EditObserverDialog (LibGlade glade)
+  {
+    super(glade.getWidget("editObserverDialog").getHandle());
+
+    warningLabel = (Label) glade.getWidget("observerWarningLabel");
+    warningIcon = (Image) glade.getWidget("observerWarningIcon");
+    this.setIcon(IconManager.windowIcon);
+
+    Button button = (Button) glade.getWidget("editObserverCancelButton");
+    button.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+
+            EditObserverDialog.this.hideAll();
+          }
+      }
+    });
+
+    okButton = (Button) glade.getWidget("editObserverOkButton");
+    okButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            filtersTable.apply();
+            if (actionsTable.apply() != false)
+              EditObserverDialog.this.hideAll();
+            else
+              System.out.println("Error with an action! Argument: " + actionsTable.getOffendingArg());
+          }
+      }
+    });
+
+    observerNameEntry = (Entry) glade.getWidget("observerNameEntry");
+    observerNameEntry.addListener(new EntryListener()
+    {
+      public void entryEvent (EntryEvent event)
+      {
+        if (event.isOfType(EntryEvent.Type.CHANGED))
+          {
+            observer.setName(observerNameEntry.getText());
+            setOkButtonState();
+          }
+      }
+    });
+
+    observerDescriptionTextView = (TextView) glade.getWidget("observerDescriptionTextView");
+    observerDescBuffer = new TextBuffer();
+
+    observerDescriptionTextView.setBuffer(observerDescBuffer);
+    observerDescBuffer.addListener(new TextBufferListener()
+    {
+      public void textBufferEvent (TextBufferEvent event)
+      {
+        if (event.isOfType(TextBufferEvent.Type.CHANGED))
+          {
+            observer.setToolTip(observerDescBuffer.getText(
+                                                           observerDescBuffer.getStartIter(),
+                                                           observerDescBuffer.getEndIter(),
+                                                           false));
+          }
+
+      }
+    });
+
+    observerTypeComboBox = new SimpleComboBox(
+                                              (glade.getWidget("observerTypeComboBox")).getHandle());
+    observerTypeComboBox.watchLinkedList(ObserverManager.theManager.getBaseObservers());
+    observerTypeComboBox.setActive(0);
+    observerTypeComboBox.addListener(new ComboBoxListener()
+    {
+      public void comboBoxEvent (ComboBoxEvent event)
+      {
+        ObserverRoot selected = (ObserverRoot) observerTypeComboBox.getSelectedObject();
+        if (selected != null
+            && ! selected.getClass().equals(observer.getClass()))
+          {
+            ObserverRoot newObserver = ObserverManager.theManager.getObserverCopy((TaskObserverRoot) selected);
+            newObserver.setName(observerNameEntry.getText());
+            newObserver.setToolTip(observerDescBuffer.getText(
+                                                              observerDescBuffer.getStartIter(),
+                                                              observerDescBuffer.getEndIter(),
+                                                              false));
+
+            if (observerNameEntry.getText().length() == 0)
+              {
+                newObserver.setName("NewObserver");
+              }
+
+            setObserver(newObserver);
+            setName(newObserver);
+            filtersTable.setObserver(newObserver);
+            actionsTable.setObserver(newObserver);
+            setOkButtonState();
+          }
+      }
+    });
+
+    resumeRadioButton = (RadioButton) glade.getWidget("resumeRadioButton");
+    resumeRadioButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            // System.out.println(this + ": .buttonEvent() resumeRadioButton");
+            observer.setReturnAction(Action.CONTINUE);
+          }
+      }
+    });
+
+    stopRadioButton = (RadioButton) glade.getWidget("stopRadioButton");
+    stopRadioButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            // System.out.println(this + ": .buttonEvent() stopRadioButton");
+            observer.setReturnAction(Action.BLOCK);
+          }
+      }
+    });
+
+    askMeRadioButton = (RadioButton) glade.getWidget("askMeRadioButton");
+    askMeRadioButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            // System.out.println(this + ": .buttonEvent() askMeRadioButton");
+            observer.setReturnAction(null);
+          }
+      }
+    });
+
+    this.filtersTable = new FiltersTable(
+                                         glade.getWidget("observerFiltersTable").getHandle());
+    this.actionsTable = new ActionsTable(
+                                         glade.getWidget("observerActionsTable").getHandle());
+
+  }
+
+  private void setAll (ObserverRoot observer)
+  {
+    this.setObserver(observer);
+    this.setName(observer);
+    this.setType(observer);
+    this.setDescription(observer);
+    this.setReturnAction(observer);
+    this.filtersTable.setObserver(observer);
+    this.actionsTable.setObserver(observer);
+  }
+
+  private void setWarning (String text)
+  {
+    warningLabel.setText(text);
+  }
+
+  private void setWarningVisibility (boolean show)
+  {
+    if (show)
+      {
+        warningLabel.show();
+        warningIcon.show();
+      }
+    else
+      {
+        warningLabel.hide();
+        warningIcon.hide();
+      }
+  }
+
+  /**
+   * Sets the ok button sensitivity according to checkSaveableState()
+   */
+  private void setOkButtonState ()
+  {
+    okButton.setSensitive(checkSaveableState());
+  }
+
+  private boolean checkObserverNameDuplicate ()
+  {
+    if (oldEditObserverName.equals(""))
+      {
+        if (ObserverManager.theManager.getObserverByName(observerNameEntry.getText()) != null)
+          {
+            setWarning("Observer already exists, please rename");
+            setWarningVisibility(true);
+            return true;
+          }
+      }
+    else
+      {
+        if (! oldEditObserverName.equals(observer.getName()))
+          if (ObserverManager.theManager.getObserverByName(observerNameEntry.getText()) != null)
+            {
+              setWarning("Observer already exists, please rename");
+              setWarningVisibility(true);
+              return true;
+            }
+      }
+    setWarningVisibility(false);
+    return false;
+  }
+
+  /**
+   * Checks whether observer is in a saveable state
+   */
+  private boolean checkSaveableState ()
+  {
+    if (observerNameEntry.getText().length() < 1)
+      return false;
+
+    if (checkObserverNameDuplicate() == true)
+      return false;
+
+    if (observerTypeComboBox.getSelectedObject() == null)
+      return false;
+
+    return true;
+  }
+
+  /**
+   * This is for creating a new observer. call getObserver() to get the new
+   * observer
+   * 
+   * @see getObserver()
+   */
+  public void editNewObserver ()
+  {
+    oldEditObserverName = "";
+    this.observerTypeComboBox.setSensitive(true);
+    this.setAll(new ObserverRoot());
+    setOkButtonState();
+  }
+
+  public void editObserver (ObserverRoot observer)
+  {
+    oldEditObserverName = observer.getName();
+    this.setAll(observer);
+    this.observerTypeComboBox.setSensitive(false);
+
+    if (observer.getClass().equals(ObserverRoot.class))
+      {
+        this.observerTypeComboBox.setSensitive(true);
+      }
+    setOkButtonState();
+  }
+
+  public ObserverRoot getObserver ()
+  {
+    return this.observer;
+  }
+
+  private void setObserver (ObserverRoot observer)
+  {
+    this.observer = observer;
+  }
+
+  private void setName (ObserverRoot observer)
+  {
+    this.observerNameEntry.setText(observer.getName());
+  }
+
+  private void setDescription (ObserverRoot observer)
+  {
+    this.observerDescBuffer.setText(observer.getToolTip());
+  }
+
+  private void setType (ObserverRoot oserver)
+  {
+    this.observerTypeComboBox.setSelectedObject(null);
+    Iterator iter = ObserverManager.theManager.getBaseObservers().iterator();
+    while (iter.hasNext())
+      {
+        GuiObject obj = (GuiObject) iter.next();
+        if ((obj.getClass().toString()).equals(oserver.getClass().toString()))
+          {
+            this.observerTypeComboBox.setSelectedObject(obj);
+          }
+      }
+  }
+
+  private void setReturnAction (ObserverRoot observer)
+  {
+    Action returnAction = observer.getCurrentAction();
+
+    if (returnAction == null)
+      {
+        this.askMeRadioButton.activate();
+        return;
+      }
+
+    if (returnAction == Action.BLOCK)
+      {
+        this.stopRadioButton.activate();
+        return;
+      }
+
+    if (returnAction == Action.CONTINUE)
+      {
+        this.resumeRadioButton.activate();
+        return;
+      }
+
+  }
+
+  public int run ()
+  {
+    setOkButtonState();
+    return super.run();
+  }
 }
