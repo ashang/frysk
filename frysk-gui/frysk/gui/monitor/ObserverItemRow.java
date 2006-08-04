@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
 import org.gnu.gtk.Button;
@@ -54,153 +55,184 @@ import org.gnu.gtk.event.FocusListener;
 import frysk.gui.monitor.observers.ObserverRoot;
 
 /**
- * 
- * @author swagiaal
- * 
- * A widget that shows an observer item and allows the
- * user to edit it. An observer item can either be a filter
- * or an action.
+ * @author swagiaal A widget that shows an observer item and allows the user to
+ *         edit it. An observer item can either be a filter or an action.
  */
-public abstract class ObserverItemRow {
-	
-		Combo combo;
-		
-		SimpleComboBox itemsComboBox;
+public abstract class ObserverItemRow
+{
 
-		CompletingEntry argumentEntry;
-		Button addButton;
-		Button removeButton;
+  Combo combo;
 
-		ObserverRoot observer;
-        
-        String offendingArg;
+  SimpleComboBox itemsComboBox;
 
-		protected ObserverItemsTable table;
-		
-		ToolTips toolTips = new ToolTips();
-		
-		ObserverItemRow(ObserverItemsTable table, ObserverRoot observer, Combo myCombo){
-		
-			this.table = table;
-			this.combo = myCombo;
-			this.observer = observer;
-			
-			argumentEntry = new CompletingEntry();
-			if(combo != null){
-				String argument = ((LiaisonItem)combo.getFilter()).getArgument();
-				if(argument == null){
-					argumentEntry.setSensitive(false);
-				}else{
-					argumentEntry.setText(argument);
-				}
-			}else{
-				argumentEntry.setText("");
-			}
+  CompletingEntry argumentEntry;
 
-			argumentEntry.addListener(new FocusListener() {
-				public boolean focusEvent(FocusEvent event) {
-					if(event.isOfType(FocusEvent.Type.FOCUS_OUT)){
-						apply();
-					}
-					return false;
-				}
-			});
+  Button addButton;
 
-			itemsComboBox = new SimpleComboBox();
-			itemsComboBox.addListener(new ComboBoxListener() {
-				public void comboBoxEvent(ComboBoxEvent event) {
-					if(event.isOfType(ComboBoxEvent.Type.CHANGED)){
-						if(combo != null && combo.isApplied()){
-							Combo tempCombo = (Combo) itemsComboBox.getSelectedObject();
-                            
-                            // un apply the previous combo
-                            // if another one has been selected apply that one
-							if(tempCombo != null){
-                               combo.unApply();
-                               combo = tempCombo;
-                             
-    							toolTips.setTip(argumentEntry, combo.getToolTip(), "");
-    							
-    							ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
-    							if(list!= null){
-    								argumentEntry.watchList(list);
-    							}
-    							combo.apply();
-                            }
-						}
-					}
-				}
-			});
-			
-			addButton = new Button("");
-			addButton.setImage(new Image(GtkStockItem.ADD, IconSize.BUTTON));
-			addButton.addListener(new ButtonListener() {
-				public void buttonEvent(ButtonEvent event) {
-					if (event.isOfType(ButtonEvent.Type.CLICK)) {
-						ObserverItemRow.this.table.addRow(null);
-					}
-				}
-			});
-			
-			removeButton = new Button("");
-			removeButton.setImage(new Image(GtkStockItem.REMOVE, IconSize.BUTTON));
-			removeButton.addListener(new ButtonListener() {
-				public void buttonEvent(ButtonEvent event) {
-					if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					  itemsComboBox.setSelectedObject(null);
-                      argumentEntry.setText("");
-						if(ObserverItemRow.this.table.getIndexOfFinalRow() == 1){
-							if(combo != null && combo.isApplied()){
-								combo.unApply();
-							}
-						}else{
-							if(combo != null && combo.isApplied()){
-								combo.unApply();
-							}
-							ObserverItemRow.this.table.removeRow(ObserverItemRow.this);
-						}
-					}
-				}
-			});
-		}
-		
-		public boolean apply() {
-			if(combo == null){
-				// this FilterRow represents and unapplied filter
-				combo = (Combo) itemsComboBox.getSelectedObject();
-			}
+  Button removeButton;
 
-			if(combo == null){// nothing was selected by user
-				return false;
-			}
-			if(!combo.isApplied()){
-				combo.apply();
-			}
-			
-			if (((LiaisonItem)combo.getFilter()).setArgument(argumentEntry.getText()))
-              return true;
+  ObserverRoot observer;
+
+  String offendingArg;
+
+  protected ObserverItemsTable table;
+
+  ToolTips toolTips = new ToolTips();
+
+  ObserverItemRow (ObserverItemsTable table, ObserverRoot observer,
+                   Combo myCombo)
+  {
+
+    this.table = table;
+    this.combo = myCombo;
+    this.observer = observer;
+
+    argumentEntry = new CompletingEntry();
+    if (combo != null)
+      {
+        String argument = ((LiaisonItem) combo.getFilter()).getArgument();
+        if (argument == null)
+          {
+            argumentEntry.setSensitive(false);
+          }
+        else
+          {
+            argumentEntry.setText(argument);
+          }
+      }
+    else
+      {
+        argumentEntry.setText("");
+      }
+
+    argumentEntry.addListener(new FocusListener()
+    {
+      public boolean focusEvent (FocusEvent event)
+      {
+        if (event.isOfType(FocusEvent.Type.FOCUS_OUT))
+          {
+            apply();
+          }
+        return false;
+      }
+    });
+
+    itemsComboBox = new SimpleComboBox();
+    itemsComboBox.addListener(new ComboBoxListener()
+    {
+      public void comboBoxEvent (ComboBoxEvent event)
+      {
+        if (event.isOfType(ComboBoxEvent.Type.CHANGED))
+          {
+            if (combo != null && combo.isApplied())
+              {
+                Combo tempCombo = (Combo) itemsComboBox.getSelectedObject();
+
+                // un apply the previous combo
+                // if another one has been selected apply that one
+                if (tempCombo != null)
+                  {
+                    combo.unApply();
+                    combo = tempCombo;
+
+                    toolTips.setTip(argumentEntry, combo.getToolTip(), "");
+
+                    ObservableLinkedList list = combo.getFilter().getArgumentCompletionList();
+                    if (list != null)
+                      {
+                        argumentEntry.watchList(list);
+                      }
+                    combo.apply();
+                  }
+              }
+          }
+      }
+    });
+
+    addButton = new Button("");
+    addButton.setImage(new Image(GtkStockItem.ADD, IconSize.BUTTON));
+    addButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            ObserverItemRow.this.table.addRow(null);
+          }
+      }
+    });
+
+    removeButton = new Button("");
+    removeButton.setImage(new Image(GtkStockItem.REMOVE, IconSize.BUTTON));
+    removeButton.addListener(new ButtonListener()
+    {
+      public void buttonEvent (ButtonEvent event)
+      {
+        if (event.isOfType(ButtonEvent.Type.CLICK))
+          {
+            itemsComboBox.setSelectedObject(null);
+            argumentEntry.setText("");
+            if (ObserverItemRow.this.table.getIndexOfFinalRow() == 1)
+              {
+                if (combo != null && combo.isApplied())
+                  {
+                    combo.unApply();
+                  }
+              }
             else
               {
-                this.offendingArg = (((LiaisonItem)combo.getFilter()).getArgument());
-                return false;
+                if (combo != null && combo.isApplied())
+                  {
+                    combo.unApply();
+                  }
+                ObserverItemRow.this.table.removeRow(ObserverItemRow.this);
               }
-		}
+          }
+      }
+    });
+  }
 
-		public void removeFromTable(){
-			ObserverItemRow.this.table.remove(itemsComboBox);
-			ObserverItemRow.this.table.remove(argumentEntry);
-			ObserverItemRow.this.table.remove(addButton);
-			ObserverItemRow.this.table.remove(removeButton);
-			
-			ObserverItemRow.this.table.showAll();
-		}
-		
-		public abstract void addToTable();
-        
-        public String getOffendingArg()
-        {
-          return this.offendingArg;
-        }
-		
+  public boolean apply ()
+  {
+    if (combo == null)
+      {
+        // this FilterRow represents and unapplied filter
+        combo = (Combo) itemsComboBox.getSelectedObject();
+      }
+
+    if (combo == null)
+      {// nothing was selected by user
+        return false;
+      }
+    if (! combo.isApplied())
+      {
+        combo.apply();
+      }
+
+    if (((LiaisonItem) combo.getFilter()).setArgument(argumentEntry.getText()))
+      return true;
+    else
+      {
+        this.offendingArg = (((LiaisonItem) combo.getFilter()).getArgument());
+        return false;
+      }
+  }
+
+  public void removeFromTable ()
+  {
+    ObserverItemRow.this.table.remove(itemsComboBox);
+    ObserverItemRow.this.table.remove(argumentEntry);
+    ObserverItemRow.this.table.remove(addButton);
+    ObserverItemRow.this.table.remove(removeButton);
+
+    ObserverItemRow.this.table.showAll();
+  }
+
+  public abstract void addToTable ();
+
+  public String getOffendingArg ()
+  {
+    return this.offendingArg;
+  }
+
 }
-

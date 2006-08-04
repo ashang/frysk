@@ -4,11 +4,13 @@
 	(setArgument): Moved above check to here; thus preventing continuation
 	of observer customization in the case of an incorrect argument.
 	* ObserverItemRow.java (apply): Check to see if the argument
-	setting failed. Now returns boolean.
+	setting failed. Now returns boolean. Applied GNU formatting.
+	(getOffendingArg): Added.
 	* EditObserverDialog.java (.buttonEvent): Check for failed
 	argument setting and print an error if something is wrong.
 	* ObserverItemsTable.java (apply): Made a check for failed 
 	argument setting. Also applied GNU formatting. Now returns a boolean.
+	(getOffendingArg): Added.
 	* ActionsTable.java: Applied GNU formatting.
 	* FiltersTable.java: Ditto.
 
