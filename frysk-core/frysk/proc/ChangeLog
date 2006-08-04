@@ -1,3 +1,22 @@
+2006-08-04  Tim Moore  <moore@redhat.com>
+
+	* Task.java (TaskException): Declare static.
+
+	Yao Qi's contributions for PPC and PPC64.
+	2006-07-28  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+        	* frysk/proc/LinuxTask.java: Move ISA selection to
+		 IsaFactory.java and format it via Emacs.
+	        * frysk/proc/IsaFactory.java: New file.
+ 
+	2006-07-27  Yao Qi  <qiyaoltc@cn.ibm.com>
+	 	Wu Zhou  <woodzltc@cn.ibm.com>
+
+ 		* frysk/proc/LinuxPPC64.java: New file for ppc64.
+	 	* frysk/proc/IsaPPC64.java: Ditto.
+	 	* frysk/proc/LinuxPPC.java: New file for ppc.
+	 	* frysk/proc/IsaPPC.java: Ditto.
+
 2006-08-03  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (AckProcess).  Rename .addClone to

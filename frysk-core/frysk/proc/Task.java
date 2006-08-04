@@ -877,7 +877,7 @@ abstract public class Task
    * caused by errors accessing the process' executable or problems
    * with ptrace.
    */
-  public class TaskException extends Exception
+  public static class TaskException extends Exception
   {
     private static final long serialVersionUID = 200607190000L;
 
