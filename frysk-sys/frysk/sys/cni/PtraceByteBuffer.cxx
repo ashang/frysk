@@ -1,4 +1,5 @@
 // This file is part of INUA.  Copyright 2004, 2005, Andrew Cagney
+// Copyright 2006, Red Hat, Inc.
 //
 // INUA is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -39,33 +40,16 @@
 #include <sys/ptrace.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
 #include <alloca.h>
 #include <stdio.h>
 
 #include <gcj/cni.h>
-
-#include <java/lang/RuntimeException.h>
 
 #include "frysk/sys/PtraceByteBuffer.h"
 #include "frysk/sys/PtraceByteBuffer$Area.h"
 #include "frysk/sys/Ptrace.h"
 #include "inua/eio/Buffer.h"
 #include "inua/eio/ByteBuffer.h"
-
-static java::lang::RuntimeException *
-newPerror (const char *syscall, pid_t pid, jlong addr, int nr)
-{
-  const char *error = strerror (nr);
-  char *message;
-  if (asprintf (&message, "%s: %s (pid %d addr 0x%llx)",
-		syscall, error, pid, (long long unsigned) addr)
-      <= 0)
-    throw new java::lang::RuntimeException (JvNewStringLatin1 ("oops"));
-  jstring jmessage = JvNewStringLatin1 (message);
-  free (message);
-  return new java::lang::RuntimeException (jmessage);
-}
 
 
 frysk::sys::PtraceByteBuffer$Area*
@@ -112,10 +96,7 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr)
   /* Word align the address, transfer one word.  */
   long paddr = addr & -sizeof (long);
 
-  errno = 0;
   tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
-  if (errno != 0)
-    throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
   return tmp.byte[addr & (sizeof (long) - 1)];
 }
@@ -140,10 +121,7 @@ frysk::sys::PtraceByteBuffer::peek (jlong addr, jbyteArray buf,
   unsigned long paddr = addr & -sizeof (long);
 
   // Read an entire word.
-  errno = 0;
   tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
-  if (errno != 0)
-    throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
   /* Adjust the xfer size to ensure that it doesn't exceed the size of
      the single word being transfered.  */
@@ -173,17 +151,11 @@ frysk::sys::PtraceByteBuffer::poke (jlong addr, jint byte)
   long paddr = addr & -sizeof (long);
 
   // Perform a read ...
-  errno = 0;
   tmp.word = frysk::sys::Ptrace::peek(pt_peek, pid, (jstring) (char *) paddr);
-  if (errno != 0)
-    throw newPerror ("ptrace.PEEK", pid, paddr, errno);
 
   // ... modify ...
   tmp.byte[addr & (sizeof (long) - 1)] = byte;
 
   // ... write.
-  errno = 0;
   frysk::sys::Ptrace::poke(pt_poke, pid, (jstring) (char *) paddr, tmp.word);
-  if (errno != 0)
-    throw newPerror ("ptrace.POKE", pid, paddr, errno);
 }

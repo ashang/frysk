@@ -1,3 +1,10 @@
+2006-08-04  Mark Wielaard  <mark@klomp.org>
+
+	* frysk/sys/cni/PtraceByteBuffer.cxx (newPerror): Removed.
+	(peek(long)): Remove errno handling.
+	(peek(long,jbyteArray,jlong,jlong)): Likewise.
+	(poke): Likewise.
+
 2006-08-03  Tim Moore  <timoore@redhat.com>
 
 	* Uname.java: New file, interface to uname(2).
