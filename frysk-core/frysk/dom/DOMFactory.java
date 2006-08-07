@@ -13,6 +13,7 @@ import lib.dw.NoDebugInfoException;
 import frysk.dom.cparser.CDTParser;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 
 public class DOMFactory
 {
@@ -28,7 +29,7 @@ public class DOMFactory
       {
         line = task.getDwflLineXXX();
       }
-    catch (Task.TaskException e)
+    catch (TaskException e)
       {
         throw new NoDebugInfoException("Couldn't access task " + task.getName());
       }

@@ -1,3 +1,10 @@
+2006-08-07  Tim Moore  <timoore@redhat.com>
+
+	* memory/MemoryWindow (setTask): Change Task.TaskException to
+	TaskException. 
+	* register/RegisterWindow (setTask): ditto.
+	* srcwin/SourceWindowFactory.java (finishSourceWin): ditto.
+
 2006-08-02  Nurdin Premji  <npremji@redhat.com>
 
 	* test/dogtail_scripts/funit_new_session.xml: Added

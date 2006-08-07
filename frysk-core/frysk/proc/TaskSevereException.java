@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2006 Red Hat Inc.
+// Copyright 2005, 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -36,47 +36,61 @@
 // modification, you must delete this exception statement from your
 // version and license this file solely under the GPL without
 // exception.
-package lib.elf;
+
+package frysk.proc;
 
 /**
- * Exception thrown when an Elf file can't be accessed in some way.
+ * An exception that indicates that further operations on the Task are
+ * unlikely to b successful or meaningful.
  */
-public class ElfFileException extends ElfException 
+class TaskSevereException extends TaskException 
 {
-  private static final long serialVersionUID = 2006071900L;
-  private String fileName;
+  private static final long serialVersionUID = 200608040000L;
 
   /**
    * Class constructor.
    *
-   * @param message the message.
-   * @see Exception
+   * @param message the message for the exception.
    */
-  public ElfFileException(String message) 
+  public TaskSevereException (String message)
   {
     super(message);
   }
 
   /**
-   * Class constructor with file name.
+   * Class constructor with cause
    *
-   * @param message the message.
-   * @param fileName name of file that caused the problem, if known.
-   * @see Exception
+   * @param message the message for the exception.
+   * @param cause the chained exception
    */
-  public ElfFileException(String message, String fileName) 
+  public TaskSevereException (String message, Throwable cause)
   {
-    super(message);
-    this.fileName = fileName;
+    super(message, cause);
   }
 
   /**
-   * Accessor for file name.
+   * Class constructor with Task argument.
    *
-   * @returns the file name
+   * @param message message for the exception
+   * @param task the offending task
+   * @see TaskException
    */
-  public String getFileName() 
+  public TaskSevereException (String message, Task task)
   {
-    return fileName;
+    super(message, task);
+  }
+
+  /**
+   * Class constructor with Task and cause arguments.
+   *
+   * @param message message for the exception
+   * @param task the offending task
+   * @param cause the chained exception
+   * @see TaskException
+   */
+  public TaskSevereException (String message, Task task, Throwable cause)
+  {
+    super(message, task, cause);
   }
 }
+

@@ -80,7 +80,7 @@ public class LinuxTask extends Task
   /**
    * Create a new unattached Task.
    */
-  LinuxTask (Proc proc, TaskId id) throws Task.TaskException
+  LinuxTask (Proc proc, TaskId id) throws TaskException
   {
     super (proc, id);
     setupMapsXXX ();
@@ -209,7 +209,7 @@ public class LinuxTask extends Task
     Ptrace.detach (getTid (), sig);
   }
     
-  protected Isa sendrecIsa () throws Task.TaskException
+  protected Isa sendrecIsa () throws TaskException
   {
     logger.log (Level.FINE, "{0} sendrecIsa\n", this);
     IsaFactory factory = IsaFactory.getFactory();

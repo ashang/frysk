@@ -47,6 +47,7 @@ import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.SyscallEventInfo;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 
 class ftrace
@@ -137,7 +138,7 @@ class ftrace
 	{
 	  syscallEventInfo = task.getSyscallEventInfo ();
 	}
-      catch (Task.TaskException e) 
+      catch (TaskException e) 
 	{
 	  // XXX Abort? or what?
 	  System.out.println("Got task exception " + e);
@@ -158,7 +159,7 @@ class ftrace
 	{
 	  syscallEventInfo = task.getSyscallEventInfo ();
 	}
-      catch (Task.TaskException e) 
+      catch (TaskException e) 
 	{
 	  // XXX Abort? or what?
 	  System.out.println("Got task exception " + e);

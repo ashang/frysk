@@ -71,7 +71,8 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 		char* message = "Could not open %s for reading";
 		char error[strlen(fileName) + strlen(message) - 2];
 		sprintf(error, message, fileName);
-		throw new lib::elf::ElfFileException(JvNewStringUTF(error));
+		throw new lib::elf::ElfFileException(JvNewStringUTF(error),
+		    file);
 	}
 	
 	if(::elf_version(EV_CURRENT) == EV_NONE)

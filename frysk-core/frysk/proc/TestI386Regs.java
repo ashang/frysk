@@ -80,7 +80,7 @@ public class TestI386Regs
 	    syscall = task.getSyscallEventInfo ();
 	    isa = (LinuxIa32)task.getIsa ();
 	  }
-	catch (Task.TaskException e)
+	catch (TaskException e)
 	  {
 	    fail("got task exception " + e);
 	    return Action.CONTINUE; // not reached
@@ -118,7 +118,7 @@ public class TestI386Regs
 	  {
 	    isa = task.getIsa();
 	  }
-	catch (Task.TaskException e) 
+	catch (TaskException e) 
 	  {
 	    isa = null;
 	  }

@@ -37,7 +37,6 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
 package frysk.proc;
 
 import java.util.LinkedList;
@@ -95,7 +94,7 @@ abstract public class Task
    * Returns this Task's Instruction Set Architecture.
    */
   public final Isa getIsa ()
-    throws Task.TaskException
+    throws TaskException
   {
     if (isa == null)
       isa = sendrecIsa();
@@ -104,13 +103,13 @@ abstract public class Task
 
 
   public final SyscallEventInfo getSyscallEventInfo ()
-    throws Task.TaskException
+    throws TaskException
   {
     return ((SyscallEventDecoder)getIsa()).getSyscallEventInfo();
   }
 
   public final DwflLine getDwflLineXXX ()
-    throws Task.TaskException
+    throws TaskException
   {
     if (dwfl == null)
       dwfl = new Dwfl(getTid());
@@ -125,7 +124,7 @@ abstract public class Task
   /**
    * Fetch this Task's Instruction Set Architecture.
    */
-  abstract protected Isa sendrecIsa () throws Task.TaskException;
+  abstract protected Isa sendrecIsa () throws TaskException;
 
   /**
    * Return the task's entry point address. This is the address of the first
@@ -777,7 +776,7 @@ abstract public class Task
 		       new Integer(this.getSyscallEventInfo().number(this))
 		     });
       }
-    catch (Task.TaskException e) 
+    catch (TaskException e) 
       {
 	logger.log(Level.SEVERE, "TaskException in {0}", this);
       }
@@ -805,7 +804,7 @@ abstract public class Task
 		       new Integer(this.getSyscallEventInfo().number(this))
 		     });
       }
-    catch (Task.TaskException e) 
+    catch (TaskException e) 
       {
 	logger.log(Level.SEVERE, "TaskException in {0}", this);
       }
@@ -871,19 +870,4 @@ abstract public class Task
    * Turns off systemcall entry and exit tracing 
    */
   protected abstract void stopTracingSyscalls ();
-
-  /**
-   * Superclass of exceptions related to tasks. These will usually be
-   * caused by errors accessing the process' executable or problems
-   * with ptrace.
-   */
-  public static class TaskException extends Exception
-  {
-    private static final long serialVersionUID = 200607190000L;
-
-    public TaskException (String s)
-    {
-      super(s);
-    }
-  }
 }

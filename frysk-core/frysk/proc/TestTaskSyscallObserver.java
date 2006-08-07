@@ -455,7 +455,7 @@ public class TestTaskSyscallObserver
 	{
 	    return task.getSyscallEventInfo();
 	}
-	catch (Task.TaskException e)
+	catch (TaskException e)
 	{
 	    fail("task exception " + e);
 	    return null; // not reached

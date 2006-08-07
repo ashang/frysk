@@ -40,6 +40,9 @@
 
 package lib.elf;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * This class represents an Elf object.
  */
@@ -88,7 +91,30 @@ public class Elf
   public Elf (int pid, ElfCommand command) throws ElfFileException,
       ElfException
   {
-    this("/proc/" + pid + "/exe", command);
+    try 
+      {
+	elf_begin("/proc/" + pid + "/exe", command.getValue());
+      }
+    catch (ElfFileException e)
+      {
+	// Try to find the real name of problem executable.
+	String badFileName = e.getFileName();
+	if (null == badFileName) 
+	  {
+	    throw e;
+	  }
+	File file = new File(badFileName);
+	try 
+	  {
+	    throw new ElfFileException(e.getMessage(),
+				       file.getCanonicalPath());
+	  }
+	catch (IOException ioException) 
+	  {
+	    // Nice try...
+	    throw e;
+	  }
+      }
   }
 
   public Elf clone (ElfCommand command)

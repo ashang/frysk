@@ -95,6 +95,8 @@ frysk_pkglibexecdir_funit_ia32_modify_SOURCES = frysk/pkglibexecdir/funit-ia32-m
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-ia32-modify
 frysk_pkglibexecdir_funit_x8664_regs_SOURCES = frysk/pkglibexecdir/funit-x8664-regs.S
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-x8664-regs
+frysk_pkglibexecdir_funit_x8664_modify_SOURCES = frysk/pkglibexecdir/funit-x8664-modify.S
+pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-x8664-modify
 
 # For TestExec.java
 pkglibexec_PROGRAMS += frysk/pkglibexecdir/funit-child-alias

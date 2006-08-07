@@ -47,6 +47,7 @@ import lib.elf.ElfCommand;
 import lib.elf.ElfEHeader;
 import lib.elf.ElfEMachine;
 import lib.elf.ElfException;
+import lib.elf.ElfFileException;
 
 import frysk.Config;
 
@@ -64,8 +65,8 @@ public class IsaFactory
 
   /** Obtain ISA of task via pid. 
    */
-  public Isa getIsa(int pid) 
-    throws Task.TaskException
+  private Isa getIsa(int pid, Task task) 
+    throws TaskException
   {
     Elf elfFile;
     logger.log (Level.FINE, "{0} getIsa\n", this);
@@ -74,10 +75,13 @@ public class IsaFactory
       {
 	elfFile = new Elf(pid, ElfCommand.ELF_C_READ);
       }
+    catch (ElfFileException e) 
+      {
+	throw new TaskFileException(e.getMessage(), task, e.getFileName(), e);
+      }
     catch (ElfException e) 
       {
-	throw (Task.TaskException)
-	  (new Task.TaskException("getting task's executable").initCause(e));
+	throw new TaskException("getting task's executable", e);
       }
 
     ElfEHeader header = elfFile.getEHeader();
@@ -93,7 +97,20 @@ public class IsaFactory
       case ElfEMachine.EM_X86_64:
 	return LinuxEMT64.isaSingleton ();
       default: 
-	throw new Task.TaskException("Unknown machine type " + header.machine);
+	throw new TaskException("Unknown machine type " + header.machine);
       }
   }
+
+  public  Isa getIsa(int pid) 
+    throws TaskException 
+  {
+    return getIsa(pid, null);
+  }
+  
+  public Isa getIsa(Task task)
+    throws TaskException
+  {
+    return getIsa(task.getTid(), task);
+  }
+  
 }

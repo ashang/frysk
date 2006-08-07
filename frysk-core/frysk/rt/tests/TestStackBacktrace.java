@@ -51,13 +51,14 @@ import frysk.rt.StackFrame;
 import frysk.core.Build;
 import frysk.sys.Sig;
 import frysk.sys.proc.MapsBuilder;
+import frysk.proc.TaskException;
 
 public class TestStackBacktrace
     extends TestLib
 {
   private Task myTask;
 
-  public void testBacktrace () throws Task.TaskException
+  public void testBacktrace () throws TaskException
   {
      if (brokenXXX(2936))
       return;

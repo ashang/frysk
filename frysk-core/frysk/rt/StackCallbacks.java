@@ -56,6 +56,7 @@ import lib.unwind.UnwindCallbacks;
 import frysk.proc.Host;
 import frysk.proc.Isa;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 
 public class StackCallbacks
     implements UnwindCallbacks
@@ -64,7 +65,7 @@ public class StackCallbacks
 
   private Isa isa;
 
-  public StackCallbacks (Task myTask) throws Task.TaskException
+  public StackCallbacks (Task myTask) throws TaskException
   {
     this.myTask = myTask;
     this.myTask.toString();

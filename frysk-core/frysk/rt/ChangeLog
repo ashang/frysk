@@ -1,3 +1,10 @@
+2006-08-07  Tim Moore  <timoore@redhat.com>
+
+	* StackCallbacks.java (StackCallbacks): change Task.TaskException
+	to TaskException.
+	* StackFactory.java (createStackFrame): ditto.
+	* tests/TestStackBacktrace.java (testBacktrace): ditto.
+
 2006-07-28  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): Now passes the signal

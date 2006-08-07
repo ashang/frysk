@@ -75,6 +75,7 @@ import frysk.gui.monitor.ObservableLinkedList;
 import frysk.gui.monitor.Saveable;
 import frysk.gui.monitor.SimpleComboBox;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 
 import lib.opcodes.Disassembler;
 import lib.opcodes.OpcodesException;
@@ -230,7 +231,7 @@ public class MemoryWindow
 
         pc_inc = myTask.getIsa().pc(myTask);
       }
-    catch (Task.TaskException e)
+    catch (TaskException e)
       {
         // XXX What to do if there's an error?
         e.printStackTrace();

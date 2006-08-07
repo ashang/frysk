@@ -215,7 +215,7 @@ public class LinuxHost
 	Proc proc = new LinuxProc(myTask, new ProcId(pid));
 	new LinuxTask(proc, attached);
       }
-    catch (Task.TaskException e)
+    catch (TaskException e)
       {
 	// XXX do real exception handling
       }
@@ -270,7 +270,7 @@ public class LinuxHost
 	  {
 	    clone = new LinuxTask(task, new TaskId(clonePid));
 	  }
-	catch (Task.TaskException e)
+	catch (TaskException e)
 	  {
 	    // XXX do real exception handling
 	    clone = null;
@@ -296,7 +296,7 @@ public class LinuxHost
 	  {
 	    forkTask = new LinuxTask(forkProc, (TaskObserver.Attached) null);
 	  }
-	catch (Task.TaskException e)
+	catch (TaskException e)
 	  {
 	    // XXX do real exception handling
 	    forkTask = null;

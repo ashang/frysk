@@ -118,7 +118,7 @@ public class LinuxProc
 							  new TaskId (tid));
 			    added.put (newTask.id, newTask);
 			}
-		    catch (Task.TaskException e)
+		    catch (TaskException e)
 			{
 			    // XXX error recovery?
 			}

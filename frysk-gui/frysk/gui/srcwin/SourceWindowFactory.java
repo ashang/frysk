@@ -66,6 +66,7 @@ import frysk.gui.monitor.WindowManager;
 import frysk.proc.Action;
 import frysk.proc.Proc;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 
 /**
@@ -284,7 +285,7 @@ public class SourceWindowFactory
 	  {
 	    line = task.getDwflLineXXX();
 	  }
-	catch (Task.TaskException e)
+	catch (TaskException e)
 	  {
 	    line = null;
 	  }

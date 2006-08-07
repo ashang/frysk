@@ -71,6 +71,7 @@ import frysk.gui.monitor.Saveable;
 import frysk.proc.Isa;
 import frysk.proc.Register;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 
 /**
  * The RegisterWindow allows the display and editing of the names and values of
@@ -147,7 +148,7 @@ public class RegisterWindow
       {
 	isa  = this.myTask.getIsa();
       }
-    catch (Task.TaskException e)
+    catch (TaskException e)
       {
 	e.printStackTrace();
 	return;

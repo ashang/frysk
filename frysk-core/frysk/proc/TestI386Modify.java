@@ -100,7 +100,7 @@ public class TestI386Modify
 		     syscall = task.getSyscallEventInfo();
 		     isa = (LinuxIa32)task.getIsa();		     
 		}
-		catch (Task.TaskException e)
+		catch (TaskException e)
 		{
 		     fail("got task exception " + e);
 		     return Action.CONTINUE; // not reached

@@ -1,3 +1,7 @@
+2006-08-07  Tim Moore  <timoore@redhat.com>
+
+	* Makefile.am: Add funit-x8664-modify test program.
+
 2006-08-03  Tim Moore  <timoore@redhat.com>
 
 	* Makefile.am: Add funit-x8664-regs test program.

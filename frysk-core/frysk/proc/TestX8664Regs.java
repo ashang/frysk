@@ -80,7 +80,7 @@ public class TestX8664Regs
 	    syscall = task.getSyscallEventInfo ();
 	    isa = (LinuxEMT64)task.getIsa ();
 	  }
-	catch (Task.TaskException e)
+	catch (TaskException e)
 	  {
 	    fail("got task exception " + e);
 	    return Action.CONTINUE; // not reached
@@ -117,7 +117,7 @@ public class TestX8664Regs
 	  {
 	    isa = task.getIsa();
 	  }
-	catch (Task.TaskException e) 
+	catch (TaskException e) 
 	  {
 	    isa = null;
 	  }
