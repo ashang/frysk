@@ -117,10 +117,10 @@
 #ifdef IS_LIBDW
 extern uint64_t __libdw_get_uleb128 (uint64_t acc, unsigned int i,
 				     const unsigned char **addrp)
-     internal_function_hidden;
+     internal_function attribute_hidden;
 extern int64_t __libdw_get_sleb128 (int64_t acc, unsigned int i,
 				    const unsigned char **addrp)
-     internal_function_hidden;
+     internal_function attribute_hidden;
 #else
 static uint64_t
 __attribute__ ((unused))

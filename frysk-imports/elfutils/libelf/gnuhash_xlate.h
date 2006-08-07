@@ -1,7 +1,7 @@
-/* Return tag of given DIE.
-   Copyright (C) 2003, 2004, 2005, 2006 Red Hat, Inc.
+/* Conversion functions for versioning information.
+   Copyright (C) 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
-   Written by Ulrich Drepper <drepper@redhat.com>, 2003.
+   Written by Ulrich Drepper <drepper@redhat.com>, 2006.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by the
@@ -48,71 +48,48 @@
    Network licensing program, please visit www.openinventionnetwork.com
    <http://www.openinventionnetwork.com>.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <assert.h>
+#include <gelf.h>
 
-#include "libdwP.h"
+#include "libelfP.h"
 
 
-Dwarf_Abbrev *
-internal_function
-__libdw_findabbrev (struct Dwarf_CU *cu, unsigned int code)
+static void
+elf_cvt_gnuhash (void *dest, const void *src, size_t len, int encode)
 {
-  Dwarf_Abbrev *abb;
+  /* The GNU hash table format on 64 bit machines mixes 32 bit and 64 bit
+     words.  We must detangle them here.   */
+  Elf32_Word *dest32 = dest;
+  const Elf32_Word *src32 = src;
 
-  /* See whether the entry is already in the hash table.  */
-  abb = Dwarf_Abbrev_Hash_find (&cu->abbrev_hash, code, NULL);
-  if (abb == NULL)
-    while (cu->last_abbrev_offset != (size_t) -1l)
-      {
-	size_t length;
-
-	/* Find the next entry.  It gets automatically added to the
-	   hash table.  */
-	abb = __libdw_getabbrev (cu->dbg, cu, cu->last_abbrev_offset, &length,
-				 NULL);
-	if (abb == NULL || abb == DWARF_END_ABBREV)
-	  {
-	    /* Make sure we do not try to search for it again.  */
-	    cu->last_abbrev_offset = (size_t) -1l;
-	    abb = (void *) -1l;
-	    break;
-	  }
-
-	cu->last_abbrev_offset += length;
-
-	/* Is this the code we are looking for?  */
-	if (abb->code == code)
-	  break;
-      }
-
-  return abb;
-}
-
-
-int
-dwarf_tag (die)
-     Dwarf_Die *die;
-{
-  /* Do we already know the abbreviation?  */
-  if (die->abbrev == NULL)
+  /* First four control words, 32 bits.  */
+  for (unsigned int cnt = 0; cnt < 4; ++cnt)
     {
-      /* Get the abbreviation code.  */
-      unsigned int u128;
-      const unsigned char *addr = die->addr;
-      get_uleb128 (u128, addr);
-
-      /* Find the abbreviation.  */
-      die->abbrev = __libdw_findabbrev (die->cu, u128);
+      if (len < 4)
+	return;
+      dest32[cnt] = bswap_32 (src32[cnt]);
+      len -= 4;
     }
 
-  if (die->abbrev == (Dwarf_Abbrev *) -1l)
+  Elf32_Word bitmask_words = encode ? src32[2] : dest32[2];
+
+  /* Now the 64 bit words.  */
+  Elf64_Xword *dest64 = (Elf64_Xword *) &dest32[4];
+  const Elf64_Xword *src64 = (const Elf64_Xword *) &src32[4];
+  for (unsigned int cnt = 0; cnt < bitmask_words; ++cnt)
     {
-      __libdw_seterrno (DWARF_E_INVALID_DWARF);
-      return DW_TAG_invalid;
+      if (len < 8)
+	return;
+      dest64[cnt] = bswap_64 (src64[cnt]);
+      len -= 8;
     }
 
-  return die->abbrev->tag;
+  /* The rest are 32 bit words again.  */
+  src32 = (const Elf32_Word *) &src64[bitmask_words];
+  dest32 = (Elf32_Word *) &dest64[bitmask_words];
+  while (len > 4)
+    {
+      *dest32++ = bswap_32 (*src32++);
+      len -= 4;
+    }
 }
-INTDEF(dwarf_tag)

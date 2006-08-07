@@ -1,5 +1,5 @@
 /* Common code for ebl reloc functions.
-   Copyright (C) 2005 Red Hat, Inc.
+   Copyright (C) 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -115,6 +115,20 @@ EBLHOOK(copy_reloc_p) (int reloc)
   return reloc == R_TYPE (COPY);
 }
 
+bool
+EBLHOOK(none_reloc_p) (int reloc)
+{
+  return reloc == R_TYPE (NONE);
+}
+
+#ifndef NO_RELATIVE_RELOC
+bool
+EBLHOOK(relative_reloc_p) (int reloc)
+{
+  return reloc == R_TYPE (RELATIVE);
+}
+#endif
+
 static void
 EBLHOOK(init_reloc) (Ebl *ebl)
 {
@@ -122,4 +136,8 @@ EBLHOOK(init_reloc) (Ebl *ebl)
   ebl->reloc_type_check = EBLHOOK(reloc_type_check);
   ebl->reloc_valid_use = EBLHOOK(reloc_valid_use);
   ebl->copy_reloc_p = EBLHOOK(copy_reloc_p);
+  ebl->none_reloc_p = EBLHOOK(none_reloc_p);
+#ifndef NO_RELATIVE_RELOC
+  ebl->relative_reloc_p = EBLHOOK(relative_reloc_p);
+#endif
 }

@@ -129,7 +129,7 @@
 #line 1 "/home/drepper/devel/elfutils/src/ldscript.y"
 
 /* Parser for linker scripts.
-   Copyright (C) 2001, 2002, 2003, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
    Written by Ulrich Drepper <drepper@redhat.com>, 2001.
 
@@ -395,16 +395,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state. */
 #define YYFINAL  32
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   228
+#define YYLAST   226
 
 /* YYNTOKENS -- Number of terminals. */
 #define YYNTOKENS  40
 /* YYNNTS -- Number of nonterminals. */
-#define YYNNTS  22
+#define YYNNTS  23
 /* YYNRULES -- Number of rules. */
-#define YYNRULES  65
+#define YYNRULES  66
 /* YYNRULES -- Number of states. */
-#define YYNSTATES  158
+#define YYNSTATES  159
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -456,50 +456,51 @@ static const unsigned char yyprhs[] =
       37,    43,    49,    54,    59,    64,    69,    74,    77,    79,
       82,    87,    90,    94,   101,   104,   106,   108,   113,   116,
      122,   124,   129,   134,   135,   140,   144,   148,   152,   156,
-     160,   164,   166,   168,   170,   172,   177,   182,   186,   188,
-     190,   191,   194,   196,   201,   207,   214,   217,   219,   222,
-     225,   229,   232,   234,   236,   238
+     160,   164,   166,   168,   170,   172,   176,   178,   180,   181,
+     186,   191,   193,   196,   198,   203,   209,   216,   219,   221,
+     224,   227,   231,   234,   236,   238,   240
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS. */
 static const yysigned_char yyrhs[] =
 {
-      41,     0,    -1,    42,    -1,    27,    55,    -1,    42,    43,
+      41,     0,    -1,    42,    -1,    27,    56,    -1,    42,    43,
       -1,    43,    -1,     6,    33,    11,    34,    35,    -1,    22,
-      33,    60,    34,    35,    -1,    20,    33,    18,    34,    35,
-      -1,    13,    33,    60,    34,    35,    -1,    23,    16,    36,
+      33,    61,    34,    35,    -1,    20,    33,    18,    34,    35,
+      -1,    13,    33,    61,    34,    35,    -1,    23,    16,    36,
       44,    37,    -1,    23,     1,    36,    44,    37,    -1,    10,
       33,    53,    34,    -1,    12,    33,    53,    34,    -1,     5,
-      33,    53,    34,    -1,    26,    36,    55,    37,    -1,    19,
-      33,    60,    34,    -1,    44,    45,    -1,    45,    -1,    46,
+      33,    53,    34,    -1,    26,    36,    56,    37,    -1,    19,
+      33,    61,    34,    -1,    44,    45,    -1,    45,    -1,    46,
       35,    -1,    11,    36,    47,    37,    -1,    11,    35,    -1,
       11,    38,    52,    -1,    21,    33,    11,    38,    52,    34,
       -1,    47,    48,    -1,    48,    -1,    49,    -1,    14,    33,
-      49,    34,    -1,    46,    35,    -1,    61,    33,    51,    50,
+      49,    34,    -1,    46,    35,    -1,    62,    33,    51,    50,
       34,    -1,    11,    -1,    25,    33,    11,    34,    -1,     7,
-      33,    60,    34,    -1,    -1,     4,    33,    52,    34,    -1,
+      33,    61,    34,    -1,    -1,     4,    33,    52,    34,    -1,
       33,    52,    34,    -1,    52,    31,    52,    -1,    52,    17,
       52,    -1,    52,     3,    52,    -1,    52,    29,    52,    -1,
       52,    28,    52,    -1,    18,    -1,    11,    -1,    24,    -1,
-      20,    -1,    10,    33,    53,    34,    -1,     5,    33,    53,
-      34,    -1,    53,    54,    60,    -1,    60,    -1,    39,    -1,
-      -1,    55,    56,    -1,    56,    -1,    36,    57,    37,    35,
-      -1,    60,    36,    57,    37,    35,    -1,    60,    36,    57,
-      37,    60,    35,    -1,    57,    58,    -1,    58,    -1,     9,
-      59,    -1,    15,    59,    -1,    59,    61,    35,    -1,    61,
-      35,    -1,     8,    -1,    11,    -1,    60,    -1,    31,    -1
+      20,    -1,    53,    54,    55,    -1,    55,    -1,    39,    -1,
+      -1,    10,    33,    53,    34,    -1,     5,    33,    53,    34,
+      -1,    61,    -1,    56,    57,    -1,    57,    -1,    36,    58,
+      37,    35,    -1,    61,    36,    58,    37,    35,    -1,    61,
+      36,    58,    37,    61,    35,    -1,    58,    59,    -1,    59,
+      -1,     9,    60,    -1,    15,    60,    -1,    60,    62,    35,
+      -1,    62,    35,    -1,     8,    -1,    11,    -1,    61,    -1,
+      31,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   142,   142,   143,   147,   148,   151,   156,   160,   165,
-     170,   174,   180,   191,   193,   195,   197,   201,   206,   210,
-     215,   227,   251,   253,   257,   262,   266,   271,   278,   285,
-     296,   298,   302,   305,   308,   313,   315,   321,   327,   333,
-     339,   345,   350,   355,   357,   361,   372,   374,   380,   384,
-     385,   388,   393,   397,   403,   409,   418,   420,   424,   426,
-     431,   437,   441,   443,   447,   449
+       0,   143,   143,   144,   148,   149,   152,   157,   161,   166,
+     172,   176,   182,   193,   195,   197,   199,   203,   208,   212,
+     217,   229,   253,   255,   259,   264,   268,   273,   280,   287,
+     298,   300,   304,   307,   310,   315,   317,   323,   329,   335,
+     341,   347,   352,   357,   359,   363,   368,   372,   373,   376,
+     387,   389,   394,   399,   403,   409,   415,   424,   426,   430,
+     432,   437,   443,   447,   449,   453,   455
 };
 #endif
 
@@ -517,8 +518,8 @@ static const char *const yytname[] =
   "','", "$accept", "script_or_version", "file", "content",
   "outputsections", "outputsection", "assignment", "inputsections",
   "inputsection", "sectionname", "sort_opt_name", "exclude_opt", "expr",
-  "filename_id_list", "comma_opt", "versionlist", "version",
-  "version_stmt_list", "version_stmt", "filename_id_star_list",
+  "filename_id_list", "comma_opt", "filename_id_listelem", "versionlist",
+  "version", "version_stmt_list", "version_stmt", "filename_id_star_list",
   "filename_id", "filename_id_star", 0
 };
 #endif
@@ -542,9 +543,9 @@ static const unsigned char yyr1[] =
       43,    43,    43,    43,    43,    43,    43,    44,    44,    45,
       45,    45,    46,    46,    47,    47,    48,    48,    48,    49,
       50,    50,    51,    51,    52,    52,    52,    52,    52,    52,
-      52,    52,    52,    52,    52,    53,    53,    53,    53,    54,
-      54,    55,    55,    56,    56,    56,    57,    57,    58,    58,
-      59,    59,    60,    60,    61,    61
+      52,    52,    52,    52,    52,    53,    53,    54,    54,    55,
+      55,    55,    56,    56,    57,    57,    57,    58,    58,    59,
+      59,    60,    60,    61,    61,    62,    62
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
@@ -554,9 +555,9 @@ static const unsigned char yyr2[] =
        5,     5,     4,     4,     4,     4,     4,     2,     1,     2,
        4,     2,     3,     6,     2,     1,     1,     4,     2,     5,
        1,     4,     4,     0,     4,     3,     3,     3,     3,     3,
-       3,     1,     1,     1,     1,     4,     4,     3,     1,     1,
-       0,     2,     1,     4,     5,     6,     2,     1,     2,     2,
-       3,     2,     1,     1,     1,     1
+       3,     1,     1,     1,     1,     3,     1,     1,     0,     4,
+       4,     1,     2,     1,     4,     5,     6,     2,     1,     2,
+       2,     3,     2,     1,     1,     1,     1
 };
 
 /* YYDEFACT[STATE-NAME] -- Default rule to reduce with in state
@@ -566,59 +567,59 @@ static const unsigned char yydefact[] =
 {
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     2,     5,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    62,    63,     0,     3,
-      52,     0,     1,     4,     0,     0,    50,    48,     0,    50,
-      50,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    57,    51,     0,     0,     0,    14,    49,     0,     0,
-      12,    13,     0,    16,     0,     0,     0,     0,     0,    18,
-       0,     0,    15,    65,    58,    64,     0,    59,     0,    56,
-       0,    50,    50,    47,     6,     9,     8,     7,    21,     0,
-       0,     0,    11,    17,    19,    10,     0,    61,    53,     0,
-      46,    45,    63,     0,     0,     0,    25,    26,     0,     0,
-      42,    41,    44,    43,     0,    22,     0,    60,    54,     0,
-       0,    28,    20,    24,    33,     0,     0,     0,     0,     0,
-       0,     0,     0,    55,     0,     0,     0,     0,    35,    38,
-      37,    40,    39,    36,     0,    27,     0,    30,     0,     0,
-      34,    23,     0,     0,    29,    32,     0,    31
+       0,     0,     0,     0,     0,     0,    63,    64,     0,     3,
+      53,     0,     1,     4,     0,     0,    48,    46,    51,     0,
+      48,    48,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    58,    52,     0,     0,     0,    14,    47,     0,
+       0,    12,    13,     0,    16,     0,     0,     0,     0,     0,
+      18,     0,     0,    15,    66,    59,    65,     0,    60,     0,
+      57,     0,    48,    48,    45,     6,     9,     8,     7,    21,
+       0,     0,     0,    11,    17,    19,    10,     0,    62,    54,
+       0,    50,    49,    64,     0,     0,     0,    25,    26,     0,
+       0,    42,    41,    44,    43,     0,    22,     0,    61,    55,
+       0,     0,    28,    20,    24,    33,     0,     0,     0,     0,
+       0,     0,     0,     0,    56,     0,     0,     0,     0,    35,
+      38,    37,    40,    39,    36,     0,    27,     0,    30,     0,
+       0,    34,    23,     0,     0,    29,    32,     0,    31
 };
 
 /* YYDEFGOTO[NTERM-NUM]. */
 static const short int yydefgoto[] =
 {
-      -1,    12,    13,    14,    68,    69,    70,   105,   106,   107,
-     149,   136,   115,    36,    58,    29,    30,    50,    51,    74,
-      75,   108
+      -1,    12,    13,    14,    69,    70,    71,   106,   107,   108,
+     150,   137,   116,    36,    59,    37,    29,    30,    51,    52,
+      75,    76,   109
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -46
+#define YYPACT_NINF -86
 static const short int yypact[] =
 {
-     105,   -12,    -1,    26,    30,    51,    81,    89,    93,   120,
-      84,     4,   103,   128,   -46,    14,   126,    14,    14,   135,
-     135,   121,   135,   109,   116,     4,   -46,   -46,    87,     4,
-     -46,   139,   -46,   -46,   129,   144,    22,   -46,   145,   127,
-     130,   147,   148,   149,   150,     9,     9,    61,     2,     2,
-      67,   -46,   -46,    87,    14,    14,   -46,   -46,   135,   143,
-     -46,   -46,   151,   -46,   152,   153,   138,   156,     5,   -46,
-     155,    79,   -46,   -46,     2,   -46,   157,     2,   158,   -46,
-      68,   131,   133,   -46,   -46,   -46,   -46,   -46,   -46,    98,
-      46,   169,   -46,   -46,   -46,   -46,   159,   -46,   -46,    78,
-     -46,   -46,   160,   162,   161,    54,   -46,   -46,   164,   166,
-     -46,   -46,   -46,   -46,    46,    64,   163,   -46,   -46,   165,
-       2,   -46,   -46,   -46,   178,    46,     0,    46,    46,    46,
-      46,    46,    46,   -46,   168,   170,   119,    20,   -46,    64,
-      64,    70,    77,   146,    24,   -46,   135,   -46,   171,   172,
-     -46,   -46,   173,   180,   -46,   -46,   174,   -46
+     111,   -18,   -14,    23,    45,    70,    75,    85,    92,    97,
+      91,    19,   128,   134,   -86,   162,    96,   162,   162,     5,
+       5,   123,     5,    93,    99,    19,   -86,   -86,   117,    19,
+     -86,   115,   -86,   -86,   125,   144,    71,   -86,   -86,   145,
+     116,   135,   147,   148,   149,   150,   101,   101,    14,    83,
+      83,    55,   -86,   -86,   117,   162,   162,   -86,   -86,   162,
+     133,   -86,   -86,   143,   -86,   151,   152,   107,   155,    63,
+     -86,   154,    74,   -86,   -86,    83,   -86,   156,    83,   157,
+     -86,    56,   137,   141,   -86,   -86,   -86,   -86,   -86,   -86,
+      88,    48,   174,   -86,   -86,   -86,   -86,   158,   -86,   -86,
+      69,   -86,   -86,   159,   161,   160,    12,   -86,   -86,   163,
+     165,   -86,   -86,   -86,   -86,    48,    59,   164,   -86,   -86,
+     166,    83,   -86,   -86,   -86,   183,    48,     0,    48,    48,
+      48,    48,    48,    48,   -86,   169,   167,    90,     7,   -86,
+      59,    59,    44,    66,   103,    29,   -86,     5,   -86,   171,
+     172,   -86,   -86,   173,   188,   -86,   -86,   175,   -86
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const short int yypgoto[] =
 {
-     -46,   -46,   -46,   192,   167,   100,    18,   -46,   104,    90,
-     -46,   -46,    28,   -16,   -46,   186,    31,   175,   -45,   176,
-     -11,    -3
+     -86,   -86,   -86,   192,   168,    80,   -85,   -86,   102,    89,
+     -86,   -86,    33,   -16,   -86,   153,   186,    38,   170,   -39,
+     176,   -11,     4
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -628,56 +629,56 @@ static const short int yypgoto[] =
 #define YYTABLE_NINF -1
 static const unsigned char yytable[] =
 {
-      31,    39,    40,   127,    37,    79,    37,    37,    41,    42,
-      26,    44,    26,    27,    31,    27,    66,   128,    31,    34,
-      66,    15,    26,   127,    35,    27,    67,   127,   129,   130,
-      67,   131,    16,    73,   138,    79,    31,   128,    81,    82,
-      28,   128,    92,    37,    37,    76,    76,    83,   129,   130,
-     109,   131,   129,   130,   150,   131,    56,   110,   151,    17,
-      52,    57,    26,    18,   111,   102,   112,   127,   103,    26,
-     113,    96,    27,   127,    96,    67,    48,    48,    52,   114,
-     127,   128,    49,    49,    19,    73,    26,   128,   119,    27,
-      66,   122,   129,   130,   128,   131,    48,    28,    72,   130,
-      67,   131,    49,    32,    78,    99,    26,   104,   131,   102,
-       1,     2,   103,   118,    20,     3,    95,     4,     5,    67,
-      25,    23,    21,   104,     6,     7,    22,     8,     9,    73,
-     147,    10,    11,     1,     2,   152,    24,    38,     3,    43,
-       4,     5,   126,    26,   148,    45,    27,     6,     7,   127,
-       8,     9,    46,   137,    10,   139,   140,   141,   142,   143,
-     144,    60,    54,   128,    61,   100,    57,   101,    93,    57,
-      57,    93,    57,    88,    89,    53,    90,    55,    84,    59,
-     116,    62,    63,    64,    65,   135,    85,    86,    87,    91,
-      94,   156,    97,    98,   117,   120,   121,   124,    90,   125,
-     133,   132,   145,   146,   153,    33,   154,   155,   157,   123,
-     134,    47,     0,    71,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    77,     0,     0,    80
+      31,    40,    41,   128,    38,   105,    38,    38,    42,    43,
+     128,    45,    80,    26,    31,    15,    27,   129,    31,    16,
+      26,   105,    26,   103,   129,    27,   104,    26,   130,   131,
+      27,   132,   128,    68,   139,   130,   131,    31,   132,    82,
+      83,   151,    80,    74,    38,    38,   129,   128,    38,   123,
+      28,    73,   110,    77,    77,    28,    17,   130,   131,   111,
+     132,   129,   128,   152,    49,    49,   112,    53,   113,   128,
+      50,    50,   114,   131,    67,   132,   129,    26,    18,    97,
+      27,   115,    97,   129,    68,    67,    53,   130,   131,   120,
+     132,    26,    79,   100,    27,    68,    26,   132,    23,   103,
+      93,   148,   104,    19,   119,    57,   128,    39,    20,    68,
+      58,    96,    67,    24,    74,   149,     1,     2,    21,    74,
+     129,     3,    68,     4,     5,    22,    49,    25,    32,    46,
+       6,     7,    50,     8,     9,    47,   153,    10,    11,     1,
+       2,    44,    89,    90,     3,    91,     4,     5,   127,    94,
+      61,    54,    94,     6,     7,    58,     8,     9,    55,   138,
+      10,   140,   141,   142,   143,   144,   145,    34,    85,    62,
+      26,   101,    35,    27,    58,   102,    58,    56,    86,    60,
+      58,    63,    64,    65,    66,   117,    87,    88,    92,    95,
+     136,    98,    99,   118,   121,   122,   125,    91,   126,   157,
+     147,   134,   133,   146,   154,    33,   155,   156,   124,   158,
+     135,    48,    84,     0,     0,    72,     0,     0,     0,     0,
+       0,     0,     0,     0,    81,     0,    78
 };
 
 static const short int yycheck[] =
 {
-      11,    17,    18,     3,    15,    50,    17,    18,    19,    20,
-       8,    22,     8,    11,    25,    11,    11,    17,    29,     5,
-      11,    33,     8,     3,    10,    11,    21,     3,    28,    29,
-      21,    31,    33,    31,    34,    80,    47,    17,    54,    55,
-      36,    17,    37,    54,    55,    48,    49,    58,    28,    29,
-       4,    31,    28,    29,    34,    31,    34,    11,    34,    33,
-      29,    39,     8,    33,    18,    11,    20,     3,    14,     8,
-      24,    74,    11,     3,    77,    21,     9,     9,    47,    33,
-       3,    17,    15,    15,    33,    31,     8,    17,    99,    11,
-      11,    37,    28,    29,    17,    31,     9,    36,    37,    29,
-      21,    31,    15,     0,    37,    37,     8,    89,    31,    11,
-       5,     6,    14,    35,    33,    10,    37,    12,    13,    21,
-      36,     1,    33,   105,    19,    20,    33,    22,    23,    31,
-      11,    26,    27,     5,     6,   146,    16,    11,    10,    18,
-      12,    13,   114,     8,    25,    36,    11,    19,    20,     3,
-      22,    23,    36,   125,    26,   127,   128,   129,   130,   131,
-     132,    34,    33,    17,    34,    34,    39,    34,    68,    39,
-      39,    71,    39,    35,    36,    36,    38,    33,    35,    34,
-      11,    34,    34,    34,    34,     7,    35,    35,    35,    33,
-      35,    11,    35,    35,    35,    33,    35,    33,    38,    33,
-      35,    38,    34,    33,    33,    13,    34,    34,    34,   105,
-     120,    25,    -1,    46,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    49,    -1,    -1,    53
+      11,    17,    18,     3,    15,    90,    17,    18,    19,    20,
+       3,    22,    51,     8,    25,    33,    11,    17,    29,    33,
+       8,   106,     8,    11,    17,    11,    14,     8,    28,    29,
+      11,    31,     3,    21,    34,    28,    29,    48,    31,    55,
+      56,    34,    81,    31,    55,    56,    17,     3,    59,    37,
+      36,    37,     4,    49,    50,    36,    33,    28,    29,    11,
+      31,    17,     3,    34,     9,     9,    18,    29,    20,     3,
+      15,    15,    24,    29,    11,    31,    17,     8,    33,    75,
+      11,    33,    78,    17,    21,    11,    48,    28,    29,   100,
+      31,     8,    37,    37,    11,    21,     8,    31,     1,    11,
+      37,    11,    14,    33,    35,    34,     3,    11,    33,    21,
+      39,    37,    11,    16,    31,    25,     5,     6,    33,    31,
+      17,    10,    21,    12,    13,    33,     9,    36,     0,    36,
+      19,    20,    15,    22,    23,    36,   147,    26,    27,     5,
+       6,    18,    35,    36,    10,    38,    12,    13,   115,    69,
+      34,    36,    72,    19,    20,    39,    22,    23,    33,   126,
+      26,   128,   129,   130,   131,   132,   133,     5,    35,    34,
+       8,    34,    10,    11,    39,    34,    39,    33,    35,    34,
+      39,    34,    34,    34,    34,    11,    35,    35,    33,    35,
+       7,    35,    35,    35,    33,    35,    33,    38,    33,    11,
+      33,    35,    38,    34,    33,    13,    34,    34,   106,    34,
+     121,    25,    59,    -1,    -1,    47,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    54,    -1,    50
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -686,20 +687,20 @@ static const unsigned char yystos[] =
 {
        0,     5,     6,    10,    12,    13,    19,    20,    22,    23,
       26,    27,    41,    42,    43,    33,    33,    33,    33,    33,
-      33,    33,    33,     1,    16,    36,     8,    11,    36,    55,
-      56,    60,     0,    43,     5,    10,    53,    60,    11,    53,
-      53,    60,    60,    18,    60,    36,    36,    55,     9,    15,
-      57,    58,    56,    36,    33,    33,    34,    39,    54,    34,
-      34,    34,    34,    34,    34,    34,    11,    21,    44,    45,
-      46,    44,    37,    31,    59,    60,    61,    59,    37,    58,
-      57,    53,    53,    60,    35,    35,    35,    35,    35,    36,
-      38,    33,    37,    45,    35,    37,    61,    35,    35,    37,
-      34,    34,    11,    14,    46,    47,    48,    49,    61,     4,
-      11,    18,    20,    24,    33,    52,    11,    35,    35,    60,
-      33,    35,    37,    48,    33,    33,    52,     3,    17,    28,
-      29,    31,    38,    35,    49,     7,    51,    52,    34,    52,
-      52,    52,    52,    52,    52,    34,    33,    11,    25,    50,
-      34,    34,    60,    33,    34,    34,    11,    34
+      33,    33,    33,     1,    16,    36,     8,    11,    36,    56,
+      57,    61,     0,    43,     5,    10,    53,    55,    61,    11,
+      53,    53,    61,    61,    18,    61,    36,    36,    56,     9,
+      15,    58,    59,    57,    36,    33,    33,    34,    39,    54,
+      34,    34,    34,    34,    34,    34,    34,    11,    21,    44,
+      45,    46,    44,    37,    31,    60,    61,    62,    60,    37,
+      59,    58,    53,    53,    55,    35,    35,    35,    35,    35,
+      36,    38,    33,    37,    45,    35,    37,    62,    35,    35,
+      37,    34,    34,    11,    14,    46,    47,    48,    49,    62,
+       4,    11,    18,    20,    24,    33,    52,    11,    35,    35,
+      61,    33,    35,    37,    48,    33,    33,    52,     3,    17,
+      28,    29,    31,    38,    35,    49,     7,    51,    52,    34,
+      52,    52,    52,    52,    52,    52,    34,    33,    11,    25,
+      50,    34,    34,    61,    33,    34,    34,    11,    34
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1122,7 +1123,7 @@ yyparse (void)
 #else
 int
 yyparse ()
-    ;
+
 #endif
 #endif
 {
@@ -1369,12 +1370,12 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 144 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 145 "/home/drepper/devel/elfutils/src/ldscript.y"
     { add_versions ((yyvsp[0].version)); }
     break;
 
   case 6:
-#line 152 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 153 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      if (likely (ld_state.entry == NULL))
 			ld_state.entry = (yyvsp[-2].str);
@@ -1382,14 +1383,14 @@ yyreduce:
     break;
 
   case 7:
-#line 157 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 158 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      ld_new_searchdir ((yyvsp[-2].str));
 		    }
     break;
 
   case 8:
-#line 161 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 162 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      if (likely (ld_state.pagesize == 0))
 			ld_state.pagesize = (yyvsp[-2].num);
@@ -1397,22 +1398,23 @@ yyreduce:
     break;
 
   case 9:
-#line 166 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 167 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
-		      if (likely (ld_state.interp == NULL))
+		      if (likely (ld_state.interp == NULL)
+			  && ld_state.file_type != dso_file_type)
 			ld_state.interp = (yyvsp[-2].str);
 		    }
     break;
 
   case 10:
-#line 171 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 173 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      new_segment ((yyvsp[-3].num), (yyvsp[-1].output_rule));
 		    }
     break;
 
   case 11:
-#line 175 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 177 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      fputs_unlocked (gettext ("mode for segment invalid\n"),
 				      stderr);
@@ -1421,7 +1423,7 @@ yyreduce:
     break;
 
   case 12:
-#line 181 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 183 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      /* First little optimization.  If there is only one
 			 file in the group don't do anything.  */
@@ -1435,27 +1437,27 @@ yyreduce:
     break;
 
   case 13:
-#line 192 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 194 "/home/drepper/devel/elfutils/src/ldscript.y"
     { add_inputfiles ((yyvsp[-1].filename_list)); }
     break;
 
   case 14:
-#line 194 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 196 "/home/drepper/devel/elfutils/src/ldscript.y"
     { add_inputfiles (mark_as_needed ((yyvsp[-1].filename_list))); }
     break;
 
   case 15:
-#line 196 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 198 "/home/drepper/devel/elfutils/src/ldscript.y"
     { add_versions ((yyvsp[-1].version)); }
     break;
 
   case 16:
-#line 198 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 200 "/home/drepper/devel/elfutils/src/ldscript.y"
     { /* XXX TODO */ }
     break;
 
   case 17:
-#line 202 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 204 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].output_rule)->next = (yyvsp[-1].output_rule)->next;
 		      (yyval.output_rule) = (yyvsp[-1].output_rule)->next = (yyvsp[0].output_rule);
@@ -1463,12 +1465,12 @@ yyreduce:
     break;
 
   case 18:
-#line 207 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 209 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.output_rule) = (yyvsp[0].output_rule); }
     break;
 
   case 19:
-#line 211 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 213 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.output_rule) = new_output_rule (output_assignment);
 		      (yyval.output_rule)->val.assignment = (yyvsp[-1].assignment);
@@ -1476,7 +1478,7 @@ yyreduce:
     break;
 
   case 20:
-#line 216 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 218 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.output_rule) = new_output_rule (output_section);
 		      (yyval.output_rule)->val.section.name = (yyvsp[-3].str);
@@ -1491,7 +1493,7 @@ yyreduce:
     break;
 
   case 21:
-#line 228 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 230 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      /* This is a short cut for "ID { *(ID) }".  */
 		      (yyval.output_rule) = new_output_rule (output_section);
@@ -1516,17 +1518,17 @@ yyreduce:
     break;
 
   case 22:
-#line 252 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 254 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.assignment) = new_assignment ((yyvsp[-2].str), (yyvsp[0].expr), false); }
     break;
 
   case 23:
-#line 254 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 256 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.assignment) = new_assignment ((yyvsp[-3].str), (yyvsp[-1].expr), true); }
     break;
 
   case 24:
-#line 258 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 260 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].input_rule)->next = (yyvsp[-1].input_rule)->next;
 		      (yyval.input_rule) = (yyvsp[-1].input_rule)->next = (yyvsp[0].input_rule);
@@ -1534,12 +1536,12 @@ yyreduce:
     break;
 
   case 25:
-#line 263 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 265 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.input_rule) = (yyvsp[0].input_rule); }
     break;
 
   case 26:
-#line 267 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 269 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.input_rule) = new_input_rule (input_section);
 		      (yyval.input_rule)->val.section = (yyvsp[0].filemask_section_name);
@@ -1547,7 +1549,7 @@ yyreduce:
     break;
 
   case 27:
-#line 272 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 274 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyvsp[-1].filemask_section_name)->keep_flag = true;
 
@@ -1557,7 +1559,7 @@ yyreduce:
     break;
 
   case 28:
-#line 279 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 281 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.input_rule) = new_input_rule (input_assignment);
 		      (yyval.input_rule)->val.assignment = (yyvsp[-1].assignment);
@@ -1565,7 +1567,7 @@ yyreduce:
     break;
 
   case 29:
-#line 286 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 288 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.filemask_section_name) = (struct filemask_section_name *)
 			obstack_alloc (&ld_state.smem, sizeof (*(yyval.filemask_section_name)));
@@ -1577,27 +1579,27 @@ yyreduce:
     break;
 
   case 30:
-#line 297 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 299 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.sectionname) = new_input_section_name ((yyvsp[0].str), false); }
     break;
 
   case 31:
-#line 299 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 301 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.sectionname) = new_input_section_name ((yyvsp[-1].str), true); }
     break;
 
   case 32:
-#line 303 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 305 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.str) = (yyvsp[-1].str); }
     break;
 
   case 33:
-#line 305 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 307 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.str) = NULL; }
     break;
 
   case 34:
-#line 309 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 311 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_align);
 		      (yyval.expr)->val.child = (yyvsp[-1].expr);
@@ -1605,12 +1607,12 @@ yyreduce:
     break;
 
   case 35:
-#line 314 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 316 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.expr) = (yyvsp[-1].expr); }
     break;
 
   case 36:
-#line 316 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 318 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_mult);
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1619,7 +1621,7 @@ yyreduce:
     break;
 
   case 37:
-#line 322 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 324 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr ((yyvsp[-1].op));
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1628,7 +1630,7 @@ yyreduce:
     break;
 
   case 38:
-#line 328 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 330 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr ((yyvsp[-1].op));
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1637,7 +1639,7 @@ yyreduce:
     break;
 
   case 39:
-#line 334 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 336 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_and);
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1646,7 +1648,7 @@ yyreduce:
     break;
 
   case 40:
-#line 340 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 342 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_or);
 		      (yyval.expr)->val.binary.left = (yyvsp[-2].expr);
@@ -1655,7 +1657,7 @@ yyreduce:
     break;
 
   case 41:
-#line 346 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 348 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_num);
 		      (yyval.expr)->val.num = (yyvsp[0].num);
@@ -1663,7 +1665,7 @@ yyreduce:
     break;
 
   case 42:
-#line 351 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 353 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyval.expr) = new_expr (exp_id);
 		      (yyval.expr)->val.str = (yyvsp[0].str);
@@ -1671,17 +1673,30 @@ yyreduce:
     break;
 
   case 43:
-#line 356 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 358 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.expr) = new_expr (exp_sizeof_headers); }
     break;
 
   case 44:
-#line 358 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 360 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.expr) = new_expr (exp_pagesize); }
     break;
 
   case 45:
-#line 362 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 364 "/home/drepper/devel/elfutils/src/ldscript.y"
+    {
+		      (yyvsp[0].filename_list)->next = (yyvsp[-2].filename_list)->next;
+		      (yyval.filename_list) = (yyvsp[-2].filename_list)->next = (yyvsp[0].filename_list);
+		    }
+    break;
+
+  case 46:
+#line 369 "/home/drepper/devel/elfutils/src/ldscript.y"
+    { (yyval.filename_list) = (yyvsp[0].filename_list); }
+    break;
+
+  case 49:
+#line 377 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      /* First little optimization.  If there is only one
 			 file in the group don't do anything.  */
@@ -1694,51 +1709,33 @@ yyreduce:
 		    }
     break;
 
-  case 46:
-#line 373 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 50:
+#line 388 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.filename_list) = mark_as_needed ((yyvsp[-1].filename_list)); }
     break;
 
-  case 47:
-#line 375 "/home/drepper/devel/elfutils/src/ldscript.y"
-    {
-		      struct filename_list *newp = new_filename_listelem ((yyvsp[0].str));
-		      newp->next = (yyvsp[-2].filename_list)->next;
-		      (yyval.filename_list) = (yyvsp[-2].filename_list)->next = newp;
-		    }
-    break;
-
-  case 48:
-#line 381 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 51:
+#line 390 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.filename_list) = new_filename_listelem ((yyvsp[0].str)); }
     break;
 
-  case 51:
-#line 389 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 52:
+#line 395 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      (yyvsp[0].version)->next = (yyvsp[-1].version)->next;
 		      (yyval.version) = (yyvsp[-1].version)->next = (yyvsp[0].version);
 		    }
     break;
 
-  case 52:
-#line 394 "/home/drepper/devel/elfutils/src/ldscript.y"
-    { (yyval.version) = (yyvsp[0].version); }
-    break;
-
   case 53:
-#line 398 "/home/drepper/devel/elfutils/src/ldscript.y"
-    {
-		      (yyvsp[-2].version)->versionname = "";
-		      (yyvsp[-2].version)->parentname = NULL;
-		      (yyval.version) = (yyvsp[-2].version);
-		    }
+#line 400 "/home/drepper/devel/elfutils/src/ldscript.y"
+    { (yyval.version) = (yyvsp[0].version); }
     break;
 
   case 54:
 #line 404 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
-		      (yyvsp[-2].version)->versionname = (yyvsp[-4].str);
+		      (yyvsp[-2].version)->versionname = "";
 		      (yyvsp[-2].version)->parentname = NULL;
 		      (yyval.version) = (yyvsp[-2].version);
 		    }
@@ -1747,34 +1744,43 @@ yyreduce:
   case 55:
 #line 410 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
+		      (yyvsp[-2].version)->versionname = (yyvsp[-4].str);
+		      (yyvsp[-2].version)->parentname = NULL;
+		      (yyval.version) = (yyvsp[-2].version);
+		    }
+    break;
+
+  case 56:
+#line 416 "/home/drepper/devel/elfutils/src/ldscript.y"
+    {
 		      (yyvsp[-3].version)->versionname = (yyvsp[-5].str);
 		      (yyvsp[-3].version)->parentname = (yyvsp[-1].str);
 		      (yyval.version) = (yyvsp[-3].version);
 		    }
     break;
 
-  case 56:
-#line 419 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 57:
+#line 425 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.version) = merge_versions ((yyvsp[-1].version), (yyvsp[0].version)); }
     break;
 
-  case 57:
-#line 421 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 58:
+#line 427 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.version) = (yyvsp[0].version); }
     break;
 
-  case 58:
-#line 425 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 59:
+#line 431 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.version) = new_version (NULL, (yyvsp[0].id_list)); }
     break;
 
-  case 59:
-#line 427 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 60:
+#line 433 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.version) = new_version ((yyvsp[0].id_list), NULL); }
     break;
 
-  case 60:
-#line 432 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 61:
+#line 438 "/home/drepper/devel/elfutils/src/ldscript.y"
     {
 		      struct id_list *newp = new_id_listelem ((yyvsp[-1].str));
 		      newp->next = (yyvsp[-2].id_list)->next;
@@ -1782,28 +1788,28 @@ yyreduce:
 		    }
     break;
 
-  case 61:
-#line 438 "/home/drepper/devel/elfutils/src/ldscript.y"
+  case 62:
+#line 444 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.id_list) = new_id_listelem ((yyvsp[-1].str)); }
     break;
 
-  case 62:
-#line 442 "/home/drepper/devel/elfutils/src/ldscript.y"
-    { (yyval.str) = (yyvsp[0].str); }
-    break;
-
   case 63:
-#line 444 "/home/drepper/devel/elfutils/src/ldscript.y"
-    { (yyval.str) = (yyvsp[0].str); }
-    break;
-
-  case 64:
 #line 448 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.str) = (yyvsp[0].str); }
     break;
 
-  case 65:
+  case 64:
 #line 450 "/home/drepper/devel/elfutils/src/ldscript.y"
+    { (yyval.str) = (yyvsp[0].str); }
+    break;
+
+  case 65:
+#line 454 "/home/drepper/devel/elfutils/src/ldscript.y"
+    { (yyval.str) = (yyvsp[0].str); }
+    break;
+
+  case 66:
+#line 456 "/home/drepper/devel/elfutils/src/ldscript.y"
     { (yyval.str) = NULL; }
     break;
 
@@ -1812,7 +1818,7 @@ yyreduce:
     }
 
 /* Line 1126 of yacc.c.  */
-#line 1816 "ldscript.c"
+#line 1822 "ldscript.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2080,7 +2086,7 @@ yyreturn:
 }
 
 
-#line 453 "/home/drepper/devel/elfutils/src/ldscript.y"
+#line 459 "/home/drepper/devel/elfutils/src/ldscript.y"
 
 
 static void
@@ -2210,11 +2216,12 @@ static struct filename_list *
 mark_as_needed (struct filename_list *listp)
 {
   struct filename_list *runp = listp;
-  while (runp != NULL)
+  do
     {
       runp->as_needed = true;
       runp = runp->next;
     }
+  while (runp != listp);
 
   return listp;
 }

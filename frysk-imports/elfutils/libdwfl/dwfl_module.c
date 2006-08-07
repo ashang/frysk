@@ -1,5 +1,5 @@
 /* Maintenance of module list in libdwfl.
-   Copyright (C) 2005 Red Hat, Inc.
+   Copyright (C) 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ nofree (void *arg __attribute__ ((unused)))
 }
 
 void
-internal_function_def
+internal_function
 __libdwfl_module_free (Dwfl_Module *mod)
 {
   if (mod->lazy_cu_root != NULL)
@@ -161,23 +161,23 @@ dwfl_report_module (Dwfl *dwfl, const char *name,
 }
 INTDEF (dwfl_report_module)
 
+
 static int
 compare_modules (const void *a, const void *b)
 {
   Dwfl_Module *const *p1 = a, *const *p2 = b;
   const Dwfl_Module *m1 = *p1, *m2 = *p2;
-  GElf_Sxword diff;
   if (m1 == NULL)
     return -1;
   if (m2 == NULL)
     return 1;
-  diff = m1->low_addr - m2->low_addr;
+
+  GElf_Sxword diff = m1->low_addr - m2->low_addr;
   if (diff < 0)
     return -1;
-  else if (diff >0)
+  if (diff > 0)
     return 1;
-  else
-    return 0;
+  return 0;
 }
 
 
@@ -186,11 +186,12 @@ compare_modules (const void *a, const void *b)
    existed before but was not included in the current report.
    Returns a nonzero return value from the callback.
    DWFL cannot be used until this function has returned zero.  */
-int dwfl_report_end (Dwfl *dwfl,
-		     int (*removed) (Dwfl_Module *, void *,
-				     const char *, Dwarf_Addr,
-				     void *arg),
-		     void *arg)
+int
+dwfl_report_end (Dwfl *dwfl,
+		 int (*removed) (Dwfl_Module *, void *,
+				 const char *, Dwarf_Addr,
+				 void *arg),
+		 void *arg)
 {
   assert (dwfl->modules == NULL);
 

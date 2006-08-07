@@ -1,7 +1,6 @@
 /* Interfaces for libdw.
-   Copyright (C) 2002, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 2002, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
-   Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by the
@@ -62,10 +61,6 @@
 # define __nonnull_attribute__(args...)
 #endif
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /* Mode for the session.  */
 typedef enum
@@ -198,6 +193,10 @@ typedef void (*__attribute__ ((noreturn)) Dwarf_OOM) (void);
 #endif
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Create a handle for a new debug session.  */
 extern Dwarf *dwarf_begin (int fildes, Dwarf_Cmd cmd);
 
@@ -241,22 +240,23 @@ extern Dwarf_Die *dwarf_addrdie (Dwarf *dbg, Dwarf_Addr addr,
 
 /* Return child of current DIE.  */
 extern int dwarf_child (Dwarf_Die *die, Dwarf_Die *result)
-     __nonnull_attribute__ (2);
+     __nonnull_attribute__ (1, 2);
 
 /* Return sibling of given DIE.  */
 extern int dwarf_siblingof (Dwarf_Die *die, Dwarf_Die *result)
      __nonnull_attribute__ (2);
 
 /* Check whether the DIE has children.  */
-extern int dwarf_haschildren (Dwarf_Die *die);
+extern int dwarf_haschildren (Dwarf_Die *die) __nonnull_attribute__ (1);
 
 /* Get attributes of the DIE.  */
 extern ptrdiff_t dwarf_getattrs (Dwarf_Die *die,
 				 int (*callback) (Dwarf_Attribute *, void *),
-				 void *arg, ptrdiff_t offset);
+				 void *arg, ptrdiff_t offset)
+     __nonnull_attribute__ (2);
 
 /* Return tag of given DIE.  */
-extern int dwarf_tag (Dwarf_Die *die);
+extern int dwarf_tag (Dwarf_Die *die) __nonnull_attribute__ (1);
 
 
 /* Return specific attribute of DIE.  */

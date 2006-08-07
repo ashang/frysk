@@ -625,7 +625,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	       ++inner)
 	    {
 	      if (grpref[inner] < shnum)
-		shdr_info[grpref[inner]].group_idx = cnt;
+	    shdr_info[grpref[inner]].group_idx = cnt;
 	      else
 		goto illformed;
 	    }
@@ -723,13 +723,13 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 	      /* If a relocation section is marked as being removed make
 		 sure the section it is relocating is removed, too.  */
 	      if (shdr_info[cnt].shdr.sh_type == SHT_REL
-		  || shdr_info[cnt].shdr.sh_type == SHT_RELA)
+		   || shdr_info[cnt].shdr.sh_type == SHT_RELA)
 		{
 		  if (shdr_info[cnt].shdr.sh_info >= shnum)
 		    goto illformed;
 		  else if (shdr_info[shdr_info[cnt].shdr.sh_info].idx != 0)
-		    shdr_info[cnt].idx = 1;
-		}
+		shdr_info[cnt].idx = 1;
+	    }
 	    }
 
 	  if (shdr_info[cnt].idx == 1)
@@ -834,10 +834,10 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		  if (shdr_info[cnt].shdr.sh_info >= shnum)
 		    goto illformed;
 		  else if ( shdr_info[shdr_info[cnt].shdr.sh_info].idx == 0)
-		    {
-		      shdr_info[shdr_info[cnt].shdr.sh_info].idx = 1;
-		      changes |= shdr_info[cnt].shdr.sh_info < cnt;
-		    }
+		{
+		  shdr_info[shdr_info[cnt].shdr.sh_info].idx = 1;
+		  changes |= shdr_info[cnt].shdr.sh_info < cnt;
+		}
 		}
 
 	      /* Mark the section as investigated.  */
@@ -1121,7 +1121,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 					     NULL);
 
 		    elf_assert ((versiondata->d_size / sizeof (Elf32_Word))
-				>= shdr_info[cnt].data->d_size / elsize);
+			    >= shdr_info[cnt].data->d_size / elsize);
 		  }
 
 		if (shdr_info[cnt].version_idx != 0)
@@ -1134,7 +1134,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 					       NULL);
 
 		    elf_assert ((versiondata->d_size / sizeof (GElf_Versym))
-				>= shdr_info[cnt].data->d_size / elsize);
+			    >= shdr_info[cnt].data->d_size / elsize);
 		  }
 
 		shdr_info[cnt].newsymidx
@@ -1420,7 +1420,7 @@ handle_elf (int fd, Elf *elf, const char *prefix, const char *fname,
 		{
 		  /* Alpha and S390 64-bit use 64-bit SHT_HASH entries.  */
 		  elf_assert (shdr_info[cnt].shdr.sh_entsize
-			      == sizeof (Elf64_Xword));
+			  == sizeof (Elf64_Xword));
 
 		  Elf64_Xword *bucket = (Elf64_Xword *) hashd->d_buf;
 

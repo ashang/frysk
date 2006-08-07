@@ -1,6 +1,6 @@
 ## Process this file with automake to create Makefile.in
 ##
-## Copyright (C) 1996-2001, 2002, 2003, 2004, 2005 Red Hat, Inc.
+## Copyright (C) 1996-2001, 2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
 ## This file is part of Red Hat elfutils.
 ##
 ## Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -96,7 +96,8 @@ libelf_a_SOURCES = elf_version.c elf_hash.c elf_error.c elf_fill.c \
 		   elf_clone.c \
 		   gelf_getlib.c gelf_update_lib.c \
 		   elf32_offscn.c elf64_offscn.c gelf_offscn.c \
-		   elf_getaroff.c
+		   elf_getaroff.c \
+		   elf_gnu_hash.c
 
 if !MUDFLAP
 libelf_pic_a_SOURCES =
@@ -131,7 +132,7 @@ uninstall: uninstall-am
 endif
 
 noinst_HEADERS = elf.h abstract.h common.h exttypes.h gelf_xlate.h libelfP.h \
-		 version_xlate.h dl-hash.h
+		 version_xlate.h gnuhash_xlate.h dl-hash.h
 EXTRA_DIST = libelf.map
 
 CLEANFILES = $(am_libelf_pic_a_OBJECTS) *.gcno *.gcda

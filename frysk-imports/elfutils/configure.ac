@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl Configure input file for elfutils.                     -*-autoconf-*-
 dnl
-dnl Copyright (C) 1996-2002, 2003, 2004, 2005 Red Hat, Inc.
+dnl Copyright (C) 1996-2002, 2003, 2004, 2005, 2006 Red Hat, Inc.
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@ dnl You should have received a copy of the GNU General Public License
 dnl along with this program; if not, write to the Free Software Foundation,
 dnl Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 dnl
-AC_INIT([Red Hat elfutils],[0.120],[http://bugzilla.redhat.com/bugzilla/],
+AC_INIT([Red Hat elfutils],[0.122],[http://bugzilla.redhat.com/bugzilla/],
 	[elfutils])
 
 AC_CONFIG_AUX_DIR([config])
@@ -108,6 +108,9 @@ dnl of files if at any time there is no such file, even if the filename
 dnl would not be used.
 AS_IF([test -z "$base_cpu"], [base_cpu=none])
 AC_SUBST(base_cpu)
+dnl Support to work around automake's inflexible dependency generation.
+dnl See src/Makefile.am for more information.
+AM_CONDITIONAL(NEVER, false)
 
 dnl Enable debugging via mudflap.  This option will cause most libraries
 dnl to be built as archives which are statically linked into the applications.
@@ -243,21 +246,16 @@ AH_BOTTOM([
   extern __typeof (name) aliasname __attribute__ ((alias (#name)));
 
 #ifdef __i386__
-# define internal_function_def __attribute__ ((regparm (3), stdcall))
+# define internal_function __attribute__ ((regparm (3), stdcall))
 #else
-# define internal_function_def /* nothing */
+# define internal_function /* nothing */
 #endif
 
-# define internal_function \
-  internal_function_def __attribute__ ((visibility ("internal")))
-# define internal_strong_alias(name, aliasname) \
-  extern __typeof (name) aliasname __attribute__ ((alias (#name), visibility ("internal"))) internal_function_def;
+#define internal_strong_alias(name, aliasname) \
+  extern __typeof (name) aliasname __attribute__ ((alias (#name))) internal_function;
 
 #define attribute_hidden \
   __attribute__ ((visibility ("hidden")))
-
-# define internal_function_hidden \
-  internal_function_def __attribute__ ((visibility ("hidden")))
 
 /* Define ALLOW_UNALIGNED if the architecture allows operations on
    unaligned memory locations.  */

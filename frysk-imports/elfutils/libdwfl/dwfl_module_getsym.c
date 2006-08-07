@@ -1,7 +1,6 @@
-/* Return tag of given DIE.
-   Copyright (C) 2003, 2004, 2005, 2006 Red Hat, Inc.
+/* Find debugging and symbol information for a module in libdwfl.
+   Copyright (C) 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
-   Written by Ulrich Drepper <drepper@redhat.com>, 2003.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by the
@@ -48,71 +47,70 @@
    Network licensing program, please visit www.openinventionnetwork.com
    <http://www.openinventionnetwork.com>.  */
 
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include "libdwflP.h"
 
-#include "libdwP.h"
-
-
-Dwarf_Abbrev *
-internal_function
-__libdw_findabbrev (struct Dwarf_CU *cu, unsigned int code)
+const char *
+dwfl_module_getsym (Dwfl_Module *mod, int ndx,
+		    GElf_Sym *sym, GElf_Word *shndxp)
 {
-  Dwarf_Abbrev *abb;
+  if (unlikely (mod == NULL))
+    return NULL;
 
-  /* See whether the entry is already in the hash table.  */
-  abb = Dwarf_Abbrev_Hash_find (&cu->abbrev_hash, code, NULL);
-  if (abb == NULL)
-    while (cu->last_abbrev_offset != (size_t) -1l)
-      {
-	size_t length;
-
-	/* Find the next entry.  It gets automatically added to the
-	   hash table.  */
-	abb = __libdw_getabbrev (cu->dbg, cu, cu->last_abbrev_offset, &length,
-				 NULL);
-	if (abb == NULL || abb == DWARF_END_ABBREV)
-	  {
-	    /* Make sure we do not try to search for it again.  */
-	    cu->last_abbrev_offset = (size_t) -1l;
-	    abb = (void *) -1l;
-	    break;
-	  }
-
-	cu->last_abbrev_offset += length;
-
-	/* Is this the code we are looking for?  */
-	if (abb->code == code)
-	  break;
-      }
-
-  return abb;
-}
-
-
-int
-dwarf_tag (die)
-     Dwarf_Die *die;
-{
-  /* Do we already know the abbreviation?  */
-  if (die->abbrev == NULL)
+  if (unlikely (mod->symdata == NULL))
     {
-      /* Get the abbreviation code.  */
-      unsigned int u128;
-      const unsigned char *addr = die->addr;
-      get_uleb128 (u128, addr);
-
-      /* Find the abbreviation.  */
-      die->abbrev = __libdw_findabbrev (die->cu, u128);
+      int result = INTUSE(dwfl_module_getsymtab) (mod);
+      if (result < 0)
+	return NULL;
     }
 
-  if (die->abbrev == (Dwarf_Abbrev *) -1l)
+  GElf_Word shndx;
+  sym = gelf_getsymshndx (mod->symdata, mod->symxndxdata, ndx, sym, &shndx);
+  if (unlikely (sym == NULL))
     {
-      __libdw_seterrno (DWARF_E_INVALID_DWARF);
-      return DW_TAG_invalid;
+      __libdwfl_seterrno (DWFL_E_LIBELF);
+      return NULL;
     }
 
-  return die->abbrev->tag;
+  if (sym->st_shndx != SHN_XINDEX)
+    shndx = sym->st_shndx;
+
+  if (shndxp != NULL)
+    *shndxp = shndx;
+
+  switch (shndx)
+    {
+    case SHN_ABS:
+    case SHN_UNDEF:
+    case SHN_COMMON:
+      break;
+
+    default:
+      if (mod->e_type != ET_REL)
+	/* Apply the bias to the symbol value.  */
+	sym->st_value += mod->symfile->bias;
+      else
+	{
+	  /* In an ET_REL file, the symbol table values are relative
+	     to the section, not to the module's load base.  */
+	  size_t symshstrndx;
+	  Dwfl_Error result = DWFL_E_LIBELF;
+	  if (elf_getshstrndx (mod->symfile->elf, &symshstrndx) == 0)
+	    result = __libdwfl_relocate_value (mod, symshstrndx,
+					       shndx, &sym->st_value);
+	  if (unlikely (result != DWFL_E_NOERROR))
+	    {
+	      __libdwfl_seterrno (result);
+	      return NULL;
+	    }
+	}
+      break;
+    }
+
+  if (unlikely (sym->st_name >= mod->symstrdata->d_size))
+    {
+      __libdwfl_seterrno (DWFL_E_BADSTROFF);
+      return NULL;
+    }
+  return (const char *) mod->symstrdata->d_buf + sym->st_name;
 }
-INTDEF(dwarf_tag)
+INTDEF (dwfl_module_getsym)

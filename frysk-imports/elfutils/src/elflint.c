@@ -961,14 +961,14 @@ section [%2d] '%s': _DYNAMIC symbol size %" PRIu64 " does not match dynamic segm
 
 static bool
 is_rel_dyn (Ebl *ebl, const GElf_Ehdr *ehdr, int idx, const GElf_Shdr *shdr,
-	    bool rela)
+	    bool is_rela)
 {
   /* If this is no executable or DSO it cannot be a .rel.dyn section.  */
   if (ehdr->e_type != ET_EXEC && ehdr->e_type != ET_DYN)
     return false;
 
   /* Check the section name.  Unfortunately necessary.  */
-  if (strcmp (section_name (ebl, idx), rela ? ".rela.dyn" : ".rel.dyn"))
+  if (strcmp (section_name (ebl, idx), is_rela ? ".rela.dyn" : ".rel.dyn"))
     return false;
 
   /* When a .rel.dyn section is used a DT_RELCOUNT dynamic section
@@ -978,7 +978,9 @@ is_rel_dyn (Ebl *ebl, const GElf_Ehdr *ehdr, int idx, const GElf_Shdr *shdr,
     {
       GElf_Shdr rcshdr_mem;
       const GElf_Shdr *rcshdr = gelf_getshdr (scn, &rcshdr_mem);
-      assert (rcshdr != NULL);
+
+      if (rcshdr == NULL)
+	break;
 
       if (rcshdr->sh_type == SHT_DYNAMIC && rcshdr->sh_entsize)
 	{
@@ -996,15 +998,108 @@ is_rel_dyn (Ebl *ebl, const GElf_Ehdr *ehdr, int idx, const GElf_Shdr *shdr,
 
 	      if (dyn->d_tag == DT_RELCOUNT)
 		{
-		  /* Found it.  One last check: does the number
-		     specified number of relative relocations exceed
-		     the total number of relocations?  */
-		  if (shdr->sh_entsize
-		      && dyn->d_un.d_val > shdr->sh_size / shdr->sh_entsize)
+		  /* Found it.  Does the type match.  */
+		  if (is_rela)
 		    ERROR (gettext ("\
+section [%2d] '%s': DT_RELCOUNT used for this RELA section\n"),
+			   idx, section_name (ebl, idx));
+		  else
+		    {
+		      /* Does the number specified number of relative
+			 relocations exceed the total number of
+			 relocations?  */
+		      if (shdr->sh_entsize != 0
+			  && dyn->d_un.d_val > (shdr->sh_size
+						/ shdr->sh_entsize))
+			ERROR (gettext ("\
 section [%2d] '%s': DT_RELCOUNT value %d too high for this section\n"),
-			   idx, section_name (ebl, idx),
-			   (int) dyn->d_un.d_val);
+			       idx, section_name (ebl, idx),
+			       (int) dyn->d_un.d_val);
+
+		      /* Make sure the specified number of relocations are
+			 relative.  */
+		      Elf_Data *reldata = elf_getdata (elf_getscn (ebl->elf,
+								   idx), NULL);
+		      if (reldata != NULL)
+			for (size_t inner = 0;
+			     inner < shdr->sh_size / shdr->sh_entsize;
+			     ++inner)
+			  {
+			    GElf_Rel rel_mem;
+			    GElf_Rel *rel = gelf_getrel (reldata, inner,
+							 &rel_mem);
+			    if (rel == NULL)
+			      /* The problem will be reported elsewhere.  */
+			      break;
+
+			    if (ebl_relative_reloc_p (ebl,
+						      GELF_R_TYPE (rel->r_info)))
+			      {
+				if (inner >= dyn->d_un.d_val)
+				  ERROR (gettext ("\
+section [%2d] '%s': relative relocations after index %d as specified by DT_RELCOUNT\n"),
+					 idx, section_name (ebl, idx),
+					 (int) dyn->d_un.d_val);
+			      }
+			    else if (inner < dyn->d_un.d_val)
+			      ERROR (gettext ("\
+section [%2d] '%s': non-relative relocation at index %zu; DT_RELCOUNT specified %d relative relocations\n"),
+				     idx, section_name (ebl, idx),
+				     inner, (int) dyn->d_un.d_val);
+			  }
+		    }
+		}
+
+	      if (dyn->d_tag == DT_RELACOUNT)
+		{
+		  /* Found it.  Does the type match.  */
+		  if (!is_rela)
+		    ERROR (gettext ("\
+section [%2d] '%s': DT_RELACOUNT used for this REL section\n"),
+			   idx, section_name (ebl, idx));
+		  else
+		    {
+		      /* Does the number specified number of relative
+			 relocations exceed the total number of
+			 relocations?  */
+		      if (dyn->d_un.d_val > shdr->sh_size / shdr->sh_entsize)
+			ERROR (gettext ("\
+section [%2d] '%s': DT_RELCOUNT value %d too high for this section\n"),
+			       idx, section_name (ebl, idx),
+			       (int) dyn->d_un.d_val);
+
+		      /* Make sure the specified number of relocations are
+			 relative.  */
+		      Elf_Data *reldata = elf_getdata (elf_getscn (ebl->elf,
+								   idx), NULL);
+		      if (reldata != NULL)
+			for (size_t inner = 0;
+			     inner < shdr->sh_size / shdr->sh_entsize;
+			     ++inner)
+			  {
+			    GElf_Rela rela_mem;
+			    GElf_Rela *rela = gelf_getrela (reldata, inner,
+							    &rela_mem);
+			    if (rela == NULL)
+			      /* The problem will be reported elsewhere.  */
+			      break;
+
+			    if (ebl_relative_reloc_p (ebl,
+						      GELF_R_TYPE (rela->r_info)))
+			      {
+				if (inner >= dyn->d_un.d_val)
+				  ERROR (gettext ("\
+section [%2d] '%s': relative relocations after index %d as specified by DT_RELCOUNT\n"),
+					 idx, section_name (ebl, idx),
+					 (int) dyn->d_un.d_val);
+			      }
+			    else if (inner < dyn->d_un.d_val)
+			      ERROR (gettext ("\
+section [%2d] '%s': non-relative relocation at index %zu; DT_RELCOUNT specified %d relative relocations\n"),
+				     idx, section_name (ebl, idx),
+				     inner, (int) dyn->d_un.d_val);
+			  }
+		    }
 		}
 	    }
 
@@ -1183,6 +1278,10 @@ section [%2d] '%s': relocation %zu: relocation type invalid for the file type\n"
     ERROR (gettext ("\
 section [%2d] '%s': relocation %zu: invalid symbol index\n"),
 	   idx, section_name (ebl, idx), cnt);
+
+  /* No more tests if this is a no-op relocation.  */
+  if (ebl_none_reloc_p (ebl, GELF_R_TYPE (r_info)))
+    return;
 
   if (ebl_gotpc_reloc_check (ebl, GELF_R_TYPE (r_info)))
     {
@@ -1530,32 +1629,42 @@ section [%2d] '%s': entry %zu: DT_PLTREL value must be DT_REL or DT_RELA\n"),
       switch (dyn->d_tag)
 	{
 	  size_t n;
+	case DT_STRTAB:
+	  /* We require the referenced section is the same as the one
+	     specified in sh_link.  */
+	  if (strshdr->sh_addr != dyn->d_un.d_val)
+	    {
+	      ERROR (gettext ("\
+section [%2d] '%s': entry %zu: pointer does not match address of section [%2d] '%s' referenced by sh_link\n"),
+		     idx, section_name (ebl, idx), cnt,
+		     shdr->sh_link, section_name (ebl, shdr->sh_link));
+	      break;
+	    }
+	  goto check_addr;
+
 	default:
 	  if (dyn->d_tag < DT_ADDRRNGLO || dyn->d_tag > DT_ADDRRNGHI)
 	    /* Value is no pointer.  */
 	    break;
 	  /* FALLTHROUGH */
 
-	case DT_PLTGOT:
-	case DT_HASH:
-	case DT_STRTAB:
-	case DT_SYMTAB:
-	case DT_RELA:
-	case DT_INIT:
-	case DT_FINI:
-	case DT_SONAME:
-	case DT_RPATH:
-	case DT_SYMBOLIC:
-	case DT_REL:
-	case DT_JMPREL:
-	case DT_INIT_ARRAY:
-	case DT_FINI_ARRAY:
-	case DT_RUNPATH:
-	case DT_VERSYM:
-	case DT_VERDEF:
-	case DT_VERNEED:
 	case DT_AUXILIARY:
 	case DT_FILTER:
+	case DT_FINI:
+	case DT_FINI_ARRAY:
+	case DT_HASH:
+	case DT_INIT:
+	case DT_INIT_ARRAY:
+	case DT_JMPREL:
+	case DT_PLTGOT:
+	case DT_REL:
+	case DT_RELA:
+	case DT_SYMBOLIC:
+	case DT_SYMTAB:
+	case DT_VERDEF:
+	case DT_VERNEED:
+	case DT_VERSYM:
+	check_addr:
 	  for (n = 0; n < ehdr->e_phnum; ++n)
 	    {
 	      GElf_Phdr phdr_mem;
@@ -1574,6 +1683,23 @@ section [%2d] '%s': entry %zu: %s value must point into loaded segment\n"),
 		     ebl_dynamic_tag_name (ebl, dyn->d_tag, buf,
 					   sizeof (buf)));
 	    }
+	  break;
+
+	case DT_NEEDED:
+	case DT_RPATH:
+	case DT_RUNPATH:
+	case DT_SONAME:
+	  if (dyn->d_un.d_ptr >= strshdr->sh_size)
+	    {
+	      char buf[50];
+	      ERROR (gettext ("\
+section [%2d] '%s': entry %zu: %s value must be valid offset in section [%2d] '%s'\n"),
+		     idx, section_name (ebl, idx), cnt,
+		     ebl_dynamic_tag_name (ebl, dyn->d_tag, buf,
+					   sizeof (buf)),
+		     shdr->sh_link, section_name (ebl, shdr->sh_link));
+	    }
+	  break;
 	}
     }
 
@@ -1712,7 +1838,248 @@ extended section index is %" PRIu32 " but symbol index is not XINDEX\n"),
 
 
 static void
-check_hash (Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
+check_sysv_hash (Ebl *ebl, GElf_Shdr *shdr, Elf_Data *data, int idx,
+		 GElf_Shdr *symshdr)
+{
+  Elf32_Word nbucket = ((Elf32_Word *) data->d_buf)[0];
+  Elf32_Word nchain = ((Elf32_Word *) data->d_buf)[1];
+
+  if (shdr->sh_size < (2 + nbucket + nchain) * shdr->sh_entsize)
+    ERROR (gettext ("\
+section [%2d] '%s': hash table section is too small (is %ld, expected %ld)\n"),
+	   idx, section_name (ebl, idx), (long int) shdr->sh_size,
+	   (long int) ((2 + nbucket + nchain) * shdr->sh_entsize));
+
+  size_t maxidx = nchain;
+
+  if (symshdr != NULL && symshdr->sh_entsize != 0)
+    {
+      size_t symsize = symshdr->sh_size / symshdr->sh_entsize;
+
+      if (nchain > symshdr->sh_size / symshdr->sh_entsize)
+	ERROR (gettext ("section [%2d] '%s': chain array too large\n"),
+	       idx, section_name (ebl, idx));
+
+      maxidx = symsize;
+    }
+
+  Elf32_Word *buf = (Elf32_Word *) data->d_buf;
+  Elf32_Word *end = (Elf32_Word *) ((char *) data->d_buf + shdr->sh_size);
+  size_t cnt;
+  for (cnt = 2; cnt < 2 + nbucket; ++cnt)
+    {
+      if (buf + cnt >= end)
+	break;
+      else if (buf[cnt] >= maxidx)
+	ERROR (gettext ("\
+section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
+	       idx, section_name (ebl, idx), cnt - 2);
+    }
+
+  for (; cnt < 2 + nbucket + nchain; ++cnt)
+    {
+      if (buf + cnt >= end)
+	break;
+      else if (buf[cnt] >= maxidx)
+	ERROR (gettext ("\
+section [%2d] '%s': hash chain reference %zu out of bounds\n"),
+	       idx, section_name (ebl, idx), cnt - 2 - nbucket);
+    }
+}
+
+
+static void
+check_sysv_hash64 (Ebl *ebl, GElf_Shdr *shdr, Elf_Data *data, int idx,
+		 GElf_Shdr *symshdr)
+{
+  Elf64_Xword nbucket = ((Elf64_Xword *) data->d_buf)[0];
+  Elf64_Xword nchain = ((Elf64_Xword *) data->d_buf)[1];
+
+  if (shdr->sh_size < (2 + nbucket + nchain) * shdr->sh_entsize)
+    ERROR (gettext ("\
+section [%2d] '%s': hash table section is too small (is %ld, expected %ld)\n"),
+	   idx, section_name (ebl, idx), (long int) shdr->sh_size,
+	   (long int) ((2 + nbucket + nchain) * shdr->sh_entsize));
+
+  size_t maxidx = nchain;
+
+  if (symshdr != NULL)
+    {
+      size_t symsize = symshdr->sh_size / symshdr->sh_entsize;
+
+      if (nchain > symshdr->sh_size / symshdr->sh_entsize)
+	ERROR (gettext ("section [%2d] '%s': chain array too large\n"),
+	       idx, section_name (ebl, idx));
+
+      maxidx = symsize;
+    }
+
+  Elf64_Xword *buf = (Elf64_Xword *) data->d_buf;
+  Elf64_Xword *end = (Elf64_Xword *) ((char *) data->d_buf + shdr->sh_size);
+  size_t cnt;
+  for (cnt = 2; cnt < 2 + nbucket; ++cnt)
+    {
+      if (buf + cnt >= end)
+	break;
+      else if (buf[cnt] >= maxidx)
+	ERROR (gettext ("\
+section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
+	       idx, section_name (ebl, idx), cnt - 2);
+    }
+
+  for (; cnt < 2 + nbucket + nchain; ++cnt)
+    {
+      if (buf + cnt >= end)
+	break;
+      else if (buf[cnt] >= maxidx)
+	ERROR (gettext ("\
+section [%2d] '%s': hash chain reference %" PRIu64 " out of bounds\n"),
+	       idx, section_name (ebl, idx), (uint64_t) cnt - 2 - nbucket);
+    }
+}
+
+
+static void
+check_gnu_hash (Ebl *ebl, GElf_Shdr *shdr, Elf_Data *data, int idx,
+		GElf_Shdr *symshdr)
+{
+  Elf32_Word nbuckets = ((Elf32_Word *) data->d_buf)[0];
+  Elf32_Word symbias = ((Elf32_Word *) data->d_buf)[1];
+  Elf32_Word bitmask_words = ((Elf32_Word *) data->d_buf)[2];
+
+  if (!powerof2 (bitmask_words))
+    ERROR (gettext ("\
+section [%2d] '%s': bitmask size not power of 2: %u\n"),
+	   idx, section_name (ebl, idx), bitmask_words);
+
+  size_t bitmask_idxmask = bitmask_words - 1;
+  if (gelf_getclass (ebl->elf) == ELFCLASS64)
+    bitmask_words *= 2;
+  Elf32_Word shift = ((Elf32_Word *) data->d_buf)[3];
+
+  if (shdr->sh_size < (4 + bitmask_words + nbuckets) * sizeof (Elf32_Word))
+    {
+      ERROR (gettext ("\
+section [%2d] '%s': hash table section is too small (is %ld, expected at least %ld)\n"),
+	     idx, section_name (ebl, idx), (long int) shdr->sh_size,
+	     (long int) ((4 + bitmask_words + nbuckets) * sizeof (Elf32_Word)));
+      return;
+    }
+
+  if (shift > 31)
+    ERROR (gettext ("\
+section [%2d] '%s': 2nd hash function shift too big: %u\n"),
+	   idx, section_name (ebl, idx), shift);
+
+  size_t maxidx = shdr->sh_size / sizeof (Elf32_Word) - (4 + bitmask_words
+							 + nbuckets);
+
+  if (symshdr != NULL)
+    maxidx = MIN (maxidx, symshdr->sh_size / symshdr->sh_entsize);
+
+  /* We need the symbol section data.  */
+  Elf_Data *symdata = elf_getdata (elf_getscn (ebl->elf, shdr->sh_link), NULL);
+
+  union
+  {
+    Elf32_Word *p32;
+    Elf64_Xword *p64;
+  } bitmask = { .p32 = &((Elf32_Word *) data->d_buf)[4] },
+      collected = { .p32 = xcalloc (bitmask_words, sizeof (Elf32_Word)) };
+
+  size_t classbits = gelf_getclass (ebl->elf) == ELFCLASS32 ? 32 : 64;
+
+  size_t cnt;
+  for (cnt = 4 + bitmask_words; cnt < 4 + bitmask_words + nbuckets; ++cnt)
+    {
+      Elf32_Word symidx = ((Elf32_Word *) data->d_buf)[cnt];
+
+      if (symidx == 0)
+	continue;
+
+      if (symidx < symbias)
+	{
+	  ERROR (gettext ("\
+section [%2d] '%s': hash chain for bucket %zu lower than symbol index bias\n"),
+		 idx, section_name (ebl, idx), cnt - (4 + bitmask_words));
+	  continue;
+	}
+
+      while (symidx - symbias < maxidx)
+	{
+	  Elf32_Word chainhash = ((Elf32_Word *) data->d_buf)[4
+							      + bitmask_words
+							      + nbuckets
+							      + symidx
+							      - symbias];
+
+	  if (symdata != NULL)
+	    {
+	      /* Check that the referenced symbol is not undefined.  */
+	      GElf_Sym sym_mem;
+	      GElf_Sym *sym = gelf_getsym (symdata, symidx, &sym_mem);
+	      if (sym != NULL && sym->st_shndx == SHN_UNDEF)
+		ERROR (gettext ("\
+section [%2d] '%s': symbol %u referenced in chain for bucket %zu is undefined\n"),
+		       idx, section_name (ebl, idx), symidx, cnt / 2 - 1);
+
+	      const char *symname = elf_strptr (ebl->elf, symshdr->sh_link,
+						sym->st_name);
+	      if (symname != NULL)
+		{
+		  Elf32_Word hval = elf_gnu_hash (symname);
+		  if ((hval & ~1u) != (chainhash & ~1u))
+		    ERROR (gettext ("\
+section [%2d] '%s': hash value for symbol %u in chain for bucket %zu wrong\n"),
+			   idx, section_name (ebl, idx), symidx, cnt / 2 - 1);
+
+		  /* Set the bits in the bitmask.  */
+		  size_t maskidx = (hval / classbits) & bitmask_idxmask;
+		  if (classbits == 32)
+		    {
+		      collected.p32[maskidx]
+			|= UINT32_C (1) << (hval & (classbits - 1));
+		      collected.p32[maskidx]
+			|= UINT32_C (1) << ((hval >> shift) & (classbits - 1));
+		    }
+		  else
+		    {
+		      collected.p64[maskidx]
+			|= UINT64_C (1) << (hval & (classbits - 1));
+		      collected.p64[maskidx]
+			|= UINT64_C (1) << ((hval >> shift) & (classbits - 1));
+		    }
+		}
+	    }
+
+	  if ((chainhash & 1) != 0)
+	    break;
+
+	  ++symidx;
+	}
+
+      if (symidx - symbias >= maxidx)
+	ERROR (gettext ("\
+section [%2d] '%s': hash chain for bucket %zu out of bounds\n"),
+	       idx, section_name (ebl, idx), cnt / 2 - 1);
+      else if (symshdr != NULL
+	       && symidx > symshdr->sh_size / symshdr->sh_entsize)
+	ERROR (gettext ("\
+section [%2d] '%s': symbol reference in chain for bucket %zu out of bounds\n"),
+	       idx, section_name (ebl, idx), cnt / 2 - 1);
+    }
+
+  if (memcmp (collected.p32, bitmask.p32, bitmask_words * sizeof (Elf32_Word)))
+    ERROR (gettext ("\
+section [%2d] '%s': bitmask does not match names in the hash table\n"),
+	   idx, section_name (ebl, idx));
+
+  free (collected.p32);
+}
+
+
+static void
+check_hash (int tag, Ebl *ebl, GElf_Ehdr *ehdr, GElf_Shdr *shdr, int idx)
 {
   if (ehdr->e_type == ET_REL)
     {
@@ -1738,59 +2105,41 @@ section [%2d] '%s': relocatable files cannot have hash tables\n"),
 section [%2d] '%s': hash table not for dynamic symbol table\n"),
 	   idx, section_name (ebl, idx));
 
-  if (shdr->sh_entsize != sizeof (Elf32_Word))
+  if (shdr->sh_entsize != (tag == SHT_GNU_HASH
+			   ? (gelf_getclass (ebl->elf) == ELFCLASS32
+			      ? sizeof (Elf32_Word) : 0)
+			   : (size_t) ebl_sysvhash_entrysize (ebl)))
     ERROR (gettext ("\
-section [%2d] '%s': entry size does not match Elf32_Word\n"),
+section [%2d] '%s': hash table entry size incorrect\n"),
 	   idx, section_name (ebl, idx));
 
   if ((shdr->sh_flags & SHF_ALLOC) == 0)
     ERROR (gettext ("section [%2d] '%s': not marked to be allocated\n"),
 	   idx, section_name (ebl, idx));
 
-  if (shdr->sh_size < 2 * shdr->sh_entsize)
+  if (shdr->sh_size < (tag == SHT_GNU_HASH ? 4 : 2) * (shdr->sh_entsize ?: 4))
     {
       ERROR (gettext ("\
-section [%2d] '%s': hash table has not even room for nbucket and nchain\n"),
+section [%2d] '%s': hash table has not even room for initial administrative entries\n"),
 	     idx, section_name (ebl, idx));
       return;
     }
 
-  Elf32_Word nbucket = ((Elf32_Word *) data->d_buf)[0];
-  Elf32_Word nchain = ((Elf32_Word *) data->d_buf)[1];
-
-  if (shdr->sh_size < (2 + nbucket + nchain) * shdr->sh_entsize)
-    ERROR (gettext ("\
-section [%2d] '%s': hash table section is too small (is %ld, expected %ld)\n"),
-	   idx, section_name (ebl, idx), (long int) shdr->sh_size,
-	   (long int) ((2 + nbucket + nchain) * shdr->sh_entsize));
-
-  if (symshdr != NULL && symshdr->sh_entsize)
+  switch (tag)
     {
-      size_t symsize = symshdr->sh_size / symshdr->sh_entsize;
-      size_t cnt;
-      Elf32_Word *buf, *end;
+    case SHT_HASH:
+      if (ebl_sysvhash_entrysize (ebl) == sizeof (Elf64_Xword))
+	check_sysv_hash64 (ebl, shdr, data, idx, symshdr);
+      else
+	check_sysv_hash (ebl, shdr, data, idx, symshdr);
+      break;
 
-      if (nchain < symshdr->sh_size / symshdr->sh_entsize)
-	ERROR (gettext ("section [%2d] '%s': chain array not large enough\n"),
-	       idx, section_name (ebl, idx));
+    case SHT_GNU_HASH:
+      check_gnu_hash (ebl, shdr, data, idx, symshdr);
+      break;
 
-      buf = ((Elf32_Word *) data->d_buf) + 2;
-      end = (Elf32_Word *) ((char *) data->d_buf + shdr->sh_size);
-      for (cnt = 2; cnt < 2 + nbucket; ++cnt)
-	if (buf >= end)
-	  return;
-	else if (*buf++ >= symsize)
-	  ERROR (gettext ("\
-section [%2d] '%s': hash bucket reference %zu out of bounds\n"),
-		 idx, section_name (ebl, idx), cnt - 2);
-
-      for (; cnt < 2 + nbucket + nchain; ++cnt)
-	if (buf >= end)
-	  return;
-	else if (*buf++ >= symsize)
-	  ERROR (gettext ("\
-section [%2d] '%s': hash chain reference %zu out of bounds\n"),
-		 idx, section_name (ebl, idx), cnt - 2 - nbucket);
+    default:
+      assert (! "should not happen");
     }
 }
 
@@ -2180,7 +2529,7 @@ section [%2d] '%s': symbol %d: local symbol with version\n"),
 	     index we need for this symbol.  */
 	  struct version_namelist *runp = version_namelist;
 	  while (runp != NULL)
-	    if (runp->ndx == *versym)
+	    if (runp->ndx == (*versym & 0x7fff))
 	      break;
 	    else
 	      runp = runp->next;
@@ -2947,7 +3296,8 @@ section [%2zu] '%s': relocatable files cannot have dynamic symbol tables\n"),
 	  break;
 
 	case SHT_HASH:
-	  check_hash (ebl, ehdr, shdr, cnt);
+	case SHT_GNU_HASH:
+	  check_hash (shdr->sh_type, ebl, ehdr, shdr, cnt);
 	  break;
 
 	case SHT_NULL:

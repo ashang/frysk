@@ -1,3 +1,30 @@
+Version 0.122:
+
+libebl: add function to test for relative relocation
+
+elflint: fix and extend DT_RELCOUNT/DT_RELACOUNT checks
+
+elflint, readelf: add support for DT_GNU_HASH
+libelf: add elf_gnu_hash
+
+elflint, readelf: add support for 64-bit SysV-style hash tables
+
+libdwfl: new functions dwfl_module_getsymtab, dwfl_module_getsym.
+
+Version 0.121:
+
+libelf: bug fixes for rewriting existing files when using mmap.
+
+make all installed headers usable in C++ code.
+
+readelf: better output format.
+
+elflint: fix tests of dynamic section content.
+
+ld: Implement --as-needed, --execstack, PT_GNU_STACK.  Many small patches.
+
+libdw, libdwfl: handle files without aranges info.
+
 Version 0.120:
 
 Bug fixes.

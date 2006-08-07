@@ -1,7 +1,3 @@
-2006-06-23  Stepan Kasal  <kasal@ucw.cz>
-
-	* line2addr.c (main): Avoid using sscanf() to prevent a warning.
-
 2006-04-04  Roland McGrath  <roland@redhat.com>
 
 	* run-bug1-test.sh: Test a second case, to cover both byte orders.

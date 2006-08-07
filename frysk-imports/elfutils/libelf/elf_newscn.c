@@ -116,9 +116,9 @@ elf_newscn (elf)
 	  1
 #endif
 	  )
-	newp = (Elf_ScnList *) calloc (sizeof (Elf_ScnList)
-				       + ((elf->state.elf.scnincr *= 2)
-					  * sizeof (Elf_Scn)), 1);
+      newp = (Elf_ScnList *) calloc (sizeof (Elf_ScnList)
+				     + ((elf->state.elf.scnincr *= 2)
+					* sizeof (Elf_Scn)), 1);
       if (newp == NULL)
 	{
 	  __libelf_seterrno (ELF_E_NOMEM);

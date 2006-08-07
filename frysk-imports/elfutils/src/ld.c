@@ -62,7 +62,6 @@ enum
     ARGP_static,
     ARGP_dynamic,
     ARGP_pagesize,
-    ARGP_rpath,
     ARGP_rpath_link,
     ARGP_runpath,
     ARGP_runpath_link,
@@ -71,6 +70,9 @@ enum
     ARGP_no_gc_sections,
     ARGP_no_undefined,
     ARGP_conserve,
+    ARGP_as_needed,
+    ARGP_no_as_needed,
+    ARGP_eh_frame_hdr,
 #if YYDEBUG
     ARGP_yydebug,
 #endif
@@ -80,23 +82,26 @@ enum
 /* Definitions of arguments for argp functions.  */
 static const struct argp_option options[] =
 {
-  /* XXX This list will be reordered and section names will be added.
-     Just not right now.  */
+  { NULL, 0, NULL, 0, N_("Input File Control:"), 0 },
   { "whole-archive", ARGP_whole_archive, NULL, 0,
     N_("Include whole archives in the output from now on."), 0 },
   { "no-whole-archive", ARGP_no_whole_archive, NULL, 0,
     N_("Stop including the whole arhives in the output."), 0 },
+  { NULL, 'l', N_("FILE"), OPTION_HIDDEN, NULL, 0 },
+  { NULL, '(', NULL, 0, N_("Start a group."), 0 },
+  { NULL, ')', NULL, 0, N_("End a group."), 0 },
+  { NULL, 'L', N_("PATH"), 0,
+    N_("Add PATH to list of directories files are searched in."), 0 },
+  { "as-needed", ARGP_as_needed, NULL, 0,
+    N_("Only set DT_NEEDED for following dynamic libs if actually used"), 0 },
+  { "no-as-needed", ARGP_no_as_needed, NULL, 0,
+    N_("Always set DT_NEEDED for following dynamic libs"), 0 },
+  { "rpath-link", ARGP_rpath_link, "PATH", OPTION_HIDDEN, NULL, 0 },
+  { NULL, 'i', NULL, 0, N_("Ignore LD_LIBRARY_PATH environment variable."),
+    0 },
 
+  { NULL, 0, NULL, 0, N_("Output File Control:"), 0 },
   { "output", 'o', N_("FILE"), 0, N_("Place output in FILE."), 0 },
-
-  { NULL, 'O', N_("LEVEL"), OPTION_ARG_OPTIONAL,
-    N_("Set optimization level to LEVEL."), 0 },
-
-  { "verbose", 'v', NULL, 0, N_("Verbose messages."), 0 },
-  { "trace", 't', NULL, 0, N_("Trace file opens."), 0 },
-  { "conserve-memory", ARGP_conserve, NULL, 0,
-    N_("Trade speed for less memory usage"), 0 },
-
   { NULL, 'z', "KEYWORD", OPTION_HIDDEN, NULL, 0 },
   { "-z nodefaultlib", '\0', NULL, OPTION_DOC,
     N_("Object is marked to not use default search path at runtime."), 0 },
@@ -128,74 +133,56 @@ Default rules of extracting from archive; weak references are not enough."),
     N_("Ignore/record dependencies on unused DSOs."), 0 },
   { "-z systemlibrary", '\0', NULL, OPTION_DOC,
     N_("Generated DSO will be a system library."), 0 },
-
-  { NULL, 'l', N_("FILE"), OPTION_HIDDEN, NULL, 0 },
-
-  { NULL, '(', NULL, 0, N_("Start a group."), 0 },
-  { NULL, ')', NULL, 0, N_("End a group."), 0 },
-
-  { NULL, 'L', N_("PATH"), 0,
-    N_("Add PATH to list of directories files are searched in."), 0 },
-
-  { NULL, 'c', N_("FILE"), 0, N_("Use linker script in FILE."), 0 },
-
   { "entry", 'e', N_("ADDRESS"), 0, N_("Set entry point address."), 0 },
-
   { "static", ARGP_static, NULL, OPTION_HIDDEN, NULL, 0 },
   { "-B static", ARGP_static, NULL, OPTION_DOC,
     N_("Do not link against shared libraries."), 0 },
   { "dynamic", ARGP_dynamic, NULL, OPTION_HIDDEN, NULL, 0 },
   { "-B dynamic", ARGP_dynamic, NULL, OPTION_DOC,
     N_("Prefer linking against shared libraries."), 0 },
-
   { "export-dynamic", 'E', NULL, 0, N_("Export all dynamic symbols."), 0 },
-
   { "strip-all", 's', NULL, 0, N_("Strip all symbols."), 0 },
   { "strip-debug", 'S', NULL, 0, N_("Strip debugging symbols."), 0 },
-
   { "pagesize", ARGP_pagesize, "SIZE", 0,
     N_("Assume pagesize for the target system to be SIZE."), 0 },
-
-  { "rpath", ARGP_rpath, "PATH", OPTION_HIDDEN, NULL, 0 },
-  { "rpath-link", ARGP_rpath_link, "PATH", OPTION_HIDDEN, NULL, 0 },
-
+  { "rpath", 'R', "PATH", OPTION_HIDDEN, NULL, 0 },
   { "runpath", ARGP_runpath, "PATH", 0, N_("Set runtime DSO search path."),
     0 },
   { "runpath-link", ARGP_runpath_link, "PATH", 0,
     N_("Set link time DSO search path."), 0 },
-
-  { NULL, 'i', NULL, 0, N_("Ignore LD_LIBRARY_PATH environment variable."),
-    0 },
-
-  { "version-script", ARGP_version_script, "FILE", 0,
-    N_("Read version information from FILE."), 0 },
-
-  { "emulation", 'm', "NAME", 0, N_("Set emulation to NAME."), 0 },
-
   { "shared", 'G', NULL, 0, N_("Generate dynamic shared object."), 0 },
   { NULL, 'r', NULL, 0L, N_("Generate relocatable object."), 0 },
-
   { NULL, 'B', "KEYWORD", OPTION_HIDDEN, "", 0 },
   { "-B local", 'B', NULL, OPTION_DOC,
     N_("Causes symbol not assigned to a version be reduced to local."), 0 },
-
   { "gc-sections", ARGP_gc_sections, NULL, 0, N_("Remove unused sections."),
     0 },
   { "no-gc-sections", ARGP_no_gc_sections, NULL, 0,
     N_("Don't remove unused sections."), 0 },
-
   { "soname", 'h', "NAME", 0, N_("Set soname of shared object."), 0 },
   { "dynamic-linker", 'I', "NAME", 0, N_("Set the dynamic linker name."), 0 },
-
   { NULL, 'Q', "YN", OPTION_HIDDEN, NULL, 0 },
   { "-Q y | n", 'Q', NULL, OPTION_DOC,
     N_("Add/suppress addition indentifying link-editor to .comment section"),
     0 },
+  { "eh-frame-hdr", ARGP_eh_frame_hdr, NULL, 0,
+    N_("Create .eh_frame_hdr section"), 0 },
 
+  { NULL, 0, NULL, 0, N_("Linker Operation Control:"), 0 },
+  { "verbose", 'v', NULL, 0, N_("Verbose messages."), 0 },
+  { "trace", 't', NULL, 0, N_("Trace file opens."), 0 },
+  { "conserve-memory", ARGP_conserve, NULL, 0,
+    N_("Trade speed for less memory usage"), 0 },
+  { NULL, 'O', N_("LEVEL"), OPTION_ARG_OPTIONAL,
+    N_("Set optimization level to LEVEL."), 0 },
+  { NULL, 'c', N_("FILE"), 0, N_("Use linker script in FILE."), 0 },
 #if YYDEBUG
   { "yydebug", ARGP_yydebug, NULL, 0,
     N_("Select to get parser debug information"), 0 },
 #endif
+  { "version-script", ARGP_version_script, "FILE", 0,
+    N_("Read version information from FILE."), 0 },
+  { "emulation", 'm', "NAME", 0, N_("Set emulation to NAME."), 0 },
 
   { NULL, 0, NULL, 0, NULL, 0 }
 };
@@ -599,7 +586,7 @@ parse_opt_1st (int key, char *arg,
       }
       break;
 
-    case ARGP_rpath:
+    case 'R':
       add_rxxpath (&ld_state.rpath, arg);
       break;
 
@@ -620,6 +607,10 @@ parse_opt_1st (int key, char *arg,
       ld_state.gc_sections = key == ARGP_gc_sections;
       break;
 
+    case ARGP_eh_frame_hdr:
+      ld_state.eh_frame_hdr = true;
+      break;
+
     case 's':
       if (arg == NULL)
 	{
@@ -636,6 +627,8 @@ parse_opt_1st (int key, char *arg,
     case 'O':
     case ARGP_whole_archive:
     case ARGP_no_whole_archive:
+    case ARGP_as_needed:
+    case ARGP_no_as_needed:
     case 'L':
     case '(':
     case ')':
@@ -730,6 +723,13 @@ parse_opt_2nd (int key, char *arg,
       break;
     case ARGP_no_whole_archive:
       ld_state.extract_rule = defaultextract;
+      break;
+
+    case ARGP_as_needed:
+      ld_state.as_needed = true;
+      break;
+    case ARGP_no_as_needed:
+      ld_state.as_needed = false;
       break;
 
     case ARGP_static:
@@ -909,17 +909,19 @@ parse_z_option (const char *arg)
 	   /* This is only meaningful if we create a DSO.  */
 	   && ld_state.file_type == dso_file_type)
     ld_state.dt_flags_1 |= DF_1_NOOPEN;
-  else if (strcmp (arg, "ignore") == 0)
-    ld_state.ignore_unused_dsos = true;
-  else if (strcmp (arg, "record") == 0)
-    ld_state.ignore_unused_dsos = false;
   else if (strcmp (arg, "systemlibrary") == 0)
     ld_state.is_system_library = true;
+  else if (strcmp (arg, "execstack") == 0)
+    ld_state.execstack = execstack_true;
+  else if (strcmp (arg, "noexecstack") == 0)
+    ld_state.execstack = execstack_false_force;
   else if (strcmp (arg, "allextract") != 0
 	   && strcmp (arg, "defaultextract") != 0
 	   && strcmp (arg, "weakextract") != 0
 	   && strcmp (arg, "lazyload") != 0
-	   && strcmp (arg, "nolazyload") != 0)
+	   && strcmp (arg, "nolazyload") != 0
+	   && strcmp (arg, "ignore") != 0
+	   && strcmp (arg, "record") != 0)
     error (0, 0, gettext ("unknown option `-%c %s'"), 'z', arg);
 }
 
@@ -937,6 +939,10 @@ parse_z_option_2 (const char *arg)
     ld_state.lazyload = true;
   else if (strcmp (arg, "nolazyload") == 0)
     ld_state.lazyload = false;
+  else if (strcmp (arg, "ignore") == 0)
+    ld_state.as_needed = true;
+  else if (strcmp (arg, "record") == 0)
+    ld_state.as_needed = false;
 }
 
 
@@ -1107,6 +1113,7 @@ ld_new_inputfile (const char *fname, enum file_type type)
   newfile->soname = newfile->fname = newfile->rfname = fname;
   newfile->file_type = type;
   newfile->extract_rule = ld_state.extract_rule;
+  newfile->as_needed = ld_state.as_needed;
   newfile->lazyload = ld_state.lazyload;
   newfile->status = not_opened;
 
@@ -1512,6 +1519,8 @@ create_special_section_symbol (struct symbol **symp, const char *name)
     abort ();
 
   (*symp)->defined = 1;
+  (*symp)->local = 1;
+  (*symp)->hidden = 1;
   (*symp)->type = STT_OBJECT;
 
   ++ld_state.nsymtab;

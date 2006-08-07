@@ -1,5 +1,5 @@
 /* Interface for libelf.
-   Copyright (C) 1998, 1999, 2000, 2002, 2004, 2005 Red Hat, Inc.
+   Copyright (C) 1998, 1999, 2000, 2002, 2004, 2005, 2006 Red Hat, Inc.
    This file is part of Red Hat elfutils.
 
    Red Hat elfutils is free software; you can redistribute it and/or modify
@@ -82,6 +82,7 @@ typedef enum
   ELF_T_SYMINFO,		/* Elf32_Syminfo, Elf64_Syminfo, ... */
   ELF_T_MOVE,			/* Elf32_Move, Elf64_Move, ... */
   ELF_T_LIB,			/* Elf32_Lib, Elf64_Lib, ... */
+  ELF_T_GNUHASH,		/* GNU-style hash section.  */
   /* Keep this the last entry.  */
   ELF_T_NUM
 } Elf_Type;
@@ -206,7 +207,7 @@ extern off_t elf_getbase (Elf *__elf);
 
 
 /* Retrieve file identification data.  */
-extern char *elf_getident (Elf *__elf, size_t *__ptr);
+extern char *elf_getident (Elf *__elf, size_t *__nbytes);
 
 /* Retrieve class-dependent object file header.  */
 extern Elf32_Ehdr *elf32_getehdr (Elf *__elf);
@@ -310,15 +311,15 @@ extern off_t elf_getaroff (Elf *__elf);
 /* Select archive element at OFFSET.  */
 extern size_t elf_rand (Elf *__elf, size_t __offset);
 
-/* Get symbol table of archhive.  */
-extern Elf_Arsym *elf_getarsym (Elf *__elf, size_t *__ptr);
+/* Get symbol table of archive.  */
+extern Elf_Arsym *elf_getarsym (Elf *__elf, size_t *__narsyms);
 
 
 /* Control ELF descriptor.  */
 extern int elf_cntl (Elf *__elf, Elf_Cmd __cmd);
 
 /* Retrieve uninterpreted file contents.  */
-extern char *elf_rawfile (Elf *__elf, size_t *__ptr);
+extern char *elf_rawfile (Elf *__elf, size_t *__nbytes);
 
 
 /* Return size of array of COUNT elements of the type denoted by TYPE
@@ -369,6 +370,10 @@ extern void elf_fill (int __fill);
 
 /* Compute hash value.  */
 extern unsigned long int elf_hash (const char *__string)
+       __attribute__ ((__pure__));
+
+/* Compute hash value using the GNU-specific hash function.  */
+extern unsigned long int elf_gnu_hash (const char *__string)
        __attribute__ ((__pure__));
 
 

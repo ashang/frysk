@@ -1,3 +1,38 @@
+2006-07-12  Ulrich Drepper  <drepper@redhat.com>
+
+	* elf32_updatefile.c: Adjust for internal_function_def removal.
+	* elf32_updatenull.c: Likewise.
+	* elf_begin.c: Likewise.
+	* elf_getdata.c: Likewise.
+
+2006-07-11  Ulrich Drepper  <drepper@redhat.com>
+
+	* libelf.h: Define ELF_T_GNUHASH.
+	* elf_getdata.c (TYPEIDX): Handle SHT_GNU_HASH.
+	(shtype_map): Add SHT_GNU_HASH entries.
+	* gelf_xlate.c (__elf_xfctstom): Add ELF_T_GNUHASH entries.
+	* gnuhash_xlate.h: New file.
+	* Makefile.am (noinst_HEADERS): Add gnuhash_xlate.h.
+
+2006-07-06  Ulrich Drepper  <drepper@redhat.com>
+
+	* elf_gnu_hash.c: New file.
+	* libelf.h: Declare elf_gnu_hash.
+	* Makefile.am (libelf_a_SOURCES): Add elf_gnu_hash.
+	* libelf.map: Add elf_gnu_map for version ELFUTILS_1.2.
+
+2006-06-15  Roland McGrath  <roland@redhat.com>
+
+	* libelf.h (elf_getarsym): Fix comment typo.
+	Rename second parameter to be more explanatory.
+	(elf_getident, elf_rawhide): Likewise.
+
+2006-05-28  Ulrich Drepper  <drepper@redhat.com>
+
+	* elf32_updatefile.c (updatemmap): Preserve section content if
+	copying would overwrite them.
+	Fix msync paramters.
+
 2006-04-04  Roland McGrath  <roland@redhat.com>
 
 	* elf32_updatefile.c (updatemmap): Handle other-endian case.
