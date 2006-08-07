@@ -88,7 +88,7 @@ public class TestOpcodes
   public void testDisassembler ()
   {
 
-    if (Build.BUILD_ARCH.indexOf("ppc") != - 1)
+    if (Build.BUILD_ARCH.indexOf("powerpc") != - 1)
       {
         if (brokenPpcXXX(2712))
           return;

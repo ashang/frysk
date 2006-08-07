@@ -1,9 +1,12 @@
-2006-05-31  Adam Jocksch  <ajocksch@redhat.com>
+2006-08-04  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+        * lib/opcodes/tests/TestOpcodes.java: Replace "ppc" with
+	"powerpc" to match Build.BUILD_ARCH.
+
+2006-07-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestOpcodes.java (brokenPpcXXX): Added.
-
 	* tests/TestOpcodes.java (testDisassembler): Re-failed for ppc/ppc64.
-
 	* tests/TestOpcodes.java (testDisassembler): Fixed, test now works
 	on x86_64.
 
