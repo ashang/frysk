@@ -99,13 +99,13 @@ FRYSK_OBSERVER_TYPES = {'frysk.gui.monitor.observers.TaskForkedObserver':'Fork O
                         'frysk.gui.monitor.observers.TaskCloneObserver':'Clone Observer' }
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
-FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name forking thread',
-                            'forked thread':'Name forked thread',
-                            "Execing Thread":"Name Execing Thread",
-                            'Terminating Task':'Name Terminating Task',
+FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name of forking thread',
+                            'forked thread':'Name of forked thread',
+                            "Execing Thread":"Name of Execing Thread",
+                            'Terminating Task':'Name of Terminating Task',
                             'Exit Value':'Int Filter Exit Value',
-                            'Cloning Thread':'Name Cloning Thread',
-                            'Cloned Thread':'Name Cloned Thread',
+                            'Cloning Thread':'Name of Cloning Thread',
+                            'Cloned Thread':'Name of Cloned Thread',
                             'Task entering syscall':'Name Task entering syscall',
                             'Task exiting syscall':'Name Task exiting syscall' }
 
@@ -620,10 +620,15 @@ def deriveElementName ( string1, string2 ):
     """
     #print "in derive"
     #print 'DEBUG - [' + string1 + '][' + string2 + ']'
-    if string1 != ' ':
+    if string1 == 'Log event':
+        returnString = 'Log event  '
+    elif string1 == "Show source code of ":
         returnString = string1 + string2
+    elif string1 != ' ':
+        returnString = string1 + ' ' + string2
     else:
-        returnString = string2    
+        returnString = string2
+    #print "returnString=[" + returnString + "]"
     return returnString
 
 # ---------------------
