@@ -78,10 +78,14 @@ public class TestDwfl
     String filename = line.getSourceFile();
     assertEquals("TestLib.cxx",
                  filename.substring(filename.lastIndexOf("/") + 1));
-    if(Build.BUILD_ARCH.indexOf("_64") == -1)
-      assertEquals(51, line.getLineNum());
+
+    if(Build.BUILD_ARCH.indexOf("x86_64") != -1)
+      assertEquals(55, line.getLineNum());
+    else if (Build.BUILD_ARCH.indexOf("powerpc") != -1)
+      assertEquals(53, line.getLineNum());
     else
-      assertEquals(52, line.getLineNum());
+      assertEquals(51, line.getLineNum());
+
     assertEquals(0, line.getColumn());
   }
 

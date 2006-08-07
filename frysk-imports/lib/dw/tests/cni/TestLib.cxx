@@ -44,10 +44,14 @@
 
 jint
 lib::dw::tests::TestLib::getPid(){
-	return (jint) getpid();
+  return (jint) getpid();
 }
 
 jlong
 lib::dw::tests::TestLib::getFuncAddr(){
-	return (jlong) &getFuncAddr;	
+#ifdef __powerpc64__
+  return *((jlong*) &getFuncAddr);
+#else
+  return (jlong) &getFuncAddr;	
+#endif
 }

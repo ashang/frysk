@@ -1,3 +1,10 @@
+2006-08-07  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* tests/cni/TestLib.cxx (getFuncAddr): Return function
+	address instead of function descriptor on PPC64.
+	* tests/TestDwfl.java: Take powerpc into account, and
+	change the expected line numbers.
+
 2006-07-31  Adam Jocksch  <ajocksch@redhat.com>
 
 	* tests/TestDwfl.java (testGetLine): Fixed, test now works on x86_64.
