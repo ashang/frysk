@@ -621,7 +621,7 @@ def deriveElementName ( string1, string2 ):
     #print "in derive"
     #print 'DEBUG - [' + string1 + '][' + string2 + ']'
     if string1 != ' ':
-        returnString = string1 + ' ' + string2
+        returnString = string1 + string2
     else:
         returnString = string2    
     return returnString
