@@ -97,8 +97,8 @@ import frysk.gui.srcwin.SourceWindowFactory;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.gui.srcwin.prefs.SyntaxPreference;
 import frysk.gui.srcwin.prefs.SyntaxPreferenceGroup;
-import frysk.gui.srcwin.tags.Tagset;
-import frysk.gui.srcwin.tags.TagsetManager;
+//import frysk.gui.srcwin.tags.Tagset;
+//import frysk.gui.srcwin.tags.TagsetManager;
 import frysk.proc.Manager;
 import frysk.sys.Signal;
 import frysk.sys.Sig;
@@ -161,21 +161,21 @@ implements LifeCycleListener, Saveable
 		PreferenceManager.addPreferenceGroup(PreferenceManager.syntaxHighlightingGroup);
 	}
 	
-	private static void createDummyTagsets(){
-		Tagset ts = new Tagset("httpd network layer", "For debugging aspects of httpd relating to the low level network layer", "httpd", "1.2");
-		TagsetManager.manager.addTagset(ts);
-		
-		ts = new Tagset("httpd error messages", "Tags for dealing with httpd errors before they're sent to the client", "httpd", "1.2.1");
-		TagsetManager.manager.addTagset(ts);
-		
-		ts = new Tagset("eclipse Copy and Pase bug finder", "Attaches hooks into eclipse's copy and paste mechnaism", "eclipse", "3.2M6");
-		TagsetManager.manager.addTagset(ts);
-		
-		ts = new Tagset("Firefox plugin loader", "Aids in debugging plugin loading in firefox", "firefox", "1.5.0");
-		TagsetManager.manager.addTagset(ts);
-		
-		ts = new Tagset("Firefox network layer", "Tags for debugging the low level network code in firefox", "firefox", "1.5.0");
-	}
+//	private static void createDummyTagsets(){
+//		Tagset ts = new Tagset("httpd network layer", "For debugging aspects of httpd relating to the low level network layer", "httpd", "1.2");
+//		TagsetManager.manager.addTagset(ts);
+//		
+//		ts = new Tagset("httpd error messages", "Tags for dealing with httpd errors before they're sent to the client", "httpd", "1.2.1");
+//		TagsetManager.manager.addTagset(ts);
+//		
+//		ts = new Tagset("eclipse Copy and Pase bug finder", "Attaches hooks into eclipse's copy and paste mechnaism", "eclipse", "3.2M6");
+//		TagsetManager.manager.addTagset(ts);
+//		
+//		ts = new Tagset("Firefox plugin loader", "Aids in debugging plugin loading in firefox", "firefox", "1.5.0");
+//		TagsetManager.manager.addTagset(ts);
+//		
+//		ts = new Tagset("Firefox network layer", "Tags for debugging the low level network code in firefox", "firefox", "1.5.0");
+//	}
 	
 	Gui (String[] glade_dirs)
 	throws GladeXMLException, FileNotFoundException, IOException
@@ -341,7 +341,7 @@ implements LifeCycleListener, Saveable
 		IconManager.useSmallIcons();
 
 		// Creates example tagsets until we can have real ones.
-		createDummyTagsets();
+		//createDummyTagsets();
 	
 		setupCoreLogging();
 
