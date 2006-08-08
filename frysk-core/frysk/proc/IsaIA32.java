@@ -45,80 +45,82 @@ import inua.eio.ByteOrder;
 
 class IsaIA32 implements Isa
 {
-    static final int I387_OFFSET = 18*4;
-    static final int DBG_OFFSET = 63 * 4;
+  static final int I387_OFFSET = 18*4;
+  static final int DBG_OFFSET = 63 * 4;
 
-    static class IA32Register extends Register
+  static class IA32Register extends Register
+  {
+    IA32Register(String name, int wordOffset)
     {
-	IA32Register (String name, int wordOffset)
-	{
-	    super (0, wordOffset * 4, 4, name);
-	}
+      super(0, wordOffset * 4, 4, name);
     }
-    private static final IA32Register[] regDefs 
-	= { new IA32Register ("eax", 6),
-	    new IA32Register ("ebx", 0),
-	    new IA32Register ("ecx", 1),
-	    new IA32Register ("edx", 2),
-	    new IA32Register ("esi", 3),
-	    new IA32Register ("edi", 4),
-	    new IA32Register ("ebp", 5),
-	    new IA32Register ("cs", 13),
-	    new IA32Register ("ds", 7),
-	    new IA32Register ("es", 8),
-	    new IA32Register ("fs", 9),
-	    new IA32Register ("gs", 10),
-	    new IA32Register ("ss", 16),
-	    new IA32Register ("orig_eax", 11),
-	    new IA32Register ("eip", 12),
-	    new IA32Register ("efl", 14),
-	    new IA32Register ("esp", 15) };
+  }
+  private static final IA32Register[] 
+  regDefs = { new IA32Register("eax", 6),
+	      new IA32Register("ebx", 0),
+	      new IA32Register("ecx", 1),
+	      new IA32Register("edx", 2),
+	      new IA32Register("esi", 3),
+	      new IA32Register("edi", 4),
+	      new IA32Register("ebp", 5),
+	      new IA32Register("cs", 13),
+	      new IA32Register("ds", 7),
+	      new IA32Register("es", 8),
+	      new IA32Register("fs", 9),
+	      new IA32Register("gs", 10),
+	      new IA32Register("ss", 16),
+	      new IA32Register("orig_eax", 11),
+	      new IA32Register("eip", 12),
+	      new IA32Register("efl", 14),
+	      new IA32Register("esp", 15) };
 
-    private LinkedHashMap registerMap = new LinkedHashMap ();
+  private LinkedHashMap registerMap = new LinkedHashMap();
 
-    // No one is using the FP or debug registers yet, but here are
-    // some definitions for them.
-    Register[] st = new Register[10];
-    Register[] dbg = new Register[8];
+  // No one is using the FP or debug registers yet, but here are
+  // some definitions for them.
+  Register[] st = new Register[10];
+  Register[] dbg = new Register[8];
 
-    IsaIA32 ()
-    {
-	for (int i = 0; i < regDefs.length; i++) {
-	    registerMap.put (regDefs[i].name, regDefs[i]);
-	}
-	for (int i = 0; i < st.length; i++) {
-	    st[i] = new Register (0, I387_OFFSET + 7*4 + i*8,
-				  8, "st" + i);
-	}
-	for (int i = 0; i < dbg.length; i++) {
-	    dbg[i] = new Register (0, DBG_OFFSET + i*4, 4, "d" + i);
-	}
-    }
+  IsaIA32()
+  {
+    for (int i = 0; i < regDefs.length; i++) 
+      {
+	registerMap.put(regDefs[i].name, regDefs[i]);
+      }
+    for (int i = 0; i < st.length; i++) 
+      {
+	st[i] = new Register(0, I387_OFFSET + 7*4 + i*8, 8, "st" + i);
+      }
+    for (int i = 0; i < dbg.length; i++) 
+      {
+	dbg[i] = new Register(0, DBG_OFFSET + i*4, 4, "d" + i);
+      }
+  }
     
-    public Iterator RegisterIterator ()
-    {
-	return registerMap.values ().iterator ();
-    }
+  public Iterator RegisterIterator()
+  {
+    return registerMap.values().iterator();
+  }
 
-    public Register getRegisterByName (String name)
-    {
-	return (Register)registerMap.get (name);
-    }
+  public Register getRegisterByName(String name)
+  {
+    return (Register)registerMap.get(name);
+  }
 
-    public long pc (Task task)
-    {
-	return getRegisterByName ("eip").get (task);
-    }
+  public long pc(Task task)
+  {
+    return getRegisterByName("eip").get(task);
+  }
 
-    public int getWordSize ()
-    {
-	return 4;
-    }
+  public int getWordSize()
+  {
+    return 4;
+  }
 
-    public ByteOrder getByteOrder ()
-    {
-	return ByteOrder.LITTLE_ENDIAN;
-    }
+  public ByteOrder getByteOrder()
+  {
+    return ByteOrder.LITTLE_ENDIAN;
+  }
 }
 
     

@@ -49,31 +49,31 @@ import inua.eio.ByteOrder;
 
 public interface Isa
 {
-    Iterator RegisterIterator ();
+  Iterator RegisterIterator();
 
-    Register getRegisterByName (String name);
+  Register getRegisterByName(String name);
 
-    long pc (Task task);
+  long pc(Task task);
 
-    int getWordSize ();
-    ByteOrder getByteOrder ();
+  int getWordSize();
+  ByteOrder getByteOrder();
 
-    // int addressSize;
-    // InstructionSet;
-    // FloatingPointFormat;
-    // Breakpoint;
-    // howToDoWatchpoints;
-    // howToComputePcAfterTrap;
-    // howToStepOutOfRange;
+  // int addressSize;
+  // InstructionSet;
+  // FloatingPointFormat;
+  // Breakpoint;
+  // howToDoWatchpoints;
+  // howToComputePcAfterTrap;
+  // howToStepOutOfRange;
 
-    /**
-     * Return the System Call Decoder.
-     *
-     * XXX: This ISA object should be re-named; it is really the
-     * OS+ISA object.
-     */
-    //SyscallEventInfo getSyscallEventInfo ()
-    //{
-    //throw new RuntimeException ("not implemented");
-    //}
+  /**
+   * Return the System Call Decoder.
+   *
+   * XXX: This ISA object should be re-named; it is really the
+   * OS+ISA object.
+   */
+  //SyscallEventInfo getSyscallEventInfo ()
+  //{
+  //throw new RuntimeException ("not implemented");
+  //}
 }

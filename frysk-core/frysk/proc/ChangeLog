@@ -1,5 +1,9 @@
 2006-08-08  Tim Moore  <timoore@redhat.com>
 
+	* Isa.java: GNU indentation.
+	* IsaIA32.java: ditto.
+	* IsaEMT64.java: ditto.
+
 	* TestI386Modify.java: (TestI386ModifyInternals.update): Change
 	Task.TaskException to TaskException.
 

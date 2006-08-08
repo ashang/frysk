@@ -45,76 +45,76 @@ import inua.eio.ByteOrder;
 
 class IsaEMT64 implements Isa
 {
-    static final int FPREGS_OFFSET = 28 * 8;
-    static final int DBG_OFFSET = 32 * 8;
+  static final int FPREGS_OFFSET = 28 * 8;
+  static final int DBG_OFFSET = 32 * 8;
 
-    static class EMT64Register extends Register
+  static class EMT64Register extends Register
+  {
+    EMT64Register(String name, int wordOffset)
     {
-	EMT64Register (String name, int wordOffset)
-	{
-	    super (0, wordOffset * 8, 8, name);
-	}
+      super(0, wordOffset * 8, 8, name);
     }
-    private static final EMT64Register[] regDefs
-	= { new EMT64Register ("rax", 10),
-	    new EMT64Register ("rbx", 5),
-	    new EMT64Register ("rcx", 11),
-	    new EMT64Register ("rdx", 12),
-	    new EMT64Register ("rsi", 13),
-	    new EMT64Register ("rdi", 14),
-	    new EMT64Register ("rbp", 4),
-	    new EMT64Register ("rsp", 19),
-	    new EMT64Register ("r8", 9),
-	    new EMT64Register ("r9", 8),
-	    new EMT64Register ("r10", 7),
-	    new EMT64Register ("r11", 6),
-	    new EMT64Register ("r12", 3),
-	    new EMT64Register ("r13", 2),
-	    new EMT64Register ("r14", 1),
-	    new EMT64Register ("r15", 0),
-	    new EMT64Register ("rip", 16),
-	    new EMT64Register ("eflags", 18),
-	    new EMT64Register ("cs", 17),
-	    new EMT64Register ("ss", 20),
-	    new EMT64Register ("ds", 23),
-	    new EMT64Register ("es", 24),
-	    new EMT64Register ("fs", 25),
-	    new EMT64Register ("gs", 26),
-	    new EMT64Register ("orig_rax", 15),
-	    new EMT64Register ("fs_base", 21),
-	    new EMT64Register ("gs_base", 22) };
+  }
+  private static final EMT64Register[] regDefs
+  = { new EMT64Register("rax", 10),
+      new EMT64Register("rbx", 5),
+      new EMT64Register("rcx", 11),
+      new EMT64Register("rdx", 12),
+      new EMT64Register("rsi", 13),
+      new EMT64Register("rdi", 14),
+      new EMT64Register("rbp", 4),
+      new EMT64Register("rsp", 19),
+      new EMT64Register("r8", 9),
+      new EMT64Register("r9", 8),
+      new EMT64Register("r10", 7),
+      new EMT64Register("r11", 6),
+      new EMT64Register("r12", 3),
+      new EMT64Register("r13", 2),
+      new EMT64Register("r14", 1),
+      new EMT64Register("r15", 0),
+      new EMT64Register("rip", 16),
+      new EMT64Register("eflags", 18),
+      new EMT64Register("cs", 17),
+      new EMT64Register("ss", 20),
+      new EMT64Register("ds", 23),
+      new EMT64Register("es", 24),
+      new EMT64Register("fs", 25),
+      new EMT64Register("gs", 26),
+      new EMT64Register("orig_rax", 15),
+      new EMT64Register("fs_base", 21),
+      new EMT64Register("gs_base", 22) };
 
-    private LinkedHashMap registerMap = new LinkedHashMap ();
+  private LinkedHashMap registerMap = new LinkedHashMap();
 
-    IsaEMT64 ()
-    {
-	for (int i = 0; i < regDefs.length; i++) {
-	    registerMap.put (regDefs[i].name, regDefs[i]);
-	}
+  IsaEMT64()
+  {
+    for (int i = 0; i < regDefs.length; i++) {
+      registerMap.put(regDefs[i].name, regDefs[i]);
     }
+  }
 
-    public Iterator RegisterIterator ()
-    {
-	return registerMap.values ().iterator ();
-    }
+  public Iterator RegisterIterator()
+  {
+    return registerMap.values().iterator();
+  }
 
-    public Register getRegisterByName (String name)
-    {
-	return (Register)registerMap.get (name);
-    }
+  public Register getRegisterByName(String name)
+  {
+    return (Register)registerMap.get(name);
+  }
 
-    public long pc (Task task)
-    {
-	return getRegisterByName ("rip").get (task);
-    }
+  public long pc(Task task)
+  {
+    return getRegisterByName("rip").get(task);
+  }
 
-    public int getWordSize ()
-    {
-	return 8;
-    }
+  public int getWordSize()
+  {
+    return 8;
+  }
 
-    public ByteOrder getByteOrder ()
-    {
-	return ByteOrder.LITTLE_ENDIAN;
-    }
+  public ByteOrder getByteOrder()
+  {
+    return ByteOrder.LITTLE_ENDIAN;
+  }
 }
