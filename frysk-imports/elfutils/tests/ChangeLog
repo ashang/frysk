@@ -1,6 +1,6 @@
 2006-08-08  Stepan Kasal  <kasal@ucw.cz>
 
-	* Makefile.am: Add XFAIL_TEST = run-elflint-self.sh
+	* Makefile.am: Add XFAIL_TEST = run-elflint-self.sh (frysk #2947)
 
 2006-06-23  Stepan Kasal  <kasal@ucw.cz>
 

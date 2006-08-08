@@ -77,6 +77,7 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	run-native-test.sh run-bug1-test.sh
 # run-show-ciefde.sh
 
+# bug frysk 2947
 XFAIL_TEST = run-elflint-self.sh
 
 if !STANDALONE
