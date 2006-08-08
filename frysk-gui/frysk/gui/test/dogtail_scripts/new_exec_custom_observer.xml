@@ -1,30 +1,34 @@
-<Observer type="frysk.gui.monitor.observers.TaskExecObserver" name="new_exec_custom_observer" tooltip="NoTooltip" returnAction="CONTINUE">
+<Observer type="frysk.gui.monitor.observers.TaskExecObserver" name="NoName" tooltip="NoTooltip" returnAction="CONTINUE">
   <actionPoints>
     <actionPoint name=" " tooltip="Actions that dont take any arguments">
       <items>
         <elements>
           <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 1" />
-          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 2" />
         </elements>
       </items>
     </actionPoint>
-    <actionPoint name="Execing Thread" tooltip="The thread that is calling exec">
+    <actionPoint name="execing thread" tooltip="The thread that is calling exec">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of" tooltip="Show the source code of the thread." argument="abc" />
           <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
-          <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of " tooltip="Show the register values belonging to the thread." argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of " tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="def" />
+          <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="ghi" />
+          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of" tooltip="Show the register values belonging to the thread." argument="jkl" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of" tooltip="Show the values in the memory space belonging to the thread." argument="mno" />
+          <element type="frysk.gui.monitor.actions.RunExternal" name="Execute an external program from" tooltip="Execute an external script or binary" argument="" />
         </elements>
       </items>
     </actionPoint>
   </actionPoints>
   <filterPoints>
-    <filterPoint name="Execing Thread" tooltip="The thread that is calling exec">
+    <filterPoint name="execing thread" tooltip="The thread that is calling exec">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="thread 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name of" tooltip="name of the process" argument="thread-1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcParentNameFilter" name="Parent name of" tooltip="name of the process" argument="thread-2" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcPathFilter" name="Executable path of" tooltip="executable path" argument="thread-4" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcCommandLineFilter" name="Command line args of" tooltip="Command line arguments of the process" argument="thread-5" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>

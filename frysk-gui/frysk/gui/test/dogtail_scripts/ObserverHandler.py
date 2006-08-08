@@ -154,7 +154,8 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       self.tempFilterPoint = ObserverPoints()
       self.tempFilterPointElements = []
       self.tempFilterPoint.setName(attributes['name'])
-      self.tempFilterPoint.setName (getFilterPointName(attributes['name']))
+ #     self.tempFilterPoint.setName (getFilterPointName(attributes['name']))
+      
 
 #   Comment out for now - not needed in current data model
 #   elif self.currentTag == 'elements':
@@ -166,10 +167,34 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
         
       try:
         if attributes['type'] == 'frysk.gui.monitor.filters.TaskProcNameFilter':
+            #print "DEBUG - attributes['type']=" + attributes['type']
             self.tempObserverElement = ObserverElement()
             self.tempObserverElement.setType(attributes['type'])
             self.tempObserverElement.setName(attributes['name'])
             self.tempObserverElement.setArgument(attributes['argument'])
+         
+        elif attributes['type'] == 'frysk.gui.monitor.filters.TaskProcParentNameFilter':
+            #print "DEBUG - attributes['type']=" + attributes['type']
+            self.tempObserverElement = ObserverElement()
+            self.tempObserverElement.setType(attributes['type'])
+            self.tempObserverElement.setName(attributes['name'])
+            self.tempObserverElement.setArgument(attributes['argument'])
+            
+        elif attributes['type'] == 'frysk.gui.monitor.filters.TaskProcPathFilter':
+            #print "DEBUG - attributes['type']=" + attributes['type']
+            self.tempObserverElement = ObserverElement()
+            self.tempObserverElement.setType(attributes['type'])
+            self.tempObserverElement.setName(attributes['name'])
+            self.tempObserverElement.setArgument(attributes['argument'])
+
+        elif attributes['type'] == 'frysk.gui.monitor.filters.TaskProcCommandLineFilter':
+            #print "DEBUG - attributes['type']=" + attributes['type']
+            self.tempObserverElement = ObserverElement()
+            self.tempObserverElement.setType(attributes['type'])
+            self.tempObserverElement.setName(attributes['name'])
+            self.tempObserverElement.setArgument(attributes['argument'])
+            
+             
          
         # If we found an Action that matches the regexp defined above
         elif p.search (attributes['type']) != 'None':

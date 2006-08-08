@@ -218,15 +218,16 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             theActions = self.theObserver.getActionPoints()
             #actionListLength = len(theActions)
             #print "DEBUG - the actions length = " + str(actionListLength)
-            actionListCounter = 0
+            #actionListCounter = 0
             for tempAction in theActions:
-                actionListCounter = actionListCounter + 1 
+                #actionListCounter = actionListCounter + 1 
                 
                 theElements = tempAction.getElements()
                 actionListLength = len(theElements)
                 #print "DEBUG - the actions length = " + str(actionListLength)
                 actionListCounter = 0
                 for tempElement in theElements:                 
+                    actionListCounter = actionListCounter + 1 
 
                     theActionName = tempElement.getName()
                     observerActionsTable = observerPanel.child (name = 'observerActionsTable')
@@ -257,25 +258,40 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
  
             for tempFilterPoint in theFilterPoints:
                 filterPointListCounter = filterPointListCounter + 1 
-                observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
-
-                # comboBox that lists the filter types - the 2nd one in the list[]
-                theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
-                comboBox = theComboBoxes[1]
-                filterItem = comboBox.menuItem (tempFilterPoint.getName() )
-                filterItem.click()
-
-                theTextBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='text'), False)
-                theTextBox = theTextBoxes[0]
                 theElements = tempFilterPoint.getElements()
-                # As of 20060613, there is only one element in the list                    
-                theElement = theElements[0]
-                theTextBox.text = theElement.getArgument() 
-                # The '+' and '-' buttons to enable adding/substracting action points
-                theButtons = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
-                # button [1] is the '+' button
+                elementListLength = len(theElements)
+                #print "DEBUG - the element length = " + str(elementListLength)
+                elementListCounter = 0
+                for tempElement in theElements:                 
+                    elementListCounter = elementListCounter + 1 
+
+                    theFilterName = tempElement.getName() + ' ' + tempFilterPoint.getName()
+                    theFilterArgument = tempElement.getArgument()
+                    
+                    #print "DEBUG tempFilterPoint="+tempFilterPoint.getName() + " name="+theFilterName + " arg=" + theFilterArgument
+                    
+                    observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
+                    # comboBox that lists the filter types - the first 2nd in the list[]
+                    theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
+                    comboBox = theComboBoxes[1]
+                    # Select the action
+                    filterItem = comboBox.menuItem (theFilterName)
+                    filterItem.click()
+                    
+                    filterText = observerFiltersTable.child(roleName = 'text')
+                    filterText.text = tempElement.getArgument()
+
+                    #print "Press the + button"
+                    # The '+' and '-' buttons to enable adding/substracting action points
+                    theButtons = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='push button'), False)
+                    # button [1] is the '+' button
+                    if elementListCounter < elementListLength:
+                        theButtons[1].click()
+                        #print "pressed the button"
+                
                 if filterPointListCounter < filterPointListLength:
-                    theButtons[1].click()
+                    theButtons[1].click()      
+                
 
             try:
      
