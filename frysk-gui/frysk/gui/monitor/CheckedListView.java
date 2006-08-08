@@ -40,6 +40,7 @@
 package frysk.gui.monitor;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.gnu.glib.Handle;
 import org.gnu.gtk.CellRendererToggle;
@@ -47,6 +48,7 @@ import org.gnu.gtk.DataColumn;
 import org.gnu.gtk.DataColumnBoolean;
 import org.gnu.gtk.ListStore;
 import org.gnu.gtk.TreeIter;
+import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
@@ -123,6 +125,7 @@ public class CheckedListView extends ListView {
 			return false;
 		return true;
 	}
+    
 	public void setChecked(GuiObject object, boolean state){
 		TreeIter iter = (TreeIter) this.map.get(object);
 
@@ -130,6 +133,50 @@ public class CheckedListView extends ListView {
 			listStore.setValue(iter, toggleDC, state);		
 	}
 	
+    public void setCheckedByName(String text, boolean state){
+      TreeIter firstIter = this.listStore.getFirstIter();
+      if(firstIter == null){
+        return;
+      }
+      
+      TreePath treePath = this.listStore.getFirstIter().getPath();
+        
+        String displayedText;
+        TreeIter iter = this.listStore.getIter(treePath);
+
+        while(iter != null){
+            displayedText = (String) this.listStore.getValue(iter, nameDC);
+
+            if(text.equals(displayedText)){
+              listStore.setValue(iter, toggleDC, state);
+              return;
+            }
+            treePath.next();
+            iter = this.listStore.getIter(treePath);
+        }
+        throw new IllegalArgumentException("the passes text argument ["+ text +"] does not match any of the items in this ComboBox");
+    }
+    
+    public LinkedList getCheckedObjects(){
+      LinkedList checkedObjects = new LinkedList();
+      TreePath treePath = this.listStore.getFirstIter().getPath();
+      
+      TreeIter iter = this.listStore.getIter(treePath);
+
+      while(iter != null){
+          if(listStore.getValue(iter, getToggleDC()) == true){
+            GuiProc guiProc = (GuiProc) listStore.getValue(iter, objectDC);
+            checkedObjects.add(guiProc);
+          }
+          
+          treePath.next();
+          iter = this.listStore.getIter(treePath);
+
+      }
+      
+      return checkedObjects;
+    }
+    
 	public void setChecked(GuiObject[] objects, boolean state){
 		for (int i=0; i<objects.length; i++)
 		{

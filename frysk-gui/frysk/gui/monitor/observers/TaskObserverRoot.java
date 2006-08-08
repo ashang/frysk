@@ -63,6 +63,7 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 	}
 
 	public void apply(Proc proc){
+       
 	    new ProcTasksObserver (proc, new ProcTasks()
 		{
 		    public void taskAdded(Task task)
@@ -84,6 +85,28 @@ public abstract class TaskObserverRoot extends ObserverRoot {
 		});
 	}
 	
-	public abstract void apply(Task task);
-
+    public void unapply(Proc proc){
+        new ProcTasksObserver (proc, new ProcTasks()
+        {
+            public void taskAdded(Task task)
+            {
+            unapply(task);
+            }
+            public void addFailed(Object observable, Throwable w)
+            {
+                errorLog.log(Level.WARNING, "TaskObserverRoot.OffSpringObserver: Add Failed", w);
+                //throw new RuntimeException(w);
+            }
+            public void existingTask(Task task)
+            {
+            unapply(task);
+            }
+            public void addedTo(Object observable){}
+            public void taskRemoved(Task task){}
+            public void deletedFrom(Object observable){}
+        });
+    }
+    
+    public abstract void apply(Task task);
+    public abstract void unapply(Task task);
 }

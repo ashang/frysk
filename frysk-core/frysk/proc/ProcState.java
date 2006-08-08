@@ -259,6 +259,12 @@ abstract class ProcState
 		}
 		return this;
 	    }
+
+        ProcState handleTaskDetachCompleted (Proc proc, Task task)
+        {
+          return this;
+        }
+
 	}
 	/**
 	 * In the process of attaching, the main task is attached, now

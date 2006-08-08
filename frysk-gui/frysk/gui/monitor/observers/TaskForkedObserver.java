@@ -201,4 +201,9 @@ public class TaskForkedObserver
     this.forkedTaskActionPoint.runActions(child);
   }
 
+  public void unapply (Task task)
+  {
+    task.requestDeleteForkedObserver(this);
+  }
+
 }

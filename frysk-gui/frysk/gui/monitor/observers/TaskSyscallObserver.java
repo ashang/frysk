@@ -177,5 +177,10 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	public GuiObject getCopy(){
 		return new TaskSyscallObserver(this);
 	}
+
+    public void unapply (Task task)
+    {
+      task.requestAddSyscallObserver(this);
+    }
 	
 }

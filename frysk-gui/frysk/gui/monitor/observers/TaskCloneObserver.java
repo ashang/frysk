@@ -150,5 +150,10 @@ public class TaskCloneObserver extends TaskObserverRoot implements TaskObserver.
 	public GuiObject getCopy(){
 		return new TaskCloneObserver(this);
 	}
+
+  public void unapply (Task task)
+  {
+    task.requestDeleteClonedObserver(this);
+  }
 	
 }

@@ -269,12 +269,12 @@ implements LifeCycleListener, Saveable
 	
 	public void lifeCycleEvent (LifeCycleEvent arg0)
 	{
-		Gtk.mainQuit();
+      Gui.quitFrysk();
 	}
 	
 	public boolean lifeCycleQuery (LifeCycleEvent arg0)
 	{
-		Gtk.mainQuit();
+      Gui.quitFrysk();
 		return false;
 	}
 	
@@ -400,7 +400,7 @@ implements LifeCycleListener, Saveable
 		quitItem.addListener (new MenuItemListener()
 				{
 			public void menuItemEvent(MenuItemEvent arg0) {
-				Gtk.mainQuit();
+				Gui.quitFrysk();
 			}
 				});
 		popupMenu.add(quitItem);
@@ -516,7 +516,17 @@ implements LifeCycleListener, Saveable
 		
 	}
 	
-	private static void setupCoreLogging() {
+    /**
+     * Function to quit fryks.
+     * All requests to quit frysk should be funneled 
+     * though this function.
+     */
+	public static void quitFrysk ()
+	{
+      Gtk.mainQuit();
+	}
+
+  private static void setupCoreLogging() {
 		// Get Core logger
 
 		logger = EventLogger.get ("logs/", "frysk_core_event.log");
@@ -606,7 +616,7 @@ implements LifeCycleListener, Saveable
     public final void execute ()
     {
       logger.log(Level.FINE, "{0} execute\n", this);
-      Gtk.mainQuit();
+      Gui.quitFrysk();
     }
   }
 }

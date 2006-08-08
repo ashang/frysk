@@ -65,7 +65,7 @@ import frysk.gui.monitor.WindowManager;
 public class ObserverManager {
 
 	public static ObserverManager theManager = new ObserverManager();
-
+	
 	static{
 		theManager.init();
 	}
@@ -87,10 +87,14 @@ public class ObserverManager {
 	
 	private ObservableLinkedList baseObservers;
 	
+    public ProgramObserver programObserver;
+    
 	public ObserverManager(){
 		this.baseObservers = new ObservableLinkedList();
 		this.taskObservers = new ObservableLinkedList();
-		
+	
+        this.programObserver = new ProgramObserver();
+        
 		this.nameHash = new UniqueHashMap();
 		
 		ObjectFactory.theFactory.makeDir(OBSERVERS_DIR);

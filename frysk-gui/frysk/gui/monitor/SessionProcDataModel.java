@@ -156,12 +156,31 @@ public class SessionProcDataModel
     Iterator i = this.currentSession.getProcesses().iterator();
     while (i.hasNext())
       {
-        Iterator j = (((DebugProcess) i.next()).getProcs()).iterator();
+        DebugProcess debugProcess = (DebugProcess) i.next();
+        Iterator j = debugProcess.getProcs().iterator();
         while (j.hasNext())
           {
             this.addProc((GuiProc) j.next());
           }
+
+        debugProcess.getProcs().itemAdded.addObserver(new Observer()
+        {
+          public void update (Observable arg0, Object obj)
+          {
+            System.out.println(this + ": .update() " + obj);
+            addProc((GuiProc) obj);
+          }
+        });
+
+        debugProcess.getProcs().itemAdded.addObserver(new Observer()
+        {
+          public void update (Observable arg0, Object obj)
+          {
+            removeProc(((GuiProc)obj).getProc());
+          }
+        });
       }
+
   }
 
   // }
@@ -169,6 +188,7 @@ public class SessionProcDataModel
   public void addProc(GuiProc guiProc)
   {
     Proc proc = guiProc.getProc();
+    System.out.println(this + ": SessionProcDataModel.addProc() " + proc );
     if (proc == null)
       {
         errorLog.log(Level.WARNING,

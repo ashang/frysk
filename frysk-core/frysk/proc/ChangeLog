@@ -1,3 +1,9 @@
+2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* ProcState.java: Added handling of DetachComplete to Attaching.toMainTask. 
+	* TestTaskObserverBlocked.java (testAddObserverAfterUnblock): 
+	Enabled test.
+
 2006-08-08  Tim Moore  <timoore@redhat.com>
 
 	* Isa.java: GNU indentation.

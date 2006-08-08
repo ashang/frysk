@@ -142,4 +142,9 @@ public class TaskExecObserver
     return this.taskFilterPoint.filter(task);
   }
 
+  public void unapply (Task task)
+  {
+    task.requestDeleteExecedObserver(this);
+  }
+
 }

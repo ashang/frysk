@@ -524,10 +524,31 @@ public class CreateFryskSessionDruid
 			}
 		});
 
+//<<<<<<< CreateFryskSessionDruid.java
+//    removeProcessGroupButton.addListener(new ButtonListener()
+//    {
+//      public void buttonEvent (ButtonEvent event)
+//      {
+//        if (event.isOfType(ButtonEvent.Type.CLICK))
+//          {
+//            Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
+//            if (i != null)
+//              while (i.hasNext())
+//                {
+//                  DebugProcess currentDebugProcess = (DebugProcess) i.next();
+//                  TreePath foo = dataModel.searchName(currentDebugProcess.getName());
+//                  changeGroupState(procWiseTreeView, new TreePath[] { foo },
+//                                   false, false);
+//                  currentSession.removeProcess(currentDebugProcess);
+//                }
+//          }
+//      }
+//    });
+//=======
     removeProcessGroupButton.addListener(new ButtonListener() {
 			public void buttonEvent(ButtonEvent event) {
 				if (event.isOfType(ButtonEvent.Type.CLICK)) {
-					Iterator i = addedProcsTreeView.getSelectedObjects();
+					Iterator i = addedProcsTreeView.getSelectedObjects().iterator();
 					if (i != null)
 						while (i.hasNext()) {
 							DebugProcess currentDebugProcess = (DebugProcess) i

@@ -1,3 +1,24 @@
+2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* observers/TaskObserverRoot.java: Added unapply(Proc).
+	added abstrace unapply(Task).
+	* observers/TaskCloneObserver.java: Implemented unapply(Task).
+	* observers/TaskTerminatingObserver.java: Ditto.
+	* observers/TaskSyscallObserver.java: Ditto.
+	* observers/TaskForkedObserver.java: Ditto.
+	* observers/TaskExecObserver.java: Ditto.
+	* WindowManager.java: Added programObserver dialog to the list
+	of windows and to save/load.
+	* SessionProcDataModel.java: Added handling for updating
+	the list when new procs are added to the underlying DebugProcess.
+	* MenuBar.java: Added quitFryk menu item.
+	Removed editCustomObservers menu item.
+	* GuiProc.java (isOwned): Added explicit check for getExec.
+	* CheckedListView.java: Added getCheckedByName.
+	Added getCheckObjects.
+	* ListView (getSelectedObjects): Changed it to return a list
+	instead of iterator.
+
 2006-08-04  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/RunExternal.java (execute): Removed existence check.

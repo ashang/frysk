@@ -92,6 +92,8 @@ public class WindowManager
 
   public SessionManagerGui sessionManager;
 
+  public ProgramObserverDialog programObserverDialog;
+  
   /** } */
 
   public WindowManager ()
@@ -104,6 +106,8 @@ public class WindowManager
   // from the massive glade file
   public void initLegacyProcpopWindows (LibGlade glade) throws IOException
   {
+    this.programObserverDialog = new ProgramObserverDialog();
+
     this.splashScreen = new SplashScreenWindow();
     this.mainWindow = new MainWindow(glade);
     this.aboutWindow = new AboutWindow(glade);
@@ -116,6 +120,7 @@ public class WindowManager
     // this.pickProcsDialog = new PickProcsDialog(null);
     this.pickProcDialog = new PickProcDialog(null);
     this.mainWindowStatusBar = new MainWindowStatusBar(glade);
+    
   }
 
   public void initSessionManagerWindow (LibGlade glade)
@@ -136,10 +141,10 @@ public class WindowManager
     logWindow.save(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-
-    // programAddWindow.save(Preferences.userRoot().node(prefs.absolutePath() +
-    // "/programAddWindow"));
-  }
+    programObserverDialog.save(Preferences.userRoot().node(
+                                               prefs.absolutePath()
+                                                   + "/programObserverDialog"));
+   }
 
   public void load (Preferences prefs)
   {
@@ -149,7 +154,8 @@ public class WindowManager
     logWindow.load(Preferences.userRoot().node(
                                                prefs.absolutePath()
                                                    + "/logWindow"));
-
-    //programAddWindow.load(Preferences.userRoot().node(prefs.absolutePath() + "/programAddWindow"));
+    programObserverDialog.load(Preferences.userRoot().node(
+                                                           prefs.absolutePath()
+                                                               + "/programObserverDialog"));
   }
 }

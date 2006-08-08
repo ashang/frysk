@@ -86,8 +86,8 @@ public class GuiProc extends GuiData{
 		this.executableName = "";
 
 		this.setExecutablePath();
-		this.setNiceExecutablePath();
-	
+        this.setNiceExecutablePath();
+        
         this.tasks = new ObservableLinkedList();
     }
 
@@ -126,12 +126,13 @@ public class GuiProc extends GuiData{
 		if(this.executablePath == PATH_NOT_FOUND){
 			this.executableName = proc.getCommand();
 		}else{
-			File file = new File(this.getNiceExecutablePath());		
+			File file = new File(niceExecutbalePath);		
 			this.executableName = file.getName();
 		}
 	}
 
 	public String getNiceExecutablePath(){
+	  this.setNiceExecutablePath();
 		return this.niceExecutbalePath;
 	}
 	
@@ -147,6 +148,7 @@ public class GuiProc extends GuiData{
 				this.executablePath = proc.getCmdLine()[0];
 			} catch (Exception e2) {
 				this.executablePath = PATH_NOT_FOUND;
+                return;
 //				this.executableName = proc.getCommand();
 			}
 //			File file = new File(this.executablePath);
@@ -178,8 +180,13 @@ public class GuiProc extends GuiData{
 	/**
 	 * Returns wether this user owns this process
 	 * or not.
+     * Checks uid and gid.
+     * Checks if the given process is this frysk process if so
+     * returns false.
+     * Also checks that the user has acces to /pro/exe if not
+     * false is returned.
 	 * @return boolean; true of the user owns this
-	 * process false otherwise;
+	 * process, and can debug it false otherwise;
 	 */
 	public boolean isOwned(){
 		boolean owned = false;
@@ -190,6 +197,13 @@ public class GuiProc extends GuiData{
             if (owned)
               if (this.proc.getPid() == Manager.host.getSelf().getPid())
                       owned = false;
+            
+            try{
+              proc.getExe();
+            }catch(Exception e){
+              owned = false;
+              return owned;
+            }
 		} catch (Exception e) {
 			errorLog.log(Level.WARNING, "GuiProc.isOwned: Error checking host/proc ownership",e);
 		}
@@ -198,6 +212,7 @@ public class GuiProc extends GuiData{
 	}
 	
 	public String getFullExecutablePath(){
+        this.setExecutablePath();
 		return this.executablePath;
 	}
 	

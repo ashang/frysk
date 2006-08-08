@@ -165,4 +165,9 @@ public class TaskTerminatingObserver
     return new TaskTerminatingObserver(this);
   }
 
+  public void unapply (Task task)
+  {
+    task.requestDeleteTerminatingObserver(this);
+  }
+
 }

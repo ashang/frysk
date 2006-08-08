@@ -49,6 +49,8 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
+import frysk.gui.Gui;
+
 /**
  * provides a handle for the windows menu bar.
  * Extending the meunu bar and attaching listiners to 
@@ -68,14 +70,12 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 
 		MenuItem item;
 		
-//		item = (MenuItem) glade.getWidget("editCustomObserversMenuItem");
-//		item.addListener(new MenuItemListener(){
-//			public void menuItemEvent(MenuItemEvent arg0) {
-//				WindowManager.theManager.customeObserverDialog.showAll();
-//				WindowManager.theManager.customeObserverDialog.present();
-//				WindowManager.theManager.customeObserverDialog.run();
-//			}
-//		});
+		item = (MenuItem) glade.getWidget("quitMenuItem");
+		item.addListener(new MenuItemListener(){
+			public void menuItemEvent(MenuItemEvent arg0) {
+				Gui.quitFrysk();
+			}
+		});
 		
 		item = (MenuItem) glade.getWidget("customObserversMenuItem");
 		item.addListener(new MenuItemListener(){
@@ -85,13 +85,12 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 			}
 		});
 		
-		item = (MenuItem) glade.getWidget("frysk_quit");
+		item = (MenuItem) glade.getWidget("closeMenuItem");
 		item.addListener(new MenuItemListener(){
 			public void menuItemEvent(MenuItemEvent arg0) {
 				WindowManager.theManager.mainWindow.hideAll();
 				WindowManager.theManager.logWindow.hideAll();
 				WindowManager.theManager.prefsWindow.hideAll();
-				//WindowManager.theManager.programAddWindow.hideAll();
 			}
 		});
 		
@@ -101,6 +100,13 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 				WindowManager.theManager.aboutWindow.showAll();
 			}
 		});
+
+        item = (MenuItem) glade.getWidget("programObserverMenuItem");
+        item.addListener(new MenuItemListener(){
+            public void menuItemEvent(MenuItemEvent event) {
+                WindowManager.theManager.programObserverDialog.showAll();
+            }
+        });
 
 	}
 	

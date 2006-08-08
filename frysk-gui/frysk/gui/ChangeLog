@@ -1,3 +1,13 @@
+2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
+
+	* sessions/DebugProcess.java: Added listining to programObserver.
+	* glade/procpop.glade: Added program observer menu item.
+	Added quit menu item.
+	* druid/CreateFryskSessionDruid.java (filterDatainSession): changed
+	getProcessies() to getProcessies().iterator.
+	* SessionManagerGui.java: used Gui.quitFrysk insteaf
+	of  Gtk.mainQuit().
+
 2006-08-08  Mike Cvet  <mcvet@redhat.com>
 
 	* Gui.java (createDummyTagsets): Commented out for now, not
