@@ -1,3 +1,7 @@
+2006-08-08  Stepan Kasal  <kasal@ucw.cz>
+
+	* test/dogtail_scripts/frysk_suite.in: Use "dogtail-run-headless -n".
+
 2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* sessions/DebugProcess.java: Added listining to programObserver.
@@ -5,8 +9,8 @@
 	Added quit menu item.
 	* druid/CreateFryskSessionDruid.java (filterDatainSession): changed
 	getProcessies() to getProcessies().iterator.
-	* SessionManagerGui.java: used Gui.quitFrysk insteaf
-	of  Gtk.mainQuit().
+	* SessionManagerGui.java: used Gui.quitFrysk instead
+	of Gtk.mainQuit().
 
 2006-08-08  Mike Cvet  <mcvet@redhat.com>
 

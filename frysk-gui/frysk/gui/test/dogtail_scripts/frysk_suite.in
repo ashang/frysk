@@ -48,7 +48,7 @@ ${src}/TestCredits.py ${src}/Test2921.xml
 #
 EOF
     echo Running: ${script}
-    if python ${script} ${frysk} ${args} ; then
+    if dogtail-run-headless -n "${script} ${frysk} ${args}" ; then
 	:
     else
 	echo "Failing ${script}"
