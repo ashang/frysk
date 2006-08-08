@@ -131,19 +131,18 @@ main (int argc, char *argv[])
   for (; cnt < argc; ++cnt)
     {
       struct args a = { .arg = argv[cnt] };
+      char *c = strchr (a.arg, ':');
 
-      switch (sscanf (a.arg, "%a[^:]:%d", &a.file, &a.line))
-	{
-	default:
-	case 0:
-	  printf ("ignored %s\n", argv[cnt]);
-	  continue;
-	case 1:
-	  a.line = 0;
-	  break;
-	case 2:
-	  break;
-	}
+      if (a.arg == NULL) {
+	printf ("ignored %s\n", a.arg);
+	continue;
+      } else if (c == NULL) {
+	a.file = strdup (a.arg);
+	a.line = 0;
+      } else {
+	a.file = strndup (a.arg, c - a.arg);
+	a.line = strtol (c + 1, NULL, 10);
+      }
 
       (void) dwfl_getdwarf (dwfl, &handle_module, &a, 0);
 
