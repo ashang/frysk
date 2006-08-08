@@ -1,3 +1,10 @@
+2006-08-08  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/RunExternal.java (RunExBlocker): Added.
+	(TaskTerminatedObserver.updateTerminated): Updated to unblock the examined task when finished.
+	(AttachedObserver.updateAttached): Requests a Terminating Observer on the external process.
+	(execute): Creates a new RunExBlocker and requests it to attach to the incoming Task.
+
 2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* observers/TaskObserverRoot.java: Added unapply(Proc).

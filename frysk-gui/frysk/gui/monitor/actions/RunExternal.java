@@ -40,6 +40,7 @@
 
 package frysk.gui.monitor.actions;
 
+//import frysk.gui.monitor.EventLogger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
@@ -50,20 +51,25 @@ import frysk.proc.Manager;
 
 import java.io.File;
 
+import org.gnu.glib.CustomEvents;
+
 /**
  * Provides the ability to execute a binary or other program externally to
- * Frysk, allowing the flexibility of user-defined actions following some 
- * event.
+ * Frysk, allowing the flexibility of user-defined actions following some event.
  * 
  * @author mcvet
  */
 public class RunExternal
     extends TaskAction
 {
-  
+
   /* The input string to be executed */
-  String execString;
-  
+  private String execString;
+
+  private RunExBlocker blocker;
+
+  private Task theTask;
+
   public RunExternal ()
   {
     super("Execute an external program from",
@@ -78,7 +84,11 @@ public class RunExternal
 
   public void execute (Task task)
   {
-      Manager.host.requestCreateAttachedProc(execString.split(" "), new AttachedObserver());
+    // Manager.host.requestCreateAttachedProc(execString.split(" "), new
+    // AttachedObserver());
+    this.blocker = new RunExBlocker();
+    this.theTask = task;
+    task.requestAddAttachedObserver(this.blocker);
   }
 
   public GuiObject getCopy ()
@@ -90,7 +100,7 @@ public class RunExternal
   {
     String[] temp = argument.split(" ");
     File bin = new File(temp[0]);
-    
+
     if (bin.exists())
       {
         this.execString = argument;
@@ -113,52 +123,94 @@ public class RunExternal
   {
     return null;
   }
-  
+
   /**
-   * Attach to this executed program so that we know whats going on - we'll
-   * be able to gather information or manipulate it in other ways, should
-   * the need arise later.
+   * Attach to this executed program so that we know whats going on - we'll be
+   * able to gather information or manipulate it in other ways, should the need
+   * arise later.
    */
   class AttachedObserver
       implements TaskObserver.Attached
   {
 
-    public void addedTo (Object observable){}
-    
+    public void addedTo (Object observable)
+    {
+    }
+
     public Action updateAttached (Task task)
     {
       task.requestAddTerminatedObserver(new TaskTerminatedObserver());
       return Action.CONTINUE;
     }
-    
-    public void deletedFrom (Object observable){}
-    
+
+    public void deletedFrom (Object observable)
+    {
+    }
+
     public void addFailed (Object observable, Throwable w)
     {
       throw new RuntimeException("Failed to attach to created proc", w);
     }
   }
-  
+
   /**
-   * We want to know when the externally-executed program has quit, so 
-   * that we can continue or optionally run another program.
+   * We want to know when the externally-executed program has quit, so that we
+   * can continue or optionally run another program.
    */
   class TaskTerminatedObserver
-  implements TaskObserver.Terminated
-{
-  public void addedTo (Object observable) {}
-  
-  public Action updateTerminated (Task task, boolean signal, int value)
+      implements TaskObserver.Terminated
   {
-    return Action.CONTINUE;
+    public void addedTo (Object observable)
+    {
+    }
+
+    public Action updateTerminated (Task task, boolean signal, int value)
+    {
+      theTask.requestUnblock(blocker);
+      theTask.requestDeleteAttachedObserver(blocker);
+      return Action.CONTINUE;
+    }
+
+    public void deletedFrom (Object observable)
+    {
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException("Failed to attach to created proc", w);
+    }
   }
-  
-  public void deletedFrom (Object observable) {}
-  
-  public void addFailed (Object observable, Throwable w)
+
+  class RunExBlocker
+      implements TaskObserver.Attached
   {
-    throw new RuntimeException("Failed to attach to created proc", w);
+
+    public void addedTo (Object observable)
+    {
+    }
+
+    public Action updateAttached (Task task)
+    {
+      System.out.println("blocking");
+      CustomEvents.addEvent(new Runnable()
+      {
+        public void run ()
+        {
+          Manager.host.requestCreateAttachedProc(execString.split(" "),
+                                                 new AttachedObserver());
+        }
+      });
+
+      return Action.BLOCK;
+    }
+
+    public void deletedFrom (Object observable)
+    {
+    }
+
+    public void addFailed (Object observable, Throwable w)
+    {
+      throw new RuntimeException("Failed to attach to created proc", w);
+    }
   }
-}
-  
 }
