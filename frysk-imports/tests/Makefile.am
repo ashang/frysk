@@ -320,7 +320,7 @@ EXTRA_DIST += frysk2130/strace-clone-exec.shin
 noinst_PROGRAMS += frysk2130/threadexec
 noinst_SCRIPTS += frysk2130/strace-clone-exec.sh
 frysk2130_threadexec_LDFLAGS = -lpthread
-TESTS += frysk2130/strace-clone-exec.sh
+XFAIL_TESTS += frysk2130/strace-clone-exec.sh
 
 # A garbage collector stress test.
 noinst_PROGRAMS += frysk2299/GCTest

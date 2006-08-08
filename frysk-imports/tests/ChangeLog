@@ -1,3 +1,7 @@
+2006-08-08  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Move frysk2130/strace-clone-exec.sh to XFAIL_TESTS.
+
 2006-08-02  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am: Do not list XFAIL_TESTS twice when declaring
