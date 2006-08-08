@@ -77,6 +77,8 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	run-native-test.sh run-bug1-test.sh
 # run-show-ciefde.sh
 
+XFAIL_TEST = run-elflint-self.sh
+
 if !STANDALONE
 noinst_PROGRAMS += msg_tst
 TESTS += msg_tst
