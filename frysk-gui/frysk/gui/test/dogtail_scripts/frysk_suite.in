@@ -8,18 +8,6 @@
 # is to comment out these lines, run the tests separately, and read
 # the datafiles from the CLI       
 
-# Is accessability enabled?
-
-accessibility=`gconftool-2 --get /desktop/gnome/interface/accessibility`
-if test "$accessibility" = false ; then
-    cat <<EOF 1>&2
-Your machine does not have accessability enabled, enter:
-    gconftool-2 --type bool --set /desktop/gnome/interface/accessibility true
-to enable it.
-EOF
-    exit 77
-fi
-
 frysk=@abs_builddir@/frysk/gui/FryskGui
 src=@abs_srcdir@/frysk/gui/test/dogtail_scripts
 

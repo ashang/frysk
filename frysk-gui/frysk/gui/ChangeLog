@@ -1,6 +1,8 @@
 2006-08-08  Stepan Kasal  <kasal@ucw.cz>
 
 	* test/dogtail_scripts/frysk_suite.in: Use "dogtail-run-headless -n".
+	And do not check whether the accessibility is on;
+	dogtail-run-headless should temporarily switch it on, if necessary.
 
 2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
