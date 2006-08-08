@@ -186,7 +186,7 @@ public class TestI386Modify
 			{
 			     isa = task.getIsa();
 			}
-			catch (Task.TaskException e)
+			catch (TaskException e)
 			{
 			     isa = null;
 			}

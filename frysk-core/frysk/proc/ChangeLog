@@ -1,3 +1,20 @@
+2006-08-08  Tim Moore  <timoore@redhat.com>
+
+	* TestI386Modify.java: (TestI386ModifyInternals.update): Change
+	Task.TaskException to TaskException.
+
+	Patches from IBM.
+	2006-08-08  Wu Zhou  <woodzltc@cn.ibm.com>
+
+		* LinuxPPC64.java (returnCode): When the 29th bit of
+		register CCR is set, return the negation of register GPR3.
+
+	
+	2006-08-08  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+        	* frysk/proc/LinuxTask.java: Do not assume little endian any
+        	more.
+
 2006-08-07  Tim Moore  <timoore@redhat.com>
 
 	* TestX8664Modify.java : New file; test based on TestI386Modify.java.

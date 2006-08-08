@@ -33,7 +33,11 @@ class LinuxPPC64
 	}
 	public long returnCode (Task task)
         {
-          return getRegisterByName("gpr3").get(task);
+          int flag = (int)getRegisterByName("ccr").get(task);
+          if ((flag & 0x10000000) != 0)
+            return -getRegisterByName("gpr3").get(task);
+          else
+            return getRegisterByName("gpr3").get(task);
 	}
 	public long arg (Task task, int n)
 	{
