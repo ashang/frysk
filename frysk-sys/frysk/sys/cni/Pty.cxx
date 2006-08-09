@@ -84,6 +84,29 @@ frysk::sys::Pty::getPtyName (jint master)
   return name;
 }
 
+// sets up the pty for use with jline
+void
+frysk::sys::Pty::setUpPtyForConsole(jint master)
+{
+	char prefix[30] = "stty -F ";
+	char *pts_name = ptsname(master);
+	char cmd[60]; 
+	
+	if (pts_name != NULL)
+	{
+		strcat(prefix, pts_name);
+		strcpy(cmd, prefix);
+		strcat(cmd, " -icanon min 1");
+		system(cmd);
+
+		strcpy(cmd, prefix);
+		strcat(cmd, " -echo");
+		system(cmd);
+	}
+	else	
+		throwErrno (errno, "ptsname");
+}
+
 jint
 frysk::sys::Pty::writeString (jint fd, jstring str)
 {

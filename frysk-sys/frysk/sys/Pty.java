@@ -64,6 +64,11 @@ public final class Pty
 	return name;
     }
 
+	public void setUpForConsole()
+	{
+	setUpPtyForConsole(master);
+	}
+
     public int ptyWrite(String str)
     {
 	return writeString (master, str);
@@ -78,6 +83,11 @@ public final class Pty
      * Returns the pathname of corrsponding to the fd
      */
     private static native String getPtyName (int fd);
+
+    /**
+     * Set pty parameters to set up for use in jline
+     */
+	private static native void setUpPtyForConsole (int fd);
 
     /**
      * Write a string to the pty
