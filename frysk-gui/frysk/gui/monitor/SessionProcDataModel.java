@@ -40,9 +40,6 @@
 
 package frysk.gui.monitor;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,6 +71,7 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.ProcTasksObserver;
 import frysk.proc.ProcObserver.ProcTasks;
+import frysk.sys.proc.Stat;
 
 public class SessionProcDataModel
 {
@@ -101,6 +99,10 @@ public class SessionProcDataModel
   private DataColumnString vszDC;
   
   private DataColumnString rssDC;
+  
+  private DataColumnString timeDC;
+  
+  private Stat stat;
 
   private HashMap iterHash;
 
@@ -132,11 +134,14 @@ public class SessionProcDataModel
     this.sensitiveDC = new DataColumnBoolean();
     this.vszDC = new DataColumnString();
     this.rssDC = new DataColumnString();
+    this.timeDC = new DataColumnString();
+    this.stat = new Stat();
 
     this.treeStore = new TreeStore(new DataColumn[] { pidDC, commandDC,
                                                      colorDC, procDataDC,
                                                      weightDC, threadParentDC,
-                                                     isThreadDC, sensitiveDC, vszDC, rssDC });
+                                                     isThreadDC, sensitiveDC, 
+                                                     vszDC, rssDC, timeDC});
 
     // Change to HashMap from HashTable
     this.iterHash = new HashMap();
@@ -234,7 +239,7 @@ public class SessionProcDataModel
 
         treeStore.setValue(iter, threadParentDC, 0);
         treeStore.setValue(iter, sensitiveDC, true);
-
+        statRead(proc, iter);
       }
     catch (Exception e)
       {
@@ -243,17 +248,6 @@ public class SessionProcDataModel
                          + proc + "to treestore, but failed.", e);
         return;
       }
-    
-    try
-    {
-      procRead(iter, proc);
-    }
-    catch (Exception e)
-    {
-      errorLog.log(Level.WARNING,
-                   "SessionProcDataModel.addTask: Trying to read from  "
-                       + proc + " to treestore, but failed.", e);
-    }
 
     new ProcTasksObserver(proc, new ProcTasks()
     {
@@ -312,55 +306,22 @@ public class SessionProcDataModel
     });
   }
 
-  /**
-   * Read the relevant information from /proc/PID/status.
-   */
-  public void procRead(TreeIter iter, Proc proc)
+  public void statRead(Proc proc, TreeIter iter)
   {
-    BufferedReader br = null;
-    try
-    {
-      br = new BufferedReader(new FileReader("/proc/" + proc.getPid() + "/status"));
-    }
-    catch (FileNotFoundException fnfe)
-    {
-      errorLog.log(Level.WARNING,
-                   "SessionProcDataModel.addTask: Trying to add proc  "
-                       + proc + "to treestore, but failed.", fnfe);
-    }
+    stat.refresh(proc.getPid());
     
-    String line = "";
-    while (!line.startsWith("VmSize:"))
-      {
-        try
-        {
-          line = br.readLine();
-        } catch (IOException ioe)
-        { 
-          System.out.println(ioe.getMessage());
-          return; 
-          }
-      }
+    treeStore.setValue(iter, vszDC, (stat.vsize / 1024) + " kB");
+    treeStore.setValue(iter, rssDC, (stat.rss * 4) + " kB");
     
-    String[] split = line.split(" +");
-    treeStore.setValue(iter, vszDC, split[1] + split[2]);
+    long t = (stat.cstime + stat.cutime + stat.stime + stat.utime) / 100;
+    long sec = t % 60;
+    long min = t / 60;
     
-    while (!line.startsWith("VmRSS:"))
-      {
-        try
-        {
-          line = br.readLine();
-        } catch (IOException ioe)
-        { 
-          System.out.println(ioe.getMessage());
-          return;
-          }
-      }
-    
-    split = line.split(" +");
-    treeStore.setValue(iter, rssDC, split[1] + split[2]);
+    if (sec < 10)
+      treeStore.setValue(iter, timeDC, min + ":0" + sec);
+    else
+      treeStore.setValue(iter, timeDC, min + ":" + sec);
   }
-  
   
   public void refreshRead ()
   {
@@ -373,7 +334,7 @@ public class SessionProcDataModel
           {
             Proc p = ((GuiProc)j.next()).getProc();
             TreeIter iter = (TreeIter)this.iterHash.get(p.getId());
-            procRead(iter, p);
+            statRead(p, iter);
           }
       }
   }
@@ -581,6 +542,11 @@ public class SessionProcDataModel
   public DataColumnString getRssDC()
   {
     return this.rssDC;
+  }
+  
+  public DataColumnString getTimeDC()
+  {
+    return this.timeDC;
   }
 
   public TreeModel getModel()

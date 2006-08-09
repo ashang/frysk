@@ -112,6 +112,10 @@ public class PIDColumnDialog
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], true);
     model.setValue(iter, (DataColumnString) cols[1], "RSS");
+    
+    iter = model.appendRow();
+    model.setValue(iter, (DataColumnBoolean) cols[0], true);
+    model.setValue(iter, (DataColumnString) cols[1], "TIME");
 
     TreeViewColumn col = new TreeViewColumn();
     CellRenderer renderer = new CellRendererToggle();

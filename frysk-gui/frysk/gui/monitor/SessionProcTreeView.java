@@ -49,7 +49,8 @@ package frysk.gui.monitor;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
-import org.gnu.glade.LibGlade; import org.gnu.glib.GObject;
+import org.gnu.glade.LibGlade; 
+import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.CellRendererText;
 import org.gnu.gtk.TreeIter;
@@ -101,9 +102,9 @@ public class SessionProcTreeView
   
   private ProcMenu procMenu;
   
-  private String[] colNames = {"Command", "VSZ", "RSS"}; 
+  private String[] colNames = {"Command", "VSZ", "RSS", "TIME"}; 
   
-  private boolean[] colVisible = {true, true, true};
+  private boolean[] colVisible = {true, true, true, true};
   
   private Preferences prefs;
 
@@ -121,7 +122,7 @@ public class SessionProcTreeView
     
     this.pidColumnDialog = new PIDColumnDialog(this.glade, this);
     
-    this.tvc = new TreeViewColumn[4];
+    this.tvc = new TreeViewColumn[5];
     
     this.procMenu = new ProcMenu(this.pidColumnDialog, this);
 
@@ -361,6 +362,19 @@ public class SessionProcTreeView
     tvc[3].addAttributeMapping(cellRendererText6,
                                    CellRendererText.Attribute.WEIGHT,
                                    dataModel.getWeightDC());
+    
+    CellRendererText cellRendererText7 = new CellRendererText();
+    tvc[4] = new TreeViewColumn();
+    tvc[4].packStart(cellRendererText7, false);
+    tvc[4].addAttributeMapping(cellRendererText7,
+                                   CellRendererText.Attribute.TEXT,
+                                   dataModel.getTimeDC());
+    tvc[4].addAttributeMapping(cellRendererText7,
+                                   CellRendererText.Attribute.FOREGROUND,
+                                   dataModel.getColorDC());
+    tvc[4].addAttributeMapping(cellRendererText7,
+                                   CellRendererText.Attribute.WEIGHT,
+                                   dataModel.getWeightDC());
 
     tvc[0].setTitle("PID"); //$NON-NLS-1$
     tvc[0].addListener(new TreeViewColumnListener()
@@ -397,16 +411,27 @@ public class SessionProcTreeView
         procTreeView.setSearchDataColumn(dataModel.getRssDC());
       }
     });
+    
+    tvc[4].setTitle("TIME"); //$NON-NLS-1$
+    tvc[4].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
+      {
+        procTreeView.setSearchDataColumn(dataModel.getTimeDC());
+      }
+    });
 
     tvc[0].setVisible(true);
     tvc[1].setVisible(true);
     tvc[2].setVisible(true);
     tvc[3].setVisible(true);
+    tvc[4].setVisible(true);
 
     this.procTreeView.appendColumn(tvc[0]);
     this.procTreeView.appendColumn(tvc[1]);
     this.procTreeView.appendColumn(tvc[2]);
     this.procTreeView.appendColumn(tvc[3]);
+    this.procTreeView.appendColumn(tvc[4]);
 
     dataModel.getModel().addListener(new PropertyNotificationListener()
     {

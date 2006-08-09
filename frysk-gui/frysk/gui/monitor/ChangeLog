@@ -3,25 +3,26 @@
 	* ProcMenu.java (ProcMenu): Edited to list options for editing columns
 	and refreshing. No longer statically referenced.
 	* PIDMenu.java: Added.
-	* PIDColumnDialog.java: Added.
+	* PIDColumnDialog.java: Added - edit columsn for RSS, VSZ, and TIME.
 	* SessionProcTreeView.java (SessionProcTreeView): Now initializes a 
 	PIDColumnDialog and ProcMenu, among other new variables. Added a LifeCycle
 	Listener onto the PIDColumnDialog.
 	(mountProcModel): Initializes TreeViewColumn array with old and new 
 	columns. Added relevant Listeners.
-	(refreshTree): Added, calls the SessionProcDataModel to update its memory display
-	values.
+	(refreshTree): Added, calls the SessionProcDataModel to update its values 
+	for memory and CPU time.
 	(getColNames): Added.
 	(load): Loads preferences for the PIDColumnDialog.
 	(save): Saves preferences for the PIDColumnDialog.
 	(setCols): Refactored from refreshTree().
 	* SessionProcDataModel.java (getSession): Added.
-	(addProc): Added support for virtual memory and resident set size value
+	(addProc): Added support for virtual memory, resident set size value, and 
+	CPU time.
 	initialization.
-	(procRead): Added.
 	(getVszDC): Added.
 	(getRssDC): Added.
 	(refreshRead): Added.
+	(statRead): Added.
 	* MenuBar.java (MenuBar): Commented out some Listeners to fix a glade oops.
 
 2006-08-08  Mike Cvet  <mcvet@redhat.com>
