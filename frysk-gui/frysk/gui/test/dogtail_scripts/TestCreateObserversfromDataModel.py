@@ -268,7 +268,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     theFilterName = tempElement.getName() + ' ' + tempFilterPoint.getName()
                     theFilterArgument = tempElement.getArgument()
                     
-                    #print "DEBUG tempFilterPoint="+tempFilterPoint.getName() + " name="+theFilterName + " arg=" + theFilterArgument
+                    #print "DEBUG tempFilterPoint="+tempFilterPoint.getName() + " name="+tempElement.getName() + " arg=" + theFilterArgument
                     
                     observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
                     # comboBox that lists the filter types - the first 2nd in the list[]

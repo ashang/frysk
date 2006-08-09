@@ -1,36 +1,41 @@
-<Observer type="frysk.gui.monitor.observers.TaskTerminatingObserver" name="new_task_term_custom_observer" tooltip="new_task_term_custom_observer description" returnAction="CONTINUE">
+<Observer type="frysk.gui.monitor.observers.TaskTerminatingObserver" name="new_task_term_custom_observer" tooltip="new_task_term_custom_observer" returnAction="CONTINUE">
   <actionPoints>
     <actionPoint name=" " tooltip="Actions that dont take any arguments">
       <items>
         <elements>
           <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 1" />
+          <element type="frysk.gui.monitor.actions.LogAction" name="Log event" tooltip="logs what is going on with this observer plus a user set comment" argument="Log event 2" />
         </elements>
       </items>
     </actionPoint>
-    <actionPoint name="Terminating Task" tooltip="The task that is terminating">
+    <actionPoint name="terminating task" tooltip="The task that is terminating">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of" tooltip="Show the source code of the thread." argument="null" />
           <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
           <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of " tooltip="Show the register values belonging to the thread." argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of " tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of" tooltip="Show the register values belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of" tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.RunExternal" name="Execute an external program from" tooltip="Execute an external script or binary" argument="" />
         </elements>
       </items>
     </actionPoint>
   </actionPoints>
   <filterPoints>
-    <filterPoint name="Terminating Task" tooltip="The task that is terminating">
+    <filterPoint name="terminating task" tooltip="The task that is terminating">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="Task 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name of" tooltip="name of the process" argument="task 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcParentNameFilter" name="Parent name of" tooltip="name of the process" argument="parent 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcPathFilter" name="Executable path of" tooltip="executable path" argument="path 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcCommandLineFilter" name="Command line args of" tooltip="Command line arguments of the process" argument="CLI 1" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>
-    <filterPoint name="Exit Value" tooltip="the exit value of the task">
+    <filterPoint name="exit value" tooltip="the exit value of the task">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.IntFilter" name="Int Filter" tooltip="Passes if value at filter call matches the given value" argument="100" filterBoolean="true" value="100" />
+          <element type="frysk.gui.monitor.filters.IntFilter" name="Value of" tooltip="Passes if value at filter call matches the given value" argument="0" filterBoolean="true" value="0" />
         </elements>
       </items>
     </filterPoint>
