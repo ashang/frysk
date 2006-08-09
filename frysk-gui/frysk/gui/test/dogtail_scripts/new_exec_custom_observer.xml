@@ -1,4 +1,4 @@
-<Observer type="frysk.gui.monitor.observers.TaskExecObserver" name="NoName" tooltip="NoTooltip" returnAction="CONTINUE">
+<Observer type="frysk.gui.monitor.observers.TaskExecObserver" name="new_exec_custom_observer" tooltip="new_exec_custom_observer description" returnAction="CONTINUE">
   <actionPoints>
     <actionPoint name=" " tooltip="Actions that dont take any arguments">
       <items>
