@@ -157,6 +157,11 @@ public class SessionProcDataModel
     // Manager.host.observableTaskRemovedXXX.addObserver
     // (taskDestroyedObserver);
   }
+  
+  public TreeStore getTreeStore()
+  {
+    return this.treeStore;
+  }
 
   public void setSession(Session session)
   {

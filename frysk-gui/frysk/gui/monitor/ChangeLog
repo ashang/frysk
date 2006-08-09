@@ -15,6 +15,7 @@
 	(load): Loads preferences for the PIDColumnDialog.
 	(save): Saves preferences for the PIDColumnDialog.
 	(setCols): Refactored from refreshTree().
+	(columnClickedEvent): Added sorting for columns.
 	* SessionProcDataModel.java (getSession): Added.
 	(addProc): Added support for virtual memory, resident set size value, and 
 	CPU time.
@@ -23,6 +24,7 @@
 	(getRssDC): Added.
 	(refreshRead): Added.
 	(statRead): Added.
+	(getTreeStore): Added.
 	* MenuBar.java (MenuBar): Commented out some Listeners to fix a glade oops.
 
 2006-08-08  Mike Cvet  <mcvet@redhat.com>

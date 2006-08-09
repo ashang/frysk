@@ -53,12 +53,14 @@ import org.gnu.glade.LibGlade;
 import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.CellRendererText;
+import org.gnu.gtk.SortType;
 import org.gnu.gtk.TreeIter;
 import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeModelFilter;
 import org.gnu.gtk.TreeModelFilterVisibleMethod;
 import org.gnu.gtk.TreePath;
 import org.gnu.gtk.TreeSelection;
+import org.gnu.gtk.TreeStore;
 import org.gnu.gtk.TreeView;
 import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
@@ -107,6 +109,8 @@ public class SessionProcTreeView
   private boolean[] colVisible = {true, true, true, true};
   
   private Preferences prefs;
+  
+  private TreeStore treeStore;
 
   private LibGlade glade;
   
@@ -306,6 +310,7 @@ public class SessionProcTreeView
 
     this.procTreeView.setModel(procFilter);
     this.procTreeView.setSearchDataColumn(dataModel.getCommandDC());
+    this.treeStore = procDataModel.getTreeStore();
 
     CellRendererText cellRendererText3 = new CellRendererText();
     tvc[0] = new TreeViewColumn();
@@ -382,6 +387,17 @@ public class SessionProcTreeView
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getPidDC());
+        
+        if (tvc[0].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getPidDC(), SortType.DESCENDING);
+            tvc[0].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getPidDC(), SortType.ASCENDING);
+            tvc[0].setSortOrder(SortType.ASCENDING);
+          }
       }
     });
     
@@ -391,6 +407,17 @@ public class SessionProcTreeView
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getCommandDC());
+        
+        if (tvc[1].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getCommandDC(), SortType.DESCENDING);
+            tvc[1].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getCommandDC(), SortType.ASCENDING);
+            tvc[1].setSortOrder(SortType.ASCENDING);
+          }
       }
     });
     
@@ -400,6 +427,17 @@ public class SessionProcTreeView
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getVszDC());
+        
+        if (tvc[2].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getVszDC(), SortType.DESCENDING);
+            tvc[2].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getVszDC(), SortType.ASCENDING);
+            tvc[2].setSortOrder(SortType.ASCENDING);
+          }
       }
     });
     
@@ -409,6 +447,17 @@ public class SessionProcTreeView
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getRssDC());
+        
+        if (tvc[3].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getRssDC(), SortType.DESCENDING);
+            tvc[3].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getRssDC(), SortType.ASCENDING);
+            tvc[3].setSortOrder(SortType.ASCENDING);
+          }
       }
     });
     
@@ -418,6 +467,17 @@ public class SessionProcTreeView
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getTimeDC());
+        
+        if (tvc[4].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getTimeDC(), SortType.DESCENDING);
+            tvc[4].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getTimeDC(), SortType.ASCENDING);
+            tvc[4].setSortOrder(SortType.ASCENDING);
+          }
       }
     });
 
