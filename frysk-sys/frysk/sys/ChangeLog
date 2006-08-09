@@ -1,3 +1,8 @@
+2006-08-09  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* Pty.java: Added a setUpForConsole function
+	* cni/Pty.cxx: the same
+
 2006-08-04  Mark Wielaard  <mark@klomp.org>
 
 	* frysk/sys/cni/PtraceByteBuffer.cxx (newPerror): Removed.
