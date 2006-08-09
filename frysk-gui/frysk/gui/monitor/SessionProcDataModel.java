@@ -244,6 +244,8 @@ public class SessionProcDataModel
 
         treeStore.setValue(iter, threadParentDC, 0);
         treeStore.setValue(iter, sensitiveDC, true);
+        
+        /* Read from /proc/pid/stat the VSZ, RSS, and CPU Time. */
         statRead(proc, iter);
       }
     catch (Exception e)
@@ -311,14 +313,25 @@ public class SessionProcDataModel
     });
   }
 
+  /**
+   * Read the Vsize, RSS, and CPU time from /proc/pid/stat, and set the 
+   * information into its relevant place in the TreeStore.
+   */
   public void statRead(Proc proc, TreeIter iter)
   {
     stat.refresh(proc.getPid());
     
+    /* stat.vsize returns in bytes */
     treeStore.setValue(iter, vszDC, (stat.vsize / 1024) + " kB");
+    
+    /* stat.rss returns the number of pages in use - multiply by page size
+     * to find actual memory use. >>> Assumes 4kb page size!! Hack alert!<<< */
     treeStore.setValue(iter, rssDC, (stat.rss * 4) + " kB");
     
+    /* Sum up individual values for clock jiffies - 100 jiffies in 
+     * each second. */
     long t = (stat.cstime + stat.cutime + stat.stime + stat.utime) / 100;
+    
     long sec = t % 60;
     long min = t / 60;
     
@@ -328,6 +341,10 @@ public class SessionProcDataModel
       treeStore.setValue(iter, timeDC, min + ":" + sec);
   }
   
+  /**
+   * Update the information listed in the TreeView, specifically the new memory
+   * information and updated CPU time.
+   */
   public void refreshRead ()
   {
     Iterator i = this.currentSession.getProcesses().iterator();
