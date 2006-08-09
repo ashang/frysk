@@ -1,3 +1,7 @@
+2006-08-09  Tim Moore  <timoore@redhat.com>
+
+	* Register.java: GNU indentation.
+
 2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* ProcState.java: Added handling of DetachComplete to Attaching.toMainTask. 
