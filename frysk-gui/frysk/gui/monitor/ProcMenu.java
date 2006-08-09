@@ -56,6 +56,7 @@ import org.gnu.gtk.event.MouseListener;
 
 import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.actions.ProcAction;
+import frysk.gui.monitor.PIDColumnDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 
 
@@ -65,24 +66,42 @@ import frysk.gui.monitor.observers.ObserverManager;
  * and can be be accessed through accessor method for extention
  * or addition to WatchWindows.
  * */
-public class ProcMenu extends Menu{
-	private static ProcMenu menu = new ProcMenu();
+public class ProcMenu extends Menu
+{
 	
 	/** the ProcData of the currently selected process */
 	private GuiProc current;
+    
+    private PIDColumnDialog pidColumnDialog;
 	
-	ProcMenu(){
+	ProcMenu(PIDColumnDialog pcd)
+    {
 		super();
 		
 		ObservableLinkedList list = ActionManager.theManager.getProcActions();
 		ListIterator iter = list.listIterator();
+        
+        this.pidColumnDialog = pcd;
+        MenuItem item = new MenuItem("Edit Columns...", false);
+        ToolTips tip = new ToolTips();
+        tip.setTip(item, "Edit Columns...", "");
+
+        item.addListener(new MenuItemListener()
+        {
+          public void menuItemEvent (MenuItemEvent arg0)
+          {
+            pidColumnDialog.showAll();
+          }
+        });
+        
+        this.add(item);
 		
 		while(iter.hasNext()){
 			final ProcAction action = (ProcAction) iter.next();
 			//System.out.println(action.getName());
 			
-			MenuItem item = new MenuItem(action.getName(), false);
-			ToolTips tip = new ToolTips();
+			item = new MenuItem(action.getName(), false);
+			tip = new ToolTips();
 			tip.setTip(item, action.getToolTip(), ""); //$NON-NLS-1$
 			
 			item.addListener(new MenuItemListener() {
@@ -94,7 +113,7 @@ public class ProcMenu extends Menu{
 		}
 		
 		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getTaskObservers());
-		MenuItem item = new MenuItem("Add observer ", false); //$NON-NLS-1$
+		item = new MenuItem("Add observer ", false); //$NON-NLS-1$
 		item.setSubmenu(menu);
 
 		item.addListener(new MouseListener(){
@@ -111,15 +130,6 @@ public class ProcMenu extends Menu{
 		this.current = null;
 		
 		this.showAll();
-	}
-	
-	/**
-	 * Singleton pattern. Get the menu from here
-	 * and add it to any watch window or add more
-	 * items to it.
-	 * */
-	public static ProcMenu getMenu(){
-		return menu;
 	}
 	
 	/**

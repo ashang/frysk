@@ -40,6 +40,9 @@
 
 package frysk.gui.monitor;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,6 +97,10 @@ public class SessionProcDataModel
   private DataColumnBoolean isThreadDC;
 
   private DataColumnBoolean sensitiveDC;
+  
+  private DataColumnString vszDC;
+  
+  private DataColumnString rssDC;
 
   private HashMap iterHash;
 
@@ -123,11 +130,13 @@ public class SessionProcDataModel
     this.isThreadDC = new DataColumnBoolean();
     this.threadParentDC = new DataColumnInt();
     this.sensitiveDC = new DataColumnBoolean();
+    this.vszDC = new DataColumnString();
+    this.rssDC = new DataColumnString();
 
     this.treeStore = new TreeStore(new DataColumn[] { pidDC, commandDC,
                                                      colorDC, procDataDC,
                                                      weightDC, threadParentDC,
-                                                     isThreadDC, sensitiveDC });
+                                                     isThreadDC, sensitiveDC, vszDC, rssDC });
 
     // Change to HashMap from HashTable
     this.iterHash = new HashMap();
@@ -182,8 +191,11 @@ public class SessionProcDataModel
       }
 
   }
-
-  // }
+  
+  public Session getSession()
+  {
+    return this.currentSession;
+  }
 
   public void addProc(GuiProc guiProc)
   {
@@ -231,6 +243,17 @@ public class SessionProcDataModel
                          + proc + "to treestore, but failed.", e);
         return;
       }
+    
+    try
+    {
+      procRead(iter, proc);
+    }
+    catch (Exception e)
+    {
+      errorLog.log(Level.WARNING,
+                   "SessionProcDataModel.addTask: Trying to read from  "
+                       + proc + " to treestore, but failed.", e);
+    }
 
     new ProcTasksObserver(proc, new ProcTasks()
     {
@@ -289,6 +312,55 @@ public class SessionProcDataModel
     });
   }
 
+  /**
+   * Read the relevant information from /proc/PID/status.
+   */
+  public void procRead(TreeIter iter, Proc proc)
+  {
+    BufferedReader br = null;
+    try
+    {
+      br = new BufferedReader(new FileReader("/proc/" + proc.getPid() + "/status"));
+    }
+    catch (FileNotFoundException fnfe)
+    {
+      errorLog.log(Level.WARNING,
+                   "SessionProcDataModel.addTask: Trying to add proc  "
+                       + proc + "to treestore, but failed.", fnfe);
+    }
+    
+    String line = "";
+    while (!line.startsWith("VmSize:"))
+      {
+        try
+        {
+          line = br.readLine();
+        } catch (IOException ioe)
+        { 
+          System.out.println(ioe.getMessage());
+          return; 
+          }
+      }
+    
+    String[] split = line.split(" +");
+    treeStore.setValue(iter, vszDC, split[1] + split[2]);
+    
+    while (!line.startsWith("VmRSS:"))
+      {
+        try
+        {
+          line = br.readLine();
+        } catch (IOException ioe)
+        { 
+          System.out.println(ioe.getMessage());
+          return;
+          }
+      }
+    
+    split = line.split(" +");
+    treeStore.setValue(iter, rssDC, split[1] + split[2]);
+  }
+  
   public void addTask(Task task)
   {
     // get an iterator pointing to the parent
@@ -481,6 +553,16 @@ public class SessionProcDataModel
   public DataColumnBoolean getSensitiveDC()
   {
     return this.sensitiveDC;
+  }
+  
+  public DataColumnString getVszDC()
+  {
+    return this.vszDC;
+  }
+  
+  public DataColumnString getRssDC()
+  {
+    return this.rssDC;
   }
 
   public TreeModel getModel()

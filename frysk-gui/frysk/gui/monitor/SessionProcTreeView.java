@@ -48,6 +48,7 @@ package frysk.gui.monitor;
 
 import java.io.IOException;
 import java.util.prefs.Preferences;
+
 import org.gnu.glade.LibGlade; import org.gnu.glib.GObject;
 import org.gnu.glib.PropertyNotificationListener;
 import org.gnu.gtk.CellRendererText;
@@ -62,6 +63,8 @@ import org.gnu.gtk.TreeViewColumn;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.VPaned;
 import org.gnu.gtk.Widget;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
 import org.gnu.gtk.event.TreeModelEvent;
@@ -93,8 +96,20 @@ public class SessionProcTreeView
   private VBox statusWidget;
   
   private InfoWidget infoWidget;
+  
+  private PIDColumnDialog pidColumnDialog;
+  
+  private ProcMenu procMenu;
+  
+  private String[] colNames = {"Command", "VSZ", "RSS"}; 
+  
+  private boolean[] colVisible = {true, true, true};
+  
+  private Preferences prefs;
 
   private LibGlade glade;
+  
+  private TreeViewColumn[] tvc;
 
   public SessionProcTreeView (LibGlade libGlade) throws IOException
   {
@@ -103,6 +118,12 @@ public class SessionProcTreeView
     this.glade = libGlade;
     this.procTreeView = (TreeView) glade.getWidget("procTreeView");
     this.threadTreeView = (TreeView) glade.getWidget("threadTreeView");
+    
+    this.pidColumnDialog = new PIDColumnDialog(this.glade, this);
+    
+    this.tvc = new TreeViewColumn[4];
+    
+    this.procMenu = new ProcMenu(this.pidColumnDialog);
 
     this.vPane = (VPaned) glade.getWidget("vPane");
 
@@ -207,7 +228,7 @@ public class SessionProcTreeView
 
             GuiProc data = getSelectedProc();
             if (data != null)
-              ProcMenu.getMenu().popup(data);
+              procMenu.popup(data);
 
             // System.out.println("click : " + data); //$NON-NLS-1$
             return true;
@@ -233,6 +254,20 @@ public class SessionProcTreeView
             return true;
           }
         return false;
+      }
+    });
+    
+    this.pidColumnDialog.addListener(new LifeCycleListener()
+    {
+      public boolean lifeCycleQuery (LifeCycleEvent arg0)
+      {
+        return false;
+      }
+
+      public void lifeCycleEvent (LifeCycleEvent arg0)
+      {
+        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
+          SessionProcTreeView.this.refreshTree();
       }
     });
 
@@ -271,60 +306,107 @@ public class SessionProcTreeView
     this.procTreeView.setModel(procFilter);
     this.procTreeView.setSearchDataColumn(dataModel.getCommandDC());
 
-    TreeViewColumn pidCol = new TreeViewColumn();
-    TreeViewColumn commandCol = new TreeViewColumn();
-
     CellRendererText cellRendererText3 = new CellRendererText();
-    pidCol.packStart(cellRendererText3, false);
-
-    pidCol.addAttributeMapping(cellRendererText3,
+    tvc[0] = new TreeViewColumn();
+    tvc[0].packStart(cellRendererText3, false);
+    tvc[0].addAttributeMapping(cellRendererText3,
                                CellRendererText.Attribute.TEXT,
                                dataModel.getPidDC());
-    pidCol.addAttributeMapping(cellRendererText3,
+    tvc[0].addAttributeMapping(cellRendererText3,
                                CellRendererText.Attribute.FOREGROUND,
                                dataModel.getColorDC());
-    pidCol.addAttributeMapping(cellRendererText3,
+    tvc[0].addAttributeMapping(cellRendererText3,
                                CellRendererText.Attribute.WEIGHT,
                                dataModel.getWeightDC());
-    // pidCol.addAttributeMapping(cellRendererText3,
+    // tvc[0].addAttributeMapping(cellRendererText3,
     // CellRendererText.Attribute.STRIKETHROUGH,psDataModel.getSensitiveDC());
 
     CellRendererText cellRendererText4 = new CellRendererText();
-    commandCol.packStart(cellRendererText4, false);
-    commandCol.addAttributeMapping(cellRendererText4,
+    tvc[1] = new TreeViewColumn();
+    tvc[1].packStart(cellRendererText4, false);
+    tvc[1].addAttributeMapping(cellRendererText4,
                                    CellRendererText.Attribute.TEXT,
                                    dataModel.getCommandDC());
-    commandCol.addAttributeMapping(cellRendererText4,
+    tvc[1].addAttributeMapping(cellRendererText4,
                                    CellRendererText.Attribute.FOREGROUND,
                                    dataModel.getColorDC());
-    commandCol.addAttributeMapping(cellRendererText4,
+    tvc[1].addAttributeMapping(cellRendererText4,
                                    CellRendererText.Attribute.WEIGHT,
                                    dataModel.getWeightDC());
-    // commandCol.addAttributeMapping(cellRendererText4,
+    // tvc[1].addAttributeMapping(cellRendererText4,
     // CellRendererText.Attribute.STRIKETHROUGH ,psDataModel.getSensitiveDC());
+    
+    CellRendererText cellRendererText5 = new CellRendererText();
+    tvc[2] = new TreeViewColumn();
+    tvc[2].packStart(cellRendererText5, false);
+    tvc[2].addAttributeMapping(cellRendererText5,
+                                   CellRendererText.Attribute.TEXT,
+                                   dataModel.getVszDC());
+    tvc[2].addAttributeMapping(cellRendererText5,
+                                   CellRendererText.Attribute.FOREGROUND,
+                                   dataModel.getColorDC());
+    tvc[2].addAttributeMapping(cellRendererText5,
+                                   CellRendererText.Attribute.WEIGHT,
+                                   dataModel.getWeightDC());
+    
+    CellRendererText cellRendererText6 = new CellRendererText();
+    tvc[3] = new TreeViewColumn();
+    tvc[3].packStart(cellRendererText6, false);
+    tvc[3].addAttributeMapping(cellRendererText6,
+                                   CellRendererText.Attribute.TEXT,
+                                   dataModel.getRssDC());
+    tvc[3].addAttributeMapping(cellRendererText6,
+                                   CellRendererText.Attribute.FOREGROUND,
+                                   dataModel.getColorDC());
+    tvc[3].addAttributeMapping(cellRendererText6,
+                                   CellRendererText.Attribute.WEIGHT,
+                                   dataModel.getWeightDC());
 
-    pidCol.setTitle("PID"); //$NON-NLS-1$
-    pidCol.addListener(new TreeViewColumnListener()
+    tvc[0].setTitle("PID"); //$NON-NLS-1$
+    tvc[0].addListener(new TreeViewColumnListener()
     {
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getPidDC());
       }
     });
-    commandCol.setTitle("Command"); //$NON-NLS-1$
-    commandCol.addListener(new TreeViewColumnListener()
+    
+    tvc[1].setTitle("Command"); //$NON-NLS-1$
+    tvc[1].addListener(new TreeViewColumnListener()
     {
       public void columnClickedEvent (TreeViewColumnEvent arg0)
       {
         procTreeView.setSearchDataColumn(dataModel.getCommandDC());
       }
     });
+    
+    tvc[2].setTitle("VSZ"); //$NON-NLS-1$
+    tvc[2].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
+      {
+        procTreeView.setSearchDataColumn(dataModel.getVszDC());
+      }
+    });
+    
+    tvc[3].setTitle("RSS"); //$NON-NLS-1$
+    tvc[3].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
+      {
+        procTreeView.setSearchDataColumn(dataModel.getRssDC());
+      }
+    });
 
-    pidCol.setVisible(true);
-    commandCol.setVisible(true);
+    tvc[0].setVisible(true);
+    tvc[1].setVisible(true);
+    tvc[2].setVisible(true);
+    tvc[3].setVisible(true);
 
-    this.procTreeView.appendColumn(pidCol);
-    this.procTreeView.appendColumn(commandCol);
+    this.procTreeView.appendColumn(tvc[0]);
+    this.procTreeView.appendColumn(tvc[1]);
+    this.procTreeView.appendColumn(tvc[2]);
+    this.procTreeView.appendColumn(tvc[3]);
 
     dataModel.getModel().addListener(new PropertyNotificationListener()
     {
@@ -434,6 +516,18 @@ public class SessionProcTreeView
 
     this.threadTreeView.expandAll();
   }
+  
+  public void refreshTree()
+  {
+    for (int i = 0; i < colNames.length; i++)
+      this.tvc[i + 1].setVisible(prefs.getBoolean( colNames[i],
+                                                       this.colVisible[i]));
+  }
+  
+  public String[] getColNames()
+  {
+    return this.colNames;
+  }
 
   private GuiProc getSelectedProc ()
   {
@@ -474,13 +568,15 @@ public class SessionProcTreeView
   public void save (Preferences prefs)
   {
     prefs.putInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
+    this.pidColumnDialog.save(prefs);
   }
 
   public void load (Preferences prefs)
   {
+    this.prefs = prefs;
     int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
-
     this.vPane.setPosition(position);
+    this.pidColumnDialog.load(prefs);
   }
 
   public void setSession (Session session)
