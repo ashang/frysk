@@ -1,4 +1,4 @@
-<Observer type="frysk.gui.monitor.observers.TaskSyscallObserver" name="new_syscall_custom_observer" tooltip="new_syscall_custom_observer" returnAction="CONTINUE">
+<Observer type="frysk.gui.monitor.observers.TaskSyscallObserver" name="NoName" tooltip="NoTooltip" returnAction="CONTINUE">
   <actionPoints>
     <actionPoint name=" " tooltip="Actions that dont take any arguments">
       <items>
@@ -8,25 +8,28 @@
         </elements>
       </items>
     </actionPoint>
-    <actionPoint name="Task entering syscall" tooltip="the Task when it is entering the syscall">
+    <actionPoint name="task entering syscall" tooltip="the Task when it is entering the syscall">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of" tooltip="Show the source code of the thread." argument="null" />
           <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
           <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of " tooltip="Show the register values belonging to the thread." argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of " tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of" tooltip="Show the register values belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of" tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of" tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.RunExternal" name="Execute an external program from" tooltip="Execute an external script or binary" argument="" />
         </elements>
       </items>
     </actionPoint>
-    <actionPoint name="Task exiting syscall" tooltip="the Task when it is exiting the syscall">
+    <actionPoint name="task exiting syscall" tooltip="the Task when it is exiting the syscall">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of " tooltip="Show the source code of the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowSourceWin" name="Show source code of" tooltip="Show the source code of the thread." argument="null" />
           <element type="frysk.gui.monitor.actions.AddTaskObserverAction" name="Add observer to" tooltip="Add given observer to the given task" argument="" />
           <element type="frysk.gui.monitor.actions.PrintTask" name="Print state of" tooltip="Print the state of the selected process or thread" argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of " tooltip="Show the register values belonging to the thread." argument="null" />
-          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of " tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowRegWin" name="Show the register values of" tooltip="Show the register values belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.ShowMemWin" name="Show the memory space of" tooltip="Show the values in the memory space belonging to the thread." argument="null" />
+          <element type="frysk.gui.monitor.actions.RunExternal" name="Execute an external program from" tooltip="Execute an external script or binary" argument="" />
         </elements>
       </items>
     </actionPoint>
@@ -46,17 +49,23 @@
     </actionPoint>
   </actionPoints>
   <filterPoints>
-    <filterPoint name="Task entering syscall" tooltip="the Task when it is entering the syscall">
+    <filterPoint name="task entering syscall" tooltip="the Task when it is entering the syscall">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="task1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name of" tooltip="name of the process" argument="task 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcParentNameFilter" name="Parent name of" tooltip="name of the process" argument="parent 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcPathFilter" name="Executable path of" tooltip="executable path" argument="path 1" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcCommandLineFilter" name="Command line args of" tooltip="Command line arguments of the process" argument="CLI 1" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>
-    <filterPoint name="Task exiting syscall" tooltip="the Task when it is exiting the syscall">
+    <filterPoint name="task exiting syscall" tooltip="the Task when it is exiting the syscall">
       <items>
         <elements>
-          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name" tooltip="name of the process" argument="task2" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcNameFilter" name="Name of" tooltip="name of the process" argument="task 2" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcParentNameFilter" name="Parent name of" tooltip="name of the process" argument="parent 2" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcPathFilter" name="Executable path of" tooltip="executable path" argument="path 2" filterBoolean="true" />
+          <element type="frysk.gui.monitor.filters.TaskProcCommandLineFilter" name="Command line args of" tooltip="Command line arguments of the process" argument="CLI 2" filterBoolean="true" />
         </elements>
       </items>
     </filterPoint>

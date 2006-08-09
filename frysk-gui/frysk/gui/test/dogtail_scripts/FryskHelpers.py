@@ -106,8 +106,8 @@ FRYSK_FILTERPOINT_NAMES = { 'forking thread':'Name of forking thread',
                             'Exit Value':'Int Filter Exit Value',
                             'Cloning Thread':'Name of Cloning Thread',
                             'Cloned Thread':'Name of Cloned Thread',
-                            'Task entering syscall':'Name Task entering syscall',
-                            'Task exiting syscall':'Name Task exiting syscall' }
+                            'task entering syscall':'Name of task entering syscall',
+                            'task exiting syscall':'Name of task exiting syscall' }
 
 # Used as a lookup table to match the key/type in XML files to value/GUI string
 FRYSK_ACTIONPOINT_NAMES = { 'Log event':'Log event  ',
