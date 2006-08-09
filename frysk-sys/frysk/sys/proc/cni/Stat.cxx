@@ -92,6 +92,7 @@ frysk::sys::proc::Stat::refresh (jint procPid)
   cstime = scanJlong (&p);
   priority = scanJlong (&p);
   nice = scanJint (&p);
+  zero = scanJint(&p);
   irealvalue = scanJlong (&p);
   starttime = scanJlong (&p);
   vsize = scanJlong (&p);

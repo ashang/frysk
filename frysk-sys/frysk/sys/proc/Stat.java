@@ -106,6 +106,7 @@ public class Stat
     /** The nice value.  */
     public int nice;
     /** A hard coded zero.  */
+    public int zero;
     /** The number of jiffies to the next SIGALRM.  */
     public long irealvalue;
     /** The number of jiffies, after system boot, that process started.  */

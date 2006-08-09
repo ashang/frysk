@@ -1,3 +1,9 @@
+2006-08-09  Mike Cvet  <mcvet@redhat.com>
+
+	* Stat.java (zero): Variable representing the zero filed in /proc/pid/stat.
+	* Stat.cxx (refresh): Fixed a bug where all values were off by one field
+	due to a missing field read, via zero above.
+
 2006-05-09  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: New file.  Move stringsToBytes to here.
