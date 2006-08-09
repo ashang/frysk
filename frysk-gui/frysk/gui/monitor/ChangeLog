@@ -1,5 +1,7 @@
 2006-08-09  Mike Cvet  <mcvet@redhat.com>
 
+	* ProcMenu.java (ProcMenu): Edited to list options for editing columns
+	and refreshing. No longer statically referenced.
 	* PIDMenu.java: Added.
 	* PIDColumnDialog.java: Added.
 	* SessionProcTreeView.java (SessionProcTreeView): Now initializes a 
@@ -7,24 +9,30 @@
 	Listener onto the PIDColumnDialog.
 	(mountProcModel): Initializes TreeViewColumn array with old and new 
 	columns. Added relevant Listeners.
-	(refreshTree): Added.
+	(refreshTree): Added, calls the SessionProcDataModel to update its memory display
+	values.
 	(getColNames): Added.
 	(load): Loads preferences for the PIDColumnDialog.
 	(save): Saves preferences for the PIDColumnDialog.
+	(setCols): Refactored from refreshTree().
 	* SessionProcDataModel.java (getSession): Added.
 	(addProc): Added support for virtual memory and resident set size value
 	initialization.
 	(procRead): Added.
 	(getVszDC): Added.
 	(getRssDC): Added.
+	(refreshRead): Added.
 	* MenuBar.java (MenuBar): Commented out some Listeners to fix a glade oops.
 
 2006-08-08  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/RunExternal.java (RunExBlocker): Added.
-	(TaskTerminatedObserver.updateTerminated): Updated to unblock the examined task when finished.
-	(AttachedObserver.updateAttached): Requests a Terminating Observer on the external process.
-	(execute): Creates a new RunExBlocker and requests it to attach to the incoming Task.
+	(TaskTerminatedObserver.updateTerminated): Updated to unblock the examined
+	task when finished.
+	(AttachedObserver.updateAttached): Requests a Terminating Observer on the
+	external process.
+	(execute): Creates a new RunExBlocker and requests it to attach to the 
+	incoming Task.
 
 2006-08-08  Sami Wagiaalla  <swagiaal@redhat.com>
 

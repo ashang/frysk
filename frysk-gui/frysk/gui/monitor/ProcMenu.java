@@ -73,8 +73,10 @@ public class ProcMenu extends Menu
 	private GuiProc current;
     
     private PIDColumnDialog pidColumnDialog;
+    
+    private SessionProcTreeView sessionProcTreeView;
 	
-	ProcMenu(PIDColumnDialog pcd)
+	ProcMenu(PIDColumnDialog pcd, SessionProcTreeView sptv)
     {
 		super();
 		
@@ -82,6 +84,8 @@ public class ProcMenu extends Menu
 		ListIterator iter = list.listIterator();
         
         this.pidColumnDialog = pcd;
+        this.sessionProcTreeView = sptv;
+        
         MenuItem item = new MenuItem("Edit Columns...", false);
         ToolTips tip = new ToolTips();
         tip.setTip(item, "Edit Columns...", "");
@@ -93,7 +97,19 @@ public class ProcMenu extends Menu
             pidColumnDialog.showAll();
           }
         });
+        this.add(item);
         
+        item = new MenuItem("Refresh", false);
+        tip = new ToolTips();
+        tip.setTip(item, "Refresh Columns", "");
+
+        item.addListener(new MenuItemListener()
+        {
+          public void menuItemEvent (MenuItemEvent arg0)
+          {
+            sessionProcTreeView.refreshTree();
+          }
+        });
         this.add(item);
 		
 		while(iter.hasNext()){

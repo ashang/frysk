@@ -123,7 +123,7 @@ public class SessionProcTreeView
     
     this.tvc = new TreeViewColumn[4];
     
-    this.procMenu = new ProcMenu(this.pidColumnDialog);
+    this.procMenu = new ProcMenu(this.pidColumnDialog, this);
 
     this.vPane = (VPaned) glade.getWidget("vPane");
 
@@ -267,7 +267,7 @@ public class SessionProcTreeView
       public void lifeCycleEvent (LifeCycleEvent arg0)
       {
         if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          SessionProcTreeView.this.refreshTree();
+          SessionProcTreeView.this.setCols();
       }
     });
 
@@ -518,6 +518,12 @@ public class SessionProcTreeView
   }
   
   public void refreshTree()
+  {
+    this.procDataModel.refreshRead();
+    setCols();
+  }
+  
+  public void setCols()
   {
     for (int i = 0; i < colNames.length; i++)
       this.tvc[i + 1].setVisible(prefs.getBoolean( colNames[i],

@@ -361,6 +361,24 @@ public class SessionProcDataModel
     treeStore.setValue(iter, rssDC, split[1] + split[2]);
   }
   
+  
+  public void refreshRead ()
+  {
+    Iterator i = this.currentSession.getProcesses().iterator();
+    while (i.hasNext())
+      {
+        DebugProcess debugProcess = (DebugProcess) i.next();
+        Iterator j = debugProcess.getProcs().iterator();
+        while (j.hasNext())
+          {
+            Proc p = ((GuiProc)j.next()).getProc();
+            TreeIter iter = (TreeIter)this.iterHash.get(p.getId());
+            procRead(iter, p);
+          }
+      }
+  }
+  
+  
   public void addTask(Task task)
   {
     // get an iterator pointing to the parent
