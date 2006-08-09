@@ -78,7 +78,7 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 # run-show-ciefde.sh
 
 # bug frysk 2947
-XFAIL_TEST = run-elflint-self.sh
+XFAIL_TESTS = run-elflint-self.sh
 
 if !STANDALONE
 noinst_PROGRAMS += msg_tst

@@ -1,3 +1,7 @@
+2006-08-09  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Fix typo in my previous change: s/XFAIL_TEST/&s/
+
 2006-08-08  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am: Add XFAIL_TEST = run-elflint-self.sh (frysk #2947)
