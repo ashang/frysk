@@ -1,3 +1,7 @@
+2006-08-09  Mike Cvet  <mcvet@redhat.com>
+
+	* MenuBar.java (MenuBar): Commented out some Listeners to fix a glade oops.
+
 2006-08-08  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/RunExternal.java (RunExBlocker): Added.
