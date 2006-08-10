@@ -162,12 +162,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
-
-        ## TODO NEXT - add code to enable creation of all observer types
         temp = self.theMatrix[0]
-        #print "DEBUG = " + temp.getType()
-        #execObserver = customObservers.child( name = 'Exec Observer', roleName='table cell' )
-        #execObserver.actions['activate'].do()  
  
         # Start loop to create the new Observers - for now, Frysk only supports (1)
         # observer object in a persistent file - so the loop counter has a limit of
@@ -254,6 +249,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
             theFilterPoints = self.theObserver.getFilterPoints()
             filterPointListLength = len(theFilterPoints)
+            #print "DEBUG - filterPoint  len = " + str(filterPointListLength)
             filterPointListCounter = 0
  
             for tempFilterPoint in theFilterPoints:
@@ -267,9 +263,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
                     theFilterName = tempElement.getName() + ' ' + tempFilterPoint.getName()
                     theFilterArgument = tempElement.getArgument()
-                    
-                    #print "DEBUG tempFilterPoint="+tempFilterPoint.getName() + " name="+tempElement.getName() + " arg=" + theFilterArgument
-                    
+                   
                     observerFiltersTable = observerPanel.child (name = 'observerFiltersTable')
                     # comboBox that lists the filter types - the first 2nd in the list[]
                     theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)

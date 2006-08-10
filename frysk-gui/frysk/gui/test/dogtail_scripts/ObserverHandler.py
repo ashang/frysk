@@ -166,35 +166,12 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
       p = re.compile('frysk.gui.monitor.actions*')
         
       try:
-        if attributes['type'] == 'frysk.gui.monitor.filters.TaskProcNameFilter':
+        if (attributes['type'] == 'frysk.gui.monitor.filters.TaskProcNameFilter') or (attributes['type'] == 'frysk.gui.monitor.filters.TaskProcParentNameFilter') or (attributes['type'] == 'frysk.gui.monitor.filters.TaskProcPathFilter') or (attributes['type'] == 'frysk.gui.monitor.filters.TaskProcCommandLineFilter') or (attributes['type'] == 'frysk.gui.monitor.filters.IntFilter'):
             #print "DEBUG - attributes['type']=" + attributes['type']
             self.tempObserverElement = ObserverElement()
             self.tempObserverElement.setType(attributes['type'])
             self.tempObserverElement.setName(attributes['name'])
             self.tempObserverElement.setArgument(attributes['argument'])
-         
-        elif attributes['type'] == 'frysk.gui.monitor.filters.TaskProcParentNameFilter':
-            #print "DEBUG - attributes['type']=" + attributes['type']
-            self.tempObserverElement = ObserverElement()
-            self.tempObserverElement.setType(attributes['type'])
-            self.tempObserverElement.setName(attributes['name'])
-            self.tempObserverElement.setArgument(attributes['argument'])
-            
-        elif attributes['type'] == 'frysk.gui.monitor.filters.TaskProcPathFilter':
-            #print "DEBUG - attributes['type']=" + attributes['type']
-            self.tempObserverElement = ObserverElement()
-            self.tempObserverElement.setType(attributes['type'])
-            self.tempObserverElement.setName(attributes['name'])
-            self.tempObserverElement.setArgument(attributes['argument'])
-
-        elif attributes['type'] == 'frysk.gui.monitor.filters.TaskProcCommandLineFilter':
-            #print "DEBUG - attributes['type']=" + attributes['type']
-            self.tempObserverElement = ObserverElement()
-            self.tempObserverElement.setType(attributes['type'])
-            self.tempObserverElement.setName(attributes['name'])
-            self.tempObserverElement.setArgument(attributes['argument'])
-            
-             
          
         # If we found an Action that matches the regexp defined above
         elif p.search (attributes['type']) != 'None':
@@ -205,7 +182,13 @@ class ObserverHandler(xml.sax.handler.ContentHandler):
           
           # The name attribute in the input file does not equal the
           # GUI name - so, make the change here. 
-          self.tempObserverElement.setName (deriveElementName ( attributes['name'], self.tempActionPoint.getName()) )
+          #print "DEBUG - self.filterPointFlag=" + str(self.filterPointFlag) + "  " + "self.actionPointFlag=" + str(self.actionPointFlag)
+          if self.filterPointFlag:
+              self.tempObserverElement.setName (deriveElementName ( attributes['name'], self.tempFilterPoint.getName()) )
+              #print "DEBUG - name = " + self.tempObserverElement.getName()
+          elif self.actionPointFlag:
+              self.tempObserverElement.setName (deriveElementName ( attributes['name'], self.tempActionPoint.getName()) )
+              #print "DEBUG - name = " + self.tempObserverElement.getName()
 
           # But - the argument is just the argument
           self.tempObserverElement.setArgument(attributes['argument'])         

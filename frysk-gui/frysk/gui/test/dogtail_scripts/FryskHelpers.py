@@ -623,10 +623,6 @@ def deriveElementName ( string1, string2 ):
     # Dealing with inconsistencies in the Observer XML model
     if string1 == 'Log event':
         returnString = 'Log event  '   
-    if (string1 == 'Value of') and (string2 == 'terminating task'):
-        returnString = string1        
-    elif string1 == "Show source code of ":
-        returnString = string1 + string2
     elif string1 != ' ':
         returnString = string1 + ' ' + string2
     else:
