@@ -34,6 +34,7 @@ AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
 CPPFLAGS="${CPPFLAGS} -D_GNU_SOURCE"
+CFLAGS="${CFLAGS} -DUNW_REMOTE_ONLY"
 
 AC_ARG_ENABLE(debug,
 [  --enable-debug          turn on debug support (slows down execution)],
@@ -81,7 +82,7 @@ target_arch=`get_arch $target_cpu`
 target_os=`get_os $target_os`
 
 if test x$target_arch != x$build_arch; then
-  CPPFLAGS="${CPPFLAGS} -DUNW_REMOTE_ONLY"
+  CPPFLAGS="${CPPFLAGS}"
 fi
 AC_CONFIG_LINKS(include/libunwind.h:include/libunwind-$target_arch.h
 		include/tdep:include/tdep-$target_arch)
