@@ -70,15 +70,12 @@ TESTS = run-arextract.sh run-arsymtest.sh newfile test-nlist \
 	newscn run-strip-test.sh run-strip-test2.sh \
 	run-strip-test3.sh run-strip-test4.sh run-strip-test5.sh \
 	run-strip-test6.sh run-ecp-test.sh run-ecp-test2.sh \
-	run-elflint-test.sh run-elflint-self.sh run-ranlib-test.sh \
+	run-elflint-test.sh $(run-elflint-self.sh) run-ranlib-test.sh \
 	run-ranlib-test2.sh run-ranlib-test3.sh run-ranlib-test4.sh \
 	run-addrscopes.sh run-strings-test.sh run-funcscopes.sh \
 	run-find-prologues.sh run-allregs.sh run-readelf-test1.sh \
 	run-native-test.sh run-bug1-test.sh
 # run-show-ciefde.sh
-
-# bug frysk 2947
-XFAIL_TESTS = run-elflint-self.sh
 
 if !STANDALONE
 noinst_PROGRAMS += msg_tst
