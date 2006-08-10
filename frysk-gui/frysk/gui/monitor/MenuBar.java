@@ -49,6 +49,8 @@ import org.gnu.gtk.MenuItem;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
+import frysk.gui.Gui;
+
 //import frysk.gui.Gui;
 
 /**
@@ -70,12 +72,12 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 
 		MenuItem item;
 		
-//		item = (MenuItem) glade.getWidget("quitMenuItem");
-//		item.addListener(new MenuItemListener(){
-//			public void menuItemEvent(MenuItemEvent arg0) {
-//				Gui.quitFrysk();
-//			}
-//		});
+		item = (MenuItem) glade.getWidget("quitMenuItem");
+		item.addListener(new MenuItemListener(){
+			public void menuItemEvent(MenuItemEvent arg0) {
+				Gui.quitFrysk();
+			}
+		});
 		
 		item = (MenuItem) glade.getWidget("customObserversMenuItem");
 		item.addListener(new MenuItemListener(){
@@ -85,14 +87,14 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 			}
 		});
 		
-//		item = (MenuItem) glade.getWidget("closeMenuItem");
-//		item.addListener(new MenuItemListener(){
-//			public void menuItemEvent(MenuItemEvent arg0) {
-//				WindowManager.theManager.mainWindow.hideAll();
-//				WindowManager.theManager.logWindow.hideAll();
-//				WindowManager.theManager.prefsWindow.hideAll();
-//			}
-//		});
+		item = (MenuItem) glade.getWidget("closeMenuItem");
+		item.addListener(new MenuItemListener(){
+			public void menuItemEvent(MenuItemEvent arg0) {
+				WindowManager.theManager.mainWindow.hideAll();
+				WindowManager.theManager.logWindow.hideAll();
+				WindowManager.theManager.prefsWindow.hideAll();
+			}
+		});
 		
 		item = (MenuItem) glade.getWidget("aboutFrysk");
 		item.addListener(new MenuItemListener(){
@@ -100,13 +102,13 @@ public class MenuBar extends org.gnu.gtk.MenuBar {
 				WindowManager.theManager.aboutWindow.showAll();
 			}
 		});
-//
-//        item = (MenuItem) glade.getWidget("programObserverMenuItem");
-//        item.addListener(new MenuItemListener(){
-//            public void menuItemEvent(MenuItemEvent event) {
-//                WindowManager.theManager.programObserverDialog.showAll();
-//            }
-//        });
+
+        item = (MenuItem) glade.getWidget("programObserverMenuItem");
+        item.addListener(new MenuItemListener(){
+            public void menuItemEvent(MenuItemEvent event) {
+                WindowManager.theManager.programObserverDialog.showAll();
+            }
+        });
 
 	}
 	

@@ -68,10 +68,20 @@
 		    <widget class="GtkMenu" id="fileMenuItem_menu">
 
 		      <child>
-			<widget class="GtkImageMenuItem" id="frysk_quit">
+			<widget class="GtkImageMenuItem" id="closeMenuItem">
 			  <property name="visible">True</property>
 			  <property name="label">gtk-close</property>
 			  <property name="use_stock">True</property>
+			</widget>
+		      </child>
+
+		      <child>
+			<widget class="GtkMenuItem" id="quitMenuItem">
+			  <property name="visible">True</property>
+			  <property name="tooltip" translatable="yes">quit frysk</property>
+			  <property name="label" translatable="yes">_Quit</property>
+			  <property name="use_underline">True</property>
+			  <signal name="activate" handler="on_quitMenuItem_activate" last_modification_time="Thu, 10 Aug 2006 17:25:05 GMT"/>
 			</widget>
 		      </child>
 		    </widget>
@@ -92,6 +102,14 @@
 			<widget class="GtkMenuItem" id="customObserversMenuItem">
 			  <property name="visible">True</property>
 			  <property name="label" translatable="yes">Manage Custom Observers...</property>
+			  <property name="use_underline">True</property>
+			</widget>
+		      </child>
+
+		      <child>
+			<widget class="GtkMenuItem" id="programObserverMenuItem">
+			  <property name="visible">True</property>
+			  <property name="label" translatable="yes">Program Observer...</property>
 			  <property name="use_underline">True</property>
 			</widget>
 		      </child>
