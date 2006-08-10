@@ -1,3 +1,8 @@
+2006-08-10  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* LinuxTask.java: Temporarily revert 1.32 patch due to bz 3014.
+	Needs another look, due to errors at make check.
+
 2006-08-09  Tim Moore  <timoore@redhat.com>
 
 	* Register.java: GNU indentation.

@@ -57,25 +57,24 @@ public class LinuxTask extends Task
 {
   private long ptraceOptions = 0;	
   
-  // XXX: For moment wire in standard 32-bit memory
+  // XXX: For moment wire in standard 32-bit little-endian memory
   // map.  This will be replaced by a memory map created using
   // information from /proc/PID/maps.
-  private void setupMapsXXX() throws TaskException
+  private void setupMapsXXX ()
   {
-    ByteOrder byteOrder = getIsa().getByteOrder();
     // XXX: For writing at least, PTRACE must be used as /proc/mem
     // cannot be written to.
-    memory = new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.DATA,
-				  0xffffffffl);
-    memory.order (byteOrder);
+    memory = new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.DATA,
+                                   0xffffffffl);
+    memory.order (ByteOrder.LITTLE_ENDIAN);
     // XXX: For moment wire in a standard 32-bit little-endian
     // register set.
     registerBank = new ByteBuffer[] 
       {
-	new PtraceByteBuffer(id.id, PtraceByteBuffer.Area.USR)
+	new PtraceByteBuffer (id.id, PtraceByteBuffer.Area.USR)
       };
     
-    registerBank[0].order(byteOrder);
+    registerBank[0].order (ByteOrder.LITTLE_ENDIAN);
   }
   
   /**
