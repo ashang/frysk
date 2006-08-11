@@ -116,7 +116,10 @@ jint
 lib::elf::Elf::elf_end(){
 	jint val = ::elf_end((::Elf*) this->pointer);
 	if (fd >= 0)
+          {
 		::close(fd);
+                fd = -1;
+          }
 	return val;
 }
 
