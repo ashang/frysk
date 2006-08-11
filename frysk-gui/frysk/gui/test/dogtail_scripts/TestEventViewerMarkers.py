@@ -67,7 +67,7 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class TestCredits (unittest.TestCase):
+class TestEVMarkers (unittest.TestCase):
 
     def setUp(self):
         
@@ -124,7 +124,7 @@ class TestCredits (unittest.TestCase):
        
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCredits))
+    suite.addTest(unittest.makeSuite(TestEVMarkers))
     return suite
 
 if __name__ == '__main__':
