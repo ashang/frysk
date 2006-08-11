@@ -1,3 +1,10 @@
+2006-08-11  Tim Moore  <timoore@redhat.com>
+
+	bz 3014
+	* IsaFactory.java: (getIsa): Call Elf.close() when done with the
+	Elf file.
+	* LinuxTask.java: rerevert 1.32, calling the IsaFactory class.
+
 2006-08-10  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* LinuxTask.java: Temporarily revert 1.32 patch due to bz 3014.

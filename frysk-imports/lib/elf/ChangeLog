@@ -1,3 +1,13 @@
+2006-08-11  Tim Moore  <timoore@redhat.com>
+
+	bz 3014, 3032
+	* Elf.java (close): New method to explicity clean up the libelf
+	object.
+	* cni/Elf.cxx (elf_begin): Store the file descriptor for later
+	use. Close it if there's an error creating the Elf object.
+	(elf_end): Close the file descriptor used to access the Elf file.
+	
+
 2006-08-07  Tim Moore  <timoore@redhat.com>
 
 	* Elf.java (Elf): Attempt to find the absolute name of the problem

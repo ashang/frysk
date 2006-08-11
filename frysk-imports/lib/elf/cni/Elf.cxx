@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 #include <stdlib.h>
+#include <unistd.h>
 #include <gelf.h>
 #include <gcj/cni.h>
 #include <string.h>
@@ -66,7 +67,7 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 	fileName[fileNameLen]='\0';
 
 	errno = 0;
-	int fd = open (fileName, O_RDONLY);
+	fd = open (fileName, O_RDONLY);
 	if(errno != 0){
 		char* message = "Could not open %s for reading";
 		char error[strlen(fileName) + strlen(message) - 2];
@@ -75,14 +76,17 @@ lib::elf::Elf::elf_begin (jstring file, jint command){
 		    file);
 	}
 	
-	if(::elf_version(EV_CURRENT) == EV_NONE)
+	if(::elf_version(EV_CURRENT) == EV_NONE) {
+		::close(fd);
 		throw new lib::elf::ElfException(JvNewStringUTF("Elf library version out of date"));
-	
+	}
 	errno = 0;	
 	::Elf* new_elf = ::elf_begin (fd, (Elf_Cmd) command, (::Elf*) 0);
 	
-	if(errno != 0 || !new_elf)
+	if(errno != 0 || !new_elf) {
+		::close(fd);
 		throw new lib::elf::ElfException(JvNewStringUTF("Could not open Elf file"));
+	}
 	
 	this->pointer = (jlong) new_elf;
 }
@@ -110,7 +114,10 @@ lib::elf::Elf::elf_next (){
 
 jint
 lib::elf::Elf::elf_end(){
-	return ::elf_end((::Elf*) this->pointer);
+	jint val = ::elf_end((::Elf*) this->pointer);
+	if (fd >= 0)
+		::close(fd);
+	return val;
 }
 
 jlong

@@ -50,10 +50,12 @@ public class Elf
 {
 
   private long pointer;
+  protected int fd;		// ecj thinks this isn't used...
 
   public Elf (long ptr)
   {
     this.pointer = ptr;
+    this.fd = -1;
   }
 
   /**
@@ -117,6 +119,15 @@ public class Elf
       }
   }
 
+  /**
+   * Destroy the external elf file object associated with  this object.
+   */
+  public void close() 
+  {
+    elf_end();
+    pointer = 0;
+  }
+  
   public Elf clone (ElfCommand command)
   {
     return new Elf(elf_clone(command.getValue()));

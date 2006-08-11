@@ -83,21 +83,28 @@ public class IsaFactory
       {
 	throw new TaskException("getting task's executable", e);
       }
-
-    ElfEHeader header = elfFile.getEHeader();
-
-    switch (header.machine) 
+    try
       {
-      case ElfEMachine.EM_386:
-	return LinuxIa32.isaSingleton ();
-      case ElfEMachine.EM_PPC:
-	return LinuxPPC.isaSingleton ();
-      case ElfEMachine.EM_PPC64:
-	return LinuxPPC64.isaSingleton ();
-      case ElfEMachine.EM_X86_64:
-	return LinuxEMT64.isaSingleton ();
-      default: 
-	throw new TaskException("Unknown machine type " + header.machine);
+	
+	ElfEHeader header = elfFile.getEHeader();
+
+	switch (header.machine) 
+	  {
+	  case ElfEMachine.EM_386:
+	    return LinuxIa32.isaSingleton ();
+	  case ElfEMachine.EM_PPC:
+	    return LinuxPPC.isaSingleton ();
+	  case ElfEMachine.EM_PPC64:
+	    return LinuxPPC64.isaSingleton ();
+	  case ElfEMachine.EM_X86_64:
+	    return LinuxEMT64.isaSingleton ();
+	  default: 
+	    throw new TaskException("Unknown machine type " + header.machine);
+	  }
+      }
+    finally 
+      {
+	elfFile.close();
       }
   }
 
