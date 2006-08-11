@@ -250,6 +250,32 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1add_1trace (JNIEnv *env,
 }
 
 /*
+ * Class:	com.redhat.ftk.EventViewer
+ * Method:	ftk_eventviewer_get_selected_traces
+ */
+JNIEXPORT jintArray JNICALL 
+Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1selected_1traces (JNIEnv *env, 
+									jclass cls, jobject sc) 
+{
+	FtkEventViewer * eventviewer = (FtkEventViewer *)getPointerFromHandle(env, sc);
+	GList *traces = ftk_eventviewer_get_selected_traces(eventviewer);
+	
+	gint length = g_list_length(traces);
+	
+	jint ret[(int) length];
+	
+	for (int i = 0; i < length; i++) {
+		ret[i] =(int) g_list_nth(traces, (gint) i)->data;
+	}
+	
+	jintArray array = (*env)->NewIntArray(env, (int) length);
+	(*env)->SetIntArrayRegion(env, array, 0, (int) length, ret);
+	return array;
+}
+
+
+
+/*
  * Class:     com.redhat.ftk.EventViewer
  * Method:    ftk_eventviewer_set_trace_rgb
  */

@@ -15,12 +15,12 @@ import org.gnu.glib.GObject;
 import org.gnu.glib.Type;
 import org.gnu.glib.Struct;
 import org.gnu.glib.Handle;
-import org.gnu.gtk.Widget;
+import org.gnu.gtk.VBox;
 
 /**
  * The EventViewer widget is used for displaying events on multiple timelines.
  */
-public class EventViewer extends Widget 
+public class EventViewer extends VBox 
 {
 
     static {
@@ -123,6 +123,12 @@ public class EventViewer extends Widget
       return ftk_eventviewer_delete_trace (getHandle(), trace);
     }
     
+    /*
+     * Get selected traces
+     */
+    public int[] getSelectedTraces() {
+      return ftk_eventviewer_get_selected_traces (getHandle());
+    }
     /**
      * Set trace rgb
      */
@@ -309,6 +315,9 @@ public class EventViewer extends Widget
     
     native static final protected boolean
     ftk_eventviewer_delete_trace (Handle sc, int trace_idx);
+    
+    native static final protected int[]
+    ftk_eventviewer_get_selected_traces (Handle sc);
                 
     native static final protected boolean
     ftk_eventviewer_tie_event_array (Handle sc, int tie_index, int count,

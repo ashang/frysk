@@ -1,3 +1,12 @@
+2006-08-11  Nurdin Premji  <npremji@redhat.com>
+
+	* src/java/com/redhat/ftk/EventViewer.java (getSelectedTraces): Ditto.
+	* src/jni/com_redhat_ftk_EventViewer.c (ftk_ev_get_selected_traces): Added code to return selected traces to java.
+	* src/widgets/ftkeventviewer.c: Created code to treat traces as official GObjects.
+	Added code to make traces selectable/highlightable.
+	Added code to return selected traces to java.
+	* src/widgets/ftkeventviewer.h: Added code to treat traces as official GObjects.
+
 2006-08-03  Nurdin Premji  <npremji@redhat.com>
 
 	* src/widgets/ftkeventviewer.c: Changed all ints to gints.

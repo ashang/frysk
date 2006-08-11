@@ -14,8 +14,8 @@
    with Red Hat EventViewer; if not, write to the Free Software Foundation,
    Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301 USA. */
 
-#ifndef __FTK_STRIPCHARTX_H__
-#define __FTK_STRIPCHARTX_H__
+#ifndef __FTK_EVENTVIEWER_H__
+#define __FTK_EVENTVIEWER_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -25,94 +25,94 @@
 G_BEGIN_DECLS
 
 #ifdef INCLUDE_PRIVATE
-static const GdkColor default_color_blue
-#ifdef DO_INITIALISE
-= {0,     0,      0, 65535}
-#endif
-;
+//static const GdkColor default_color_blue
+//#ifdef DO_INITIALISE
+//= {0,     0,      0, 65535}
+//#endif
+//;
+//
+//static const GdkColor default_color_turq
+//#ifdef DO_INITIALISE
+//= {0,     0, 40800, 65535}
+//#endif
+//;
+//
+//static const GdkColor default_color_cyan
+//#ifdef DO_INITIALISE
+//= {0,     0, 65535, 65535}
+//#endif
+//;
+//
+//static const GdkColor default_color_green
+//#ifdef DO_INITIALISE
+//= {0,     0, 65535,     0}
+//#endif
+//;
+//
+//static const GdkColor default_color_lime
+//#ifdef DO_INITIALISE
+//= {0, 40800, 65535,     0}
+//#endif
+//;
+//
+//static const GdkColor default_color_yellow
+//#ifdef DO_INITIALISE
+//= {0, 65535, 65535,     0}
+//#endif
+//;
+//
+//static const GdkColor default_color_orange
+//#ifdef DO_INITIALISE
+//= {0, 65535, 40800,     0}
+//#endif
+//;
+//
+//static const GdkColor default_color_red
+//#ifdef DO_INITIALISE
+//= {0, 65535,     0,     0}
+//#endif
+//;
+//
+//static const GdkColor default_color_pink
+//#ifdef DO_INITIALISE
+//= {0, 65535,     0, 65535}
+//#endif
+//;
+//
+//static const GdkColor default_color_violet
+//#ifdef DO_INITIALISE
+//= {0, 40800,     0, 65535}
+//#endif
+//;
 
-static const GdkColor default_color_turq
-#ifdef DO_INITIALISE
-= {0,     0, 40800, 65535}
-#endif
-;
-
-static const GdkColor default_color_cyan
-#ifdef DO_INITIALISE
-= {0,     0, 65535, 65535}
-#endif
-;
-
-static const GdkColor default_color_green
-#ifdef DO_INITIALISE
-= {0,     0, 65535,     0}
-#endif
-;
-
-static const GdkColor default_color_lime
-#ifdef DO_INITIALISE
-= {0, 40800, 65535,     0}
-#endif
-;
-
-static const GdkColor default_color_yellow
-#ifdef DO_INITIALISE
-= {0, 65535, 65535,     0}
-#endif
-;
-
-static const GdkColor default_color_orange
-#ifdef DO_INITIALISE
-= {0, 65535, 40800,     0}
-#endif
-;
-
-static const GdkColor default_color_red
-#ifdef DO_INITIALISE
-= {0, 65535,     0,     0}
-#endif
-;
-
-static const GdkColor default_color_pink
-#ifdef DO_INITIALISE
-= {0, 65535,     0, 65535}
-#endif
-;
-
-static const GdkColor default_color_violet
-#ifdef DO_INITIALISE
-= {0, 40800,     0, 65535}
-#endif
-;
-
-const GdkColor * default_color_set[]
-#ifdef DO_INITIALISE
-= {
-  &default_color_blue,
-  &default_color_turq,
-  &default_color_cyan,
-  &default_color_green,
-  &default_color_lime,
-  &default_color_yellow,
-  &default_color_orange,
-  &default_color_red,
-  &default_color_pink,
-  &default_color_violet
-}
-#endif
-;
-
-#define ftk_default_colorp(i)		default_color_set[i]
-#define ftk_default_color(i)		*(default_color_set[i])
-#define ftk_default_color_red(i)	default_color_set[i]->red
-#define ftk_default_color_green(i)	default_color_set[i]->green
-#define ftk_default_color_blue(i)	default_color_set[i]->blue
-
-static const gint colors_count
-#ifdef DO_INITIALISE
-= sizeof(default_color_set)/sizeof(GdkColor *)
-#endif
-     ;
+//const GdkColor * default_color_set[]
+//#ifdef DO_INITIALISE
+//= {
+//  &default_color_blue,
+//  &default_color_turq,
+//  &default_color_cyan,
+//  &default_color_green,
+//  &default_color_lime,
+//  &default_color_yellow,
+//  &default_color_orange,
+//  &default_color_red,
+//  &default_color_pink,
+//  &default_color_violet
+//}
+//#endif
+//;
+//
+//#define ftk_default_colorp(i)		default_color_set[i]
+//#define ftk_default_color(i)		*(default_color_set[i])
+//#define ftk_default_color_red(i)	default_color_set[i]->red
+//#define ftk_default_color_green(i)	default_color_set[i]->green
+//#define ftk_default_color_blue(i)	default_color_set[i]->blue
+//
+//static const gint colors_count
+//#ifdef DO_INITIALISE
+//= sizeof(default_color_set)/sizeof(GdkColor *)
+//#endif
+//     ;
 
 
 /* unicode encodings for digbat symbols */
@@ -219,8 +219,8 @@ typedef enum {
   FTK_GLYPH_FILLED_FOUR_STAR,
   FTK_GLYPH_OPEN_FOUR_STAR,
   FTK_GLYPH_FILLED_FIVE_STAR,
-  FTK_GLYPH_LAST,
-  FTK_GLYPH_AUTOMATIC
+  FTK_GLYPH_LAST
+  //FTK_GLYPH_AUTOMATIC
 } FtkGlyph;
 
 
@@ -240,6 +240,23 @@ typedef enum {
 
 #define FTK_IS_EVENTVIEWER_CLASS(klass)	\
         (G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_EVENTVIEWER_TYPE))
+        
+#define FTK_TRACE_TYPE					\
+		(ftk_eventviewer_get_type ())
+
+#define FTK_TRACE(obj)					\
+		(G_TYPE_CHECK_INSTANCE_CAST ((obj),	\
+		FTK_TRACE_TYPE, FtkTrace))
+		
+#define FTK_TRACE_CLASS(klass)		\
+		(G_TYPE_CHECK_CLASS_CAST ((klass),	\
+		FTK_TRACE_TYPE, FtkTraceClass))
+		
+#define FTK_IS_TRACE(obj)			\
+		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), FTK_TRACE_TYPE))
+		
+#define	FTK_IS_TRACE_CLASS(klass)	\
+		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_TRACE_TYPE))		
 
 typedef struct {
   GdkGC       * gc;
@@ -272,19 +289,21 @@ typedef struct {
 #define ftk_marker_label_modified(m)	(m)->label_modified
 #define ftk_marker_index(m)			(m)->index
 
+
 typedef struct {
   gint		marker;
   gchar	      * string;
-  gint		loc;
+  GdkPoint		loc;
   double	time;
 } ftk_event_s;
 
 #define ftk_event_marker(e)	(e)->marker
 #define ftk_event_string(e)	(e)->string
-#define ftk_event_loc(e)	(e)->loc
+#define ftk_event_hloc(e)	(e)->loc.x
 #define ftk_event_time(e)	(e)->time
 
-typedef struct _ftk_trace_s {
+typedef struct _FtkTrace {
+  GObject * parent;
   double	linestyle;
   double	linewidth;
   double	min_time;
@@ -303,9 +322,10 @@ typedef struct _ftk_trace_s {
   gboolean	valid;
   gboolean	time_set;
   gint index;
-} ftk_trace_s;
+  gboolean	selected;
+} FtkTrace;
 
-#define ftk_tie_s ftk_trace_s
+#define ftk_tie_s FtkTrace
 
 #define ftk_trace_gc(t)			(t)->gc
 #define ftk_trace_min_time(t)		(t)->min_time
@@ -330,6 +350,12 @@ typedef struct _ftk_trace_s {
 #define ftk_trace_event_max(t)		(t)->event_max
 #define ftk_trace_valid(t)		(t)->valid
 #define ftk_trace_index(t)		(t)->index
+#define ftk_trace_selected(t)	(t)->selected
+
+typedef struct _FtkTraceClass {
+  GObjectClass parent_class;
+  void (* ftktrace) (FtkTrace * trace);
+} FtkTraceClass;
 
 #define ftk_tie_gc(t)			(t)->gc
 #define ftk_tie_label(t)		(t)->label
@@ -419,7 +445,7 @@ typedef struct _FtkEventViewer {
   ftk_marker_s	        * markers;
   gint	      		  markers_next;
   gint	      		  markers_max;
-  ftk_trace_s		* traces;
+  FtkTrace		* traces;
   gint			  trace_next;
   gint			  trace_max;
   gint			* trace_pool;
@@ -457,6 +483,8 @@ typedef struct _FtkEventViewer {
   gboolean		  time_set;
   gboolean		  hold_activated;
   gint			  accessible_index;
+  
+  gint			 selected_trace;
 } FtkEventViewer;
 
 #define ftk_ev_vbox(v)		      &((v)->vbox)
@@ -544,6 +572,8 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_markers_modified(v)	(v)->markers_modified
 #define ftk_ev_widget_modified(v)	(v)->widget_modified
 #define ftk_ev_accessible_index(v) 	(v)->accessible_index
+
+#define ftk_ev_selected_trace(v)	(v)->selected_trace
 
 typedef struct _FtkEventViewerClass {
   GtkVBoxClass parent_class;
@@ -645,6 +675,9 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
 gboolean
 ftk_eventviewer_delete_trace	(FtkEventViewer * eventviewer,
 				 gint trace_idx);
+				 
+GList *
+ftk_eventviewer_get_selected_traces (FtkEventViewer * eventviewer);
 
 gboolean
 ftk_eventviewer_set_trace_rgb_e	(FtkEventViewer * eventviewer,
