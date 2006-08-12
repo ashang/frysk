@@ -3027,7 +3027,7 @@ ftk_eventviewer_set_trace_linestyle (FtkEventViewer * eventviewer,
  		FtkTrace *trace = ftk_ev_trace(eventviewer, traceID);
  		if (ftk_trace_selected(trace)) 
  		{
- 			traces = g_list_append(traces, (gpointer)(gint) traceID);
+ 			traces = g_list_append(traces, (gpointer) traceID);
  		}
  	}
 	

@@ -1,10 +1,3 @@
-2006-08-11  Phil Muldoon  <pmuldoon@redhat.com?
-
-	 * src/jni/com_redhat_ftk_EventViewer.c (ftk_eventviewer_get_selected_traces):
-	Don't cast from gint -> jint -> int.
-	* src/widgets/ftkeventviewer.c (ftk_eventviewer_get_selected_traces): Cast
-	traceId to (gpointer)(gint).
-
 2006-08-11  Nurdin Premji  <npremji@redhat.com>
 
 	* src/java/com/redhat/ftk/EventViewer.java (getSelectedTraces): Ditto.
