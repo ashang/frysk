@@ -1,3 +1,8 @@
+2006-08-14  Mark Wielaard  <mark@klomp.org>
+
+	* StatusWidget.java (StatusWidget): MouseListener.mouseEvent()
+	traces[] consists of longs.
+
 2006-08-11  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java: Added right click menu to traces. Need to do same for processes.

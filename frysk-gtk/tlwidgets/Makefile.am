@@ -107,8 +107,8 @@ ftk.jar: com/redhat/ftk/EventViewer.class \
          com/redhat/ftk/SimultaneousEvent.class \
          com/redhat/ftk/EventPair.class
 	$(JAR) cf ftk.jar -C . com/redhat/ftk/EventViewer.class \
-					  -C . com/redhat/ftk/SimultaneousEvent.class
-					  -C . com/redhat/ftk/EventPair.class
+			  -C . com/redhat/ftk/SimultaneousEvent.class \
+			  -C . com/redhat/ftk/EventPair.class
 
 #Stripchart.o: $(tlwidgetssrc)/java/com/redhat/ftk/Stripchart.java
 #	$(GCJ) -fjni -classpath $(FRYSK_GTK_CLASSPATH) -I ./src/java \

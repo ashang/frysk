@@ -179,11 +179,11 @@ public class StatusWidget
             & event.getButtonPressed() == MouseEvent.BUTTON3)
           {
             System.out.println("Button Press, Third Button");
-            int traces[] = viewer.getSelectedTraces();
+            long traces[] = viewer.getSelectedTraces();
 
             if (traces != null)
               {
-                GuiData data = (GuiData) procMap.get(new Integer(traces[0]));
+                GuiData data = (GuiData) procMap.get(new Long(traces[0]));
                 if (data.getClass().equals(GuiTask.class))
                   {
                     ThreadMenu.getMenu().popup((GuiTask) data);
