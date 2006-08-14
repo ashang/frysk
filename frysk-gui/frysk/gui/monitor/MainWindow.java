@@ -126,7 +126,7 @@ public class MainWindow extends Window implements Saveable{
 	  	final Terminal term = Terminal.terminalAndShell();
 		term.setDefaultColors();
 		term.setForegroundColor(Color.BLACK);
-		term.setBackgroundColor(Color.WHITE);
+		term.setBackgroudColor(Color.WHITE);
 		CustomEvents.addEvent(new Runnable() {
 			public void run() {
 				//Terminal term = new Terminal("/bin/sh", new String[] {}, System.getenv("PWD"));

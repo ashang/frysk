@@ -163,7 +163,7 @@ public class ConsoleWindow extends Window {
 		term.setPty (master);
 		
 		term.setDefaultColors();
-		term.setBackgroundColor(Color.WHITE);
+		term.setBackgroudColor(Color.WHITE);
 		term.setForegroundColor(Color.BLACK);
 		term.setSize (80, 25);
 //		term.feed ("Hi, there!  This is VTE!  (term.feed() output)\r\n");
