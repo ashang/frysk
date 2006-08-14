@@ -78,7 +78,9 @@ public class StressMapRead
 
   public void testMapRead ()
   {
-    
+    if (brokenXXX(3043))
+      return;
+
     PtraceByteBuffer buffer = new PtraceByteBuffer(pid,
                                                    PtraceByteBuffer.Area.DATA);
     
