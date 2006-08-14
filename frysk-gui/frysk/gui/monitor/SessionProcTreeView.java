@@ -668,6 +668,7 @@ public class SessionProcTreeView
     int position = prefs.getInt("vPane.position", this.vPane.getPosition()); //$NON-NLS-1$
     this.vPane.setPosition(position);
     this.pidColumnDialog.load(prefs);
+    setCols();
   }
 
   public void setSession (Session session)

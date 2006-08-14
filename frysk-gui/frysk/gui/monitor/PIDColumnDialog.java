@@ -200,6 +200,9 @@ public class PIDColumnDialog
 
     for (int i = 0; i < temp.length; i++)
       {
+        /* If this is our first time loading, don't set the columns to false */
+        if (prefs.get(temp[i], "") == "")
+          break;
         boolean val = prefs.getBoolean(temp[i], i == 0);
         model.setValue(iter, (DataColumnBoolean) cols[0], val);
         iter = iter.getNextIter();
