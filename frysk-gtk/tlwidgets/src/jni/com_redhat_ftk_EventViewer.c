@@ -264,8 +264,8 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1selected_1traces (JNIEnv 
 	
 	jlong ret[(int) length];
 	
-	for (gint i = 0; i < length; i++) {
-		ret[i] = (jlong) g_list_nth(traces, i)->data;
+	for (guint i = 0; i < length; i++) {
+		ret[i] =  GPOINTER_TO_INT (g_list_nth(traces, i)->data);
 	}
 	
 	jlongArray array = (*env)->NewLongArray(env, (int) length);

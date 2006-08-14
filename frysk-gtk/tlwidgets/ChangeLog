@@ -1,3 +1,10 @@
+2006-08-14  Nurdin Premji  <npremji@redhat.com>
+
+	* src/jni/com_redhat_ftk_EventViewer.c (Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1selected_1traces)
+	Fixed 64/32 bit breakages with GPOINTER_TO_INT macro.
+	* src/widgets/ftkeventviewer.c (ftk_eventviewer_get_selected_traces): 
+	Fixed 64/32 bit breakages with GINT_TO_POINTER macro.
+
 2006-08-14  Mark Wielaard  <mark@klomp.org>
 
 	* Makefile.am (ftk.jar): Add all classes to jar.
