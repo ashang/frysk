@@ -44,14 +44,14 @@ import inua.eio.ByteBuffer;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.Task;
+import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
 import frysk.proc.TestLib;
 import frysk.rt.StackFactory;
 import frysk.rt.StackFrame;
-import frysk.core.Build;
-import frysk.sys.Sig;
 import frysk.sys.proc.MapsBuilder;
-import frysk.proc.TaskException;
+import frysk.sys.Sig;
+import frysk.core.Build;
 
 public class TestStackBacktrace
     extends TestLib
@@ -63,7 +63,7 @@ public class TestStackBacktrace
      if (brokenXXX(2936))
       return;
     
-    class TaskCreatedObserver
+    class TaskCreatedObserver extends TaskObserverBase
         implements TaskObserver.Attached
     {
 
@@ -72,24 +72,6 @@ public class TestStackBacktrace
         // TestStackBacktrace.this.myTask = task;
         Manager.eventLoop.requestStop();
         return Action.BLOCK;
-      }
-
-      public void addedTo (Object observable)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      public void addFailed (Object observable, Throwable w)
-      {
-        // TODO Auto-generated method stub
-
-      }
-
-      public void deletedFrom (Object observable)
-      {
-        // TODO Auto-generated method stub
-
       }
     }
 
@@ -104,7 +86,7 @@ public class TestStackBacktrace
     assertNotNull(myTask);
     myTask.requestAddAttachedObserver(obs);
 
-    assertRunUntilStop("Observer was not added");
+    assertRunUntilStop("Attempting to add observer");
 
     class MyBuilder
         extends MapsBuilder

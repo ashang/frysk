@@ -1,3 +1,7 @@
+2006-08-14  Mike Cvet  <mcvet@redhat.com>
+
+	* TestLib.java (TaskObserverBase): Made public.
+
 2006-08-11  Tim Moore  <timoore@redhat.com>
 
 	bz 3014

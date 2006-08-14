@@ -1,3 +1,8 @@
+2006-08-14  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): TaskCreatedObserver
+	now extends TaskObserverBase.
+
 2006-08-07  Tim Moore  <timoore@redhat.com>
 
 	* StackCallbacks.java (StackCallbacks): change Task.TaskException

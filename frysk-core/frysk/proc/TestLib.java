@@ -843,7 +843,7 @@ public class TestLib
      * task is found.  It should register itself with the applicable
      * observer.
      */
-    abstract class TaskObserverBase
+    public abstract class TaskObserverBase
 	implements TaskObserver
     {
 	/**
