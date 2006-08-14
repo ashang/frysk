@@ -1,3 +1,7 @@
+2006-08-14  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am (TESTS_ENVIRONMENT): Skip the dogtail tests.
+
 2006-08-08  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am (TESTS_ENVIRONMENT): Add a comment.

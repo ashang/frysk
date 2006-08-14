@@ -85,8 +85,8 @@ GEN_GCJ_LDADD += -lopcodes
 
 # Skip the JUnit tests (exit with status 77) when there is no display; bug #3012.
 #TESTS_ENVIRONMENT = ( test $$tst != TestRunner || test -n "$$DISPLAY" || exit 77 ) && 
-# Well, for now skip the dogtail test suite, too:
-TESTS_ENVIRONMENT = ( test -n "$$DISPLAY" || sh -c "exit 77" ) &&
+# ... well, for now, skip dogtail tests unconditionally:
+TESTS_ENVIRONMENT = ( test $$tst = TestRunner && test -n "$$DISPLAY" || sh -c "exit 77" ) &&
 
 TESTS += frysk/gui/test/dogtail_scripts/frysk_suite.sh
 EXTRA_DIST += frysk/gui/test/dogtail_scripts/frysk_suite.in
