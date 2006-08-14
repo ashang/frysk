@@ -1,3 +1,7 @@
+2006-08-14  Stepan Kasal  <kasal@ucw.cz>
+
+	* MainWindow.java (buildTerminal): s/setBackgroudColor/setBackgroundColor/
+
 2006-08-14  Mike Cvet  <mcvet@redhat.com>
 
 	* PIDColumnDialog.java (load): Fixed a checkbox bug during loading.
