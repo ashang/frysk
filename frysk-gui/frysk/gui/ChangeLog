@@ -1,3 +1,7 @@
+2006-08-14  Stepan Kasal  <kasal@ucw.cz>
+
+	* test/dogtail_scripts/frysk_suite.in: Revert my chang from 2006-08-08.
+
 2006-08-11  Nurdin Premji  <npremji@redhat.com>
 
 	* test/dogtail_scripts/TestEventViewerMarkers.py: Ditto
