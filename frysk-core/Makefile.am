@@ -54,6 +54,8 @@ EXTRA_DIST += \
 
 
 ANTLR = $(JAVA) -classpath ../frysk-imports/antlr.jar antlr.Tool
+# Prune files.list so these antlr generated files are not run through ecj
+prune_ecj = -e CppParser.java -e CppTreeParser.java -e CLI.java -e PrintHandler.java
 
 # Add dejagnu, remember to clean up.
 AUTOMAKE_OPTIONS = dejagnu

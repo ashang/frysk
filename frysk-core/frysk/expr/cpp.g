@@ -116,11 +116,12 @@ options {
   */
 imaginaryTokenDefinitions
     :
-        APPLY
         ARG_LIST
-        EXPR_LIST
-        COND_EXPR
         ARRAY_REF
+	CAST
+        COND_EXPR
+        EXPR_LIST
+        FUNC_CALL
     ;
 
 /** 
@@ -131,15 +132,19 @@ imaginaryTokenDefinitions
   * which then propagates it up to the calling program.
   */
 start throws TabException
-    :   expression ETX
+    :   expressionList ETX
     ;
 
 /**
   *  This rule looks for comma separated expressions.
   */
+expressionList throws TabException
+    :   expression (COMMA! expression)*
+        {#expressionList = #(#[EXPR_LIST,"Expr list"], expressionList);}
+        ;
+
 expression! throws TabException
     :   assign_expr1: assignment_expression 
-        (comma:COMMA assign_expr2:assignment_expression)*
         {
 /** 
   * The following syntax is used for generation of ASTs. 
@@ -147,9 +152,6 @@ expression! throws TabException
   * ## refers to the AST returned by this rule (expression)
   */
 
-            if (#comma!=null)
-## = #([EXPR_LIST, "ExpressionList"], #assign_expr1, #assign_expr2);
-            else
 ## = #assign_expr1;
         }
     ;
@@ -250,7 +252,7 @@ equality_expression throws TabException
 relational_expression throws TabException 
     :   shift_expression
         (options {warnWhenFollowAmbig = false;}:
-            (	LESSTHAN^
+	    (	LESSTHAN^
             |	GREATERTHAN^
             |	LESSTHANOREQUALTO^
             |	GREATERTHANOREQUALTO^
@@ -271,15 +273,47 @@ additive_expression throws TabException
     ;
 
 multiplicative_expression throws TabException 
-    :	signed_pm_expression
+    :	unary_expression
         (options{warnWhenFollowAmbig = false;}:
-            (STAR^ | DIVIDE^ | MOD^) signed_pm_expression
+            (STAR^ | DIVIDE^ | MOD^) unary_expression
         )*
     ;
-
-signed_pm_expression throws TabException
-    :   (options {warnWhenFollowAmbig=false;} : MINUS^)? pm_expression
+ 
+unary_expression throws TabException 
+    :   PLUS^ unary_expression
+    |   MINUS^ unary_expression
+    |   PLUSPLUS^ pm_expression
+    |   MINUSMINUS^ pm_expression
+    |   unary_expression_simple
     ;
+
+unary_expression_simple throws TabException 
+    :   TILDE unary_expression
+    |   NOT unary_expression
+    |   cast_expression
+//    |   pm_expression selector* (PLUSPLUS |MINUSMINUS)?
+    | pm_expression
+    ;
+
+primitiveType
+    :   "boolean"
+    |   "char"
+    |   "byte"
+    |   "short"
+    |   "int"
+    |   "long"
+    |   "float"
+    |   "double"
+    ;
+
+cast_expression! throws TabException 
+    :  LPAREN type:primitiveType RPAREN expr:unary_expression
+//       | LPAREN (expression) RPAREN unary_expression_simple
+//       |  LPAREN (expression | primitiveType) RPAREN unary_expression_simple
+        {
+## = #([CAST, "Cast"], #type, #expr);
+        }
+	;
 
 pm_expression throws TabException 
 {String sTabText;}
@@ -332,8 +366,8 @@ variable! throws TabException
             : LSQUARE expr1:expression RSQUARE
                 { astPostExpr = #([ARRAY_REF, "ArrayReference"], 
 								#astPostExpr, #expr1); }
-            |   LPAREN (expr2:expression)? RPAREN
-                { astPostExpr = #([APPLY, "FuncCall"], #astPostExpr, #expr2); }
+            |   LPAREN (expr2:expressionList)? RPAREN
+                { astPostExpr = #([FUNC_CALL, "FuncCall"], #astPostExpr, #expr2); }
             |   DOT
                 (   tb:TAB
                     {
@@ -650,6 +684,17 @@ options {
 }
 
 
+primitiveType
+    :   "boolean"
+    |   "char"
+    |   "byte"
+    |   "short"
+    |   "int"
+    |   "long"
+    |   "float"
+    |   "double"
+    ;
+
 expr returns [Variable returnVar=null] throws InvalidOperatorException, OperationNotDefinedException
 { Variable v1, v2, log_expr;}
     :   #(PLUS  v1=expr v2=expr)  {	returnVar = v1.getType().add(v1, v2);  }
@@ -779,7 +824,9 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
             returnVar = v1;
             symTab.put(v1.getText(), v1);
         }
-    |   #(EXPR_LIST v1=expr v2=expr)  { returnVar = v1; }
+    |   #(CAST primitiveType v2=expr) { returnVar = v2; }
+    |   #(EXPR_LIST v1=expr)  { returnVar = v1; }
+    |   #(FUNC_CALL v1=expr v2=expr)  { returnVar = v1; }
     |   ident:IDENT  {
             if((returnVar = ((Variable)symTab.get(ident.getText()))) == null) {
                 returnVar = IntegerType.newIntegerVariable(intType, ident.getText(), 0);
@@ -793,4 +840,3 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
             }
         }
     ;
-

@@ -536,13 +536,16 @@ clean-classes-dir:
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
 # habit of silently compiling invalid Java code (garbage in, garbage out),
-# fortunately ECJ rejects it.
+# fortunately ECJ rejects it.  The files list can optionally be pruned first.
 
 all-local: ecj/checked
 ecj/checked: files.list $(GEN_DIRNAME).jar
 	rm -rf ecj
 	mkdir -p ecj
 if HAVE_ECJ
+	$(if $(prune_ecj), \
+	grep -v $(prune_ecj) $(top_builddir)/files.list > $(top_builddir)/files.list.ecj, \
+	cp $(top_builddir)/files.list $(top_builddir)/files.list.ecj)
 	$(GIJ) \
 		--classpath $(ECJ_JAR):$(CLASSPATH) \
 		org.eclipse.jdt.internal.compiler.batch.Main \
@@ -551,12 +554,12 @@ if HAVE_ECJ
 		-warn:+semicolon \
 		-sourcepath $(SOURCEPATH) \
 		-classpath $(CLASSPATH) \
-		@$(top_builddir)/files.list \
+		@$(top_builddir)/files.list.ecj \
 		2>&1 | tee $@.log
 	if test -s $@.log ; \
 	then rm $@.log ; false ; \
 	fi
-	rm -f $@.log
+	rm -f $@.log $(top_builddir)/files.list.ecj
 endif
 	touch $@
 .PHONY: clean-ecj-dir

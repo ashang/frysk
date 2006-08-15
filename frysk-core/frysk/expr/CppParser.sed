@@ -8,17 +8,6 @@ s:\(import java.util.Hashtable;\):/* \1 */:
 s:\(import frysk.lang.*;\):/* \1 */:
 s:\(import java.util.\*;\):/* \1 */:
 
-# Fix unread variables
-/\<sInputExpression\>/ s:\(^.*$\):/* \1 */:
-/\<post_expr2_AST\> =/ s:\(^.*$\):/* \1 */:
-/\<ques_AST\> =/ s:\(^.*$\):/* \1 */:
-/\<colon_AST\> =/ s:\(^.*$\):/* \1 */:
-/\<colon\> = / s:\(^.*$\):/* \1 */:
-/\<tmp42_AST\> = / s:\(^.*$\):/* \1 */:
-/\<tmp43_AST\> = / s:\(^.*$\):/* \1 */:
-/\<tmp44_AST\> = / s:\(^.*$\):/* \1 */:
-/\<tmp45_AST\> = / s:\(^.*$\):/* \1 */:
-/\<tmp60_AST\> = / s:\(^.*$\):/* \1 */:
-
+# Fix for gcj
 /buildTokenTypeASTClassMap/,+2 s/};/}/
 
