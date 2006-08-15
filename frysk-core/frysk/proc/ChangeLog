@@ -1,3 +1,8 @@
+2006-08-15  Mark Wielaard  <mark@klomp.org>
+
+	* ForkTestLib.java: New file.
+	* cni/ForkTestLib.cxx: Likewise.
+
 2006-08-14  Mike Cvet  <mcvet@redhat.com>
 
 	* TestLib.java (TaskObserverBase): Made public.
