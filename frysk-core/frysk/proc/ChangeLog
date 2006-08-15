@@ -1,5 +1,34 @@
 2006-08-15  Mark Wielaard  <mark@klomp.org>
 
+	* frysk/proc/Breakpoint.java: New file.
+	* frysk/proc/BreakpointAddresses.java: Likewise.
+	* frysk/proc/Proc.java (breakpoints): New final field.
+	(Proc): Initialize breakpoints.
+	(requestAddCodeObserver): New method.
+	(requestDeleteCodeObserver): New method.
+	* frysk/proc/Task.java (handleAddCodeObserver): New method.
+	(handleDeleteCodeObserver): New method.
+	(codeObservers): New field.
+	(requestAddCodeObserver): New method.
+	(requestDeleteCodeObserver): New method.
+	(notifyCodeBreakpoint): Likewise.
+	* frysk/proc/TaskCodeObservation.java: New file.
+	* frysk/proc/TaskObserver.java (updateHit): Update documentation.
+	* frysk/proc/TaskState.java (handleAddCodeObserver): New method.
+	(handleDeleteCodeObserver): New method.
+	(Running.handleStoppedEvent): Add and remove pending CodeObservers.
+	(Running.steppingBreakpoint): New field.
+	(Running.handleTrappedEvent): New method.
+	(Running.pendingCodeObservers): New field.
+	(Running.PendingCodeObserver): New struct.
+	(Running.handleAddCodeObserver): New method.
+	(Running.handleDeleteCodeObserver): New method.
+	(BlockedSignal.handleAddCodeObserver): New method.
+	(BlockedSignal.handleDeleteCodeObserver): New method.
+	* frysk/proc/TestBreakpoints.java: new file.
+
+2006-08-15  Mark Wielaard  <mark@klomp.org>
+
 	* ForkTestLib.java: New file.
 	* cni/ForkTestLib.cxx: Likewise.
 

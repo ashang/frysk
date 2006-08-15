@@ -1,3 +1,7 @@
+2006-08-15  Mark Wielaard  <mark@klomp.org>
+
+	* funit-breakpoints.c: New test prog.
+
 2006-08-07  Tim Moore  <timoore@redhat.com>
 
 	* funit-x8664-modify.S: New x8664 specific program.

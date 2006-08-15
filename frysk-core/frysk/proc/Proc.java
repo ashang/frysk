@@ -151,6 +151,8 @@ public abstract class Proc
     protected abstract String[] sendrecCmdLine ();
     private String[] argv;
 
+    final BreakpointAddresses breakpoints;
+
     /**
      * Create a new Proc skeleton.  Since PARENT could be NULL,
      * explicitly specify the HOST.
@@ -161,6 +163,7 @@ public abstract class Proc
 	this.id = id;
 	this.parent = parent;
 	this.creator = creator;
+	this.breakpoints = new BreakpointAddresses(this);
 	// Keep parent informed.
 	if (parent != null)
 	    parent.add (this);
@@ -407,6 +410,48 @@ public abstract class Proc
 			(Proc.this, this);
 		}
 	    });
+    }
+
+    /**
+     * (Internal) Tell the process to add the specified Code Observation,
+     * attaching to the process if necessary.
+     * Adds a TaskCodeObservation to the eventloop which instructs the
+     * task to install the breakpoint if necessary.
+     */
+    void requestAddCodeObserver (Task task,
+				 TaskObservable observable,
+				 TaskObserver.Code observer)
+    {
+	logger.log (Level.FINE, "{0} requestAddCodeObserver\n", this); 
+	TaskCodeObservation tco;
+	tco = new TaskCodeObservation(task, observable, observer)
+	  {
+	    public void execute ()
+	    {
+	      handleAddObservation (this);
+	    }
+	  };
+	Manager.eventLoop.add(tco);
+    }
+    
+    /**
+     * (Internal) Tell the process to delete the specified
+     * Code Observation, detaching from the process if necessary.
+     */
+    void requestDeleteCodeObserver (Task task,
+				    TaskObservable observable,
+				    TaskObserver.Code observer)
+    {
+      TaskCodeObservation tco;
+      tco = new TaskCodeObservation(task, observable, observer)
+	{
+	  public void execute()
+	  {
+	    newState = oldState().handleDeleteObservation(Proc.this, this);
+	  }
+	};
+
+      Manager.eventLoop.add(tco);
     }
 
     /**

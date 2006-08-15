@@ -299,6 +299,26 @@ abstract public class Task
   }
 
   /**
+   * Called by <code>TaskCodeObservation</code> when added through the
+   * event loop.
+   */
+  void handleAddCodeObserver (Observable observable,
+			      TaskObserver.Code observer)
+  {
+    newState = oldState().handleAddCodeObserver(this, observable, observer);
+  }
+
+  /**
+   * Called by <code>TaskCodeObservation</code> when deleted through the
+   * event loop.
+   */
+  void handleDeleteCodeObserver (Observable observable,
+				 TaskObserver.Code observer)
+  {
+    newState = oldState().handleDeleteCodeObserver(this, observable, observer);
+  }
+
+  /**
    * (Internal) Tell the task to remove itself (it is no longer listed in the
    * system process table and, presumably, has exited).
    */
@@ -870,4 +890,46 @@ abstract public class Task
    * Turns off systemcall entry and exit tracing 
    */
   protected abstract void stopTracingSyscalls ();
+
+  /**
+   * Set of Code observers.
+   */
+  private TaskObservable codeObservers = new TaskObservable(this);
+  
+  /**
+   * Add TaskObserver.Code to the TaskObserver pool.
+   */
+  public void requestAddCodeObserver (TaskObserver.Code o)
+  {
+    logger.log(Level.FINE, "{0} requestAddCodeObserver\n", this);
+    proc.requestAddCodeObserver(this, codeObservers, o);
+  }
+
+  /**
+   * Delete TaskObserver.Code for the TaskObserver pool.
+   */
+  public void requestDeleteCodeObserver (TaskObserver.Code o)
+  {
+    logger.log(Level.FINE, "{0} requestDeleteCodeObserver\n", this);
+    proc.requestDeleteCodeObserver(this, codeObservers, o);
+  }
+  
+  /**
+   * Notify all Code observers of the breakpoint. Return the number of
+   * blocking observers.
+   */
+  int notifyCodeBreakpoint (long address)
+  {
+    logger.log(Level.FINE, "{0} notifyCodeBreakpoint({1})\n",
+	       new Object[] { this, Long.valueOf(address) });
+    
+    Iterator i = proc.breakpoints.getCodeObservers(address);
+    while (i.hasNext())
+      {
+	TaskObserver.Code observer = (TaskObserver.Code) i.next();
+	if (observer.updateHit(this) == Action.BLOCK)
+	  blockers.add(observer);
+      }
+    return blockers.size();
+  }
 }

@@ -202,7 +202,9 @@ public interface TaskObserver
 	long getAddress ();
 	/**
 	 * The task has hit the breakpoint.  Return Action.BLOCK to
-	 * block the task's further execution.
+	 * block the task's further execution.  Note that all Tasks of
+	 * a Proc share their breakpoints, so this method needs to
+	 * check the actual Task that got hit.
 	 */
 	Action updateHit (Task task);
     }

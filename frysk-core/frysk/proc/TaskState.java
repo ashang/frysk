@@ -41,6 +41,9 @@ package frysk.proc;
 
 import java.util.logging.Level;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 /**
  * The task state machine.
  */
@@ -158,6 +161,17 @@ class TaskState
     {
 	throw unhandled (task, "handleDeleteSyscallObserver");
     }
+    TaskState handleAddCodeObserver(Task task, Observable observable,
+				    TaskObserver.Code observer)
+    {
+      throw unhandled (task, "handleAddCodeObserver");
+    } 
+    TaskState handleDeleteCodeObserver(Task task, Observable observable,
+				       TaskObserver.Code observer)
+    {
+      throw unhandled (task, "handleDeleteCodeObserver");
+    } 
+
 
     
     /**
@@ -868,13 +882,52 @@ class TaskState
 	}
 	TaskState handleStoppedEvent (Task task)
 	{
-	    // From time to time bogus stop events appear, for
-	    // instance when the kernel simultaneously receives both
-	    // an attach and signal for an identical process.  Just
-	    // discard them.
-	    logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-	    return this;
+	  if (pendingCodeObservers.isEmpty())
+	    {
+	      // From time to time bogus stop events appear, for
+	      // instance when the kernel simultaneously receives both
+	      // an attach and signal for an identical process.  Just
+	      // discard them.
+	      logger.log (Level.FINE,
+			  "{0} spurious handleStoppedEvent\n", task); 
+	      return this;
+	    }
+
+	  logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
+	  Iterator it = pendingCodeObservers.iterator();
+	  while (it.hasNext())
+	    {
+	      PendingCodeObserver pco = (PendingCodeObserver) it.next();
+	      if (pco.addition)
+		{
+		  if (task.proc.breakpoints.addBreakpoint(pco.observer))
+		    {
+		      long address = pco.observer.getAddress();
+		      Breakpoint breakpoint;
+		      breakpoint = Breakpoint.create(address, task.proc);
+		      breakpoint.install(task);
+		    }
+		  pco.observable.add(pco.observer);
+		}
+	      else
+		{
+		  if (task.proc.breakpoints.removeBreakpoint(pco.observer))
+		    {
+		      long address = pco.observer.getAddress();
+		      Breakpoint breakpoint;
+		      breakpoint = Breakpoint.create(address, task.proc);
+		      breakpoint.remove(task);
+		    }
+		  pco.observable.delete(pco.observer);
+		}
+	      it.remove();
+	    }
+
+	  // And pretend nothing happend, happily continue running.
+	  task.sendContinue(0);
+	  return this;
 	}
+
 	TaskState handleTerminatingEvent (Task task, boolean signal,
 					  int value)
 	{
@@ -949,6 +1002,117 @@ class TaskState
 	    task.sendContinue (0);
 	    return running;
 	}
+
+      // Whether we are currently stepping over a breakpoint.
+      private Breakpoint steppingBreakpoint;
+
+      /**
+       * Handles traps caused by breakpoints. If there are any Code
+       * observers at the address of the trap they get notified. If
+       * none of the Code observers blocks we continue over the
+       * breakpoint (breakpoint stepping state), otherwise we block
+       * till all blocking observers are happy (breakpoint stopped
+       * state).
+       */
+      TaskState handleTrappedEvent (Task task)
+      {
+	logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
+
+	if (steppingBreakpoint != null)
+	  {
+	    steppingBreakpoint.stepDone(task);
+	    steppingBreakpoint = null;
+	    task.sendContinue(0);
+	    return this;
+	  }
+
+	// FIXME This might not hold for all architectures.
+	// Should probably be handled by the Isa.
+	long address;
+	try
+	  {
+	    address = task.getIsa().pc(task) - 1;
+	  }
+	catch (TaskException tte)
+	  {
+	    // XXX - Now what - did the process die suddenly?
+	    throw new RuntimeException(tte);
+	  }
+
+	int blockers = task.notifyCodeBreakpoint(address);
+	if (blockers == 0)
+	  {
+	    try
+	      {
+		Breakpoint bp = Breakpoint.create(address, task.getProc());
+		bp.prepareStep(task);
+		task.sendStepInstruction(0);
+		steppingBreakpoint = bp;
+		return running;
+	      }
+	    catch (TaskException te)
+	      {
+		// Argh, major trouble! No way to recover from this one...
+		throw new RuntimeException(te);
+	      }
+	  }
+	else
+	  return blockedContinue;
+      }
+
+      // List containing the CodeObservers that are pending addition
+      // or deletion (in order that they were requested).
+      LinkedList pendingCodeObservers = new LinkedList();
+
+      // Small struct to put in pendingCodeObservers
+      static final class PendingCodeObserver
+      {
+	// True if this observer needs to be added,
+	// false if it needs to be deleted deletion.
+	boolean addition;
+
+	// The Code observer to add or delete.
+	TaskObserver.Code observer;
+
+	// The observable - XXX isn't this always the task?
+	Observable observable;
+
+	public String toString()
+	{
+	  return ("PendingCodeObserver[observer=" +observer
+		  + ", addition=" + addition
+		  + ", observable=" + observable + "]");
+	}
+      }
+
+      TaskState handleAddCodeObserver(Task task, Observable observable,
+				      TaskObserver.Code observer)
+      {
+	// We cannot add or delete when running, push it on the queue
+	// and stop the task.
+	PendingCodeObserver pco = new PendingCodeObserver();
+	pco.addition = true;
+	pco.observer = observer;
+	pco.observable = observable;
+	pendingCodeObservers.add(pco);
+	task.sendStop();
+	return this;
+      }
+
+      TaskState handleDeleteCodeObserver(Task task, Observable observable,
+					 TaskObserver.Code observer)
+      {
+	// We cannot add or delete when running, push it on the queue
+	// and stop the task.
+	PendingCodeObserver pco = new PendingCodeObserver();
+	pco.addition = false;
+	pco.observer = observer;
+	pco.observable = observable;
+	pendingCodeObservers.add(pco);
+	task.sendStop();
+	return this;
+      }
+
 	TaskState handleAddObserver (Task task, Observable observable,
 				     Observer observer)
 	{
@@ -1440,8 +1604,33 @@ class TaskState
 	      return new SyscallBlockedSignal(sig);
 	    }
   	  }
-	 }
-    
+
+      TaskState handleAddCodeObserver(Task task, Observable observable,
+				      TaskObserver.Code observer)
+      {
+	if (task.proc.breakpoints.addBreakpoint(observer))
+	  {
+	    long address = observer.getAddress();
+	    Breakpoint breakpoint = Breakpoint.create(address, task.proc);
+	    breakpoint.install(task);
+	  }
+	observable.add(observer);
+	return this;
+      }
+
+      TaskState handleDeleteCodeObserver(Task task, Observable observable,
+					 TaskObserver.Code observer)
+      {
+	if (task.proc.breakpoints.removeBreakpoint(observer))
+	  {
+	    long address = observer.getAddress();
+	    Breakpoint breakpoint = Breakpoint.create(address, task.proc);
+	    breakpoint.remove(task);
+	  }
+	observable.delete(observer);
+	return this;
+      }
+    }
     
     /**
      * The task is in the blocked state with no pending signal.
