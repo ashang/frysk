@@ -423,6 +423,7 @@ typedef struct _FtkEventViewer {
   double		  max_time;
   GtkWidget		* popup_window;
   GtkWidget		* popup_label;
+  GtkWidget		* button_legend_box;
   GtkWidget		* hbutton_box;
   GtkWidget		* scale_toggle_button;
   GtkWidget		* hold_toggle_button;
@@ -507,6 +508,7 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_popup_type(v)		(v)->popup_type
 #define ftk_ev_popup_trace(v)		(v)->popup_trace
 #define ftk_ev_popup_marker(v)		(v)->popup_marker
+#define ftk_ev_button_legend_box(v)	(v)->button_legend_box
 #define ftk_ev_hbutton_box(v)		(v)->hbutton_box
 #define ftk_ev_scale_toggle_button(v)	(v)->scale_toggle_button
 #define ftk_ev_hold_toggle_button(v)	(v)->hold_toggle_button

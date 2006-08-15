@@ -1,3 +1,7 @@
+2006-08-15  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java: Asthetic changes to eventviewer.
+
 2006-08-14  Mike Cvet  <mcvet@redhat.com>
 
 	* PIDColumnDialog.java (load): Fixed a checkbox bug during loading.

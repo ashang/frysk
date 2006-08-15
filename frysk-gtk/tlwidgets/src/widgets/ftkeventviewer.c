@@ -371,6 +371,19 @@ initialise_widget (FtkEventViewer * eventviewer)
   ftk_ev_selected_trace (eventviewer) = -1;
 }
 
+
+static void
+create_button_legend_box (FtkEventViewer * eventviewer)
+{
+	GtkWidget * button_legend_box = gtk_hbox_new(FALSE, 5);
+	ftk_ev_button_legend_box (eventviewer) = button_legend_box;
+	
+	AtkObject *obj;
+	obj = gtk_widget_get_accessible (button_legend_box);
+	atk_object_set_name(obj, _("Button Legend Box"));
+	atk_object_set_description(obj, _("Box to hold the buttons and legend."));
+}
+
 /*------------------------- Button Box --------------------------------------*/
 
 /*
@@ -379,12 +392,18 @@ initialise_widget (FtkEventViewer * eventviewer)
  * ---------------------------------------------------------------------------
  */
 
-static GtkWidget *
+static void
 create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 {
   /*****************   button box  **************/
     
   GtkWidget * hbutton_box = gtk_hbox_new(FALSE, 5);
+  GtkWidget * vbutton_box = gtk_vbox_new(FALSE, 5);
+  
+  gtk_box_pack_end (GTK_BOX (hbutton_box),
+			vbutton_box,
+			FALSE, FALSE, 0);
+  
   ftk_ev_hbutton_box (eventviewer) = hbutton_box;
   
   /* Accessibility for button box. */
@@ -392,7 +411,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
   obj = gtk_widget_get_accessible (hbutton_box);
   atk_object_set_name(obj, _("Button Box"));
   atk_object_set_description (obj, _("Box to hold all the buttons."));
-  
+
   
     
 #if 0  /* fixme -- not yet implemented */
@@ -447,7 +466,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
     /* fixme -- make initial state configurable */
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hold_toggle_button),
 				  ftk_ev_hold_activated(eventviewer));
-    gtk_box_pack_start (GTK_BOX (hbutton_box),
+    gtk_box_pack_start (GTK_BOX (vbutton_box),
 			hold_toggle_button,
 			FALSE, FALSE, 0);
   }
@@ -467,7 +486,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
                       (GtkSignalFunc) ftk_eventviewer_center_click,
 		      eventviewer);
 
-    gtk_box_pack_start (GTK_BOX (hbutton_box),
+    gtk_box_pack_start (GTK_BOX (vbutton_box),
 			center_button,
 			FALSE, FALSE, 0);
 		
@@ -486,9 +505,10 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 
     GtkRequisition requisition;
 
-    GtkWidget * frame = gtk_frame_new (NULL);
-    GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
-    GtkWidget * label = gtk_label_new ("Interval");
+    GtkWidget * frame = gtk_frame_new ("Interval");
+    
+    gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_ETCHED_IN);
+    
     GtkObject * ival_adj
       = gtk_adjustment_new (log10 (ftk_ev_span (eventviewer)),
 			    log10 (MINIMUM_SPAN),
@@ -516,44 +536,27 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
 			  "Set display width in seconds.",
 			  "private");
       
-    gtk_container_add (GTK_CONTAINER(frame), hbox);
-    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 10);
-    gtk_box_pack_start (GTK_BOX (hbox), slider, FALSE, FALSE, 0);
-    gtk_box_pack_end (GTK_BOX (hbutton_box),
+    gtk_container_add (GTK_CONTAINER(frame), slider);
+    
+    gtk_box_pack_start (GTK_BOX (hbutton_box),
 		      frame,
 		      FALSE, FALSE, 0);
 		      
-    /* Accessibility for ginterval slider */
+    /* Accessibility for interval slider */
  	
     {
-      AtkObject *obj, *atk_widget, *atk_label;
+      AtkObject *obj;
  		
       obj = gtk_widget_get_accessible(frame);
       atk_object_set_name(obj, _("Interval Frame"));
       atk_object_set_description (obj, _("Frame to hold Interval Slider."));
     	
-      obj = gtk_widget_get_accessible(hbox);
-      atk_object_set_name(obj, _("Interval Box"));
-      atk_object_set_description (obj, _("Box to hold Interval Slider."));  	
- 		
-      AtkRelationSet *relation_set;
-      AtkRelation *relation;
-      AtkObject *targets[1];
-
-      atk_widget = gtk_widget_get_accessible (slider);
-      atk_object_set_name(atk_widget, _("Interval slider"));
-      atk_object_set_description(atk_widget, _("Logarithmic slider for time ginterval."));
+     
+      obj = gtk_widget_get_accessible (slider);
+      atk_object_set_name(obj, _("Interval slider"));
+      atk_object_set_description(obj, _("Logarithmic slider for time ginterval."));
         
-      atk_label = gtk_widget_get_accessible (label);
-      atk_object_set_name(atk_label, _("Interval Label"));
-      atk_object_set_description(atk_label, _("Label for the ginterval slider."));
-
-      relation_set = atk_object_ref_relation_set (atk_label);
-      targets[0] = atk_widget;
-
-      relation = atk_relation_new (targets, 1, ATK_RELATION_LABEL_FOR);
-      atk_relation_set_add (relation_set, relation);
-      g_object_unref (G_OBJECT (relation));
+      
     }
   }
 #endif
@@ -618,9 +621,9 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
   }
 #endif
 
-  gtk_widget_show_all (hbutton_box);
+  //gtk_widget_show_all (hbutton_box);
   
-  return hbutton_box;
+  //return hbutton_box;
 }
 
 
@@ -633,7 +636,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
  * --------------------------------------------------------------------------
  */
   
-static GtkWidget *
+static void
 create_legend_area (FtkEventViewer * eventviewer)
 {
   GtkWidget * frame = gtk_frame_new ("Legend");
@@ -661,8 +664,8 @@ create_legend_area (FtkEventViewer * eventviewer)
 		     
   ftk_ev_legend_frame (eventviewer) = frame;
   gtk_container_add (GTK_CONTAINER(frame), da);
-  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-  gtk_widget_show_all (frame);
+  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_ETCHED_IN);
+ // gtk_widget_show_all (frame);
 
 
   /* Legend Accessibility. */
@@ -675,17 +678,19 @@ create_legend_area (FtkEventViewer * eventviewer)
   atk_object_set_name(obj, _("Legend Drawing Area"));
   atk_object_set_description (obj, _("Drawing Area to hold Legend."));
 
-  return frame;
+  //return frame;
 }
 
 /************************************* Drawing Area **************************/
   
-static GtkWidget *
+static void
 create_drawing_area (FtkEventViewer * eventviewer)
 {
   /*****************  drawing area **************/
   GtkWidget * scrolled_window;
   GtkWidget * frame = gtk_frame_new (NULL);
+  
+  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
   GtkWidget * da = gtk_drawing_area_new();
 
   /* atk stuff */
@@ -766,7 +771,7 @@ create_drawing_area (FtkEventViewer * eventviewer)
    
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
-				  GTK_POLICY_NEVER,
+				  GTK_POLICY_ALWAYS,
 				  GTK_POLICY_ALWAYS);
   
   gtk_container_add (GTK_CONTAINER(frame), scrolled_window);
@@ -774,13 +779,13 @@ create_drawing_area (FtkEventViewer * eventviewer)
 #else
   gtk_container_add (GTK_CONTAINER(frame), da);
 #endif
-  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-  gtk_widget_show (frame);
+  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
+  //gtk_widget_show (frame);
 
-  return frame;
+  //return frame;
 }
 
-GtkWidget *
+void
 create_scrollbar (FtkEventViewer * eventviewer)
 {
   /**************** scrollbar *************/
@@ -792,7 +797,10 @@ create_scrollbar (FtkEventViewer * eventviewer)
 			  1.0,
 			  ftk_ev_span (eventviewer),
 			  ftk_ev_span (eventviewer)/4.0);
-  GtkWidget * h_scroll = gtk_hscrollbar_new (GTK_ADJUSTMENT (scroll_adj));
+			  
+  GtkScrolledWindow * da_scrolled_window = ftk_ev_da_scrolled_window(eventviewer);
+  gtk_scrolled_window_set_hadjustment(da_scrolled_window, GTK_ADJUSTMENT (scroll_adj));
+  GtkWidget * h_scroll = gtk_scrolled_window_get_hscrollbar(da_scrolled_window);
   
   /* Horizontal ScrollBar Accessibility */
   
@@ -810,7 +818,7 @@ create_scrollbar (FtkEventViewer * eventviewer)
 		    (GtkSignalFunc) ftk_eventviewer_scroll_cv, eventviewer);
 
 
-  return h_scroll;
+  //return h_scroll;
 }
 
 static void
@@ -843,17 +851,28 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
   gtk_box_set_homogeneous (GTK_BOX (vbox), FALSE);
   gtk_box_set_spacing (GTK_BOX (vbox), 0);
 
-  {
-    GtkWidget * bb = create_button_box (eventviewer, eventviewer_tips);
-    GtkWidget * la = create_legend_area (eventviewer);
-    GtkWidget * da = create_drawing_area (eventviewer);
-    GtkWidget * sb = create_scrollbar (eventviewer);
+  create_button_legend_box(eventviewer);
+    create_button_box (eventviewer, eventviewer_tips);
+    create_legend_area (eventviewer);
+    create_drawing_area (eventviewer);
+    create_scrollbar (eventviewer);
     
-    gtk_box_pack_start (GTK_BOX (vbox), bb, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX (vbox), la, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX (vbox), da, TRUE, TRUE, 0);
-    gtk_box_pack_start (GTK_BOX (vbox), sb, FALSE, FALSE, 0);
-  }
+    gtk_box_pack_end (GTK_BOX (ftk_ev_button_legend_box(eventviewer)), 
+    					ftk_ev_hbutton_box(eventviewer), FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX (ftk_ev_button_legend_box(eventviewer)), 
+    					ftk_ev_legend_frame(eventviewer), TRUE, TRUE, 0);
+    
+
+	gtk_box_pack_start (GTK_BOX (vbox), ftk_ev_button_legend_box(eventviewer), 
+    					FALSE, FALSE, 0);
+    					 					
+  	gtk_box_pack_start (GTK_BOX (vbox), ftk_ev_da_frame(eventviewer), 
+    					TRUE, TRUE, 0);
+    					
+    gtk_box_pack_start (GTK_BOX (vbox), ftk_ev_scroll(eventviewer), 
+    					FALSE, FALSE, 0);
+    
+    gtk_widget_show_all(GTK_WIDGET(eventviewer));
 }
 
 static void
@@ -2015,20 +2034,21 @@ ftk_eventviewer_expose(GtkWidget * widget, GdkEventExpose * event,
   if (GTK_WIDGET_DRAWABLE (widget)) {
     FtkEventViewer * eventviewer = FTK_EVENTVIEWER (widget);
 
-
+	//Do not remove, needs to be here according to Chris Moller.
     if (event) {
-      gtk_container_propagate_expose (GTK_CONTAINER (eventviewer),
-				      ftk_ev_hbutton_box (eventviewer),	
-				      event);
-      gtk_container_propagate_expose (GTK_CONTAINER (widget),
+	  gtk_container_propagate_expose (GTK_CONTAINER 
+	  								  (ftk_ev_button_legend_box(eventviewer)),
+	  				  ftk_ev_hbutton_box (eventviewer),
+	  				  event);
+      gtk_container_propagate_expose (GTK_CONTAINER (ftk_ev_button_legend_box(eventviewer)),
 				      GTK_WIDGET (ftk_ev_legend_frame (eventviewer)),
 				      event);
       gtk_container_propagate_expose (GTK_CONTAINER (widget),
 				      GTK_WIDGET (ftk_ev_da_frame (eventviewer)),
 				      event);
-      gtk_container_propagate_expose (GTK_CONTAINER (widget),
-				      GTK_WIDGET (ftk_ev_scroll (eventviewer)),
-				      event);
+//      gtk_container_propagate_expose (GTK_CONTAINER (widget),
+//				      GTK_WIDGET (ftk_ev_scroll (eventviewer)),
+//				      event);
     }
 
     //    draw_plot (eventviewer);
@@ -3985,7 +4005,6 @@ ftk_eventviewer_tie_event_array (FtkEventViewer * eventviewer,
 /* ========================== ACCESSIBILITY ========================= */
 
 /* ================================================================== */
-
 enum  {
   FTK_ACCESSIBLE_HBUTTON_BOX,
   FTK_ACCESSIBLE_LEGEND_FRAME,

@@ -53,10 +53,11 @@ import java.util.Observable;
 import java.util.Observer;
 // import java.util.Random;
 
-import org.gnu.atk.AtkObject;
+//import org.gnu.atk.AtkObject;
 import org.gnu.gdk.Color;
-import org.gnu.gtk.Frame;
+//import org.gnu.gtk.Frame;
 import org.gnu.gtk.Label;
+//import org.gnu.gtk.ShadowType;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
@@ -79,7 +80,7 @@ public class StatusWidget
 
   // private GuiData data;
 
-  private Frame frame;
+  //private Frame frame;
 
   private EventViewer viewer;
 
@@ -110,13 +111,14 @@ public class StatusWidget
 
     this.procMap = new HashMap();
     // ========================================
-    frame = new Frame(""); //$NON-NLS-1$
-    frame.setBorderWidth(10);
-    AtkObject atk = frame.getAccessible();
-    atk.setName("Status Frame");
-    atk.setDescription("Frame to hold the status widget.");
+    //frame = new Frame(""); //$NON-NLS-1$
+    //frame.setBorderWidth(0);
+    //frame.setShadow(ShadowType.NONE);
+    //AtkObject atk = frame.getAccessible();
+    //atk.setName("Status Frame");
+    //atk.setDescription("Frame to hold the status widget.");
     // frame.add(mainVbox);
-    this.add(frame);
+    //this.add(frame);
     // ========================================
 
     // ========================================
@@ -141,7 +143,7 @@ public class StatusWidget
     this.procMap.put(new Integer(trace0), guiProc);
 
     initLogTextView(guiProc);
-    frame.add(viewer);
+    this.add(viewer);
     // mainVbox.packStart(viewer, true, true, 0);
     // ========================================
 
@@ -403,7 +405,8 @@ public class StatusWidget
 
   public void setName (String name)
   {
-    this.frame.setLabel(name);
+    //this.frame.setLabel(name);
+    System.out.println("Why do you want to change my name");
   }
 
   public int getTrace0 ()

@@ -1,3 +1,9 @@
+2006-08-15  Nurdin Premji  <npremji@redhat.com>
+
+	* src/widgets/ftkeventviewer.h: Ditto.
+	* src/widgets/ftkeventviewer.c: Asthetic changes to eventviewer.
+	Note that ftk_eventviewer_expose must manually call gtk_propogate_expose.
+
 2006-08-14  Nurdin Premji  <npremji@redhat.com>
 
 	* src/jni/com_redhat_ftk_EventViewer.c (Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1selected_1traces)
