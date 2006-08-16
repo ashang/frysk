@@ -191,7 +191,7 @@ public class SessionProcDataModel
           }
         });
 
-        debugProcess.getProcs().itemAdded.addObserver(new Observer()
+        debugProcess.getProcs().itemRemoved.addObserver(new Observer()
         {
           public void update (Observable arg0, Object obj)
           {
