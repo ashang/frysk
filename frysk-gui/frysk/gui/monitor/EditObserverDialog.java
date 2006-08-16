@@ -61,6 +61,7 @@ import org.gnu.gtk.event.TextBufferEvent;
 import org.gnu.gtk.event.TextBufferListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -133,8 +134,18 @@ public class EditObserverDialog
             if (actionsTable.apply() != false)
               EditObserverDialog.this.hideAll();
             else
-              System.out.println("Error with an action! Argument: " + actionsTable.getOffendingArg());
-          }
+              {
+                String msg = "Error with an Action! Argument: "
+                  + actionsTable.getOffendingArg()
+                  + " does not exist!";
+                if (!actionsTable.getOffendingArg().startsWith("/"))
+                  msg = msg + "\nTry appending the full path to the executable.";
+                
+                WarnDialog dialog = new WarnDialog(msg);
+                dialog.showAll();
+                dialog.run();
+              }
+            }
       }
     });
 

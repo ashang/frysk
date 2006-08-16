@@ -108,7 +108,7 @@ public class RunExternal
       }
     else
       {
-        System.out.println("The executable :" + temp[0] + " does not exist!");
+        System.out.println("The executable: " + temp[0] + " does not exist!");
         this.execString = temp[0];
         return false;
       }
