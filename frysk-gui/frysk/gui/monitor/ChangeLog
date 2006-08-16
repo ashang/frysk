@@ -1,3 +1,7 @@
+2006-08-16  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java: Changed to display menu after a button release.
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* WindowManager.java: Specify "frysk.gui...." as the logger,

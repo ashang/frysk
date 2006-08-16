@@ -177,7 +177,7 @@ public class StatusWidget
       public boolean mouseEvent (MouseEvent event)
       {
 
-        if (event.getType() == MouseEvent.Type.BUTTON_PRESS
+        if (event.getType() == MouseEvent.Type.BUTTON_RELEASE
             & event.getButtonPressed() == MouseEvent.BUTTON3)
           {
             int traces[] = viewer.getSelectedTraces();

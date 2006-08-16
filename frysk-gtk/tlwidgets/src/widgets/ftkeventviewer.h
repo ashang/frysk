@@ -323,6 +323,7 @@ typedef struct _FtkTrace {
   gboolean	time_set;
   gint index;
   gboolean	selected;
+  gboolean modified;
 } FtkTrace;
 
 #define ftk_tie_s FtkTrace
@@ -351,6 +352,7 @@ typedef struct _FtkTrace {
 #define ftk_trace_valid(t)		(t)->valid
 #define ftk_trace_index(t)		(t)->index
 #define ftk_trace_selected(t)	(t)->selected
+#define ftk_trace_modified(t)	(t)->modified
 
 typedef struct _FtkTraceClass {
   GObjectClass parent_class;

@@ -1,5 +1,10 @@
 2006-08-16  Nurdin Premji  <npremji@redhat.com>
 
+	* src/widgets/ftkeventviewer.h: More trace highlighting.
+	* src/widgets/ftkeventviewer.c: Reimplemented macro.
+	More code on trace highlighting, should now feel "normal".
+	* src/jni/com_redhat_ftk_EventViewer.c: Reimplemented macro "kludge".
+	
 	* src/jni/com_redhat_ftk_EventViewer.c: Ditto
 	* src/widgets/ftkeventviewer.c: Removed kludge of storing integer in a pointer.	
 	* src/java/com/redhat/ftk/EventViewer.java: Removed kludge of casting integer as a pointer.
