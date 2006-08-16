@@ -1,3 +1,8 @@
+2006-08-16  Tim Moore  <timoore@redhat.com>
+
+	* cni/Elf.cxx (elfEnd): Zero out pointer to foreign object; test
+	for that too.
+
 2006-08-11  Mark Wielaard  <mark@klomp.org>
 
 	* frysk-imports/lib/elf/cni/Elf.cxx (elf_end): Set fd field to -1.

@@ -43,10 +43,10 @@ main:
 	mov $1, %rax // exit syscall number
 	mov $2, %rdi // first syscall arg
 	mov $3, %rsi
-	mov $4, %rdx
-	mov $5, %r10
-	mov $6, %r8
-	mov $7, %r9
+	mov $-4, %rdx
+	mov $0xdeadbeef, %r10
+	mov $0xfeeddeadbeef, %r8
+	mov $0xdeadbeefdeadbeef, %r9
 // Perform a syscall which will end up being exit (2)
 	syscall
 	retq

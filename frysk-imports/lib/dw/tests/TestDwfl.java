@@ -71,6 +71,8 @@ public class TestDwfl
 
   public void testGetLine ()
   {
+    if (brokenXXX(2965))
+      return;
     Dwfl dwfl = new Dwfl(TestLib.getPid());
     assertNotNull(dwfl);
     DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());

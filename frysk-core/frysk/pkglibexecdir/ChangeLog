@@ -1,3 +1,9 @@
+2006-08-16  Tim Moore  <timoore@redhat.com>
+
+	* funit-x8664-regs.s: Use some more interesting 64 bit values to
+	stress the long and BigInteger Register APIs.
+	* funit-x8664-modify.s: ditto.
+
 2006-08-15  Mark Wielaard  <mark@klomp.org>
 
 	* funit-breakpoints.c: New test prog.

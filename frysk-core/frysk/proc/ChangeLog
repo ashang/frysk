@@ -1,3 +1,25 @@
+2006-08-16  Tim Moore  <timoore@redhat.com>
+
+	* Register.java (bank, offset, length, name): Make final.
+	(reverseArray): New method.
+	(get): Use byte array accessor of PtraceByteBuffer.
+	(getBigInteger): ditto.
+	(put): Use putUInt and putULong accessors of PtraceByteBuffer.
+	(putBigInteger): ditto.
+	
+	* LinuxHost.java (sendCreateAttachedProc,
+	PollWaitOnSigChld.anonymous.cloneEvent,
+	PollWaitOnSigChld.anonymous.forkEvent): Rethrow TaskException as
+	RuntimeException instead of eating it.
+	* Task.java (notifySyscallEnter, notifySyscallExit): ditto
+	* LinuxProc.java (sendRefresh.TidBuilder.buildId): Document why
+	TaskException can be swallowed.
+
+	* TestX8664Regs.java (TestX8664Regs): Use some more interesting 64
+	bit values to stress the long and BigInteger Register APIs.
+	* TestX8664Modify.java (TestX8664Modify): ditto.
+	
+
 2006-08-15  Mark Wielaard  <mark@klomp.org>
 
 	* frysk/proc/Breakpoint.java: New file.

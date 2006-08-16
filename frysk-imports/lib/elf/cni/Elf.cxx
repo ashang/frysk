@@ -113,14 +113,21 @@ lib::elf::Elf::elf_next (){
 }
 
 jint
-lib::elf::Elf::elf_end(){
-	jint val = ::elf_end((::Elf*) this->pointer);
-	if (fd >= 0)
-          {
-		::close(fd);
-                fd = -1;
-          }
-	return val;
+lib::elf::Elf::elf_end()
+{
+  if (this->pointer)
+    {
+      jint val = ::elf_end((::Elf*) this->pointer);
+      if (fd >= 0)
+	::close(fd);
+      this->pointer = 0;
+      fd = -1;
+      return val;
+    }
+  else
+    {
+      return 0;
+    }
 }
 
 jlong

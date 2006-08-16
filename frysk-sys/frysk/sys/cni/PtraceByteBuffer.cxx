@@ -38,6 +38,7 @@
 
 #include <sys/types.h>
 #include <sys/ptrace.h>
+#include <sys/user.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <alloca.h>
@@ -51,12 +52,15 @@
 #include "inua/eio/Buffer.h"
 #include "inua/eio/ByteBuffer.h"
 
-
+// XXX for Text and Area buffers the maxOffset is 0 for now because
+// the ByteBuffer interfaces that we're using don't check it. Soon
+// we'll put the maximum value for an unsigned long in there and see
+// what breaks.
 frysk::sys::PtraceByteBuffer$Area*
 frysk::sys::PtraceByteBuffer$Area::textArea ()
 {
 #if defined PT_READ_I && defined PT_WRITE_I
-  return new PtraceByteBuffer$Area (PT_READ_I, PT_WRITE_I);
+  return new PtraceByteBuffer$Area (PT_READ_I, PT_WRITE_I, 0);
 #else
   return NULL;
 #endif
@@ -66,7 +70,7 @@ frysk::sys::PtraceByteBuffer$Area*
 frysk::sys::PtraceByteBuffer$Area::dataArea ()
 {
 #if defined PT_READ_D && defined PT_WRITE_D
-  return new PtraceByteBuffer$Area (PT_READ_D, PT_WRITE_D);
+  return new PtraceByteBuffer$Area (PT_READ_D, PT_WRITE_D, 0);
 #else
   return NULL;
 #endif
@@ -76,7 +80,7 @@ frysk::sys::PtraceByteBuffer$Area*
 frysk::sys::PtraceByteBuffer$Area::usrArea ()
 {
 #if defined PT_READ_U && defined PT_WRITE_U
-  return new PtraceByteBuffer$Area (PT_READ_U, PT_WRITE_U);
+  return new PtraceByteBuffer$Area (PT_READ_U, PT_WRITE_U, sizeof(struct user));
 #else
   return NULL;
 #endif

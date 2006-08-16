@@ -120,7 +120,11 @@ public class LinuxProc
 			}
 		    catch (TaskException e)
 			{
-			    // XXX error recovery?
+			  // No big deal; we weren't able to create
+			  // the LinuxTask object because we don't
+			  // have permission to access the task's
+			  // executable or  something, so the user
+			  // won't be able to manipulate this task.
 			}
 		}
 	    }

@@ -59,11 +59,14 @@ main:
 	mov 0(%r10), %r10
 	cmp $8, %r10
 	jne .L2
-	cmp $4, %rdx
+	mov $0xdeadbeef,%r10
+	cmp %r10, %rdx
 	jne .L2
-	cmp $5, %rcx
+	mov $0xfeeddeadbeef, %r10
+	cmp %r10, %rcx
 	jne .L2
-	cmp $6, %r8
+	mov $0xdeadbeefdeadbeef, %r10
+	cmp %r10, %r8
 	jne .L2
 	mov $1, %rax
 	syscall

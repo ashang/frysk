@@ -44,21 +44,30 @@ public class PtraceByteBuffer
 {
     static public class Area
     {
-	protected int peek;
-	protected int poke;
-	// XXX: ECJ 3.1 complains if this is private - it can't see
-	// that the CNI code is calling it.
-	protected Area (int peek, int poke)
-	{
-	    this.peek = peek;
-	    this.poke = poke;
-	}
-	static private native Area textArea ();
-	static private native Area dataArea ();
-	static private native Area usrArea ();
-	static public final Area TEXT = textArea ();
-	static public final Area DATA = dataArea ();
-	static public final Area USR = usrArea ();
+      protected int peek;
+      protected int poke;
+      protected long maxOffset;
+      
+      // XXX: ECJ 3.1 complains if this is private - it can't see
+      // that the CNI code is calling it.
+      protected Area (int peek, int poke, long maxOffset)
+      {
+	this.peek = peek;
+	this.poke = poke;
+	this.maxOffset = maxOffset;
+      }
+      
+      public long getMaxOffset() 
+      {
+	return maxOffset;
+      }
+      
+      static private native Area textArea ();
+      static private native Area dataArea ();
+      static private native Area usrArea ();
+      static public final Area TEXT = textArea ();
+      static public final Area DATA = dataArea ();
+      static public final Area USR = usrArea ();
     }
 
     protected Area area;
@@ -66,7 +75,7 @@ public class PtraceByteBuffer
 
     public PtraceByteBuffer (int pid, Area area)
     {
-	super (0, 0);
+	super (0, area.getMaxOffset());
 	this.pid = pid;
 	this.area = area;
     }

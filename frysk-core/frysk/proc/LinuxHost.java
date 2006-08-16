@@ -217,7 +217,7 @@ public class LinuxHost
       }
     catch (TaskException e)
       {
-	// XXX do real exception handling
+	throw new RuntimeException("got TaskException", e);
       }
 
   }
@@ -272,8 +272,7 @@ public class LinuxHost
 	  }
 	catch (TaskException e)
 	  {
-	    // XXX do real exception handling
-	    clone = null;
+	    throw new RuntimeException("caught TaskException", e);
 	  }
         task.processClonedEvent(clone);
       }
@@ -298,8 +297,7 @@ public class LinuxHost
 	  }
 	catch (TaskException e)
 	  {
-	    // XXX do real exception handling
-	    forkTask = null;
+	    throw new RuntimeException("caught TaskException", e);
 	  }
         task.processForkedEvent(forkTask);
       }

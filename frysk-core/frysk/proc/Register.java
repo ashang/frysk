@@ -47,11 +47,22 @@ public class Register
 {
   // Type type;
   // boolean readWrite;
-  int bank;
-  int offset;
-  int length;
-  String name;
+  final int bank;
+  final int offset;
+  final int length;
+  final String name;
 
+  // Does this really not exist somewhere else?
+  private static void reverseArray(byte[] array) 
+  {
+    for (int left = 0, right = array.length - 1; left < right; left++, right--)
+      {
+	byte temp = array[right];
+	array[right] = array[left];
+	array[left] = temp;
+      }
+  }
+  
   Register(int bank, int offset, int length, String name)
   {
     this.bank = bank;
@@ -59,25 +70,17 @@ public class Register
     this.length = length;
     this.name = name;
   }
-
+  
   public long get(frysk.proc.Task task)
   {
     ByteBuffer b = task.registerBank[bank];
     long val = 0;
+    byte[] bytes = new byte[length];
+    b.get(offset, bytes, 0, length);
     if (b.order() == ByteOrder.LITTLE_ENDIAN)
-      {
-	for (int i = offset + length - 1; i >= offset; i--)
-	  {
-	    val = val << 8 | (b.get(i) & 0xff);
-	  }
-      }
-    else
-      {
-	for (int i = offset; i < offset + length; i++)
-	  {
-	    val = val << 8 | (b.get(i) & 0xff);
-	  }
-      }
+      reverseArray(bytes);
+    for (int i = 0; i < length; i++) 
+	val = val << 8 | (bytes[i] & 0xff);
     return val;
   }
 
@@ -91,27 +94,26 @@ public class Register
   {
     ByteBuffer b = task.registerBank[bank];
     byte[] bytes = new byte[length];
+    b.get(offset, bytes, 0, length);
+    
     if (b.order() == ByteOrder.LITTLE_ENDIAN)
-      {
-	for (int i = 0; i < length; i++)
-	  {
-	    bytes[length - 1 - i] = (byte)b.get(i + offset);
-	  }
-      }
-    else
-      {
-	for (int i = 0; i < length; i++)
-	  {
-	    bytes[i] = (byte)b.get(i + offset);
-	  }
-      }
+      reverseArray(bytes);
     return new BigInteger(bytes);
   }
 
   public void put(frysk.proc.Task task, long val)
   {
     ByteBuffer b = task.registerBank[bank];
-    if (b.order() == ByteOrder.LITTLE_ENDIAN)
+
+    if (length == 4) 
+      {
+	b.putUInt(offset, val);
+      }
+    else if (length == 8) 
+      {
+	b.putULong(offset, val);
+      }
+    else if (b.order() == ByteOrder.LITTLE_ENDIAN)
       {
 	for (int i = offset; i < offset + length; i++)
 	  {
@@ -135,31 +137,51 @@ public class Register
    * @param task task in which to write the register
    * @param val the value
    */
-  public void putBigInteger(frysk.proc.Task task, BigInteger val)
+  public void putBigInteger(frysk.proc.Task task, BigInteger bigVal)
   {
     ByteBuffer b = task.registerBank[bank];
-    byte[] bytes = val.toByteArray();
-    int i;
-    if (b.order() == ByteOrder.LITTLE_ENDIAN) 
+    byte[] bytes = bigVal.toByteArray();
+    int valLen = bytes.length;
+    byte signExtension = (bigVal.signum() < 0 ? (byte)-1 : 0);
+    
+    // XXX Refactor this test so it's done at creation time.
+    if (length == 4 || length == 8) 
       {
-	for (i = 0; i < bytes.length; i++) 
-	  {
-	    b.putByte(i + offset, bytes[bytes.length - 1 - i]);
-	  }
-	for (; i < length; i++)
-	  {
-	    b.putByte(i + offset, (byte)0);
-	  }
-      } 
-    else 
+	long val = 0;
+	
+	for (int i = 0; i < length - valLen; i++)
+	  val = (val << 8) | (signExtension & 0xff);
+	for (int i = 0; i < valLen; i++)
+	  val = (val << 8) | (bytes[i] & 0xff);
+	if (length == 4)
+	  b.putUInt(offset, val);
+	else
+	  b.putULong(offset, val);
+      }
+    else
       {
-	for (i = length; i >= bytes.length; i--)
+	int i;
+	if (b.order() == ByteOrder.LITTLE_ENDIAN) 
 	  {
-	    b.putByte(i + offset, (byte)0);
-	  }
-	for (; i >= 0; i--) 
+	    for (i = 0; i < bytes.length; i++) 
+	      {
+		b.putByte(i + offset, bytes[bytes.length - 1 - i]);
+	      }
+	    for (; i < length; i++)
+	      {
+		b.putByte(i + offset, signExtension);
+	      }
+	  } 
+	else 
 	  {
-	    b.putByte(i + offset, bytes[i]);
+	    for (i = length; i >= bytes.length; i--)
+	      {
+		b.putByte(i + offset, signExtension);
+	      }
+	    for (; i >= 0; i--) 
+	      {
+		b.putByte(i + offset, bytes[i]);
+	      }
 	  }
       }
   }

@@ -799,6 +799,7 @@ abstract public class Task
     catch (TaskException e) 
       {
 	logger.log(Level.SEVERE, "TaskException in {0}", this);
+	throw new RuntimeException("caught TaskException", e);
       }
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {
@@ -827,6 +828,7 @@ abstract public class Task
     catch (TaskException e) 
       {
 	logger.log(Level.SEVERE, "TaskException in {0}", this);
+	throw new RuntimeException("caught TaskException", e);
       }
     for (Iterator i = syscallObservers.iterator(); i.hasNext();)
       {

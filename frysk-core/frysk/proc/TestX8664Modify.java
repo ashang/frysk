@@ -105,37 +105,40 @@ public class TestX8664Modify
 	// and sets up the registers with simple values.  We want
 	// to verify that all the registers are as expected.
 	syscallNum = syscall.number (task);
-	if (syscallNum == 20) { 
-	  rsi = isa.getRegisterByName ("rsi").get (task);
-	  assertEquals ("rsi register", 22, rsi);
-	  rdx = isa.getRegisterByName ("rdx").get (task);
-	  assertEquals ("rdx register", 23, rdx);
-	  // r10 contains address of memory location we
-	  // are expected to write 8 to
-	  r10 = isa.getRegisterByName ("r10").get (task);
-	  int mem = task.memory.getInt (r10);
-	  assertEquals ("old mem value", 3, mem);
-	  task.memory.putInt (r10, 8);
-	  mem = task.memory.getInt (r10);
-	  assertEquals ("new mem value", 8, mem);
-	  rdi = isa.getRegisterByName ("rdi").get (task);
-	  assertEquals ("rdi register", 21, rdi);
-	  // r8 contains the address we want to jump to
-	  // when we return from the syscall
-	  r8 = isa.getRegisterByName ("r8").get (task);
-	  isa.getRegisterByName ("r9").put (task, r8);
-	  // set a number of the registers as expected
-	  isa.getRegisterByName ("rdi").put (task, 2);
-	  isa.getRegisterByName ("rsi").put (task, 3);
-	  isa.getRegisterByName ("rdx").put (task, 4);
-	  isa.getRegisterByName ("rcx").put (task, 5);
-	  isa.getRegisterByName ("r8").put (task, 6);
-	}
-	else if (syscallNum == 1) {
-	  rdi = isa.getRegisterByName ("rdi").get (task);
-	  assertEquals ("exit code", 2, rdi);
-	  exitSyscall = true;
-	}
+	if (syscallNum == 20)
+	  { 
+	    rsi = isa.getRegisterByName ("rsi").get (task);
+	    assertEquals ("rsi register", 22, rsi);
+	    rdx = isa.getRegisterByName ("rdx").get (task);
+	    assertEquals ("rdx register", 23, rdx);
+	    // r10 contains address of memory location we
+	    // are expected to write 8 to
+	    r10 = isa.getRegisterByName ("r10").get (task);
+	    int mem = task.memory.getInt (r10);
+	    assertEquals ("old mem value", 3, mem);
+	    task.memory.putInt (r10, 8);
+	    mem = task.memory.getInt (r10);
+	    assertEquals ("new mem value", 8, mem);
+	    rdi = isa.getRegisterByName ("rdi").get (task);
+	    assertEquals ("rdi register", 21, rdi);
+	    // r8 contains the address we want to jump to
+	    // when we return from the syscall
+	    r8 = isa.getRegisterByName ("r8").get (task);
+	    isa.getRegisterByName ("r9").put (task, r8);
+	    // set a number of the registers as expected
+	    isa.getRegisterByName ("rdi").put (task, 2);
+	    isa.getRegisterByName ("rsi").put (task, 3);
+	    isa.getRegisterByName ("rdx").put (task, 0xdeadbeefl);
+	    isa.getRegisterByName ("rcx").put (task, 0xfeeddeadbeefl);
+	    // 0xdeadbeefdeadbeef
+	    isa.getRegisterByName ("r8").put (task, -0x2152411021524111l);
+	  }
+	else if (syscallNum == 1) 
+	  {
+	    rdi = isa.getRegisterByName ("rdi").get (task);
+	    assertEquals ("exit code", 2, rdi);
+	    exitSyscall = true;
+	  }
 	return Action.CONTINUE;
       }
       public Action updateSyscallExit (Task task)

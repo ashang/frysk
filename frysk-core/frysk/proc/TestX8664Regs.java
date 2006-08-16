@@ -39,7 +39,9 @@
 
 package frysk.proc;
 
+import java.util.Hashtable;
 import java.util.Observable;
+import java.math.BigInteger;
 
 /**
  * Check that x86_64 registers can be accessed.
@@ -52,14 +54,17 @@ public class TestX8664Regs
   {
     boolean EMT64Isa;
     int syscallNum;
-    long orig_rax;
-    long rdi;
-    long rsi;
-    long rdx;
-    long r10;
-    long r8;
-    long r9;
-	
+    String[] regNames 
+    = new String[] { "orig_rax", "rdi", "rsi", "rdx", "r10", "r8", "r9"};
+    long[] regValues
+    = new long[] 
+    { 1, 2, 3, -4, 0xdeadbeefl, 0xfeeddeadbeefl,
+      // 0xdeadbeefdeadbeef
+      -0x2152411021524111l
+    };
+    Hashtable longResults = new Hashtable();
+    Hashtable bigResults = new Hashtable();
+    
     // Need to add task observers to the process the moment it is
     // created, otherwize the creation of the very first task is
     // missed (giving a mismatch of task created and deleted
@@ -68,10 +73,14 @@ public class TestX8664Regs
     class TaskEventObserver
       extends SyscallExaminer.Tester.TaskEventObserver
     {
+    
+    }
+
+    class LongTaskEventObserver
+      extends TaskEventObserver
+    {
       public Action updateSyscallEnter (Task task)
       {
-	logger.entering("TestX8664Regs.TaskEventObserver",
-			"updateSyscallEnter");
 	super.updateSyscallEnter(task);
 	SyscallEventInfo syscall;
 	LinuxEMT64 isa;
@@ -89,15 +98,22 @@ public class TestX8664Regs
 	// and sets up the registers with simple values.  We want
 	// to verify that all the registers are as expected.
 	syscallNum = syscall.number (task);
-	if (syscallNum == 1) { 
-	  orig_rax = isa.getRegisterByName ("orig_rax").get (task);
-	  rdi = isa.getRegisterByName ("rdi").get (task);
-	  rsi = isa.getRegisterByName ("rsi").get (task);
-	  rdx = isa.getRegisterByName ("rdx").get (task);
-	  r10 = isa.getRegisterByName ("r10").get (task);
-	  r8 = isa.getRegisterByName ("r8").get (task);
-	  r9 = isa.getRegisterByName ("r9").get (task);
-	}
+	if (syscallNum == 1) 
+	  { 
+	    for (int i = 0; i < regNames.length; i++)
+	      {
+		longResults.put(regNames[i], 
+				new Long(isa.getRegisterByName(regNames[i])
+					 .get (task)));
+	      }
+	    for (int i = 0; i < regNames.length; i++) 
+	      {
+		bigResults.put(regNames[i],
+			       isa.getRegisterByName(regNames[i])
+			       .getBigInteger(task));
+	      }
+	    
+	  }
 	return Action.CONTINUE;
       }
     }
@@ -105,13 +121,20 @@ public class TestX8664Regs
     class RegsTestObserver 
       extends SyscallExaminer.TaskAddedObserver 
     {
+      private TaskEventObserver taskEventObserver;
+      
+      RegsTestObserver(TaskEventObserver teo)
+      {
+	super();
+	taskEventObserver = teo;
+      }
+      
       public void update(Observable o, Object obj)
       {
 	super.update(o, obj);
 	Task task = (Task)obj;
 	if (!isChildOfMine(task.proc))
 	  return;
-	TaskEventObserver taskEventObserver = new TaskEventObserver();
 	Isa isa;
 	try 
 	  {
@@ -139,10 +162,26 @@ public class TestX8664Regs
     TestX8664RegsInternals ()
     {
       super();
-      addTaskAddedObserver(new RegsTestObserver());
+      addTaskAddedObserver(new RegsTestObserver(new LongTaskEventObserver()));
+    }
+    
+    void verify() 
+    {
+      for (int i = 0; i < regNames.length; i++) 
+	{
+	  assertEquals(regNames[i] + " long value", 
+		       regValues[i],
+		       ((Long)longResults.get(regNames[i])).longValue());
+	}
+      for (int i = 0; i < regNames.length; i++) 
+	{
+	  assertTrue(regNames[i] + " BigInteger value", 
+		     BigInteger.valueOf(regValues[i])
+		     .compareTo((BigInteger)bigResults.get(regNames[i])) == 0);
+	}
+      assertTrue ("exited", exited);
     }
   }
-  
 
   public void testX8664Regs ()
   {
@@ -157,17 +196,9 @@ public class TestX8664Regs
     logger.finest("About to resume funit-x8664-regs");
     child.resume();
     assertRunUntilStop ("run \"x86regs\" until exit");
-
-    if (t.EMT64Isa) {
-      assertEquals ("orig_rax register", 1, t.orig_rax);
-      assertEquals ("rdi register", 2, t.rdi);
-      assertEquals ("rsi register", 3, t.rsi);
-      assertEquals ("rdx register", 4, t.rdx);
-      assertEquals ("r10 register", 5, t.r10);
-      assertEquals ("r8 register", 6, t.r8);
-      assertEquals ("r9 register", 7, t.r9);
-
-      assertTrue ("exited", t.exited);
-    }
+    if (t.EMT64Isa) 
+      {
+	t.verify();
+      }
   }
 }
