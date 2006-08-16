@@ -110,12 +110,13 @@ behave weird; and <tt>/proc</tt> is not accessible</li>
 
 <li>You will need to install a number of packages vis:
 <pre>
-sudo yum install antlr jdom glib-java glib-java-devel \
-libgtk-java libgtk-java-devel libvte-java vte-devel \
-gcc-java xmlto transfig dogtail automake gcc-c++ \
-libglade-java libglade-java-devel libglade2-devel \
-sharutils eclipse-ecj
+sudo yum install antlr jdom junit gcc-java gcc-c++ \
+    libglade-java-devel libvte-java-devel \
+    automake xmlto transfig eclipse-ecj dogtail \
+    libglade2-devel vte-devel ghostscript
 </pre>
+<!-- The last three (libglade2-devel vte-devel ghostscript) are redundant in
+rawhide since 2006-08-17, but we are leaving it in for a while. -->
 </li>
 
 <li>The <em>frysk</em> RPM included in FC-5 is very different to that
