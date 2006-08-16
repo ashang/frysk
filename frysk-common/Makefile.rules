@@ -536,7 +536,7 @@ clean-classes-dir:
 
 # When ECJ is available, use it as an extra lint pass.  GCJ has the
 # habit of silently compiling invalid Java code (garbage in, garbage out),
-# fortunately ECJ rejects it.  The files list can optionally be pruned first.
+# fortunately ECJ rejects it.  The file list can optionally be pruned first.
 
 all-local: ecj/checked
 ecj/checked: files.list $(GEN_DIRNAME).jar
