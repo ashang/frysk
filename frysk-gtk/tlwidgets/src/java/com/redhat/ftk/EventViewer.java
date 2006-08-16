@@ -126,7 +126,7 @@ public class EventViewer extends VBox
     /*
      * Get selected traces
      */
-    public long[] getSelectedTraces() {
+    public int[] getSelectedTraces() {
       return ftk_eventviewer_get_selected_traces (getHandle());
     }
     /**
@@ -316,7 +316,7 @@ public class EventViewer extends VBox
     native static final protected boolean
     ftk_eventviewer_delete_trace (Handle sc, int trace_idx);
     
-    native static final protected long[]
+    native static final protected int[]
     ftk_eventviewer_get_selected_traces (Handle sc);
                 
     native static final protected boolean

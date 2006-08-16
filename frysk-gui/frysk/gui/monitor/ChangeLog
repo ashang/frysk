@@ -1,3 +1,8 @@
+2006-08-16  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java: Fixed right-click menu.
+	Got rid of kludge of storing integer inside a pointer.
+
 2006-08-16    <swagiaal@redhat.com>
 
 	* SessionProcDataModel.java: handling was being added to itemAdded

@@ -1,5 +1,9 @@
 2006-08-16  Nurdin Premji  <npremji@redhat.com>
 
+	* src/jni/com_redhat_ftk_EventViewer.c: Ditto
+	* src/widgets/ftkeventviewer.c: Removed kludge of storing integer in a pointer.	
+	* src/java/com/redhat/ftk/EventViewer.java: Removed kludge of casting integer as a pointer.
+
 	* src/widgets/ftkeventviewer.c: Added more code for trace highlighting based on button release
 	as well as button click events. User clicks and then drags away == cancel.
 
