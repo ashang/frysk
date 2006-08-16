@@ -41,12 +41,11 @@ package frysk.proc;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.Config;
 import frysk.event.Event;
 
 class State
 {
-    protected static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    protected static Logger logger = Logger.getLogger ("frysk.proc");
 
     private String name;
     protected State (String name)

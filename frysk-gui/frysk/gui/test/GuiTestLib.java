@@ -45,7 +45,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import junit.framework.TestCase;
-import frysk.Config;
 import frysk.junit.Paths;
 import frysk.proc.Action;
 import frysk.proc.Manager;
@@ -61,7 +60,7 @@ import frysk.gui.monitor.EventLogger;
 
 public class GuiTestLib extends TestCase{
 	
-	 protected final static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    protected final static Logger logger = Logger.getLogger ("frysk.gui.test");
 
 	public GuiTestLib(){
 	}

@@ -39,7 +39,6 @@
 
 package frysk.proc;
 
-import frysk.Config;
 import frysk.event.SignalEvent;
 import frysk.junit.Paths;
 import frysk.sys.Errno;
@@ -70,7 +69,7 @@ import junit.framework.TestCase;
 public class TestLib
     extends TestCase
 {
-    protected final static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    protected final static Logger logger = Logger.getLogger ("frysk.proc");
 
     /**
      * A variable that has the value true.  Used by code trying to

@@ -49,12 +49,10 @@ import java.util.logging.Logger;
 
 import lib.dw.Dwfl;
 import lib.dw.DwflLine;
-import frysk.Config;
-
 
 abstract public class Task
 {
-  protected static final Logger logger = Logger.getLogger(Config.FRYSK_LOG_ID);
+  protected static final Logger logger = Logger.getLogger ("frysk.proc");
 
   /**
    * If known, as a result of tracing clone or fork, the task that created this

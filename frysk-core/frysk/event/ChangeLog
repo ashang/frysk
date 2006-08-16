@@ -1,3 +1,8 @@
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* TimerEvent.java: Specify "frysk.event" as the logger, delete
+	unused import of frysk.Config.
+
 2006-05-25  Stan Cox  <scox@redhat.com>
 
 	* EventLoop.java (wakeupIfBlocked): Change to FINEST.

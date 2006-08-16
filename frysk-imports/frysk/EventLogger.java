@@ -85,7 +85,7 @@ public class EventLogger
 	    System.exit (1);
 	}
 
-	logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+	logger = Logger.getLogger ("frysk");
 	try {
 	    File log_dir = new File (Config.FRYSK_DIR + log_subdir + "/");
 

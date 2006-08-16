@@ -42,12 +42,11 @@ package frysk.proc;
 import frysk.event.Event;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.Config;
 
 public abstract class TaskEvent
     implements Event
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    private static Logger logger = Logger.getLogger ("frysk.proc");
     protected Task task;
     protected TaskId taskId;
     TaskEvent ()

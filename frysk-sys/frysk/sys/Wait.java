@@ -41,7 +41,6 @@ package frysk.sys;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
-import frysk.Config;
 
 /**
  * Wait for an event from either a process, task, or all processes and
@@ -60,7 +59,7 @@ public final class Wait
 	// Seems that when calling static methods this isn't
 	// initialized, force it.
 	if (logger == null)
-	    logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+	    logger = Logger.getLogger ("frysk.sys");
 	// Log everything, use isLoggable so as to avoid all the
 	// boxing when it isn't needed.
 	if (logger.isLoggable (Level.FINE)) {

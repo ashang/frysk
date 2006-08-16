@@ -5,12 +5,10 @@ package frysk.proc;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import frysk.Config;
-
 class LinuxPPC64
   extends IsaPPC64 implements SyscallEventDecoder
 {
-  private static Logger logger = Logger.getLogger(Config.FRYSK_LOG_ID);
+  private static Logger logger = Logger.getLogger ("frysk.proc");
   private static LinuxPPC64 isa;
 
   static LinuxPPC64 isaSingleton ()

@@ -42,7 +42,6 @@ package frysk.proc;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.Config;
 import frysk.event.Event;
 
 /**
@@ -54,7 +53,7 @@ import frysk.event.Event;
 public final class ProcTasksObserver
     implements TaskObserver.Cloned, TaskObserver.Terminated
 {
-    protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    protected static final Logger logger = Logger.getLogger ("frysk.proc");
     private final Proc proc;
     private final ProcObserver.ProcTasks procTasksObserver;
     private Task mainTask;

@@ -41,7 +41,6 @@ package frysk.event;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * A timer event.
@@ -53,7 +52,7 @@ import frysk.Config;
 public abstract class TimerEvent
     implements Event, Comparable
 {
-    private static Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    private static Logger logger = Logger.getLogger ("frysk.event");
     private long timeMillis;
     private long periodMillis = 0;
 

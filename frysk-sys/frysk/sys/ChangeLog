@@ -1,3 +1,8 @@
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Wait.java: Specify "frysk.sys" as the logger, delete unused
+	import of frysk.Config.
+
 2006-08-16  Tim Moore  <timoore@redhat.com>
 
 	* PtraceByteBuffer.java (Area, Area.getMaxOffset): New method that

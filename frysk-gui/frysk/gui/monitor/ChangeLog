@@ -1,3 +1,8 @@
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* WindowManager.java: Specify "frysk.gui...." as the logger,
+	delete unused import of frysk.Config.
+
 2006-08-16  Mike Cvet  <mcvet@redhat.com>
 
 	* EditObserverDialog.java (.buttonEvent): Removed printing to

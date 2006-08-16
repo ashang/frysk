@@ -47,7 +47,6 @@ import java.util.Iterator;
 import java.util.Observable; // XXX: Temporary.
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * A host machine.
@@ -58,7 +57,7 @@ import frysk.Config;
 
 public abstract class Host
 {
-    public static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    public static final Logger logger = Logger.getLogger ("frysk.proc");
     /**
      * The host corresponds to a specific system.
      */

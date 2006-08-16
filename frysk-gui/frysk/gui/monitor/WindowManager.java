@@ -46,7 +46,6 @@ import java.util.prefs.Preferences;
 
 import org.gnu.glade.LibGlade;
 
-import frysk.Config;
 import frysk.gui.SessionManagerGui;
 import frysk.gui.druid.CreateFryskSessionDruid;
 
@@ -62,7 +61,7 @@ public class WindowManager
 
   public static WindowManager theManager = new WindowManager();
 
-  public static Logger logger = Logger.getLogger(Config.FRYSK_LOG_ID);
+  public static Logger logger = Logger.getLogger ("frysk.gui.monitor");
 
   /**
    * Public instances of the windows {

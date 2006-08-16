@@ -49,12 +49,10 @@ import lib.elf.ElfEMachine;
 import lib.elf.ElfException;
 import lib.elf.ElfFileException;
 
-import frysk.Config;
-
 public class IsaFactory
 {
   private static IsaFactory factory;
-  static final Logger logger = Logger.getLogger(Config.FRYSK_LOG_ID);
+  static final Logger logger = Logger.getLogger ("frysk.proc");
 
   static IsaFactory getFactory()
   {

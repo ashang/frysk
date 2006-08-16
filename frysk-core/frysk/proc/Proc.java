@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import frysk.Config;
 
 /**
  * A UNIX Process, containing tasks, memory, ...
@@ -55,7 +54,7 @@ import frysk.Config;
 
 public abstract class Proc
 {
-    protected static final Logger logger = Logger.getLogger (Config.FRYSK_LOG_ID);
+    protected static final Logger logger = Logger.getLogger ("frysk.proc");
     final ProcId id;
     public ProcId getId ()
     {

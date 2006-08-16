@@ -1,3 +1,8 @@
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Config.javain (FRYSK_LOG_ID): Delete.
+	* EventLogger.java: Specify "frysk" for logger.
+
 2006-08-03  Andrew Cagney  <cagney@redhat.com>
 
 	* Config.javain (FRYSK_LOG_ID): Rename to just "frysk".
