@@ -53,11 +53,11 @@ import java.util.Observable;
 import java.util.Observer;
 // import java.util.Random;
 
-//import org.gnu.atk.AtkObject;
+// import org.gnu.atk.AtkObject;
 import org.gnu.gdk.Color;
-//import org.gnu.gtk.Frame;
+// import org.gnu.gtk.Frame;
 import org.gnu.gtk.Label;
-//import org.gnu.gtk.ShadowType;
+// import org.gnu.gtk.ShadowType;
 import org.gnu.gtk.VBox;
 import org.gnu.gtk.event.MouseEvent;
 import org.gnu.gtk.event.MouseListener;
@@ -80,7 +80,7 @@ public class StatusWidget
 
   // private GuiData data;
 
-  //private Frame frame;
+  // private Frame frame;
 
   private EventViewer viewer;
 
@@ -111,14 +111,14 @@ public class StatusWidget
 
     this.procMap = new HashMap();
     // ========================================
-    //frame = new Frame(""); //$NON-NLS-1$
-    //frame.setBorderWidth(0);
-    //frame.setShadow(ShadowType.NONE);
-    //AtkObject atk = frame.getAccessible();
-    //atk.setName("Status Frame");
-    //atk.setDescription("Frame to hold the status widget.");
+    // frame = new Frame(""); //$NON-NLS-1$
+    // frame.setBorderWidth(0);
+    // frame.setShadow(ShadowType.NONE);
+    // AtkObject atk = frame.getAccessible();
+    // atk.setName("Status Frame");
+    // atk.setDescription("Frame to hold the status widget.");
     // frame.add(mainVbox);
-    //this.add(frame);
+    // this.add(frame);
     // ========================================
 
     // ========================================
@@ -185,21 +185,30 @@ public class StatusWidget
 
             if (traces != null)
               {
-                GuiData data = (GuiData) procMap.get(new Long(traces[0]));
-                if (data.getClass().equals(GuiTask.class))
+                if (1 == traces.length)
                   {
-                    ThreadMenu.getMenu().popup((GuiTask) data);
+                    GuiData data = (GuiData) procMap.get(new Long(traces[0]));
+                    if (data.getClass().equals(GuiTask.class))
+                      {
+                        ThreadMenu.getMenu().popup((GuiTask) data);
+                      }
+                    else if (data.getClass().equals(GuiProc.class))
+                      {
+                        // procMenu.popup((GuiProc) data);
+                        // FIXME: Get a process menu.
+                        System.out.println("This is a GuiProc, can't get the menu yet.");
+                      }
+                    else
+                      {
+                        System.out.println("Sorry this isn't a task or a proc, its a: "
+                                           + data.getClass());
+                      }
                   }
-                else if (data.getClass().equals(GuiProc.class))
+                else if (1 < traces.length)
                   {
-                    // procMenu.popup((GuiProc) data);
-                    // FIXME: Get a process menu.
-                    System.out.println("This is a GuiProc, can't get the menu yet.");
-                  }
-                else
-                  {
-                    System.out.println("Sorry this isn't a task or a proc, its a: "
-                                       + data.getClass());
+                    System.out.println("Multiple traces selected, "
+                                       + "TODO: multiple trace functionality, "
+                                       + "also drag and drop.");
                   }
               }
 
@@ -405,7 +414,7 @@ public class StatusWidget
 
   public void setName (String name)
   {
-    //this.frame.setLabel(name);
+    // this.frame.setLabel(name);
     System.out.println("Why do you want to change my name");
   }
 

@@ -1,3 +1,9 @@
+2006-08-16  Nurdin Premji  <npremji@redhat.com>
+
+	* StatusWidget.java: Applied GNU Formatting.
+	Changed code to only pop up menu when one trace is selected.
+	Multiple traces should have different functionality.
+
 2006-08-15  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java: Asthetic changes to eventviewer.

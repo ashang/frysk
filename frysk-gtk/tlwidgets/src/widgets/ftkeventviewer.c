@@ -91,6 +91,9 @@ static gboolean ftk_ev_button_press_event (GtkWidget * widget,
 					   GdkEventButton * event,
 					   gpointer data);
 
+static gboolean ftk_ev_button_release_event (GtkWidget * widget,
+					   GdkEventButton * event,
+					   gpointer data);
 
 static gboolean ftk_ev_motion_notify_event (GtkWidget * widget,
 					    GdkEventMotion * event,
@@ -740,10 +743,8 @@ create_drawing_area (FtkEventViewer * eventviewer)
   g_signal_connect (GTK_OBJECT(da), "button_press_event",
 		    G_CALLBACK (ftk_ev_button_press_event), eventviewer);
 		    
-     
-
-//  g_signal_connect (GTK_OBJECT(da), "button_release_event",
-//		    G_CALLBACK (ftk_ev_button_press_event), eventviewer);
+  g_signal_connect (GTK_OBJECT(da), "button_release_event",
+		    G_CALLBACK (ftk_ev_button_release_event), eventviewer);
 
   g_signal_connect (GTK_OBJECT(da), "motion_notify_event",
 		    G_CALLBACK (ftk_ev_motion_notify_event), eventviewer);
@@ -1215,6 +1216,11 @@ set_readout (FtkEventViewer * eventviewer, double y)
 }
 #endif
 
+
+/* 
+ * Highlighting a trace: User should click and release button on the same trace.
+ * Clicking on a trace and releasing elsewhere is considered a cancel.
+ */
 static gboolean
 ftk_ev_button_press_event (GtkWidget * widget,
 			   GdkEventButton * event,
@@ -1242,6 +1248,50 @@ ftk_ev_button_press_event (GtkWidget * widget,
 		{
 			ftk_trace_selected (temp_trace) = !ftk_trace_selected (temp_trace);
 			
+	  		return FALSE;
+		} 
+    }
+	
+  /* If no trace was selected, set all trace selected values to false. */
+  for (gint trace = 0; trace < ftk_ev_trace_next(eventviewer); trace++)
+  {
+  	FtkTrace *temp_trace = ftk_ev_trace(eventviewer, trace);
+  	ftk_trace_selected (temp_trace) = FALSE;
+  }
+   
+   if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
+      			ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
+				eventviewer);
+	  		}
+	  		
+  return FALSE;
+}
+
+static gboolean
+ftk_ev_button_release_event (GtkWidget * widget, 
+							GdkEventButton *event,
+							gpointer data)
+{
+	if (1 != event->button ) {
+		return FALSE;
+	}
+
+  /* Select a trace. */
+  FtkEventViewer *eventviewer = FTK_EVENTVIEWER(data);
+
+
+ /* If a trace was selected toggle its selected value. */
+  for (gint trace = 0; trace < ftk_ev_trace_next(eventviewer); trace++) 
+    {
+      FtkTrace *temp_trace = ftk_ev_trace(eventviewer, trace);
+      //FIXME: HARDCODED VALUES
+       double vp = (double)((ftk_trace_label_dheight(temp_trace) >> 1) +
+				 ftk_trace_vpos_d(temp_trace));
+      
+     
+      if ( (abs ((double) event->y - vp) < SELECT_TOLERANCE) && ftk_trace_selected(temp_trace))
+		{
+			
 			if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
       			ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
 				eventviewer);
@@ -1264,7 +1314,7 @@ ftk_ev_button_press_event (GtkWidget * widget,
 	  		}
 	  		
   return FALSE;
-}
+}					
 
 static void
 ftk_create_popup_window (FtkEventViewer * eventviewer, char * lbl, double dx)
