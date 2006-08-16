@@ -51,6 +51,7 @@ __author__ = 'Nurdin Premji <npremji@redhat.com>'
 # Imports
 from dogtail import tree
 from dogtail import predicate
+from dogtail.config import config
 
 # Setup to parse test input data (XML file)
 import xml.sax
@@ -67,10 +68,10 @@ import unittest
 # Test support functions
 from FryskHelpers import *
 
-class TestEVMarkers (unittest.TestCase):
+class TestEventViewerMarkers (unittest.TestCase):
 
     def setUp(self):
-        
+   
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
@@ -115,16 +116,35 @@ class TestEVMarkers (unittest.TestCase):
         statusWidget = monitor.child('statusWidget')
 
         #Ensure that there are the proper number of monitors.
-        #Terminating
-        terminatingObserver = statusWidget.child('Terminating Observer')
-        #Exec
-        execObserver = statusWidget.child('Exec Observer')
-        #Fork
-        forkObserver = statusWidget.child('Fork Observer')
-       
+
+        # Positive test
+        theObserverList = ['Terminating Observer', 'Exec Observer', 'Fork Observer']
+        for observerName in theObserverList:
+            try:
+                tempObserver = statusWidget.child(observerName)
+                self.theLogWriter.writeResult({'INFO' :  'positive test passed - observer ' + observerName + ' found'  })
+            except dogtail.tree.SearchError:
+                self.fail ( 'Error - unable to locate Observer with name = ' + observerName )
+                sys.exit(1)
+
+        # Negative test
+
+        # Set the threshold to 3 to avoid having 17 search failure messages displayed for
+        # each iteration of the negative test
+        config.searchCutoffCount=3
+
+        theBadObserverList = ['Terminating Observer suffix', 'prefix Exec Observer']
+        for observerName in theBadObserverList:
+            try:
+                tempObserver = statusWidget.child(observerName)
+                self.fail ( 'Error - located a non-existent Observer with name = ' + observerName )
+                sys.exit(1)
+            except dogtail.tree.SearchError:
+                self.theLogWriter.writeResult({'INFO' :  'negative test passed - non-existent observer ' + observerName + ' not found'  })
+
 def suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestEVMarkers))
+    suite.addTest(unittest.makeSuite(TestEventViewerMarkers))
     return suite
 
 if __name__ == '__main__':
