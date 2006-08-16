@@ -1,3 +1,8 @@
+2006-08-16    <swagiaal@redhat.com>
+
+	* glade/procpop.glade: Added minimum height to observerActionsViewPort
+	and observerFiltersViewPort.
+
 2006-08-14  Stepan Kasal  <kasal@ucw.cz>
 
 	* test/dogtail_scripts/frysk_suite.in: Revert my chang from 2006-08-08.

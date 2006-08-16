@@ -1820,12 +1820,13 @@
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-		  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
 		  <property name="shadow_type">GTK_SHADOW_NONE</property>
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkViewport" id="viewport1">
+		    <widget class="GtkViewport" id="observerActionsViewPort">
+		      <property name="height_request">90</property>
 		      <property name="visible">True</property>
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
@@ -1902,12 +1903,13 @@
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="hscrollbar_policy">GTK_POLICY_NEVER</property>
-		  <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+		  <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
 		  <property name="shadow_type">GTK_SHADOW_NONE</property>
 		  <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 		  <child>
-		    <widget class="GtkViewport" id="viewport2">
+		    <widget class="GtkViewport" id="observerFiltersViewPort">
+		      <property name="height_request">90</property>
 		      <property name="visible">True</property>
 		      <property name="shadow_type">GTK_SHADOW_ETCHED_IN</property>
 
