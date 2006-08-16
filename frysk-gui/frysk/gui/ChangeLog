@@ -1,3 +1,7 @@
+2006-08-16  Rick Moseley  <rmoseley@redhat.com>
+
+	* sessions/ProcessPicker.java: Set upper left window icon to Frysk's.
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* test/GuiTestLib.java: Specify "frysk.gui...." as the logger,

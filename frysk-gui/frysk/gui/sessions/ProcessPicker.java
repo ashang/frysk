@@ -42,6 +42,7 @@ package frysk.gui.sessions;
 
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
+import frysk.gui.common.IconManager;
 import frysk.gui.monitor.GuiProc;
 import frysk.gui.monitor.WindowManager;
 
@@ -199,6 +200,7 @@ public class ProcessPicker
 
         setListeners();
         procView.expandAll();
+        this.setIcon(IconManager.windowIcon);
         this.run();
       }
   }
