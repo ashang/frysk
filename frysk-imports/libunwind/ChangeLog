@@ -1,3 +1,7 @@
+2006-08-16  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.in (dvi): Add phony target.
+
 2006-08-10  Rick Moseley  <rmoseley@redhat.com>
 
 	* configure.ac: Turn on UNW_REMOTE_ONLY always for Frysk.

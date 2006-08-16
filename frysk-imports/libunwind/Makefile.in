@@ -146,3 +146,8 @@ distdir:
 	tar cfC - '$(srcdir)' \
 	  --exclude=CVS --exclude=autom4te.cache --exclude=.cvsignore . \
 	  | tar xfC - '$(distdir)'
+
+# A dirty hack: ignore "dvi"
+.PHONY: dvi
+dvi:
+	@/bin/true
