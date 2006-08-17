@@ -2,6 +2,8 @@
 
 	* Makefile.am: Stopped recompiling the class files 3 times.
 	Should also fix make -j bugs. Thanks to cagney.
+	
+	ftkeventviewer.c (ftk_eventviewer_init): Fixed exception error.
 
 2006-08-16  Nurdin Premji  <npremji@redhat.com>
 
