@@ -1,3 +1,7 @@
+2006-08-17  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* glade/procpop.glade: Remove dangling quit menu handler
+
 2006-08-16  Rick Moseley  <rmoseley@redhat.com>
 
 	* sessions/ProcessPicker.java: Set upper left window icon to Frysk's.
