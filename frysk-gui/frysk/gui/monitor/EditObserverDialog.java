@@ -135,15 +135,20 @@ public class EditObserverDialog
               EditObserverDialog.this.hideAll();
             else
               {
-                String msg = "Error with an Action! Argument: "
-                  + actionsTable.getOffendingArg()
-                  + " does not exist!";
-                if (!actionsTable.getOffendingArg().startsWith("/"))
-                  msg = msg + "\nTry appending the full path to the executable.";
-                
-                WarnDialog dialog = new WarnDialog(msg);
-                dialog.showAll();
-                dialog.run();
+                String arg = actionsTable.getOffendingArg();
+                if (arg != null)
+                  {
+                    String msg = "Error with an Action! Argument: "
+                                 + actionsTable.getOffendingArg()
+                                 + " does not exist!";
+                    if (! arg.startsWith("/"))
+                      msg = msg
+                            + "\nTry appending the full path to the executable.";
+
+                    WarnDialog dialog = new WarnDialog(msg);
+                    dialog.showAll();
+                    dialog.run();
+                  }
               }
             }
       }
