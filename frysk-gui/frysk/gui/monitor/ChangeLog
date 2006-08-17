@@ -1,5 +1,7 @@
 2006-08-17    <swagiaal@redhat.com>
 
+	* ObserverItemsTable.java: Aded check for null combos part of fix
+	for bz 3061.
 	* SimpleComboBox.java: Changed default text to "No item selected".
 	part of fix for bz 3065.
 	* FilterRow.java: Changed default text to "No filter".

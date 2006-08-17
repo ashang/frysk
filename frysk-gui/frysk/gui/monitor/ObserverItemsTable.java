@@ -144,8 +144,11 @@ public abstract class ObserverItemsTable
             while (i.hasNext())
               {
                 ObserverItemRow row = (ObserverItemRow) i.next();
-                row.combo.unApply();
-              }
+               
+                if(row.combo != null){
+                  row.combo.unApply();
+                }
+              }   
             return false;
           }
       }
