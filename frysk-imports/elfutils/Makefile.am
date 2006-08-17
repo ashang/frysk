@@ -48,8 +48,8 @@ rpm: dist
 	rpmbuild -ts --sign elfutils-@PACKAGE_VERSION@.tar.gz
 
 # Do not install the copy embedded in frysk:
-install:
-	: Do not install elfutils.
+install uninstall installcheck:
+	: Do not run $@ in elfutils.
 
 # Tell version 3.79 and up of GNU make to not build goals in this
 # directory in parallel.

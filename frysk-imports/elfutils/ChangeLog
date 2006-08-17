@@ -1,3 +1,7 @@
+2006-08-17  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Do not run installcheck nor uninstall either.
+
 2006-06-27  Rick Moseley  <rmoseley@redhat.com>
 
 	* Makefile.am: Change to not install for frysk.
