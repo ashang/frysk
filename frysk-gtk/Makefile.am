@@ -61,7 +61,9 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
 if USE_LIBUNWIND
 GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-$(libunwind_cpu).a
 endif
-GEN_GCJ_LDADD += -lopcodes
+# Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
+# link -lbfd_get just for simplification.
+GEN_GCJ_LDADD += -lopcodes -L../frysk-imports/lib/opcodes -lbfd_get
 
 # Hack, need to compile this entire sub-tree with JNI.
 AM_GCJFLAGS += -fjni 

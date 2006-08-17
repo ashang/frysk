@@ -85,7 +85,10 @@ if USE_LIBUNWIND
 GEN_GCJ_LDADD += ./libunwind/src/libunwind-$(libunwind_cpu).a 
 endif
 
-GEN_GCJ_LDADD += -lopcodes
+# Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally 
+# compile this code just for simplification.
+noinst_LIBRARIES += lib/opcodes/libbfd_get.a
+GEN_GCJ_LDADD += -lopcodes -L./lib/opcodes -lbfd_get
 
 all-local: lib/elf/tests/test-core lib/elf/tests/helloworld.o
 

@@ -1,3 +1,9 @@
+2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* lib/opcodes/libbfd_get.c : New file to stub bfd_getb32 and bfd_getl32
+	on PPC64.
+	* Makefile.am : Add lib/opcodes/libbfd_get.a to noinst_LIBRARIES.
+
 2006-07-31  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* bootstrap.sh: Build libunwind if it is supported.

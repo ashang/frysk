@@ -1,3 +1,7 @@
+2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* Makefile.am : Append -lbfd_get to GEN_GCJ_LDADD.
+
 2006-07-21  Nurdin Premji  <npremji@redhat.com>
 
 	* .cvsignore: Ignoring
