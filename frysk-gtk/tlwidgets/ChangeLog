@@ -1,3 +1,8 @@
+2006-08-17  Nurdin Premji  <npremji@redhat.com>
+
+	* Makefile.am: Stopped recompiling the class files 3 times.
+	Should also fix make -j bugs. Thanks to cagney.
+
 2006-08-16  Nurdin Premji  <npremji@redhat.com>
 
 	* src/widgets/ftkeventviewer.h: More trace highlighting.
