@@ -148,6 +148,6 @@ distdir:
 	  | tar xfC - '$(distdir)'
 
 # A dirty hack: ignore "dvi"
-.PHONY: dvi
-dvi:
+.PHONY: dvi installcheck
+dvi installcheck:
 	@/bin/true

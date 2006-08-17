@@ -1,3 +1,7 @@
+2006-08-17  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.in (installcheck): Another stub target.
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.in (dvi): Add phony target.
