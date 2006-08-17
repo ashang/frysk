@@ -106,7 +106,7 @@ public class SimpleComboBox
 
   void init ()
   {
-    this.defaultItem = new GuiObject("Select an item...", "click to select an item");
+    this.defaultItem = new GuiObject("No item selected", "click to select an item");
 
     this.map = new HashMap();
 
@@ -317,7 +317,7 @@ public class SimpleComboBox
    * is selected. 
    * Example: "No items slected" or "please select an item"
    */
-  public void setNoSelectionText(String text){
+  public void setDefaultText(String text){
     this.defaultItem.setName(text);
   }
   

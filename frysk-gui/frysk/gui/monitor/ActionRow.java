@@ -52,7 +52,8 @@ public class ActionRow extends ObserverItemRow{
 		
         ObservableLinkedList comboList = ComboFactory.theFactory.getActionCombos(observer);
 		itemsComboBox.watchLinkedList(comboList);
-		
+        itemsComboBox.setDefaultText("No action");
+        
 		if(combo != null){
         	itemsComboBox.setSelectedText(combo.getName());
 			comboList.swap(itemsComboBox.getSelectedObject(), combo);

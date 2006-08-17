@@ -69,10 +69,10 @@ public class FilterRow extends ObserverItemRow{
 		
 		ObservableLinkedList comboList = ComboFactory.theFactory.getFilterCombos(observer);
 		itemsComboBox.watchLinkedList(comboList);
-		
+		itemsComboBox.setDefaultText("No filter");
 		booleanComboBox = new SimpleComboBox();
 		booleanComboBox.watchLinkedList(booleanList);
-		
+        booleanComboBox.setDefaultText("");
 		if(combo != null){
 			filter = (Filter) combo.getFilter();
 			itemsComboBox.setSelectedText(combo.getName());

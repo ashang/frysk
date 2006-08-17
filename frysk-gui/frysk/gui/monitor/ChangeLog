@@ -1,3 +1,12 @@
+2006-08-17    <swagiaal@redhat.com>
+
+	* SimpleComboBox.java: Changed default text to "No item selected".
+	part of fix for bz 3065.
+	* FilterRow.java: Changed default text to "No filter".
+	part of fix for bz 3065.
+	* ActionRow.java: Changed default text to "No action".
+	part of fix for bz 3065.
+	
 2006-08-16  Nurdin Premji  <npremji@redhat.com>
 
 	* StatusWidget.java: Changed to display menu after a button release.
