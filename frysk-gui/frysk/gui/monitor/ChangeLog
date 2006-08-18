@@ -1,3 +1,9 @@
+2006-08-18  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* AboutWindow.java: Inherit from AboutDialog not Widget.
+	(AboutWindow): Add lifecyclelistener. Add listener for
+	dialog close button.
+
 2006-08-17  Mike Cvet  <mcvet@redhat.com>
 
 	* EditObserverDialog.java (.buttonEvent): Added a null string check
