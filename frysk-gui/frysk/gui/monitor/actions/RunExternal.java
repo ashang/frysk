@@ -40,7 +40,9 @@
 
 package frysk.gui.monitor.actions;
 
-//import frysk.gui.monitor.EventLogger;
+import frysk.gui.Gui;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import frysk.gui.monitor.GuiObject;
 import frysk.gui.monitor.ObservableLinkedList;
 import frysk.proc.Task;
@@ -50,6 +52,7 @@ import frysk.proc.Action;
 import frysk.proc.Manager;
 
 import java.io.File;
+import java.util.Date;
 
 import org.gnu.glib.CustomEvents;
 
@@ -70,6 +73,8 @@ public class RunExternal
 
   private Task theTask;
 
+  private static Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
+  
   public RunExternal ()
   {
     super("Execute an external program from",
@@ -108,7 +113,9 @@ public class RunExternal
       }
     else
       {
-        System.out.println("The executable: " + temp[0] + " does not exist!");
+        errorLog.log(Level.SEVERE, new Date() + 
+                     " RunExternal.setArgument(String argument): " +
+                     "The executable: " + temp[0] + " does not exist!");
         this.execString = temp[0];
         return false;
       }
