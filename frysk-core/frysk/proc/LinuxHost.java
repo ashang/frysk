@@ -40,6 +40,7 @@
 
 package frysk.proc;
 
+import frysk.event.Event;
 import frysk.event.EventLoop;
 import frysk.event.SignalEvent;
 import frysk.sys.Ptrace;
@@ -241,6 +242,48 @@ public class LinuxHost
 
     Wait.Observer waitObserver = new Wait.Observer()
     {
+	/**
+	 * Maintain a list of fscked up kernel waitpid events - where
+	 * an event for a pid arrives before it has been created - so
+	 * that they can be re-processed when there's a fork.
+	 */
+	private List fsckedOrderedKernelEvents;
+	/**
+	 * Run through the list of fscked up kernel waitpid events
+	 * attempting delivery of each in turn.
+	 */
+	private void attemptDeliveringFsckedKernelEvents ()
+	{
+	    if (fsckedOrderedKernelEvents != null) {
+		Event[] pending = (Event[]) fsckedOrderedKernelEvents.toArray (new Event[0]);
+		fsckedOrderedKernelEvents = null;
+		for (int i = 0; i < pending.length; i++) {
+		    pending[i].execute ();
+		}
+	    }
+	}
+	/**
+	 * Append the fscked-up stop event (it arrived when the task
+	 * didn't exist) to the fscked-up list.  Will get re-processed
+	 * later.
+	 */
+	private void saveFsckedOrderedKernelStoppedEvent (final int aPid,
+							  final int aSignal)
+	{
+	    if (fsckedOrderedKernelEvents == null)
+		fsckedOrderedKernelEvents = new LinkedList ();
+	    fsckedOrderedKernelEvents.add (new Event ()
+		{
+		    final int pid = aPid;
+		    final int signal = aSignal;
+		    public void execute ()
+		    {
+			waitObserver.stopped (pid, signal);
+		    }
+		});
+	    
+	}
+
       // Hold onto a scratch ID; avoids overhead of
       // allocating a new taskId everytime a new event
       // arrives -- micro optimization..
@@ -300,6 +343,7 @@ public class LinuxHost
 	    throw new RuntimeException("caught TaskException", e);
 	  }
         task.processForkedEvent(forkTask);
+	attemptDeliveringFsckedKernelEvents ();
       }
 
       public void exitEvent (int pid, boolean signal, int value,
@@ -330,6 +374,15 @@ public class LinuxHost
       public void stopped (int pid, int sig)
       {
         Task task = getTask(pid, "{0} stopped\n");
+	if (task == null) {
+	    // If there's no Task corresponding to TID, assume that
+	    // the kernel fscked up its event ordering - notifying of
+	    // a child-stop before it notified us of a child-create -
+	    // push the event onto a second queue where it can be
+	    // processed after a fork.
+	    saveFsckedOrderedKernelStoppedEvent (pid, sig);
+	    return;
+	}
         switch (sig)
           {
           case Sig.STOP_:

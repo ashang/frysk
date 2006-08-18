@@ -1,3 +1,13 @@
+2006-08-18  Andrew Cagney  <cagney@redhat.com>
+
+	* LinuxHost.java (PollWaitOnSigChld .waitObserver): Add
+	fsckedOrderedKernelEvents, attemptDeliveringFsckedKernelEvents,
+	and saveFsckedOrderedKernelStoppedEvent.
+	(PollWaitOnSigChld .waitObserver .stopped): When the task is not
+	found, push it onto the fsckedOrderedKernelEvents list.
+	(PollWaitOnSigChld .waitObserver .forkEvent): Once the child is
+	created, run over the fsckedOrderedKernelEvents.
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Host.java: Specify "frysk.proc" as the logger, delete unused
