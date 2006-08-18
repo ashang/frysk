@@ -59,7 +59,7 @@ import frysk.proc.Task;
 import frysk.proc.TaskException;
 
 public class StackCallbacks
-    implements UnwindCallbacks
+  implements UnwindCallbacks
 {
   private Task myTask;
 
@@ -250,6 +250,8 @@ public class StackCallbacks
 
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwflDieBias bias = dwfl.getDie(addr);
+    if (bias == null)
+      return "";
     DwarfDie die = bias.die;
     if (die == null)
       return "";
@@ -268,6 +270,8 @@ public class StackCallbacks
 
     Dwfl dwfl = new Dwfl(myTask.getTid());
     DwflDieBias bias = dwfl.getDie(addr);
+    if (bias == null)
+      return 0;
     DwarfDie die = bias.die;
     if (die == null)
       return 0;

@@ -1,3 +1,8 @@
+2006-08-17  Yao Qi  <qiyao@localhost.localdomain>
+
+	* StackCallbacks.java (getProcName): Check the null pointer.
+	(getProcOffset): Ditto.
+
 2006-08-14  Mike Cvet  <mcvet@redhat.com>
 
 	* tests/TestStackBacktrace.java (testBacktrace): TaskCreatedObserver
