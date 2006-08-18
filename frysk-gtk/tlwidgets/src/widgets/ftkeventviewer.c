@@ -82,10 +82,14 @@ static void ftk_eventviewer_spin_vc (GtkSpinButton *spinbutton,
 				     gpointer       user_data);
 #endif
 
-static void ftk_eventviewer_scroll_cv (GtkRange     *range,
+static gboolean ftk_eventviewer_scroll_cv (GtkRange     *range,
 				       GtkScrollType scroll,
 				       gdouble       value,
 				       gpointer      user_data);
+				       
+static gboolean
+ftk_eventviewer_scroll_adj_val_changed (GtkAdjustment *adjustment,
+                                            gpointer       user_data);
 
 static gboolean ftk_ev_button_press_event (GtkWidget * widget,
 					   GdkEventButton * event,
@@ -465,11 +469,7 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
     atk_object_set_name(obj, _("Auto-Updates"));
     atk_object_set_description (obj, _("Enable/disable automatic-updates."));
    
-    
-#if 0 /* fixme -- don't know if needed */
-    g_signal_connect (GTK_OBJECT(scale_toggle_button),"toggled",
-                      (GtkSignalFunc) ftk_eventviewer_scale_toggle, NULL);
-#endif
+
     /* fixme -- make initial state configurable */
     gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hold_toggle_button),
 				  ftk_ev_hold_activated(eventviewer));
@@ -506,7 +506,6 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
    
   }	
 
-#ifdef USE_SLIDER_INTERVAL
   {
     /* ginterval slider */
 
@@ -566,45 +565,6 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
       
     }
   }
-#endif
-
-#ifndef USE_SLIDER_INTERVAL
-  {
-    /* ginterval spin button */
-
-    GtkWidget * frame = gtk_frame_new (NULL);
-    GtkWidget * hbox  = gtk_hbox_new (FALSE, 0);
-    GtkWidget * label = gtk_label_new ("Interval");
-    GtkObject * ival_adj
-      = gtk_adjustment_new (ftk_ev_span (eventviewer),
-			    MINIMUM_SPAN,
-			    MAXIMUM_SPAN,
-			    1.0,
-			    ftk_ev_span (eventviewer),
-			    ftk_ev_span (eventviewer));
-    GtkWidget * ival_button
-      = gtk_spin_button_new (GTK_ADJUSTMENT (ival_adj), /* adjustment */
-			     1.0,		/* gdouble climb_rate */
-			     4);		/* guint digits	*/
-    g_signal_connect (GTK_OBJECT(ival_button),"value-changed",
-                      (GtkSignalFunc) ftk_eventviewer_spin_vc,
-		      eventviewer);
-
-    ftk_ev_interval_button (eventviewer) = ival_button;
-      
-    gtk_tooltips_set_tip (GTK_TOOLTIPS (eventviewer_tips),
-			  ftk_ev_interval_button (eventviewer),
-			  "Set display width in seconds.",
-			  "private");
-
-    gtk_container_add (GTK_CONTAINER(frame), hbox);
-    gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 10);
-    gtk_box_pack_start (GTK_BOX (hbox), ival_button, FALSE, FALSE, 0);
-    gtk_box_pack_end (GTK_BOX (hbutton_box),
-		      frame,
-		      FALSE, FALSE, 0);
-  }
-#endif
 
 #ifdef USE_READOUT
   {
@@ -628,9 +588,6 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
   }
 #endif
 
-  //gtk_widget_show_all (hbutton_box);
-  
-  //return hbutton_box;
 }
 
 
@@ -666,14 +623,10 @@ create_legend_area (FtkEventViewer * eventviewer)
 
   g_signal_connect (GTK_OBJECT(da), "leave_notify_event",
 		    G_CALLBACK (ftk_ev_leave_notify_event), eventviewer);
-		    
-		    
 		     
   ftk_ev_legend_frame (eventviewer) = frame;
   gtk_container_add (GTK_CONTAINER(frame), da);
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_ETCHED_IN);
- // gtk_widget_show_all (frame);
-
 
   /* Legend Accessibility. */
   AtkObject *obj;
@@ -765,8 +718,6 @@ create_drawing_area (FtkEventViewer * eventviewer)
   g_signal_connect (GTK_OBJECT(da), "style-set",
 		    G_CALLBACK (ftk_eventviewer_style), eventviewer);
   
-
-#ifndef NOT_USE_SCROLL
   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
   ftk_ev_da_scrolled_window(eventviewer) = GTK_SCROLLED_WINDOW (scrolled_window);
   
@@ -777,20 +728,16 @@ create_drawing_area (FtkEventViewer * eventviewer)
   atk_object_set_description(obj, _("Scrolled Window to hold Drawing Area"));
   /* ------------------------------ */
    
-  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
+  //gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (scrolled_window), da);
+  gtk_container_add(GTK_CONTAINER(scrolled_window), da);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
 				  GTK_POLICY_ALWAYS,
 				  GTK_POLICY_ALWAYS);
   
   gtk_container_add (GTK_CONTAINER(frame), scrolled_window);
-  gtk_widget_show (scrolled_window);
-#else
-  gtk_container_add (GTK_CONTAINER(frame), da);
-#endif
+ 
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
-  //gtk_widget_show (frame);
-
-  //return frame;
+ 
 }
 
 void
@@ -822,11 +769,19 @@ create_scrollbar (FtkEventViewer * eventviewer)
   gtk_widget_show (h_scroll);
   ftk_ev_scroll (eventviewer) = h_scroll;
   ftk_ev_scroll_adj (eventviewer) = GTK_ADJUSTMENT (scroll_adj);
-  g_signal_connect (GTK_OBJECT(h_scroll),"change-value",
+  g_signal_connect (GTK_RANGE(h_scroll),"change-value",
 		    (GtkSignalFunc) ftk_eventviewer_scroll_cv, eventviewer);
+		    
+  g_signal_connect (scroll_adj, "value-changed",
+  			(GtkSignalFunc) ftk_eventviewer_scroll_adj_val_changed, eventviewer);
 
+}
 
-  //return h_scroll;
+static gboolean
+ftk_eventviewer_scroll_adj_val_changed (GtkAdjustment *adjustment,
+                                            gpointer       user_data) 
+{
+	return TRUE; //inhibit propagation
 }
 
 static void
@@ -1124,6 +1079,11 @@ ftk_eventviewer_da_scroll (GtkWidget * widget,
   FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
   gboolean rc = FALSE;		/* false to propagate */
 
+  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
+		{
+      		ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
+			eventviewer);
+	  	}	
   switch ((int)(event->state)) {
   case 1:		/* shift */
     gtk_propagate_event (ftk_ev_scroll (eventviewer), (GdkEvent *)event);
@@ -1140,7 +1100,8 @@ ftk_eventviewer_da_scroll (GtkWidget * widget,
 #endif
   }
 
-  return rc;
+  //return rc;
+  return TRUE;
 }
 
 #ifdef USE_SLIDER_INTERVAL
@@ -2256,24 +2217,7 @@ ftk_eventviewer_scale_toggle(GtkToggleButton * button,
 }
 #endif
 
-#ifndef USE_SLIDER_INTERVAL
-static void
-ftk_eventviewer_spin_vc (GtkSpinButton *spinbutton,
-			 gpointer       user_data)
-{
-  FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
-  GtkAdjustment * adj = ftk_ev_scroll_adj (eventviewer);
-
-  ftk_ev_span (eventviewer) = gtk_spin_button_get_value (spinbutton);
-
-  g_object_set (G_OBJECT (adj), "page-size", ftk_ev_span (eventviewer), NULL);
-  gtk_adjustment_changed (adj);
-    
-  draw_plot (eventviewer);
-}
-#endif
-
-static void
+static gboolean
 ftk_eventviewer_scroll_cv(GtkRange     *range,
 			  GtkScrollType scroll,
 			  gdouble       value,
@@ -2284,6 +2228,7 @@ ftk_eventviewer_scroll_cv(GtkRange     *range,
   gtk_adjustment_set_value (adj, value);
 
   ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+  return TRUE; //Inhibit propagation.
 }
 
 static gint
@@ -2335,8 +2280,18 @@ do_append (FtkEventViewer * eventviewer,
 		    "upper", nt,
 		    NULL);
       gtk_adjustment_changed (adj);
-      if (!gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON (ftk_ev_hold_toggle_button(eventviewer))))
+      
+    }
+    if (!gtk_toggle_button_get_active 
+    ( GTK_TOGGLE_BUTTON (ftk_ev_hold_toggle_button(eventviewer))))
+    {
 	gtk_adjustment_set_value (adj, nt - ftk_ev_span (eventviewer));
+	if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
+		{
+      		ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
+			eventviewer);
+	  	}	
+	 return event_nr;
     }
   }
 
