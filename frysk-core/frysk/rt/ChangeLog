@@ -1,4 +1,4 @@
-2006-08-17  Yao Qi  <qiyao@localhost.localdomain>
+2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* StackCallbacks.java (getProcName): Check the null pointer.
 	(getProcOffset): Ditto.
