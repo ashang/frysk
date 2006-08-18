@@ -1,3 +1,8 @@
+2006-08-18  Stepan Kasal  <kasal@ucw.cz>
+
+	* Makefile.am: Do not put more targets on one line; Automake does not
+	understand that.
+
 2006-08-17  Stepan Kasal  <kasal@ucw.cz>
 
 	* Makefile.am: Do not run installcheck nor uninstall either.
