@@ -186,7 +186,7 @@ public class SessionProcDataModel
         {
           public void update (Observable arg0, Object obj)
           {
-            System.out.println(this + ": .update() " + obj);
+            //System.out.println(this + ": .update() " + obj);
             addProc((GuiProc) obj);
           }
         });
@@ -210,7 +210,7 @@ public class SessionProcDataModel
   public void addProc(GuiProc guiProc)
   {
     Proc proc = guiProc.getProc();
-    System.out.println(this + ": SessionProcDataModel.addProc() " + proc );
+    //System.out.println(this + ": SessionProcDataModel.addProc() " + proc );
     if (proc == null)
       {
         errorLog.log(Level.WARNING,

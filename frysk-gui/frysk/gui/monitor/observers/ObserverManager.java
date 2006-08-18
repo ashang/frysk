@@ -294,7 +294,7 @@ public class ObserverManager {
 
 			this.addTaskObserverPrototype(loadedObserver);
 		}
-		System.out.println(this + ": ObserverManager.loadObservers() DONE");
+		//System.out.println(this + ": ObserverManager.loadObservers() DONE");
 	}
 	
 	public void save(){
