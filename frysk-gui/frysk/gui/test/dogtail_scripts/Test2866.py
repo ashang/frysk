@@ -65,10 +65,7 @@ import dogtail.tc
 import unittest
 
 # Test support functions
-from FryskHelpers import startFrysk
-from FryskHelpers import endFrysk
-from FryskHelpers import createMinimalSession
-from FryskHelpers import CUSTOM_OBSERVER_DIALOG
+from FryskHelpers import *
 
 class TestCredits (unittest.TestCase):
 
@@ -81,7 +78,10 @@ class TestCredits (unittest.TestCase):
 
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
+        self.funitChildBinary = sys.argv[2]
+        
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()
         
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
@@ -95,10 +95,9 @@ class TestCredits (unittest.TestCase):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[2])
+        self.parser.parse(sys.argv[3])
         #inputFile = os.environ.get('TestDruid_FILE')
         #self.parser.parse(inputFile)
-
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after
@@ -107,22 +106,23 @@ class TestCredits (unittest.TestCase):
         
     def tearDown(self):    
         # Exit Frysk
-        endFrysk(self.frysk)
+        endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        
         
         
     def testEditObservers( self ):      
         """Check that all Observers can be queried and updated"""   
     
         # Select the 'Observers' menu item
-        observersItem = self.frysk.menuItem( 'Observers' )
+        observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
 
         # And the menu pick to access Observers
-        observersSelection = observersItem.menuItem( 'Manage Custom Observers...' )
+        observersSelection = observersItem.menuItem( MANAGE_CUSTOM_OBSERVERS )
         observersSelection.click()
 
-        customObservers = self.frysk.dialog( 'Custom Observers' )
+        customObservers = self.frysk.dialog( CUSTOM_OBSERVERS )
         customScrollPane = customObservers.child( roleName='scroll pane' )
         customTable = customScrollPane.child( roleName = 'table' )
         

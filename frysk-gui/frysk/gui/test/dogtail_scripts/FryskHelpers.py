@@ -54,6 +54,7 @@ from dogtail import predicate
 
 # Needed to remove Frysk from Gnome Panel and to invoke funit-child
 import subprocess
+from TestRunObject import TestRunObject
 
 # Set up for logging
 import dogtail.tc
@@ -120,7 +121,7 @@ FRYSK_OBSERVER_FILES = os.environ['HOME'] + "/.frysk/Observers/"
 
 # Used with funit-child to create/control processes used in testing
 FUNIT_CHILD_BINARY = '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child'
-FUNIT_TIMEOUT = '10'
+FUNIT_TIMEOUT = '600'
 FUNIT_MANAGER_TID = '0'
 
 SIGUSR1 = '-SIGUSR1'   # Add a clone
@@ -141,7 +142,7 @@ SIGNAL_TEXT_COUNTS = {SIGUSR1:0,
                       SIGHUP:4,
                       SIGINT:6,
                       SIGURG:0,
-                      SIGALRM:0,
+                      SIGALRM:2,
                       SIGFPE:0,
                       SIGPWR:0,
                       SIGPIPE:0,
@@ -247,7 +248,7 @@ def createProcessDict ( inputList ):
     return theDictionary
 
 # ---------------------
-def startFrysk ( FryskBinary, logWriter ):
+def startFrysk ( FryskBinary, funitChildBinary, logWriter ):
     """ Start up the Frysk GUI
         Function returns an object that points to the Frysk GUI
     """
@@ -269,19 +270,47 @@ def startFrysk ( FryskBinary, logWriter ):
     except:
         logWriter.writeResult({'INFO' :  'Frysk not running at start of test - ok to start test'  })
    
+    # Start up funit-child process that will be needed as a target for
+    # the creation of the test startup session
+    FUNIT_CHILD_BINARY = funitChildBinary
+    theTuple =  startFunitChild2 ()
+    ofile = theTuple[1]
+ 
+    # Read 1st line - extract PID value for the funit-child process
+    s = ofile.readline()
+    values = s.split('.')
+    PID = values[0]
+    #print "PID = " + PID
+
+    # Throw away next (4) lines of output
+    s = ofile.readline()
+    s = ofile.readline()
+    s = ofile.readline()
+    s = ofile.readline()
+
     # Start up Frysk 
     run ( FryskBinary, appName=FRYSK_APP_NAME )
     fryskObject = tree.root.application ( FRYSK_APP_NAME )
-    return fryskObject
+
+    # Need to return an object with 3 members: fryskObject, PID, ofile
+    currentTestSessionObject = TestRunObject ( PID, ofile, fryskObject )
+    #print "DEBUG PID = " + currentTestSessionObject.getPID()
+    #return fryskObject
+    return currentTestSessionObject
 
 # ---------------------
-def endFrysk( fryskObject ):
+def endFrysk( testObject ):
     """ Close the Frysk GUI 
     """
     # Exit Frysk GUI
+    fryskObject = testObject.getFryskObject()
     closeItem = fryskObject.menuItem( 'Close' )
     closeItem.click()
     killFrysk()
+    
+    # And, kill the funit-child process
+    returnString = signalFunitChild2(str(testObject.getPID()), SIGALRM, testObject.getOutputFile() )
+    print returnString 
      
     # ---------------------
 def killFrysk( ):
@@ -669,6 +698,7 @@ def signalFunitChild2 (targetPid, theSignal, stdoutFile ):
     counter = 0
     while counter < lineCount:    
         lineRead = stdoutFile.readline()
+        #print "DEBUG - line of text = " + lineRead
         counter = counter + 1   
     
     thePattern = SIGNAL_TEXT_PATTERNS.get(theSignal)

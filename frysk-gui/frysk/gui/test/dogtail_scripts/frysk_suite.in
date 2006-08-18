@@ -22,6 +22,7 @@ fi
 
 frysk=@abs_builddir@/frysk/gui/FryskGui
 src=@abs_srcdir@/frysk/gui/test/dogtail_scripts
+funitchild=@abs_builddir@/frysk-core/frysk/pkglibexecdir/funit-child
 
 cat <<EOF | grep -v '#' | while read script args ; do
 #
@@ -48,7 +49,7 @@ ${src}/TestCredits.py ${src}/Test2921.xml
 #
 EOF
     echo Running: ${script}
-    if python ${script} ${frysk} ${args} ; then
+    if python ${script} ${frysk} ${funitchild} ${args} ; then
 	:
     else
 	echo "Failing ${script}"

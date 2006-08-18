@@ -75,8 +75,8 @@ from ObserverPoints import ObserverPoints
 
 class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
-    def setUp( self ):
-
+    def setUp(self):
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
@@ -84,9 +84,12 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
 
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
-                
-         # Load up Session object
+        self.funitChildBinary = sys.argv[2]
+        
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()
+        
+        # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
@@ -98,16 +101,16 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[2])
+        self.parser.parse(sys.argv[3])
         #inputFile = os.environ.get('TestDruid_FILE')
         #self.parser.parse(inputFile)
-
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
-        createMinimalSession (self.frysk, self.theSession, False) 
+        createMinimalSession (self.frysk, self.theSession, False)
         
+        ########################################################################################
 
         # Load up some sample Observer objects         
         self.parser = xml.sax.make_parser(  )
@@ -121,7 +124,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[3])
+        self.parser.parse(sys.argv[4])
         #inputFile = os.environ.get('TestCreateObserversfromDataModel_FILE')
         #parser.parse(inputFile)
 
@@ -453,10 +456,12 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         # Resturn to the Frysk main menu
         okButton = customObservers.button( 'OK' )
         okButton.click()
-       
+
+    def tearDown(self):    
         # Exit Frysk
-        endFrysk( self.frysk )
+        endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+       
  
     def testUpdateObservers( self ):      
         """Check that the newly created Observers can be queried and updated"""   

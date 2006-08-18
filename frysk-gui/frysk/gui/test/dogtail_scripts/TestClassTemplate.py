@@ -58,25 +58,52 @@ import dogtail.tc
 # Set up for unit test framework
 import unittest
 
+# Test support functions
+from FryskHelpers import *
+
 class TestClassTemplate (unittest.TestCase):
-
+ 
   def setUp(self):
-   # Set up for logging
-   self.TestString=dogtail.tc.TCString()
-   
-   # Start up Frysk - comment this out for now - closing Frysk generates 
-   # LOTS of exceptions if it's opened this way - and Frsk cannot be closed
-   # in the Gnome panel
-   # run ('/opt/Frysk/frysk_bin/frysk-gui/frysk/gui/FryskGui')
-   
-   # Locate the Frysk application - note the application name of 
-   # 'java-gnome' (sourceware.org/bugzilla #2591)
-   self.frysk = tree.root.application ('java-gnome')
+        
+        # Set up for logging
+        self.TestString=dogtail.tc.TCString()
+        self.theLogWriter = self.TestString.writer
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
+        # Start up Frysk 
+        self.FryskBinary = sys.argv[1]
+        self.funitChildBinary = sys.argv[2]
+        
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()
+        
+        # Load up Session object
+        self.parser = xml.sax.make_parser(  )
+        self.handler = FryskHandler.FryskHandler(  )
+        self.parser.setContentHandler(self.handler)
+       
+        # Mechanism to allow multiple tests to be assembled into test suite,
+        # and have the test input data files be specified in the suite defiition,
+        # not the test script. As of June 8, 2006, there's a problem with 
+        # the test suite - either Frysk or Dogtail gets confused and attempts
+        # to run tests before other tests have completed - short-term workaround
+        # is to comment out these lines, run the tests separately, and read
+        # the datafiles from the CLI       
+        self.parser.parse(sys.argv[3])
+        #inputFile = os.environ.get('TestDruid_FILE')
+        #self.parser.parse(inputFile)
+        self.theSession = self.handler.theDebugSession
+
+        # Create a Frysk session - True = quit the FryskGui after
+        # creating the session
+        createMinimalSession (self.frysk, self.theSession, False)
+        
   def tearDown(self):    
-   # Exit Frysk
-   closeItem = self.frysk.findChild(predicate.IsAMenuItemNamed('Close'))
-   # closeItem.actions['click'].do()
+        # Exit Frysk
+        endFrysk (self.startObject)
+        self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
+        
+        
 
   def testName(self):      
    """Check that ..."""   

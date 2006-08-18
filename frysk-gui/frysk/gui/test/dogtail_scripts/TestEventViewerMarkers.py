@@ -70,8 +70,9 @@ from FryskHelpers import *
 
 class TestEventViewerMarkers (unittest.TestCase):
 
+
     def setUp(self):
-   
+        
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
@@ -79,7 +80,10 @@ class TestEventViewerMarkers (unittest.TestCase):
 
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
+        self.funitChildBinary = sys.argv[2]
+        
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()
         
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
@@ -93,10 +97,9 @@ class TestEventViewerMarkers (unittest.TestCase):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[2])
+        self.parser.parse(sys.argv[3])
         #inputFile = os.environ.get('TestDruid_FILE')
         #self.parser.parse(inputFile)
-
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after
@@ -105,13 +108,14 @@ class TestEventViewerMarkers (unittest.TestCase):
         
     def tearDown(self):    
         # Exit Frysk
-        endFrysk(self.frysk)
+        endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
-
+        
+        
 
     def testEVMarkers(self):  
         monitor = self.frysk.child(MONITOR)
-        nautilus = self.frysk.child('nautilus')
+        nautilus = self.frysk.child('funit-child')
         nautilus.grabFocus()
         statusWidget = monitor.child('statusWidget')
 
