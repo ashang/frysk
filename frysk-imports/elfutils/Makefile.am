@@ -48,6 +48,7 @@ rpm: dist
 	rpmbuild -ts --sign elfutils-@PACKAGE_VERSION@.tar.gz
 
 # Do not install the copy embedded in frysk:
+## (We cannot put all targets to one line, Automake would not understand.)
 install:
 	: Do not run $@ in elfutils.
 uninstall:
