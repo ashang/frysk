@@ -1,3 +1,21 @@
+2006-08-18  Len DiMaggio  <ldimaggi@redhat.com>
+
+	* test/dogtail_scripts/FryskHelpers.py,
+	  test/dogtail_scripts/Test2866.py,
+	  test/dogtail_scripts/Test2921.xml,
+	  test/dogtail_scripts/TestClassTemplate.py,
+	  test/dogtail_scripts/TestCreateObserversfromDataModel.py,
+	  test/dogtail_scripts/TestCredits.py,
+	  test/dogtail_scripts/TestDruid.py,
+	  test/dogtail_scripts/TestEventViewerButtons.py,
+	  test/dogtail_scripts/TestEventViewerMarkers.py,
+	  test/dogtail_scripts/TestLicense.py,
+	  test/dogtail_scripts/TestStressDruid.py,
+	  test/dogtail_scripts/another_new_session.xml,
+	  test/dogtail_scripts/frysk_suite.in:
+	    Changed to always use funit-child as a targetprocess.
+	* test/dogtail_scripts/funit_prototype.py: New file.
+
 2006-08-17  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Remove dangling quit menu handler
@@ -18,7 +36,7 @@
 
 2006-08-14  Stepan Kasal  <kasal@ucw.cz>
 
-	* test/dogtail_scripts/frysk_suite.in: Revert my chang from 2006-08-08.
+	* test/dogtail_scripts/frysk_suite.in: Revert my change from 2006-08-08.
 
 2006-08-11  Nurdin Premji  <npremji@redhat.com>
 
