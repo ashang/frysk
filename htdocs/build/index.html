@@ -84,10 +84,12 @@ build <em>frysk</em> from <tt>CVS</tt>; just install RPMs for the following:
 <pre>
 transfig xmlto passivetex xmltex \
 gcc4 gcc4-c++ gcc4-java libgcj4-devel \
-sharutils frysk
+sharutils frysk automake ghostscript
 </pre>
 
-For additional updates, check Red Hat Enterprise Linux 4's tracker
+(A broken dependency in transfig means that ghostscript must also be
+explicitly specified.)
+<p>For additional updates, check Red Hat Enterprise Linux 4's tracker
 bug's <a
 href="/bugzilla/showdependencytree.cgi?id=2004">dependency
 tree</a>.

@@ -1,9 +1,10 @@
 2006-08-20  Stepan Kasal  <kasal@ucw.cz>
 
-	* htdocs/build/index.html: Explain which of the packages are needed
-	only because of broken dependencies in previous releases.
 	* htdocs/index.html: Fix a typo which malformed the end of the page;
 	link to `bugzilla', not `bugs'.
+	* htdocs/build/index.html: Explain which of the packages are needed
+	only because of broken dependencies in previous releases.
+	Add `automake ghostscript' to the list of requirements for RHEL 4U3.
 
 2006-08-16  Stepan Kasal  <kasal@ucw.cz>
 
