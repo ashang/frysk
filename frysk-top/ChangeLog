@@ -2,6 +2,8 @@
 
 	* htdocs/build/index.html: Explain which of the packages are needed
 	only because of broken dependencies in previous releases.
+	* htdocs/index.html: Fix a typo which malformed the end of the page;
+	link to `bugzilla', not `bugs'.
 
 2006-08-16  Stepan Kasal  <kasal@ucw.cz>
 
