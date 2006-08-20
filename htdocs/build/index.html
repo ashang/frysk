@@ -115,9 +115,10 @@ sudo yum install antlr jdom junit gcc-java gcc-c++ \
     automake xmlto transfig eclipse-ecj dogtail \
     libglade2-devel vte-devel ghostscript
 </pre>
-(The transfig and ghostscript packages are needed to build the documentation.)
-<!-- The last three (libglade2-devel vte-devel ghostscript) are redundant in
-rawhide since 2006-08-17, but we are leaving it in for a while. -->
+Packages libglade2-devel, vte-devel, and ghostscript must be explicitely
+specified because of broken dependencies in packages libglade-java-devel,
+libvte-java-devel, and transfig, respectively.  The problem is fixed in
+current Fedora Devel.
 </li>
 
 <li>The <em>frysk</em> RPM included in FC-5 is very different to that
