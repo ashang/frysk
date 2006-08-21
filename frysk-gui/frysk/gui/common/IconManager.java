@@ -7,6 +7,8 @@ import org.gnu.gtk.IconSet;
 import org.gnu.gtk.IconSize;
 import org.gnu.gtk.IconSource;
 
+import frysk.gui.monitor.TrayIcon;
+
 public class IconManager {
 
 	//	 Image files - search bar
@@ -48,6 +50,8 @@ public class IconManager {
 		IMAGES_DIR = path;
 	}
 	
+    public static TrayIcon trayIcon = new TrayIcon("Frysk Monitor/Debugger", false);
+    
 	public static void loadIcons(){
 		factories = new IconFactory[2];
 		factories[0] = new IconFactory(); // "small" icons

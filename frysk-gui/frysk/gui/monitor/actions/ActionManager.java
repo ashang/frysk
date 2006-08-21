@@ -75,7 +75,8 @@ public class ActionManager
   {
 
     this.addGenericActionPrototype(new LogAction());
-
+    this.addGenericActionPrototype(new NotifyUserAction());
+    
     this.addTaskActionPrototype(new PrintTask());
 
     this.addProcActionPrototype(new PrintProc());

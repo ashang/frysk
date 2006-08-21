@@ -1,7 +1,12 @@
 2006-08-21    <swagiaal@redhat.com>
 
+	* actions/NotifyUserAction.java: New file. Part of fix for ba 3064.
+	* actions/ActionManager.java: Added NotifyUserAction template to
+	generic actions. Part of fix for ba 3064..
+	* TrayIcon.java: Added support for changing tooltip when setting
+	animation. Part of fix for ba 3064.
 	* actions/RunExternal.java: Added copying of execString to 
-	copy constructor. Fix for bz 6058
+	copy constructor. Fix for bz 6058.
 
 2006-08-18  Mike Cvet  <mcvet@redhat.com>
 

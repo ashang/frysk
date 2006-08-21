@@ -1,3 +1,8 @@
+2006-08-21    <swagiaal@redhat.com>
+
+	* IconManager.java: Moved public static instance of TrayIcon to
+	here. Part of fix for ba 3064.
+
 2006-07-28  Mike Cvet  <mcvet@redhat.com>
 
 	* TaskBlockCounter.java: Commented.

@@ -97,9 +97,10 @@ public class TrayIcon implements Saveable{
      * @param active whether the icon should be animated or not 
 	 */
 	public TrayIcon(String tooltip, boolean active){
-		this.tooltip = tooltip;
-		this.tips = new ToolTips();
-		tray = new EggTrayIcon(tooltip);
+        this.tips = new ToolTips();
+        
+        this.tooltip = tooltip;
+		tray = new EggTrayIcon(null);
 		this.clearPopups();
 		if(!active)
 			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON)); //$NON-NLS-1$
@@ -236,8 +237,7 @@ public class TrayIcon implements Saveable{
 		}
 		
 		trayItem.add(icon);
-		
-		tips.setTip(trayItem, this.tooltip, ""); //$NON-NLS-1$
+        tips.setTip(trayItem, this.tooltip, ""); //$NON-NLS-1$
 		
 		if(trayItem.getParent() == null)
 			tray.add(trayItem);
@@ -259,13 +259,15 @@ public class TrayIcon implements Saveable{
 					popupMenu.showAll();
 				}
 				
-				if(arg0.getButtonPressed() == windowButton && popupWindows.size() != 0)
+				if(arg0.getButtonPressed() == windowButton && popupWindows.size() != 0){
 					for(int i = 0; i < popupWindows.size(); i++){
 						((Window)popupWindows.elementAt(i)).showAll();
 						((Window)popupWindows.elementAt(i)).deiconify();
 						((Window)popupWindows.elementAt(i)).present();
 					}
-				return false;
+                    setActive(false, tooltip);
+                }
+                return false;
 			}	
 		
 		});
@@ -285,9 +287,11 @@ public class TrayIcon implements Saveable{
 		return active;
 	}
 
-	public void setActive(boolean active) {
-		this.active = active;
-		
+    public void setActive(boolean active, String tooltip) {
+      //this.tips = new ToolTips();
+      tips.setTip(tray, tooltip, "");
+      this.active = active;
+        
 		if(!this.active)
 			this.setContents(new Image(new GtkStockItem("frysk-tray-24"), IconSize.BUTTON)); //$NON-NLS-1$
 		else

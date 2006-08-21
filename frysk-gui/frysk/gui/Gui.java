@@ -346,7 +346,6 @@ implements LifeCycleListener, Saveable
 		setupCoreLogging();
 
 		
-		TrayIcon trayIcon;
 		Gui procpop = null;
 		Preferences prefs = null;
 		
@@ -385,15 +384,14 @@ implements LifeCycleListener, Saveable
 		PreferenceManager.setPreferenceModel(prefs);
 		initializePreferences();
 		
-		trayIcon = new TrayIcon("Frysk Monitor/Debugger", false); //$NON-NLS-1$
 		
-		trayIcon.setMenuButton(TrayIcon.BUTTON_3);
-		trayIcon.setWindowButton(TrayIcon.BUTTON_1);
-		trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);
+		IconManager.trayIcon.setMenuButton(TrayIcon.BUTTON_3);
+        IconManager.trayIcon.setWindowButton(TrayIcon.BUTTON_1);
+        IconManager.trayIcon.addPopupWindow(WindowManager.theManager.mainWindow);
 		
 		// Right click menu.
 		Menu popupMenu = new Menu();
-		trayIcon.setPopupMenu(popupMenu);
+        IconManager.trayIcon.setPopupMenu(popupMenu);
 		
 		// Quit 
 		MenuItem quitItem = new MenuItem("Quit", false); //$NON-NLS-1$
