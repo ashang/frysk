@@ -310,7 +310,7 @@ def endFrysk( testObject ):
     
     # And, kill the funit-child process
     returnString = signalFunitChild2(str(testObject.getPID()), SIGALRM, testObject.getOutputFile() )
-    print returnString 
+    #print returnString 
      
     # ---------------------
 def killFrysk( ):

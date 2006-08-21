@@ -26,8 +26,8 @@ returnString = signalFunitChild2(str(PID), SIGINT, ofile)
 print returnString 
 
 # Kill funit-child
-#print 'Kill funit-child'
-#returnString = signalFunitChild2(str(PID), SIGALRM, ofile)
-#print returnString 
+print 'Kill funit-child'
+returnString = signalFunitChild2(str(PID), SIGALRM, ofile)
+print returnString 
 
 
