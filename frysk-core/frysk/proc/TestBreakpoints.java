@@ -40,9 +40,12 @@
 package frysk.proc;
 
 import java.io.*;
+import java.util.Observable;
+import java.util.Observer;
 
 public class TestBreakpoints
   extends TestLib
+  implements Observer
 {
   // Process id and Proc representation of our test program.
   int pid;
@@ -62,6 +65,9 @@ public class TestBreakpoints
   boolean terminating;
   boolean exitSignal;
   int exitValue;
+
+  // Whether the proc has really terminited (cannot be seen by the host).
+  boolean procTerminated;
 
   // Monitor to notify and wait on for state of event changes..
   static Object monitor = new Object();
@@ -91,6 +97,10 @@ public class TestBreakpoints
 
     attached = false;
     terminating = false;
+    procTerminated = false;
+
+    // Monitor so we know the proc has really left the building.
+    Manager.host.observableProcRemovedXXX.addObserver(this);
 
     // Start an EventLoop so we don't have to poll for events all the time.
     eventloop = new EventLoopRunner();
@@ -104,6 +114,22 @@ public class TestBreakpoints
    */
   public void tearDown()
   {
+    // Make sure proc is gone.
+    synchronized (monitor)
+      {
+	while (!procTerminated)
+          {
+            try
+              {
+		monitor.wait();
+              }
+            catch (InterruptedException ie)
+              {
+		// Ignored
+              }
+          }
+      }
+
     // Make sure event loop is gone.
     eventloop.requestStop();
     synchronized (monitor)
@@ -124,6 +150,22 @@ public class TestBreakpoints
     // And kill off any remaining processes we spawned
     super.tearDown();
   }
+
+  // Called by the Host when procs are removed.
+  // Used to monitor whether or not our proc has truely left the building.
+  public void update(Observable o, Object obj)
+  {
+    Proc p = (Proc) obj;
+    if (p.equals(proc))
+      {
+	synchronized (monitor)
+	  {
+	    procTerminated = true;
+	    monitor.notifyAll();
+	  }
+      }
+  }
+
 
   public void testHitAndRun() throws IOException
   {
