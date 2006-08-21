@@ -1,3 +1,7 @@
+2006-08-21  Stan Cox  <scox@redhat.com>
+
+	* cpp.g (CppTreeParser): Add HEXADECIMALINT and OCTALINT.
+
 2006-08-11  Stan Cox  <scox@redhat.com>
 
 	* cpp.g (CppParser): Add CAST, FUNC_CALL, unary_expression, 

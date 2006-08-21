@@ -40,20 +40,51 @@ package frysk.cli.hpd;
 
 import java.io.StringReader;
 import java.text.ParseException;
+import java.util.Vector;
+
 import antlr.CommonAST;
 import frysk.lang.Variable;
 import frysk.expr.CppParser;
 import frysk.expr.CppLexer;
 import frysk.expr.CppTreeParser;
 
+
 public class PrintHandler implements CommandHandler
 {
+    private static final int DECIMAL = 10;
+    private static final int HEX = 16;
+    private static final int OCTAL = 8;
     public void handle(Command cmd) throws ParseException
         {
+	Vector params = cmd.getParameters();
 	Variable result;
+    boolean haveFormat = false;
+    int outputFormat = DECIMAL;
 	String sInput = cmd.getFullCommand().substring(cmd.getAction().length()).trim();
+
+	for (int i = 0; i < params.size(); i++)
+	    {
+          System.out.println("cmd=" + params.elementAt(i));
+		if (((String)params.elementAt(i)).equals("-format"))
+		    {
+		    haveFormat = true;
+			i += 1;
+			String arg = ((String)params.elementAt(i));
+			if (arg.compareTo("d") == 0)
+			    outputFormat = DECIMAL;
+			else if (arg.compareTo("o") == 0)
+			    outputFormat = OCTAL;
+			else if (arg.compareTo("x") == 0)
+			    outputFormat = HEX;
+            System.out.println("arg=" + arg + " " + outputFormat);
+		    }
+	    }
+    if (haveFormat)
+      sInput = sInput.substring(0,sInput.indexOf("-format"));
+
+    System.out.println(sInput + " " + outputFormat);
 	if (sInput.length() == 0) {
-	    cmd.getOut().println ("Usage " + cmd.getAction() + " Expression");
+	    cmd.getOut().println ("Usage " + cmd.getAction() + " Expression [-format d|x|o]");
 	    return;
 	}
 	if (cmd.getAction().compareTo("assign") == 0) {
@@ -81,8 +112,20 @@ public class PrintHandler implements CommandHandler
 	CppTreeParser treeParser = new CppTreeParser(4, 2, SymTab.symTab);
 
 	try {
+        Integer intResult;
 	    result = treeParser.expr(t);
-	    cmd.getOut().println (result);
+        switch (outputFormat)
+        {
+          case HEX: 
+            cmd.getOut().print("0x");
+            break;
+          case OCTAL: 
+            cmd.getOut().print("0");
+            break;
+        }
+        
+        
+        cmd.getOut().println(Integer.toString(result.getInt(),outputFormat));
 	}   catch (ArithmeticException ae)  {
 	    System.err.println("Arithmetic Exception occurred:  " + ae);
 	}

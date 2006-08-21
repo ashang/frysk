@@ -743,9 +743,17 @@ expr returns [Variable returnVar=null] throws InvalidOperatorException, Operatio
     |   #(COND_EXPR  log_expr=expr v1=expr v2=expr)  { 
             returnVar = ((log_expr.getType().getLogicalValue(log_expr)) ? v1 : v2);  
         }
+    |   o:OCTALINT  {
+            returnVar = IntegerType.newIntegerVariable (
+                intType, Integer.parseInt(o.getText().substring(1),8));
+        }
     |   i:DECIMALINT  {
             returnVar = IntegerType.newIntegerVariable (
                 intType, Integer.parseInt(i.getText()));
+        }
+    |   h:HEXADECIMALINT  {
+            returnVar = IntegerType.newIntegerVariable (
+                intType, Integer.parseInt(h.getText().substring(2),16));
         }
     |   #(ASSIGNEQUAL v1=expr v2=expr)  {
             if(v1.getType().getTypeId() != v2.getType().getTypeId())

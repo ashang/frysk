@@ -1,3 +1,7 @@
+2006-08-21  Stan Cox  <scox@redhat.com>
+
+	* hpd/PrintHandler.java (handle): Add -format and hex/octal output.
+
 2006-07-14  Stan Cox  <scox@redhat.com>
 
 	* hpd/Command.java (getOut, setOut): New.
