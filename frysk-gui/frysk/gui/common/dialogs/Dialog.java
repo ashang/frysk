@@ -82,14 +82,14 @@ public class Dialog extends org.gnu.gtk.Dialog {
 	         }
 		});
 		
-		this.addListener(new DialogListener() {
-		
-			public boolean dialogEvent(DialogEvent arg0) {
-				Dialog.this.hideAll();
-				return false;
-			}
-		
-		});
+//		this.addListener(new DialogListener() {
+//		
+//			public boolean dialogEvent(DialogEvent arg0) {
+//				Dialog.this.hideAll();
+//				return false;
+//			}
+//		
+//		});
 		this.setIcon(IconManager.windowIcon);
 	}
 	

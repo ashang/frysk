@@ -85,6 +85,7 @@ public class RunExternal
   public RunExternal (RunExternal other)
   {
     super(other);
+    this.execString = other.execString;
   }
 
   public void execute (Task task)
