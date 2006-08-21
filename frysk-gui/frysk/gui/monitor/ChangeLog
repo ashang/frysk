@@ -1,3 +1,8 @@
+2006-08-21    <swagiaal@redhat.com>
+
+	* actions/RunExternal.java: Added copying of execString to 
+	copy constructor. Fix for bz 6058
+
 2006-08-18  Mike Cvet  <mcvet@redhat.com>
 
 	* PIDColumnDialog.java (PIDColumnDialog): Added rows for PPID,
