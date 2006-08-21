@@ -69,13 +69,8 @@ from FryskHelpers import *
 
 class Test2985 (unittest.TestCase):
 
-    def setUp(self):
-        
-        # Start up funit-child process.
-        theTimeout = 200000 
-        theManagerTid = 0 
-        self.theFunitPid = startFunitChild (str(theTimeout), str(theManagerTid))
-        
+    def setUp(self):      
+         
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
         self.theLogWriter = self.TestString.writer
@@ -83,13 +78,16 @@ class Test2985 (unittest.TestCase):
 
         # Start up Frysk 
         self.FryskBinary = sys.argv[1]
-        self.frysk = startFrysk(self.FryskBinary, self.theLogWriter)
+        self.funitChildBinary = sys.argv[2]
+        
+        self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
+        self.frysk = self.startObject.getFryskObject()
         
         # Load up Session object
         self.parser = xml.sax.make_parser(  )
         self.handler = FryskHandler.FryskHandler(  )
         self.parser.setContentHandler(self.handler)
-        
+       
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
         # not the test script. As of June 8, 2006, there's a problem with 
@@ -97,22 +95,20 @@ class Test2985 (unittest.TestCase):
         # to run tests before other tests have completed - short-term workaround
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
-        self.parser.parse(sys.argv[2])
+        self.parser.parse(sys.argv[3])
         #inputFile = os.environ.get('TestDruid_FILE')
         #self.parser.parse(inputFile)
-
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after
         # creating the session
         createMinimalSession (self.frysk, self.theSession, False)
-        
+          
     def tearDown(self):    
         # Exit Frysk
-        endFrysk(self.frysk)
+        endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
-
-
+   
     def test2985(self):  
         monitor = self.frysk.child(MONITOR)
         funitChild = self.frysk.child('funit-child')
@@ -127,7 +123,7 @@ class Test2985 (unittest.TestCase):
         #Fork
         forkObserver = statusWidget.child('Fork Observer')
         
-        signalFunitChild(str(self.theFunitPid), SIGALRM)
+        signalFunitChild( str(self.startObject.getPID()), SIGALRM )
         
         terminatingObserverCounter = 0;
         execObserverCounter = 0;
