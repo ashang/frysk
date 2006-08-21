@@ -216,6 +216,11 @@ public class LinuxHost
 	Proc proc = new LinuxProc(myTask, new ProcId(pid));
 	new LinuxTask(proc, attached);
       }
+    catch (TaskFileException e) 
+      {
+	// Not a problem; if we can't access the task's executable,
+	// we're not interested.
+      }
     catch (TaskException e)
       {
 	throw new RuntimeException("got TaskException", e);
