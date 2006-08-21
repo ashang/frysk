@@ -104,9 +104,9 @@ public class SessionProcTreeView
   
   private ProcMenu procMenu;
   
-  private String[] colNames = {"Command", "VSZ", "RSS", "TIME"}; 
+  private String[] colNames = {"Command", "VSZ", "RSS", "TIME", "PPID", "STAT", "NICE"}; 
   
-  private boolean[] colVisible = {true, true, true, true};
+  private boolean[] colVisible = {true, true, true, true, false, false, false};
   
   private Preferences prefs;
   
@@ -126,7 +126,7 @@ public class SessionProcTreeView
     
     this.pidColumnDialog = new PIDColumnDialog(this.glade, this);
     
-    this.tvc = new TreeViewColumn[5];
+    this.tvc = new TreeViewColumn[8];
     
     this.procMenu = new ProcMenu(this.pidColumnDialog, this);
 
@@ -381,6 +381,47 @@ public class SessionProcTreeView
                                    CellRendererText.Attribute.WEIGHT,
                                    dataModel.getWeightDC());
 
+    CellRendererText cellRendererText8 = new CellRendererText();
+    tvc[5] = new TreeViewColumn();
+    tvc[5].packStart(cellRendererText8, false);
+    tvc[5].addAttributeMapping(cellRendererText8,
+                                   CellRendererText.Attribute.TEXT,
+                                   dataModel.getPPIDDC());
+    tvc[5].addAttributeMapping(cellRendererText8,
+                                   CellRendererText.Attribute.FOREGROUND,
+                                   dataModel.getColorDC());
+    tvc[5].addAttributeMapping(cellRendererText8,
+                                   CellRendererText.Attribute.WEIGHT,
+                                   dataModel.getWeightDC());
+    
+    CellRendererText cellRendererText9 = new CellRendererText();
+    tvc[6] = new TreeViewColumn();
+    tvc[6].packStart(cellRendererText9, false);
+    tvc[6].addAttributeMapping(cellRendererText9,
+                                   CellRendererText.Attribute.TEXT,
+                                   dataModel.getStateDC());
+    tvc[6].addAttributeMapping(cellRendererText9,
+                                   CellRendererText.Attribute.FOREGROUND,
+                                   dataModel.getColorDC());
+    tvc[6].addAttributeMapping(cellRendererText9,
+                                   CellRendererText.Attribute.WEIGHT,
+                                   dataModel.getWeightDC());
+    
+    CellRendererText cellRendererText10 = new CellRendererText();
+    tvc[7] = new TreeViewColumn();
+    tvc[7].packStart(cellRendererText10, false);
+    tvc[7].addAttributeMapping(cellRendererText10,
+                                   CellRendererText.Attribute.TEXT,
+                                   dataModel.getNiceDC());
+    tvc[7].addAttributeMapping(cellRendererText10,
+                                   CellRendererText.Attribute.FOREGROUND,
+                                   dataModel.getColorDC());
+    tvc[7].addAttributeMapping(cellRendererText10,
+                                   CellRendererText.Attribute.WEIGHT,
+                                   dataModel.getWeightDC());
+    
+    
+    
     tvc[0].setTitle("PID"); //$NON-NLS-1$
     tvc[0].addListener(new TreeViewColumnListener()
     {
@@ -480,18 +521,84 @@ public class SessionProcTreeView
           }
       }
     });
+    
+    tvc[5].setTitle("PPID"); //$NON-NLS-1$
+    tvc[5].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
+      {
+        procTreeView.setSearchDataColumn(dataModel.getTimeDC());
+        
+        if (tvc[5].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getPPIDDC(), SortType.DESCENDING);
+            tvc[5].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getPPIDDC(), SortType.ASCENDING);
+            tvc[5].setSortOrder(SortType.ASCENDING);
+          }
+      }
+    });
+    
+    tvc[6].setTitle("STAT"); //$NON-NLS-1$
+    tvc[6].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
+      {
+        procTreeView.setSearchDataColumn(dataModel.getTimeDC());
+        
+        if (tvc[6].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getStateDC(), SortType.DESCENDING);
+            tvc[6].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getStateDC(), SortType.ASCENDING);
+            tvc[6].setSortOrder(SortType.ASCENDING);
+          }
+      }
+    });
+    
+    tvc[7].setTitle("NICE"); //$NON-NLS-1$
+    tvc[7].addListener(new TreeViewColumnListener()
+    {
+      public void columnClickedEvent (TreeViewColumnEvent arg0)
+      {
+        procTreeView.setSearchDataColumn(dataModel.getTimeDC());
+        
+        if (tvc[7].getSortOrder() == SortType.ASCENDING)
+          {
+            treeStore.setSortColumn(procDataModel.getNiceDC(), SortType.DESCENDING);
+            tvc[7].setSortOrder(SortType.DESCENDING);
+          }
+        else
+          {
+            treeStore.setSortColumn(procDataModel.getNiceDC(), SortType.ASCENDING);
+            tvc[7].setSortOrder(SortType.ASCENDING);
+          }
+      }
+    });
 
     tvc[0].setVisible(true);
     tvc[1].setVisible(true);
     tvc[2].setVisible(true);
     tvc[3].setVisible(true);
     tvc[4].setVisible(true);
+    tvc[5].setVisible(true);
+    tvc[6].setVisible(true);
+    tvc[7].setVisible(true);
 
     this.procTreeView.appendColumn(tvc[0]);
     this.procTreeView.appendColumn(tvc[1]);
     this.procTreeView.appendColumn(tvc[2]);
     this.procTreeView.appendColumn(tvc[3]);
     this.procTreeView.appendColumn(tvc[4]);
+    this.procTreeView.appendColumn(tvc[5]);
+    this.procTreeView.appendColumn(tvc[6]);
+    this.procTreeView.appendColumn(tvc[7]);
 
     dataModel.getModel().addListener(new PropertyNotificationListener()
     {

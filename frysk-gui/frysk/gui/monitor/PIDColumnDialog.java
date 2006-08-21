@@ -116,6 +116,18 @@ public class PIDColumnDialog
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], true);
     model.setValue(iter, (DataColumnString) cols[1], "TIME");
+    
+    iter = model.appendRow();
+    model.setValue(iter, (DataColumnBoolean) cols[0], false);
+    model.setValue(iter, (DataColumnString) cols[1], "PPID");
+    
+    iter = model.appendRow();
+    model.setValue(iter, (DataColumnBoolean) cols[0], false);
+    model.setValue(iter, (DataColumnString) cols[1], "STAT");
+    
+    iter = model.appendRow();
+    model.setValue(iter, (DataColumnBoolean) cols[0], false);
+    model.setValue(iter, (DataColumnString) cols[1], "NICE");
 
     TreeViewColumn col = new TreeViewColumn();
     CellRenderer renderer = new CellRendererToggle();
@@ -174,6 +186,8 @@ public class PIDColumnDialog
       {
       }
     });
+    
+    this.colList.setAlternateRowColor(true);
   }
 
   public void save (Preferences prefs)

@@ -1,12 +1,18 @@
+2006-08-18  Mike Cvet  <mcvet@redhat.com>
+
+	* PIDColumnDialog.java (PIDColumnDialog): Added rows for PPID,
+	State, and NICE fields.
+	* SessionProcDataModel.java (statRead): Added reads from Stat's 
+	PPID, State, and NICE fields.
+	* SessionProcTreeView.java (mountProcModel): Added columns for the
+	above fields.
+	* actions/RunExternal.java (setArgument): Logs to the error log
+	when there is a problem with the executable.
+	
 2006-08-18  Phil Muldoon <pmuldoon@redhat.com>
 
 	* observers/ObserverManager.java: Remove System.out.println statements.
 	* SessionDataModel.java: Remove System.out.println statements.
-
-2006-08-18  Mike Cvet  <mcvet@redhat.com>
-
-	* actions/RunExternal.java (setArgument): Logs to the error log
-	when there is a problem with the executable.
 
 2006-08-18  Phil Muldoon  <pmuldoon@redhat.com>
 

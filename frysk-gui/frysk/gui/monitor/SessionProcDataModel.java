@@ -102,6 +102,12 @@ public class SessionProcDataModel
   
   private DataColumnString timeDC;
   
+  private DataColumnString ppidDC;
+  
+  private DataColumnString stateDC;
+  
+  private DataColumnString niceDC;
+  
   private Stat stat;
 
   private HashMap iterHash;
@@ -135,13 +141,17 @@ public class SessionProcDataModel
     this.vszDC = new DataColumnString();
     this.rssDC = new DataColumnString();
     this.timeDC = new DataColumnString();
+    this.ppidDC = new DataColumnString();
+    this.stateDC = new DataColumnString();
+    this.niceDC = new DataColumnString();
     this.stat = new Stat();
 
     this.treeStore = new TreeStore(new DataColumn[] { pidDC, commandDC,
                                                      colorDC, procDataDC,
                                                      weightDC, threadParentDC,
                                                      isThreadDC, sensitiveDC, 
-                                                     vszDC, rssDC, timeDC});
+                                                     vszDC, rssDC, timeDC,
+                                                     ppidDC, stateDC, niceDC});
 
     // Change to HashMap from HashTable
     this.iterHash = new HashMap();
@@ -339,6 +349,10 @@ public class SessionProcDataModel
       treeStore.setValue(iter, timeDC, min + ":0" + sec);
     else
       treeStore.setValue(iter, timeDC, min + ":" + sec);
+    
+    treeStore.setValue(iter, ppidDC, "" + stat.ppid);
+    treeStore.setValue(iter, stateDC, "" + stat.state);
+    treeStore.setValue(iter, niceDC, "" + stat.nice);
   }
   
   /**
@@ -570,7 +584,22 @@ public class SessionProcDataModel
   {
     return this.timeDC;
   }
+  
+  public DataColumnString getPPIDDC()
+  {
+    return this.ppidDC;
+  }
 
+  public DataColumnString getStateDC()
+  {
+    return this.stateDC;
+  }
+  
+  public DataColumnString getNiceDC()
+  {
+    return this.niceDC;
+  }
+  
   public TreeModel getModel()
   {
     return this.treeStore;
