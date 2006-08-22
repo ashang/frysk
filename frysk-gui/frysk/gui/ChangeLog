@@ -1,5 +1,9 @@
 2006-08-22  Mike Cvet  <mcvet@redhat.com>
 
+	* register/RegisterWindowFactory.java (createRegisterWindow): 
+	Now correctly initializes the RegisterWindow when there are no
+	blockers on the process.
+	* memory/MemoryWindowFactory.java (createMemoryWindow): Ditto.
 	* sessions/ProcessPicker.java (checkSession): Properly hides the
 	startup manager window when all processes are singletons. Fixes
 	#3105.

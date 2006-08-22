@@ -52,6 +52,8 @@ public abstract class LiaisonItem
 {
   protected Runnable runnable;
 
+  public int needInfo;
+  
   public LiaisonItem ()
   {
     super();

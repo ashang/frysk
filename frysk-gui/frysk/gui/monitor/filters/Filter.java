@@ -44,42 +44,53 @@ import org.jdom.Element;
 
 import frysk.gui.monitor.LiaisonItem;
 
-public abstract class Filter extends LiaisonItem {
-	
-	boolean filterBoolean;
-	
-	public Filter(){
-		super();
-		this.filterBoolean = true;
-	}
-	
-	public Filter(String name, String toolTip){
-		super(name, toolTip);
-		this.filterBoolean = true;
-	}
-	
-	public Filter(Filter other){
-		super(other);
-		this.filterBoolean = other.filterBoolean;
-//		System.out.println(this + ": Filter.Filter() copying");
-	}
-	
-	public void save(Element node){
-		super.save(node);
-		node.setAttribute("filterBoolean", this.filterBoolean+"");
-	}
-	
-	public void load(Element node){
-		super.load(node);
-		this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
-	}
-	
-	public void setFilterBoolean(boolean filterBoolean){
-		this.filterBoolean = filterBoolean;
-//		System.out.println(this + ": Filter.setFilterBoolean() boolean set to " + this.filterBoolean );
-	}
-	
-	public boolean getFilterBoolean(){
-		return this.filterBoolean;
-	}
+public abstract class Filter
+    extends LiaisonItem
+{
+
+  boolean filterBoolean;
+
+  public Filter ()
+  {
+    super();
+    this.filterBoolean = true;
+    this.needInfo = 1;  /* Usually Filters require user input */
+  }
+
+  public Filter (String name, String toolTip)
+  {
+    super(name, toolTip);
+    this.filterBoolean = true;
+  }
+
+  public Filter (Filter other)
+  {
+    super(other);
+    this.filterBoolean = other.filterBoolean;
+    // System.out.println(this + ": Filter.Filter() copying");
+  }
+
+  public void save (Element node)
+  {
+    super.save(node);
+    node.setAttribute("filterBoolean", this.filterBoolean + "");
+  }
+
+  public void load (Element node)
+  {
+    super.load(node);
+    this.setFilterBoolean(Boolean.parseBoolean(node.getAttributeValue("filterBoolean")));
+  }
+
+  public void setFilterBoolean (boolean filterBoolean)
+  {
+    this.filterBoolean = filterBoolean;
+    // System.out.println(this + ": Filter.setFilterBoolean() boolean set to " +
+    // this.filterBoolean );
+  }
+
+  public boolean getFilterBoolean ()
+  {
+    return this.filterBoolean;
+  }
 }

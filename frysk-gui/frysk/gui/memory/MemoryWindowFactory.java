@@ -104,10 +104,10 @@ public class MemoryWindowFactory
         return;
       }
       
-//    if (task.getBlockers().length != 0)
-//      {
-//        mw = finishMemWin(mw, task);
-//      }
+    if (task.getBlockers().length != 0)
+      {
+        mw = finishMemWin(mw, task);
+      }
     
     MemWinBlocker blocker = new MemWinBlocker();
     blocker.myTask = task;

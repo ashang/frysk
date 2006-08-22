@@ -105,10 +105,10 @@ public class RegisterWindowFactory
         return;
       }
 
-    // if (task.getBlockers().length != 0)
-    // {
-    // mw = finishRegWin(mw, task);
-    // }
+     if (task.getBlockers().length != 0)
+     {
+     rw = finishRegWin(rw, task);
+     }
 
     RegWinBlocker blocker = new RegWinBlocker();
     blocker.myTask = task;

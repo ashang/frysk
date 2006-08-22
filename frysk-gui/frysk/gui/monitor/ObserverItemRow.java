@@ -208,8 +208,9 @@ public abstract class ObserverItemRow
       {
         combo.apply();
       }
-
-    if (((LiaisonItem) combo.getFilter()).setArgument(argumentEntry.getText()))
+    
+    if (((LiaisonItem) combo.getFilter()).setArgument(argumentEntry.getText())
+        || ((LiaisonItem) combo.getFilter()).needInfo == 0)
       return true;
     else
       {

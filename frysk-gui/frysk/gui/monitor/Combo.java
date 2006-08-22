@@ -37,62 +37,71 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.monitor;
 
-
 /**
- * 
- * @author swagiaal
- *
- * An object representing a combination of a @link frysk.gui.monitor.LiaisonItem
- * and a @link frysk.gui.monitor.LiaisonPoint.
- * 
- * Combos store the permutations of an observers Action/FilterPoints with their
- * respective applicable Actions/Filters.
+ * @author swagiaal An object representing a combination of a
+ * @link frysk.gui.monitor.LiaisonItem and a
+ * @link frysk.gui.monitor.LiaisonPoint. Combos store the permutations of an
+ *       observers Action/FilterPoints with their respective applicable
+ *       Actions/Filters.
  * @see frysk.gui.monitor.filters.ComboFactory
  */
-public class Combo extends GuiObject {
+public class Combo
+    extends GuiObject
+{
 
-	private LiaisonPoint liaisonPoint;
-	private LiaisonItem liaisonItem;
-	private boolean applied = false;
-	
-	public Combo(LiaisonPoint filterPoint, LiaisonItem item){
-		super();
-		this.liaisonPoint = filterPoint;
-		this.liaisonItem = item;
-		
-		this.setName(item.getName() + " " + filterPoint.getName() );
-		this.setToolTip(item.getToolTip());
-		
-		this.applied = filterPoint.getItems().contains(item);
-	}
-	
-	public void apply(){
-		if(applied){
-			throw new RuntimeException("You are trying to apply a Combo that is already applied");
-		}
-		this.liaisonItem = (LiaisonItem) this.liaisonItem.getCopy();
-		this.liaisonPoint.addItem(liaisonItem);
-		this.applied = true;
-	}
-	
-	public void unApply(){
-		//System.out.println(this+": LiaisonItemCombo.unApply()");
-		this.liaisonPoint.removeItem(liaisonItem);
-		this.applied = false;
-	}
-	
-	public boolean isApplied(){
-		//System.out.println(this + ": Combo.isApplied() " + this.applied);
-		return this.applied;
-	}
-	
-	public LiaisonPoint getLiaisonPoint(){
-		return this.liaisonPoint;
-	}
-	
-	public LiaisonItem getFilter(){
-		return this.liaisonItem;
-	}
+  private LiaisonPoint liaisonPoint;
+
+  private LiaisonItem liaisonItem;
+
+  private boolean applied = false;
+
+  public Combo (LiaisonPoint filterPoint, LiaisonItem item)
+  {
+    super();
+    this.liaisonPoint = filterPoint;
+    this.liaisonItem = item;
+
+    this.setName(item.getName() + " " + filterPoint.getName());
+    this.setToolTip(item.getToolTip());
+
+    this.applied = filterPoint.getItems().contains(item);
+  }
+
+  public void apply ()
+  {
+    if (applied)
+      {
+        throw new RuntimeException(
+                                   "You are trying to apply a Combo that is already applied");
+      }
+    this.liaisonItem = (LiaisonItem) this.liaisonItem.getCopy();
+    this.liaisonPoint.addItem(liaisonItem);
+    this.applied = true;
+  }
+
+  public void unApply ()
+  {
+    // System.out.println(this+": LiaisonItemCombo.unApply()");
+    this.liaisonPoint.removeItem(liaisonItem);
+    this.applied = false;
+  }
+
+  public boolean isApplied ()
+  {
+    // System.out.println(this + ": Combo.isApplied() " + this.applied);
+    return this.applied;
+  }
+
+  public LiaisonPoint getLiaisonPoint ()
+  {
+    return this.liaisonPoint;
+  }
+
+  public LiaisonItem getFilter ()
+  {
+    return this.liaisonItem;
+  }
 }

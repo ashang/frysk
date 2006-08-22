@@ -50,6 +50,7 @@ public abstract class Action
   public Action ()
   {
     super();
+    this.needInfo = 0; /* Usually Actions don't require user input */
   }
 
   public Action (Action other)

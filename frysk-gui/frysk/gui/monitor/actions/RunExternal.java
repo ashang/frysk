@@ -80,6 +80,7 @@ public class RunExternal
     super("Execute an external program from",
           "Execute an external script or binary");
     this.execString = new String();
+    this.needInfo = 1;  /* This Action requires user input - the binary path */
   }
 
   public RunExternal (RunExternal other)

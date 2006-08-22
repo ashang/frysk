@@ -1,3 +1,15 @@
+2006-08-22  Mike Cvet  <mcvet@redhat.com>
+
+	* ObserverItemRow.java (apply): Fails when the input is blank 
+	/and/ the LiasionItem doesn't require input. Fixes #3106.
+	* LiaisonItem.java (needInfo): New int needInfo - a flag to
+	determine whether or not input is needed by the LiaisonItem by
+	the user.
+	* actions/Action.java (Action): Initialized needInfo to 0.
+	* filters/Filter.java: Applied GNU formatting.
+	(Filter): Initialized needInfo to 1.
+	* Combo.java: Applied GNU formatting.
+
 2006-08-21    <swagiaal@redhat.com>
 
 	* actions/NotifyUserAction.java: New file. Part of fix for ba 3064.
