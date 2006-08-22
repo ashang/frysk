@@ -1,3 +1,7 @@
+2006-08-22  Nurdin Premji  <npremji@redhat.com>
+
+	* htdocs/build/index.html: Fixed a typo, sharutils, not sharEutils.
+
 2006-08-20  Stepan Kasal  <kasal@ucw.cz>
 
 	* htdocs/index.html: Fix a typo which malformed the end of the page;
