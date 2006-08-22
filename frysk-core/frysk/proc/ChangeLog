@@ -1,3 +1,7 @@
+2006-08-21  Tom Tromey  <tromey@redhat.com>
+
+        * Syscall.java (getName, getNumber): New methods.
+
 2006-08-21  Mark Wielaard  <mark@klomp.org>
 
 	* TestBreakpoints.java: Implements Observer.

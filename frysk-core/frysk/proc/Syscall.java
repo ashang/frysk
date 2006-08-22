@@ -85,6 +85,16 @@ public class Syscall
 	this ("<" + number + ">", number, 0, "i:");
     }
     
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getNumber()
+    {
+        return number;
+    }
+
     private void printStringArg (PrintWriter writer,
 				 frysk.proc.Task task,
 				 long addr)
