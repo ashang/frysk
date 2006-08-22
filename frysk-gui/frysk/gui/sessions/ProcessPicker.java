@@ -154,6 +154,7 @@ public class ProcessPicker
         while (j.hasNext())
           ((DebugProcess) j.next()).addObservers();
 
+        WindowManager.theManager.sessionManager.hideAll();
         finish(s);
       }
     else

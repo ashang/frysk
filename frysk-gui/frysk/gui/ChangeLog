@@ -1,3 +1,9 @@
+2006-08-22  Mike Cvet  <mcvet@redhat.com>
+
+	* sessions/ProcessPicker.java (checkSession): Properly hides the
+	startup manager window when all processes are singletons. Fixes
+	#3105.
+
 2006-08-18  Len DiMaggio  <ldimaggi@redhat.com>
 
 	* test/dogtail_scripts/FryskHelpers.py,
