@@ -1,6 +1,11 @@
+2006-08-22  Mark Wielaard  <mark@klomp.org>
+
+	* TestBreakpoints.java (tearDown): Add more comments about child
+	process creation and dead.
+
 2006-08-21  Tom Tromey  <tromey@redhat.com>
 
-        * Syscall.java (getName, getNumber): New methods.
+	* Syscall.java (getName, getNumber): New methods.
 
 2006-08-21  Mark Wielaard  <mark@klomp.org>
 

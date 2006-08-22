@@ -114,7 +114,9 @@ public class TestBreakpoints
    */
   public void tearDown()
   {
-    // Make sure proc is gone.
+    // Make sure proc is gone. Since this is a child process we want to
+    // make sure it really terminated so we aren't getting any stray
+    // waitpid messages from it anymore.
     synchronized (monitor)
       {
 	while (!procTerminated)
