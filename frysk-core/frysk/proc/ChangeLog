@@ -1,3 +1,12 @@
+2006-08-22  Andrew Cagney  <cagney@redhat.com>
+
+	* TestLib.java (tearDown): For terminated threads, re-reap their
+	pid.
+	* TestBreakpoints.java (tearDown): Delete code using the event
+	loop to reap children.
+	(setUp): Do not add to Manager .host .observableProcRemovedXXX
+	.addObserver.
+	
 2006-08-22  Mark Wielaard  <mark@klomp.org>
 
 	* TestBreakpoints.java (tearDown): Add more comments about child

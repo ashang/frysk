@@ -1363,6 +1363,9 @@ public class TestLib
 					       int value, boolean coreDumped)
 			{
 			    detach (pid);
+			    // Do not remove PID from children list;
+			    // need to let the terminated event behind
+			    // it bubble up.
 			}
 			public void execEvent (int pid)
 			{
@@ -1379,10 +1382,32 @@ public class TestLib
 			public void terminated (int pid, boolean signal,
 						int value, boolean coreDumped)
 			{
-			  children.remove(new Integer(pid));
+			    // Hopefully done with this PID.
+			    children.remove(new Integer(pid));
+			    // To be sure, again make certain that the
+			    // thread is detached.
+			    detach (pid);
+			    // True children can have a second exit
+			    // status behind this first one, drain
+			    // that also.  Give up when this PID has
+			    // no outstanding events.
+			    try {
+				while (true) {
+				    Wait.waitAll (pid,
+						  new IgnoreWaitObserver ());
+				    logger.log (Level.FINE,
+						"{0} waitAll (pid) ok\n",
+						new Integer (pid));
+				}
+			    }
+			    catch (Errno.Echild e) {
+				logger.log (Level.FINE,
+					    "{0} waitAll (ECHLD)\n",
+					    new Integer (pid));
+			    }
 			}
 			public void disappeared (int pid, Throwable w)
-		       {
+			{
 			    detach (pid);
 			    children.remove(new Integer(pid));
 			}
