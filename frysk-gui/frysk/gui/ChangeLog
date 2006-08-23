@@ -1,3 +1,9 @@
+2006-08-22  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* monitor/MainWindow.java: enable the terminal, also added a function that kills terminal shell.
+	* Gui.java: now calls MainWindow's killTerminalShell().
+	* glade/procpop.java: removed dummy textcontrol to put a terminal
+
 2006-08-22  Mike Cvet  <mcvet@redhat.com>
 
 	* register/RegisterWindowFactory.java (createRegisterWindow): 
