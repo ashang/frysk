@@ -181,7 +181,7 @@ SUFFIXES += .mkjava
 SUFFIXES += .shjava
 .shjava.java:
 	rm -f $*.tmp
-	export CC=$(CC) ; \
+	CC='$(CC)'; export CC ; \
 	$(SHELL) $< | $(SHELL) $(MKJAVA) > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
@@ -198,7 +198,7 @@ SUFFIXES += .mkenum
 SUFFIXES += .shenum
 .shenum.java:
 	rm -f $*.tmp
-	export CC=$(CC) ; \
+	CC='$(CC)'; export CC ; \
 	$(SHELL) $< | $(SHELL) $(MKENUM) > $*.tmp $@
 	chmod a-w $*.tmp
 	mv -f $*.tmp $@
