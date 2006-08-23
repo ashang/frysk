@@ -4,6 +4,8 @@
 	Also moved main scrollbar back out of scrollwindow for now until I can implement scrolling.
 	* src/widgets/ftkeventviewer.h: Changed legend and main drawing areas to custom widgets.
 	So accessibility is cleaner.
+	
+	* src/widgets/ftkeventviewer.c: Removed print statement.
 
 2006-08-18  Nurdin Premji  <npremji@redhat.com>
 

@@ -23,8 +23,10 @@
 #include <sys/time.h>
 #include <gtk/gtk.h>
 #include <gtk/gtkwidget.h>
+
+//#define SCROLLBAR
 #ifdef SCROLLBAR
-#include <gtk/gtkmarshalers.h>
+#include "ftk_marshaller.h"
 #endif
 #include <cairo.h>
 #include <glib-object.h>
@@ -233,7 +235,7 @@ ftk_drawing_area_class_init (FtkDrawingAreaClass *klass)
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkTextViewClass, set_scroll_adjustments),
 		  NULL, NULL,
-		  _gtk_marshal_VOID__OBJECT_OBJECT,
+		  _ftk_marshal_VOID__OBJECT_OBJECT,
 		  G_TYPE_NONE, 2,
 		  GTK_TYPE_ADJUSTMENT,
 		  GTK_TYPE_ADJUSTMENT);  
@@ -2468,7 +2470,6 @@ do_append (FtkEventViewer * eventviewer,
     
 
     g_object_get (G_OBJECT (adj), "upper", &upper, NULL);
-    fprintf(stderr, "The upper value is: %g\n", upper);
     if (upper < nt) {
       g_object_set (G_OBJECT (adj),
 		    "upper", nt,
