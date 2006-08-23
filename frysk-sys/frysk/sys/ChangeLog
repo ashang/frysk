@@ -1,3 +1,7 @@
+2006-08-22  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* cni/Ptrace.cxx: added calls to setsid and setpgid to forked process
+
 2006-08-16  Andrew Cagney  <cagney@redhat.com>
 
 	* Wait.java: Specify "frysk.sys" as the logger, delete unused
