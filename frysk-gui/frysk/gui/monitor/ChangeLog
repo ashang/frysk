@@ -1,3 +1,8 @@
+2006-08-23  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* EventLogger.java (EventLogger): Turn off parent handlers.
+	Increase Level capture scope.
+
 2006-08-23  Mike Cvet  <mcvet@redhat.com>
 
 	* EditObserverDialog.java (.buttonEvent): Temporarily removed

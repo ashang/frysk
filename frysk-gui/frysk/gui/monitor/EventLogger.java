@@ -130,7 +130,10 @@ public class EventLogger implements TaskObserver.Execed, TaskObserver.Syscall,
 		this.attachedResumeObserver = new AttachedResumeObserver();
 
 		eventLogFile = Logger.getLogger(EVENT_LOG_ID);
+		eventLogFile.setUseParentHandlers(false);
 		eventLogFile.addHandler(buildHandler());
+		eventLogFile.setLevel(Level.ALL);
+		
 	}
 
 	private FileHandler buildHandler() {
