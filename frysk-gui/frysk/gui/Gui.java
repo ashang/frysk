@@ -500,6 +500,7 @@ implements LifeCycleListener, Saveable
         
 		Manager.eventLoop.requestStop();
 		procpop.save(prefs);
+		WindowManager.theManager.mainWindow.killTerminalShell();
 		
 		//XXX:
 		ObserverManager.theManager.save();

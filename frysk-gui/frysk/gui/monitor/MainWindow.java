@@ -42,21 +42,32 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.lang.Throwable;
 
 import org.gnu.glade.LibGlade;
+import org.gnu.glib.CustomEvents;
 import org.gnu.gtk.Window;
 import org.gnu.gtk.Notebook;
-//import org.gnu.gdk.Color;
-//import org.gnu.gnomevte.Terminal;
-
+import org.gnu.gtk.VBox;
+import org.gnu.gdk.Color;
+import org.gnu.gnomevte.Terminal;
 import frysk.gui.Gui;
 import frysk.gui.sessions.Session;
+
+import frysk.proc.*;
+import frysk.sys.Pty;
+import frysk.sys.Signal;
+import frysk.sys.Sig;
 
 public class MainWindow extends Window implements Saveable{
 	
 	//private ProcViewPage procViewPage;
 	private SessionProcTreeView sessionProcTreeView;
   	private Notebook statusNotebook;
+
+	//terminal things
+	private VBox terminalWidget;
+	private Task shellTask = null;
 	
 	private Logger errorLog = Logger.getLogger (Gui.ERROR_LOG_ID);
 
@@ -64,6 +75,7 @@ public class MainWindow extends Window implements Saveable{
 		super(((Window)glade.getWidget("procpopWindow")).getHandle()); //$NON-NLS-1$
 		
 		this.statusNotebook = (Notebook) glade.getWidget("statusNoteBook");
+		this.terminalWidget = (VBox) glade.getWidget("terminalWidget");
 
 		try {
 	//		this.procViewPage = new ProcViewPage(glade);
@@ -121,21 +133,49 @@ public class MainWindow extends Window implements Saveable{
   	
   	public void buildTerminal()
   	{
-		// terminal-o-death commented out for now
-		/*
-	  	final Terminal term = Terminal.terminalAndShell();
+		Pty pty = new Pty();
+		String name = pty.getName();
+	  	final Terminal term = new Terminal();
+		
+		System.out.println("pty fd = " + pty.getFd() + "   name = " + pty.getName());
+		Manager.host.requestCreateAttachedProc(name, name, name, new String[] {"/bin/sh"},
+												new TaskObserver.Attached()
+												{
+													public Action updateAttached(Task task)
+													{
+														shellTask = task;
+														return Action.CONTINUE;
+													}
+													public void addedTo(Object observable)
+													{
+													}
+													public void addFailed(Object observable, Throwable w)
+													{
+													}
+													public void deletedFrom(Object observable)
+													{
+													}
+												});
+		term.setPty(pty.getFd());
+		
+
 		term.setDefaultColors();
 		term.setForegroundColor(Color.BLACK);
 		term.setBackgroudColor(Color.WHITE);
+
 		CustomEvents.addEvent(new Runnable() {
 			public void run() {
-				//Terminal term = new Terminal("/bin/sh", new String[] {}, System.getenv("PWD"));
 				terminalWidget.add(term);
 				term.showAll();
 				terminalWidget.showAll();
 			}
-		});
-*/	
-  	}
+		});  	
+	}
+
+	public void killTerminalShell()
+	{
+		if (shellTask != null)
+			Signal.kill(shellTask.getTid(), Sig.HUP);
+	}
 }
 
