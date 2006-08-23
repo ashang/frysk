@@ -81,6 +81,9 @@ frysk::sys::Ptrace$PtraceThread::callPtrace ()
       else if (result == 0) /* Child */
 	{ 
       
+	  setsid();
+	  setpgid(0, 0);
+
 	  // Convert args into argv, argc.
 	  int argc = JvGetArrayLength (args);
 	  char **argv = (char **) alloca ((argc + 1) * sizeof (void*));
