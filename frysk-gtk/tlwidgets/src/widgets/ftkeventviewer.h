@@ -241,8 +241,40 @@ typedef enum {
 #define FTK_IS_EVENTVIEWER_CLASS(klass)	\
         (G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_EVENTVIEWER_TYPE))
         
+#define FTK_DRAWING_AREA_TYPE					\
+		(ftk_drawing_area_get_type())
+		
+#define FTK_DRAWING_AREA(obj) \
+		(G_TYPE_CHECK_INSTANCE_CAST ((obj), \
+		FTK_DRAWING_AREA_TYPE, FtkDrawingArea))
+		
+#define FTK_IS_DRAWING_AREA(obj) \
+		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), FTK_DRAWING_AREA_TYPE))
+		
+#define FTK_IS_DRAWING_AREA_CLASS(klass) \
+		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_DRAWING_AREA_TYPE))	
+		
+#define FTK_DRAWING_AREA_GET_CLASS(klass) \
+		(G_TYPE_INSTANCE_GET_CLASS ((obj), FTK_DRAWING_AREA_TYPE, FtkDrawingAreaClass))					
+
+#define FTK_LEGEND_TYPE					\
+		(ftk_legend_get_type())
+
+#define FTK_LEGEND(obj) \
+		(G_TYPE_CHECK_INSTANCE_CAST ((obj), \
+		FTK_LEGEND_TYPE, FtkLegend))
+		
+#define FTK_IS_LEGEND(obj) \
+		(G_TYPE_CHECK_INSTANCE_TYPE ((obj,), FTK_LEGEND_TYPE))
+		
+#define FTK_IS_LEGEND_CLASS(klass) \
+		(G_TYPE_CHECK_CLASS_TYPE ((klass), FTK_LEGEND_TYPE))	
+		
+#define FTK_LEGEND_GET_CLASS(klass) \
+		(G_TYPE_INSTANCE_GET_CLASS ((obj), FTK_LEGEND_TYPE, FtkLegendClass))					
+        
 #define FTK_TRACE_TYPE					\
-		(ftk_eventviewer_get_type ())
+		(ftk_trace_get_type ())
 
 #define FTK_TRACE(obj)					\
 		(G_TYPE_CHECK_INSTANCE_CAST ((obj),	\
@@ -359,6 +391,66 @@ typedef struct _FtkTraceClass {
   void (* ftktrace) (FtkTrace * trace);
 } FtkTraceClass;
 
+typedef struct _FtkDrawingArea {
+	GtkDrawingArea	parent;
+	FtkTrace		* traces;
+  gint			  trace_next;
+  gint			  trace_max;
+  gint			* trace_pool;
+  gint			  trace_pool_next;
+  gint			  trace_pool_max;
+  gint			* trace_order;
+  gint			  trace_order_next;
+  gint			  trace_order_max;
+  gboolean		  trace_modified;		/* used */
+  gint			  trace_origin;
+  gint			  trace_width;
+  GtkAdjustment		*hadjustment;
+  GtkAdjustment		*vadjustment;
+} FtkDrawingArea;
+
+#define ftk_da_trace_pool(d)		(d)->trace_pool
+#define ftk_da_trace_pool_ety(d,i)	(d)->trace_pool[i]
+#define ftk_da_trace_pool_next(d)	(d)->trace_pool_next
+#define ftk_da_trace_pool_max(d)	(d)->trace_pool_max
+#define ftk_da_trace_order(d)		(d)->trace_order
+#define ftk_da_trace_order_ety(d,i)	(d)->trace_order[i]
+#define ftk_da_trace_order_next(d)	(d)->trace_order_next
+#define ftk_da_trace_order_max(d)	(d)->trace_order_max
+#define ftk_da_traces(d)		(d)->traces
+#define ftk_da_trace(d,i)	      &((d)->traces[i])
+#define ftk_da_trace_next(d)		(d)->trace_next
+#define ftk_da_trace_max(d)		(d)->trace_max
+#define ftk_da_trace_modified(d)	(d)->trace_modified
+#define ftk_da_trace_origin(d)		(d)->trace_origin
+#define ftk_da_trace_width(d)		(d)->trace_width
+
+typedef struct _FtkDrawingAreaClass {
+	GtkDrawingAreaClass parent_class;
+	
+	void (* set_scroll_adjustments)   (FtkDrawingArea    *da,
+                                     GtkAdjustment  *hadjustment,
+                                     GtkAdjustment  *vadjustment);
+} FtkDrawingAreaClass;
+
+typedef struct _FtkLegend {
+	GtkDrawingArea parent;
+	ftk_marker_s	        * markers;
+  gint	      		  markers_next;
+  gint	      		  markers_max;
+  gboolean     		  markers_modified;		/* used */
+} FtkLegend;
+
+typedef struct _FtkLegendClass {
+	GtkDrawingAreaClass parent_class;
+} FtkLegendClass;
+
+#define ftk_legend_markers(l)		(l)->markers
+#define ftk_legend_marker(l,i)	      &((l)->markers[i])
+#define ftk_legend_markers_next(l)		(l)->markers_next
+#define ftk_legend_markers_max(l)		(l)->markers_max
+#define ftk_legend_markers_modified(l)	(l)->markers_modified
+
 #define ftk_tie_gc(t)			(t)->gc
 #define ftk_tie_label(t)		(t)->label
 #define ftk_tie_label_dheight(t)	(t)->label_height_d
@@ -440,23 +532,13 @@ typedef struct _FtkEventViewer {
   GtkWidget		* readout;
   GtkWidget		* scroll;
   GtkAdjustment		* scroll_adj;
-  GtkDrawingArea	* da;
+  FtkDrawingArea	* da;
   GtkScrolledWindow * da_scrolled_window;
-  GtkDrawingArea	* legend_da;
+  FtkLegend	* legend_da;
   GdkColor		  bg_color;
   const GdkColor       ** color_set;
-  ftk_marker_s	        * markers;
-  gint	      		  markers_next;
-  gint	      		  markers_max;
-  FtkTrace		* traces;
-  gint			  trace_next;
-  gint			  trace_max;
-  gint			* trace_pool;
-  gint			  trace_pool_next;
-  gint			  trace_pool_max;
-  gint			* trace_order;
-  gint			  trace_order_next;
-  gint			  trace_order_max;
+  
+  
   ftk_tie_s		* ties;
   gint			  tie_next;
   gint			  tie_max;
@@ -470,16 +552,13 @@ typedef struct _FtkEventViewer {
   gint			  label_box_height;
   gint			  da_height;
   gint			  legend_height;
-  gint			  trace_origin;
-  gint			  trace_width;
+
   gint			  popup_trace;
   gint			  popup_marker;
   ftk_popup_type_e	  popup_type;
   FtkGlyph		  next_glyph;
   gint			  next_color;
-  gboolean		  trace_modified;		/* used */
   gboolean		  tie_modified;
-  gboolean     		  markers_modified;		/* used */
   gboolean     		  widget_modified;		/* used */
   gboolean     		  symbols_initted;
   gboolean		  drawable;
@@ -537,19 +616,7 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_bg_red(v)		(v)->bg_color.red
 #define ftk_ev_bg_green(v)		(v)->bg_color.green
 #define ftk_ev_bg_blue(v)		(v)->bg_color.blue
-#define ftk_ev_trace_pool(v)		(v)->trace_pool
-#define ftk_ev_trace_pool_ety(v,i)	(v)->trace_pool[i]
-#define ftk_ev_trace_pool_next(v)	(v)->trace_pool_next
-#define ftk_ev_trace_pool_max(v)	(v)->trace_pool_max
-#define ftk_ev_trace_order(v)		(v)->trace_order
-#define ftk_ev_trace_order_ety(v,i)	(v)->trace_order[i]
-#define ftk_ev_trace_order_next(v)	(v)->trace_order_next
-#define ftk_ev_trace_order_max(v)	(v)->trace_order_max
-#define ftk_ev_traces(v)		(v)->traces
-#define ftk_ev_trace(v,i)	      &((v)->traces[i])
-#define ftk_ev_trace_next(v)		(v)->trace_next
-#define ftk_ev_trace_max(v)		(v)->trace_max
-#define ftk_ev_trace_modified(v)	(v)->trace_modified
+
 #define ftk_ev_ties(v)			(v)->ties
 #define ftk_ev_tie(v,i)	 	      &((v)->ties[i])
 #define ftk_ev_tie_next(v)		(v)->tie_next
@@ -567,13 +634,8 @@ typedef struct _FtkEventViewer {
 #define ftk_ev_dlink(v,i)	      &((v)->dlinks[i])
 #define ftk_ev_dlink_next(v)		(v)->dlink_next
 #define ftk_ev_dlink_max(v)		(v)->dlink_max
-#define ftk_ev_trace_origin(v)		(v)->trace_origin
-#define ftk_ev_trace_width(v)		(v)->trace_width
-#define ftk_ev_markers(v)		(v)->markers
-#define ftk_ev_marker(v,i)	      &((v)->markers[i])
-#define ftk_ev_markers_next(v)		(v)->markers_next
-#define ftk_ev_markers_max(v)		(v)->markers_max
-#define ftk_ev_markers_modified(v)	(v)->markers_modified
+
+
 #define ftk_ev_widget_modified(v)	(v)->widget_modified
 #define ftk_ev_accessible_index(v) 	(v)->accessible_index
 
