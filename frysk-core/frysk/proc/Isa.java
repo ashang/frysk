@@ -57,7 +57,26 @@ public interface Isa
 
   int getWordSize();
   ByteOrder getByteOrder();
-
+  
+  /**
+   * Get the breakpoint instruction.
+   * 
+   * @return bytes[] the instruction of the ISA.
+   */
+  byte[] getBreakpointInstruction();
+ 
+  /**
+   * Get the true breakpoint address according to PC register after hitting 
+   * one breakpoint set in task. Different arch will take different action
+   * when it hit one breakpoint. In X86/X86-64, the length of the breakpoint
+   * instruction will be added to the PC register.However in PPC64, the PC 
+   * register's value will remain unchanged. 
+   * 
+   * The function will take different actions according to task's ISA.
+   * 
+   */
+  long getBreakpointAddress(Task task);
+  
   // int addressSize;
   // InstructionSet;
   // FloatingPointFormat;

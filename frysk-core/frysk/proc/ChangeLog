@@ -1,3 +1,39 @@
+2006-08-23  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* frysk/proc/Isa.java (getBpInstruction): New method to get the
+	instruction to replace the original instruction for breakpoint.
+	(getBreakpointAddress): New method to get the breakpoint's
+	address after hitting the breakpoint.
+	* frysk/proc/IsaIA32.java (getBpInstruction): New method to
+	implement the Isa interface.
+	(getBreakpointAddress): New method to implement the Isa interface.
+	(BREAKPOINT_INSTRUCTION): New attribute to store the breakpoint
+	instruction on IA32.
+	* frysk/proc/IsaEMT64.java (getBpInstruction): New method to
+	implement the Isa interface.
+	(getBreakpointAddress): New method to implement the Isa interface.
+	(BREAKPOINT_INSTRUCTION): New attribute to store the breakpoint
+	instruction on EMT64.
+	* frysk/proc/IsaPPC.java (getBpInstruction): New method to
+	implement the Isa interface.
+	(getBreakpointAddress): New method to implement the Isa interface.
+	* frysk/proc/IsaPPC64.java (getBpInstruction): New method to
+	implement the Isa interface.
+	(getBreakpointAddress): New method to implement the Isa interface.
+	(BREAKPOINT_INSTRUCTION): New attribute to store the breakpoint
+	instruction on PPC64.
+
+	* frysk/proc/Breakpoint.java (TRAP): Move it to
+	BREAKPOINT_INSTRUCTION in specific ISA.
+	(origInstruction): Renamed from orig.
+	(set): Replace the original instruction with breakpoint
+	instruction got from ISA. 
+	(reset): Restore the original instruction.
+	(prepareStep): Add support for PPC64.
+
+	* frysk/proc/TaskState.java (Running.handleTrappedEvent): Get
+	breakpoint address according to task's ISA.
+
 2006-08-22  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java (tearDown): For terminated threads, re-reap their

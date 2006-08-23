@@ -48,6 +48,8 @@ class IsaIA32 implements Isa
   static final int I387_OFFSET = 18*4;
   static final int DBG_OFFSET = 63 * 4;
 
+  private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
+  
   static class IA32Register extends Register
   {
     IA32Register(String name, int wordOffset)
@@ -120,6 +122,40 @@ class IsaIA32 implements Isa
   public ByteOrder getByteOrder()
   {
     return ByteOrder.LITTLE_ENDIAN;
+  }
+  
+  /**
+   * Get the breakpoint instruction.
+   * 
+   * @return bytes[] the instruction of the ISA or null if TRAP is not 
+   *         initialized.
+   */
+  public final byte[] getBreakpointInstruction()
+  {
+    byte[] instruction = null;
+    
+    instruction = new byte[IsaIA32.BREAKPOINT_INSTRUCTION.length];
+    
+    System.arraycopy(IsaIA32.BREAKPOINT_INSTRUCTION, 0, 
+                     instruction, 0, IsaIA32.BREAKPOINT_INSTRUCTION.length);
+    
+    return instruction;
+  }
+  
+  /**
+   * Get the true breakpoint address according to PC register after hitting 
+   * one breakpoint set in task. In X86, the length of breakpoint instruction
+   * will be added to the PC register's value. So the true breakpoint address
+   * is the PC register's value minus the length of breakpoint. 
+   */
+  public long getBreakpointAddress(Task task)
+  {
+    long pcValue = 0;
+    
+    pcValue = this.pc(task);
+    pcValue = pcValue - IsaIA32.BREAKPOINT_INSTRUCTION.length;
+    
+    return pcValue;
   }
 }
 

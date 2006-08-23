@@ -46,6 +46,11 @@ class IsaPPC64
 
   private LinkedHashMap registerMap = new LinkedHashMap();
 
+  // the illegal instruction for ppc64: 0x7d821008.
+  // the default order is BIG_ENDIAN
+  private static byte[] BREAKPOINT_INSTRUCTION = { (byte)0x7d, (byte)0x82, 
+                                                   (byte)0x10, (byte)0x08 };
+  
   IsaPPC64()
   {
     for (int i = 0; i < gpr.length; i++) 
@@ -90,5 +95,43 @@ class IsaPPC64
   public ByteOrder getByteOrder ()
   {
     return ByteOrder.BIG_ENDIAN;
+  }
+  
+  /**
+   * Get the breakpoint instruction of the PPC64 platform.
+   * 
+   * @return bytes[] the breakpoint instruction
+   */
+  public final byte[] getBreakpointInstruction()
+  {
+    byte[] instruction = null;
+    
+    if (null == IsaPPC64.BREAKPOINT_INSTRUCTION)
+      return null;
+    
+    instruction = new byte[IsaPPC64.BREAKPOINT_INSTRUCTION.length];
+    
+    System.arraycopy(IsaPPC64.BREAKPOINT_INSTRUCTION, 0, 
+                     instruction, 0, IsaPPC64.BREAKPOINT_INSTRUCTION.length);
+    
+    return instruction;
+  }
+  
+  /**
+   * Get the true breakpoint address according to PC register after hitting 
+   * one breakpoint set in task. In PPC64, the PC register's value will 
+   * remain unchanged. 
+   * 
+   */
+  public final long getBreakpointAddress(Task task)
+  {
+    long pcValue = 0;
+        
+    if (null == task)
+      return pcValue;
+
+    pcValue = this.pc(task);
+    
+    return pcValue;
   }
 }

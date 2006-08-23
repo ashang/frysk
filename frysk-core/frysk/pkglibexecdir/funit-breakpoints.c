@@ -77,9 +77,18 @@ main ()
   bp2 = 0;
 
   // Tell the tester the addresses of the functions to put breakpoints on.
-  // XXX add ppc case
+  // There's great difference to get the addresses of one function between 
+  // PPC64 and other platform(such as X86/X86_64). What we get through the
+  // the form "&function_name" is the address of function descriptor but 
+  // not the true entry address of the function on PPC64.
+#ifndef __powerpc64__
   printf("%p\n", &first_breakpoint_function);
   printf("%p\n", &second_breakpoint_function);
+#else
+  printf("%p\n", (void *)(*(long *)&first_breakpoint_function));
+  printf("%p\n", (void *) (*(long *)&second_breakpoint_function));
+#endif
+
   fflush(stdout);
 
   // Go round and round.

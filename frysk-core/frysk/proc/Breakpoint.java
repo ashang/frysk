@@ -60,13 +60,8 @@ public class Breakpoint
   // Static cache of installed break points.
   private static HashMap installed = new HashMap();
 
-  // The instruction that will generate a trap signal.  Happens to be
-  // the same for x86 and x86_64, but will depend on the Isa in use
-  // for other architectures.
-  private static final byte TRAP = (byte) 0xcc;
-
-  // The original instruction at the location we replaced with TRAP.
-  private byte orig;
+  // The original instruction at the location we replaced with BREAKPOINT_INSTRUCTION.
+  private byte[] origInstruction;
 
   /**
    * Private constructor called by create to record address and
@@ -115,20 +110,51 @@ public class Breakpoint
 	  throw new IllegalStateException("Already installed: " + this);
 
 	installed.put(this, this);
-	set(task);
+    
+        try
+          {
+            set(task);
+          }
+	catch (TaskException e)
+          {
+            // Throw RuntimeException for the following two reasons:
+            // 1st) TaskException is thrown out by Task.getIsa() in set(), if the
+            //      frysk works well, the exception shouldnot be thrown out. If we
+            //      get one, it mean some runtime exception occurs.
+            // 2nd) This method will be called in TaskState.Running.handleStoppedEvent().
+            //      There's no exception hanling there. So we have to throw one Runtime-
+            //      Exception here.
+            throw new RuntimeException(e);
+          }
       }
   }
 
   /**
    * Actually sets the breakpoint.
    */
-  private void set(Task task)
+  private void set(Task task) throws TaskException
   {
-    ByteBuffer buffer = task.memory;
+    int len = 0;
+    ByteBuffer buffer = null;
+    byte[] bpInstruction = null;
+    
+    buffer = task.memory;
     buffer.position(address);
-    orig = buffer.getByte();
+    
+    bpInstruction = task.getIsa().getBreakpointInstruction();
+    
+    len = bpInstruction.length;
+    if (len <= 0)
+      throw new IllegalStateException("Breakpoint instruction is invalid: " + 
+                                      this);
+    
+    origInstruction = new byte[len];
+    for (int index = 0; index < len; index++)
+      origInstruction[index] = buffer.getByte();
+    
     buffer.position(address);
-    buffer.putByte(TRAP);
+    for (int index = 0; index < len; index++)
+      buffer.putByte(bpInstruction[index]);
   }
 
   /**
@@ -151,9 +177,15 @@ public class Breakpoint
    */
   private void reset(Task task)
   {
-    ByteBuffer buffer = task.memory;
+    int len = 0;
+    ByteBuffer buffer = null;
+    
+    buffer = task.memory;
     buffer.position(address);
-    buffer.putByte(orig);
+    
+    len = origInstruction.length;
+    for (int index = 0; index < len; index++)
+      buffer.putByte(origInstruction[index]);
   }
 
   // XXX Prepare step and step done are not multi-task safe.
@@ -176,6 +208,8 @@ public class Breakpoint
       pc = isa.getRegisterByName("eip");
     else if (isa instanceof LinuxEMT64)
       pc = isa.getRegisterByName("rip");
+    else if (isa instanceof LinuxPPC64)
+      pc = isa.getRegisterByName("nip");
     else
       throw new RuntimeException("unsupported architecture: " + isa);
     pc.put(task, address);
@@ -192,8 +226,23 @@ public class Breakpoint
   {
     if (! stepping)
       throw new IllegalStateException("Not stepping");
-
-    set(task);
+          
+    try
+      {
+        set(task);
+      }
+    catch (TaskException e)
+      {
+        // Throw RuntimeException for the following two reasons:
+        // 1st) TaskException is thrown out by Task.getIsa() in set(), if the
+        //      frysk works well, the exception shouldnot be thrown out. If we
+        //      get one, it mean some runtime exception occurs.
+        // 2nd) setDone() will be called in TaskState.Running.handleTrappedEvent().
+        //      There's no exception hanling there. So we have to throw one Runtime-
+        //      Exception here.
+        throw new RuntimeException(e);
+      }
+    
     stepping = false;
   }
 

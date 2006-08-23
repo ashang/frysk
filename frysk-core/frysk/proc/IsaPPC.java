@@ -91,4 +91,22 @@ class IsaPPC
   {
     return ByteOrder.BIG_ENDIAN;
   }
+  
+  /**
+   * Not support now.
+   * 
+   * @return bytes[] the instruction of the ISA.
+   */
+  public byte[] getBreakpointInstruction()
+  {
+    throw new RuntimeException("unsupported architecture: " + this);
+  }
+  
+  /**
+   * Not support now.
+   */
+  public long getBreakpointAddress(Task task)
+  {
+    throw new RuntimeException("unsupported architecture: " + this);
+  }
 }

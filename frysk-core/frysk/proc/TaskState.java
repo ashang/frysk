@@ -1026,12 +1026,10 @@ class TaskState
 	    return this;
 	  }
 
-	// FIXME This might not hold for all architectures.
-	// Should probably be handled by the Isa.
 	long address;
 	try
 	  {
-	    address = task.getIsa().pc(task) - 1;
+	    address = task.getIsa().getBreakpointAddress(task);
 	  }
 	catch (TaskException tte)
 	  {
