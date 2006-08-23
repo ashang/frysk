@@ -371,6 +371,13 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     sessionNameText = vbox43_tab2_processGroups.child(name='sessionNameText')
     sessionNameText.text = sessionObject.getName()
     
+    print "DEBUG = " + sessionNameText.text
+    print "DEBUG = " + str(sessionNameText.caretOffset)
+    sessionNameText.caretOffset = 2       
+    print "DEBUG = " + sessionNameText.text
+    print "DEBUG = " + str(sessionNameText.caretOffset)
+    
+    
     hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
         
     # ---------------------

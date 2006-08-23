@@ -197,9 +197,11 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
             observerDescription.text = newObserverDescription
                 
             observerTypeComboBox = observerPanel.child( roleName='combo box', name = 'observerTypeComboBox') 
-            comboMenu = observerTypeComboBox.child( roleName='menu' )    
-            selectedItem=comboMenu.child( name = observerToCreate.getType() )
-            selectedItem.click()              
+            comboMenu = observerTypeComboBox.child( roleName='menu' ) 
+            # Valid - but not optimal code - replace with use of combovalue attribute   
+            #selectedItem=comboMenu.child( name = observerToCreate.getType() )
+            #selectedItem.click()  
+            observerTypeComboBox.combovalue = observerToCreate.getType()           
 
             # At this point, we want to access the multiple actions (ActionPoints)
             # defined in the Observer. The GUI elements to support the definition of
@@ -233,8 +235,10 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     theComboBoxes = observerActionsTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
                     comboBox = theComboBoxes[0]
                     # Select the action
-                    actionItem = comboBox.menuItem (theActionName)
-                    actionItem.click()
+                    # Valid - but not optimal code - replace with use of combovalue attribute   
+                    #actionItem = comboBox.menuItem (theActionName)
+                    #actionItem.click()
+                    comboBox.combovalue = theActionName
                     
                     actionText = observerActionsTable.child(roleName = 'text')
                     actionText.text = tempElement.getArgument()
@@ -272,8 +276,10 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                     theComboBoxes = observerFiltersTable.findChildren(predicate.GenericPredicate(roleName='combo box'), False)
                     comboBox = theComboBoxes[1]
                     # Select the action
-                    filterItem = comboBox.menuItem (theFilterName)
-                    filterItem.click()
+                    #filterItem = comboBox.menuItem (theFilterName)
+                    #filterItem.click()
+                    # Valid - but not optimal code - replace with use of combovalue attribute                       
+                    comboBox.combovalue = theFilterName
                     
                     filterText = observerFiltersTable.child(roleName = 'text')
                     filterText.text = tempElement.getArgument()
