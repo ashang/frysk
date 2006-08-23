@@ -351,6 +351,7 @@ public class SessionManagerGui
 			{
 				WindowManager.theManager.mainWindow.buildTerminal();
                 hideAll();
+            	WindowManager.theManager.mainWindow.showAll();
 			}
           }
       }
