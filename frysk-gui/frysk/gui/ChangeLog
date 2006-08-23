@@ -1,3 +1,10 @@
+2006-08-23  Mike Cvet  <mcvet@redhat.com>
+
+	* SessionManagerGui.java (openSession): Added - opens the new Session correctly in the
+	MainWindow. Closes #3114.
+	(getSessionManagementControls): Now calls openSession to open the new Session.
+	(getManagerControls): Ditto.
+
 2006-08-22  Ivan Pantuyev  <ipantuye@redhat.com>
 
 	* SessionManagerGui.java: added a line to show main window after terminal session is open

@@ -222,9 +222,7 @@ public class SessionManagerGui
       {
         if (arg0.isOfType(TreeViewEvent.Type.ROW_ACTIVATED))
           {
-            WindowManager.theManager.mainWindow.showAll();
-            WindowManager.theManager.mainWindow.setSession((Session) previousSessions.getSelectedObject());
-            hideAll();
+            openSession();
           }
       }
     });
@@ -338,21 +336,7 @@ public class SessionManagerGui
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
-            LibGlade glade = getGlade();
-            processPicker = new ProcessPicker(glade);
-            Session s = (Session) previousSessions.getSelectedObject();
-
-			if (previousSession.getState())
-			{
-                processPicker.checkSession(s);
-				WindowManager.theManager.mainWindow.hideTerminal();
-			}
-			if (terminalSession.getState())
-			{
-				WindowManager.theManager.mainWindow.buildTerminal();
-                hideAll();
-            	WindowManager.theManager.mainWindow.showAll();
-			}
+            openSession();
           }
       }
     });
@@ -446,6 +430,26 @@ public class SessionManagerGui
         return true;
       }
     return false;
+  }
+  
+  public void openSession()
+  {
+    
+    LibGlade glade = getGlade();
+    processPicker = new ProcessPicker(glade);
+    Session s = (Session) previousSessions.getSelectedObject();
+
+    if (previousSession.getState())
+    {
+        processPicker.checkSession(s);
+        WindowManager.theManager.mainWindow.hideTerminal();
+    }
+    if (terminalSession.getState())
+    {
+        WindowManager.theManager.mainWindow.buildTerminal();
+        hideAll();
+        WindowManager.theManager.mainWindow.showAll();
+    }
   }
   
   public void setGladePath(String[] glade_dirs)
