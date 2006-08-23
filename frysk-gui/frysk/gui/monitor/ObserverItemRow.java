@@ -209,12 +209,13 @@ public abstract class ObserverItemRow
         combo.apply();
       }
     
-    if (((LiaisonItem) combo.getFilter()).setArgument(argumentEntry.getText())
-        || ((LiaisonItem) combo.getFilter()).needInfo == 0)
+//    if (((LiaisonItem) combo.getFilter()).setArgument(argumentEntry.getText())
+//        || ((LiaisonItem) combo.getFilter()).needInfo == 0)
+    if (((LiaisonItem) combo.getFilter()).setArgument(argumentEntry.getText()))
       return true;
     else
       {
-        this.offendingArg = (((LiaisonItem) combo.getFilter()).getArgument());
+        //this.offendingArg = (((LiaisonItem) combo.getFilter()).getArgument());
         return false;
       }
   }

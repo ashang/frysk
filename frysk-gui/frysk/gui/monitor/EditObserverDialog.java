@@ -60,8 +60,8 @@ import org.gnu.gtk.event.TextBufferEvent;
 import org.gnu.gtk.event.TextBufferListener;
 
 import frysk.gui.common.IconManager;
+//import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.common.dialogs.FryskDialog;
-import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
@@ -131,7 +131,9 @@ public class EditObserverDialog
         if (event.isOfType(ButtonEvent.Type.CLICK))
           {
             filtersTable.apply();
-            if (actionsTable.apply() != false)
+            actionsTable.apply();
+            EditObserverDialog.this.hideAll();
+          /*  if (actionsTable.apply() != false)
               EditObserverDialog.this.hideAll();
             else
               {
@@ -149,7 +151,7 @@ public class EditObserverDialog
                     dialog.showAll();
                     dialog.run();
                   }
-              }
+              } */
             }
       }
     });

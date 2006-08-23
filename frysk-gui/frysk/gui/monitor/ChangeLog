@@ -1,3 +1,10 @@
+2006-08-23  Mike Cvet  <mcvet@redhat.com>
+
+	* EditObserverDialog.java (.buttonEvent): Temporarily removed
+	some input-checking code.
+	* ObserverItemsTable.java (apply): Ditto.
+	* ObserverItemRow.java (apply): Ditto.
+
 2006-08-23    <swagiaal@redhat.com>
 
 	* ObserversDialog.java: Rname Dialog to FryskDialog.

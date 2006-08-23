@@ -137,20 +137,21 @@ public abstract class ObserverItemsTable
     while (iterator.hasNext())
       {
         ObserverItemRow itemRow = (ObserverItemRow) iterator.next();
-        if (itemRow.apply() == false)
-          {
-            this.offendingArg = itemRow.getOffendingArg();
-            Iterator i = this.applyList.iterator();
-            while (i.hasNext())
-              {
-                ObserverItemRow row = (ObserverItemRow) i.next();
-               
-                if(row.combo != null){
-                  row.combo.unApply();
-                }
-              }   
-            return false;
-          }
+        itemRow.apply();
+//        if (itemRow.apply() == false)
+//          {
+//            this.offendingArg = itemRow.getOffendingArg();
+//            Iterator i = this.applyList.iterator();
+//            while (i.hasNext())
+//              {
+//                ObserverItemRow row = (ObserverItemRow) i.next();
+//               
+//                if(row.combo != null){
+//                  row.combo.unApply();
+//                }
+//              }   
+//            return false;
+//          }
       }
     this.applyList.clear();
     return true;
