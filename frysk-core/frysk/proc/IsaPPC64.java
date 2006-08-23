@@ -106,9 +106,6 @@ class IsaPPC64
   {
     byte[] instruction = null;
     
-    if (null == IsaPPC64.BREAKPOINT_INSTRUCTION)
-      return null;
-    
     instruction = new byte[IsaPPC64.BREAKPOINT_INSTRUCTION.length];
     
     System.arraycopy(IsaPPC64.BREAKPOINT_INSTRUCTION, 0, 
@@ -126,9 +123,6 @@ class IsaPPC64
   public final long getBreakpointAddress(Task task)
   {
     long pcValue = 0;
-        
-    if (null == task)
-      return pcValue;
 
     pcValue = this.pc(task);
     
