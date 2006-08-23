@@ -54,7 +54,7 @@ import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
 
-public class NoDebugInfoDialog extends Dialog{
+public class NoDebugInfoDialog extends FryskDialog{
 
 	private String title = ""; //$NON-NLS-1$
 	private String message = ""; //$NON-NLS-1$

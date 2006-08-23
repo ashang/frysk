@@ -344,14 +344,10 @@ public class DebugProcess extends GuiObject {
     {
       public void update (Observable observable, Object object)
       {
-        System.out.println(this + ": DebugProcess.addProcs() " + "[" + executablePath + "]");
         
         GuiProc guiProc = (GuiProc) object;
         if((guiProc.getNiceExecutablePath()).equals(executablePath)){
           addProc(guiProc);
-          System.out.println(this + ": .update() adding " + "[" + guiProc.getNiceExecutablePath() + "]");
-        }else{
-          System.out.println(this + ": .update() NOT adding " + "[" + guiProc.getNiceExecutablePath() + "]");
         }
       }
     });

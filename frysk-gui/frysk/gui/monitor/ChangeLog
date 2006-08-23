@@ -1,3 +1,10 @@
+2006-08-23    <swagiaal@redhat.com>
+
+	* ObserversDialog.java: Rname Dialog to FryskDialog.
+	* ProgramObserverDialog.java: Ditto.
+	* PickProcDialog.java: Ditto
+	* EditObserverDialog.java: Inherets from FryskDialog now.
+
 2006-08-22  Mike Cvet  <mcvet@redhat.com>
 
 	* ObserverItemRow.java (apply): Fails when the input is blank 

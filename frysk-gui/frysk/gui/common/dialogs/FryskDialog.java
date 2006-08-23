@@ -37,6 +37,8 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
+
 /*
  * Created on Sep 26, 2005
  *
@@ -45,60 +47,50 @@
  */
 package frysk.gui.common.dialogs;
 
-import org.gnu.gtk.GtkStockItem;
-import org.gnu.gtk.HBox;
-import org.gnu.gtk.Label;
-import org.gnu.gtk.PolicyType;
-import org.gnu.gtk.ScrolledWindow;
+import org.gnu.glib.Handle;
+import org.gnu.gtk.Dialog;
 import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
+import org.gnu.gtk.event.LifeCycleEvent;
+import org.gnu.gtk.event.LifeCycleListener;
+
+import frysk.gui.common.IconManager;
 
 
-public class WarnDialog extends FryskDialog{
+public class FryskDialog extends Dialog {
 
-	private String title = ""; //$NON-NLS-1$
-	private String message = ""; //$NON-NLS-1$
-
-	public WarnDialog(String title, String message) {
+	//private String message;
+	
+	public FryskDialog(){
 		super();
-		this.title = title;
-		this.message = message;
-		doImplementation();
+		this.init();
 	}
 	
-	public WarnDialog(String message) {
-		super();
-		this.title = "Warning"; //$NON-NLS-1$
-	    this.message = message;
-		doImplementation();
+	public FryskDialog(Handle handle){
+		super(handle);
+		this.init();
 	}
-
 	
-	private void doImplementation()
-	{
-		
-		this.addButton(GtkStockItem.OK, 1);
-		this.setTitle(this.title);
-		this.setDefaultSize(400,200);
-		HBox mainBox = new HBox(false,0);
-		this.getDialogLayout().add(mainBox);
-		
-		ScrolledWindow sWindow = new ScrolledWindow(null,null);
-		sWindow.setBorderWidth(10);
-		sWindow.setPolicy(PolicyType.AUTOMATIC,PolicyType.AUTOMATIC);
-		
-		Label warnLabel = new Label(this.message);
-		sWindow.addWithViewport(warnLabel);
-		
-		mainBox.packStart(sWindow,true, true, 0);
-
-		this.addListener(new DialogListener(){
-			public boolean dialogEvent(DialogEvent arg0) {
-				hideAll();
-				return false;
-			}
+	private void init(){
+		this.addListener(new LifeCycleListener() {
+			public void lifeCycleEvent(LifeCycleEvent event) {}
+	         public boolean lifeCycleQuery(LifeCycleEvent event) {
+	             if (event.isOfType(LifeCycleEvent.Type.DESTROY) || 
+	                 event.isOfType(LifeCycleEvent.Type.DELETE)) {
+	            	 FryskDialog.this.hideAll();
+	             }	
+	             return true;
+	         }
 		});
 		
+		this.addListener(new DialogListener() {
+			public boolean dialogEvent(DialogEvent event) {
+				FryskDialog.this.hideAll();
+				return false;
+			}
+		
+		});
+		this.setIcon(IconManager.windowIcon);
 	}
 	
 }

@@ -1,3 +1,11 @@
+2006-08-23    <swagiaal@redhat.com>
+
+	* dialogs/ErrorDialog.java: Rnamed Dialog to FryskDialog
+	* dialogs/FryskDialog.java: Renamed Dialog.java to this.
+	* dialogs/WarnDialog.java: Ditto.
+	* dialogs/QueryDialog.java: Ditto.
+	* dialogs/NoDebugInfoDialog.java: Ditto.
+
 2006-08-21    <swagiaal@redhat.com>
 
 	* IconManager.java: Moved public static instance of TrayIcon to

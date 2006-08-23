@@ -71,7 +71,7 @@ import org.gnu.gtk.event.TreeViewColumnListener;
 import org.gnu.gtk.event.TreeViewEvent;
 import org.gnu.gtk.event.TreeViewListener;
 
-import frysk.gui.common.dialogs.Dialog;
+import frysk.gui.common.dialogs.FryskDialog;
 import frysk.proc.Manager;
 import frysk.proc.Proc;
 
@@ -82,7 +82,7 @@ import frysk.proc.Proc;
  * A Dialog that displays a list of procs matching
  * the given path.
  */
-public class PickProcDialog extends Dialog {
+public class PickProcDialog extends FryskDialog {
 
 	TreeView ListView;
 

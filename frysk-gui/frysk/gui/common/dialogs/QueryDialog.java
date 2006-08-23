@@ -54,7 +54,7 @@ import org.gnu.gtk.event.DialogEvent;
 import org.gnu.gtk.event.DialogListener;
 
 
-public class QueryDialog extends Dialog{
+public class QueryDialog extends FryskDialog{
 
 	private String title = ""; 
 	private String message = "";

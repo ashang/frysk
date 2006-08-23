@@ -44,7 +44,6 @@ import java.util.Iterator;
 
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Button;
-import org.gnu.gtk.Dialog;
 import org.gnu.gtk.Entry;
 import org.gnu.gtk.Image;
 import org.gnu.gtk.Label;
@@ -61,6 +60,7 @@ import org.gnu.gtk.event.TextBufferEvent;
 import org.gnu.gtk.event.TextBufferListener;
 
 import frysk.gui.common.IconManager;
+import frysk.gui.common.dialogs.FryskDialog;
 import frysk.gui.common.dialogs.WarnDialog;
 import frysk.gui.monitor.observers.ObserverManager;
 import frysk.gui.monitor.observers.ObserverRoot;
@@ -71,7 +71,7 @@ import frysk.proc.Action;
  * @author swagiaal Dialog that is used to edit an observer.
  */
 public class EditObserverDialog
-    extends Dialog
+    extends FryskDialog
 {
 
   private ObserverRoot observer;

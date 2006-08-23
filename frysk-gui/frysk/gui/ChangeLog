@@ -1,3 +1,7 @@
+2006-08-23    <swagiaal@redhat.com>
+
+	* sessions/DebugProcess.java: Removed print statements.
+
 2006-08-23  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionManagerGui.java (openSession): Added - opens the new Session correctly in the

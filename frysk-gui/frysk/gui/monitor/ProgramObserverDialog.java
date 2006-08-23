@@ -53,7 +53,7 @@ import org.gnu.gtk.ScrolledWindow;
 import org.gnu.gtk.event.CellRendererToggleEvent;
 import org.gnu.gtk.event.CellRendererToggleListener;
 
-import frysk.gui.common.dialogs.Dialog;
+import frysk.gui.common.dialogs.FryskDialog;
 import frysk.gui.monitor.datamodels.DataModelManager;
 import frysk.gui.monitor.observers.ObserverManager;
 
@@ -64,7 +64,7 @@ import frysk.gui.monitor.observers.ObserverManager;
  * A Dialog for editing the properties of the frysk program
  * Observer
  */
-public class ProgramObserverDialog extends Dialog implements Saveable{
+public class ProgramObserverDialog extends FryskDialog implements Saveable{
 	
 	PickProcsListView checkedListView;
 	
