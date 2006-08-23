@@ -1,5 +1,9 @@
 2006-08-22  Ivan Pantuyev  <ipantuye@redhat.com>
 
+	* SessionManagerGui.java: added a line to show main window after terminal session is open
+
+2006-08-22  Ivan Pantuyev  <ipantuye@redhat.com>
+
 	* monitor/MainWindow.java: enable the terminal, also added a function that kills terminal shell.
 	* Gui.java: now calls MainWindow's killTerminalShell().
 	* glade/procpop.java: removed dummy textcontrol to put a terminal
