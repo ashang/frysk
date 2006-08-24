@@ -1,3 +1,11 @@
+2006-08-23  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindowFactory.java (MemWinListener.lifeCycleQuery):
+	Fixed a MainWindow show oops negation.
+	(createMemoryWindow): Commented out some suspect code creating two
+	MemoryWindows.
+	* register/RegisterWindowFactory.java (createRegisterWindow): Ditto.
+
 2006-08-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* glade/procpop.glade: Added Credits text.

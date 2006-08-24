@@ -104,10 +104,10 @@ public class MemoryWindowFactory
         return;
       }
       
-    if (task.getBlockers().length != 0)
-      {
-        mw = finishMemWin(mw, task);
-      }
+//    if (task.getBlockers().length != 0)
+//      {
+//        mw = finishMemWin(mw, task);
+//      }
     
     MemWinBlocker blocker = new MemWinBlocker();
     blocker.myTask = task;
@@ -239,10 +239,19 @@ public class MemoryWindowFactory
     if (TaskBlockCounter.getBlockCount(task) == 1)
       {
         System.out.println(">>>DETACHING<<<");
-        TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-        task.requestUnblock(o);
-        task.requestDeleteAttachedObserver(o);
-        blockerTable.remove(task);
+        
+        try {
+          TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+          task.requestUnblock(o);
+          task.requestDeleteAttachedObserver(o);
+          blockerTable.remove(task);
+        } catch (Exception e)
+        {
+          Preferences prefs = PreferenceManager.getPrefs();
+          MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+          mw.save(prefs);
+          return;
+        }
       }
     TaskBlockCounter.decBlockCount(task);
     Preferences prefs = PreferenceManager.getPrefs();
@@ -275,7 +284,7 @@ public boolean lifeCycleQuery (LifeCycleEvent arg0)
 
           unblockTask(t);
 
-          if (mw.equals(memWin))
+          if (!mw.equals(memWin))
             WindowManager.theManager.mainWindow.showAll();
           
           mw.hideAll();

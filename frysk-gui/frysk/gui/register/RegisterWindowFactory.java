@@ -105,10 +105,10 @@ public class RegisterWindowFactory
         return;
       }
 
-     if (task.getBlockers().length != 0)
-     {
-     rw = finishRegWin(rw, task);
-     }
+//     if (task.getBlockers().length != 0)
+//     {
+//     rw = finishRegWin(rw, task);
+//     }
 
     RegWinBlocker blocker = new RegWinBlocker();
     blocker.myTask = task;
@@ -236,10 +236,19 @@ public class RegisterWindowFactory
     if (TaskBlockCounter.getBlockCount(task) == 1)
       {
         System.out.println(">>>DETACHING<<<");
-        TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-        task.requestUnblock(o);
-        task.requestDeleteAttachedObserver(o);
-        blockerTable.remove(task);
+        
+        try {
+          TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+          task.requestUnblock(o);
+          task.requestDeleteAttachedObserver(o);
+          blockerTable.remove(task);
+        } catch (Exception e)
+        {
+          Preferences prefs = PreferenceManager.getPrefs();
+          RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+          rw.save(prefs);
+          return;
+        }
       }
     TaskBlockCounter.decBlockCount(task);
     Preferences prefs = PreferenceManager.getPrefs();
