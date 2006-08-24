@@ -1,3 +1,8 @@
+2006-08-24  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/AddTaskObserverAction.java (execute): Added a null
+	check for the observer. Fixes #3125.
+
 2006-08-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ObserversMenu.java: Removed debug output.

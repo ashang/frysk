@@ -70,7 +70,8 @@ public class AddTaskObserverAction
 
   public void execute (Task task)
   {
-    observer.apply(task.getProc());
+    if (observer != null)
+      observer.apply(task.getProc());
   }
 
   public GuiObject getCopy ()
