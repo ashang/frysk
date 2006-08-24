@@ -92,7 +92,7 @@ public class ObserversMenu extends Menu{
 				removeGuiObject(observer);
 			}
 		});
-		System.out.println(this + "ObserversMenu.ObserversMenu() added observers");
+		//System.out.println(this + "ObserversMenu.ObserversMenu() a/dded observers");
 		
 		
 
