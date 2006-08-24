@@ -41,9 +41,9 @@ package frysk.proc;
 import inua.util.PrintWriter;
 
 /**
- * A class that holds static Syscall info. It is used
- * in combination with @link frysk.proc.SyscallEventInfo and
- * the task to get information about a particular system call event.
+ * A class that holds static information about a system call.  It is
+ * used in combination with {@link SyscallEventInfo} and the
+ * task to get information about a particular system call event.
  */
 public class Syscall
 {
@@ -84,12 +84,14 @@ public class Syscall
     {
 	this ("<" + number + ">", number, 0, "i:");
     }
-    
+
+    /** Return the name of the system call.  */
     public String getName()
     {
         return name;
     }
 
+    /** Return the system call's number.  */
     public int getNumber()
     {
         return number;
@@ -111,7 +113,15 @@ public class Syscall
 	    writer.print (x);
 	}
     }
-    
+
+    /**
+     * Print a textual representation of a system call.
+     * @param writer where to print the representation
+     * @param task the task which supplies information about the
+     * arguments
+     * @param syscall the system call event info
+     * @return writer
+     */
     public PrintWriter printCall (PrintWriter writer,
 			   frysk.proc.Task task,
 			   SyscallEventInfo syscall)
@@ -152,6 +162,15 @@ public class Syscall
 	return writer;
     }
     
+    /**
+     * Print a textual representation of the return result of a system
+     * call.
+     * @param writer where to print the representation
+     * @param task the task which supplies information about the
+     * return value
+     * @param syscall the system call event info
+     * @return writer
+     */
     public PrintWriter printReturn (PrintWriter writer,
 			     frysk.proc.Task task,
 			     SyscallEventInfo syscallEventInfo)
@@ -193,8 +212,14 @@ public class Syscall
 	return writer;
     }
 
-    // XXX: Eventually this will be moved down to Linux, or even
-    // further.
+    /**
+     * Given a system call's number, this will return the corresponding
+     * Syscall object.  Note that system call numbers are platform
+     * dependent.
+     * XXX: Eventually this will be moved down to Linux, or even
+     * further.
+     * @param num the number of the system call
+     */
     public static Syscall syscallByNum (int num)
     {
       if(num >= syscallList.length || num < 0){
