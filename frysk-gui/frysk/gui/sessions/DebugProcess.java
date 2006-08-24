@@ -384,7 +384,7 @@ public class DebugProcess extends GuiObject {
     {
       public void update (Observable observable, Object arg)
       {
-        System.out.println(".update()");
+        //System.out.println(".update()");
         GuiProc guiProc = (GuiProc) arg;
 //        if (guiProc.getNiceExecutablePath().equals(executablePath))
           //{

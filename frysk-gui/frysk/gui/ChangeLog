@@ -1,3 +1,7 @@
+2006-08-24  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* sessions/DebugProcess.java: Remove debug output.
+
 2006-08-24  Mike Cvet  <mcvet@redhat.com>
 
 	* memory/MemoryWindowFactory.java (createMemoryWindow): Re-arranged everything
