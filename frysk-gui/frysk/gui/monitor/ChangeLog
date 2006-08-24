@@ -1,5 +1,9 @@
 2006-08-23  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* ProcWiseDataModel.java(ProcDestroyedObserver.update):
+	Changed process verb in treeview. Changed process accountancy.
+	(ProcCreatedObserver.update): Ditto.
+ 
 	* EventLogger.java (EventLogger): Turn off parent handlers.
 	Increase Level capture scope.
 

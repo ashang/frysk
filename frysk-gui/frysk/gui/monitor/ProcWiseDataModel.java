@@ -306,7 +306,7 @@ public class ProcWiseDataModel
               if (parent != null)
                 {
                   iterHash.put(guiProc.getExecutableName(), parent);
-                  setRow(parent, guiProc.getExecutableName(), guiProc, 0, false);
+                  setRow(parent, guiProc.getExecutableName(), guiProc, 1, false);
                 }
             }
           else
@@ -317,9 +317,8 @@ public class ProcWiseDataModel
               String parentName = treeStore.getValue(parent, nameDC);
               String[] comp = parentName.split("\\(");
               String processVerb = "process";
-              if (childCount > 1)
-                processVerb = "processes";
-              parentName = comp[0].trim() + " (" + childCount + " child "
+              processVerb = "processes";
+              parentName = comp[0].trim() + " (" + childCount + " "
                            + processVerb + ")";
 
               treeStore.setValue(parent, nameDC, parentName);
@@ -393,9 +392,9 @@ public class ProcWiseDataModel
               return;
             }
 
-          int n = parent.getChildCount();
+          int n = treeStore.getValue(parent, childCountDC);
 
-          if (n == 0)
+          if (n == 1)
             {
               try
                 {
@@ -419,11 +418,14 @@ public class ProcWiseDataModel
               String parentName = treeStore.getValue(parent, nameDC);
               String[] comp = parentName.split("\\(");
               String processVerb = "process";
-              if (childCount > 1)
-                processVerb = "processes";
+              //if (childCount > 1)
+              processVerb = "processes";
 
-              parentName = comp[0].trim() + " (" + childCount + " child "
-                           + processVerb + ")";
+              if (childCount > 1)
+            	  parentName = comp[0].trim() + " (" + childCount + " "
+            	  		+ processVerb + ")";
+              else
+            	  parentName = comp[0].trim();
 
               treeStore.setValue(parent, nameDC, parentName);
 
