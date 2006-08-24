@@ -101,13 +101,21 @@ frysk::sys::TestLib::getByteValAddr ()
 jlong
 frysk::sys::TestLib::getFuncAddr ()
 {
+#ifdef __powerpc64__
+  return *((jlong*) dummyfunc);
+#else
   return (jlong) dummyfunc;
+#endif
 }
 
 jbyteArray
 frysk::sys::TestLib::getFuncBytes ()
 {
-  char *addr = (char *) dummyfunc;
+#ifdef __powerpc64__
+  char *addr= (char *) *((jlong*) dummyfunc);
+#else
+ char *addr = (char *) dummyfunc;
+#endif
   jbyteArray bytes = JvNewByteArray (4);
   memcpy (elements (bytes), addr, 4);
   return bytes;
