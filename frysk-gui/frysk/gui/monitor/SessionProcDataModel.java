@@ -205,7 +205,7 @@ public class SessionProcDataModel
         {
           public void update (Observable arg0, Object obj)
           {
-            removeProc(((GuiProc)obj).getProc());
+            removeProc((GuiProc)obj);
           }
         });
       }
@@ -472,8 +472,9 @@ public class SessionProcDataModel
       }
   }
 
-  public void removeProc(Proc proc)
+  public void removeProc(GuiProc guiProc)
   {
+    Proc proc = guiProc.getProc();
     TreeIter iter;
     try
       {
@@ -491,6 +492,7 @@ public class SessionProcDataModel
       {
         treeStore.removeRow(iter);
         iterHash.remove(proc.getId());
+        System.out.println("SessionProcDataModel.removeProc()");
       }
     catch (Exception e)
       {

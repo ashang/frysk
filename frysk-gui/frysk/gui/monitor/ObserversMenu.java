@@ -74,7 +74,11 @@ public class ObserversMenu extends Menu{
 	
 		this.map = new HashMap();
 		ListIterator iter = actions.listIterator();
-		
+        while(iter.hasNext()){
+            final ObserverRoot observer = (ObserverRoot) iter.next();
+            this.addGuiObject(observer);
+        }
+        
 		actions.itemAdded.addObserver(new Observer() {
 			public void update(Observable observable, Object object) {
 				ObserverRoot observer = (ObserverRoot)object;
@@ -88,18 +92,15 @@ public class ObserversMenu extends Menu{
 				removeGuiObject(observer);
 			}
 		});
+		System.out.println(this + "ObserversMenu.ObserversMenu() added observers");
 		
 		
-		while(iter.hasNext()){
-			final ObserverRoot observer = (ObserverRoot) iter.next();
-			this.addGuiObject(observer);
-		}
 
 		this.showAll();
 	}
 	
 	private void addGuiObject(final GuiObject observer) {
-		MenuItem item = new MenuItem(observer.getName(), false);
+	    MenuItem item = new MenuItem(observer.getName(), false);
 		ToolTips tip = new ToolTips();
 		tip.setTip(item, observer.getToolTip(), "");
 		
@@ -116,12 +117,14 @@ public class ObserversMenu extends Menu{
 		});
 		this.add(item);
 		this.map.put(observer, item);
+        this.showAll();
 	}
 
 	private void removeGuiObject(final GuiObject observer) {
-		MenuItem item = (MenuItem) this.map.get(observer);
+        MenuItem item = (MenuItem) this.map.get(observer);
 		this.remove(item);
 		this.map.remove(observer);
+        this.showAll();
 	}
 
 	/**

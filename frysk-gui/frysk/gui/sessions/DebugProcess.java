@@ -61,6 +61,9 @@ import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 import frysk.gui.srcwin.tags.Tagset;
 import frysk.gui.srcwin.tags.TagsetManager;
+import frysk.proc.Action;
+import frysk.proc.Task;
+import frysk.proc.TaskObserver;
 
 /**
  * @author swagiaal, pmuldoon A container that refers to an executable there
@@ -381,11 +384,12 @@ public class DebugProcess extends GuiObject {
     {
       public void update (Observable observable, Object arg)
       {
+        System.out.println(".update()");
         GuiProc guiProc = (GuiProc) arg;
-        if (guiProc.getNiceExecutablePath().equals(executablePath))
-          {
+//        if (guiProc.getNiceExecutablePath().equals(executablePath))
+          //{
             removeProc(guiProc);
-          }
+          //}
       }
     });
   }
@@ -408,6 +412,36 @@ public class DebugProcess extends GuiObject {
 
   public void addProc (GuiProc guiProc)
   {
+    // Add terminated observer to catch the procs exit
+    guiProc.getProc().getMainTask().requestAddTerminatedObserver(new TaskObserver.Terminated()
+    {
+    
+      public void deletedFrom (Object observable)
+      {
+        // TODO Auto-generated method stub
+    
+      }
+    
+      public void addedTo (Object observable)
+      {
+        // TODO Auto-generated method stub
+    
+      }
+    
+      public void addFailed (Object observable, Throwable w)
+      {
+        // TODO Auto-generated method stub
+    
+      }
+    
+      public Action updateTerminated (Task task, boolean signal, int value)
+      {
+        removeProc(GuiProc.GuiProcFactory.getGuiProc(task.getProc()));
+        return Action.CONTINUE;
+      }
+    
+    });
+    
     Iterator iterator = this.observers.iterator();
     while (iterator.hasNext())
       {

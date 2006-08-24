@@ -1,3 +1,10 @@
+2006-08-23    <swagiaal@redhat.com>
+
+	* SessionProcDataModel.java: Changed removeProc to take GuiProc
+	instead of Proc.
+	* ObserversMenu.java: Added showAll statments to adding/removing
+	observers.
+
 2006-08-23  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ProcWiseDataModel.java(ProcDestroyedObserver.update):
