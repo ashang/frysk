@@ -1,3 +1,21 @@
+2006-08-24  Mike Cvet  <mcvet@redhat.com>
+
+	* memory/MemoryWindowFactory.java (createMemoryWindow): Re-arranged everything
+	to avoid blocker race-conditions and to properly distinguish between initializations
+	from the Monitor or SourceWindow.
+	(finishMemWin): Get rid of some redundant LifeCycles.
+	(setMemWin): Fixed a bug which resulted in this window being created twice by the 
+	SourceWindow.
+	(setMonitor): Added - Called when this Factory is used by the Monitor.
+	(unblockTask): Windows can be hidden rather than destroyed, and thus not unblock the
+	blocked Task. Prevent a window which was just hidden from repetively trying to unblock.
+	Fixes #3120. Also allow window to be hidden properly from the Monitor.
+	* register/RegisterWindowFactory.java (createRegisterWindow): Ditto.
+	(finishRegWin): Ditto.
+	(setRegWin): Ditto.
+	(setMonitor): Ditto.
+	(unblockTask): Ditto.
+
 2006-08-23    <swagiaal@redhat.com>
 
 	* sessions/DebugProcess.java: Added TaskTerminatedObserver to catch

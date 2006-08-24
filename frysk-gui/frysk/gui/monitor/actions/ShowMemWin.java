@@ -65,12 +65,8 @@ public class ShowMemWin
 
   public void execute (Task task)
   {
-//    if (MemoryWindowFactory.memWin == null)
-//      MemoryWindowFactory.createMemoryWindow(task);
-//    else
-//      MemoryWindowFactory.memWin.showAll();
+    MemoryWindowFactory.setMonitor();
     MemoryWindowFactory.createMemoryWindow(task);
-    //mw.showAll();
   }
 
   public GuiObject getCopy ()

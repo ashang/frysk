@@ -80,6 +80,10 @@ public class RegisterWindowFactory
   /* Used to instantiate the glade file multiple times */
   private static String[] gladePaths;
 
+  /* Bad hack to tell if we've been called from the Monitor or SourceWindow */
+  /* TODO: Get rid of this when the BlockedObserver becomes a reality */
+  private static boolean monitor = false;
+  
   private final static String REG_GLADE = "registerwindow.glade";
 
   public static void setPaths (String[] paths)
@@ -105,21 +109,23 @@ public class RegisterWindowFactory
         return;
       }
 
-//     if (task.getBlockers().length != 0)
-//     {
-//     rw = finishRegWin(rw, task);
-//     }
-
     RegWinBlocker blocker = new RegWinBlocker();
     blocker.myTask = task;
-
-    /* If this Task is already blocked, don't try to block it again */
-    if (TaskBlockCounter.getBlockCount(task) == 0)
-        task.requestAddAttachedObserver(blocker);
+    
+     if (TaskBlockCounter.getBlockCount(task) != 0 || monitor == true)
+       {
+         /* If this Task is already blocked, don't try to block it again */
+         rw = finishRegWin(rw, task);
+       }
+     else 
+       {
+         /* Otherwise it is not blocked, and we should go about doing it */
+         task.requestAddAttachedObserver(blocker);
+         blockerTable.put(task, blocker);
+       }
 
     /* Indicate that there is another window on this Task */
     TaskBlockCounter.incBlockCount(task);
-    blockerTable.put(task, blocker);
 
     return;
   }
@@ -130,7 +136,6 @@ public class RegisterWindowFactory
    */
   public static RegisterWindow finishRegWin (RegisterWindow rw, Task task)
   {
-
     LibGlade glade = null;
 
     // Look for the right path to load the glade file from
@@ -175,30 +180,6 @@ public class RegisterWindowFactory
         e.printStackTrace();
       }
 
-    rw.addListener(new LifeCycleListener()
-    {
-      public boolean lifeCycleQuery (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
-          {
-            RegisterWindow mw = (RegisterWindow) arg0.getSource();
-            mw.hideAll();
-            return true;
-          }
-
-        return false;
-      }
-
-      public void lifeCycleEvent (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          {
-            RegisterWindow mw = (RegisterWindow) arg0.getSource();
-            mw.hideAll();
-          }
-      }
-    });
-
     rw.addListener(new RegWinListener());
 
     Preferences prefs = PreferenceManager.getPrefs();
@@ -221,9 +202,12 @@ public class RegisterWindowFactory
    */
   public static void setRegWin (Task task)
   {
-    RegisterWindow rw = (RegisterWindow) taskTable.get(task);
-    rw = finishRegWin(rw, task);
-    regWin = rw;
+    regWin = (RegisterWindow) taskTable.get(task);
+  }
+  
+  public static void setMonitor()
+  {
+    monitor = true;
   }
 
   /**
@@ -233,28 +217,33 @@ public class RegisterWindowFactory
    */
   private static void unblockTask (Task task)
   {
-    if (TaskBlockCounter.getBlockCount(task) == 1)
+    if (taskTable.get(task) != null)
       {
-        System.out.println(">>>DETACHING<<<");
-        
-        try {
-          TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-          task.requestUnblock(o);
-          task.requestDeleteAttachedObserver(o);
-          blockerTable.remove(task);
-        } catch (Exception e)
-        {
-          Preferences prefs = PreferenceManager.getPrefs();
-          RegisterWindow rw = (RegisterWindow) taskTable.get(task);
-          rw.save(prefs);
-          return;
-        }
+        if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
+          {
+            System.out.println(">>>DETACHING<<<");
+
+            try
+              {
+                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+                task.requestUnblock(o);
+                task.requestDeleteAttachedObserver(o);
+                blockerTable.remove(task);
+              }
+            catch (Exception e)
+              {
+                Preferences prefs = PreferenceManager.getPrefs();
+                RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+                rw.save(prefs);
+                return;
+              }
+          }
+        TaskBlockCounter.decBlockCount(task);
+        Preferences prefs = PreferenceManager.getPrefs();
+        RegisterWindow rw = (RegisterWindow) taskTable.get(task);
+        rw.save(prefs);
+        taskTable.remove(task);
       }
-    TaskBlockCounter.decBlockCount(task);
-    Preferences prefs = PreferenceManager.getPrefs();
-    RegisterWindow rw = (RegisterWindow) taskTable.get(task);
-    rw.save(prefs);
-    taskTable.remove(task);
   }
 
   private static class RegWinListener

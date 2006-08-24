@@ -1,3 +1,10 @@
+2006-08-24  Mike Cvet  <mcvet@redhat.com>
+
+	* actions/ShowMemWin.java (execute): Calls setMonitor() in
+	MemoryWindowFactory to let it know its being called from
+	the Monitor.
+	* actions/ShowRegWin.java (execute): Ditto.
+
 2006-08-23    <swagiaal@redhat.com>
 
 	* SessionProcDataModel.java: Changed removeProc to take GuiProc

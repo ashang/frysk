@@ -80,6 +80,10 @@ public class MemoryWindowFactory
   /* Used to instantiate the glade file multiple times */
   private static String[] gladePaths;
   
+  /* Bad hack to tell if we've been called from the Monitor or SourceWindow */
+  /* TODO: Get rid of this when the BlockedObserver becomes a reality */
+  private static boolean monitor = false;
+  
   private final static String MEM_GLADE = "memorywindow.glade";
   
   public static void setPaths(String[] paths)
@@ -96,30 +100,33 @@ public class MemoryWindowFactory
    */
   public static void createMemoryWindow (Task task)
   {
-    /* Check if there is already a MemoryWindow running on this task */
     MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+
+    /* Check if there is already a MemoryWindow running on this task */
     if (mw != null)
       {
         mw.showAll();
         return;
       }
-      
-//    if (task.getBlockers().length != 0)
-//      {
-//        mw = finishMemWin(mw, task);
-//      }
-    
+
     MemWinBlocker blocker = new MemWinBlocker();
     blocker.myTask = task;
+    
+     if (TaskBlockCounter.getBlockCount(task) != 0 || monitor == true)
+       {
+         /* If this Task is already blocked, don't try to block it again */
+         mw = finishMemWin(mw, task);
+       }
+     else 
+       {
+         /* Otherwise it is not blocked, and we should go about doing it */
+         task.requestAddAttachedObserver(blocker);
+         blockerTable.put(task, blocker);
+       }
 
-    /* If this Task is already blocked, don't try to block it again */
-    if (TaskBlockCounter.getBlockCount(task) == 0)
-        task.requestAddAttachedObserver(blocker);
-      
     /* Indicate that there is another window on this Task */
     TaskBlockCounter.incBlockCount(task);
-    blockerTable.put(task, blocker);
-    
+
     return;
   }
 
@@ -175,32 +182,6 @@ public class MemoryWindowFactory
       {
         e.printStackTrace();
       }
-
-
-    mw.addListener(new LifeCycleListener()
-    {
-      public boolean lifeCycleQuery (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
-          {
-            MemoryWindow mw = (MemoryWindow) arg0.getSource();
-            mw.hideAll();
-            
-            return true;
-          }
-
-        return false;
-      }
-
-      public void lifeCycleEvent (LifeCycleEvent arg0)
-      {
-        if (arg0.isOfType(LifeCycleEvent.Type.HIDE))
-          {
-            MemoryWindow mw = (MemoryWindow) arg0.getSource();
-            mw.hideAll();
-          }
-      }
-    });
     
     mw.addListener(new MemWinListener());
     
@@ -219,14 +200,17 @@ public class MemoryWindowFactory
   }
   
   /**
-   * Used by the SourceWindow to assign the static regWin object which it uses
+   * Used by the SourceWindow to assign the static memWin object which it uses
    * to ensure there is only one MemoryWindow running for its Task.
    */
   public static void setMemWin(Task task)
   {
-    MemoryWindow mw = (MemoryWindow) taskTable.get(task);
-    mw = finishMemWin(mw, task);
-    memWin = mw;
+    memWin = (MemoryWindow) taskTable.get(task);
+  }
+  
+  public static void setMonitor()
+  {
+    monitor = true;
   }
   
   /**
@@ -236,49 +220,54 @@ public class MemoryWindowFactory
    */
   private static void unblockTask (Task task)
   {
-    if (TaskBlockCounter.getBlockCount(task) == 1)
+    if (taskTable.get(task) != null)
       {
-        System.out.println(">>>DETACHING<<<");
-        
-        try {
-          TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
-          task.requestUnblock(o);
-          task.requestDeleteAttachedObserver(o);
-          blockerTable.remove(task);
-        } catch (Exception e)
-        {
-          Preferences prefs = PreferenceManager.getPrefs();
-          MemoryWindow mw = (MemoryWindow) taskTable.get(task);
-          mw.save(prefs);
-          return;
-        }
+        if (TaskBlockCounter.getBlockCount(task) == 1 && monitor != true)
+          {
+            System.out.println(">>>DETACHING<<<");
+
+            try
+              {
+                TaskObserver.Attached o = (TaskObserver.Attached) blockerTable.get(task);
+                task.requestUnblock(o);
+                task.requestDeleteAttachedObserver(o);
+                blockerTable.remove(task);
+              }
+            catch (Exception e)
+              {
+                Preferences prefs = PreferenceManager.getPrefs();
+                MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+                mw.save(prefs);
+                return;
+              }
+          }
+        TaskBlockCounter.decBlockCount(task);
+        Preferences prefs = PreferenceManager.getPrefs();
+        MemoryWindow mw = (MemoryWindow) taskTable.get(task);
+        mw.save(prefs);
+        taskTable.remove(task);
       }
-    TaskBlockCounter.decBlockCount(task);
-    Preferences prefs = PreferenceManager.getPrefs();
-    MemoryWindow mw = (MemoryWindow) taskTable.get(task);
-    mw.save(prefs);
-    taskTable.remove(task);
   }
   
   private static class MemWinListener
-  implements LifeCycleListener
-{
+      implements LifeCycleListener
+  {
 
-public void lifeCycleEvent (LifeCycleEvent arg0)
-{
-}
-
-public boolean lifeCycleQuery (LifeCycleEvent arg0)
-{
-
-  /*
-   * If the window is closing we want to remove it and it's task from the
-   * map, so that we know to create a new instance next time
-   */
-  if (arg0.isOfType(LifeCycleEvent.Type.DELETE) 
-      || arg0.isOfType(LifeCycleEvent.Type.DESTROY)
-      || arg0.isOfType(LifeCycleEvent.Type.HIDE))
+    public void lifeCycleEvent (LifeCycleEvent arg0)
     {
+    }
+
+    public boolean lifeCycleQuery (LifeCycleEvent arg0)
+    {
+
+      /*
+       * If the window is closing we want to remove it and it's task from the
+       * map, so that we know to create a new instance next time
+       */
+      if (arg0.isOfType(LifeCycleEvent.Type.DELETE)
+          || arg0.isOfType(LifeCycleEvent.Type.DESTROY)
+          || arg0.isOfType(LifeCycleEvent.Type.HIDE))
+        {
           MemoryWindow mw = (MemoryWindow) arg0.getSource();
           Task t = mw.getMyTask();
 
@@ -286,60 +275,60 @@ public boolean lifeCycleQuery (LifeCycleEvent arg0)
 
           if (!mw.equals(memWin))
             WindowManager.theManager.mainWindow.showAll();
-          
+
           mw.hideAll();
           return true;
+        }
+
+      return false;
     }
 
-  return false;
-}
+  }
 
-}
-  
   private static class MemWinBlocker
-  implements TaskObserver.Attached
-{
-
-private Task myTask;
-
-public Action updateAttached (Task task)
-{
-  // TODO Auto-generated method stub
-  System.out.println("blocking");
-  CustomEvents.addEvent(new Runnable()
+      implements TaskObserver.Attached
   {
-    
-    public void run ()
+
+    private Task myTask;
+
+    public Action updateAttached (Task task)
     {
-      MemoryWindow mw = (MemoryWindow) taskTable.get(myTask);
-      finishMemWin(mw, myTask);
+      // TODO Auto-generated method stub
+      System.out.println("blocking");
+      CustomEvents.addEvent(new Runnable()
+      {
+
+        public void run ()
+        {
+          MemoryWindow mw = (MemoryWindow) taskTable.get(myTask);
+          finishMemWin(mw, myTask);
+        }
+
+      });
+
+      return Action.BLOCK;
     }
 
-  });
+    public void addedTo (Object observable)
+    {
+      // TODO Auto-generated method stub
 
-  return Action.BLOCK;
-}
+    }
 
-public void addedTo (Object observable)
-{
-  // TODO Auto-generated method stub
+    public void addFailed (Object observable, Throwable w)
+    {
 
-}
+      EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
+                               observable);
+      throw new RuntimeException(w);
+    }
 
-public void addFailed (Object observable, Throwable w)
-{
+    public void deletedFrom (Object observable)
+    {
+      // TODO Auto-generated method stub
 
-  EventLogger.logAddFailed("addFailed(Object observable, Throwable w)",
-                           observable);
-  throw new RuntimeException(w);
-}
+    }
 
-public void deletedFrom (Object observable)
-{
-  // TODO Auto-generated method stub
+  }
 
-}
-
-}
-  
 }
