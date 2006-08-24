@@ -1,3 +1,7 @@
+2006-08-24    <swagiaal@redhat.com>
+
+	* TaskState.java: Added handleSignaledEvent to runningInSyscall 
+
 2006-08-24  Tom Tromey  <tromey@redhat.com>
 
 	* Syscall.java : Updated javadoc.

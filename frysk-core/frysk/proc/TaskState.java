@@ -1439,6 +1439,17 @@ class TaskState
             task.sendSyscallContinue (0);
             return runningInSyscall;
         }
+        TaskState handleSignaledEvent (Task task, int sig)
+        {
+            logger.log (Level.FINE, "{0} handleSignaledEvent\n", task); 
+            if (task.notifySignaled (sig) > 0) {
+              return new SyscallBlockedInSyscall (sig);
+            }
+            else {
+              task.sendSyscallContinue (sig);
+              return runningInSyscall;
+            }
+        }
 	};
 
     private static final TaskState detaching = new TaskState ("detaching")
