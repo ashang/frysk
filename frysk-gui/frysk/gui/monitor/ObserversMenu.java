@@ -42,6 +42,8 @@ import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -49,6 +51,7 @@ import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
+import frysk.gui.Gui;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
@@ -68,6 +71,8 @@ public class ObserversMenu extends Menu{
 	private GuiProc currentProc;
 	
 	private HashMap map;
+	
+	 private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 	
 	public ObserversMenu(ObservableLinkedList actions){
 		super();
@@ -108,10 +113,28 @@ public class ObserversMenu extends Menu{
 			public void menuItemEvent(MenuItemEvent arg0) {
 
 				if(currentTask != null){
-					currentTask.add((TaskObserverRoot)observer);
+					if (currentTask.getObservers().contains(observer))
+					{
+						  errorLog.log(
+		                           Level.WARNING,
+		                           "The Process " + currentTask.getTask().getProc().getCommand()+
+		                           " already has observer " + observer.getName() + ". Not adding");
+		                           
+					}
+					else
+						currentTask.add((TaskObserverRoot)observer);
 				}
 				if(currentProc != null){
-					currentProc.add((TaskObserverRoot)observer);
+					if (currentProc.getObservers().contains(observer))
+					{
+						  errorLog.log(
+		                           Level.WARNING,
+		                           "The Process " + currentProc.getName()+
+		                           " already has observer " + observer.getName() +". Not adding");
+		                           
+					}
+					else
+						currentProc.add((TaskObserverRoot)observer);
 				}
 			}
 		});

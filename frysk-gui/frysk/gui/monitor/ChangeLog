@@ -1,3 +1,9 @@
+2006-08-24  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* ObserversMenu.java: Check if observer has been added already.
+	Do not allow "same" multiple observers to one task/proc
+
+
 2006-08-24  Mike Cvet  <mcvet@redhat.com>
 
 	* actions/AddTaskObserverAction.java (execute): Added a null
