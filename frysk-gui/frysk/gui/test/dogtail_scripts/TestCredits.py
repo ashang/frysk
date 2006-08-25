@@ -82,7 +82,7 @@ class TestCredits (unittest.TestCase):
         self.funitChildBinary = sys.argv[2]
         
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
-        self.frysk = self.startObject.getFryskObject()
+        self.frysk = self.startObject.getFryskObject()  
         
         # Load up Session object
         self.parser = xml.sax.make_parser(  )

@@ -379,7 +379,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 # Correct, but not optimal: observerInGui.actions['activate'].do()
                 observerInGui.doAction('activate')
-                observerInGui.grabFocus()
+                #observerInGui.grabFocus()
+                observerInGui.grabFocus
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
@@ -449,7 +450,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                # Correct, but not optimal: observerInGui.actions['activate'].do()
                 observerInGui.doAction('activate')
-                observerInGui.grabFocus()
+                #observerInGui.grabFocus()
+                observerInGui.grabFocus
                 deleteButton = customObservers.button( 'Delete' )
                 deleteButton.click()
             except dogtail.tree.SearchError:
@@ -492,7 +494,8 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
                 observerInGui = customTable.child( name = observerNameToVerify, roleName='table cell' )
                 # Correct, but not optimal: observerInGui.actions['activate'].do()
                 observerInGui.doAction('activate')
-                observerInGui.grabFocus()
+#               observerInGui.grabFocus()
+                observerInGui.grabFocus
             except dogtail.tree.SearchError:
                 self.fail ( 'Error - unable to locate Observer with name = ' + observerNameToVerify )
             else:
