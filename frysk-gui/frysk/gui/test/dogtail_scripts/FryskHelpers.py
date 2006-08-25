@@ -369,15 +369,7 @@ def createMinimalSession (fryskObject, sessionObject, quitBoolean):
     sessionDruid_sessionNoteBook = vbox1.child('sessionDruid_sessionNoteBook')
     vbox43_tab2_processGroups = sessionDruid_sessionNoteBook.child('vbox43_tab2_processGroups')
     sessionNameText = vbox43_tab2_processGroups.child(name='sessionNameText')
-    sessionNameText.text = sessionObject.getName()
-    
-    print "DEBUG = " + sessionNameText.text
-    print "DEBUG = " + str(sessionNameText.caretOffset)
-    sessionNameText.caretOffset = 2       
-    print "DEBUG = " + sessionNameText.text
-    print "DEBUG = " + str(sessionNameText.caretOffset)
-    
-    
+    sessionNameText.text = sessionObject.getName()  
     hbox62_tab2_groupLists = vbox43_tab2_processGroups.child('hbox62_tab2_groupLists')
         
     # ---------------------
