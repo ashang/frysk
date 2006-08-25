@@ -1,8 +1,15 @@
+2006-08-25  Stepan Kasal  <kasal@ucw.cz>
+
+	* ConsoleWidget.java: Fix EOLs: CRLF -> LF.
+
+2006-08-24  Ivan Pantuyev  <ipantuye@redhat.com>
+
+	* ConsoleWidget.java: New file.
+
 2006-08-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* ObserversMenu.java: Check if observer has been added already.
 	Do not allow "same" multiple observers to one task/proc
-
 
 2006-08-24  Mike Cvet  <mcvet@redhat.com>
 
