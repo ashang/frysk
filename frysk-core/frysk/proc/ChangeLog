@@ -1,4 +1,4 @@
-2006-08-24    <swagiaal@redhat.com>
+2006-08-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TaskState.java: Added handleSignaledEvent to runningInSyscall 
 
