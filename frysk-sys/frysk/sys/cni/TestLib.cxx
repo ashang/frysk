@@ -58,20 +58,26 @@
 jint
 frysk::sys::TestLib::forkIt ()
 {
-  jint pid; 
-  if ((pid = fork()) < 0) {
-    perror("Error: could not fork child process");
-    exit(1);
-  } else if (pid == 0) { /* Child */
-    sleep(5);
-    printf("DETACHED PROCESS: EXITING\n");
-  }
+  jint pid = fork(); 
+  
+  if (pid < 0) /* Error */
+    {
+      if (errno != 0)
+	    throwErrno (errno, "frysk.sys.TestLib.forkIt()");
+	  
+      exit(EXIT_FAILURE);
+    } 
+  else if (pid == 0) /* Child */
+    { 
+      sleep(5);
+      exit(EXIT_SUCCESS);
+    }
   return pid; 
 }
 
 jint
 frysk::sys::TestLib::waitIt(jint pid) {
-	return waitpid(pid, NULL, __WALL);
+  return waitpid(pid, NULL, __WALL);
 }
 
 /* Dummy static function for use by getFuncAddr. */
@@ -114,7 +120,7 @@ frysk::sys::TestLib::getFuncBytes ()
 #ifdef __powerpc64__
   char *addr= (char *) *((jlong*) dummyfunc);
 #else
- char *addr = (char *) dummyfunc;
+  char *addr = (char *) dummyfunc;
 #endif
   jbyteArray bytes = JvNewByteArray (4);
   memcpy (elements (bytes), addr, 4);

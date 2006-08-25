@@ -1,3 +1,9 @@
+2006-08-26  Mike Cvet <mcvet@redhat.com>
+
+	* cni/TestLib.cxx (forkIt): Properly GNU format. Removed the
+	printf() call, replaced wtih an exit(). Removed the perror() call
+	and replaced with throwErrno().
+
 2006-08-23  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* cni/TestLib.cxx (getFuncAddr): Get function address instead of
