@@ -1,3 +1,8 @@
+2006-08-25  Mike Cvet  <mcvet@redhat.com>
+
+	* test/TestWindowFactorization.java: Added - testing large-scale creation of 
+	factory-generated windows.
+
 2006-08-24  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* sessions/DebugProcess.java: Remove debug output.
