@@ -5,7 +5,6 @@
 
 <widget class="GtkWindow" id="SessionManager">
   <property name="border_width">12</property>
-  <property name="visible">True</property>
   <property name="title" translatable="yes" context="yes">Frysk Startup Manager</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
   <property name="window_position">GTK_WIN_POS_CENTER</property>

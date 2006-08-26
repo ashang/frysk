@@ -1,3 +1,13 @@
+2006-08-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java (gui): Added SessionManager showAll()
+	* glade/frysk_session_manager.glade: Set visibilty to false as
+	default.
+	* test/TestWindowFactorization.java (setUp): Added.
+	(testMemoryWindowFactorization): On Exception call fail().
+	Remove stacktrace output, debug output and System.exit(1).
+	Remove showAll(), requires a display.
+
 2006-08-25  Mike Cvet  <mcvet@redhat.com>
 
 	* test/TestWindowFactorization.java: Added - testing large-scale creation of 

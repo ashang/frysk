@@ -496,6 +496,7 @@ implements LifeCycleListener, Saveable
 			}
 		});
 		
+		WindowManager.theManager.sessionManager.showAll();
 		Gtk.main();
         
 		Manager.eventLoop.requestStop();

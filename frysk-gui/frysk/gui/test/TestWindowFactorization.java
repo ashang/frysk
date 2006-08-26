@@ -33,6 +33,7 @@ import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
 //import frysk.gui.srcwin.SourceWindow;
 import org.gnu.glade.LibGlade;
+import org.gnu.gtk.Gtk;
 
 public class TestWindowFactorization
     extends TestCase
@@ -42,6 +43,11 @@ public class TestWindowFactorization
                                 "../../frysk/frysk-gui/frysk/gui/glade/",
                                 "/home/mcvet/workspace/build/frysk-gui/../../frysk/frysk-gui/frysk/gui/glade/" };
 
+  
+  public void setUp() {
+	 Gtk.init(new String[] {});	
+  }
+	
   public void testMemoryWindowFactorization ()
   {
     LibGlade gladem = null;
@@ -67,19 +73,17 @@ public class TestWindowFactorization
                   // If we don't find the glade file, look at the next file
                   continue;
                 else
-                  {
-                    System.out.println("GLADE FAILED");
-                    e.printStackTrace();
-                    System.exit(1);
-                  }
+                	fail("GLADE FAILED");
               }
             // If we've found it, break
             break;
           }
         MemoryWindow mw = new MemoryWindow(gladem);
-        mw.showAll();
+        mw.getClass();
+        //mw.showAll();
         RegisterWindow rw = new RegisterWindow(glader);
-        rw.showAll();
+        //rw.showAll();
+        rw.getClass();
         //        SourceWindow sw = new SourceWindow(glades, gladePaths[i], null, null);
         //        sw.showAll();
       }
