@@ -424,6 +424,7 @@ public class SessionProcDataModel
         GuiTask guiTask = GuiTaskFactory.getGuiTask(task);
         GuiProc guiProc = GuiProcFactory.getGuiProc(task.getProc());
         guiProc.addGuiTask(guiTask);
+        guiTask.setParent(guiProc);
 
       }
     catch (Exception e)

@@ -1,3 +1,15 @@
+2006-08-26  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* SessionProcDataModel.java (addTask): set parent GuiProc.
+	* GuiTask.java (setParent): New.
+	(getParent): New.	
+	* ObserversMenu.java (addGuiObject): Remove post
+	observer check.
+	(setCurrentProc): Disable observers in menu 
+	the the Proc already has.
+	(setCurrentTask): Disable observers in menu 
+	the the Task *and* the Proc already has.
+	
 2006-08-25  Stepan Kasal  <kasal@ucw.cz>
 
 	* ConsoleWidget.java: Fix EOLs: CRLF -> LF.
@@ -8,8 +20,9 @@
 
 2006-08-24  Phil Muldoon  <pmuldoon@redhat.com>
 
-	* ObserversMenu.java: Check if observer has been added already.
-	Do not allow "same" multiple observers to one task/proc
+	* ObserversMenu.java (addGuiObject): Check if observer has 
+	been added already.	Do not allow "same" multiple observers to one 
+	task/proc
 
 2006-08-24  Mike Cvet  <mcvet@redhat.com>
 

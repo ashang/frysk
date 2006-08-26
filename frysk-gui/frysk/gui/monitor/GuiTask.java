@@ -51,6 +51,7 @@ import frysk.proc.Task;
 public class GuiTask extends GuiData{
 
 	private Task task;
+	private GuiProc parent;
 	
     private GuiTask(Task task) {
 		if(task == null){
@@ -62,6 +63,14 @@ public class GuiTask extends GuiData{
 
 	public Task getTask() {
 		return task;
+	}
+	
+	public void setParent(GuiProc proc) {
+		parent = proc;
+	}
+	
+	public GuiProc getParent()	{
+		return parent;
 	}
 
 	public void add(final TaskObserverRoot observer){

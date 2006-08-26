@@ -39,11 +39,10 @@
 package frysk.gui.monitor;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gnu.gtk.Menu;
 import org.gnu.gtk.MenuItem;
@@ -51,7 +50,6 @@ import org.gnu.gtk.ToolTips;
 import org.gnu.gtk.event.MenuItemEvent;
 import org.gnu.gtk.event.MenuItemListener;
 
-import frysk.gui.Gui;
 import frysk.gui.monitor.observers.ObserverRoot;
 import frysk.gui.monitor.observers.TaskObserverRoot;
 
@@ -72,9 +70,7 @@ public class ObserversMenu extends Menu{
 	
 	private HashMap map;
 	
-	 private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
-	
-	public ObserversMenu(ObservableLinkedList actions){
+	 public ObserversMenu(ObservableLinkedList actions){
 		super();
 	
 		this.map = new HashMap();
@@ -97,9 +93,6 @@ public class ObserversMenu extends Menu{
 				removeGuiObject(observer);
 			}
 		});
-		//System.out.println(this + "ObserversMenu.ObserversMenu() a/dded observers");
-		
-		
 
 		this.showAll();
 	}
@@ -111,33 +104,15 @@ public class ObserversMenu extends Menu{
 		
 		item.addListener(new MenuItemListener() {
 			public void menuItemEvent(MenuItemEvent arg0) {
-
-				if(currentTask != null){
-					if (currentTask.getObservers().contains(observer))
-					{
-						  errorLog.log(
-		                           Level.WARNING,
-		                           "The Process " + currentTask.getTask().getProc().getCommand()+
-		                           " already has observer " + observer.getName() + ". Not adding");
-		                           
-					}
-					else
-						currentTask.add((TaskObserverRoot)observer);
-				}
-				if(currentProc != null){
-					if (currentProc.getObservers().contains(observer))
-					{
-						  errorLog.log(
-		                           Level.WARNING,
-		                           "The Process " + currentProc.getName()+
-		                           " already has observer " + observer.getName() +". Not adding");
-		                           
-					}
-					else
-						currentProc.add((TaskObserverRoot)observer);
-				}
+							
+				if(currentTask != null)
+					currentTask.add((TaskObserverRoot)observer);
+			
+				if(currentProc != null)
+					currentProc.add((TaskObserverRoot)observer);
 			}
 		});
+
 		this.add(item);
 		this.map.put(observer, item);
         this.showAll();
@@ -167,10 +142,60 @@ public class ObserversMenu extends Menu{
 	}
 	
 	public void setCurrentProc(GuiProc current){
+
+		// Assign selected proc
 		this.currentProc = current;
+		
+
+		// reset menu
+		resetMenuSensitivity();
+		
+		// De-sensitize already added observers from session, or 
+		// from previous user selections.
+		ObservableLinkedList foo = this.currentProc.getObservers();
+		Iterator i = foo.iterator();
+		while (i.hasNext())	{
+			MenuItem item = (MenuItem) this.map.get(((GuiObject)i.next()));
+			item.setSensitive(false);
+		}
 	}
 	
 	public void setCurrentTask(GuiTask current){
+		
+		// Assign selected task
 		this.currentTask = current;
+		
+		// Temporary menu item pointer.
+		MenuItem item = null;
+		
+		// reset menu
+		resetMenuSensitivity();
+		
+		// De-sensitize already added observers tasks observers from session, or 
+		// from previous user selections.
+		ObservableLinkedList foo = this.currentTask.getObservers();
+		Iterator i = foo.iterator();
+		while (i.hasNext())	{
+			item = (MenuItem) this.map.get(((GuiObject)i.next()));
+			item.setSensitive(false);
+		}
+		
+		// De-sensitize already added Proc observers  from session, or 
+		// from previous user selections.
+		foo = this.currentTask.getParent().getObservers();
+		i = foo.iterator();
+		while (i.hasNext())	{
+			item = (MenuItem) this.map.get(((GuiObject)i.next()));
+			item.setSensitive(false);
+		}
+		
+		
+	}
+	
+	private void resetMenuSensitivity() {
+		// Reset menu selection
+		Iterator z = this.map.values().iterator();
+		while (z.hasNext())
+			((MenuItem)z.next()).setSensitive(true);
 	}
 }
