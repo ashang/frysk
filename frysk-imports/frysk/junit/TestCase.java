@@ -1,6 +1,6 @@
 // This file is part of the program FRYSK.
 //
-// Copyright 2005, 2006, Red Hat Inc.
+// Copyright 2006, Red Hat Inc.
 //
 // FRYSK is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by
@@ -37,75 +37,45 @@
 // version and license this file solely under the GPL without
 // exception.
 
-
-package lib.dw.tests;
-
-import frysk.junit.TestCase;
-import lib.dw.DwarfDie;
-import lib.dw.Dwfl;
-import lib.dw.DwflDieBias;
-import lib.dw.DwflLine;
+package frysk.junit;
 
 import frysk.imports.Build;
 
-public class TestDwfl
-    extends TestCase
+/**
+ * <em>frysk</em> specific extension to the JUnit test framework's
+ * TestCase.
+ */
+
+public class TestCase
+    extends junit.framework.TestCase
 {
-  public void testGetLine ()
+    /**
+     * A variable that has the value true.  Used by code trying to
+     * stop the optimizer realise that there's dead code around.
+     */
+    static boolean trueXXX = true;
+    /**
+     * A method that returns true, and prints skip.  Used by test
+     * cases that want to be skipped (vis: if (broken()) return) while
+     * trying to avoid the compiler's optimizer realizing that the
+     * rest of the function is dead.
+     */
+    protected static boolean brokenXXX (int bug)
+    {
+	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
+	return trueXXX;
+    }
+
+  /**
+   * A method that returns true, and prints skip, when the build
+   * architecture is PowerPC.
+   */
+  protected static boolean brokenPpcXXX (int bug)
   {
-    if (brokenXXX(2965))
-      return;
-    Dwfl dwfl = new Dwfl(TestLib.getPid());
-    assertNotNull(dwfl);
-    DwflLine line = dwfl.getSourceLine(TestLib.getFuncAddr());
-    assertNotNull(line);
-    String filename = line.getSourceFile();
-    assertEquals("TestLib.cxx",
-                 filename.substring(filename.lastIndexOf("/") + 1));
-
-    if(Build.BUILD_ARCH.indexOf("x86_64") != -1)
-      assertEquals(55, line.getLineNum());
-    else if (Build.BUILD_ARCH.indexOf("powerpc") != -1)
-      assertEquals(53, line.getLineNum());
-    else
-      assertEquals(51, line.getLineNum());
-
-    assertEquals(0, line.getColumn());
-  }
-
-  public void testGetDie ()
-  {
-    Dwfl dwfl = new Dwfl(TestLib.getPid());
-    assertNotNull(dwfl);
-    
-    DwflDieBias bias = dwfl.getDie(TestLib.getFuncAddr());
-    assertNotNull(bias);
-    
-    assertEquals(0, bias.bias);
-    
-    DwarfDie die = bias.die;
-    assertNotNull(die);
-    
-    assertEquals("TestLib.cxx",
-                 die.getName().substring(die.getName().lastIndexOf("/") + 1));
-
-    DwarfDie[] allDies = die.getScopes(TestLib.getFuncAddr() - bias.bias);
-    assertNotNull(allDies);
-
-    String[] names = { "getFuncAddr", "TestLib.cxx" };
-
-    for (int i = 0; i < allDies.length; i++)
-      {
-        assertNotNull(allDies[i]);
-        if (i == 1)
-          assertEquals(
-                       names[i],
-                       allDies[i].getName().substring(
-                                                      die.getName().lastIndexOf(
-                                                                                "/") + 1));
-        else
-          assertEquals(names[i], allDies[i].getName());
-      }
+    if (Build.BUILD_ARCH.indexOf ("powerpc") != - 1) {
+	return brokenXXX (bug);
+    }
+    return false;
   }
 
 }

@@ -40,6 +40,7 @@
 package frysk.proc;
 
 import frysk.event.SignalEvent;
+import frysk.junit.TestCase;
 import frysk.junit.Paths;
 import frysk.sys.Errno;
 import frysk.sys.Fork;
@@ -60,7 +61,6 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import junit.framework.TestCase;
 
 /**
  * Utility for JUnit tests.
@@ -70,23 +70,6 @@ public class TestLib
     extends TestCase
 {
     protected final static Logger logger = Logger.getLogger ("frysk.proc");
-
-    /**
-     * A variable that has the value true.  Used by code trying to
-     * stop the optimizer realise that there's dead code around.
-     */
-    static boolean trueXXX = true;
-    /**
-     * A function that returns true, and prints skip.  Used by test
-     * cases that want to be skipped (vis: if(broken()) return) while
-     * trying to avoid the compiler's optimizer realizing that the
-     * rest of the function is dead.
-     */
-    protected static boolean brokenXXX (int bug)
-    {
-	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
-	return trueXXX;
-    }
 
     /**
      * Return the exec prefix that should be prepended to all
@@ -118,7 +101,7 @@ public class TestLib
      * run event loop while the given proc is not removed
      * if it is removed before the timeout the assert fails
      * other wise the test passes.
-     * */
+     */
     static void assertRunWhileProcNotRemoved(int pid, int timeout){
       new StopEventLoopWhenProcRemoved(pid);
        assertFalse("Event loop has been interrupted by proc removal", Manager.eventLoop.runPolling (timeout * 1000));

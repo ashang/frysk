@@ -1,3 +1,9 @@
+2006-08-28  Andrew Cagney  <cagney@redhat.com>
+
+	* tests/TestOpcodes.java: Extend frysk.junit.TestCase.
+	(trueXXX, brokenXXX, brokenPpcXXX): Delete, moved to
+	frysk.junit.TestCase.
+
 2006-08-04  Yao Qi  <qiyaoltc@cn.ibm.com>
 
         * lib/opcodes/tests/TestOpcodes.java: Replace "ppc" with

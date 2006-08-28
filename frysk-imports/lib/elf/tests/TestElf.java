@@ -42,7 +42,7 @@ package lib.elf.tests;
 
 import java.math.BigInteger;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import lib.elf.Elf;
 import lib.elf.ElfCommand;
 import lib.elf.ElfData;
@@ -60,25 +60,6 @@ import frysk.imports.Build;
 public class TestElf
     extends TestCase
 {
-    /**
-     * A variable that has the value true.  Used by code trying to
-     * stop the optimizer realise that there's dead code around.
-     */
-    static boolean trueXXX = true;
-    /**
-     * A function that returns true, and prints skip.  Used by test
-     * cases that want to be skipped (vis: if(broken()) return) while
-     * trying to avoid the compiler's optimizer realizing that the
-     * rest of the function is dead.
-     */
-    protected static boolean brokenXXX (int bug)
-    {
-	System.out.print ("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id=" + bug + " >>");
-	return trueXXX;
-    }
-
-
-
   public void testCore () throws ElfException, ElfFileException
   {
     Elf testElf = new Elf(Build.ABS_BUILDDIR + "/lib/elf/tests/test-core",

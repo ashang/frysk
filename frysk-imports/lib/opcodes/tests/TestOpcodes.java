@@ -44,7 +44,7 @@ import inua.eio.ByteBuffer;
 
 import java.util.LinkedList;
 
-import junit.framework.TestCase;
+import frysk.junit.TestCase;
 import lib.opcodes.Disassembler;
 import lib.opcodes.Instruction;
 import lib.opcodes.OpcodesException;
@@ -53,33 +53,6 @@ import frysk.imports.Build;
 public class TestOpcodes
     extends TestCase
 {
-
-  /**
-   * A variable that has the value true. Used by code trying to stop the
-   * optimizer realise that there's dead code around.
-   */
-  static boolean trueXXX = true;
-
-  /**
-   * A function that returns true, and prints skip. Used by test cases that want
-   * to be skipped (vis: if(broken()) return) while trying to avoid the
-   * compiler's optimizer realizing that the rest of the function is dead.
-   */
-  protected static boolean brokenXXX (int bug)
-  {
-    System.out.print("<<BROKEN http://sourceware.org/bugzilla/show_bug.cgi?id="
-                     + bug + " >>");
-    return trueXXX;
-  }
-
-  /**
-   * See above
-   */
-  protected static boolean brokenPpcXXX (int bug)
-  {
-    return brokenXXX(bug);
-  }
-
   /*
    * Note: this test is expected to fail on anything but i386 for the time
    * being. TODO: come up with a way of doing the correct assertEquals for other
@@ -87,12 +60,8 @@ public class TestOpcodes
    */
   public void testDisassembler ()
   {
-
-    if (Build.BUILD_ARCH.indexOf("powerpc") != - 1)
-      {
-        if (brokenPpcXXX(2712))
+      if (brokenPpcXXX(2712))
           return;
-      }
 
     ByteBuffer buffer = new DummyByteBuffer();
     final int numInstructions = 16;
