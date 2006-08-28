@@ -319,6 +319,7 @@ def killFrysk( ):
     # The Frysk object in the panel cannot be accessed as it does not have any
     # AT/SPI information - just kill the process instead
     subprocess.Popen( [r'killall', '-KILL', FRYSK_PROCESS_NAME] ).wait()
+    subprocess.Popen( [r'killall', '-KILL', 'funit-child'] ).wait()
     
     # Cleanup all frysk config files created during the test - save them for test
     # failure analysis - need to add a means to tie test run info to dir name
