@@ -3,7 +3,8 @@
 	* test/TestWindowFactorization.java (AttachedObserver): Added.
 	(TaskTerminatedObserver): Added.
 	(testWindowFactorization): Threw in some garbage collection 
-	statements, calls new methods.
+	statements, calls new methods. Calls setTasks() from the 
+	AttachedObserver.
 	(setTasks): Added.
 	(initGlades): Added.
 

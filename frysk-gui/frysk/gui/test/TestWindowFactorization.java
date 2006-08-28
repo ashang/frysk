@@ -1,43 +1,17 @@
 
-
 package frysk.gui.test;
 
 import junit.framework.TestCase;
-//import java.io.IOException;
-//import java.util.HashMap;
-//import java.util.Hashtable;
-//import java.util.Iterator;
-//
-//import lib.dw.DwflLine;
-//import lib.dw.NoDebugInfoException;
-//
-//import org.gnu.glade.LibGlade;
-//import org.gnu.glib.CustomEvents;
-//import org.gnu.gtk.event.LifeCycleEvent;
-//import org.gnu.gtk.event.LifeCycleListener;
-//import org.jdom.output.Format;
-//import org.jdom.output.XMLOutputter;
-//
-//import frysk.dom.DOMFactory;
-//import frysk.dom.DOMFrysk;
-//import frysk.dom.DOMFunction;
-//import frysk.dom.DOMImage;
-//import frysk.gui.common.dialogs.WarnDialog;
-//import frysk.gui.common.TaskBlockCounter;
-//import frysk.gui.monitor.EventLogger;
-//import frysk.gui.monitor.WindowManager;
 
-//import frysk.proc.Proc;
 import frysk.proc.Task;
-//import frysk.proc.TaskException;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.TaskObserver;
-//import frysk.gui.srcwin.SourceWindow;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
+
 import org.gnu.glib.CustomEvents;
 
 public class TestWindowFactorization
@@ -56,8 +30,6 @@ public class TestWindowFactorization
 
   private LibGlade glader = null;
 
-  // LibGlade glades = null;
-
   private MemoryWindow mw = null;
 
   private RegisterWindow rw = null;
@@ -70,18 +42,13 @@ public class TestWindowFactorization
   public void testWindowFactorization ()
   {
 
-    CustomEvents.addEvent(new Runnable()
-    {
-      public void run ()
-      {
-        String[] exec = { "/bin/true" };
-        Manager.host.requestCreateAttachedProc(exec, new AttachedObserver());
-      }
-    });
+    Manager.eventLoop.start();
 
     for (int j = 0; j < 15; j++)
       {
-
+        String[] exec = { "/bin/ed" };
+        Manager.host.requestCreateAttachedProc(exec, new AttachedObserver());
+        System.out.println("#" + j);
         initGlades();
 
         mw = new MemoryWindow(gladem);
@@ -89,13 +56,20 @@ public class TestWindowFactorization
         rw = new RegisterWindow(glader);
         System.gc();
 
-//        while (theTask == null)
-//          {
-//          }
-        if (theTask == null)
-          return;
-        setTasks();
-        theTask = null;
+        int x = 0;
+        /* Throw some entropy in there along with GC as we wait for the process
+         * to be created. */
+        while (theTask == null)
+          {
+            x = x + 3;
+            x = x - 2;
+            if (x == 2500000)
+              {
+                x = 0;
+                System.gc();
+              }
+
+          }
       }
   }
 
@@ -110,8 +84,6 @@ public class TestWindowFactorization
                                   null);
             glader = new LibGlade(gladePaths[i] + "/" + "registerwindow.glade",
                                   null);
-            // glades = new LibGlade(gladePaths[i] + "/"
-            // + "frysk_source.glade", null);
           }
         catch (Exception e)
           {
@@ -138,12 +110,11 @@ public class TestWindowFactorization
     RegisterWindow rw = new RegisterWindow(glader);
     //rw.showAll();
     rw.getClass();
-    //        SourceWindow sw = new SourceWindow(glades, gladePaths[i], null, null);
-    //        sw.showAll();
   }
 
   public void setTasks ()
   {
+    System.out.println("Setting tasks");
     mw.setTask(theTask);
     rw.setTask(theTask);
   }
@@ -160,9 +131,24 @@ public class TestWindowFactorization
     {
       System.out.println("updateAttached");
       theTask = task;
+      if (task == null)
+        System.out.println("Aww crap...");
+      else
+        System.out.println(task);
+      System.out.println("theTask: " + theTask);
       blocker = this;
       task.requestAddTerminatedObserver(new TaskTerminatedObserver());
-      return Action.BLOCK;
+
+      CustomEvents.addEvent(new Runnable()
+      {
+        public void run ()
+        {
+          setTasks();
+        }
+      });
+
+      System.out.println("About to finish");
+      return Action.CONTINUE;
     }
 
     public void deletedFrom (Object observable)
@@ -188,6 +174,7 @@ public class TestWindowFactorization
 
     public Action updateTerminated (Task task, boolean signal, int value)
     {
+      System.out.println("updateTerminated");
       theTask.requestUnblock(blocker);
       theTask.requestDeleteAttachedObserver(blocker);
       return Action.CONTINUE;
