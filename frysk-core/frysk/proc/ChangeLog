@@ -1,3 +1,8 @@
+2006-08-28  Mark Wielaard  <mark@klomp.org>
+
+	* TaskState.java: Merge (syscall)WaitForContinueOrUnblock,
+	(Syscall)BlockedSignal and (syscall)WaitForUnblocked states.
+
 2006-08-24  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* TaskState.java: Added handleSignaledEvent to runningInSyscall 

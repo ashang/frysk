@@ -311,7 +311,7 @@ class TaskState
 	{
 	    task.sendSetOptions ();
 	    if (task.notifyAttached () > 0)
-		return new BlockedSignal (signal);
+	      return new BlockedSignal (signal, false);
 	    task.sendContinue (signal);
 	    return running;
 	}
@@ -335,6 +335,8 @@ class TaskState
 	private static class WaitForContinueOrUnblock
 	    extends Attached
 	{
+	    boolean syscallObserverAdded;
+
 	    final int signal;
 	    WaitForContinueOrUnblock (int signal)
 	    {
@@ -352,7 +354,12 @@ class TaskState
 	    {
 		logger.log (Level.FINE, "{0} handleContinue\n", task); 
 		if (task.blockers.size () == 0)
-		    return Attached.transitionToRunningState (task, signal);
+		  {
+		    if (syscallObserverAdded)
+		      return transitionToSyscallRunningState(task);
+		    else
+		      return Attached.transitionToRunningState(task, signal);
+		  }
 		return new Attached.WaitForUnblock (signal);
 	    }
 	    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
@@ -360,38 +367,12 @@ class TaskState
 		logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
 		task.startTracingSyscalls();
 		observable.add(observer);
-		return syscallWaitForContinueOrUnblock;
+		syscallObserverAdded = true;
+		return this;
 	    }	    
 	}
 	private static final TaskState waitForContinueOrUnblock =
 	    new Attached.WaitForContinueOrUnblock (0);
-	/**
-	 * Need either a continue or an unblock.
-	 */
-	private static final TaskState syscallWaitForContinueOrUnblock =
-	    new Attached ("syscallWaitForContinueOrUnblock")
-	    {
-		TaskState handleUnblock (Task task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    return this;
-		}
-		TaskState handleContinue (Task task)
-		{
-		    logger.log (Level.FINE, "{0} handleContinue\n", task); 
-		    if (task.blockers.size () == 0)
-			return transitionToSyscallRunningState (task);
-		    return Attached.syscallWaitForUnblock;
-		}
-		TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-		{
-		    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-		    observable.add(observer);
-		    return this;
-		}	    
-            };
 
 	/**
 	 * Got continue, just need to clear the blocks.
@@ -399,6 +380,9 @@ class TaskState
 	private static class WaitForUnblock
 	    extends Attached
 	{
+
+	    boolean syscallObserverAdded;
+
 	    final int signal;
 	    WaitForUnblock (int signal)
 	    {
@@ -418,82 +402,27 @@ class TaskState
 		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		task.blockers.remove (observer);
 		if (task.blockers.size () == 0)
-		    return transitionToRunningState (task, signal);
+		  {
+		    if (syscallObserverAdded)
+		      return transitionToSyscallRunningState(task);
+		    else
+		      return transitionToRunningState(task, signal);
+		  }
 		return this;
 	    }
-	}
-	    
-	/**
-	 * Got continue, just need to clear the blocks.
-	 */
-	private static final TaskState syscallWaitForUnblock =
-	    new Attached ("syscallWaitForUnblock")
+	    TaskState handleAddSyscallObserver(Task task,
+					       Observable observable,
+					       Observer observer)
 	    {
-		TaskState handleUnblock (Task task,
-					 TaskObserver observer)
-		{
-		    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-		    task.blockers.remove (observer);
-		    if (task.blockers.size () == 0)
-			return transitionToSyscallRunningState (task);
-		    return this;
-		}
-		TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-		{
-		    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-		    observable.add(observer);
-		    return this;
-		}	    
-            };
-		    
-		
+	      logger.log (Level.FINE, "{0} handleAddSyscallObserver\n",
+			  task);
+	      observable.add(observer);
+	      syscallObserverAdded = true;
+	      return this;
+	    }	    
+	}
     }
 
-    //    private static class StartTrackingSyscalls extends TaskState{
-    //	        
-    //    	protected StartTrackingSyscalls() {
-    //		super("startTrackingSyscalls");
-    //	}
-    //
-    //    	public static TaskState initialState(Task task){
-    //    		task.sendStop();
-    //		return new StartTrackingSyscalls();
-    //    	}
-    //    	
-    //	TaskState handleStoppedEvent (Task task)
-    //    	{
-    //    		task.traceSyscall = true;
-    //    		task.sendContinue(0);
-    //    		return trackingSyscalls;
-    //    	}
-    //    	 
-    //     }
-    //	
-    //     private static class StopTrackingSyscalls extends TaskState{
-    //	        
-    //	    	protected StopTrackingSyscalls() {
-    //			super("stopTrackingSyscalls");
-    //		}
-    //
-    //	    	public static TaskState initialState(Task task){
-    //	    		task.sendStop();
-    //			return new StopTrackingSyscalls();
-    //	    	}
-    //	    	
-    //		TaskState handleStoppedEvent (Task task)
-    //	    	{
-    //	    		task.traceSyscall = false;
-    //	    		task.sendContinue(0);
-    //	    		return running; //is this right ??
-    //	    	}
-    //    	 
-    //     }
-    //    
-    //     private static final TaskState trackingSyscalls = new TaskState("trackingSyscalls"){
-    //	    	 
-    //     };
-     
-    
     /**
      * A new main Task, created via fork, just starting.  Go with the
      * assumption that it should detach.  Two events exist that
@@ -715,6 +644,8 @@ class TaskState
     static class StartClonedTask
 	extends TaskState
     {
+        boolean syscallObserverAdded;
+	      
 	StartClonedTask (String name)
 	{
 	    super ("StartClonedTask." + name);
@@ -781,81 +712,33 @@ class TaskState
 			return StartClonedTask.blockedOffspring;
 		    // XXX: Really notify attached here?
 		    if (task.notifyAttached () > 0)
-			return blockedContinue;
-		    task.sendContinue (0);
-		    return running;
+		      {
+			if (syscallObserverAdded)
+			  return syscallBlockedContinue;
+			else
+			  return blockedContinue;
+		      }
+		    if (syscallObserverAdded)
+		      {
+			task.sendSyscallContinue (0);
+			return syscallRunning;
+		      }
+		    else
+		      {
+			task.sendContinue (0);
+			return running;
+		      }
 		}
 	    };
-	    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-	    {
-          task.startTracingSyscalls();
-	      observable.add(observer);
-	      return SyscallStartClonedTask.syscallBlockedOffspring;
-	    }
-    }
-
-    /**
-     * A cloned task just starting out, wait for it to stop, and for
-     * it to be unblocked.  A cloned task is never continued.
-     */
-    static class SyscallStartClonedTask
-    extends StartClonedTask
-    {
-    SyscallStartClonedTask (String name)
-    {
-        super ("SyscallStartClonedTask." + name);
-    }
-//    private static TaskState attemptSyscallContinue (Task task)
-//    {
-//        logger.log (Level.FINE, "{0} attemptSyscallContinue\n", task); 
-//        task.sendSetOptions ();
-//        if (task.notifyClonedOffspring () > 0)
-//        return SyscallStartClonedTask.syscallBlockedOffspring;
-//        // XXX: Really notify attached here?
-//        if (task.notifyAttached () > 0)
-//          return syscallBlockedContinue;
-//        task.sendSyscallContinue (0);
-//        return syscallRunning;
-//    }
-//    
-//    private static final TaskState waitForStop =
-//        new StartClonedTask ("waitForStop")
-//        {
-//        TaskState handleUnblock (Task task,
-//                     TaskObserver observer)
-//        {
-//            logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-//            // XXX: Should instead fail?
-//            task.blockers.remove (observer);
-//            return StartClonedTask.waitForStop;
-//        }
-//        TaskState handleTrappedEvent (Task task)
-//        {
-//            logger.log (Level.FINE, "{0} handleTrappedEvent\n", task);
-//            return attemptContinue (task);
-//        }
-//        TaskState handleStoppedEvent (Task task)
-//        {
-//            logger.log (Level.FINE, "{0} handleStoppedEvent\n", task);
-//            return attemptContinue (task);
-//        }
-//        };
-    
-    protected static final TaskState syscallBlockedOffspring = new StartClonedTask("syscallBlockedOffspring")
-    {
-      TaskState handleUnblock (Task task, TaskObserver observer)
+      TaskState handleAddSyscallObserver (Task task,
+					  Observable observable,
+					  Observer observer)
       {
-        logger.log(Level.FINE, "{0} handleUnblock\n", task);
-        task.blockers.remove(observer);
-        if (task.blockers.size() > 0)
-          return SyscallStartClonedTask.syscallBlockedOffspring;
-        // XXX: Really notify attached here?
-        if (task.notifyAttached() > 0)
-          return syscallBlockedContinue;
-        task.sendSyscallContinue(0);
-        return syscallRunning;
+	task.startTracingSyscalls();
+	observable.add(observer);
+	syscallObserverAdded = true;
+	return this;
       }
-    };
     }
 
     /**
@@ -873,7 +756,7 @@ class TaskState
 	{
 	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n", new Object[] {task, new Integer(sig)}); 
 	    if (task.notifySignaled (sig) > 0) {
-		return new BlockedSignal (sig);
+	      return new BlockedSignal(sig, false);
 	    }
 	    else {
 		task.sendContinue (sig);
@@ -934,7 +817,7 @@ class TaskState
 	    logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
 	    if(task.notifyTerminating (signal, value) > 0){
           if (signal){
-            return new BlockedSignal(value);
+            return new BlockedSignal(value, false);
           }else{
             return blockedContinue;
           }
@@ -1198,7 +1081,7 @@ class TaskState
 	{
 	    logger.log (Level.FINE, "{0} handleSignaledEvent\n", task); 
 	    if (task.notifySignaled (sig) > 0) {
-		return new SyscallBlockedSignal (sig);
+	      return new BlockedSignal(sig, true);
 	    }
 	    else {
 		task.sendSyscallContinue (sig);
@@ -1224,7 +1107,7 @@ class TaskState
 
         if(task.notifyTerminating (signal, value) > 0){
           if (signal){
-            return new SyscallBlockedSignal(value);
+            return new BlockedSignal(value, true);
           }else{
             return syscallBlockedContinue;
           }
@@ -1354,7 +1237,7 @@ class TaskState
 	    {
 	      logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
 	      if(task.notifySyscallExit () > 0){
-	        return syscallBlockedExitingSyscall;
+	        return syscallBlockedContinue;
           }else{
     		task.sendSyscallContinue (0);
     		return syscallRunning;
@@ -1576,11 +1459,14 @@ class TaskState
     private static class BlockedSignal
 	extends TaskState
     {
+        boolean syscallObserverAdded;
+
 	int sig;
-	BlockedSignal (int sig)
+        BlockedSignal(int sig, boolean syscallObserverAdded)
 	{
 	    super ("BlockedSignal");
 	    this.sig = sig;
+	    this.syscallObserverAdded = syscallObserverAdded;
 	}
 	public String toString ()
 	{
@@ -1599,19 +1485,24 @@ class TaskState
 	    task.blockers.remove (observer);
 	    if (task.blockers.size () > 0)
 		return this; // Still blocked.
-	    task.sendContinue (sig);
-	    return running;
+	    if (syscallObserverAdded)
+	      {
+		task.sendSyscallContinue(sig);
+		return syscallRunning;
+	      }
+	    else
+	      {
+		task.sendContinue (sig);
+		return running;
+	      }
 	}
 	
 	TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer){
 	    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
 	    task.startTracingSyscalls();
 	    observable.add(observer);
-	    if(sig == 0){
-	      return syscallBlockedContinue;
-	    }else{
-	      return new SyscallBlockedSignal(sig);
-	    }
+	    syscallObserverAdded = true;
+	    return this;
   	  }
 
       TaskState handleAddCodeObserver(Task task, Observable observable,
@@ -1646,7 +1537,7 @@ class TaskState
      * It is a common case that a task is blocked with no pending
      * signal so this instance can be shared.
      */
-    private static final TaskState blockedContinue = new BlockedSignal (0)
+  private static final TaskState blockedContinue = new BlockedSignal(0, false)
     {
         public String toString ()
         {
@@ -1654,37 +1545,11 @@ class TaskState
         }
     };
     
-    private static class SyscallBlockedSignal extends BlockedSignal{
-	SyscallBlockedSignal(int sig) {
-	    super(sig);
-	}
-	
-	TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer){
-	    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
-	    observable.add(observer);
-	    return this;
-	}
-	
-	TaskState handleUnblock (Task task, TaskObserver observer)
-	{
-	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-	    task.blockers.remove (observer);
-	    if (task.blockers.size () > 0)
-		return this; // Still blocked.
-	    task.sendSyscallContinue(sig);
-	    return syscallRunning;
-	}
-	
-	public String toString ()
-	{
-	    return "syscallBlockedSignal";
-	}
-    }
-   
     /**
      * Sharable instance of the common blockedContinue in syscall tracing mode
      */
-    private static final TaskState syscallBlockedContinue = new SyscallBlockedSignal (0)
+    private static final TaskState syscallBlockedContinue =
+      new BlockedSignal(0, true)
     {
         public String toString ()
         {
@@ -1693,26 +1558,13 @@ class TaskState
     };
 
     /**
-     * A task ends up in this state if it sends out a syscallExit
-     * event and an observer chooses to block it.
-     */
-    private static final TaskState syscallBlockedExitingSyscall = new SyscallBlockedSignal (0)
-    {
-        public String toString ()
-        {
-        return "syscallBlockedExitingSyscall";
-        }
-    };
-
-    
-    /**
      * A task blocked after SyscallEnter notification or while runningInSyscall
      * by an event other than syscalledEvent
      */
-    public static class SyscallBlockedInSyscall extends SyscallBlockedSignal{
+    public static class SyscallBlockedInSyscall extends BlockedSignal{
       SyscallBlockedInSyscall(int sig)
       {
-        super(sig);
+        super(sig, true);
       }
 
       TaskState handleUnblock (Task task, TaskObserver observer)
@@ -1735,7 +1587,7 @@ class TaskState
      * A shareable instance of SyscallBlockedInSyscall where the signal
      * to be delivered is 0.
      */
-    private static final TaskState syscallBlockedInSyscallContinue = new SyscallBlockedInSyscall(0){
+  private static final TaskState syscallBlockedInSyscallContinue = new SyscallBlockedInSyscall(0){
         public String toString ()
         {
         return "syscallBlockedInSyscall";
@@ -1761,7 +1613,9 @@ class TaskState
      * entry. so if the switch to syscall tracing mode occurs the correct state
      * (runningInSyscall) is returned
      */
-    private static final TaskState blockedInExecSyscall = new BlockedSignal (0){
+    private static final TaskState blockedInExecSyscall =
+      new BlockedSignal(0, false)
+        {
 	    TaskState handleUnblock (Task task, TaskObserver observer)
 	    {
 		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
@@ -1798,10 +1652,6 @@ class TaskState
 	    {
 		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
 		task.notifyTerminating (signal, value);
-		// 		if (signal)
-		// 		    task.sendContinue (value);
-		// 		else
-		// 		    task.sendContinue (0);
 		return disappeared;
 	    }
     	    TaskState handleDisappearedEvent (Task task, Throwable w)
