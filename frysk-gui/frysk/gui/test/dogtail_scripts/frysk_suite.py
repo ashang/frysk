@@ -59,35 +59,36 @@ __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
 # Import the test suites
 import unittest
-import TestLicense
-import TestCredits
-import TestCreateObserversfromDataModel
-import TestDruid
+import license
+import credits
+import druid
+import observerData
 
 # Import needed to access test file input files via envron var's
 import os
 
 # Define the test input files
-os.environ.__setitem__('TestCreateObserversfromDataModel_FILE', 'new_fork_custom_observer.xml')
 os.environ.__setitem__('TestDruid_FILE', 'another_new_session.xml')
+os.putenv('TestDruid_FILE', 'another_new_session.xml')
+print "1 DEBUG = " + os.getenv('TestDruid_FILE')
+
 
 # Define the suite elements
-licenseSuite = TestLicense.suite()
-creditsSuite = TestCredits.suite()
-createSuiteObserverDataSuite = TestCreateObserversfromDataModel.suite()
-druidSuite  = TestDruid.suite()
+licenseSuite = license.suite()
+creditsSuite = credits.suite()
+druidSuite = druid.suite()
+observerSuite = observerData.suite()
 
 # Assemble the suite
 suite = unittest.TestSuite()
 suite.addTest(licenseSuite)
 suite.addTest(creditsSuite)
-#suite.addTest(createObserverDataSuite)
-#suite.addTest(druidSuite)
+suite.addTest(druidSuite)
+suite.addTest(observerSuite)
 
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)
 
 # Cleanup
-os.environ.__delitem__('TestCreateObserversfromDataModel_FILE')
 os.environ.__delitem__('TestDruid_FILE')
 
