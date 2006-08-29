@@ -50,13 +50,28 @@ class IsaIA32 implements Isa
 
   private static final byte[] BREAKPOINT_INSTRUCTION = { (byte)0xcc };
   
-  static class IA32Register extends Register
+  static class IA32Register 
+    extends Register
   {
     IA32Register(String name, int wordOffset)
     {
       super(0, wordOffset * 4, 4, name);
     }
   }
+
+  static class IA32SegmentRegister 
+    extends IA32Register
+  {
+    IA32SegmentRegister(String name, int wordOffset)
+    {
+      super(name, wordOffset);
+    }
+    public int getLength()
+    {
+      return 2;
+    }
+  }
+
   private static final IA32Register[] 
   regDefs = { new IA32Register("eax", 6),
 	      new IA32Register("ebx", 0),
@@ -65,12 +80,12 @@ class IsaIA32 implements Isa
 	      new IA32Register("esi", 3),
 	      new IA32Register("edi", 4),
 	      new IA32Register("ebp", 5),
-	      new IA32Register("cs", 13),
-	      new IA32Register("ds", 7),
-	      new IA32Register("es", 8),
-	      new IA32Register("fs", 9),
-	      new IA32Register("gs", 10),
-	      new IA32Register("ss", 16),
+	      new IA32SegmentRegister("cs", 13),
+	      new IA32SegmentRegister("ds", 7),
+	      new IA32SegmentRegister("es", 8),
+	      new IA32SegmentRegister("fs", 9),
+	      new IA32SegmentRegister("gs", 10),
+	      new IA32SegmentRegister("ss", 16),
 	      new IA32Register("orig_eax", 11),
 	      new IA32Register("eip", 12),
 	      new IA32Register("efl", 14),

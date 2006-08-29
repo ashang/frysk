@@ -18,6 +18,18 @@ class IsaPPC64
       super (0, wordOffset * 8, 8, name);
     }
   }
+  static class PPC6432BitRegister
+    extends PPC64Register
+  {
+    PPC6432BitRegister(String name, int wordOffset)
+    {
+      super (name, wordOffset);
+    }
+    public int getLength()
+    {
+      return 4;
+    }
+  }
   
   private static PPC64Register[] gprs()
   {
@@ -36,8 +48,8 @@ class IsaPPC64
   private static final PPC64Register orig_r3 = new PPC64Register("orig_r3", 34);
   private static final PPC64Register ctr = new PPC64Register("ctr", 35);
   private static final PPC64Register lnk = new PPC64Register("lnk", 36);
-  private static final PPC64Register xer = new PPC64Register("xer", 37);
-  private static final PPC64Register ccr = new PPC64Register("ccr", 38);
+  private static final PPC64Register xer = new PPC6432BitRegister("xer", 37);
+  private static final PPC64Register ccr = new PPC6432BitRegister("ccr", 38);
   private static final PPC64Register mq = new PPC64Register("mq", 39);
   private static final PPC64Register trap = new PPC64Register("trap", 40);
   private static final PPC64Register dar = new PPC64Register("dar", 41);

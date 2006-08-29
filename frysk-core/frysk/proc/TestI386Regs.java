@@ -61,6 +61,8 @@ public class TestI386Regs
     long esp;
     long esi;
     long edi;
+    int csLength;
+    int ssLength;
 	
     // Need to add task observers to the process the moment it is
     // created, otherwize the creation of the very first task is
@@ -98,6 +100,8 @@ public class TestI386Regs
 	  esi = isa.getRegisterByName ("esi").get (task);
 	  edi = isa.getRegisterByName ("edi").get (task);
 	  esp = isa.getRegisterByName ("esp").get (task);
+	  csLength = isa.getRegisterByName ("cs").getLength();
+	  ssLength = isa.getRegisterByName ("ss").getLength();
 	}
 	return Action.CONTINUE;
       }
@@ -166,6 +170,8 @@ public class TestI386Regs
       assertEquals ("esi register", 6, t.esi);
       assertEquals ("edi register", 7, t.edi);
       assertEquals ("esp register", 8, t.esp);
+      assertEquals ("cs length", 2, t.csLength);
+      assertEquals ("ss length", 2, t.ssLength);
 
       assertTrue ("exited", t.exited);
     }

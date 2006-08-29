@@ -57,6 +57,18 @@ class IsaEMT64 implements Isa
       super(0, wordOffset * 8, 8, name);
     }
   }
+  static class EMT64SegmentRegister extends EMT64Register
+  {
+    EMT64SegmentRegister (String name, int wordOffset)
+    {
+      super (name, wordOffset);
+    }
+    public int getLength()
+    {
+      return 4;
+    }
+  }
+
   private static final EMT64Register[] regDefs
   = { new EMT64Register("rax", 10),
       new EMT64Register("rbx", 5),
@@ -76,12 +88,12 @@ class IsaEMT64 implements Isa
       new EMT64Register("r15", 0),
       new EMT64Register("rip", 16),
       new EMT64Register("eflags", 18),
-      new EMT64Register("cs", 17),
-      new EMT64Register("ss", 20),
-      new EMT64Register("ds", 23),
-      new EMT64Register("es", 24),
-      new EMT64Register("fs", 25),
-      new EMT64Register("gs", 26),
+      new EMT64SegmentRegister("cs", 17),
+      new EMT64SegmentRegister("ss", 20),
+      new EMT64SegmentRegister("ds", 23),
+      new EMT64SegmentRegister("es", 24),
+      new EMT64SegmentRegister("fs", 25),
+      new EMT64SegmentRegister("gs", 26),
       new EMT64Register("orig_rax", 15),
       new EMT64Register("fs_base", 21),
       new EMT64Register("gs_base", 22) };

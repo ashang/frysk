@@ -1,3 +1,13 @@
+2006-08-25  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* IsaIA32.java: New class for 16-bit segment register on IA32.
+	* TestI386Regs.java: Test length of segment register.
+
+	* IsaEMT64.java: New class for 32-bit segment registers on X86_64.
+	* TestX8664Regs.java: Test length of segment register.
+
+	* IsaPPC64.java: New class for 32-bit registers on PPC64.
+
 2006-08-29  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* IsaPPC64.java (getWordSize): Edit the return value from 4 to 8.
