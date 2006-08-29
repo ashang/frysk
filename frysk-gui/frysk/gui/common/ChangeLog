@@ -1,4 +1,9 @@
-2006-08-23    <swagiaal@redhat.com>
+2006-08-29  Rick Moseley  <rmoseley@redhat.com>
+
+	* IconManager.java: Added tooltip info about which host the 
+	eggtrayicon is connected to.
+
+2006-08-23  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* dialogs/ErrorDialog.java: Rnamed Dialog to FryskDialog
 	* dialogs/FryskDialog.java: Renamed Dialog.java to this.
@@ -6,7 +11,7 @@
 	* dialogs/QueryDialog.java: Ditto.
 	* dialogs/NoDebugInfoDialog.java: Ditto.
 
-2006-08-21    <swagiaal@redhat.com>
+2006-08-21  Sami Wagiaalla  <swagiaal@redhat.com>
 
 	* IconManager.java: Moved public static instance of TrayIcon to
 	here. Part of fix for ba 3064.
