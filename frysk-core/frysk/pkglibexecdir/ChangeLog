@@ -1,7 +1,7 @@
 2006-08-23  Yong Zheng  <zhengyo@cn.ibm.com>
 
-	*frysk/pkglibexecdir/funit-breakpoint.c (main): Get the function
-	address instead of address of function descriptor on PPC64.
+	* funit-breakpoint.c (main): Get the function address 
+	instead of address of function descriptor on PPC64.
 
 2006-08-16  Tim Moore  <timoore@redhat.com>
 
