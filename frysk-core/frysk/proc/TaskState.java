@@ -320,11 +320,11 @@ class TaskState
 	 * is both unblocked and continued, should transition
 	 * to the syscallRunning state.
 	 */
-	static TaskState transitionToSyscallRunningState (Task task)
+      static TaskState transitionToSyscallRunningState (Task task, int signal)
 	{
 	    logger.log(Level.FINE, "transitionToSyscallRunningState\n");
 	    if (task.notifyAttached () > 0)
-		return syscallBlockedContinue;
+	      return new BlockedSignal (signal, true);
 	    task.sendSyscallContinue (0);
 	    return syscallRunning;
 	}
@@ -356,7 +356,7 @@ class TaskState
 		if (task.blockers.size () == 0)
 		  {
 		    if (syscallObserverAdded)
-		      return transitionToSyscallRunningState(task);
+		      return transitionToSyscallRunningState(task, signal);
 		    else
 		      return Attached.transitionToRunningState(task, signal);
 		  }
@@ -404,7 +404,7 @@ class TaskState
 		if (task.blockers.size () == 0)
 		  {
 		    if (syscallObserverAdded)
-		      return transitionToSyscallRunningState(task);
+		      return transitionToSyscallRunningState(task, signal);
 		    else
 		      return transitionToRunningState(task, signal);
 		  }
