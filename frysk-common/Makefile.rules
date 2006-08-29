@@ -272,6 +272,7 @@ $(GEN_SOURCENAME)/JUnitTests.java:
 	  find ${GEN_DIRS} \
 	    -name 'TestLib.*' -prune -o \
 	    -name 'JUnit*' -prune -o \
+	    -name 'TestCase.java' -prune -o \
 	    -name 'Test*.java' -print -o \
 	    -name 'Stress*.java' -print \
 	    | sort -f | while read test ; do \

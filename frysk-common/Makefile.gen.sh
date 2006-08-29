@@ -567,6 +567,7 @@ done
 print_header "... TESTS += Test*.java"
 find ${dirs} \
     -name "[^A-Za-z]*" -prune -o \
+    -name 'TestCase.java' -prune -o \
     -name '*Test*.java' -print \
     | sort -f | while read file ; do
     if has_main ${file} ; then

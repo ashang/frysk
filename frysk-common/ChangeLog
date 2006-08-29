@@ -1,3 +1,9 @@
+2006-08-29  Andrew Cagney  <cagney@redhat.com>
+
+	* Makefile.gen.sh (TESTS): Exclude TestCase.java from possible
+	list of tests.
+	* Makefile.rules ($(GEN_SOURCENAME)/JUnitTests.java): Ditto.
+
 2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
 
 	* m4/frysk-use-libunwind.m4: Turn on linking in of linunwind for
