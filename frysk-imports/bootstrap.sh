@@ -53,7 +53,7 @@ FILE_LIST="frysk \
 target_cpu=`uname -a`
 
 case "${target_cpu}" in
-       *86*)
+       *)
        # libunwind is supported on X86 and X86_64 now, so buildlibunwind
        # java binding.  When libunwind is supported on PPC/PPC64, libuwind
        # and its java bindings could be built unconditionally.

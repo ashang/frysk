@@ -1,3 +1,8 @@
+2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
+
+	* m4/frysk-use-libunwind.m4: Turn on linking in of linunwind for
+	target powerpc64.
+
 2006-08-23  Alexandre Oliva  <aoliva@redhat.com>
 
 	* Makefile.rules (.shjava.java, .shenum.java): Support

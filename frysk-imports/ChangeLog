@@ -1,3 +1,7 @@
+2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
+
+	* bootstrap.sh: Build libunwind unconditionally.
+
 2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* lib/opcodes/libbfd_get.c : New file to stub bfd_getb32 and bfd_getl32
