@@ -62,6 +62,8 @@ public class TestX8664Regs
       // 0xdeadbeefdeadbeef
       -0x2152411021524111l
     };
+    int csLength;
+
     Hashtable longResults = new Hashtable();
     Hashtable bigResults = new Hashtable();
     
@@ -114,6 +116,7 @@ public class TestX8664Regs
 	      }
 	    
 	  }
+	csLength = isa.getRegisterByName("cs").getLength();
 	return Action.CONTINUE;
       }
     }
@@ -179,6 +182,7 @@ public class TestX8664Regs
 		     BigInteger.valueOf(regValues[i])
 		     .compareTo((BigInteger)bigResults.get(regNames[i])) == 0);
 	}
+      assertEquals ("cs length", 4, csLength);
       assertTrue ("exited", exited);
     }
   }
