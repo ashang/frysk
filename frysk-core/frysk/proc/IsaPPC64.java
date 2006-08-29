@@ -89,7 +89,7 @@ class IsaPPC64
 
   public int getWordSize ()
   {
-    return 4;
+    return 8;
   }
 
   public ByteOrder getByteOrder ()

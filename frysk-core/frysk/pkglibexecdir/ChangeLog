@@ -1,3 +1,7 @@
+2006-08-29  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* funit-ppc64-regs.S: New PPC64 specific program.
+
 2006-08-23  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* funit-breakpoint.c (main): Get the function address 

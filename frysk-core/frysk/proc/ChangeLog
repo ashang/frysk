@@ -1,3 +1,9 @@
+2006-08-29  Yong Zheng  <zhengyo@cn.ibm.com>
+
+	* IsaPPC64.java (getWordSize): Edit the return value from 4 to 8.
+	* TestRegs.java: New file to add register access test on PPC64 and
+	merge Test<ISA>Regs.java into one case.
+
 2006-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* TestLib.java: Extend frysk.junit.TestCase.
