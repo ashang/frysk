@@ -1,4 +1,5 @@
 
+
 package frysk.gui.test;
 
 import junit.framework.TestCase;
@@ -9,6 +10,8 @@ import frysk.gui.register.RegisterWindow;
 import frysk.proc.Action;
 import frysk.proc.Manager;
 import frysk.proc.TaskObserver;
+import frysk.proc.DummyProc;
+import frysk.proc.DummyTask;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
 
@@ -41,35 +44,33 @@ public class TestWindowFactorization
 
   public void testWindowFactorization ()
   {
+    DummyProc dp = new DummyProc();
+    DummyTask dt = new DummyTask(dp);
+    this.theTask = (Task) dt;
 
     Manager.eventLoop.start();
 
     for (int j = 0; j < 15; j++)
       {
-        String[] exec = { "/bin/ed" };
-        Manager.host.requestCreateAttachedProc(exec, new AttachedObserver());
-        System.out.println("#" + j);
+        //System.out.println("#" + j);
         initGlades();
 
         mw = new MemoryWindow(gladem);
-        System.gc();
         rw = new RegisterWindow(glader);
+
+        setTasks();
+
         System.gc();
+//        mw.showAll();
+//        mw.hideAll();
+        mw = null;
 
-        int x = 0;
-        /* Throw some entropy in there along with GC as we wait for the process
-         * to be created. */
-        while (theTask == null)
-          {
-            x = x + 3;
-            x = x - 2;
-            if (x == 2500000)
-              {
-                x = 0;
-                System.gc();
-              }
+        System.gc();
+//        rw.showAll();
+//        rw.hideAll();
+        rw = null;
 
-          }
+        // theTask = null;
       }
   }
 
@@ -100,23 +101,35 @@ public class TestWindowFactorization
 
               }
           }
-        //      If we've found it, break
+        // If we've found it, break
         break;
       }
 
     MemoryWindow mw = new MemoryWindow(gladem);
     mw.getClass();
-    //mw.showAll();
     RegisterWindow rw = new RegisterWindow(glader);
-    //rw.showAll();
     rw.getClass();
   }
 
   public void setTasks ()
   {
-    System.out.println("Setting tasks");
-    mw.setTask(theTask);
-    rw.setTask(theTask);
+    if (theTask.getMemory() != null)
+      mw.setTask(theTask);
+//    else
+//      System.out.println("Memory is null");
+
+    try
+      {
+        if (theTask.getIsa() != null)
+          rw.setTask(theTask);
+//        else
+//          System.out.println("ISA is null");
+      }
+    catch (Exception e)
+      {
+        System.exit(1);
+      }
+
   }
 
   class AttachedObserver

@@ -1,3 +1,10 @@
+2006-08-30  Mike Cvet  <mcvet@redhat.com>
+
+	* test/TestWindowFactorization.java (testWindowFactorization): 
+	Now using DummyProc and DummyTask.
+	(setTasks): Don't setTasks for the windows if critical task
+	information is null.
+
 2006-08-28  Mike Cvet  <mcvet@redhat.com>
 
 	* test/TestWindowFactorization.java (AttachedObserver): Added.
