@@ -844,13 +844,15 @@ class TaskState
 	    // Remove all tasks, retaining just this one.
 	    task.proc.retain (task);
 	    ((LinuxProc)task.proc).getStat ().refresh();
-	    if (task.notifyExeced () > 0) {
+	    if (task.notifyExeced () > 0)
+	      {
 		return blockedInExecSyscall;
-	    }
-	    else {
+	      }
+	    else
+	      {
 		task.sendContinue (0);
 		return running;
-	    }
+	      }
 	}
 	TaskState handleDisappearedEvent (Task task, Throwable w)
 	{
@@ -1279,7 +1281,7 @@ class TaskState
 	    {
 		logger.log (Level.FINE, "{0} handleDetach\n", task); 
 		task.sendStop ();
-		return detachingInSyscall;
+		return detaching;
 	    }
 	    TaskState handleExecedEvent (Task task)
 	    {
@@ -1416,40 +1418,16 @@ class TaskState
 		task.sendContinue (signal);
 		return detaching;
 	    }
-	};
-
-    private static final TaskState detachingInSyscall =
-	new TaskState ("detachingInSyscall")
-	{
-	    TaskState handleStoppedEvent (Task task)
+	    //XXX: why is this needed and why does it mean a syscallExit ?
+	    TaskState handleSyscalledEvent (Task task)
 	    {
-		logger.log (Level.FINE, "{0} handleStoppedEvent\n", task); 
-		task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
-		return detached;
+	      logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
+	      task.notifySyscallExit ();
+	      task.sendContinue (0);
+	      return detaching;
 	    }
-	    
-        //XXX: why is this needed and why does it mean a syscallExit ?
-        TaskState handleSyscalledEvent (Task task)
-	    {
-		logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-		task.notifySyscallExit ();
-		task.sendContinue (0);
-		return detaching;
-	    }
-	    TaskState handleTerminatingEvent (Task task, boolean signal,
-					      int value)
-	    {
-		logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
-		if (signal)
-		    task.sendDetach (value);
-		else
-		    task.sendDetach (0);
-		task.proc.performTaskDetachCompleted (task);
-		return detached;
-	    }
-	};
-
+      };
+  
     /**
      * The Task is blocked by a set of observers, remain in this state
      * until all the observers have unblocked themselves.  This state
