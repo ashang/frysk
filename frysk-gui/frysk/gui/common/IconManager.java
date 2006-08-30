@@ -76,7 +76,18 @@ public class IconManager
 
   public static final String os_arch = System.getProperty("os.arch");
 
-  public static String getHostName (String which)
+  /*
+   * getHostInfo gets host information to pass to the tooltip for the
+   * Frysk eggtrayicon.  This info is displayed when the icon is hovered
+   * over.
+   * 
+   * @param which - tells which piece of info to get
+   *                hostname = return the host's name
+   *                ipaddr = return the host's ip address
+   *                
+   * @return the information requested
+   */
+  public static String getHostInfo (String which)
   {
     String host_name = "";
     String ip_addr = "";
@@ -90,7 +101,8 @@ public class IconManager
       {
         System.err.println("Unable to get host name or ip address from "
                            + "getHostAddress()/getHostName()");
-        e.printStackTrace();
+        return "Unable to get info";
+        //e.printStackTrace();
 
       }
     if (which.equals("hostname"))
@@ -106,12 +118,12 @@ public class IconManager
 
   public static TrayIcon trayIcon = new TrayIcon("Frysk Monitor/Debugger"
                                                  + "\nhost:  "
-                                                 + getHostName("hostname")
+                                                 + getHostInfo("hostname")
                                                  + "\nos:  " + os_name
                                                  + "\nkernel version:  "
                                                  + os_version + "\narch:  "
                                                  + os_arch + "\nIP address:  "
-                                                 + getHostName("ipaddr"), false);
+                                                 + getHostInfo("ipaddr"), false);
 
   public static void loadIcons ()
   {

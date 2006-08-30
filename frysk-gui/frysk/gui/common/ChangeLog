@@ -1,3 +1,8 @@
+2006-08-30  Rick Moseley  <rmoseley@redhat.com>
+
+	* IconManager.java: Changed method name from getHostName to getHostInfo,
+	do not backtrace if info is not found, return error, added javadoc.
+
 2006-08-29  Rick Moseley  <rmoseley@redhat.com>
 
 	* IconManager.java: Added tooltip info about which host the 
