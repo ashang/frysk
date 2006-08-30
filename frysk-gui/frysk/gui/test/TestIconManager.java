@@ -37,6 +37,7 @@
 // version and license this file solely under the GPL without
 // exception.
 
+
 package frysk.gui.test;
 
 import frysk.gui.Build;
@@ -44,71 +45,97 @@ import junit.framework.TestCase;
 import frysk.gui.common.IconManager;
 import org.gnu.gtk.IconFactory;
 import org.gnu.gtk.Gtk;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-public class TestIconManager extends TestCase {
+public class TestIconManager
+    extends TestCase
+{
 
-	IconFactory defaultSet = null;
+  IconFactory defaultSet = null;
 
-	private static final String BASE_PATH = "frysk/gui/";
+  private static final String BASE_PATH = "frysk/gui/";
 
-	String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
-			+ "images/" };
+  String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
+                                       + "images/" };
 
-	public void testIconManagerLoad() {
-		Gtk.init(new String[] {});
+  public void testIconManagerLoad ()
+  {
+    Gtk.init(new String[] {});
 
-		// Start loading factory. Need to improve this test as we are 
-		// basically looking for a stracktrace.
-		IconManager.setImageDir(imagePaths);
-		IconManager.loadIcons();
-		IconManager.useSmallIcons();
-	}
+    // Start loading factory. Need to improve this test as we are
+    // basically looking for a stacktrace.
+    IconManager.setImageDir(imagePaths);
+    IconManager.loadIcons();
+    IconManager.useSmallIcons();
+  }
 
-	public void testIconManagerGetFactory() {
+  public void testIconManagerGetFactory ()
+  {
 
-		// Cheat a bit and get the factory
-		// if it is not null, the factory was returned
-		// succesfully.
-		defaultSet = IconManager.getFactory();
-		assertNotNull("Testing getFactory", defaultSet);
-	}
+    // Cheat a bit and get the factory
+    // if it is not null, the factory was returned
+    // succesfully.
+    defaultSet = IconManager.getFactory();
+    assertNotNull("Testing getFactory", defaultSet);
+  }
 
-	public void testIconLookups() {
+  public void testIconLookups ()
+  {
 
-		defaultSet = IconManager.getFactory();
+    defaultSet = IconManager.getFactory();
 
-		// Basically manually grind through each icon lookup and test
-		// to make sure if the IconSet returned is not null.
-		assertNotNull("Testing frysk-run icon set lookup", defaultSet
-				.lookupIconSet("frysk-run"));
-		assertNotNull("Testing frysk-stop icon set lookup", defaultSet
-				.lookupIconSet("frysk-stop"));
+    // Basically manually grind through each icon lookup and test
+    // to make sure if the IconSet returned is not null.
+    assertNotNull("Testing frysk-run icon set lookup",
+                  defaultSet.lookupIconSet("frysk-run"));
+    assertNotNull("Testing frysk-stop icon set lookup",
+                  defaultSet.lookupIconSet("frysk-stop"));
 
-		assertNotNull("Testing frysk-next icon set lookup", defaultSet
-				.lookupIconSet("frysk-next"));
-		assertNotNull("Testing frysk-nextAI icon set lookup", defaultSet
-				.lookupIconSet("frysk-nextAI"));
+    assertNotNull("Testing frysk-next icon set lookup",
+                  defaultSet.lookupIconSet("frysk-next"));
+    assertNotNull("Testing frysk-nextAI icon set lookup",
+                  defaultSet.lookupIconSet("frysk-nextAI"));
 
-		assertNotNull("Testing frysk-step icon set lookup", defaultSet
-				.lookupIconSet("frysk-step"));
-		assertNotNull("Testing frysk-stepAI icon set lookup", defaultSet
-				.lookupIconSet("frysk-stepAI"));
-		assertNotNull("Testing frysk-continue icon set lookup", defaultSet
-				.lookupIconSet("frysk-continue"));
-		assertNotNull("Testing frysk-finish icon set lookup", defaultSet
-				.lookupIconSet("frysk-finish"));
-		assertNotNull("Testing frysk-down icon set lookup", defaultSet
-				.lookupIconSet("frysk-down"));
-		assertNotNull("Testing frysk-up icon set lookup", defaultSet
-				.lookupIconSet("frysk-up"));
-		assertNotNull("Testing frysk-bottom icon set lookup", defaultSet
-				.lookupIconSet("frysk-bottom"));
+    assertNotNull("Testing frysk-step icon set lookup",
+                  defaultSet.lookupIconSet("frysk-step"));
+    assertNotNull("Testing frysk-stepAI icon set lookup",
+                  defaultSet.lookupIconSet("frysk-stepAI"));
+    assertNotNull("Testing frysk-continue icon set lookup",
+                  defaultSet.lookupIconSet("frysk-continue"));
+    assertNotNull("Testing frysk-finish icon set lookup",
+                  defaultSet.lookupIconSet("frysk-finish"));
+    assertNotNull("Testing frysk-down icon set lookup",
+                  defaultSet.lookupIconSet("frysk-down"));
+    assertNotNull("Testing frysk-up icon set lookup",
+                  defaultSet.lookupIconSet("frysk-up"));
+    assertNotNull("Testing frysk-bottom icon set lookup",
+                  defaultSet.lookupIconSet("frysk-bottom"));
 
-		assertNotNull("Testing frysk-highlight icon set lookup", defaultSet
-				.lookupIconSet("frysk-highlight"));
+    assertNotNull("Testing frysk-highlight icon set lookup",
+                  defaultSet.lookupIconSet("frysk-highlight"));
 
-		assertNotNull("Testing splash-screen", IconManager.splashImage);
-		assertNotNull("Testing window-icon", IconManager.windowIcon);
-		assertNotNull("Testing animation", IconManager.anim);
-	}
+    assertNotNull("Testing splash-screen", IconManager.splashImage);
+    assertNotNull("Testing window-icon", IconManager.windowIcon);
+    assertNotNull("Testing animation", IconManager.anim);
+  }
+
+  /*
+   * testgetLocalHost will test whether or not a call to getLocalHost returns a
+   * valid value or creates an exception.
+   */
+  public void testgetLocalHost ()
+  {
+    InetAddress addr = null;
+    try
+      {
+        addr = InetAddress.getLocalHost();
+      }
+    catch (UnknownHostException e)
+      {
+        assertNull("Testing getLocalHost", addr);
+
+      }
+    assertNotNull("Testing getLocalHost", addr);
+  }
 }

@@ -1,4 +1,9 @@
+2006-08-30  Rick Moseley  <rmoseley@redhat.com>
+
+	* test/TestIconManager.java: Added test for getLocalHost.
+
 2006-08-30  Nurdin Premji <npremji@redhat.com>
+
 	* test/dogtail_scripts/Test2985.py: Added code to cause test to fail if 
 	more than one of the same type of observer is detected.
 
