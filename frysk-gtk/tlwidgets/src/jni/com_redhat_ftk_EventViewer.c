@@ -265,7 +265,8 @@ Java_com_redhat_ftk_EventViewer_ftk_1eventviewer_1get_1selected_1traces (JNIEnv 
 	jint ret[(gint) length];
 	
 	for (guint i = 0; i < length; i++) {
-		ret[i] = (jint) GPOINTER_TO_INT (g_list_nth_data(traces,i));
+		jlong temp = GPOINTER_TO_INT (g_list_nth_data(traces, i));
+		ret[i] = (jint) temp;
 	}
 	g_list_free(traces);
 	jintArray array = (*env)->NewIntArray(env, (int) length);

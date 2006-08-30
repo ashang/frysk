@@ -1,3 +1,12 @@
+2006-08-30  Nurdin Premji  <npremji@redhat.com>
+
+	* src/widgets/ftkeventviewer.c: Added event accessibility. Renamed ftk_event_s to FtkEvent
+	* src/widgets/ftkeventviewer.h: Ditto.
+	* src/widgets/ftk_marshaller.list: Added
+	* Makefile.am: Added dependency to create ftk_marshaller.h and .c files.
+	* src/jni/com_redhat_ftk_EventViewer.c: changed from storing 
+	GTK_POINTER_TO_INT in a jint to a jlong then casted down to jint.
+
 2006-08-23  Nurdin Premji  <npremji@redhat.com>
 
 	* src/widgets/ftkeventviewer.c: Ditto.

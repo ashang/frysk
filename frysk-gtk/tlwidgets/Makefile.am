@@ -68,6 +68,8 @@ AM_CFLAGS = -fPIC -DPIC -std=gnu99 \
 	-Wall -Werror \
 	-I$(srcdir)/src/widgets \
 	$(FRYSK_GTK_CFLAGS)
+	
+AM_CPPFLAGS = -I src/widgets -I $(srcdir)/src/widgets	
 
 .a.so:
 	soname=`basename $@` ; \
@@ -152,8 +154,21 @@ libftkjni.so: libftkjni.a
 #libftk_a_SOURCES = src/widgets/ftkstripchart.c \
 #                   src/widgets/ftkstripchartx.c \
 #                   src/widgets/ftkeventviewer.c
-libftk_a_SOURCES = src/widgets/ftkeventviewer.c
+libftk_a_SOURCES = src/widgets/ftkeventviewer.c \
+                  src/widgets/ftk_marshaller.list
 noinst_LIBRARIES += libftk.a
 solib_PROGRAMS += libftk.so
 libftk_so_SOURCES =
 libftk.so: libftk.a
+BUILT_SOURCES = src/widgets/ftk_marshaller.h
+
+# Rules for the marshalers code:
+GENMARSHAL_COMMAND = glib-genmarshal --prefix=_ftk_marshal
+
+.list.h:
+	$(GENMARSHAL_COMMAND) --header $< >$@
+
+.list.c:
+	(echo '/* This file has been automatically generated.  Do not edit. */' && \
+	echo '#include "$*.h"' && \
+	$(GENMARSHAL_COMMAND) --body $< ) >$@

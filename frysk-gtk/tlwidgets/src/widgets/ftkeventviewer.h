@@ -327,15 +327,17 @@ typedef struct {
   gchar	      * string;
   GdkPoint		loc;
   double	time;
-} ftk_event_s;
+  gint index;
+} FtkEvent;
 
 #define ftk_event_marker(e)	(e)->marker
 #define ftk_event_string(e)	(e)->string
 #define ftk_event_hloc(e)	(e)->loc.x
 #define ftk_event_time(e)	(e)->time
+#define ftk_event_index(e)	(e)->index
 
 typedef struct _FtkTrace {
-  GObject * parent;
+  GtkWidget * parent;
   double	linestyle;
   double	linewidth;
   double	min_time;
@@ -347,7 +349,7 @@ typedef struct _FtkTrace {
   gint		label_height_d;
   gint		vpos_d;
   char	      * string;
-  ftk_event_s * events;
+  FtkEvent * events;
   gint		event_next;
   gint		event_max;
   gboolean	label_modified;		/* used */
@@ -387,7 +389,7 @@ typedef struct _FtkTrace {
 #define ftk_trace_modified(t)	(t)->modified
 
 typedef struct _FtkTraceClass {
-  GObjectClass parent_class;
+  GtkWidgetClass parent_class;
   void (* ftktrace) (FtkTrace * trace);
 } FtkTraceClass;
 
@@ -424,6 +426,8 @@ typedef struct _FtkDrawingArea {
 #define ftk_da_trace_modified(d)	(d)->trace_modified
 #define ftk_da_trace_origin(d)		(d)->trace_origin
 #define ftk_da_trace_width(d)		(d)->trace_width
+#define ftk_da_hadjustment(d)		(d)->hadjustment
+#define ftk_da_vadjustment(d)		(d)->vadjustment
 
 typedef struct _FtkDrawingAreaClass {
 	GtkDrawingAreaClass parent_class;
