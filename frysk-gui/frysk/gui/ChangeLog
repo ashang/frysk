@@ -8,7 +8,7 @@
 	Now using DummyProc and DummyTask. Removed unnecessary observers.
 	(setTasks): Don't setTasks for the windows if critical task
 	information is null.
-	(setUp): Added IconManager initializations.
+	(setUp): Added IconManager initializations. Fixes #3153.
 
 2006-08-28  Mike Cvet  <mcvet@redhat.com>
 
