@@ -1,3 +1,7 @@
+2006-08-30  Nurdin Premji <npremji@redhat.com>
+	* test/dogtail_scripts/Test2985.py: Added code to cause test to fail if 
+	more than one of the same type of observer is detected.
+
 2006-08-30  Mike Cvet  <mcvet@redhat.com>
 
 	* test/TestWindowFactorization.java (testWindowFactorization): 

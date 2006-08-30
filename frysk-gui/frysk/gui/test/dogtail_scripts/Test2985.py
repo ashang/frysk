@@ -139,6 +139,16 @@ class Test2985 (unittest.TestCase):
         print "Terminating Observer Count", terminatingObserverCounter
         print "Exec Observer Count", execObserverCounter
         print "Fork Observer", forkObserverCounter
+
+	if (terminatingObserverCounter > 1):
+		self.fail("Too many terminating observers.")
+		sys.exit(1)
+	if (execObserverCounter > 1):
+		self.fail("Too many exec observers.")
+		sys.exit(1)
+	if (forkObserverCounter > 1):
+		self.fail("Too many fork observers.")
+		sys.exit(1)
        
 def suite():
     suite = unittest.TestSuite()
