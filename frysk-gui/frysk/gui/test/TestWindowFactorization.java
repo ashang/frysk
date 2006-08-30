@@ -5,17 +5,17 @@ package frysk.gui.test;
 import junit.framework.TestCase;
 
 import frysk.proc.Task;
+import frysk.gui.common.IconManager;
 import frysk.gui.memory.MemoryWindow;
 import frysk.gui.register.RegisterWindow;
-import frysk.proc.Action;
 import frysk.proc.Manager;
-import frysk.proc.TaskObserver;
 import frysk.proc.DummyProc;
 import frysk.proc.DummyTask;
+import frysk.gui.Build;
 import org.gnu.glade.LibGlade;
 import org.gnu.gtk.Gtk;
 
-import org.gnu.glib.CustomEvents;
+//import org.gnu.glib.CustomEvents;
 
 public class TestWindowFactorization
     extends TestCase
@@ -25,7 +25,10 @@ public class TestWindowFactorization
                                 "../../frysk/frysk-gui/frysk/gui/glade/",
                                 "/home/mcvet/workspace/build/frysk-gui/../../frysk/frysk-gui/frysk/gui/glade/" };
 
-  AttachedObserver blocker = null;
+  String[] imagePaths = new String[] { Build.ABS_SRCDIR + "/" + BASE_PATH
+                                       + "images/" };
+  
+  private static final String BASE_PATH = "frysk/gui/";
 
   private Task theTask = null;
 
@@ -40,6 +43,9 @@ public class TestWindowFactorization
   public void setUp ()
   {
     Gtk.init(new String[] {});
+    IconManager.setImageDir(imagePaths);
+    IconManager.loadIcons();
+    IconManager.useSmallIcons();
   }
 
   public void testWindowFactorization ()
@@ -114,7 +120,10 @@ public class TestWindowFactorization
   public void setTasks ()
   {
     if (theTask.getMemory() != null)
-      mw.setTask(theTask);
+      {
+        mw.setTask(theTask);
+        //System.out.println("Memory Set!");
+      }
 //    else
 //      System.out.println("Memory is null");
 
@@ -131,76 +140,4 @@ public class TestWindowFactorization
       }
 
   }
-
-  class AttachedObserver
-      implements TaskObserver.Attached
-  {
-
-    public void addedTo (Object observable)
-    {
-    }
-
-    public Action updateAttached (Task task)
-    {
-      System.out.println("updateAttached");
-      theTask = task;
-      if (task == null)
-        System.out.println("Aww crap...");
-      else
-        System.out.println(task);
-      System.out.println("theTask: " + theTask);
-      blocker = this;
-      task.requestAddTerminatedObserver(new TaskTerminatedObserver());
-
-      CustomEvents.addEvent(new Runnable()
-      {
-        public void run ()
-        {
-          setTasks();
-        }
-      });
-
-      System.out.println("About to finish");
-      return Action.CONTINUE;
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException("Failed to attach to created proc", w);
-    }
-  }
-
-  /**
-   * We want to know when the externally-executed program has quit, so that we
-   * can continue or optionally run another program.
-   */
-  class TaskTerminatedObserver
-      implements TaskObserver.Terminated
-  {
-    public void addedTo (Object observable)
-    {
-    }
-
-    public Action updateTerminated (Task task, boolean signal, int value)
-    {
-      System.out.println("updateTerminated");
-      theTask.requestUnblock(blocker);
-      theTask.requestDeleteAttachedObserver(blocker);
-      return Action.CONTINUE;
-    }
-
-    public void deletedFrom (Object observable)
-    {
-    }
-
-    public void addFailed (Object observable, Throwable w)
-    {
-      throw new RuntimeException("Failed to attach to created proc", w);
-    }
-  }
-
 }
