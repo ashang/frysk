@@ -1,3 +1,7 @@
+2006-08-31  Nurdin Premji  <npremji@redhat.com>
+	* src/widgets/ftkeventviewer.c (ftk_eventviewer_da_expose):added check for 
+	GTK_WIDGET_DRAWABLE
+
 2006-08-30  Nurdin Premji  <npremji@redhat.com>
 
 	* src/widgets/ftkeventviewer.c: Added event accessibility. Renamed ftk_event_s to FtkEvent

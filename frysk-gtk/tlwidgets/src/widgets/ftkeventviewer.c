@@ -2176,6 +2176,10 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
 			  gpointer data)
 {
   FtkEventViewer * eventviewer = FTK_EVENTVIEWER (data);
+	
+  if (!GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
+	return TRUE; //inhibit propagation
+  }
   FtkDrawingArea * da = ftk_ev_da(eventviewer);
   
   if (!ftk_ev_symbols_initted (eventviewer)) ftk_init_cr (eventviewer);
