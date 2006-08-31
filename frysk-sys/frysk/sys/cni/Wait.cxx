@@ -44,6 +44,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <alloca.h>
+#include <limits.h>
+#include <stdlib.h>
 #include "linux.ptrace.h"
 
 #include <gcj/cni.h>
@@ -167,7 +169,8 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
     int status;
     WaitResult* next;
   };
-  WaitResult* head = (WaitResult* ) alloca (sizeof (WaitResult));
+  int ff_found = 0;
+  WaitResult* head = (WaitResult* ) malloc (sizeof (WaitResult));
   WaitResult* tail = head;
 
   // Drain the waitpid queue of all its events storing each in a list
@@ -186,7 +189,8 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
     log (tail->pid, tail->status, errno);
     if (tail->pid <= 0)
       break;
-    tail->next = (WaitResult*) alloca (sizeof (WaitResult));
+    ff_found |= ((0xff & tail->status) == 0xff);
+    tail->next = (WaitResult*) malloc (sizeof (WaitResult));
     tail = tail->next;
     i++;
   }
@@ -207,12 +211,36 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
    * multithreaded parent - see #2774 */
   pid_t old_pid = -2;
   int old_status = 0;
+  FILE * mailer = NULL;
+  {
+    char * hn = (char *)alloca (HOST_NAME_MAX + 1);
+    gethostname (hn, HOST_NAME_MAX);
+    ff_found &=
+      (NULL != strcasestr (hn, "moller")) |
+      (NULL != strcasestr (hn, "redhat.com"));
+  }
+  if (ff_found && (head != tail))
+    mailer = popen ("mail -s \"0xff bug found\" cmoller@redhat.com", "w");
   while (head != tail) {
+    WaitResult * this_head;
     // Process the result - check for a duplicate entry
-    if (old_pid != head->pid || old_status != head->status)
-      processStatus (head->pid, head->status, observer);
+    if (mailer)
+      fprintf (mailer, "pid: %6d\tstatus: %#08x\n",
+	       (int)(head->pid), head->status);
+    if (old_pid != head->pid || old_status != head->status) {
+      // suppress local reporting of any 0xff status
+      if ((0xff & tail->status) != 0xff)
+	processStatus (head->pid, head->status, observer);
+    }
     old_pid = head->pid; old_status = head->status;
+    this_head = head;
     head = head->next;
+    free (this_head);
+  }
+  free (tail);
+  if (mailer) {
+    fflush (mailer);
+    pclose (mailer);
   }
 }
 

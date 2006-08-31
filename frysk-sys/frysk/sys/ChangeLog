@@ -1,3 +1,10 @@
+2006-08-30  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx:  Added code to send diagnostics to
+	cmoller@redhat.com if the 0xff condition is detected.  Also
+	suppresses local processing of that status on the theory that it's
+	not a real status.
+
 2006-08-28  Andrew Cagney  <cagney@redhat.com>
 
 	* StressMapRead.java: Extend frysk.junit.TestCase.
