@@ -90,9 +90,9 @@ class druid ( unittest.TestCase ):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
         # Start up Frysk 
-        self.FryskBinary = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
-        self.funitChildBinary = '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child'
-        
+        self.FryskBinary = os.getenv('fryskBinary')
+        self.funitChildBinary = os.getenv('funitChild')
+ 
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()
         
@@ -109,9 +109,6 @@ class druid ( unittest.TestCase ):
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
         self.parser.parse(os.getenv('TestDruid_FILE') )        
-        #self.parser.parse('another_new_session.xml')
-        #inputFile = os.environ.get('TestDruid_FILE')
-        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after

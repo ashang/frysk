@@ -80,8 +80,8 @@ class credits (unittest.TestCase):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' starting'  })
 
         # Start up Frysk 
-        self.FryskBinary = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
-        self.funitChildBinary = '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child'
+        self.FryskBinary = os.getenv('fryskBinary')  
+        self.funitChildBinary = os.getenv('funitChild')  
         
         self.startObject = startFrysk(self.FryskBinary, self.funitChildBinary, self.theLogWriter)
         self.frysk = self.startObject.getFryskObject()  
@@ -99,8 +99,6 @@ class credits (unittest.TestCase):
         # is to comment out these lines, run the tests separately, and read
         # the datafiles from the CLI       
         self.parser.parse(os.getenv('TestDruid_FILE') )
-        #inputFile = os.environ.get('TestDruid_FILE')
-        #self.parser.parse(inputFile)
         self.theSession = self.handler.theDebugSession
 
         # Create a Frysk session - True = quit the FryskGui after
@@ -112,16 +110,8 @@ class credits (unittest.TestCase):
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
 
-    def test1(self):
-        testCredits(self, 'abc')
-
-    def test2(self):
-        testCredits(self, 'def')
-
-def testCredits(self, theString):      
+    def testCredits(self):      
         """Check that the credits text is correct"""   
-      
-        print 'DEBUG=' + theString
 
         # Define the expected credits string
         expectedCreditsString = 'TBD\n'
@@ -160,8 +150,7 @@ def testCredits(self, theString):
 def suite():
     suite = unittest.TestSuite()
     #suite.addTest(unittest.makeSuite(credits))
-    suite.addTest(credits('test1'))
-    suite.addTest(credits('test2'))
+    suite.addTest(credits('testCredits'))
     return suite
 
 if __name__ == '__main__':

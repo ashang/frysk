@@ -465,7 +465,7 @@ class TestCreateObserversfromDataModel ( unittest.TestCase ):
         okButton = customObservers.button( 'OK' )
         okButton.click()
 
-    def tearDown(self):    
+    #def tearDown(self):    
         # Exit Frysk
         endFrysk (self.startObject)
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })

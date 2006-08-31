@@ -73,8 +73,6 @@ from DebugSession import DebugSession
 
 # Constants
 FRYSK_PROCESS_NAME = 'FryskGui'
-#FRYSK_BINARY_NAME = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
-
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
 FRYSK_APP_NAME = 'java-gnome'
 
@@ -120,7 +118,6 @@ FRYSK_SESSION_FILES = os.environ['HOME'] + "/.frysk/Sessions/"
 FRYSK_OBSERVER_FILES = os.environ['HOME'] + "/.frysk/Observers/"
 
 # Used with funit-child to create/control processes used in testing
-FUNIT_CHILD_BINARY = '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child'
 FUNIT_TIMEOUT = '600'
 FUNIT_MANAGER_TID = '0'
 
@@ -272,8 +269,8 @@ def startFrysk ( FryskBinary, funitChildBinary, logWriter ):
    
     # Start up funit-child process that will be needed as a target for
     # the creation of the test startup session
-    FUNIT_CHILD_BINARY = funitChildBinary
-    theTuple =  startFunitChild2 ()
+    #FUNIT_CHILD_BINARY = funitChildBinary
+    theTuple =  startFunitChild2 ( funitChildBinary )
     ofile = theTuple[1]
  
     # Read 1st line - extract PID value for the funit-child process
@@ -660,10 +657,10 @@ def deriveElementName ( string1, string2 ):
     return returnString
 
 # ---------------------
-def startFunitChild (timeout, managerTid):
+def startFunitChild (timeout, managerTid, funitChildBinary):
     """ Function to invoke funit-child - returns the PID of funit-child
     """
-    pidValue=subprocess.Popen([FUNIT_CHILD_BINARY, FUNIT_TIMEOUT, FUNIT_MANAGER_TID]).pid
+    pidValue=subprocess.Popen([funitChildBinary, FUNIT_TIMEOUT, FUNIT_MANAGER_TID]).pid
     return pidValue
 
 # ---------------------
@@ -673,10 +670,10 @@ def signalFunitChild (targetPid, theSignal):
     p2 = subprocess.Popen( ['kill', theSignal, targetPid] ).wait() 
     
     
-def startFunitChild2 ():
+def startFunitChild2 (funitChildBinary ):
     """ Function to invoke funit-child - returns a tuple of output streams
     """
-    theTuple = os.popen4(FUNIT_CHILD_BINARY + ' ' + FUNIT_TIMEOUT + ' ' + FUNIT_MANAGER_TID)
+    theTuple = os.popen4(funitChildBinary + ' ' + FUNIT_TIMEOUT + ' ' + FUNIT_MANAGER_TID)
     # The return tuple: [0] = stdin, [1] = stdout+stderr
     return theTuple
 

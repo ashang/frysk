@@ -38,15 +38,6 @@
 # version and license this file solely under the GPL without
 # exception.
 
-
-# As of June 8, 2006, there's a problem with 
-# the test suite - either Frysk or Dogtail gets confused and attempts
-# to run tests before other tests have completed - short-term workaround
-# is to comment out these lines, run the tests separately, and read
-# the datafiles from the CLI
-
-
-
 """
 Script name:    frysk_suite.py
 Creation date:  April 2006
@@ -55,7 +46,6 @@ Summary:        Still a prototype
 """
 
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
-
 
 # Import the test suites
 import unittest
@@ -69,9 +59,8 @@ import os
 
 # Define the test input files
 os.environ.__setitem__('TestDruid_FILE', 'another_new_session.xml')
-os.putenv('TestDruid_FILE', 'another_new_session.xml')
-print "1 DEBUG = " + os.getenv('TestDruid_FILE')
-
+os.environ.__setitem__('fryskBinary', '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui')
+os.environ.__setitem__('funitChild', '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child')
 
 # Define the suite elements
 licenseSuite = license.suite()
@@ -91,4 +80,6 @@ unittest.TextTestRunner(verbosity=2).run(suite)
 
 # Cleanup
 os.environ.__delitem__('TestDruid_FILE')
+os.environ.__delitem__('fryskBinary')
+os.environ.__delitem__('funitChild')
 
