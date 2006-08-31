@@ -1,3 +1,8 @@
+2006-08-31  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java (gui): Remove Command Interface Window option.
+	GNU Format.
+
 2006-08-30  Rick Moseley  <rmoseley@redhat.com>
 
 	* test/TestIconManager.java: Added test for getLocalHost.
