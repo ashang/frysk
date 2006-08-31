@@ -1,3 +1,10 @@
+2006-08-31  Mike Cvet  <mcvet@redhat.com>
+
+	* frysk2760/TestBarrier.java (GCThread.run): Removed frivolous
+	print statement.
+	* frysk2760/TestBarrier.cxx: Extensively cleaned up, sends 
+	proper kill signals now, regarding #3151.
+
 2006-08-10  Andrew Cagney  <cagney@redhat.com>
 
 	* Makefile.am (TESTS): Revert 2006-08-08 change.  Test must pass.

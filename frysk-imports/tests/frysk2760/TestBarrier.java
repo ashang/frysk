@@ -93,7 +93,6 @@ public class TestBarrier extends Thread {
 	protected class GCThread extends Thread {
 		public void run() {
 			System.gc();
-			System.out.println("GC finished");
 			doWork();
 		}
 	}

@@ -61,13 +61,21 @@ pthread_t timer_thread;
 pid_t thread_pid;
 
 jint
-frysk2760::TestBarrier::doFork () {
-	if ((pid = fork()) == 0) {
-		printf("Waiting on barrier\n");
-		pthread_barrier_wait(&barrier);
-	}
-	printf("My PID is: %d\n", getpid());
-	return pid;
+frysk2760::TestBarrier::doFork ()
+{
+  pid = fork ();
+  if (pid < 0) /* Error */
+    {
+      if (errno != 0) /* Change to throwErrno once it becomes possible */
+		::perror ("frysk.imports.tests.frysk2760 doFork()");
+	  exit(EXIT_FAILURE);
+    }
+  else if (pid == 0)
+    {
+      pthread_barrier_wait (&barrier);
+    }
+
+  return pid;
 }
 
 void
@@ -75,14 +83,16 @@ frysk2760::TestBarrier::timerThread () {
 
   errno = 0;
   ::ptrace ((enum __ptrace_request) PTRACE_ATTACH, \
-			     pid, NULL, 0);
+	    pid, NULL, 0);
 			     
-	if (errno != 0)
-    	::perror("ptrace - timer");
+  if (errno != 0)
+    ::perror ("frysk.imports.tests.frysk2760 timerThread()");
     	
-  printf("Limit reached - deadlock occured! Exiting!\n");
-  kill(pid, 15);
-  exit(1);
+  fprintf (stderr,"Limit reached - deadlock occured! Exiting!\n");
+  kill (pid, SIGKILL);
+  kill (pid, SIGCONT);
+  waitpid(pid, NULL, __WALL);
+  exit(EXIT_FAILURE);
 }
 
 void
@@ -94,31 +104,38 @@ frysk2760::TestBarrier::initBarrier ()
 void
 frysk2760::TestBarrier::doWork ()
 {
-  pthread_mutex_lock(&mutex);
-  pthread_mutex_unlock(&mutex);
-  int pid;
-  if ((pid = fork()) < 0) {
-  	perror("Error: could not fork child process");
-	exit(EXIT_FAILURE);
-  } else if (pid == 0) {
-  	
-  	errno = 0;
-  	::ptrace ((enum __ptrace_request) PTRACE_TRACEME, \
-			     pid, NULL, 0);
+  pthread_mutex_lock (&mutex);
+  pthread_mutex_unlock (&mutex);
+  
+  pid_t pid = fork ();
+  if (pid < 0) 
+    {
+      if (errno != 0)
+		perror ("frysk.imports.tests.frysk2760 doWork()");
+      exit (EXIT_FAILURE);
+    } 
+  else if (pid == 0)
+    {  	
+      errno = 0;
+      ::ptrace ((enum __ptrace_request) PTRACE_TRACEME, \
+		pid, NULL, 0);
 			     
-	if (errno != 0)
-    	::perror("ptrace");
+      if (errno != 0)
+		::perror("ptrace");
 			     
-	::execv ("/bin/true", NULL);
-	::perror ("execvp");
-  }
-  else {
-  long i;
-  for (i = 0; i < 1000000; i+=2)
-  	i--;
-  printf("Waiting on barrier\n");
-  pthread_barrier_wait(&barrier);
-  printf("Through barrier, killing timer\n");
-  kill(thread_pid, SIGTERM);
-  }
+      ::execv ("/bin/true", NULL);
+      ::perror ("execvp");
+      exit (EXIT_SUCCESS);
+    }
+  else 
+    {
+      long i;
+      for (i = 0; i < 1000000; i+=2)
+		i--;
+
+      fprintf (stderr,"Waiting on barrier\n");
+      pthread_barrier_wait (&barrier);
+      fprintf (stderr,"Through barrier, killing timer\n");
+      kill (thread_pid, SIGTERM);
+    }
 }
