@@ -1,3 +1,7 @@
+2006-08-31  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx:  Take out the local suppression of the 0xff error.
+
 2006-08-30  Chris Moller  <moller@mollerware.com>
 
 	* cni/Wait.cxx:  Added code to send diagnostics to

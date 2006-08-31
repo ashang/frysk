@@ -229,7 +229,8 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
 	       (int)(head->pid), head->status);
     if (old_pid != head->pid || old_status != head->status) {
       // suppress local reporting of any 0xff status
-      if ((0xff & tail->status) != 0xff)
+      // suppress the suppression 
+      // if ((0xff & tail->status) != 0xff)
 	processStatus (head->pid, head->status, observer);
     }
     old_pid = head->pid; old_status = head->status;
