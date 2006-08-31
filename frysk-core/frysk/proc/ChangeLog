@@ -1,3 +1,9 @@
+2006-08-31  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* TestRegs.java: Copy the tests for length of segment registers
+	from TetI386Regs.java and TestX8664Regs.java.
+	New test for length of register ccr and xer on PPC64.
+
 2006-08-30  Mark Wielaard  <mark@klomp.org>
 
 	* TaskState.java: Merge detaching and detachingInSyscall states.

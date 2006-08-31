@@ -64,6 +64,8 @@ public class TestRegs
     long esp;
     long esi;
     long edi;
+    int csLength;
+    int ssLength;
     
     // Need to add task observers to the process the moment it is
     // created, otherwize the creation of the very first task is
@@ -93,7 +95,7 @@ public class TestRegs
     	// and sets up the registers with simple values.  We want
     	// to verify that all the registers are as expected.
     	syscallNum = syscall.number (task);
-    	if (syscallNum == 1)
+    	if (syscallNum == SyscallNum.SYSexit )
     	{
     	  orig_eax = isa.getRegisterByName ("orig_eax").get (task);
     	  ebx = isa.getRegisterByName ("ebx").get (task);
@@ -103,6 +105,8 @@ public class TestRegs
     	  esi = isa.getRegisterByName ("esi").get (task);
     	  edi = isa.getRegisterByName ("edi").get (task);
     	  esp = isa.getRegisterByName ("esp").get (task);
+	  csLength = isa.getRegisterByName ("cs").getLength();
+	  ssLength = isa.getRegisterByName ("ss").getLength();
     	}
     	return Action.CONTINUE;
     }
@@ -164,6 +168,8 @@ public class TestRegs
       // 0xdeadbeefdeadbeef
       -0x2152411021524111l
     };
+    int csLength;
+
     Hashtable longResults = new Hashtable();
     Hashtable bigResults = new Hashtable();
     
@@ -201,21 +207,19 @@ public class TestRegs
         // and sets up the registers with simple values.  We want
         // to verify that all the registers are as expected.
         syscallNum = syscall.number (task);
-        if (syscallNum == 1) 
-          { 
+        if (syscallNum == SyscallNum.SYSexit)
+	  { 
             for (int i = 0; i < regNames.length; i++)
               {
-            longResults.put(regNames[i], 
-                    new Long(isa.getRegisterByName(regNames[i])
-                         .get (task)));
+		longResults.put(regNames[i],
+				new Long(isa.getRegisterByName(regNames[i]).get (task)));
               }
             for (int i = 0; i < regNames.length; i++) 
               {
-            bigResults.put(regNames[i],
-                       isa.getRegisterByName(regNames[i])
-                       .getBigInteger(task));
+		bigResults.put(regNames[i],
+			       isa.getRegisterByName(regNames[i]).getBigInteger(task));
               }
-            
+	    csLength = isa.getRegisterByName("cs").getLength();
           }
         return Action.CONTINUE;
       }
@@ -255,7 +259,7 @@ public class TestRegs
           }
         else
           {
-            // If not ia32, stop immediately
+            // If not X86_64, stop immediately
             EMT64Isa = false;
             Manager.eventLoop.requestStop();
           }
@@ -283,7 +287,8 @@ public class TestRegs
                      BigInteger.valueOf(regValues[i])
                      .compareTo((BigInteger)bigResults.get(regNames[i])) == 0);
         }
-      
+      assertEquals ("cs length", 4, csLength);
+
       assertTrue ("exited", exited);
     }
   }
@@ -294,6 +299,8 @@ public class TestRegs
     long gpr3;
     long gpr4;
     long gpr5;
+    int ccrLength;
+    int xerLength;
     
     int syscallNum;
     boolean isPPC64Isa;
@@ -337,6 +344,8 @@ public class TestRegs
           gpr3 = isaPPC64.getRegisterByName ("gpr3").get (task);
           gpr4 = isaPPC64.getRegisterByName ("gpr4").get (task);
           gpr5 = isaPPC64.getRegisterByName ("gpr5").get (task);
+	  ccrLength = isaPPC64.getRegisterByName("ccr").getLength();
+	  xerLength = isaPPC64.getRegisterByName("xer").getLength();
         }
         
         return Action.CONTINUE;
@@ -411,7 +420,8 @@ public class TestRegs
         assertEquals ("esi register", 6, t.esi);
         assertEquals ("edi register", 7, t.edi);
         assertEquals ("esp register", 8, t.esp);
-  
+	assertEquals ("cs length", 2, t.csLength);
+	assertEquals ("ss length", 2, t.ssLength);  
         assertTrue ("exited", t.exited);
       }
   }
@@ -464,6 +474,8 @@ public class TestRegs
         assertEquals ("gpr4 register", 4, t.gpr4);
         // Left shift 36bits from 0x1
         assertEquals ("gpr5 register", 0x1000000000L, t.gpr5);
+	assertEquals ("ccr length", 4, t.ccrLength);
+	assertEquals ("xer length", 4, t.xerLength);
         
         assertTrue ("exited", t.exited);
       }
