@@ -687,7 +687,7 @@ public class SessionProcTreeView
                                    CellRendererText.Attribute.WEIGHT,
                                    procDataModel.getWeightDC());
 
-    pidCol.setTitle("PID"); //$NON-NLS-1$
+    pidCol.setTitle("TID"); //$NON-NLS-1$
     commandCol.setTitle("Entry Functions"); //$NON-NLS-1$
 
     pidCol.setVisible(true);

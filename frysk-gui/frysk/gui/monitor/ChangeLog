@@ -1,3 +1,8 @@
+2006-08-31  Mike Cvet  <mcvet@redhat.com>
+
+	* SessionProcTreeView.java (threadViewInit): Set the column header
+	of the thread dialog to TID from PID.
+
 2006-08-26  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionProcDataModel.java (addTask): set parent GuiProc.
