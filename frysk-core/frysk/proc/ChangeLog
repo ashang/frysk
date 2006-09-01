@@ -1,5 +1,9 @@
 2006-09-01  Mark Wielaard  <mark@klomp.org>
 
+	* TestSyscallRunning.java: Removed doesn't compile on x86.
+
+2006-09-01  Mark Wielaard  <mark@klomp.org>
+
 	* TaskState.java (runningInSyscall): Handle adding of Observer and
 	SyscallObserver.
 	* TestSyscallRunning.java: New file.
