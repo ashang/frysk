@@ -70,9 +70,6 @@ from TestRunObject import TestRunObject
 
 class credits (unittest.TestCase):
 
-    #def __init__(self, value1):
-    #    self.TESTING = value1
-
     def setUp(self):
         # Set up for logging
         self.TestString=dogtail.tc.TCString()
@@ -93,11 +90,7 @@ class credits (unittest.TestCase):
        
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. As of June 8, 2006, there's a problem with 
-        # the test suite - either Frysk or Dogtail gets confused and attempts
-        # to run tests before other tests have completed - short-term workaround
-        # is to comment out these lines, run the tests separately, and read
-        # the datafiles from the CLI       
+        # not the test script. 
         self.parser.parse(os.getenv('TestDruid_FILE') )
         self.theSession = self.handler.theDebugSession
 

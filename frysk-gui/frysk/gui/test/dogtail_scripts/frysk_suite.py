@@ -53,6 +53,11 @@ import license
 import credits
 import druid
 import observerData
+import viewerButtons
+import viewerMarkers
+import test2866
+import test2985
+import stressDruid
 
 # Import needed to access test file input files via envron var's
 import os
@@ -67,6 +72,11 @@ licenseSuite = license.suite()
 creditsSuite = credits.suite()
 druidSuite = druid.suite()
 observerSuite = observerData.suite()
+viewerButtonsSuite = viewerButtons.suite()
+viewerMarkersSuite = viewerMarkers.suite()
+test2866Suite = test2866.suite()
+test2985Suite = test2985.suite()
+stressDruidSuite = stressDruid.suite()
 
 # Assemble the suite
 suite = unittest.TestSuite()
@@ -74,6 +84,11 @@ suite.addTest(licenseSuite)
 suite.addTest(creditsSuite)
 suite.addTest(druidSuite)
 suite.addTest(observerSuite)
+suite.addTest(viewerButtonsSuite)
+suite.addTest(viewerMarkersSuite)
+suite.addTest(test2866Suite)
+suite.addTest(test2985Suite)
+# Commented out - test aborts - bug 2807 suite.addTest(stressDruidSuite)
 
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)

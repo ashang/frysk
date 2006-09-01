@@ -95,11 +95,7 @@ class observerData ( unittest.TestCase ):
 
         # Mechanism to allow multiple tests to be assembled into test suite,
         # and have the test input data files be specified in the suite defiition,
-        # not the test script. As of June 8, 2006, there's a problem with
-        # the test suite - either Frysk or Dogtail gets confused and attempts
-        # to run tests before other tests have completed - short-term workaround
-        # is to comment out these lines, run the tests separately, and read
-        # the datafiles from the CLI
+        # not the test script. 
         self.parser.parse(os.getenv('TestDruid_FILE') )
         self.theSession = self.handler.theDebugSession
 
@@ -113,7 +109,6 @@ class observerData ( unittest.TestCase ):
         self.theLogWriter.writeResult({'INFO' :  'test script: ' + self.theLogWriter.scriptName + ' ending'  })
 
     def deleteTheObserver(self):
-        print "hello"
         observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
 
@@ -149,8 +144,6 @@ class observerData ( unittest.TestCase ):
         okButton.click()   
 
     def updateTheObserver(self):
-        print "hello hello"       
- 
         # Select the 'Observers' menu item
         observersItem = self.frysk.menuItem( OBSERVERS )
         observersItem.click()
@@ -197,8 +190,6 @@ class observerData ( unittest.TestCase ):
         okButton.click()
         
     def createTheObserver(self, theDataFileName):
-        print "hello hello hello"
-        
     # Load up some sample Observer objects         
         self.parser = xml.sax.make_parser(  )
         self.handler = ObserverHandler.ObserverHandler(  )

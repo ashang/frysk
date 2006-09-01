@@ -22,7 +22,7 @@ fi
 
 frysk=@abs_builddir@/frysk/gui/FryskGui
 src=@abs_srcdir@/frysk/gui/test/dogtail_scripts
-funitchild=@abs_builddir@/frysk-core/frysk/pkglibexecdir/funit-child
+funitchild=@abs_builddir@/../frysk-core/frysk/pkglibexecdir/funit-child
 
 cat <<EOF | grep -v '#' | while read script args ; do
 #
