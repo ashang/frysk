@@ -1,3 +1,7 @@
+2006-09-01  Mark Wielaard  <mark@klomp.org>
+
+	* funit-syscall-running.c: New test prog.
+
 2006-08-29  Yong Zheng  <zhengyo@cn.ibm.com>
 
 	* funit-ppc64-regs.S: New PPC64 specific program.

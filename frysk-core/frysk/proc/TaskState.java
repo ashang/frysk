@@ -1297,6 +1297,22 @@ class TaskState
 		    return runningInSyscall;
 		}
 	    }
+	  TaskState handleAddObserver (Task task, Observable observable,
+				       Observer observer)
+	  {
+            logger.log (Level.FINE, "{0} handleAddObserver\n", task);
+            observable.add (observer);
+            return this;
+	  }
+	  TaskState handleAddSyscallObserver(Task task,
+					     Observable observable,
+					     Observer observer)
+	  {
+	    // Nothing special to do, we are already traceing syscalls.
+	    logger.log (Level.FINE, "{0} handleAddSyscallObserver\n", task);
+	    observable.add(observer);
+	    return this;
+	  }
         TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
         {
           logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);

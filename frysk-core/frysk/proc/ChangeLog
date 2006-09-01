@@ -1,3 +1,9 @@
+2006-09-01  Mark Wielaard  <mark@klomp.org>
+
+	* TaskState.java (runningInSyscall): Handle adding of Observer and
+	SyscallObserver.
+	* TestSyscallRunning.java: New file.
+
 2006-09-01  Wu Zhou  <woodzltc@cn.ibm.com>
 
 	Yong Zheng's patch to delete redundant testcases.
