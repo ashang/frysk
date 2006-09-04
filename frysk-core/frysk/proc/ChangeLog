@@ -1,3 +1,8 @@
+2006-09-04  Yao Qi  <qiyaoltc@cn.ibm.com>
+
+	* LinuxPPC.java (returnCode): Extract sign of return code from
+	CCR register.
+
 2006-09-01  Mark Wielaard  <mark@klomp.org>
 
 	* TestSyscallRunning.java: Removed doesn't compile on x86.
