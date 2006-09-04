@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -74,32 +75,27 @@ main ()
   printf("%d\n", ntohs (addr.sin_port));
   fflush(stdout);
 
-  int runs;
-  // Go round and round.
-  while (1)
+  struct sockaddr_in sai;
+  len = sizeof (sai);
+  fflush(stderr);
+  int f = accept (fd, (struct sockaddr *) &sai, &len);
+  if (f == -1)
     {
-      // Wait till we are OK to go!
-      runs = getchar();
-      if (runs == 0)
-	break;
-      if (runs < 0) 
-        {
-	  fprintf(stderr, "Couldn't read runs\n");
-	  break;
-        }
-
-      while(runs--)
-	{
-	  struct sockaddr_in c;
-	  len = sizeof (c);
-	  fflush(stderr);
-	  if (accept (fd, (struct sockaddr *) &c, &len) == -1)
-	    {
-	      perror ("accept");
-	      exit (-1);
-	    }
-	}
+      perror ("accept");
+      exit (-1);
     }
 
-  return runs;
+  // Wait for the start sign
+  getchar();
+  
+  char cs[1];
+  // Keep reading from the socket till it is closed.
+  ssize_t c = 1;
+  while (c > 0)
+    c = read(f, &cs, 1);
+  
+  if (c < 0) 
+    perror ("read");
+
+  return c;
 }
