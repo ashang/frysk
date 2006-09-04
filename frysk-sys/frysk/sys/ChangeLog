@@ -1,3 +1,10 @@
+2006-09-04  Chris Moller  <moller@mollerware.com>
+
+	* cni/Wait.cxx: Added a bit of code to check for unset status from
+	waitpid.  Ridiculously unlikely, but something seems to be munged
+	up somewhere, and an unset status could theoretically leave just
+	the wrong random bits in the int.
+
 2006-08-31  Chris Moller  <moller@mollerware.com>
 
 	* cni/Wait.cxx:  Removed the entire mail thing.

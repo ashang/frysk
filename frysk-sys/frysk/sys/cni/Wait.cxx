@@ -177,12 +177,24 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   // getting its next event back on the queue resulting in live lock.
 
   int myErrno = 0;
+  int unset_status = 0;
+  pid_t unset_status_pid = 0;
   int i = 0;
   while (true) {
     // Keep fetching the wait status until there are none left.  If
     // there are no children ECHILD is returned which is ok.
     errno = 0;
+    // It's a long shot, but since the status int is pass-by-reference, it's
+    // possible that if the kernel is munged up the waitpid could returrn
+    // without having set the int.  This will check for that.  Assumes that
+    // 0xaaaaaaaa is not a possible value for the status, which I don't know
+    // for sure, but it seems unlikely.
+    tail->status = 0xaaaaaaaa;
     tail->pid = ::waitpid (-1, &tail->status, WNOHANG | __WALL);
+    if ((tail->pid > 0) && (unsigned int)(tail->status) == 0xaaaaaaaa) {
+      unset_status = 1;
+      unset_status_pid = tail->pid;
+    }
     myErrno = errno;
     log (tail->pid, tail->status, errno);
     if (tail->pid <= 0)
@@ -193,6 +205,9 @@ frysk::sys::Wait::waitAllNoHang (frysk::sys::Wait$Observer* observer)
   }
   if (i > 2001)
     printf ("\tYo! There were %d simultaneous pending waitpid's!\n", i);
+  if (unset_status)
+    printf ("\tYo! waitpid failed to set status on pid %d!\n",
+	    (int)unset_status_pid);
   // Check the reason for exiting.
   switch (myErrno) {
   case 0:
