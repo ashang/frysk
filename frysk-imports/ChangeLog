@@ -1,3 +1,7 @@
+2006-09-04  Mark Wielaard  <mark@klomp.org>
+
+	* include/linux.syscall.h: include errno.h.
+
 2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
 
 	* bootstrap.sh: Build libunwind unconditionally.

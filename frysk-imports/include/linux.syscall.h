@@ -37,8 +37,10 @@
 // version and license this file solely under the GPL without
 // exception.
 
-/* Declares __NR_*.  Moreover it might define _syscall2 and such, so it is
- * safer to make sure it gets included first. */
+/* linux/unistd.h declares __NR_*.  Moreover it might define _syscall2 and
+ * such, so it is safer to make sure it gets included first.  Might refer
+ * to errno variable, so better also include that. */
+#include <errno.h>
 #include <linux/unistd.h>
 
 /* Declares syscall() */
