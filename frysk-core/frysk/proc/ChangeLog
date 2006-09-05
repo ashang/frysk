@@ -1,3 +1,8 @@
+2006-09-05  Mark Wielaard  <mark@klomp.org>
+
+	* TaskState.java (syscallBlockedEnteringSyscall): Removed, merge
+	with syscallBlockedInSyscallContinue.
+
 2006-09-04  Mark Wielaard  <mark@klomp.org>
 
 	* TestSyscallRunning.java: Added back, use SYSread and write to

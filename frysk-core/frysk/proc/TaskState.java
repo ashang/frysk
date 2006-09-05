@@ -1095,7 +1095,7 @@ class TaskState
 	{
 	    logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
 	    if(task.notifySyscallEnter () > 0){
-	      return syscallBlockedEnteringSyscall;
+	      return syscallBlockedInSyscallContinue;
         }else{
           task.sendSyscallContinue(0);
           return runningInSyscall;
@@ -1588,17 +1588,6 @@ class TaskState
         }
     };
     
-    /**
-     * A Task ends up in this state if it sends out a syscallExit event
-     * and an observer chooses to block it.
-     */
-    private static final TaskState syscallBlockedEnteringSyscall = new SyscallBlockedInSyscall(0){
-      public String toString ()
-      {
-      return "syscallBlockedEnterinSyscall";
-      }
-    };
- 
     /**
      * A task recieves an execedEvent and the client decides to block
      * the task -> this state. This state is needed because if in this state
