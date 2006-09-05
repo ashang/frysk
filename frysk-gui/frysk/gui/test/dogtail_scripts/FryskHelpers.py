@@ -74,7 +74,7 @@ from DebugSession import DebugSession
 # Constants
 FRYSK_PROCESS_NAME = 'FryskGui'
 # Frysk app name - note 'java-gnome' (sourceware.org/bugzilla #2591) 
-FRYSK_APP_NAME = 'java-gnome'
+FRYSK_APP_NAME = 'Frysk'
 
 # Other Frysk dialog titles
 CUSTOM_OBSERVER_DIALOG = 'Frysk Custom Observer Details'

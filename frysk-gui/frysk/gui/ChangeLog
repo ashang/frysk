@@ -1,6 +1,7 @@
 2006-09-05  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (gui): Call the application "Frysk" not "java-gnome".
+	* test/dogtail_scripts/FryskHelpers.py: Rename java-gmome to Frysk.
 
 2006-08-31  Phil Muldoon  <pmuldoon@redhat.com>
 
