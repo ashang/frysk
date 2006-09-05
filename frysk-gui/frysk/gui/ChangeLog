@@ -1,3 +1,7 @@
+2006-09-05  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Gui.java (gui): Call the application "Frysk" not "java-gnome".
+
 2006-08-31  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* Gui.java (gui): Remove Command Interface Window option.

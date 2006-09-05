@@ -337,6 +337,7 @@ public class Gui implements LifeCycleListener, Saveable {
 		int currentlyRunningPID;
 		File dir = new File(Config.FRYSK_DIR);
 
+		System.setProperty("gnome.appName", "Frysk");
 		if (dir.exists()) {
 			String[] contents = dir.list();
 			for (int i = 0; i < contents.length; i++) {
@@ -479,6 +480,7 @@ public class Gui implements LifeCycleListener, Saveable {
 		final Preferences myPrefs = prefs;
 
 		myGui.load(myPrefs);
+		
 
 	
 		TimerEvent refreshTimer = new TimerEvent(0, 3000) {
