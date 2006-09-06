@@ -43,6 +43,8 @@
  */
 extern int slurp (int pid, const char *name, char buf[], long sizeof_buf);
 
+extern int slurp_thread (int pid, int tid, const char *name, char buf[], long sizeof_buf);
+
 /**
  * Slurp <tt>/proc/PID/name</tt> returning a jbyteArray or NULL.
  */

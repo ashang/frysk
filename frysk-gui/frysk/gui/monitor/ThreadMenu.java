@@ -42,6 +42,8 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
+
+
 package frysk.gui.monitor;
 
 import java.util.ListIterator;
@@ -58,66 +60,102 @@ import frysk.gui.monitor.actions.ActionManager;
 import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.observers.ObserverManager;
 
-public class ThreadMenu extends Menu {
-	private static ThreadMenu menu = new ThreadMenu();
-	
-	/** the TaskData of the currently selected task */
-	private GuiTask current;
-	
-	ThreadMenu(){
-		super();
-		
-		ObservableLinkedList list = ActionManager.theManager.getTaskActions();
-		ListIterator iter = list.listIterator();
-		
-		while(iter.hasNext()){
-			final TaskAction action = (TaskAction) iter.next();
-			
-			MenuItem item = new MenuItem(action.getName(), false);
-			ToolTips tip = new ToolTips();
-			tip.setTip(item, action.getToolTip(), ""); //$NON-NLS-1$
-			
-			item.addListener(new MenuItemListener() {
-				public void menuItemEvent(MenuItemEvent event) {
-					action.execute(current.getTask());
-				}
-			});
-			this.add(item);
-		}
-		
-		final ObserversMenu menu = new ObserversMenu(ObserverManager.theManager.getTaskObservers());
-		MenuItem item = new MenuItem("Add observer ", false); //$NON-NLS-1$
-		item.setSubmenu(menu);
+public class ThreadMenu
+    extends Menu
+{
 
-		item.addListener(new MouseListener(){
-			public boolean mouseEvent(MouseEvent event) {
-				if(event.getType() == MouseEvent.Type.ENTER){
-					menu.setCurrentTask(current);
-				}
-				return false;
-			}
-		});
-		
-		this.add(item);
-		this.showAll();
-	}
-	
-	/**
-	 * Singelton pattern. Get the menu from here
-	 * and add it to any watch window or add more
-	 * items to it.
-	 * */
-	public static ThreadMenu getMenu(){
-		return menu;
-	}
-	
-	/**
-	 * Show the popup menu. selected operation is to be 
-	 * applied to process with id pid
-	 * */
-	public void popup(GuiTask selected){
-		this.popup();
-		this.current = selected;
-		//System.out.println("-- PID: " + current.getTask().getTid()); //$NON-NLS-1$
-	}
+  private TIDColumnDialog tidColumnDialog;
+
+  /** the TaskData of the currently selected task */
+  private GuiTask current;
+
+  private SessionProcTreeView sessionProcTreeView;
+
+  ThreadMenu (TIDColumnDialog tcd, SessionProcTreeView sptv)
+  {
+
+    super();
+
+    ObservableLinkedList list = ActionManager.theManager.getTaskActions();
+    ListIterator iter = list.listIterator();
+
+    this.tidColumnDialog = tcd;
+    this.sessionProcTreeView = sptv;
+
+    MenuItem item = new MenuItem("Edit Columns...", false);
+    ToolTips tip = new ToolTips();
+    tip.setTip(item, "Edit Columns...", "");
+
+    item.addListener(new MenuItemListener()
+    {
+      public void menuItemEvent (MenuItemEvent arg0)
+      {
+        tidColumnDialog.showAll();
+      }
+    });
+    this.add(item);
+
+    item = new MenuItem("Refresh", false);
+    tip = new ToolTips();
+    tip.setTip(item, "Refresh Columns", "");
+
+    item.addListener(new MenuItemListener()
+    {
+      public void menuItemEvent (MenuItemEvent arg0)
+      {
+        sessionProcTreeView.refreshThreadTree();
+      }
+    });
+    this.add(item);
+
+    while (iter.hasNext())
+      {
+        final TaskAction action = (TaskAction) iter.next();
+
+        item = new MenuItem(action.getName(), false);
+        tip = new ToolTips();
+        tip.setTip(item, action.getToolTip(), ""); //$NON-NLS-1$
+
+        item.addListener(new MenuItemListener()
+        {
+          public void menuItemEvent (MenuItemEvent event)
+          {
+            action.execute(current.getTask());
+          }
+        });
+        this.add(item);
+      }
+
+    final ObserversMenu menu = new ObserversMenu(
+                                                 ObserverManager.theManager.getTaskObservers());
+    item = new MenuItem("Add observer ", false); //$NON-NLS-1$
+    item.setSubmenu(menu);
+
+    item.addListener(new MouseListener()
+    {
+      public boolean mouseEvent (MouseEvent event)
+      {
+        if (event.getType() == MouseEvent.Type.ENTER)
+          {
+            menu.setCurrentTask(current);
+          }
+        return false;
+      }
+    });
+
+    this.add(item);
+    this.current = null;
+    this.showAll();
+  }
+
+  /**
+   * Show the popup menu. selected operation is to be applied to process with id
+   * pid
+   */
+  public void popup (GuiTask selected)
+  {
+    this.popup();
+    this.current = selected;
+    //System.out.println("-- PID: " + current.getTask().getTid()); //$NON-NLS-1$
+  }
 }

@@ -85,6 +85,40 @@ slurp (int pid, const char* name, char buf[], long sizeof_buf)
   return len;
 }
 
+int
+slurp_thread (int pid, int tid, const char* name, char buf[], long sizeof_buf)
+{
+  // Get the file name.
+  char file[FILENAME_MAX];
+  if (::snprintf (file, sizeof file, "/proc/%d/task/%d/%s", (int) pid, (int) tid, name)
+      >= FILENAME_MAX)
+    throwRuntimeException ("snprintf: buffer overflow");
+  
+  // Open the file file.
+  errno = 0;
+  int fd = ::open (file, O_RDONLY);
+  if (errno != 0)
+    return -1;
+
+  // Read in the entire file file, NUL terminate the string.
+  errno = 0;
+  int len = ::read (fd, buf, sizeof_buf - 1);
+  if (errno != 0) {
+    ::close (fd);
+    return -1;
+  }
+
+  // Close the file, no longer needs to be open.
+  errno = 0;
+  ::close (fd);
+  if (errno != 0)
+    return -1;
+
+  // Null terminate the buffer.
+  buf[len] = '\0';
+  return len;
+}
+
 jbyteArray
 slurp (int pid, const char* name)
 {

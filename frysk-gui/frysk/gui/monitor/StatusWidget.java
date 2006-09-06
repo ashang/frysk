@@ -59,8 +59,8 @@ import org.gnu.gdk.Color;
 import org.gnu.gtk.Label;
 // import org.gnu.gtk.ShadowType;
 import org.gnu.gtk.VBox;
-import org.gnu.gtk.event.MouseEvent;
-import org.gnu.gtk.event.MouseListener;
+//import org.gnu.gtk.event.MouseEvent;
+//import org.gnu.gtk.event.MouseListener;
 
 import com.redhat.ftk.EventViewer;
 
@@ -171,53 +171,53 @@ public class StatusWidget
     // mainVbox.packStart(vbox, false, true, 0);
     // ========================================
 
-    this.viewer.addListener(new MouseListener()
-    {
-
-      public boolean mouseEvent (MouseEvent event)
-      {
-
-        if (event.getType() == MouseEvent.Type.BUTTON_RELEASE
-            & event.getButtonPressed() == MouseEvent.BUTTON3)
-          {
-            int traces[] = viewer.getSelectedTraces();
-
-            if (traces != null)
-              {
-                if (1 == traces.length)
-                  {
-                    GuiData data = (GuiData) procMap.get(new Integer(traces[0]));
-
-                    if (data.getClass().equals(GuiTask.class))
-                      {
-                        ThreadMenu.getMenu().popup((GuiTask) data);
-                      }
-                    else if (data.getClass().equals(GuiProc.class))
-                      {
-                        // procMenu.popup((GuiProc) data);
-                        // FIXME: Get a process menu.
-                        System.out.println("This is a GuiProc, can't get the menu yet.");
-                      }
-                    else
-                      {
-                        System.out.println("Sorry this isn't a task or a proc, its a: "
-                                           + data.getClass());
-                      }
-                  }
-                else if (1 < traces.length)
-                  {
-                    System.out.println("Multiple traces selected, "
-                                       + "TODO: multiple trace functionality, "
-                                       + "also drag and drop.");
-                  }
-              }
-
-            // System.out.println("click : " + data); //$NON-NLS-1$
-            return true;
-          }
-        return false;
-      }
-    });
+//    this.viewer.addListener(new MouseListener()
+//    {
+//
+//      public boolean mouseEvent (MouseEvent event)
+//      {
+//
+//        if (event.getType() == MouseEvent.Type.BUTTON_RELEASE
+//            & event.getButtonPressed() == MouseEvent.BUTTON3)
+//          {
+//            int traces[] = viewer.getSelectedTraces();
+//
+//            if (traces != null)
+//              {
+//                if (1 == traces.length)
+//                  {
+//                    GuiData data = (GuiData) procMap.get(new Integer(traces[0]));
+//
+//                    if (data.getClass().equals(GuiTask.class))
+//                      {
+//                        ThreadMenu.getMenu().popup((GuiTask) data);
+//                      }
+//                    else if (data.getClass().equals(GuiProc.class))
+//                      {
+//                        // procMenu.popup((GuiProc) data);
+//                        // FIXME: Get a process menu.
+//                        System.out.println("This is a GuiProc, can't get the menu yet.");
+//                      }
+//                    else
+//                      {
+//                        System.out.println("Sorry this isn't a task or a proc, its a: "
+//                                           + data.getClass());
+//                      }
+//                  }
+//                else if (1 < traces.length)
+//                  {
+//                    System.out.println("Multiple traces selected, "
+//                                       + "TODO: multiple trace functionality, "
+//                                       + "also drag and drop.");
+//                  }
+//              }
+//
+//            // System.out.println("click : " + data); //$NON-NLS-1$
+//            return true;
+//          }
+//        return false;
+//      }
+//    });
 
     this.showAll();
   }

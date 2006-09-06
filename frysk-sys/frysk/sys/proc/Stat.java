@@ -58,17 +58,25 @@ public class Stat
      * of scan problem.
      */
     public native boolean refresh (int pid);
+    
+    /**
+     * Refresh Stat from <tt>/proc/PID/task/TID/stat</tt>, return true if the
+     * scan was successful.  Returns false when the file doesn't
+     * exist, or can't be read.  Throws an error if there is some sort
+     * of scan problem.
+     */
+    public native boolean refreshThread (int pid, int tid);
 
     /**
      * Refresh stat from <tt>/proc/</tt>{@link #pid}<tt>/stat</tt>.
      */
     public final boolean refresh ()
     {
-	return refresh (pid);
+	return refresh (tid);
     }
 
-    /** The process id.  */
-    public int pid;
+    /** The thread id (== pid in main thread)  */
+    public int tid;
     /** The filename of the executable.  */
     public String comm;
     /** The state represented by a character from "RSDZTW".  */

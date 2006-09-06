@@ -78,7 +78,7 @@ public class SessionProcDataModel
 
   DataColumn[] columns;
 
-  private DataColumnInt pidDC;
+  private DataColumnInt tidDC;
 
   private DataColumnString commandDC;
 
@@ -126,7 +126,7 @@ public class SessionProcDataModel
   public SessionProcDataModel() throws IOException
   {
 
-    this.pidDC = new DataColumnInt();
+    this.tidDC = new DataColumnInt();
     this.commandDC = new DataColumnString();
     this.colorDC = new DataColumnString();
     this.procDataDC = new DataColumnObject();
@@ -142,7 +142,7 @@ public class SessionProcDataModel
     this.niceDC = new DataColumnString();
     this.stat = new Stat();
 
-    this.treeStore = new TreeStore(new DataColumn[] { pidDC, commandDC,
+    this.treeStore = new TreeStore(new DataColumn[] { tidDC, commandDC,
                                                      colorDC, procDataDC,
                                                      weightDC, threadParentDC,
                                                      isThreadDC, sensitiveDC, 
@@ -241,7 +241,7 @@ public class SessionProcDataModel
     try
       {
         treeStore.setValue(iter, commandDC, proc.getCommand());
-        treeStore.setValue(iter, pidDC, proc.getPid());
+        treeStore.setValue(iter, tidDC, proc.getPid());
         treeStore.setValue(iter, procDataDC,
                            (GuiProc.GuiProcFactory.getGuiProc(proc)));
         treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
@@ -251,7 +251,7 @@ public class SessionProcDataModel
         treeStore.setValue(iter, sensitiveDC, true);
         
         /* Read from /proc/pid/stat the VSZ, RSS, and CPU Time. */
-        statRead(proc, iter);
+        statRead(proc, null, iter);
       }
     catch (Exception e)
       {
@@ -322,15 +322,20 @@ public class SessionProcDataModel
    * Read the Vsize, RSS, and CPU time from /proc/pid/stat, and set the 
    * information into its relevant place in the TreeStore.
    */
-  public void statRead(Proc proc, TreeIter iter)
+  public void statRead(Proc proc, Task task, TreeIter iter)
   {
-    stat.refresh(proc.getPid());
+    if (task == null && proc != null)
+      stat.refresh(proc.getPid());
+    else if (task != null && proc == null)
+      stat.refreshThread(task.getProc().getPid(), task.getTid());
+    else
+      return;
     
     /* stat.vsize returns in bytes */
     treeStore.setValue(iter, vszDC, (stat.vsize / 1024) + " kB");
     
     /* stat.rss returns the number of pages in use - multiply by page size
-     * to find actual memory use. >>> Assumes 4kb page size!! Hack alert!<<< */
+     * to find actual memory use >>> Assumes 4kb page size!! Hack alert! <<< */
     treeStore.setValue(iter, rssDC, (stat.rss * 4) + " kB");
     
     /* Sum up individual values for clock jiffies - 100 jiffies in 
@@ -351,10 +356,10 @@ public class SessionProcDataModel
   }
   
   /**
-   * Update the information listed in the TreeView, specifically the new memory
-   * information and updated CPU time.
+   * Update the information listed in the process TreeView, specifically the
+   * new memory information and updated CPU time.
    */
-  public void refreshRead ()
+  public void refreshProcRead ()
   {
     Iterator i = this.currentSession.getProcesses().iterator();
     while (i.hasNext())
@@ -365,8 +370,23 @@ public class SessionProcDataModel
           {
             Proc p = ((GuiProc)j.next()).getProc();
             TreeIter iter = (TreeIter)this.iterHash.get(p.getId());
-            statRead(p, iter);
+            statRead(p, null, iter);
           }
+      }
+  }
+  
+  /**
+   * Update the information listed in the thread TreeView, specifically the
+   * new memory information and updated CPU time.
+   */
+  public void refreshThreadRead (GuiProc gp)
+  {
+    Iterator i = gp.getTasks().iterator();
+    while (i.hasNext())
+      {
+        Task t = (Task) ((GuiTask) i.next()).getTask();
+        TreeIter iter = (TreeIter) this.iterHash.get(t.getTaskId());
+        statRead(null, t, iter);
       }
   }
   
@@ -407,7 +427,7 @@ public class SessionProcDataModel
       {
         treeStore.setValue(iter, commandDC,
                            Long.toHexString(task.getEntryPointAddress()));
-        treeStore.setValue(iter, pidDC, task.getTid());
+        treeStore.setValue(iter, tidDC, task.getTid());
         treeStore.setValue(iter, weightDC, Weight.NORMAL.getValue());
         treeStore.setValue(iter, threadParentDC, task.getProc().getPid());
         treeStore.setValue(iter, isThreadDC, true);
@@ -415,6 +435,8 @@ public class SessionProcDataModel
         treeStore.setValue(iter, procDataDC,
                            GuiTask.GuiTaskFactory.getGuiTask(task));
         treeStore.setValue(iter, sensitiveDC, true);
+        
+        statRead(null, task, iter);
 
         GuiTask guiTask = GuiTaskFactory.getGuiTask(task);
         GuiProc guiProc = GuiProcFactory.getGuiProc(task.getProc());
@@ -500,9 +522,9 @@ public class SessionProcDataModel
 
   }
 
-  public DataColumnInt getPidDC()
+  public DataColumnInt getTidDC()
   {
-    return this.pidDC;
+    return this.tidDC;
   }
 
   public DataColumnString getCommandDC()
@@ -653,7 +675,7 @@ public class SessionProcDataModel
       }
     // System.out.println(this + ": ProcDataModel.getThreadCount() " +
     // treeStore.getValue(iter, commandDC) + " " + treeStore.getValue(iter,
-    // pidDC) + " "+ threadCount);
+    // tidDC) + " "+ threadCount);
     return threadCount;
 
   }

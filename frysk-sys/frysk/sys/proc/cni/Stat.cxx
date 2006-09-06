@@ -58,10 +58,74 @@ frysk::sys::proc::Stat::refresh (jint procPid)
   int bufLen = slurp (procPid, "stat", buf, sizeof buf);
   if (bufLen < 0)
     return false;
-  
+    
   const char* p = buf;
 
-  pid = scanJint (&p);
+  tid = scanJint (&p);
+
+  // The "comm" needs special treatment, need to scan backwards for
+  // ')' as the command itself could contain ')'.
+  char* commStart = ::strchr (buf, '(');
+  char* commEnd = ::strrchr (buf, ')');
+  if (commStart == NULL || commEnd == NULL)
+    throwRuntimeException ("botched comm field");
+  comm = JvNewStringLatin1 (commStart + 1, commEnd - commStart - 1);
+
+  // Messy, its a character, need to first skip any white space.
+  p = commEnd + 1;
+  p += ::strspn (p, " ");
+  state = *p++;
+
+  ppid = scanJint (&p);
+  pgrp = scanJint (&p);
+  session = scanJint (&p);
+  ttyNr = scanJint (&p);
+  tpgid = scanJint (&p);
+  flags = scanJlong (&p);
+  minflt = scanJlong (&p);
+  cminflt = scanJlong (&p);
+  majflt = scanJlong (&p);
+  cmajflt = scanJlong (&p);
+  utime = scanJlong (&p);
+  stime = scanJlong (&p);
+  cutime = scanJlong (&p);
+  cstime = scanJlong (&p);
+  priority = scanJlong (&p);
+  nice = scanJint (&p);
+  zero = scanJint(&p);
+  irealvalue = scanJlong (&p);
+  starttime = scanJlong (&p);
+  vsize = scanJlong (&p);
+  rss = scanJlong (&p);
+  rlim = scanJlong (&p);
+  startcode = scanJlong (&p);
+  endcode = scanJlong (&p);
+  startstack = scanJlong (&p);
+  kstkesp = scanJlong (&p);
+  kstkeip = scanJlong (&p);
+  signal = scanJlong (&p);
+  blocked = scanJlong (&p);
+  sigignore = scanJlong (&p);
+  sigcatch = scanJlong (&p);
+  wchan = scanJlong (&p);
+  nswap = scanJlong (&p);
+  cnswap = scanJlong (&p);
+  exitSignal = scanJint (&p);
+  processor = scanJint (&p);
+  return true;
+}
+
+jboolean
+frysk::sys::proc::Stat::refreshThread (jint procPid, jint threadTid)
+{
+  char buf[BUFSIZ];
+  int bufLen = slurp_thread (procPid, threadTid, "stat", buf, sizeof buf);
+  if (bufLen < 0)
+    return false;
+    
+  const char* p = buf;
+
+  tid = scanJint (&p);
 
   // The "comm" needs special treatment, need to scan backwards for
   // ')' as the command itself could contain ')'.

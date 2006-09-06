@@ -1,3 +1,45 @@
+2006-09-06  Mike Cvet <mcvet@redhat.com>
+
+	* TIDColumnDialog.java: Added. Almost identical to the
+	PIDColumnDialog, but needed because of the extra glade reference.
+	* ThreadMenu.java (ThreadMenu): Removed static reference, 
+	turned into dynamic menu like ProcMenu. Added entries to deal
+	with thread view customization like the process viewer.
+	(getMenu): Removed.
+	* StatusWidget.java (StatusWidget): Commented out some 
+	unneeded mouse listeners.
+	* SessionProcTreeView.java (SessionProcTreeView): Addressing #3160.
+	Added new variables to handle extended thread information. Uses 
+	the new dynamic ThreadMenu. Added new listeners for procPid and
+	threadTidColumnDialogs.
+	(mountThreadModel): Added listeners for all the new thread columns.
+	(threadViewInit): Initialized and added information for all the new
+	thread columns.
+	(refreshProcTree): Refactored from refreshTree().
+	(refreshThreadTree): Added.
+	(setProcCols): Refactored from setCols().
+	(setThreadCols): Added.
+	(getProcColNames): Refactored from getColNames().
+	(getThreadColNames): Added.
+	(getSelectedProc): Uses update getTidDC() method from the
+	SessionProcDataModel.
+	(save): Saves for the thread dialog as well.
+	(load): Loads for the thread dialog as well.
+	* SessionProcDataModel.java (tidDC): Refactored from pidDC.
+	(statRead): Changed parameters to now accept a Task, since 
+	frysk.sys.Stat now handles reading thread information from /proc.
+	Added a check to handle new input.
+	(refreshProcRead): Refactored from refreshRead().
+	(refreshThreadRead): Added.
+	(addTask): Now reads from Stat.
+	(getTidDC): Refactored from getPidDC().
+	* ProcMenu.java (.menuItemEvent): Updated reference to the
+	refactored refreshProcTree().
+	* PIDColumnDialog.java (save): Updated reference to the 
+	refactored getProcColNames().
+	(load): Ditto.
+
+=======
 2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionProcTreeView.java (SessionProcTreeView): Check sanity of
@@ -20,6 +62,7 @@
 	(enterBottomHalf): Ditto.
 	* observers/SysCallUtilyInfo.java: New.
 	
+>>>>>>> 1.370
 2006-08-31  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionProcTreeView.java (threadViewInit): Set the column header

@@ -1,41 +1,3 @@
-// This file is part of the program FRYSK.
-//
-// Copyright 2005, Red Hat Inc.
-//
-// FRYSK is free software; you can redistribute it and/or modify it
-// under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
-//
-// FRYSK is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with FRYSK; if not, write to the Free Software Foundation,
-// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
-// 
-// In addition, as a special exception, Red Hat, Inc. gives You the
-// additional right to link the code of FRYSK with code not covered
-// under the GNU General Public License ("Non-GPL Code") and to
-// distribute linked combinations including the two, subject to the
-// limitations in this paragraph. Non-GPL Code permitted under this
-// exception must only link to the code of FRYSK through those well
-// defined interfaces identified in the file named EXCEPTION found in
-// the source code files (the "Approved Interfaces"). The files of
-// Non-GPL Code may instantiate templates or use macros or inline
-// functions from the Approved Interfaces without causing the
-// resulting work to be covered by the GNU General Public
-// License. Only Red Hat, Inc. may make changes or additions to the
-// list of Approved Interfaces. You must obey the GNU General Public
-// License in all respects for all of the FRYSK code and other code
-// used in conjunction with FRYSK except the Non-GPL Code covered by
-// this exception. If you modify this file, you may extend this
-// exception to your version of the file, but you are not obligated to
-// do so. If you do not wish to provide this exception without
-// modification, you must delete this exception statement from your
-// version and license this file solely under the GPL without
-// exception.
 
 
 package frysk.gui.monitor;
@@ -64,7 +26,6 @@ import org.gnu.gtk.event.LifeCycleEvent;
 import org.gnu.gtk.event.LifeCycleListener;
 
 import frysk.gui.common.IconManager;
-import frysk.gui.monitor.Saveable;
 
 /**
  * A simple dialog to accept input determining which columns should be 
@@ -72,7 +33,7 @@ import frysk.gui.monitor.Saveable;
  * 
  * @author mcvet
  */
-public class PIDColumnDialog
+public class TIDColumnDialog
     extends Dialog
     implements Saveable
 {
@@ -87,23 +48,23 @@ public class PIDColumnDialog
 
   private SessionProcTreeView sptv;
 
-  public PIDColumnDialog (LibGlade glade, SessionProcTreeView sptv)
+  public TIDColumnDialog (LibGlade glade, SessionProcTreeView sptv)
   {
-    super(glade.getWidget("pidColumnDialog").getHandle());
+    super(glade.getWidget("tidColumnDialog").getHandle());
 
     this.glade = glade;
     this.sptv = sptv;
 
     this.setIcon(IconManager.windowIcon);
 
-    this.colList = (TreeView) this.glade.getWidget("colView");
+    this.colList = (TreeView) this.glade.getWidget("tidColView");
     colList.setHeadersVisible(false);
 
     final ListStore model = new ListStore(cols);
 
     TreeIter iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], true);
-    model.setValue(iter, (DataColumnString) cols[1], "Command");
+    model.setValue(iter, (DataColumnString) cols[1], "Entry function");
 
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], true);
@@ -112,19 +73,19 @@ public class PIDColumnDialog
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], true);
     model.setValue(iter, (DataColumnString) cols[1], "RSS");
-    
+
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], true);
     model.setValue(iter, (DataColumnString) cols[1], "TIME");
-    
+
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], false);
     model.setValue(iter, (DataColumnString) cols[1], "PPID");
-    
+
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], false);
     model.setValue(iter, (DataColumnString) cols[1], "STAT");
-    
+
     iter = model.appendRow();
     model.setValue(iter, (DataColumnBoolean) cols[0], false);
     model.setValue(iter, (DataColumnString) cols[1], "NICE");
@@ -157,14 +118,14 @@ public class PIDColumnDialog
 
     colList.setModel(model);
 
-    ((Button) this.glade.getWidget("closeButton")).addListener(new ButtonListener()
+    ((Button) this.glade.getWidget("tidCloseButton")).addListener(new ButtonListener()
     {
       public void buttonEvent (ButtonEvent arg0)
       {
         if (arg0.isOfType(ButtonEvent.Type.CLICK))
           {
-            PIDColumnDialog.this.save(PIDColumnDialog.this.prefs);
-            PIDColumnDialog.this.hideAll();
+            TIDColumnDialog.this.save(TIDColumnDialog.this.prefs);
+            TIDColumnDialog.this.hideAll();
           }
       }
     });
@@ -175,8 +136,8 @@ public class PIDColumnDialog
       {
         if (arg0.isOfType(LifeCycleEvent.Type.DELETE))
           {
-            PIDColumnDialog.this.save(PIDColumnDialog.this.prefs);
-            PIDColumnDialog.this.hideAll();
+            TIDColumnDialog.this.save(TIDColumnDialog.this.prefs);
+            TIDColumnDialog.this.hideAll();
             return true;
           }
         return false;
@@ -186,16 +147,16 @@ public class PIDColumnDialog
       {
       }
     });
-    
+
     this.colList.setAlternateRowColor(true);
   }
 
   public void save (Preferences prefs)
   {
     ListStore model = (ListStore) this.colList.getModel();
-
+    
     TreeIter iter = model.getFirstIter();
-    String[] temp = sptv.getProcColNames();
+    String[] temp = sptv.getThreadColNames();
 
     for (int i = 0; i < temp.length; i++)
       {
@@ -210,7 +171,7 @@ public class PIDColumnDialog
     this.prefs = prefs;
     ListStore model = (ListStore) this.colList.getModel();
     TreeIter iter = model.getFirstIter();
-    String[] temp = sptv.getProcColNames();
+    String[] temp = sptv.getThreadColNames();
 
     for (int i = 0; i < temp.length; i++)
       {

@@ -1,3 +1,14 @@
+2006-09-06  Mike Cvet  <mcvet@redhat.com>
+
+	* Stat.java (tid): Refactored from the int pid. More correct variable name.
+	(refreshThread): Added - supports reading proc stat information for threads
+	belonging to a process.
+	* cni/Stat.cxx (refreshThread): Added. Nearly identical to refresh() but
+	handles individual threads belonging to a process.
+	(refresh): Updated to use new variable tid.
+	* cni/slurp.cxx (slurp_thread): Added. Reads from /proc/PID/task/TID/stat.
+	* cni/slurp.hxx (slurp_thread): Added header for above function.
+
 2006-08-09  Mike Cvet  <mcvet@redhat.com>
 
 	* Stat.java (zero): Variable representing the zero filed in /proc/pid/stat.

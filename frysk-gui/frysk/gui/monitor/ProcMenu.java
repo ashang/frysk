@@ -107,7 +107,7 @@ public class ProcMenu extends Menu
         {
           public void menuItemEvent (MenuItemEvent arg0)
           {
-            sessionProcTreeView.refreshTree();
+            sessionProcTreeView.refreshProcTree();
           }
         });
         this.add(item);
