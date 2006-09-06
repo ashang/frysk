@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Frysk System Monitor / Debugger: Documentation</title>
+  <link rel="stylesheet" href="../frysk.css" type="text/css">
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+</head>
+<body>
+<span style="font-weight: bold;"></span>
+<table border="0" cellpadding="2" cellspacing="2" width="100%">
+  <tbody>
+    <tr>
+      <td height="80" valign="bottom"> <img src="../frysklogo.png"
+ alt="Frysk logo"> </td>
+      <td class="topnavright" align="right" valign="bottom"> <a
+ href="../">Home</a> &nbsp;|&nbsp; <a href="../usecases/">Use Cases</a>
+&nbsp;|&nbsp; <a href="../workflow/">Work Flows</a> &nbsp;|&nbsp; <a
+ href="../questions/">FAQ</a> &nbsp;|&nbsp; <a href="../getinvolved/">Get
+Involved</a> &nbsp;|&nbsp; <a href="../bugzilla/">Bugzilla</a>
+&nbsp;|&nbsp; <a href="../build/">Build</a> &nbsp;|&nbsp;
+Documentation &nbsp;|&nbsp; <a href="../developers/">Developers</a> </td>
+    </tr>
+  </tbody>
+</table>
+<div class="mainbackground">
+<div class="maintextregion"> <img src="../fryskcorner.gif"
+ alt="triangle">
+<table style="margin-top: 17px;" border="0" cellpadding="4"
+ cellspacing="2" width="99%">
+  <tbody>
+    <tr>
+      <td valign="bottom"><!-- start title -->
+      <h1>Test Coverage for Frysk</h1>
+<!-- end title --> </td>
+    </tr>
+    <tr>
+      <td valign="top"><!-- start text -->
+      <ul>
+        <li>When developing software it is useful to determine which
+sections of the program the testsuites are exercising.&nbsp; Having
+coverage information shows which sections of the code are being missed
+by the tests.&nbsp; The GCJ compiler has an option to compile code to
+produce this coverage information when the code is executed.&nbsp; The
+gcov and lcov tools can analyze this information and produce either
+text files or html that developers can analyze to determine whether
+current tests are sufficient or whether additional tests are needed.<br>
+          <ul>
+            <li>To enable collection of coverage information the
+following GCJ options are used: --coverage -g<br>
+            </li>
+          </ul>
+        </li>
+        <li>To produce coverage information for frysk, first configure
+a build tree as described <a
+ href="file:///home/scox/pristinefrysk/src/htdocs/build/index.html">here</a><br>
+        </li>
+        <li><span style="text-decoration: underline;"></span>The &nbsp;<a
+ href="lcov-fixbld.sh">lcov-fixbld.sh shell script</a> can be used to
+change the Makefiles to build executables which will create coverage
+information.&nbsp; Run <span style="font-style: italic;">make</span>
+in the build tree after running the script.<a
+ style="color: rgb(51, 51, 255);" href="lcov-fixbld.sh"><span
+ style="color: rgb(0, 0, 0);"><span style="text-decoration: underline;"></span></span><br>
+          </a></li>
+        <li><a style="color: rgb(51, 51, 255);" href="lcov-fixbld.sh"><span
+ style="color: rgb(0, 0, 0);"></span></a>Run the test suites with <span
+ style="font-style: italic;">make
+check</span>.&nbsp;&nbsp; This will create the coverage information.</li>
+        <li><span style="font-style: italic;">lcov</span> converts the <span
+ style="font-style: italic;">gcov</span> data, which is created by
+running the test suites, into html files which are viewable on web
+pages.&nbsp; <span style="font-style: italic;">lcov</span> rpms are
+available for Fedora.&nbsp;&nbsp; The advantages of <span
+ style="font-style: italic;">lcov</span> over <span
+ style="font-style: italic;">gcov</span> are:<br>
+          <ul>
+            <li><span style="font-style: italic;">lcov</span> creates
+summaries showing the code coverage for each file.</li>
+            <li><span style="font-style: italic;">lcov</span> makes it
+easy to scan for unexecuted code by <span
+ style="color: rgb(255, 0, 0);">highlighting it in red</span></li>
+          </ul>
+          <ul style="color: rgb(255, 255, 255);">
+            <li><span style="font-style: italic;">lcov</span>
+results can be posted on a webpage.</li>
+          </ul>
+        </li>
+      </ul>
+      <ul>
+        <li><span style="color: rgb(255, 0, 0);"><span
+ style="color: rgb(0, 0, 0);"><span style="color: rgb(255, 255, 255);">The</span>&nbsp;
+          <a href="lcov.sh">lcov.sh
+shell script</a> <span style="color: rgb(255, 255, 255);">can be used
+to create web pages from the *.gcno and *.gcda
+information created by gcov</span>.<a style="color: rgb(51, 51, 255);"
+ href="lcov.sh"><span style="color: rgb(0, 0, 0);"></span></a></span></span><br>
+          <ul>
+            <li>If a *.gcda file does not have an equivalent *.gcno
+file then <span style="font-style: italic;">lcov</span> will
+complain.&nbsp; Running <span style="font-style: italic;">sh lcov.sh
+fixup</span> will clean these up.<br>
+            </li>
+            <li>To create the info files used to create the web pages
+run <span style="font-style: italic;">sh lcov.sh info</span>.&nbsp; It
+is possible that <span style="font-style: italic;">lcov</span> will
+complain if either a source file cannot be found or if no *.gcno and
+*.gcda files are present in a directory.&nbsp; In this case it may be
+necessary to remove offending directories from the info case in lcov.sh.</li>
+            <li>To create the web pages run <span
+ style="font-style: italic;">sh lcov.sh genhtml.</span></li>
+            <li>&nbsp;Test results accumulate for succeeding testsuite
+runs and <span style="font-style: italic;">lcov</span> posts a
+summary.&nbsp; To zero the test results run sh <span
+ style="font-style: italic;">lcov.sh zero</span>.</li>
+          </ul>
+        </li>
+      </ul>
+      <span style="color: rgb(255, 0, 0);"><span
+ style="color: rgb(0, 0, 0);"></span></span>
+      <p>&nbsp;</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+<table border="0" cellpadding="2" cellspacing="2" width="100%">
+  <tbody>
+    <tr>
+      <td class="footer" align="center"> <a
+ href="http://sources.redhat.com">sources.redhat.com</a> </td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>
