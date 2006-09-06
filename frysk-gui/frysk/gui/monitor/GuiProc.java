@@ -140,19 +140,17 @@ public class GuiProc extends GuiData{
 		try{
 			this.executablePath = proc.getExe();
 			
-//			File file = new File(this.getNiceExecutablePath());
-//			this.executableName = file.getName();
-
 		}catch (Exception e) {
 			try {
-				this.executablePath = proc.getCmdLine()[0];
+				if (proc.getCmdLine().length > 0)
+					this.executablePath = proc.getCmdLine()[0];
+				else
+					this.executablePath = PATH_NOT_FOUND;
+					
 			} catch (Exception e2) {
 				this.executablePath = PATH_NOT_FOUND;
                 return;
-//				this.executableName = proc.getCommand();
 			}
-//			File file = new File(this.executablePath);
-//			this.executableName = file.getName();
 		}
 	}
 	

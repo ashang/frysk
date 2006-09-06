@@ -167,9 +167,15 @@ public class SessionProcTreeView
 
             // Sets the status bar to read the full executable path of the given
             // process.
-            WindowManager.theManager.mainWindowStatusBar.push(
+            
+            if (!data.getFullExecutablePath().contains("(deleted"))
+            	WindowManager.theManager.mainWindowStatusBar.push(
                                                               0,
                                                               data.getFullExecutablePath());
+            else
+            	WindowManager.theManager.mainWindowStatusBar.push(
+                        0,
+                        data.getExecutableName());
 
             // Sets the selected thread to the first thread.
             if (threadTreeView.getModel().getFirstIter() != null)

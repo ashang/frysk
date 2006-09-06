@@ -1,5 +1,12 @@
 2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 
+	* SessionProcTreeView.java (SessionProcTreeView): Check sanity of
+	executable path. If not sane, use name instead.
+	* SessionProcDataModel.java (stopRefreshing): Remove.
+	(setRefreshTime): Ditto.
+	(refresh): Ditto.
+	
+	* GuiProc.java (setExecutablePath): Added array length check.
 	* observers/SysCallUtilyInfo.java (getCallInfoFromSyscall): Add rule
 	for closing brackets on arguments that are provided.
 

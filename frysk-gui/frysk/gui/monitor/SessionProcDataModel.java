@@ -60,13 +60,11 @@ import org.gnu.gtk.TreeModel;
 import org.gnu.gtk.TreeStore;
 import org.gnu.pango.Weight;
 
-import frysk.event.TimerEvent;
 import frysk.gui.Gui;
 import frysk.gui.monitor.GuiProc.GuiProcFactory;
 import frysk.gui.monitor.GuiTask.GuiTaskFactory;
 import frysk.gui.sessions.DebugProcess;
 import frysk.gui.sessions.Session;
-import frysk.proc.Manager;
 import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.ProcTasksObserver;
@@ -111,8 +109,6 @@ public class SessionProcDataModel
   private Stat stat;
 
   private HashMap iterHash;
-
-  private TimerEvent refreshTimer;
 
   private Logger errorLog = Logger.getLogger(Gui.ERROR_LOG_ID);
 
@@ -220,7 +216,6 @@ public class SessionProcDataModel
   public void addProc(GuiProc guiProc)
   {
     Proc proc = guiProc.getProc();
-    //System.out.println(this + ": SessionProcDataModel.addProc() " + proc );
     if (proc == null)
       {
         errorLog.log(Level.WARNING,
@@ -503,29 +498,6 @@ public class SessionProcDataModel
         return;
       }
 
-  }
-
-  public void stopRefreshing()
-  {
-    Manager.eventLoop.remove(refreshTimer);
-  }
-
-  public void setRefreshTime(int sec)
-  {
-    Manager.eventLoop.remove(refreshTimer);
-    this.refreshTimer = new TimerEvent(0, sec * 1000)
-    {
-      public void execute()
-      {
-        Manager.host.requestRefreshXXX(true);
-      }
-    };
-    Manager.eventLoop.add(refreshTimer);
-  }
-
-  public void refresh() throws IOException
-  {
-    Manager.host.requestRefreshXXX(true);
   }
 
   public DataColumnInt getPidDC()
