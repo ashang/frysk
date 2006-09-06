@@ -120,8 +120,12 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 		return Action.BLOCK;
 	}
 
-	protected void enterBottomHalf(Task task) {
-		this.setInfo(this.getName()+": "+"PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: enter syscall" + " Host: " + Manager.host.getName());
+	protected void enterBottomHalf(Task task)  {
+		
+
+
+		this.setInfo(this.getName()+": "+"PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: Entering Syscall - " 
+				+ SysCallUtilyInfo.getCallInfoFromSyscall(task) + " Host: " + Manager.host.getName());
 		if(this.runEnterFilters(task)){
 			this.runEnterActions(task);
 		}
@@ -153,7 +157,12 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 	}
 
 	protected void exitBottomHalf(Task task) {
-		this.setInfo("PID: " + task.getProc().getPid() + " TID: " + task.getTid() + " Event: leave " + this.getName() + " Host: " + Manager.host.getName());
+		
+		
+		this.setInfo(this.getName()+" PID: " + task.getProc().getPid() + " TID: " + task.getTid() + 
+				" Event: Leaving Syscall -  " + 
+				SysCallUtilyInfo.getReturnInfoFromSyscall(task) + 
+				" Host: " + Manager.host.getName());
 		if(this.runExitFilters(task)){
 			this.runExitActions(task);
 		}

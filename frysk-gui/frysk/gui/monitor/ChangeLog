@@ -1,3 +1,11 @@
+2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/TaskSyscallObserver.java (exitBottomHalf): Add richer syscall
+	information to log call.
+	(enterBottomHalf): Ditto.
+	* observers/SysCallUtilyInfo.java: New.
+	
+
 2006-08-31  Mike Cvet  <mcvet@redhat.com>
 
 	* SessionProcTreeView.java (threadViewInit): Set the column header
