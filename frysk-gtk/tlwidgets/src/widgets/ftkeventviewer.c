@@ -25,7 +25,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkbindings.h>
 
-//#define SCROLLBAR
+#define SCROLLBAR
 //#define CONNECT_CHANGE_SIGNAL
 #define CONNECT_VAL_CHANGED_SIGNAL
 #define EVENT_ALLY
@@ -50,8 +50,8 @@ G_DEFINE_TYPE (FtkLegend, ftk_legend, GTK_TYPE_DRAWING_AREA);
 
 /************************************************************
  *                                                          *
- * 		Callback Definitions.       	                    *
- * 							                                *
+ *              Callback Definitions.                       *
+ *                                                          *
  ************************************************************/
 static gboolean ftk_eventviewer_da_scroll (GtkWidget      *widget,
 					   GdkEventScroll *event,
@@ -201,7 +201,7 @@ ftk_legend_get_accessible (GtkWidget * widget);
 #define DEFAULT_INITIAL_HEIGHT		 30
 #define DEFAULT_INITIAL_LEGEND_HEIGHT	 30
 
-#define DEFAULT_SPAN			 60.0
+#define DEFAULT_SPAN			 10.0
 #define MINIMUM_SPAN			 1e-6
 #define MAXIMUM_SPAN			 1e6
 
@@ -289,7 +289,7 @@ ftk_drawing_area_init (FtkDrawingArea * da)
   ftk_da_trace_next(da) = 0;
   ftk_da_trace_max(da)  = 0;
   ftk_da_trace_modified(da)  = FALSE;
-  ftk_da_vadjustment(da) = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
+
 }
 
 GtkWidget*
@@ -298,8 +298,31 @@ ftk_drawing_area_new ()
 	FtkDrawingArea * da
 	= g_object_new (ftk_drawing_area_get_type(),
 			NULL);
-			
+	
 	return GTK_WIDGET (da);
+}
+
+void
+ftk_drawing_area_size_allocate (GtkWidget *widget, GtkAllocation *allocation, gpointer user_data) 
+{
+if (!FTK_IS_DRAWING_AREA(widget)) {
+return;
+}
+
+FtkDrawingArea *da = FTK_DRAWING_AREA(widget);
+GtkAdjustment *adj = ftk_da_vadjustment(da);
+//FIXME: how large is a trace?
+gint trace_size = 18;
+adj->page_size = (allocation->height)/trace_size;
+adj->page_increment = adj->page_size;
+#if 0
+if (adj->upper < adj->page_size) {
+	adj->upper = adj->page_size;
+}
+#endif
+gtk_adjustment_changed(ftk_da_vadjustment(da));
+ftk_da_trace_modified(da) = TRUE;
+//gtk_widget_queue_draw_area(widget, allocation->x, allocation->y, allocation->width, allocation->height);
 }
 
 #if 0
@@ -322,9 +345,9 @@ ftk_drawing_area_set_scroll_adjustments (FtkDrawingArea   *da,
                                       GtkAdjustment *hadj,
                                       GtkAdjustment *vadj)
 {
-	#if 0
+#if 0	
   gboolean need_adjust = FALSE;
-
+#endif
   if (hadj)
     g_return_if_fail (GTK_IS_ADJUSTMENT (hadj));
   else
@@ -336,17 +359,21 @@ ftk_drawing_area_set_scroll_adjustments (FtkDrawingArea   *da,
 
   if (da->hadjustment && (da->hadjustment != hadj))
     {
+#if 0
       g_signal_handlers_disconnect_by_func (da->hadjustment,
 					    ftk_da_value_changed,
 					    da);
+#endif
       g_object_unref (da->hadjustment);
     }
 
   if (da->vadjustment && (da->vadjustment != vadj))
     {
+#if 0
       g_signal_handlers_disconnect_by_func (da->vadjustment,
 					    ftk_da_value_changed,
 					    da);
+#endif
       g_object_unref (da->vadjustment);
     }
 
@@ -354,27 +381,30 @@ ftk_drawing_area_set_scroll_adjustments (FtkDrawingArea   *da,
     {
       da->hadjustment = hadj;
       g_object_ref_sink (da->hadjustment);
-      
+      #if 0
       g_signal_connect (da->hadjustment, "value_changed",
                         G_CALLBACK (ftk_da_value_changed),
 			da);
       need_adjust = TRUE;
+ 	#endif
     }
 
   if (da->vadjustment != vadj)
     {
       da->vadjustment = vadj;
       g_object_ref_sink (da->vadjustment);
-      
+      #if 0
       g_signal_connect (da->vadjustment, "value_changed",
                         G_CALLBACK (ftk_da_value_changed),
 			da);
       need_adjust = TRUE;
+	#endif
     }
-
+#if 0
   if (need_adjust)
   	ftk_da_value_changed (NULL, da);
-  	#endif
+#endif
+  	
 }
 
 #endif
@@ -678,8 +708,11 @@ create_button_box (FtkEventViewer * eventviewer, GtkTooltips * eventviewer_tips)
   /* Accessibility for button box. */
   AtkObject *obj;
   obj = gtk_widget_get_accessible (hbutton_box);
-  atk_object_set_name(obj, _("Button Box"));
+  atk_object_set_name(obj, _("Button and Interval Box"));
   atk_object_set_description (obj, _("Box to hold all the buttons."));
+	
+  obj = gtk_widget_get_accessible (vbutton_box);
+  atk_object_set_name(obj, _("Button Box"));
 
   
     
@@ -900,6 +933,32 @@ create_legend_area (FtkEventViewer * eventviewer)
 }
 
 /************************************* Drawing Area **************************/
+void
+create_adjustments (FtkEventViewer *eventviewer)
+{
+  gdouble span = ftk_ev_span (eventviewer);
+  FtkDrawingArea *da = ftk_ev_da(eventviewer);
+  ftk_da_hadjustment(da) = GTK_ADJUSTMENT ( 
+	gtk_adjustment_new 
+	(0.0, //value
+	 0.0, //lower
+	 span, //upper
+	 1.0, //step_increment
+	 span, //page_increment
+	 span  //page_size.
+	)); 
+
+  ftk_ev_scroll_adj(eventviewer) = ftk_da_hadjustment(da);
+  ftk_da_vadjustment(da) = GTK_ADJUSTMENT (
+	gtk_adjustment_new
+	(0, 
+	 0, 
+	 0, 
+	 1, 
+	 0, 
+	 0
+	));
+}
   
 static void
 create_drawing_area (FtkEventViewer * eventviewer)
@@ -910,7 +969,10 @@ create_drawing_area (FtkEventViewer * eventviewer)
   
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
   GtkWidget * da = ftk_drawing_area_new();
-  
+  ftk_ev_da(eventviewer) = FTK_DRAWING_AREA(da);
+	
+  create_adjustments(eventviewer);
+	
   /* atk stuff */
   AtkObject *obj;
   obj = gtk_widget_get_accessible (da);
@@ -921,14 +983,9 @@ create_drawing_area (FtkEventViewer * eventviewer)
   atk_object_set_name(obj, _("Drawing Frame"));
   atk_object_set_description(obj, _("The frame to hold the main drawing area"));
         
-  /*fprintf (stderr, "initting atk %#08x\n", atk_obj);
 
-  if (GTK_IS_ACCESSIBLE (atk_obj)) {
-  fprintf (stderr, "accessible\n");
-  } 
-  */
 
-  ftk_ev_da(eventviewer) = FTK_DRAWING_AREA(da);
+ 
   
   gtk_drawing_area_size (GTK_DRAWING_AREA(ftk_ev_da(eventviewer)),
 			 DEFAULT_INITIAL_WIDTH,
@@ -975,8 +1032,11 @@ create_drawing_area (FtkEventViewer * eventviewer)
 		    
   g_signal_connect (GTK_OBJECT(da), "style-set",
 		    G_CALLBACK (ftk_eventviewer_style), eventviewer);
+
+  g_signal_connect (GTK_WIDGET(da), "size-allocate",
+		    G_CALLBACK (ftk_drawing_area_size_allocate), da);
   
-  scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  scrolled_window = gtk_scrolled_window_new (ftk_da_hadjustment(FTK_DRAWING_AREA(da)), ftk_da_vadjustment(FTK_DRAWING_AREA(da)));
   ftk_ev_da_scrolled_window(eventviewer) = GTK_SCROLLED_WINDOW (scrolled_window);
   
   
@@ -1005,28 +1065,23 @@ create_drawing_area (FtkEventViewer * eventviewer)
  
 }
 
+
 void
 create_scrollbar (FtkEventViewer * eventviewer)
 {
   /**************** scrollbar *************/
     
-  GtkObject * scroll_adj
-    = gtk_adjustment_new (0.0,
-			  0.0,
-			  ftk_ev_span (eventviewer),
-			  1.0,
-			  ftk_ev_span (eventviewer),
-			  ftk_ev_span (eventviewer)/4.0);
+  
   GtkWidget * h_scroll;
+  GtkWidget * v_scroll;
   #ifdef SCROLLBAR	  
   FtkDrawingArea *da = ftk_ev_da(eventviewer);
-  ftk_da_hadjustment(da) = GTK_ADJUSTMENT(scroll_adj);
-  ftk_da_vadjustment(da) = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0));  
+
   GtkScrolledWindow * da_scrolled_window = ftk_ev_da_scrolled_window(eventviewer);
-  gtk_scrolled_window_set_hadjustment(da_scrolled_window, GTK_ADJUSTMENT (scroll_adj));
-  gtk_scrolled_window_set_vadjustment(da_scrolled_window, GTK_ADJUSTMENT (ftk_da_vadjustment(da)));
   
   h_scroll = gtk_scrolled_window_get_hscrollbar(da_scrolled_window);
+  v_scroll = gtk_scrolled_window_get_vscrollbar(da_scrolled_window);
+	
   #else
   h_scroll = gtk_hscrollbar_new(GTK_ADJUSTMENT(scroll_adj));
   #endif
@@ -1039,20 +1094,25 @@ create_scrollbar (FtkEventViewer * eventviewer)
   atk_object_set_name(obj, _("Main HScroll"));
   atk_object_set_description(obj, _("The main horizontal scrollbar"));
   
+  obj = gtk_widget_get_accessible (v_scroll);
+  atk_object_set_name(obj, _("Main VScroll"));
+  
   gtk_range_set_update_policy (GTK_RANGE (h_scroll),
 			       GTK_UPDATE_CONTINUOUS);
-  gtk_widget_show (h_scroll);
+  
   ftk_ev_scroll (eventviewer) = h_scroll;
-  ftk_ev_scroll_adj (eventviewer) = GTK_ADJUSTMENT (scroll_adj);
+  ftk_ev_scroll_adj (eventviewer) = GTK_ADJUSTMENT (ftk_da_hadjustment(da));
   
   #ifdef CONNECT_CHANGE_SIGNAL
   g_signal_connect (GTK_RANGE(h_scroll),"change-value",
 		    (GtkSignalFunc) ftk_eventviewer_scroll_cv, eventviewer);
 	#endif	
   #ifdef CONNECT_VAL_CHANGED_SIGNAL    
-  g_signal_connect (scroll_adj, "value-changed",
+  g_signal_connect (ftk_da_hadjustment(da), "value-changed",
   			(GtkSignalFunc) ftk_eventviewer_scroll_adj_val_changed, eventviewer);
-  	#endif					
+  g_signal_connect (ftk_da_vadjustment(da), "value-changed",
+			(GtkSignalFunc) ftk_eventviewer_scroll_adj_val_changed, eventviewer);
+  #endif					
 }
 
 #ifdef CONNECT_VAL_CHANGED_SIGNAL
@@ -1061,10 +1121,13 @@ ftk_eventviewer_scroll_adj_val_changed (GtkAdjustment *adjustment,
                                             gpointer       user_data) 
 {
 	FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
-  
-  ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+	if (adjustment == ftk_da_vadjustment(ftk_ev_da(eventviewer))) 
+	{
+		ftk_da_trace_modified(ftk_ev_da(eventviewer)) = TRUE;
+	}
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
 
-	return TRUE; //inhibit propagation
+	return FALSE; //allow propagation
 }
 #endif
 
@@ -1123,6 +1186,7 @@ ftk_eventviewer_init (FtkEventViewer * eventviewer)
     #endif					
     					
     gtk_widget_show_all(GTK_WIDGET(eventviewer));
+   
 }
 
 /*******************************************************/
@@ -1344,18 +1408,20 @@ ftk_eventviewer_center_click (GtkButton *button,
 
   slop = 0.25 * ftk_ev_span (eventviewer);
 
-  g_object_set (G_OBJECT (adj), "page-size", slop + ftk_ev_span (eventviewer),
-		NULL);
+  adj->page_size = slop + ftk_ev_span (eventviewer);
+  gtk_adjustment_changed (adj);
+
   gtk_adjustment_set_value (adj, (ftk_ev_min_time (eventviewer)
 				  - ftk_ev_zero (eventviewer)) - slop/2.0);
+  gtk_adjustment_value_changed(adj);
 
   gtk_range_set_value (GTK_RANGE (ftk_ev_interval_scale (eventviewer)),
 		       log10 (slop + ftk_ev_span (eventviewer)));
 
-  gtk_adjustment_changed (adj);
+ 
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+  ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
 }
 
 
@@ -1368,11 +1434,8 @@ ftk_eventviewer_da_scroll (GtkWidget * widget,
   FtkEventViewer * eventviewer = FTK_EVENTVIEWER (user_data);
   gboolean rc = FALSE;		/* false to propagate */
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-		{
-      		ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
-			eventviewer);
-	  	}	
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
   switch ((int)(event->state)) {
   case 1:		/* shift */
     gtk_propagate_event (ftk_ev_scroll (eventviewer), (GdkEvent *)event);
@@ -1410,7 +1473,10 @@ ftk_eventviewer_slider_format (GtkScale *scale,
 
   fprintf (stderr, "setting ps to %g\n", ftk_ev_span (eventviewer));
 
-  g_object_set (G_OBJECT (adj), "page-size", ftk_ev_span (eventviewer), NULL);
+  //g_object_set (G_OBJECT (adj), "page-size", ftk_ev_span (eventviewer), NULL);
+	adj->page-size = ftk_ev_span(eventviewer);
+	adj->page_increment = ftk_ev_span(eventviewer);
+	
   gtk_adjustment_changed (adj);
     
   draw_plot (eventviewer);
@@ -1430,12 +1496,15 @@ ftk_eventviewer_slider_cv (GtkRange * range,
   
     ftk_ev_span(eventviewer) = lv;
 
-    g_object_set (G_OBJECT (adj), "page-size", ftk_ev_span (eventviewer), NULL);
+    //g_object_set (G_OBJECT (adj), "page-size", ftk_ev_span (eventviewer), NULL);
+	  adj->page_size = ftk_ev_span(eventviewer);
+	adj->page_increment = ftk_ev_span(eventviewer);
     gtk_adjustment_changed (adj);
 
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)),
-			      NULL, eventviewer);
-    
+
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+ 
+
     return FALSE;
   }
   else return TRUE;	/* do no more */
@@ -1512,11 +1581,9 @@ FtkDrawingArea * da = ftk_ev_da(eventviewer);
   	ftk_trace_selected (temp_trace) = FALSE;
   }
    
-   if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
-      			ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
-				eventviewer);
-	  		}
-	  			  		
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+  			  		
   return FALSE; /* Continue handling event. */
 }
 
@@ -1547,11 +1614,9 @@ FtkDrawingArea * da = ftk_ev_da(eventviewer);
      	ftk_trace_selected (temp_trace) = !ftk_trace_selected (temp_trace);			
       if  (abs ((double) event->y - vp) < SELECT_TOLERANCE) 
       {
-      	if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-		{
-      		ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
-			eventviewer);
-	  	}	  		
+      	
+	      ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+  		
 	    return FALSE; /* Continue handling event. */
       } else {
       	ftk_trace_selected(temp_trace) = !ftk_trace_selected(temp_trace);
@@ -1594,11 +1659,8 @@ FtkDrawingArea * da = ftk_ev_da(eventviewer);
 		}				 
     }
     
-    if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-		{
-      		ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
-			eventviewer);
-	  	}	
+   ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+	
 	  	
 	return FALSE;  					
 }	
@@ -2185,14 +2247,18 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   if (!ftk_ev_symbols_initted (eventviewer)) ftk_init_cr (eventviewer);
 
   /* compute label extents and baselines */
-  if (ftk_da_trace_modified (da)) {
+  if (ftk_da_trace_modified (da)) 
+	{
     gint i;
     gint max_label_width  = 0;
     gint total_label_height = 0;
     
     ftk_da_trace_modified (da) = FALSE;
 
-    for (i = 0; i < ftk_da_trace_order_next(da); i++) {
+   // for (i = 0; i < ftk_da_trace_order_next(da); i++) 
+	gint last_trace = fmin(ftk_da_trace_order_next(da), ftk_da_vadjustment(da)->value + ftk_da_vadjustment(da)->page_size);	
+	for (i = ftk_da_vadjustment(da)->value; i <  last_trace; i++) 
+	{
       FtkTrace * trace = ftk_da_trace(da,
 					 ftk_da_trace_order_ety (da, i));
       
@@ -2221,14 +2287,18 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
   
   
   /* Request more space if more traces. */
+#if 0
   if ((ftk_ev_da_height(eventviewer) > (int)(dwidge->allocation.height)) ||
       (ftk_ev_da_height(eventviewer) < ((int)(dwidge->allocation.height) - 12))) {
     gtk_widget_set_size_request (GTK_WIDGET (ftk_ev_da (eventviewer)),
 				 (int)(dwidge->allocation.width),
 				 ftk_ev_da_height(eventviewer));
   }
+#endif
   
   {
+
+    //Draw Background.
     cairo_t * cr = gdk_cairo_create (dwidge->window);
 
     gint dww = (int)(dwidge->allocation.width);
@@ -2254,7 +2324,13 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
       ftk_da_trace_width (da)  =
 	(dww - LABEL_GAP) - ftk_da_trace_origin (da);
 
-      for (i = 0; i < ftk_da_trace_order_next(da); i++) {
+
+
+     // for (i = 0; i < ftk_da_trace_order_next(da); i++) 
+	    gint last_trace = fmin(ftk_da_trace_order_next(da), ftk_da_vadjustment(da)->value + ftk_da_vadjustment(da)->page_size);	
+	
+	for (i = ftk_da_vadjustment(da)->value; i <  last_trace; i++) 
+	{
 	FtkTrace * trace = ftk_da_trace(da,
 					   ftk_da_trace_order_ety (da, i));
 	if (ftk_trace_valid (trace)) {
@@ -2334,7 +2410,11 @@ ftk_eventviewer_da_expose(GtkWidget * dwidge, GdkEventExpose * event,
     {				/* draw points */
       gint i,j;
 
-      for (i = 0; i < ftk_da_trace_order_next(da); i++) {
+      //for (i = 0; i < ftk_da_trace_order_next(da); i++) 
+	    gint last_trace = fmin(ftk_da_trace_order_next(da), ftk_da_vadjustment(da)->value + ftk_da_vadjustment(da)->page_size);	
+	
+	for (i = ftk_da_vadjustment(da)->value; i < last_trace; i++) 
+	{
 	FtkTrace * trace = ftk_da_trace(da,
 					   ftk_da_trace_order_ety (da, i));
 	if (!ftk_trace_valid (trace)) continue;
@@ -2442,9 +2522,8 @@ ftk_eventviewer_style (GtkWidget * widget, GtkStyle *previous_style,
     }
   }
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (da))) {
-    ftk_eventviewer_da_expose(GTK_WIDGET(da), NULL, eventviewer);
-  }
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
 
   return TRUE;
 }
@@ -2534,8 +2613,9 @@ ftk_eventviewer_scroll_cv(GtkRange     *range,
   GtkAdjustment * adj = gtk_range_get_adjustment (range);
   gtk_adjustment_set_value (adj, value);
 
-  ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  return TRUE; //Inhibit propagation.
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+return TRUE; //Inhibit propagation.
 }
 #endif
 
@@ -2583,26 +2663,21 @@ do_append (FtkEventViewer * eventviewer,
     gdouble upper;
     gdouble nt = ftk_event_time (event) - ftk_ev_zero (eventviewer);
     GtkAdjustment * adj = ftk_ev_scroll_adj (eventviewer);
-    
-
-    g_object_get (G_OBJECT (adj), "upper", &upper, NULL);
-    if (upper < nt) {
-      g_object_set (G_OBJECT (adj),
-		    "upper", nt,
-		    NULL);
-      gtk_adjustment_changed (adj);
-      
+    upper = adj->upper;
+	  
+   if (upper < nt) {
+      adj->upper = nt+adj->step_increment;
+      gtk_adjustment_changed (adj);      
     }
     if (!gtk_toggle_button_get_active 
     ( GTK_TOGGLE_BUTTON (ftk_ev_hold_toggle_button(eventviewer))))
     {
-	gtk_adjustment_set_value (adj, nt - ftk_ev_span (eventviewer));
-	if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-		{
-      		ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
-			eventviewer);
-	  	}	
-	 return event_nr;
+	gtk_adjustment_set_value (adj, nt + adj->step_increment - ftk_ev_span (eventviewer));
+	gtk_adjustment_value_changed(adj);
+	ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+  
+
+	 return event_nr; //Expose draws cairo point already.
     }
   }
 
@@ -2727,8 +2802,8 @@ ftk_eventviewer_resize_e (FtkEventViewer * eventviewer,
 
   ftk_ev_widget_modified (eventviewer) = TRUE;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
 
   return TRUE;
 }
@@ -2786,9 +2861,9 @@ ftk_eventviewer_set_bg_rgb_e (FtkEventViewer * eventviewer,
     return FALSE;
   }
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   return TRUE;
 }
 
@@ -2902,13 +2977,14 @@ ftk_eventviewer_set_timebase_e	(FtkEventViewer * eventviewer,
 
   {
     GtkAdjustment * adj = ftk_ev_scroll_adj (eventviewer);
-    g_object_set (G_OBJECT (adj), "upper", ftk_ev_span (eventviewer), NULL);
+    adj->page_increment = ftk_ev_span (eventviewer);
+    adj->page_size = ftk_ev_span(eventviewer); 
     gtk_adjustment_changed (adj);
   }
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   return TRUE;
 }
 
@@ -2957,6 +3033,11 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
      	
     }
 
+if (ftk_da_vadjustment(da)->upper < ftk_da_trace_next(da)) {
+	ftk_da_vadjustment(da)->upper = ftk_da_trace_next(da);
+	gtk_adjustment_changed(ftk_da_vadjustment(da));
+}
+
     if (ftk_da_trace_order_next (da) >= ftk_da_trace_order_max (da)) {
 #define FTK_TRACE_ORDER_INCR 4
       ftk_da_trace_order_max (da) += FTK_TRACE_ORDER_INCR;
@@ -2998,9 +3079,9 @@ ftk_eventviewer_add_trace_e (FtkEventViewer * eventviewer,
     
     ftk_da_trace_modified (da) = TRUE;
 
-    if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-      ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL,
-				eventviewer);
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+ 
+
   }
 
   return tag;
@@ -3164,9 +3245,8 @@ ftk_eventviewer_delete_trace_e	(FtkEventViewer * eventviewer,
   }
 
   ftk_da_trace_modified(da) = TRUE;
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) 
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)),
-			      NULL, eventviewer);
+  
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
 
   return TRUE;
 }
@@ -3239,9 +3319,9 @@ ftk_eventviewer_set_trace_rgb_e (FtkEventViewer * eventviewer,
     return FALSE;
   }
   
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   return TRUE;
 }
 
@@ -3324,9 +3404,10 @@ ftk_eventviewer_set_trace_label_e (FtkEventViewer * eventviewer,
     gtk_widget_create_pango_layout (GTK_WIDGET (eventviewer), t_label);
   free (t_label);
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+
+ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   return TRUE;
 }
 
@@ -3379,9 +3460,9 @@ ftk_eventviewer_set_trace_linestyle_e (FtkEventViewer * eventviewer,
   ftk_trace_linestyle (trace)		= (double)ls;
   ftk_trace_linewidth (trace)		= (double)lw;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+  ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   return TRUE;
 }
 
@@ -3492,8 +3573,9 @@ ftk_eventviewer_marker_new_e (FtkEventViewer * eventviewer,
   if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer))) {
     ftk_eventviewer_legend_da_expose(GTK_WIDGET(ftk_ev_legend_da(eventviewer)),
 				     NULL, eventviewer);
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)),
-			      NULL, eventviewer);
+   ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   }
 
   return ftk_legend_markers_next (legend)++;
@@ -3777,9 +3859,9 @@ ftk_eventviewer_set_tie_rgb_e (FtkEventViewer * eventviewer,
   ftk_tie_color_blue (tie)		= blue;
   ftk_ev_tie_modified (eventviewer)	= TRUE;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+  ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
+
   return TRUE;
 }
 
@@ -3861,9 +3943,8 @@ ftk_eventviewer_set_tie_label_e (FtkEventViewer * eventviewer,
   free (t_label);
   ftk_tie_label_modified (tie)	= TRUE;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+ ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
   return TRUE;
 }
 
@@ -3914,9 +3995,8 @@ ftk_eventviewer_set_tie_linestyle_e (FtkEventViewer * eventviewer,
   ftk_tie_linewidth (tie)		= (double)lw;
   ftk_tie_linestyle (tie)		= (double)ls;
 
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (eventviewer)))
-    ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
-  
+  ftk_eventviewer_da_expose(GTK_WIDGET(ftk_ev_da(eventviewer)), NULL, eventviewer);
+
   return TRUE;
 }
 
@@ -6808,5 +6888,6 @@ ftk_legend_get_accessible (GtkWidget *widget)
  
   return (* GTK_WIDGET_CLASS (parent_class)->get_accessible) (widget);
 }
+
 
 

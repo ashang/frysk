@@ -1,3 +1,12 @@
+2006-09-06  Nurdin Premji  <npremji@redhat.com>
+	* src/widgets/ftkeventviewr.c: Fixed issues with horizontal and vertical scrollbars.
+	Changed default span to 10 to reflect default value in java file.
+	Added code to deal with drawing area size reallocations. So that more traces can be drawn.
+	Cleaned up accessibility names for standard widgets.
+	Removed redundant checks of GTK_WIDGET_DRAWABLE. ftk_eventviewer_da_expose 
+	already checks for this now.
+	Changed to only draw the number of traces that can be seen on  the screen.
+
 2006-08-31  Nurdin Premji  <npremji@redhat.com>
 	* src/widgets/ftkeventviewer.c (ftk_eventviewer_da_expose):added check for 
 	GTK_WIDGET_DRAWABLE
