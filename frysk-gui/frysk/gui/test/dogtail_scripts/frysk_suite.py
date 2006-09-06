@@ -58,14 +58,20 @@ import viewerMarkers
 import test2866
 import test2985
 import stressDruid
+import elena
 
 # Import needed to access test file input files via envron var's
 import os
 
+src = '/home/ldimaggi/sandbox/frysk/frysk-gui/frysk/gui/test/dogtail_scripts/'
+frysk = '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui'
+funitChild = '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child'
+
 # Define the test input files
-os.environ.__setitem__('TestDruid_FILE', 'another_new_session.xml')
-os.environ.__setitem__('fryskBinary', '/home/ldimaggi/sandbox/build/frysk-gui/frysk/gui/FryskGui')
-os.environ.__setitem__('funitChild', '/home/ldimaggi/sandbox/build/frysk-core/frysk/pkglibexecdir/funit-child')
+os.environ.__setitem__('TestDruid_FILE', src + 'another_new_session.xml')
+os.environ.__setitem__('fryskBinary', frysk)
+os.environ.__setitem__('funitChild', funitChild)
+os.environ.__setitem__('fryskDataDir', src)
 
 # Define the suite elements
 licenseSuite = license.suite()
@@ -77,6 +83,7 @@ viewerMarkersSuite = viewerMarkers.suite()
 test2866Suite = test2866.suite()
 test2985Suite = test2985.suite()
 stressDruidSuite = stressDruid.suite()
+elenaSuite = elena.suite()
 
 # Assemble the suite
 suite = unittest.TestSuite()
@@ -89,6 +96,7 @@ suite.addTest(viewerMarkersSuite)
 suite.addTest(test2866Suite)
 suite.addTest(test2985Suite)
 # Commented out - test aborts - bug 2807 suite.addTest(stressDruidSuite)
+suite.addTest(elenaSuite)
 
 # Run the test suite
 unittest.TextTestRunner(verbosity=2).run(suite)
@@ -97,4 +105,5 @@ unittest.TextTestRunner(verbosity=2).run(suite)
 os.environ.__delitem__('TestDruid_FILE')
 os.environ.__delitem__('fryskBinary')
 os.environ.__delitem__('funitChild')
+os.environ.__delitem__('fryskDataDir')
 

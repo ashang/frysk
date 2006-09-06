@@ -503,19 +503,19 @@ class observerData ( unittest.TestCase ):
         
     # The actual tests - one for each type of observer
     def testexec(self):
-        observerData.runTest(self, 'new_exec_custom_observer.xml')
+        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_exec_custom_observer.xml')
 
     def testfork(self):
-        observerData.runTest(self, 'new_fork_custom_observer.xml')
+        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_fork_custom_observer.xml')
 
     def testsyscall(self):
-        observerData.runTest(self, 'new_syscall_custom_observer.xml')
+        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_syscall_custom_observer.xml')
 
     def testclone(self):
-        observerData.runTest(self, 'new_task_clone_custom_observer.xml')
+        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_task_clone_custom_observer.xml')
         
     def testterm(self):
-        observerData.runTest(self, 'new_task_term_custom_observer.xml')       
+        observerData.runTest(self, os.getenv('fryskDataDir') + 'new_task_term_custom_observer.xml')       
        
     def runTest (self, theDataFileName):
         """Check that Observers can be created and read"""       
