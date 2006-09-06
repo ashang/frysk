@@ -101,7 +101,9 @@ public class SysCallUtilyInfo {
 				enterCall += ",";
 		}
 
-		enterCall += ')';
+		if (syscall.numArgs > 0)
+			enterCall += ')';
+		
 		return enterCall;
 	}
 

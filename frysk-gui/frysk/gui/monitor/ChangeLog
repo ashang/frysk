@@ -1,4 +1,9 @@
 2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/SysCallUtilyInfo.java (getCallInfoFromSyscall): Add rule
+	for closing brackets on arguments that are provided.
+
+2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 	
 	* observers/SysCallUtilyInfo.java: Remove fully defined references for
 	Syscall.
