@@ -48,9 +48,9 @@ import inua.util.PrintWriter;
 public class Syscall
 {
     int number;
-    int numArgs;
+    public final int numArgs;
     String name;
-    String argList;
+    public final String argList;
     boolean noreturn;
 
     Syscall (String name, int number, int numArgs, 

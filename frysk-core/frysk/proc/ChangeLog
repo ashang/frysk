@@ -1,3 +1,7 @@
+2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* Syscall.java: numArgs, argList make public final
+
 2006-09-06  Mark Wielaard  <mark@klomp.org>
 
 	* TaskState.java (SyscallRunning): Removed, merged with Running.
