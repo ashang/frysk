@@ -747,20 +747,43 @@ class TaskState
     private static class Running
 	extends TaskState
     {
-	protected Running (String state)
+        private final boolean syscalltracing;
+
+      protected Running (String state, boolean syscalltracing)
 	{
 	    super (state);
+	    this.syscalltracing = syscalltracing;
 	}
 	
+        /**
+	 * Tells the Task to continue, with or without syscall tracing.
+	 */
+        private void sendContinue(Task task, int sig)
+        {
+	  if (syscalltracing)
+	    task.sendSyscallContinue(sig);
+	  else
+	    task.sendContinue(sig);
+        }
+
+        /**
+	 * Returns a blocked TaskState depending on whether we are
+	 * syscall tracing the Task.
+	 */
+        private TaskState blockedContinue()
+        {
+	  return syscalltracing ? syscallBlockedContinue : blockedContinue;
+	}
+
 	TaskState handleSignaledEvent (Task task, int sig)
 	{
 	    logger.log (Level.FINE, "{0} handleSignaledEvent, signal: {1}\n", new Object[] {task, new Integer(sig)}); 
 	    if (task.notifySignaled (sig) > 0) {
-	      return new BlockedSignal(sig, false);
+	      return new BlockedSignal(sig, syscalltracing);
 	    }
 	    else {
-		task.sendContinue (sig);
-		return running;
+	        sendContinue(task, sig);
+		return this;
 	    }
 	}
 	TaskState handleStoppedEvent (Task task)
@@ -807,7 +830,7 @@ class TaskState
 	    }
 
 	  // And pretend nothing happend, happily continue running.
-	  task.sendContinue(0);
+	  sendContinue(task, 0);
 	  return this;
 	}
 
@@ -817,18 +840,18 @@ class TaskState
 	    logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
 	    if(task.notifyTerminating (signal, value) > 0){
           if (signal){
-            return new BlockedSignal(value, false);
+            return new BlockedSignal(value, syscalltracing);
           }else{
-            return blockedContinue;
+            return blockedContinue();
           }
         }
         
 	    if (signal)
-	      task.sendContinue (value);
+	      sendContinue(task, value);
 	    else
-	      task.sendContinue (0);
+	      sendContinue(task, 0);
         
-	    return running;
+	    return this;
 	}
 	TaskState handleTerminatedEvent (Task task, boolean signal,
 					 int value)
@@ -850,8 +873,8 @@ class TaskState
 	      }
 	    else
 	      {
-		task.sendContinue (0);
-		return running;
+		sendContinue(task, 0);
+		return this;
 	      }
 	}
 	TaskState handleDisappearedEvent (Task task, Throwable w)
@@ -862,7 +885,7 @@ class TaskState
 	TaskState handleContinue (Task task)
 	{
 	    logger.log (Level.FINE, "{0} handleContinue\n", task); 
-	    return running;
+	    return this;
 	}
 	TaskState handleDetach (Task task)
 	{
@@ -875,17 +898,17 @@ class TaskState
 	{
 	    logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
 	    if (task.notifyClonedParent (clone) > 0)
-		return blockedContinue;
-	    task.sendContinue (0);
-	    return running;
+	      return blockedContinue();
+	    sendContinue(task, 0);
+	    return this;
 	}
 	TaskState handleForkedEvent (Task task, Task fork)
 	{
 	    logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
 	    if (task.notifyForkedParent (fork) > 0)
-		return blockedContinue;
-	    task.sendContinue (0);
-	    return running;
+	      return blockedContinue();
+	    sendContinue(task, 0);
+	    return this;
 	}
 
       // Whether we are currently stepping over a breakpoint.
@@ -907,7 +930,7 @@ class TaskState
 	  {
 	    steppingBreakpoint.stepDone(task);
 	    steppingBreakpoint = null;
-	    task.sendContinue(0);
+	    sendContinue(task, 0);
 	    return this;
 	  }
 
@@ -931,7 +954,7 @@ class TaskState
 		bp.prepareStep(task);
 		task.sendStepInstruction(0);
 		steppingBreakpoint = bp;
-		return running;
+		return this;
 	      }
 	    catch (TaskException te)
 	      {
@@ -940,7 +963,7 @@ class TaskState
 	      }
 	  }
 	else
-	  return blockedContinue;
+	  return blockedContinue();
       }
 
       // List containing the CodeObservers that are pending addition
@@ -1001,14 +1024,14 @@ class TaskState
 	{
 	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
 	    observable.add (observer);
-	    return running;
+	    return this;
 	}
 	TaskState handleDeleteObserver (Task task, Observable observable,
 					Observer observer)
 	{
 	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
 	    observable.delete (observer);
-	    return running;
+	    return this;
 	}
 	TaskState handleUnblock (Task task,
 				 TaskObserver observer)
@@ -1016,15 +1039,48 @@ class TaskState
 	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 	    // XXX: What to do about a stray unblock?
 	    // observer.fail (new RuntimeException (task, "not blocked");
-	    return running;
+	    return this;
 	}
 	TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
 	{
-      observable.add(observer);
-      task.sendStop();
-       return transitionToSyscallRunning;
+	  observable.add(observer);
+	  if (! syscalltracing)
+	    {
+	      task.sendStop();
+	      return transitionToSyscallRunning;
+	    }
+	  return this;
 	}
     
+      TaskState handleDeleteSyscallObserver(Task task,
+					    Observable observable,
+					    Observer observer)
+      {
+	logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
+	observable.delete(observer);
+	if (observable.numberOfObservers() == 0)
+	  {
+	    logger.log(Level.FINE,
+		       "{0} handleDeleteSyscallObserver no observers left\n",
+		       task);
+	    task.sendStop();
+	    return transitionOutOfSyscallRunning;
+	  }
+	return this;
+      }
+
+      TaskState handleSyscalledEvent(Task task)
+      {
+	logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
+	if (task.notifySyscallEnter () > 0)
+	  return syscallBlockedInSyscallContinue;
+	else
+	  {
+	    task.sendSyscallContinue(0);
+	    return runningInSyscall;
+	  }
+      }
+		
     /**
      * A task has been requested to stop, it is waiting
      * for a stopevent to tell so it can send syscall tracing
@@ -1071,122 +1127,6 @@ class TaskState
     }
   
     /**
-     * Keep the task running in syscall tracing mode
-     */
-    private static class SyscallRunning extends Running{
-		    
-	protected SyscallRunning(String state) {
-	    super(state);
-	}
-		
-	TaskState handleSignaledEvent (Task task, int sig)
-	{
-	    logger.log (Level.FINE, "{0} handleSignaledEvent\n", task); 
-	    if (task.notifySignaled (sig) > 0) {
-	      return new BlockedSignal(sig, true);
-	    }
-	    else {
-		task.sendSyscallContinue (sig);
-		return syscallRunning;
-	    }
-	}
-		
-	TaskState handleSyscalledEvent (Task task)
-	{
-	    logger.log (Level.FINE, "{0} handleSyscalledEvent\n", task); 
-	    if(task.notifySyscallEnter () > 0){
-	      return syscallBlockedInSyscallContinue;
-        }else{
-          task.sendSyscallContinue(0);
-          return runningInSyscall;
-        }
-	}
-		
-	TaskState handleTerminatingEvent (Task task, boolean signal,
-					  int value)
-	{
-	    logger.log (Level.FINE, "{0} handleTerminatingEvent\n", task); 
-
-        if(task.notifyTerminating (signal, value) > 0){
-          if (signal){
-            return new BlockedSignal(value, true);
-          }else{
-            return syscallBlockedContinue;
-          }
-        }
-        
-	    if (signal)
-	      task.sendSyscallContinue (value);
-	    else
-	      task.sendSyscallContinue (0);
-	    return syscallRunning;
-	}
-	TaskState handleContinue (Task task)
-	{
-	    logger.log (Level.FINE, "{0} handleContinue\n", task); 
-	    return syscallRunning;
-	}
-	TaskState handleClonedEvent (Task task, Task clone)
-	{
-	    logger.log (Level.FINE, "{0} handleClonedEvent\n", task); 
-	    if (task.notifyClonedParent (clone) > 0)
-		return syscallBlockedContinue;
-	    task.sendSyscallContinue (0);
-	    return syscallRunning;
-	}
-	TaskState handleForkedEvent (Task task, Task fork)
-	{
-	    logger.log (Level.FINE, "{0} handleForkedEvent\n", task); 
-	    if (task.notifyForkedParent (fork) > 0)
-		return syscallBlockedContinue;
-	    task.sendSyscallContinue (0);
-	    return syscallRunning;
-	}
-	TaskState handleAddObserver (Task task, Observable observable,
-				     Observer observer)
-	{
-	    logger.log (Level.FINE, "{0} handleAddObserver\n", task);
-	    observable.add (observer);
-	    return syscallRunning;
-	}
-	TaskState handleDeleteObserver (Task task, Observable observable,
-					Observer observer)
-	{
-	    logger.log (Level.FINE, "{0} handleDeleteObserver\n", task); 
-	    observable.delete (observer);
-	    return syscallRunning;
-	}
-	TaskState handleUnblock (Task task,
-				 TaskObserver observer)
-	{
-	    logger.log (Level.FINE, "{0} handleUnblock\n", task); 
-	    // XXX: What to do about a stray unblock?
-	    // observer.fail (new RuntimeException (task, "not blocked");
-	    return syscallRunning;
-	}
-    
-    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
-    {
-      logger.log(Level.FINE, "{0} handleAddSyscallObserver\n", task);
-      observable.add(observer);
-      return this; 
-    }
-    TaskState handleDeleteSyscallObserver (Task task, Observable observable, Observer observer)
-    {
-      logger.log(Level.FINE, "{0} handleDeleteSyscallObserver\n", task);
-      observable.delete(observer);
-      if(observable.numberOfObservers() == 0){
-        logger.log(Level.FINE, "{0} handleDeleteSyscallObserver number of observer = 0 \n", task);
-        task.sendStop();
-        return transitionOutOfSyscallRunning;
-      }else{
-        return this;
-      }
-    }
-
-    }
-
-    /**
      * A task has been requested to stop, it is waiting
      * for a stopevent to tell so it can send syscall tracing
      * options and trasition to syscallRunning.
@@ -1212,17 +1152,17 @@ class TaskState
        
      };
      
-  
-	    
     /**
      * Sharable instance of the running state.
      */
-    private static final TaskState running = new Running ("running");
+    private static final TaskState running =
+      new Running("running", false);
 
     /**
      * Sharable instance of the syscallRunning state.
      */
-    private static final TaskState syscallRunning = new SyscallRunning("syscallRunning");
+    private static final TaskState syscallRunning =
+      new Running("syscallRunning", true);
 
     
     // Task is running inside a syscall.
