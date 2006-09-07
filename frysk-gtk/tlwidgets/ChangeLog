@@ -1,5 +1,10 @@
+2006-09-07  Nurdin Premj  <npremji@redhat.com>
+	* src/widgets/ftkeventviewer.c(ftk_da_redraw_canvas): Added.
+	Use ftk_da_redraw_canvas to re-expose the drawing area rather than calling expose manually.
+	Shrank the amount of dead area at the end of eventviewer to 1% of the screen size (rather than 10%).
+
 2006-09-06  Nurdin Premji  <npremji@redhat.com>
-	* src/widgets/ftkeventviewr.c: Fixed issues with horizontal and vertical scrollbars.
+	* src/widgets/ftkeventviewer.c: Fixed issues with horizontal and vertical scrollbars.
 	Changed default span to 10 to reflect default value in java file.
 	Added code to deal with drawing area size reallocations. So that more traces can be drawn.
 	Cleaned up accessibility names for standard widgets.
