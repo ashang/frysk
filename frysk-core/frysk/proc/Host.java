@@ -239,7 +239,7 @@ public abstract class Host
 
     /**
      * A process has been added.  Possible reasons include a process
-     * referesh, and a fork.
+     * refresh, and a fork.
      *
      * XXX: Should be made private and instead accessor methods added.
      * Should more formally define the observable and the event.

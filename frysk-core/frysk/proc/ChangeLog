@@ -1,3 +1,7 @@
+2006-09-07  Tom Tromey  <tromey@redhat.com>
+
+	* Host.java (requestRefreshXXX): Fix typo.
+
 2006-09-07  Mark Wielaard  <mark@klomp.org>
 
 	* TaskState.java: Merge BlockedSignal, SyscallBlockedInSyscall and
