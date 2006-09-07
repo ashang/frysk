@@ -138,7 +138,8 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 
 	private void runEnterActions(Task task) {
 		super.runActions();
-		this.enteringGenericActionPoint.runActions(this);
+		// Sami why do we need to call enteringGenericActionPoint as well as enteringTaskActionPoint?
+		//this.enteringGenericActionPoint.runActions(this);
 		this.enteringTaskActionPoint.runActions(task);
 	}
 
@@ -171,7 +172,8 @@ public class TaskSyscallObserver extends TaskObserverRoot implements TaskObserve
 
 	private void runExitActions(Task task) {
 		super.runActions();
-		this.exitingGenericActionPoint.runActions(this);
+		// Sami why do we need to call exitingGenericActionPoint as well as exitingTaskActionPoint?
+		//this.exitingGenericActionPoint.runActions(this);
 		this.exitingTaskActionPoint.runActions(task);
 	}
 

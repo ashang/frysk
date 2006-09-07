@@ -1,3 +1,16 @@
+2006-09-07  Phil Muldoon  <pmuldoon@redhat.com>
+
+	* observers/TaskSyscallObserver.java (runEnterActions): Remove double action call
+	(runExitActions): Ditto.
+	
+	* StatusWidget.java (newTrace): Rename variable from trace1 to 
+	newTrace.
+	(StatusWidget): Rename trace0 to initialTrace
+	(buildEventViewer): New.
+	(StatusWidget): Refactor viewer init to buildEventViewer.
+	(initThreads): Rename thread linked list to threadList.
+	(initLogTextView): Rename to initEventViewer.
+
 2006-09-07  Mike Cvet  <mcvet@redhat.com>
 
 	* TIDColumnDialog.java: Added license.
@@ -43,7 +56,6 @@
 	refactored getProcColNames().
 	(load): Ditto.
 
-=======
 2006-09-06  Phil Muldoon  <pmuldoon@redhat.com>
 
 	* SessionProcTreeView.java (SessionProcTreeView): Check sanity of
