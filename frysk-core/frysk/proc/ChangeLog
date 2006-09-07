@@ -1,5 +1,10 @@
 2006-09-07  Mark Wielaard  <mark@klomp.org>
 
+	* TaskState.java: Merge BlockedSignal, SyscallBlockedInSyscall and
+	blockedInExecSyscall.
+
+2006-09-07  Mark Wielaard  <mark@klomp.org>
+
 	* TestSyscallSignal.java: New file.
 
 2006-09-06  Mark Wielaard  <mark@klomp.org>
