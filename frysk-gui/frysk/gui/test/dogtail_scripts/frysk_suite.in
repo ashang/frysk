@@ -47,6 +47,17 @@ Summary:        Still a prototype
 
 __author__ = 'Len DiMaggio <ldimaggi@redhat.com>'
 
+frysk=@abs_builddir@/frysk/gui/FryskGui
+src=@abs_srcdir@/frysk/gui/test/dogtail_scripts/
+funitChild=@abs_builddir@/../frysk-core/frysk/pkglibexecdir/funit-child
+
+# Import needed to access test file input files via envron var's
+import os
+import sys
+# Needed to be able to run the scripts from the source tree when this script
+# is in the build tree
+sys.path.append(src)
+
 # Import the test suites
 import unittest
 import license
@@ -59,13 +70,6 @@ import test2866
 import test2985
 import stressDruid
 import elena
-
-# Import needed to access test file input files via envron var's
-import os
-
-frysk=@abs_builddir@/frysk/gui/FryskGui
-src=@abs_srcdir@/frysk/gui/test/dogtail_scripts/
-funitChild=@abs_builddir@/../frysk-core/frysk/pkglibexecdir/funit-child
 
 # Define the test input files
 os.environ.__setitem__('TestDruid_FILE', src + 'another_new_session.xml')
