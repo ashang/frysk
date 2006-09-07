@@ -307,26 +307,23 @@ class TaskState
 	 * Once the task is both unblocked and continued, should
 	 * transition to the running state.
 	 */
-	static TaskState transitionToRunningState (Task task, int signal)
+        static TaskState transitionToRunningState(Task task, int signal,
+						  boolean syscalltracing)
 	{
-	    task.sendSetOptions ();
+	    logger.log(Level.FINE, "transitionToRunningState\n");
+	    task.sendSetOptions();
 	    if (task.notifyAttached () > 0)
-	      return new BlockedSignal (signal, false);
-	    task.sendContinue (signal);
-	    return running;
-	}
-	/**
-	 * If a task is in syscall tracing mode,once the task
-	 * is both unblocked and continued, should transition
-	 * to the syscallRunning state.
-	 */
-      static TaskState transitionToSyscallRunningState (Task task, int signal)
-	{
-	    logger.log(Level.FINE, "transitionToSyscallRunningState\n");
-	    if (task.notifyAttached () > 0)
-	      return new BlockedSignal (signal, true);
-	    task.sendSyscallContinue (0);
-	    return syscallRunning;
+	      return new BlockedSignal(signal, syscalltracing);
+	    if (syscalltracing)
+	      {
+		task.sendSyscallContinue(signal);
+		return syscallRunning;
+	      }
+	    else
+	      {
+		task.sendContinue(signal);
+		return running;
+	      }
 	}
 	/**
 	 * The blocked task has stopped, possibly with a pending
@@ -354,13 +351,10 @@ class TaskState
 	    {
 		logger.log (Level.FINE, "{0} handleContinue\n", task); 
 		if (task.blockers.size () == 0)
-		  {
-		    if (syscallObserverAdded)
-		      return transitionToSyscallRunningState(task, signal);
-		    else
-		      return Attached.transitionToRunningState(task, signal);
-		  }
-		return new Attached.WaitForUnblock (signal);
+		  return transitionToRunningState(task, signal,
+						  syscallObserverAdded);
+		else
+		  return new Attached.WaitForUnblock (signal);
 	    }
 	    TaskState handleAddSyscallObserver (Task task, Observable observable, Observer observer)
 	    {
@@ -402,12 +396,8 @@ class TaskState
 		logger.log (Level.FINE, "{0} handleUnblock\n", task); 
 		task.blockers.remove (observer);
 		if (task.blockers.size () == 0)
-		  {
-		    if (syscallObserverAdded)
-		      return transitionToSyscallRunningState(task, signal);
-		    else
-		      return transitionToRunningState(task, signal);
-		  }
+		  return transitionToRunningState(task, signal,
+						  syscallObserverAdded);
 		return this;
 	    }
 	    TaskState handleAddSyscallObserver(Task task,
@@ -562,7 +552,8 @@ class TaskState
 		{
 		    if (task.notifyForkedOffspring () > 0)
 			return StartMainTask.attachContinueBlocked;
-		    return Attached.transitionToRunningState (task, signal);
+		    return Attached.transitionToRunningState(task, signal,
+							     false);
 		}
 		TaskState handleTrappedEvent (Task task)
 		{
@@ -632,7 +623,7 @@ class TaskState
 		    task.blockers.remove (observer);
 		    if (task.blockers.size () > 0)
 			return StartMainTask.attachContinueBlocked;
-		    return Attached.transitionToRunningState (task, 0);
+		    return Attached.transitionToRunningState(task, 0, false);
 		}
 	    };
     }
