@@ -1,3 +1,8 @@
+2006-09-07  Andrew Cagney  <cagney@redhat.com>
+
+	* frysk2130/strace-clone-exec.shin: Add check for strace, fail
+	when not installed.
+
 2006-08-31  Mike Cvet  <mcvet@redhat.com>
 
 	* frysk2760/TestBarrier.java (GCThread.run): Removed frivolous
