@@ -50,14 +50,21 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Observable;
 import java.util.Observer;
+
 import org.gnu.gdk.Color;
 import org.gnu.gtk.Label;
 import org.gnu.gtk.VBox;
-//import org.gnu.gtk.event.MouseEvent;
-//import org.gnu.gtk.event.MouseListener;
+
 import com.redhat.ftk.EventViewer;
-import frysk.gui.monitor.actions.GenericAction;
+
+import frysk.gui.monitor.actions.TaskAction;
 import frysk.gui.monitor.observers.ObserverRoot;
+import frysk.gui.monitor.observers.TaskCloneObserver;
+import frysk.gui.monitor.observers.TaskExecObserver;
+import frysk.gui.monitor.observers.TaskForkedObserver;
+import frysk.gui.monitor.observers.TaskSyscallObserver;
+import frysk.gui.monitor.observers.TaskTerminatingObserver;
+import frysk.proc.Task;
 
 public class StatusWidget extends VBox {
 
@@ -151,6 +158,34 @@ public class StatusWidget extends VBox {
 		int trace = guiTask.getTrace();
 		viewer.deleteTrace(trace);
 	}
+	
+	private void addObserverActionPoint(ObserverRoot observer, GuiData guiData)	{
+		if (observer instanceof TaskSyscallObserver) {
+			((TaskSyscallObserver)observer).enteringTaskActionPoint.addAction(new TimelineAction(
+				observer, guiData));
+		}
+		
+		if (observer instanceof TaskCloneObserver) {
+			((TaskCloneObserver)observer).clonedTaskActionPoint.addAction(new TimelineAction(
+					observer, guiData));
+		}
+		
+		if (observer instanceof TaskExecObserver) {
+			((TaskExecObserver)observer).taskActionPoint.addAction(new TimelineAction(
+					observer, guiData));
+		}
+		
+		if (observer instanceof TaskForkedObserver) {
+			((TaskForkedObserver)observer).forkedTaskActionPoint.addAction(new TimelineAction(
+					observer, guiData));
+		}
+		
+		if (observer instanceof TaskTerminatingObserver) {
+			((TaskTerminatingObserver)observer).taskActionPoint.addAction(new TimelineAction(
+					observer, guiData));
+		}
+
+	}
 
 	private void initEventViewer(final GuiData guiData) {
 		ObservableLinkedList observers;
@@ -167,16 +202,20 @@ public class StatusWidget extends VBox {
 			ListIterator iter = observers.listIterator();
 			while (iter.hasNext()) {
 				final ObserverRoot observer = (ObserverRoot) iter.next();
-				observer.genericActionPoint.addAction(new TimelineAction(
-						observer, guiData));
+				addObserverActionPoint(observer,guiData);
+
+				//observer.genericActionPoint.addAction(new TimelineAction(
+				//	observer, guiData));
+		
 			}
 		}
 		guiData.getObservers().itemAdded.addObserver(new Observer() {
 			GuiData realGuiData = guiData;
 			public void update(Observable arg0, Object obj) {
 				final ObserverRoot observer = (ObserverRoot) obj;
-				observer.genericActionPoint.addAction(new TimelineAction(
-						observer, realGuiData));
+				addObserverActionPoint(observer,realGuiData);
+//				observer.genericActionPoint.addAction(new TimelineAction(
+//						observer, realGuiData));
 			}
 		});
 	}
@@ -192,7 +231,7 @@ public class StatusWidget extends VBox {
   private static int count = 0;
 
   class TimelineAction
-      extends GenericAction
+      extends TaskAction
   {
 
     int markerId;
@@ -260,19 +299,29 @@ public class StatusWidget extends VBox {
 
     }
 
-    public void execute (ObserverRoot observer)
-    {
+  
+	public void execute(Task task) {
+		      
+	      if (guiData instanceof GuiTask)
+	    	  if (task.getTid() == ((GuiTask)guiData).getTask().getTid())
+	    		  viewer.appendEvent(guiData.getTrace(), markerId,
+	                         "Other useful per-event information.");
+	}
 
-      // XXX: Change other usefull...
-    	
-  //    System.out.print("Writing to trace: " + guiData.getTrace());
-  //    if (guiData instanceof GuiTask)
-    	//  System.out.println(" for thread " + ((GuiTask)guiData).getTask().getTid() + " belonging to process " +
-    	///		  ((GuiTask)guiData).getParent().getName());
-   //   else
-  //  	  System.out.println("for Proc only" + ((GuiProc)guiData).getName());
-      viewer.appendEvent(guiData.getTrace(), markerId,
-                         "Other useful per-event information.");
-    }
+	public String getArgument() {
+		return null;
+	}
+
+	public ObservableLinkedList getArgumentCompletionList() {
+		return null;
+	}
+
+	public GuiObject getCopy() {
+		return null;
+	}
+
+	public boolean setArgument(String argument) {
+		return false;
+	}
   }
 }
