@@ -60,8 +60,8 @@ public class TestStackBacktrace
 
   public void testBacktrace () throws TaskException
   {
-     if (brokenXXX(2936))
-      return;
+//     if (brokenXXX(2936))
+//      return;
     
     class TaskCreatedObserver extends TaskObserverBase
         implements TaskObserver.Attached
@@ -123,15 +123,15 @@ public class TestStackBacktrace
 
     assertNotNull(frame);
 
-    int level = 0;
+    //int level = 0;
     while (frame != null)
       {
-        System.out.println("Frame " + (++level));
-        System.out.println("\tFile: " + frame.getSourceFile());
-        System.out.println("\tFunc: " + frame.getMethodName());
-        System.out.println("\tLine: " + frame.getLineNumber());
-        System.out.println("\tCol: " + frame.getColumn());
-        System.out.println("\tAddr: " + frame.getAddress());
+//        System.out.println("Frame " + (++level));
+//        System.out.println("\tFile: " + frame.getSourceFile());
+//        System.out.println("\tFunc: " + frame.getMethodName());
+//        System.out.println("\tLine: " + frame.getLineNumber());
+//        System.out.println("\tCol: " + frame.getColumn());
+//        System.out.println("\tAddr: " + frame.getAddress());
         frame = frame.getOuter();
       }
 

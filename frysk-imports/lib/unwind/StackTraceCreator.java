@@ -51,8 +51,31 @@ public class StackTraceCreator
    */
   public static FrameCursor createStackTrace (UnwindCallbacks callbacks)
   {
-    return unwind_setup(callbacks);
+    return unwind_setup(new UnwindArgs(callbacks));
   }
 
-  private static native FrameCursor unwind_setup (UnwindCallbacks callbacks);
+  private static native FrameCursor unwind_setup (UnwindArgs args);
+
+  private static native void unwind_finish (UnwindArgs args);
+
+  private static class UnwindArgs
+  {
+    public UnwindCallbacks CBarg;
+
+    public long UPTarg;
+
+    public long unwas;
+
+    public UnwindArgs (UnwindCallbacks CBarg)
+    {
+      this.CBarg = CBarg;
+      this.UPTarg = 0;
+      this.unwas = 0;
+    }
+
+    public void finalize ()
+    {
+      unwind_finish(this);
+    }
+  }
 }

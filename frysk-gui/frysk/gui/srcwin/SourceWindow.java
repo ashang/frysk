@@ -104,6 +104,7 @@ import frysk.gui.register.RegisterWindowFactory;
 import frysk.gui.srcwin.CurrentStackView.StackViewListener;
 import frysk.gui.srcwin.prefs.SourceWinPreferenceGroup;
 import frysk.proc.Task;
+import frysk.rt.StackFrame;
 
 /**
  * The SourceWindow displays the source or assembly level view of a Task's
@@ -231,7 +232,7 @@ public class SourceWindow
    * @param stack The stack frame that represents the current state of execution
    */
   public SourceWindow (LibGlade glade, String gladePath, DOMFrysk dom,
-                       StackLevel stack)
+                       StackLevel stack, StackFrame frame)
   {
     super(((Window) glade.getWidget(SOURCE_WINDOW)).getHandle());
 
@@ -250,7 +251,7 @@ public class SourceWindow
 
     this.tips = new ToolTips();
 
-    this.populateStackBrowser(this.stack);
+    this.populateStackBrowser(this.stack, frame);
 
     this.createActions(ag);
     this.createMenus();
@@ -336,9 +337,9 @@ public class SourceWindow
    * 
    * @param top
    */
-  private void populateStackBrowser (StackLevel top)
+  private void populateStackBrowser (StackLevel top, StackFrame frame)
   {
-    stackView = new CurrentStackView(top);
+    stackView = new CurrentStackView(top, frame);
 
     StackLevel lastStack = stackView.getCurrentLevel();
 

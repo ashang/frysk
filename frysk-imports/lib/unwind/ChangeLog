@@ -1,3 +1,19 @@
+2006-09-08	Alexandre Oliva	<aoliva@redhat.com>
+
+	* StackTraceCreator.java (UnwindArgs): New inner class.
+    (createStackTrace): Instantiate it.
+    (unwind_setup): Take it as argument.
+    (unwind_finish): New native method.
+    * cni/StackTraceCreator.cxx: Include libunwind-ptrace.h and
+    header for new inner class.
+    (find_proc_info, put_unwind_info, get_dyn_info_list_addr): Use
+    implementation from libunwind-ptrace.
+    (access_mem, access_reg, access_fpreg, resume, get_proc_name):
+    Adjust.
+    (unwind_setup): Set up libunwind-ptrace opaque args and
+    UnwindArgs fields that need native finalization.
+    (unwind_finish): Finalize them.
+
 2005-07-24  Adam Jocksch  <ajocksch@redhat.com>
 
 	* UnwindCallbacks.java (getProcInfo): Now returns a boolean and takes the

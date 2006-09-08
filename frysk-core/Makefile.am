@@ -85,7 +85,8 @@ GEN_GCJ_LDADD += ../frysk-imports/elfutils/libdw/libdw.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libebl/libebl.a
 GEN_GCJ_LDADD += ../frysk-imports/elfutils/libelf/libelf.a
 if USE_LIBUNWIND
-GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-$(libunwind_cpu).a
+GEN_GCJ_LDADD += ../frysk-imports/libunwind/src/libunwind-ptrace.a \
+                ../frysk-imports/libunwind/src/libunwind-$(libunwind_cpu).a
 endif
 # Stub bfd_getb32 and bfd_getl32 for PPC64.  Unconditionally
 # link -lbfd_get just for simplification.
@@ -116,6 +117,7 @@ frysk/pkglibexecdir/funit-child-alias.$(OBJEXT): $(frysk_pkglibexecdir_funit_chi
 MOSTLYCLEANFILES += frysk/pkglibexecdir/funit-child-alias.$(OBJEXT)
 EXTRA_DIST += $(srcdir)/frysk/cli/hpd/doc-files/parsetree.png
 EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/util.h
+EXTRA_DIST += $(srcdir)/frysk/pkglibexecdir/funit-rt-looper.h
 
 # Try running funit from the install directory; ignore things like
 # program transform name for the moment.

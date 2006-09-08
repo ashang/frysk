@@ -1,3 +1,13 @@
+2006-09-08  Mike Cvet  <mcvet@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Commented out
+	output since now the test runs and works.
+
+2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
+
+	* tests/TestStackBacktrace.java (testBacktrace): Remove
+    expected failure marker.
+
 2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* StackCallbacks.java (getProcName): Check the null pointer.

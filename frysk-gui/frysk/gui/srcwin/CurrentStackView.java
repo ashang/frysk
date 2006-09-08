@@ -61,6 +61,7 @@ import org.gnu.gtk.event.TreeSelectionListener;
 import frysk.dom.DOMFunction;
 import frysk.dom.DOMLine;
 import frysk.dom.DOMSource;
+import frysk.rt.StackFrame;
 
 public class CurrentStackView
     extends TreeView
@@ -78,7 +79,7 @@ public class CurrentStackView
 
   private Vector observers;
 
-  public CurrentStackView (StackLevel topLevel)
+  public CurrentStackView (StackLevel topLevel, StackFrame frame)
   {
     super();
 
@@ -98,56 +99,104 @@ public class CurrentStackView
     TreeIter iter = null;
     TreeIter last = null;
 
-    while (topLevel != null)
+    boolean hasInlinedCode = false;
+
+    // while (topLevel != null) // Always one iteration anyway
+    // {
+    // iter = listModel.appendRow();
+
+    CurrentLineSection current = topLevel.getCurrentLine();
+    hasInlinedCode = false;
+
+    // Go through each segment of the current line, but once we've found
+    // one stop checking
+    while (current != null && ! hasInlinedCode)
+      {
+        // Go through each line of the segment
+        for (int i = current.getStartLine(); i < current.getEndLine(); i++)
+          {
+            // Check for inlined code
+            DOMLine line = topLevel.getData().getLine(i);
+            if (line != null && line.hasInlinedCode())
+              {
+                hasInlinedCode = true;
+                break;
+              }
+          }
+
+        current = current.getNextSection();
+      }
+
+    // DOMSource source = topLevel.getData();
+    // DOMFunction func = topLevel.getFunc();
+    //
+    // String row = (source == null ? "Unknown file" : source.getFileName())
+    // + ": "
+    // + (func == null ? "Unknown function" : func.getName());
+
+    // If we've found inlined code, update the display
+    // if (hasInlinedCode)
+    // row += " (i)";
+
+    // listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+    //
+    // listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
+
+    // Save the last node so we can select it
+    // if (topLevel.getNextScope() == null)
+    // {
+    // currentLevel = topLevel;
+    // last = iter;
+    // }
+
+    // topLevel = topLevel.getNextScope();
+    // }
+
+    DOMSource source = topLevel.getData();
+    DOMFunction func = topLevel.getFunc();
+    String row = "";
+    if (source == null || func == null)
       {
         iter = listModel.appendRow();
+        row = "Unknown file : Unknown function";
+        listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
+      }
+    else
+      {
 
-        CurrentLineSection current = topLevel.getCurrentLine();
-        boolean hasInlinedCode = false;
-
-        // Go through each segment of the current line, but once we've found
-        // one stop checking
-        while (current != null && ! hasInlinedCode)
+        int level = 0;
+        while (frame != null)
           {
-            // Go through each line of the segment
-            for (int i = current.getStartLine(); i < current.getEndLine(); i++)
+            iter = listModel.appendRow();
+            if (frame.getMethodName() != "")
               {
-                // Check for inlined code
-                DOMLine line = topLevel.getData().getLine(i);
-                if (line != null && line.hasInlinedCode())
-                  {
-                    hasInlinedCode = true;
-                    break;
-                  }
+                row = "#" + (++level) + " 0x"
+                      + Long.toHexString(frame.getAddress()) + " in "
+                      + frame.getMethodName() + " (): line #"
+                      + frame.getLineNumber();
+              }
+            else
+              {
+                row = "#" + (++level) + " 0x"
+                      + Long.toHexString(frame.getAddress()) + " in (null) ()";
               }
 
-            current = current.getNextSection();
+            if (hasInlinedCode)
+              row += " (i)";
+
+            listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
+            listModel.setValue(iter, (DataColumnObject) stackColumns[1], frame);
+
+            frame = frame.getOuter();
+            row = "";
           }
-
-        DOMSource source = topLevel.getData();
-        DOMFunction func = topLevel.getFunc();
-
-        String row = (source == null ? "Unknown file" : source.getFileName())
-                     + ": "
-                     + (func == null ? "Unknown function" : func.getName());
-
-        // If we've found inlined code, update the display
-        if (hasInlinedCode)
-          row += " (i)";
-
-        listModel.setValue(iter, (DataColumnString) stackColumns[0], row);
-
-        listModel.setValue(iter, (DataColumnObject) stackColumns[1], topLevel);
-
-        // Save the last node so we can select it
-        if (topLevel.getNextScope() == null)
-          {
-            currentLevel = topLevel;
-            last = iter;
-          }
-
-        topLevel = topLevel.getNextScope();
       }
+
+    last = iter;
+    /* For now - its always null anyway */
+    currentLevel = topLevel;
+
     this.setModel(listModel);
 
     TreeViewColumn column = new TreeViewColumn();

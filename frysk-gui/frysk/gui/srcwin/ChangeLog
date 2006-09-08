@@ -1,3 +1,16 @@
+2006-09-08  Mike Cvet  <mcvet@redhat.com>
+
+	* SourceWindowFactory.java (finishSourceWin): Creates a new
+	StackFrame to send to the SourceWindow. Removed some unneeded 
+	comments and information.
+	* CurrentStackView.java (CurrentStackView): Temporarily removed lots
+	of old and redundant code, and added plumbing for the new StackFrame
+	parameter.
+	* SourceWindow.java (SourceWindow): Now takes in a StackFrame for 
+	useful information.
+	(populateStackBrowser): Also takes a StackFrame as a parameter.
+	* CurrentLineSelection.java: Applied GNU formatting.
+
 2006-07-27  Mike Cvet  <mcvet@redhat.com>
 
 	* SourceWindowFactory.java: Cleaned up global variables; now works

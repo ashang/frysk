@@ -68,6 +68,8 @@ import frysk.proc.Proc;
 import frysk.proc.Task;
 import frysk.proc.TaskException;
 import frysk.proc.TaskObserver;
+import frysk.rt.StackFactory;
+import frysk.rt.StackFrame;
 
 /**
  * SourceWindow factory is the interface through which all SourceWindow objects
@@ -272,11 +274,6 @@ public class SourceWindowFactory
                                + "! Exiting.");
             return;
           }
-        // printDOM(dom);
-
-        // DOMFunction f =
-        // DOMFunction.createDOMFunction(dom.getImage(task.getName()), "main",
-        // "looper.c", 3, 3, 24, 28);
 
         DwflLine line;
         DOMFunction f = null;
@@ -302,10 +299,17 @@ public class SourceWindowFactory
           {
             stack1 = new StackLevel(f, StackLevel.NO_LINE);
           }
+        StackFrame frame = null;
+        try
+          {
+            frame = StackFactory.createStackFrame(task);
+          }
+        catch (Exception e)
+          {
+            System.out.println(e.getMessage());
+          }
 
-//        WindowManager.theManager.sessionManager.hide();
-
-        srcWin = new SourceWindow(glade, gladePaths[i], dom, stack1);
+        srcWin = new SourceWindow(glade, gladePaths[i], dom, stack1, frame);
         taskTable.put(task, srcWin);
         srcWin.setMyTask(task);
         srcWin.addListener(new SourceWinListener());

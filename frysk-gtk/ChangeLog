@@ -1,3 +1,8 @@
+2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
+
+	* Makefile.am (GEN_GCJ_LDADD): Link in libunwind-ptrace.a.
+    * Makefile.in: Rebuild.
+
 2006-08-17  Yao Qi  <qiyaoltc@cn.ibm.com>
 
 	* Makefile.am : Append -lbfd_get to GEN_GCJ_LDADD.

@@ -1,3 +1,7 @@
+2006-09-08	Alexandre Oliva  <aoliva@redhat.com>
+
+	* src/os-linux (tdep_get_elf_image): Define for remote only too.
+
 2006-08-29  Wu Zhou  <woodzltc@cn.ibm.com>
 
 	* include/libunwind-ppc64.h: New header file for ppc64 stubs.
