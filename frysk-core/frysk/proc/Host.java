@@ -176,12 +176,11 @@ public abstract class Host
      * refreshing the internal structure to match.  Optionally refresh
      * each processes task list.
      */
-    public void requestRefreshXXX (final boolean refreshAllArg)
+    public void requestRefreshXXX (final boolean refreshAll)
     {
 	logger.log (Level.FINEST, "{0} requestRefreshXXX boolean\n", this); 
 	Manager.eventLoop.add (new HostEvent ("RequestRefresh")
 	    {
-		boolean refreshAll = refreshAllArg;
 		public void execute ()
 		{
 		    newState= oldState ().handleRefresh (Host.this, refreshAll);
@@ -191,24 +190,19 @@ public abstract class Host
     /**
      * Request that a new attached and running process be created.
      */
-    public final void requestCreateAttachedProc (final String stdinArg,
-						 final String stdoutArg,
-						 final String stderrArg,
-						 final String[] argsArg,
+    public final void requestCreateAttachedProc (final String stdin,
+						 final String stdout,
+						 final String stderr,
+						 final String[] args,
 						 final TaskObserver.Attached attachedObserver)
     {
 	logger.log (Level.FINE, "{0} requestCreateAttachedProc\n", this); 
 	Manager.eventLoop.add (new HostEvent ("requestCreateAttachedProc")
 	    {
-		String stdin = stdinArg;
-		String stdout = stdoutArg;
-		String stderr = stderrArg;
-		String[] args = argsArg;
-		TaskObserver.Attached attached = attachedObserver;
 		public void execute ()
 		{
 		    newState= oldState ().handleCreateAttachedProc
-			(Host.this, stdin, stdout, stderr, args, attached);
+			(Host.this, stdin, stdout, stderr, args, attachedObserver);
 		}
 	    });
     }
