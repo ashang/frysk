@@ -1,3 +1,7 @@
+2006-09-08  Mark Wielaard  <mark@klomp.org>
+
+	* TaskState.java: Merge Running and runningInSyscall states.
+
 2006-09-07  Tom Tromey  <tromey@redhat.com>
 
 	* Host.java (requestRefreshXXX): Fix typo.
