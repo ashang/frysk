@@ -56,13 +56,13 @@ class frysk
 		     new String[] { Config.PKGDATADIR + "/samples" });
     	}
 	else if (args[0].equals ("--help")) {
-	    System.out.println ("Useage: 'frysk [option]");
+	    System.out.println ("Usage: 'frysk [option]");
 	    System.out.println ();
 	    System.out.println ("options:");
 	    System.out.println ("\t--help\t\tDisplays this message");
     	}
 	else {
-	    System.err.println ("Invalid arugment:" + args[0]);
+	    System.err.println ("Invalid argument:" + args[0]);
 	    System.err.println ("See 'frysk --help' for valid options");
 	}
     }
